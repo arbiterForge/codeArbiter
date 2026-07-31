@@ -41,6 +41,9 @@
 #                          manifest_version, release_is_nondraft) -> str
 #   select_release_target(*confirmations, targets) -> str
 #   classify_merge_readiness(check_runs, head_sha, check_name) -> str
+#   classify_commit(subject, body) -> dict
+#   classify_window(commits) -> dict
+#   parse_window_log(text) -> list[dict]
 #   first_release_baseline(adoption_log_text) -> str
 #   peel_tag(ls_remote_text, tag) -> str
 #   parse_release_targets(text) -> list[dict]
@@ -494,6 +497,126 @@ def classify_merge_readiness(check_runs, head_sha, check_name):
     if any(run.get("conclusion") != "success" for run in matching):
         return "not_successful"
     return "green"
+
+
+# Conventional-Commits subject grammar: `type(optional-scope)!: subject`.
+# The `!` sits AFTER the closing paren when a scope is present and directly
+# after the type when it is not -- both spellings mark a breaking change,
+# and a hand-rolled `split(':')[0]` that strips `!` before checking for it
+# loses the marker entirely.
+_CC_SUBJECT_RE = re.compile(r"^(?P<type>[a-zA-Z]+)(?:\((?P<scope>[^)]*)\))?(?P<bang>!)?:\s")
+
+# `BREAKING CHANGE:` (and the hyphenated spelling the spec also permits) as
+# a FOOTER -- at the start of its own line, never mid-sentence, so prose
+# that merely discusses a breaking change does not silently bump a major.
+_BREAKING_FOOTER_RE = re.compile(r"^BREAKING[ -]CHANGE:", re.MULTILINE)
+_CHANGELOG_FOOTER_RE = re.compile(r"^CHANGELOG:", re.MULTILINE)
+
+# Which types bump, and to what. `refactor` bumps patch and IS harvested
+# (see the changelog-grouping rule); `docs`/`chore`/`test`/`ci` bump
+# nothing but may still carry a harvested footer.
+_BUMPING_TYPES = {"feat": "minor", "fix": "patch", "perf": "patch",
+                  "refactor": "patch"}
+_BUMP_RANK = {"none": 0, "patch": 1, "minor": 2, "major": 3}
+
+
+def classify_commit(subject, body=""):
+    """One commit -> `{type, scope, breaking, bump, has_changelog_footer}`.
+
+    Pure and non-raising over synthetic input, per this module's mechanism
+    invariant: a subject that is not Conventional-Commits at all yields
+    `type=""`, `bump="none"` -- an unparseable subject cannot bump, which
+    is the safe direction.
+
+    Exists because this was the last mechanical step in the release lane
+    with no helper behind it, on the check the hard rules mark MUST-level
+    (adversarial review run 11). An exercising agent wrote
+    `subject.split('(')[0].split(':')[0].rstrip('!')` as its own reading;
+    that strips the `!` BEFORE anything checks for it, so `feat!:` and
+    `feat(api)!:` both classify as an ordinary `feat` and a major release
+    silently becomes a minor one. Two operators writing two parses produce
+    two different gates on the check that decides whether a release may
+    proceed.
+    """
+    if not isinstance(subject, str):
+        subject = ""
+    if not isinstance(body, str):
+        body = ""
+    match = _CC_SUBJECT_RE.match(subject)
+    if match is None:
+        return {"type": "", "scope": "", "breaking": False, "bump": "none",
+                "has_changelog_footer": bool(_CHANGELOG_FOOTER_RE.search(body))}
+    ctype = match.group("type").lower()
+    breaking = bool(match.group("bang")) or bool(_BREAKING_FOOTER_RE.search(body))
+    if breaking:
+        bump = "major"
+    else:
+        bump = _BUMPING_TYPES.get(ctype, "none")
+    return {
+        "type": ctype,
+        "scope": match.group("scope") or "",
+        "breaking": breaking,
+        "bump": bump,
+        "has_changelog_footer": bool(_CHANGELOG_FOOTER_RE.search(body)),
+    }
+
+
+def classify_window(commits):
+    """`[{sha, subject, body}, ...]` -> the whole window's verdict:
+    `{bump, commits: [...], missing_footer: [...]}`.
+
+    `bump` is the highest precedence across the window (`major` > `minor`
+    > `patch` > `none`). `missing_footer` lists every BUMPING commit with
+    no `CHANGELOG:` footer -- the exact set Phase 1 step 3 turns into
+    `[NEEDS-TRIAGE]` lines, in window order, so the report's shape is not
+    re-derived per release either.
+
+    A breaking commit bumps major regardless of type, so a `chore!:` is
+    reported as bumping and IS subject to the footer rule -- a hand-rolled
+    type-list check misses that, because `chore` is not in the bumping
+    list.
+    """
+    rows = []
+    if not isinstance(commits, (list, tuple)):
+        commits = []
+    for entry in commits:
+        if not isinstance(entry, dict):
+            continue
+        verdict = classify_commit(entry.get("subject", ""), entry.get("body", ""))
+        verdict["sha"] = str(entry.get("sha", ""))
+        verdict["subject"] = str(entry.get("subject", ""))
+        rows.append(verdict)
+    bump = "none"
+    for row in rows:
+        if _BUMP_RANK[row["bump"]] > _BUMP_RANK[bump]:
+            bump = row["bump"]
+    missing = [r for r in rows
+               if r["bump"] != "none" and not r["has_changelog_footer"]]
+    return {"bump": bump, "commits": rows, "missing_footer": missing}
+
+
+def parse_window_log(text):
+    """`git log --pretty=format:%H%n%s%n%b%n----` output -> the
+    `[{sha, subject, body}]` shape `classify_window` consumes.
+
+    The separator is the one the release skill already prescribes, so the
+    prose and this parser cannot drift apart into two different readings
+    of the same command's output.
+    """
+    if not isinstance(text, str):
+        return []
+    entries = []
+    for chunk in text.split("\n----"):
+        lines = [ln for ln in chunk.split("\n")]
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        if not lines or not lines[0].strip():
+            continue
+        sha = lines[0].strip()
+        subject = lines[1] if len(lines) > 1 else ""
+        body = "\n".join(lines[2:])
+        entries.append({"sha": sha, "subject": subject, "body": body})
+    return entries
 
 
 def first_release_baseline(adoption_log_text):
@@ -1137,6 +1260,15 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      classify-window            stdin = `git log $WINDOW --pretty=format:
+                                  %H%n%s%n%b%n---- -- $PAYLOAD` -> prints the
+                                  derived bump, then one
+                                  `[NEEDS-TRIAGE] <sha> <subject>` line per
+                                  BUMPING commit missing a CHANGELOG: footer.
+                                  exit 0 clean - 1 a footer is missing (the
+                                  step-3 BLOCK) - 2 the window is non-bumping
+                                  (the step-2 STOP). Classifies and reports;
+                                  the skill keeps the decision.
       adoption-commit            stdin = `git log --diff-filter=A --format=%H
                                   -- .codearbiter/CONTEXT.md` -> prints the
                                   commit that ADOPTED codeArbiter, or nothing
@@ -1211,7 +1343,8 @@ def main(argv):
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
             "notes-match|dates-match|semver-greater|classify|peel-tag|"
-            "run-pre-tag|adoption-commit|backfill-detect} ...\n")
+            "run-pre-tag|adoption-commit|classify-window|"
+            "backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1287,6 +1420,29 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "classify-window" and not rest:
+        # stdin = `git log $WINDOW --pretty=format:%H%n%s%n%b%n---- --
+        # $PAYLOAD`. Prints the derived bump on the first line, then one
+        # `[NEEDS-TRIAGE] <short-sha> <subject>` line per BUMPING commit
+        # with no CHANGELOG: footer -- the exact report shape Phase 1
+        # step 3 specifies, so it is not re-derived per release.
+        #
+        # Exit 0 = classified, no missing footers. Exit 1 = at least one
+        # bumping commit lacks a footer (the step-3 BLOCK). Exit 2 = the
+        # window is non-bumping, which is the step-2 STOP.
+        #
+        # It CLASSIFIES and REPORTS; it does not decide the release. The
+        # skill keeps the BLOCK. A helper returning proceed/stop would put
+        # a governance decision inside a library, which is the wrong side
+        # of ADR-0010's cooperative-agent line.
+        window = classify_window(parse_window_log(sys.stdin.read()))
+        print(window["bump"])
+        for row in window["missing_footer"]:
+            print(f"[NEEDS-TRIAGE] {row['sha'][:7]} {row['subject']}")
+        if window["missing_footer"]:
+            return 1
+        return 2 if window["bump"] == "none" else 0
 
     if cmd == "adoption-commit" and not rest:
         # A-5.5. stdin = `git log --diff-filter=A --format=%H --

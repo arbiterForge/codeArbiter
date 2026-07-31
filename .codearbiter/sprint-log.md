@@ -1282,3 +1282,36 @@ The mitigation is that it is sequenced, not forgotten: the prose wiring is the
 next skill-touching task, and the mechanism is unreachable-but-tested until then
 rather than silently half-built. If the sprint stopped here it would be a real
 gap, and this entry is what makes that visible rather than discovered later.
+
+## 2026-07-31 — commit classification + footer scan: the last prose arithmetic (SMARTS, auto-decided)
+
+**Question.** Phase 1 steps 2 and 3 — Conventional-Commits classification and
+the `CHANGELOG:` footer scan — are the only mechanical steps in the lane with
+no helper behind them. Step 3 is the one the hard rules mark MUST-level. Leave
+as prose, or ship a `classify-window` subcommand?
+
+**Decision: ship it.** Same shape as `run-pre-tag` and `adoption-commit`.
+
+| lens | verdict | why |
+|---|---|---|
+| **Scalable** (weighted heavier) | **helper, strong** | Replaces a per-release hand-written parse with one command. The largest single prose-arithmetic surface left in the lane. |
+| Reliable | helper, strong | Run 11's agent wrote `subject.split('(')[0].split(':')[0].rstrip('!')` — its own reading. `feat!:`, `feat(scope)!:`, and a bare `BREAKING CHANGE:` footer are each handled by whatever the operator invents. **Two operators produce two different gates on the check that decides whether a release may proceed.** |
+| Securable | helper, moderate | The footer BLOCK is what stops an unlogged user-facing change reaching a tag. A gate whose implementation varies per operator is not a gate. |
+| Testable | helper, strong | Grammar edge cases (`!` breaking marker, scopes, multi-line bodies, footer position) become fixtures instead of being re-derived per release. |
+| Maintainable | helper, moderate | One parse across three governance plugins via sync-core, versus the same grammar restated in prose. |
+| Available | tied | Same BLOCK conditions either way; this changes who computes them, not what they are. |
+
+**Four strong/moderate, one tied, none opposed.**
+
+**Scope held deliberately.** The helper CLASSIFIES and REPORTS; it does not
+decide the release. It emits each commit's type, whether it bumps, whether it
+carries a footer, and the aggregate bump — and the skill keeps the BLOCK. A
+helper that returned "proceed/stop" would move a governance decision into a
+library, which ADR-0010's cooperative-agent model puts on the wrong side of
+the line.
+
+**Sequenced like T-51.** Mechanism and CLI now (run 12 is in flight against the
+current skill); the prose that wires it lands in the next skill batch. Same
+stated risk as before — a mechanism with no caller is its own defect class — and
+the same mitigation: it is recorded here and is the next skill-touching task,
+not forgotten.

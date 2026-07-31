@@ -2462,6 +2462,106 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    # ---- Conventional-Commits classification + footer scan ----
+    def test_breaking_marker_is_major_with_and_without_a_scope(self):
+        # THE defect this helper exists for. Run 11's agent wrote
+        # `subject.split('(')[0].split(':')[0].rstrip('!')`, which strips
+        # the `!` BEFORE anything checks for it -- so a breaking change
+        # ships as a minor, or as no release at all.
+        for subject in ("feat!: drop the legacy endpoint",
+                        "feat(api)!: drop the legacy endpoint",
+                        "chore!: rip out the vendored copy"):
+            with self.subTest(subject=subject):
+                self.assertEqual(
+                    core_releaselib.classify_commit(subject)["bump"], "major")
+                self.assertTrue(core_releaselib.classify_commit(subject)["breaking"])
+
+    def test_a_breaking_chore_still_bumps_and_is_footer_checked(self):
+        # `chore` is not in the bumping-type list, so a type-list check
+        # misses `chore!:` entirely -- it bumps major AND is therefore
+        # subject to the footer rule.
+        window = core_releaselib.classify_window(
+            [{"sha": "a" * 40, "subject": "chore!: rip it out", "body": ""}])
+        self.assertEqual(window["bump"], "major")
+        self.assertEqual(len(window["missing_footer"]), 1)
+
+    def test_breaking_change_footer_must_start_a_line(self):
+        # Prose merely DISCUSSING a breaking change must not bump major.
+        self.assertEqual(
+            core_releaselib.classify_commit(
+                "docs: prose", "this mentions a BREAKING CHANGE: inline")["bump"],
+            "none")
+        self.assertEqual(
+            core_releaselib.classify_commit(
+                "docs: prose", "BREAKING CHANGE: config moved")["bump"],
+            "major")
+
+    def test_ordinary_types_map_to_their_documented_bumps(self):
+        for subject, want in (("feat(api): add", "minor"), ("fix: a bug", "patch"),
+                              ("perf: faster", "patch"), ("refactor(core): split", "patch"),
+                              ("docs: prose", "none"), ("chore: routine", "none"),
+                              ("test: cover", "none"), ("ci: pipeline", "none")):
+            with self.subTest(subject=subject):
+                self.assertEqual(
+                    core_releaselib.classify_commit(subject)["bump"], want)
+
+    def test_a_non_conventional_subject_cannot_bump(self):
+        # An unparseable subject degrades to "no bump", the safe direction.
+        for subject in ("not conventional at all", "", "feat missing colon"):
+            self.assertEqual(
+                core_releaselib.classify_commit(subject)["bump"], "none")
+
+    def test_classify_commit_never_raises_on_junk(self):
+        for subject, body in ((None, None), (42, []), ({}, 7)):
+            self.assertEqual(
+                core_releaselib.classify_commit(subject, body)["bump"], "none")
+
+    def test_window_bump_is_the_highest_precedence_present(self):
+        commits = [
+            {"sha": "a" * 40, "subject": "fix: a", "body": "CHANGELOG: x"},
+            {"sha": "b" * 40, "subject": "feat: b", "body": "CHANGELOG: y"},
+            {"sha": "c" * 40, "subject": "docs: c", "body": ""},
+        ]
+        self.assertEqual(core_releaselib.classify_window(commits)["bump"], "minor")
+
+    def test_missing_footer_lists_only_bumping_commits_in_window_order(self):
+        commits = [
+            {"sha": "1" * 40, "subject": "feat: a", "body": ""},           # bumping, no footer
+            {"sha": "2" * 40, "subject": "docs: b", "body": ""},           # non-bumping
+            {"sha": "3" * 40, "subject": "fix: c", "body": "CHANGELOG: z"},  # has footer
+            {"sha": "4" * 40, "subject": "perf: d", "body": ""},           # bumping, no footer
+        ]
+        missing = core_releaselib.classify_window(commits)["missing_footer"]
+        self.assertEqual([m["sha"][0] for m in missing], ["1", "4"])
+
+    def test_parse_window_log_round_trips_the_prescribed_format(self):
+        text = ("aaaaaaa\nfeat: one\nCHANGELOG: first\n----\n"
+                "bbbbbbb\nfix: two\n\n----\n")
+        entries = core_releaselib.parse_window_log(text)
+        self.assertEqual([e["sha"] for e in entries], ["aaaaaaa", "bbbbbbb"])
+        self.assertEqual(entries[0]["subject"], "feat: one")
+        self.assertIn("CHANGELOG: first", entries[0]["body"])
+
+    def test_classify_window_cli_exit_codes_discriminate(self):
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+
+        def run(text):
+            return subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "classify-window"],
+                input=text, capture_output=True, text=True, env=env)
+
+        clean = run("aaaaaaa\nfeat: one\nCHANGELOG: first\n----\n")
+        self.assertEqual(clean.returncode, 0, clean.stderr)
+        self.assertEqual(clean.stdout.splitlines()[0], "minor")
+
+        blocked = run("bbbbbbb\nfeat: one\n\n----\n")
+        self.assertEqual(blocked.returncode, 1, blocked.stderr)
+        self.assertIn("[NEEDS-TRIAGE] bbbbbbb feat: one", blocked.stdout)
+
+        nonbumping = run("ccccccc\ndocs: prose\n\n----\n")
+        self.assertEqual(nonbumping.returncode, 2, nonbumping.stderr)
+        self.assertEqual(nonbumping.stdout.splitlines()[0], "none")
+
     # ---- A-5.5: the first-release baseline ----
     def test_first_release_baseline_returns_the_adoption_commit(self):
         self.assertEqual(
