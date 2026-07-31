@@ -104,10 +104,13 @@ Stdlib only. No third-party imports.
 
 from __future__ import annotations
 
+import datetime
+import importlib.util
 import io
 import json
 import os
 import re
+import shlex
 import shutil
 import stat
 import subprocess
@@ -1201,6 +1204,862 @@ class HermeticGitEnvTest(unittest.TestCase):
                 "a poisoned default .git/hooks/pre-commit blocked a fixture "
                 "commit — _git's per-call `-c core.hooksPath=...` override "
                 "is not bypassing it")
+
+
+# --------------------------------------------------------------------------- #
+# T-74/T-75 — the lane driver: invocation strings extracted from the
+# INSTALLED release skill, run for real (or ratchet-accounted) against a
+# private, disposable consumer repo. (issue #563, AC-6.6 "Lane driver" and
+# "Assertions are on derived outputs"; .codearbiter/plans/portable-release-
+# and-protected-state.md T-74, T-75.)
+#
+# Why this is not a direct-import test of core/pysrc/_releaselib.py: the
+# release skill (`plugins/ca/skills/release/SKILL.md`, pre-T-41x) tells its
+# reader to run SPECIFIC shell command lines — `TAG_PREFIX=$(python3
+# .github/scripts/_releaselib.py tag-prefix $TARGET)`, `git log
+# LAST_TAG..HEAD -- $PAYLOAD`, `git tag -a ... -F <message-file>`, and so
+# on. A test that imports `_releaselib.py`'s functions directly and calls
+# them in Python can pass while the PROSE instructs the reader to invoke a
+# CLI shape that script no longer accepts (an added required argument, a
+# renamed subcommand, a flag that moved) — direct import cannot see that
+# drift because it never goes through the CLI surface the prose actually
+# names. This module instead locates the literal backtick-delimited command
+# line following a stable prose ANCHOR in the installed skill text, and
+# either subprocess-executes it for real (after substituting the variables
+# the skill's own prose defines: `$TARGET`, `$TAG_PREFIX`, `$PAYLOAD`,
+# `LAST_TAG`, `${TAG_PREFIX}MAJOR.MINOR.PATCH`, `<message-file>`) or accounts
+# for it on the SAME `known-unresolved-refs.txt` ratchet T-73b already
+# maintains, when the invocation names a this-repo path (right now,
+# `.github/scripts/_releaselib.py` — a CI-only shim that does not ship in
+# the plugin payload and has no `__main__` entry point even where it is
+# read; T-41b's repointing plus giving the portable mechanism a CLI are
+# BOTH prerequisites before this class of invocation could ever move from
+# accounted to run).
+#
+# Honest scope limit, stated once here rather than left implicit: this
+# driver only extracts from `## Targets` through the end of `## Phase 2` —
+# never `## Phase 3 — Publish`, which requires explicit user authorization
+# and names `git push`, `gh release create`, and `gh release view`. Those
+# are gated write/publish actions this fixture must never perform even
+# against a disposable repo (no network, no auth, and out of AC-6.6's named
+# "target resolution, window derivation, bump classification, changelog
+# rolling, tag-message composition" scope). `RELEASE_DATE=$(date +%F)` is
+# ALSO out of this driver's extracted set for a narrower reason: `date` is
+# not a stdlib-guaranteed executable on every platform this suite runs on
+# (the same class of problem T-42's python3->interpreter-fallback exists
+# to fix, but nothing yet fixes it for `date`), so this module derives the
+# release date with Python's own `datetime.date.today()` instead of
+# shelling out — labelled here as test-authored plumbing, never claimed as
+# an "extracted invocation".
+
+RELEASE_TARGETS_BLOCK = (
+    "<!-- release-targets -->\n"
+    "[app]\n"
+    "prefix: v\n"
+    "manifest: package.json\n"
+    "changelog: CHANGELOG.md\n"
+    "payload: .\n"
+    "<!-- /release-targets -->\n"
+)
+
+# A candidate backtick span "looks like an invocation" iff it starts with a
+# shell assignment (`VAR=$(`), or a bare `git `/`python3 `/`node ` command —
+# the shapes every invocation this driver cares about actually takes. This
+# excludes non-invocation backtick spans that sit near an anchor in the same
+# sentence (a dotted function reference like `_releaselib.classify_publish_
+# state`, or a bare variable mention like `$PAYLOAD`), so the capture walks
+# past those to the real command rather than mis-extracting the first
+# backtick span it meets.
+_INVOCATION_SHAPE_RE = re.compile(r'^(?:[A-Za-z_][A-Za-z0-9_]*=\$\(|git |python3 |node )')
+
+# label -> (stable prose anchor, expected classification). Each anchor
+# string is verified unique in the installed skill text (ConsumerFixtureTest-
+# style hard-fail on drift, not a silent widen); the expected classification
+# is asserted directly in LaneDriverTest.test_lane_driver_classification_map
+# so a mutant flipping run<->accounted is caught without comparing the
+# driver to itself.
+_LANE_INVOCATION_ANCHORS = (
+    ("target_resolution_tag_prefix", "never typed from memory:", "accounted"),
+    ("window_last_tag", "never a hand-rolled grep:", "accounted"),
+    ("window_scope_bare", "the commit set is", "run"),
+    ("window_scope_full_log", "Read every commit in the", "run"),
+    ("tag_message_composition", "Tag with", "run"),
+    ("publish_state_classify", "do not flatly abort", "accounted"),
+)
+
+# The one this-repo path substring that currently makes an invocation
+# unresolvable in a consumer — literally the same string T-73b's
+# `known-unresolved-refs.txt` already carries (line "`.github/scripts/
+# _releaselib.py`"), so accounting here rides the SAME committed ratchet
+# file rather than a second, driftable copy of the same fact.
+_LANE_SHIM_MARKER = ".github/scripts/_releaselib.py"
+
+
+def _capture_invocation_after_anchor(skill_text, anchor, window=500):
+    """Find `anchor` (a stable, unique prose substring) in `skill_text`, then
+    return the content of the FIRST invocation-shaped backtick span within
+    `window` characters after it — skipping any non-invocation backtick span
+    (a dotted name, a bare variable mention) that appears first in the same
+    sentence. Hard-fails with a named cause, rather than returning an empty
+    or partial result, if the anchor is missing (the skill's prose shape
+    changed) or no invocation-shaped span follows it (the skill stopped
+    naming a command where it used to) — this IS the drift detector; a
+    silent skip here would defeat the entire point of extracting from the
+    installed text instead of importing the library directly."""
+    idx = skill_text.find(anchor)
+    if idx == -1:
+        raise RuntimeError(
+            f"lane-driver anchor not found in the installed release skill: "
+            f"{anchor!r} — the skill's prose has changed shape; this "
+            "driver's anchors need updating in the SAME commit")
+    scanned = skill_text[idx + len(anchor): idx + len(anchor) + window]
+    for m in re.finditer(r'`([^`]+)`', scanned):
+        candidate = m.group(1)
+        if _INVOCATION_SHAPE_RE.match(candidate):
+            return candidate
+    raise RuntimeError(
+        f"no invocation-shaped backtick span found within {window} chars "
+        f"after anchor {anchor!r} — the skill stopped naming a runnable "
+        "command here")
+
+
+def _classify_invocation(invocation):
+    """"accounted" iff the invocation names the one currently-unresolvable
+    this-repo path; "run" otherwise. Callers must additionally assert the
+    accounted case's path is a member of `known-unresolved-refs.txt` — this
+    function alone does not read that file, so a unit test can exercise it
+    against synthetic text with no fixture dependency."""
+    return "accounted" if _LANE_SHIM_MARKER in invocation else "run"
+
+
+def _substitute_argv(argv, mapping):
+    """Token-by-token substitution over an ALREADY-`shlex.split` argv list —
+    never a substring replace over the raw command STRING before splitting.
+    This matters concretely on Windows: the composed tag-message temp path
+    substituted for `<message-file>` contains backslashes, and `shlex.split`
+    (POSIX mode) treats an unquoted backslash as an escape character that
+    would corrupt such a path if it were substituted into the string BEFORE
+    tokenization and the result were re-split. Splitting the original,
+    backslash-free skill text FIRST and substituting whole or partial tokens
+    AFTER avoids ever feeding a Windows path through `shlex`. A single
+    substring-replace pass per token covers both a WHOLE-token match
+    (`$PAYLOAD`, `<message-file>`) and a token that only CONTAINS the
+    variable (`LAST_TAG..HEAD`) — a separate `tok in mapping` short-circuit
+    would be dead code, since `str.replace` on an exact match already
+    returns the same result."""
+    out = []
+    for tok in argv:
+        replaced = tok
+        for old, new in mapping.items():
+            if old in replaced:
+                replaced = replaced.replace(old, new)
+        out.append(replaced)
+    return out
+
+
+def _run_argv(argv, cwd):
+    """Execute one substituted, already-tokenized RUN-classified invocation.
+    No `shell=True` anywhere in this module — every invocation this driver
+    actually runs is a plain argv list (no pipe, no `$(...)` capture is ever
+    required by a RUN-classified invocation; the ones that need a pipe all
+    name the this-repo shim and are accounted, never run). `git` calls are
+    routed through the SAME hermetic isolation `_git` gives every other git
+    call in this module (a lane-driver-composed `git tag -a` is exactly as
+    reachable by an ambient core.hooksPath/gpgsign poison as any other git
+    invocation here); a leading bare `python3` token is swapped for
+    `sys.executable` since `python3` is not guaranteed present, especially
+    on Windows (the same substitution T-42 tracks for the skill itself)."""
+    if argv and argv[0] == "python3":
+        argv = [sys.executable] + argv[1:]
+    if argv and argv[0] == "git":
+        no_hooks = os.path.join(cwd, ".ca-fixture-no-hooks-dir")
+        argv = ["git",
+                "-c", f"core.hooksPath={no_hooks}",
+                "-c", "commit.gpgsign=false",
+                "-c", "tag.gpgsign=false",
+                "-c", "user.name=codeArbiter consumer-smoke fixture",
+                "-c", "user.email=fixture@example.invalid",
+                *argv[1:]]
+        return subprocess.run(argv, cwd=cwd, capture_output=True, encoding="utf-8",
+                               timeout=GIT_TIMEOUT, env=_isolated_git_env())
+    return subprocess.run(argv, cwd=cwd, capture_output=True, encoding="utf-8",
+                           timeout=GIT_TIMEOUT)
+
+
+def _independent_last_tag(tags, prefix):
+    """A LAST_TAG oracle sharing no code with `core/pysrc/_releaselib.py`'s
+    `last_tag_select` — mirrors `test_release_trace.py`'s
+    `_independent_last_tag` so agreement between the two is genuine
+    cross-validation, not two lookups through the same helper."""
+    rx = re.compile(r"^" + re.escape(prefix) + r"(\d+)\.(\d+)\.(\d+)$")
+    best = None
+    for tag in tags:
+        m = rx.match(tag)
+        if not m:
+            continue
+        version = tuple(int(g) for g in m.groups())
+        if best is None or version > best[0]:
+            best = (version, tag)
+    return best[1] if best else None
+
+
+def _parse_window_log(stdout):
+    """Parse `git log --pretty=format:%H%n%s%n%b%n----`'s output into a list
+    of `{"sha", "subject", "body"}` dicts, oldest-last (git's own order).
+    Entries are delimited by a line that is EXACTLY `----`, matching the
+    skill's own format string byte for byte."""
+    entries = []
+    for chunk in stdout.split("\n----\n"):
+        chunk = chunk.strip("\n")
+        if not chunk:
+            continue
+        lines = chunk.split("\n")
+        entries.append({
+            "sha": lines[0],
+            "subject": lines[1] if len(lines) > 1 else "",
+            "body": "\n".join(lines[2:]).strip("\n"),
+        })
+    return entries
+
+
+_COMMIT_TYPE_RE = re.compile(r"^(\w+)(\([^)]*\))?(!)?:")
+_CHANGELOG_FOOTER_RE = re.compile(r"CHANGELOG:\s*(.+)")
+_GROUP_BY_TYPE = {"feat": "Added", "fix": "Fixed", "perf": "Performance"}
+
+
+def _commit_type(subject):
+    m = _COMMIT_TYPE_RE.match(subject)
+    if not m:
+        return None, False
+    return m.group(1), bool(m.group(3))
+
+
+def _footer_text(body):
+    m = _CHANGELOG_FOOTER_RE.search(body)
+    return m.group(1).strip() if m else None
+
+
+def _classify_bump(entries):
+    """Transcription of `release/SKILL.md` Phase 1 step 2's classification
+    rule. No CLI exists for this in the pre-T-41x skill — there is no
+    invocation string to extract, so this is test-authored, mirroring the
+    numbered prose directly rather than importing a mechanism function
+    (none exists to import). Returns None for a non-bumping window (the
+    skill's own STOP case), never a silent default bump."""
+    major = minor = patch = False
+    for e in entries:
+        ctype, bang = _commit_type(e["subject"])
+        if bang or "BREAKING CHANGE:" in e["body"]:
+            major = True
+        elif ctype == "feat":
+            minor = True
+        elif ctype in ("fix", "perf", "refactor"):
+            patch = True
+    if major:
+        return "major"
+    if minor:
+        return "minor"
+    if patch:
+        return "patch"
+    return None
+
+
+def _bump_version(bare, bump):
+    major, minor, patch = (int(x) for x in bare.split("."))
+    if bump == "major":
+        return f"{major + 1}.0.0"
+    if bump == "minor":
+        return f"{major}.{minor + 1}.0"
+    if bump == "patch":
+        return f"{major}.{minor}.{patch + 1}"
+    return None
+
+
+def _roll_changelog(existing_text, next_version, entries, release_date):
+    """Transcription of Phase 1 step 4's rolling rule: a new bracket-heading
+    section grouped Added/Fixed/Performance from each commit's `CHANGELOG:`
+    footer, with prior sections left intact. Test-authored for the same
+    reason `_classify_bump` is — no CLI exists for this step either."""
+    groups = {}
+    for e in entries:
+        ctype, _ = _commit_type(e["subject"])
+        group = _GROUP_BY_TYPE.get(ctype)
+        if group is None:
+            continue
+        footer = _footer_text(e["body"])
+        if footer is None:
+            continue
+        groups.setdefault(group, []).append(footer)
+    lines = [f"## [{next_version}] - {release_date}", ""]
+    for group in ("Added", "Fixed", "Performance"):
+        if group in groups:
+            lines.append(f"### {group}")
+            for item in groups[group]:
+                lines.append(f"- {item}")
+            lines.append("")
+    section_text = "\n".join(lines).rstrip("\n") + "\n"
+    if existing_text.startswith("# Changelog"):
+        head, _, rest = existing_text.partition("\n")
+        full_text = head + "\n\n" + section_text + "\n" + rest.lstrip("\n")
+    else:
+        full_text = section_text + "\n" + existing_text
+    return section_text, full_text
+
+
+def _git_strip_cleanup(text):
+    """Reproduce `git tag`/`git commit`'s DEFAULT `--cleanup=strip` transform
+    on a `-F`-supplied message: drop every line starting with `#` (git's
+    default comment character), squeeze runs of blank lines down to one, and
+    drop leading/trailing blank lines. Implemented independently of git
+    itself (never by shelling out and comparing git to itself) so this
+    module's expectation of what a REAL `git tag -a -F` call produces is a
+    checkable, mutation-sensitive claim rather than "whatever git happened
+    to output that day"."""
+    lines = [ln for ln in text.split("\n") if not ln.startswith("#")]
+    squeezed = []
+    blank_run = False
+    for ln in lines:
+        if ln.strip() == "":
+            if blank_run:
+                continue
+            blank_run = True
+        else:
+            blank_run = False
+        squeezed.append(ln)
+    while squeezed and squeezed[0].strip() == "":
+        squeezed.pop(0)
+    while squeezed and squeezed[-1].strip() == "":
+        squeezed.pop()
+    return "\n".join(squeezed) + "\n"
+
+
+def _load_mechanism(path, private_name):
+    """Load one `_releaselib.py` copy under a private module name — mirrors
+    `test_release_trace.py`'s `_load_core_lane`. Loaded from the MATERIALIZED
+    plugin root's `hooks/_releaselib.py` (the vendored, shipped copy) rather
+    than `core/pysrc/_releaselib.py` directly, in keeping with this whole
+    fixture's point: prove against the installed artifact."""
+    spec = importlib.util.spec_from_file_location(private_name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[private_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+class _LaneFixture:
+    """A fresh, disposable single-package consumer repo carrying a declared
+    `.codearbiter/release-targets.md`, PRIVATE to one mutating test class.
+    Never the shared module-level `_FIXTURE.consumer_root`: `ConsumerFixtureTest`
+    asserts an EXACT tracked-file set and an exact one-tag list against that
+    shared repo, and this class's own sequence rolls a CHANGELOG and creates
+    a real annotated tag, either of which would break those assertions (and,
+    with unittest's alphabetical class ordering inside a module, silently
+    depend on run order to avoid it)."""
+
+    def __init__(self, label):
+        self.scratch = tempfile.mkdtemp(prefix=f"ca-lane-driver-{label}-")
+        try:
+            self.consumer_root = os.path.join(self.scratch, "consumer")
+            build_consumer_repo(self.consumer_root)
+            targets_path = os.path.join(
+                self.consumer_root, ".codearbiter", "release-targets.md")
+            _write_text(targets_path, RELEASE_TARGETS_BLOCK)
+            _git(["add", "-A"], self.consumer_root)
+            _git(["commit", "-q", "-m", "chore: declare release-targets.md"], self.consumer_root)
+        except Exception:
+            # Mirrors `_Fixture.__init__`'s own pattern: `self.scratch` is
+            # allocated before anything that can fail, so a failure here
+            # (build_consumer_repo, either git call) must still remove it
+            # rather than leak — a caller catching a raised exception out of
+            # `__init__` never gets a `self` to call `cleanup()` on.
+            self.cleanup()
+            raise
+
+    def cleanup(self):
+        _force_rmtree(self.scratch)
+
+
+def _execute_lane_sequence(skill_text, core_lane, consumer_root,
+                            prefix="v", payload="."):
+    """Extract, classify, and (for RUN invocations) execute the lane
+    driver's six anchored invocations against `consumer_root`, returning a
+    dict of every intermediate and derived value both T-74 and T-75 assert
+    against. Shared by both test classes so the extraction/substitution/
+    execution PLUMBING is written once; each class still asserts directly
+    against literals or independent oracles, never against each other's
+    computed results, so sharing this function does not make either class's
+    assertions mutation-dead."""
+    result = {"invocations": {}, "classification": {}, "processes": {}}
+
+    for label, anchor, expected in _LANE_INVOCATION_ANCHORS:
+        invocation = _capture_invocation_after_anchor(skill_text, anchor)
+        classification = _classify_invocation(invocation)
+        result["invocations"][label] = invocation
+        result["classification"][label] = classification
+
+    tags = [t.strip() for t in
+            _git(["tag", "-l"], consumer_root).stdout.splitlines() if t.strip()]
+    result["tags"] = tags
+    result["last_tag_lib"] = core_lane.last_tag_select(tags, prefix)
+    result["last_tag_oracle"] = _independent_last_tag(tags, prefix)
+    last_tag = result["last_tag_lib"]
+
+    for label in ("window_scope_bare", "window_scope_full_log"):
+        argv = _substitute_argv(
+            shlex.split(result["invocations"][label]),
+            {"LAST_TAG": last_tag, "$PAYLOAD": payload})
+        result["processes"][label] = _run_argv(argv, consumer_root)
+
+    result["window_entries"] = _parse_window_log(
+        result["processes"]["window_scope_full_log"].stdout)
+    result["bump"] = _classify_bump(result["window_entries"])
+    bare_last_tag = core_lane._bare_version(last_tag)
+    result["next_version"] = _bump_version(bare_last_tag, result["bump"])
+
+    with open(os.path.join(consumer_root, "CHANGELOG.md"), encoding="utf-8") as fh:
+        existing_changelog = fh.read()
+    release_date = datetime.date.today().isoformat()
+    result["release_date"] = release_date
+    section_text, full_text = _roll_changelog(
+        existing_changelog, result["next_version"], result["window_entries"], release_date)
+    result["rolled_section"] = section_text
+    result["rolled_full_text"] = full_text
+    result["message"] = section_text.rstrip("\n") + f"\nReleased-at: {release_date}\n"
+    result["tag_name"] = prefix + result["next_version"]
+
+    fd, message_path = tempfile.mkstemp(prefix="lane-driver-msg-", suffix=".txt")
+    os.close(fd)
+    try:
+        with open(message_path, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(result["message"])
+        argv = _substitute_argv(
+            shlex.split(result["invocations"]["tag_message_composition"]),
+            {"${TAG_PREFIX}MAJOR.MINOR.PATCH": result["tag_name"],
+             "<message-file>": message_path})
+        result["processes"]["tag_message_composition"] = _run_argv(argv, consumer_root)
+    finally:
+        os.remove(message_path)
+
+    return result
+
+
+class LaneDriverTest(unittest.TestCase):
+    """T-74 (AC-6.6 'Lane driver'): the mechanical sequence runs AS THE
+    PROSE SPELLS IT — invocation strings extracted from the installed
+    `SKILL.md`, never a direct import — through target resolution, window
+    derivation, and tag-message composition. Each extracted invocation
+    either resolves and runs successfully, or is accounted for by the SAME
+    `known-unresolved-refs.txt` ratchet T-73b maintains; this class is green
+    and required from day one because the accounting, not a blanket "must
+    all run" requirement, is what the ratchet buys before T-41b lands."""
+
+    @classmethod
+    def setUpClass(cls):
+        # unittest does NOT call tearDownClass if setUpClass itself raises,
+        # so a failure anywhere in this body (a mutant breaking
+        # `_execute_lane_sequence`, an anchor going missing) would otherwise
+        # leak `cls.lane`'s scratch directory — caught and cleaned up here
+        # rather than relying on tearDownClass to run.
+        cls.lane = _LaneFixture("t74")
+        try:
+            skill_path = os.path.join(_FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.core_lane = _load_mechanism(
+                os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+                "_lane_driver_core_t74")
+            cls.result = _execute_lane_sequence(
+                cls.skill_text, cls.core_lane, cls.lane.consumer_root)
+        except Exception:
+            cls.lane.cleanup()
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.lane.cleanup()
+
+    def test_lane_driver_classification_map(self):
+        # A literal, hand-declared expectation per label — direct against
+        # the anchors table, not derived from anything the driver itself
+        # computed, so a mutant flipping run<->accounted in `_classify_invocation`
+        # is caught here directly rather than by an equality between two
+        # things sharing that same function.
+        expected = {label: exp for label, _, exp in _LANE_INVOCATION_ANCHORS}
+        self.assertEqual(self.result["classification"], expected)
+
+    def test_accounted_invocations_are_on_the_committed_ratchet(self):
+        known = _load_known_unresolved()
+        accounted_labels = [label for label, cls_ in self.result["classification"].items()
+                             if cls_ == "accounted"]
+        self.assertTrue(accounted_labels, "no invocation classified accounted — "
+                         "the ratchet-accounting arm of this test is untested")
+        for label in accounted_labels:
+            with self.subTest(label=label):
+                self.assertIn(_LANE_SHIM_MARKER, self.result["invocations"][label])
+                self.assertIn(
+                    _LANE_SHIM_MARKER, known,
+                    f"{label!r} names {_LANE_SHIM_MARKER!r}, which is no longer on "
+                    f"{KNOWN_UNRESOLVED_PATH!r} — either T-41b has landed (update "
+                    "this driver to RUN it) or the ratchet file drifted out from "
+                    "under this accounting")
+
+    def test_run_invocations_all_exited_zero(self):
+        run_labels = [label for label, cls_ in self.result["classification"].items()
+                      if cls_ == "run"]
+        self.assertTrue(run_labels, "no invocation classified run — the "
+                         "actually-runs arm of this test is untested")
+        for label in run_labels:
+            with self.subTest(label=label):
+                proc = self.result["processes"][label]
+                self.assertEqual(
+                    proc.returncode, 0,
+                    f"extracted invocation {label!r} "
+                    f"({self.result['invocations'][label]!r}) failed: {proc.stderr}")
+
+    def test_window_derivation_finds_every_commit_git_itself_reports(self):
+        # Cross-validated against a SEPARATE git subcommand (rev-list
+        # --count), not the same `log` output compared to itself. THREE, not
+        # two: `_LaneFixture` declares release-targets.md as its own commit
+        # AFTER the v1.2.3 tag (a `chore:` commit contributing no bump and no
+        # CHANGELOG: footer), on top of `build_consumer_repo`'s feat and fix.
+        last_tag = self.result["last_tag_lib"]
+        independent_count = int(_git(
+            ["rev-list", "--count", f"{last_tag}..HEAD"], self.lane.consumer_root).stdout.strip())
+        self.assertEqual(len(self.result["window_entries"]), independent_count)
+        self.assertEqual(len(self.result["window_entries"]), 3)
+
+    def test_window_scope_bare_reports_the_same_commit_count(self):
+        # AC-6.6: "never on exit codes alone." `window_scope_bare` (`git log
+        # LAST_TAG..HEAD -- $PAYLOAD`, default pretty format) is a RUN
+        # invocation whose only other test coverage is its exit code — a
+        # mutant substituting a bogus-but-still-zero-exit revision range
+        # into it would survive undetected without this. Its stdout is
+        # git's own default format, one `commit <sha>` line per entry.
+        last_tag = self.result["last_tag_lib"]
+        independent_count = int(_git(
+            ["rev-list", "--count", f"{last_tag}..HEAD"], self.lane.consumer_root).stdout.strip())
+        stdout = self.result["processes"]["window_scope_bare"].stdout
+        commit_lines = [ln for ln in stdout.splitlines() if ln.startswith("commit ")]
+        self.assertEqual(len(commit_lines), independent_count)
+        self.assertEqual(len(commit_lines), 3)
+
+    def test_full_release_skill_payloads_extract_byte_identical_invocations(self):
+        # MEDIUM-3's exact defect class (adversarial review 2026-07-31,
+        # documented in this same file's ReferenceResolutionRatchetTest):
+        # the release skill ships as THREE full copies (`ca`,
+        # `ca-codex`/`ca-pi` routines), and a driver reading only `ca`'s copy
+        # is blind to a drift introduced into a sibling -- including one
+        # `tools/build-surface.py` itself renders differently. None of the
+        # six anchored invocations contains a host-token placeholder, so
+        # they are expected to be BYTE IDENTICAL across all three full
+        # payloads; a divergence here is itself the finding, not a bug in
+        # this test.
+        root_by_host = {
+            "claude": _FIXTURE.plugin_root,
+            "codex": _FIXTURE.codex_plugin_root,
+            "pi": _FIXTURE.pi_plugin_root,
+        }
+        full_payloads = [
+            (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
+            if label not in _STUB_PAYLOAD_LABELS
+        ]
+        self.assertEqual(len(full_payloads), 3)
+        per_payload_invocations = {}
+        for label, host, relpath in full_payloads:
+            skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
+            with open(skill_path, encoding="utf-8") as fh:
+                text = fh.read()
+            per_payload_invocations[label] = {
+                inv_label: _capture_invocation_after_anchor(text, anchor)
+                for inv_label, anchor, _ in _LANE_INVOCATION_ANCHORS
+            }
+        baseline_label, baseline = next(iter(per_payload_invocations.items()))
+        for label, invocations in per_payload_invocations.items():
+            with self.subTest(payload=label):
+                self.assertEqual(
+                    invocations, baseline,
+                    f"payload {label!r} extracted different invocation strings "
+                    f"than {baseline_label!r} — the release skill's copies have "
+                    "drifted apart")
+
+    def test_tag_message_composition_created_a_real_annotated_tag(self):
+        proc = self.result["processes"]["tag_message_composition"]
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        obj_type = _git(
+            ["cat-file", "-t", self.result["tag_name"]], self.lane.consumer_root).stdout.strip()
+        self.assertEqual(obj_type, "tag")
+
+
+class ConsumerEndToEndTest(unittest.TestCase):
+    """T-75 (AC-6.6 'consumer_end_to_end'): assertions on DERIVED OUTPUTS —
+    the resolved row, LAST_TAG, the computed bump, and the rolled changelog
+    text — never on exit codes alone."""
+
+    @classmethod
+    def setUpClass(cls):
+        # See LaneDriverTest.setUpClass's comment: unittest skips
+        # tearDownClass entirely if setUpClass raises, so cleanup on failure
+        # is handled explicitly here rather than left to tearDownClass.
+        cls.lane = _LaneFixture("t75")
+        try:
+            skill_path = os.path.join(_FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.core_lane = _load_mechanism(
+                os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+                "_lane_driver_core_t75")
+            cls.result = _execute_lane_sequence(
+                cls.skill_text, cls.core_lane, cls.lane.consumer_root)
+        except Exception:
+            cls.lane.cleanup()
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.lane.cleanup()
+
+    def test_resolved_row(self):
+        rows = self.core_lane.load_targets(
+            os.path.join(self.lane.consumer_root, ".codearbiter", "release-targets.md"))
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row["target"], "app")
+        self.assertEqual(row["prefix"], "v")
+        self.assertEqual(row["manifest"], ["package.json"])
+        self.assertEqual(row["changelog"], "CHANGELOG.md")
+        self.assertEqual(row["payload"], ".")
+
+    def test_last_tag(self):
+        self.assertEqual(self.result["tags"], ["v1.2.3"])
+        self.assertEqual(self.result["last_tag_lib"], "v1.2.3")
+        self.assertEqual(self.result["last_tag_oracle"], "v1.2.3")
+        self.assertEqual(self.result["last_tag_lib"], self.result["last_tag_oracle"])
+
+    def test_computed_bump(self):
+        # Direct literal, not a comparison against the classifier's own
+        # helper output: a feat + a fix in the window must classify minor
+        # (feat outranks fix), and the derived next version must be the
+        # strict SemVer advance the manifest/tag gate itself requires.
+        self.assertEqual(self.result["bump"], "minor")
+        self.assertEqual(self.result["next_version"], "1.3.0")
+        self.assertTrue(
+            self.core_lane.semver_greater(self.result["next_version"], "1.2.3"))
+
+    def test_bump_classification_negative_case_is_discriminating(self):
+        # A docs/chore-only window must NOT bump — proven directly against
+        # `_classify_bump`, independent of what the live fixture's own
+        # commits happen to be, so a mutant that always returns "minor"
+        # cannot survive.
+        self.assertIsNone(_classify_bump([
+            {"sha": "a", "subject": "docs: fix typo", "body": ""},
+            {"sha": "b", "subject": "chore: bump lockfile", "body": ""},
+        ]))
+
+    def test_rolled_changelog_text(self):
+        text = self.result["rolled_full_text"]
+        self.assertIn(f"## [1.3.0] - {self.result['release_date']}", text)
+        self.assertIn("### Added", text)
+        self.assertIn("- Added a widget export helper.", text)
+        self.assertIn("### Fixed", text)
+        self.assertIn("- Fixed an off-by-one when counting widgets.", text)
+        # Prior section stays intact.
+        self.assertIn("## [1.2.3] - 2026-01-01", text)
+        self.assertIn("- Initial release.", text)
+        # The new section sits ABOVE the prior one.
+        self.assertLess(text.index("## [1.3.0]"), text.index("## [1.2.3]"))
+
+    def test_tag_message_composition_passes_the_same_guards_phase3_applies(self):
+        message = self.result["message"]
+        tag = self.result["tag_name"]
+        self.assertTrue(self.core_lane.notes_heading_matches(message, tag))
+        self.assertTrue(self.core_lane.release_dates_consistent(
+            self.result["rolled_section"], message))
+
+    def test_the_real_annotated_tag_carries_the_composed_message(self):
+        # [NEEDS-TRIAGE] genuine finding, surfaced ONLY because this class
+        # actually runs `git tag -a ... -F <message-file>` for real rather
+        # than asserting on exit codes or a direct import: git's DEFAULT
+        # `--cleanup=strip` (the same behavior `git commit` applies to a
+        # hand-typed message) treats every line starting with `#` as a
+        # comment and drops it from a `-F`-supplied message. The Phase-1
+        # changelog section this skill composes into the tag message is
+        # Keep-a-Changelog Markdown, whose OWN heading lines are `## [X.Y.Z]
+        # ...` / `### Added` -- exactly `#`-prefixed. The skill's literal
+        # instruction (`git tag -a ... -F <message-file>`, no
+        # `--cleanup=verbatim`) therefore silently strips the composed
+        # message's own version/date heading and every section heading from
+        # the CREATED TAG OBJECT, even though the pre-tag composition and
+        # its `notes_heading_matches`/`release_dates_consistent` checks (run
+        # against the Phase-1 section TEXT and the GitHub Release notes
+        # FILE, never against the tag object actually created) never
+        # observe it. `RealHistoryTagStrippingEvidenceTest` below confirms
+        # this has ALREADY happened to this repo's own real, published
+        # `v2.8.13` tag. This is not fixed here -- fixing the skill's `git
+        # tag` invocation is out of this test's scope and belongs to
+        # whichever task takes up T-41x or a new issue; this assertion
+        # documents the ACTUAL, currently-shipping behavior rather than
+        # silently "fixing" the extracted invocation to make the test pass.
+        tag = self.result["tag_name"]
+        obj_type = _git(["cat-file", "-t", tag], self.lane.consumer_root).stdout.strip()
+        self.assertEqual(obj_type, "tag")
+        raw = _git(["cat-file", "-p", tag], self.lane.consumer_root).stdout
+        # The tag object's own header lines (object/type/tag/tagger) precede
+        # a blank line, after which the message body begins verbatim.
+        _, _, body = raw.partition("\n\n")
+        stripped_expectation = _git_strip_cleanup(self.result["message"])
+        self.assertEqual(body.rstrip("\n"), stripped_expectation.rstrip("\n"))
+        # The composed message's OWN heading survives in-memory (the
+        # pre-tag guards run against it) but is genuinely gone from what
+        # got tagged -- the concrete gap between "checked" and "shipped".
+        self.assertIn(f"## [{self.result['next_version']}]", self.result["message"])
+        self.assertNotIn(
+            "## [", body,
+            "if this now FAILS because the tag body DOES contain its "
+            "heading, that means the skill's `git tag -a` invocation picked "
+            "up `--cleanup=verbatim` (or equivalent) and the stripping "
+            "defect this test documents was FIXED -- re-triage the "
+            "[NEEDS-TRIAGE] finding above and relax this assertion "
+            "deliberately, rather than treating a red run here as a "
+            "regression to chase")
+
+
+class LaneDriverUnitTest(unittest.TestCase):
+    """Direct, synthetic-input coverage of the three arms `_execute_lane_
+    sequence` depends on, independent of whatever the LIVE skill currently
+    contains — mirrors the role `ResolverUnitTest` plays for T-73b. Without
+    this, a mutant in `_classify_invocation` or `_run_argv` that happens to
+    behave correctly on the skill's OWN one example of each arm would
+    survive undetected."""
+
+    def test_well_formed_invocation_is_extracted_and_runs(self):
+        text = "before text. Run this: `git rev-parse HEAD` after text."
+        invocation = _capture_invocation_after_anchor(text, "Run this:")
+        self.assertEqual(invocation, "git rev-parse HEAD")
+        self.assertEqual(_classify_invocation(invocation), "run")
+        with tempfile.TemporaryDirectory() as scratch:
+            _git(["init", "-q"], scratch)
+            _write_text(os.path.join(scratch, "f.txt"), "x\n")
+            _git(["add", "-A"], scratch)
+            _git(["commit", "-q", "-m", "c"], scratch)
+            proc = _run_argv(shlex.split(invocation), scratch)
+            self.assertEqual(proc.returncode, 0)
+
+    def test_extraction_fails_loud_when_anchor_missing(self):
+        with self.assertRaises(RuntimeError):
+            _capture_invocation_after_anchor("no anchor here at all", "MISSING ANCHOR")
+
+    def test_extraction_fails_loud_when_no_invocation_shaped_span_follows(self):
+        text = "Anchor here: `_bare.module.reference` and nothing runnable near it."
+        with self.assertRaises(RuntimeError):
+            _capture_invocation_after_anchor(text, "Anchor here:")
+
+    def test_invocation_naming_this_repo_shim_is_accounted(self):
+        invocation = "python3 .github/scripts/_releaselib.py tag-prefix app"
+        self.assertEqual(_classify_invocation(invocation), "accounted")
+
+    def test_invocation_with_nonexistent_git_subcommand_fails_rather_than_silently_passing(self):
+        # Proves the driver actually surfaces a failing exit code rather
+        # than treating "it ran" as "it succeeded" — the malformed-CLI arm
+        # AC-6.6 exists to catch, demonstrated with a synthetic invocation
+        # rather than depending on the live skill ever naming a broken one.
+        with tempfile.TemporaryDirectory() as scratch:
+            _git(["init", "-q"], scratch)
+            proc = _run_argv(["git", "this-subcommand-does-not-exist"], scratch)
+            self.assertNotEqual(proc.returncode, 0)
+
+    def test_substitute_argv_never_reparses_a_backslash_bearing_path_through_shlex(self):
+        # The concrete Windows hazard the module docstring names: a
+        # `<message-file>` token substituted with a backslash-bearing path
+        # must survive as ONE argv element, never re-split.
+        argv = shlex.split("git tag -a ${TAG_PREFIX}MAJOR.MINOR.PATCH -F <message-file>")
+        windows_path = r"C:\Users\example\AppData\Local\Temp\msg.txt"
+        substituted = _substitute_argv(
+            argv, {"${TAG_PREFIX}MAJOR.MINOR.PATCH": "v1.3.0", "<message-file>": windows_path})
+        self.assertEqual(substituted, ["git", "tag", "-a", "v1.3.0", "-F", windows_path])
+
+
+class RealHistoryTagStrippingEvidenceTest(unittest.TestCase):
+    """[NEEDS-TRIAGE] Corroborates `ConsumerEndToEndTest`'s discovery with
+    REAL evidence rather than only the scratch fixture's synthetic proof:
+    `git tag -a -F`'s default comment-stripping cleanup has ALREADY silently
+    corrupted this repo's own real, previously published release tag
+    message. `v2.8.13` is a real, PUBLISHED tag; the project's own release
+    skill ("Recovering from a bad release": no break-glass, a published tag
+    is never moved or deleted) makes it a permanent historical fact rather
+    than transient repo state, so pinning it here does not go stale the way
+    pinning "the current HEAD" or "the latest tag" would. Entirely
+    read-only against REPO_ROOT (`git cat-file -p`, never `git tag`) --
+    creates no ref, mutates nothing.
+
+    **Not mutation-killable by construction** (the same phrasing the sprint
+    plan uses for T-12's circularity proof): this asserts a HISTORICAL FACT
+    about a commit already in this repository's object database, not the
+    behavior of any function this module defines. There is no production
+    code path here for a mutant to corrupt; its value is corroborating
+    `ConsumerEndToEndTest`'s synthetic finding against real, already-shipped
+    evidence, not discriminating a mutation."""
+
+    def test_the_live_v2_8_13_tag_message_is_missing_its_own_changelog_heading(self):
+        result = subprocess.run(
+            ["git", "cat-file", "-p", "v2.8.13"],
+            cwd=REPO_ROOT, capture_output=True, encoding="utf-8", timeout=GIT_TIMEOUT)
+        self.assertEqual(
+            result.returncode, 0,
+            f"v2.8.13 is expected to be a real, permanently published tag in "
+            f"this repository's history: {result.stderr}")
+        _, _, body = result.stdout.partition("\n\n")
+        self.assertNotIn(
+            "## [2.8.13]", body,
+            "if this now PASSES, this repo's tagging process (or git's own "
+            "default cleanup behavior) changed -- re-triage the "
+            "[NEEDS-TRIAGE] finding in ConsumerEndToEndTest rather than "
+            "deleting this test")
+
+
+# --------------------------------------------------------------------------- #
+# T-76 — consumer back-fill. HONEST GAP: the release skill has no back-fill
+# section, no confirmation prose, and no candidate-shape-detection function
+# today (T-49/T-50, .codearbiter/plans/portable-release-and-protected-
+# state.md, are both still PENDING). There is therefore nothing to extract
+# and nothing to call for either of T-76's two required arms (refuse without
+# confirmation; persist on confirmation) — writing a test that MOCKS a
+# confirmation prompt the skill never asks for would be exactly the
+# green-but-hollow shape this campaign's own memory (a-green-job-can-
+# measure-nothing) warns against. What IS real and testable today, kept
+# green and required rather than left unasserted:
+# --------------------------------------------------------------------------- #
+
+
+class BackfillNotYetImplementedTest(unittest.TestCase):
+    """[NEEDS-TRIAGE] T-76's two-arm proof (refuse without confirmation,
+    persist on confirmation) is NOT implemented here — the skill capability
+    it would exercise does not exist yet. This class asserts the one honest,
+    mechanically-true fact available today (the lane cannot silently
+    back-fill a guess; `load_targets` raises rather than defaulting) plus a
+    canary that forces this class to be REPLACED, not silently left green
+    forever, the moment T-49/T-50 land."""
+
+    def test_backfill_detects_absence_and_the_lane_cannot_silently_proceed(self):
+        targets_path = os.path.join(_FIXTURE.consumer_root, ".codearbiter", "release-targets.md")
+        self.assertFalse(os.path.isfile(targets_path))
+        core_lane = _load_mechanism(
+            os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+            "_backfill_probe_core")
+        with self.assertRaises(core_lane.AbsentBlockError):
+            core_lane.load_targets(targets_path)
+
+    def test_backfill_confirmation_prose_not_yet_shipped(self):
+        # Canary, not a feature check: this asserts the GAP, and is written
+        # to fail the moment it closes. If this goes red because the skill
+        # NOW contains back-fill/candidate-shape prose, that is T-49/T-50
+        # landing — replace this whole class with the real two-arm proof
+        # (refuse-without-confirmation, persist-on-confirmation) in that
+        # SAME commit; do not just delete or loosen this assertion.
+        skill_path = os.path.join(_FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            text = fh.read()
+        self.assertNotIn("back-fill", text.lower())
+        self.assertNotIn("candidate shape", text.lower())
 
 
 if __name__ == "__main__":

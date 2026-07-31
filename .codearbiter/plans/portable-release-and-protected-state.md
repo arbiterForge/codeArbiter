@@ -211,6 +211,17 @@ generate from it).
 | T-41c | `core/surface/skills/release/SKILL.md` | `-k skill_provenance_field` — Phase 3 step 5 reads the row field; absent → documented skip | provenance step | A-6.0, A-3.5 | T-41b | PENDING |
 | T-41d | `core/surface/skills/release/SKILL.md` | `-k skill_conditional_prose` — hosted-lane and immutability sections conditional on repo capability | prose conditionals | A-6.0 | T-41c | PENDING |
 | T-41e | — (review only) | adversarial Opus agent reviews the rewritten skill; BLOCK-level findings fixed and re-reviewed before proceeding | mid-sprint review | A-6.0 | T-41d | PENDING |
+| T-41f | `core/pysrc/_releaselib.py` | `python "<plugin-root>/hooks/_releaselib.py" tag-prefix ca` exits 0 from a consumer-shaped environment — the mechanism gains a `__main__` CLI entry point | shipped CLI exists | A-6.0 | T-41b | PENDING |
+
+> **T-41f exists because the plan had a hole.** T-41b repoints the skill's helper
+> invocations to `${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`, but that file has **zero**
+> `__main__` — only the `.github/scripts/` shim carries a CLI. Repointing alone would aim the
+> prose at a file that cannot be invoked, so `tag-prefix`, `last-tag` and `classify` would still
+> fail in a consumer *after* the rewrite "succeeded". Found by the T-74 lane driver, which runs
+> the prose's invocation strings rather than importing the library. This is the third ledger hole
+> in this campaign — the first two were the missing skill rewrite (A-6.0) and the missing
+> portability proof (A-6.6/6.7) — and all three shared a shape: a criterion set that was
+> internally consistent and silent about a step nobody had named.
 | T-42 | `core/surface/skills/release/SKILL.md` | `-k interpreter_fallback` — uses the shipped `python3 "<p>" … \|\| python "<p>" …` pattern (`taskwrite.py:11`) | interpreter fallback | A-3.6 | T-41e | PENDING |
 | T-43 | `.github/scripts/payload_version_gate.py` | `python .github/scripts/test_payload_version_gate.py -k no_prefix_literal` | CI reads declared source | A-4.1 | T-42 | PENDING |
 | T-44a | `.github/scripts/_releaselib.py` | `python .github/scripts/test_release_lib.py -k select_target_name_keyed` — `name=value` argv pairs; unknown name fails closed | shim CLI shape | A-4.2 | T-43 | PENDING |
@@ -295,8 +306,8 @@ empty and deletes the ratchet.
 |---|---|---|---|---|---|---|
 | T-73a | `.github/scripts/test_consumer_smoke.py` | scratch consumer repo built; plugin materialized by `git archive HEAD -- plugins/ca` into a scratch cache — **not** an in-repo `CLAUDE_PLUGIN_ROOT` pointer, **not** a recursive copy (both carry uncommitted and gitignored dev-tree state) | consumer fixture | A-6.6 | T-27d | ACCEPTED |
 | T-73b | `.github/scripts/test_consumer_smoke.py`, `.github/scripts/known-unresolved-refs.txt` | `-k reference_resolution_ratchet` — unresolved refs in the **installed** SKILL.md equal the committed list exactly; fails on any change in either direction | reference ratchet | A-6.6 | T-73a | ACCEPTED |
-| T-74 | `.github/scripts/test_consumer_smoke.py` | `-k lane_driver` — the mechanical sequence runs via **invocation strings extracted from the skill text**, never direct imports, so prose/CLI drift fails here | lane driver | A-6.6 | T-73b | PENDING |
-| T-75 | `.github/scripts/test_consumer_smoke.py` | `-k consumer_end_to_end` — asserts on derived **outputs** (resolved row, `LAST_TAG`, computed bump, rolled changelog text), never exit codes alone | portability proof | A-6.6 | T-74 | PENDING |
+| T-74 | `.github/scripts/test_consumer_smoke.py` | `-k lane_driver` — the mechanical sequence runs via **invocation strings extracted from the skill text**, never direct imports, so prose/CLI drift fails here | lane driver | A-6.6 | T-73b | ACCEPTED |
+| T-75 | `.github/scripts/test_consumer_smoke.py` | `-k consumer_end_to_end` — asserts on derived **outputs** (resolved row, `LAST_TAG`, computed bump, rolled changelog text), never exit codes alone | portability proof | A-6.6 | T-74 | ACCEPTED |
 | T-76 | `.github/scripts/test_consumer_smoke.py` | `-k backfill_detects` — no declared file, so the detected shape is presented and does not proceed unconfirmed | consumer back-fill | A-6.6 | T-75 | PENDING |
 | T-77 | `.github/scripts/test_release_trace.py` | `-k this_repo_still_releases` — pinned pre-change lane and new lane both derive next version, window and composed tag **message file** from live HEAD; equality asserted; **zero refs created** | this repo still releases | A-6.7 | T-76 | ACCEPTED |
 | T-78 | `.codearbiter/reports/agent-lane-proof.json` | scripted agent scenarios run against the scratch fixture — happy path, missing-footer BLOCK, back-fill confirm and refuse — with outcomes and the **content hash of the shipped skill** recorded | agent judgment layer | A-6.6 | T-77 | PENDING |
