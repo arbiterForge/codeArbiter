@@ -56,6 +56,7 @@ provenance-manifest: .github/published-tags.json
 latest-eligible: true
 pre-tag: python3 .github/scripts/check_badge_consistency.py
 pre-tag: python3 .github/scripts/check_command_catalog.py
+pre-tag: python3 .github/scripts/check_skill_proof_fresh.py
 
 [ca-codex]
 prefix: ca-codex-v

@@ -100,19 +100,61 @@ class PayloadDerivationTest(unittest.TestCase):
 
 
 class CheckLiveRepoTest(unittest.TestCase):
-    """The live artifact is genuinely stale right now (T-78's exercise ran
-    pre-remediation). This guard exists to fail loudly on exactly that
-    state — proving it fails for the RIGHT reason on the real repo, not
-    merely on synthetic fixtures, is the point (per the standing
-    "a gate that cannot fail is worse than none" discipline)."""
+    """The live artifact is CURRENT as of run 3, so this guard must pass on
+    the real repo — and, per the standing "a gate that cannot fail is worse
+    than none" discipline, must still be shown to fail for the right reason
+    when the real artifact is perturbed. Both directions are asserted here
+    against the REAL file, not merely against synthetic fixtures.
 
-    def test_head_currently_fails_on_stale_proof_current(self):
+    This class previously asserted the opposite (that HEAD was stale). It
+    was inverted when the run-3 exercise settled the proof; the mutation
+    test below is what keeps the inversion honest, because a guard that
+    only ever passes proves nothing.
+    """
+
+    def test_head_passes_now_that_the_proof_is_current(self):
         errors = G.check()
-        self.assertTrue(errors, "expected the live, stale artifact to fail this guard")
-        self.assertTrue(
-            any("proof_current" in e for e in errors),
-            f"expected a proof_current-shaped failure, got: {errors}",
+        self.assertEqual(
+            errors,
+            [],
+            "the live artifact records proof_current=true and a hash that "
+            "should match the shipped skill; a failure here means either "
+            "the skill was edited without re-running the agent-judgment "
+            f"exercise, or the artifact was hand-edited. Errors: {errors}",
         )
+
+    def test_the_live_artifact_still_fails_when_the_recorded_hash_is_wrong(self):
+        # The real document, perturbed in exactly one field. Proves the
+        # guard's hash comparison is load-bearing against the REAL payload
+        # — not just against a synthetic fixture whose hash never matched
+        # anything in the first place.
+        with open(REAL_ARTIFACT, encoding="utf-8") as fh:
+            document = json.load(fh)
+        document["exercise"]["exercised_skill_sha256"] = "0" * 64
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "artifact.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            errors = G.check(artifact_path=path)
+        self.assertTrue(errors, "a wrong recorded hash must fail the guard")
+        self.assertTrue(
+            any("has changed since" in e for e in errors),
+            f"expected a hash-drift failure, got: {errors}",
+        )
+
+    def test_the_live_artifact_still_fails_when_proof_current_is_revoked(self):
+        # The other direction: the real document with proof_current flipped
+        # back to false must fail. This is the state the artifact was in
+        # before run 3 settled it, so this test also pins that the guard
+        # would have caught it.
+        with open(REAL_ARTIFACT, encoding="utf-8") as fh:
+            document = json.load(fh)
+        document["proof_current"] = False
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "artifact.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            errors = G.check(artifact_path=path)
+        self.assertTrue(errors)
+        self.assertIn("proof_current", errors[0])
 
     def test_real_artifact_is_parseable_json_at_least(self):
         # Guards the guard's own JSON-parse path against the real file: if
@@ -240,18 +282,48 @@ class CheckFailureModeTest(unittest.TestCase):
 
 class MainCLITest(unittest.TestCase):
     """The script actually run as a subprocess, exercising `main()` and its
-    exit-code contract end to end against the live (currently stale) repo
-    state — not merely `check()` called in-process."""
+    exit-code contract end to end against the live repo — not merely
+    `check()` called in-process.
 
-    def test_cli_exits_1_on_the_live_stale_artifact(self):
-        result = subprocess.run(
+    This is the form the `ca` row's declared `pre-tag` command runs, so it
+    must pass on a current artifact AND still exit 1 when the proof goes
+    stale. Both directions are asserted; a gate that only ever exits 0
+    proves nothing."""
+
+    def _run(self, cwd=None):
+        return subprocess.run(
             [sys.executable, str(REPO_ROOT / ".github" / "scripts" / "check_skill_proof_fresh.py")],
-            cwd=str(REPO_ROOT),
-            capture_output=True,
-            text=True,
-        )
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("no longer covers the shipped release skill", result.stdout)
+            cwd=str(cwd or REPO_ROOT), capture_output=True, text=True)
+
+    def test_cli_exits_0_now_that_the_recorded_proof_is_current(self):
+        result = self._run()
+        self.assertEqual(
+            result.returncode, 0,
+            "this is a DECLARED pre-tag command on the `ca` row; a non-zero "
+            "exit here BLOCKS every release of `ca`. Either the skill was "
+            "edited without re-running the agent-judgment exercise, or the "
+            f"artifact was hand-edited. stdout: {result.stdout}")
+        self.assertIn("still covers the shipped release skill", result.stdout)
+
+    def test_cli_exits_1_when_the_shipped_skill_drifts_from_the_record(self):
+        # Proves the declared command can still FAIL, against the real
+        # script and the real artifact, by copying the repo's own inputs
+        # into a scratch tree and perturbing only the recorded hash. The
+        # live repo is never mutated — this gate guards a release lane, so
+        # its own test must not be able to leave the repo dirty.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".codearbiter" / "reports").mkdir(parents=True)
+            with open(REAL_ARTIFACT, encoding="utf-8") as fh:
+                document = json.load(fh)
+            document["exercise"]["exercised_skill_sha256"] = "0" * 64
+            (root / ".codearbiter" / "reports" / "agent-lane-proof.json").write_text(
+                json.dumps(document), encoding="utf-8")
+            errors = G.check(repo=REPO_ROOT,
+                             artifact_path=root / ".codearbiter" / "reports"
+                             / "agent-lane-proof.json")
+        self.assertTrue(errors, "a drifted hash must fail the declared command")
+        self.assertTrue(any("has changed since" in e for e in errors), errors)
 
 
 if __name__ == "__main__":

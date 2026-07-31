@@ -6,20 +6,31 @@ state.md; AC-6.8, .codearbiter/specs/release-portable-fixture.md).
 Non-mutating: reads the proof artifact and the shipped skill, prints a
 report, and exits 0 or 1. Never writes anything.
 
-INTENDED WIRING (deliberately NOT done yet). This script is meant to become
-a declared `pre-tag` command on the `ca` row of `.codearbiter/release-
-targets.md` (DECISION-0034: check-only, non-mutating pre-tag commands),
-modeled on the existing `check_badge_consistency.py` row. It is NOT wired
-there by this commit: the artifact this script reads
-(`.codearbiter/reports/agent-lane-proof.json`) already records
-`proof_current: false` because the T-78 agent-judgment exercise ran against
-a pre-remediation skill, and every finding it drove has since edited the
-skill. Wiring this script as a declared `pre-tag` command today would ship
-a permanently-red command on `ca`'s row, which violates this repo's own
-"declared rows run green" completion bar. The maintainer wires the row
-after a fresh T-78 exercise is re-run against the post-remediation skill
-and the artifact is refreshed with `proof_current: true` and a hash that
-actually matches what ships.
+WIRING (now done). This script is a declared `pre-tag` command on the `ca`
+row of `.codearbiter/release-targets.md` (DECISION-0034: check-only,
+non-mutating pre-tag commands), modeled on the existing
+`check_badge_consistency.py` row.
+
+It was deliberately left unwired when first written, because the artifact
+it reads (`.codearbiter/reports/agent-lane-proof.json`) then recorded
+`proof_current: false`: the first agent-judgment exercise had run against a
+pre-remediation skill, and every finding it drove had since edited that
+skill. Wiring it then would have shipped a permanently-red command on
+`ca`'s row, violating this repo's own "declared rows run green" bar.
+
+Three blind exercises were run in total, each against the skill as the
+previous one left it, finding 4 HIGHs, then 2, then 0. The third run is
+what made the artifact recordable: it found no HIGH-severity defect, so
+its hash could be written as a current proof without a pending fix
+immediately invalidating it. That hash is what this script now enforces.
+
+The standing consequence, stated plainly: ANY edit to
+`plugins/ca/skills/release/SKILL.md` now fails `ca`'s pre-tag gate until a
+fresh exercise is run and the artifact refreshed. That is the point, not a
+side effect. Hand-editing `proof_current` back to true without re-running
+the exercise defeats the only check in this repo that covers whether an
+agent can actually follow the release prose — a property all three runs
+showed a green mechanical suite does not imply.
 
 WHICH PAYLOAD THIS PROOF COVERS, AND WHY
 -----------------------------------------

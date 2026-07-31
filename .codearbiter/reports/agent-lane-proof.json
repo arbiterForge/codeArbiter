@@ -1,14 +1,83 @@
 {
-  "$schema_note": "Agent-judgment exercise record for the release skill (issue #563, spec .codearbiter/specs/release-portable-fixture.md AC-6.6 'agent judgment' layer). This file documents ONE real-agent exercise and the remediation it drove, not the scripted-scenario harness T-78/T-79 will build against the scratch fixture. It is a record, not a test; the numbers below are not re-derived by any test in this suite.",
-  "proof_current": false,
-  "proof_current_note": "This field exists so a future check_skill_proof_fresh.py (T-79, still PENDING) has a machine-readable answer to read, not just an English caveat. No hash in this file represents a skill an agent has actually re-exercised. `post_remediation_skill_sha256` records what shipped AFTER this remediation for traceability only; it is NOT a re-validated proof. Flip this to true (and replace `exercised_skill_sha256` with the hash actually exercised) only after the agent-judgment exercise is re-run against the post-remediation skill content.",
+  "$schema_note": "Agent-judgment exercise record for the release skill (issue #563, spec .codearbiter/specs/release-portable-fixture.md AC-6.6 'agent judgment' layer). EIGHT independent blind exercises were run, each against the skill as the previous one left it. This file records the campaign; `exercise` below is the one run whose hash the freshness gate enforces. It is a record, not a test -- no number in it is re-derived by any test in this suite.",
+  "proof_current": true,
+  "proof_current_note": "TRUE as of run 8 (2026-07-31). `exercise.exercised_skill_sha256` is the hash of the skill an agent actually read and acted on, verified byte-for-byte equal to the shipped payload at record time; `check_skill_proof_fresh.py` re-verifies it on every invocation of the `ca` row's pre-tag commands. Any later edit to plugins/ca/skills/release/SKILL.md invalidates this and MUST fail the gate -- that is the gate's purpose, and the correct response is to re-run the exercise, never to hand-edit this field. `post_remediation_skill_sha256` remains traceability-only and is deliberately never read as a proof source.",
+  "stopping_rule": {
+    "what_was_applied": "Stop when a run probes a region ALREADY covered by the previous run's fix and finds no HIGH. Runs 5, 6 and 7 each found exactly one HIGH, and each was in a region newly probed -- run 5 by accident (a tag prefix with no tags), runs 6 and 7 by deliberate direction. That is coverage expanding, not the skill degrading, so a clean run in a NEW region would have proved little. Run 8 was aimed at the same region run 7's fix touched (version derivation) and returned no HIGH; that is the condition that ended the campaign.",
+    "what_this_record_does_NOT_claim": "Not convergence. The HIGH sequence is 4, 2, 0, 2, 1, 1, 1, 0 -- run 3's zero was sampling, not settlement, and treating it as convergence at the time was an error corrected here. Two clean runs out of eight is what the evidence supports, and it is what this file says.",
+    "why_stopping_is_safe": "The freshness gate. Every open finding below is FILED rather than fixed, and fixing any of them edits the skill, which invalidates this hash and fails `ca`'s pre-tag gate until a fresh exercise is run. Stopping does not close the loop; it parks it behind a mechanism that reopens on the next edit."
+  },
   "exercise": {
+    "run": 8,
     "date": "2026-07-31",
-    "method": "An agent was handed only the installed release skill (no expected-outcome briefing) and a scratch consumer repo, and asked to follow the prose. It found defects no mechanical test in this campaign reached, because they are agent-judgment failures (a distinction the mechanism cannot make, a precondition the prose never satisfies, an authorization restatement the prose omits) rather than exit-code or assertion mismatches.",
-    "exercised_skill_sha256": "69d69bb48bc94affac4052d376ac0f1daa6bff0af55af5f39db81d71e6db5ef4",
+    "role": "THE RECORDED PROOF. Aimed at version derivation -- the region runs 6 and 7 each found a HIGH in, and the region run 7's fix rewrote. Returned no HIGH.",
+    "method": "An agent was handed only the installed release skill (no expected-outcome briefing, no knowledge of prior runs) and asked to follow the prose across four consumer shapes chosen to stress version derivation: a tagged project whose manifest LEADS the tag; a project with no tags at all, through the back-fill lane; a project with two declared manifests in DIFFERENT formats disagreeing on version; and a control with a consistent tag and manifest plus a footerless bumping commit. Three of the four reached an annotated tag; the fourth blocked where designed and completed after the stated remedy. Nothing was pushed or published.",
+    "exercised_skill_sha256": "e4deb4e456f85ad673f7d6df7e11f847e2766157ac0394193103d46761947920",
     "exercised_skill_path": "plugins/ca/skills/release/SKILL.md",
-    "exercised_skill_path_note": "The recorded hash matches the pre-remediation content of plugins/ca/skills/release/SKILL.md exactly (verified: sha256sum reproduced it byte-for-byte before this remediation's edits). This is the INSTALLED/generated copy the T-78/6.8 'shipped skill' language refers to, not core/surface/skills/release/SKILL.md (the source template, which never ships to a consumer directly).",
-    "exercised_skill_sha256_status": "STALE. Every finding below changed core/surface/skills/release/SKILL.md and/or core/pysrc/_releaselib.py; tools/build-surface.py and tools/sync-core.py were re-run afterward, so plugins/ca/skills/release/SKILL.md no longer matches the hash above. Re-running the agent-judgment exercise against the new skill content is what re-validates this remediation -- this record does not substitute for that re-run. See `proof_current` (false) for the machine-readable form of this statement."
+    "exercised_skill_path_note": "52,222 bytes. Verified identical between the working tree and a `git archive HEAD` extraction, so the exercised bytes are the COMMITTED bytes, not a dirty tree. This is the INSTALLED `claude`-host copy the AC-6.8 'shipped skill' language refers to, never core/surface/skills/release/SKILL.md (the source template, which ships to no consumer).",
+    "high_findings": 0,
+    "outcomes": {
+      "tag_behind_manifest": "base = max(1.2.0, 1.4.2) = 1.4.2, minor -> 1.5.0, clearing tag, manifest and changelog. The run-7 HIGH does not reproduce: deriving from the tag alone would have yielded 1.3.0, and the agent confirmed `semver-greater 1.3.0 1.4.2` exits 1.",
+      "no_tags_backfill": "Exit 3 triggered back-fill; the emitted block round-tripped through the parser; marker minted and removed; base = max(0.0.0, 1.4.2) = 1.4.2 -> 1.5.0. The run-6 HIGH does not reproduce; `semver-greater 0.1.0 1.4.2` exits 1 as the counterfactual.",
+      "two_manifest_formats": "base = max(tag 2.0.0, {2.0.0, 2.3.1}) = 2.3.1 -> 2.4.0. Both per-format read commands work as written, and applying the JSON reader to the TOML file raises JSONDecodeError exit 1 exactly as the prose says.",
+      "control_with_missing_footer": "BLOCKed with one [NEEDS-TRIAGE] line per offender; manifest still 0.3.0 and tree clean at the BLOCK; derived 0.4.0 after the remedy."
+    },
+    "guards_independently_reverified": "The agent re-proved, rather than assumed: --cleanup=verbatim round-trips byte-exact (273 bytes, matching sha256 on both sides) while the default cleanup destroys every heading and notes-match catches it; peel-tag vs bare rev-parse (the latter would produce a spurious abort_mismatch); unquoted empty tag_sha collapsing to five arguments; `git show-ref --tags -d` exiting 1 with zero tags while the pipeline exits 0; exit 3 vs exit 4; a partial step 6 producing abort_mismatch; and `gh release view` reporting no-remote and no-release through the same non-zero exit."
+  },
+  "campaign": {
+    "high_findings_by_run": [
+      4,
+      2,
+      0,
+      2,
+      1,
+      1,
+      1,
+      0
+    ],
+    "runs": [
+      {
+        "run": 1,
+        "highs": 4,
+        "note": "Found the back-fill overwrite path -- a data-loss defect -- plus three others. Detail preserved in `findings` below."
+      },
+      {
+        "run": 2,
+        "highs": 2,
+        "note": "Wiring seams: peel-tag absent from the shipped CLI (so the mandated `git tag -a` made a HEALTHY tag classify as abort_mismatch), and backfill-detect omitting latest-eligible. Shipped in 73bd884. Its summary named the pattern the whole campaign kept hitting: 'The mechanisms are individually well tested; what is unspecified is how a caller wires them together.'"
+      },
+      {
+        "run": 3,
+        "highs": 0,
+        "note": "Recorded at the time as convergence. It was not -- see `stopping_rule`."
+      },
+      {
+        "run": 4,
+        "highs": 2,
+        "note": "git tag's default cleanup silently deleting every Markdown heading from the tag message (issue #569, ALREADY FILED and shipped unfixed; it has permanently corrupted this repo's published v2.8.13), and a stale manifest read returning a terminal abort_mismatch on a healthy release. The second was introduced by this campaign's own fix for run 3's findings."
+      },
+      {
+        "run": 5,
+        "highs": 1,
+        "note": "The `<none>` sentinel substituted into `git log <none>..HEAD`, exit 128 -- on the first release of every back-filled project. Run 4 had found this and rated it MEDIUM; filing rather than fixing it was an error, and run 5's HIGH rating was correct."
+      },
+      {
+        "run": 6,
+        "highs": 1,
+        "note": "A project that had shipped 1.4.2 without ever tagging derived 0.1.0 and wrote it over its own manifest, walking the version backward with all three existing guards passing."
+      },
+      {
+        "run": 7,
+        "highs": 1,
+        "note": "Caused by run 6's fix: the base was stated only in the no-tag branch, so a TAGGED project with a leading manifest derived off the tag and then hard-blocked against its own manifest floor, with no remedy stated. Fixed by collapsing two floors into one $BASE_VERSION."
+      },
+      {
+        "run": 8,
+        "highs": 0,
+        "note": "The recorded proof. Same region as run 7's fix; no HIGH."
+      }
+    ],
+    "what_the_campaign_demonstrated": "Every HIGH after run 1 was in a SEAM -- how a caller wires the mechanisms together -- not in a mechanism. The mechanical suites were green throughout: 272 unit tests, 69 consumer-portability tests, mutation-verified governance rules. None of them could see a prose instruction that names a command nobody can run, sources an argument from the wrong read, or hands an operator a sentinel where a revision is required. Three of the HIGHs were introduced by this campaign's own remediation of an earlier HIGH, which is the strongest available argument for keeping the exercise in the loop rather than trusting a green suite."
   },
   "post_remediation_skill_sha256": {
     "plugins/ca/skills/release/SKILL.md": "bb4c79287a4e60db530ea64e1a6829ae714d8e47dac579af2c1bbd3bfacba309",
@@ -156,7 +225,15 @@
     }
   },
   "not_remediated_here": [
-    "T-78's own scripted-scenario harness (happy path / missing-footer BLOCK / back-fill confirm+refuse against the scratch fixture) is not built by this remediation -- it remains PENDING per the sprint plan. This file records a REAL agent exercise's findings and their fix, not that harness.",
-    "T-79's check_skill_proof_fresh.py (the pre-tag freshness gate reading a hash from this file) does not exist yet and is not built by this remediation."
-  ]
+    "Run 8's MEDIUM/LOW findings are FILED, not fixed (issue #570). Fixing any of them edits the skill, invalidates this hash, and fails the pre-tag gate until a fresh exercise runs -- which is the mechanism working, not an obstacle to route around.",
+    "The two sharpest: $BASE_VERSION is defined as a MAXIMUM with no command computing it (the same defect class `semver-greater` closed one level down), and Phase 1 step 6's WRITE side names no command at all -- with no stdlib TOML writer, the prose forces the 'typed' edit its own heading forbids.",
+    "The proof covers ONE rendering (the `claude` host's plugins/ca/skills/release/SKILL.md). The ca-codex and ca-pi routine copies are proven byte-consistent with the same core/surface source by sync-core/build-surface --check, but neither has been independently exercised, and check_skill_proof_fresh.py deliberately does not fabricate that coverage.",
+    "Whether an agent reading this prose behaves as prescribed is irreducibly unprovable by any test in this campaign. Eight blind runs is evidence, not proof; the freshness gate exists so the evidence cannot silently go stale."
+  ],
+  "wiring": {
+    "status": "WIRED as of this record.",
+    "row": "`pre-tag: python3 .github/scripts/check_skill_proof_fresh.py` on the [ca] row of .codearbiter/release-targets.md",
+    "decision": "DECISION-0034 (pre-tag commands are check-only and non-mutating). This one reads two files and prints; it never writes.",
+    "consequence": "Every future edit to plugins/ca/skills/release/SKILL.md now fails `ca`'s pre-tag gate until the exercise is re-run and this artifact refreshed. Intended. The cost is one blind run per skill revision; the purpose is that a prose change to the release lane cannot ship on the strength of a green mechanical suite alone -- which all eight runs demonstrated it should not."
+  }
 }
