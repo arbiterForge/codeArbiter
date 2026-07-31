@@ -60,6 +60,21 @@
 #                                       dict, which would drop the
 #                                       raw-and-realpath symlink coverage that
 #                                       dispatch provides.
+#   resolve_registered_path(fpath, root, registry=None)
+#                                       -> (rel_path, ProtectedPolicy) | (None,
+#                                       None). The T-06/T-07 flank helper: once
+#                                       classify_protected has already reported
+#                                       "state" for `fpath`, this resolves
+#                                       WHICH registered path matched and WHICH
+#                                       policy it carries, trying both the raw
+#                                       normalized path and its
+#                                       realpath-resolved repo-relative form -
+#                                       the SAME two forms classify_protected
+#                                       itself tries (#162) - so the flank
+#                                       resolves the identical entry
+#                                       classify_protected saw rather than
+#                                       re-deriving membership through an
+#                                       independent check.
 #   MARKER_FRESHNESS_MINUTES -> int    the H-11 marker window (30). Matches
 #                                       the ADR-authoring gate's value by
 #                                       convention, not a shared import - see
@@ -106,7 +121,7 @@ import os
 from enum import Enum
 
 from _hooklib import marker_fresh
-from _pathnorm import norm_path
+from _pathnorm import norm_path, raw_repo_rel, repo_rel
 
 
 class ProtectedPolicy(str, Enum):
@@ -141,17 +156,70 @@ class ProtectedPolicy(str, Enum):
 REGISTRY: dict[str, ProtectedPolicy] = {}
 
 
+def _canon(rel_path):
+    """Canonical comparison form of a repo-relative path: separator-
+    normalized (`norm_path`), then whitespace-stripped, `./`-prefix-
+    stripped (repeatable — "././x" too), doubled-slash-collapsed,
+    trailing-slash-stripped, and finally case-folded.
+
+    Applied to BOTH sides of every `lookup_policy` comparison (the query
+    path AND every registry key) so a spelling difference on either side
+    degrades to "still matches" rather than "silently matches nothing" —
+    the same "a malformed key degrades the way a malformed query path does"
+    principle `lookup_policy`'s own docstring states, extended to cover the
+    specific spellings its docstring already promised but the OLD
+    norm_path-only comparison silently missed (#564 follow-up, finding F2):
+    a leading `./`, a trailing slash, a doubled slash, and a leading space.
+
+    Case-folded — not merely separator-normalized — for a second,
+    independent reason (finding F1): `_bashguardlib.py`'s H-22 shell-flank
+    regexes compile with `re.I` (`_state_write_res`), so a case-sensitive
+    equality check here would let the two flanks disagree on whether a
+    differently-cased spelling of a registered path is protected. On a
+    case-preserving-but-insensitive filesystem (default macOS/APFS,
+    Windows/NTFS) that disagreement is a live fail-open: `_protectedlib.
+    classify_protected` resolves through `os.path.realpath`, which does
+    NOT canonicalize case for an EXISTING path on a case-insensitive mount
+    (posixpath.realpath never folds case at all; even `nt.realpath`, which
+    does resolve an existing file's on-disk case, cannot help a NOT-YET-
+    created file — exactly the Write that creates a protected-state file
+    for the first time) — so `Write(".codearbiter/Open-Tasks.md")` could
+    reach this equality check with a case that never gets folded away
+    before comparison. This module deliberately picks ONE fixed rule,
+    case-INSENSITIVE, GLOBALLY, rather than "whatever this host's
+    filesystem happens to do": matching host behavior is not obviously
+    right either (it varies per platform AND per volume on the same
+    platform), and a fixed global rule is the only option `_bashguardlib.py`
+    can mirror without itself inspecting the filesystem. Choosing
+    case-INSENSITIVE (not case-sensitive) only WIDENS what H-22 protects —
+    consistent with this codebase's "ambiguity resolves CLOSED" stance
+    (module comment, `_bashguardlib.py`) — at the cost of a same-directory
+    file whose name differs from a registered path ONLY by case (e.g. a
+    genuinely different `OPEN-TASKS.MD`) being treated as protected too; a
+    registry entry choosing a name that collides with a real sibling file
+    under a case change is expected to be rare enough that this is judged
+    the right trade."""
+    p = norm_path(rel_path).strip()
+    while p.startswith("./"):
+        p = p[2:]
+    while "//" in p:
+        p = p.replace("//", "/")
+    p = p.rstrip("/")
+    return p.lower()
+
+
 def lookup_policy(rel_path, registry=None):
     """The ProtectedPolicy registered for `rel_path`, or None if it carries
-    no policy. Both `rel_path` and every registry key are separator-
-    normalized before comparison, so a Windows backslash path matches a
-    registry keyed with forward slashes (the same normalization every other
-    _*lib.py classifier applies via norm_path) AND a registry entry that was
-    itself typo'd with a backslash, a `./` prefix character, or a trailing
-    slash still matches rather than silently protecting nothing - a
-    malformed *key* degrades the same way a malformed query path does; only a
-    malformed *policy* (see ProtectedPolicy) is an internal error worth
-    raising on.
+    no policy. Both `rel_path` and every registry key are canonicalized
+    (`_canon`, above) before comparison — separator-normalized, `./`/
+    doubled-slash/trailing-slash/leading-space tolerant, and
+    case-INSENSITIVE (deliberately, globally — see `_canon`'s docstring for
+    why) — so a Windows backslash path, a `./`-prefixed or trailing-slash
+    query, or a differently-cased spelling all match a registry entry, AND
+    a registry entry that was itself typo'd any of those ways still matches
+    rather than silently protecting nothing - a malformed *key* degrades the
+    same way a malformed query path does; only a malformed *policy* (see
+    ProtectedPolicy) is an internal error worth raising on.
 
     `registry` defaults to the module-level REGISTRY; a test (or a future
     caller) may pass a synthetic dict instead, which is what keeps this
@@ -163,11 +231,65 @@ def lookup_policy(rel_path, registry=None):
     alias this module does not itself guard against."""
     if registry is None:
         registry = REGISTRY
-    normalized = norm_path(rel_path)
+    normalized = _canon(rel_path)
     for key, policy in registry.items():
-        if norm_path(key) == normalized:
+        if _canon(key) == normalized:
             return policy
     return None
+
+
+def resolve_registered_path(fpath, root, registry=None):
+    """The `(rel_path, policy)` pair a Write/Edit/shell target resolves to,
+    once `_protectedlib.classify_protected` has already reported "state" for
+    it - or `(None, None)` if it turns out to carry no registry entry after
+    all (a caller that checks this before ever consulting
+    classify_protected, or a stale class set).
+
+    Tries BOTH the raw (symlink-unresolved) repo-relative form
+    (`raw_repo_rel`) and the realpath-resolved repo-relative form
+    (`repo_rel`), in that order - the SAME two-form symlink-safety property
+    (#162) classify_protected's four legacy classes get automatically from
+    running a regex `.search()` over the raw normalized path text.
+
+    That automatic coverage does NOT transfer for free to this module's
+    EQUALITY-based lookup (finding F3, #564 follow-up): `norm_path(fpath)` -
+    almost always an ABSOLUTE path, since every host sends one - is never
+    equal to a repo-relative registry key, so trying it as the "raw" leg was
+    inert (it could never match anything). Worse, it made symlink coverage
+    the WRONG WAY ROUND versus the other four classes: when the REGISTERED
+    PATH ITSELF is a symlink pointing somewhere unregistered,
+    `os.path.realpath` resolves the ONLY spelling a host actually sends
+    (the absolute path) straight through the symlink to that unregistered
+    target, and the dead raw leg supplied no alternative route back to the
+    registered name — so the write was silently ADMITTED, the opposite of
+    the legacy classes' behavior in the equivalent scenario (a regex
+    `.search()` still matches the raw path text regardless of where it
+    realpaths to). `raw_repo_rel` fixes this: computed by pure lexical
+    arithmetic against `root` (no `os.path.realpath` call), it still names
+    the registered entry syntactically even when the path is a symlink, so
+    that spelling now resolves correctly too - restoring the SAME
+    "protected either way you spell it" guarantee the legacy classes
+    already had; the realpath leg still exists for the mirror-image case
+    (a symlinked DIRECTORY whose visible path lacks the registered prefix
+    but resolves into it).
+
+    So a flank reaching this function resolves the IDENTICAL entry
+    classify_protected saw, rather than re-deriving membership through an
+    independent check. That independent-check shape is exactly what #564's
+    design forbids ("no second, parallel lookup") - this function only ever
+    RESOLVES what classify_protected already decided; it never decides
+    membership on its own account.
+
+    `registry` defaults to the module-level REGISTRY, matching
+    `lookup_policy`'s own parameter shape, for the same reason: a test (or a
+    future caller) may pass a synthetic dict."""
+    for p in (raw_repo_rel(fpath, root), repo_rel(fpath, root)):
+        if not p:
+            continue
+        policy = lookup_policy(p, registry)
+        if policy is not None:
+            return p, policy
+    return None, None
 
 
 # The H-11 authoring-marker freshness window, matching the existing

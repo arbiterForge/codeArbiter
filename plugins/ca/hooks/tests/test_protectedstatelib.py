@@ -1,10 +1,14 @@
+import io
 import os
+import subprocess
 import sys
 import tempfile
 import time
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import _bashguardlib  # noqa: E402
+import _protectedlib  # noqa: E402
 import _protectedstatelib  # noqa: E402
 from _protectedstatelib import (  # noqa: E402
     MARKER_FRESHNESS_MINUTES,
@@ -12,7 +16,23 @@ from _protectedstatelib import (  # noqa: E402
     lookup_policy,
     marker_gated_write_admitted,
     marker_name_for,
+    resolve_registered_path,
 )
+
+HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
+
+
+def _symlinks_supported():
+    """Windows CI runners often lack the privilege to create symlinks; skip
+    the symlink cases there (mirrors test_pre_write.py's identically-named
+    helper)."""
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            os.symlink(os.path.join(d, "t"), os.path.join(d, "l"))
+        return True
+    except (OSError, NotImplementedError, AttributeError):
+        return False
 
 
 def _touch(path, age_seconds=0):
@@ -87,6 +107,70 @@ class TestRegistryLookup(unittest.TestCase):
             lookup_policy(".codearbiter/release-targets.md", registry),
             ProtectedPolicy.MARKER_GATED,
         )
+
+    def test_registry_lookup_is_case_insensitive(self):
+        # F1 (#564 follow-up): the shell flank's H-22 regexes compile with
+        # re.I (_bashguardlib._state_write_res) - a case-SENSITIVE
+        # lookup_policy would let the two flanks disagree on a
+        # differently-cased spelling. Deliberately global, not host-fs-
+        # dependent (see _canon's docstring) - a query that differs from the
+        # registered key ONLY by case still resolves.
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertEqual(
+            lookup_policy(".codearbiter/Open-Tasks.md", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+        self.assertEqual(
+            lookup_policy(".codearbiter/OPEN-TASKS.MD", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+
+    def test_registry_lookup_is_case_insensitive_on_the_key_too(self):
+        # The symmetric direction: a registry KEY typo'd in the wrong case
+        # must not silently protect nothing either (mirrors the backslash
+        # key-normalization test above, for case).
+        registry = {".codearbiter/Open-Tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertEqual(
+            lookup_policy(".codearbiter/open-tasks.md", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+
+    def test_registry_lookup_tolerates_leading_dot_slash(self):
+        # F2 (#564 follow-up): the docstring at lines 161-169 promises this
+        # spelling matches; norm_path() alone (separator swap only) does not
+        # strip it.
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertEqual(
+            lookup_policy("./.codearbiter/open-tasks.md", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+
+    def test_registry_lookup_tolerates_a_trailing_slash(self):
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertEqual(
+            lookup_policy(".codearbiter/open-tasks.md/", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+
+    def test_registry_lookup_tolerates_a_doubled_slash(self):
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertEqual(
+            lookup_policy(".codearbiter//open-tasks.md", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+
+    def test_registry_lookup_tolerates_a_leading_space(self):
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertEqual(
+            lookup_policy(" .codearbiter/open-tasks.md", registry),
+            ProtectedPolicy.HELPER_ONLY,
+        )
+
+    def test_registry_lookup_still_rejects_a_genuinely_different_path(self):
+        # None of the tolerance above should turn lookup_policy into a
+        # substring match - a real, different path must still miss.
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        self.assertIsNone(lookup_policy(".codearbiter/other-tasks.md", registry))
 
     def test_registry_lookup_default_registry_has_no_hardcoded_consumers(self):
         # B1 ships the registry mechanism, not entries - release-targets.md
@@ -260,6 +344,611 @@ class TestMarkerNameFor(unittest.TestCase):
 
     def test_marker_name_for_degenerate_input_never_collides_with_a_real_path(self):
         self.assertNotEqual(marker_name_for(""), marker_name_for("release-targets.md"))
+
+
+class TestNoLegacyOverlap(unittest.TestCase):
+    """B-01/T-05b: a registered protected-state path must not ALSO classify
+    into any of the four legacy classes (audit/decisions/context/marker).
+    Overlap between an independently-checked registry entry and a legacy
+    class is exactly the #528/#529 failure mode this design closes (see
+    _protectedlib.py:13-19) — a CONFIGURATION error (a mis-added registry
+    entry), so it must fail LOUDLY as a test failure here.
+
+    Correction (finding F8, #564 follow-up): this docstring used to claim
+    an overlap "resolves silently by classify_protected's evaluation-order
+    precedence". Tracing every overlap case shows the opposite: `hits` is a
+    `set` that `classify_protected` accumulates every hit into (never a
+    first-match-wins dispatch), and every downstream consumer (pre-write.py/
+    pre-edit.py) checks each class INDEPENDENTLY — so an overlapping entry
+    makes H-22 (and whichever legacy guard it also collides with) fail
+    STRICTLY CLOSED, both gates firing, never looser than either alone. This
+    test exists because a mis-added overlapping entry is still a
+    configuration bug worth catching loudly (two guards blocking the exact
+    same write for two different reasons is confusing and a maintenance
+    trap), not because it would silently under-protect anything."""
+
+    def _assert_no_overlap(self, rel_path):
+        self.assertFalse(_protectedlib.is_audit_log(rel_path),
+                          f"{rel_path} collides with the audit class")
+        self.assertFalse(_protectedlib.is_decisions_path(rel_path),
+                          f"{rel_path} collides with the decisions class")
+        self.assertFalse(_protectedlib.is_context_md(rel_path),
+                          f"{rel_path} collides with the context class")
+        self.assertFalse(_protectedlib.is_marker_path(rel_path),
+                          f"{rel_path} collides with the marker class")
+
+    def test_no_legacy_overlap_synthetic_registry(self):
+        # The three named B2 consumers, checked ahead of their own
+        # enrolment tasks (T-33/T-65/T-66) — a synthetic registry lets this
+        # guard be meaningful NOW rather than only once those tasks land.
+        registry = {
+            ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+            ".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY,
+            ".codearbiter/done-tasks.md": ProtectedPolicy.APPEND_ONLY,
+        }
+        for rel_path in registry:
+            with self.subTest(rel_path=rel_path):
+                self._assert_no_overlap(rel_path)
+
+    def test_no_legacy_overlap_is_self_arming(self):
+        # F8: the synthetic test above pins the THREE currently-named
+        # consumers as hardcoded literals — if a FOURTH, DIFFERENT entry is
+        # registered at enrolment, nothing forces anyone to remember to add
+        # its literal path there too. This test instead walks the LIVE
+        # `_protectedstatelib.REGISTRY` whenever it is non-empty, falling
+        # back to the same three-consumer set only while REGISTRY still
+        # ships empty (today). Once ANY consumer is registered for real,
+        # this test starts walking the REAL registry automatically, with NO
+        # code change needed here — closing the gap where a fourth/
+        # different entry could ship unchecked.
+        registry = _protectedstatelib.REGISTRY or {
+            ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+            ".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY,
+            ".codearbiter/done-tasks.md": ProtectedPolicy.APPEND_ONLY,
+        }
+        # The guard against ITS OWN vacuousness: a mutant that drops the
+        # `or {...}` fallback (leaving `registry = _protectedstatelib.
+        # REGISTRY`) makes `registry` the real, currently-EMPTY dict, and
+        # this assertion fails loudly instead of silently walking zero
+        # subtests the way the old test_no_legacy_overlap_default_registry
+        # did.
+        self.assertTrue(registry, "the overlap guard must never walk an empty set")
+        for rel_path in registry:
+            with self.subTest(rel_path=rel_path):
+                self._assert_no_overlap(rel_path)
+
+
+class TestResolveRegisteredPath(unittest.TestCase):
+    """T-06/T-07: the flank-shared resolver. Once classify_protected has
+    already reported "state" for a target, this resolves WHICH registered
+    path matched and WHICH policy it carries — trying the SAME raw and
+    realpath-resolved forms classify_protected itself tries (#162), never a
+    second, independent membership check."""
+
+    def test_resolves_a_registered_relative_path(self):
+        registry = {".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED}
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "release-targets.md")
+            rel, policy = resolve_registered_path(target, root, registry)
+        self.assertEqual(rel, ".codearbiter/release-targets.md")
+        self.assertEqual(policy, ProtectedPolicy.MARKER_GATED)
+
+    def test_unregistered_path_resolves_to_none_none(self):
+        registry = {".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED}
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "open-tasks.md")
+            self.assertEqual(resolve_registered_path(target, root, registry), (None, None))
+
+    def test_default_registry_resolves_nothing(self):
+        # The real, empty production REGISTRY.
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "release-targets.md")
+            self.assertEqual(resolve_registered_path(target, root), (None, None))
+
+    @unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")
+    def test_resolves_a_symlinked_protected_file_via_the_raw_leg(self):
+        # F3 (#564 follow-up): when the PROTECTED PATH ITSELF is a symlink
+        # pointing somewhere UNREGISTERED, realpath resolves the only
+        # spelling a host actually sends (the absolute path) straight
+        # through it to that unregistered target - the raw
+        # (symlink-unresolved) leg is what still recognizes the registered
+        # NAME. Before the fix this leg was `norm_path(fpath)` (an absolute
+        # path, never equal to a repo-relative registry key) and was
+        # inert - dropping it entirely was undetectable.
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            decoy = os.path.join(root, "decoy.md")
+            with open(decoy, "w", encoding="utf-8") as f:
+                f.write("not registered\n")
+            link = os.path.join(root, ".codearbiter", "open-tasks.md")
+            os.symlink(decoy, link)
+            rel, policy = resolve_registered_path(link, root, registry)
+        self.assertEqual(rel, ".codearbiter/open-tasks.md")
+        self.assertEqual(policy, ProtectedPolicy.HELPER_ONLY)
+
+    @unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")
+    def test_resolves_a_symlinked_directory_alias_via_the_realpath_leg(self):
+        # The mirror-image #162 case, still needed alongside the raw leg
+        # above: a symlinked DIRECTORY whose visible path lacks
+        # ".codearbiter/" but resolves into it. Only the realpath-resolved
+        # leg sees this one - the raw leg computes "alias/open-tasks.md",
+        # which is not registered.
+        registry = {".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY}
+        with tempfile.TemporaryDirectory() as root:
+            ca = os.path.join(root, ".codearbiter")
+            os.makedirs(ca)
+            alias = os.path.join(root, "alias")
+            os.symlink(ca, alias, target_is_directory=True)
+            target = os.path.join(alias, "open-tasks.md")
+            rel, policy = resolve_registered_path(target, root, registry)
+        self.assertEqual(rel, ".codearbiter/open-tasks.md")
+        self.assertEqual(policy, ProtectedPolicy.HELPER_ONLY)
+
+
+class TestStateWriteRes(unittest.TestCase):
+    """T-08: `_state_write_res`'s per-entry regex TEMPLATE and
+    `_build_state_write_res`'s registry walk, exercised directly — a regex
+    regression in the template itself is pinned independent of the
+    dispatch logic (`_check_h22_state`) built around it."""
+
+    def test_redirect_re_matches_single_and_double_chevron(self):
+        redirect_re, _, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertTrue(redirect_re.search("> open-tasks.md"))
+        self.assertTrue(redirect_re.search(">> open-tasks.md"))
+
+    def test_write_re_matches_a_write_verb_followed_by_the_basename(self):
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertTrue(write_re.search("tee open-tasks.md"))
+        self.assertTrue(write_re.search("rm .codearbiter/open-tasks.md"))
+
+    def test_write_re_excludes_git_verbs(self):
+        # B-07: the verb list must never include a git verb, or `git add
+        # open-tasks.md` (commit-gate Phase 7, run on every retained board
+        # flip) would make commit-gate block itself.
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(write_re.search("git add open-tasks.md"))
+
+    def test_write_re_does_not_match_across_a_pipe_or_semicolon(self):
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(write_re.search("tee /tmp/x; echo open-tasks.md"))
+
+    def test_write_re_is_case_insensitive(self):
+        # F1: mirrors lookup_policy's case-insensitivity so the two flanks
+        # agree.
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertTrue(write_re.search("tee OPEN-TASKS.MD"))
+
+    def test_write_re_does_not_match_trailing_garbage_after_the_basename(self):
+        # F4 (#564 follow-up): the right-edge anchor (mirroring
+        # DECISION_LOG_SHELL_RE, #528) closes the over-match where the
+        # basename was merely a PREFIX-substring of a longer filename -
+        # `rm .codearbiter/open-tasks.md.bak` used to match.
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(write_re.search("rm .codearbiter/open-tasks.md.bak"))
+
+    def test_write_re_still_matches_when_followed_by_a_redirect_or_quote(self):
+        # Non-regression for the right-edge anchor: it must not ALSO reject
+        # legitimate trailing punctuation immediately after the basename.
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertTrue(write_re.search("cp open-tasks.md /tmp/x"))
+        self.assertTrue(write_re.search('rm "open-tasks.md"'))
+
+    def test_write_re_basename_escaping_is_load_bearing(self):
+        # F4: `re.escape` on the basename must actually run - a mutant
+        # dropping it turns the basename's own "." into "matches any
+        # character", which would let a DIFFERENT filename in the same
+        # position (any single char standing in for the dot) match too.
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(write_re.search("rm open-tasksXmd"))
+
+    def test_write_re_includes_the_precedent_verbs(self):
+        # F6: sponge (LOG_DESTROY_RE precedent), ln, install, patch, shred.
+        _, write_re, _, _ = _bashguardlib._state_write_res("open-tasks.md")
+        for verb in ("sponge", "ln", "install", "patch", "shred"):
+            with self.subTest(verb=verb):
+                self.assertTrue(write_re.search(f"{verb} open-tasks.md"))
+
+    def test_git_restore_re_matches_checkout_and_restore(self):
+        # F5: mirrors H-05's LOG_GIT_RESTORE_RE (#335) - checkout/restore
+        # rewrite a tracked worktree file through git itself, bypassing
+        # every filesystem verb above.
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertTrue(git_restore_re.search("git checkout -- open-tasks.md"))
+        self.assertTrue(git_restore_re.search("git restore open-tasks.md"))
+
+    def test_git_restore_re_excludes_git_add(self):
+        # F5's own non-regression: must not catch `git add` (B-07,
+        # commit-gate Phase 7 runs this on every retained board flip).
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(git_restore_re.search("git add open-tasks.md"))
+
+    def test_interp_re_matches_a_python_c_one_liner(self):
+        # F6: mirrors GATE_MARKER_INTERP_RE (#237) - the sanctioned
+        # helper's own Python file-I/O route, reused directly.
+        _, _, _, interp_re = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertTrue(
+            interp_re.search("python3 -c \"open('open-tasks.md','w').write('x')\""))
+
+    def test_interp_re_matches_across_a_newline_in_the_payload(self):
+        # F6: per the #237 follow-up, this needs [\s\S]* (DOTALL-equivalent)
+        # not [^\n]* - the interpreter token and the filename may sit on
+        # different physical lines of the SAME multi-line -c payload.
+        _, _, _, interp_re = _bashguardlib._state_write_res("open-tasks.md")
+        payload = "python -c \"x = 1\nopen('open-tasks.md', 'w')\""
+        self.assertTrue(interp_re.search(payload))
+
+    def test_interp_re_does_not_match_an_unrelated_interpreter_invocation(self):
+        _, _, _, interp_re = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(interp_re.search("python3 -c \"print('hello world')\""))
+
+    def test_build_state_write_res_keys_off_bare_basename_per_entry(self):
+        built = _bashguardlib._build_state_write_res({
+            ".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY,
+            ".codearbiter\\release-targets.md": ProtectedPolicy.MARKER_GATED,
+        })
+        self.assertEqual(len(built), 2)
+        for rel_path, policy, redirect_re, write_re, git_restore_re, interp_re in built:
+            if rel_path.endswith("open-tasks.md"):
+                self.assertEqual(policy, ProtectedPolicy.HELPER_ONLY)
+                self.assertTrue(write_re.search("tee open-tasks.md"))
+            else:
+                self.assertEqual(policy, ProtectedPolicy.MARKER_GATED)
+                self.assertTrue(write_re.search("tee release-targets.md"))
+
+    def test_build_state_write_res_reflects_an_empty_registry(self):
+        self.assertEqual(_bashguardlib._build_state_write_res({}), ())
+
+    def test_module_state_write_res_reflects_the_real_default_registry(self):
+        # The real production REGISTRY is empty at this slice, so the
+        # module-level, import-time-compiled tuple must be empty too.
+        self.assertEqual(_bashguardlib._STATE_WRITE_RES, ())
+
+
+def _comparable_state_res(built):
+    """A regex-object-free, `==`-comparable projection of a
+    `_build_state_write_res` tuple: compiled `re.Pattern` objects compare by
+    IDENTITY, never by pattern text, so two independently-built tuples with
+    IDENTICAL regex source never compare `==` even when they are behaviorally
+    identical. F9 needs to compare two SEPARATELY built tuples, so it needs
+    this projection to do it meaningfully."""
+    return tuple(
+        (rel_path, policy, redirect_re.pattern, redirect_re.flags,
+         write_re.pattern, write_re.flags,
+         git_restore_re.pattern, git_restore_re.flags,
+         interp_re.pattern, interp_re.flags)
+        for rel_path, policy, redirect_re, write_re, git_restore_re, interp_re in built
+    )
+
+
+class TestStateWriteResReflectsRegistry(unittest.TestCase):
+    """F9 (#564 follow-up): `_STATE_WRITE_RES` must be GENUINELY DERIVED
+    from `_protectedstatelib.REGISTRY` at import time, not merely equal to
+    `()` because both happen to be empty today.
+    `test_module_state_write_res_reflects_the_real_default_registry` above
+    (`_STATE_WRITE_RES == ()`) is a VACUOUS pin for this specific mutant: a
+    mutant hardcoding `_STATE_WRITE_RES = ()` survives it for as long as the
+    real registry stays empty (T-33/T-65/T-66 not yet landed) - the
+    assertion is true regardless of whether the RHS was actually derived
+    from anything.
+
+    Proves the derivation itself by RELOADING `_bashguardlib` against a
+    SYNTHETIC non-empty registry patched onto `_protectedstatelib` first -
+    the same "exercise the real default/import-time path against an
+    injected value" technique
+    `TestRegistryLookup.test_registry_lookup_reads_the_default_module_registry`
+    already uses for `lookup_policy`, extended to an import-time constant
+    that a per-call default parameter trick cannot reach."""
+
+    def test_state_write_res_is_genuinely_rebuilt_from_the_registry_at_import(self):
+        import importlib
+        original = _protectedstatelib.REGISTRY
+        try:
+            _protectedstatelib.REGISTRY = {
+                ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+            }
+            reloaded = importlib.reload(_bashguardlib)
+            # Built fresh from a plain function call - untouched by a
+            # mutation that only targets the MODULE-LEVEL assignment line.
+            expected = reloaded._build_state_write_res(_protectedstatelib.REGISTRY)
+            self.assertNotEqual(expected, ())
+            self.assertEqual(
+                _comparable_state_res(reloaded._STATE_WRITE_RES),
+                _comparable_state_res(expected),
+            )
+        finally:
+            _protectedstatelib.REGISTRY = original
+            importlib.reload(_bashguardlib)
+
+
+class _StateShellFixture(unittest.TestCase):
+    """In-process shell-flank harness for the H-22 protected-state check
+    (T-08/T-08a/T-08b). REGISTRY ships EMPTY at this slice (T-33/T-65/T-66
+    enroll the three named consumers later); the compiled per-entry regex
+    set (`_bashguardlib._STATE_WRITE_RES`) is built ONCE at IMPORT from the
+    module registry (performance-002/_scopelib.py:109-117 precedent), so
+    exercising the real dispatch logic needs that compiled tuple rebuilt
+    against a SYNTHETIC registry — mutating `_protectedstatelib.REGISTRY`
+    after the fact would not be seen by it at all (it is a one-time
+    snapshot, by design)."""
+
+    def setUp(self):
+        self._orig_state_res = _bashguardlib._STATE_WRITE_RES
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self._tmp.name, "repo")
+        os.makedirs(os.path.join(self.root, ".codearbiter", ".markers"))
+        # Isolate block()'s gate-events append: with no CLAUDE_PROJECT_DIR
+        # override, project_root() would otherwise climb from THIS TEST
+        # PROCESS's cwd (this repo's own checkout) and append a live BLOCK
+        # line to the real .codearbiter/gate-events.log — the same
+        # isolation every subprocess-based hook test already applies via
+        # env=, needed here too since this harness calls the guard
+        # IN-PROCESS (a synthetic registry cannot cross a subprocess
+        # boundary — a fresh interpreter would just re-import the real,
+        # empty one).
+        self._orig_env = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = self.root
+
+    def tearDown(self):
+        _bashguardlib._STATE_WRITE_RES = self._orig_state_res
+        if self._orig_env is None:
+            os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        else:
+            os.environ["CLAUDE_PROJECT_DIR"] = self._orig_env
+        self._tmp.cleanup()
+
+    def _set_registry(self, registry):
+        _bashguardlib._STATE_WRITE_RES = _bashguardlib._build_state_write_res(registry)
+
+    def _touch_marker(self, name, age_seconds=0):
+        m = os.path.join(self.root, ".codearbiter", ".markers", name)
+        with open(m, "w", encoding="utf-8") as f:
+            f.write("active\n")
+        if age_seconds:
+            past = time.time() - age_seconds
+            os.utime(m, (past, past))
+        return m
+
+    def _run_check(self, cmd):
+        """Run `_check_h22_state` with stderr captured (block() prints
+        there), returning (SystemExit|None, stderr_text) — keeps the
+        BLOCKED banner out of the test runner's own console output while
+        still letting a failure assertion show it for diagnosis."""
+        old_stderr = sys.stderr
+        sys.stderr = io.StringIO()
+        try:
+            try:
+                _bashguardlib._check_h22_state(cmd, self.root)
+                return None, sys.stderr.getvalue()
+            except SystemExit as exc:
+                return exc, sys.stderr.getvalue()
+        finally:
+            sys.stderr = old_stderr
+
+    def assertShellBlocked(self, cmd, tag="H-22"):
+        exc, err = self._run_check(cmd)
+        self.assertIsNotNone(exc, f"expected BLOCK for {cmd!r}, but it was allowed")
+        self.assertEqual(exc.code, 2, err)
+        self.assertIn(f"[{tag}]", err, err)
+
+    def assertShellAllowed(self, cmd):
+        # _check_h22_state never sys.exit(0)s on its own — only run_guards'
+        # final fall-through does that — so "did not raise" IS the allow
+        # signal for this one check.
+        exc, err = self._run_check(cmd)
+        self.assertIsNone(exc, f"expected ALLOW for {cmd!r}; got {err!r}")
+
+
+class TestStateShellMarkerGated(_StateShellFixture):
+    """B-04/T-08: marker-gated admits only under a fresh authoring marker."""
+
+    def setUp(self):
+        super().setUp()
+        self._set_registry({".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED})
+
+    def test_redirect_without_marker_blocks(self):
+        self.assertShellBlocked(">> .codearbiter/release-targets.md")
+
+    def test_write_verb_without_marker_blocks(self):
+        self.assertShellBlocked("tee .codearbiter/release-targets.md")
+
+    def test_write_verb_with_fresh_marker_admits(self):
+        self._touch_marker("release-targets-authoring")
+        self.assertShellAllowed("tee .codearbiter/release-targets.md")
+
+    def test_write_verb_with_stale_marker_blocks(self):
+        self._touch_marker("release-targets-authoring",
+                            age_seconds=MARKER_FRESHNESS_MINUTES * 60 + 60)
+        self.assertShellBlocked("tee .codearbiter/release-targets.md")
+
+    def test_unrelated_command_passes(self):
+        self.assertShellAllowed("git status")
+
+    def test_git_checkout_without_marker_blocks(self):
+        # F5: the git-restore leg feeds into the SAME policy dispatch as
+        # every other leg — marker-gated still requires a fresh marker.
+        self.assertShellBlocked("git checkout -- .codearbiter/release-targets.md")
+
+    def test_git_checkout_with_fresh_marker_admits(self):
+        self._touch_marker("release-targets-authoring")
+        self.assertShellAllowed("git checkout -- .codearbiter/release-targets.md")
+
+
+class TestStateShellHelperOnly(_StateShellFixture):
+    """B-05: helper-only is hard-blocked, with NO marker path at all — and
+    the B-07/B-08/B-09/B-12 non-regressions this policy's shell flank must
+    hold, all in one place."""
+
+    def setUp(self):
+        super().setUp()
+        self._set_registry({".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY})
+
+    def test_truncating_redirect_blocks_unconditionally(self):
+        self.assertShellBlocked("> open-tasks.md")
+
+    def test_append_redirect_blocks_unconditionally(self):
+        # B-09 non-regression: `>> open-tasks.md` must BLOCK — helper-only
+        # carries no append allowance at this shell flank (that lives
+        # inside the sanctioned helper's own Python file I/O only).
+        self.assertShellBlocked(">> open-tasks.md")
+
+    def test_tee_blocks_unconditionally(self):
+        # B-09 non-regression.
+        self.assertShellBlocked("tee open-tasks.md")
+
+    def test_marker_never_admits_helper_only(self):
+        # helper-only has NO marker path at all — minting a marker, even
+        # one shaped like a marker-gated authoring token, must not admit.
+        self._touch_marker("open-tasks-authoring")
+        self.assertShellBlocked("tee open-tasks.md")
+
+    def test_git_add_passes(self):
+        # B-07 non-regression — commit-gate Phase 7 runs exactly this on
+        # every retained board flip; a git verb in the write-verb set would
+        # make commit-gate block itself on its own sanctioned staging.
+        self.assertShellAllowed("git add open-tasks.md")
+
+    def test_filename_as_helper_argv_data_passes(self):
+        # B-08 non-regression — the filename appears only as free-text argv
+        # DATA to the sanctioned helper, with no adjacent write verb.
+        self.assertShellAllowed('taskwrite add -- "fix open-tasks.md schema"')
+
+    def test_taskwrite_invocation_passes_with_enrolment_live(self):
+        # B-12 circularity proof: the helper's own argv never lexically
+        # names the file it writes (core/surface/commands/task.md's
+        # invocation shape) — proved here rather than assumed, with
+        # helper-only actually wired and simulated as enrolled.
+        self.assertShellAllowed(
+            'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add -- "ship the thing" '
+            '|| python "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add -- "ship the thing"'
+        )
+
+    def test_verb_in_description_residual_false_blocks(self):
+        # T-08b: pin the documented lexical residual. A write verb ("tee")
+        # inside a free-text description, followed (no |;& between) by the
+        # protected basename later in the SAME command, is
+        # indistinguishable at this guard's lexical level from a genuine
+        # `tee open-tasks.md` redirect. This is EXPECTED, current behavior
+        # — not a bug to chase with smarter parsing (T-08b design ruling;
+        # /ca:override is the sanctioned escape hatch for a false block).
+        self.assertShellBlocked('taskwrite add -- "remember to tee open-tasks.md"')
+
+    def test_verb_in_description_residual_pinned_passing_form(self):
+        # The B-08 non-regression this residual sits beside: the SAME
+        # filename, in the SAME free-text argv position, passes as long as
+        # no write-verb word happens to precede it in the command text.
+        self.assertShellAllowed('taskwrite add -- "fix open-tasks.md schema"')
+
+    def test_git_checkout_blocks(self):
+        # F5, through the full dispatch: `git checkout` rewrites a tracked
+        # protected-state file through git itself, bypassing every
+        # filesystem verb above.
+        self.assertShellBlocked("git checkout -- open-tasks.md")
+
+    def test_git_restore_blocks(self):
+        self.assertShellBlocked("git restore open-tasks.md")
+
+    def test_python_c_one_liner_blocks(self):
+        # F6: reuses the sanctioned helper's own Python file-I/O route
+        # while naming the file lexically.
+        self.assertShellBlocked(
+            "python3 -c \"open('open-tasks.md','w').write('forged')\"")
+
+    def test_sponge_blocks(self):
+        self.assertShellBlocked("sponge open-tasks.md")
+
+    def test_shred_blocks(self):
+        self.assertShellBlocked("shred open-tasks.md")
+
+
+class TestStateShellAppendOnly(_StateShellFixture):
+    """B-06/B-05 (T-13/T-65 ruling): append-only is flank-IDENTICAL to
+    helper-only at the shell guard — no tail-anchored or append-verb
+    admission here; the distinction lives entirely in the archive verb the
+    sanctioned helper exposes, never in this lexical check."""
+
+    def setUp(self):
+        super().setUp()
+        self._set_registry({".codearbiter/done-tasks.md": ProtectedPolicy.APPEND_ONLY})
+
+    def test_append_redirect_blocks_unconditionally(self):
+        self.assertShellBlocked(">> done-tasks.md")
+
+    def test_tee_blocks_unconditionally(self):
+        self.assertShellBlocked("tee done-tasks.md")
+
+    def test_git_add_passes(self):
+        self.assertShellAllowed("git add done-tasks.md")
+
+
+class TestStateShellWiring(_StateShellFixture):
+    """T-08: `_check_h22_state` is actually WIRED into `run_guards()` — every
+    other test in this module calls `_check_h22_state` directly, which would
+    stay green even if the wiring line inside `run_guards()` itself were
+    deleted. This drives the full `run_guards()` entry point instead, the
+    same call pre-bash.py's `_run` makes, so a removed wiring line fails
+    HERE and nowhere else in this module."""
+
+    def setUp(self):
+        super().setUp()
+        self._set_registry({".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY})
+
+    def test_run_guards_blocks_through_the_real_entry_point(self):
+        payload = {"tool_name": "Bash", "tool_input": {"command": "tee open-tasks.md"}}
+        ti = {"command": "tee open-tasks.md"}
+        old_stderr = sys.stderr
+        sys.stderr = io.StringIO()
+        try:
+            with self.assertRaises(SystemExit) as ctx:
+                _bashguardlib.run_guards(payload, self.root, ti)
+            err = sys.stderr.getvalue()
+        finally:
+            sys.stderr = old_stderr
+        self.assertEqual(ctx.exception.code, 2, err)
+        self.assertIn("H-22", err, err)
+
+    def test_run_guards_allows_an_unrelated_command_through_the_real_entry_point(self):
+        payload = {"tool_name": "Bash", "tool_input": {"command": "echo hi"}}
+        ti = {"command": "echo hi"}
+        with self.assertRaises(SystemExit) as ctx:
+            _bashguardlib.run_guards(payload, self.root, ti)
+        self.assertEqual(ctx.exception.code, 0)
+
+
+class TestMarkerTouchAllowed(_StateShellFixture):
+    """T-08a: touching an AUTHORING marker must pass the shell flank, even
+    with H-22 actively enforcing its consumer file — the marker's own
+    basename ("release-targets-authoring") never collides with the
+    protected file's basename ("release-targets.md") under either the
+    redirect or write-verb pattern, and `touch` is not in H-22's
+    write-verb list at all (mirrors GATE_MARKER_WRITE_RE/CONTEXT_WRITE_RE's
+    own exclusion of `touch`). See the GATE_MARKER_NAMES comment in
+    _protectedlib.py for the "block-to-allow" criterion this pins."""
+
+    def setUp(self):
+        super().setUp()
+        self._set_registry({".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED})
+
+    def test_marker_touch_allowed(self):
+        self.assertShellAllowed("touch .codearbiter/.markers/release-targets-authoring")
+
+    def test_marker_touch_allowed_against_the_real_pre_bash_subprocess(self):
+        # Exercises the REAL default (empty) registry through the actual
+        # hook entry point, not only the injected in-process harness above
+        # (the "at least one test against the real default path" review
+        # note) — and is also the simplest proof that nothing ELSE in the
+        # shell flank (GATE_MARKER_*, H-05, H-11, H-18) treats
+        # marker-touching as a blockable act.
+        ctx = os.path.join(self.root, ".codearbiter", "CONTEXT.md")
+        with open(ctx, "w", encoding="utf-8") as f:
+            f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+        payload = ('{"tool_name": "Bash", "tool_input": {"command": '
+                   '"touch .codearbiter/.markers/release-targets-authoring"}}')
+        env = {**os.environ, "CLAUDE_PROJECT_DIR": self.root}
+        res = subprocess.run([sys.executable, PRE_BASH], cwd=self.root,
+                             input=payload, capture_output=True, text=True,
+                             encoding="utf-8", errors="replace", timeout=30, env=env)
+        self.assertEqual(res.returncode, 0, res.stderr)
 
 
 if __name__ == "__main__":

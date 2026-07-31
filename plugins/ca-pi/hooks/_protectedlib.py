@@ -20,12 +20,25 @@
 #
 # _hooklib re-exports every name below, so no consumer changed and the
 # pre-existing hook suites prove parity without moving.
+#
+# T-05a (#564): a FIFTH class, "state", joins the four above — a path
+# registered in the protected-state registry (_protectedstatelib.py, B1: a
+# per-entry policy of marker-gated/helper-only/append-only). It is evaluated
+# strictly AFTER the four legacy classes (a documented ordering, not just an
+# implementation detail — see classify_protected's own docstring) and
+# changes nothing about the RETURN CONTRACT: still a bare set of class-name
+# strings, exactly as before. Resolving the registered path's POLICY is left
+# entirely to whichever flank branch consumes the "state" tag
+# (_protectedstatelib.lookup_policy / resolve_registered_path) — never done
+# here, so this module gains no dependency on a POLICY concept it has no
+# other reason to know about, and the four pre-existing consumers of
+# classify_protected see zero contract change.
 
 from __future__ import annotations
 
 import re
 
-from _pathnorm import norm_path, repo_rel
+from _pathnorm import norm_path, raw_repo_rel, repo_rel
 
 
 # Append-only audit logs (H-05) and ADR-decisions paths (H-11) — centralized
@@ -110,6 +123,25 @@ MARKERS_RE = re.compile(r"\.codearbiter/\.markers(?:/|$)")
 # legitimately shell-written (the sanctioned producers are the python
 # security-pass.py / migration-pass.py helpers), unlike adr-authoring-active
 # which /adr legitimately `touch`es.
+#
+# T-08a / #564: this set enumerates markers whose PRESENCE converts a
+# hard-gate BLOCK into an ALLOW (H-09b/H-10b's security-gate-passed, H-14's
+# migration-gate-passed) — that conversion is the membership criterion, not
+# "is this a marker under .markers/". A protected-state AUTHORING marker
+# (e.g. release-targets-authoring, and the `<stem>-authoring` shape every
+# future marker-gated consumer follows — _protectedstatelib.marker_name_for)
+# does NOT belong here even though it also gates a write: it authorizes
+# nothing on its own, the content it gates still passes through ordinary
+# review, and it is deliberately self-mintable by an agent (a plain `touch`)
+# under ADR-0010 — same as adr-authoring-active above. Its purpose is audit
+# friction, not authorization.
+#
+# The risk here runs opposite to intuition: a future "hardening" pass that
+# widens this blocklist to cover every registered marker would brick every
+# legitimate authoring lane (a marker an agent can never touch admits
+# nothing, ever) while stopping no non-cooperative agent (who can bypass
+# this guard's own enforcement the same way they could bypass any other
+# lexical shell check). See test_marker_touch_allowed (T-08a) for the pin.
 GATE_MARKER_NAMES = r"(?:security-gate-passed|migration-gate-passed)"
 
 
@@ -177,6 +209,44 @@ def is_marker_path(rel):
     return bool(MARKERS_RE.search(norm_path(rel)))
 
 
+def is_registered_state_path(rel):
+    """True iff `rel` carries a policy in the protected-state registry
+    (`_protectedstatelib.lookup_policy`, B1/#564) — the fifth protected class
+    `classify_protected` recognizes (T-05a), evaluated strictly AFTER the
+    other four.
+
+    The `_protectedstatelib` import is deliberately LAZY — done here, inside
+    the function body, rather than at this module's top level.
+    `_protectedstatelib` imports `marker_fresh` from `_hooklib`, and
+    `_hooklib` imports `classify_protected` (and every other name in this
+    file) FROM here — a module-level `import _protectedstatelib` at the top
+    of `_protectedlib.py` would be a genuine three-module import cycle
+    (`_protectedlib` -> `_protectedstatelib` -> `_hooklib` -> `_protectedlib`)
+    that Python cannot resolve at module-load time. Deferring the import to
+    CALL time breaks the cycle without restructuring the dependency graph:
+    every real caller reaches this function only after `_hooklib` (and
+    therefore this module) has already finished its own top-level execution,
+    so by the time the deferred import statement actually runs,
+    `_protectedstatelib`'s own `from _hooklib import marker_fresh` resolves
+    against an already-complete `_hooklib` module.
+
+    Correction (finding F11, #564 follow-up): this is NOT the same pattern
+    `_babysitlib.babysit_config` or `statusline.py` use — neither of those
+    actually breaks an import CYCLE. `statusline.py`'s function-level
+    imports are a startup-latency lazy-load with no cyclic partner at all,
+    and `_babysitlib.py`'s deferred import sits inside a lazy default
+    injection where `_hooklib` never imports `_babysitlib` back (no cycle
+    to break). The deferral here IS still correct and necessary — it is
+    the only thing that breaks the genuine three-module cycle described
+    above — the prior comment simply cited the wrong precedent; corrected
+    so the comment matches the record.
+
+    It is a local import, not file I/O or a git call, so it does not violate
+    this module's zero-side-effects-at-import invariant."""
+    import _protectedstatelib
+    return _protectedstatelib.lookup_policy(rel) is not None
+
+
 def classify_protected(fpath, root):
     """The set of protected classes a Write/Edit `fpath` targets, resolving
     symlinks (#162). Each classifier runs against BOTH the raw normalized path
@@ -184,11 +254,43 @@ def classify_protected(fpath, root):
     path lacks `.codearbiter/` still realpaths back inside the repo, so an alias
     can no longer launder a write past the guard. Centralized so pre-write.py and
     pre-edit.py apply the identical symlink-safe check to every class (H-05,
-    H-11, #159 CONTEXT.md, #160 markers) instead of re-encoding it twice.
+    H-11, #159 CONTEXT.md, #160 markers, #564 protected-state) instead of
+    re-encoding it twice.
 
-    Classes: "audit", "decisions", "context", "marker". repo_rel() returns "" for
-    a target outside the repo (which cannot be a `.codearbiter` path), so that
-    flank is simply skipped."""
+    Classes: "audit", "decisions", "context", "marker", "state". repo_rel()
+    returns "" for a target outside the repo (which cannot be a
+    `.codearbiter` path), so that flank is simply skipped.
+
+    "state" (T-05a, #564) is resolved in a SEPARATE loop below, strictly
+    AFTER the four legacy classes above — not interleaved into their loop.
+    That split is about incremental extension safety (a class added later
+    stays visibly separate from the four it was added beside, per the
+    module-header rationale above), NOT about the hits it produces:
+    `hits` is a `set`, so the SECOND loop's position relative to the first
+    has no observable effect on `classify_protected`'s own return value —
+    no test (mutant or otherwise) can distinguish "state resolved in loop 2"
+    from "state resolved inside loop 1" from the returned set alone
+    (finding F12, #564 follow-up correcting an earlier, overselling version
+    of this paragraph). The ordering that DOES matter or a real class/tag
+    conflict lives elsewhere and IS enforced in code: the textual branch
+    order of the `if "..." in classes:` checks in pre-write.py/pre-edit.py,
+    and pre-edit.py's own `_CLASS_TAG` priority tuple, which decide which
+    ONE message a caller emits when a path hits more than one class.
+
+    The "state" loop tries BOTH a raw (symlink-unresolved) repo-relative
+    form (`raw_repo_rel`) and the realpath-resolved repo-relative form
+    (`repo_rel`) — the SAME #162 two-form symlink-safety property the four
+    legacy classes get for free from `.search()`-based regex matching over
+    the raw path text, restored here explicitly (finding F3) because an
+    EQUALITY-based lookup (`_protectedstatelib.lookup_policy`) does not get
+    that coverage for free from a bare `norm_path(fpath)` — see
+    `_protectedstatelib.resolve_registered_path`'s docstring for the full
+    account of the symlink-inversion bug this closes. The return contract is
+    unchanged by this addition: still a bare set of strings. A caller that
+    needs the registered path's POLICY (marker-gated/helper-only/
+    append-only) resolves it separately, via `_protectedstatelib` — this
+    function only ever reports CLASS membership, exactly as it always has,
+    so its four pre-existing consumers see no contract change."""
     hits = set()
     for p in (norm_path(fpath), repo_rel(fpath, root)):
         if not p:
@@ -201,4 +303,10 @@ def classify_protected(fpath, root):
             hits.add("context")
         if is_marker_path(p):
             hits.add("marker")
+    for p in (raw_repo_rel(fpath, root), repo_rel(fpath, root)):
+        if not p:
+            continue
+        if is_registered_state_path(p):
+            hits.add("state")
+            break
     return hits

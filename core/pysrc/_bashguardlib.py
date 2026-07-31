@@ -57,6 +57,23 @@
 #                                         pre-bash.py — .github/scripts/
 #                                         test_hook_guards.py imports it by
 #                                         this exact name)
+#   _state_write_res(basename) -> (redirect_re, write_re, git_restore_re,
+#                                         interp_re)   H-22's per-entry
+#                                         shell-flank regex TEMPLATE for one
+#                                         protected-state registry entry's
+#                                         bare filename (T-08, #564; the
+#                                         git-restore and interpreter legs
+#                                         added per findings F5/F6)
+#   _build_state_write_res(registry) -> tuple[(rel_path, policy, redirect_re,
+#                                         write_re, git_restore_re,
+#                                         interp_re), ...]   the compiled set
+#                                         for every entry in `registry`;
+#                                         `_STATE_WRITE_RES` is this, built
+#                                         once at import from the live
+#                                         `_protectedstatelib.REGISTRY`
+#   _check_h22_state(cmd, root) -> None  H-22's run_guards() gate — block()s
+#                                         on a shell mutation of a registered
+#                                         protected-state file
 
 import os
 import re
@@ -71,6 +88,12 @@ from _hooklib import (
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
                 # gitdir: pointer) project_root() climb (#223)
+import _protectedstatelib  # H-22's shell flank (T-08, #564) — imported as a
+                            # module (not `from ... import REGISTRY`) so
+                            # _STATE_WRITE_RES below is built from a live
+                            # attribute lookup at import time, never a
+                            # snapshotted name binding.
+from _protectedstatelib import ProtectedPolicy, marker_gated_write_admitted
 
 # The most recent git-read failure, surfaced in the H-01/H-09b/H-14 fail-closed
 # block message. "git unavailable or timed out" alone cost a session of root-
@@ -413,6 +436,149 @@ GATE_MARKER_WRITE_RE = re.compile(
 GATE_MARKER_INTERP_RE = re.compile(
     r"\b(python3?|node|perl|ruby|sh)\b[\s\S]*" + GATE_MARKER, re.I,
 )
+
+# H-22's shell flank: the protected-state registry (B1/#564) — Write/Edit are
+# guarded via classify_protected's "state" class (pre-write.py/pre-edit.py,
+# T-05a/T-06/T-07); this closes the shell flank the SAME way the four
+# pre-existing classes already do above: a redirect into a registered file,
+# or a write/delete verb naming it, blocks.
+#
+# ONE (redirect_re, write_re) pair PER REGISTRY ENTRY, not a single
+# alternation over every registered basename (T-08 design ruling): a regex
+# defect in one entry's pattern then stays isolated to that entry — and is
+# pinned by that entry's own test — instead of one opaque pattern smearing a
+# failure across every consumer. `_state_write_res` is the per-entry
+# TEMPLATE, called once per registry entry by `_build_state_write_res`.
+#
+# BARE basename anchor, deliberately WITHOUT a `.codearbiter/` directory
+# prefix the way CONTEXT_MD carries one: the redirect-operator prefix
+# (`>>?\|?\s*\S*`) and the verb-then-bounded-window shape
+# (`\b(verb-list)\b[^|;&]*`) below are copied verbatim from
+# CONTEXT_REDIRECT_RE/CONTEXT_WRITE_RE (above, ~line 355), but the NAME
+# fragment itself mirrors AUDIT_LOG_NAMES/LOG_TRUNC_RE/LOG_DESTROY_RE's
+# bare-filename anchor instead. This is not a stylistic choice: B-07/B-08's
+# own non-regression cases, and the T-08b lexical residual, both name the
+# protected file with NO `.codearbiter/` prefix at all — `taskwrite add --
+# "fix open-tasks.md schema"` and the false-blocking `taskwrite add -- "…tee
+# open-tasks.md"` both carry the bare filename inside free-text argv. A
+# directory-anchored pattern could neither reproduce the documented residual
+# nor catch a real `tee open-tasks.md` run with a cwd already inside
+# `.codearbiter/` (where no directory prefix appears in the command text
+# either) — it would under-scan exactly the attack this guard exists for.
+# The right-edge lookahead DECISION_LOG_SHELL_RE (#528, ~line 355) already
+# carries. H-22's bare-basename anchor inherited the over-match closing it
+# fixes without it: `rm .codearbiter/open-tasks.md.bak` matched, because the
+# basename is a literal PREFIX-substring of the ".bak" spelling and nothing
+# required the basename text to END where it should. Requires end-of-string,
+# whitespace, a redirect/pipe/separator, or a quote-close immediately after
+# the basename — never a bare `\b` word boundary alone, which cannot do this
+# job here (a hyphen is a non-word character on BOTH its sides, so `\b` sits
+# at a hyphen exactly as readily as at a `/`; it cannot distinguish
+# "…/open-tasks.md" from "my-open-tasks.md").
+#
+# This closes only the RIGHT-side over-match. The mirror-image LEFT-side one
+# (a longer filename that happens to END with the registered basename, e.g.
+# `my-open-tasks.md`, `> my-open-tasks.md`) is a KNOWN, ACCEPTED residual of
+# the bare-basename anchor design itself (finding F4, #564 follow-up) — a
+# left anchor would require knowing the basename is not itself part of a
+# longer name, which the bare-anchor design (see the module comment above)
+# deliberately does not have enough context to tell apart from a legitimate
+# no-directory-prefix spelling. Declared, not merely implicit: see
+# security-controls.md's "Protected-state registry (H-22)" section.
+_STATE_NAME_RIGHT_EDGE = r"""(?=$|[\s>|;&"'])"""
+
+# The write-verb list, extended past the CONTEXT_WRITE_RE/DECISIONS_WRITE_RE
+# baseline it was copied from (finding F6, #564 follow-up) with verbs
+# present in this file's own cited precedents but missing here: `sponge`
+# (already in LOG_DESTROY_RE, ~line 317), plus `ln` (a hardlinked/symlinked
+# name overwrites whatever sits there with `ln -f`), `install` (coreutils'
+# copy-with-permissions — a genuine overwrite verb), `patch` (rewrites a
+# file in place from a diff), and `shred` (secure-delete, the ultimate
+# destroy). `install`/`ln` both carry a real false-positive cost of their
+# own (`npm install`/`pip install` are common phrases; `ln` is a short,
+# common token) — accepted under the SAME "ambiguity resolves CLOSED"
+# stance this file states at its own top (module docstring) and applies
+# throughout (e.g. `cp overrides.log backup`, a mere READ, blocks anyway);
+# declared in security-controls.md rather than left an undeclared gap.
+_STATE_WRITE_VERBS = (
+    r"rm|del|mv|cp|copy|dd|tee|sed|sponge|ln|install|patch|shred|truncate|ni"
+    r"|New-Item|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content"
+    r"|Out-File|Add-Content"
+)
+
+
+def _state_write_res(basename):
+    r"""`(redirect_re, write_re, git_restore_re, interp_re)` for ONE
+    protected-state registry entry's bare filename — the compiled set
+    `_build_state_write_res` returns one of, per entry. See the module
+    comment above for why this is bare-basename, not directory-anchored,
+    and `_STATE_NAME_RIGHT_EDGE`/`_STATE_WRITE_VERBS` above for the
+    right-anchor and extended verb list (finding F4/F6).
+
+    `git_restore_re` (finding F5, #564 follow-up): mirrors H-05's
+    LOG_GIT_RESTORE_RE (#335) — `git checkout`/`git restore` rewrite a
+    TRACKED worktree file through git itself, bypassing every filesystem
+    verb above entirely (all three planned registry entries are tracked
+    files, so this is not a hypothetical). A SEPARATE pattern, not folded
+    into the write-verb list: `checkout`/`restore` are git SUBCOMMANDS, not
+    shell verbs, and matching them needs the `GIT` global-options-tolerant
+    prefix the write-verb list has no business carrying. Deliberately does
+    NOT match `git add` — B-07's non-regression (commit-gate Phase 7 runs
+    `git add open-tasks.md` on every retained board flip, which must never
+    trip H-22) — and structurally cannot: the subcommand alternation here is
+    only `checkout|restore`.
+
+    `interp_re` (finding F6, #564 follow-up): mirrors GATE_MARKER_INTERP_RE
+    (#237) — an arbitrary interpreter one-liner
+    (`python -c "open('open-tasks.md','w')..."`) reuses `helper-only`'s own
+    sanctioned Python file-I/O route while naming the target file lexically,
+    a flank no verb-list spelling above can see. `[\s\S]*` (not `[^\n]*`,
+    per the #237 follow-up) so the interpreter token and the filename may
+    sit on different physical lines of the SAME multi-line `-c`/`-e`
+    payload — `[^\n]*` cannot cross that newline and would silently reopen
+    the identical hole in its multi-line spelling."""
+    name = re.escape(basename)
+    redirect_re = re.compile(
+        r">>?\|?\s*\S*" + name + _STATE_NAME_RIGHT_EDGE, re.I)
+    write_re = re.compile(
+        r"\b(" + _STATE_WRITE_VERBS + r")\b[^|;&]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+    )
+    git_restore_re = re.compile(
+        GIT + r"\s+(?:checkout|restore)\b[^|;&]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+    )
+    interp_re = re.compile(
+        r"\b(python3?|node|perl|ruby|sh)\b[\s\S]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+    )
+    return redirect_re, write_re, git_restore_re, interp_re
+
+
+def _build_state_write_res(registry):
+    """`(rel_path, policy, redirect_re, write_re, git_restore_re,
+    interp_re)` for every entry in `registry`, keyed on each entry's bare
+    basename via `_state_write_res`. An explicit `registry` PARAMETER (not a
+    bare comprehension over the module-level default) so a test can rebuild
+    this exact tuple against a SYNTHETIC registry — the real one ships EMPTY
+    at this slice (T-01–T-08; T-33/T-65/T-66 enroll the three named
+    consumers later) — the same `registry=`-parameter shape
+    `_protectedstatelib.lookup_policy` already uses for the identical
+    reason."""
+    built = []
+    for rel_path, policy in registry.items():
+        basename = rel_path.replace("\\", "/").rsplit("/", 1)[-1]
+        redirect_re, write_re, git_restore_re, interp_re = _state_write_res(basename)
+        built.append((rel_path, policy, redirect_re, write_re, git_restore_re, interp_re))
+    return tuple(built)
+
+
+# performance-002/_scopelib.py:109-117 precedent: compiled ONCE at import
+# from the live (code-constant, never disk-loaded — #564 design ruling)
+# registry, not recompiled per call. Empty at this slice, so
+# `_check_h22_state` is correctly a no-op against every command until a
+# consumer is registered. A test exercises the real logic by rebuilding this
+# EXACT tuple against a synthetic registry (`_build_state_write_res`), never
+# by mutating `_protectedstatelib.REGISTRY` after the fact — this tuple
+# would not see that (it is a one-time import-time snapshot, by design).
+_STATE_WRITE_RES = _build_state_write_res(_protectedstatelib.REGISTRY)
 
 
 def git_cwd(cmd, root):
@@ -1042,6 +1208,50 @@ def _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback):
                       "prohibited.")
 
 
+def _check_h22_state(cmd, root):
+    """H-22: the protected-state registry's shell flank (B-04/B1, #564).
+    Walks the precompiled per-entry pairs (`_STATE_WRITE_RES`); a command
+    that redirects into, or runs a write/delete verb against, a registered
+    basename either admits (marker-gated, under a FRESH authoring marker —
+    `_protectedstatelib.marker_gated_write_admitted`, the H-11 pattern) or
+    blocks outright (helper-only/append-only — flank-IDENTICAL: the
+    distinction between them lives entirely in what the sanctioned helper's
+    OWN append verb is allowed to do, never in this shell guard, which has
+    no marker path for either).
+
+    Marker checks read from the pinned `root` (project_root), never `cwd` —
+    the SAME split `_check_h09b_h10b_crypto_secret`/`_check_h14_migration`
+    already draw (D-2, `_effective_exec_root`'s own docstring): a linked
+    worktree has `.codearbiter/` (tracked) but not `.codearbiter/.markers/`
+    (gitignored), so marker paths must stay anchored at the main checkout.
+
+    Git verbs are deliberately ABSENT from the write-verb list (the same
+    list `CONTEXT_WRITE_RE`/`DECISIONS_WRITE_RE` already use) — `git add
+    open-tasks.md` (commit-gate Phase 7, run on every retained board flip)
+    must never reach a block here (B-07), or commit-gate would block itself
+    on its own sanctioned board-flip staging. `git checkout`/`git restore`
+    ARE covered, but via the separate `git_restore_re` leg (finding F5,
+    #564 follow-up) — never the general write-verb list — precisely so that
+    isolation holds: `git_restore_re`'s subcommand alternation is only
+    `checkout|restore`, so it structurally cannot also catch `git add`."""
+    for rel_path, policy, redirect_re, write_re, git_restore_re, interp_re in _STATE_WRITE_RES:
+        if not (redirect_re.search(cmd) or write_re.search(cmd)
+                or git_restore_re.search(cmd) or interp_re.search(cmd)):
+            continue
+        if policy == ProtectedPolicy.MARKER_GATED and marker_gated_write_admitted(rel_path, root):
+            continue
+        if policy == ProtectedPolicy.MARKER_GATED:
+            block("H-22", f"'{rel_path}' is marker-gated protected project state (#564) — a "
+                          f"shell redirect or write/delete verb naming it is admitted only "
+                          f"under a fresh authoring marker. Mint the marker via the sanctioned "
+                          f"authoring lane, or /override.")
+        else:
+            block("H-22", f"'{rel_path}' is protected project state (#564, "
+                          f"policy={policy.value}) — shell redirects and write/delete verbs "
+                          f"naming it are prohibited outright; there is no marker path for "
+                          f"this policy. Use the sanctioned helper.")
+
+
 def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
     """H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     a recorded security-gate pass. The crypto-compliance / secret-handling skills
@@ -1229,6 +1439,7 @@ def run_guards(payload, root, ti):
     _check_h11_decisions(cmd)
     _check_h18_context_md(cmd)
     _check_h19_gate_marker(git_view, cmd, heredoc_shell_fallback)
+    _check_h22_state(cmd, root)
     _check_h09b_h10b_crypto_secret(commit, add, cwd, root)
     _check_h14_migration(commit, add, cwd, root)
 

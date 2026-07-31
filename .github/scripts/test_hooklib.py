@@ -320,6 +320,84 @@ class AuditPathHelperTest(unittest.TestCase):
         self.assertFalse(_hooklib.is_tail_append(current, "## DECISION-0001", "## DECISION-0001-REWRITTEN"))
 
 
+class ClassifyProtectedStateTest(unittest.TestCase):
+    """T-05a (#564): classify_protected grows a FIFTH class, "state", for a
+    path the protected-state registry (_protectedstatelib.py, B1) recognizes
+    - evaluated strictly AFTER the four legacy classes, with ZERO change to
+    the classifier's return contract (still a bare set of strings; the
+    POLICY is resolved separately, inside whichever flank's own "state"
+    branch needs it - not here, and not by this test).
+
+    REGISTRY ships EMPTY at this slice (T-33/T-65/T-66 enroll the three
+    named consumers later), so exercising the "state" branch needs an
+    INJECTED registry - patch the module-level _protectedstatelib.REGISTRY
+    directly (lookup_policy reads it fresh on every call, unlike
+    _bashguardlib's precompiled _STATE_WRITE_RES which snapshots at import)."""
+
+    def setUp(self):
+        import _protectedstatelib
+        self._protectedstatelib = _protectedstatelib
+        self._orig_registry = _protectedstatelib.REGISTRY
+
+    def tearDown(self):
+        self._protectedstatelib.REGISTRY = self._orig_registry
+
+    def test_registered_path_classifies_as_state(self):
+        from _protectedstatelib import ProtectedPolicy
+        self._protectedstatelib.REGISTRY = {
+            ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+        }
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "release-targets.md")
+            self.assertEqual(_hooklib.classify_protected(target, root), {"state"})
+
+    def test_unregistered_path_does_not_classify_as_state(self):
+        from _protectedstatelib import ProtectedPolicy
+        self._protectedstatelib.REGISTRY = {
+            ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+        }
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "open-tasks.md")
+            self.assertNotIn("state", _hooklib.classify_protected(target, root))
+
+    def test_registered_backslash_path_still_classifies_as_state(self):
+        # norm_path() folds separators, so a Windows-style query path must
+        # still hit the registry entry (mirrors the existing
+        # is_audit_log/is_decisions_path backslash-normalization tests).
+        from _protectedstatelib import ProtectedPolicy
+        self._protectedstatelib.REGISTRY = {
+            ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+        }
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "release-targets.md")
+            win_target = target.replace("/", "\\")
+            self.assertIn("state", _hooklib.classify_protected(win_target, root))
+
+    def test_state_can_coexist_with_a_legacy_class(self):
+        # classify_protected itself never resolves an audit/state collision -
+        # it reports every class a path hits, same as it already does for
+        # the pre-existing four (#528/#529). T-05b's separate overlap guard
+        # is what keeps this scenario from ever being LIVE registry data;
+        # this test only pins that the CLASSIFIER's own composition rule
+        # (report every hit) still applies once "state" exists.
+        from _protectedstatelib import ProtectedPolicy
+        self._protectedstatelib.REGISTRY = {
+            ".codearbiter/overrides.log": ProtectedPolicy.MARKER_GATED,
+        }
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "overrides.log")
+            self.assertEqual(_hooklib.classify_protected(target, root), {"audit", "state"})
+
+    def test_default_registry_never_classifies_anything_as_state(self):
+        # A direct positive fact about PRODUCTION classify_protected: the
+        # registry is empty at this slice, so nothing in a real repo hits
+        # "state" yet - exercises the REAL default path, not only an
+        # injected synthetic one.
+        with tempfile.TemporaryDirectory() as root:
+            target = os.path.join(root, ".codearbiter", "release-targets.md")
+            self.assertNotIn("state", _hooklib.classify_protected(target, root))
+
+
 class PathGlobTest(unittest.TestCase):
     """is_migration_path / is_ci_path / is_deploy_path against default globs
     (no security-controls.md in the tmp root, so defaults only)."""

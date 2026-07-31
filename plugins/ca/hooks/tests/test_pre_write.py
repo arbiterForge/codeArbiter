@@ -13,6 +13,8 @@ ZERO direct tests (test_write.py covers the pruner engine, not this hook):
 Same subprocess style as test_pre_edit.py: Claude-Code-shaped hook JSON piped to
 pre-write.py on stdin, cwd'd into a throwaway arbiter-enabled repo. Stdlib only.
 """
+import importlib.util as _ilu
+import io
 import json
 import os
 import subprocess
@@ -23,6 +25,7 @@ import unittest
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRE_WRITE = os.path.join(HOOKS, "pre-write.py")
+sys.path.insert(0, HOOKS)
 
 
 def _sh(args, cwd, **kw):
@@ -206,6 +209,166 @@ class TestSymlinkAlias(_PreWriteFixture):
         self.assertBlocked(
             self.run_write(os.path.join(self.root, "mlink", "security-gate-passed"),
                            content="d\n"), "H-19")
+
+
+def _load_pre_write():
+    """Load pre-write.py as an IN-PROCESS module (mirrors
+    test_guard_crash_failclosed.py's `_load` pattern) rather than a
+    subprocess. T-06's H-22 branch needs a SYNTHETIC protected-state
+    registry — REGISTRY ships empty at this slice (T-33/T-65/T-66 enroll
+    consumers later) — and `_protectedstatelib.lookup_policy`/
+    `resolve_registered_path` read the module-level REGISTRY fresh on every
+    call (unlike the shell flank's precompiled `_STATE_WRITE_RES`), so
+    mutating `_protectedstatelib.REGISTRY` directly is visible to a call
+    made from THIS SAME process — a call inside a pre-write.py SUBPROCESS
+    would just re-import its own, separately-loaded, empty REGISTRY."""
+    spec = _ilu.spec_from_file_location("pre_write_h22test", PRE_WRITE)
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TestH22ProtectedState(unittest.TestCase):
+    """T-06 (#564): the generic "state" branch. marker-gated admits only
+    under a fresh authoring marker; helper-only/append-only hard-block
+    unconditionally, with NO marker path at all."""
+
+    ARBITER = "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\nfixture\n"
+
+    def setUp(self):
+        import _protectedstatelib
+        self.mod = _load_pre_write()
+        self._protectedstatelib = _protectedstatelib
+        self._orig_registry = _protectedstatelib.REGISTRY
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self._tmp.name, "repo")
+        self.ca = os.path.join(self.root, ".codearbiter")
+        self.markers = os.path.join(self.ca, ".markers")
+        os.makedirs(self.ca)
+        with open(os.path.join(self.ca, "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write(self.ARBITER)
+        self._orig_env = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = self.root
+
+    def tearDown(self):
+        self._protectedstatelib.REGISTRY = self._orig_registry
+        if self._orig_env is None:
+            os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        else:
+            os.environ["CLAUDE_PROJECT_DIR"] = self._orig_env
+        self._tmp.cleanup()
+
+    def _set_registry(self, registry):
+        self._protectedstatelib.REGISTRY = registry
+
+    def _touch_marker(self, name, age_seconds=0):
+        os.makedirs(self.markers, exist_ok=True)
+        m = os.path.join(self.markers, name)
+        with open(m, "w", encoding="utf-8") as f:
+            f.write("active\n")
+        if age_seconds:
+            past = time.time() - age_seconds
+            os.utime(m, (past, past))
+        return m
+
+    def run_write(self, file_path, content="x\n"):
+        payload = {"tool_name": "Write", "tool_input": {"file_path": file_path, "content": content}}
+        old_stdin, old_stdout, old_stderr = sys.stdin, sys.stdout, sys.stderr
+        sys.stdin = io.StringIO(json.dumps(payload))
+        sys.stdout = io.StringIO()
+        sys.stderr = io.StringIO()
+        try:
+            with self.assertRaises(SystemExit) as ctx:
+                self.mod.main()
+            return ctx.exception.code, sys.stderr.getvalue()
+        finally:
+            sys.stdin, sys.stdout, sys.stderr = old_stdin, old_stdout, old_stderr
+
+    def assertBlockedH22(self, res):
+        code, err = res
+        self.assertEqual(code, 2, err)
+        self.assertIn("H-22", err, err)
+
+    def assertAllowed(self, res):
+        code, err = res
+        self.assertEqual(code, 0, err)
+
+    def test_marker_gated_write_without_marker_is_blocked(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self.assertBlockedH22(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_marker_gated_write_with_fresh_marker_is_allowed(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self._touch_marker("release-targets-authoring")
+        self.assertAllowed(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_marker_gated_write_with_stale_marker_is_blocked(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self._touch_marker("release-targets-authoring", age_seconds=31 * 60)
+        self.assertBlockedH22(self.run_write(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_helper_only_write_is_blocked_unconditionally(self):
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        self.assertBlockedH22(self.run_write(os.path.join(self.ca, "open-tasks.md")))
+
+    def test_helper_only_write_is_blocked_even_with_a_marker_present(self):
+        # helper-only has NO marker path at all — a marker present under
+        # ANY name must not admit it.
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        self._touch_marker("open-tasks-authoring")
+        self.assertBlockedH22(self.run_write(os.path.join(self.ca, "open-tasks.md")))
+
+    def test_append_only_write_is_blocked_unconditionally(self):
+        self._set_registry({".codearbiter/done-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.APPEND_ONLY})
+        self.assertBlockedH22(self.run_write(os.path.join(self.ca, "done-tasks.md")))
+
+    def test_unregistered_path_is_unaffected(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self.assertAllowed(self.run_write(os.path.join(self.ca, "open-tasks.md")))
+
+    def test_default_empty_registry_blocks_nothing_new(self):
+        # The REAL production registry — empty at this slice.
+        self.assertAllowed(self.run_write(os.path.join(self.ca, "release-targets.md")))
+
+    @unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")
+    def test_symlinked_dir_alias_blocks_registered_state_file(self):
+        # F10 (#564 follow-up): the #162 symlink property TestSymlinkAlias
+        # (above) pins for the four legacy classes had no "state" case. A
+        # symlinked DIRECTORY whose visible path lacks .codearbiter/ but
+        # resolves into it must still hit "state" via the REALPATH leg.
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        alias = os.path.join(self.root, "alias")
+        os.symlink(self.ca, alias, target_is_directory=True)
+        self.assertBlockedH22(self.run_write(os.path.join(alias, "open-tasks.md")))
+
+    @unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")
+    def test_symlinked_protected_file_still_blocks_via_raw_spelling(self):
+        # F10/F3 (#564 follow-up): the MIRROR-IMAGE case, and the one the
+        # OLD "raw leg" (norm_path(fpath), inert for an equality-based
+        # lookup) got backwards — when the PROTECTED PATH ITSELF is a
+        # symlink, realpath resolves the only spelling a host actually
+        # sends (the absolute path) straight through it to an unregistered
+        # target. The raw (symlink-unresolved) repo-relative form is what
+        # still recognizes the registered NAME.
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        decoy = os.path.join(self.root, "decoy.md")
+        with open(decoy, "w", encoding="utf-8") as f:
+            f.write("not protected\n")
+        link = os.path.join(self.ca, "open-tasks.md")
+        os.symlink(decoy, link)
+        self.assertBlockedH22(self.run_write(link))
 
 
 class TestPreWriteAllowPaths(_PreWriteFixture):

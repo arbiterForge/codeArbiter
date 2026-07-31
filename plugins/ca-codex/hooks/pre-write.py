@@ -11,6 +11,12 @@
 #         BLOCK into an allow (#160) — never writable via the Write tool.
 #   H-05  audit logs (overrides.log, triage.log, sprint-log.md, decisions/decision-log.md) are append-only.
 #   H-11  ADRs under decisions/ are authored only via /adr.
+#   H-22  the protected-state registry (B1/#564): a marker-gated entry admits
+#         only under a fresh authoring marker; a helper-only or append-only
+#         entry is hard-blocked with NO marker path at all — one generic
+#         branch resolves the entry's policy via _protectedstatelib and
+#         applies it, so a fourth registered file needs a registry entry,
+#         never a new hook branch.
 #
 # Every protected-path decision resolves symlinks (#162): classify_protected()
 # checks the raw path AND its realpath-resolved repo-relative form, so a symlink
@@ -27,6 +33,9 @@ import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
     arbiter_active, block, classify_protected, frontmatter_enabled_text,
     get_host, marker_fresh, project_root, read_input, set_host, utf8_stdio,
+)
+from _protectedstatelib import (  # noqa: E402
+    ProtectedPolicy, marker_gated_write_admitted, resolve_registered_path,
 )
 
 
@@ -115,6 +124,29 @@ def _guard_op(root, op):
                           "attribution required. Subagent-authored ADRs are prohibited.")
         if not marker_fresh(marker, 30):
             block("H-11", "ADR authoring marker is stale (>30 min). Re-run /adr.")
+
+    # H-22: the protected-state registry (B1/#564) — ONE generic branch,
+    # regardless of `kind`. classify_protected already decided "state" is a
+    # hit; resolve_registered_path only resolves WHICH registered path
+    # matched and WHICH policy it carries — never a second, independent
+    # membership check (T-06 design ruling). marker-gated admits only under a
+    # fresh authoring marker; helper-only and append-only are
+    # flank-IDENTICAL here — both hard-block unconditionally, with NO marker
+    # path at all. The policies differ only in what the SANCTIONED HELPER's
+    # own file I/O is allowed to do, which this tool-call flank never sees by
+    # construction (its argv/content never reaches this guard).
+    if "state" in classes:
+        rel, policy = resolve_registered_path(fpath, root)
+        if policy == ProtectedPolicy.MARKER_GATED:
+            if not marker_gated_write_admitted(rel, root):
+                block("H-22", f"'{rel}' is marker-gated protected project state (#564) — a "
+                              f"Write is admitted only under a fresh authoring marker. Run "
+                              f"the sanctioned authoring lane, or "
+                              + get_host().cmd_ref("override") + ".")
+        else:
+            block("H-22", f"'{rel}' is protected project state (#564) — the Write tool may "
+                          f"never target it; there is no marker path for this policy. Use "
+                          f"the sanctioned helper.")
 
 
 def _run(root):

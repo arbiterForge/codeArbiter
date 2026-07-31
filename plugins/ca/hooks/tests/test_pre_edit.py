@@ -21,6 +21,8 @@ that the pre-* guards are designed to be tested with.
 
 Stdlib only (project policy: hooks and their tests carry no dependencies).
 """
+import importlib.util as _ilu
+import io
 import json
 import os
 import subprocess
@@ -31,6 +33,7 @@ import unittest
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRE_EDIT = os.path.join(HOOKS, "pre-edit.py")
+sys.path.insert(0, HOOKS)
 
 
 def _sh(args, cwd, **kw):
@@ -456,6 +459,160 @@ class TestNotebookEditGuard(_PreEditFixture):
         nb = os.path.join(self.root, "analysis.ipynb")
         self._write(nb, "{}")
         self.assertAllowed(self.run_notebook(nb))
+
+
+def _load_pre_edit():
+    """Load pre-edit.py as an IN-PROCESS module (mirrors
+    test_guard_crash_failclosed.py's `_load` pattern), for the SAME reason
+    test_pre_write.py's `_load_pre_write` does: T-07's H-22 branch needs a
+    SYNTHETIC protected-state registry, and `_protectedstatelib.REGISTRY` is
+    read fresh on every `lookup_policy`/`resolve_registered_path` call — a
+    mutation is only visible to a call made from THIS SAME process, never
+    to a subprocess's own, separately-loaded, empty REGISTRY."""
+    spec = _ilu.spec_from_file_location("pre_edit_h22test", PRE_EDIT)
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class TestH22ProtectedState(unittest.TestCase):
+    """T-07 (#564): the SAME generic "state" branch pre-write.py carries.
+    marker-gated admits only under a fresh authoring marker; helper-only/
+    append-only hard-block unconditionally, with NO marker path — and no
+    tail-anchored-append admission (unlike H-05's audit logs)."""
+
+    ARBITER = "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\nfixture\n"
+
+    def setUp(self):
+        import _protectedstatelib
+        self.mod = _load_pre_edit()
+        self._protectedstatelib = _protectedstatelib
+        self._orig_registry = _protectedstatelib.REGISTRY
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = os.path.join(self._tmp.name, "repo")
+        self.ca = os.path.join(self.root, ".codearbiter")
+        self.markers = os.path.join(self.ca, ".markers")
+        os.makedirs(self.ca)
+        with open(os.path.join(self.ca, "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write(self.ARBITER)
+        with open(os.path.join(self.ca, "release-targets.md"), "w", encoding="utf-8") as f:
+            f.write("| target | prefix |\n|---|---|\n| ca | v |\n")
+        with open(os.path.join(self.ca, "open-tasks.md"), "w", encoding="utf-8") as f:
+            f.write("# Open tasks\n\n- [ ] seed\n")
+        self._orig_env = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = self.root
+
+    def tearDown(self):
+        self._protectedstatelib.REGISTRY = self._orig_registry
+        if self._orig_env is None:
+            os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        else:
+            os.environ["CLAUDE_PROJECT_DIR"] = self._orig_env
+        self._tmp.cleanup()
+
+    def _set_registry(self, registry):
+        self._protectedstatelib.REGISTRY = registry
+
+    def _touch_marker(self, name, age_seconds=0):
+        os.makedirs(self.markers, exist_ok=True)
+        m = os.path.join(self.markers, name)
+        with open(m, "w", encoding="utf-8") as f:
+            f.write("active\n")
+        if age_seconds:
+            past = time.time() - age_seconds
+            os.utime(m, (past, past))
+        return m
+
+    def _run(self, payload):
+        old_stdin, old_stdout, old_stderr = sys.stdin, sys.stdout, sys.stderr
+        sys.stdin = io.StringIO(json.dumps(payload))
+        sys.stdout = io.StringIO()
+        sys.stderr = io.StringIO()
+        try:
+            with self.assertRaises(SystemExit) as ctx:
+                self.mod.main()
+            return ctx.exception.code, sys.stderr.getvalue()
+        finally:
+            sys.stdin, sys.stdout, sys.stderr = old_stdin, old_stdout, old_stderr
+
+    def run_edit(self, file_path, old_string, new_string):
+        return self._run({"tool_name": "Edit",
+                          "tool_input": {"file_path": file_path, "old_string": old_string,
+                                        "new_string": new_string}})
+
+    def assertBlockedH22(self, res):
+        code, err = res
+        self.assertEqual(code, 2, err)
+        self.assertIn("H-22", err, err)
+
+    def assertAllowed(self, res):
+        code, err = res
+        self.assertEqual(code, 0, err)
+
+    def test_marker_gated_edit_without_marker_is_blocked(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
+
+    def test_marker_gated_edit_with_fresh_marker_is_allowed(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self._touch_marker("release-targets-authoring")
+        self.assertAllowed(self.run_edit(
+            os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
+
+    def test_marker_gated_edit_with_stale_marker_is_blocked(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self._touch_marker("release-targets-authoring", age_seconds=31 * 60)
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
+
+    def test_helper_only_edit_is_blocked_unconditionally(self):
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "open-tasks.md"), old_string="seed", new_string="seed2"))
+
+    def test_helper_only_tail_anchored_append_is_STILL_blocked(self):
+        # Unlike H-05's audit logs, a helper-only registry entry gets NO
+        # append admission at this flank — the append verb lives entirely
+        # inside the sanctioned helper, never in this Edit guard.
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        current = "# Open tasks\n\n- [ ] seed\n"
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "open-tasks.md"), old_string=current,
+            new_string=current + "- [ ] more\n"))
+
+    def test_append_only_edit_is_blocked_unconditionally(self):
+        self._set_registry({".codearbiter/done-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.APPEND_ONLY})
+        with open(os.path.join(self.ca, "done-tasks.md"), "w", encoding="utf-8") as f:
+            f.write("# Done tasks\n")
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "done-tasks.md"),
+            old_string="# Done tasks\n", new_string="# Done tasks\n\n- x (done 2026-01-01)\n"))
+
+    def test_notebookedit_targeting_state_path_is_blocked(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        res = self._run({"tool_name": "NotebookEdit",
+                         "tool_input": {"notebook_path": os.path.join(self.ca, "release-targets.md"),
+                                       "new_source": "print(1)"}})
+        self.assertBlockedH22(res)
+
+    def test_unregistered_path_is_unaffected(self):
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self.assertAllowed(self.run_edit(
+            os.path.join(self.ca, "open-tasks.md"), old_string="seed", new_string="seed2"))
+
+    def test_default_empty_registry_blocks_nothing_new(self):
+        # The REAL production registry — empty at this slice.
+        self.assertAllowed(self.run_edit(
+            os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
 
 
 class TestPreEditAllowPaths(_PreEditFixture):

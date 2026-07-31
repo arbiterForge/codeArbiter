@@ -11,6 +11,10 @@
 #         be the file's REAL current trailing content, new_string must extend
 #         it, and replace_all is rejected outright (reliability-003, #172).
 #   H-11  ADRs under decisions/ are edited only via /adr.
+#   H-22  the protected-state registry (B1/#564): the SAME generic branch as
+#         pre-write.py — marker-gated admits only under a fresh authoring
+#         marker; helper-only and append-only are hard-blocked, no marker
+#         path at all.
 #
 # NotebookEdit is guarded too (a notebook has no append/frontmatter semantics, so
 # a protected target is refused outright) — defense in depth; none of the
@@ -37,6 +41,9 @@ from _hooklib import (  # noqa: E402
     arbiter_active, block, classify_protected, frontmatter_enabled_text,
     get_host, is_tail_append, marker_fresh, project_root, read_input,
     set_host, utf8_stdio,
+)
+from _protectedstatelib import (  # noqa: E402
+    ProtectedPolicy, marker_gated_write_admitted, resolve_registered_path,
 )
 
 
@@ -93,7 +100,8 @@ def _run(root):
 
     # The tag that names each protected class, in message priority order.
     _CLASS_TAG = (("marker", "H-19"), ("context", "H-18"),
-                  ("audit", "H-05"), ("decisions", "H-11"))
+                  ("audit", "H-05"), ("decisions", "H-11"),
+                  ("state", "H-22"))
 
     # H-21: an "opaque" op is a host's signal that it could not map this
     # payload to a known per-file shape at all (e.g. a FailClosedHost, or a
@@ -206,6 +214,29 @@ def _run(root):
                           "attribution required.")
         if not marker_fresh(marker, 30):
             block("H-11", "ADR authoring marker is stale (>30 min). Re-run /adr.")
+
+    # H-22: the protected-state registry (B1/#564) — the SAME generic branch
+    # pre-write.py carries (T-06/T-07 design ruling: one branch, not a
+    # per-tool special case). classify_protected already decided "state" is
+    # a hit; resolve_registered_path only resolves WHICH registered path and
+    # WHICH policy — never a second, independent membership check.
+    # marker-gated admits only under a fresh authoring marker; helper-only
+    # and append-only are flank-IDENTICAL here — both hard-block
+    # unconditionally, with NO marker path and no tail-anchored-append
+    # admission (unlike H-05's audit logs, an append-only registry entry's
+    # append verb lives in the sanctioned HELPER, not in this Edit flank).
+    if "state" in classes:
+        rel, policy = resolve_registered_path(fpath, root)
+        if policy == ProtectedPolicy.MARKER_GATED:
+            if not marker_gated_write_admitted(rel, root):
+                block("H-22", f"'{rel}' is marker-gated protected project state (#564) — an "
+                              f"Edit is admitted only under a fresh authoring marker. Run the "
+                              f"sanctioned authoring lane, or "
+                              + get_host().cmd_ref("override") + ".")
+        else:
+            block("H-22", f"'{rel}' is protected project state (#564) — the Edit tools may "
+                          f"never target it; there is no marker path for this policy. Use "
+                          f"the sanctioned helper.")
 
     sys.exit(0)
 

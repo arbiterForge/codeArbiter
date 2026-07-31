@@ -560,6 +560,110 @@ vague "if the threat model expands to untrusted agents". Any ONE reopens it:
 
 ---
 
+## Protected-state registry (H-22)
+
+`_protectedstatelib.py` (B1/#564) is a generic path->policy registry — `marker-
+gated`, `helper-only`, or `append-only` — enforced by a fifth `classify_protected`
+class (`"state"`) across all three flanks: `pre-write.py`/`pre-edit.py` (Write/
+Edit) and `_bashguardlib.py`'s H-22 check (shell). The registry itself ships
+EMPTY as of this slice; `release-targets.md`, `open-tasks.md`, and
+`done-tasks.md` are enrolled by their own later tasks (T-33/T-65/T-66). The
+residuals below are declared now, ahead of that enrolment, so they are visible
+from day one rather than discovered live.
+
+**Case and canonicalization are deliberately GLOBAL, not host-filesystem-
+dependent.** Both flanks — `_protectedstatelib.lookup_policy`'s registry
+comparison and `_bashguardlib._state_write_res`'s shell regexes — treat a
+registered path case-INSENSITIVELY and tolerate a `./` prefix, a trailing
+slash, a doubled slash, and a leading/trailing space. Matching the *host*
+filesystem's own case-sensitivity was considered and rejected: it varies by
+platform AND by volume on the same platform (Windows/NTFS and default macOS/
+APFS are case-preserving-but-insensitive; Linux ext4 and non-default macOS
+volumes are case-sensitive), and `os.path.realpath` does not reliably fold
+case for a path that does not yet exist on disk — exactly the case of a Write
+that creates a protected-state file for the first time. A fixed,
+case-insensitive rule that both flanks can apply without inspecting the
+filesystem was judged safer: it only WIDENS what H-22 protects (a same-
+directory file whose name differs from a registered path only by case is also
+treated as protected), never narrows it.
+
+**The bare-basename shell anchor over-matches by design, and the known false
+blocks are accepted.** H-22's shell flank matches a registered file's bare
+basename with NO directory prefix requirement (unlike `CONTEXT_MD`/`GATE_MARKER`)
+— this is forced by spec B1 (`taskwrite add -- "fix open-tasks.md schema"` and a
+bare `tee open-tasks.md` run from inside `.codearbiter/` both need to be
+distinguishable/catchable with no directory prefix in the command text). The
+cost, verified and accepted (the sanctioned bypass for a false block is
+`/ca:override`):
+
+- a longer filename that happens to END with a registered basename still
+  matches — `> my-open-tasks.md` blocks even though it targets a different
+  file. A right-edge lookahead (mirroring `DECISION_LOG_SHELL_RE`, #528) closes
+  the mirror-image case (`rm .codearbiter/open-tasks.md.bak` no longer
+  matches), but there is no equivalent left-edge anchor: the bare-basename
+  design has no directory context available to distinguish a genuine
+  no-prefix spelling from a longer name's suffix;
+- a same-named file in an UNRELATED directory still matches —
+  `rm node_modules/somepkg/open-tasks.md`, `tee tests/fixtures/open-tasks.md`
+  — the direct, load-bearing consequence of the bare-basename anchor itself
+  (see `_bashguardlib.py`'s `_state_write_res` module comment for the full
+  B-07/B-08/T-08b rationale this over-match is forced by);
+- a verb that only READS the protected file, then writes elsewhere, still
+  matches — `cp .codearbiter/open-tasks.md /tmp/backup` — the same
+  "ambiguity resolves CLOSED" stance the H-05 audit-log guard already applies
+  to the identical `cp overrides.log backup` shape.
+
+**H-22's write-verb list is wider than the H-05/H-11/H-18 baseline it was
+copied from, and the extra verbs are declared, not merely implicit.** Past the
+shared baseline (`rm|del|mv|cp|copy|dd|tee|sed|truncate|ni|New-Item|
+Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content|Out-File|
+Add-Content`), H-22 additionally blocks `sponge` (already in H-05's
+`LOG_DESTROY_RE`), `ln`, `install`, `patch`, and `shred`. `ln`/`install` are
+both real, if less common, English/shell words — `npm install` and `pip
+install` are common phrases that could, in principle, sit lexically near a
+protected basename in an unrelated command — accepted under the same
+"ambiguity resolves CLOSED" stance applied throughout this file. `git
+checkout`/`git restore` (a tracked worktree file can be rewritten through git
+itself, bypassing every filesystem verb) are covered by a SEPARATE regex leg,
+mirroring H-05's `LOG_GIT_RESTORE_RE` (#335) — deliberately not folded into
+the general verb list, so it cannot also catch `git add` (commit-gate Phase 7
+runs `git add open-tasks.md` on every retained board flip, and must never trip
+H-22). An arbitrary interpreter one-liner
+(`python -c "open('open-tasks.md','w')..."`) is covered by a third leg
+mirroring `GATE_MARKER_INTERP_RE` (#237) — the `helper-only` policy's whole
+premise is that the sanctioned helper's own Python file I/O is the only
+legitimate route, so an interpreter one-liner reusing that exact route while
+naming the file lexically must be caught the same way #237 already catches it
+for gate markers.
+
+**`touch` is deliberately excluded — two positions are recorded, not one.**
+security-reviewer traced every `.codearbiter`-state mtime consumer and found
+none feeds an admission decision: `marker_gated_write_admitted` stats the
+*marker's* mtime, never the protected file's, so even `touch -t` back-dating a
+protected file admits nothing on its own. The adversarial pass counters that
+for the `helper-only` policy specifically, *creation itself* is the violation
+H-11's own precedent guards against — `touch`ing an absent board would create
+an empty one outside the sanctioned helper, and `DECISIONS_WRITE_RE` (H-11's
+own shell flank) does include `touch` for exactly that reason. The exclusion
+stands: the admission-analysis argument is decisive for what this specific
+guard can observe, and including `touch` would false-block a legitimate
+description like `taskwrite add -- "touch up open-tasks.md wording"`. Both
+positions are recorded here so a future reader sees a considered decision, not
+an oversight.
+
+**Scanning the raw `cmd` (not the heredoc-stripped `git_view`) is a known,
+consistent residual (LOW-5).** H-22's shell check, like H-05/H-11/H-18, scans
+the RAW command rather than plumbing through the `git_view`/
+`heredoc_shell_fallback` machinery H-19's gate-marker check uses. A heredoc
+body fed to a non-shell consumer that merely QUOTES a protected filename in
+prose (e.g. a PR/issue body describing this very control) could, in principle,
+false-trip H-22 the same way it could H-05/H-11/H-18 before H-19 grew that
+extra plumbing for its own DOTALL-crossing concern. Left as-is for
+consistency with the three guards it was modeled on; revisited only if it
+proves to cost more false blocks in practice than the extra plumbing is worth.
+
+---
+
 ## Published tag immutability
 
 Four installable tag series are published from this repository: `v*` (ca),

@@ -42,3 +42,33 @@ def repo_rel(fpath, root):
     rel = os.path.relpath(os.path.realpath(fpath), os.path.realpath(root))
     rel = rel.replace(os.sep, "/")
     return "" if rel == ".." or rel.startswith("../") else rel
+
+
+def raw_repo_rel(fpath, root):
+    """`repo_rel`'s realpath-FREE twin: the repo-relative POSIX path for
+    `fpath` computed by pure lexical arithmetic against `root`, resolving
+    NEITHER side's symlinks — the raw spelling a host actually sent, or ""
+    when it cannot be expressed relative to `root` at all (outside root, or
+    on Windows a different drive).
+
+    Exists for the classifiers that need BOTH the realpath-resolved form
+    AND the unresolved one to reproduce the #162 symlink-safety property
+    (`classify_protected` already tries a raw and a realpath'd form for
+    every legacy class, via regex `.search()` on the raw normalized string —
+    a shape that happens to also cover "the protected path itself is a
+    symlink" for those classes, because the pattern matches the raw text
+    regardless of what it resolves to). The equality-based `state` class
+    (`_protectedstatelib.lookup_policy`) has no equivalent for-free coverage
+    from a bare `norm_path(fpath)` — that string is very often absolute,
+    never equal to a repo-relative registry key — so a caller needing the
+    same raw-spelling coverage for an EQUALITY-based lookup should resolve
+    `fpath` against `root` here first, exactly like `repo_rel` does, just
+    without the `os.path.realpath()` call (T-06/F3, #564 follow-up)."""
+    if not fpath:
+        return ""
+    try:
+        rel = os.path.relpath(os.path.normpath(fpath), os.path.normpath(root))
+    except ValueError:
+        return ""  # Windows: fpath and root on different drives
+    rel = rel.replace(os.sep, "/")
+    return "" if rel == ".." or rel.startswith("../") else rel
