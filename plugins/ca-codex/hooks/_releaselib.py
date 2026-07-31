@@ -882,11 +882,34 @@ def detect_candidate_target(manifest_candidates, changelog_candidates,
     (`scan_backfill_candidates` is the one filesystem reader, kept separate
     per this module's read-isolation convention). Returns a row dict shaped
     like one `load_targets` entry (`target`, `prefix`, `manifest`,
-    `changelog`, `payload`) ONLY when exactly one manifest candidate and
-    exactly one changelog candidate were found. Raises
+    `changelog`, `payload`, `latest_eligible`) ONLY when exactly one manifest
+    candidate and exactly one changelog candidate were found. Raises
     `BackfillAmbiguousError` for every other case — zero or multiple of
     either — naming which side was ambiguous and what was found, so a caller
-    surfacing the error has something concrete to show the user."""
+    surfacing the error has something concrete to show the user.
+
+    HIGH-2 (adversarial review 2026-07-31): the returned row declares
+    `latest_eligible: True`. This detector can only ever propose ONE row —
+    it fires on a SINGLE candidate manifest and a SINGLE candidate
+    changelog, which is what "back-fill a consumer with no declared file
+    yet" means by construction — so the project it is proposing a row for
+    is, at the moment of detection, a single-target project. The release
+    skill's hard rule ("at most one declared target may set
+    `latest-eligible: true`, and every other target's Phase-3 publish MUST
+    pass `--latest=false` EXPLICITLY") was written to stop one of several
+    SIBLING series stealing the "Latest" badge from another in a
+    multi-target repository; applied unconditionally to a single-target
+    project's own first-ever release, the same rule demoted the one release
+    that exists out of the position every visitor sees, with nothing in the
+    lane prompting the operator to notice or correct it. Declaring the key
+    explicitly here — rather than leaving the rule to somehow infer
+    "solo project" from a file that names only one target — is also the
+    more honest choice for a project that later adds a SECOND target: the
+    Back-fill lane's own "Present, and require explicit confirmation"
+    step already shows this exact printed block to the operator verbatim
+    before anything is written, so `latest-eligible: true` is a line they
+    read and can strike, not a behavior that silently changes the day a
+    second row is declared by hand."""
     # Plain ASCII throughout this message, deliberately: unlike every
     # DOCSTRING/comment in this module, this text is actually written to a
     # CLI's stdout/stderr and captured by a real subprocess call. A child
@@ -911,6 +934,7 @@ def detect_candidate_target(manifest_candidates, changelog_candidates,
         "manifest": [manifest_candidates[0]],
         "changelog": changelog_candidates[0],
         "payload": ".",
+        "latest_eligible": True,
     }
 
 
@@ -921,13 +945,22 @@ def format_release_targets_block(row):
     Round-trips through `parse_release_targets` — this is the one function
     that turns a detected/confirmed candidate into the exact text the
     back-fill lane persists, so a caller never hand-assembles the delimiter
-    grammar itself."""
+    grammar itself.
+
+    Emits a `latest-eligible` line when `row` declares one (HIGH-2,
+    adversarial review 2026-07-31) — `detect_candidate_target` always does,
+    since it can only ever propose a single-target row — rendered as the
+    grammar's own `true`/`false` literal, never a bare Python truthiness
+    string, so the round-trip through `parse_release_targets` parses it back
+    as the same boolean rather than an `InvalidBooleanError`."""
     lines = ["<!-- release-targets -->", f"[{row['target']}]",
               f"prefix: {row['prefix']}"]
     for manifest in row.get("manifest", []):
         lines.append(f"manifest: {manifest}")
     lines.append(f"changelog: {row['changelog']}")
     lines.append(f"payload: {row['payload']}")
+    if "latest_eligible" in row:
+        lines.append(f"latest-eligible: {'true' if row['latest_eligible'] else 'false'}")
     lines.append("<!-- /release-targets -->")
     return "\n".join(lines) + "\n"
 
@@ -948,7 +981,9 @@ def format_release_targets_block(row):
 # skill's vocabulary). This CLI supports only the subcommands a release
 # skill actually needs to shell out to: resolving a target's declared
 # prefix, selecting the last tag in a series, checking a notes file's
-# heading, and classifying a (re)publish attempt.
+# heading, classifying a (re)publish attempt, and peeling a tag to the
+# commit it names (`peel-tag`, HIGH-1, adversarial review 2026-07-31 — added
+# here because the CI shim already had it and a consumer had no equivalent).
 # --------------------------------------------------------------------------- #
 
 
@@ -1036,6 +1071,21 @@ def main(argv):
                <manifest_version> <release_nondraft>
                                   prints the publish-state label
                                   (bools: true/false).
+      peel-tag <tag>             stdin = `<sha> <ref>` lines in either
+                                  `git ls-remote --tags` or `git show-ref
+                                  --tags -d` format -> prints the COMMIT
+                                  `tag` names (peeled through its `^{}`
+                                  line when annotated), or "" when `tag`
+                                  is absent from stdin (HIGH-1, adversarial
+                                  review 2026-07-31). This is the one
+                                  sanctioned way to produce `<tag_sha>` for
+                                  `classify` below: a bare `git rev-parse
+                                  <tag>` returns an ANNOTATED tag's own
+                                  object id, not the commit it points at,
+                                  which would feed `classify` a value that
+                                  can never equal `<head_sha>` and
+                                  misclassify a healthy tag as
+                                  `abort_mismatch`.
       backfill-detect [root]     scans `root` (default: `default_backfill_
                                   root()`, i.e. `CLAUDE_PROJECT_DIR` then
                                   cwd) for exactly one candidate manifest and
@@ -1057,7 +1107,7 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
-            "notes-match|classify|backfill-detect} ...\n")
+            "notes-match|classify|peel-tag|backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1140,6 +1190,20 @@ def main(argv):
             tag_exists=as_bool(rest[0]), tag_sha=rest[1], head_sha=rest[2],
             tag_version=rest[3], manifest_version=rest[4],
             release_is_nondraft=as_bool(rest[5])))
+        return 0
+
+    if cmd == "peel-tag" and len(rest) == 1:
+        # HIGH-1 (adversarial review 2026-07-31): this subcommand did not
+        # exist in this module's own CLI before this fix, even though
+        # `peel_tag` was already public API and `.github/scripts/
+        # _releaselib.py` (this repo's OWN, non-portable CI shim) already
+        # exposed it. A consumer shelling out to the VENDORED copy of THIS
+        # file had no sanctioned way to peel an annotated tag to its commit
+        # at all, which left `git rev-parse <tag>` as the only thing a
+        # reader would reach for -- exactly the value that misclassifies a
+        # healthy tag (see the docstring above and the release skill's
+        # Phase 2 step 1).
+        print(peel_tag(sys.stdin.read(), rest[0]))
         return 0
 
     if cmd == "backfill-detect" and len(rest) <= 1:

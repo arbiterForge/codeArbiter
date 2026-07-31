@@ -2351,6 +2351,108 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(out.getvalue().strip(), "publish_fresh")
 
+    # HIGH-1 (adversarial review 2026-07-31): before this fix, this module's
+    # own CLI had NO `peel-tag` subcommand at all -- `.github/scripts/
+    # _releaselib.py` (the CI-only shim) had one, but the CONSUMER-facing
+    # copy (this file, vendored byte-identically into every plugin's
+    # `hooks/`) did not. A caller shelling out to the vendored copy had no
+    # sanctioned way to turn an annotated tag into the commit it names, and
+    # would reach for a bare `git rev-parse <tag>` instead -- which returns
+    # the tag OBJECT, not the commit, and silently misclassifies a healthy
+    # tag as `abort_mismatch`.
+    TAG_OBJ = "1" * 40
+    COMMIT = "2" * 40
+
+    def test_peel_tag_dispatches_and_peels_an_annotated_tag(self):
+        import io, contextlib
+        # Real `git show-ref --tags -d` / `git ls-remote --tags` shape: the
+        # tag's own object id on one line, the peeled `^{}` commit on the
+        # next -- verified against a real repo (v2.8.13) before this test
+        # was written, not merely asserted from the docstring.
+        stdin_text = (f"{self.TAG_OBJ} refs/tags/v2.6.0\n"
+                      f"{self.COMMIT} refs/tags/v2.6.0^{{}}\n")
+        out = io.StringIO()
+        stdin = sys.stdin
+        sys.stdin = io.StringIO(stdin_text)
+        try:
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(["peel-tag", "v2.6.0"])
+        finally:
+            sys.stdin = stdin
+        self.assertEqual(rc, 0)
+        # This is the exact assertion a mutant that reverted `peel_tag`'s
+        # `peeled or direct` ordering (printing the RAW tag-object id
+        # instead of the peeled commit) would fail: it pins the PEELED
+        # value, not merely "some tag-shaped output was printed".
+        self.assertEqual(out.getvalue().strip(), self.COMMIT)
+        self.assertNotEqual(out.getvalue().strip(), self.TAG_OBJ)
+
+    def test_peel_tag_prints_empty_for_an_absent_tag(self):
+        import io, contextlib
+        out = io.StringIO()
+        stdin = sys.stdin
+        sys.stdin = io.StringIO("")
+        try:
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(["peel-tag", "v9.9.9"])
+        finally:
+            sys.stdin = stdin
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.getvalue().strip(), "")
+
+    def test_a_naive_rev_parse_value_misclassifies_a_healthy_tag_but_the_peeled_value_does_not(self):
+        # This is the finding itself, pinned as one test with the contrast
+        # as the evidence (HIGH-1): the SAME healthy annotated tag, at the
+        # SAME HEAD commit, fed to `classify` two different ways.
+        #
+        #   - the value a bare `git rev-parse <tag>` would produce (the tag
+        #     OBJECT id) -> `abort_mismatch`, a hard STOP on a release that
+        #     is actually fine;
+        #   - the value `peel-tag` produces (the commit the tag names) ->
+        #     `resume_publish` (or `publish_fresh`/`already_published`
+        #     depending on release state), never a mismatch.
+        #
+        # `classify_publish_state` itself is not the defect -- feeding it
+        # the tag object IS a mismatch by its own contract. The defect is
+        # procedural: which value a caller derives. This test proves the
+        # skill's newly-documented derivation (peel-tag) resolves to the
+        # non-aborting answer for a tag that is genuinely healthy, where
+        # the naive derivation would not.
+        head_sha = self.COMMIT
+        manifest_version = tag_version = "2.6.0"
+
+        # The naive value: an annotated tag's own object id.
+        naive_tag_sha = self.TAG_OBJ
+        self.assertEqual(
+            core_releaselib.classify_publish_state(
+                tag_exists=True, tag_sha=naive_tag_sha, head_sha=head_sha,
+                tag_version=tag_version, manifest_version=manifest_version,
+                release_is_nondraft=False),
+            "abort_mismatch")
+
+        # The correct value: peel-tag's output for the SAME tag/HEAD.
+        stdin_text = (f"{self.TAG_OBJ} refs/tags/v2.6.0\n"
+                      f"{head_sha} refs/tags/v2.6.0^{{}}\n")
+        import io, contextlib
+        out = io.StringIO()
+        stdin = sys.stdin
+        sys.stdin = io.StringIO(stdin_text)
+        try:
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(["peel-tag", "v2.6.0"])
+        finally:
+            sys.stdin = stdin
+        self.assertEqual(rc, 0)
+        peeled_tag_sha = out.getvalue().strip()
+        self.assertEqual(peeled_tag_sha, head_sha)
+
+        self.assertEqual(
+            core_releaselib.classify_publish_state(
+                tag_exists=True, tag_sha=peeled_tag_sha, head_sha=head_sha,
+                tag_version=tag_version, manifest_version=manifest_version,
+                release_is_nondraft=False),
+            "resume_publish")
+
     def test_consumer_shaped_subprocess_invocation_exits_zero(self):
         # The literal verification named in the plan: the mechanism's CLI
         # runs as a standalone script (no sibling `core/pysrc/` import
@@ -2700,6 +2802,27 @@ _GOVERNANCE_RULES = {
     "MEDIUM: a footer on a non-bumping commit is harvested, not dropped": (
         "Also harvest a `CHANGELOG:` footer from any", "test`/`docs`/`chore`/`ci` commit"),
     "MEDIUM: list-targets exists": ("sanctioned enumeration", "list-targets"),
+    # Re-run of the agent-judgment exercise (2026-07-31): two more HIGH
+    # findings and the six MEDIUMs it raised. Distinct key names from the
+    # PRIOR round's HIGH-1..4 above -- same date, a different pass, and a
+    # different set of findings; these must not collide with (or silently
+    # replace) the earlier dict entries.
+    "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse": (
+        "git rev-parse ${TAG_PREFIX}MAJOR.MINOR.PATCH", "peel-tag"),
+    "HIGH-2 (re-run): back-fill declares latest-eligible for its one target": (
+        "latest-eligible: true`", "single-target"),
+    "MEDIUM (re-run): omitted single target resolves via list-targets, not assumption": (
+        "mechanically, never by assumption", "list-targets"),
+    "MEDIUM (re-run): manifest bump is stated once (step 6), not twice": (
+        "one action described two ways",),
+    "MEDIUM (re-run): last_tag_select's ancestry-blind residual is documented": (
+        "abandoned permanently", "no ancestry awareness"),
+    "MEDIUM (re-run): NEEDS-TRIAGE has a defined shape, destination, and plural form": (
+        "EVERY offending commit", "own `[NEEDS-TRIAGE]` line"),
+    "MEDIUM (re-run): the footer BLOCK states its own remedy": (
+        "remedy is the operator's to choose",),
+    "MEDIUM (re-run): the Phase-1 section file's home is outside the tree": (
+        "OUTSIDE the working tree", "mktemp"),
 }
 
 
@@ -2819,7 +2942,21 @@ class BackfillDetectionTest(unittest.TestCase):
             "target": "app", "prefix": "v",
             "manifest": ["package.json"], "changelog": "CHANGELOG.md",
             "payload": ".",
+            "latest_eligible": True,
         })
+
+    def test_the_proposed_row_is_latest_eligible(self):
+        # HIGH-2 (adversarial review 2026-07-31): a back-filled project is,
+        # by construction, single-target -- the detector fires on exactly
+        # one candidate manifest and one candidate changelog -- so its one
+        # release must not be silently demoted out of the "Latest" position
+        # by the sibling-series rule the hard rule exists to police. Pinned
+        # with `assertIs` against the boolean, not a substring on the
+        # printed text, so a mutant that emits the STRING "True"/"true"
+        # without the actual Python bool is still caught.
+        row = core_releaselib.detect_candidate_target(
+            ["package.json"], ["CHANGELOG.md"])
+        self.assertIs(row["latest_eligible"], True)
 
     def test_zero_manifests_is_ambiguous(self):
         with self.assertRaises(core_releaselib.BackfillAmbiguousError):
@@ -2889,6 +3026,24 @@ class BackfillDetectionTest(unittest.TestCase):
         self.assertEqual(rows[0]["manifest"], ["package.json"])
         self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
         self.assertEqual(rows[0]["payload"], ".")
+        # HIGH-2 (adversarial review 2026-07-31): the emitted
+        # `latest-eligible: true` line must round-trip back through the
+        # REAL grammar parser as the boolean `True`, not merely appear as a
+        # substring of the printed text -- `assertIs` against the parsed
+        # value is what would catch a mutant emitting an unparseable or
+        # wrong-case literal (`InvalidBooleanError`) or the wrong boolean.
+        self.assertIs(rows[0]["latest_eligible"], True)
+
+    def test_format_omits_the_key_entirely_when_the_row_declares_none(self):
+        # A caller supplying a row shaped like the module docstring's
+        # minimum ("at least target/prefix/changelog/payload/manifest")
+        # with no `latest_eligible` key at all must not have one invented --
+        # `format_release_targets_block` is a generic renderer, not only
+        # `detect_candidate_target`'s own private serializer.
+        row = {"target": "app", "prefix": "v", "manifest": ["package.json"],
+               "changelog": "CHANGELOG.md", "payload": "."}
+        text = core_releaselib.format_release_targets_block(row)
+        self.assertNotIn("latest-eligible", text)
 
     def test_a_second_load_reads_the_persisted_row_without_detecting_again(self):
         # T-50: "a second run reads it rather than re-detecting" -- proven
@@ -2930,6 +3085,11 @@ class BackfillCLITest(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["manifest"], ["package.json"])
             self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+            # HIGH-2 (adversarial review 2026-07-31): the full CLI path
+            # (`backfill-detect` -> printed text -> real parser) must also
+            # carry the eligibility declaration, not just the pure-function
+            # call tested above.
+            self.assertIs(rows[0]["latest_eligible"], True)
 
     def test_backfill_detect_writes_nothing_to_disk_even_on_success(self):
         # T-49: detection alone is the mechanical half of "does not proceed
