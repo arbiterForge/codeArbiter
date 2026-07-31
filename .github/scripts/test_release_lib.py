@@ -2462,6 +2462,44 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    def test_run_pre_tag_catches_a_mutation_of_an_ALREADY_MODIFIED_file(self):
+        # HIGH, run 10. The assertion was a set difference over porcelain
+        # LINES, so a command mutating a file that was already ` M`
+        # produced a byte-identical line and fell out of the difference --
+        # exit 0, content changed. The blind spot covered exactly
+        # $CHANGELOG and $MANIFEST: the two files Phase 1 touches
+        # immediately before this step, and the two that actually ship
+        # (one into the tag message and the Release notes, the other as
+        # the version the tag claims).
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [], dirty=True)
+            injector = os.path.join(root, "inject.py")
+            with open(injector, "w") as fh:
+                fh.write("f=open('CHANGELOG.md','a')\n"
+                         "f.write('INJECTED'+chr(10))\nf.close()\n")
+            targets = os.path.join(root, ".codearbiter", "release-targets.md")
+            with open(targets, encoding="utf-8") as fh:
+                text = fh.read()
+            with open(targets, "w", encoding="utf-8", newline="") as fh:
+                fh.write(text.replace("<!-- /release-targets -->",
+                                      "pre-tag: python inject.py\n<!-- /release-targets -->"))
+            changelog = os.path.join(root, "CHANGELOG.md")
+            with open(changelog, "rb") as fh:
+                before = fh.read()
+            proc = self._run_pre_tag(root)
+            with open(changelog, "rb") as fh:
+                after = fh.read()
+            self.assertNotEqual(
+                before, after,
+                "the fixture must actually mutate the file, or this test "
+                "cannot distinguish a working guard from a broken one")
+            self.assertEqual(
+                proc.returncode, 6,
+                "a command that appends to the already-modified CHANGELOG "
+                "must be caught; a porcelain-line comparison cannot see it "
+                f"(stdout={proc.stdout} stderr={proc.stderr})")
+            self.assertIn("CHANGELOG.md", proc.stderr)
+
     def test_run_pre_tag_runs_commands_in_the_project_root(self):
         # MEDIUM, run 9: commands used to run in the inherited cwd while
         # the declaration came from CLAUDE_PROJECT_DIR, so a check could
@@ -3074,8 +3112,13 @@ _GOVERNANCE_RULES = {
         "re-read from the file NOW", "never the value Pre-flight read"),
     "HIGH (run 4): release_nondraft inverts gh's isDraft": (
         "with its answer inverted", "--jq '.isDraft'"),
+    # Re-anchored on the INVOCATION, not the bare subcommand name: run 10's
+    # step-7 fix added a second mention of `dates-match` in prose (naming
+    # why it cannot see an uncommitted tree), so the bare token stopped
+    # being able to detect deletion of the command itself. The ratchet
+    # caught this rather than letting it rot.
     "MEDIUM (run 4): the required date check has a runnable command": (
-        "dates-match",),
+        "_releaselib.py dates-match <Phase-1 section file> <message-file>",),
     # Run 5 (2026-07-31).
     "HIGH (run 5): the <none> sentinel is derived into a range, never substituted": (
         "is a sentinel, not a revision", "WINDOW=HEAD"),
@@ -3098,6 +3141,11 @@ _GOVERNANCE_RULES = {
         "a half-finished bump",),
     "LOW (run 6): the show-ref exit-status rationale is corrected, not repeated": (
         "the reason given for it was wrong",),
+    # Run 10 (2026-07-31).
+    "HIGH (run 10): the release edits are committed before tagging": (
+        "this is not conditional", "names a COMMIT, not the working tree"),
+    "HIGH (run 10): the Phase-1 gate requires a clean tree on exit": (
+        "the release edits are COMMITTED",),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the

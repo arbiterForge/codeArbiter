@@ -93,6 +93,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 import subprocess
@@ -1280,12 +1281,48 @@ def main(argv):
         project_root = os.path.dirname(os.path.dirname(default_targets_path())) or "."
 
         def _tree_state():
+            """(paths -> content digest, failure). Content, not just the
+            porcelain LINE (HIGH, adversarial review run 10).
+
+            A porcelain-line set alone cannot see a command that mutates a
+            file which was ALREADY modified: the line is byte-identical
+            (` M CHANGELOG.md` before and after), so the change falls out
+            of the set difference and the command exits 0. That blind spot
+            covered exactly `$CHANGELOG` and `$MANIFEST` -- the two files
+            Phase 1 touches immediately before this step, and the two an
+            injected line would actually damage, since both ship: one into
+            the tag message and the Release notes, the other as the
+            version the tag claims. Demonstrated with a changed sha256 and
+            an `INJECTED` line surviving to exit 0.
+
+            Digesting every path git reports as changed closes it. Paths
+            git lists but that do not exist (a deletion, or a rename's old
+            side) get a sentinel rather than being skipped, so a delete is
+            a state change like any other.
+            """
             probe = subprocess.run(
                 ["git", "status", "--porcelain"],
                 capture_output=True, text=True, cwd=project_root)
             if probe.returncode != 0:
                 return None, (probe.stderr.strip() or "git status failed")
-            return set(probe.stdout.splitlines()), None
+            state = {}
+            for line in probe.stdout.splitlines():
+                # Porcelain v1: XY then a space then the path. A rename
+                # carries `old -> new`; take the destination, which is the
+                # path that exists on disk.
+                rel = line[3:].strip().strip('"')
+                if " -> " in rel:
+                    rel = rel.split(" -> ", 1)[1].strip().strip('"')
+                if not rel:
+                    continue
+                absolute = os.path.join(project_root, *rel.split("/"))
+                try:
+                    with open(absolute, "rb") as fh:
+                        digest = hashlib.sha256(fh.read()).hexdigest()
+                except OSError:
+                    digest = "<absent-or-unreadable>"
+                state[rel] = digest
+            return state, None
 
         # The assertion is "this command changed NOTHING NEW", not "the
         # tree is pristine" (HIGH, run 9). The first form is what this
@@ -1333,7 +1370,9 @@ def main(argv):
             if failure is not None:
                 sys.stderr.write(f"run-pre-tag: cannot read the tree state: {failure}\n")
                 return 6
-            introduced = sorted(current - baseline)
+            introduced = sorted(
+                rel for rel, digest in current.items()
+                if baseline.get(rel) != digest)
             if introduced:
                 sys.stderr.write(
                     f"run-pre-tag: BLOCK -- {command!r} exited 0 but MUTATED "
