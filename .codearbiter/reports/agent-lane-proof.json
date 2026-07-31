@@ -209,20 +209,25 @@
   ],
   "mutation_testing_note": "Every mechanism-level assertion (HIGH-1's exception hierarchy and CLI exit codes, MEDIUM's list-targets) was verified by an actual revert-run-restore cycle: PYTHONDONTWRITEBYTECODE=1, python -B, targeted -k selection, confirmed red for the stated reason, reverted, confirmed green. Every prose-only fix (HIGH-1's belt-and-braces rule, HIGH-2, HIGH-3, HIGH-4, and all three of the MEDIUM changelog-harvest _GOVERNANCE_RULES entries) was ALSO verified by a real, live mutant against core/surface/skills/release/SKILL.md itself: the load-bearing phrase was deleted, GovernanceSurvivalTest was re-run, the failure was confirmed to name exactly that one rule and no other, and the file was restored (git diff / build-surface --check confirmed byte-identical to the pre-mutant state afterward). Token uniqueness (grep-count == 1 across the real file for each rule's anchor phrase) was checked before trusting any of these mutants -- an earlier draft used tokens that occurred in two separate sentences and would have survived deleting either one alone; those were replaced with phrases unique to the single sentence each rule protects. This closes the gap a purely synthetic-fixture proof (GovernanceRuleCheckerTest.test_deleting_one_rules_tokens_is_detected_and_only_that_one, which proves the CHECKER discriminates in the abstract, not that a given rule's tokens are unique in the REAL file) would have left open. What remains genuinely irreducible, and is NOT closed by any test in this campaign, is whether an agent reading the restored prose actually behaves as it prescribes -- that is the AC-6.6 'agent judgment' layer, and re-running the real agent-judgment exercise against the post-remediation skill is what actually re-validates it.",
   "verification": {
+    "as_of": "run 8 / commit 5192ef7 (2026-07-31)",
+    "note": "Refreshed at record time. An earlier draft of this file carried run-1-era counts (256 unit tests, 60 consumer-smoke, three pre-tag commands) alongside a CURRENT proof hash, which invites the inference that the whole record was re-verified when only the hash had been. Counts and hash are now from the same commit.",
     "suites_green": [
-      ".github/scripts/test_consumer_smoke.py (60 tests, 1 skipped)",
-      ".github/scripts/test_release_lib.py (256 tests)",
+      ".github/scripts/test_release_lib.py (272 tests)",
+      ".github/scripts/test_consumer_smoke.py (69 tests, 1 skipped)",
       ".github/scripts/test_release_trace.py (28 tests)",
       ".github/scripts/test_release_workflow.py (60 tests)",
-      ".github/scripts/test_ci_impact.py (54 tests)"
+      ".github/scripts/test_ci_impact.py (54 tests)",
+      ".github/scripts/test_check_skill_proof_fresh.py (20 tests)"
     ],
     "build_surface_check": "OK (claude, codex, pi in sync)",
     "sync_core_check": "OK (55 core file(s) x 3 plugin(s), all byte-identical)",
     "pre_tag_commands": {
       "python3 .github/scripts/check_badge_consistency.py": 0,
       "python3 .github/scripts/check_command_catalog.py": 0,
+      "python3 .github/scripts/check_skill_proof_fresh.py": 0,
       "python3 tools/build-host-packages.py --check": 0
-    }
+    },
+    "pre_tag_note": "All four DECLARED rows executed through load_targets() and run for real, not assumed from the file's text. check_skill_proof_fresh.py is the newly wired one."
   },
   "not_remediated_here": [
     "Run 8's MEDIUM/LOW findings are FILED, not fixed (issue #570). Fixing any of them edits the skill, invalidates this hash, and fails the pre-tag gate until a fresh exercise runs -- which is the mechanism working, not an obstacle to route around.",
