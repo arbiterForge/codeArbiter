@@ -1164,3 +1164,28 @@ Five of six lenses favored check-only. Maintainable and Testable: one rule with 
 `.codearbiter/release-targets.md` rows carry a `pre-tag` list with no assert-clean flag. The release skill runs each command, asserts exit 0, then asserts a clean tree, and BLOCKs on either failure. This repo's badge and count reconciliation must be expressed as check scripts — `check_badge_consistency.py` already has that shape; the catalog and README-table assertions need equivalent non-mutating checks written. `build-host-packages.py` is not a pre-tag command; a companion check asserts the generated root manifest matches the plugin manifest and fails when it lags. Costs this repo one extra loop per release when a generated artifact is stale. Tracked under issue #563, spec `specs/release-portable-fixture.md`.
 
 ---
+
+## DECISION-0035 — adr-0024-ratification — Protected-state registry ratified as a declared executable-input boundary
+
+**Date:** 2026-07-31
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** security-architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `.codearbiter/release-targets.md` carries per-row `pre-tag` shell commands that `/ca:release` executes, making it executable input, with no recorded trust model.
+- **Scaffold position:** ADR-0002 already governs this class for `plan.json` — operator-authored, PR-reviewed, length-capped, boundary declared rather than allowlisted — but three material differences separate the new case from it.
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0024 is accepted. The protected-state registry is a declared executable-input boundary protected by write-gating rather than content inspection: marker-gated writes, a 1024-character cap per `pre-tag` entry, check-only commands under an unconditional clean-tree assertion, and a content hash forcing re-confirmation when a command changes. No content predicate ever grants admission. The authoring marker is explicitly audit friction rather than authorization, self-mintable by design under ADR-0010, and `GATE_MARKER_NAMES` is not widened to cover it. Case handling is global rather than host-derived.
+
+### SMARTS rationale
+Securable drove it, and the decisive reasoning is that the alternatives fail in the same shape: a content predicate admitting a write based on what the file contains converts content into an authorization signal, launderable by anyone who can write the content — the same defect that sank the file-absent exemption and the conflict-marker carve-out considered earlier in this campaign. Maintainable and Scalable favored one registry over per-file hook branches, and the maintainer's standing steer to weight `Scalable` heavily for deterministic enforcement over prose reinforced it. Reliable favored global case handling once it was established that `realpath` cannot fold case for a file that does not yet exist, which is precisely a Write creating a protected file for the first time — a host-derived rule would have been silently wrong exactly at creation.
+
+### Implementation implication
+`core/pysrc/_protectedstatelib.py`, `_protectedlib.py` and `_bashguardlib.py` carry the enforcement, already landed at 56387ee. The ADR's `governs:` field enrolls those three plus `.codearbiter/release-targets.md`, so the post-write hook surfaces the decision at edit time rather than at a checkpoint sweep. Four residuals are declared in both the ADR and `security-controls.md`, and three reopen conditions are recorded — most concretely, that recurring board-conflict overrides in `gate-events.log` mean building a `taskwrite resolve` verb rather than punching an exception into the guard. Closes T-16 of the sprint plan.
+
+---

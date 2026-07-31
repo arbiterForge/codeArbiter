@@ -142,14 +142,14 @@ Paths resolve per `coding-standards.md`: Python hooks in `plugins/ca/hooks/`, sh
   an authoring marker fakes nothing and is self-mintable by design (ADR-0010). The risk runs
   opposite to intuition — a future generic "hardening" over every registered marker would brick
   every minting lane while stopping no non-cooperative agent. T-08a is the fence against that.
-| T-09 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_git_add_passes` — `git add open-tasks.md` passes. Load-bearing: `commit-gate` Phase 7 runs exactly that on every retained board flip, so a git verb in the list makes commit-gate block itself | git-verb non-regression | B-07 | T-08 | PENDING |
-| T-10 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_filename_as_helper_argv_data_passes` — helper call with the filename in its description passes | argv-data non-regression | B-08 | T-08 | PENDING |
-| T-11 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_tee_blocks_unconditionally` and `-k test_append_redirect_blocks_unconditionally` | shell-write blocking | B-09 | T-08 | PENDING |
-| T-12 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_taskwrite_invocation_passes_with_enrolment_live` — the real `core/surface/commands/task.md` invocation shape. **Not mutation-killable by construction** — the command names no registered basename, which is the property being proved; assert it against the generated invocation rather than a hand-copy so it notices drift | circularity proof | B-12 | T-08 | PENDING |
-| T-13 | `.../tests/test_protectedstatelib.py` | `SUITE -k TestStateShellAppendOnly` — non-append mutation blocks, append verb admitted | append-only policy | B-06 | T-08 | PENDING |
-| T-14 | `core/pysrc/pre-write.py`, `plugins/ca/hooks/*.py` | `python .github/scripts/check-plugin-refs.py` passes; `H-NN` cited in code and test | stable hook ID | B-11 | T-08 | PENDING |
-| T-15 | `core/pysrc/_protectedstatelib.py` → generated | `python tools/sync-core.py --check` passes | byte-identity | B-01 | T-14 | PENDING |
-| T-16 | `.codearbiter/decisions/00NN-*.md` | ADR file exists, dated, user-attributed, names the ADR-0010 residual | ADR authored | B-27 | T-15 | PENDING |
+| T-09 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_git_add_passes` — `git add open-tasks.md` passes. Load-bearing: `commit-gate` Phase 7 runs exactly that on every retained board flip, so a git verb in the list makes commit-gate block itself | git-verb non-regression | B-07 | T-08 | ACCEPTED |
+| T-10 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_filename_as_helper_argv_data_passes` — helper call with the filename in its description passes | argv-data non-regression | B-08 | T-08 | ACCEPTED |
+| T-11 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_tee_blocks_unconditionally` and `-k test_append_redirect_blocks_unconditionally` | shell-write blocking | B-09 | T-08 | ACCEPTED |
+| T-12 | `.../tests/test_protectedstatelib.py` | `SUITE -k test_taskwrite_invocation_passes_with_enrolment_live` — the real `core/surface/commands/task.md` invocation shape. **Not mutation-killable by construction** — the command names no registered basename, which is the property being proved; assert it against the generated invocation rather than a hand-copy so it notices drift | circularity proof | B-12 | T-08 | ACCEPTED |
+| T-13 | `.../tests/test_protectedstatelib.py` | `SUITE -k TestStateShellAppendOnly` — non-append mutation blocks, append verb admitted | append-only policy | B-06 | T-08 | ACCEPTED |
+| T-14 | `core/pysrc/pre-write.py`, `plugins/ca/hooks/*.py` | `python .github/scripts/check-plugin-refs.py` passes; `H-NN` cited in code and test | stable hook ID | B-11 | T-08 | ACCEPTED |
+| T-15 | `core/pysrc/_protectedstatelib.py` → generated | `python tools/sync-core.py --check` passes | byte-identity | B-01 | T-14 | ACCEPTED |
+| T-16 | `.codearbiter/decisions/00NN-*.md` | ADR file exists, dated, user-attributed, names the ADR-0010 residual | ADR authored | B-27 | T-15 | ACCEPTED |
 
 **HARD GATE at T-16** — `/ca:adr` requires user attribution. Halts and surfaces.
 
