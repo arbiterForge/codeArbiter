@@ -2950,16 +2950,21 @@ _GOVERNANCE_RULES = {
         "is a sentinel, not a revision", "WINDOW=HEAD"),
     "MEDIUM (run 5): the possibly-empty tag_sha is quoted": (
         'Quote it', '"$TAG_SHA"'),
-    "MEDIUM (run 5): manifest_version is parsed, not grepped": (
-        "extracted with a real parser",),
+    "MEDIUM (runs 5+7): manifest_version is parsed by the file's own format": (
+        "FORMAT'S OWN parser rather than a line-grep",),
     "LOW (run 5): the round-trip check reads the raw object, not a reconstruction": (
         "git cat-file tag ${TAG_PREFIX}MAJOR.MINOR.PATCH",),
     # Run 6 (2026-07-31).
-    "HIGH (run 6): the base version floors on the manifest, not 0.0.0": (
-        "the highest version any declared `manifest` already carries",
-        "Take the MAXIMUM across every declared"),
-    "HIGH (run 6): the strictly-greater check runs against the manifest floor too": (
-        "semver-greater <derived> <floor>",),
+    "HIGH (runs 6+7): one base version, the max of tag and every manifest": (
+        "one base, computed the same way in every case",
+        "the highest version any declared `manifest` currently carries"),
+    "HIGH (run 7): the strictly-greater check names its own remedy": (
+        "semver-greater <derived> $BASE_VERSION",
+        "re-derive from `$BASE_VERSION` rather than raising the bump"),
+    "MEDIUM (run 7): the manifest reader follows the file's format": (
+        "import tomllib,sys",),
+    "MEDIUM (run 7): max-vs-first manifest coupling is stated": (
+        "a half-finished bump",),
     "LOW (run 6): the show-ref exit-status rationale is corrected, not repeated": (
         "the reason given for it was wrong",),
 }

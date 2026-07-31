@@ -1820,6 +1820,13 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
             declared = None
         if isinstance(declared, str) and core_lane.semver_key(declared):
             floors.append(declared)
+    # ONE base — the max of the tag baseline and every declared manifest
+    # (HIGH, runs 6 and 7). Run 6 established the manifest half; run 7
+    # showed the tag half alone hard-blocks a tagged project whose
+    # manifest leads, because the derived version fails its own manifest
+    # floor. The prose now computes `$BASE_VERSION` once and compares
+    # against it exactly once; the driver mirrors that rather than keeping
+    # a second, separate floor.
     base = max(floors, key=core_lane.semver_key)
     result["version_floors"] = floors
     result["version_base"] = base
@@ -2296,6 +2303,47 @@ class NeverTaggedManifestFloorTest(unittest.TestCase):
         self.assertEqual(self.result["version_base"], "1.4.2")
         self.assertIn("1.4.2", self.result["version_floors"])
         self.assertIn("0.0.0", self.result["version_floors"])
+
+    def test_a_tagged_project_whose_manifest_leads_still_clears_its_own_floor(self):
+        # HIGH, run 7 — the defect the run-6 fix CREATED. Run 6 floored the
+        # CHECK on the manifest but stated the BASE only in the no-tag
+        # branch, so a project WITH a tag derived off the tag alone and
+        # then failed its own manifest floor: a hard block on a legitimate
+        # release, with the remedy stated nowhere.
+        #
+        # Exercised as a pure derivation over the shipped mechanism rather
+        # than a fifth end-to-end fixture: the failing shape is entirely in
+        # the arithmetic (tag 1.2.0, manifest 1.4.2, minor bump), and the
+        # end-to-end path is already covered by this class's own no-tag
+        # fixture.
+        base = max(["1.2.0", "1.4.2"], key=self.core_lane.semver_key)
+        self.assertEqual(base, "1.4.2", "the base must be the max, not the tag")
+        self.assertTrue(
+            self.core_lane.semver_greater("1.5.0", base),
+            "a minor bump off the true base must clear it")
+        self.assertFalse(
+            self.core_lane.semver_greater("1.3.0", base),
+            "deriving off the tag alone yields 1.3.0, which fails the "
+            "manifest floor — this is exactly the run-7 hard block, and it "
+            "must stay reproducible so the fix cannot silently regress")
+
+    def test_the_sentinel_never_reaches_the_comparator(self):
+        # MEDIUM, run 7: step 4 previously demanded a second comparison
+        # against LAST_TAG, which on a first release is `<none>` — not a
+        # version. `semver-greater` correctly exits 2 on it, so the
+        # instruction was unrunnable on precisely the path Back-fill
+        # serves. There is now ONE comparison, against $BASE_VERSION.
+        cli = os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py")
+        proc = _run_argv([sys.executable, cli, "semver-greater", "2.2.0", "<none>"],
+                         self.consumer_root)
+        self.assertEqual(
+            proc.returncode, 2,
+            "the sentinel is not a version; if this ever exits 0 or 1 the "
+            "comparator started accepting it, which would hide the very "
+            "confusion that made the two-floor instruction unrunnable")
+        self.assertNotIn(
+            "<none>", self.result["version_base"],
+            "the sentinel must be mapped to 0.0.0 before it can reach the base")
 
     def test_the_shipped_cli_can_run_the_floor_check_itself(self):
         # The prose tells an operator to assert the floor via

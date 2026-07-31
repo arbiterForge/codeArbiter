@@ -126,6 +126,25 @@ predate the plugin rewrite and are grouped by date.
   `$WINDOW` (`HEAD` when there is no tag, `<tag>..HEAD` otherwise) before any
   command uses it.
 
+- **Version derivation now has one base instead of two floors.** The bump
+  applies to `$BASE_VERSION` - the maximum of the last tag's version and the
+  highest version any declared manifest carries - and the strictly-greater
+  assertion runs once against it. The two-floor form this replaces hard-blocked
+  a legitimate release: a project holding a `v1.2.0` tag and a `1.4.2` manifest
+  derived `1.3.0` from the tag, then failed its own manifest floor, and the
+  step said only "must exit 0" with no remedy. It also demanded a comparison
+  against the last tag, which on a first release is the string `<none>` - not a
+  version, so that comparison was unrunnable on exactly the path back-fill
+  exists to serve. One base removes both.
+
+- **The manifest reader now follows the file's format.** Only the JSON form was
+  named, so a declared `pyproject.toml` raised `JSONDecodeError`. The
+  `<manifest_version>` argument also reads the *first* declared manifest while
+  the base reads the *maximum* across all of them - deliberate, but safe only
+  because the bump touches every declared path, so that coupling is now stated
+  rather than left to be discovered when a partial bump turns a healthy release
+  into a terminal stop with a misleading reason.
+
 - **A project that had shipped without tagging was released backward.** With
   no tag in its series the lane took `0.0.0` as the base, so a package whose
   manifest already read `1.4.2` derived `0.1.0` - and the manifest bump then
