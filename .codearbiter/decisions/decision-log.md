@@ -1189,3 +1189,30 @@ Securable drove it, and the decisive reasoning is that the alternatives fail in 
 `core/pysrc/_protectedstatelib.py`, `_protectedlib.py` and `_bashguardlib.py` carry the enforcement, already landed at 56387ee. The ADR's `governs:` field enrolls those three plus `.codearbiter/release-targets.md`, so the post-write hook surfaces the decision at edit time rather than at a checkpoint sweep. Four residuals are declared in both the ADR and `security-controls.md`, and three reopen conditions are recorded — most concretely, that recurring board-conflict overrides in `gate-events.log` mean building a `taskwrite resolve` verb rather than punching an exception into the guard. Closes T-16 of the sprint plan.
 
 ---
+
+## DECISION-0036 — bare-release-requires-explicit-target — A multi-target project must name its release target; no implicit default
+
+**Date:** 2026-07-31
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The release skill defaulted a bare `/ca:release` to target `ca`, a hardcoded fact about this repository.
+- **Scaffold position:** A-6.0 requires that no hardcoded row survive the portability rewrite, and steer 5 requires no behavior change to this repo's four-plugin release. Both cannot hold for the bare invocation.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+A declared file with exactly one target resolves that target implicitly. A declared file with more than one target requires an explicit `$TARGET`; a bare invocation STOPs. This repository declares four targets, so `/ca:release` alone now stops and `/ca:release ca` is required. This is an accepted, deliberate exception to steer 5, taken with the steer in view rather than around it.
+
+### SMARTS rationale
+Securable and Reliable drove it. A bare invocation that resolves a target nobody named is a default-allow on a lane that ends in a `contents: write` publisher, and the alternative places that default inside `release-targets.md`, which has no write protection until its H-22 enrolment at T-33 and would therefore be an unguarded redirect. Reliable agrees: a stale default flag publishes the wrong series, where an explicit argument cannot. Scalable was the one clean win for the declared-default alternative, since bare invocation silently changes meaning the day a consumer adds a second row, but that discontinuity is one-time per consumer and surfaces as a STOP rather than as a wrong publish. Precedent aligns: DECISION-0034 chose check-only over silent fixers, and this campaign already rejected positional target selection as a reorder-to-mispublish hazard.
+
+Recorded against the author's original justification, which does not survive scrutiny: the claim was that a declared default would bake in "the primary target is named ca", but `latest-eligible: true` already singles out `ca` in the same row set and shipped in the same change under the same criterion. The objection proves too much. The decision stands on the security and reliability grounds above, not on that reasoning.
+
+### Implementation implication
+`core/surface/skills/release/SKILL.md` keeps the STOP. `core/surface/commands/release.md` must stop documenting a `ca`-only default when T-71 reconciles it. A test must pin this: an adversarial mutant restoring the hardcoded `ca` default currently survives both suites, so the behavior is asserted by nothing. That test is a follow-up obligation of this decision, not optional.
+
+---

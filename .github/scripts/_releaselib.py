@@ -122,6 +122,13 @@ MultipleBlocksError = _mechanism.MultipleBlocksError
 DelimiterInValueError = _mechanism.DelimiterInValueError
 MissingRequiredKeyError = _mechanism.MissingRequiredKeyError
 
+# SEMVER is re-exported because `tools/build-host-packages.py:22` imports it.
+# The first shim conversion dropped it while re-exporting its two neighbours,
+# and nothing failed: no TEST imports SEMVER, so the re-export surface was
+# covered for the names the tests use rather than the names consumers use.
+# `test_shim_reexports_every_name_any_consumer_imports` now derives the
+# required set from the repo rather than restating it here.
+SEMVER = _mechanism.SEMVER
 semver_key = _mechanism.semver_key
 semver_greater = _mechanism.semver_greater
 notes_heading_matches = _mechanism.notes_heading_matches

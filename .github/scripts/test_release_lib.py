@@ -48,8 +48,12 @@ proof still lived only against the old, unmodified shim:
 
 import importlib.util
 import inspect
+import io
+import json
 import os
+import re
 import sys
+import tempfile
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -505,14 +509,29 @@ class CLITest(unittest.TestCase):
 class SkillProseTest(unittest.TestCase):
     """AC-5 (0002) + skill-side wiring of AC-1..4 into release/SKILL.md.
 
-    Structural: the prose is what the orchestrator follows, so we assert the
-    helpers are invoked and the farm.js freshness instruction is unconditional
-    and points at CI as the backstop."""
+    T-41a-d (issue #563) rewrote the skill from a hardcoded four-row table to
+    a declared-file loader, so this class now reads the SOURCE
+    (`core/surface/skills/release/SKILL.md`) rather than a generated payload —
+    the spec's own "Source of truth" rule ("every skill and command edit
+    lands in core/surface/, never a generated plugins/*/ copy. Guards and
+    structural assertions target the surface source"), which the pre-rewrite
+    version of this class violated by reading `plugins/ca/skills/...`
+    directly. Assertions that pinned this repo's four hardcoded rows
+    (`test_every_shipped_bundle_is_named_for_its_target`,
+    `test_every_release_target_is_reachable_from_the_command`,
+    `test_each_target_names_its_own_manifest_and_changelog`,
+    `test_only_ca_may_claim_the_latest_badge`,
+    `test_the_pi_root_manifest_is_generated_not_hand_edited`,
+    `test_names_ci_tools_job_as_backstop`) are retired below in favor of
+    `SkillPortabilityTest`, which asserts the LOADER-based replacement shape
+    instead — asserting the OLD literal text would now be asserting the
+    defect this migration exists to remove."""
 
     @classmethod
     def setUpClass(cls):
         repo = os.path.dirname(os.path.dirname(HERE))
-        path = os.path.join(repo, "plugins", "ca", "skills", "release", "SKILL.md")
+        path = os.path.join(
+            repo, "core", "surface", "skills", "release", "SKILL.md")
         with open(path, encoding="utf-8") as fh:
             cls.text = fh.read()
 
@@ -531,61 +550,6 @@ class SkillProseTest(unittest.TestCase):
             self.text,
             "0002: the rebuild must not be conditional on an in-window source change")
 
-    def test_every_shipped_bundle_is_named_for_its_target(self):
-        # #382 generalised the freshness step over four targets, so the check
-        # that used to name ONE artifact now has to name all of them: a plugin
-        # whose bundle is absent from the Targets table can release a stale one
-        # simply because nothing told the orchestrator to rebuild it. Listed
-        # explicitly rather than derived, because ca-pi's bundles are NOT in
-        # payload_scope.SHIPPED_TOOLS_ARTIFACTS - they live under extensions/,
-        # which is already inside the payload scope.
-        for artifact in ("plugins/ca/tools/farm.js",
-                         "plugins/ca-sandbox/tools/sandbox.js",
-                         "plugins/ca-sandbox/tools/claude-inside.js",
-                         "plugins/ca-pi/extensions/codearbiter.js",
-                         "plugins/ca-pi/extensions/codearbiter-child.js"):
-            with self.subTest(artifact=artifact):
-                self.assertIn(artifact, self.text,
-                              "the Targets table must name every shipped bundle")
-
-    def test_every_release_target_is_reachable_from_the_command(self):
-        # The command half of #382: one command, four targets. Each target and
-        # its namespace must appear, and the namespace must come from the shared
-        # register rather than being typed into the prose.
-        self.assertIn("_releaselib.py tag-prefix", self.text,
-                      "the skill must ASK for the namespace, not restate four of them")
-        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
-            with self.subTest(target=target):
-                self.assertIn(f"`{target}`", self.text)
-                self.assertIn(f"`{prefix}`", self.text)
-
-    def test_each_target_names_its_own_manifest_and_changelog(self):
-        for path in ("plugins/ca/.claude-plugin/plugin.json",
-                     "plugins/ca-codex/.codex-plugin/plugin.json",
-                     "plugins/ca-sandbox/.claude-plugin/plugin.json",
-                     "plugins/ca-pi/package.json",
-                     "plugins/ca-codex/CHANGELOG.md",
-                     "plugins/ca-sandbox/CHANGELOG.md",
-                     "plugins/ca-pi/CHANGELOG.md"):
-            with self.subTest(path=path):
-                self.assertIn(path, self.text)
-
-    def test_only_ca_may_claim_the_latest_badge(self):
-        # One repo-wide "Latest" across four series; a sibling claiming it hides
-        # ca's current release from every visitor.
-        self.assertIn("MUST NOT assert `--latest` for any target except `ca`",
-                      self.text)
-
-    def test_the_pi_root_manifest_is_generated_not_hand_edited(self):
-        # Pi installs the repository ROOT as the package, so the root manifest is
-        # a second thing that must agree with the tag - and it is generated.
-        self.assertIn("tools/build-host-packages.py", self.text)
-        self.assertIn("never hand-edit", self.text.lower())
-
-    def test_names_ci_tools_job_as_backstop(self):
-        self.assertIn("`tools` job", self.text,
-                      "AC-5: the local check must name the CI tools job as the mechanical backstop")
-
     def test_date_derived_once(self):
         # The release date is computed once and reused (no second hand-typed date).
         self.assertIn("date +%F", self.text)
@@ -599,6 +563,247 @@ class SkillProseTest(unittest.TestCase):
         # assertion is scoped to the markdown-heading form only.
         self.assertIn("## [MAJOR.MINOR.PATCH]", self.text)
         self.assertNotIn("## vMAJOR.MINOR.PATCH", self.text)
+
+
+class SkillPortabilityTest(unittest.TestCase):
+    """T-41a-d (issue #563, A-6.0): the release skill's Targets table becomes
+    a `load_targets()` call, its helper invocations resolve under
+    `${CLAUDE_PLUGIN_ROOT}` (rendered; the SOURCE spells it
+    `{{PLUGIN_ROOT}}`), its Phase-3 tag-provenance step reads the row's
+    `provenance-manifest` field, and its hosted-lane/immutability prose is
+    conditional on what the consumer's own repo has. Reads the SURFACE
+    SOURCE, never a generated payload (spec: "Source of truth")."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = os.path.dirname(os.path.dirname(HERE))
+        path = os.path.join(
+            cls.repo, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+
+    # -- T-41a: table -> loader; no hardcoded row survives ------------------
+
+    def test_skill_uses_loader(self):
+        self.assertIn("load", self.text.lower())
+        self.assertIn("declared file", self.text)
+        self.assertIn("release-targets.md", self.text)
+        # No hardcoded row survives: neither this repo's four target names,
+        # nor any of its literal manifest/changelog/artifact paths, appear as
+        # skill PROSE any longer (a bare filename with no directory qualifier,
+        # e.g. `CHANGELOG.md`/`package.json` as a placeholder VALUE label,
+        # remains fine and is not checked here).
+        for literal in (
+                "ca-codex", "ca-sandbox", "ca-pi",
+                "plugins/ca/.claude-plugin/plugin.json",
+                "plugins/ca-codex/.codex-plugin/plugin.json",
+                "plugins/ca-sandbox/.claude-plugin/plugin.json",
+                "plugins/ca-pi/package.json",
+                "plugins/ca-codex/CHANGELOG.md",
+                "plugins/ca-sandbox/CHANGELOG.md",
+                "plugins/ca-pi/CHANGELOG.md",
+                "plugins/ca/tools/farm.js",
+                "plugins/ca-sandbox/tools/sandbox.js",
+                "plugins/ca-sandbox/tools/claude-inside.js",
+                "plugins/ca-pi/extensions/codearbiter.js",
+                "plugins/ca-pi/extensions/codearbiter-child.js"):
+            with self.subTest(literal=literal):
+                self.assertNotIn(
+                    literal, self.text,
+                    f"a hardcoded row literal {literal!r} survives the "
+                    "table -> loader rewrite")
+        self.assertNotIn(
+            "| `$TARGET` | `$TAG_PREFIX` |", self.text,
+            "the old hardcoded Targets table header survives")
+
+    def test_skill_uses_loader_field_names(self):
+        # The row's own field vocabulary (grammar names, spec "File grammar")
+        # must appear so an agent following the prose knows which key to read.
+        for field in ("prefix", "manifest", "changelog", "payload",
+                      "payload-exclude", "rebuild", "artifacts",
+                      "provenance-manifest", "pre-tag", "latest-eligible",
+                      "generated-manifest", "generate", "display-name"):
+            with self.subTest(field=field):
+                self.assertIn(f"`{field}`", self.text)
+
+    # -- T-41b: helpers repoint under {{PLUGIN_ROOT}}; no .github/scripts/,
+    #    and the four prose-only mentions no longer name a repo path --------
+
+    def test_skill_helpers_repoint_under_plugin_root(self):
+        self.assertNotIn(".github/scripts/", self.text)
+        self.assertIn("{{PLUGIN_ROOT}}/hooks/_releaselib.py", self.text)
+
+    def test_skill_no_longer_names_the_four_prose_only_scripts(self):
+        # MEDIUM-4 (ratchet comment, known-unresolved-refs.txt): these four
+        # were NAMED without being invoked, so a criterion about invocations
+        # alone would never clear them. Reworded to a conditional CI
+        # reference (AC-6.3 precedent) rather than a literal repo path.
+        for script in ("check_badge_consistency.py", "check_tag_immutability.py",
+                       "payload_scope.py", "test_release_lib.py"):
+            with self.subTest(script=script):
+                self.assertNotIn(script, self.text)
+        # The ca-pi-specific root-manifest regeneration invocation is gone
+        # entirely -- it is now DATA (a declared `pre-tag` command in this
+        # repo's own release-targets.md), never skill prose.
+        self.assertNotIn("tools/build-host-packages.py", self.text)
+
+    # -- T-41c: Phase 3 provenance step reads the row field -----------------
+
+    def test_skill_provenance_field(self):
+        self.assertIn("provenance-manifest", self.text)
+        self.assertIn("$PROVENANCE_MANIFEST", self.text)
+        self.assertNotIn(".github/published-tags.json", self.text)
+        # The absent-row-field skip must be documented explicitly in the
+        # report, not silent (A-3.5).
+        idx = self.text.index("Record the tag's provenance")
+        window = self.text[idx:idx + 1200]
+        self.assertIn("skips this step", window)
+        self.assertIn("say so explicitly in the report", window)
+
+    # -- T-41d: hosted-lane and immutability prose are conditional ----------
+
+    def test_skill_conditional_prose(self):
+        phase3_idx = self.text.index("## Phase 3")
+        recovering_idx = self.text.index("## Recovering from a bad release")
+        phase3_preamble = self.text[phase3_idx:phase3_idx + 900]
+        recovering = self.text[recovering_idx:]
+
+        self.assertIn("If this project has a hosted release workflow", phase3_preamble)
+        self.assertIn("A project with no hosted workflow", phase3_preamble)
+
+        self.assertIn("If this project runs an automated tag-immutability",
+                       recovering)
+        self.assertIn("A project with no such CI check", recovering)
+        # This repo's own concrete CI check name/artifact must not survive as
+        # an unconditional claim about every consumer's repo.
+        self.assertNotIn("[CHECK] | [REPO] | Published tag immutability",
+                          self.text)
+        self.assertNotIn(".github/published-tags.json", self.text)
+        self.assertNotIn("repository rulesets", self.text)
+
+        # The doctrine itself must survive: immutable-tag rule, no
+        # break-glass, correction-by-new-version, "manifest is the witness".
+        self.assertIn("A published tag is immutable", recovering)
+        self.assertIn("no break-glass", recovering.lower())
+        self.assertIn("the manifest is the witness, not the suspect", recovering)
+        for step_text in ("git push --force", "git push --delete",
+                          "gh release delete", "gh release edit"):
+            with self.subTest(step_text=step_text):
+                self.assertIn(step_text, recovering)
+
+    def test_skill_latest_is_row_driven(self):
+        self.assertIn("latest-eligible", self.text)
+        self.assertNotIn(
+            "MUST NOT assert `--latest` for any target except `ca`", self.text)
+        self.assertIn(
+            "MUST NOT assert `--latest` for any target whose row does not "
+            "declare `latest-eligible: true`", self.text)
+
+    def test_skill_pre_tag_replaces_the_hardcoded_surface_sync(self):
+        # The old per-target badge/root-manifest bullet list is gone; the
+        # portable replacement is the row's declared `pre-tag` commands
+        # (DECISION-0034), run in declared order with a BLOCK on non-zero.
+        self.assertNotIn("the README version badge (`version-X.Y.Z`)", self.text)
+        self.assertIn("pre-tag", self.text)
+        self.assertIn("DECISION-0034", self.text)
+
+    # -- HIGH-1 (adversarial review 2026-07-31): the skill named a back-fill
+    #    lane (T-49/T-50) that did not exist yet, and a canary in
+    #    test_consumer_smoke.py fired on it. `context-creation` alone is
+    #    truthful today. --------------------------------------------------
+
+    def test_skill_does_not_claim_a_backfill_lane_yet(self):
+        self.assertNotIn("back-fill", self.text.lower())
+        self.assertIn("context-creation", self.text)
+
+    # -- HIGH-3 (adversarial review 2026-07-31): a manifest path that is
+    #    GENERATED output is declarable, never hand-edited by this skill. --
+
+    def test_skill_generated_manifest_is_never_hand_edited(self):
+        self.assertIn("generated-manifest", self.text)
+        # A bare `assertIn("generate", ...)` would pass on the substring
+        # inside "generated-manifest"/"regenerate" alone and never actually
+        # exercise the field-name reference — check the backticked field
+        # name, the same way test_skill_uses_loader_field_names does.
+        self.assertIn("`generate`", self.text)
+        self.assertIn("never hand-edited", self.text)
+        self.assertIn("MUST NOT hand-edit a path also listed in "
+                       "`$GENERATED_MANIFEST`", self.text)
+
+    # -- M-1 (adversarial review 2026-07-31): the Release title convention
+    #    names a "display name" no grammar key ever supplied. -------------
+
+    def test_skill_release_title_uses_a_declared_display_name(self):
+        self.assertIn("display-name", self.text)
+        self.assertIn(
+            "The title convention is `<$DISPLAY_NAME> MAJOR.MINOR.PATCH: "
+            "<summary>`", self.text)
+        self.assertNotIn("<$TARGET display name>", self.text)
+
+    # -- M-2 (adversarial review 2026-07-31): the command and a hosted
+    #    lane reading "the same declared file" is false until slice 4
+    #    (T-43-T-46) repoints the workflow/gate off hardcoded constants;
+    #    the claim must be conditional on that, not asserted outright. ----
+
+    def test_skill_tag_prefix_agreement_with_a_hosted_lane_is_conditional(self):
+        self.assertNotIn(
+            "the same declared file a hosted publish lane (if this project "
+            "has one) reads, so the command and the lane cannot disagree",
+            self.text)
+        idx = self.text.index("Resolve `$TAG_PREFIX`")
+        window = self.text[idx:idx + 700]
+        self.assertIn("is ALSO wired to read this declared file", window)
+        self.assertIn("the two can drift", window)
+
+    # -- Portability guard proxy (T-41b's own criterion; the guard SCRIPT
+    #    that will enforce this mechanically, check_skill_portability.py, is
+    #    T-68a/T-68b's own deliverable and is deliberately NOT authored here
+    #    -- see the plan's dependency order). This is the honest local
+    #    equivalent until then. --------------------------------------------
+
+    def test_no_github_scripts_invocation_remains_in_the_source(self):
+        self.assertNotIn(".github/scripts/", self.text)
+
+    def test_generated_payloads_carry_no_github_scripts_reference(self):
+        # The source-only assertions above prove the SOURCE is clean, but
+        # `tools/build-surface.py --check` only proves the generator is
+        # IDEMPOTENT, not that what it rendered is free of `.github/scripts/`
+        # -- and `test_consumer_smoke.py`'s reference-resolution ratchet,
+        # which is the suite that would otherwise catch a payload-rendering
+        # regression, reads `git archive HEAD` and is blind to an uncommitted
+        # change. This is the one thing in this repo's GREEN, re-runnable
+        # test surface that actually reads the three full generated copies
+        # (`ca`, the `ca-codex`/`ca-pi` "routines" copies) rather than only
+        # the surface source or a stale committed snapshot.
+        payloads = (
+            ("ca", os.path.join("plugins", "ca", "skills", "release", "SKILL.md")),
+            ("ca-codex", os.path.join(
+                "plugins", "ca-codex", "routines", "release", "SKILL.md")),
+            ("ca-pi", os.path.join(
+                "plugins", "ca-pi", "routines", "release", "SKILL.md")),
+        )
+        host_plugin_root_token = {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}
+        hosts_json_path = os.path.join(self.repo, "core", "hosts.json")
+        with open(hosts_json_path, encoding="utf-8") as fh:
+            hosts_data = json.load(fh)
+        tokens_by_host = {
+            host["name"]: host["tokens"]["PLUGIN_ROOT"] for host in hosts_data["hosts"]
+        }
+        for label, relpath in payloads:
+            with self.subTest(payload=label):
+                path = os.path.join(self.repo, relpath)
+                with open(path, encoding="utf-8") as fh:
+                    text = fh.read()
+                self.assertNotIn(
+                    ".github/scripts/", text,
+                    f"{label!r}'s generated release skill still carries a "
+                    ".github/scripts/ invocation")
+                plugin_token = tokens_by_host[host_plugin_root_token[label]]
+                self.assertIn(
+                    f"{plugin_token}/hooks/_releaselib.py", text,
+                    f"{label!r}'s generated release skill does not resolve "
+                    f"its helper invocations under its own host's "
+                    f"plugin-root token ({plugin_token!r})")
 
 
 
@@ -774,6 +979,65 @@ class NotesHeadingNamespacedTagTest(unittest.TestCase):
         for spelling, want in cases.items():
             with self.subTest(spelling=spelling):
                 self.assertEqual(_releaselib._bare_version(spelling), want)
+
+
+class ShimReexportCompletenessTest(unittest.TestCase):
+    """The shim must re-export every name ANY consumer imports, not just the
+    names the tests happen to use.
+
+    This exists because of a real regression. The first shim conversion
+    re-exported `semver_key` and `semver_greater` but dropped `SEMVER`, which
+    `tools/build-host-packages.py` imports. Nothing failed: the whole suite
+    stayed green, because no test imported `SEMVER`. The re-export surface was
+    covered for the names the tests use rather than the names consumers use,
+    and the break only surfaced when a declared `pre-tag` command ran it.
+
+    The required set is DERIVED by scanning the repo, never restated here. A
+    hand-maintained list would reproduce the same defect the moment someone
+    adds an import without updating it.
+    """
+
+    _IMPORT_RE = re.compile(r"^\s*from\s+_releaselib\s+import\s+(.+)$", re.M)
+
+    def _required_names(self):
+        roots = [os.path.join(REPO_ROOT, ".github", "scripts"),
+                 os.path.join(REPO_ROOT, "tools")]
+        required = {}
+        for root in roots:
+            if not os.path.isdir(root):
+                continue
+            for entry in sorted(os.listdir(root)):
+                if not entry.endswith(".py"):
+                    continue
+                path = os.path.join(root, entry)
+                with io.open(path, encoding="utf-8") as handle:
+                    text = handle.read()
+                for clause in self._IMPORT_RE.findall(text):
+                    clause = clause.split("#", 1)[0]
+                    for raw in clause.split(","):
+                        name = raw.strip().split(" as ")[0].strip()
+                        if name and name.isidentifier():
+                            required.setdefault(name, []).append(entry)
+        return required
+
+    def test_the_scan_finds_real_consumers(self):
+        """Guard the guard: an empty or trivial scan would make the next test
+        vacuously pass, which is exactly how the original defect survived."""
+        required = self._required_names()
+        self.assertGreaterEqual(
+            len(required), 3,
+            "the import scan found almost nothing, so the completeness check "
+            "below would pass without measuring anything: %r" % (required,))
+
+    def test_shim_reexports_every_name_any_consumer_imports(self):
+        required = self._required_names()
+        missing = {n: v for n, v in sorted(required.items())
+                   if not hasattr(_releaselib, n)}
+        self.assertEqual(
+            missing, {},
+            "the shim does not export every name its consumers import. Each "
+            "entry maps a missing name to the files importing it; a consumer "
+            "importing it will fail at module load: %r" % (missing,))
 
 
 class ReleaselibShimTest(unittest.TestCase):
@@ -996,8 +1260,11 @@ class LoadTargetsTest(unittest.TestCase):
         "<!-- release-targets -->\n"
         "[app]\n"
         "prefix: v\n"
+        "display-name: My App\n"
         "manifest: package.json\n"
         "manifest: nested/package.json\n"
+        "generated-manifest: nested/package.json\n"
+        "generate: node scripts/regen-nested-manifest.js\n"
         "changelog: CHANGELOG.md\n"
         "payload: .\n"
         "payload-exclude: tools/\n"
@@ -1028,7 +1295,10 @@ class LoadTargetsTest(unittest.TestCase):
         row = rows[0]
         self.assertEqual(row["target"], "app")
         self.assertEqual(row["prefix"], "v")
+        self.assertEqual(row["display_name"], "My App")
         self.assertEqual(row["manifest"], ["package.json", "nested/package.json"])
+        self.assertEqual(row["generated_manifest"], ["nested/package.json"])
+        self.assertEqual(row["generate"], "node scripts/regen-nested-manifest.js")
         self.assertEqual(row["changelog"], "CHANGELOG.md")
         self.assertEqual(row["payload"], ".")
         self.assertEqual(row["payload_exclude"], ["tools/"])
@@ -1050,7 +1320,10 @@ class LoadTargetsTest(unittest.TestCase):
             path = self._write_fixture(tmp, text)
             rows = core_releaselib.load_targets(path)
         row = rows[0]
+        self.assertIsNone(row["display_name"])
         self.assertEqual(row["manifest"], [])
+        self.assertEqual(row["generated_manifest"], [])
+        self.assertIsNone(row["generate"])
         self.assertEqual(row["payload_exclude"], [])
         self.assertIsNone(row["rebuild"])
         self.assertEqual(row["artifacts"], [])
@@ -1181,6 +1454,15 @@ class ParserContractTest(unittest.TestCase):
                 + self.CLOSE)
         rows = core_releaselib.parse_release_targets(text)
         self.assertEqual(rows[0]["manifest"], ["a.json", "b.json"])
+
+    def test_parser_contract_generated_manifest_repeats_without_error(self):
+        # HIGH-3: generated-manifest is a list key too, same as manifest.
+        text = (self.VALID_HEADER
+                + "manifest: a.json\nmanifest: b.json\n"
+                + "generated-manifest: a.json\ngenerated-manifest: b.json\n"
+                + self.CLOSE)
+        rows = core_releaselib.parse_release_targets(text)
+        self.assertEqual(rows[0]["generated_manifest"], ["a.json", "b.json"])
 
     def test_parser_contract_duplicate_target_block_raises_duplicate_target_error(self):
         text = (self.VALID_HEADER + "[app]\nprefix: w\n"
@@ -1756,6 +2038,229 @@ class CoreSelectReleaseTargetArmsTest(unittest.TestCase):
             "lib")
 
 
+class CoreCLITest(unittest.TestCase):
+    """T-41f (issue #563): `core/pysrc/_releaselib.py` gains a `__main__` CLI
+    entry point. Without this, T-41b's repointing of the release skill's
+    helper invocations under `${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`
+    would aim prose at a file with no runnable entry point at all —
+    `tag-prefix`, `last-tag`, and `classify` would fail in a consumer even
+    though the rewrite reports success. Every case here calls
+    `core_releaselib.main(argv)` directly EXCEPT
+    `test_consumer_shaped_subprocess_invocation_exits_zero`, which shells out
+    for real (the literal verification named in the plan: `python
+    "<plugin-root>/hooks/_releaselib.py" tag-prefix ca` exits 0 from a
+    consumer-shaped environment) — a direct-call test alone could pass while
+    the file has a syntax error or an import that only breaks when actually
+    executed as a script."""
+
+    def _write_targets(self, tmp_dir, block):
+        path = os.path.join(tmp_dir, "release-targets.md")
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(block)
+        return path
+
+    APP_BLOCK = (
+        "<!-- release-targets -->\n"
+        "[app]\n"
+        "prefix: v\n"
+        "changelog: CHANGELOG.md\n"
+        "payload: .\n"
+        "<!-- /release-targets -->\n"
+    )
+
+    def test_no_argv_prints_usage_and_exits_2(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main([])
+        self.assertEqual(rc, 2)
+        self.assertIn("usage", err.getvalue())
+
+    def test_bad_invocation_exits_2(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(["nonsense"])
+        self.assertEqual(rc, 2)
+
+    def test_tag_prefix_resolves_via_explicit_targets_file(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_targets(tmp, self.APP_BLOCK)
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(
+                    ["tag-prefix", "app", "--targets-file", path])
+            self.assertEqual(rc, 0)
+            self.assertEqual(out.getvalue().strip(), "v")
+
+    def test_tag_prefix_unknown_target_exits_2(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_targets(tmp, self.APP_BLOCK)
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                rc = core_releaselib.main(
+                    ["tag-prefix", "nope", "--targets-file", path])
+            self.assertEqual(rc, 2)
+            self.assertIn("unknown release target", err.getvalue())
+
+    def test_tag_prefix_targets_file_flag_with_no_value_exits_2(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(["tag-prefix", "app", "--targets-file"])
+        self.assertEqual(rc, 2)
+        self.assertIn("--targets-file requires a value", err.getvalue())
+
+    def test_targets_file_flag_is_not_special_cased_for_other_subcommands(self):
+        # The flag-stripping pass lives INSIDE the tag-prefix branch only, so
+        # a caller-supplied positional value that happens to equal the flag
+        # spelling is never lexically special-cased out of a DIFFERENT
+        # subcommand's argument list.
+        import io, contextlib
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = core_releaselib.main(
+                ["classify", "false", "--targets-file", "-", "1.0.0", "1.0.0", "false"])
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.getvalue().strip(), "publish_fresh")
+
+    def test_tag_prefix_absent_declared_file_exits_2_not_a_traceback(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(
+                ["tag-prefix", "app", "--targets-file",
+                 os.path.join(tempfile.gettempdir(),
+                              "codearbiter-cli-test-does-not-exist.md")])
+        self.assertEqual(rc, 2)
+        self.assertIn("could not read declared release targets", err.getvalue())
+
+    def test_default_targets_path_prefers_claude_project_dir_env(self):
+        old = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = os.path.join("some", "project", "root")
+        try:
+            self.assertEqual(
+                core_releaselib.default_targets_path(),
+                os.path.join("some", "project", "root",
+                             ".codearbiter", "release-targets.md"))
+        finally:
+            if old is None:
+                os.environ.pop("CLAUDE_PROJECT_DIR", None)
+            else:
+                os.environ["CLAUDE_PROJECT_DIR"] = old
+
+    def test_default_targets_path_falls_back_to_cwd(self):
+        old = os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        try:
+            self.assertEqual(
+                core_releaselib.default_targets_path(),
+                os.path.join(os.getcwd(), ".codearbiter", "release-targets.md"))
+        finally:
+            if old is not None:
+                os.environ["CLAUDE_PROJECT_DIR"] = old
+
+    def test_tag_prefix_resolves_via_claude_project_dir_env_with_no_flag(self):
+        # The exact shape a consumer session actually invokes this in: no
+        # --targets-file at all, resolution purely from the env var the
+        # harness sets.
+        import io, contextlib
+        old = os.environ.get("CLAUDE_PROJECT_DIR")
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, ".codearbiter"), exist_ok=True)
+            with open(os.path.join(tmp, ".codearbiter", "release-targets.md"),
+                      "w", encoding="utf-8") as fh:
+                fh.write(self.APP_BLOCK)
+            os.environ["CLAUDE_PROJECT_DIR"] = tmp
+            try:
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    rc = core_releaselib.main(["tag-prefix", "app"])
+                self.assertEqual(rc, 0)
+                self.assertEqual(out.getvalue().strip(), "v")
+            finally:
+                if old is None:
+                    os.environ.pop("CLAUDE_PROJECT_DIR", None)
+                else:
+                    os.environ["CLAUDE_PROJECT_DIR"] = old
+
+    def test_last_tag_and_notes_match_and_classify_all_dispatch(self):
+        import io, contextlib
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            stdin = sys.stdin
+            sys.stdin = io.StringIO("v1.0.0 v1.1.0 v1.1.0-beta.1")
+            try:
+                rc = core_releaselib.main(["last-tag", "v"])
+            finally:
+                sys.stdin = stdin
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.getvalue().strip(), "v1.1.0")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            notes_path = os.path.join(tmp, "notes.md")
+            with open(notes_path, "w", encoding="utf-8") as fh:
+                fh.write("## [1.1.0] - 2026-07-31\n\n### Added\n\n- a thing\n")
+            self.assertEqual(
+                core_releaselib.main(["notes-match", "v1.1.0", notes_path]), 0)
+            self.assertEqual(
+                core_releaselib.main(["notes-match", "v9.9.9", notes_path]), 1)
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = core_releaselib.main(
+                ["classify", "false", "-", "-", "1.1.0", "1.1.0", "false"])
+        self.assertEqual(rc, 0)
+        self.assertEqual(out.getvalue().strip(), "publish_fresh")
+
+    def test_consumer_shaped_subprocess_invocation_exits_zero(self):
+        # The literal verification named in the plan: the mechanism's CLI
+        # runs as a standalone script (no sibling `core/pysrc/` import
+        # available), resolving `tag-prefix ca` against a declared file it
+        # finds via CLAUDE_PROJECT_DIR — mirroring the vendored copy at
+        # `${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`, which is executed
+        # from a directory that is NOT the consumer's project root either.
+        # Run twice: once against a scratch consumer-shaped tree (no fact
+        # from this repository at all), once against this repo's own vendored
+        # copy and its own declared file, so both readings of "consumer-
+        # shaped" are covered rather than asserted only in the abstract.
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            plugin_root = os.path.join(tmp, "plugin-root")
+            project_root = os.path.join(tmp, "project-root")
+            os.makedirs(plugin_root, exist_ok=True)
+            os.makedirs(os.path.join(project_root, ".codearbiter"), exist_ok=True)
+            vendored = os.path.join(plugin_root, "_releaselib.py")
+            with open(_CORE_RELEASELIB_PATH, "rb") as src, open(vendored, "wb") as dst:
+                dst.write(src.read())
+            with open(os.path.join(project_root, ".codearbiter",
+                                    "release-targets.md"), "w", encoding="utf-8") as fh:
+                fh.write(self.APP_BLOCK)
+            env = dict(os.environ)
+            env["CLAUDE_PROJECT_DIR"] = project_root
+            result = subprocess.run(
+                [sys.executable, vendored, "tag-prefix", "app"],
+                cwd=plugin_root, capture_output=True, encoding="utf-8",
+                env=env, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.strip(), "v")
+
+        # This repo's own vendored plugins/ca copy against its own real
+        # .codearbiter/release-targets.md, cwd = the plugin's hooks/ dir
+        # (never the project root) so only the CLAUDE_PROJECT_DIR/cwd-fallback
+        # resolution logic under test can be finding the right file.
+        env = dict(os.environ)
+        env["CLAUDE_PROJECT_DIR"] = REPO_ROOT
+        vendored_ca = os.path.join(REPO_ROOT, "plugins", "ca", "hooks", "_releaselib.py")
+        result = subprocess.run(
+            [sys.executable, vendored_ca, "tag-prefix", "ca"],
+            cwd=os.path.dirname(vendored_ca), capture_output=True,
+            encoding="utf-8", env=env, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "v")
+
+
 class ThisRepoRowsTest(unittest.TestCase):
     """A-1.10 (T-26): this repository's own `.codearbiter/release-targets.md`
     loads as four rows (`this_repo_rows`) whose `target` and `prefix` equal
@@ -1808,6 +2313,37 @@ class ThisRepoRowsTest(unittest.TestCase):
         self.assertEqual(
             row["manifest"], ["plugins/ca-pi/package.json", "package.json"])
         self.assertEqual(row["payload_exclude"], ["plugins/ca-pi/tools/"])
+
+    # HIGH-3 (adversarial review 2026-07-31): the generated repo-root
+    # `package.json` is declarable, not folklore -- `generated-manifest`
+    # names it as a subset of `manifest` and `generate` is the row's own
+    # regeneration command, mirroring the `rebuild`/`artifacts` pairing.
+    def test_this_repo_rows_ca_pi_root_manifest_is_declared_generated(self):
+        row = self.by_target["ca-pi"]
+        self.assertEqual(row["generated_manifest"], ["package.json"])
+        # The generated entry must also be a real manifest entry -- declaring
+        # a path as generated without also declaring it a manifest would
+        # mean nothing ever asserts its version, silently defeating the
+        # whole point of naming it.
+        self.assertIn("package.json", row["manifest"])
+        self.assertEqual(row["generate"], "python3 tools/build-host-packages.py")
+
+    def test_this_repo_rows_ca_declares_a_display_name(self):
+        # M-1 (adversarial review 2026-07-31): the Phase-3 Release title has
+        # no grammar key to source a "display name" from without this field
+        # -- `ca` releases as "codeArbiter X.Y.Z", not "ca X.Y.Z".
+        self.assertEqual(self.by_target["ca"]["display_name"], "codeArbiter")
+
+    def test_this_repo_rows_only_ca_declares_a_display_name(self):
+        # Every other target's display name defaults to $TARGET itself
+        # (undeclared), which is already correct for `ca-codex`/`ca-sandbox`/
+        # `ca-pi` -- their tag prefix and target name already match the name
+        # a Release title should show.
+        for target, row in self.by_target.items():
+            if target == "ca":
+                continue
+            with self.subTest(target=target):
+                self.assertIsNone(row["display_name"])
 
     def test_this_repo_rows_every_manifest_and_changelog_path_exists_on_disk(self):
         for target, row in self.by_target.items():
@@ -1915,12 +2451,14 @@ class ThisRepoRowsTest(unittest.TestCase):
     # `tools/`, not `.github/scripts/`. The allowlist is therefore BOTH
     # roots, not one.
     _PRE_TAG_ALLOWED_ROOTS = (".github/scripts/", "tools/")
-    # check_command_catalog.py is T-34 (PENDING, not yet authored) -- the one
-    # declared, KNOWN-pending forward reference. Asserted as such below
-    # rather than silently accepted (which would let ANY future absent
-    # script pass unnoticed) or silently failing (which would block on a
-    # row that correctly anticipates a task already on the plan).
-    _PRE_TAG_KNOWN_PENDING = frozenset({".github/scripts/check_command_catalog.py"})
+    # check_command_catalog.py was T-34's one declared, KNOWN-pending forward
+    # reference (PENDING, not yet authored). HIGH-2 (adversarial review
+    # 2026-07-31) authored it, so the forward reference is retired here in
+    # the SAME commit -- leaving it in _PRE_TAG_KNOWN_PENDING would now
+    # assert the opposite of what just became true (this class's own
+    # sibling assertion below, `self.assertFalse(exists, ...)`, exists
+    # precisely to catch that and force this exact edit).
+    _PRE_TAG_KNOWN_PENDING = frozenset()
 
     def test_this_repo_rows_pre_tag_scripts_resolve_under_an_allowlisted_root(self):
         import re as _re
@@ -1951,6 +2489,146 @@ class ThisRepoRowsTest(unittest.TestCase):
                             exists,
                             f"{target}: pre-tag script {script!r} does not exist "
                             "on disk")
+
+
+# --------------------------------------------------------------------------- #
+# The finding that outranks all of them (adversarial review 2026-07-31): a
+# mutation campaign deleted governance prose from the release skill payloads
+# and re-ran both suites. 11 of 12 deletions survived -- the recovery
+# section, the CHANGELOG:-footer BLOCK/never-auto-fill rule, Phase-3 publish
+# read-back, the notes-heading guard, the immutable-published-tag hard rule,
+# derive-never-guess, the pre-tag BLOCK-on-nonzero rule, and the
+# payload-scoped window rule could each be deleted with the suite staying
+# green. Only the `--latest` row-driven assertion
+# (test_skill_latest_is_row_driven) caught its mutant.
+#
+# Coverage followed what the T-41 rewrite ADDED, not the doctrine that had
+# to SURVIVE it -- the same shape as the SEMVER regression this campaign's
+# own tests elsewhere are named after. This class closes that: it asserts
+# PRESENCE of each load-bearing rule, in EVERY payload that actually renders
+# the release skill's prose, derived mechanically (never a hand-maintained
+# path list) via `tools/build-surface.py`'s own `_output_rel` against
+# `core/hosts.json` -- so a fourth host or a renamed output directory
+# cannot silently exit this test's scope.
+# --------------------------------------------------------------------------- #
+
+_BUILD_SURFACE_PATH = os.path.join(REPO_ROOT, "tools", "build-surface.py")
+_build_surface_spec = importlib.util.spec_from_file_location(
+    "_release_lib_build_surface", _BUILD_SURFACE_PATH)
+build_surface = importlib.util.module_from_spec(_build_surface_spec)
+sys.modules[_build_surface_spec.name] = build_surface
+_build_surface_spec.loader.exec_module(build_surface)
+
+# Each rule is a short list of tokens that must ALL appear (in any order,
+# not necessarily adjacent) for the rule to count as present. Short,
+# co-occurring tokens rather than a pinned sentence: a full-sentence anchor
+# dies to the next copyedit, and a test that fails on every copyedit is a
+# test that gets deleted at the next rewrite (the review's own warning).
+# Each token set below is still fatal to an actual deletion of the rule it
+# names -- verified by `test_a_deleted_rule_is_detected` below, and by the
+# live mutation recorded in this remediation's report.
+_GOVERNANCE_RULES = {
+    "recovery section": ("## Recovering from a bad release",),
+    "footer BLOCK / never-auto-fill": ("CHANGELOG:", "auto-fill"),
+    "publish read-back": ("gh release view", "non-draft"),
+    "immutable-tag hard rule": ("published tag is immutable",),
+    "derive-never-guess": ("MUST NOT guess the version",),
+    "pre-tag BLOCK-on-nonzero": ("pre-tag", "non-zero exit", "BLOCK"),
+    "payload-scoped window rule": ("$PAYLOAD", "MUST scope"),
+}
+
+
+def _missing_governance_rules(text):
+    """The subset of `_GOVERNANCE_RULES` names whose token set is NOT fully
+    present in `text`, in declaration order. Empty when every rule survives.
+    A pure function so the checker itself can be exercised against a
+    synthetic fixture, not only against today's real skill text."""
+    missing = []
+    for name, tokens in _GOVERNANCE_RULES.items():
+        if not all(token in text for token in tokens):
+            missing.append(name)
+    return missing
+
+
+class GovernanceRuleCheckerTest(unittest.TestCase):
+    """Proves `_missing_governance_rules` itself discriminates a deletion,
+    rather than trusting a checker that could vacuously report nothing
+    missing no matter what it is given."""
+
+    def test_every_rule_is_present_in_a_fixture_carrying_all_of_them(self):
+        fixture = " ".join(
+            token for tokens in _GOVERNANCE_RULES.values() for token in tokens)
+        self.assertEqual(_missing_governance_rules(fixture), [])
+
+    def test_deleting_one_rules_tokens_is_detected_and_only_that_one(self):
+        for name, tokens in _GOVERNANCE_RULES.items():
+            with self.subTest(rule=name):
+                fixture = " ".join(
+                    token for other, other_tokens in _GOVERNANCE_RULES.items()
+                    for token in other_tokens if other != name)
+                self.assertEqual(_missing_governance_rules(fixture), [name])
+
+    def test_an_empty_text_is_missing_every_rule(self):
+        self.assertEqual(
+            sorted(_missing_governance_rules("")),
+            sorted(_GOVERNANCE_RULES))
+
+
+class GovernanceSurvivalTest(unittest.TestCase):
+    """Applies the proven checker above to the SOURCE and to every payload
+    that actually renders `core/surface/skills/release/SKILL.md`'s prose.
+
+    Deliberately 4 texts (source + 3 rendered copies: `ca`, `ca-codex`
+    routines, `ca-pi` routines), not 5. The release-portable-fixture spec
+    ("Source of truth") counts FIVE release-skill-family payloads in this
+    repository, but the other two -- `plugins/ca-codex/skills/ca-release/
+    SKILL.md` and `plugins/ca-pi/skills/ca-release/SKILL.md` -- are thin
+    router STUBS rendered from `core/surface/commands/release.md`, a
+    DIFFERENT template that never carried this governance prose to begin
+    with (verified: `_output_rel` for `skills/release/SKILL.md` names only
+    the three below for the three governance hosts). Scoping to the two
+    stubs' non-existent copy of this prose would not test anything; scoping
+    to only a subset that happens to carry the text is exactly the mistake
+    this campaign has already made twice (MEDIUM-3's ca-codex/routines
+    omission) -- so the set here is every payload `_output_rel` says this
+    ONE template renders to, mechanically, not a hand-picked list."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = REPO_ROOT
+        source_path = os.path.join(
+            cls.repo, "core", "surface", "skills", "release", "SKILL.md")
+        with open(source_path, encoding="utf-8") as fh:
+            source_text = fh.read()
+        cls.texts = {"core/surface (source)": source_text}
+        descriptors = build_surface.load_host_descriptors(cls.repo)
+        for descriptor in descriptors:
+            dst, _rule = build_surface._output_rel(
+                "skills/release/SKILL.md", descriptor)
+            if dst is None:
+                continue
+            path = os.path.join(cls.repo, descriptor.plugin_dir, dst)
+            with open(path, encoding="utf-8") as fh:
+                cls.texts[f"{descriptor.plugin_dir}/{dst}"] = fh.read()
+
+    def test_at_least_the_three_rendered_copies_plus_source_are_covered(self):
+        # A sanity floor on the derivation itself: if `_output_rel` ever
+        # returned nothing (a descriptor.json edit that broke the release
+        # skill's own surface rule), this class would silently check ONLY
+        # the source and never notice a rendering regression -- the same
+        # vacuous-scope failure mode MEDIUM-3 found by a different door.
+        self.assertGreaterEqual(len(self.texts), 4)
+
+    def test_every_governance_rule_survives_in_every_payload(self):
+        for label, text in self.texts.items():
+            with self.subTest(payload=label):
+                missing = _missing_governance_rules(text)
+                self.assertEqual(
+                    missing, [],
+                    f"{label}: governance rule(s) missing: {missing} -- "
+                    "a deletion of load-bearing doctrine slipped through "
+                    "(adversarial review 2026-07-31, the mutation campaign "
+                    "this class exists to close)")
 
 
 if __name__ == "__main__":

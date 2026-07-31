@@ -11,69 +11,49 @@
 # This is a RATCHET, not a red test: `test_reference_resolution_ratchet`
 # asserts the computed set equals this file EXACTLY, in either direction. A
 # shrink not recorded here fails just as loudly as a new contaminating
-# reference appearing. Every entry below is a hardcoded, this-repo-specific
-# reference the release skill carries because the skill rewrite (T-41a-d,
-# A-6.0) has not yet run:
+# reference appearing.
 #
-#   - the Targets table (`| ca | v | plugins/ca/.claude-plugin/plugin.json |
-#     ... |`) hardcodes every plugin's manifest/changelog/artifact paths as
-#     literal prose; T-41a replaces the table with `load_targets()` and none
-#     of these literals survive as text;
-#   - every `python3 .github/scripts/_releaselib.py ...` / `tools/build-
-#     host-packages.py` invocation assumes the skill executes with THIS
-#     repo as its working tree; T-41b repoints every such helper call under
-#     `${CLAUDE_PLUGIN_ROOT}`;
-#   - `.github/published-tags.json` is hardcoded in Phase 3 step 5; T-41c
-#     reads it from the row's `provenance-manifest` field instead.
+# EMPTIED by T-41a-d/T-41f (issue #563), in this commit. All 24 prior entries
+# are resolved by the skill rewrite (A-6.0):
 #
-# Entries are removed here in the SAME commit that removes the
-# corresponding reference from the skill — never in a separate cleanup
-# commit, and never by widening the extractor to stop seeing them. T-79
-# asserts this file is empty and retires the ratchet.
+#   - the hardcoded Targets table (every `plugins/<x>/...` manifest,
+#     changelog, and artifact literal, plus every `<x>-CHANGELOG.md`/
+#     `<x>.claude-plugin/plugin.json` path, plus the three executed globs
+#     `plugins/ca/commands/*.md` / `plugins/ca/skills/*/` /
+#     `plugins/ca/agents/*.md`) — T-41a replaced the whole table with
+#     `load_targets()`; none of that literal prose survives, so none of it
+#     is extracted any longer (not merely "now resolves" — it is simply
+#     absent from the text: `plugins/ca-codex/...`, `plugins/ca-pi/...`,
+#     `plugins/ca-sandbox/...`, `plugins/ca/tools/farm.js`,
+#     `plugins/ca/.claude-plugin/plugin.json`, `plugins/ca/COMMANDS.md`,
+#     `plugins/ca/commands/*.md`, `plugins/ca/skills/*/`,
+#     `plugins/ca/agents/*.md`);
+#   - `.github/scripts/_releaselib.py` — T-41b repointed every invocation to
+#     `{{PLUGIN_ROOT}}/hooks/_releaselib.py` (rendered `${CLAUDE_PLUGIN_ROOT}`
+#     / `<plugin-root>` per host), which now resolves against the
+#     git-archived plugin payload for real (T-41f gave the portable
+#     mechanism a `__main__` CLI, so the reference is not just present but
+#     genuinely invocable);
+#   - `tools/build-host-packages.py` — the ca-pi-specific root-manifest
+#     regeneration step is no longer skill PROSE at all; it is DATA (this
+#     repo's own `ca-pi` row already declares
+#     `pre-tag: python3 tools/build-host-packages.py --check`), read and run
+#     by Phase 1 step 5's row-driven `pre-tag` execution rather than named
+#     in the skill text;
+#   - `check_badge_consistency.py`, `check_tag_immutability.py`,
+#     `payload_scope.py`, `test_release_lib.py` — the four prose-only
+#     mentions T-41b's scope was extended to cover (MEDIUM-4, adversarial
+#     review 2026-07-31: these were NAMED without being invoked, so a
+#     criterion about invocations alone would never clear them). Reworded to
+#     a conditional CI reference that names no repo path — the AC-6.3
+#     `decision-lifecycle` precedent — rather than carved out of the scan;
+#   - `.github/published-tags.json` — T-41c's Phase-3 provenance step now
+#     reads the row's `provenance-manifest` field
+#     (`{{PROJECT_DIR}}/.codearbiter/release-targets.md`'s `provenance-
+#     manifest` key) instead of naming this repo's own copy of the file
+#     literally; the "Recovering from a bad release" section's immutability
+#     doctrine (T-41d) is conditional on the same field for the same reason.
 #
-# MEDIUM-4 (adversarial review 2026-07-31), ruling: `check_badge_
-# consistency.py`, `check_tag_immutability.py`, `payload_scope.py`, and
-# `test_release_lib.py` below are named in PROSE ("CI's badge-consistency
-# guard (...)", "pinned by ...") rather than executed by the skill itself —
-# under the spec's own measurement rule they are not contaminating on
-# their own terms, so T-41a-d's "no .github/scripts/ invocation remains"
-# criterion will not touch them and T-79 would otherwise be unreachable.
-# Ruling is to keep ONE list (a blocking/non-blocking split would create a
-# parking space where a real invocation could hide, AC-6.3 precedent:
-# `decision-lifecycle` was reworded, not carved out) and extend T-41b's
-# scope to reword these four mentions too, the same way. This comment is
-# the marker naming T-41b as the task that clears all four; do not remove
-# these lines except in the commit that does the reword.
-#
-# MEDIUM-3 (adversarial review 2026-07-31): the three payloads below marked
-# "glob" are new in this remediation (HIGH-1 — the extractor previously
-# could not see an executed glob at all); the release-skill payloads under
-# `ca-codex`/`ca-pi` (`routines/release/SKILL.md`, an identical copy of
-# this same contamination) contribute NO entry not already listed here —
-# verified by `ReferenceResolutionRatchetTest` scanning all five installed
-# copies and asserting the UNIONED unresolved set against this file.
-
-.github/published-tags.json
-.github/scripts/_releaselib.py
-.github/scripts/check_badge_consistency.py
-.github/scripts/check_tag_immutability.py
-.github/scripts/payload_scope.py
-.github/scripts/test_release_lib.py
-plugins/ca-codex/.codex-plugin/plugin.json
-plugins/ca-codex/CHANGELOG.md
-plugins/ca-pi/CHANGELOG.md
-plugins/ca-pi/extensions/codearbiter-child.js
-plugins/ca-pi/extensions/codearbiter.js
-plugins/ca-pi/package.json
-plugins/ca-sandbox/.claude-plugin/plugin.json
-plugins/ca-sandbox/CHANGELOG.md
-plugins/ca-sandbox/tools/claude-inside.js
-plugins/ca-sandbox/tools/sandbox.js
-plugins/ca/.claude-plugin/plugin.json
-plugins/ca/COMMANDS.md
-plugins/ca/agents/*.md
-plugins/ca/commands/*.md
-plugins/ca/commands/COMMANDS.md
-plugins/ca/skills/*/
-plugins/ca/tools/farm.js
-tools/build-host-packages.py
+# T-79 (PENDING, not this commit) additionally asserts this file stays empty
+# and retires the ratchet MECHANISM itself; this commit only empties its
+# CONTENTS, which the ratchet's own equality check already requires.

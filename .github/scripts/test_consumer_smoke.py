@@ -703,7 +703,14 @@ _GLOB_DIR_REF_RE = re.compile(
 # T-41's portable form while the two stub payloads hold at 1 reference
 # each and never shrink, so pick a floor inside BOTH bounds against the
 # post-migration total, not just the pre-migration one.
-_EXTRACTION_FLOOR = 45
+#
+# Lowered by T-41a-d (issue #563): the Targets table -> loader rewrite
+# removed the bulk of the previously-extracted literals (measured live total
+# post-rewrite: 14, across all five payloads — 4 for `ca`, 1 each for the
+# two stubs, 4 each for the `ca-codex`/`ca-pi` routines copies). 12 sits
+# inside both bounds (14 >= 12, and 12 >= 14 // 2 = 7) with a small margin
+# rather than pinning the floor to the exact live count.
+_EXTRACTION_FLOOR = 12
 _STABLE_ANCHOR_REF = "${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"
 
 # T-73b payload list — one entry per shipped copy of the release skill.
@@ -1279,19 +1286,24 @@ _INVOCATION_SHAPE_RE = re.compile(r'^(?:[A-Za-z_][A-Za-z0-9_]*=\$\(|git |python3
 # so a mutant flipping run<->accounted is caught without comparing the
 # driver to itself.
 _LANE_INVOCATION_ANCHORS = (
-    ("target_resolution_tag_prefix", "never typed from memory:", "accounted"),
-    ("window_last_tag", "never a hand-rolled grep:", "accounted"),
+    ("target_resolution_tag_prefix", "never typed from memory:", "run"),
+    ("window_last_tag", "never a hand-rolled grep:", "run"),
     ("window_scope_bare", "the commit set is", "run"),
     ("window_scope_full_log", "Read every commit in the", "run"),
     ("tag_message_composition", "Tag with", "run"),
-    ("publish_state_classify", "do not flatly abort", "accounted"),
+    ("publish_state_classify", "do not flatly abort", "run"),
 )
 
-# The one this-repo path substring that currently makes an invocation
-# unresolvable in a consumer — literally the same string T-73b's
-# `known-unresolved-refs.txt` already carries (line "`.github/scripts/
-# _releaselib.py`"), so accounting here rides the SAME committed ratchet
-# file rather than a second, driftable copy of the same fact.
+# T-41b/T-41f (issue #563): all six anchored invocations now resolve under
+# the vendored plugin's OWN CLI (`${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`,
+# core/pysrc/_releaselib.py's `__main__` entry point) and run for real —
+# before this rewrite, three of the six named `.github/scripts/_releaselib.py`
+# (a CI-only shim with no `__main__`) and were merely ACCOUNTED for on the
+# same ratchet T-73b maintains, since nothing could actually invoke that path
+# from inside a consumer. `_classify_invocation`/`_LANE_SHIM_MARKER` remain as
+# general machinery — `LaneDriverUnitTest` still exercises the accounted arm
+# directly against synthetic text — in case a future invocation reintroduces
+# an unresolvable this-repo path; the LIVE skill no longer produces one.
 _LANE_SHIM_MARKER = ".github/scripts/_releaselib.py"
 
 
@@ -1357,18 +1369,15 @@ def _substitute_argv(argv, mapping):
     return out
 
 
-def _run_argv(argv, cwd):
-    """Execute one substituted, already-tokenized RUN-classified invocation.
-    No `shell=True` anywhere in this module — every invocation this driver
-    actually runs is a plain argv list (no pipe, no `$(...)` capture is ever
-    required by a RUN-classified invocation; the ones that need a pipe all
-    name the this-repo shim and are accounted, never run). `git` calls are
-    routed through the SAME hermetic isolation `_git` gives every other git
-    call in this module (a lane-driver-composed `git tag -a` is exactly as
-    reachable by an ambient core.hooksPath/gpgsign poison as any other git
-    invocation here); a leading bare `python3` token is swapped for
-    `sys.executable` since `python3` is not guaranteed present, especially
-    on Windows (the same substitution T-42 tracks for the skill itself)."""
+def _prepare_argv(argv, cwd):
+    """Apply this module's two standing per-invocation transforms to one
+    already-tokenized argv list, returning the adjusted list (never mutates
+    the input): a leading bare `python3` becomes `sys.executable`, since
+    `python3` is not guaranteed present, especially on Windows (the same
+    substitution T-42 tracks for the skill itself); a leading `git` gets the
+    SAME hermetic isolation `_git` gives every other git call in this module
+    (a lane-driver-composed `git tag -a` is exactly as reachable by an
+    ambient core.hooksPath/gpgsign poison as any other git invocation here)."""
     if argv and argv[0] == "python3":
         argv = [sys.executable] + argv[1:]
     if argv and argv[0] == "git":
@@ -1380,10 +1389,67 @@ def _run_argv(argv, cwd):
                 "-c", "user.name=codeArbiter consumer-smoke fixture",
                 "-c", "user.email=fixture@example.invalid",
                 *argv[1:]]
-        return subprocess.run(argv, cwd=cwd, capture_output=True, encoding="utf-8",
-                               timeout=GIT_TIMEOUT, env=_isolated_git_env())
+    return argv
+
+
+def _run_argv(argv, cwd, input_text=None):
+    """Execute one substituted, already-tokenized invocation. No
+    `shell=True` anywhere in this module — every invocation this driver runs
+    is a plain argv list; a pipe-bearing invocation is staged as SEPARATE
+    subprocess calls chained by stdin (`_run_command_substitution`), never a
+    literal `|` handed to a real shell. `input_text`, when given, is piped to
+    the process's stdin (the pipeline-staging case).
+
+    T-41f (issue #563): a python invocation's environment is built EXPLICITLY
+    rather than inherited. `core/pysrc/_releaselib.py`'s `tag-prefix`
+    subcommand resolves its declared file via `CLAUDE_PROJECT_DIR` first
+    (`default_targets_path`), and an ambient value leaking in from whatever
+    session happens to be running this SUITE (this file is itself typically
+    run from inside a governed session) would silently repoint resolution
+    away from this fixture's own scratch consumer — exactly the class of
+    dev-tree-state leak this whole module exists to keep out (memory:
+    dev-repo-state-masks-consumer-bugs). `CLAUDE_PROJECT_DIR` is therefore
+    always pinned to `cwd`, mirroring what a real host harness does, and
+    `CLAUDE_PLUGIN_ROOT` is stripped since no invocation this driver runs
+    reads it as an env var — the plugin root is already substituted directly
+    into the argv string before this function ever sees it."""
+    argv = _prepare_argv(argv, cwd)
+    if argv[0] == "git":
+        env = _isolated_git_env()
+    else:
+        env = dict(os.environ)
+        env.pop("CLAUDE_PLUGIN_ROOT", None)
+        env["CLAUDE_PROJECT_DIR"] = cwd
     return subprocess.run(argv, cwd=cwd, capture_output=True, encoding="utf-8",
-                           timeout=GIT_TIMEOUT)
+                           timeout=GIT_TIMEOUT, input=input_text, env=env)
+
+
+_VAR_SUBSHELL_RE = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*)=\$\((.*)\)$')
+
+
+def _run_command_substitution(invocation, cwd, mapping):
+    """Run a `VAR=$(command)` shaped invocation — possibly containing an
+    internal `|` pipeline — for real. Each pipeline stage is a SEPARATE
+    `_run_argv` call chained by stdin, never a literal `$(...)` or `|`
+    handed to an actual shell (no `shell=True` anywhere in this module).
+    Returns `(var_name, stdout.strip(), last_process)` so a caller can both
+    use the resolved value and assert on the process that produced it.
+    T-41b/T-41f (issue #563): before the release skill's helper invocations
+    were repointed under `${CLAUDE_PLUGIN_ROOT}` and the portable mechanism
+    gained a CLI, both of this driver's `VAR=$(...)` invocations named a
+    this-repo-only shim with no `__main__` and could only be ACCOUNTED for;
+    this function is what makes them genuinely RUNNABLE post-rewrite."""
+    m = _VAR_SUBSHELL_RE.match(invocation)
+    if not m:
+        raise ValueError(f"not a VAR=$(...) invocation: {invocation!r}")
+    var_name, inner = m.group(1), m.group(2)
+    stdin_text = None
+    proc = None
+    for stage in (s.strip() for s in inner.split("|")):
+        argv = _substitute_argv(shlex.split(stage), mapping)
+        proc = _run_argv(argv, cwd, input_text=stdin_text)
+        stdin_text = proc.stdout
+    return var_name, (proc.stdout or "").strip(), proc
 
 
 def _independent_last_tag(tags, prefix):
@@ -1580,15 +1646,22 @@ class _LaneFixture:
 
 
 def _execute_lane_sequence(skill_text, core_lane, consumer_root,
-                            prefix="v", payload="."):
-    """Extract, classify, and (for RUN invocations) execute the lane
-    driver's six anchored invocations against `consumer_root`, returning a
-    dict of every intermediate and derived value both T-74 and T-75 assert
-    against. Shared by both test classes so the extraction/substitution/
-    execution PLUMBING is written once; each class still asserts directly
-    against literals or independent oracles, never against each other's
-    computed results, so sharing this function does not make either class's
-    assertions mutation-dead."""
+                            target="app", payload="."):
+    """Extract, classify, and execute the lane driver's six anchored
+    invocations against `consumer_root`, returning a dict of every
+    intermediate and derived value both T-74 and T-75 assert against.
+    Shared by both test classes so the extraction/substitution/execution
+    PLUMBING is written once; each class still asserts directly against
+    literals or independent oracles, never against each other's computed
+    results, so sharing this function does not make either class's
+    assertions mutation-dead.
+
+    Post-T-41b/T-41f, all six anchored invocations are RUN, including the
+    two `VAR=$(...)` command-substitution forms (`target_resolution_tag_
+    prefix`, `window_last_tag`) that this driver previously could only
+    account for — `_run_command_substitution` stages each (the second is an
+    internal `|` pipeline) as separate subprocess calls chained by stdin,
+    exactly the sequence a shell would run, never a literal shell itself."""
     result = {"invocations": {}, "classification": {}, "processes": {}}
 
     for label, anchor, expected in _LANE_INVOCATION_ANCHORS:
@@ -1597,12 +1670,30 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
         result["invocations"][label] = invocation
         result["classification"][label] = classification
 
+    # The vendored plugin root the loaded `core_lane` module was read from
+    # (`_load_mechanism` sets `__file__` to `<plugin_root>/hooks/
+    # _releaselib.py`) — substituted for `${CLAUDE_PLUGIN_ROOT}` in every
+    # invocation this driver runs, mirroring how a real host resolves that
+    # placeholder at prompt-render time.
+    plugin_root = os.path.dirname(os.path.dirname(core_lane.__file__))
+    root_mapping = {"${CLAUDE_PLUGIN_ROOT}": plugin_root}
+
+    _, tag_prefix, proc = _run_command_substitution(
+        result["invocations"]["target_resolution_tag_prefix"], consumer_root,
+        {**root_mapping, "$TARGET": target})
+    result["processes"]["target_resolution_tag_prefix"] = proc
+    result["tag_prefix"] = tag_prefix
+
     tags = [t.strip() for t in
             _git(["tag", "-l"], consumer_root).stdout.splitlines() if t.strip()]
     result["tags"] = tags
-    result["last_tag_lib"] = core_lane.last_tag_select(tags, prefix)
-    result["last_tag_oracle"] = _independent_last_tag(tags, prefix)
-    last_tag = result["last_tag_lib"]
+
+    _, last_tag, proc = _run_command_substitution(
+        result["invocations"]["window_last_tag"], consumer_root,
+        {**root_mapping, "$TAG_PREFIX": tag_prefix})
+    result["processes"]["window_last_tag"] = proc
+    result["last_tag_lib"] = last_tag
+    result["last_tag_oracle"] = _independent_last_tag(tags, tag_prefix)
 
     for label in ("window_scope_bare", "window_scope_full_log"):
         argv = _substitute_argv(
@@ -1625,7 +1716,7 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     result["rolled_section"] = section_text
     result["rolled_full_text"] = full_text
     result["message"] = section_text.rstrip("\n") + f"\nReleased-at: {release_date}\n"
-    result["tag_name"] = prefix + result["next_version"]
+    result["tag_name"] = tag_prefix + result["next_version"]
 
     fd, message_path = tempfile.mkstemp(prefix="lane-driver-msg-", suffix=".txt")
     os.close(fd)
@@ -1640,6 +1731,26 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     finally:
         os.remove(message_path)
 
+    # publish_state_classify: a bare, 6-positional-argument CLI call — no
+    # pipe, no command substitution. Substituted with the state that holds
+    # at THIS point in the sequence (the tag composed above exists only
+    # in-memory as a message file; no ref has been created), matching
+    # exactly what Phase 2 step 1 checks BEFORE tagging: tag_exists=false,
+    # so `classify_publish_state` short-circuits to "publish_fresh"
+    # regardless of the other five values — the well-defined, meaningful
+    # case this fixture can exercise without first creating a real tag.
+    head_sha = _git(["rev-parse", "HEAD"], consumer_root).stdout.strip()
+    argv = _substitute_argv(
+        shlex.split(result["invocations"]["publish_state_classify"]),
+        {**root_mapping,
+         "<tag_exists>": "false", "<tag_sha>": "", "<head_sha>": head_sha,
+         "<tag_version>": result["next_version"],
+         "<manifest_version>": result["next_version"],
+         "<release_nondraft>": "false"})
+    proc = _run_argv(argv, consumer_root)
+    result["processes"]["publish_state_classify"] = proc
+    result["publish_state"] = (proc.stdout or "").strip()
+
     return result
 
 
@@ -1647,11 +1758,15 @@ class LaneDriverTest(unittest.TestCase):
     """T-74 (AC-6.6 'Lane driver'): the mechanical sequence runs AS THE
     PROSE SPELLS IT — invocation strings extracted from the installed
     `SKILL.md`, never a direct import — through target resolution, window
-    derivation, and tag-message composition. Each extracted invocation
-    either resolves and runs successfully, or is accounted for by the SAME
-    `known-unresolved-refs.txt` ratchet T-73b maintains; this class is green
-    and required from day one because the accounting, not a blanket "must
-    all run" requirement, is what the ratchet buys before T-41b lands."""
+    derivation, and tag-message composition.
+
+    Post-T-41b/T-41f (issue #563): all six anchored invocations now RUN —
+    before that rewrite landed, three of them named a this-repo-only shim
+    with no `__main__` and could only be ACCOUNTED for against the same
+    `known-unresolved-refs.txt` ratchet T-73b maintains.
+    `test_no_invocations_remain_accounted` documents that transition
+    directly rather than silently deleting the accounting machinery this
+    class used to depend on."""
 
     @classmethod
     def setUpClass(cls):
@@ -1687,21 +1802,47 @@ class LaneDriverTest(unittest.TestCase):
         expected = {label: exp for label, _, exp in _LANE_INVOCATION_ANCHORS}
         self.assertEqual(self.result["classification"], expected)
 
-    def test_accounted_invocations_are_on_the_committed_ratchet(self):
-        known = _load_known_unresolved()
+    def test_no_invocations_remain_accounted(self):
+        # T-41b/T-41f landed: every anchored invocation now resolves under
+        # the vendored plugin's own CLI and runs for real. This replaces
+        # `test_accounted_invocations_are_on_the_committed_ratchet` (which
+        # asserted the PRE-rewrite accounted set was non-empty and named on
+        # the ratchet) — that assertion would now fail vacuously, since
+        # there is nothing left to account for; a green run here is the
+        # positive statement that the migration completed, not a weakened
+        # substitute for it.
         accounted_labels = [label for label, cls_ in self.result["classification"].items()
                              if cls_ == "accounted"]
-        self.assertTrue(accounted_labels, "no invocation classified accounted — "
-                         "the ratchet-accounting arm of this test is untested")
-        for label in accounted_labels:
-            with self.subTest(label=label):
-                self.assertIn(_LANE_SHIM_MARKER, self.result["invocations"][label])
-                self.assertIn(
-                    _LANE_SHIM_MARKER, known,
-                    f"{label!r} names {_LANE_SHIM_MARKER!r}, which is no longer on "
-                    f"{KNOWN_UNRESOLVED_PATH!r} — either T-41b has landed (update "
-                    "this driver to RUN it) or the ratchet file drifted out from "
-                    "under this accounting")
+        self.assertEqual(
+            accounted_labels, [],
+            "an invocation is classified accounted again — either a new "
+            "this-repo-only reference crept back into the skill, or "
+            "_classify_invocation regressed")
+        known = _load_known_unresolved()
+        self.assertNotIn(
+            _LANE_SHIM_MARKER, known,
+            f"{_LANE_SHIM_MARKER!r} is still on {KNOWN_UNRESOLVED_PATH!r}, but "
+            "no invocation in the live skill names it any longer — the "
+            "ratchet file is out of date with the rewrite")
+
+    def test_publish_state_classify_ran_and_resolved_publish_fresh(self):
+        # The one anchored invocation `_execute_lane_sequence` substitutes
+        # with synthetic (not skill-derived) placeholder values, so its
+        # correctness is asserted directly here rather than folded into
+        # `test_run_invocations_all_exited_zero`'s exit-code-only check
+        # (AC-6.6: "never on exit codes alone").
+        proc = self.result["processes"]["publish_state_classify"]
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(self.result["publish_state"], "publish_fresh")
+
+    def test_target_resolution_and_last_tag_ran_via_the_vendored_cli(self):
+        # Cross-validates the two command-substitution invocations this
+        # class now RUNS (previously accounted) against values this driver
+        # already trusts from elsewhere: the resolved prefix must match
+        # what the consumer's own declared row names, and the resolved
+        # LAST_TAG must agree with the independent oracle.
+        self.assertEqual(self.result["tag_prefix"], "v")
+        self.assertEqual(self.result["last_tag_lib"], self.result["last_tag_oracle"])
 
     def test_run_invocations_all_exited_zero(self):
         run_labels = [label for label, cls_ in self.result["classification"].items()
@@ -1749,16 +1890,23 @@ class LaneDriverTest(unittest.TestCase):
         # the release skill ships as THREE full copies (`ca`,
         # `ca-codex`/`ca-pi` routines), and a driver reading only `ca`'s copy
         # is blind to a drift introduced into a sibling -- including one
-        # `tools/build-surface.py` itself renders differently. None of the
-        # six anchored invocations contains a host-token placeholder, so
-        # they are expected to be BYTE IDENTICAL across all three full
-        # payloads; a divergence here is itself the finding, not a bug in
-        # this test.
+        # `tools/build-surface.py` itself renders differently.
+        #
+        # Post-T-41b (issue #563): three of the six anchored invocations NOW
+        # carry the `{{PLUGIN_ROOT}}` placeholder, rendered per-host
+        # (`${CLAUDE_PLUGIN_ROOT}` for claude/codex, `<plugin-root>` for pi —
+        # `core/hosts.json`), so byte-identity across all three payloads no
+        # longer holds literally. Each payload's own plugin-root token is
+        # normalized to a fixed canonical string before comparing, so this
+        # test still catches a genuine wording/structure drift between
+        # copies while tolerating the ONE expected, per-host spelling
+        # difference `tools/build-surface.py` itself introduces.
         root_by_host = {
             "claude": _FIXTURE.plugin_root,
             "codex": _FIXTURE.codex_plugin_root,
             "pi": _FIXTURE.pi_plugin_root,
         }
+        host_tokens = _load_host_tokens()
         full_payloads = [
             (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
             if label not in _STUB_PAYLOAD_LABELS
@@ -1769,8 +1917,10 @@ class LaneDriverTest(unittest.TestCase):
             skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
             with open(skill_path, encoding="utf-8") as fh:
                 text = fh.read()
+            plugin_token, _project_token = host_tokens[host]
             per_payload_invocations[label] = {
                 inv_label: _capture_invocation_after_anchor(text, anchor)
+                    .replace(plugin_token, "\0PLUGIN_ROOT\0")
                 for inv_label, anchor, _ in _LANE_INVOCATION_ANCHORS
             }
         baseline_label, baseline = next(iter(per_payload_invocations.items()))
@@ -1779,7 +1929,8 @@ class LaneDriverTest(unittest.TestCase):
                 self.assertEqual(
                     invocations, baseline,
                     f"payload {label!r} extracted different invocation strings "
-                    f"than {baseline_label!r} — the release skill's copies have "
+                    f"than {baseline_label!r} (after normalizing each payload's "
+                    "own plugin-root token) — the release skill's copies have "
                     "drifted apart")
 
     def test_tag_message_composition_created_a_real_annotated_tag(self):
