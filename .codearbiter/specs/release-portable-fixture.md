@@ -42,10 +42,26 @@ is deferred to D-6.
 
 ## Source of truth
 
-Every skill and command edit lands in `core/surface/`, never a generated `plugins/*/` copy. The
-release skill ships in three payloads (`plugins/ca/skills/release/`,
-`plugins/ca-codex/skills/ca-release/`, `plugins/ca-pi/skills/ca-release/` plus
-`plugins/ca-pi/routines/release/`). Guards and structural assertions target the surface source.
+Every skill and command edit lands in `core/surface/`, never a generated `plugins/*/` copy. Guards
+and structural assertions target the surface source.
+
+**The release skill ships in five payloads, and this list was wrong twice.** Measured:
+
+| payload | `.github/scripts` refs |
+|---|---|
+| `plugins/ca/skills/release/SKILL.md` | 7 |
+| `plugins/ca-codex/routines/release/SKILL.md` | 7 |
+| `plugins/ca-pi/routines/release/SKILL.md` | 7 |
+| `plugins/ca-codex/skills/ca-release/SKILL.md` | 0 (stub) |
+| `plugins/ca-pi/skills/ca-release/SKILL.md` | 0 (stub) |
+
+*(Rev 4.7 — an earlier revision named four payloads and got the significant ones backwards: it listed
+the two `ca-release` stubs, which carry no contamination, and omitted
+`plugins/ca-codex/routines/release/` entirely, which carries a full set. An adversarial review caught
+the `ca-pi` omission; generalizing that fix surfaced the `ca-codex` one, which no review or spec had
+named. Any assertion scoped to one payload — including T-79's terminal "the list is empty" — would
+have certified `ca` while two identically contaminated copies kept shipping to Codex and Pi
+consumers.)*
 
 ## Migration ordering (load-bearing)
 

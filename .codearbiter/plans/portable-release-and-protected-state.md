@@ -293,8 +293,8 @@ empty and deletes the ratchet.
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-73a | `.github/scripts/test_consumer_smoke.py` | scratch consumer repo built; plugin materialized by `git archive HEAD -- plugins/ca` into a scratch cache — **not** an in-repo `CLAUDE_PLUGIN_ROOT` pointer, **not** a recursive copy (both carry uncommitted and gitignored dev-tree state) | consumer fixture | A-6.6 | T-27d | PENDING |
-| T-73b | `.github/scripts/test_consumer_smoke.py`, `.github/scripts/known-unresolved-refs.txt` | `-k reference_resolution_ratchet` — unresolved refs in the **installed** SKILL.md equal the committed list exactly; fails on any change in either direction | reference ratchet | A-6.6 | T-73a | PENDING |
+| T-73a | `.github/scripts/test_consumer_smoke.py` | scratch consumer repo built; plugin materialized by `git archive HEAD -- plugins/ca` into a scratch cache — **not** an in-repo `CLAUDE_PLUGIN_ROOT` pointer, **not** a recursive copy (both carry uncommitted and gitignored dev-tree state) | consumer fixture | A-6.6 | T-27d | ACCEPTED |
+| T-73b | `.github/scripts/test_consumer_smoke.py`, `.github/scripts/known-unresolved-refs.txt` | `-k reference_resolution_ratchet` — unresolved refs in the **installed** SKILL.md equal the committed list exactly; fails on any change in either direction | reference ratchet | A-6.6 | T-73a | ACCEPTED |
 | T-74 | `.github/scripts/test_consumer_smoke.py` | `-k lane_driver` — the mechanical sequence runs via **invocation strings extracted from the skill text**, never direct imports, so prose/CLI drift fails here | lane driver | A-6.6 | T-73b | PENDING |
 | T-75 | `.github/scripts/test_consumer_smoke.py` | `-k consumer_end_to_end` — asserts on derived **outputs** (resolved row, `LAST_TAG`, computed bump, rolled changelog text), never exit codes alone | portability proof | A-6.6 | T-74 | PENDING |
 | T-76 | `.github/scripts/test_consumer_smoke.py` | `-k backfill_detects` — no declared file, so the detected shape is presented and does not proceed unconfirmed | consumer back-fill | A-6.6 | T-75 | PENDING |
