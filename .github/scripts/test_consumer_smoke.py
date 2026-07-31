@@ -1351,7 +1351,15 @@ _LANE_INVOCATION_ANCHORS = (
     ("window_last_tag", "never a hand-rolled grep:", "run"),
     ("window_scope_bare", "the commit set is", "run"),
     ("window_scope_full_log", "Read every commit in the", "run"),
-    ("tag_message_composition", "Tag with", "run"),
+    # Anchored on "Peel it through" rather than the former "Tag with":
+    # Phase 2 step 1 was reordered so `git tag` runs only inside the
+    # `publish_fresh` branch, AFTER classification (MEDIUM, run-3
+    # adversarial review — a literal reading of the old order wrote the ref
+    # before computing whether writing it was safe). The captured
+    # invocation is unchanged (`peel-tag`); only the prose landmark ahead
+    # of it moved. Verified unique in all three installed renderings by
+    # test_lane_anchors_are_unique_in_every_rendering below.
+    ("tag_sha_peel", "Peel it through", "run"),
     ("publish_state_classify", "do not flatly abort", "run"),
 )
 
@@ -1787,10 +1795,10 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
         with open(message_path, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(result["message"])
         argv = _substitute_argv(
-            shlex.split(result["invocations"]["tag_message_composition"]),
+            shlex.split(result["invocations"]["tag_sha_peel"]),
             {"${TAG_PREFIX}MAJOR.MINOR.PATCH": result["tag_name"],
              "<message-file>": message_path})
-        result["processes"]["tag_message_composition"] = _run_argv(argv, consumer_root)
+        result["processes"]["tag_sha_peel"] = _run_argv(argv, consumer_root)
     finally:
         os.remove(message_path)
 
@@ -1990,8 +1998,8 @@ class LaneDriverTest(unittest.TestCase):
                     "own plugin-root token) — the release skill's copies have "
                     "drifted apart")
 
-    def test_tag_message_composition_created_a_real_annotated_tag(self):
-        proc = self.result["processes"]["tag_message_composition"]
+    def test_tag_sha_peel_created_a_real_annotated_tag(self):
+        proc = self.result["processes"]["tag_sha_peel"]
         self.assertEqual(proc.returncode, 0, proc.stderr)
         obj_type = _git(
             ["cat-file", "-t", self.result["tag_name"]], self.lane.consumer_root).stdout.strip()
@@ -2076,7 +2084,7 @@ class ConsumerEndToEndTest(unittest.TestCase):
         # The new section sits ABOVE the prior one.
         self.assertLess(text.index("## [1.3.0]"), text.index("## [1.2.3]"))
 
-    def test_tag_message_composition_passes_the_same_guards_phase3_applies(self):
+    def test_tag_sha_peel_passes_the_same_guards_phase3_applies(self):
         message = self.result["message"]
         tag = self.result["tag_name"]
         self.assertTrue(self.core_lane.notes_heading_matches(message, tag))
@@ -2336,6 +2344,51 @@ class BackfillTwoArmProofTest(unittest.TestCase):
         self.assertIn("manifest: package.json", proc.stdout)
         self.assertIn("changelog: CHANGELOG.md", proc.stdout)
         self.assertIn("payload: .", proc.stdout)
+
+    def test_lane_anchors_are_unique_in_every_rendering(self):
+        # The header comment above _LANE_INVOCATION_ANCHORS has always
+        # CLAIMED each anchor is "verified unique in the installed skill
+        # text". Nothing enforced it until now: the claim was prose, and a
+        # prose claim about a test is exactly the kind of thing that goes
+        # stale silently.
+        #
+        # Two distinct failure modes, both real:
+        #   - MISSING (count 0) — a prose edit moves or deletes the
+        #     landmark. This fires loudly at setUpClass, so it is already
+        #     hard to miss; the run-3 reorder of Phase 2 step 1 removed
+        #     "Tag with" and did exactly this.
+        #   - AMBIGUOUS (count > 1) — a prose edit introduces a SECOND
+        #     occurrence earlier in the file. `str.find()` takes the first
+        #     match, so the driver silently captures a different
+        #     invocation and every downstream assertion still passes,
+        #     against the wrong command. That is the one worth a test.
+        #
+        # Checked across all three full-prose renderings, not just `ca`: a
+        # check reading one copy is blind to drift in a sibling.
+        root_by_host = {
+            "claude": _FIXTURE.plugin_root,
+            "codex": _FIXTURE.codex_plugin_root,
+            "pi": _FIXTURE.pi_plugin_root,
+        }
+        full_payloads = [
+            (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
+            if label not in _STUB_PAYLOAD_LABELS
+        ]
+        self.assertEqual(len(full_payloads), 3)
+        for label, host, relpath in full_payloads:
+            skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
+            with open(skill_path, encoding="utf-8") as fh:
+                text = fh.read()
+            for name, anchor, _classification in _LANE_INVOCATION_ANCHORS:
+                self.assertEqual(
+                    text.count(anchor), 1,
+                    f"payload {label!r}: lane anchor {name!r} = {anchor!r} "
+                    f"occurs {text.count(anchor)} time(s); it must occur "
+                    "exactly once. Zero means a prose edit moved the "
+                    "landmark (update the anchor in the SAME commit). More "
+                    "than one means find()'s first-match rule now silently "
+                    "captures the wrong invocation while every assertion "
+                    "downstream keeps passing.")
 
     def test_full_release_skill_payloads_extract_the_same_backfill_invocation(self):
         # MEDIUM-3's exact defect class (mirrors LaneDriverTest's own
