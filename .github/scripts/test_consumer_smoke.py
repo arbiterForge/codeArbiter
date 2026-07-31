@@ -1351,15 +1351,23 @@ _LANE_INVOCATION_ANCHORS = (
     ("window_last_tag", "never a hand-rolled grep:", "run"),
     ("window_scope_bare", "the commit set is", "run"),
     ("window_scope_full_log", "Read every commit in the", "run"),
-    # Anchored on "Peel it through" rather than the former "Tag with":
-    # Phase 2 step 1 was reordered so `git tag` runs only inside the
-    # `publish_fresh` branch, AFTER classification (MEDIUM, run-3
-    # adversarial review — a literal reading of the old order wrote the ref
-    # before computing whether writing it was safe). The captured
-    # invocation is unchanged (`peel-tag`); only the prose landmark ahead
-    # of it moved. Verified unique in all three installed renderings by
-    # test_lane_anchors_are_unique_in_every_rendering below.
-    ("tag_sha_peel", "Peel it through", "run"),
+    # Re-anchored from the former "Tag with": Phase 2 step 1 was reordered
+    # so `git tag` runs only inside the `publish_fresh` branch, AFTER
+    # classification (MEDIUM, run-3 adversarial review — a literal reading
+    # of the old order wrote the ref before computing whether writing it
+    # was safe). The captured invocation is the SAME `git tag -a … -F
+    # <message-file>`; only its position, and the landmark ahead of it,
+    # moved.
+    #
+    # The anchor must sit between the relocated command and any earlier
+    # backtick span that also matches _INVOCATION_SHAPE_RE. An intuitive
+    # landmark ("this is the only place `git tag` runs") fails silently
+    # here: the bare `git tag` mention matches the shape regex first, so
+    # find()-then-first-match captures the two-word fragment instead of the
+    # real command, and shlex.split hands subprocess an argv that is not
+    # the lane's. Hence a landmark that precedes the command with no
+    # command-shaped span in between.
+    ("tag_message_composition", "write the ref now, and only here", "run"),
     ("publish_state_classify", "do not flatly abort", "run"),
 )
 
@@ -1795,10 +1803,10 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
         with open(message_path, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(result["message"])
         argv = _substitute_argv(
-            shlex.split(result["invocations"]["tag_sha_peel"]),
+            shlex.split(result["invocations"]["tag_message_composition"]),
             {"${TAG_PREFIX}MAJOR.MINOR.PATCH": result["tag_name"],
              "<message-file>": message_path})
-        result["processes"]["tag_sha_peel"] = _run_argv(argv, consumer_root)
+        result["processes"]["tag_message_composition"] = _run_argv(argv, consumer_root)
     finally:
         os.remove(message_path)
 
@@ -1998,8 +2006,8 @@ class LaneDriverTest(unittest.TestCase):
                     "own plugin-root token) — the release skill's copies have "
                     "drifted apart")
 
-    def test_tag_sha_peel_created_a_real_annotated_tag(self):
-        proc = self.result["processes"]["tag_sha_peel"]
+    def test_tag_message_composition_created_a_real_annotated_tag(self):
+        proc = self.result["processes"]["tag_message_composition"]
         self.assertEqual(proc.returncode, 0, proc.stderr)
         obj_type = _git(
             ["cat-file", "-t", self.result["tag_name"]], self.lane.consumer_root).stdout.strip()
@@ -2084,7 +2092,7 @@ class ConsumerEndToEndTest(unittest.TestCase):
         # The new section sits ABOVE the prior one.
         self.assertLess(text.index("## [1.3.0]"), text.index("## [1.2.3]"))
 
-    def test_tag_sha_peel_passes_the_same_guards_phase3_applies(self):
+    def test_tag_message_composition_passes_the_same_guards_phase3_applies(self):
         message = self.result["message"]
         tag = self.result["tag_name"]
         self.assertTrue(self.core_lane.notes_heading_matches(message, tag))
