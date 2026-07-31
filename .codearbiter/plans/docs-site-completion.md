@@ -1,6 +1,6 @@
 # Documentation Site Completion Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Complete the first-class codeArbiter documentation experience with the historic gate brand, splash docs rail, fixed hero atmosphere, professional diagram family, comprehensive page audit, source-backed generated references, and synchronized README.
 
@@ -16,7 +16,7 @@
 - Preserve GitHub Pages base-path safety under `/codeArbiter/`.
 - Reuse local Manrope and JetBrains Mono font assets.
 - Runtime media must come from real product behavior and carry provenance.
-- Do not stage `.superpowers/`.
+- Do not stage external tool working directories.
 - Use the historic commit-line gate silhouette; only its filled pivot triangle becomes an open downward terminal chevron.
 - Operational explanations remain editable, accessible SVG.
 - Use test-first changes and independently verifiable commits.
