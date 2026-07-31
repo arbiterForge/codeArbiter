@@ -126,6 +126,17 @@ predate the plugin rewrite and are grouped by date.
   `$WINDOW` (`HEAD` when there is no tag, `<tag>..HEAD` otherwise) before any
   command uses it.
 
+- **A project that had shipped without tagging was released backward.** With
+  no tag in its series the lane took `0.0.0` as the base, so a package whose
+  manifest already read `1.4.2` derived `0.1.0` - and the manifest bump then
+  wrote that over it, moving the project's own version backward. Every gate
+  passed, the manifest-equality assertion included, because the bump had just
+  made it equal. The base is now the highest version any declared manifest
+  carries, taken across all of them rather than the first, and the
+  strictly-greater assertion runs against that floor as well as against the
+  last tag - through a new `semver-greater` command, since the arithmetic the
+  hard rules say must never be guessed had no tool behind it.
+
 - **Three smaller wiring defects on the ordinary path.** The possibly-empty
   tag sha was passed unquoted, and on the fresh-publish path - the common case
   - an empty unquoted argument does not become an empty positional, it

@@ -1725,7 +1725,8 @@ class _LaneFixture:
 
 
 def _execute_lane_sequence(skill_text, core_lane, consumer_root,
-                            target="app", payload="."):
+                            target="app", payload=".",
+                            manifests=("package.json",)):
     """Extract, classify, and execute the lane driver's six anchored
     invocations against `consumer_root`, returning a dict of every
     intermediate and derived value both T-74 and T-75 assert against.
@@ -1793,8 +1794,36 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     result["window_entries"] = _parse_window_log(
         result["processes"]["window_scope_full_log"].stdout)
     result["bump"] = _classify_bump(result["window_entries"])
-    bare_last_tag = core_lane._bare_version(last_tag)
-    result["next_version"] = _bump_version(bare_last_tag, result["bump"])
+    # The base is the MAXIMUM of the tag baseline and every declared
+    # manifest's current version (HIGH, run-6 adversarial review). With no
+    # tag in the series, `_bare_version("<none>")` is "0.0.0" — and a
+    # project that has shipped 1.4.2 without ever tagging would derive
+    # 0.1.0 from it, walking its own version backward while every gate
+    # passes, because step 6's bump makes the manifest-equality assertion
+    # true after the fact. The prose now reads the manifests HERE, before
+    # any bump; the driver performs the same derivation rather than
+    # assuming the tag is the only floor.
+    # `_bare_version("<none>")` returns the sentinel unchanged, not
+    # "0.0.0" — it strips a prefix, it does not interpret the no-tag case.
+    # Mapping it to the 0.0.0 baseline is this caller's job, and doing it
+    # explicitly keeps a `None` semver_key out of the max() below.
+    tag_floor = core_lane._bare_version(last_tag)
+    if core_lane.semver_key(tag_floor) is None:
+        tag_floor = "0.0.0"
+    floors = [tag_floor]
+    for manifest_rel in manifests:
+        manifest_abs = os.path.join(consumer_root, *manifest_rel.split("/"))
+        try:
+            with open(manifest_abs, encoding="utf-8") as fh:
+                declared = json.load(fh).get("version")
+        except (OSError, ValueError):
+            declared = None
+        if isinstance(declared, str) and core_lane.semver_key(declared):
+            floors.append(declared)
+    base = max(floors, key=core_lane.semver_key)
+    result["version_floors"] = floors
+    result["version_base"] = base
+    result["next_version"] = _bump_version(base, result["bump"])
 
     with open(os.path.join(consumer_root, "CHANGELOG.md"), encoding="utf-8") as fh:
         existing_changelog = fh.read()
@@ -2185,6 +2214,107 @@ class ConsumerEndToEndTest(unittest.TestCase):
             "would strip, so the assertions above cannot distinguish "
             "`--cleanup=verbatim` from the default -- the fixture stopped "
             "covering #569 and needs a message with Markdown headings")
+
+
+class NeverTaggedManifestFloorTest(unittest.TestCase):
+    """HIGH, run-6 adversarial review: a project that has shipped a version
+    WITHOUT ever tagging in its series.
+
+    The lane resolved `LAST_TAG=<none>`, took `0.0.0` as the base, and
+    derived `0.1.0` from a `feat` — then Phase 1 step 6 wrote that over a
+    manifest that already read `1.4.2`, walking the project's own version
+    backward. Every gate passed, including the manifest-equality assertion,
+    because step 6 had just made it equal.
+
+    No fixture in this suite could catch it: every consumer built here had
+    a manifest CONSISTENT with its tag, so the floor was never load-bearing
+    and a missing floor check was indistinguishable from a working one —
+    the same vacuity the `--cleanup=verbatim` negative control exists to
+    prevent. This class supplies the missing case: no tags at all, and a
+    manifest that LEADS."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.scratch = tempfile.mkdtemp(prefix="ca-lane-floor-")
+        try:
+            cls.consumer_root = os.path.join(cls.scratch, "consumer")
+            build_consumer_repo(cls.consumer_root)
+            _write_text(
+                os.path.join(cls.consumer_root, ".codearbiter", "release-targets.md"),
+                RELEASE_TARGETS_BLOCK)
+            # The manifest asserts 1.4.2; the series has no tag at all.
+            manifest = os.path.join(cls.consumer_root, "package.json")
+            with open(manifest, encoding="utf-8") as fh:
+                document = json.load(fh)
+            document["version"] = "1.4.2"
+            _write_text(manifest, json.dumps(document, indent=2) + "\n")
+            for tag in _git(["tag", "-l"], cls.consumer_root).stdout.split():
+                _git(["tag", "-d", tag], cls.consumer_root)
+            _git(["add", "-A"], cls.consumer_root)
+            _git(["commit", "-q", "-m", "feat: a shipped-but-untagged feature"],
+                 cls.consumer_root)
+            skill_path = os.path.join(_FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.core_lane = _load_mechanism(
+                os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+                "_lane_driver_core_floor")
+            cls.result = _execute_lane_sequence(
+                cls.skill_text, cls.core_lane, cls.consumer_root)
+        except Exception:
+            _force_rmtree(cls.scratch)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    def test_the_series_really_has_no_tag(self):
+        # Without this the whole class could pass vacuously against a
+        # fixture that quietly kept a tag.
+        self.assertEqual(self.result["tags"], [])
+        self.assertEqual(self.result["last_tag_lib"], "<none>")
+
+    def test_the_window_is_bare_head_not_a_sentinel_range(self):
+        self.assertEqual(self.result["window_expr"], "HEAD")
+        self.assertEqual(self.result["processes"]["window_scope_bare"].returncode, 0)
+
+    def test_the_derived_version_does_not_walk_the_manifest_backward(self):
+        derived = self.result["next_version"]
+        self.assertTrue(
+            self.core_lane.semver_greater(derived, "1.4.2"),
+            f"derived {derived!r} is not strictly greater than the manifest's "
+            "own 1.4.2 — the release would move the project's version "
+            "BACKWARD (HIGH, run 6)")
+        self.assertNotEqual(
+            derived, "0.1.0",
+            "0.1.0 is the exact value the 0.0.0-base defect produced")
+
+    def test_the_manifest_is_part_of_the_base_not_just_the_tag(self):
+        # Names the mechanism, so a regression says WHY rather than only
+        # that a number changed.
+        self.assertEqual(self.result["version_base"], "1.4.2")
+        self.assertIn("1.4.2", self.result["version_floors"])
+        self.assertIn("0.0.0", self.result["version_floors"])
+
+    def test_the_shipped_cli_can_run_the_floor_check_itself(self):
+        # The prose tells an operator to assert the floor via
+        # `semver-greater`. If that subcommand is not reachable from the
+        # VENDORED payload, the instruction is unfollowable in a consumer.
+        cli = os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py")
+        good = _run_argv([sys.executable, cli, "semver-greater",
+                          self.result["next_version"], "1.4.2"],
+                         self.consumer_root)
+        bad = _run_argv([sys.executable, cli, "semver-greater", "0.1.0", "1.4.2"],
+                        self.consumer_root)
+        junk = _run_argv([sys.executable, cli, "semver-greater", "nope", "1.4.2"],
+                         self.consumer_root)
+        self.assertEqual(good.returncode, 0)
+        self.assertEqual(bad.returncode, 1)
+        self.assertEqual(
+            junk.returncode, 2,
+            "an unparseable version must be exit 2, distinct from the exit-1 "
+            "'compared, and not greater' answer")
 
 
 class LaneDriverUnitTest(unittest.TestCase):

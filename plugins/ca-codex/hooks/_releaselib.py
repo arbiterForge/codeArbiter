@@ -1067,6 +1067,14 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      semver-greater <candidate> <floor>
+                                  exit 0 iff `candidate` is STRICTLY greater
+                                  than `floor`; 1 when equal or lesser; 2 when
+                                  either is unparseable. The sanctioned way to
+                                  run the lane's strictly-greater assertions,
+                                  including the manifest FLOOR check -- both
+                                  were hand-done against a hard rule saying
+                                  the version MUST NOT be guessed.
       dates-match <changelog_section_file> <tag_message_file>
                                   exit 0 iff the changelog section's heading
                                   date equals the `Released-at:` date in the
@@ -1116,7 +1124,8 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
-            "notes-match|classify|peel-tag|backfill-detect} ...\n")
+            "notes-match|dates-match|semver-greater|classify|peel-tag|"
+            "backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1192,6 +1201,36 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "semver-greater" and len(rest) == 2:
+        # MEDIUM (adversarial review 2026-07-31, run 6): the hard rules say
+        # "MUST NOT guess the version", and every other mechanical step in
+        # the lane got a tested helper -- but the bump arithmetic and the
+        # strictly-greater assertion were both hand-done, because
+        # `semver_greater` was public API reachable only by import. This
+        # is also the mechanism the manifest-floor check needs (HIGH, run
+        # 6: a never-tagged project whose manifest already reads 1.4.2 was
+        # released as 0.1.0, walking its own version backward, because the
+        # only greater-than check compared against a `<none>` sentinel).
+        # Exit 0 iff `candidate` is STRICTLY greater than `floor`; 1
+        # otherwise -- including equal, which is the case that matters.
+        # Parseability is checked SEPARATELY and reported as exit 2, never
+        # folded into the exit-1 "not greater" answer. `semver_greater` is
+        # non-raising by this module's mechanism-function invariant, so an
+        # unparseable version returns False -- which is fail-CLOSED for the
+        # floor check (a garbage version cannot clear the floor) but is
+        # indistinguishable from a genuine "not greater". Conflating "I
+        # compared them and the answer is no" with "I could not compare
+        # them" is the exact defect class this lane's exit-3-vs-4 work
+        # already fixed once; it is not reintroduced here.
+        for value in rest:
+            if semver_key(value) is None:
+                sys.stderr.write(
+                    f"semver-greater: not valid SemVer: {value!r} -- this is "
+                    "NOT the same answer as 'not greater' (exit 1); the "
+                    "comparison did not happen\n")
+                return 2
+        return 0 if semver_greater(rest[0], rest[1]) else 1
 
     if cmd == "dates-match" and len(rest) == 2:
         # MEDIUM (adversarial review 2026-07-31, run 4): Phase 1 step 5 and

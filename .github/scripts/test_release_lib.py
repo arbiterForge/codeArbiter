@@ -2309,6 +2309,66 @@ class CoreCLITest(unittest.TestCase):
             missing = os.path.join(tmp, "does-not-exist.md")
             self.assertEqual(core_releaselib.main(["dates-match", missing, message]), 1)
 
+    # `semver-greater` (run 6). The hard rules say the version MUST NOT be
+    # guessed, yet the bump arithmetic and the strictly-greater assertion
+    # were both hand-done: `semver_greater` was public API reachable only
+    # by import. This is also the mechanism the manifest-FLOOR check needs
+    # (HIGH, run 6).
+    def test_semver_greater_exits_0_when_strictly_greater(self):
+        self.assertEqual(
+            core_releaselib.main(["semver-greater", "1.5.0", "1.4.2"]), 0)
+
+    def test_semver_greater_exits_1_when_lesser(self):
+        # The exact defect: a never-tagged project deriving 0.1.0 against a
+        # manifest already at 1.4.2.
+        self.assertEqual(
+            core_releaselib.main(["semver-greater", "0.1.0", "1.4.2"]), 1)
+
+    def test_semver_greater_exits_1_when_equal_not_0(self):
+        # "Strictly" is the whole point -- re-releasing the same version is
+        # the case an inclusive comparison would wave through.
+        self.assertEqual(
+            core_releaselib.main(["semver-greater", "1.4.2", "1.4.2"]), 1)
+
+    def test_semver_greater_exits_2_on_an_unparseable_version(self):
+        # Distinct from exit 1. `semver_greater` is non-raising and returns
+        # False for garbage, which is fail-closed but indistinguishable
+        # from a real "not greater" -- the same conflation the exit-3-vs-4
+        # work already removed from the declared-file path.
+        import io, contextlib
+        for argv in (["semver-greater", "nope", "1.4.2"],
+                     ["semver-greater", "1.4.2", "nope"]):
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                rc = core_releaselib.main(argv)
+            self.assertEqual(rc, 2, argv)
+            self.assertIn("not valid SemVer", err.getvalue())
+
+    def test_semver_greater_bad_invocation_exits_2(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(["semver-greater", "1.0.0"])
+        self.assertEqual(rc, 2)
+
+    def test_usage_banner_names_every_implemented_subcommand(self):
+        # LOW (run 6): `dates-match` was implemented and working but absent
+        # from the tool's own help, so an operator checking `--help`-shaped
+        # output would conclude the skill's instruction was stale. Derived
+        # from the dispatch table rather than a hand-list, so a future
+        # subcommand cannot be added without appearing here.
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            core_releaselib.main([])
+        banner = err.getvalue()
+        for name in ("tag-prefix", "list-targets", "last-tag", "notes-match",
+                     "dates-match", "semver-greater", "classify", "peel-tag",
+                     "backfill-detect"):
+            self.assertIn(
+                name, banner,
+                f"{name!r} is implemented but missing from the usage banner")
+
     def test_dates_match_bad_invocation_exits_2(self):
         import io, contextlib
         err = io.StringIO()
@@ -2894,6 +2954,14 @@ _GOVERNANCE_RULES = {
         "extracted with a real parser",),
     "LOW (run 5): the round-trip check reads the raw object, not a reconstruction": (
         "git cat-file tag ${TAG_PREFIX}MAJOR.MINOR.PATCH",),
+    # Run 6 (2026-07-31).
+    "HIGH (run 6): the base version floors on the manifest, not 0.0.0": (
+        "the highest version any declared `manifest` already carries",
+        "Take the MAXIMUM across every declared"),
+    "HIGH (run 6): the strictly-greater check runs against the manifest floor too": (
+        "semver-greater <derived> <floor>",),
+    "LOW (run 6): the show-ref exit-status rationale is corrected, not repeated": (
+        "the reason given for it was wrong",),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the
