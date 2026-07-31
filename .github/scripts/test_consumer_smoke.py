@@ -2118,11 +2118,25 @@ class ConsumerEndToEndTest(unittest.TestCase):
         # FILE, never against the tag object actually created) never
         # observe it. `RealHistoryTagStrippingEvidenceTest` below confirms
         # this has ALREADY happened to this repo's own real, published
-        # `v2.8.13` tag. This is not fixed here -- fixing the skill's `git
-        # tag` invocation is out of this test's scope and belongs to
-        # whichever task takes up T-41x or a new issue; this assertion
-        # documents the ACTUAL, currently-shipping behavior rather than
-        # silently "fixing" the extracted invocation to make the test pass.
+        # `v2.8.13` tag.
+        #
+        # INVERTED 2026-07-31 (run-4 adversarial review; issue #569). This
+        # assertion used to ENCODE the defect: it computed
+        # `_git_strip_cleanup(message)` and asserted the tag body equalled
+        # that mangled form -- documenting shipped behaviour rather than
+        # papering over it, which was the right call while the defect
+        # stood. It also left instructions for this exact moment: "if this
+        # now FAILS because the tag body DOES contain its heading, the
+        # invocation picked up `--cleanup=verbatim` and the defect was
+        # FIXED -- relax this assertion deliberately rather than treating a
+        # red run as a regression to chase." That is what happened; this is
+        # that deliberate inversion.
+        #
+        # It now asserts the OPPOSITE: the composed message must reach the
+        # tag object byte-for-byte, headings intact. A test asserting a
+        # stripped expectation cannot distinguish a fixed lane from a
+        # broken one -- it passes in precisely the world the fix exists to
+        # end.
         tag = self.result["tag_name"]
         obj_type = _git(["cat-file", "-t", tag], self.lane.consumer_root).stdout.strip()
         self.assertEqual(obj_type, "tag")
@@ -2130,21 +2144,37 @@ class ConsumerEndToEndTest(unittest.TestCase):
         # The tag object's own header lines (object/type/tag/tagger) precede
         # a blank line, after which the message body begins verbatim.
         _, _, body = raw.partition("\n\n")
-        stripped_expectation = _git_strip_cleanup(self.result["message"])
-        self.assertEqual(body.rstrip("\n"), stripped_expectation.rstrip("\n"))
-        # The composed message's OWN heading survives in-memory (the
-        # pre-tag guards run against it) but is genuinely gone from what
-        # got tagged -- the concrete gap between "checked" and "shipped".
+        self.assertEqual(
+            body.rstrip("\n"), self.result["message"].rstrip("\n"),
+            "the composed message must reach the tag object unmodified; a "
+            "difference here means `--cleanup=verbatim` was dropped from "
+            "the skill's `git tag` invocation and Markdown headings are "
+            "being stripped again (issue #569)")
+        # The exact bytes the default cleanup mode destroys, asserted
+        # individually so a regression names what was lost instead of
+        # printing a whole-body diff.
         self.assertIn(f"## [{self.result['next_version']}]", self.result["message"])
-        self.assertNotIn(
-            "## [", body,
-            "if this now FAILS because the tag body DOES contain its "
-            "heading, that means the skill's `git tag -a` invocation picked "
-            "up `--cleanup=verbatim` (or equivalent) and the stripping "
-            "defect this test documents was FIXED -- re-triage the "
-            "[NEEDS-TRIAGE] finding above and relax this assertion "
-            "deliberately, rather than treating a red run here as a "
-            "regression to chase")
+        self.assertIn(
+            f"## [{self.result['next_version']}]", body,
+            "the version heading is gone from the tag object -- #569 is back")
+        for heading in ("### Added", "### Fixed"):
+            if heading in self.result["message"]:
+                self.assertIn(
+                    heading, body,
+                    f"{heading!r} is gone from the tag object -- #569 is back")
+        # Negative control. Everything above would pass VACUOUSLY if the
+        # composed message happened to contain no `#` lines at all: strip
+        # and verbatim cleanup agree on such a message, so the assertions
+        # would hold no matter which mode the lane used, and the fix would
+        # be untested. Requiring the two forms to DIFFER proves this
+        # fixture actually exercises the bytes the defect destroys.
+        self.assertNotEqual(
+            _git_strip_cleanup(self.result["message"]).rstrip("\n"),
+            self.result["message"].rstrip("\n"),
+            "the composed message contains nothing git's default cleanup "
+            "would strip, so the assertions above cannot distinguish "
+            "`--cleanup=verbatim` from the default -- the fixture stopped "
+            "covering #569 and needs a message with Markdown headings")
 
 
 class LaneDriverUnitTest(unittest.TestCase):
