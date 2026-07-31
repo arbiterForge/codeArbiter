@@ -1091,6 +1091,7 @@ class ReleaselibShimTest(unittest.TestCase):
         "MalformedBlockError", "UnknownKeyError", "DuplicateKeyError",
         "DuplicateTargetError", "InvalidBooleanError", "MultipleBlocksError",
         "DelimiterInValueError", "MissingRequiredKeyError",
+        "FileExistsNoBlockError",
     )
 
     def test_shim_exception_names_are_not_silently_swapped(self):
@@ -1391,6 +1392,81 @@ class EmptyBlockTest(unittest.TestCase):
         self.assertFalse(
             issubclass(core_releaselib.AbsentBlockError,
                        core_releaselib.EmptyBlockError))
+
+
+class FileExistsNoBlockTest(unittest.TestCase):
+    """HIGH-1 (adversarial review 2026-07-31): an EXISTING declared-target
+    file that carries no delimiter block at all must raise a DIFFERENT,
+    distinguishable error than a genuinely ABSENT file -- the release
+    skill's Back-fill lane triggers on `AbsentBlockError` alone, and
+    treating "exists but no block" as the same case would make the lane
+    silently overwrite an operator's own existing (bad) file. Only
+    `load_targets` can make this distinction (it is the one function that
+    knows whether `open()` succeeded); `parse_release_targets` sees text
+    only and is UNCHANGED -- it keeps raising `AbsentBlockError` for a
+    blockless string, proven by `AbsentBlockTest` above, which this class
+    must not weaken."""
+
+    def test_existing_file_with_no_block_raises_file_exists_no_block_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "release-targets.md")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("just some prose, no block at all\n")
+            with self.assertRaises(core_releaselib.FileExistsNoBlockError):
+                core_releaselib.load_targets(path)
+
+    def test_genuinely_missing_file_still_raises_absent_block_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "does-not-exist.md")
+            with self.assertRaises(core_releaselib.AbsentBlockError):
+                core_releaselib.load_targets(path)
+
+    def test_existing_no_block_is_never_caught_by_except_absent_block_error(self):
+        # The exact hazard HIGH-1 names: a caller written BEFORE this class
+        # existed, with `except AbsentBlockError:` as its Back-fill trigger,
+        # must not accidentally widen to catch the existing-file case too.
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "release-targets.md")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("no block here either\n")
+            caught_as_absent = False
+            try:
+                try:
+                    core_releaselib.load_targets(path)
+                except core_releaselib.AbsentBlockError:
+                    caught_as_absent = True
+            except core_releaselib.FileExistsNoBlockError:
+                pass
+            self.assertFalse(
+                caught_as_absent,
+                "an existing-but-blockless file must never be caught by "
+                "`except AbsentBlockError:` -- that is the Back-fill "
+                "lane's genuinely-absent-only trigger")
+
+    def test_file_exists_no_block_error_is_a_sibling_not_a_subclass(self):
+        # Deliberately NOT `issubclass(FileExistsNoBlockError,
+        # AbsentBlockError)` in either direction -- both are siblings under
+        # ReleaseTargetsError, so a pre-existing `except AbsentBlockError`
+        # clause's behavior is unchanged by this class's addition.
+        self.assertFalse(
+            issubclass(core_releaselib.FileExistsNoBlockError,
+                       core_releaselib.AbsentBlockError))
+        self.assertFalse(
+            issubclass(core_releaselib.AbsentBlockError,
+                       core_releaselib.FileExistsNoBlockError))
+        self.assertTrue(
+            issubclass(core_releaselib.FileExistsNoBlockError,
+                       core_releaselib.ReleaseTargetsError))
+
+    def test_parse_release_targets_on_synthetic_text_is_unchanged(self):
+        # parse_release_targets has no file to have opened, so a blockless
+        # STRING still raises the ORIGINAL AbsentBlockError -- this class
+        # must not weaken AbsentBlockTest's existing proof.
+        with self.assertRaises(core_releaselib.AbsentBlockError):
+            core_releaselib.parse_release_targets("just prose, no block\n")
 
 
 class ParserContractTest(unittest.TestCase):
@@ -2127,7 +2203,10 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(out.getvalue().strip(), "publish_fresh")
 
-    def test_tag_prefix_absent_declared_file_exits_2_not_a_traceback(self):
+    def test_tag_prefix_absent_declared_file_exits_3_not_a_traceback(self):
+        # HIGH-1 (adversarial review 2026-07-31): a genuinely absent file
+        # gets its OWN exit code (3), never the generic bad-invocation/
+        # unknown-target code (2) it used to share with everything else.
         import io, contextlib
         err = io.StringIO()
         with contextlib.redirect_stderr(err):
@@ -2135,8 +2214,65 @@ class CoreCLITest(unittest.TestCase):
                 ["tag-prefix", "app", "--targets-file",
                  os.path.join(tempfile.gettempdir(),
                               "codearbiter-cli-test-does-not-exist.md")])
-        self.assertEqual(rc, 2)
+        self.assertEqual(rc, 3)
         self.assertIn("could not read declared release targets", err.getvalue())
+        self.assertIn("AbsentBlockError", err.getvalue())
+
+    def test_tag_prefix_existing_no_block_file_exits_4_distinct_from_absent(self):
+        # HIGH-1: an EXISTING file with no block is a DIFFERENT declared-file
+        # state than a genuinely absent one and must exit with a DIFFERENT
+        # code -- the exact discrimination the finding says the CLI lacked.
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "release-targets.md")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("no block in this file at all\n")
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                rc = core_releaselib.main(
+                    ["tag-prefix", "app", "--targets-file", path])
+            self.assertEqual(rc, 4)
+            self.assertIn("FileExistsNoBlockError", err.getvalue())
+
+    def test_list_targets_prints_every_declared_name(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_targets(
+                tmp,
+                "<!-- release-targets -->\n"
+                "[one]\n"
+                "prefix: v\n"
+                "changelog: CHANGELOG.md\n"
+                "payload: .\n"
+                "\n"
+                "[two]\n"
+                "prefix: two-v\n"
+                "changelog: two/CHANGELOG.md\n"
+                "payload: two/\n"
+                "<!-- /release-targets -->\n")
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(
+                    ["list-targets", "--targets-file", path])
+            self.assertEqual(rc, 0)
+            self.assertEqual(out.getvalue().splitlines(), ["one", "two"])
+
+    def test_list_targets_absent_file_exits_3(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(
+                ["list-targets", "--targets-file",
+                 os.path.join(tempfile.gettempdir(),
+                              "codearbiter-cli-list-targets-does-not-exist.md")])
+        self.assertEqual(rc, 3)
+
+    def test_list_targets_bad_invocation_exits_2(self):
+        import io, contextlib
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(["list-targets", "unexpected-positional"])
+        self.assertEqual(rc, 2)
 
     def test_default_targets_path_prefers_claude_project_dir_env(self):
         old = os.environ.get("CLAUDE_PROJECT_DIR")
@@ -2544,6 +2680,26 @@ _GOVERNANCE_RULES = {
     # DECISION-0036: a multi-target declared file requires an explicit
     # $TARGET; a bare invocation must STOP rather than defaulting.
     "bare multi-target invocation stops": ("$TARGET` is required", "STOP and ask"),
+    # Adversarial-review remediation (2026-07-31, agent-judgment exercise):
+    # each token set below is fatal to the SPECIFIC regression its finding
+    # names, not just a paraphrase of the rule -- see
+    # .codearbiter/reports/agent-lane-proof.json for the finding IDs.
+    "HIGH-1: back-fill distinguishes exists-vs-absent": (
+        "FileExistsNoBlockError", "mechanically distinct"),
+    "HIGH-1: back-fill re-checks existence at write time, belt-and-braces": (
+        "regardless of how this lane was entered", "STOP without writing",
+        "never overwrite an existing file at this path"),
+    "HIGH-2: CONTEXT.md is conditional on the Back-fill path": (
+        "Back-fill lane above has no", "not itself a STOP"),
+    "HIGH-3: back-fill's own write is committed before Pre-flight": (
+        "This write itself dirties the tree", "commit-gate", "chore: declare release targets"),
+    "HIGH-4: resume_publish still requires authorization": (
+        "resume_publish", "still requires explicit user authorization"),
+    "MEDIUM: footer BLOCK covers the full harvested set": (
+        "feat`/`fix`/`perf`/`refactor` commit", "MUST carry a `CHANGELOG:` footer"),
+    "MEDIUM: a footer on a non-bumping commit is harvested, not dropped": (
+        "Also harvest a `CHANGELOG:` footer from any", "test`/`docs`/`chore`/`ci` commit"),
+    "MEDIUM: list-targets exists": ("sanctioned enumeration", "list-targets"),
 }
 
 

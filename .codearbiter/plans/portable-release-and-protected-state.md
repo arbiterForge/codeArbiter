@@ -233,10 +233,10 @@ generate from it).
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-47 | `core/surface/skills/decompose/SKILL.md` | `python .github/scripts/test_board_sync.py -k decompose_intent_only` | intent-only elicitation | A-5.1 | T-46 | PENDING |
-| T-48 | `core/surface/skills/context-creation/SKILL.md` | `python .github/scripts/test_release_lib.py -k context_creation_writes_loadable` — the written file parses via `load_targets` | full elicitation | A-5.2 | T-47 | PENDING |
-| T-49 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_requires_confirmation` — no write without confirm | back-fill gate | A-5.3 | T-48 | PENDING |
-| T-50 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_persists` — second run reads, does not re-detect | back-fill persist | A-5.4 | T-49 | PENDING |
+| T-47 | `core/surface/skills/decompose/SKILL.md` | `python .github/scripts/test_board_sync.py -k decompose_intent_only` | intent-only elicitation | A-5.1 | T-46 | ACCEPTED |
+| T-48 | `core/surface/skills/context-creation/SKILL.md` | `python .github/scripts/test_release_lib.py -k context_creation_writes_loadable` — the written file parses via `load_targets` | full elicitation | A-5.2 | T-47 | ACCEPTED |
+| T-49 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_requires_confirmation` — no write without confirm | back-fill gate | A-5.3 | T-48 | ACCEPTED |
+| T-50 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_persists` — second run reads, does not re-detect | back-fill persist | A-5.4 | T-49 | ACCEPTED |
 | T-51 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k first_release_baseline` — baseline derived from `git log --diff-filter=A -- .codearbiter/CONTEXT.md`, with a user override offered in the prompt | adoption baseline | A-5.5 | T-50 | PENDING |
 | T-52 | `.codearbiter/.provenance/release-targets.json` | `python .github/scripts/test_provenancelib.py -k release_targets_triggers` | drift triggers | A-5.6 | T-51 | PENDING |
 
@@ -308,7 +308,7 @@ empty and deletes the ratchet.
 | T-73b | `.github/scripts/test_consumer_smoke.py`, `.github/scripts/known-unresolved-refs.txt` | `-k reference_resolution_ratchet` — unresolved refs in the **installed** SKILL.md equal the committed list exactly; fails on any change in either direction | reference ratchet | A-6.6 | T-73a | ACCEPTED |
 | T-74 | `.github/scripts/test_consumer_smoke.py` | `-k lane_driver` — the mechanical sequence runs via **invocation strings extracted from the skill text**, never direct imports, so prose/CLI drift fails here | lane driver | A-6.6 | T-73b | ACCEPTED |
 | T-75 | `.github/scripts/test_consumer_smoke.py` | `-k consumer_end_to_end` — asserts on derived **outputs** (resolved row, `LAST_TAG`, computed bump, rolled changelog text), never exit codes alone | portability proof | A-6.6 | T-74 | ACCEPTED |
-| T-76 | `.github/scripts/test_consumer_smoke.py` | `-k backfill_detects` — no declared file, so the detected shape is presented and does not proceed unconfirmed | consumer back-fill | A-6.6 | T-75 | PENDING |
+| T-76 | `.github/scripts/test_consumer_smoke.py` | `-k backfill_detects` — no declared file, so the detected shape is presented and does not proceed unconfirmed | consumer back-fill | A-6.6 | T-75 | ACCEPTED |
 | T-77 | `.github/scripts/test_release_trace.py` | `-k this_repo_still_releases` — pinned pre-change lane and new lane both derive next version, window and composed tag **message file** from live HEAD; equality asserted; **zero refs created** | this repo still releases | A-6.7 | T-76 | ACCEPTED |
 | T-78 | `.codearbiter/reports/agent-lane-proof.json` | scripted agent scenarios run against the scratch fixture — happy path, missing-footer BLOCK, back-fill confirm and refuse — with outcomes and the **content hash of the shipped skill** recorded | agent judgment layer | A-6.6 | T-77 | PENDING |
 | T-79 | `.codearbiter/release-targets.md`, `.github/scripts/check_skill_proof_fresh.py` | a `pre-tag` row asserts the recorded skill hash still matches the shipped skill, so editing the skill without re-running the proof **blocks the next release**; and the known-failures list is asserted empty, retiring the ratchet | proof freshness + ratchet retirement | A-6.8, A-6.1 | T-78 | PENDING |

@@ -49,6 +49,8 @@
 #   detect_candidate_target(manifest_candidates, changelog_candidates,
 #                           target=..., prefix=...) -> dict
 #   format_release_targets_block(row) -> str
+#   default_targets_path() -> str
+#   _targets_error_exit_code(exc) -> int
 #   main(argv) -> int
 #
 # CLI (T-41f): every consuming host vendors this file byte-identically into
@@ -76,6 +78,18 @@
 #   MissingRequiredKeyError — a target block is missing prefix/changelog/payload
 #   BackfillAmbiguousError  — the back-fill scan found zero, or more than one,
 #                             candidate manifest or changelog file (T-49/T-50)
+#   FileExistsNoBlockError  — the declared-target file EXISTS on disk but
+#                             carries no delimiter block at all (HIGH-1,
+#                             adversarial review 2026-07-31). Deliberately a
+#                             SIBLING of AbsentBlockError, not a subclass of
+#                             it: raised only by load_targets() (which knows
+#                             the file was opened successfully), never by
+#                             parse_release_targets() on synthetic text,
+#                             and never caught by an `except
+#                             AbsentBlockError:` clause written for the
+#                             genuinely-missing-file case — see "Back-fill
+#                             detection" below for why that distinction is
+#                             load-bearing.
 
 from __future__ import annotations
 
@@ -97,6 +111,35 @@ class AbsentBlockError(ReleaseTargetsError):
 
 class EmptyBlockError(ReleaseTargetsError):
     """The delimiter block is present but contains no declaration content."""
+
+
+class FileExistsNoBlockError(ReleaseTargetsError):
+    """The declared-target file EXISTS on disk (it opened and read
+    successfully) but contains no `<!-- release-targets -->` delimiter block
+    at all.
+
+    HIGH-1 (adversarial review 2026-07-31): before this class existed,
+    `load_targets` raised the SAME `AbsentBlockError` for this case as it did
+    for a genuinely missing file, because it delegated straight to
+    `parse_release_targets`, which cannot tell "no text at all" from "text
+    with no block in it" apart from "no file" -- it only ever sees text. An
+    agent implementing the release skill's Back-fill lane literally as
+    written -- catch `AbsentBlockError`, enter back-fill, "write the
+    confirmed block verbatim" -- would silently overwrite an operator's
+    EXISTING file that merely lacks the block, discarding whatever they
+    actually put there. That is exactly the outcome the skill's own prose
+    says this lane must never cause.
+
+    Deliberately a SIBLING of `AbsentBlockError` under `ReleaseTargetsError`,
+    not a subclass of it: an `except AbsentBlockError:` clause written for
+    "the file is genuinely absent" (the Back-fill lane's ONE sanctioned
+    trigger) continues to see only that case, unchanged, and does not
+    accidentally widen to catch this one. A broad `except
+    ReleaseTargetsError:` clause still catches both, as it always did. Only
+    `load_targets` ever raises this -- `parse_release_targets` is pure over
+    text and has no way to know whether a file existed, so its own
+    AbsentBlockError-on-no-block behavior against synthetic text is
+    unchanged."""
 
 
 class MalformedBlockError(ReleaseTargetsError):
@@ -738,14 +781,30 @@ def load_targets(path):
     declared-error contract `parse_release_targets` gives every other
     violation, so a `contents: write` caller can catch one exception type
     instead of one type for content problems and another for I/O ones. There
-    is, in the end, no block to find at an unreadable path either."""
+    is, in the end, no block to find at an unreadable path either.
+
+    An EXISTING, readable file that simply carries no delimiter block is a
+    DIFFERENT failure (HIGH-1, adversarial review 2026-07-31) and raises
+    `FileExistsNoBlockError` instead — see that class's docstring. This
+    function is the only place that distinction can be made, since it is the
+    only one that knows whether `open()` actually succeeded."""
     try:
         with open(path, encoding="utf-8", newline="") as fh:
             text = fh.read()
     except OSError as exc:
         raise AbsentBlockError(
             f"could not read release-targets file {path!r}: {exc}") from exc
-    return parse_release_targets(text)
+    try:
+        return parse_release_targets(text)
+    except AbsentBlockError as exc:
+        # The open() above already succeeded, so this is NOT "no file" -- it
+        # is "a file that exists and contains no block". Re-raised under the
+        # sibling class so a caller's `except AbsentBlockError:` (the
+        # Back-fill lane's trigger) never mistakes the two states for one
+        # another.
+        raise FileExistsNoBlockError(
+            f"{path!r} exists but contains no <!-- release-targets --> "
+            f"block: {exc}") from exc
 
 
 # --------------------------------------------------------------------------- #
@@ -935,11 +994,39 @@ def _resolve_target_row(target, targets_file):
     return None
 
 
+def _targets_error_exit_code(exc):
+    """The CLI's exit-code discriminator for any `ReleaseTargetsError`
+    surfaced from `load_targets` (HIGH-1, adversarial review 2026-07-31):
+
+      3  - a genuinely ABSENT declared file (`AbsentBlockError`, and nothing
+           else) -- nothing on disk at all. This is the release skill's
+           Back-fill lane's ONE sanctioned trigger.
+      4  - every other case: an EXISTING file that has no block
+           (`FileExistsNoBlockError`), or is empty, malformed, or otherwise
+           unparseable. All of these STOP outright per the skill's "Targets"
+           section and must never be mistaken for "safe to back-fill".
+
+    Exit code 2 is deliberately NOT reused for either state here: it already
+    means "bad CLI invocation" or "unrecognised target name" elsewhere in
+    this dispatcher, neither of which is a statement about the declared
+    file's own state -- collapsing them together is exactly how the
+    original defect made "absent" and "exists but broken" indistinguishable
+    from the CLI."""
+    return 3 if isinstance(exc, AbsentBlockError) else 4
+
+
 def main(argv):
     """CLI dispatch. Subcommands:
 
       tag-prefix <target> [--targets-file PATH]
                                   prints the target's declared `prefix`.
+      list-targets [--targets-file PATH]
+                                  prints every declared target's name, one
+                                  per line, in declaration order -- the
+                                  sanctioned way to enumerate targets without
+                                  hand-parsing the file (never guaranteed to
+                                  be a single name; a multi-target file names
+                                  more than one).
       last-tag <prefix>          stdin = tags (whitespace/newline separated)
                                   -> prints the selected tag or <none>.
       notes-match <tag> <notes_file>
@@ -960,15 +1047,17 @@ def main(argv):
                                   and exits 1 — it never prints a guess.
 
     `--targets-file PATH` overrides `default_targets_path()` for `tag-prefix`
-    only; every other subcommand needs no declared file at all. Every
-    subcommand prints a value/label and exits 0, or writes a short cause to
-    stderr and exits non-zero — never a bare traceback, so a caller shelling
-    out to this file gets a diagnosable failure either way. Returns a
-    process exit code."""
+    and `list-targets` only; every other subcommand needs no declared file
+    at all. `tag-prefix` and `list-targets` exit 3 when the declared file is
+    genuinely absent and 4 for every other declared-file error (HIGH-1,
+    `_targets_error_exit_code`); every other subcommand prints a value/label
+    and exits 0, or writes a short cause to stderr and exits non-zero —
+    never a bare traceback, so a caller shelling out to this file gets a
+    diagnosable failure either way. Returns a process exit code."""
     if not argv:
         sys.stderr.write(
-            "usage: _releaselib.py {tag-prefix|last-tag|notes-match"
-            "|classify|backfill-detect} ...\n")
+            "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
+            "notes-match|classify|backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -995,13 +1084,42 @@ def main(argv):
             row = _resolve_target_row(target, targets_file)
         except ReleaseTargetsError as exc:
             sys.stderr.write(
-                f"could not read declared release targets from "
-                f"{targets_file!r}: {exc}\n")
-            return 2
+                f"{type(exc).__name__}: could not read declared release "
+                f"targets from {targets_file!r}: {exc}\n")
+            return _targets_error_exit_code(exc)
         if row is None:
             sys.stderr.write(f"unknown release target: {target}\n")
             return 2
         print(row["prefix"])
+        return 0
+
+    if cmd == "list-targets":
+        # MEDIUM (adversarial review 2026-07-31): the single-target rule
+        # requires knowing a target's name, but `tag-prefix` takes the name
+        # as INPUT and, before this subcommand existed, nothing enumerated
+        # the declared names -- an agent had no sanctioned way to answer
+        # "what targets exist?" except hand-parsing the file, exactly the
+        # grammar this module exists to be the one tested parser for.
+        targets_file = default_targets_path()
+        if "--targets-file" in rest:
+            idx = rest.index("--targets-file")
+            if idx + 1 >= len(rest):
+                sys.stderr.write("--targets-file requires a value\n")
+                return 2
+            targets_file = rest[idx + 1]
+            rest = rest[:idx] + rest[idx + 2:]
+        if rest:
+            sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")
+            return 2
+        try:
+            rows = load_targets(targets_file)
+        except ReleaseTargetsError as exc:
+            sys.stderr.write(
+                f"{type(exc).__name__}: could not read declared release "
+                f"targets from {targets_file!r}: {exc}\n")
+            return _targets_error_exit_code(exc)
+        for row in rows:
+            print(row["target"])
         return 0
 
     if cmd == "last-tag" and len(rest) == 1:

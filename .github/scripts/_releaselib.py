@@ -65,7 +65,7 @@
 #   ReleaseTargetsError, AbsentBlockError, EmptyBlockError, MalformedBlockError,
 #   UnknownKeyError, DuplicateKeyError, DuplicateTargetError,
 #   InvalidBooleanError, MultipleBlocksError, DelimiterInValueError,
-#   MissingRequiredKeyError
+#   MissingRequiredKeyError, FileExistsNoBlockError
 #   semver_key(value) -> tuple | None
 #   semver_greater(current, base) -> bool
 #   notes_heading_matches(notes_text, tag) -> bool
@@ -121,6 +121,7 @@ InvalidBooleanError = _mechanism.InvalidBooleanError
 MultipleBlocksError = _mechanism.MultipleBlocksError
 DelimiterInValueError = _mechanism.DelimiterInValueError
 MissingRequiredKeyError = _mechanism.MissingRequiredKeyError
+FileExistsNoBlockError = _mechanism.FileExistsNoBlockError
 
 # SEMVER is re-exported because `tools/build-host-packages.py:22` imports it.
 # The first shim conversion dropped it while re-exporting its two neighbours,
