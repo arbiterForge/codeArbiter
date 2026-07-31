@@ -2168,49 +2168,204 @@ class RealHistoryTagStrippingEvidenceTest(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# T-76 — consumer back-fill. HONEST GAP: the release skill has no back-fill
-# section, no confirmation prose, and no candidate-shape-detection function
-# today (T-49/T-50, .codearbiter/plans/portable-release-and-protected-
-# state.md, are both still PENDING). There is therefore nothing to extract
-# and nothing to call for either of T-76's two required arms (refuse without
-# confirmation; persist on confirmation) — writing a test that MOCKS a
-# confirmation prompt the skill never asks for would be exactly the
-# green-but-hollow shape this campaign's own memory (a-green-job-can-
-# measure-nothing) warns against. What IS real and testable today, kept
-# green and required rather than left unasserted:
+# T-76 — consumer back-fill, the real two-arm proof (issue #563, T-49/T-50).
+# Replaces the 2026-07-31 canary (`BackfillNotYetImplementedTest`), which
+# asserted the ABSENCE of back-fill prose and was written to fail the moment
+# it closed, with the instruction to replace the whole class rather than
+# loosen the assertion. T-49/T-50 landed in this same commit, so this is
+# that replacement: both required arms (refuse without confirmation, persist
+# on confirmation) plus the "second run reads, does not re-detect" property,
+# run against the scratch consumer fixture (never this repo's dev tree),
+# with the `backfill-detect` invocation extracted from the INSTALLED skill
+# text and subprocess-executed — mirroring LaneDriverTest's own "prose, not
+# import" discipline (AC-6.6's "Lane driver" layer).
 # --------------------------------------------------------------------------- #
 
+_BACKFILL_DETECT_ANCHOR = "From the project root, run"
 
-class BackfillNotYetImplementedTest(unittest.TestCase):
-    """[NEEDS-TRIAGE] T-76's two-arm proof (refuse without confirmation,
-    persist on confirmation) is NOT implemented here — the skill capability
-    it would exercise does not exist yet. This class asserts the one honest,
-    mechanically-true fact available today (the lane cannot silently
-    back-fill a guess; `load_targets` raises rather than defaulting) plus a
-    canary that forces this class to be REPLACED, not silently left green
-    forever, the moment T-49/T-50 land."""
 
-    def test_backfill_detects_absence_and_the_lane_cannot_silently_proceed(self):
-        targets_path = os.path.join(_FIXTURE.consumer_root, ".codearbiter", "release-targets.md")
-        self.assertFalse(os.path.isfile(targets_path))
-        core_lane = _load_mechanism(
-            os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
-            "_backfill_probe_core")
-        with self.assertRaises(core_lane.AbsentBlockError):
-            core_lane.load_targets(targets_path)
+class _BackfillFixture:
+    """A fresh, disposable single-package consumer repo carrying NO declared
+    `release-targets.md` — the exact precondition the back-fill lane needs.
+    Private to this test class for the same reason `_LaneFixture` is private
+    to `LaneDriverTest`/`ConsumerEndToEndTest`: a mutating test must never
+    touch the shared module-level `_FIXTURE.consumer_root`, which
+    `ConsumerFixtureTest` asserts an exact tracked-file set against."""
 
-    def test_backfill_confirmation_prose_not_yet_shipped(self):
-        # Canary, not a feature check: this asserts the GAP, and is written
-        # to fail the moment it closes. If this goes red because the skill
-        # NOW contains back-fill/candidate-shape prose, that is T-49/T-50
-        # landing — replace this whole class with the real two-arm proof
-        # (refuse-without-confirmation, persist-on-confirmation) in that
-        # SAME commit; do not just delete or loosen this assertion.
-        skill_path = os.path.join(_FIXTURE.plugin_root, "skills", "release", "SKILL.md")
-        with open(skill_path, encoding="utf-8") as fh:
-            text = fh.read()
-        self.assertNotIn("back-fill", text.lower())
-        self.assertNotIn("candidate shape", text.lower())
+    def __init__(self, label):
+        self.scratch = tempfile.mkdtemp(prefix=f"ca-backfill-{label}-")
+        try:
+            self.consumer_root = os.path.join(self.scratch, "consumer")
+            build_consumer_repo(self.consumer_root)
+        except Exception:
+            # Mirrors `_Fixture.__init__`/`_LaneFixture.__init__`'s own
+            # pattern: allocate `self.scratch` before anything that can
+            # fail, so a failure here still removes it rather than leaks.
+            self.cleanup()
+            raise
+
+    def cleanup(self):
+        _force_rmtree(self.scratch)
+
+
+class BackfillTwoArmProofTest(unittest.TestCase):
+    """T-76 (AC-6.6 'backfill_detects'): with no declared file, the detected
+    shape is presented and does not proceed unconfirmed. `build_consumer_repo`
+    seeds exactly one `package.json` and one `CHANGELOG.md` at its root — the
+    single unambiguous candidate of each kind the back-fill lane's own
+    never-guess posture requires before it can propose anything at all."""
+
+    @classmethod
+    def setUpClass(cls):
+        # See LaneDriverTest.setUpClass's comment: unittest skips
+        # tearDownClass entirely if setUpClass raises, so cleanup on failure
+        # is handled explicitly here rather than left to tearDownClass.
+        cls.lane = _BackfillFixture("t76")
+        try:
+            skill_path = os.path.join(_FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.core_lane = _load_mechanism(
+                os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+                "_backfill_two_arm_core")
+            cls.targets_path = os.path.join(
+                cls.lane.consumer_root, ".codearbiter", "release-targets.md")
+            cls.invocation = _capture_invocation_after_anchor(
+                cls.skill_text, _BACKFILL_DETECT_ANCHOR)
+        except Exception:
+            cls.lane.cleanup()
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.lane.cleanup()
+
+    def _run_detect(self):
+        plugin_root = os.path.dirname(os.path.dirname(self.core_lane.__file__))
+        argv = _substitute_argv(
+            shlex.split(self.invocation), {"${CLAUDE_PLUGIN_ROOT}": plugin_root})
+        return _run_argv(argv, self.lane.consumer_root)
+
+    def test_no_declared_file_and_the_parser_still_refuses_to_default(self):
+        # The property `AbsentBlockError` is CORRECT and MUST stay (the task
+        # brief's own instruction): the back-fill lane HANDLES this error,
+        # it is never a silent default inside the parser itself.
+        self.assertFalse(os.path.isfile(self.targets_path))
+        with self.assertRaises(self.core_lane.AbsentBlockError):
+            self.core_lane.load_targets(self.targets_path)
+
+    def test_detection_extracted_from_the_installed_skill_finds_the_candidate(self):
+        proc = self._run_detect()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("[app]", proc.stdout)
+        self.assertIn("prefix: v", proc.stdout)
+        self.assertIn("manifest: package.json", proc.stdout)
+        self.assertIn("changelog: CHANGELOG.md", proc.stdout)
+        self.assertIn("payload: .", proc.stdout)
+
+    def test_full_release_skill_payloads_extract_the_same_backfill_invocation(self):
+        # MEDIUM-3's exact defect class (mirrors LaneDriverTest's own
+        # cross-payload check): a driver reading only the `ca` copy is
+        # blind to a drift introduced into a sibling. Scope to the THREE
+        # full payloads (the two `ca-release` stubs never carry this
+        # section at all), normalize each host's own plugin-root token
+        # spelling, and assert the extracted invocation is identical
+        # across all three -- and that the anchor is unambiguous (occurs
+        # exactly once) in each.
+        root_by_host = {
+            "claude": _FIXTURE.plugin_root,
+            "codex": _FIXTURE.codex_plugin_root,
+            "pi": _FIXTURE.pi_plugin_root,
+        }
+        host_tokens = _load_host_tokens()
+        full_payloads = [
+            (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
+            if label not in _STUB_PAYLOAD_LABELS
+        ]
+        self.assertEqual(len(full_payloads), 3)
+        per_payload_invocation = {}
+        for label, host, relpath in full_payloads:
+            skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
+            with open(skill_path, encoding="utf-8") as fh:
+                text = fh.read()
+            self.assertEqual(
+                text.count(_BACKFILL_DETECT_ANCHOR), 1,
+                f"payload {label!r}: anchor {_BACKFILL_DETECT_ANCHOR!r} must "
+                "occur exactly once (an ambiguous anchor would silently "
+                "extract the WRONG invocation via find()'s first-match rule)")
+            plugin_token, _project_token = host_tokens[host]
+            invocation = _capture_invocation_after_anchor(text, _BACKFILL_DETECT_ANCHOR)
+            per_payload_invocation[label] = invocation.replace(
+                plugin_token, "\0PLUGIN_ROOT\0")
+        baseline_label, baseline = next(iter(per_payload_invocation.items()))
+        for label, invocation in per_payload_invocation.items():
+            with self.subTest(payload=label):
+                self.assertEqual(
+                    invocation, baseline,
+                    f"payload {label!r} extracted a different backfill-detect "
+                    f"invocation than {baseline_label!r} (after normalizing "
+                    "each payload's own plugin-root token) -- the release "
+                    "skill's copies have drifted apart")
+
+    def test_arm_1_refuse_without_confirmation_writes_nothing(self):
+        # Detection alone is the mechanical half of "does not proceed
+        # without explicit confirmation": running it — even twice, as if a
+        # user has not yet answered — must never touch disk on its own.
+        self._run_detect()
+        self._run_detect()
+        self.assertFalse(
+            os.path.isfile(self.targets_path),
+            "backfill-detect must only PRINT the candidate block; it must "
+            "never write release-targets.md on its own")
+
+    def test_arm_2_persist_on_confirmation_and_a_second_run_reads_not_redetects(self):
+        proc = self._run_detect()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        confirmed_block = proc.stdout
+
+        # Confirmation: the lane's own persist step (Back-fill step 3) --
+        # write the confirmed block verbatim, exactly as the skill prose
+        # instructs.
+        os.makedirs(os.path.dirname(self.targets_path), exist_ok=True)
+        with open(self.targets_path, "w", encoding="utf-8", newline="") as fh:
+            fh.write(confirmed_block)
+
+        rows = self.core_lane.load_targets(self.targets_path)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["target"], "app")
+        self.assertEqual(rows[0]["prefix"], "v")
+        self.assertEqual(rows[0]["manifest"], ["package.json"])
+        self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+        self.assertEqual(rows[0]["payload"], ".")
+
+        # T-50: "a second run reads it rather than re-detecting" -- proven
+        # by NOT invoking detection again here at all (no `_run_detect`
+        # call below) and still getting the identical row back from the
+        # normal load path alone.
+        second_read = self.core_lane.load_targets(self.targets_path)
+        self.assertEqual(second_read, rows)
+
+    def test_ambiguous_candidates_still_refuse_rather_than_guess(self):
+        # A DIFFERENT scratch repo, not the shared happy-path lane: a second
+        # candidate manifest makes the scan genuinely ambiguous, and the
+        # command must refuse (non-zero exit, nothing printed) rather than
+        # pick one silently.
+        ambiguous = _BackfillFixture("t76-ambiguous")
+        try:
+            with open(os.path.join(ambiguous.consumer_root, "pyproject.toml"),
+                      "w", encoding="utf-8") as fh:
+                fh.write("")
+            plugin_root = os.path.dirname(os.path.dirname(self.core_lane.__file__))
+            argv = _substitute_argv(
+                shlex.split(self.invocation), {"${CLAUDE_PLUGIN_ROOT}": plugin_root})
+            proc = _run_argv(argv, ambiguous.consumer_root)
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertEqual(proc.stdout, "")
+            ambiguous_targets_path = os.path.join(
+                ambiguous.consumer_root, ".codearbiter", "release-targets.md")
+            self.assertFalse(os.path.isfile(ambiguous_targets_path))
+        finally:
+            ambiguous.cleanup()
 
 
 if __name__ == "__main__":

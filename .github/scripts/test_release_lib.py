@@ -707,13 +707,14 @@ class SkillPortabilityTest(unittest.TestCase):
         self.assertIn("pre-tag", self.text)
         self.assertIn("DECISION-0034", self.text)
 
-    # -- HIGH-1 (adversarial review 2026-07-31): the skill named a back-fill
-    #    lane (T-49/T-50) that did not exist yet, and a canary in
-    #    test_consumer_smoke.py fired on it. `context-creation` alone is
-    #    truthful today. --------------------------------------------------
+    # -- T-49/T-50 (issue #563, A-5.3/A-5.4): the back-fill lane itself now
+    #    exists (replacing the HIGH-1 canary from 2026-07-31, which asserted
+    #    the ABSENCE of this prose and was written to be replaced, not
+    #    loosened, the moment this landed — see BackfillSkillProseTest and
+    #    test_consumer_smoke.py's two-arm proof). --------------------------
 
-    def test_skill_does_not_claim_a_backfill_lane_yet(self):
-        self.assertNotIn("back-fill", self.text.lower())
+    def test_skill_names_the_backfill_lane_and_still_names_context_creation(self):
+        self.assertIn("back-fill", self.text.lower())
         self.assertIn("context-creation", self.text)
 
     # -- HIGH-3 (adversarial review 2026-07-31): a manifest path that is
@@ -2535,6 +2536,14 @@ _GOVERNANCE_RULES = {
     "derive-never-guess": ("MUST NOT guess the version",),
     "pre-tag BLOCK-on-nonzero": ("pre-tag", "non-zero exit", "BLOCK"),
     "payload-scoped window rule": ("$PAYLOAD", "MUST scope"),
+    # T-49/T-50 (issue #563, A-5.3/A-5.4): the back-fill lane must not be
+    # collapsible to a silent default -- both the requirement to confirm and
+    # the requirement to persist (rather than re-detect) are load-bearing.
+    "back-fill requires explicit confirmation": ("Back-fill", "explicit confirmation"),
+    "back-fill persists and does not re-detect": ("does not re-detect",),
+    # DECISION-0036: a multi-target declared file requires an explicit
+    # $TARGET; a bare invocation must STOP rather than defaulting.
+    "bare multi-target invocation stops": ("$TARGET` is required", "STOP and ask"),
 }
 
 
@@ -2629,6 +2638,408 @@ class GovernanceSurvivalTest(unittest.TestCase):
                     "a deletion of load-bearing doctrine slipped through "
                     "(adversarial review 2026-07-31, the mutation campaign "
                     "this class exists to close)")
+
+
+# --------------------------------------------------------------------------- #
+# T-49/T-50 (issue #563, A-5.3/A-5.4): the back-fill lane -- detection
+# mechanism, its CLI, and the release-skill prose describing it, all in this
+# same diff (the campaign's own governing rule after HIGH-1/HIGH-2 one slice
+# ago: prose and the machinery it describes land together, or not at all).
+# --------------------------------------------------------------------------- #
+
+
+class BackfillDetectionTest(unittest.TestCase):
+    """`detect_candidate_target` / `scan_backfill_candidates` /
+    `format_release_targets_block`: pure mechanism, exercised directly.
+    Ambiguity is asserted in BOTH directions per candidate kind (zero AND
+    multiple), not merely "zero raises" -- a checker that only covers one
+    arm leaves the other mutation-dead, which is exactly the arm the
+    never-guess posture exists for."""
+
+    def test_exactly_one_of_each_returns_a_row(self):
+        row = core_releaselib.detect_candidate_target(
+            ["package.json"], ["CHANGELOG.md"])
+        self.assertEqual(row, {
+            "target": "app", "prefix": "v",
+            "manifest": ["package.json"], "changelog": "CHANGELOG.md",
+            "payload": ".",
+        })
+
+    def test_zero_manifests_is_ambiguous(self):
+        with self.assertRaises(core_releaselib.BackfillAmbiguousError):
+            core_releaselib.detect_candidate_target([], ["CHANGELOG.md"])
+
+    def test_two_manifests_is_ambiguous(self):
+        with self.assertRaises(core_releaselib.BackfillAmbiguousError):
+            core_releaselib.detect_candidate_target(
+                ["package.json", "pyproject.toml"], ["CHANGELOG.md"])
+
+    def test_zero_changelogs_is_ambiguous(self):
+        with self.assertRaises(core_releaselib.BackfillAmbiguousError):
+            core_releaselib.detect_candidate_target(["package.json"], [])
+
+    def test_two_changelogs_is_ambiguous(self):
+        with self.assertRaises(core_releaselib.BackfillAmbiguousError):
+            core_releaselib.detect_candidate_target(
+                ["package.json"], ["CHANGELOG.md", "HISTORY.md"])
+
+    def test_ambiguous_errors_are_declared_release_targets_errors(self):
+        # A caller catching the general ReleaseTargetsError family (the same
+        # contract every other declared parser error already honors) must
+        # also catch this one.
+        self.assertTrue(
+            issubclass(core_releaselib.BackfillAmbiguousError,
+                       core_releaselib.ReleaseTargetsError))
+
+    def test_ambiguous_message_names_what_was_found(self):
+        with self.assertRaises(core_releaselib.BackfillAmbiguousError) as ctx:
+            core_releaselib.detect_candidate_target(
+                ["package.json", "pyproject.toml"], ["CHANGELOG.md"])
+        self.assertIn("package.json", str(ctx.exception))
+        self.assertIn("pyproject.toml", str(ctx.exception))
+
+    def test_scan_reads_only_the_top_level_and_is_deterministic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in ("package.json", "CHANGELOG.md"):
+                with open(os.path.join(tmp, name), "w", encoding="utf-8") as fh:
+                    fh.write("{}")
+            os.makedirs(os.path.join(tmp, "nested"), exist_ok=True)
+            with open(os.path.join(tmp, "nested", "pyproject.toml"),
+                      "w", encoding="utf-8") as fh:
+                fh.write("")
+            manifests, changelogs = core_releaselib.scan_backfill_candidates(tmp)
+            self.assertEqual(manifests, ["package.json"])
+            self.assertEqual(changelogs, ["CHANGELOG.md"])
+
+    def test_scan_of_a_missing_root_finds_nothing_rather_than_raising(self):
+        manifests, changelogs = core_releaselib.scan_backfill_candidates(
+            os.path.join(tempfile.gettempdir(),
+                         "codearbiter-backfill-scan-does-not-exist"))
+        self.assertEqual(manifests, [])
+        self.assertEqual(changelogs, [])
+
+    def test_format_round_trips_through_the_real_parser(self):
+        row = core_releaselib.detect_candidate_target(
+            ["package.json"], ["CHANGELOG.md"])
+        text = core_releaselib.format_release_targets_block(row)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "release-targets.md")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            rows = core_releaselib.load_targets(path)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["target"], "app")
+        self.assertEqual(rows[0]["prefix"], "v")
+        self.assertEqual(rows[0]["manifest"], ["package.json"])
+        self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+        self.assertEqual(rows[0]["payload"], ".")
+
+    def test_a_second_load_reads_the_persisted_row_without_detecting_again(self):
+        # T-50: "a second run reads it rather than re-detecting" -- proven
+        # mechanically by never calling detect_candidate_target/
+        # scan_backfill_candidates a second time and still getting the row.
+        row = core_releaselib.detect_candidate_target(
+            ["pyproject.toml"], ["HISTORY.md"], target="widgets", prefix="w")
+        text = core_releaselib.format_release_targets_block(row)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "release-targets.md")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            second_read = core_releaselib.load_targets(path)
+        self.assertEqual(second_read[0]["target"], "widgets")
+        self.assertEqual(second_read[0]["prefix"], "w")
+
+
+class BackfillCLITest(unittest.TestCase):
+    """`backfill-detect` end-to-end through `main(argv)` -- the shape the
+    release skill's back-fill lane actually shells out to."""
+
+    def test_exactly_one_candidate_of_each_prints_the_loadable_block_and_exits_0(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "package.json"), "w", encoding="utf-8") as fh:
+                fh.write("{}")
+            with open(os.path.join(tmp, "CHANGELOG.md"), "w", encoding="utf-8") as fh:
+                fh.write("# Changelog\n")
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(["backfill-detect", tmp])
+            self.assertEqual(rc, 0)
+            printed = out.getvalue()
+            with tempfile.TemporaryDirectory() as tmp2:
+                path = os.path.join(tmp2, "release-targets.md")
+                with open(path, "w", encoding="utf-8") as fh:
+                    fh.write(printed)
+                rows = core_releaselib.load_targets(path)
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["manifest"], ["package.json"])
+            self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+
+    def test_backfill_detect_writes_nothing_to_disk_even_on_success(self):
+        # T-49: detection alone is the mechanical half of "does not proceed
+        # without explicit confirmation" -- the CLI must ONLY print the
+        # candidate block, never persist it as a side effect. Snapshot the
+        # scanned root's own tree before/after: a passing exit code alone
+        # would not catch a mutant that also writes .codearbiter/
+        # release-targets.md into the scanned root.
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "package.json"), "w", encoding="utf-8") as fh:
+                fh.write("{}")
+            with open(os.path.join(tmp, "CHANGELOG.md"), "w", encoding="utf-8") as fh:
+                fh.write("# Changelog\n")
+            before = sorted(
+                os.path.relpath(os.path.join(dirpath, name), tmp)
+                for dirpath, _, names in os.walk(tmp) for name in names)
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                rc = core_releaselib.main(["backfill-detect", tmp])
+            self.assertEqual(rc, 0)
+            after = sorted(
+                os.path.relpath(os.path.join(dirpath, name), tmp)
+                for dirpath, _, names in os.walk(tmp) for name in names)
+            self.assertEqual(before, after)
+            self.assertFalse(
+                os.path.isdir(os.path.join(tmp, ".codearbiter")),
+                "backfill-detect must never create .codearbiter/ itself")
+
+    def test_no_candidates_exits_non_zero_and_writes_no_block(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                rc = core_releaselib.main(["backfill-detect", tmp])
+            self.assertNotEqual(rc, 0)
+            self.assertEqual(out.getvalue(), "")
+            self.assertIn("candidate manifest", err.getvalue())
+
+    def test_multiple_candidates_exits_non_zero_and_writes_no_block(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in ("package.json", "CHANGELOG.md", "HISTORY.md"):
+                with open(os.path.join(tmp, name), "w", encoding="utf-8") as fh:
+                    fh.write("{}" if name == "package.json" else "# x\n")
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                rc = core_releaselib.main(["backfill-detect", tmp])
+            self.assertNotEqual(rc, 0)
+            self.assertEqual(out.getvalue(), "")
+            self.assertIn("candidate changelog", err.getvalue())
+
+    def test_root_defaults_to_cwd_when_no_env_var_is_set(self):
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "Cargo.toml"), "w", encoding="utf-8") as fh:
+                fh.write("")
+            with open(os.path.join(tmp, "CHANGES.md"), "w", encoding="utf-8") as fh:
+                fh.write("")
+            old_cwd = os.getcwd()
+            old_env = os.environ.pop("CLAUDE_PROJECT_DIR", None)
+            os.chdir(tmp)
+            try:
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    rc = core_releaselib.main(["backfill-detect"])
+            finally:
+                os.chdir(old_cwd)
+                if old_env is not None:
+                    os.environ["CLAUDE_PROJECT_DIR"] = old_env
+            self.assertEqual(rc, 0)
+            self.assertIn("Cargo.toml", out.getvalue())
+            self.assertIn("CHANGES.md", out.getvalue())
+
+    def test_root_resolves_via_claude_project_dir_env_regardless_of_cwd(self):
+        # T-41f's own defect class, re-applied here: a subprocess is not
+        # guaranteed to start with the project directory as its cwd. Run
+        # from an UNRELATED cwd with CLAUDE_PROJECT_DIR pointed at the real
+        # candidate root and confirm resolution follows the env var, not
+        # wherever the caller happens to be sitting.
+        import io, contextlib
+        with tempfile.TemporaryDirectory() as project_root, \
+                tempfile.TemporaryDirectory() as unrelated_cwd:
+            with open(os.path.join(project_root, "package.json"),
+                      "w", encoding="utf-8") as fh:
+                fh.write("{}")
+            with open(os.path.join(project_root, "CHANGELOG.md"),
+                      "w", encoding="utf-8") as fh:
+                fh.write("")
+            old_cwd = os.getcwd()
+            old_env = os.environ.get("CLAUDE_PROJECT_DIR")
+            os.chdir(unrelated_cwd)
+            os.environ["CLAUDE_PROJECT_DIR"] = project_root
+            try:
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    rc = core_releaselib.main(["backfill-detect"])
+            finally:
+                os.chdir(old_cwd)
+                if old_env is None:
+                    os.environ.pop("CLAUDE_PROJECT_DIR", None)
+                else:
+                    os.environ["CLAUDE_PROJECT_DIR"] = old_env
+            self.assertEqual(rc, 0)
+            self.assertIn("manifest: package.json", out.getvalue())
+            self.assertIn("changelog: CHANGELOG.md", out.getvalue())
+
+    def test_default_backfill_root_prefers_claude_project_dir_env(self):
+        old = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = os.path.join("some", "consumer", "root")
+        try:
+            self.assertEqual(
+                core_releaselib.default_backfill_root(),
+                os.path.join("some", "consumer", "root"))
+        finally:
+            if old is None:
+                os.environ.pop("CLAUDE_PROJECT_DIR", None)
+            else:
+                os.environ["CLAUDE_PROJECT_DIR"] = old
+
+
+class BackfillSkillProseTest(unittest.TestCase):
+    """T-49/T-50 (issue #563, A-5.3/A-5.4): the release skill's own
+    'Back-fill' lane. Replaces the 2026-07-31 canary
+    (`test_skill_does_not_claim_a_backfill_lane_yet`, which asserted the
+    ABSENCE of this prose and was written to be replaced -- not loosened --
+    the moment this landed). These are the plan's own named verification
+    targets (`-k backfill_requires_confirmation`, `-k backfill_persists`)."""
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+        idx = cls.text.index("## Back-fill")
+        end = cls.text.index("## Pre-flight")
+        cls.section = cls.text[idx:end]
+
+    def test_backfill_requires_confirmation(self):
+        # Presents the detected shape and explicitly does not proceed
+        # (write, or advance to any later phase) without confirmation.
+        self.assertIn("explicit confirmation", self.section)
+        self.assertIn("Do NOT write it", self.section)
+        self.assertIn("STOPs the lane", self.section)
+        self.assertIn("nothing is written", self.section)
+        # It never guesses among ambiguous candidates either.
+        self.assertIn("never guesses among candidates", self.section)
+
+    def test_backfill_persists(self):
+        # On confirmation the file is actually written...
+        self.assertIn("Write the confirmed block", self.section)
+        self.assertIn("release-targets.md", self.section)
+        # ...and a second run reads rather than re-detecting.
+        self.assertIn("does not re-detect", self.section)
+        self.assertIn("never runs again for this project", self.section)
+
+    def test_backfill_fires_only_on_a_genuinely_absent_file(self):
+        # The distinct failure mode this whole lane must not step on: an
+        # EXISTING but malformed file still STOPs outright per "Targets"
+        # above, rather than being treated as a detection opportunity.
+        self.assertIn("AbsentBlockError", self.section)
+        self.assertIn("however broken", self.section)
+        targets_idx = self.text.index("## Targets")
+        targets_section = self.text[targets_idx:self.text.index("## Back-fill")]
+        self.assertIn("unparseable declared file", targets_section)
+        self.assertIn("STOP and surface the parse error", targets_section)
+
+    def test_backfill_invokes_the_detection_cli(self):
+        self.assertIn("backfill-detect", self.section)
+        self.assertIn("{{PLUGIN_ROOT}}/hooks/_releaselib.py", self.section)
+
+
+class ContextCreationBackfillTest(unittest.TestCase):
+    """T-48 (issue #563, A-5.2): `context-creation` scouts a candidate
+    manifest/changelog and writes a file `load_targets` accepts. The
+    assertion is on the WRITTEN FILE's validity (the spec's own wording),
+    not on skill prose -- the exact template block the skill instructs an
+    agent to produce is extracted and parsed for real, the same way
+    `SkillPortabilityTest`/`BackfillDetectionTest` treat other template
+    blocks in this campaign."""
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "context-creation", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+
+    def _extract_template(self):
+        start = self.text.index("<!-- release-targets -->")
+        end = self.text.index(
+            "<!-- /release-targets -->", start) + len("<!-- /release-targets -->")
+        return self.text[start:end]
+
+    def test_context_creation_names_the_destination_and_the_grammar_source(self):
+        self.assertIn("release-targets.md", self.text)
+        self.assertIn("{{PLUGIN_ROOT}}/hooks/_releaselib.py", self.text)
+
+    def test_context_creation_writes_loadable(self):
+        template = self._extract_template()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "release-targets.md")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(template + "\n")
+            rows = core_releaselib.load_targets(path)
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row["target"], "app")
+        self.assertEqual(row["prefix"], "v")
+        self.assertEqual(row["manifest"], ["package.json"])
+        self.assertEqual(row["changelog"], "CHANGELOG.md")
+        self.assertEqual(row["payload"], ".")
+
+    def test_context_creation_defers_to_confirm_nn_when_ambiguous(self):
+        # Never scaffolded from an ambiguous scan -- the same "no signal, or
+        # conflicting signals -> [CONFIRM-NN]" rule the rest of Phase 3
+        # already applies, extended (not special-cased) to this doc.
+        idx = self.text.index("HIGH-confidence only when")
+        window = self.text[idx:idx + 900]
+        self.assertIn("[CONFIRM-NN]", window)
+        self.assertIn("never scaffolded from an ambiguous scan", window.lower())
+
+
+class DecisionZeroZeroThreeSixTest(unittest.TestCase):
+    """DECISION-0036 pin (this-slice test obligation): a multi-target
+    declared file requires an explicit `$TARGET`; a bare invocation STOPs. A
+    single-target file still resolves implicitly. No hardcoded target name
+    resolves as a fallback -- this decision has no dedicated resolution
+    FUNCTION to unit-test (verified: `tag-prefix` always requires a
+    positional target name; `select_release_target` is the CI dispatch
+    arm's OWN selection, not this). The pin is therefore structural, over
+    the surface source that states the rule -- see this class's own
+    mutation-kill proof in the accompanying report for the text mutant this
+    was verified to catch."""
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+
+    def test_single_target_resolves_implicitly(self):
+        self.assertIn(
+            "the declared file names exactly one target, that target is "
+            "used", self.text)
+
+    def test_multi_target_bare_invocation_stops(self):
+        self.assertIn("$TARGET` is required", self.text)
+        self.assertIn("STOP and ask rather than guessing which one a bare "
+                       "invocation meant", self.text)
+
+    def test_no_hardcoded_target_name_resolves_as_a_fallback(self):
+        # Scoped to the SENTENCE that states the rule, not the whole
+        # document -- a regression restoring the pre-DECISION-0036 behavior
+        # would add a hardcoded fallback name right where the multi-target
+        # STOP is declared. `core/surface/commands/release.md` still carries
+        # the old "targets the `ca` plugin only" wording (T-71's job, not
+        # this skill's, and out of scope here) -- deliberately not scanned,
+        # since a stale sentence in a DIFFERENT file must not make this
+        # narrower check look like it covers ground it doesn't.
+        idx = self.text.index("$TARGET` is required")
+        window = self.text[max(0, idx - 200): idx + 200]
+        self.assertNotIn("`ca`", window)
+        self.assertNotIn("defaults to", window.lower())
 
 
 if __name__ == "__main__":

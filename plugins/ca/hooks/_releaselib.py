@@ -44,6 +44,11 @@
 #   peel_tag(ls_remote_text, tag) -> str
 #   parse_release_targets(text) -> list[dict]
 #   load_targets(path) -> list[dict]
+#   default_backfill_root() -> str
+#   scan_backfill_candidates(root) -> (list[str], list[str])
+#   detect_candidate_target(manifest_candidates, changelog_candidates,
+#                           target=..., prefix=...) -> dict
+#   format_release_targets_block(row) -> str
 #   main(argv) -> int
 #
 # CLI (T-41f): every consuming host vendors this file byte-identically into
@@ -69,6 +74,8 @@
 #                             which would otherwise truncate the block under a
 #                             naive non-greedy match
 #   MissingRequiredKeyError — a target block is missing prefix/changelog/payload
+#   BackfillAmbiguousError  — the back-fill scan found zero, or more than one,
+#                             candidate manifest or changelog file (T-49/T-50)
 
 from __future__ import annotations
 
@@ -742,6 +749,131 @@ def load_targets(path):
 
 
 # --------------------------------------------------------------------------- #
+# Back-fill detection (T-49/T-50, issue #563, spec AC-5.3/5.4). Fires only
+# when a caller has already observed `load_targets` raise `AbsentBlockError`
+# — a genuinely MISSING declared file. `load_targets` itself is unchanged and
+# keeps raising on absence; nothing here is a silent default inside the
+# parser. An unparseable EXISTING file (any other ReleaseTargetsError
+# subclass) is a different failure and is never routed through this — the
+# release skill's own "Targets" prose still STOPs outright on that case.
+#
+# Detection is honest about ambiguity by construction: it never returns a
+# single guess unless the scan found EXACTLY one candidate manifest and
+# EXACTLY one candidate changelog. Zero of either (nothing plausible) or more
+# than one of either (several plausible candidates, no signal for which one)
+# both raise `BackfillAmbiguousError` — the caller (the release skill's
+# back-fill lane) surfaces that as "cannot propose a row, route to full
+# elicitation instead" rather than inventing a target from a guess.
+# --------------------------------------------------------------------------- #
+
+# Generic, ecosystem-level manifest/changelog filenames — not a fact about
+# any one consuming repository, so these stay clear of the module denylist
+# (A-1.2) the same way the shared grammar keys already do.
+BACKFILL_MANIFEST_CANDIDATES = (
+    "package.json", "pyproject.toml", "Cargo.toml", "composer.json",
+)
+BACKFILL_CHANGELOG_CANDIDATES = (
+    "CHANGELOG.md", "CHANGES.md", "HISTORY.md",
+)
+
+# The generic single-target example name/prefix this module's own docstring
+# and the release-portable-fixture spec's grammar section both use for a
+# one-target consumer (`[app]` / `prefix: v`) — reused here as the back-fill
+# lane's default rather than restated as a second, drifting copy.
+_BACKFILL_DEFAULT_TARGET = "app"
+_BACKFILL_DEFAULT_PREFIX = "v"
+
+
+class BackfillAmbiguousError(ReleaseTargetsError):
+    """Raised by `detect_candidate_target` when the scan found zero, or more
+    than one, candidate manifest or changelog file. A repo with several
+    plausible manifests (or none) must not receive a confidently-wrong
+    proposal — the never-guess posture this whole module's parser already
+    applies to a malformed declaration applies here too, to an AMBIGUOUS
+    absence rather than a malformed one."""
+
+
+def scan_backfill_candidates(root):
+    """The one filesystem reader for back-fill detection: lists `root`'s
+    top-level entries and returns `(manifest_candidates, changelog_candidates)`
+    — the repo-relative names present from `BACKFILL_MANIFEST_CANDIDATES` and
+    `BACKFILL_CHANGELOG_CANDIDATES`, each sorted for determinism. Deliberately
+    a TOP-LEVEL-ONLY scan: this is a first-pass detection that gets PRESENTED
+    to the user for explicit confirmation, never a silent multi-directory
+    guess. An unreadable `root` degrades to "nothing found" (both lists
+    empty) rather than raising — the caller's own ambiguity handling already
+    treats "zero candidates" as a case to surface, so a missing/unreadable
+    root reaches the same honest "cannot propose one" outcome instead of a
+    bare `OSError` escaping a detection helper."""
+    try:
+        entries = set(os.listdir(root))
+    except OSError:
+        entries = set()
+    manifests = sorted(name for name in BACKFILL_MANIFEST_CANDIDATES
+                        if name in entries)
+    changelogs = sorted(name for name in BACKFILL_CHANGELOG_CANDIDATES
+                         if name in entries)
+    return manifests, changelogs
+
+
+def detect_candidate_target(manifest_candidates, changelog_candidates,
+                             target=_BACKFILL_DEFAULT_TARGET,
+                             prefix=_BACKFILL_DEFAULT_PREFIX):
+    """Pure detection logic over an ALREADY-SCANNED set of candidate names
+    (`scan_backfill_candidates` is the one filesystem reader, kept separate
+    per this module's read-isolation convention). Returns a row dict shaped
+    like one `load_targets` entry (`target`, `prefix`, `manifest`,
+    `changelog`, `payload`) ONLY when exactly one manifest candidate and
+    exactly one changelog candidate were found. Raises
+    `BackfillAmbiguousError` for every other case — zero or multiple of
+    either — naming which side was ambiguous and what was found, so a caller
+    surfacing the error has something concrete to show the user."""
+    # Plain ASCII throughout this message, deliberately: unlike every
+    # DOCSTRING/comment in this module, this text is actually written to a
+    # CLI's stdout/stderr and captured by a real subprocess call. A child
+    # Python process with no PYTHONIOENCODING/PYTHONUTF8 set encodes its
+    # stdout/stderr using the ambient console codepage on Windows (not
+    # UTF-8), so a non-ASCII character here (an em-dash raised this exact
+    # failure, verified) can produce bytes a UTF-8-decoding parent
+    # (`subprocess.run(..., encoding="utf-8")`) cannot decode at all.
+    if len(manifest_candidates) != 1:
+        raise BackfillAmbiguousError(
+            f"found {len(manifest_candidates)} candidate manifest file(s) "
+            f"({', '.join(manifest_candidates) or 'none'}) - cannot propose "
+            "a single release-targets.md row without asking which one")
+    if len(changelog_candidates) != 1:
+        raise BackfillAmbiguousError(
+            f"found {len(changelog_candidates)} candidate changelog file(s) "
+            f"({', '.join(changelog_candidates) or 'none'}) - cannot propose "
+            "a single release-targets.md row without asking which one")
+    return {
+        "target": target,
+        "prefix": prefix,
+        "manifest": [manifest_candidates[0]],
+        "changelog": changelog_candidates[0],
+        "payload": ".",
+    }
+
+
+def format_release_targets_block(row):
+    """Render one `load_targets`-loadable file body from a row dict shaped
+    like `detect_candidate_target`'s return value (or any dict carrying at
+    least `target`, `prefix`, `changelog`, `payload`, and a `manifest` list).
+    Round-trips through `parse_release_targets` — this is the one function
+    that turns a detected/confirmed candidate into the exact text the
+    back-fill lane persists, so a caller never hand-assembles the delimiter
+    grammar itself."""
+    lines = ["<!-- release-targets -->", f"[{row['target']}]",
+              f"prefix: {row['prefix']}"]
+    for manifest in row.get("manifest", []):
+        lines.append(f"manifest: {manifest}")
+    lines.append(f"changelog: {row['changelog']}")
+    lines.append(f"payload: {row['payload']}")
+    lines.append("<!-- /release-targets -->")
+    return "\n".join(lines) + "\n"
+
+
+# --------------------------------------------------------------------------- #
 # CLI entry point (T-41f, issue #563). Gated behind `if __name__ ==
 # "__main__":` at the bottom of this file, so nothing here touches the
 # zero-side-effects-at-import invariant every other section of this module
@@ -779,6 +911,17 @@ def default_targets_path():
     return os.path.join(root, ".codearbiter", "release-targets.md")
 
 
+def default_backfill_root():
+    """The back-fill scan's default root, mirroring `default_targets_path`'s
+    own env-first precedence exactly: `CLAUDE_PROJECT_DIR` when set, else the
+    process's current working directory. Without this, `backfill-detect`
+    invoked with no positional root (the shape the release skill's own
+    prose uses) would scan whatever directory the CALLER happens to be
+    running in rather than the project root — the same T-41f defect class
+    this module's CLI already guards against for `tag-prefix`."""
+    return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+
+
 def _resolve_target_row(target, targets_file):
     """The declared row named `target` in `targets_file`, or `None` if no
     row of that name is declared. Raises `ReleaseTargetsError` (any
@@ -806,6 +949,15 @@ def main(argv):
                <manifest_version> <release_nondraft>
                                   prints the publish-state label
                                   (bools: true/false).
+      backfill-detect [root]     scans `root` (default: `default_backfill_
+                                  root()`, i.e. `CLAUDE_PROJECT_DIR` then
+                                  cwd) for exactly one candidate manifest and
+                                  one candidate changelog (T-49/T-50); on a
+                                  single unambiguous candidate of each,
+                                  prints the exact `release-targets.md`
+                                  block text and exits 0; on zero or multiple
+                                  of either, writes the ambiguity to stderr
+                                  and exits 1 — it never prints a guess.
 
     `--targets-file PATH` overrides `default_targets_path()` for `tag-prefix`
     only; every other subcommand needs no declared file at all. Every
@@ -816,7 +968,7 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|last-tag|notes-match"
-            "|classify} ...\n")
+            "|classify|backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -870,6 +1022,17 @@ def main(argv):
             tag_exists=as_bool(rest[0]), tag_sha=rest[1], head_sha=rest[2],
             tag_version=rest[3], manifest_version=rest[4],
             release_is_nondraft=as_bool(rest[5])))
+        return 0
+
+    if cmd == "backfill-detect" and len(rest) <= 1:
+        root = rest[0] if rest else default_backfill_root()
+        manifests, changelogs = scan_backfill_candidates(root)
+        try:
+            row = detect_candidate_target(manifests, changelogs)
+        except BackfillAmbiguousError as exc:
+            sys.stderr.write(f"{exc}\n")
+            return 1
+        sys.stdout.write(format_release_targets_block(row))
         return 0
 
     sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")

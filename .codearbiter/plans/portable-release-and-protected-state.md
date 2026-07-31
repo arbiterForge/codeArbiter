@@ -190,7 +190,7 @@ repo's rows load, and the release lane is proven behavior-identical. Shippable o
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-34 | `.github/scripts/check_command_catalog.py` | script exits 0 on a reconciled tree, 1 on drift, mutates nothing | catalog check | A-2.8 | T-33 | PENDING |
+| T-34 | `.github/scripts/check_command_catalog.py` | script exits 0 on a reconciled tree, 1 on drift, mutates nothing | catalog check | A-2.8 | T-33 | ACCEPTED |
 | T-35 | `.codearbiter/release-targets.md` | all declared `pre-tag` commands exit 0 on a clean tree | rows run green | A-2.9 | T-34 | PENDING |
 | T-36 | `core/pysrc/releasehash.py`, `tools/sync-core.py` generated set | `python tools/sync-core.py --check` passes with it enrolled; `SUITE -k test_pre_tag_hash` — changed hash forces re-confirmation | hash re-confirm | A-2.10 | T-35 | PENDING |
 | T-37 | `core/pysrc/_releaselib.py` | `-k manifest_declared` — equality asserted, mismatch BLOCKs | manifest assert | A-3.1 | T-36 | PENDING |
@@ -206,12 +206,12 @@ generate from it).
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-41a | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k skill_uses_loader` — Targets table replaced by `load_targets`; no hardcoded row survives | table → loader | A-6.0 | T-41 | PENDING |
-| T-41b | `core/surface/skills/release/SKILL.md` | `python .github/scripts/check_skill_portability.py` — no `.github/scripts/` invocation remains; helpers resolve under `${CLAUDE_PLUGIN_ROOT}` | helper repointing | A-6.0 | T-41a | PENDING |
-| T-41c | `core/surface/skills/release/SKILL.md` | `-k skill_provenance_field` — Phase 3 step 5 reads the row field; absent → documented skip | provenance step | A-6.0, A-3.5 | T-41b | PENDING |
-| T-41d | `core/surface/skills/release/SKILL.md` | `-k skill_conditional_prose` — hosted-lane and immutability sections conditional on repo capability | prose conditionals | A-6.0 | T-41c | PENDING |
-| T-41e | — (review only) | adversarial Opus agent reviews the rewritten skill; BLOCK-level findings fixed and re-reviewed before proceeding | mid-sprint review | A-6.0 | T-41d | PENDING |
-| T-41f | `core/pysrc/_releaselib.py` | `python "<plugin-root>/hooks/_releaselib.py" tag-prefix ca` exits 0 from a consumer-shaped environment — the mechanism gains a `__main__` CLI entry point | shipped CLI exists | A-6.0 | T-41b | PENDING |
+| T-41a | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k skill_uses_loader` — Targets table replaced by `load_targets`; no hardcoded row survives | table → loader | A-6.0 | T-41 | ACCEPTED |
+| T-41b | `core/surface/skills/release/SKILL.md` | `python .github/scripts/check_skill_portability.py` — no `.github/scripts/` invocation remains; helpers resolve under `${CLAUDE_PLUGIN_ROOT}` | helper repointing | A-6.0 | T-41a | ACCEPTED |
+| T-41c | `core/surface/skills/release/SKILL.md` | `-k skill_provenance_field` — Phase 3 step 5 reads the row field; absent → documented skip | provenance step | A-6.0, A-3.5 | T-41b | ACCEPTED |
+| T-41d | `core/surface/skills/release/SKILL.md` | `-k skill_conditional_prose` — hosted-lane and immutability sections conditional on repo capability | prose conditionals | A-6.0 | T-41c | ACCEPTED |
+| T-41e | — (review only) | adversarial Opus agent reviews the rewritten skill; BLOCK-level findings fixed and re-reviewed before proceeding | mid-sprint review | A-6.0 | T-41d | ACCEPTED |
+| T-41f | `core/pysrc/_releaselib.py` | `python "<plugin-root>/hooks/_releaselib.py" tag-prefix ca` exits 0 from a consumer-shaped environment — the mechanism gains a `__main__` CLI entry point | shipped CLI exists | A-6.0 | T-41b | ACCEPTED |
 
 > **T-41f exists because the plan had a hole.** T-41b repoints the skill's helper
 > invocations to `${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`, but that file has **zero**

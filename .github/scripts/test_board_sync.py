@@ -215,6 +215,46 @@ def test_standup_advisory_board_sweep():
     )
 
 
+# ---- A-5.1 (issue #563): decompose elicits release INTENT only, not a row (T-47) --
+def test_decompose_intent_only():
+    # Reads the SURFACE SOURCE (core/surface/), never a generated plugins/*/
+    # copy -- the release-portable-fixture campaign's own "Source of truth"
+    # convention, since core/surface/skills/decompose/SKILL.md is what this
+    # repo's guards and structural assertions are meant to target.
+    t = read_repo("core/surface/skills/decompose/SKILL.md")
+    anchor = "Release intent is elicited here"
+    idx = t.find(anchor)
+    check(idx != -1,
+          "decompose SKILL.md: must carry the 'Release intent is elicited "
+          "here' paragraph stating the no-row-written rule (A-5.1)")
+    # Scoped to THIS one paragraph -- not the whole document -- so a
+    # deletion here cannot hide behind a restatement elsewhere (the Layer 4
+    # Unlock line ALSO mentions "tag prefix"/"changelog", so a document-wide
+    # substring check would still pass with this paragraph gutted).
+    window = t[idx: idx + 700] if idx != -1 else ""
+    wl = window.lower()
+    check(
+        "tag prefix" in wl,
+        "decompose SKILL.md: the release-intent paragraph must name the tag "
+        "prefix preference (A-5.1)",
+    )
+    check(
+        "changelog kept" in wl,
+        "decompose SKILL.md: the release-intent paragraph must name the "
+        "changelog-kept y/n answer (A-5.1)",
+    )
+    check(
+        "release-targets.md` row is ever written by this skill" in window,
+        "decompose SKILL.md: must state it writes no release-targets.md row "
+        "-- it runs before any manifest or tag exists (A-5.1)",
+    )
+    check(
+        "before any manifest or tag exists" in wl,
+        "decompose SKILL.md: must state WHY it cannot substantiate a row yet "
+        "(no manifest or tag exists during greenfield decomposition, A-5.1)",
+    )
+
+
 # --- APPEND NEW test_* FUNCTIONS ABOVE THIS LINE --------------------------------
 # Each new function must also be added to TESTS and (if it reads a new file)
 # to REQUIRED_FILES below.
@@ -229,6 +269,7 @@ REQUIRED_FILES = [
     # --- APPEND NEW REQUIRED FILES HERE ----------------------------------------
     "plugins/ca/includes/harvest.md",
     "plugins/ca/commands/standup.md",
+    "core/surface/skills/decompose/SKILL.md",
 ]
 
 TESTS = [
@@ -239,6 +280,7 @@ TESTS = [
     # --- APPEND NEW TESTS HERE --------------------------------------------------
     test_harvest_md_commit_gate_pre_commit,
     test_standup_advisory_board_sweep,
+    test_decompose_intent_only,
 ]
 # ---------------------------------------------------------------------------
 

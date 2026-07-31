@@ -13,7 +13,7 @@ Every phase below is written once, against that row. Nothing in this skill is pe
 
 ## Targets
 
-Resolve `$TARGET`'s row from the declared file FIRST and use it throughout — never a hardcoded table. Absent or unparseable declared file → STOP and surface the parse error; never guess a row's shape. Resolve `$TAG_PREFIX` through the shared mechanism, never typed from memory: `TAG_PREFIX=$(python3 <plugin-root>/hooks/_releaselib.py tag-prefix $TARGET)`. Where a hosted publish lane's own namespace resolution is ALSO wired to read this declared file — rather than carrying a separate, hardcoded copy of the same facts — the command and the lane cannot disagree; where it is not (yet) wired that way, the two can drift, and reconciling them is a workflow-authoring task this skill cannot enforce from the command side alone.
+Resolve `$TARGET`'s row from the declared file FIRST and use it throughout — never a hardcoded table. An unparseable declared file (any parser-contract violation on a file that DOES exist) → STOP and surface the parse error; never guess a row's shape. A genuinely ABSENT declared file — nothing on disk at all — enters the "Back-fill" lane below instead of stopping outright; that lane never runs against a file that already exists, however malformed. Resolve `$TAG_PREFIX` through the shared mechanism, never typed from memory: `TAG_PREFIX=$(python3 <plugin-root>/hooks/_releaselib.py tag-prefix $TARGET)`. Where a hosted publish lane's own namespace resolution is ALSO wired to read this declared file — rather than carrying a separate, hardcoded copy of the same facts — the command and the lane cannot disagree; where it is not (yet) wired that way, the two can drift, and reconciling them is a workflow-authoring task this skill cannot enforce from the command side alone.
 
 From the resolved row:
 
@@ -31,7 +31,7 @@ From the resolved row:
 | `$PROVENANCE_MANIFEST` (`provenance-manifest`) | optional; Phase 3 step 5 skips (and says so) when absent |
 | `--latest` eligibility (`latest-eligible`) | at most one declared target may claim it |
 
-An unrecognised `$TARGET` — no row of that name — STOPs; do not guess which project was meant. With no declared file at all, `context-creation` (onboarding) is the sanctioned way to create one; this skill never invents a row from a guess.
+An unrecognised `$TARGET` — no row of that name — STOPs; do not guess which project was meant. With no declared file at all, this skill's own "Back-fill" lane below handles it at release time; `context-creation` (full onboarding) is the sanctioned way to create one ahead of a release. Neither ever invents a row from a guess.
 
 Traps worth stating rather than discovering, general to any row rather than specific to one target:
 
@@ -39,6 +39,17 @@ Traps worth stating rather than discovering, general to any row rather than spec
 - **A manifest path also listed in `$GENERATED_MANIFEST` is never hand-edited.** It is regenerated output — some other build or packaging step produces it from a primary manifest or source of truth — so "update the manifest to the derived version" means running the row's declared `generate` command for that one path, then letting the SAME equality assertion every other manifest path gets confirm it landed on the derived version. Hand-writing a generated manifest defeats its own generator and can leave it silently inconsistent with whatever it is supposed to mirror.
 - **A row's `payload-exclude` entries are excluded from the commit window and the rebuild-freshness scope, not merely cosmetic** — a payload that ships no policy or build artifact under an excluded directory must not gate the release on changes there.
 - **At most one declared target may set `latest-eligible: true`, and every other target's Phase-3 publish MUST pass `--latest=false` EXPLICITLY.** Omitting the flag is not declining it: GitHub defaults `make_latest` to true for any non-prerelease, so a target that simply does not ask for the badge still takes it — measured in this repository's own history, where a sibling's release displaced the primary target's badge for exactly this reason. A hosting service has one repo-wide "Latest"; a declared file may name several series.
+
+## Back-fill (no declared file yet)
+
+`load_targets` raises `AbsentBlockError` when `<project-root>/.codearbiter/release-targets.md` does not exist on disk at all — the ONE gap this skill does not merely STOP on. Every OTHER `ReleaseTargetsError` (a malformed, empty, duplicate, or otherwise unparseable EXISTING file) still STOPs outright per "Targets" above; this lane never runs against a file that already exists, however broken — a broken declaration is a different failure from a missing one, and detecting a shape to paper over it would silently discard the operator's own (bad) declaration.
+
+1. **Detect.** From the project root, run `python3 <plugin-root>/hooks/_releaselib.py backfill-detect`. It scans the repo root for exactly one candidate manifest (`package.json`, `pyproject.toml`, `Cargo.toml`, `composer.json`) and exactly one candidate changelog (`CHANGELOG.md`, `CHANGES.md`, `HISTORY.md`).
+   - **Zero, or more than one, candidate of either kind (non-zero exit):** the repo is genuinely ambiguous — several plausible manifests or none, several changelogs or none. STOP here; this lane never guesses among candidates and never invents one from nothing. Route the user to `context-creation` instead, which resolves the same ambiguity through full elicitation rather than a bare top-level scan.
+   - **Exactly one candidate of each kind (exit 0):** the command prints the exact `release-targets.md` block it would write, already in the grammar `load_targets` accepts.
+2. **Present, and require explicit confirmation before doing anything else.** Show the printed block to the user VERBATIM. Do NOT write it, and do NOT proceed to Pre-flight or any phase below, until the user explicitly confirms the detected shape is correct. A refusal STOPs the lane — nothing is written, and nothing is proposed a second time without a fresh detection pass.
+3. **Persist, only on confirmation.** Write the confirmed block verbatim to `<project-root>/.codearbiter/release-targets.md`, then re-enter Pre-flight, which now finds the file and resolves `$TARGET` exactly as "Targets" above describes.
+4. **A second invocation reads; it does not re-detect.** Once the file exists on disk, `load_targets` succeeds and this back-fill lane never runs again for this project — detection above fires ONLY when the file is genuinely absent, never once a row has been confirmed and persisted.
 
 ## Pre-flight
 
