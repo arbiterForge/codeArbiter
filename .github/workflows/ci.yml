@@ -1136,6 +1136,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # test_release_trace.py (below) needs FULL git history -- it `git
+          # show`s a specific historical commit -- AND the complete tag set
+          # (its live-repo cross-check). A default shallow, tag-less
+          # checkout fails both (HIGH-2, adversarial review 2026-07-31); its
+          # own setUpModule preflight fails loudly and names this exact
+          # fix if either is ever missing.
+          fetch-depth: 0
+          fetch-tags: true
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
@@ -1252,6 +1261,18 @@ jobs:
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
+      - name: Run the A-1.11 release resolution-trace suite
+        # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
+        # the portable-mechanism split (core/pysrc/_releaselib.py plus a
+        # declared release-targets.md) reproduces the pinned pre-change
+        # lane's resolved variables for both `ca` and `ca-pi`, and states
+        # explicitly the one place the two lanes are INTENDED to diverge
+        # (AC-1.12, the pre-release-marker scope fix). Was previously wired
+        # into no workflow at all (HIGH-2, adversarial review 2026-07-31) --
+        # this checkout step's `fetch-depth: 0` / `fetch-tags: true` are
+        # both required for this suite specifically; its own preflight fails
+        # loudly, never silently, if either is ever missing.
+        run: python .github/scripts/test_release_trace.py
       - name: Run the unit tests for CI's own machinery
         # These four suites existed and ran on NOTHING. Each one guards a script
         # that CI itself depends on, which is what makes the gap matter rather

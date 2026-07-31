@@ -1,0 +1,39 @@
+{
+  "$comment": [
+    "A-1.11 (T-27a) resolution-trace fixture: a small, frozen, SYNTHETIC commit",
+    "graph -- never a real git repository. `head` names the commit HEAD points",
+    "at; `commits` is the parent adjacency a plain DFS/BFS walks to answer",
+    "'git log <ref>..HEAD'; `tag_refs` maps each tag in tags.txt to the sha it",
+    "names, exactly like `git ls-remote --tags` would. Values are synthetic",
+    "sha-shaped strings (c1..c6, b1), not real object ids -- nothing here is",
+    "ever written to an actual .git directory.",
+    "",
+    "`b1` branches off `c4` and merges into `c6` alongside `c5` (`c6`'s second",
+    "parent) precisely so WINDOW_COMMITS is not a straight line: a walk that",
+    "only follows each commit's FIRST parent (a plausible wrong",
+    "implementation of 'git log <ref>..HEAD') silently drops `b1` from every",
+    "window that should contain it, where an all-parents walk does not. See",
+    "the module docstring's WINDOW_COMMITS honest-limit paragraph and",
+    "WindowCommitsTest."
+  ],
+  "head": "c6",
+  "commits": [
+    {"sha": "c1", "parents": []},
+    {"sha": "c2", "parents": ["c1"]},
+    {"sha": "c3", "parents": ["c2"]},
+    {"sha": "c4", "parents": ["c3"]},
+    {"sha": "c5", "parents": ["c4"]},
+    {"sha": "b1", "parents": ["c4"]},
+    {"sha": "c6", "parents": ["c5", "b1"]}
+  ],
+  "tag_refs": {
+    "v1.0.0": "c2",
+    "v1.1.0": "c4",
+    "v1.1.0-beta.1": "c3",
+    "ca-pi-v0.1.0": "c2",
+    "ca-pi-v0.1.1": "c5",
+    "ca-codex-v0.2.0": "c1",
+    "ca-sandbox-v0.1.0": "c1",
+    "web-beta-v1.0.0": "c6"
+  }
+}

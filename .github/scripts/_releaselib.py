@@ -1,133 +1,149 @@
 #!/usr/bin/env python3
-# codeArbiter - pure helpers backing the `release` skill's mechanical gates.
+# codeArbiter - CI's stable entry point for the release lane's mechanical gates
+# (issue #563, .codearbiter/specs/release-portable-fixture.md, "Migration
+# ordering").
 #
-# The release SKILL.md is prose the orchestrator follows; these are the small,
-# git-free, synthetically-testable assertions that back its load-bearing steps so
-# a model lapse can't ship a wrong or half-published release. Each maps to one
-# acceptance criterion of specs/release-skill-hardening.md (findings v2.release.
-# 0003-0006). The skill invokes them; CI runs their tests (test_release_lib.py).
+# This file is the PERMANENT shim six sites shell out to directly --
+# release.yml:135,171 and .github/actions/publish-release/action.yml:125,164,
+# 180,228 -- and payload_version_gate.py imports RELEASE_TAG_PREFIXES from it
+# at module load. It is never deleted, only slimmed down: slice 1 (this
+# change) converts it to a thin RE-EXPORT of the portable mechanism now living
+# at core/pysrc/_releaselib.py, while TEMPORARILY retaining this repo's own
+# data constants (RELEASE_TARGETS, RELEASE_TAG_PREFIXES, MERGE_READINESS_CHECK)
+# so every existing caller keeps working unchanged. Slice 4 (T-46) removes the
+# constants once payload_version_gate.py and release.yml read them from the
+# declared .codearbiter/release-targets.md file instead; this shim survives
+# that change too.
+#
+# The mechanism module is loaded from core/pysrc/ directly -- not from a
+# vendored plugins/*/hooks/ copy -- because this file executes inside the
+# codeArbiter repo itself (CI checks out the full repo), where core/pysrc/ is
+# the canonical source `tools/sync-core.py` vendors FROM. It is located via
+# this file's own __file__, never the process cwd, mirroring the
+# cwd-independent REPO resolution `payload_version_gate.py` already uses
+# (`Path(__file__).resolve().parents[2]`) -- so this module resolves
+# correctly no matter what directory it is invoked from. Both this shim and
+# the mechanism module are named `_releaselib.py`, so a plain `import
+# _releaselib` from inside this file would resolve to itself via the module
+# cache regardless of sys.path order; loading the mechanism by explicit file
+# path under a distinct internal name (`importlib.util.spec_from_file_location`,
+# the same technique `test_release_lib.py` already uses for the same reason)
+# avoids that collision.
+#
+# KNOWN RESIDUAL (M-6, adversarial review 2026-07-31): the private module
+# name above means this shim's copy of the mechanism is a DISTINCT load from
+# any OTHER independent load of core/pysrc/_releaselib.py in the same
+# process -- e.g. a test harness's own private-named copy, or a future
+# second consumer that loads the mechanism itself rather than importing this
+# shim. `shim.ReleaseTargetsError is <someone else's independently-loaded
+# copy>.ReleaseTargetsError` is FALSE. An `except` clause spanning that
+# boundary would miss. No caller does this today. This is documented rather
+# than "fixed" by reusing a same-named entry out of `sys.modules` when one
+# is present: there is no single canonical name a dynamically-loaded copy is
+# guaranteed to register under (this file's own tests, `test_release_lib.py`,
+# and `test_release_trace.py` each pick their own private name for their own
+# reasons), so keying off `sys.modules` would make this shim's behavior
+# depend on import order and on what some OTHER, unrelated test file
+# happened to load first -- an import-order-dependent hazard traded for a
+# documented, narrow one. The sanctioned route for a caller that needs to
+# catch this shim's exceptions is to import the class from THIS shim (the
+# public, re-exported surface), never to load its own separate copy of
+# core/pysrc/_releaselib.py and expect the two hierarchies to unify.
 #
 # Design invariants (mirror the other _*lib helpers):
-#   - Stdlib only; zero side effects at import (no git, no file I/O).
-#   - Pure functions over synthetic input; never raise on malformed input -
-#     degrade to the safe answer (False / the <none> sentinel), since a release
-#     gate that crashes is worse than one that conservatively refuses.
+#   - Stdlib only; zero side effects at import beyond loading the sibling
+#     mechanism module (no git, no argument parsing at import time).
+#   - The wrapper functions below restore this repo's OLD default arguments
+#     (ca's `v` prefix, RELEASE_TARGETS order, MERGE_READINESS_CHECK) so every
+#     existing caller -- the six shell-out sites, payload_version_gate.py, and
+#     this module's own CLI -- keeps working unchanged even though the
+#     portable mechanism's equivalents now REQUIRE the parameter that used to
+#     default (A-1.3: a repo default cannot survive in the portable module).
 #
-# Public API:
+# Public API (re-exported from core/pysrc/_releaselib.py, unwrapped -- no
+# repo-specific default to restore):
+#   ReleaseTargetsError, AbsentBlockError, EmptyBlockError, MalformedBlockError,
+#   UnknownKeyError, DuplicateKeyError, DuplicateTargetError,
+#   InvalidBooleanError, MultipleBlocksError, DelimiterInValueError,
+#   MissingRequiredKeyError
 #   semver_key(value) -> tuple | None
 #   semver_greater(current, base) -> bool
-#   last_tag_select(tags) -> str
 #   notes_heading_matches(notes_text, tag) -> bool
 #   release_dates_consistent(changelog_section, tag_message) -> bool
 #   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
 #                          manifest_version, release_is_nondraft) -> str
-#   select_release_target(*confirmations) -> str   (RELEASE_TARGETS order)
-#   classify_merge_readiness(check_runs, head_sha, check_name) -> str
 #   peel_tag(ls_remote_text, tag) -> str
+#   parse_release_targets(text) -> list[dict]
+#   load_targets(path) -> list[dict]
+#   _bare_version(tag) -> str
+#   NONE_SENTINEL
+#
+# Public API (this repo's DATA -- transitional, see module comment above):
+#   RELEASE_TARGETS, RELEASE_TAG_PREFIXES, MERGE_READINESS_CHECK
+#   last_tag_select(tags, prefix="v") -> str
+#   select_release_target(*confirmations) -> str   (RELEASE_TARGETS order)
+#   classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CHECK) -> str
 #
 # The last three back `.github/workflows/release.yml`'s read-only preflight and
 # its tag-integrity guard (issues #378, #385, #380). The hosted publish path
 # holds `contents: write` and its writes are public and irreversible, so every
 # one of them degrades to the REFUSING answer on malformed input.
 
-import re
+import importlib.util
+import os
+import sys
 
-NONE_SENTINEL = "<none>"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(os.path.dirname(_HERE))
+_MECHANISM_PATH = os.path.join(_REPO_ROOT, "core", "pysrc", "_releaselib.py")
 
-# The `ci-passed` aggregate in .github/workflows/ci.yml — the single check run
+_mechanism_spec = importlib.util.spec_from_file_location(
+    "_release_mechanism", _MECHANISM_PATH)
+_mechanism = importlib.util.module_from_spec(_mechanism_spec)
+# Registered in sys.modules so introspection (inspect.getsourcefile, etc.)
+# resolves the loaded module's real file rather than reading it back as a
+# "built-in class" with no source at all.
+sys.modules[_mechanism_spec.name] = _mechanism
+_mechanism_spec.loader.exec_module(_mechanism)
+
+# --------------------------------------------------------------------------- #
+# Re-exported mechanism -- unwrapped, no repo-specific default to restore.
+# --------------------------------------------------------------------------- #
+
+ReleaseTargetsError = _mechanism.ReleaseTargetsError
+AbsentBlockError = _mechanism.AbsentBlockError
+EmptyBlockError = _mechanism.EmptyBlockError
+MalformedBlockError = _mechanism.MalformedBlockError
+UnknownKeyError = _mechanism.UnknownKeyError
+DuplicateKeyError = _mechanism.DuplicateKeyError
+DuplicateTargetError = _mechanism.DuplicateTargetError
+InvalidBooleanError = _mechanism.InvalidBooleanError
+MultipleBlocksError = _mechanism.MultipleBlocksError
+DelimiterInValueError = _mechanism.DelimiterInValueError
+MissingRequiredKeyError = _mechanism.MissingRequiredKeyError
+
+semver_key = _mechanism.semver_key
+semver_greater = _mechanism.semver_greater
+notes_heading_matches = _mechanism.notes_heading_matches
+release_dates_consistent = _mechanism.release_dates_consistent
+classify_publish_state = _mechanism.classify_publish_state
+peel_tag = _mechanism.peel_tag
+parse_release_targets = _mechanism.parse_release_targets
+load_targets = _mechanism.load_targets
+_bare_version = _mechanism._bare_version
+NONE_SENTINEL = _mechanism.NONE_SENTINEL
+
+# --------------------------------------------------------------------------- #
+# DATA -- this repo's own facts. TRANSITIONAL (A-1.9): removed in slice 4
+# (T-46) once payload_version_gate.py and release.yml read
+# .codearbiter/release-targets.md instead. Until then, no commit may leave
+# RELEASE_TAG_PREFIXES unimportable from this module.
+# --------------------------------------------------------------------------- #
+
+# The `ci-passed` aggregate in .github/workflows/ci.yml - the single check run
 # that means "every required job for this commit concluded green". Kept in sync
 # with that job's `name:` by test_release_workflow.py.
 MERGE_READINESS_CHECK = "[GATE ] | [REPO] | Merge readiness"
-
-# A `ca` release tag is exactly `vMAJOR.MINOR.PATCH` - no suffix. The anchored
-# form already excludes pre-releases (`v2.6.0-beta.1`) and the namespaced
-# `ca-sandbox-v*` series (no leading bare `v`); PRERELEASE_MARKERS is the
-# explicit, legible second line of defense the spec names.
-_RELEASE_RE_CACHE = {}
-
-
-def _release_re(prefix):
-    """The anchored `<prefix>MAJOR.MINOR.PATCH` matcher for one release series."""
-    rx = _RELEASE_RE_CACHE.get(prefix)
-    if rx is None:
-        rx = re.compile(r"^" + re.escape(prefix) + r"(\d+)\.(\d+)\.(\d+)$")
-        _RELEASE_RE_CACHE[prefix] = rx
-    return rx
-_PRERELEASE_MARKERS = ("-beta", "-rc", "-alpha")
-
-# A changelog section heading, in either the `## vX.Y.Z - DATE` form or the
-# Keep-a-Changelog `## [X.Y.Z] - DATE` form the repo actually ships (every
-# released section + every prior GitHub Release body uses the bracket style).
-# The capture is the bare `X.Y.Z`; the optional leading `v` and the surrounding
-# brackets sit OUTSIDE the group, so heading comparison is style-agnostic. Any
-# separator is allowed between version and date. Plus the annotated-tag
-# `Released-at:` footer.
-_HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?", re.MULTILINE)
-_CHANGELOG_DATE_RE = re.compile(
-    r"^##\s+\[?v?\d+\.\d+\.\d+\]?\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
-_RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
-
-# Full SemVer, including the pre-release and build-metadata tails a release tag
-# never carries but a MANIFEST does (`0.2.4-beta.1` shipped on ca-codex). The
-# anchored `_release_re` above deliberately rejects those, because it selects a
-# published release series; this one parses a version for ORDERING, which is a
-# different question and needs the tail.
-SEMVER = re.compile(
-    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
-    r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
-    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
-)
-
-
-def semver_key(value):
-    """`"2.9.1"` -> a sortable key; `None` when `value` is not valid SemVer.
-
-    Non-raising per this module's invariant — a caller that needs the raising
-    contract wraps it (`tools/build-host-packages.py` does, to keep its own
-    diagnosis wording). Build metadata is parsed and discarded: SemVer §10 says
-    it is not part of precedence, so `1.0.0+a` and `1.0.0+b` compare equal.
-    """
-    if not isinstance(value, str):
-        return None
-    match = SEMVER.fullmatch(value)
-    if match is None:
-        return None
-    prerelease = match.group(4)
-    if prerelease is None:
-        pre_key = None
-    else:
-        pre_key = tuple(
-            (0, int(part)) if part.isdigit() else (1, part)
-            for part in prerelease.split(".")
-        )
-    return int(match.group(1)), int(match.group(2)), int(match.group(3)), pre_key
-
-
-def semver_greater(current, base):
-    """True iff `current` is a STRICT SemVer advance over `base`.
-
-    The single definition of "advance" for every payload-version gate (#530), so
-    `ca`, `ca-sandbox`, `ca-codex` and `ca-pi` cannot disagree about what
-    advancing means — issue #530 AC-3.
-
-    Degrades to False when either side is unparseable, which refuses the gate
-    rather than passing it. Pre-release ordering follows SemVer §11: a
-    pre-release is LOWER than its release (`1.0.0-beta` < `1.0.0`), numeric
-    identifiers compare numerically and rank below alphanumeric ones.
-    """
-    current_key = semver_key(current)
-    base_key = semver_key(base)
-    if current_key is None or base_key is None:
-        return False
-    if current_key[:3] != base_key[:3]:
-        return current_key[:3] > base_key[:3]
-    current_pre, base_pre = current_key[3], base_key[3]
-    if current_pre is None:
-        return base_pre is not None
-    if base_pre is None:
-        return False
-    return current_pre > base_pre
-
 
 # Every plugin that has a sanctioned release lane, in dispatch-input order
 # (#382). The names are the labels `select_release_target` returns and the
@@ -139,8 +155,8 @@ RELEASE_TARGETS = ("ca", "ca-codex", "ca-sandbox", "ca-pi")
 # Each target's tag namespace. `ca` owns the bare `v*` series as the repository's
 # primary release; every sibling is namespaced so it cannot collide with it. The
 # ANCHORED match built from these prefixes is also what keeps one series from
-# resolving another's tag as its own baseline — `^v` cannot match `ca-pi-v0.1.30`
-# — so series isolation is a property of the match rather than an exclusion list
+# resolving another's tag as its own baseline - `^v` cannot match `ca-pi-v0.1.30`
+# - so series isolation is a property of the match rather than an exclusion list
 # somebody has to remember to extend. release.yml's per-lane `tag-prefix` inputs
 # are asserted against this map by the workflow contract suite, so the hosted
 # lane and the /ca:release command cannot disagree about a namespace.
@@ -152,123 +168,17 @@ RELEASE_TAG_PREFIXES = {
 }
 
 
-def _bare_version(tag):
-    """`v2.6.0` / `[2.6.0]` / `2.6.0` / `ca-pi-v0.1.31` -> the bare SemVer.
-
-    Lets the heading match compare a tag against a bracket-style changelog
-    heading without caring about either spelling.
-
-    This used to be `tag.lstrip("v")`, which strips only a LEADING "v" — right
-    for ca's bare `v2.9.1`, and wrong for every namespaced sibling, because
-    `"ca-pi-v0.1.31".lstrip("v")` is unchanged and never equals the `0.1.31`
-    parsed out of the heading. The hosted publish action treats a failed
-    `notes-match` as a STOP, so the ca-codex, ca-sandbox and ca-pi lanes could
-    not have completed a release at all: they would have aborted at that guard
-    on a perfectly correct changelog, every time. Nothing caught it because the
-    lanes had never been dispatched and every test used a bare `v` tag.
-
-    Anchored on the SemVer at the END rather than by stripping a known prefix,
-    so a fifth plugin's namespace works without being enumerated here."""
-    if not isinstance(tag, str):
-        return tag
-    text = tag.strip().strip("[]")
-    match = re.search(r"(\d+\.\d+\.\d+.*)$", text)
-    return match.group(1) if match else text.lstrip("v")
-
-
 def last_tag_select(tags, prefix="v"):
     """Return the highest SemVer tag in `tags` for ONE release series, excluding
     pre-releases (`-beta`/`-rc`/`-alpha`). Returns NONE_SENTINEL when the series
     has no release tag yet.
 
-    `prefix` selects the series and defaults to `"v"` — ca, the primary release —
-    so every existing caller keeps its behaviour unchanged. Pass a value from
-    RELEASE_TAG_PREFIXES for a sibling (#382, the /ca:release command half).
-
-    This is the single source of `LAST_TAG`, replacing the skill's inline grep
-    one-liner: bare `git describe --tags` returns the nearest tag by commit-graph
-    ANCESTRY, which in a multi-plugin repo is routinely another plugin's tag, and
-    silently bases an entire release on the wrong baseline.
-
-    Series isolation is a property of the ANCHORED match rather than a list of
-    exclusions to maintain: `^v` cannot match `ca-pi-v0.1.30`, and `^ca-pi-v`
-    cannot match `v2.9.1`. A fifth plugin therefore cannot leak into an existing
-    series by being forgotten in an exclusion list."""
-    best = None  # ((major, minor, patch), original_tag)
-    if not isinstance(tags, (list, tuple)):
-        return NONE_SENTINEL
-    if not isinstance(prefix, str) or not prefix:
-        return NONE_SENTINEL
-    matcher = _release_re(prefix)
-    for t in tags:
-        if not isinstance(t, str):
-            continue
-        if any(marker in t for marker in _PRERELEASE_MARKERS):
-            continue
-        m = matcher.match(t)
-        if not m:
-            continue
-        ver = tuple(int(g) for g in m.groups())
-        if best is None or ver > best[0]:
-            best = (ver, t)
-    return best[1] if best else NONE_SENTINEL
-
-
-def notes_heading_matches(notes_text, tag):
-    """True iff the FIRST changelog heading in `notes_text` (either `## vX.Y.Z`
-    or the Keep-a-Changelog `## [X.Y.Z]` form) names the same version as `tag`. A
-    stale notes-file (whose first section is an older version) returns False, so
-    the release skill cannot publish the wrong changelog section under the right
-    tag. Missing heading or non-string input -> False."""
-    if not isinstance(notes_text, str) or not isinstance(tag, str):
-        return False
-    m = _HEADING_RE.search(notes_text)
-    if not m:
-        return False
-    return m.group(1) == _bare_version(tag)
-
-
-def release_dates_consistent(changelog_section, tag_message):
-    """True iff the date in `changelog_section`'s heading (`## vX.Y.Z - DATE` or
-    `## [X.Y.Z] - DATE`) equals the `Released-at: DATE` date in `tag_message`.
-    Guards against the date being
-    hand-typed inconsistently across surfaces. Either date absent, or non-string
-    input -> False."""
-    if not isinstance(changelog_section, str) or not isinstance(tag_message, str):
-        return False
-    cm = _CHANGELOG_DATE_RE.search(changelog_section)
-    tm = _RELEASED_AT_RE.search(tag_message)
-    if not cm or not tm:
-        return False
-    return cm.group(1) == tm.group(1)
-
-
-def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
-                           manifest_version, release_is_nondraft):
-    """Classify a (re)publish attempt so the skill can resume a half-finished
-    publish instead of dead-ending on 'tag exists -> STOP'. Returns one of:
-
-      publish_fresh      - no tag yet; the normal Phase 2/3 path.
-      already_published  - the tag is at HEAD and a non-draft Release exists.
-      resume_publish     - tag is at HEAD and its version matches the manifest,
-                           but no non-draft Release exists (tag pushed, Release
-                           never created) -> finish Phase 3.
-      abort_mismatch     - tag points at a non-HEAD commit, or its version
-                           disagrees with the manifest -> STOP, never overwrite.
-
-    Mismatch OUTRANKS publication state (issue #380). An existing Release used
-    to short-circuit to `already_published` before the tag was compared to
-    HEAD, so a resumed publish silently accepted a Release whose tag installs a
-    different snapshot. The tag is what consumers actually fetch; if it does
-    not name this commit, nothing about the Release makes the state safe.
-    """
-    if not tag_exists:
-        return "publish_fresh"
-    if tag_sha != head_sha or tag_version != manifest_version:
-        return "abort_mismatch"
-    if release_is_nondraft:
-        return "already_published"
-    return "resume_publish"
+    `prefix` defaults to `"v"` - ca, the primary release - so every existing
+    caller (the CLI's bare `last-tag` invocation, this repo's tooling) keeps its
+    behaviour unchanged even though the portable mechanism's own
+    `last_tag_select` now REQUIRES the prefix (A-1.3). Pass a value from
+    RELEASE_TAG_PREFIXES for a sibling (#382)."""
+    return _mechanism.last_tag_select(tags, prefix)
 
 
 def select_release_target(*confirmations):
@@ -281,33 +191,10 @@ def select_release_target(*confirmations):
       multiple   - more than one; the dispatch is ambiguous and MUST be refused.
       arity      - the caller passed the wrong NUMBER of inputs.
 
-    Issue #378: the publish jobs each tested only their OWN confirmation input,
-    so one dispatch supplying both started two `contents: write` publishers and
-    could create two tags and two public Releases. Selection is one decision,
-    made once, by a job that holds no write token. Blank-ish input (whitespace,
-    non-string) counts as "not selected" so a stray space can never read as a
-    second target.
-
-    Issue #382 widened this from two plugins to four (ca, ca-codex, ca-sandbox,
-    ca-pi). The count is checked rather than zipped-to-shortest on purpose: a
-    caller wired for two would otherwise resolve `ca` from a dispatch that also
-    selected ca-pi, silently publishing the wrong plugin. `arity` is not a
-    target and matches no `case` arm in release.yml, so the workflow's
-    fail-closed `*)` default refuses it - and, like every other return here,
-    it is a LABEL rather than an exception, so the caller's contract of "prints
-    a label and never raises" holds."""
-    def _selected(value):
-        return isinstance(value, str) and value.strip() != ""
-
-    if len(confirmations) != len(RELEASE_TARGETS):
-        return "arity"
-    selected = [target for target, value in zip(RELEASE_TARGETS, confirmations)
-                if _selected(value)]
-    if len(selected) > 1:
-        return "multiple"
-    if selected:
-        return selected[0]
-    return "none"
+    Delegates to the portable mechanism's `select_release_target`, supplying
+    this repo's RELEASE_TARGETS register - which the portable module now
+    REQUIRES rather than assumes (A-1.3)."""
+    return _mechanism.select_release_target(*confirmations, targets=RELEASE_TARGETS)
 
 
 def classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CHECK):
@@ -322,59 +209,17 @@ def classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CH
       not_successful  - completed with any conclusion other than `success`
                         (failure, cancelled, skipped, timed_out, neutral, ...).
 
-    Issue #385: the hosted release workflow proved only that it was dispatched
-    from main. Branch protection shows how a commit ENTERED main, not that
-    post-merge evidence exists for the exact commit about to be tagged, and the
-    release skill's hard rules say MUST NOT tag on a red suite.
-
-    Fail-closed throughout: unparseable input is `missing`, and several runs
-    share one name only when a re-run is in flight - we cannot tell which
-    verdict is authoritative, so EVERY matching run must be green."""
-    if not isinstance(check_runs, list):
-        return "missing"
-    matching = [run for run in check_runs
-                if isinstance(run, dict) and run.get("name") == check_name]
-    if not matching:
-        return "missing"
-    if any(run.get("head_sha") != head_sha for run in matching):
-        return "sha_mismatch"
-    if any(run.get("status") != "completed" for run in matching):
-        return "pending"
-    if any(run.get("conclusion") != "success" for run in matching):
-        return "not_successful"
-    return "green"
-
-
-def peel_tag(ls_remote_text, tag):
-    """Resolve the COMMIT a remote tag names, from `git ls-remote --tags`
-    output. Returns "" when the tag is absent.
-
-    An annotated tag's own object id is not the commit it points at; the
-    peeled `refs/tags/<tag>^{}` line is. Issue #380: the workflow treated any
-    remote hit as a resumable publish and skipped tag creation without ever
-    comparing the tag to `GITHUB_SHA`, so a stale tag could be accepted as a
-    successful rerun and a Release published for the wrong commit. Matching is
-    exact on the ref name, so `v2.6.0` is never resolved from `v2.6.0-beta.1`."""
-    if not isinstance(ls_remote_text, str) or not isinstance(tag, str):
-        return ""
-    direct = peeled = ""
-    ref = f"refs/tags/{tag}"
-    for line in ls_remote_text.splitlines():
-        parts = line.split()
-        if len(parts) != 2:
-            continue
-        sha, name = parts
-        if name == ref + "^{}":
-            peeled = sha
-        elif name == ref:
-            direct = sha
-    return peeled or direct
+    `check_name` defaults to MERGE_READINESS_CHECK so every existing caller
+    keeps its behaviour unchanged even though the portable mechanism's own
+    `classify_merge_readiness` now REQUIRES it (A-1.3)."""
+    return _mechanism.classify_merge_readiness(check_runs, head_sha, check_name)
 
 
 # --------------------------------------------------------------------------- #
-# Thin CLI so the release SKILL.md can shell out to the pinned logic, the same
-# way it already calls check_badge_consistency.py. Pure dispatch over the
-# functions above; reads tags from stdin / files from argv. Never raises.
+# Thin CLI so release.yml / publish-release/action.yml can shell out to the
+# pinned logic, the same way they already call check_badge_consistency.py.
+# Pure dispatch over the functions above; reads tags from stdin / files from
+# argv. Never raises.
 # --------------------------------------------------------------------------- #
 
 def _read(path):

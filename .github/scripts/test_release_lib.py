@@ -47,6 +47,7 @@ proof still lived only against the old, unmodified shim:
 """
 
 import importlib.util
+import inspect
 import os
 import sys
 import unittest
@@ -61,6 +62,11 @@ _CORE_RELEASELIB_PATH = os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py
 _core_spec = importlib.util.spec_from_file_location(
     "_core_releaselib", _CORE_RELEASELIB_PATH)
 core_releaselib = importlib.util.module_from_spec(_core_spec)
+# Registered in sys.modules (not just bound to a local name) so `inspect.
+# getsourcefile` can resolve it — inspect looks the object's `__module__` up
+# in sys.modules to find `__file__`, and an unregistered dynamically-loaded
+# module reads back as a "built-in class" with no source file at all.
+sys.modules[_core_spec.name] = core_releaselib
 _core_spec.loader.exec_module(core_releaselib)
 
 
@@ -769,6 +775,159 @@ class NotesHeadingNamespacedTagTest(unittest.TestCase):
             with self.subTest(spelling=spelling):
                 self.assertEqual(_releaselib._bare_version(spelling), want)
 
+
+class ReleaselibShimTest(unittest.TestCase):
+    """A-1.9 (transitional, retired at T-46 alongside AC-4.4): the shim
+    (`.github/scripts/_releaselib.py`, imported above as `_releaselib`) must
+    be a thin RE-EXPORT of the portable mechanism (`core_releaselib`), not a
+    second implementation, while still exposing this repo's own data
+    constants so the six CI shell-out sites and `payload_version_gate.py`
+    keep working unchanged. See the migration ordering in
+    .codearbiter/specs/release-portable-fixture.md: until slice 4 lands, no
+    commit may leave RELEASE_TAG_PREFIXES unimportable from this module."""
+
+    def test_releaselib_shim_exports_constants(self):
+        # payload_version_gate.py:53 imports exactly these three names from
+        # this shim at module load; they must still resolve.
+        self.assertEqual(_releaselib.RELEASE_TAG_PREFIXES,
+                          {"ca": "v", "ca-codex": "ca-codex-v",
+                           "ca-sandbox": "ca-sandbox-v", "ca-pi": "ca-pi-v"})
+        self.assertTrue(callable(_releaselib.semver_greater))
+        self.assertTrue(callable(_releaselib.semver_key))
+
+    def test_shim_error_hierarchy_is_the_portable_modules_not_a_duplicate(self):
+        # A duplicate hierarchy would let the two modules' exceptions
+        # silently diverge: a caller catching the shim's ReleaseTargetsError
+        # would not catch one raised by core/pysrc/_releaselib.py, and vice
+        # versa. `inspect.getsourcefile` -- rather than `assertIs` -- is the
+        # right proof here: the shim loads its own copy of the mechanism
+        # module under a private name (`_release_mechanism`), so its classes
+        # are never the SAME objects as this test's own independently-loaded
+        # `core_releaselib` (a second, distinct exec of the same file).
+        # Source-file identity is what "re-exported, not reimplemented"
+        # actually means; a hand-written duplicate hierarchy inside the shim
+        # itself would report the SHIM's own path here, not the core one.
+        self.assertEqual(
+            inspect.getsourcefile(_releaselib.AbsentBlockError), _CORE_RELEASELIB_PATH)
+        self.assertEqual(
+            inspect.getsourcefile(_releaselib.ReleaseTargetsError), _CORE_RELEASELIB_PATH)
+        self.assertEqual(
+            inspect.getsourcefile(_releaselib.MissingRequiredKeyError),
+            _CORE_RELEASELIB_PATH)
+
+    # M-3 (adversarial review, 2026-07-31): the 3-name spot-check above
+    # proves PROVENANCE (the class comes from the core file) but not
+    # IDENTITY (it is the RIGHT class from that file) -- a swap bug like
+    # `AbsentBlockError = _mechanism.MalformedBlockError` inside the shim
+    # would still pass every assertion above unchanged, since both classes
+    # live in the same core file. Enumerated explicitly, all 11 names.
+    _EXCEPTION_NAMES = (
+        "ReleaseTargetsError", "AbsentBlockError", "EmptyBlockError",
+        "MalformedBlockError", "UnknownKeyError", "DuplicateKeyError",
+        "DuplicateTargetError", "InvalidBooleanError", "MultipleBlocksError",
+        "DelimiterInValueError", "MissingRequiredKeyError",
+    )
+
+    def test_shim_exception_names_are_not_silently_swapped(self):
+        # `__name__` is set at CLASS-DEFINITION time in the core module and
+        # is independent of whichever shim-level variable currently holds a
+        # reference to it -- so a swap (the shim name binds to the WRONG
+        # core class) shows up here even though `inspect.getsourcefile`
+        # alone cannot see it (both classes share one file). Paired with the
+        # existing source-file check and `issubclass`, this closes both
+        # directions the review named: a same-file swap (caught by
+        # `__name__`) and a hand-written duplicate under the right name
+        # (caught by `getsourcefile`).
+        for name in self._EXCEPTION_NAMES:
+            with self.subTest(name=name):
+                cls = getattr(_releaselib, name)
+                self.assertEqual(cls.__name__, name)
+                self.assertEqual(inspect.getsourcefile(cls), _CORE_RELEASELIB_PATH)
+                self.assertTrue(issubclass(cls, _releaselib.ReleaseTargetsError))
+
+    def test_shim_mechanism_functions_are_the_portable_modules_not_a_duplicate(self):
+        # Same reasoning as the error-hierarchy test above, applied to every
+        # non-defaulted mechanism function: each must be DEFINED in
+        # core/pysrc/_releaselib.py, never reimplemented in the shim. (The
+        # three wrapped functions -- last_tag_select, select_release_target,
+        # classify_merge_readiness -- restore this repo's OLD default
+        # arguments and so are legitimately NEW, thin functions defined in
+        # the shim itself; they are covered by the wrapper test below, not
+        # here.)
+        for fn in (_releaselib.semver_key, _releaselib.semver_greater,
+                   _releaselib.notes_heading_matches,
+                   _releaselib.release_dates_consistent,
+                   _releaselib.classify_publish_state, _releaselib.peel_tag,
+                   _releaselib.load_targets, _releaselib.parse_release_targets):
+            with self.subTest(fn=fn.__name__):
+                self.assertEqual(inspect.getsourcefile(fn), _CORE_RELEASELIB_PATH)
+
+    def test_shim_wrapped_functions_restore_the_old_default_arguments(self):
+        # last_tag_select, select_release_target, and classify_merge_readiness
+        # now REQUIRE, in the portable module, the argument that used to
+        # default (A-1.3). The shim's own wrappers must still work with no
+        # argument, exactly as every existing caller invokes them.
+        self.assertEqual(_releaselib.last_tag_select(["v1.0.0"]), "v1.0.0")
+        self.assertEqual(
+            _releaselib.select_release_target("1.0.0", "", "", ""), "ca")
+        self.assertEqual(
+            _releaselib.classify_merge_readiness(
+                [{"name": _releaselib.MERGE_READINESS_CHECK, "head_sha": "a" * 40,
+                  "status": "completed", "conclusion": "success"}], "a" * 40),
+            "green")
+
+    def test_shim_resolves_the_mechanism_regardless_of_cwd(self):
+        # The whole point of locating the mechanism via this file's own
+        # __file__ rather than the process cwd (mirroring
+        # payload_version_gate.py's own REPO resolution): invoking the CLI
+        # from a directory with no relationship to this repo must not break
+        # the import. A cwd-dependent relative lookup would fail here.
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as elsewhere:
+            result = subprocess.run(
+                [sys.executable, os.path.join(HERE, "_releaselib.py"), "last-tag"],
+                cwd=elsewhere, input="v1.0.0\nv1.1.0\n",
+                capture_output=True, text=True, timeout=30)
+        self.assertEqual((result.returncode, result.stdout.strip()), (0, "v1.1.0"))
+
+    def test_payload_version_gate_imports_and_runs_unchanged(self):
+        # The load-bearing consumer (payload_version_gate.py:53) does
+        # `from _releaselib import RELEASE_TAG_PREFIXES, semver_greater,
+        # semver_key` at module load. This used to shell out to the gate CLI
+        # with `--base origin/main`, but the hooks job's checkout has no
+        # `fetch-depth: 0` and never fetches `origin/main`, so that
+        # subprocess correctly returned FAIL (exit 1) there for a reason that
+        # has nothing to do with this shim (HIGH-3). It also duplicated the
+        # `version-bump-ca` gate's verdict under a different trigger set,
+        # coupling this shim's own test to this repo's release/payload state.
+        #
+        # A plain in-process `import` exercises the EXACT statement the
+        # consumer runs, in the same interpreter this test file is already
+        # running in (`sys.path.insert(0, HERE)` above puts `.github/scripts`
+        # first, exactly where `payload_version_gate.py` itself inserts it).
+        # `from … import` binds names to the SAME objects the module-level
+        # `_releaselib` import at the top of this file already produced, so
+        # `assertIs` is a genuine identity proof of the shim/consumer wiring
+        # — no git, no network, no repo release-state dependency at all.
+        import payload_version_gate  # noqa: E402 — needs sys.path mutation above
+        self.assertIs(payload_version_gate.RELEASE_TAG_PREFIXES,
+                      _releaselib.RELEASE_TAG_PREFIXES)
+        self.assertIs(payload_version_gate.semver_greater, _releaselib.semver_greater)
+        self.assertIs(payload_version_gate.semver_key, _releaselib.semver_key)
+
+    def test_bare_invocation_exits_2(self):
+        # Argparse's own required-argument failure, not a crash -- the args
+        # are required, so a bare invocation must refuse rather than guess.
+        # In-process (`main([])` raises SystemExit before any git call is
+        # made, so this never depended on repo state) rather than a 120s-
+        # timeout subprocess with its own cwd dependency.
+        import payload_version_gate
+        with self.assertRaises(SystemExit) as ctx:
+            payload_version_gate.main([])
+        self.assertEqual(ctx.exception.code, 2)
+
+
 class DenylistTest(unittest.TestCase):
     """A-1.2: the portable mechanism (core/pysrc/_releaselib.py) must carry no
     literal from this repository's namespace or CI vocabulary. `.github/
@@ -1275,6 +1434,42 @@ class CorePrereleaseMarkerScopeTest(unittest.TestCase):
             core_releaselib.last_tag_select(tags, "thing-alpha-v"), "thing-alpha-v0.2.0")
 
 
+class CorePrereleaseMarkersSecondLineOfDefenseTest(unittest.TestCase):
+    """Adversarial-review remediation (M-4, 2026-07-31): `_PRERELEASE_MARKERS`
+    is documented in `core/pysrc/_releaselib.py` as an explicit SECOND line of
+    defense behind the anchored `_release_re` matcher — but `_release_re`'s
+    own trailing `$` already rejects any tag carrying a suffix past
+    `MAJOR.MINOR.PATCH`, so a marker-bearing tag never reaches the
+    `_PRERELEASE_MARKERS` check at all through the public `last_tag_select`
+    API today. Mutating `_PRERELEASE_MARKERS` to `()` therefore changes
+    NOTHING observable through that path — confirmed empirically, and
+    exactly what the review found ("survives both suites").
+
+    A bare `assertEqual(_PRERELEASE_MARKERS, (...))` would die to that
+    mutant too, but would prove only that the tuple's literal value is
+    pinned, not that the defense DOES anything — the constant could be
+    renamed to nonsense words and that test would still only check its own
+    copy of the value. This test instead exercises the second line of
+    defense in the scenario it exists FOR: a hypothetical relaxation of the
+    first line. It monkeypatches `_release_re` to an UNANCHORED matcher (no
+    trailing `$`) for the duration of one call, so a marker-bearing "version"
+    now clears the (weakened) regex and reaches the `_PRERELEASE_MARKERS`
+    check on its own merits — the only way to make this line reachable
+    without weakening the shipped regex itself, which is out of scope here.
+    """
+
+    def test_marker_check_still_excludes_when_the_regex_alone_would_not(self):
+        import re as _re
+        import unittest.mock as mock
+        lax = _re.compile(r"^v(\d+)\.(\d+)\.(\d+)")  # deliberately no trailing $
+        with mock.patch.object(core_releaselib, "_release_re", return_value=lax):
+            tags = ["v1.0.0", "v1.1.0-beta.1"]
+            # Under the lax regex alone, "v1.1.0-beta.1" matches (span
+            # v1.1.0) and is numerically higher than v1.0.0 — only
+            # _PRERELEASE_MARKERS can still exclude it here.
+            self.assertEqual(core_releaselib.last_tag_select(tags, "v"), "v1.0.0")
+
+
 class CoreColonInValueTest(unittest.TestCase):
     """M4: values split on the FIRST colon only; a later colon is part of the
     value. `line.find(":")` vs `line.rfind(":")` are indistinguishable
@@ -1559,6 +1754,203 @@ class CoreSelectReleaseTargetArmsTest(unittest.TestCase):
         self.assertEqual(
             core_releaselib.select_release_target("", "2.0.0", targets=self.TARGETS),
             "lib")
+
+
+class ThisRepoRowsTest(unittest.TestCase):
+    """A-1.10 (T-26): this repository's own `.codearbiter/release-targets.md`
+    loads as four rows (`this_repo_rows`) whose `target` and `prefix` equal
+    the pre-change RELEASE_TAG_PREFIXES constants (the shim's
+    temporarily-retained data, A-1.9), and every one of the four declares
+    `provenance-manifest` — a maintainer decision (2026-07-31) tighter than
+    the spec's own grammar example, which shows the field on `ca` alone. An
+    absent field silently skips the tag-provenance recording step (A-3.5), so
+    three of four release lanes would otherwise stop recording published tags
+    with no signal at all — a behavior change this migration must not
+    introduce. Every method name below carries `this_repo_rows` so `-k
+    this_repo_rows` (the verification command named in the plan) selects the
+    whole class."""
+
+    REPO_ROOT = os.path.dirname(os.path.dirname(HERE))
+    TARGETS_PATH = os.path.join(REPO_ROOT, ".codearbiter", "release-targets.md")
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rows = core_releaselib.load_targets(cls.TARGETS_PATH)
+        cls.by_target = {row["target"]: row for row in cls.rows}
+
+    def test_this_repo_rows_exactly_four_load(self):
+        self.assertEqual(len(self.rows), 4)
+        self.assertEqual(set(self.by_target), {"ca", "ca-codex", "ca-sandbox", "ca-pi"})
+
+    def test_this_repo_rows_target_and_prefix_equal_the_pre_change_constants(self):
+        # _releaselib.RELEASE_TAG_PREFIXES is this repo's own pre-change
+        # constant (still carried by the shim, A-1.9); the declared file must
+        # agree with it exactly, in both directions.
+        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+            with self.subTest(target=target):
+                self.assertIn(target, self.by_target)
+                self.assertEqual(self.by_target[target]["prefix"], prefix)
+        self.assertEqual(
+            {row["target"] for row in self.rows}, set(_releaselib.RELEASE_TARGETS))
+
+    def test_this_repo_rows_every_row_declares_a_provenance_manifest(self):
+        for target, row in self.by_target.items():
+            with self.subTest(target=target):
+                self.assertEqual(row["provenance_manifest"], ".github/published-tags.json")
+
+    def test_this_repo_rows_only_ca_is_latest_eligible(self):
+        for target, row in self.by_target.items():
+            with self.subTest(target=target):
+                self.assertEqual(row["latest_eligible"], target == "ca")
+
+    def test_this_repo_rows_ca_pi_declares_two_manifests_and_excludes_tools(self):
+        row = self.by_target["ca-pi"]
+        self.assertEqual(
+            row["manifest"], ["plugins/ca-pi/package.json", "package.json"])
+        self.assertEqual(row["payload_exclude"], ["plugins/ca-pi/tools/"])
+
+    def test_this_repo_rows_every_manifest_and_changelog_path_exists_on_disk(self):
+        for target, row in self.by_target.items():
+            for rel in [row["changelog"], *row["manifest"]]:
+                with self.subTest(target=target, path=rel):
+                    self.assertTrue(
+                        os.path.isfile(os.path.join(self.REPO_ROOT, rel)),
+                        f"{target}: declared path {rel!r} does not exist on disk")
+
+    # -- M-2 (adversarial review, 2026-07-31): "6 of 6 row mutants survived,
+    # including replacing ca-pi's pre-tag with `rm -rf plugins/`, pointing
+    # payload at the wrong plugin, and deleting an artifact line." The
+    # methods below assert this repo's declared executable input by exact
+    # content, not merely by existence, closing each named mutant. --
+
+    # Sourced from plugins/ca/skills/release/SKILL.md's own Targets table
+    # (the authoritative source .codearbiter/release-targets.md transcribes)
+    # -- an EXACT list per target, so a deleted or reordered artifact line
+    # cannot survive: "each artifacts path exists" alone does not catch a
+    # deletion, since every surviving path in a shortened list still exists.
+    _EXPECTED_ARTIFACTS = {
+        "ca": ["plugins/ca/tools/farm.js"],
+        "ca-codex": [],
+        "ca-sandbox": [
+            "plugins/ca-sandbox/tools/sandbox.js",
+            "plugins/ca-sandbox/tools/claude-inside.js",
+        ],
+        "ca-pi": [
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/extensions/codearbiter-child.js",
+        ],
+    }
+
+    def test_this_repo_rows_artifacts_exactly_match_the_declared_set(self):
+        for target, expected in self._EXPECTED_ARTIFACTS.items():
+            with self.subTest(target=target):
+                self.assertEqual(self.by_target[target]["artifacts"], expected)
+
+    def test_this_repo_rows_every_artifact_path_exists_on_disk(self):
+        for target, row in self.by_target.items():
+            for rel in row["artifacts"]:
+                with self.subTest(target=target, path=rel):
+                    self.assertTrue(
+                        os.path.isfile(os.path.join(self.REPO_ROOT, rel)),
+                        f"{target}: declared artifact {rel!r} does not exist on disk")
+
+    def test_this_repo_rows_payload_is_scoped_to_its_own_target(self):
+        # Catches "payload points at the wrong plugin": every target's
+        # declared payload must be `plugins/<target>/` -- its OWN directory,
+        # never a sibling's.
+        for target, row in self.by_target.items():
+            with self.subTest(target=target):
+                self.assertEqual(row["payload"], f"plugins/{target}/")
+
+    def test_this_repo_rows_rebuild_follows_the_cd_and_run_convention(self):
+        # HIGH-4: a declared `rebuild` with no `cd` (e.g. the pre-fix
+        # `node plugins/ca-pi/tools/build.mjs`) resolves its own
+        # relative-path inputs against the repo root rather than the
+        # rebuild directory, and fails only at release time. Every declared
+        # `rebuild` must be `cd <existing dir> && <cmd>`, with the entrypoint
+        # `cmd` names resolving relative to that directory -- structurally,
+        # never by actually invoking `npm run build` / `node build.mjs`
+        # here, which belongs to the per-plugin `tools` CI jobs, not a suite
+        # also run on this repo's hooks matrix.
+        import json as _json
+        import re as _re
+        cd_re = _re.compile(r"^cd (\S+) && (.+)$")
+        for target, row in self.by_target.items():
+            rebuild = row["rebuild"]
+            if rebuild is None:
+                continue
+            with self.subTest(target=target):
+                match = cd_re.match(rebuild)
+                self.assertIsNotNone(
+                    match,
+                    f"{target}: rebuild {rebuild!r} does not follow "
+                    "'cd <dir> && <cmd>'")
+                rel_dir, cmd = match.groups()
+                abs_dir = os.path.join(self.REPO_ROOT, rel_dir)
+                self.assertTrue(
+                    os.path.isdir(abs_dir), f"{target}: {rel_dir!r} does not exist")
+                if cmd.startswith("node "):
+                    entry = cmd[len("node "):].strip()
+                    self.assertTrue(
+                        os.path.isfile(os.path.join(abs_dir, entry)),
+                        f"{target}: rebuild entrypoint {entry!r} does not exist "
+                        f"under {rel_dir!r}")
+                elif cmd == "npm run build":
+                    package_json = os.path.join(abs_dir, "package.json")
+                    self.assertTrue(
+                        os.path.isfile(package_json),
+                        f"{target}: no package.json under {rel_dir!r}")
+                    with open(package_json, encoding="utf-8") as fh:
+                        manifest = _json.load(fh)
+                    self.assertIn(
+                        "build", manifest.get("scripts", {}),
+                        f"{target}: package.json under {rel_dir!r} declares no "
+                        "'build' script")
+                else:
+                    self.fail(f"{target}: unrecognised rebuild command shape {cmd!r}")
+
+    # The review's own literal wording ("each pre-tag entry names a script
+    # under .github/scripts/") is falsified by ca-pi's real, CORRECT row --
+    # `python3 tools/build-host-packages.py --check`, under the repo-root
+    # `tools/`, not `.github/scripts/`. The allowlist is therefore BOTH
+    # roots, not one.
+    _PRE_TAG_ALLOWED_ROOTS = (".github/scripts/", "tools/")
+    # check_command_catalog.py is T-34 (PENDING, not yet authored) -- the one
+    # declared, KNOWN-pending forward reference. Asserted as such below
+    # rather than silently accepted (which would let ANY future absent
+    # script pass unnoticed) or silently failing (which would block on a
+    # row that correctly anticipates a task already on the plan).
+    _PRE_TAG_KNOWN_PENDING = frozenset({".github/scripts/check_command_catalog.py"})
+
+    def test_this_repo_rows_pre_tag_scripts_resolve_under_an_allowlisted_root(self):
+        import re as _re
+        cmd_re = _re.compile(r"^python3\s+(\S+\.py)\b")
+        for target, row in self.by_target.items():
+            for command in row["pre_tag"]:
+                with self.subTest(target=target, command=command):
+                    match = cmd_re.match(command)
+                    self.assertIsNotNone(
+                        match,
+                        f"{target}: pre-tag {command!r} is not a "
+                        "'python3 <script>[.py] ...' command")
+                    script = match.group(1)
+                    self.assertTrue(
+                        any(script.startswith(root)
+                            for root in self._PRE_TAG_ALLOWED_ROOTS),
+                        f"{target}: pre-tag script {script!r} is outside the "
+                        f"allowlisted roots {self._PRE_TAG_ALLOWED_ROOTS}")
+                    exists = os.path.isfile(os.path.join(self.REPO_ROOT, script))
+                    if script in self._PRE_TAG_KNOWN_PENDING:
+                        self.assertFalse(
+                            exists,
+                            f"{target}: {script!r} is listed as a KNOWN-pending "
+                            "(T-34) forward reference but now exists on disk -- "
+                            "remove it from _PRE_TAG_KNOWN_PENDING")
+                    else:
+                        self.assertTrue(
+                            exists,
+                            f"{target}: pre-tag script {script!r} does not exist "
+                            "on disk")
 
 
 if __name__ == "__main__":

@@ -202,6 +202,32 @@ Grouped by slice; each is one `tdd` Phase 1 obligation and individually testable
      prose still enter the old-lane script by transcription, so this narrows the oracle problem
      rather than eliminating it.
 
+     **A second, sharper limit on the window variable.** `LAST_TAG`, manifest versions and artifacts
+     are genuinely independent between the two lanes. The *window commit set* is not: window
+     derivation has never lived in `_releaselib.py`, old or new — it is release-skill prose
+     (`git log LAST_TAG..HEAD`). So any straightforward trace shares one walk function across both
+     lanes, and the window comparison can only fail where `LAST_TAG` has already failed. It carries
+     no independent discriminating power **and no fixture change can give it any**, because a merge
+     commit or any other structure changes both sides identically. The window is therefore a
+     consistency check on the harness's own walk, not a behavior trace, and the criterion must not be
+     read as if it proves anything about the migration.
+
+     *(Rev 4.6 corrects rev 4.5, which claimed a merge commit confers discriminating power. It does
+     not, for the reason above — that claim was written in from an unverified report and is the third
+     such error in this campaign. The fixture's merge commit does earn its place, but for a different
+     property: it catches a first-parent-only walk in the harness. The test docstring stated this
+     correctly while the spec stated the opposite.)*
+
+1.12 **The trace must state what it knowingly does NOT hold constant.** `last_tag_select` was
+     deliberately changed during this campaign: the pre-release marker test moved from the whole tag
+     to the prefix-stripped version portion, so a consumer prefix containing `-beta`/`-rc`/`-alpha`
+     no longer loses its entire series. That is an intended behavior change, and a trace asserting
+     "nothing changed" across it is asserting something false — it only reads as true because no
+     fixture prefix carries a marker. The fixture must include a marker-bearing prefix row and assert
+     the **intended** divergence explicitly (old lane yields the never-released sentinel, new lane
+     resolves the tag), converting the trace from "nothing changed" into "exactly this changed, on
+     purpose".
+
 ### Slice 2 — pre-tag execution (check-only, DECISION-0034)
 
 2.1 Declared commands execute in declared order.
@@ -299,15 +325,59 @@ Grouped by slice; each is one `tdd` Phase 1 obligation and individually testable
     script the skill executes, since `check_adr_identity.py` is CI-only and is not shipped.
 6.4 `commands/release.md` documents the same arguments and phase numbering as the skill.
 6.5 The docs-site release guide distinguishes the general lane from this repo's configuration.
-6.6 **Portability is proven in a clean consumer repo, not asserted.** A scratch git repo containing a
-    single `package.json`, a `CHANGELOG.md`, one `v*` tag, and an installed codeArbiter — with **no
-    file from this repository present** — runs `/ca:release` through target resolution, window
-    derivation, bump classification, and changelog rolling. *(Added rev 4.1: #563's acceptance carried
-    this as a checkbox but no numbered criterion existed, so no task covered it. Verifying against
-    this repo's own hand-built state is the documented way consumer-facing bugs stay hidden.)*
-6.7 **This repo still releases.** After the migration, `/ca:release ca` reaches a composed tag on a
-    scratch branch with the same version the pre-change lane would have derived, and the tag is
-    discarded rather than published.
+6.6 **Portability is proven in a clean consumer repo, not asserted.** The plugin is materialized by
+    `git archive HEAD -- plugins/ca` extracted into a scratch cache — **not** by pointing
+    `CLAUDE_PLUGIN_ROOT` at the in-repo tree, and **not** by a recursive copy. Both alternatives carry
+    dev-tree state: an in-repo pointer is the dev tree wearing a costume, and a copy brings
+    uncommitted and gitignored files, so a skill referencing a file that exists locally but was never
+    committed would still pass. `git archive` delivers exactly the committed payload. The scratch
+    consumer repo holds one `package.json`, a `CHANGELOG.md`, one `v*` tag, synthetic conventional
+    commits carrying `CHANGELOG:` footers, and **no file from this repository**.
+
+    Three layers, with different reach:
+
+    - **Reference resolution.** Every executed-or-read path in the *installed* `SKILL.md` resolves
+      against the scratch plugin root or scratch consumer repo. This catches the defect class that
+      started #563 with no model in the loop. It is distinct from AC-6.1's guard: the guard checks
+      the source lexically and misses a payload-packaging failure; this checks the installed result
+      physically.
+    - **Lane driver.** The mechanical sequence runs *as the prose spells it* — invoking the helper
+      CLI with **invocation strings extracted from the skill text**, never by direct import — through
+      target resolution, window derivation, bump classification, changelog rolling, and tag-message
+      composition. A drift between what the prose says to run and what the CLI accepts must fail
+      here rather than be papered over by a direct-import test.
+    - **Agent judgment (irreducible, and narrow).** Whether a model following the prose confirms the
+      bump, BLOCKs on a missing footer, STOPs without publication authorization, and handles the
+      back-fill confirmation honestly. Nothing mechanical proves prose-followability. This layer's
+      scope must be stated in its own docs so it is neither inflated nor skipped as already covered.
+
+    Assertions are on **derived outputs** — the resolved row, `LAST_TAG`, the computed bump, the
+    rolled changelog text — never on exit codes alone.
+
+    *Install-mechanism defects are explicitly out of reach here* — manifest parse errors, hook wiring
+    at install. Those belong to the clean-home install smoke test performed at release, and must not
+    be pulled into per-PR CI.
+
+6.7 **This repo still releases — proven without creating a ref.** The T-27 trace apparatus extends to
+    live-repo HEAD: the pinned pre-change lane and the new lane each derive the next version, the
+    commit window, and the composed tag **message file**, and the two must be equal. `notes-match`
+    and `dates-consistent` run against the composed message. **Zero refs are created.**
+
+    *(Rev 4.4 — this replaces "compose a tag on a scratch branch and discard it". Two hazards killed
+    that: `payload_version_gate.py:115-117` checks local tags, so an interrupted proof leaves one
+    behind and every later gate run reports "already released"; and a single habitual
+    `git push --tags` publishes at the real next version with no `published-tags.json` entry,
+    tripping the immutability audit and forcing exactly the cleanup release doctrine calls a
+    deliberate, announced maintainer action. A tag's informative content is its message file and its
+    target derivation, both comparable without a ref. Real annotated-tag mechanics are exercised
+    inside the AC-6.6 scratch fixture, where refs are disposable by construction and the same code
+    path runs.)*
+
+6.8 **The agent-layer proof cannot rot silently.** The proof run records the content hash of the
+    shipped release skill it exercised. A declared `pre-tag` check asserts at release time that the
+    hash still matches the shipped skill, so editing the skill without re-running the proof **blocks
+    the next release**. Enforcement at the frequency the proof matters — per release, not per PR —
+    using this campaign's own `pre-tag` mechanism as the enforcement point.
 
 ## Decisions on record
 

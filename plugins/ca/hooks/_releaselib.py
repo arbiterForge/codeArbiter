@@ -118,8 +118,17 @@ class MissingRequiredKeyError(ReleaseTargetsError):
 
 
 # A `2.9.1`-style series tag is exactly `<prefix>MAJOR.MINOR.PATCH` — no
-# suffix. The anchored form already excludes pre-releases (`2.6.0-beta.1`);
-# _PRERELEASE_MARKERS is the explicit, legible second line of defense.
+# suffix. The anchored form already excludes pre-releases (`2.6.0-beta.1`).
+#
+# _PRERELEASE_MARKERS is UNREACHABLE through the public API as shipped, not a
+# "second line of defense" as this comment previously claimed. The `$` anchor
+# below rejects every suffixed tag, so no tag can both match the regex AND
+# carry a marker in its prefix-stripped version portion — verified by probe.
+# It is retained as a guard that would become load-bearing if the anchor were
+# ever relaxed, and is tested via a monkeypatched unanchored matcher so the
+# behavior is proven rather than assumed. Whether to delete it outright or
+# make it genuinely reachable is tracked as an open question; do not read its
+# presence as evidence that suffixed tags are filtered twice.
 _RELEASE_RE_CACHE = {}
 
 

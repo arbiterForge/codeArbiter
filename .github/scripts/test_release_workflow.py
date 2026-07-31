@@ -276,6 +276,19 @@ class _ShellHarness(unittest.TestCase):
         scripts = root / ".github" / "scripts"
         scripts.mkdir(parents=True)
         shutil.copy(HERE / "_releaselib.py", scripts / "_releaselib.py")
+        # The shim (copied above) resolves `core/pysrc/_releaselib.py` at
+        # import time via its own __file__ -> parents[2] -- i.e. TWO levels
+        # above `.github/scripts/`, exactly like this synthetic tree's
+        # `.github/scripts/` is two levels below `root`. Without the mechanism
+        # module also present here, every subprocess invocation of the copied
+        # shim raises FileNotFoundError before it does anything else. This is
+        # NOT a fallback for a genuinely absent mechanism (the spec forbids
+        # that) -- it is reproducing the real on-disk shape the shim already
+        # requires, the same way the shim itself is copied above.
+        core_pysrc = root / "core" / "pysrc"
+        core_pysrc.mkdir(parents=True)
+        shutil.copy(HERE.parent.parent / "core" / "pysrc" / "_releaselib.py",
+                    core_pysrc / "_releaselib.py")
         return root
 
     def _run(self, script, *, env=None, ls_remote="", checks="[]",

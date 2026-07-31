@@ -64,6 +64,14 @@ python .github/scripts/test_taskwriter.py
 # publish classifier, the CLI, and the SKILL.md structural wiring (_releaselib)
 python .github/scripts/test_release_lib.py
 
+# A-1.11 release resolution trace — proves the portable-mechanism split
+# (core/pysrc/_releaselib.py + declared release-targets.md) reproduces the
+# pinned pre-change lane's resolved variables for ca and ca-pi, and states
+# the one intended divergence (AC-1.12, pre-release-marker scope). Needs
+# FULL git history and all tags (fetch-depth: 0, fetch-tags: true) — its own
+# preflight fails loudly, not silently, if either is missing.
+python .github/scripts/test_release_trace.py
+
 # commit-gate board-sync chokepoint — Phase 6 board-edit exemption + prose
 # wiring (AC-04..07, ADR-0008); structural SKILL.md/command-doc assertions
 python .github/scripts/test_board_sync.py

@@ -31,6 +31,7 @@ duplicated, so the two documents cannot drift.
 | A-1.9 | *(transitional)* shim re-exports mechanism, still exposes `RELEASE_TAG_PREFIXES` |
 | A-1.10 | this repo's four rows load; target+prefix equal pre-change constants |
 | A-1.11 | resolution trace reproduces a recorded pre-change run for `ca` and `ca-pi` |
+| A-1.12 | the trace asserts the **intended** `last_tag_select` divergence on a marker-bearing prefix, so it says "exactly this changed, on purpose" rather than "nothing changed" |
 | A-2.1 | pre-tag commands execute in declared order |
 | A-2.2 | non-zero exit blocks |
 | A-2.3 | dirty tree blocks; assertion precedes `rebuild` |
@@ -57,11 +58,15 @@ duplicated, so the two documents cannot drift.
 | A-5.4 | back-fill persists; second run reads |
 | A-5.5 | first-release changelog baseline instead of per-commit BLOCK |
 | A-5.6 | provenance triggers are the rows' referenced paths |
+| A-6.0 | the release skill itself resolves targets from the declared file (table becomes loader, helpers repoint, provenance step reads the row field, hosted-lane prose conditionalized) |
 | A-6.1 | reference-form guard over `core/surface/skills/**` |
 | A-6.2 | `subagent-driven-development` farm.js reference resolves |
 | A-6.3 | `decision-lifecycle` reworded to conditional CI reference |
 | A-6.4 | `commands/release.md` matches the skill |
 | A-6.5 | docs-site guide distinguishes general lane from this repo |
+| A-6.6 | portability proven in a clean consumer repo built by `git archive HEAD` — reference resolution, prose-extracted lane driver, and a narrow agent-judgment layer; assertions on derived outputs, never exit codes |
+| A-6.7 | this repo still releases — pinned old lane and new lane derive the same version, window and composed tag **message file** from live HEAD, with **zero refs created** |
+| A-6.8 | the agent-layer proof cannot rot: a `pre-tag` check asserts the recorded skill-content hash still matches what ships, so editing the skill without re-running the proof blocks the next release |
 
 ### Workstream B — protected-state machinery
 
@@ -165,12 +170,12 @@ Paths resolve per `coding-standards.md`: Python hooks in `plugins/ca/hooks/`, sh
 | T-22 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k parser_contract` — 8 violations, 8 distinguishable errors | parser contract | A-1.6 | T-21 | ACCEPTED |
 | T-23 | `core/pysrc/_releaselib.py` | `test_release_lib.py -k empty_block` raises the declared error | empty-block error | A-1.7 | T-22 | ACCEPTED |
 | T-24 | `.github/scripts/test_release_lib.py` | `-k series_isolation` — `v` and `ca-pi-v` resolve independently | series isolation | A-1.8 | T-23 | ACCEPTED |
-| T-25 | `.github/scripts/_releaselib.py` | `python .github/scripts/payload_version_gate.py --plugin plugins/ca --base origin/main` exits 0 (bare invocation exits 2 — args are required) | transitional shim | A-1.9 | T-24 | PENDING |
-| T-26 | `.codearbiter/release-targets.md` | `python .github/scripts/test_release_lib.py -k this_repo_rows` — 4 rows load, prefixes match constants, **and every one of the four declares `provenance-manifest`** | repo rows declared | A-1.10 | T-25 | PENDING |
-| T-27a | `.github/scripts/fixtures/release-trace/` | `python .github/scripts/test_release_trace.py -k fixture_shape` — frozen tag list, manifests, commit graph, 4 rows | trace fixture | A-1.11 | T-26 | PENDING |
-| T-27b | `.github/scripts/test_release_trace.py` | `-k old_lane_loads` — helpers pinned via `git show <pre-change-sha>:.github/scripts/_releaselib.py` | pinned old lane | A-1.11 | T-27a | PENDING |
-| T-27c | `.github/scripts/test_release_trace.py` | `-k old_lane_live` — the transcribed old lane resolves `ca`'s real last tag against the live repo; **divergence is a STOP, not a fixup** | old-lane validation | A-1.11 | T-27b | PENDING |
-| T-27d | `.github/scripts/test_release_trace.py` | `-k trace_matches` — new lane reproduces the recorded variable dict for `ca` **and** `ca-pi` | trace assertion | A-1.11 | T-27c | PENDING |
+| T-25 | `.github/scripts/_releaselib.py` | `python .github/scripts/payload_version_gate.py --plugin plugins/ca --base origin/main` exits 0 (bare invocation exits 2 — args are required) | transitional shim | A-1.9 | T-24 | ACCEPTED |
+| T-26 | `.codearbiter/release-targets.md` | `python .github/scripts/test_release_lib.py -k this_repo_rows` — 4 rows load, prefixes match constants, **and every one of the four declares `provenance-manifest`** | repo rows declared | A-1.10 | T-25 | ACCEPTED |
+| T-27a | `.github/scripts/fixtures/release-trace/` | `python .github/scripts/test_release_trace.py -k fixture_shape` — frozen tag list, manifests, commit graph, 4 rows | trace fixture | A-1.11 | T-26 | ACCEPTED |
+| T-27b | `.github/scripts/test_release_trace.py` | `-k old_lane_loads` — helpers pinned via `git show <pre-change-sha>:.github/scripts/_releaselib.py` | pinned old lane | A-1.11 | T-27a | ACCEPTED |
+| T-27c | `.github/scripts/test_release_trace.py` | `-k old_lane_live` — the transcribed old lane resolves `ca`'s real last tag against the live repo; **divergence is a STOP, not a fixup** | old-lane validation | A-1.11 | T-27b | ACCEPTED |
+| T-27d | `.github/scripts/test_release_trace.py` | `-k trace_matches` — new lane reproduces the recorded variable dict for `ca` **and** `ca-pi` | trace assertion | A-1.11 | T-27c | ACCEPTED |
 | T-28 | `core/surface/skills/release/SKILL.md` | `test_release_lib.py -k pre_tag_order` — declared order preserved | pre-tag order | A-2.1 | T-27 | PENDING |
 | T-29 | `core/pysrc/_releaselib.py` | `-k pre_tag_exit` — non-zero exit blocks | pre-tag exit | A-2.2 | T-28 | PENDING |
 | T-30 | `core/pysrc/_releaselib.py` | `-k pre_tag_dirty` — dirty tree blocks, assertion precedes rebuild | clean-tree gate | A-2.3 | T-29 | PENDING |
@@ -273,10 +278,29 @@ consumer proof runs in a scratch repo with no file from this repository present.
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-73 | `.github/scripts/test_consumer_smoke.py` | scratch repo built: one `package.json`, one `CHANGELOG.md`, tag `v1.2.3`, codeArbiter installed, **zero files from this repo** | consumer fixture | A-6.6 | T-72 | PENDING |
-| T-74 | `.github/scripts/test_consumer_smoke.py` | `-k backfill_detects` — no declared file → detected shape presented, refuses to proceed unconfirmed | consumer back-fill | A-6.6 | T-73 | PENDING |
-| T-75 | `.github/scripts/test_consumer_smoke.py` | `-k consumer_end_to_end` — target resolution, window derivation, bump classification and changelog rolling all succeed with no non-payload path touched | portability proof | A-6.6 | T-74 | PENDING |
-| T-76 | `.github/scripts/test_release_trace.py` | `-k this_repo_still_releases` — `/ca:release ca` composes a tag on a scratch branch at the version the pre-change lane would derive; tag discarded, never pushed | this repo still releases | A-6.7 | T-75 | PENDING |
+**Pulled forward as a ratchet.** T-73a/T-73b run right after T-27d, not at the end. The loader and
+library already landed at `0664506`, so the fixture is feasible now — and authoring it at the end
+means transcribing its expected values from the implementation it is supposed to check.
+
+The ratchet is what makes early landing safe. A long-red test cannot be a required check while red,
+so it enforces nothing for weeks, and a test red for its whole life gets edited into passing on the
+day it finally matters. Instead T-73b compares the unresolved-reference set against a **committed
+known-failures list** — green and required from day one, failing whenever that set changes in
+**either** direction without the list moving in the same diff. It catches both a shrink nobody
+recorded and a *new* contaminating reference sneaking in mid-campaign, which a plain red test would
+silently absorb. T-41a–d, T-69 and T-70 each shrink the list in their own commit; T-79 asserts it is
+empty and deletes the ratchet.
+
+| id | path(s) | verification | maps-to | covers | depends | status |
+|---|---|---|---|---|---|---|
+| T-73a | `.github/scripts/test_consumer_smoke.py` | scratch consumer repo built; plugin materialized by `git archive HEAD -- plugins/ca` into a scratch cache — **not** an in-repo `CLAUDE_PLUGIN_ROOT` pointer, **not** a recursive copy (both carry uncommitted and gitignored dev-tree state) | consumer fixture | A-6.6 | T-27d | PENDING |
+| T-73b | `.github/scripts/test_consumer_smoke.py`, `.github/scripts/known-unresolved-refs.txt` | `-k reference_resolution_ratchet` — unresolved refs in the **installed** SKILL.md equal the committed list exactly; fails on any change in either direction | reference ratchet | A-6.6 | T-73a | PENDING |
+| T-74 | `.github/scripts/test_consumer_smoke.py` | `-k lane_driver` — the mechanical sequence runs via **invocation strings extracted from the skill text**, never direct imports, so prose/CLI drift fails here | lane driver | A-6.6 | T-73b | PENDING |
+| T-75 | `.github/scripts/test_consumer_smoke.py` | `-k consumer_end_to_end` — asserts on derived **outputs** (resolved row, `LAST_TAG`, computed bump, rolled changelog text), never exit codes alone | portability proof | A-6.6 | T-74 | PENDING |
+| T-76 | `.github/scripts/test_consumer_smoke.py` | `-k backfill_detects` — no declared file, so the detected shape is presented and does not proceed unconfirmed | consumer back-fill | A-6.6 | T-75 | PENDING |
+| T-77 | `.github/scripts/test_release_trace.py` | `-k this_repo_still_releases` — pinned pre-change lane and new lane both derive next version, window and composed tag **message file** from live HEAD; equality asserted; **zero refs created** | this repo still releases | A-6.7 | T-76 | PENDING |
+| T-78 | `.codearbiter/reports/agent-lane-proof.json` | scripted agent scenarios run against the scratch fixture — happy path, missing-footer BLOCK, back-fill confirm and refuse — with outcomes and the **content hash of the shipped skill** recorded | agent judgment layer | A-6.6 | T-77 | PENDING |
+| T-79 | `.codearbiter/release-targets.md`, `.github/scripts/check_skill_proof_fresh.py` | a `pre-tag` row asserts the recorded skill hash still matches the shipped skill, so editing the skill without re-running the proof **blocks the next release**; and the known-failures list is asserted empty, retiring the ratchet | proof freshness + ratchet retirement | A-6.8, A-6.1 | T-78 | PENDING |
 
 ## Pre-run dispositions (maintainer-answered 2026-07-31)
 
