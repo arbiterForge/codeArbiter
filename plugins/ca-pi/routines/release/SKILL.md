@@ -95,7 +95,11 @@ Read these, or STOP and surface the gap — never guess:
 Derive the bump mechanically from the commit log; do not guess it.
 
 1. Read every commit in the `$PAYLOAD`-scoped window: `git log $WINDOW --pretty=format:%H%n%s%n%b%n---- -- $PAYLOAD` (the path scope is load-bearing — it excludes every sibling's commits from the bump and changelog).
-2. Classify each subject by its Conventional-Commits prefix and apply the highest-precedence bump:
+2. **Classify the window through the tested helper, not by hand:** `git log $WINDOW --pretty=format:%H%n%s%n%b%n---- -- $PAYLOAD | python3 <plugin-root>/hooks/_releaselib.py classify-window`. It prints the derived bump on the first line, then one `[NEEDS-TRIAGE] <short-sha> <subject>` line per bumping commit missing a `CHANGELOG:` footer — step 3's report, in step 3's exact shape. **Exit 0** clean; **exit 1** at least one footer is missing (step 3's BLOCK); **exit 2** the whole window is non-bumping (the STOP below). It classifies and reports; the decision stays here, in this skill.
+
+   Hand-rolling this parse is how it goes wrong, and not hypothetically (HIGH-adjacent, adversarial review 2026-07-31, run 11): an exercising agent wrote `subject.split('(')[0].split(':')[0].rstrip('!')`, which strips the breaking marker *before* anything checks for it — so `feat!:` classified as a minor, `feat(api)!:` the same, and `chore!:` as no release at all. A breaking change ships as a minor, or does not ship. Two operators writing two parses produce two different gates on the check that decides whether a release may proceed, which is not a gate.
+
+   The rules it implements, for reference — the helper is authoritative, this list is the explanation:
    - `BREAKING CHANGE:` footer or `!` after the type/scope → **major**.
    - else any `feat` → **minor**.
    - else any `fix`, `perf`, `refactor` → **patch**.

@@ -3400,6 +3400,8 @@ _GOVERNANCE_RULES = {
         "_releaselib.py adoption-commit"),
     "A-3.6: the interpreter fallback is stated as a file-wide convention": (
         "Interpreter convention, stated once",),
+    "HIGH-adjacent (run 11): window classification runs through the helper": (
+        "Two operators writing two parses", "_releaselib.py classify-window"),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the
