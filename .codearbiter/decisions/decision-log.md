@@ -1114,3 +1114,53 @@ own sources so the report does not count its tests as covered source.
 Baseline recorded; shortfall tracked like #511.
 
 ---
+
+## DECISION-0033 — release-pre-tag-steps — Repo-specific pre-tag reconciliation is declared per target row, not pushed to CI
+
+**Date:** 2026-07-30
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The `release` skill hardcodes this repo's pre-tag steps (README badge sync, command/skill/agent count derivation, `build-host-packages.py` regeneration) as skill prose.
+- **Scaffold position:** A shippable skill cannot carry any repo's specific reconciliation commands; project state is where per-repo facts belong.
+- **Status type:** open-decision-closure
+
+### Decision
+Each release target row in `.codearbiter/release-targets.md` carries an ordered list of pre-tag shell commands. The skill runs them before tagging, asserts each exits 0, and asserts the tree is clean afterward. This repo's four existing steps move into its own rows unchanged. CI's `check_badge_consistency.py` is retained as the mechanical backstop it already is — the declared steps complement it rather than replace it.
+
+### SMARTS rationale
+Testable, Available, Scalable, and Maintainable favored declared rows cleanly. Declared steps are data, so a fixture can assert run order and dirty-tree failure; pushing the steps to CI would require simulating CI status payloads to test, and would make tagging unavailable during any CI outage. Securable was the only non-Strong cell, and it falls inside the trust class ADR-0002 already accepted: operator-authored, PR-reviewed shell input, resolved by declaring the boundary rather than restricting the operator. The rejected local-hook-script option scored Weak on Securable for precisely the reason ADR-0002 rejected its own equivalent — an undeclared executable-input boundary.
+
+### Implementation implication
+`.codearbiter/release-targets.md` gains a `pre-tag` list per row plus an assert-clean flag. `security-controls.md` gains a boundary-crossings entry declaring the file as executable input, with a length cap following ADR-0002's 1024-character precedent. An ADR is warranted for the new trust boundary and should be authored via `/ca:adr` during implementation. The `release` skill drops its four hardcoded reconciliation steps in favor of running the declared list. Tracked under issue #563.
+
+---
+
+## DECISION-0034 — release-pre-tag-semantics — Declared pre-tag commands are check-only and may never mutate the tree
+
+**Date:** 2026-07-30
+**Status:** accepted
+**Supersedes:** DECISION-0033
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0033 held that pre-tag steps are declared per target row and run with exit-code and clean-tree assertions, and its implementation note described a per-row assert-clean flag.
+- **Scaffold position:** This repo's actual pre-tag steps are edits, not assertions — `build-host-packages.py` regenerates the root manifest and `wc -l` count derivation implies editing README prose — so a clean-tree assertion blocks the very reconciliation the steps exist to perform.
+- **Status type:** open-decision-closure
+
+### Decision
+Pre-tag commands remain declared per target row rather than pushed to CI, restating DECISION-0033's holding in full. They are additionally constrained to be **check-only**: a command must assert and exit non-zero on drift, and must not mutate the working tree. The clean-tree assertion applies unconditionally, so any mutation is detected and blocks the release. No per-row assert-clean flag exists. Reconciliation itself — regenerating a manifest, syncing README badges — stays a separate action the operator performs and commits through `commit-gate` before re-running the release.
+
+### SMARTS rationale
+Five of six lenses favored check-only. Maintainable and Testable: one rule with no branch, and a fixture asserts exit code plus unchanged tree without standing up commit-gate, whose own gates would otherwise leak into release tests. Reliable: the tree the suite ran against is the tree that gets tagged, with no mid-phase mutation landing after the last green run. Securable: because the clean-tree assertion always runs, a rogue declared command's writes surface before tagging, which the flagged and unconditional-mutation alternatives both lose. Available was the single Weak cell and is an accepted cost — a lagging generated manifest stops the release and names what to run. ADR-0008's ride-along precedent genuinely favored in-lane reconciliation, but it applies to narrow classified edits with named exemptions (`classify_board_diff` transitions, provenance re-baselines), never to arbitrary operator-declared commands; extending it here would let a regenerated manifest reach a tag without passing commit-gate review.
+
+### Implementation implication
+`.codearbiter/release-targets.md` rows carry a `pre-tag` list with no assert-clean flag. The release skill runs each command, asserts exit 0, then asserts a clean tree, and BLOCKs on either failure. This repo's badge and count reconciliation must be expressed as check scripts — `check_badge_consistency.py` already has that shape; the catalog and README-table assertions need equivalent non-mutating checks written. `build-host-packages.py` is not a pre-tag command; a companion check asserts the generated root manifest matches the plugin manifest and fails when it lags. Costs this repo one extra loop per release when a generated artifact is stale. Tracked under issue #563, spec `specs/release-portable-fixture.md`.
+
+---
