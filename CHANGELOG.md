@@ -63,6 +63,33 @@ predate the plugin rewrite and are grouped by date.
   despite having releases. The test now applies to the version portion only.
   Invisible in this repository, live in a consumer's.
 
+- **The release skill cited a CI path that only exists in this repository.** A
+  parenthetical pointed at `.github/actions/publish-release/action.yml` to
+  explain where the tag-peeling helper came from. That file ships in no
+  payload, so every consumer read a pointer to nothing - the exact
+  this-repo contamination the portable-fixture work exists to remove. The
+  explanation stands without the path.
+
+- **The tag was written before the check that says whether writing it was
+  safe.** Phase 2 named `git tag -a` first and classified the publish state
+  afterwards, so an agent following the step in written order created the ref
+  and only then asked whether it should have. `git tag` now appears once, in
+  the `publish_fresh` branch, after classification.
+
+- **Three of `classify`'s six arguments had no stated source, and a fourth had
+  no local one.** `head_sha`, `tag_version`, and `manifest_version` were named
+  but never sourced, so each was supplied from whatever the reader inferred;
+  `release_nondraft`'s only origin, `gh release view`, reports "no remote" and
+  "no such release" through the same non-zero exit. All four now carry an
+  explicit derivation, and the ambiguous `gh` failure STOPs instead of passing
+  a guess into the one branch that decides whether a published release is
+  republished.
+
+- **`<summary>` in the Release title convention was never defined.** It
+  appeared exactly once in the skill - in the convention itself - so the title
+  of every published Release was improvised. It is now derived from the
+  changelog section the release already composed.
+
 ## [2.10.8] — 2026-07-30
 
 ### Changed
