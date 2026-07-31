@@ -1774,10 +1774,20 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     result["last_tag_lib"] = last_tag
     result["last_tag_oracle"] = _independent_last_tag(tags, tag_prefix)
 
+    # `$WINDOW`, derived exactly as Pre-flight prescribes (HIGH, run-5
+    # adversarial review): `<none>` is a SENTINEL, not a revision, and
+    # substituting it into a range is a hard failure — `git log
+    # <none>..HEAD` exits 128 with `fatal: bad revision`. The skill used to
+    # spell the window `LAST_TAG..HEAD` inline, which is why this driver
+    # substituted `LAST_TAG`; it now spells it `$WINDOW` and states the
+    # derivation, so the driver performs the same derivation rather than
+    # hardcoding the range shape.
+    window = "HEAD" if last_tag == "<none>" else f"{last_tag}..HEAD"
+    result["window_expr"] = window
     for label in ("window_scope_bare", "window_scope_full_log"):
         argv = _substitute_argv(
             shlex.split(result["invocations"][label]),
-            {"LAST_TAG": last_tag, "$PAYLOAD": payload})
+            {"$WINDOW": window, "$PAYLOAD": payload})
         result["processes"][label] = _run_argv(argv, consumer_root)
 
     result["window_entries"] = _parse_window_log(

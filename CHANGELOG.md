@@ -116,6 +116,25 @@ predate the plugin rewrite and are grouped by date.
   subcommand exposed it, so it was reachable only by importing the module -
   something the skill never instructs. Added as `dates-match`.
 
+- **The first release of every back-filled project died on a sentinel.** With
+  no tag yet in a series, the tag helper returns the literal string `<none>`,
+  and the skill spelled the commit window `LAST_TAG..HEAD` - so the command it
+  handed the operator was `git log <none>..HEAD`, which exits 128 with `fatal:
+  bad revision`. The prose called that state "normal, not an error" while
+  giving a command that cannot survive it, and it lands on exactly the
+  consumers the back-fill lane exists to serve. The window is now derived into
+  `$WINDOW` (`HEAD` when there is no tag, `<tag>..HEAD` otherwise) before any
+  command uses it.
+
+- **Three smaller wiring defects on the ordinary path.** The possibly-empty
+  tag sha was passed unquoted, and on the fresh-publish path - the common case
+  - an empty unquoted argument does not become an empty positional, it
+  vanishes, so the classifier received five arguments and exited 2. Reading
+  the manifest version named no command where every neighbouring argument
+  named one. And the tag round-trip check read `git tag -l --format=%(contents)`,
+  a reconstruction that appends a newline and so cannot detect a byte
+  difference even in principle; it now reads the raw object.
+
 ## [2.10.8] — 2026-07-30
 
 ### Changed

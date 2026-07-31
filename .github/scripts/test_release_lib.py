@@ -2885,6 +2885,15 @@ _GOVERNANCE_RULES = {
         "with its answer inverted", "--jq '.isDraft'"),
     "MEDIUM (run 4): the required date check has a runnable command": (
         "dates-match",),
+    # Run 5 (2026-07-31).
+    "HIGH (run 5): the <none> sentinel is derived into a range, never substituted": (
+        "is a sentinel, not a revision", "WINDOW=HEAD"),
+    "MEDIUM (run 5): the possibly-empty tag_sha is quoted": (
+        'Quote it', '"$TAG_SHA"'),
+    "MEDIUM (run 5): manifest_version is parsed, not grepped": (
+        "extracted with a real parser",),
+    "LOW (run 5): the round-trip check reads the raw object, not a reconstruction": (
+        "git cat-file tag ${TAG_PREFIX}MAJOR.MINOR.PATCH",),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the
