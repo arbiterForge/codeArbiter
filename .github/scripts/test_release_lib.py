@@ -2462,6 +2462,56 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    # ---- A-5.5: the first-release baseline ----
+    def test_first_release_baseline_returns_the_adoption_commit(self):
+        self.assertEqual(
+            core_releaselib.first_release_baseline("f3394f8\n"), "f3394f8")
+
+    def test_first_release_baseline_takes_the_EARLIEST_of_several(self):
+        # git log prints newest-first, so the LAST line is the earliest
+        # addition. A file added, deleted and re-added yields two entries;
+        # taking the newest would treat the re-adoption as the boundary and
+        # silently drop every commit in between -- the same class of quiet
+        # history loss this function exists to prevent.
+        text = "bbbbbbb\naaaaaaa\n"      # newest first
+        self.assertEqual(core_releaselib.first_release_baseline(text), "aaaaaaa")
+
+    def test_first_release_baseline_is_empty_when_never_adopted(self):
+        # A repo that never onboarded is a NORMAL answer, not an error.
+        for text in ("", "\n", "   \n\n"):
+            self.assertEqual(core_releaselib.first_release_baseline(text), "")
+
+    def test_first_release_baseline_never_raises_on_junk(self):
+        # Mechanism-function invariant: degrade to the refusing answer.
+        for junk in (None, 42, [], "not-a-sha\n", "zzz\n"):
+            self.assertEqual(core_releaselib.first_release_baseline(junk), "")
+
+    def test_first_release_baseline_tolerates_trailing_fields(self):
+        # `--format=%H` alone is what the prose names, but an operator who
+        # adds a date or subject must not get a mangled sha back.
+        self.assertEqual(
+            core_releaselib.first_release_baseline("f3394f8 2026-06-04 Phase 2\n"),
+            "f3394f8")
+
+    def test_adoption_commit_cli_prints_the_sha_and_exits_0(self):
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        proc = subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "adoption-commit"],
+            input="f3394f8\n", capture_output=True, text=True, env=env)
+        self.assertEqual(proc.returncode, 0)
+        self.assertEqual(proc.stdout.strip(), "f3394f8")
+
+    def test_adoption_commit_cli_exits_0_with_no_output_when_never_adopted(self):
+        # Exit 0 deliberately: a non-zero here would break a `set -e` lane
+        # on the ordinary path, and the caller distinguishes the cases by
+        # empty output exactly as it already does for `peel-tag`.
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        proc = subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "adoption-commit"],
+            input="", capture_output=True, text=True, env=env)
+        self.assertEqual(proc.returncode, 0)
+        self.assertEqual(proc.stdout.strip(), "")
+
     def test_run_pre_tag_catches_a_mutation_of_an_ALREADY_MODIFIED_file(self):
         # HIGH, run 10. The assertion was a set difference over porcelain
         # LINES, so a command mutating a file that was already ` M`

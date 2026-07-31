@@ -41,6 +41,7 @@
 #                          manifest_version, release_is_nondraft) -> str
 #   select_release_target(*confirmations, targets) -> str
 #   classify_merge_readiness(check_runs, head_sha, check_name) -> str
+#   first_release_baseline(adoption_log_text) -> str
 #   peel_tag(ls_remote_text, tag) -> str
 #   parse_release_targets(text) -> list[dict]
 #   load_targets(path) -> list[dict]
@@ -493,6 +494,46 @@ def classify_merge_readiness(check_runs, head_sha, check_name):
     if any(run.get("conclusion") != "success" for run in matching):
         return "not_successful"
     return "green"
+
+
+def first_release_baseline(adoption_log_text):
+    """The commit sha that ADOPTED codeArbiter -- the one that added
+    `.codearbiter/CONTEXT.md` -- from `git log --diff-filter=A
+    --format=%H -- .codearbiter/CONTEXT.md` output. `""` when the file was
+    never added (no adoption commit, or a repo that never onboarded).
+
+    A-5.5. On a project's FIRST release the tag series is empty, so
+    `LAST_TAG` is `<none>` and the window is the entire history. Every
+    pre-adoption `feat`/`fix`/`perf`/`refactor` commit therefore enters
+    the footer-completeness check -- and none of them carries a
+    `CHANGELOG:` footer, because they predate the convention entirely. The
+    lane would emit one `[NEEDS-TRIAGE]` line per such commit and STOP: a
+    repository adopting at its 500th commit gets a 500-line block on a
+    release where nothing is actually wrong. That is a hard block on a
+    legitimate release, and it lands on precisely the population the
+    Back-fill lane exists to serve.
+
+    The adoption commit is the honest boundary: commits before it were
+    authored under no changelog convention and cannot retroactively
+    acquire footers, while commits after it were authored under one and
+    SHOULD be held to it.
+
+    Non-raising and pure over text, per this module's mechanism-function
+    invariant. Takes the LAST line when several are present: `git log`
+    prints newest-first, so the last line is the EARLIEST addition, which
+    is the real adoption. (A file added, deleted, and re-added produces
+    two entries -- taking the newest would silently treat a re-adoption as
+    the boundary and drop every commit between the two, which is the same
+    class of quiet history loss this function exists to prevent.)
+    """
+    if not isinstance(adoption_log_text, str):
+        return ""
+    shas = [line.strip().split()[0] for line in adoption_log_text.splitlines()
+            if line.strip()]
+    if not shas:
+        return ""
+    candidate = shas[-1]
+    return candidate if re.fullmatch(r"[0-9a-fA-F]{7,64}", candidate) else ""
 
 
 def peel_tag(ls_remote_text, tag):
@@ -1096,6 +1137,14 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      adoption-commit            stdin = `git log --diff-filter=A --format=%H
+                                  -- .codearbiter/CONTEXT.md` -> prints the
+                                  commit that ADOPTED codeArbiter, or nothing
+                                  when there is none. The honest window floor
+                                  for a project's FIRST release: without it,
+                                  every pre-adoption commit enters the
+                                  footer check and none can pass, blocking a
+                                  legitimate release once per commit (A-5.5).
       run-pre-tag <target>       runs the row's declared `pre-tag` commands in
                                   DECLARED ORDER, stopping at the first
                                   non-zero exit, and asserts a clean tree after
@@ -1162,7 +1211,7 @@ def main(argv):
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
             "notes-match|dates-match|semver-greater|classify|peel-tag|"
-            "run-pre-tag|backfill-detect} ...\n")
+            "run-pre-tag|adoption-commit|backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1238,6 +1287,21 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "adoption-commit" and not rest:
+        # A-5.5. stdin = `git log --diff-filter=A --format=%H --
+        # .codearbiter/CONTEXT.md`. Prints the adoption commit, or nothing
+        # at all when the project has no adoption commit.
+        #
+        # Exit 0 either way, deliberately: "this project has no adoption
+        # commit" is a normal answer for a repo that never onboarded, not
+        # an error, and the caller distinguishes the two by empty output
+        # exactly as it already does for `peel-tag`. A non-zero exit here
+        # would break a `set -e` lane on the ordinary path.
+        baseline = first_release_baseline(sys.stdin.read())
+        if baseline:
+            print(baseline)
+        return 0
 
     if cmd == "run-pre-tag" and len(rest) == 1:
         # A-2.1/2.2/2.3 (DECISION-0034). Runs the row's declared `pre-tag`

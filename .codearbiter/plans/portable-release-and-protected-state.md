@@ -238,6 +238,8 @@ generate from it).
 | T-49 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_requires_confirmation` — no write without confirm | back-fill gate | A-5.3 | T-48 | ACCEPTED |
 | T-50 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_persists` — second run reads, does not re-detect | back-fill persist | A-5.4 | T-49 | ACCEPTED |
 | T-51 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k first_release_baseline` — baseline derived from `git log --diff-filter=A -- .codearbiter/CONTEXT.md`, with a user override offered in the prompt | adoption baseline | A-5.5 | T-50 | PENDING |
+> **T-51 partial (2026-07-31).** The MECHANISM and its CLI entry point (`first_release_baseline`, `adoption-commit`) are built, tested and mutation-verified. The row stays PENDING because criterion 5.5 requires the LANE to offer the baseline, which is skill prose — and a mechanism with no caller is the exact defect class this campaign already found once (`peel-tag` was public API with no CLI while the skill aimed prose at it). The prose is batched with T-42's into one edit after run 11 reports, so a single exercise covers both rather than owing two. Flipping this row before that lands would assert a lane behaviour that does not exist.
+
 | T-52 | `.codearbiter/.provenance/release-targets.json` | `python .github/scripts/test_provenancelib.py -k release_targets_triggers` | drift triggers | A-5.6 | T-51 | PENDING |
 
 ### Step 4 — B3: the two conversions

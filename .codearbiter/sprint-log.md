@@ -1254,3 +1254,31 @@ rather than inventing a code. The runner adds only two: 5 for a failed command,
 **Not decided here.** Whether `rebuild` should also move behind a helper. 2.3
 only requires the clean-tree assertion precede any rebuild, which ordering in the
 runner satisfies.
+
+## 2026-07-31 — T-51 first-release baseline: sequencing + shape (SMARTS, auto-decided)
+
+**Question.** Criterion 5.5 needs the lane to offer a changelog baseline at the
+adoption commit instead of BLOCKing once per pre-adoption commit. Two calls:
+what shape, and when to land the prose.
+
+**Decision 1 — a pure mechanism function plus a CLI subcommand, not prose
+arithmetic.** Consistent with the T-28 ruling and the same lenses; Scalable
+weighted heavier per the standing steer. The alternative (tell the agent to run
+`git log --diff-filter=A` and interpret it) repeats the exact defect class ten
+blind runs kept finding: prose naming a derivation nobody can perform
+mechanically. `peel-tag` was public API with no CLI entry and the skill aimed
+prose at a file nothing could run; that is the precedent, not a hypothetical.
+
+**Decision 2 — land the mechanism now, batch the prose after run 11.** A skill
+edit invalidates the recorded agent-judgment proof and forces a re-run. Run 11
+is in flight against the current skill. Editing the skill now would waste it and
+owe a twelfth run. T-42's interpreter-fallback prose has the same property, so
+both prose edits land together in ONE batch after run 11 reports, covered by one
+subsequent exercise instead of two.
+
+**Stated risk of decision 2, since it is the one that could go wrong.** Shipping
+a mechanism with no caller is itself a defect class this campaign found (T-41f).
+The mitigation is that it is sequenced, not forgotten: the prose wiring is the
+next skill-touching task, and the mechanism is unreachable-but-tested until then
+rather than silently half-built. If the sprint stopped here it would be a real
+gap, and this entry is what makes that visible rather than discovered later.
