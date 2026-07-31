@@ -200,17 +200,19 @@ jobs:
               # file - the exact shape of a duplicate-number collision - would
               # skip this job and land the ambiguity unchecked.
               - '.codearbiter/decisions/**'
-              # T-73a/T-73b (issue #563, AC-6.6): test_consumer_smoke.py's
-              # reference-resolution ratchet reads the GENERATED payload copy
+              # T-73a/T-73b/T-79 (issue #563, AC-6.6/AC-6.8): test_consumer_
+              # smoke.py's reference-resolution check (a T-73b ratchet,
+              # retired by T-79 into a strict "the unresolved set is empty"
+              # assertion) reads the GENERATED payload copy
               # plugins/ca/skills/release/SKILL.md, not core/surface/. core/**
               # above already covers a source-of-truth edit (T-41a-d), but a
               # PR that only touches the generated copy directly (a hand-edit,
               # or a tools/build-surface.py regeneration landing without its
               # core/ source change in the same diff) would otherwise flag
               # neither this filter nor .github/scripts/** and skip the exact
-              # job that proves the ratchet still matches what ships.
+              # job that proves the reference set still matches what ships.
               - 'plugins/ca/skills/**'
-              # MEDIUM-3 (adversarial review 2026-07-31): the ratchet now also
+              # MEDIUM-3 (adversarial review 2026-07-31): the check also
               # scans the GENERATED ca-codex/ca-pi copies of the release
               # skill (plugins/*/skills/ca-release/SKILL.md,
               # plugins/*/routines/release/SKILL.md) for the same reason as
@@ -1294,17 +1296,31 @@ jobs:
         # both required for this suite specifically; its own preflight fails
         # loudly, never silently, if either is ever missing.
         run: python .github/scripts/test_release_trace.py
-      - name: Run the T-73a/T-73b consumer-portability smoke suite
-        # issue #563, AC-6.6: proves the portable release skill in a scratch
-        # consumer repo built by `git archive HEAD -- plugins/ca` -- never an
-        # in-repo CLAUDE_PLUGIN_ROOT pointer, never a recursive copy -- and
-        # physically resolves every executed-or-read path reference in the
-        # INSTALLED release SKILL.md against a committed ratchet file
-        # (.github/scripts/known-unresolved-refs.txt), green and required
-        # from day one. Needs no history beyond HEAD -- git archive reads
-        # only the current commit's tree -- so it runs fine under this job's
-        # fetch-depth: 0 checkout above without needing a change there.
+      - name: Run the T-73a/T-73b/T-79 consumer-portability smoke suite
+        # issue #563, AC-6.6/AC-6.8: proves the portable release skill in a
+        # scratch consumer repo built by `git archive HEAD -- plugins/ca` --
+        # never an in-repo CLAUDE_PLUGIN_ROOT pointer, never a recursive
+        # copy -- and physically resolves every executed-or-read path
+        # reference in the INSTALLED release SKILL.md, asserting the
+        # unresolved set is EMPTY outright (T-79 retired the T-73b ratchet,
+        # a committed known-unresolved-refs.txt compared for equality, once
+        # the release-skill rewrite resolved every entry it ever carried).
+        # Green and required from day one. Needs no history beyond HEAD --
+        # git archive reads only the current commit's tree -- so it runs
+        # fine under this job's fetch-depth: 0 checkout above without
+        # needing a change there.
         run: python .github/scripts/test_consumer_smoke.py
+      - name: Run the T-79 skill-proof-freshness guard's own unit tests
+        # issue #563, AC-6.8: check_skill_proof_fresh.py is the pre-tag
+        # freshness gate this campaign's completion bar depends on so the
+        # T-78 agent-judgment exercise cannot silently rot behind a later
+        # skill edit. Not yet wired as a declared pre-tag command on `ca`'s
+        # release-targets.md row (the recorded proof is genuinely stale
+        # right now; wiring it today would ship a permanently-red command --
+        # left to the maintainer once the exercise is re-run). This suite
+        # is its own guard: every named failure cause, plus the live repo's
+        # own currently-stale artifact failing for exactly that reason.
+        run: python .github/scripts/test_check_skill_proof_fresh.py
       - name: Run the unit tests for CI's own machinery
         # These four suites existed and ran on NOTHING. Each one guards a script
         # that CI itself depends on, which is what makes the gap matter rather

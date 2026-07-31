@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""codeArbiter — T-73a/T-73b: the scratch consumer fixture and the
-reference-resolution ratchet (issue #563, AC-6.6,
+"""codeArbiter — T-73a/T-73b/T-79: the scratch consumer fixture and the
+reference-resolution guard (issue #563, AC-6.6/AC-6.8,
 .codearbiter/specs/release-portable-fixture.md,
-.codearbiter/plans/portable-release-and-protected-state.md).
+.codearbiter/plans/portable-release-and-protected-state.md). Reference
+resolution started as a T-73b ratchet (committed known-unresolved-refs.txt,
+compared for equality) and was retired into a strict "the set is empty"
+assertion by T-79 once the release-skill rewrite resolved every entry.
 
 The maintainer's completion bar for this campaign is that the portable
 release lane is proven to work AND to port. Verifying against this
@@ -17,17 +20,22 @@ to prove portability — it builds throwaway trees instead:
                                     host: `plugins/ca`, `plugins/ca-codex`,
                                     `plugins/ca-pi`), and a throwaway
                                     single-package consumer git repo.
-  ReferenceResolutionRatchetTest   T-73b — extracts every executed-or-read
-                                    path reference from EVERY INSTALLED copy
-                                    of the release skill (the spec's own
-                                    "Source of truth" list, plus
+  ReferenceResolutionTest          T-73b/T-79 — extracts every executed-or-
+                                    read path reference from EVERY INSTALLED
+                                    copy of the release skill (the spec's
+                                    own "Source of truth" list, plus
                                     `ca-codex/routines/release/SKILL.md`,
                                     which ships an identically-contaminated
                                     copy the spec's enumeration omits — see
                                     the adversarial-review remediation on
-                                    2026-07-31) and compares the UNIONED
-                                    unresolved set against a committed
-                                    ratchet file.
+                                    2026-07-31) and asserts the UNIONED
+                                    unresolved set is EMPTY outright. T-79
+                                    retired the T-73b ratchet (a committed
+                                    `known-unresolved-refs.txt` compared for
+                                    equality in either direction) into this
+                                    strict zero-form once the skill rewrite
+                                    (T-41a-d/T-41f) resolved all 24 entries —
+                                    see `test_reference_resolution_is_empty`.
   ResolverUnitTest                 direct, synthetic-input coverage of the
                                     three-armed `_resolves` classifier, so a
                                     mutant on any one arm cannot survive on
@@ -121,7 +129,6 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(os.path.dirname(HERE))
-KNOWN_UNRESOLVED_PATH = os.path.join(HERE, "known-unresolved-refs.txt")
 
 GIT_TIMEOUT = 60
 
@@ -633,7 +640,8 @@ class ConsumerFixtureTest(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# T-73b — reference-resolution ratchet
+# T-73b/T-79 — reference resolution (started as a ratchet, retired to a
+# strict "the unresolved set is empty" assertion)
 # --------------------------------------------------------------------------- #
 
 # Matches a slash-separated, extensioned path reference inside a backtick
@@ -772,11 +780,33 @@ def _load_host_tokens():
     }
 
 
+_FENCED_CODE_BLOCK_RE = re.compile(r'```.*?```', re.DOTALL)
+
+
 def _extract_refs(skill_text):
     """Every backtick-code-span path reference in `skill_text` matching
     `_PATH_REF_RE` or `_GLOB_DIR_REF_RE`. Backtick spans are this
     codebase's near-universal convention for naming an executed or read
-    path in skill/command prose."""
+    path in skill/command prose.
+
+    Triple-backtick FENCED code blocks are excised first, and must be: a
+    naive `` `([^`]+)` `` single-backtick pairing treats the first two
+    backticks of an opening ```` ``` ```` fence as an empty span, then pairs
+    its third backtick with the FIRST backtick of the closing fence — so
+    everything between (the whole fenced block) is swallowed as one giant
+    span, and backtick-pair alignment for the ENTIRE REST OF THE FILE after
+    it is shifted. Measured against the live release skill (after the
+    back-fill lane's Phase-3 marker fences landed, f199962): unpatched, only
+    8 of the 14 real references across all five payloads were extracted —
+    including losing the `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/
+    core.md` and `.codearbiter/CONTEXT.md` references outright, which is
+    exactly the "extractor silently drops something" failure class a
+    resolution check exists to prevent. The fenced blocks here are raw shell
+    (`mkdir`/`touch`/`rm -f` with a `git rev-parse`-derived path), never a
+    portability-checkable literal, so excising them loses nothing this
+    checker is meant to catch. Substituting a newline (not the empty
+    string) keeps line numbers stable for anything that reports them."""
+    skill_text = _FENCED_CODE_BLOCK_RE.sub('\n', skill_text)
     refs = set()
     for span in re.findall(r'`([^`]+)`', skill_text):
         refs.update(_PATH_REF_RE.findall(span))
@@ -876,27 +906,29 @@ def _resolves(ref, plugin_root, consumer_root,
     return os.path.exists(os.path.join(consumer_root, *ref.split("/")))
 
 
-def _load_known_unresolved():
-    if not os.path.isfile(KNOWN_UNRESOLVED_PATH):
-        raise RuntimeError(f"missing ratchet file: {KNOWN_UNRESOLVED_PATH!r}")
-    entries = set()
-    with open(KNOWN_UNRESOLVED_PATH, encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            entries.add(line)
-    return entries
-
-
-class ReferenceResolutionRatchetTest(unittest.TestCase):
-    """T-73b (A-6.6, 'reference resolution'). Physically resolves every
+class ReferenceResolutionTest(unittest.TestCase):
+    """T-73b/T-79 (A-6.6, 'reference resolution'). Physically resolves every
     executed-or-read path reference in EVERY installed copy of the release
     skill (`_RELEASE_SKILL_PAYLOADS`) against the matching scratch plugin
-    root and the shared scratch consumer repo, and compares the UNIONED
-    unresolved set to the committed ratchet file — green and required from
-    day one, failing on a change in EITHER direction that is not
-    accompanied by the same edit to `known-unresolved-refs.txt`."""
+    root and the shared scratch consumer repo, and asserts the UNIONED
+    unresolved set is EMPTY.
+
+    T-79 retired the T-73b RATCHET (equality against a committed
+    `known-unresolved-refs.txt`, in either direction) into this strict
+    zero-form: the skill rewrite (T-41a-d/T-41f) resolved all 24 entries
+    the ratchet ever carried, so there is no longer a tolerated-failures
+    list to compare against — an empty set is simply asserted outright.
+
+    The ratchet's whole reason to exist was failing in BOTH directions (a
+    shrink nobody recorded, and a NEW contaminating reference sneaking in),
+    and the strict form must keep both. A shrink has nothing left to catch
+    (the list is already empty), so only the second direction still needs a
+    live guarantee: a new contaminating reference must still turn this red.
+    That is exactly what `self.unresolved == set()` asserts, and
+    `test_extraction_is_not_vacuous` below is what keeps this assertion from
+    being satisfiable by an extractor that has quietly stopped matching
+    anything — the exact failure mode this campaign already found once
+    (M4, adversarial review 2026-07-31)."""
 
     @classmethod
     def setUpClass(cls):
@@ -977,22 +1009,21 @@ class ReferenceResolutionRatchetTest(unittest.TestCase):
                 "reference of its own — it is no longer a pure router to "
                 "the full release skill and must be scanned as one")
 
-    def test_reference_resolution_ratchet(self):
-        known = _load_known_unresolved()
-        added = sorted(self.unresolved - known)
-        removed = sorted(known - self.unresolved)
+    def test_reference_resolution_is_empty(self):
+        # T-79's strict zero-form: no committed list to compare against —
+        # the UNIONED set of unresolved path references across every
+        # installed release-skill payload (materialized from live HEAD)
+        # must simply be empty.
         self.assertEqual(
-            self.unresolved, known,
-            "the UNIONED set of unresolved path references across every "
-            "installed release-skill payload (materialized from live HEAD) "
-            f"no longer matches {KNOWN_UNRESOLVED_PATH!r}.\n"
-            f"  newly UNRESOLVED (not yet on the list — likely a NEW "
-            f"contaminating reference): {added or '(none)'}\n"
-            f"  newly RESOLVED (should be REMOVED from the list in this "
-            f"SAME commit): {removed or '(none)'}\n"
+            self.unresolved, set(),
+            "the release skill (or one of its ca-codex/ca-pi copies) "
+            "carries a path reference that does not resolve against the "
+            "shipped payload or the scratch consumer repo — a NEW "
+            "contaminating this-repo reference, or a payload-packaging "
+            "regression:\n"
+            f"  unresolved: {sorted(self.unresolved)}\n"
             "Remember: the fixture archives `HEAD`, not the working tree — "
-            "commit both the SKILL.md edit and the known-unresolved-refs.txt "
-            "edit before re-running this test.")
+            "commit the fix before re-running this test.")
 
 
 class ResolverUnitTest(unittest.TestCase):
@@ -1000,8 +1031,8 @@ class ResolverUnitTest(unittest.TestCase):
     extractor's glob support. The live release skill carries exactly ONE
     `${CLAUDE_PLUGIN_ROOT}` reference in its `claude` copy and it happens
     to resolve, so a mutant that made that arm always return True would
-    survive `ReferenceResolutionRatchetTest` undetected; these exercise
-    each arm with both a present and an absent input directly."""
+    survive `ReferenceResolutionTest` undetected; these exercise each arm
+    with both a present and an absent input directly."""
 
     def test_plugin_root_arm_present(self):
         self.assertTrue(_resolves(
@@ -1128,6 +1159,30 @@ class ResolverUnitTest(unittest.TestCase):
         text = "`plugins/ca/` and `plugins/ca-pi/tools/` are payload scopes."
         self.assertEqual(_extract_refs(text), set())
 
+    def test_extractor_still_sees_a_reference_after_a_fenced_code_block(self):
+        # Regression pin, independent of the live skill text: introduced by
+        # f199962 ("add the back-fill lane"), a fenced ```bash block desyncs
+        # a naive `` `([^`]+)` `` single-backtick pairing for everything
+        # AFTER it — measured live, this silently dropped 6 of 14 real
+        # references across the five shipped payloads, including the very
+        # anchor `test_extraction_is_not_vacuous` depends on. This is the
+        # exact "an extractor that silently matches nothing [useful]" class
+        # of failure the empty-set assertion (`test_reference_resolution_
+        # is_empty`) would otherwise be vacuous against. A synthetic fixture
+        # here catches a regression even if the live skill text changes
+        # shape enough to stop tripping over it by accident.
+        text = (
+            "Mint the marker:\n\n"
+            "   ```bash\n"
+            "   mkdir -p \"$(git rev-parse --show-toplevel)/.codearbiter/.markers\"\n"
+            "   ```\n\n"
+            "Then apply `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` "
+            "before writing.\n"
+        )
+        self.assertEqual(
+            _extract_refs(text),
+            {"${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"})
+
 
 # --------------------------------------------------------------------------- #
 # MEDIUM-6 (adversarial review 2026-07-31) — the hermetic git-env guards
@@ -1215,8 +1270,9 @@ class HermeticGitEnvTest(unittest.TestCase):
 
 # --------------------------------------------------------------------------- #
 # T-74/T-75 — the lane driver: invocation strings extracted from the
-# INSTALLED release skill, run for real (or ratchet-accounted) against a
-# private, disposable consumer repo. (issue #563, AC-6.6 "Lane driver" and
+# INSTALLED release skill, run for real (or classified "accounted", see
+# below) against a private, disposable consumer repo. (issue #563, AC-6.6
+# "Lane driver" and
 # "Assertions are on derived outputs"; .codearbiter/plans/portable-release-
 # and-protected-state.md T-74, T-75.)
 #
@@ -1234,14 +1290,19 @@ class HermeticGitEnvTest(unittest.TestCase):
 # line following a stable prose ANCHOR in the installed skill text, and
 # either subprocess-executes it for real (after substituting the variables
 # the skill's own prose defines: `$TARGET`, `$TAG_PREFIX`, `$PAYLOAD`,
-# `LAST_TAG`, `${TAG_PREFIX}MAJOR.MINOR.PATCH`, `<message-file>`) or accounts
-# for it on the SAME `known-unresolved-refs.txt` ratchet T-73b already
-# maintains, when the invocation names a this-repo path (right now,
-# `.github/scripts/_releaselib.py` — a CI-only shim that does not ship in
-# the plugin payload and has no `__main__` entry point even where it is
-# read; T-41b's repointing plus giving the portable mechanism a CLI are
-# BOTH prerequisites before this class of invocation could ever move from
-# accounted to run).
+# `LAST_TAG`, `${TAG_PREFIX}MAJOR.MINOR.PATCH`, `<message-file>`) or, when
+# the invocation names a this-repo path with no `__main__` to run (this
+# module's own historical example was `.github/scripts/_releaselib.py`, a
+# CI-only shim that never shipped in the plugin payload), classifies it
+# "accounted" rather than running it. T-41b's repointing plus giving the
+# portable mechanism a CLI were BOTH prerequisites before this class of
+# invocation could ever move from accounted to run; the live skill no
+# longer produces one (see `test_no_invocations_remain_accounted` below).
+# T-79 additionally retired the `known-unresolved-refs.txt` file this
+# accounting used to be cross-checked against — "accounted" is now a
+# synthetic/unit-test-only concept (`ReferenceResolutionTest`'s empty-set
+# assertion is the live guarantee), kept as general machinery in case a
+# future invocation reintroduces an unresolvable this-repo path.
 #
 # Honest scope limit, stated once here rather than left implicit: this
 # driver only extracts from `## Targets` through the end of `## Phase 2` —
@@ -1299,8 +1360,8 @@ _LANE_INVOCATION_ANCHORS = (
 # core/pysrc/_releaselib.py's `__main__` entry point) and run for real —
 # before this rewrite, three of the six named `.github/scripts/_releaselib.py`
 # (a CI-only shim with no `__main__`) and were merely ACCOUNTED for on the
-# same ratchet T-73b maintains, since nothing could actually invoke that path
-# from inside a consumer. `_classify_invocation`/`_LANE_SHIM_MARKER` remain as
+# T-73b ratchet (since retired by T-79), since nothing could actually invoke
+# that path from inside a consumer. `_classify_invocation`/`_LANE_SHIM_MARKER` remain as
 # general machinery — `LaneDriverUnitTest` still exercises the accounted arm
 # directly against synthetic text — in case a future invocation reintroduces
 # an unresolvable this-repo path; the LIVE skill no longer produces one.
@@ -1337,9 +1398,11 @@ def _capture_invocation_after_anchor(skill_text, anchor, window=500):
 
 def _classify_invocation(invocation):
     """"accounted" iff the invocation names the one currently-unresolvable
-    this-repo path; "run" otherwise. Callers must additionally assert the
-    accounted case's path is a member of `known-unresolved-refs.txt` — this
-    function alone does not read that file, so a unit test can exercise it
+    this-repo path; "run" otherwise. Post-T-79, there is no committed
+    ratchet file to cross-check the accounted case against — the live
+    guarantee is `test_no_invocations_remain_accounted`, which asserts the
+    accounted case never actually occurs against the shipped skill. This
+    function alone does not read any file, so a unit test can exercise it
     against synthetic text with no fixture dependency."""
     return "accounted" if _LANE_SHIM_MARKER in invocation else "run"
 
@@ -1762,11 +1825,11 @@ class LaneDriverTest(unittest.TestCase):
 
     Post-T-41b/T-41f (issue #563): all six anchored invocations now RUN —
     before that rewrite landed, three of them named a this-repo-only shim
-    with no `__main__` and could only be ACCOUNTED for against the same
-    `known-unresolved-refs.txt` ratchet T-73b maintains.
-    `test_no_invocations_remain_accounted` documents that transition
-    directly rather than silently deleting the accounting machinery this
-    class used to depend on."""
+    with no `__main__` and could only be ACCOUNTED for (T-79 later retired
+    the `known-unresolved-refs.txt` ratchet this used to be cross-checked
+    against). `test_no_invocations_remain_accounted` documents that
+    transition directly rather than silently deleting the accounting
+    machinery this class used to depend on."""
 
     @classmethod
     def setUpClass(cls):
@@ -1818,12 +1881,6 @@ class LaneDriverTest(unittest.TestCase):
             "an invocation is classified accounted again — either a new "
             "this-repo-only reference crept back into the skill, or "
             "_classify_invocation regressed")
-        known = _load_known_unresolved()
-        self.assertNotIn(
-            _LANE_SHIM_MARKER, known,
-            f"{_LANE_SHIM_MARKER!r} is still on {KNOWN_UNRESOLVED_PATH!r}, but "
-            "no invocation in the live skill names it any longer — the "
-            "ratchet file is out of date with the rewrite")
 
     def test_publish_state_classify_ran_and_resolved_publish_fresh(self):
         # The one anchored invocation `_execute_lane_sequence` substitutes
@@ -1886,7 +1943,7 @@ class LaneDriverTest(unittest.TestCase):
 
     def test_full_release_skill_payloads_extract_byte_identical_invocations(self):
         # MEDIUM-3's exact defect class (adversarial review 2026-07-31,
-        # documented in this same file's ReferenceResolutionRatchetTest):
+        # documented in this same file's ReferenceResolutionTest):
         # the release skill ships as THREE full copies (`ca`,
         # `ca-codex`/`ca-pi` routines), and a driver reading only `ca`'s copy
         # is blind to a drift introduced into a sibling -- including one
