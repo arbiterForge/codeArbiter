@@ -9,16 +9,12 @@ import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
 // Served from https://codearbiter.dev/ — shared by the `base` option below and
 // the rehype plugin that base-prefixes markdown links.
 //
-// MUST be "" for an apex domain, never "/". rehypeBaseLinks prefixes any
-// root-absolute href/src with this value, and "/" would turn "/diagrams/x.svg"
-// into "//diagrams/x.svg" — a protocol-relative URL pointing at another host,
-// which fails silently. Empty string makes the plugin a correct no-op, because
-// "/diagrams/x.svg" already starts with `${BASE}/`. Astro's own `base` still
-// needs a real path, so it takes `BASE || "/"` below.
-// Exported so the tests that assert base-dependent output derive it from here
-// instead of re-declaring the literal. Three of them previously kept their own
-// copy, which is what turned a one-line base change into a four-test failure.
-export const BASE = "";
+// The value lives in ./base.mjs, the single source of truth, because the link
+// auditor and several tests need it too and must never keep their own copy.
+// See that file for why it is "" and not "/" on an apex domain. Re-exported
+// here so importers of astro.config.mjs keep working unchanged.
+export { BASE } from "./base.mjs";
+import { BASE } from "./base.mjs";
 
 // Build the reference sidebar groups from the generator's output. `predev` and
 // `prebuild` run `npm run gen` first, so sidebar.json exists before this loads.

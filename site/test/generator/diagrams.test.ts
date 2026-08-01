@@ -11,6 +11,7 @@
  * is no src/assets copy to keep in sync.
  */
 import { describe, it, expect } from "vitest";
+// @ts-expect-error -- untyped .mjs config module
 import { BASE } from "../../astro.config.mjs";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";

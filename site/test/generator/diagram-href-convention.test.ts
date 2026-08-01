@@ -18,6 +18,7 @@
  * "../diagrams/x.svg", a different hardcoded base) fails the guard.
  */
 import { describe, it, expect } from "vitest";
+// @ts-expect-error -- untyped .mjs config module
 import { BASE } from "../../astro.config.mjs";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, dirname, extname } from "node:path";

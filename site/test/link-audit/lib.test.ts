@@ -8,8 +8,16 @@ import {
   resolveToDistFile,
   auditDist,
   missingRequiredAssets,
-  BASE,
 } from "../../scripts/link-audit/lib";
+
+/** A fixed subpath base for the algorithm cases below.
+ *
+ * Deliberately NOT the site's live BASE. These cases exercise prefix stripping
+ * and the outside-base classification, which only exist when the base is
+ * non-empty; binding them to the live value made all nine disappear the moment
+ * the site moved to an apex domain. The apex case (base "") is covered by its
+ * own describe block at the end of this file. */
+const TEST_BASE = "/codeArbiter";
 
 /** Build a throwaway dist/ tree. `assets` controls the chrome the audit pins;
  * `pages` is a map of dist-relative path -> file contents. */
@@ -69,7 +77,7 @@ describe("resolveToDistFile", () => {
   const distRoot = "/fake/dist";
 
   it("resolves a base-prefixed root-absolute target to a dist file", () => {
-    const result = resolveToDistFile("/codeArbiter/overview/", "/codeArbiter/x", distRoot, BASE);
+    const result = resolveToDistFile("/codeArbiter/overview/", "/codeArbiter/x", distRoot, TEST_BASE);
     expect(result).toEqual({
       kind: "resolved",
       distFile: join(distRoot, "overview", "index.html"),
@@ -77,7 +85,7 @@ describe("resolveToDistFile", () => {
   });
 
   it("classifies a base-less root-absolute target as outside-base (regression: previously silently skipped)", () => {
-    const result = resolveToDistFile("/overview/", "/codeArbiter/x", distRoot, BASE);
+    const result = resolveToDistFile("/overview/", "/codeArbiter/x", distRoot, TEST_BASE);
     expect(result).toEqual({ kind: "outside-base", normalizedPath: "/overview/" });
   });
 
@@ -86,7 +94,7 @@ describe("resolveToDistFile", () => {
       "../concepts/",
       "/codeArbiter/guides/troubleshooting",
       distRoot,
-      BASE,
+      TEST_BASE,
     );
     expect(result).toEqual({
       kind: "resolved",
@@ -95,12 +103,12 @@ describe("resolveToDistFile", () => {
   });
 
   it("classifies a page-relative target that normalizes outside the base as outside-base", () => {
-    const result = resolveToDistFile("../../overview/", "/codeArbiter/x", distRoot, BASE);
+    const result = resolveToDistFile("../../overview/", "/codeArbiter/x", distRoot, TEST_BASE);
     expect(result?.kind).toBe("outside-base");
   });
 
   it("maps an extensionless route to its directory index", () => {
-    const result = resolveToDistFile("/codeArbiter/overview", "/codeArbiter/x", distRoot, BASE);
+    const result = resolveToDistFile("/codeArbiter/overview", "/codeArbiter/x", distRoot, TEST_BASE);
     expect(result).toEqual({
       kind: "resolved",
       distFile: join(distRoot, "overview", "index.html"),
@@ -108,7 +116,7 @@ describe("resolveToDistFile", () => {
   });
 
   it("maps a file-like target (has an extension) verbatim", () => {
-    const result = resolveToDistFile("/codeArbiter/favicon.svg", "/codeArbiter/x", distRoot, BASE);
+    const result = resolveToDistFile("/codeArbiter/favicon.svg", "/codeArbiter/x", distRoot, TEST_BASE);
     expect(result).toEqual({
       kind: "resolved",
       distFile: join(distRoot, "favicon.svg"),
@@ -116,7 +124,7 @@ describe("resolveToDistFile", () => {
   });
 
   it("returns null for an empty target", () => {
-    expect(resolveToDistFile("", "/codeArbiter/x", distRoot, BASE)).toBeNull();
+    expect(resolveToDistFile("", "/codeArbiter/x", distRoot, TEST_BASE)).toBeNull();
   });
 });
 
@@ -145,7 +153,7 @@ describe("auditDist", () => {
   });
 
   it("resolves base-prefixed internal links and reports base-less ones and dangling ones as failures", () => {
-    const result = auditDist(dist, BASE);
+    const result = auditDist(dist, TEST_BASE);
     const messages = result.failures.map((f) => f.message);
 
     expect(messages.some((m) => m.includes("outside base path"))).toBe(true);
@@ -173,7 +181,7 @@ describe("auditDist page-inventory invariant", () => {
     // "found nothing wrong" and "looked at nothing" are different outcomes.
     const dist = track(makeDist({ pages: {} }));
 
-    const result = auditDist(dist, BASE);
+    const result = auditDist(dist, TEST_BASE);
 
     expect(result.pageCount).toBe(0);
     expect(missingRequiredAssets(dist)).toEqual([]);
@@ -184,7 +192,7 @@ describe("auditDist page-inventory invariant", () => {
   it("fails a dist that contains only non-HTML files", () => {
     const dist = track(makeDist({ pages: { "robots.txt": "User-agent: *" } }));
 
-    const result = auditDist(dist, BASE);
+    const result = auditDist(dist, TEST_BASE);
 
     expect(result.pageCount).toBe(0);
     expect(result.failures.some((f) => /zero HTML pages/i.test(f.message))).toBe(true);
@@ -197,7 +205,7 @@ describe("auditDist page-inventory invariant", () => {
       }),
     );
 
-    const result = auditDist(dist, BASE);
+    const result = auditDist(dist, TEST_BASE);
 
     expect(result.pageCount).toBe(1);
     expect(result.checked).toBe(1);
@@ -262,4 +270,45 @@ describe("missingRequiredAssets", () => {
       expect(missingRequiredAssets(dist)).toEqual(expected);
     });
   }
+});
+
+describe("resolveToDistFile on an apex domain (base '')", () => {
+  const distRoot = "/fake/dist";
+  const APEX_BASE = "";
+
+  // The site's live configuration. With an empty base every root-absolute
+  // target is inside the base by definition, so the outside-base classification
+  // that the subpath cases above exercise cannot fire here — that is the
+  // behaviour change the apex move introduced, pinned rather than assumed.
+  it("resolves a root-absolute target with no prefix to strip", () => {
+    const result = resolveToDistFile("/overview/", "/x", distRoot, APEX_BASE);
+    expect(result).toEqual({
+      kind: "resolved",
+      distFile: join(distRoot, "overview", "index.html"),
+    });
+  });
+
+  it("treats every root-absolute target as inside the base", () => {
+    const result = resolveToDistFile("/anything/", "/x", distRoot, APEX_BASE);
+    expect(result?.kind).toBe("resolved");
+  });
+
+  it("maps a file-like target verbatim", () => {
+    const result = resolveToDistFile("/diagrams/x.svg", "/x", distRoot, APEX_BASE);
+    expect(result).toEqual({ kind: "resolved", distFile: join(distRoot, "diagrams", "x.svg") });
+  });
+
+  it("cannot classify anything as outside-base, so escapes fall to the missing-file check", () => {
+    // posix.normalize clamps at the root, so "../../../etc/passwd" from "/x"
+    // becomes "/etc/passwd" — which is inside a base of "". The outside-base
+    // classification is therefore INERT on an apex domain; what still catches a
+    // bad target is auditDist's dangling-file check, not this guard. Pinned so
+    // the next reader does not assume a protection that is no longer load-bearing.
+    // "passwd" is extensionless, so it maps to a directory index like any route.
+    const result = resolveToDistFile("../../../etc/passwd", "/x", distRoot, APEX_BASE);
+    expect(result).toEqual({
+      kind: "resolved",
+      distFile: join(distRoot, "etc", "passwd", "index.html"),
+    });
+  });
 });

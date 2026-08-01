@@ -20,6 +20,7 @@ import { isUnifiedProcessor } from "@astrojs/markdown-remark";
 // @ts-expect-error -- untyped .mjs config module
 import config from "../astro.config.mjs";
 
+// @ts-expect-error -- untyped .mjs config module
 import { BASE } from "../astro.config.mjs";
 
 describe("astro.config markdown wiring", () => {
