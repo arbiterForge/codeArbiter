@@ -1617,10 +1617,10 @@ def main(argv):
     diagnosable failure either way. Returns a process exit code."""
     if not argv:
         sys.stderr.write(
-            "usage: _releaselib.py {tag-prefix|list-targets|last-tag|"
-            "notes-match|dates-match|semver-greater|classify|peel-tag|"
-            "run-pre-tag|adoption-commit|classify-window|check-manifests|"
-            "backfill-detect} ...\n")
+            "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
+            "payload-pathspec|last-tag|notes-match|dates-match|"
+            "semver-greater|classify|peel-tag|run-pre-tag|adoption-commit|"
+            "classify-window|check-manifests|backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1654,6 +1654,64 @@ def main(argv):
             sys.stderr.write(f"unknown release target: {target}\n")
             return 2
         print(row["prefix"])
+        return 0
+
+    if cmd in ("show-row", "payload-pathspec"):
+        # Blind-exercise HIGH (run 14). The lane's own rule is that the
+        # declared file must be read "through the same tested grammar", not
+        # "by-eye scan of the delimiter block" -- but only `prefix` and the
+        # target names had readers. Nine fields (`manifest`,
+        # `generated-manifest`, `generate`, `changelog`, `payload`,
+        # `payload-exclude`, `artifacts`, `pre-tag`, `provenance-manifest`,
+        # `latest-eligible`) had none, so following the lane REQUIRED doing
+        # the thing it forbids. An exercising agent read all nine by eye and
+        # said so.
+        #
+        # `payload-pathspec` exists separately because `$PAYLOAD` is
+        # documented as "payload, minus payload-exclude" and plain
+        # `git log -- <path>` cannot express subtraction. The exclusion was
+        # therefore unspellable from the prose, and silently absent from any
+        # window for a row that declares one. This prints the pathspec
+        # arguments to pass verbatim, `:(exclude)` forms included.
+        if len(rest) != 1:
+            sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")
+            return 2
+        target = rest[0]
+        targets_file = default_targets_path()
+        try:
+            row = _resolve_target_row(target, targets_file)
+        except ReleaseTargetsError as exc:
+            sys.stderr.write(
+                f"{type(exc).__name__}: could not read declared release "
+                f"targets from {targets_file!r}: {exc}\n")
+            return _targets_error_exit_code(exc)
+        if row is None:
+            sys.stderr.write(f"unknown release target: {target}\n")
+            return 2
+
+        if cmd == "payload-pathspec":
+            payload = row.get("payload") or "."
+            parts = [payload] + [f":(exclude){p}"
+                                 for p in (row.get("payload_exclude") or [])]
+            print(" ".join(parts))
+            return 0
+
+        # KEY=VALUE, one per line, list-valued fields joined on a comma --
+        # parseable by a shell `while read` loop and legible to a human,
+        # which is what an agent following prose actually needs. A field the
+        # row does not declare is printed with an EMPTY value rather than
+        # omitted, so "not declared" and "I forgot to look" stay
+        # distinguishable at the call site.
+        for key in ("target", "prefix", "manifest", "generated_manifest",
+                    "generate", "changelog", "payload", "payload_exclude",
+                    "artifacts", "rebuild", "pre_tag", "provenance_manifest",
+                    "latest_eligible", "display_name"):
+            value = row.get(key)
+            if isinstance(value, (list, tuple)):
+                value = ",".join(str(v) for v in value)
+            elif isinstance(value, bool):
+                value = "true" if value else "false"
+            print(f"{key.upper()}={'' if value is None else value}")
         return 0
 
     if cmd == "list-targets":

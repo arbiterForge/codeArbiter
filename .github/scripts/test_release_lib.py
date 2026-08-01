@@ -2143,6 +2143,22 @@ class CoreCLITest(unittest.TestCase):
     the file has a syntax error or an import that only breaks when actually
     executed as a script."""
 
+    def _run_core(self, *argv):
+        """`main(argv)` with BOTH streams captured, as a SimpleNamespace with
+        `.returncode` / `.stdout` / `.stderr`.
+
+        This class otherwise calls `main` bare and asserts only the code;
+        `show-row` and `payload-pathspec` answer on STDOUT and diagnose on
+        STDERR, so both have to be readable to test them at all.
+        """
+        import contextlib
+        from types import SimpleNamespace
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(list(argv))
+        return SimpleNamespace(returncode=rc, stdout=out.getvalue(),
+                               stderr=err.getvalue())
+
     def _write_targets(self, tmp_dir, block):
         path = os.path.join(tmp_dir, "release-targets.md")
         with open(path, "w", encoding="utf-8") as fh:
@@ -2809,6 +2825,59 @@ class CoreCLITest(unittest.TestCase):
                 fh.write("   " + os.linesep)
             self.assertEqual(
                 rh.confirmation_state(root, "app", ["python3 a.py"]), rh.NEVER)
+
+    def test_show_row_prints_every_declared_field(self):
+        # Blind exercise run 14, HIGH. The lane forbids reading the declared
+        # file by eye, but only `prefix` and the target names had readers —
+        # so nine fields could ONLY be obtained the forbidden way, and an
+        # exercising agent did exactly that and said so.
+        out = self._run_core("show-row", "ca")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        keys = dict(line.split("=", 1) for line in out.stdout.splitlines() if "=" in line)
+        for expected in ("TARGET", "PREFIX", "MANIFEST", "CHANGELOG", "PAYLOAD",
+                         "ARTIFACTS", "PRE_TAG", "PROVENANCE_MANIFEST",
+                         "LATEST_ELIGIBLE", "GENERATED_MANIFEST", "GENERATE",
+                         "PAYLOAD_EXCLUDE", "REBUILD", "DISPLAY_NAME"):
+            self.assertIn(expected, keys, out.stdout)
+        self.assertEqual(keys["TARGET"], "ca")
+        self.assertEqual(keys["PREFIX"], "v")
+        # An UNDECLARED field prints empty rather than vanishing, so a
+        # caller can tell "not declared" from "I did not look".
+        self.assertEqual(keys["GENERATED_MANIFEST"], "")
+
+    def test_show_row_rejects_an_unknown_target(self):
+        out = self._run_core("show-row", "not-a-target")
+        self.assertEqual(out.returncode, 2)
+        self.assertIn("unknown release target", out.stderr)
+
+    def test_payload_pathspec_emits_the_exclude_form(self):
+        # Blind exercise run 14, HIGH. `$PAYLOAD` is documented as "payload
+        # minus payload-exclude", and `git log -- <path>` has no
+        # subtraction — so for any row declaring an exclude the window was
+        # unspellable from the prose, and the excluded commits silently
+        # counted toward the bump and the changelog.
+        out = self._run_core("payload-pathspec", "ca-pi")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(),
+                         "plugins/ca-pi/ :(exclude)plugins/ca-pi/tools/")
+
+    def test_payload_pathspec_on_a_row_without_an_exclude_is_just_the_payload(self):
+        out = self._run_core("payload-pathspec", "ca")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "plugins/ca/")
+
+    def test_payload_pathspec_actually_narrows_a_real_git_window(self):
+        # Driven through git rather than asserted as a string: the point of
+        # the subcommand is that its output works verbatim after `--`.
+        pathspec = self._run_core("payload-pathspec", "ca-pi").stdout.split()
+        base = ["git", "log", "--oneline", "-40", "--"]
+        with_exclude = subprocess.run(base + pathspec, cwd=REPO_ROOT,
+                                      capture_output=True, text=True)
+        without = subprocess.run(base + ["plugins/ca-pi/"], cwd=REPO_ROOT,
+                                 capture_output=True, text=True)
+        self.assertEqual(with_exclude.returncode, 0, with_exclude.stderr)
+        self.assertLessEqual(len(with_exclude.stdout.splitlines()),
+                             len(without.stdout.splitlines()))
 
     def test_pre_tag_marker_names_do_not_collide_across_targets(self):
         # CodeRabbit MAJOR, confirmed. The sanitizer folded every
