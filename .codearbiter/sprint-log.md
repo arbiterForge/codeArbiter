@@ -1315,3 +1315,33 @@ current skill); the prose that wires it lands in the next skill batch. Same
 stated risk as before — a mechanism with no caller is its own defect class — and
 the same mitigation: it is recorded here and is the next skill-touching task,
 not forgotten.
+
+## 2026-07-31 — slice 3 (A-3.1..A-3.5) as one row-capability helper (SMARTS, auto-decided)
+
+**Question.** Five criteria describe which steps a row's declared fields turn
+on or off: manifest equality vs a tag-derived version, rebuild+artifacts,
+payload-exclude, optional provenance. Five separate checks, or one function
+that reports a row's applicable assertions?
+
+**Decision: one `row_assertions(row)`.** Scalable weighted heavier per the
+standing steer.
+
+| lens | verdict | why |
+|---|---|---|
+| **Scalable** | **one function, strong** | Adding a sixth optional field extends one return shape rather than adding a sixth scattered check the lane must remember to call. |
+| Reliable | one function, strong | The five criteria are not independent — "no manifest" implies "tag is the version source". Splitting them lets the two answers disagree; a single derivation cannot. |
+| Testable | one function, strong | Each criterion becomes an assertion about one returned field, over synthetic rows, with no filesystem. |
+| Maintainable | one function, moderate | The skill's prose about optional fields maps to one readable structure instead of five prose paragraphs the lane re-derives. |
+| Securable | tied | No new execution surface; it reports, it does not run anything. |
+| Available | tied | Same behaviour either way. |
+
+**Three strong, one moderate, two tied.**
+
+**Scope held.** It reports what APPLIES; it does not perform the assertions.
+`check-manifests` already does the manifest comparison and the runner does
+pre-tag. Folding execution in here would make one function both the planner and
+the actor, and the campaign's own history is that the planner/actor seam is
+where the defects live.
+
+**No skill edit.** These are mechanism criteria, so run 13's recorded proof
+stays valid and no exercise is owed for this slice.

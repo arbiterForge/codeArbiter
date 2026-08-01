@@ -521,6 +521,115 @@ _BUMPING_TYPES = {"feat": "minor", "fix": "patch", "perf": "patch",
 _BUMP_RANK = {"none": 0, "patch": 1, "minor": 2, "major": 3}
 
 
+def row_assertions(row):
+    """Which release-lane steps a row's DECLARED FIELDS turn on (A-3.1..3.5).
+
+    Returns a dict:
+
+      version_source        "manifest" | "tag"
+      assert_manifest_equal bool   -- A-3.1/3.2
+      manifests             list   -- every declared manifest path
+      rebuild               str|None
+      artifacts             list   -- asserted clean after `rebuild` (A-3.3)
+      payload_exclude       list   -- removed from the window (A-3.4)
+      record_provenance     bool   -- A-3.5
+      skipped               list   -- steps that do NOT apply, each with a
+                                      reason, so the report can say a step
+                                      was SKIPPED rather than leaving the
+                                      reader to infer it from silence
+
+    The five criteria are not independent: "declares no manifest" IS "the
+    tag is the version source". Deriving them together makes the two
+    answers structurally incapable of disagreeing, which two separate
+    checks could not promise.
+
+    `skipped` exists because the skill's own rule is that a skipped step
+    and a forgotten step must never look alike. An optional field's absence
+    is a decision the operator made; reporting it explicitly is what makes
+    the difference visible in the release report.
+
+    This REPORTS what applies; it performs none of it. `check-manifests`
+    does the equality comparison and `run-pre-tag` runs the commands.
+    Folding execution in here would make one function both planner and
+    actor, and this lane's history is that the planner/actor seam is
+    exactly where its defects have lived.
+
+    Pure and non-raising: a non-dict yields the all-absent shape.
+    """
+    if not isinstance(row, dict):
+        row = {}
+
+    def _list(key):
+        value = row.get(key)
+        if isinstance(value, list):
+            return [v for v in value if isinstance(v, str) and v.strip()]
+        return [value] if isinstance(value, str) and value.strip() else []
+
+    manifests = _list("manifest")
+    artifacts = _list("artifacts")
+    excludes = _list("payload_exclude")
+    rebuild = row.get("rebuild") if isinstance(row.get("rebuild"), str) else None
+    provenance = row.get("provenance_manifest")
+    provenance = provenance if isinstance(provenance, str) and provenance.strip() else None
+
+    skipped = []
+    if not manifests:
+        skipped.append(("manifest-equality",
+                        "the row declares no manifest, so the derived tag is "
+                        "the version source and there is nothing to compare"))
+    if rebuild is None:
+        skipped.append(("rebuild",
+                        "the row declares no rebuild command"))
+    if not artifacts:
+        skipped.append(("artifacts-clean",
+                        "the row declares no artifacts to assert clean"))
+    if not excludes:
+        skipped.append(("payload-exclude",
+                        "the row excludes nothing from its payload"))
+    if provenance is None:
+        skipped.append(("provenance-recording",
+                        "the row declares no provenance-manifest"))
+
+    return {
+        "version_source": "manifest" if manifests else "tag",
+        "assert_manifest_equal": bool(manifests),
+        "manifests": manifests,
+        "rebuild": rebuild,
+        "artifacts": artifacts,
+        "payload_exclude": excludes,
+        "record_provenance": provenance is not None,
+        "provenance_manifest": provenance,
+        "skipped": skipped,
+    }
+
+
+def window_excludes_payload_paths(paths, payload, payload_exclude):
+    """`paths` filtered to `payload`, minus anything under an exclude (A-3.4).
+
+    Directory-prefix semantics on normalized separators, so `tools` never
+    matches `toolsmith/` — a substring test would silently drop a sibling
+    directory whose name merely starts the same way.
+
+    Pure over synthetic input; non-raising.
+    """
+    def _norm(value):
+        return str(value).replace("\\", "/").strip().strip("/") if value else ""
+
+    scope = _norm(payload)
+    excludes = [_norm(e) for e in (payload_exclude or []) if _norm(e)]
+    kept = []
+    for path in (paths or []):
+        rel = _norm(path)
+        if not rel:
+            continue
+        if scope and scope != "." and not (rel == scope or rel.startswith(scope + "/")):
+            continue
+        if any(rel == ex or rel.startswith(ex + "/") for ex in excludes):
+            continue
+        kept.append(path)
+    return kept
+
+
 def provenance_trigger_paths(rows):
     """Every path a declared row REFERENCES, sorted and de-duplicated:
     each `manifest`, each `changelog`, and each `artifacts` entry (A-5.6).

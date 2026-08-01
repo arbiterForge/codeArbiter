@@ -2470,6 +2470,139 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    # ---- Slice 3: which assertions a row's declared fields turn on ----
+    ROW_FULL = {
+        "target": "app", "prefix": "v", "changelog": "CHANGELOG.md",
+        "payload": "plugins/app/", "manifest": ["plugins/app/plugin.json"],
+        "rebuild": "cd plugins/app/tools && npm run build",
+        "artifacts": ["plugins/app/tools/bundle.js"],
+        "payload_exclude": ["plugins/app/tools/"],
+        "provenance_manifest": ".github/published-tags.json",
+    }
+    ROW_BARE = {
+        "target": "bare", "prefix": "v", "changelog": "CHANGELOG.md",
+        "payload": ".",
+    }
+
+    def test_manifest_declared_asserts_equality(self):
+        # A-3.1. A declared manifest means the lane compares versions.
+        verdict = core_releaselib.row_assertions(self.ROW_FULL)
+        self.assertTrue(verdict["assert_manifest_equal"])
+        self.assertEqual(verdict["version_source"], "manifest")
+        self.assertEqual(verdict["manifests"], ["plugins/app/plugin.json"])
+        self.assertNotIn("manifest-equality",
+                         [name for name, _reason in verdict["skipped"]])
+
+    def test_manifest_declared_covers_every_path_not_just_the_first(self):
+        # A row may declare several; asserting only the first is the
+        # partial-bump hole run 12 found from the other direction.
+        row = dict(self.ROW_FULL, manifest=["a/plugin.json", "b/package.json"])
+        self.assertEqual(core_releaselib.row_assertions(row)["manifests"],
+                         ["a/plugin.json", "b/package.json"])
+
+    def test_manifest_absent_uses_the_tag_as_version_source(self):
+        # A-3.2. No manifest is a legitimate consumer shape, not an error:
+        # the derived tag IS the version, and there is nothing to compare.
+        verdict = core_releaselib.row_assertions(self.ROW_BARE)
+        self.assertFalse(verdict["assert_manifest_equal"])
+        self.assertEqual(verdict["version_source"], "tag")
+        self.assertEqual(verdict["manifests"], [])
+
+    def test_manifest_absent_is_reported_as_skipped_not_silently_dropped(self):
+        # The skill's own rule: a skipped step and a forgotten step must
+        # never look alike. Absence is an operator decision, so it is named.
+        skipped = dict(core_releaselib.row_assertions(self.ROW_BARE)["skipped"])
+        self.assertIn("manifest-equality", skipped)
+        self.assertIn("no manifest", skipped["manifest-equality"])
+
+    def test_version_source_and_manifest_assertion_cannot_disagree(self):
+        # The reason these are ONE derivation. Two independent checks could
+        # report "tag is the version source" while also asserting manifest
+        # equality; a single derivation structurally cannot.
+        for row in (self.ROW_FULL, self.ROW_BARE, {},
+                    dict(self.ROW_FULL, manifest=[])):
+            verdict = core_releaselib.row_assertions(row)
+            self.assertEqual(
+                verdict["assert_manifest_equal"],
+                verdict["version_source"] == "manifest", row.get("target"))
+
+    def test_rebuild_artifacts_are_reported_together(self):
+        # A-3.3. `rebuild` runs, then every `artifacts` entry is asserted
+        # clean; a stale bundle blocks.
+        verdict = core_releaselib.row_assertions(self.ROW_FULL)
+        self.assertEqual(verdict["rebuild"],
+                         "cd plugins/app/tools && npm run build")
+        self.assertEqual(verdict["artifacts"], ["plugins/app/tools/bundle.js"])
+
+    def test_rebuild_artifacts_absent_are_named_as_skipped(self):
+        skipped = dict(core_releaselib.row_assertions(self.ROW_BARE)["skipped"])
+        self.assertIn("rebuild", skipped)
+        self.assertIn("artifacts-clean", skipped)
+
+    def test_provenance_optional_absent_is_skipped_and_reported(self):
+        # A-3.5. Absent means the recording step is skipped AND the report
+        # says so -- silence here reads as "forgotten", which is the exact
+        # ambiguity this field's optionality creates.
+        verdict = core_releaselib.row_assertions(self.ROW_BARE)
+        self.assertFalse(verdict["record_provenance"])
+        self.assertIsNone(verdict["provenance_manifest"])
+        self.assertIn("provenance-recording",
+                      [name for name, _reason in verdict["skipped"]])
+
+    def test_provenance_optional_present_records(self):
+        verdict = core_releaselib.row_assertions(self.ROW_FULL)
+        self.assertTrue(verdict["record_provenance"])
+        self.assertEqual(verdict["provenance_manifest"],
+                         ".github/published-tags.json")
+
+    def test_row_assertions_never_raises_on_junk(self):
+        for junk in (None, 42, "row", [], {"manifest": 7, "artifacts": None}):
+            verdict = core_releaselib.row_assertions(junk)
+            self.assertEqual(verdict["version_source"], "tag")
+            self.assertEqual(verdict["manifests"], [])
+
+    def test_payload_exclude_removes_paths_under_the_excluded_directory(self):
+        # A-3.4, against ca-pi's real shape: tools/ ships neither generated
+        # policy nor a built runtime artifact, so a change there must not
+        # gate the release.
+        kept = core_releaselib.window_excludes_payload_paths(
+            ["plugins/ca-pi/extensions/codearbiter.js",
+             "plugins/ca-pi/tools/build.mjs",
+             "plugins/ca-pi/package.json"],
+            "plugins/ca-pi/", ["plugins/ca-pi/tools/"])
+        self.assertEqual(kept, ["plugins/ca-pi/extensions/codearbiter.js",
+                                "plugins/ca-pi/package.json"])
+
+    def test_payload_exclude_is_a_path_prefix_not_a_substring(self):
+        # "tools" must not swallow "toolsmith/". A substring test would
+        # silently drop a sibling directory whose name merely starts the
+        # same way -- a dropped commit, not a loud failure.
+        kept = core_releaselib.window_excludes_payload_paths(
+            ["a/toolsmith/x.js", "a/tools/y.js"], "a", ["a/tools"])
+        self.assertEqual(kept, ["a/toolsmith/x.js"])
+
+    def test_payload_exclude_scopes_to_the_payload_first(self):
+        # A sibling target's paths are outside this row's payload and must
+        # not enter its window at all.
+        kept = core_releaselib.window_excludes_payload_paths(
+            ["plugins/ca-pi/a.js", "plugins/ca/b.py"], "plugins/ca-pi/", [])
+        self.assertEqual(kept, ["plugins/ca-pi/a.js"])
+
+    def test_payload_exclude_whole_repo_payload_keeps_everything(self):
+        # A consumer's `payload: .` scopes to the whole tree.
+        kept = core_releaselib.window_excludes_payload_paths(
+            ["src/a.py", "docs/b.md"], ".", [])
+        self.assertEqual(kept, ["src/a.py", "docs/b.md"])
+
+    def test_payload_exclude_matches_this_repos_declared_ca_pi_row(self):
+        # The spec names ca-pi's tools/ exclusion specifically, so assert
+        # against the DECLARED row rather than a synthetic one.
+        rows = {r["target"]: r for r in core_releaselib.load_targets(
+            os.path.join(REPO_ROOT, ".codearbiter", "release-targets.md"))}
+        verdict = core_releaselib.row_assertions(rows["ca-pi"])
+        self.assertEqual(verdict["payload_exclude"], ["plugins/ca-pi/tools/"])
+        self.assertEqual(len(verdict["manifests"]), 2)
+
     # ---- A-2.10: pre-tag content-hash confirmation (releasehash.py) ----
     def _releasehash(self):
         import importlib.util

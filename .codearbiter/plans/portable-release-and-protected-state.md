@@ -193,11 +193,11 @@ repo's rows load, and the release lane is proven behavior-identical. Shippable o
 | T-34 | `.github/scripts/check_command_catalog.py` | script exits 0 on a reconciled tree, 1 on drift, mutates nothing | catalog check | A-2.8 | T-33 | ACCEPTED |
 | T-35 | `.codearbiter/release-targets.md` | all declared `pre-tag` commands exit 0 on a clean tree | rows run green | A-2.9 | T-34 | ACCEPTED |
 | T-36 | `core/pysrc/releasehash.py`, `tools/sync-core.py` generated set | `python tools/sync-core.py --check` passes with it enrolled; `SUITE -k test_pre_tag_hash` — changed hash forces re-confirmation | hash re-confirm | A-2.10 | T-35 | ACCEPTED |
-| T-37 | `core/pysrc/_releaselib.py` | `-k manifest_declared` — equality asserted, mismatch BLOCKs | manifest assert | A-3.1 | T-36 | PENDING |
-| T-38 | `core/pysrc/_releaselib.py` | `-k manifest_absent` — tag is version source, no assertion | optional manifest | A-3.2 | T-37 | PENDING |
-| T-39 | `core/pysrc/_releaselib.py` | `-k rebuild_artifacts` — stale bundle blocks, cause named | rebuild gate | A-3.3 | T-38 | PENDING |
-| T-40 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k payload_exclude` — ca-pi `tools/` excluded | payload exclusions | A-3.4 | T-39 | PENDING |
-| T-41 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k provenance_optional` — absent → skipped and reported | optional provenance | A-3.5 | T-40 | PENDING |
+| T-37 | `core/pysrc/_releaselib.py` | `-k manifest_declared` — equality asserted, mismatch BLOCKs | manifest assert | A-3.1 | T-36 | ACCEPTED |
+| T-38 | `core/pysrc/_releaselib.py` | `-k manifest_absent` — tag is version source, no assertion | optional manifest | A-3.2 | T-37 | ACCEPTED |
+| T-39 | `core/pysrc/_releaselib.py` | `-k rebuild_artifacts` — stale bundle blocks, cause named | rebuild gate | A-3.3 | T-38 | ACCEPTED |
+| T-40 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k payload_exclude` — ca-pi `tools/` excluded | payload exclusions | A-3.4 | T-39 | ACCEPTED |
+| T-41 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k provenance_optional` — absent → skipped and reported | optional provenance | A-3.5 | T-40 | ACCEPTED |
 
 **The skill rewrite — the campaign's central deliverable.** Absent from the first plan draft; a review
 found the bijection passed because A-6.1 mapped to the guard *script* rather than the cleanup it
