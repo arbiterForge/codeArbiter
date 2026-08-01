@@ -1290,7 +1290,7 @@ class HermeticGitEnvTest(unittest.TestCase):
 # line following a stable prose ANCHOR in the installed skill text, and
 # either subprocess-executes it for real (after substituting the variables
 # the skill's own prose defines: `$TARGET`, `$TAG_PREFIX`, `$PAYLOAD`,
-# `LAST_TAG`, `${TAG_PREFIX}MAJOR.MINOR.PATCH`, `<message-file>`) or, when
+# `LAST_TAG`, `${TAG_PREFIX}${VERSION}`, `<message-file>`) or, when
 # the invocation names a this-repo path with no `__main__` to run (this
 # module's own historical example was `.github/scripts/_releaselib.py`, a
 # CI-only shim that never shipped in the plugin payload), classifies it
@@ -1338,7 +1338,18 @@ RELEASE_TARGETS_BLOCK = (
 # state`, or a bare variable mention like `$PAYLOAD`), so the capture walks
 # past those to the real command rather than mis-extracting the first
 # backtick span it meets.
-_INVOCATION_SHAPE_RE = re.compile(r'^(?:[A-Za-z_][A-Za-z0-9_]*=\$\(|git |python3 |node )')
+# `"$PY" ` and `$PY ` are as much a command start as a bare `python3 ` here:
+# the skill resolves the interpreter once up front and invokes it through
+# that variable at every later site, so omitting the spelling does not make
+# the scan MISS an invocation -- it makes the scan walk PAST it to whatever
+# command-shaped span comes next, which for the `publish_state_classify`
+# anchor is the `git tag -a ... -F <message-file>` in the branch below.
+# That failure is silent and wrong rather than loud: the driver then runs a
+# tag command under the classify label, with a mapping that has no
+# `<message-file>` in it, and reports a git error for a step that was never
+# the one under test.
+_INVOCATION_SHAPE_RE = re.compile(
+    r'^(?:[A-Za-z_][A-Za-z0-9_]*=\$\(|git |python3 |node |"\$PY" |\$PY )')
 
 # label -> (stable prose anchor, expected classification). Each anchor
 # string is verified unique in the installed skill text (ConsumerFixtureTest-
@@ -1862,8 +1873,21 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
             fh.write(result["message"])
         argv = _substitute_argv(
             shlex.split(result["invocations"]["tag_message_composition"]),
-            {"${TAG_PREFIX}MAJOR.MINOR.PATCH": result["tag_name"],
+            {"${TAG_PREFIX}${VERSION}": result["tag_name"],
              "<message-file>": message_path})
+        # A mapping key that no longer appears in the skill's spelling
+        # substitutes NOTHING and raises nothing: `git tag -a` happily
+        # creates a ref literally named `${TAG_PREFIX}${VERSION}` and exits
+        # 0, so the drift surfaces several assertions later as "tag v1.3.0
+        # does not exist" -- a true statement that names neither the cause
+        # nor this line. Checking the substituted argv here reports the
+        # drift where it happened. (This is not hypothetical: the key read
+        # `${TAG_PREFIX}MAJOR.MINOR.PATCH` until the skill adopted a
+        # `$VERSION` variable.)
+        if result["tag_name"] not in argv:
+            raise RuntimeError(
+                "the tag-name substitution did not apply -- the skill's "
+                f"spelling drifted away from the mapping key. argv={argv!r}")
         result["processes"]["tag_message_composition"] = _run_argv(argv, consumer_root)
     finally:
         os.remove(message_path)
