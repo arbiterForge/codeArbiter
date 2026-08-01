@@ -272,7 +272,45 @@ REQUIRED_FILES = [
     "core/surface/skills/decompose/SKILL.md",
 ]
 
+def test_debug_uses_helper():
+    """B-16/T-54: `debug` Exit (c) records through the board helper, and
+    no direct append to open-tasks.md remains.
+
+    Exit (c) used to instruct appending a schema-conformant line to
+    `.codearbiter/open-tasks.md` by hand. That was the last real surface
+    writing the board directly, and under the `helper-only` protected-state
+    class the board is heading for, a direct write stops being possible —
+    so the instruction would have become one that cannot be followed.
+
+    Asserted across every rendered copy, not just the source template: a
+    conversion that landed in `core/surface` but not in a host's rendered
+    routine would leave that host still instructing the old path.
+    """
+    copies = [
+        "core/surface/skills/debug/SKILL.md",
+        "plugins/ca/skills/debug/SKILL.md",
+        "plugins/ca-codex/routines/debug/SKILL.md",
+        "plugins/ca-pi/routines/debug/SKILL.md",
+    ]
+    seen = 0
+    for relative in copies:
+        if not (ROOT / relative).exists():
+            continue
+        seen += 1
+        text = read_repo(relative)
+        check("taskwrite.py" in text and "--desc" in text,
+              f"{relative}: Exit (c) does not route through taskwrite --desc")
+        # The direct-append instruction, in the shape it actually had.
+        check("append a schema-conformant queued entry" not in text,
+              f"{relative}: the direct-append instruction still remains")
+        check("never by appending to the file" in text,
+              f"{relative}: nothing forbids the direct append it replaced")
+    check(seen >= 4,
+          f"expected at least 4 rendered debug copies, found {seen}")
+
+
 TESTS = [
+    test_debug_uses_helper,
     test_task_doc_states_commit_colocation,
     test_commit_gate_phase6_board_edit_exemption,
     test_commit_gate_phase7_stages_board_edit_by_path,
@@ -292,7 +330,28 @@ def main():
             print(f"FATAL: missing file {m}")
         return 2
 
-    for fn in TESTS:
+    # `-k SUBSTRING` selection, matching unittest's spelling. This runner
+    # previously IGNORED the flag, so a plan row naming
+    # `test_board_sync.py -k some_check` ran the entire suite and reported
+    # green -- passing for a reason unrelated to what the row claimed to
+    # verify. Selecting nothing is now a hard error rather than a vacuous
+    # pass, which is the failure mode a `-k` typo actually produces.
+    selected = TESTS
+    argv = sys.argv[1:]
+    if "-k" in argv:
+        index = argv.index("-k")
+        if index + 1 >= len(argv):
+            print("FATAL: -k requires a pattern")
+            return 2
+        pattern = argv[index + 1]
+        selected = [fn for fn in TESTS if pattern in fn.__name__]
+        if not selected:
+            print(f"FATAL: -k {pattern!r} selected no checks of "
+                  f"{len(TESTS)}; a selector that matches nothing would "
+                  "otherwise report success while verifying nothing")
+            return 2
+
+    for fn in selected:
         before = len(_failures)
         try:
             fn()
@@ -308,7 +367,7 @@ def main():
         for m in _failures:
             print(f"  - {m}")
         return 1
-    print(f"\nOK: {len(TESTS)} check(s) green")
+    print(f"\nOK: {len(selected)} check(s) green")
     return 0
 
 
