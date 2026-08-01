@@ -20,7 +20,8 @@ import { isUnifiedProcessor } from "@astrojs/markdown-remark";
 // @ts-expect-error -- untyped .mjs config module
 import config from "../astro.config.mjs";
 
-const BASE = "/codeArbiter";
+// @ts-expect-error -- untyped .mjs config module
+import { BASE } from "../astro.config.mjs";
 
 describe("astro.config markdown wiring", () => {
   it("configures no markdown plugins through the deprecated top-level keys", () => {
@@ -41,7 +42,14 @@ describe("astro.config markdown wiring", () => {
     const { code } = await renderer.render("[Overview](/overview)");
 
     expect(code).toContain(`href="${BASE}/overview"`);
-    expect(code).not.toContain(`href="/overview"`);
+
+    // Only meaningful when the site is served from a subpath. On the apex
+
+    // domain BASE is "" and the prefixing is a correct no-op, so asserting the
+
+    // bare form is absent would assert the opposite of the intended behaviour.
+
+    if (BASE !== "") expect(code).not.toContain(`href="/overview"`);
   });
 
   it("leaves an external link untouched through the configured processor", async () => {

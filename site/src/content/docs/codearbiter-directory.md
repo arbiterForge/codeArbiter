@@ -72,7 +72,7 @@ frontmatter are both in place, the orchestrator persona loads on every session i
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/activation-states.svg"
+    src="/diagrams/activation-states.svg"
     alt="Activation classification flow: a missing CONTEXT.md or missing leading frontmatter is dormant; an unclosed block is malformed and surfaces an error; a closed block containing arbiter enabled activates the persona and gates."
     loading="lazy"
     width="900"

@@ -22,7 +22,7 @@ dependency-free (native font glyphs only, no Nerd Font) and renders on every ses
 <figure class="ca-diagram">
   <div class="ca-statusline-map">
     <img
-      src="/codeArbiter/diagrams/statusline.png"
+      src="/diagrams/statusline.png"
       alt="The codeArbiter statusline: a folder row; a git row with repo, branch, and a model pill; rate-limit percentages with reset countdowns; an arbiter row showing stage, tasks, open questions, and overrides; and session/today token, cost, burn, and context-usage segments."
       loading="lazy"
       width="2174"

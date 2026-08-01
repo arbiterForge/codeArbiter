@@ -54,7 +54,7 @@ the read hook.
 The hook is implemented as `pre-read.py`, backed by `_readinjectlib.py`; see the [hooks and gates reference](/reference/hooks-gates/) for the full gate catalog.
 
 <figure class="ca-diagram">
-  <img src="/codeArbiter/diagrams/four-tier-map.svg" alt="The four-tier file-to-knowledge map: a Read is matched against security-controls.md, accepted ADRs, approved specs, and provenance in priority order, and the highest-priority match's pointer is injected within a 150-token budget." loading="lazy" />
+  <img src="/diagrams/four-tier-map.svg" alt="The four-tier file-to-knowledge map: a Read is matched against security-controls.md, accepted ADRs, approved specs, and provenance in priority order, and the highest-priority match's pointer is injected within a 150-token budget." loading="lazy" />
   <figcaption>Four tiers, evaluated in priority order. The highest match governs; a non-governed Read injects nothing.</figcaption>
 </figure>
 

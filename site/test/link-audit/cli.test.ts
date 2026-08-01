@@ -82,14 +82,14 @@ describe("link-audit CLI", () => {
   }, 60_000);
 
   it("exits zero on a minimal complete dist", () => {
-    const dist = makeDist({ "index.html": `<a href="/codeArbiter/favicon.svg">icon</a>` });
+    const dist = makeDist({ "index.html": `<a href="/favicon.svg">icon</a>` });
     const { status, stdout } = runCli(dist);
     expect(status).toBe(0);
     expect(stdout).toContain("link-audit: OK");
   }, 60_000);
 
   it("exits non-zero on a dangling internal link", () => {
-    const dist = makeDist({ "index.html": `<a href="/codeArbiter/missing/">dangling</a>` });
+    const dist = makeDist({ "index.html": `<a href="/missing/">dangling</a>` });
     const { status, stderr } = runCli(dist);
     expect(status).toBe(1);
     expect(stderr).toContain("link failure");

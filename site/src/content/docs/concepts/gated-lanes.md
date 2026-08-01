@@ -24,7 +24,7 @@ by design; a hard gate that trips often is a signal the spec was too thin, and w
 at the spec rather than working around at the gate.
 
 <figure class="ca-diagram">
-  <img src="/codeArbiter/diagrams/gate-model.svg" alt="Gate model. A soft gate surfaces a decision bubble and waits for the user. A hard gate is a closed cross-bar that is never auto-decided." loading="lazy" />
+  <img src="/diagrams/gate-model.svg" alt="Gate model. A soft gate surfaces a decision bubble and waits for the user. A hard gate is a closed cross-bar that is never auto-decided." loading="lazy" />
   <figcaption>Soft gates surface and wait. Hard gates stop, and only the user can clear them.</figcaption>
 </figure>
 
@@ -53,7 +53,7 @@ commit. It's the only path to a commit. [`refactor`](/reference/skills/refactor/
 phases, all built around proving behavioral parity through unmodified pre-existing tests.
 
 <figure class="ca-diagram">
-  <img src="/codeArbiter/diagrams/commit-gate-phases.svg" alt="Commit-gate's nine phases as a left-to-right gated pipeline: permission, branch, classification, verification, behavioral proof, diff review, selective stage, message, commit. Each phase is a hard BLOCK gate. Phase 5.5, provenance auto-heal, is a conditional side-lane that only runs on drift, then rejoins before diff review." loading="lazy" />
+  <img src="/diagrams/commit-gate-phases.svg" alt="Commit-gate's nine phases as a left-to-right gated pipeline: permission, branch, classification, verification, behavioral proof, diff review, selective stage, message, commit. Each phase is a hard BLOCK gate. Phase 5.5, provenance auto-heal, is a conditional side-lane that only runs on drift, then rejoins before diff review." loading="lazy" />
   <figcaption>Nine phases, permission through commit. 5.5 is a conditional side-lane, not a tenth gate.</figcaption>
 </figure>
 

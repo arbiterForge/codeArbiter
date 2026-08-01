@@ -23,7 +23,7 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/lane-opt-in.svg"
+    src="/diagrams/lane-opt-in.svg"
     alt="The /ca:init lane in two rows: Commands (/ca:init, which forks to /ca:create-context for existing code or /ca:decompose for a new project) and Skills (create-context backs the first path, decompose the second). Two connectors fork from /ca:init, one to each path."
     loading="lazy"
     width="920"

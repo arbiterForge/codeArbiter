@@ -11,6 +11,8 @@
  * is no src/assets copy to keep in sync.
  */
 import { describe, it, expect } from "vitest";
+// @ts-expect-error -- untyped .mjs config module
+import { BASE } from "../../astro.config.mjs";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -104,7 +106,7 @@ describe("concept diagrams (AC-9)", () => {
   });
 
   it("annotates the unchanged statusline capture with nine table keys", () => {
-    expect(statuslineGuide).toContain("/codeArbiter/diagrams/statusline.png");
+    expect(statuslineGuide).toContain(`${BASE}/diagrams/statusline.png`);
     expect(statuslineGuide.match(/ca-statusline-map__marker--\d/g)).toHaveLength(9);
     for (let key = 1; key <= 9; key += 1) {
       expect(statuslineGuide).toContain(`| ${key} |`);

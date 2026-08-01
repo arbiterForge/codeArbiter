@@ -56,7 +56,7 @@ codeArbiter is dormant until a repository opts in. Every enforcement hook calls 
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/activation-states.svg"
+    src="/diagrams/activation-states.svg"
     alt="Activation classification flow: a missing CONTEXT.md or missing leading frontmatter is dormant; an unclosed block is malformed and surfaces an error; a closed block containing arbiter enabled activates the persona and gates."
     loading="lazy"
     width="900"
@@ -106,7 +106,7 @@ codeArbiter runs untrusted repositories inside `ca-sandbox`, isolated as non-roo
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/sandbox-boundary.svg"
+    src="/diagrams/sandbox-boundary.svg"
     alt="ca-sandbox boundary: the untrusted repository lives in a Docker named volume inside a non-root, read-only container with dropped capabilities, no new privileges, resource limits, and network disabled by default. Host bind mounts and the Docker socket are blocked. Files leave only through host-initiated docker cp."
     loading="lazy"
     width="960"

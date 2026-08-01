@@ -18,7 +18,7 @@ authorized to merge.
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/lane-sprint.svg"
+    src="/diagrams/lane-sprint.svg"
     alt="The autonomous sprint lane from one combined spec and plan approval through small implementation cells, SMARTS-logged decisions, review, verification, commit, and pull request."
     loading="lazy"
   />

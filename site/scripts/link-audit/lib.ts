@@ -29,7 +29,13 @@
 import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
 import { join, posix, relative, sep } from "node:path";
 
-export const BASE = "/codeArbiter"; // must match astro.config.mjs `base`
+// Single source of truth, shared with astro.config.mjs — never a local copy.
+// This constant previously held its own literal with a "must match
+// astro.config.mjs" comment, and the apex-domain move desynced it: 19,940
+// link-audit failures from a one-line base change.
+// @ts-expect-error -- untyped .mjs module
+import { BASE as SHARED_BASE } from "../../base.mjs";
+export const BASE: string = SHARED_BASE;
 
 /** Recursively collect every *.html file under dir. */
 export function htmlFiles(dir: string): string[] {
