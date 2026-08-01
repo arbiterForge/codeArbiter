@@ -49,9 +49,17 @@ function isSanctioned(value: string, ext: string): boolean {
     return /^\$\{baseUrl\}\/diagrams\/[\w.-]+\.svg$/.test(value);
   }
   // .md / .mdx: the root-absolute base-safe literal, with the base derived from
-  // astro.config.mjs rather than repeated here. Repeating it is what let this
-  // guard and the config disagree when the base moved to the apex domain.
-  return new RegExp(`^${BASE}/diagrams/[\\w.-]+\\.svg$`).test(value);
+  // base.mjs rather than repeated here. Repeating it is what let this guard and
+  // the config disagree when the base moved to the apex domain.
+  //
+  // The base is matched as a plain string prefix, never interpolated into a
+  // RegExp. A base such as "/docs.v2" or "/v1.0" contains regex metacharacters,
+  // and an unescaped `.` matches any character — the guard would then accept
+  // "/docsXv2/diagrams/a.svg" and quietly stop guarding. Since this file exists
+  // to survive a base change, it must not break on one.
+  const prefix = `${BASE}/diagrams/`;
+  if (!value.startsWith(prefix)) return false;
+  return /^[\w.-]+\.svg$/.test(value.slice(prefix.length));
 }
 
 describe("diagram <img src> convention (Task 21)", () => {
