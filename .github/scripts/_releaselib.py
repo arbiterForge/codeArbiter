@@ -289,6 +289,18 @@ def main(argv):
     if cmd == "select-target" and len(rest) == len(RELEASE_TARGETS):
         print(select_release_target(*rest))
         return 0
+    if cmd == "select-target-named" and rest:
+        # A-4.2/T-44b. Each argument is `name=value`, so selection never
+        # depends on the ORDER the workflow happens to pass its inputs in.
+        # The positional form above aligns by index against
+        # RELEASE_TARGETS: correct only while the workflow's input order
+        # and the declared row order agree, which nothing enforced. A row
+        # inserted at the front shifts every confirmation by one and the
+        # dispatch publishes the wrong plugin, holding a contents:write
+        # token, with every downstream check passing because the wrong
+        # release is internally consistent.
+        print(_mechanism.select_release_target_by_name(list(rest), RELEASE_TARGETS))
+        return 0
     if cmd == "merge-readiness" and len(rest) == 2:
         import json
         try:

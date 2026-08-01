@@ -2470,6 +2470,93 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    # ---- A-4.2: name-keyed target selection ----
+    TARGETS = ["ca", "ca-codex", "ca-sandbox", "ca-pi"]
+
+    def test_select_target_name_keyed_resolves_the_named_target(self):
+        self.assertEqual(
+            core_releaselib.select_release_target_by_name(
+                ["ca-pi=0.1.44", "ca=", "ca-codex="], self.TARGETS),
+            "ca-pi")
+
+    def test_select_target_name_keyed_is_immune_to_row_order(self):
+        # THE defect this closes. The positional resolver aligns
+        # confirmations to `targets` by INDEX, so it is correct only while
+        # the workflow's input order and the declared file's row order
+        # agree -- and nothing enforced that. Insert one row at the front
+        # of the declared file and every confirmation shifts by one: a
+        # dispatch meaning to publish `ca-codex` publishes `ca` instead,
+        # holding a contents:write token, and every downstream check passes
+        # because the WRONG release is internally consistent.
+        shifted = ["NEW"] + self.TARGETS
+        self.assertEqual(
+            core_releaselib.select_release_target(
+                "", "2.4.0", "", "", targets=self.TARGETS),
+            "ca-codex")
+        self.assertEqual(
+            core_releaselib.select_release_target(
+                "", "2.4.0", "", "", targets=shifted[:4]),
+            "ca",
+            "if this stops being 'ca', the positional hazard changed shape "
+            "and this test no longer demonstrates what it claims")
+        # Same intent, name-keyed, against BOTH registers:
+        for register in (self.TARGETS, shifted):
+            self.assertEqual(
+                core_releaselib.select_release_target_by_name(
+                    ["ca-codex=2.4.0"], register),
+                "ca-codex")
+
+    def test_select_target_name_keyed_refuses_a_multi_target_dispatch(self):
+        # One dispatch, one publisher. Two confirmations must never start
+        # two contents:write jobs.
+        self.assertEqual(
+            core_releaselib.select_release_target_by_name(
+                ["ca=1.0.0", "ca-pi=2.0.0"], self.TARGETS),
+            "multiple")
+
+    def test_select_target_name_keyed_treats_blank_as_not_selected(self):
+        for pairs in (["ca="], ["ca=   "], ["ca=", "ca-pi="], []):
+            self.assertEqual(
+                core_releaselib.select_release_target_by_name(pairs, self.TARGETS),
+                "none", pairs)
+
+    def test_select_target_name_keyed_reports_an_undeclared_name(self):
+        # Distinct from `none`: a fail-closed caller refuses both, but only
+        # this one means the workflow and the declared file disagree, which
+        # is worth reporting rather than passing off as an empty dispatch.
+        self.assertEqual(
+            core_releaselib.select_release_target_by_name(
+                ["nope=1.0.0"], self.TARGETS),
+            "unknown")
+        self.assertNotEqual("unknown", "none")
+
+    def test_select_target_name_keyed_ignores_a_pair_with_no_equals(self):
+        # An empty workflow input can arrive as a bare name; that is a
+        # missing value, not a malformed dispatch.
+        self.assertEqual(
+            core_releaselib.select_release_target_by_name(
+                ["bare-name"], self.TARGETS),
+            "none")
+
+    def test_select_target_name_keyed_never_raises_on_junk(self):
+        for pairs in (None, 42, ["ca=1.0.0", None, 7], "ca=1.0.0"):
+            result = core_releaselib.select_release_target_by_name(
+                pairs, self.TARGETS)
+            self.assertIn(result, self.TARGETS + ["none", "multiple", "unknown"])
+
+    def test_select_target_name_keyed_agrees_with_the_declared_register(self):
+        # Against this repo's real declared names, so a rename in the
+        # declared file surfaces here rather than at dispatch time.
+        rows = core_releaselib.load_targets(
+            os.path.join(REPO_ROOT, ".codearbiter", "release-targets.md"))
+        names = [r["target"] for r in rows]
+        for name in names:
+            with self.subTest(target=name):
+                self.assertEqual(
+                    core_releaselib.select_release_target_by_name(
+                        [f"{name}=1.2.3"], names),
+                    name)
+
     # ---- Slice 3: which assertions a row's declared fields turn on ----
     ROW_FULL = {
         "target": "app", "prefix": "v", "changelog": "CHANGELOG.md",

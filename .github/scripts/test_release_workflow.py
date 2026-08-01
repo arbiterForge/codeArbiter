@@ -953,5 +953,70 @@ class RegistrationTest(unittest.TestCase):
                       "this contract suite must run in CI")
 
 
+class NameKeyedTargetSelectionTest(unittest.TestCase):
+    """A-4.2/T-44b: the workflow passes NAME-KEYED confirmations.
+
+    The previous form passed four bare values whose meaning came from
+    their POSITION, aligned by index against the declared row order.
+    Nothing enforced that the two orders agreed. A row inserted at the
+    front of `.codearbiter/release-targets.md` shifted every confirmation
+    by one, so a dispatch meaning to publish the second target published
+    the first -- while holding `contents: write`, and with every
+    downstream check passing, because the wrong release is internally
+    consistent.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+
+    def test_name_keyed_selection_is_what_the_workflow_calls(self):
+        self.assertIn("select-target-named", self.text)
+
+    def test_name_keyed_replaced_the_positional_call(self):
+        # The positional subcommand still EXISTS in the shim (its own
+        # tests cover it, and T-46 owns its retirement), but the workflow
+        # must no longer reach for it -- two call paths would let the
+        # order hazard back in through the one that matters.
+        positional = re.search(
+            r"_releaselib\.py select-target(?!-named)", self.text)
+        self.assertIsNone(
+            positional,
+            "release.yml still calls the positional select-target; the "
+            "order hazard is only closed if the workflow uses the "
+            "name-keyed form")
+
+    def test_name_keyed_every_declared_target_is_passed_with_its_name(self):
+        # Derived from the DECLARED file, not a hand-list: a target added
+        # to the declaration but not plumbed here would otherwise be
+        # unreleasable, and a name typo would resolve to `unknown` only at
+        # dispatch time.
+        rows = _releaselib.load_targets(
+            str(REPO_ROOT / ".codearbiter" / "release-targets.md"))
+        for row in rows:
+            name = row["target"]
+            with self.subTest(target=name):
+                self.assertRegex(
+                    self.text, rf'"{re.escape(name)}=\$[A-Z_]+"',
+                    f"release.yml does not pass a name-keyed input for the "
+                    f"declared target {name!r}")
+
+    def test_name_keyed_unknown_label_has_its_own_diagnosis(self):
+        # `unknown` means the workflow's inputs and the declared file
+        # disagree, which is a different problem from "no input" -- the
+        # catch-all arm would fail closed but say nothing useful.
+        self.assertIn("unknown)", self.text)
+        self.assertIn("does not declare", self.text)
+
+    def test_name_keyed_labels_are_all_handled_by_the_case(self):
+        # Every label the selector can return must have an arm, or a
+        # fail-closed catch-all. Asserted against the mechanism's own
+        # vocabulary rather than a copy of it.
+        for label in ("multiple", "none", "unknown"):
+            with self.subTest(label=label):
+                self.assertIn(f"{label})", self.text)
+        self.assertIn("*)", self.text)
+
+
 if __name__ == "__main__":
     unittest.main()

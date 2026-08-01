@@ -420,6 +420,62 @@ def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
     return "resume_publish"
 
 
+def select_release_target_by_name(pairs, targets):
+    """Resolve a release dispatch from NAME-KEYED inputs (A-4.2).
+
+    `pairs` are `name=value` strings — one per confirmation input, each
+    carrying the target it belongs to. `targets` is the declared register.
+    Returns the same label vocabulary as the positional resolver:
+
+      <target>   exactly one non-blank value; that target
+      none       nothing supplied; nothing to publish
+      multiple   more than one; ambiguous, MUST be refused
+      unknown    a pair names a target the declared file does not contain
+
+    WHY NAME-KEYED. The positional form aligns confirmations to `targets`
+    by INDEX, so it is correct only while the workflow's input order and
+    the declared file's row order agree. Nothing enforced that. Insert a
+    row in the middle of the declared file, or reorder the workflow's
+    inputs, and every confirmation shifts by one — a dispatch meaning to
+    publish the second declared target publishes the first instead, with a
+    `contents: write` token, and every downstream check passes because the
+    wrong release is internally consistent. Order was load-bearing and
+    invisible.
+
+    `unknown` is deliberately a LABEL, not an exception, matching this
+    module's "prints a label and never raises" contract for the release
+    lane. It is also deliberately not `none`: a caller's fail-closed
+    default arm refuses both, but only one of them means "somebody named a
+    target that does not exist", which is a declaration/workflow
+    disagreement worth reporting rather than a quiet no-op.
+
+    Blank-ish values count as not-selected, exactly as in the positional
+    form, so a stray space cannot read as a second target. A pair with no
+    `=` at all is ignored rather than fatal — an empty workflow input can
+    arrive as a bare name — but a pair whose NAME is unknown is reported,
+    because that is a real mismatch rather than an empty slot.
+
+    Pure and non-raising over synthetic input.
+    """
+    known = [t for t in targets if isinstance(t, str)] if isinstance(
+        targets, (list, tuple)) else []
+    selected = []
+    for pair in (pairs if isinstance(pairs, (list, tuple)) else []):
+        if not isinstance(pair, str) or "=" not in pair:
+            continue
+        name, _, value = pair.partition("=")
+        name = name.strip()
+        if name and name not in known:
+            return "unknown"
+        if value.strip():
+            selected.append(name)
+    if not selected:
+        return "none"
+    if len(set(selected)) > 1 or len(selected) > 1:
+        return "multiple"
+    return selected[0]
+
+
 def select_release_target(*confirmations, targets):
     """Resolve which single target a release dispatch selected.
     `confirmations` are the per-target version inputs, positionally aligned
