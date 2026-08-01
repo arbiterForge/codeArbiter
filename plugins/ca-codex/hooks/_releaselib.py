@@ -101,6 +101,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+import shlex
 import subprocess
 import sys
 
@@ -1673,6 +1674,14 @@ def main(argv):
         # therefore unspellable from the prose, and silently absent from any
         # window for a row that declares one. This prints the pathspec
         # arguments to pass verbatim, `:(exclude)` forms included.
+        field = None
+        if "--field" in rest:
+            idx = rest.index("--field")
+            if idx + 1 >= len(rest):
+                sys.stderr.write("--field requires a value\n")
+                return 2
+            field = rest[idx + 1]
+            rest = rest[:idx] + rest[idx + 2:]
         if len(rest) != 1:
             sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")
             return 2
@@ -1696,22 +1705,62 @@ def main(argv):
             print(" ".join(parts))
             return 0
 
-        # KEY=VALUE, one per line, list-valued fields joined on a comma --
-        # parseable by a shell `while read` loop and legible to a human,
-        # which is what an agent following prose actually needs. A field the
-        # row does not declare is printed with an EMPTY value rather than
-        # omitted, so "not declared" and "I forgot to look" stay
-        # distinguishable at the call site.
-        for key in ("target", "prefix", "manifest", "generated_manifest",
-                    "generate", "changelog", "payload", "payload_exclude",
-                    "artifacts", "rebuild", "pre_tag", "provenance_manifest",
-                    "latest_eligible", "display_name"):
-            value = row.get(key)
+        # Emitted as SHELL-QUOTED `NAME='value'` pairs, and named for the
+        # variables the release skill actually spells (`TAG_PREFIX`, not
+        # `PREFIX`). Both halves are load-bearing, and blind exercise run 15
+        # found the cost of getting either wrong:
+        #
+        #   * UNQUOTED output made the documented `eval "$(… show-row …)"`
+        #     EXECUTE declared field values. `rebuild: cd x && npm run build`
+        #     parsed as the assignment `REBUILD=cd` followed by the command
+        #     `x`, with `&& npm run build` next in line -- it was one
+        #     successful exit away from running a build nobody asked for, and
+        #     `eval` still reported 0 because plain assignments followed. A
+        #     declared file's values are operator-authored shell that this
+        #     lane executes only AFTER `releasehash` confirms a human read
+        #     them; executing a fragment of that at row-read time runs it
+        #     BEFORE the gate that exists for it. `shlex.quote` closes it.
+        #   * MISNAMED keys silently left `TAG_PREFIX`, `REBUILD` and
+        #     `PRE_TAG` unset after the eval -- the three the lane leans on
+        #     hardest -- so the mandated reader delivered 10 of 13 fields and
+        #     the operator had to read the rest by eye, which is the exact
+        #     thing this subcommand was added to prevent.
+        #
+        # `--field NAME` prints ONE raw value with no quoting and no `NAME=`,
+        # for `X=$(… --field payload)` command substitution. That form needs
+        # no `eval` at all and is what the skill now uses.
+        fields = [("TARGET", "target"), ("TAG_PREFIX", "prefix"),
+                  ("MANIFEST", "manifest"),
+                  ("GENERATED_MANIFEST", "generated_manifest"),
+                  ("GENERATE", "generate"), ("CHANGELOG", "changelog"),
+                  ("PAYLOAD", "payload"),
+                  ("PAYLOAD_EXCLUDE", "payload_exclude"),
+                  ("ARTIFACTS", "artifacts"), ("REBUILD", "rebuild"),
+                  ("PRE_TAG", "pre_tag"),
+                  ("PROVENANCE_MANIFEST", "provenance_manifest"),
+                  ("LATEST_ELIGIBLE", "latest_eligible"),
+                  ("DISPLAY_NAME", "display_name")]
+
+        def _flatten(value):
             if isinstance(value, (list, tuple)):
-                value = ",".join(str(v) for v in value)
-            elif isinstance(value, bool):
-                value = "true" if value else "false"
-            print(f"{key.upper()}={'' if value is None else value}")
+                return ",".join(str(v) for v in value)
+            if isinstance(value, bool):
+                return "true" if value else "false"
+            return "" if value is None else str(value)
+
+        if field is not None:
+            wanted = field.strip().lower().replace("-", "_")
+            by_key = {key: name for name, key in fields}
+            if wanted not in by_key:
+                sys.stderr.write(
+                    f"unknown field {field!r}; declared fields are: "
+                    + ", ".join(key for _n, key in fields) + "\n")
+                return 2
+            print(_flatten(row.get(wanted)))
+            return 0
+
+        for name, key in fields:
+            print(f"{name}={shlex.quote(_flatten(row.get(key)))}")
         return 0
 
     if cmd == "list-targets":

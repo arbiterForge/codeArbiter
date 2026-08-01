@@ -562,8 +562,8 @@ class SkillProseTest(unittest.TestCase):
         # made notes-match no-match on the real v2.6.0 publish). `vMAJOR.MINOR.
         # PATCH` without the `## ` prefix is still correct for tag names, so the
         # assertion is scoped to the markdown-heading form only.
-        self.assertIn("## [MAJOR.MINOR.PATCH]", self.text)
-        self.assertNotIn("## vMAJOR.MINOR.PATCH", self.text)
+        self.assertIn("## [${VERSION}]", self.text)
+        self.assertNotIn("## v${VERSION}", self.text)
 
 
 class SkillPortabilityTest(unittest.TestCase):
@@ -738,7 +738,7 @@ class SkillPortabilityTest(unittest.TestCase):
     def test_skill_release_title_uses_a_declared_display_name(self):
         self.assertIn("display-name", self.text)
         self.assertIn(
-            "The title convention is `<$DISPLAY_NAME> MAJOR.MINOR.PATCH: "
+            "The title convention is `<$DISPLAY_NAME> ${VERSION}: "
             "<summary>`", self.text)
         self.assertNotIn("<$TARGET display name>", self.text)
 
@@ -2834,16 +2834,69 @@ class CoreCLITest(unittest.TestCase):
         out = self._run_core("show-row", "ca")
         self.assertEqual(out.returncode, 0, out.stderr)
         keys = dict(line.split("=", 1) for line in out.stdout.splitlines() if "=" in line)
-        for expected in ("TARGET", "PREFIX", "MANIFEST", "CHANGELOG", "PAYLOAD",
+        for expected in ("TARGET", "TAG_PREFIX", "MANIFEST", "CHANGELOG", "PAYLOAD",
                          "ARTIFACTS", "PRE_TAG", "PROVENANCE_MANIFEST",
                          "LATEST_ELIGIBLE", "GENERATED_MANIFEST", "GENERATE",
                          "PAYLOAD_EXCLUDE", "REBUILD", "DISPLAY_NAME"):
             self.assertIn(expected, keys, out.stdout)
         self.assertEqual(keys["TARGET"], "ca")
-        self.assertEqual(keys["PREFIX"], "v")
+        self.assertEqual(keys["TAG_PREFIX"], "v")
         # An UNDECLARED field prints empty rather than vanishing, so a
-        # caller can tell "not declared" from "I did not look".
-        self.assertEqual(keys["GENERATED_MANIFEST"], "")
+        # caller can tell "not declared" from "I did not look". Shell-quoted,
+        # so an empty value is the two-character `''`.
+        self.assertIn(keys["GENERATED_MANIFEST"], ("", "''"))
+
+    def test_show_row_output_is_shell_quoted_and_eval_executes_nothing(self):
+        # Blind exercise run 15, HIGH. Unquoted output made the documented
+        # `eval "$(show-row ...)"` EXECUTE declared values: `rebuild: cd x &&
+        # npm run build` parsed as `REBUILD=cd` plus the command `x`, with
+        # `&& npm run build` next -- and eval still exited 0. These values
+        # are operator shell the lane runs only AFTER releasehash confirms a
+        # human read them, so executing a fragment at row-read time runs it
+        # BEFORE its own gate.
+        out = self._run_core("show-row", "ca")
+        rebuild = next(line for line in out.stdout.splitlines()
+                       if line.startswith("REBUILD="))
+        self.assertIn("&&", rebuild, "fixture must carry a shell metachar")
+        self.assertTrue(rebuild.startswith("REBUILD='"),
+                        f"value must be shell-quoted, got: {rebuild}")
+        # The decisive check: hand the whole block to a real shell and prove
+        # it assigns without executing.
+        script = (out.stdout + "\n"
+                  + 'printf "%s|%s|%s" "$TAG_PREFIX" "$REBUILD" "$PRE_TAG"\n')
+        # Fed on STDIN, not `bash -c <script>`: on Windows the multi-line
+        # argument is mangled by the exec-layer quoting and every variable
+        # comes back empty, which would make this test pass vacuously by
+        # "finding" no shell output.
+        # BYTES, not text=True: universal-newline translation rewrites every
+        # \n as \r\n on Windows, and bash then reports `$'\r': command not
+        # found` for a script this test authored correctly.
+        proc = subprocess.run(["bash", "-s"], input=script.encode("utf-8"),
+                              capture_output=True, cwd=REPO_ROOT)
+        stderr = proc.stderr.decode("utf-8", "replace")
+        stdout = proc.stdout.decode("utf-8", "replace")
+        self.assertEqual(proc.returncode, 0, stderr)
+        self.assertEqual(stderr.strip(), "",
+                         f"reading the row produced shell output: {stderr}")
+        parts = [p.strip() for p in stdout.split("|")]
+        self.assertEqual(len(parts), 3, stdout)
+        prefix, rebuilt, pre_tag = parts
+        self.assertEqual(prefix, "v",
+                         "the assignments did not take effect — this test "
+                         "would be vacuous")
+        self.assertEqual(rebuilt, "cd plugins/ca/tools && npm run build")
+        self.assertTrue(pre_tag, "PRE_TAG must survive the round trip")
+
+    def test_show_row_field_returns_one_raw_value(self):
+        out = self._run_core("show-row", "ca", "--field", "payload")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "plugins/ca/")
+        self.assertNotIn("=", out.stdout)
+
+    def test_show_row_field_rejects_an_unknown_name(self):
+        out = self._run_core("show-row", "ca", "--field", "nope")
+        self.assertEqual(out.returncode, 2)
+        self.assertIn("unknown field", out.stderr)
 
     def test_show_row_rejects_an_unknown_target(self):
         out = self._run_core("show-row", "not-a-target")
@@ -3804,7 +3857,12 @@ _GOVERNANCE_RULES = {
     # different set of findings; these must not collide with (or silently
     # replace) the earlier dict entries.
     "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse": (
-        "git rev-parse ${TAG_PREFIX}MAJOR.MINOR.PATCH", "peel-tag"),
+        # Anchor follows the skill's own spelling: the placeholder
+        # `MAJOR.MINOR.PATCH` was replaced by the `$VERSION` variable the
+        # lane now actually assigns (blind exercise run 15 -- the literal
+        # appeared in seven commands and was never defined anywhere, so the
+        # tag/push/release commands were uncopyable as written).
+        "git rev-parse ${TAG_PREFIX}${VERSION}", "peel-tag"),
     "HIGH-2 (re-run): back-fill declares latest-eligible for its one target": (
         "latest-eligible: true`", "single-target"),
     "MEDIUM (re-run): omitted single target resolves via list-targets, not assumption": (
@@ -3852,7 +3910,7 @@ _GOVERNANCE_RULES = {
     "MEDIUM (runs 5+7): manifest_version is parsed by the file's own format": (
         "FORMAT'S OWN parser rather than a line-grep",),
     "LOW (run 5): the round-trip check reads the raw object, not a reconstruction": (
-        "git cat-file tag ${TAG_PREFIX}MAJOR.MINOR.PATCH",),
+        "git cat-file tag ${TAG_PREFIX}${VERSION}",),
     # Run 6 (2026-07-31).
     "HIGH (runs 6+7): one base version, the max of tag and every manifest": (
         "one base, computed the same way in every case",
