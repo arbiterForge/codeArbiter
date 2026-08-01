@@ -56,7 +56,13 @@ RESOLVED_PREFIXES = ("${CLAUDE_PLUGIN_ROOT}", "${CLAUDE_PROJECT_DIR}",
 
 # Extensions that make a path an artifact to RUN or READ rather than a
 # directory being described.
-ARTIFACT_SUFFIXES = (".py", ".js", ".mjs", ".ts", ".sh", ".json", ".yml", ".yaml")
+# `.md` belongs here even though it is not executable: the rule this guard
+# states is EXECUTES-**OR-READS**, and a skill telling a consumer to read
+# `core/surface/skills/release/SKILL.md` names a file they do not have just
+# as surely as one telling them to run a script. Omitting it meant the
+# guard's stated rule was wider than its behaviour.
+ARTIFACT_SUFFIXES = (".py", ".js", ".mjs", ".ts", ".sh", ".json", ".yml",
+                     ".yaml", ".md")
 
 _BACKTICKED = re.compile(r"`([^`]+)`")
 
@@ -98,6 +104,12 @@ def _candidate_paths(span):
         if any(prefix in token for prefix in RESOLVED_PREFIXES):
             # e.g. `python3 ${CLAUDE_PLUGIN_ROOT}/hooks/x.py` — resolved.
             continue
+        # `./tools/farm.js` is the same instruction as `tools/farm.js`, and
+        # the prefix test below is literal, so without this the guard could
+        # be bypassed (or accidentally evaded) by two characters. Repeatable,
+        # for `././`.
+        while token.startswith("./"):
+            token = token[2:]
         if not token.startswith(REPO_ROOTS):
             continue
         if not token.endswith(ARTIFACT_SUFFIXES):

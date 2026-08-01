@@ -1168,6 +1168,14 @@ jobs:
           # fix if either is ever missing.
           fetch-depth: 0
           fetch-tags: true
+          # This job runs read-only test suites and never pushes, so it has
+          # no use for the ambient GITHUB_TOKEN that checkout otherwise
+          # leaves in .git/config for every later step. Dropping it shrinks
+          # what a compromised dependency in any of those steps can reach.
+          # Safe here specifically because the repo is public: the history
+          # and tags above are already fetched by this step, and anything
+          # later needing the remote can read it anonymously.
+          persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"

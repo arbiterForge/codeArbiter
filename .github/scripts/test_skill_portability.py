@@ -57,6 +57,28 @@ class MatchingRuleTest(unittest.TestCase):
                 "in CI; if it disagrees, the report is wrong.\n")
         self.assertEqual(G.scan_file("x.md", line), [])
 
+    def test_matching_rule_flags_a_readable_markdown_artifact(self):
+        # CodeRabbit MAJOR, confirmed. The stated rule is EXECUTES-OR-READS,
+        # but `.md` was absent from the suffix list, so a skill telling a
+        # consumer to READ one of this repo's own docs passed — the guard's
+        # documented rule was wider than its behaviour.
+        hits = G.scan_file(
+            "x.md", "Read `core/surface/skills/release/SKILL.md` for the contract.\n")
+        self.assertEqual([h[1] for h in hits],
+                         ["core/surface/skills/release/SKILL.md"])
+
+    def test_matching_rule_sees_through_a_dot_slash_prefix(self):
+        # CodeRabbit MAJOR, confirmed. The repo-root test is a literal
+        # prefix match, so `./tools/farm.js` — the same instruction — slipped
+        # past on two characters.
+        for line, want in (
+            ("Run `./tools/farm.js` to dispatch.", "tools/farm.js"),
+            ("Run `././.github/scripts/thing.py` now.", ".github/scripts/thing.py"),
+        ):
+            with self.subTest(line=line):
+                self.assertEqual([h[1] for h in G.scan_file("x.md", line + "\n")],
+                                 [want])
+
     def test_matching_rule_ignores_a_directory_without_an_artifact_suffix(self):
         # `plugins/ca/` is a location, not something to execute.
         self.assertEqual(G.scan_file("x.md", "Payload lives under `plugins/ca/`.\n"), [])
