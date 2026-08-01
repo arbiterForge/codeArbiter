@@ -47,7 +47,7 @@ Invoke the farm dispatcher:
 
 For the measured canary step, add `"canary": true`. The tool resolves the one shared built backend;
 if it reports `terminal: degraded`, surface that preview degradation and rebuild the sibling bundle.
-Do not shell out to a nonexistent Pi-local `tools/farm.js` and do not fall back silently.
+Do not shell out to a Pi-local farm dispatcher — this host ships none, so any path you construct for one resolves to nothing — and do not fall back silently.
 
 {{ELSE}}
 ```

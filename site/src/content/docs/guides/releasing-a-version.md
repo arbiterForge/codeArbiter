@@ -29,7 +29,23 @@ already landed on a clean release branch and its verification is green.
   <code>$ca-release</code>; Pi uses <code>/ca-release</code>. Examples below use Claude Code syntax.
 </div>
 
-## Choose the target
+## Where the targets come from
+
+The release lane holds no knowledge of any particular project. Every fact it
+needs (the tag prefix, which manifests carry the version, which changelog to
+roll into, what the payload scope is, and any checks to run before tagging) is
+read from a file the project declares at `.codearbiter/release-targets.md`.
+
+That means **the table below is codeArbiter's own configuration, not the lane's
+behaviour.** Your project's table is whatever its own declared file says: one
+row for a single-artifact repository, several for a monorepo. If you have no
+declared file yet, the first `/ca:release` proposes one from what it can detect
+and writes nothing until you confirm it.
+
+Read the rest of this guide with that split in mind: the steps are general, the
+four rows are ours.
+
+## codeArbiter's own declared targets
 
 | Target | Tag | Manifest(s) | Changelog | Built artifacts |
 |---|---|---|---|---|

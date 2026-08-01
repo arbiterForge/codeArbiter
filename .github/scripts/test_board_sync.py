@@ -215,6 +215,46 @@ def test_standup_advisory_board_sweep():
     )
 
 
+# ---- A-5.1 (issue #563): decompose elicits release INTENT only, not a row (T-47) --
+def test_decompose_intent_only():
+    # Reads the SURFACE SOURCE (core/surface/), never a generated plugins/*/
+    # copy -- the release-portable-fixture campaign's own "Source of truth"
+    # convention, since core/surface/skills/decompose/SKILL.md is what this
+    # repo's guards and structural assertions are meant to target.
+    t = read_repo("core/surface/skills/decompose/SKILL.md")
+    anchor = "Release intent is elicited here"
+    idx = t.find(anchor)
+    check(idx != -1,
+          "decompose SKILL.md: must carry the 'Release intent is elicited "
+          "here' paragraph stating the no-row-written rule (A-5.1)")
+    # Scoped to THIS one paragraph -- not the whole document -- so a
+    # deletion here cannot hide behind a restatement elsewhere (the Layer 4
+    # Unlock line ALSO mentions "tag prefix"/"changelog", so a document-wide
+    # substring check would still pass with this paragraph gutted).
+    window = t[idx: idx + 700] if idx != -1 else ""
+    wl = window.lower()
+    check(
+        "tag prefix" in wl,
+        "decompose SKILL.md: the release-intent paragraph must name the tag "
+        "prefix preference (A-5.1)",
+    )
+    check(
+        "changelog kept" in wl,
+        "decompose SKILL.md: the release-intent paragraph must name the "
+        "changelog-kept y/n answer (A-5.1)",
+    )
+    check(
+        "release-targets.md` row is ever written by this skill" in window,
+        "decompose SKILL.md: must state it writes no release-targets.md row "
+        "-- it runs before any manifest or tag exists (A-5.1)",
+    )
+    check(
+        "before any manifest or tag exists" in wl,
+        "decompose SKILL.md: must state WHY it cannot substantiate a row yet "
+        "(no manifest or tag exists during greenfield decomposition, A-5.1)",
+    )
+
+
 # --- APPEND NEW test_* FUNCTIONS ABOVE THIS LINE --------------------------------
 # Each new function must also be added to TESTS and (if it reads a new file)
 # to REQUIRED_FILES below.
@@ -229,9 +269,136 @@ REQUIRED_FILES = [
     # --- APPEND NEW REQUIRED FILES HERE ----------------------------------------
     "plugins/ca/includes/harvest.md",
     "plugins/ca/commands/standup.md",
+    "core/surface/skills/decompose/SKILL.md",
 ]
 
+def test_debug_uses_helper():
+    """B-16/T-54: `debug` Exit (c) records through the board helper, and
+    no direct append to open-tasks.md remains.
+
+    Exit (c) used to instruct appending a schema-conformant line to
+    `.codearbiter/open-tasks.md` by hand. That was the last real surface
+    writing the board directly, and under the `helper-only` protected-state
+    class the board is heading for, a direct write stops being possible —
+    so the instruction would have become one that cannot be followed.
+
+    Asserted across every rendered copy, not just the source template: a
+    conversion that landed in `core/surface` but not in a host's rendered
+    routine would leave that host still instructing the old path.
+    """
+    copies = [
+        "core/surface/skills/debug/SKILL.md",
+        "plugins/ca/skills/debug/SKILL.md",
+        "plugins/ca-codex/routines/debug/SKILL.md",
+        "plugins/ca-pi/routines/debug/SKILL.md",
+    ]
+    seen = 0
+    for relative in copies:
+        if not (ROOT / relative).exists():
+            continue
+        seen += 1
+        text = read_repo(relative)
+        check("taskwrite.py" in text and "--desc" in text,
+              f"{relative}: Exit (c) does not route through taskwrite --desc")
+        # The direct-append instruction, in the shape it actually had.
+        check("append a schema-conformant queued entry" not in text,
+              f"{relative}: the direct-append instruction still remains")
+        check("never by appending to the file" in text,
+              f"{relative}: nothing forbids the direct append it replaced")
+    check(seen >= 4,
+          f"expected at least 4 rendered debug copies, found {seen}")
+
+
+def test_done_flip_retained():
+    """B-19/T-56: a `/ca:task done` flip still classifies RETAINED with the
+    protected-state enrolment simulated live, and the helper's own write is
+    invisible to the lexical flanks.
+
+    The circularity hazard: if enrolling `open-tasks.md` could block
+    `/ca:task`, the guard would stop the only sanctioned writer and the
+    board would become unmaintainable. The spec's mitigation is
+    STRUCTURAL, not sequencing -- `taskwrite.py` writes with Python file
+    I/O whose argv never names the file, so the shell flank has nothing to
+    match on. That construction, not "enrolment lands last", is what makes
+    it safe, so it is what gets pinned here.
+
+    Both halves are asserted: the classifier keeps the flip RETAINED (so
+    commit-gate does not read it as scope creep), and a simulated
+    helper-only enrolment does not make the helper's own invocation
+    blockable.
+    """
+    hooks = ROOT / "plugins" / "ca" / "hooks"
+    sys.path.insert(0, str(hooks))
+    try:
+        import _taskboardlib as tb
+        import _protectedstatelib as ps
+        import _bashguardlib as bg
+    finally:
+        if str(hooks) in sys.path:
+            sys.path.remove(str(hooks))
+
+    before = "# Open tasks\n\n## In-flight\n- [~] a.b.0001 - a task (started 2026-07-01)\n"
+    after = "# Open tasks\n\n## In-flight\n- [x] a.b.0001 - a task (started 2026-07-01) (done 2026-07-02)\n"
+    check(tb.classify_board_diff(before, after) is True,
+          "a clean done-flip must classify RETAINED, or commit-gate reads "
+          "the board edit as scope creep and refuses the work commit")
+
+    # The helper's write, as the shell flank would see it. `taskwrite.py`
+    # names the VERB and the task, never open-tasks.md, so a lexical rule
+    # keyed on the filename has nothing to match -- which is exactly why
+    # enrolling the board cannot lock out its own writer.
+    invocation = 'python3 hooks/taskwrite.py done a.b.0001'
+    check("open-tasks" not in invocation,
+          "the helper invocation must not name the board file, or the "
+          "shell flank could block the only sanctioned writer")
+    simulated = dict(ps.REGISTRY)
+    simulated[".codearbiter/open-tasks.md"] = ps.ProtectedPolicy.HELPER_ONLY
+    compiled = bg._build_state_write_res(simulated)
+    check(len(compiled) == len(simulated),
+          "the simulated enrolment did not compile into the shell flank")
+    for entry in compiled:
+        for regex in entry[2:]:
+            check(regex.search(invocation) is None,
+                  f"a flank regex matches the helper's own invocation "
+                  f"({invocation!r}) -- enrolment would block /ca:task")
+
+
+def test_context_creation_board_route():
+    """B-18/T-55: `context-creation` seeds open-tasks.md through the board
+    helper, one call per task, never by writing entries into the file.
+
+    It used to POPULATE the file with the Write tool during doc-writing.
+    Once open-tasks.md is enrolled `helper-only`, that write is refused
+    outright -- so the instruction would survive as one nobody can follow.
+    Seeding through repeated `taskwrite add` also means the backlog cannot
+    drift from the schema the SessionStart hook and statusline parse.
+    """
+    copies = [
+        "core/surface/skills/context-creation/SKILL.md",
+        "plugins/ca/skills/context-creation/SKILL.md",
+        "plugins/ca-codex/routines/context-creation/SKILL.md",
+        "plugins/ca-pi/routines/context-creation/SKILL.md",
+    ]
+    seen = 0
+    for relative in copies:
+        if not (ROOT / relative).exists():
+            continue
+        seen += 1
+        text = read_repo(relative)
+        check("taskwrite.py" in text,
+              f"{relative}: open-tasks seeding does not name the board helper")
+        check("one call per item" in text,
+              f"{relative}: nothing states the per-item helper contract")
+        check("never by writing entries into the file directly" in text,
+              f"{relative}: nothing forbids the direct write it replaced")
+    check(seen >= 4,
+          f"expected at least 4 rendered context-creation copies, found {seen}")
+
+
 TESTS = [
+    test_done_flip_retained,
+    test_context_creation_board_route,
+    test_debug_uses_helper,
     test_task_doc_states_commit_colocation,
     test_commit_gate_phase6_board_edit_exemption,
     test_commit_gate_phase7_stages_board_edit_by_path,
@@ -239,6 +406,7 @@ TESTS = [
     # --- APPEND NEW TESTS HERE --------------------------------------------------
     test_harvest_md_commit_gate_pre_commit,
     test_standup_advisory_board_sweep,
+    test_decompose_intent_only,
 ]
 # ---------------------------------------------------------------------------
 
@@ -250,7 +418,28 @@ def main():
             print(f"FATAL: missing file {m}")
         return 2
 
-    for fn in TESTS:
+    # `-k SUBSTRING` selection, matching unittest's spelling. This runner
+    # previously IGNORED the flag, so a plan row naming
+    # `test_board_sync.py -k some_check` ran the entire suite and reported
+    # green -- passing for a reason unrelated to what the row claimed to
+    # verify. Selecting nothing is now a hard error rather than a vacuous
+    # pass, which is the failure mode a `-k` typo actually produces.
+    selected = TESTS
+    argv = sys.argv[1:]
+    if "-k" in argv:
+        index = argv.index("-k")
+        if index + 1 >= len(argv):
+            print("FATAL: -k requires a pattern")
+            return 2
+        pattern = argv[index + 1]
+        selected = [fn for fn in TESTS if pattern in fn.__name__]
+        if not selected:
+            print(f"FATAL: -k {pattern!r} selected no checks of "
+                  f"{len(TESTS)}; a selector that matches nothing would "
+                  "otherwise report success while verifying nothing")
+            return 2
+
+    for fn in selected:
         before = len(_failures)
         try:
             fn()
@@ -266,7 +455,7 @@ def main():
         for m in _failures:
             print(f"  - {m}")
         return 1
-    print(f"\nOK: {len(TESTS)} check(s) green")
+    print(f"\nOK: {len(selected)} check(s) green")
     return 0
 
 

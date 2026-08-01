@@ -46,6 +46,27 @@ an action that has no candidates; never bundle confirmations.
    `{{CMD:task}} done <id>` — the only blessed board writer. State this clearly to the
    user; do not auto-flip.
 
+6. **Archival sweep — proposed per item, never batched** (B-24). Long-done tasks
+   accumulate on the board and inflate the in-flight count until it stops meaning
+   anything. List the done items older than the cutoff, then ask about **each one
+   separately** and archive only the ones the user says yes to:
+   `python3 "{{PLUGIN_ROOT}}/hooks/taskwrite.py" archive <id> || python "{{PLUGIN_ROOT}}/hooks/taskwrite.py" archive <id>`.
+
+   One confirmation per item, one helper call per item — the two map 1:1 on
+   purpose. A batched "archive all 12?" turns twelve decisions into one, and the
+   helper's own per-item ordering (append to `done-tasks.md` first, then remove
+   from `open-tasks.md`) is what makes an interrupted sweep recoverable; a batch
+   loop that answered once would throw that away.
+
+   An item marked `[x]` with **no `(done YYYY-MM-DD)` stamp** cannot be aged, so
+   it is never in the proposed set. Offer it only if the user asks, and only with
+   `--allow-undated` — both `{{CMD:task}} done` and the board classifier require
+   the stamp, so an unstamped entry is legacy or override-era and its real age is
+   unknown.
+
+   Declining is always available and costs nothing: an unarchived task stays
+   exactly where it is. Never archive without a yes.
+
 Present a one-line summary of what was done and what was declined.
 
 ## When NOT to use

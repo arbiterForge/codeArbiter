@@ -132,8 +132,18 @@ jobs:
           # Argument ORDER is the contract (_releaselib.RELEASE_TARGETS): the
           # helper refuses a wrong-length call with the non-target label `arity`
           # rather than resolving a plugin from the wrong input.
-          TARGET=$(python3 .github/scripts/_releaselib.py select-target \
-            "$CONFIRM" "$CODEX_CONFIRM" "$SANDBOX_CONFIRM" "$PI_CONFIRM")
+          # NAME-KEYED (A-4.2). Each input carries the target it belongs
+          # to, so selection never depends on the order these are passed.
+          # The previous positional form aligned by index against the
+          # declared row order — correct only while the two agreed, which
+          # nothing enforced. A row inserted at the front of the declared
+          # file shifted every confirmation by one, and this dispatch would
+          # have published the wrong plugin while holding contents:write,
+          # with every downstream check passing because the wrong release
+          # is internally consistent.
+          TARGET=$(python3 .github/scripts/_releaselib.py select-target-named \
+            "ca=$CONFIRM" "ca-codex=$CODEX_CONFIRM" \
+            "ca-sandbox=$SANDBOX_CONFIRM" "ca-pi=$PI_CONFIRM")
           case "$TARGET" in
             ca|ca-codex|ca-sandbox|ca-pi)
               echo "resolved release target: $TARGET"
@@ -144,6 +154,10 @@ jobs:
               ;;
             none)
               echo "::error::this dispatch selected no plugin — supply exactly one version input"
+              exit 1
+              ;;
+            unknown)
+              echo "::error::a version input names a target that .codearbiter/release-targets.md does not declare — the workflow's inputs and the declared file disagree. Reconcile them; do not add the name here alone."
               exit 1
               ;;
             *)

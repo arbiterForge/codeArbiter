@@ -2750,5 +2750,98 @@ class ProvenanceRecordShapeTest(unittest.TestCase):
                          "the file that raised must be the one — and the only one — skipped")
 
 
+class TestReleaseTargetsTriggers(unittest.TestCase):
+    """A-5.6 / T-52: `.codearbiter/.provenance/release-targets.json` records
+    the declared rows' OWN referenced paths as drift triggers.
+
+    The declared file names other files -- each `manifest`, each
+    `changelog`, each `artifacts` entry. Nothing watched whether those
+    files still existed where the rows claim, so a renamed manifest left a
+    row pointing at nothing and the release lane found out at tag time.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, HERE)
+        import build_release_targets_provenance as builder
+        cls.builder = builder
+        cls.record_path = os.path.join(
+            REPO, ".codearbiter", ".provenance", "release-targets.json")
+
+    def test_release_targets_triggers_record_is_valid_v1(self):
+        record = pl.read_provenance(self.record_path)
+        self.assertIsNotNone(record, "the record is missing or unreadable")
+        self.assertTrue(pl.valid_provenance_record(record))
+        self.assertEqual(record["doc"], "release-targets")
+
+    def test_release_targets_triggers_cover_every_declared_path(self):
+        # The check the generator's --check mode runs, asserted here too so
+        # a green suite means the record matches the declaration even if
+        # nobody runs the script.
+        self.assertEqual(self.builder.check(), [])
+
+    def test_release_targets_triggers_are_exactly_the_declared_set(self):
+        # Two-way. A missing trigger loses the coverage; an extra one
+        # watches a path no row references any more, which goes stale
+        # silently and trains the reader to ignore the report.
+        record = pl.read_provenance(self.record_path)
+        recorded = {e["path"] for e in record["entries"]
+                    if e.get("drift_trigger") is True}
+        self.assertEqual(recorded, set(self.builder.declared_paths()))
+
+    def test_release_targets_triggers_exclude_scopes_and_commands(self):
+        # `payload`/`payload-exclude` are directory scopes -- batch_hash
+        # cannot hash a directory. `pre-tag`/`rebuild`/`generate` are
+        # command strings, not files. Recording either would produce a
+        # permanently-"missing" trigger that teaches operators the report
+        # is noise.
+        recorded = set(self.builder.declared_paths())
+        for scope in ("plugins/ca/", "plugins/ca-pi/tools/", "."):
+            self.assertNotIn(scope, recorded)
+        for entry in recorded:
+            self.assertFalse(
+                entry.startswith("python3 ") or entry.startswith("cd "),
+                f"{entry!r} is a command, not a path")
+
+    def test_release_targets_triggers_surface_a_moved_path(self):
+        # The failure this record exists to catch, driven end to end
+        # through compute_drift rather than asserted about the file's
+        # shape: a recorded path that git no longer knows is "missing".
+        record = pl.read_provenance(self.record_path)
+        entries = [dict(e) for e in record["entries"]]
+        self.assertTrue(entries, "no entries to exercise")
+        moved = entries[0]["path"]
+        current = {e["path"]: e["hash"] for e in entries if e["hash"]}
+        current.pop(moved, None)          # simulate the rename
+        drift = pl.compute_drift({"release-targets": record}, current)
+        self.assertIn("release-targets", drift)
+        self.assertIn(
+            {"path": moved, "kind": "missing"}, drift["release-targets"],
+            "a declared path git no longer knows must surface as missing")
+
+    def test_release_targets_triggers_surface_a_changed_file(self):
+        record = pl.read_provenance(self.record_path)
+        entries = [dict(e) for e in record["entries"]]
+        current = {e["path"]: e["hash"] for e in entries if e["hash"]}
+        target = next(iter(current))
+        current[target] = "0" * 40        # simulate an edit
+        drift = pl.compute_drift({"release-targets": record}, current)
+        self.assertIn({"path": target, "kind": "changed"},
+                      drift["release-targets"])
+
+    def test_release_targets_triggers_check_reports_a_gap(self):
+        # The generator's own failure mode, exercised against a synthetic
+        # record rather than by mutating the real one.
+        with tempfile.TemporaryDirectory() as tmp:
+            partial = os.path.join(tmp, "release-targets.json")
+            full = pl.read_provenance(self.record_path)
+            trimmed = pl.new_record(
+                "release-targets", entries=full["entries"][:-1])
+            pl.write_provenance(partial, trimmed)
+            errors = self.builder.check(record_path=partial)
+        self.assertTrue(errors)
+        self.assertTrue(any("declared but not recorded" in e for e in errors))
+
+
 if __name__ == "__main__":
     unittest.main()

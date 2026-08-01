@@ -1114,3 +1114,105 @@ own sources so the report does not count its tests as covered source.
 Baseline recorded; shortfall tracked like #511.
 
 ---
+
+## DECISION-0033 — release-pre-tag-steps — Repo-specific pre-tag reconciliation is declared per target row, not pushed to CI
+
+**Date:** 2026-07-30
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The `release` skill hardcodes this repo's pre-tag steps (README badge sync, command/skill/agent count derivation, `build-host-packages.py` regeneration) as skill prose.
+- **Scaffold position:** A shippable skill cannot carry any repo's specific reconciliation commands; project state is where per-repo facts belong.
+- **Status type:** open-decision-closure
+
+### Decision
+Each release target row in `.codearbiter/release-targets.md` carries an ordered list of pre-tag shell commands. The skill runs them before tagging, asserts each exits 0, and asserts the tree is clean afterward. This repo's four existing steps move into its own rows unchanged. CI's `check_badge_consistency.py` is retained as the mechanical backstop it already is — the declared steps complement it rather than replace it.
+
+### SMARTS rationale
+Testable, Available, Scalable, and Maintainable favored declared rows cleanly. Declared steps are data, so a fixture can assert run order and dirty-tree failure; pushing the steps to CI would require simulating CI status payloads to test, and would make tagging unavailable during any CI outage. Securable was the only non-Strong cell, and it falls inside the trust class ADR-0002 already accepted: operator-authored, PR-reviewed shell input, resolved by declaring the boundary rather than restricting the operator. The rejected local-hook-script option scored Weak on Securable for precisely the reason ADR-0002 rejected its own equivalent — an undeclared executable-input boundary.
+
+### Implementation implication
+`.codearbiter/release-targets.md` gains a `pre-tag` list per row plus an assert-clean flag. `security-controls.md` gains a boundary-crossings entry declaring the file as executable input, with a length cap following ADR-0002's 1024-character precedent. An ADR is warranted for the new trust boundary and should be authored via `/ca:adr` during implementation. The `release` skill drops its four hardcoded reconciliation steps in favor of running the declared list. Tracked under issue #563.
+
+---
+
+## DECISION-0034 — release-pre-tag-semantics — Declared pre-tag commands are check-only and may never mutate the tree
+
+**Date:** 2026-07-30
+**Status:** accepted
+**Supersedes:** DECISION-0033
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0033 held that pre-tag steps are declared per target row and run with exit-code and clean-tree assertions, and its implementation note described a per-row assert-clean flag.
+- **Scaffold position:** This repo's actual pre-tag steps are edits, not assertions — `build-host-packages.py` regenerates the root manifest and `wc -l` count derivation implies editing README prose — so a clean-tree assertion blocks the very reconciliation the steps exist to perform.
+- **Status type:** open-decision-closure
+
+### Decision
+Pre-tag commands remain declared per target row rather than pushed to CI, restating DECISION-0033's holding in full. They are additionally constrained to be **check-only**: a command must assert and exit non-zero on drift, and must not mutate the working tree. The clean-tree assertion applies unconditionally, so any mutation is detected and blocks the release. No per-row assert-clean flag exists. Reconciliation itself — regenerating a manifest, syncing README badges — stays a separate action the operator performs and commits through `commit-gate` before re-running the release.
+
+### SMARTS rationale
+Five of six lenses favored check-only. Maintainable and Testable: one rule with no branch, and a fixture asserts exit code plus unchanged tree without standing up commit-gate, whose own gates would otherwise leak into release tests. Reliable: the tree the suite ran against is the tree that gets tagged, with no mid-phase mutation landing after the last green run. Securable: because the clean-tree assertion always runs, a rogue declared command's writes surface before tagging, which the flagged and unconditional-mutation alternatives both lose. Available was the single Weak cell and is an accepted cost — a lagging generated manifest stops the release and names what to run. ADR-0008's ride-along precedent genuinely favored in-lane reconciliation, but it applies to narrow classified edits with named exemptions (`classify_board_diff` transitions, provenance re-baselines), never to arbitrary operator-declared commands; extending it here would let a regenerated manifest reach a tag without passing commit-gate review.
+
+### Implementation implication
+`.codearbiter/release-targets.md` rows carry a `pre-tag` list with no assert-clean flag. The release skill runs each command, asserts exit 0, then asserts a clean tree, and BLOCKs on either failure. This repo's badge and count reconciliation must be expressed as check scripts — `check_badge_consistency.py` already has that shape; the catalog and README-table assertions need equivalent non-mutating checks written. `build-host-packages.py` is not a pre-tag command; a companion check asserts the generated root manifest matches the plugin manifest and fails when it lags. Costs this repo one extra loop per release when a generated artifact is stale. Tracked under issue #563, spec `specs/release-portable-fixture.md`.
+
+---
+
+## DECISION-0035 — adr-0024-ratification — Protected-state registry ratified as a declared executable-input boundary
+
+**Date:** 2026-07-31
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** security-architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** `.codearbiter/release-targets.md` carries per-row `pre-tag` shell commands that `/ca:release` executes, making it executable input, with no recorded trust model.
+- **Scaffold position:** ADR-0002 already governs this class for `plan.json` — operator-authored, PR-reviewed, length-capped, boundary declared rather than allowlisted — but three material differences separate the new case from it.
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0024 is accepted. The protected-state registry is a declared executable-input boundary protected by write-gating rather than content inspection: marker-gated writes, a 1024-character cap per `pre-tag` entry, check-only commands under an unconditional clean-tree assertion, and a content hash forcing re-confirmation when a command changes. No content predicate ever grants admission. The authoring marker is explicitly audit friction rather than authorization, self-mintable by design under ADR-0010, and `GATE_MARKER_NAMES` is not widened to cover it. Case handling is global rather than host-derived.
+
+### SMARTS rationale
+Securable drove it, and the decisive reasoning is that the alternatives fail in the same shape: a content predicate admitting a write based on what the file contains converts content into an authorization signal, launderable by anyone who can write the content — the same defect that sank the file-absent exemption and the conflict-marker carve-out considered earlier in this campaign. Maintainable and Scalable favored one registry over per-file hook branches, and the maintainer's standing steer to weight `Scalable` heavily for deterministic enforcement over prose reinforced it. Reliable favored global case handling once it was established that `realpath` cannot fold case for a file that does not yet exist, which is precisely a Write creating a protected file for the first time — a host-derived rule would have been silently wrong exactly at creation.
+
+### Implementation implication
+`core/pysrc/_protectedstatelib.py`, `_protectedlib.py` and `_bashguardlib.py` carry the enforcement, already landed at 56387ee. The ADR's `governs:` field enrolls those three plus `.codearbiter/release-targets.md`, so the post-write hook surfaces the decision at edit time rather than at a checkpoint sweep. Four residuals are declared in both the ADR and `security-controls.md`, and three reopen conditions are recorded — most concretely, that recurring board-conflict overrides in `gate-events.log` mean building a `taskwrite resolve` verb rather than punching an exception into the guard. Closes T-16 of the sprint plan.
+
+---
+
+## DECISION-0036 — bare-release-requires-explicit-target — A multi-target project must name its release target; no implicit default
+
+**Date:** 2026-07-31
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The release skill defaulted a bare `/ca:release` to target `ca`, a hardcoded fact about this repository.
+- **Scaffold position:** A-6.0 requires that no hardcoded row survive the portability rewrite, and steer 5 requires no behavior change to this repo's four-plugin release. Both cannot hold for the bare invocation.
+- **Status type:** same-level-conflict-resolution
+
+### Decision
+A declared file with exactly one target resolves that target implicitly. A declared file with more than one target requires an explicit `$TARGET`; a bare invocation STOPs. This repository declares four targets, so `/ca:release` alone now stops and `/ca:release ca` is required. This is an accepted, deliberate exception to steer 5, taken with the steer in view rather than around it.
+
+### SMARTS rationale
+Securable and Reliable drove it. A bare invocation that resolves a target nobody named is a default-allow on a lane that ends in a `contents: write` publisher, and the alternative places that default inside `release-targets.md`, which has no write protection until its H-22 enrolment at T-33 and would therefore be an unguarded redirect. Reliable agrees: a stale default flag publishes the wrong series, where an explicit argument cannot. Scalable was the one clean win for the declared-default alternative, since bare invocation silently changes meaning the day a consumer adds a second row, but that discontinuity is one-time per consumer and surfaces as a STOP rather than as a wrong publish. Precedent aligns: DECISION-0034 chose check-only over silent fixers, and this campaign already rejected positional target selection as a reorder-to-mispublish hazard.
+
+Recorded against the author's original justification, which does not survive scrutiny: the claim was that a declared default would bake in "the primary target is named ca", but `latest-eligible: true` already singles out `ca` in the same row set and shipped in the same change under the same criterion. The objection proves too much. The decision stands on the security and reliability grounds above, not on that reasoning.
+
+### Implementation implication
+`core/surface/skills/release/SKILL.md` keeps the STOP. `core/surface/commands/release.md` must stop documenting a `ca`-only default when T-71 reconciles it. A test must pin this: an adversarial mutant restoring the hardcoded `ca` default currently survives both suites, so the behavior is asserted by nothing. That test is a follow-up obligation of this decision, not optional.
+
+---

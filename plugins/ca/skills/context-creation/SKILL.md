@@ -45,7 +45,7 @@ skill's report-only synthesis contract depends on the orchestrator never
 loading the scouts' raw source into its own context.
 Each reads only its assigned slice:
 
-- **Scout A — Tech stack.** Read `package.json`, lockfiles, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `*.gemspec`, `Gemfile`. Report languages, runtime versions, frameworks, key dependencies, the dependency manager, license fields.
+- **Scout A — Tech stack.** Read `package.json`, lockfiles, `pyproject.toml`, `requirements.txt`, `go.mod`, `Cargo.toml`, `*.gemspec`, `Gemfile`. Report languages, runtime versions, frameworks, key dependencies, the dependency manager, license fields. Additionally report, at the repository root only: which of `package.json` / `pyproject.toml` / `Cargo.toml` / `composer.json` carry a version field (candidate release manifests), which of `CHANGELOG.md` / `CHANGES.md` / `HISTORY.md` are present (candidate changelogs), and any existing tag naming convention visible in the repo (e.g. a `v*` tag) — the inputs Phase 3/5 use to draft `.codearbiter/release-targets.md`.
 - **Scout B — Infrastructure.** Read CI/CD config (`.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/config.yml`), `Dockerfile*`, `docker-compose*.yml`, `Makefile`, `*.tf`, IaC. Report CI/CD platform, build/test/lint commands, deployment targets, environment names, containerization, IaC tool.
 - **Scout C — Architecture.** Read the source tree (names and structure only), entry points (`main.ts`, `index.ts`, `app.py`, `server.go`), and imports in entry points only. Report component list, entry points, module boundaries, architectural pattern, public interfaces.
 - **Scout D — Security posture.** Read auth files (`auth*`, `middleware*`, `guard*`, `jwt*`, `session*`, `oauth*`), crypto import lines, secret-loading sites (`process.env`, `os.environ`, vault/KMS call sites — paths and line numbers only, never values), `.env.example` (never `.env`). Report auth mechanism, crypto libraries, secret-loading patterns (paths + lines, no values), vault/KMS integration, hardcoded-secret risk files (paths only).
@@ -67,6 +67,7 @@ Draft every surviving project-state doc from the six reports, working only from 
 | A (tech stack), B (build/test/lint commands), E (test runner) | `tech-stack.md` |
 | C (architecture), E (structure) | `coding-standards.md` |
 | D (security) | `security-controls.md` (thin) |
+| A (candidate manifest, candidate changelog, tag convention) | `.codearbiter/release-targets.md` |
 | All scouts | `CONTEXT.md` (project identity, purpose, scope, NOT-building) |
 
 Classify every finding by confidence:
@@ -76,6 +77,20 @@ Classify every finding by confidence:
 - **LOW** — no signal, or conflicting signals. Write a `[CONFIRM-NN]` placeholder.
 
 Every `[CONFIRM-NN]` carries: a sequential ID, one sentence on what is unknown, why it matters, and what would resolve it. IDs are sequential with `open-questions.md`.
+
+**`.codearbiter/release-targets.md` is HIGH-confidence only when Scout A found exactly one candidate manifest and exactly one candidate changelog at the repository root.** Draft the row then, in the grammar `${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`'s module docstring declares — a single-target project needs only `prefix`, `manifest`, `changelog`, `payload`:
+
+```
+<!-- release-targets -->
+[app]
+prefix: v
+manifest: package.json
+changelog: CHANGELOG.md
+payload: .
+<!-- /release-targets -->
+```
+
+(`prefix` defaults to `v` unless Scout A found a different existing tag convention; `payload` is `.` for a single-package repository.) Zero, or more than one, candidate manifest or changelog is LOW confidence — the same "no signal, or conflicting signals" rule above — and gets a `[CONFIRM-NN]` instead of a guessed row; this doc is never scaffolded from an ambiguous scan, and the file is simply not written until the gap is resolved in Phase 4.
 
 Gate: every surviving doc drafted; every low-confidence inference carries a `[CONFIRM-NN]`. No silent omission. A domain with no scout signal gets a doc with a `[CONFIRM-NN]` for the whole section — never an empty file.
 
@@ -100,8 +115,24 @@ Write the surviving docs to `${CLAUDE_PROJECT_DIR}/.codearbiter/`. Every doc car
 | `coding-standards.md` | Structural patterns, naming conventions, style rules. |
 | `security-controls.md` | Thin: auth mechanism, banned crypto primitives, secret-loading stance. Only what a security boundary actually requires. |
 | `open-questions.md` | Every deferred `[CONFIRM-NN]` in `CONFIRM-NN: <description>` form. |
-| `open-tasks.md` | The task backlog if scouts found one; otherwise a stub noting the user must populate it. |
+| `open-tasks.md` | Create the file with its heading only. **Every task goes in through the board helper, one call per item — `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add "<task>"` — never by writing entries into the file directly** (B-18). The helper owns the board schema the SessionStart hook and the statusline parse, so a backlog seeded this way cannot drift from it; and once `open-tasks.md` is enrolled in the protected-state registry, a direct write is refused outright, which would leave a Write-tool instruction here unfollowable. If scouts found no backlog, the heading-only file stands as the stub. |
 | `overrides.log` | Empty append-only audit log, created so `/override` has a sink. |
+| `release-targets.md` | Conditional, unlike every other row above: written ONLY when Phase 3 drafted it at HIGH confidence (exactly one candidate manifest, exactly one candidate changelog) or Phase 4 resolved its `[CONFIRM-NN]` to a concrete row. Left unwritten otherwise — `/release`'s own back-fill lane (or a later `context-creation` run, once the ambiguity resolves) is the sanctioned way to create it, never a guess made here. **This file is marker-gated protected state; it needs the authoring marker below, unlike every other row in this table.** |
+
+**Authoring marker — required for `release-targets.md` only.** That path is enrolled in the protected-state registry as `marker-gated` (hook `H-22`), so a Write against it is refused unless a fresh authoring marker exists. This lane is a sanctioned author of it, so it mints one immediately before the write and removes it immediately after — the same one-pass shape `/release`'s back-fill lane uses:
+
+```bash
+mkdir -p "$(git rev-parse --show-toplevel)/.codearbiter/.markers"
+touch "$(git rev-parse --show-toplevel)/.codearbiter/.markers/release-targets-authoring"
+```
+
+Write the file, then:
+
+```bash
+rm -f "$(git rev-parse --show-toplevel)/.codearbiter/.markers/release-targets-authoring"
+```
+
+Skip both commands entirely when this run is not writing `release-targets.md` — a marker minted for a write that never happens is a 30-minute window nothing needed. No other file in the table above is enrolled, so none of them take a marker.
 
 If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize them as entries under `.codearbiter/decisions/` in the standard ADR format. If a record cannot be fully parsed, summarize what is known, flag the uncertainty, and note the source path for review.
 

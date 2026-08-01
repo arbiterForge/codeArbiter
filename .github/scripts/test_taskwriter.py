@@ -30,6 +30,7 @@ HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 sys.path.insert(0, HOOKS)
 
 import _taskboardlib as tb  # noqa: E402
+import taskwrite as taskwrite_mod  # noqa: E402 — for its declared exit codes
 
 
 def _d(y, m, d):
@@ -546,6 +547,579 @@ class TaskwriteCliTest(unittest.TestCase):
         self.assertEqual(rc, 1)
         self.assertIn("no board at", stderr.getvalue())
         self.assertEqual(os.listdir(d), [], "no file should be created for an uninitialized repo")
+
+
+class ArchiveTransformTest(unittest.TestCase):
+    """B-20/T-57: the pure text->text move, and B-21/T-59 dedup."""
+
+    OPEN = ("# Open tasks\n\n## In-flight\n"
+            "- [x] a.b.0001 - old (done 2026-07-01)\n"
+            "- [x] a.b.0002 - recent (done 2026-07-30)\n"
+            "- [x] undated legacy\n"
+            "- [~] a.b.0003 - live (started 2026-07-20)\n")
+    TODAY = datetime.date(2026, 8, 1)
+
+    def _task(self, ident):
+        for line in self.OPEN.splitlines():
+            parsed = tb.parse_board(line)
+            if parsed and (parsed[0].id == ident or parsed[0].title == ident):
+                return parsed[0]
+        raise AssertionError(f"no task {ident!r} in the fixture")
+
+    def test_archive_cutoff_uses_an_injected_date(self):
+        # A cutoff test keyed on the real clock passes for eleven days and
+        # then starts failing on its own, so `today` is required with no
+        # default anywhere in the chain.
+        aged, _undated = tb.archive_candidates(self.OPEN, today=self.TODAY)
+        self.assertEqual([t.id for t in aged], ["a.b.0001"])
+
+    def test_archive_cutoff_is_a_named_constant(self):
+        self.assertEqual(tb.ARCHIVE_CUTOFF_DAYS, 14)
+        # Boundary: exactly at the cutoff is NOT yet aged; one day past is.
+        at = self.TODAY - datetime.timedelta(days=tb.ARCHIVE_CUTOFF_DAYS)
+        past = at - datetime.timedelta(days=1)
+        board = (f"## In-flight\n- [x] x.y.0001 - a (done {at})\n"
+                 f"- [x] x.y.0002 - b (done {past})\n")
+        aged, _ = tb.archive_candidates(board, today=self.TODAY)
+        self.assertEqual([t.id for t in aged], ["x.y.0002"])
+
+    def test_archive_undated_items_are_returned_separately(self):
+        # They cannot be aged, and the spec admits them only under explicit
+        # per-item confirmation -- a single combined list would let a caller
+        # sweep them by accident.
+        aged, undated = tb.archive_candidates(self.OPEN, today=self.TODAY)
+        self.assertEqual([t.title for t in undated], ["undated legacy"])
+        self.assertNotIn("undated legacy", [t.title for t in aged])
+
+    def test_archive_transform_moves_one_item_and_keeps_the_rest(self):
+        new_open, new_done = tb.archive_transform(self.OPEN, "", self._task("a.b.0001"))
+        self.assertIn("a.b.0001", new_done)
+        self.assertNotIn("a.b.0001", new_open)
+        for survivor in ("a.b.0002", "a.b.0003", "undated legacy"):
+            self.assertIn(survivor, new_open, survivor)
+
+    def test_archive_transform_creates_the_done_heading_when_absent(self):
+        _open, new_done = tb.archive_transform(self.OPEN, "", self._task("a.b.0001"))
+        self.assertTrue(new_done.startswith(tb.DONE_TASKS_HEADING))
+
+    def test_archive_rerun_does_not_duplicate_by_dotted_id(self):
+        # B-21. Dedup is on the ID, not the text.
+        #
+        # Found by a surviving mutant: my first version archived the SAME
+        # text twice, which text-dedup also handles — so switching the
+        # implementation to text-only kept the test green. The ID rule only
+        # bites when the title CHANGED between runs, which is the case the
+        # docstring actually claims and the case a board edit produces.
+        task = self._task("a.b.0001")
+        _first_open, first_done = tb.archive_transform(self.OPEN, "", task)
+        self.assertIn("old", first_done)
+
+        # Same ID, title edited since it was archived.
+        edited_board = self.OPEN.replace("- old (done 2026-07-01)",
+                                         "- RENAMED (done 2026-07-01)")
+        edited = next(p[0] for p in
+                      (tb.parse_board(l) for l in edited_board.splitlines())
+                      if p and p[0].id == "a.b.0001")
+        self.assertNotEqual(edited.raw.strip(), task.raw.strip())
+
+        _open2, second_done = tb.archive_transform(edited_board, first_done, edited)
+        self.assertEqual(
+            second_done, first_done,
+            "a re-archive after a title edit appended a second copy; dedup "
+            "must key on the dotted ID, not the line text")
+        self.assertEqual(second_done.count("a.b.0001"), 1)
+
+    def test_archive_rerun_identical_text_is_also_deduped(self):
+        # The simple case, kept explicitly so both dedup paths are pinned.
+        task = self._task("a.b.0001")
+        first_open, first_done = tb.archive_transform(self.OPEN, "", task)
+        second_open, second_done = tb.archive_transform(first_open, first_done, task)
+        self.assertEqual(second_done, first_done)
+        self.assertEqual(second_open, first_open)
+
+    def test_archive_rerun_dedups_an_id_less_entry_on_exact_text(self):
+        # An ID-less entry has no stable handle, so its own text is the
+        # only thing that identifies it.
+        task = self._task("undated legacy")
+        _o, done = tb.archive_transform(self.OPEN, "", task)
+        _o2, done2 = tb.archive_transform(_o, done, task)
+        self.assertEqual(done2.count("undated legacy"), 1)
+
+    def test_archive_rerun_still_removes_from_open_when_already_archived(self):
+        # THE interrupted-run state (B-22): the record is in done-tasks but
+        # was never removed from open-tasks. The next run must finish the
+        # move rather than refuse it.
+        task = self._task("a.b.0001")
+        _first_open, done = tb.archive_transform(self.OPEN, "", task)
+        new_open, new_done = tb.archive_transform(self.OPEN, done, task)
+        self.assertNotIn("a.b.0001", new_open)
+        self.assertEqual(new_done.count("a.b.0001"), 1)
+
+    def test_archive_transform_never_raises_on_junk(self):
+        for bad_open, bad_done, bad_task in ((None, "", None), ("", None, None),
+                                             ("x", "y", object())):
+            result = tb.archive_transform(bad_open, bad_done, bad_task)
+            self.assertEqual(len(result), 2)
+
+
+class DoneTasksShapeTest(unittest.TestCase):
+    """B-23/T-61: `done-tasks.md` is scaffolded at init, not conjured on
+    the first archive.
+
+    An append-only file that springs into existence mid-sweep has no
+    reviewed initial content and no header saying what it is — and
+    `archive`'s first write would be the thing that defines the format.
+    Scaffolding it means the shape is reviewed once, in the initializer,
+    like every other `.codearbiter/` artifact.
+    """
+
+    def _init_module(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_init_ca_under_test", os.path.join(HOOKS, "init-codearbiter.py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_done_tasks_shape_is_scaffolded_by_init(self):
+        init = self._init_module()
+        self.assertIn("done-tasks.md", init.FILES)
+
+    def test_done_tasks_shape_states_append_only_and_its_writer(self):
+        init = self._init_module()
+        body = init.FILES["done-tasks.md"]
+        self.assertIn("APPEND-ONLY", body)
+        self.assertIn("taskwrite archive", body)
+        # The stamp rule, because it is what makes an entry ageable and
+        # what `archive` refuses to invent.
+        self.assertIn("(done YYYY-MM-DD)", body)
+
+    def test_done_tasks_shape_heading_matches_what_archive_writes(self):
+        # If the scaffold's heading and the transform's fallback heading
+        # disagreed, an archive into a scaffolded file would produce one
+        # heading and an archive into a missing file another.
+        init = self._init_module()
+        self.assertTrue(
+            init.FILES["done-tasks.md"].startswith(tb.DONE_TASKS_HEADING),
+            "the scaffold heading and DONE_TASKS_HEADING must agree")
+
+    def test_done_tasks_shape_scaffold_is_a_valid_archive_target(self):
+        # The scaffolded text must accept an appended entry without the
+        # transform inventing a second heading.
+        init = self._init_module()
+        scaffold = init.FILES["done-tasks.md"]
+        board = "## In-flight\n- [x] a.b.0001 - t (done 2026-07-01)\n"
+        task = next(p[0] for p in
+                    (tb.parse_board(l) for l in board.splitlines()) if p)
+        _open, done = tb.archive_transform(board, scaffold, task)
+        self.assertEqual(done.count(tb.DONE_TASKS_HEADING), 1)
+        self.assertIn("a.b.0001", done)
+
+
+class ArchiveVerbTest(unittest.TestCase):
+    """B-20/B-23/T-58 and B-22/T-60: the CLI verb, end to end on disk."""
+
+    BOARD = ("# Open tasks\n\n## In-flight\n"
+             "- [x] a.b.0001 - old (done 2026-07-01)\n"
+             "- [x] a.b.0002 - keep (done 2026-07-30)\n"
+             "- [x] undated legacy\n")
+
+    def _repo(self):
+        import tempfile as tf
+        root = tf.mkdtemp(prefix="ca-archive-")
+        self.addCleanup(__import__("shutil").rmtree, root, True)
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(self.BOARD)
+        return root
+
+    def _run(self, root, *argv):
+        import subprocess
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                   PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, os.path.join(HOOKS, "taskwrite.py"), *argv],
+            capture_output=True, text=True, env=env, cwd=root)
+
+    def _read(self, root, name):
+        path = os.path.join(root, ".codearbiter", name)
+        if not os.path.isfile(path):
+            return None
+        with open(path, encoding="utf-8") as handle:
+            return handle.read()
+
+    def test_archive_verb_creates_done_tasks_and_moves_the_item(self):
+        # B-23: done-tasks.md need not exist beforehand; the verb creates it.
+        root = self._repo()
+        self.assertIsNone(self._read(root, "done-tasks.md"))
+        proc = self._run(root, "archive", "a.b.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        done = self._read(root, "done-tasks.md")
+        self.assertIsNotNone(done, "done-tasks.md was not created")
+        self.assertIn("a.b.0001", done)
+        self.assertNotIn("a.b.0001", self._read(root, "open-tasks.md"))
+
+    def test_archive_verb_leaves_other_items_untouched(self):
+        root = self._repo()
+        self._run(root, "archive", "a.b.0001")
+        board = self._read(root, "open-tasks.md")
+        self.assertIn("a.b.0002", board)
+        self.assertIn("undated legacy", board)
+
+    def test_archive_verb_refuses_an_item_that_is_not_done(self):
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "a", encoding="utf-8", newline="\n") as handle:
+            handle.write("- [~] a.b.0009 - live (started 2026-07-20)\n")
+        proc = self._run(root, "archive", "a.b.0009")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("only moves", proc.stderr)
+
+    def test_archive_verb_refuses_an_undated_item_without_the_flag(self):
+        # Undated items archive only under explicit per-item confirmation:
+        # both `taskwrite done` and the ADR-0008 classifier require the
+        # stamp, so an unstamped entry is legacy or override-era.
+        root = self._repo()
+        proc = self._run(root, "archive", "undated legacy")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("--allow-undated", proc.stderr)
+        self.assertIsNone(self._read(root, "done-tasks.md"),
+                          "a refused archive must write nothing at all")
+
+    def test_archive_verb_accepts_an_undated_item_with_the_flag(self):
+        root = self._repo()
+        proc = self._run(root, "archive", "undated legacy", "--allow-undated")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("undated legacy", self._read(root, "done-tasks.md"))
+
+    def test_archive_verb_is_rerun_safe_on_disk(self):
+        root = self._repo()
+        self.assertEqual(self._run(root, "archive", "a.b.0001").returncode, 0)
+        second = self._run(root, "archive", "a.b.0001")
+        # The item is gone from the board, so the second run has nothing to
+        # match -- it must refuse cleanly, never duplicate.
+        self.assertEqual(second.returncode, 1)
+        self.assertEqual(self._read(root, "done-tasks.md").count("a.b.0001"), 1)
+
+    # ---- workstream-B adversary HIGH-2/HIGH-3/HIGH-4 --------------------
+    #
+    # Every pre-existing archive fixture in this file is pure top-level
+    # bullets, which is exactly why the sub-bullet defects were invisible.
+    # This one carries the shape `add --desc/--boundaries` actually emits.
+    BLOCK_BOARD = ("# Open tasks\n\n## In-flight\n"
+                   "- [x] g.t.0001 - first (done 2026-07-01)\n"
+                   "  - Desc: the rationale that must survive\n"
+                   "  - Boundaries: egress, secrets\n"
+                   "- [ ] g.t.0002 - second\n")
+
+    def _block_repo(self):
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(self.BLOCK_BOARD)
+        return root
+
+    def test_archive_moves_the_sub_bullets_with_the_task(self):
+        # HIGH-2. `archive_transform` moved `task.raw` -- the TOP LINE
+        # alone -- so Desc/Boundaries were left behind and silently
+        # re-attributed to whatever task followed. Boundaries is a
+        # security-scoping field, so the orphan does not merely vanish
+        # from the record: it reappears as a claim about a different task.
+        root = self._block_repo()
+        proc = self._run(root, "archive", "g.t.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+        done = self._read(root, "done-tasks.md")
+        self.assertIn("- Desc: the rationale that must survive", done)
+        self.assertIn("- Boundaries: egress, secrets", done)
+
+        open_after = self._read(root, "open-tasks.md")
+        self.assertNotIn("the rationale that must survive", open_after)
+        self.assertNotIn("egress, secrets", open_after)
+
+        # The decisive assertion: the surviving task must not have
+        # inherited the archived task's fields.
+        survivor = next(t for t in tb.parse_board(open_after)
+                        if t.id == "g.t.0002")
+        self.assertEqual(survivor.desc, "")
+        self.assertEqual(survivor.boundaries, [])
+
+    def test_indented_continuation_prose_does_not_split_the_block(self):
+        # CodeRabbit MAJOR, confirmed. `task_block`'s close scan advanced
+        # only past `- Key:` sub-bullets and blanks, while `parse_board`
+        # keeps a task open across ANY indented line. So an indented
+        # continuation line stopped the block early and orphaned every
+        # sub-bullet after it onto the following task -- re-opening HIGH-2
+        # through a different door. The two rules are now identical.
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Open tasks\n\n## In-flight\n"
+                         "- [x] g.t.0001 - one (done 2026-07-01)\n"
+                         "    continuation prose, indented, not a sub-bullet\n"
+                         "  - Boundaries: egress, secrets\n"
+                         "- [ ] g.t.0002 - two\n")
+        proc = self._run(root, "archive", "g.t.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        open_after = self._read(root, "open-tasks.md")
+        self.assertNotIn("continuation prose", open_after)
+        self.assertNotIn("egress, secrets", open_after)
+        survivor = next(t for t in tb.parse_board(open_after) if t.id == "g.t.0002")
+        self.assertEqual(survivor.boundaries, [])
+        self.assertIn("- Boundaries: egress, secrets", self._read(root, "done-tasks.md"))
+
+    def test_the_board_is_parsed_whole_so_lineno_is_real(self):
+        # CodeRabbit MAJOR, confirmed. `_archive` parsed the board one line
+        # at a time, so every Task carried lineno == 1 and no sub-fields --
+        # meaning `task_block`'s index-based location could never match and
+        # always fell through to its first-line fallback. Asserted on the
+        # parse itself, because the archive OUTCOME was right either way and
+        # so could not detect the dead mechanism.
+        text = ("# Open tasks\n\n## In-flight\n"
+                "- [x] a.b.0001 - one (done 2026-07-01)\n"
+                "- [x] a.b.0002 - two (done 2026-07-01)\n")
+        whole = tb.parse_board(text)
+        self.assertEqual([t.lineno for t in whole], [4, 5])
+        per_line = [p[0] for p in
+                    (tb.parse_board(line) for line in text.splitlines()) if p]
+        self.assertEqual([t.lineno for t in per_line], [1, 1],
+                         "the per-line parse this replaced should still be "
+                         "demonstrably lineno-blind")
+
+    def test_archive_of_a_block_is_rerun_safe(self):
+        # The interrupted-run recovery property held before this fix and
+        # must still hold now that the moved unit is a block: dedup keys
+        # on the ID while the move keys on the block, so the two operate
+        # on different units and could drift apart.
+        root = self._block_repo()
+        with open(os.path.join(root, ".codearbiter", "done-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Done tasks\n"
+                         "- [x] g.t.0001 - first (done 2026-07-01)\n"
+                         "  - Desc: the rationale that must survive\n"
+                         "  - Boundaries: egress, secrets\n")
+        proc = self._run(root, "archive", "g.t.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        done = self._read(root, "done-tasks.md")
+        self.assertEqual(done.count("g.t.0001"), 1, "recovery duplicated the block")
+        self.assertEqual(done.count("- Desc: the rationale"), 1)
+        self.assertNotIn("g.t.0001", self._read(root, "open-tasks.md"))
+
+    def test_archive_of_one_duplicate_leaves_the_other_on_the_board(self):
+        # HIGH-3. Removal was `line.strip() != raw` over every line, so
+        # two character-identical done entries both disappeared while a
+        # single record was appended -- one task destroyed, rc=0, "archived".
+        # Reachable through the sanctioned helper alone: `add` is
+        # documented rerun-safe, so two adds of one description is an
+        # ordinary state, not a hand-crafted file.
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Open tasks\n\n## In-flight\n"
+                         "- [x] tidy the log (done 2026-06-02)\n"
+                         "- [x] tidy the log (done 2026-06-02)\n")
+        proc = self._run(root, "archive", "tidy the log")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(
+            self._read(root, "open-tasks.md").count("tidy the log"), 1,
+            "archiving one duplicate removed both — a record was destroyed")
+        self.assertEqual(
+            self._read(root, "done-tasks.md").count("tidy the log"), 1)
+
+    def test_an_unreadable_archive_refuses_and_writes_nothing(self):
+        # HIGH-4. `except OSError: done_text = ""` folded "I could not
+        # read it" into "there is nothing there", and the write REPLACES
+        # done-tasks.md wholesale -- so any transient read failure (an
+        # editor holding the file, a deny-read ACL, a failing volume)
+        # silently wiped every historical record with rc=0 and the word
+        # "archived". Injected as PermissionError because the Windows
+        # deny-read ACL that found this surfaces as exactly that in-process.
+        root = self._repo()
+        historical = ("# Done tasks\n"
+                      "- [x] a.b.9001 - historical one (done 2026-01-01)\n"
+                      "- [x] a.b.9002 - historical two (done 2026-02-01)\n")
+        with open(os.path.join(root, ".codearbiter", "done-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(historical)
+        board_before = self._read(root, "open-tasks.md")
+
+        driver = (
+            "import sys, builtins\n"
+            f"sys.path.insert(0, {HOOKS!r})\n"
+            "import taskwrite\n"
+            "real = builtins.open\n"
+            "def guarded(path, *a, **k):\n"
+            "    if 'done-tasks' in str(path) and 'r' in str(k.get('mode', a[0] if a else 'r')):\n"
+            "        raise PermissionError(13, 'denied')\n"
+            "    return real(path, *a, **k)\n"
+            "builtins.open = guarded\n"
+            "sys.exit(taskwrite.main(['archive', 'a.b.0001']))\n"
+        )
+        import subprocess
+        proc = subprocess.run(
+            [sys.executable, "-c", driver], capture_output=True, text=True,
+            env=dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                     PYTHONDONTWRITEBYTECODE="1"), cwd=root)
+
+        self.assertEqual(proc.returncode, taskwrite_mod.EXIT_ARCHIVE_UNREADABLE,
+                         f"expected the distinct unreadable-archive exit, got "
+                         f"{proc.returncode}: {proc.stderr}")
+        self.assertIn("append-only", proc.stderr)
+        # Neither file moved. This is the assertion the defect failed.
+        self.assertEqual(self._read(root, "done-tasks.md"), historical)
+        self.assertEqual(self._read(root, "open-tasks.md"), board_before)
+
+    def test_the_unreadable_refusal_is_not_an_oserror(self):
+        # The refusal must not be catchable by the very idiom that caused
+        # the bug. `except OSError: text = ""` is what destroyed the
+        # archive; if ArchiveUnreadable were an OSError subclass, the next
+        # caller to write that idiom one level up would swallow the refusal
+        # and reintroduce the same data loss silently.
+        self.assertFalse(issubclass(taskwrite_mod.ArchiveUnreadable, OSError))
+        self.assertTrue(issubclass(taskwrite_mod.ArchiveUnreadable, RuntimeError))
+        with self.assertRaises(taskwrite_mod.ArchiveUnreadable):
+            try:
+                raise taskwrite_mod.ArchiveUnreadable("refused")
+            except OSError:                      # must NOT catch it
+                self.fail("a generic OSError handler swallowed the refusal")
+
+    def test_archive_still_seeds_an_absent_done_tasks_file(self):
+        # The other half of the HIGH-4 split: ABSENT is not UNREADABLE.
+        # An existing repo has no done-tasks.md until its first archive,
+        # so seeding one must keep working — a fix that refused on every
+        # OSError would break the first archive in every repo.
+        root = self._repo()
+        self.assertIsNone(self._read(root, "done-tasks.md"))
+        proc = self._run(root, "archive", "a.b.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("a.b.0001", self._read(root, "done-tasks.md"))
+
+    def test_archive_interrupted_between_writes_loses_nothing(self):
+        # B-22. Simulate the exact interruption: done-tasks.md already has
+        # the record (phase 1 completed) but open-tasks.md still lists it
+        # (phase 2 never ran) -- which is what a kill between the two writes
+        # leaves behind. Recovery must complete the move, not duplicate and
+        # not lose.
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "done-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Done tasks\n- [x] a.b.0001 - old (done 2026-07-01)\n")
+        proc = self._run(root, "archive", "a.b.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        done = self._read(root, "done-tasks.md")
+        self.assertEqual(done.count("a.b.0001"), 1, "recovery duplicated the record")
+        self.assertNotIn("a.b.0001", self._read(root, "open-tasks.md"))
+
+    def test_archive_writes_done_before_open_so_a_failed_second_write_keeps_it(self):
+        # M-1 (workstream-B adversary). The test this REPLACES claimed to
+        # measure the ordering and did not: it called `archive_transform`
+        # -- a pure function that writes nothing -- and closed on
+        # `assertNotIn("a.b.0001", removed_first + "")`, which is the
+        # identical string it had just asserted on. The "other order" was
+        # never executed, and a mutant reversing the two writes in
+        # `taskwrite.py` survived the entire suite.
+        #
+        # Measured instead by making the SECOND write fail and looking at
+        # what survived on disk. Under the shipped order (done first) the
+        # record is in done-tasks.md; under the reversed order the
+        # done-tasks write is never reached and the record is in NEITHER
+        # file -- which is the loss the ordering exists to prevent.
+        root = self._repo()
+        driver = (
+            "import sys\n"
+            f"sys.path.insert(0, {HOOKS!r})\n"
+            "import taskwrite\n"
+            "real = taskwrite._atomic_write\n"
+            "def boom(path, text, prefix):\n"
+            "    if prefix == 'open-tasks.':\n"
+            "        raise RuntimeError('simulated crash before the second write')\n"
+            "    return real(path, text, prefix)\n"
+            "taskwrite._atomic_write = boom\n"
+            "taskwrite.main(['archive', 'a.b.0001'])\n"
+        )
+        import subprocess
+        proc = subprocess.run(
+            [sys.executable, "-c", driver], capture_output=True, text=True,
+            env=dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                     PYTHONDONTWRITEBYTECODE="1"), cwd=root)
+        self.assertIn("simulated crash", proc.stderr)
+
+        done = self._read(root, "done-tasks.md") or ""
+        self.assertIn(
+            "a.b.0001", done,
+            "the record was NOT written to done-tasks.md before open-tasks "
+            "was rewritten — reversing the two writes loses it outright")
+        # open-tasks still lists it: recoverable, and the next run dedups.
+        self.assertIn("a.b.0001", self._read(root, "open-tasks.md"))
+
+
+class AddRationaleTest(unittest.TestCase):
+    """B-17/T-53: `add` carries a `- Desc:` rationale sub-bullet.
+
+    `debug` Exit (c) used to append its "no action" note to
+    `open-tasks.md` DIRECTLY, because the helper had no way to express a
+    rationale sub-bullet. That made it the last real surface still writing
+    the board by hand — and under the `helper-only` protected-state class
+    the board is heading for, a direct write is exactly what stops being
+    possible. The conversion needed the helper extension first; this is it.
+    """
+
+    BOARD = "# Open tasks\n\n## In-flight\n\n"
+
+    def test_add_rationale_emits_an_indented_desc_sub_bullet(self):
+        out = tb.add_entry(self.BOARD, desc="parser drops the final row",
+                           rationale="no action: upstream fixes it in 4.2")
+        self.assertIn("  - Desc: no action: upstream fixes it in 4.2", out)
+
+    def test_add_rationale_round_trips_through_the_board_parser(self):
+        # The point of routing through the helper: the entry must still be
+        # a task the board's own readers see. A sub-bullet that broke
+        # parsing would drop the note out of the in-flight count, which is
+        # the opposite of what Exit (c) wants.
+        out = tb.add_entry(self.BOARD, desc="parser drops the final row",
+                           rationale="no action", group="debug", type="note")
+        parsed = [tb.parse_board(line) for line in out.splitlines()]
+        tasks = [p[0] for p in parsed if p]
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0].id, "debug.note.0001")
+        self.assertEqual(tasks[0].title, "parser drops the final row")
+        self.assertEqual(tasks[0].state, "queued")
+
+    def test_add_rationale_sits_above_boundaries_when_both_are_given(self):
+        out = tb.add_entry(self.BOARD, desc="d", rationale="why",
+                           boundaries=["a", "b"])
+        body = out.splitlines()
+        desc_at = next(i for i, l in enumerate(body) if "- Desc:" in l)
+        bounds_at = next(i for i, l in enumerate(body) if "- Boundaries:" in l)
+        self.assertLess(desc_at, bounds_at)
+
+    def test_add_rationale_absent_emits_no_sub_bullet(self):
+        # The default path must be byte-identical to before this feature.
+        self.assertNotIn("- Desc:", tb.add_entry(self.BOARD, desc="d"))
+
+    def test_add_rationale_rejects_a_line_break(self):
+        # A newline would emit an orphan physical line the board parser
+        # cannot attribute to any task — the exact schema drift routing
+        # through the helper exists to prevent.
+        self.assertIsNotNone(tb.add_error(desc="d", rationale="a\nb"))
+        self.assertEqual(tb.add_entry(self.BOARD, desc="d", rationale="a\nb"),
+                         self.BOARD, "an invalid field must fail soft, unchanged")
+
+    def test_add_rationale_rejects_blank_and_non_string(self):
+        for bad in ("", "   ", 42, []):
+            with self.subTest(rationale=bad):
+                self.assertIsNotNone(tb.add_error(desc="d", rationale=bad))
+
+    def test_add_rationale_is_exposed_by_the_taskwrite_cli(self):
+        # A helper extension nobody can invoke is the defect class this
+        # campaign already hit once (a mechanism with no CLI entry point
+        # while prose aimed at it), so assert the flag is actually wired.
+        source = os.path.join(HOOKS, "taskwrite.py")
+        with open(source, encoding="utf-8") as handle:
+            text = handle.read()
+        self.assertIn('"--desc"', text)
+        self.assertIn("rationale=args.rationale", text)
 
 
 if __name__ == "__main__":

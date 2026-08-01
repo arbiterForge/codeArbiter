@@ -47,7 +47,7 @@ Call the trusted `codearbiter_farm_preview` tool with:
 
 For the measured canary step, add `"canary": true`. The tool resolves the one shared built backend;
 if it reports `terminal: degraded`, surface that preview degradation and rebuild the sibling bundle.
-Do not shell out to a nonexistent Pi-local `tools/farm.js` and do not fall back silently.
+Do not shell out to a Pi-local farm dispatcher — this host ships none, so any path you construct for one resolves to nothing — and do not fall back silently.
 
 
 Run it with cwd set to `<project-root>` (the dispatcher resolves `.farm/` and git worktrees

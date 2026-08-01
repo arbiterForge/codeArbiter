@@ -156,7 +156,51 @@ def test_no_ledger_or_statusline():
                   f"{p.name}: must not introduce a '{b}' (rejected under challenge)")
 
 
+def test_standup_sweep():
+    """B-24/T-64: /ca:standup owns the archival sweep, PER ITEM.
+
+    The sweep needs a lane with per-action confirmation and a
+    never-destructive-without-a-yes contract, which is verbatim what D-2
+    asked for. standup is that lane -- but only if it proposes each item
+    separately. A batched "archive all 12?" turns twelve decisions into
+    one, and the helper's per-item ordering (append to done-tasks first,
+    then remove from open-tasks) is what makes an interrupted sweep
+    recoverable; a batch loop answered once would throw that away.
+    """
+    for relative in ("core/surface/commands/standup.md",
+                     "plugins/ca/commands/standup.md"):
+        path = ROOT / relative
+        if not path.exists():
+            continue
+        text = read(path)
+        check("taskwrite.py" in text and "archive" in text,
+              f"{relative}: the sweep does not name the archive helper")
+        # BOTH, not either. A first draft used
+        # `"each one" or "per item"`, and the section HEADING contains
+        # "per item" on its own -- so mutating the instruction to "ask
+        # once for all of them" left the check green. An OR across
+        # phrases that appear independently in the same document asserts
+        # almost nothing.
+        # Anchored on the full instruction, not the bare phrase: "each
+        # one" also appears in this file's opening paragraph about
+        # confirmations, so a check keyed on it alone survives mutating
+        # the instruction it is supposed to guard. Verified unique.
+        check("ask about **each one" in text,
+              f"{relative}: the instruction does not say to ask about each "
+              "item separately")
+        check("One confirmation per item, one helper call per item" in text,
+              f"{relative}: the 1:1 confirmation-to-call contract is not stated")
+        check("--allow-undated" in text,
+              f"{relative}: undated items have no stated handling")
+        check("Never archive without a yes" in text
+              or "never archive without a yes" in text.lower(),
+              f"{relative}: the never-without-a-yes contract is not stated")
+        check("Declining is always available" in text,
+              f"{relative}: declining is not offered as a first-class outcome")
+
+
 TESTS = [
+    test_standup_sweep,
     test_register_split,
     test_receipt_close,
     test_sprint_summary_aligned,

@@ -4,11 +4,19 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [Unreleased]
+## [0.2.0] - 2026-08-01
 
-## [Unreleased]
+### Added
 
-## [Unreleased]
+- Protected-state registry (hook `H-22`): `.codearbiter/` files can be enrolled as `marker-gated`, `helper-only`, or `append-only`, enforced across the Write, Edit, and shell flanks. `release-targets.md`, `open-tasks.md`, and `done-tasks.md` are enrolled, one per policy.
+- `taskwrite archive` moves a long-done task to `done-tasks.md`, writing the permanent record before removing from the board so an interrupted run cannot lose it.
+
+### Fixed
+
+- `_releaselib.py` spawned git as a bare `git`, bypassing the trusted-path seam every Pi-reachable module must use.
+- The shell flank's interpreter leg missed `py` and PowerShell, and matched on the interpreter token alone — which blocked the sanctioned helper's own invocation whenever a task description named an enrolled file. It now requires an inline-code switch.
+- Archiving moved only a task's top line, orphaning its `Desc`/`Boundaries` sub-bullets onto the following task, and removed every line matching the target, collapsing two identical done entries into one.
+- An unreadable `done-tasks.md` was treated as empty, so a transient read failure rewrote the append-only archive from scratch and discarded every record.
 
 ## [0.1.43] - 2026-07-30
 

@@ -1,6 +1,6 @@
 ---
-description: Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag.
-argument-hint: ["<version>"] | --auto | --dry-run
+description: Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. Takes the declared target's name as its only argument. The only path to a version tag.
+argument-hint: "[target]"
 ---
 
 # /ca:release — tagged release
@@ -9,44 +9,32 @@ The only permitted path to a version tag. A release is a deployment-readiness as
 
 ## Flow
 
-Routes to the `release` skill. `/ca:release` targets the **`ca`** plugin only (ADR-0007): `LAST_TAG`
-is the newest `ca` SemVer tag (`v*`, never the sibling `ca-sandbox-v*`), and the release window is the
-`plugins/ca/`-scoped commit set — a `ca-sandbox` tag or commit never bumps `ca` or lands in its
-changelog.
+Routes to the `release` skill, which resolves everything about the release from the project's **declared target file**, `${CLAUDE_PROJECT_DIR}/.codearbiter/release-targets.md` — the tag prefix, the manifests, the changelog, the payload scope, and the optional checks. Nothing about any target is written here.
 
-1. **Pre-flight** — working tree clean, on the configured release branch, suite green, no blocking
-   `[CONFIRM-NN]` open, HEAD not produced via `/ca:override`. Identify `LAST_TAG` and the release window.
-2. **Version bump (SemVer)** — classify every commit in `LAST_TAG..HEAD` by Conventional Commits type
-   and apply the highest-precedence bump (major beats minor beats patch). An explicit version that
-   disagrees with the classification BLOCKS — the bump is never silently up- or downgraded.
-3. **Changelog** — roll up the `CHANGELOG:` footers from `feat`, `fix`, and `perf` commits into a new
-   section. BLOCK if any `feat`/`fix` commit lacks the footer; never auto-fill it.
-4. **Tag** — compose the annotated tag. Never push it to a remote without explicit user
-   authorization — publication is a separate decision.
+`/ca:release` takes the target's name as its only argument. When the declared file names exactly one target, a bare `/ca:release` uses it; when it names more, the argument is required and the skill STOPs rather than guessing. A project with no declared file at all enters the skill's own back-fill lane, which proposes a row and writes nothing without explicit confirmation.
 
-`--dry-run` runs every gate and surfaces the readiness report, then STOPs before composing the tag.
+1. **Pre-flight** — declared row resolved, working tree clean, not on the default branch, suite green, no blocking `[CONFIRM-NN]` open. Resolve `LAST_TAG` within that target's own tag series and scope the commit window to the row's declared payload, so a sibling target's commit never bumps this one or lands in its changelog.
+2. **Version** — classify the window by Conventional Commits type and apply the highest-precedence bump, against a base that accounts for both the last tag and every declared manifest. Every bumping commit must carry a `CHANGELOG:` footer; a missing one BLOCKs and is never auto-filled.
+3. **Surfaces** — roll the section into the declared changelog, update every declared manifest, and run the row's declared `pre-tag` checks. Those checks are check-only: one that mutates the tree BLOCKs.
+4. **Tag** — commit the release edits, then compose the annotated tag. Never push it or publish a Release without explicit user authorization — publication is a separate decision.
 
 ## Arguments
 
-- **`<version>`** (e.g. `"1.2.3"`) — explicit version; Phase 2 still classifies the window and BLOCKs
-  on disagreement.
-- **`--auto`** — derive the version from the commit log (default when no version is given).
-- **`--dry-run`** — run all gates, compose nothing. Combines with `--auto` or an explicit version.
-  An explicit version never combines with `--auto` — they are mutually exclusive.
+- **`[target]`** — the name of a row in the declared target file (e.g. the name in `[ca]`). Optional only when exactly one target is declared. An unrecognised name STOPs; it is never resolved to a guess.
+
+There are no version, `--auto`, or `--dry-run` arguments. The version is always derived from the commit log and the declared manifests — supplying one by hand is the thing this lane exists to prevent.
 
 ## Routes to
 
-`release` (`${CLAUDE_PLUGIN_ROOT}/skills/release/SKILL.md`).
+`release` (`${CLAUDE_PLUGIN_ROOT}/skills/release/SKILL.md`), which is authoritative for the phase contents and gates summarized above.
 
 ## When NOT to use
 
 - Tagging an in-progress branch → land work first via `/ca:feature` / `/ca:fix`.
 - Pushing an already-composed tag → that is a separate user-authorized step.
 - A changelog only → it is a phase output, not a standalone deliverable.
+- Creating a declared target file ahead of a release → that is `context-creation`'s job, or the skill's back-fill lane at release time.
 
 ## Hard gate
 
-MUST NOT compose a tag on a red suite. MUST NOT silently up- or downgrade the SemVer classification —
-an explicit version that disagrees with the commit log BLOCKS. MUST NOT auto-fill a missing
-`CHANGELOG:` footer. MUST NOT write to the default branch or force-push. MUST NOT push the tag without
-explicit user authorization. Any BLOCK may be bypassed only via `/ca:override`.
+MUST NOT compose a tag on a red suite. MUST NOT guess the version — it is derived from the commit log and the declared manifests. MUST NOT auto-fill a missing `CHANGELOG:` footer. MUST NOT resolve an unrecognised or ambiguous target to a guess. MUST NOT write to the default branch or force-push. MUST NOT push the tag or publish a Release without explicit user authorization. Any BLOCK may be bypassed only via `/ca:override`.

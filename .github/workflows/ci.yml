@@ -200,6 +200,29 @@ jobs:
               # file - the exact shape of a duplicate-number collision - would
               # skip this job and land the ambiguity unchecked.
               - '.codearbiter/decisions/**'
+              # T-73a/T-73b/T-79 (issue #563, AC-6.6/AC-6.8): test_consumer_
+              # smoke.py's reference-resolution check (a T-73b ratchet,
+              # retired by T-79 into a strict "the unresolved set is empty"
+              # assertion) reads the GENERATED payload copy
+              # plugins/ca/skills/release/SKILL.md, not core/surface/. core/**
+              # above already covers a source-of-truth edit (T-41a-d), but a
+              # PR that only touches the generated copy directly (a hand-edit,
+              # or a tools/build-surface.py regeneration landing without its
+              # core/ source change in the same diff) would otherwise flag
+              # neither this filter nor .github/scripts/** and skip the exact
+              # job that proves the reference set still matches what ships.
+              - 'plugins/ca/skills/**'
+              # MEDIUM-3 (adversarial review 2026-07-31): the check also
+              # scans the GENERATED ca-codex/ca-pi copies of the release
+              # skill (plugins/*/skills/ca-release/SKILL.md,
+              # plugins/*/routines/release/SKILL.md) for the same reason as
+              # the ca entry immediately above - a hand-edit or a
+              # build-surface.py regeneration landing without its core/
+              # source change would otherwise skip this job too.
+              - 'plugins/ca-codex/skills/**'
+              - 'plugins/ca-codex/routines/**'
+              - 'plugins/ca-pi/skills/**'
+              - 'plugins/ca-pi/routines/**'
             impact:
               - '.github/ci-impact-map.json'
               - '.github/scripts/test_ci_impact.py'
@@ -1136,6 +1159,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # test_release_trace.py (below) needs FULL git history -- it `git
+          # show`s a specific historical commit -- AND the complete tag set
+          # (its live-repo cross-check). A default shallow, tag-less
+          # checkout fails both (HIGH-2, adversarial review 2026-07-31); its
+          # own setUpModule preflight fails loudly and names this exact
+          # fix if either is ever missing.
+          fetch-depth: 0
+          fetch-tags: true
+          # This job runs read-only test suites and never pushes, so it has
+          # no use for the ambient GITHUB_TOKEN that checkout otherwise
+          # leaves in .git/config for every later step. Dropping it shrinks
+          # what a compromised dependency in any of those steps can reach.
+          # Safe here specifically because the repo is public: the history
+          # and tags above are already fetched by this step, and anything
+          # later needing the remote can read it anonymously.
+          persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
@@ -1252,6 +1292,43 @@ jobs:
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
+      - name: Run the A-1.11 release resolution-trace suite
+        # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
+        # the portable-mechanism split (core/pysrc/_releaselib.py plus a
+        # declared release-targets.md) reproduces the pinned pre-change
+        # lane's resolved variables for both `ca` and `ca-pi`, and states
+        # explicitly the one place the two lanes are INTENDED to diverge
+        # (AC-1.12, the pre-release-marker scope fix). Was previously wired
+        # into no workflow at all (HIGH-2, adversarial review 2026-07-31) --
+        # this checkout step's `fetch-depth: 0` / `fetch-tags: true` are
+        # both required for this suite specifically; its own preflight fails
+        # loudly, never silently, if either is ever missing.
+        run: python .github/scripts/test_release_trace.py
+      - name: Run the T-73a/T-73b/T-79 consumer-portability smoke suite
+        # issue #563, AC-6.6/AC-6.8: proves the portable release skill in a
+        # scratch consumer repo built by `git archive HEAD -- plugins/ca` --
+        # never an in-repo CLAUDE_PLUGIN_ROOT pointer, never a recursive
+        # copy -- and physically resolves every executed-or-read path
+        # reference in the INSTALLED release SKILL.md, asserting the
+        # unresolved set is EMPTY outright (T-79 retired the T-73b ratchet,
+        # a committed known-unresolved-refs.txt compared for equality, once
+        # the release-skill rewrite resolved every entry it ever carried).
+        # Green and required from day one. Needs no history beyond HEAD --
+        # git archive reads only the current commit's tree -- so it runs
+        # fine under this job's fetch-depth: 0 checkout above without
+        # needing a change there.
+        run: python .github/scripts/test_consumer_smoke.py
+      - name: Run the T-79 skill-proof-freshness guard's own unit tests
+        # issue #563, AC-6.8: check_skill_proof_fresh.py is the pre-tag
+        # freshness gate this campaign's completion bar depends on so the
+        # T-78 agent-judgment exercise cannot silently rot behind a later
+        # skill edit. Not yet wired as a declared pre-tag command on `ca`'s
+        # release-targets.md row (the recorded proof is genuinely stale
+        # right now; wiring it today would ship a permanently-red command --
+        # left to the maintainer once the exercise is re-run). This suite
+        # is its own guard: every named failure cause, plus the live repo's
+        # own currently-stale artifact failing for exactly that reason.
+        run: python .github/scripts/test_check_skill_proof_fresh.py
       - name: Run the unit tests for CI's own machinery
         # These four suites existed and ran on NOTHING. Each one guards a script
         # that CI itself depends on, which is what makes the gap matter rather
@@ -1279,6 +1356,21 @@ jobs:
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
         run: python .github/scripts/test_provenancelib.py
+      - name: Run shipped-skill portability guard
+        # A-6.1: a skill under core/surface/skills/** renders into every
+        # plugin and ships to consumers who do not have THIS repository, so
+        # a line naming `.github/scripts/x.py` or `tools/farm.js` is an
+        # instruction nobody can follow. The guard fails on any repo-rooted
+        # artifact path it executes or reads, permitting ${CLAUDE_PLUGIN_ROOT}
+        # / ${CLAUDE_PROJECT_DIR} prefixes, scan-target patterns, and
+        # conditional CI references.
+        run: python .github/scripts/check_skill_portability.py
+      - name: Run shipped-skill portability guard unit tests
+        # The guard's own matching rule, both directions: a bare repo path
+        # is flagged, a resolved prefix and a scan-target list are not, and
+        # a synthetic offending tree still fails - so the guard is shown
+        # able to fail rather than only ever passing.
+        run: python .github/scripts/test_skill_portability.py
       - name: Run README badge-consistency unit tests
         # The guard's own logic: version-badge parse, count-badge parse, prose
         # counts, table-row slugs, and each drift kind (version/count/prose/

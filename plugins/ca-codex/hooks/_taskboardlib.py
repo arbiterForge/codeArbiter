@@ -627,7 +627,8 @@ def _insert_under_section(text, block, section):
     return f"{base}{section}\n{block}\n"
 
 
-def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
+def add_error(*, desc, origin=None, boundaries=None, section="## In-flight",
+              rationale=None):
     """Return a field-specific error for an add input, else ``None``.
 
     These constraints keep every accepted field on the physical line where the
@@ -646,6 +647,17 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
     if origin is not None and (not isinstance(origin, str)
                                or _LINE_BREAK_RE.search(origin)):
         return "bad --from: expected single-line text"
+    if rationale is not None:
+        # B-17/T-53. `debug` Exit (c) carries a "no action" rationale as an
+        # indented `- Desc:` sub-bullet, which it appended DIRECTLY because
+        # the helper had no way to express it — the last real surface still
+        # writing the board by hand. Same single-line rule as every other
+        # optional field: a line break here would emit an orphan physical
+        # line the board parser cannot attribute to any task.
+        if not isinstance(rationale, str) or not rationale.strip():
+            return "bad --desc: expected nonblank single-line text"
+        if _LINE_BREAK_RE.search(rationale):
+            return "bad --desc: expected nonblank single-line text"
     if boundaries is not None:
         if not isinstance(boundaries, (list, tuple)):
             return "bad --boundaries: expected comma-separated single-line values"
@@ -660,12 +672,13 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
 
 
 def add_entry(text, *, desc, origin=None, group=None, type=None,
-              boundaries=None, section="## In-flight"):
+              boundaries=None, section="## In-flight", rationale=None):
     """Append a queued entry. ID-less by default; mints `<group>.<type>.<NNNN>`
     when both group and type are given. Optional `(from <origin>)` back-ref and a
     `Boundaries` sub-bullet. Invalid fields fail soft by returning ``text``
     unchanged, so no input can inject an orphan/malformed physical line."""
-    if add_error(desc=desc, origin=origin, boundaries=boundaries, section=section):
+    if add_error(desc=desc, origin=origin, boundaries=boundaries,
+                 section=section, rationale=rationale):
         return text
     desc = desc.strip()
     tid = f"{group}.{type}.{next_seq(text, group, type):04d}" if (group and type) else None
@@ -673,9 +686,192 @@ def add_entry(text, *, desc, origin=None, group=None, type=None,
     line = f"- [ ] {body}"
     if origin:
         line += f"  (from {origin})"
+    if rationale:
+        # Emitted BEFORE Boundaries so the rationale reads immediately under
+        # its task — the shape `debug` Exit (c) already produced by hand,
+        # and the shape the board's existing readers already tolerate.
+        line += f"\n  - Desc: {rationale.strip()}"
     if boundaries:
         line += f"\n  - Boundaries: {', '.join(boundaries)}"
     return _insert_under_section(text, line, section)
+
+
+# B-20/B4. Done items older than this are sweep candidates. A NAMED
+# constant per D-3's precedent, and tested against an INJECTED date rather
+# than `today()` -- a cutoff test keyed on the real clock passes for eleven
+# days and then starts failing on its own.
+ARCHIVE_CUTOFF_DAYS = 14
+
+DONE_TASKS_HEADING = "# Done tasks"
+
+
+def archive_candidates(text, *, today, cutoff_days=ARCHIVE_CUTOFF_DAYS):
+    """`(aged, undated)` — done tasks eligible for the archival sweep.
+
+    `aged` are done items whose `(done YYYY-MM-DD)` stamp is strictly more
+    than `cutoff_days` old. `undated` are `[x]` items carrying NO stamp at
+    all, returned SEPARATELY because they cannot be aged: both
+    `taskwrite done` and the ADR-0008 classifier require the stamp, so an
+    undated entry is legacy or override-era. The spec admits them only
+    under explicit per-item confirmation, and keeping them in a second
+    list is what makes a caller unable to sweep them by accident.
+
+    Pure over synthetic input; non-raising. `today` is REQUIRED — there is
+    no clock default, so no test can silently depend on the real date.
+    """
+    aged, undated = [], []
+    if not isinstance(text, str) or today is None:
+        return aged, undated
+    for line in text.splitlines():
+        parsed = parse_board(line)
+        if not parsed:
+            continue
+        task = parsed[0]
+        if task.state != "done":
+            continue
+        if task.done is None:
+            undated.append(task)
+            continue
+        if (today - task.done).days > cutoff_days:
+            aged.append(task)
+    return aged, undated
+
+
+def already_archived(done_text, task):
+    """True iff `task` is already recorded in `done_text`.
+
+    Dedup is on the DOTTED ID when the task has one, and on exact line
+    text when it does not. That split matters: an ID-less entry has no
+    stable handle, so only its own text identifies it, while an
+    ID-carrying entry must dedup on the ID even if its title was later
+    edited -- otherwise a re-run appends a second copy of the same task
+    under a slightly different wording.
+    """
+    if not isinstance(done_text, str) or task is None:
+        return False
+    if getattr(task, "id", None):
+        for line in done_text.splitlines():
+            parsed = parse_board(line)
+            if parsed and parsed[0].id == task.id:
+                return True
+        return False
+    needle = (getattr(task, "raw", "") or "").strip()
+    if not needle:
+        return False
+    return any(line.strip() == needle for line in done_text.splitlines())
+
+
+def task_block(lines, task):
+    """`(start, end)` half-open line range of `task`'s WHOLE block, or None.
+
+    A task is not one line. `parse_board` opens a task on a top-level
+    bullet and attaches every following `- Key: value` sub-bullet
+    (`Desc`, `Done when`, `Boundaries`) to it, closing only on the next
+    top-level bullet or a non-indented non-bullet line -- a BLANK line
+    does not close it. This function reproduces exactly that rule, so the
+    unit the board moves is the unit the board parses. Any other choice
+    re-attributes the orphaned sub-bullets to whatever task follows,
+    silently rewriting a `Boundaries:` security scope onto an unrelated
+    item (workstream-B adversary HIGH-2).
+
+    Trailing blank lines are TRIMMED off the block: a blank line between
+    two tasks is a separator belonging to the board, not cargo belonging
+    to the task above it.
+
+    Located by INDEX, never by text equality. Two done items may be
+    character-identical -- `taskwrite add` is documented rerun-safe, so
+    two adds of one description is a reachable state -- and removing
+    "every line equal to this one" while appending a single record
+    destroys the duplicate permanently (adversary HIGH-3). `task.lineno`
+    is trusted only when it still points at `task.raw`; otherwise the
+    FIRST matching top-level line wins, so a caller holding a Task parsed
+    from some other text degrades to the old behaviour instead of
+    corrupting the board.
+    """
+    raw = (getattr(task, "raw", "") or "").strip()
+    if not raw:
+        return None
+
+    start = None
+    lineno = getattr(task, "lineno", None)
+    if isinstance(lineno, int) and 0 < lineno <= len(lines):
+        if lines[lineno - 1].strip() == raw:
+            start = lineno - 1
+    if start is None:
+        for i, line in enumerate(lines):
+            if _TOP_RE.match(line) and line.strip() == raw:
+                start = i
+                break
+    if start is None:
+        return None
+
+    # The close condition MIRRORS `parse_board` exactly: a top-level bullet
+    # opens the next task, and a line that is non-blank AND not indented
+    # closes the current one. Everything else -- blank lines, `- Key:`
+    # sub-bullets, and indented continuation prose -- keeps it open.
+    #
+    # The earlier form advanced only past `_SUB_RE` matches and blanks, and
+    # broke on anything else. That diverged on INDENTED NON-SUB text: an
+    # indented continuation line kept the task open in `parse_board` (which
+    # went on to attach a later `- Desc:` to it) while stopping the block
+    # here, so the sub-bullets past it were orphaned onto the next task --
+    # re-opening the very defect this function exists to close. The two must
+    # agree, so the rule is copied rather than paraphrased.
+    end = start + 1
+    while end < len(lines):
+        line = lines[end]
+        if _TOP_RE.match(line):
+            break
+        if line.strip() and not line[:1].isspace():
+            break
+        end += 1
+    while end > start + 1 and not lines[end - 1].strip():
+        end -= 1
+    return start, end
+
+
+def archive_transform(open_text, done_text, task):
+    """`(new_open_text, new_done_text)` for ONE archived item.
+
+    Per-item by construction (B-20). Batching is unsafe in both orders:
+    appending all N then removing all N duplicates every item if the run
+    dies between phases, and removing first loses records outright. One
+    item at a time makes an interruption cost at most a single duplicate
+    that the next run's dedup absorbs.
+
+    The caller is responsible for writing `done` BEFORE `open` — this
+    function only computes both texts. Rerun-safe: an item already in
+    `done_text` is not appended twice, but IS still removed from
+    `open_text`, which is exactly the state an interrupted run leaves
+    behind.
+
+    Moves the task's whole BLOCK, not its top line -- see `task_block`
+    for the boundary rule and for why removal is index-based.
+
+    Pure and non-raising; unknown input returns the texts unchanged.
+    """
+    if not isinstance(open_text, str) or not isinstance(done_text, str):
+        return open_text, done_text
+    lines = open_text.splitlines()
+    span = task_block(lines, task)
+    if span is None:
+        return open_text, done_text
+    start, end = span
+    block = lines[start:end]
+
+    if already_archived(done_text, task):
+        new_done = done_text
+    else:
+        body = done_text if done_text.strip() else DONE_TASKS_HEADING + "\n"
+        if not body.endswith("\n"):
+            body += "\n"
+        new_done = body + "\n".join(block) + "\n"
+
+    kept = lines[:start] + lines[end:]
+    new_open = "\n".join(kept)
+    if open_text.endswith("\n") and not new_open.endswith("\n"):
+        new_open += "\n"
+    return new_open, new_done
 
 
 def _find_task_line(lines, target):

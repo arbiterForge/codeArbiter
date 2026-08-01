@@ -276,6 +276,32 @@ class _ShellHarness(unittest.TestCase):
         scripts = root / ".github" / "scripts"
         scripts.mkdir(parents=True)
         shutil.copy(HERE / "_releaselib.py", scripts / "_releaselib.py")
+        # The shim (copied above) resolves `core/pysrc/_releaselib.py` at
+        # import time via its own __file__ -> parents[2] -- i.e. TWO levels
+        # above `.github/scripts/`, exactly like this synthetic tree's
+        # `.github/scripts/` is two levels below `root`. Without the mechanism
+        # module also present here, every subprocess invocation of the copied
+        # shim raises FileNotFoundError before it does anything else. This is
+        # NOT a fallback for a genuinely absent mechanism (the spec forbids
+        # that) -- it is reproducing the real on-disk shape the shim already
+        # requires, the same way the shim itself is copied above.
+        core_pysrc = root / "core" / "pysrc"
+        core_pysrc.mkdir(parents=True)
+        shutil.copy(HERE.parent.parent / "core" / "pysrc" / "_releaselib.py",
+                    core_pysrc / "_releaselib.py")
+        # The DECLARED file, for the same reason the mechanism module is
+        # copied above: reproduce the real on-disk shape, do not stub it.
+        # Since A-4.4 the shim reads its target register from here rather
+        # than from a literal, so `select-target-named` resolves nothing
+        # without it -- and CI, which checks out the whole repo, always has
+        # it. Copying the REAL file (never a synthetic one) is also what
+        # makes these execution tests exercise this repository's actual
+        # declared targets rather than a fixture that could drift from them.
+        declared = root / ".codearbiter"
+        declared.mkdir(parents=True)
+        shutil.copy(
+            HERE.parent.parent / ".codearbiter" / "release-targets.md",
+            declared / "release-targets.md")
         return root
 
     def _run(self, script, *, env=None, ls_remote="", checks="[]",
@@ -830,14 +856,14 @@ class LaneIsolationTest(unittest.TestCase):
 
     def test_every_lane_tag_prefix_comes_from_the_shared_register(self):
         # #382: the hosted lane and the /ca:release command must not disagree
-        # about a namespace. `_releaselib.RELEASE_TAG_PREFIXES` is the one source
+        # about a namespace. `_releaselib.release_tag_prefixes()` is the one source
         # of truth; a lane that drifts from it would publish into a series the
         # command cannot resolve a baseline for.
         for job, params in LANES.items():
             with self.subTest(lane=job):
                 self.assertEqual(
                     _lane_inputs(job)["tag-prefix"],
-                    _releaselib.RELEASE_TAG_PREFIXES[params["target"]],
+                    _releaselib.release_tag_prefixes()[params["target"]],
                     f"{job}'s tag namespace differs from the shared register")
 
     def test_manifests_changelogs_and_namespaces_do_not_overlap(self):
@@ -938,6 +964,127 @@ class RegistrationTest(unittest.TestCase):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("python .github/scripts/test_release_workflow.py", ci,
                       "this contract suite must run in CI")
+
+
+class NameKeyedTargetSelectionTest(unittest.TestCase):
+    """A-4.2/T-44b: the workflow passes NAME-KEYED confirmations.
+
+    The previous form passed four bare values whose meaning came from
+    their POSITION, aligned by index against the declared row order.
+    Nothing enforced that the two orders agreed. A row inserted at the
+    front of `.codearbiter/release-targets.md` shifted every confirmation
+    by one, so a dispatch meaning to publish the second target published
+    the first -- while holding `contents: write`, and with every
+    downstream check passing, because the wrong release is internally
+    consistent.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+
+    def test_name_keyed_selection_is_what_the_workflow_calls(self):
+        self.assertIn("select-target-named", self.text)
+
+    def test_name_keyed_replaced_the_positional_call(self):
+        # The positional subcommand still EXISTS in the shim (its own
+        # tests cover it, and T-46 owns its retirement), but the workflow
+        # must no longer reach for it -- two call paths would let the
+        # order hazard back in through the one that matters.
+        positional = re.search(
+            r"_releaselib\.py select-target(?!-named)", self.text)
+        self.assertIsNone(
+            positional,
+            "release.yml still calls the positional select-target; the "
+            "order hazard is only closed if the workflow uses the "
+            "name-keyed form")
+
+    def test_name_keyed_every_declared_target_is_passed_with_its_name(self):
+        # Derived from the DECLARED file, not a hand-list: a target added
+        # to the declaration but not plumbed here would otherwise be
+        # unreleasable, and a name typo would resolve to `unknown` only at
+        # dispatch time.
+        rows = _releaselib.load_targets(
+            str(REPO_ROOT / ".codearbiter" / "release-targets.md"))
+        for row in rows:
+            name = row["target"]
+            with self.subTest(target=name):
+                self.assertRegex(
+                    self.text, rf'"{re.escape(name)}=\$[A-Z_]+"',
+                    f"release.yml does not pass a name-keyed input for the "
+                    f"declared target {name!r}")
+
+    @staticmethod
+    def _workflow_keyed_names(text):
+        """The target names release.yml actually passes, read out of the
+        `select-target-named` invocation itself rather than a hand-list —
+        so this test cannot drift from the command it describes."""
+        call = re.search(
+            r"select-target-named(.*?)\)\n", text, re.S)
+        if call is None:
+            return set()
+        return set(re.findall(r'"([A-Za-z0-9._-]+)=\$', call.group(1)))
+
+    def test_name_agreement_declared_set_equals_workflow_inputs(self):
+        """A-4.3. The declared target set and the workflow's inputs must
+        agree BY NAME, in both directions.
+
+        One direction is the obvious one: a target declared in
+        `.codearbiter/release-targets.md` with no workflow input is
+        unreleasable, and nobody finds out until someone tries to release
+        it.
+
+        The other direction is the quiet one: a workflow input naming a
+        target the declaration no longer carries. That input stays on the
+        dispatch form, an operator fills it in, and the resolver answers
+        `unknown` at dispatch time — a fail-closed refusal, but only after
+        somebody believed they were cutting a release. Worse, if the name
+        were later re-declared for a DIFFERENT component, the stale input
+        would silently start selecting it.
+
+        Set equality, not containment, so neither direction can rot.
+        """
+        declared = {row["target"] for row in _releaselib.load_targets(
+            str(REPO_ROOT / ".codearbiter" / "release-targets.md"))}
+        wired = self._workflow_keyed_names(self.text)
+        self.assertTrue(wired, "no name-keyed inputs found in release.yml")
+        self.assertEqual(
+            wired, declared,
+            "release.yml's name-keyed inputs and the declared target set "
+            f"disagree. Declared-but-unwired: {sorted(declared - wired)}. "
+            f"Wired-but-undeclared: {sorted(wired - declared)}. Reconcile "
+            "both files; adding a name to one alone is what this asserts "
+            "against.")
+
+    def test_name_agreement_detects_a_declared_target_with_no_input(self):
+        # The assertion's own discriminating power, against synthetic text
+        # rather than by mutating the real workflow.
+        text = ('TARGET=$(python3 x select-target-named \\\n'
+                '  "ca=$CONFIRM" "ca-codex=$CODEX_CONFIRM")\n')
+        self.assertEqual(self._workflow_keyed_names(text), {"ca", "ca-codex"})
+
+    def test_name_agreement_extraction_reads_the_real_invocation(self):
+        # If the extraction silently returned an empty set, the equality
+        # test above would fail loudly rather than pass vacuously -- but
+        # pin the non-empty read anyway, since a vacuous PASS is the
+        # failure mode this repo has already hit twice.
+        self.assertGreaterEqual(len(self._workflow_keyed_names(self.text)), 4)
+
+    def test_name_keyed_unknown_label_has_its_own_diagnosis(self):
+        # `unknown` means the workflow's inputs and the declared file
+        # disagree, which is a different problem from "no input" -- the
+        # catch-all arm would fail closed but say nothing useful.
+        self.assertIn("unknown)", self.text)
+        self.assertIn("does not declare", self.text)
+
+    def test_name_keyed_labels_are_all_handled_by_the_case(self):
+        # Every label the selector can return must have an arm, or a
+        # fail-closed catch-all. Asserted against the mechanism's own
+        # vocabulary rather than a copy of it.
+        for label in ("multiple", "none", "unknown"):
+            with self.subTest(label=label):
+                self.assertIn(f"{label})", self.text)
+        self.assertIn("*)", self.text)
 
 
 if __name__ == "__main__":

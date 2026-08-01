@@ -62,7 +62,8 @@ governs: <optional, comma-separated path globs this decision constrains — e.g.
   0014-githook-shim-dropin-fail-closed`, not `supersedes: 0014` — or `none`. A bare number is
   still accepted for the legacy records that carry one, but ONLY while it names exactly one
   ADR; once a number is shared it is an error, not a guess, and
-  `.github/scripts/check_adr_identity.py` fails the build. Supersession is a forward-only
+  this repository's own CI fails the build (the identity check is CI-only and is
+  not shipped, so a consumer enforces this rule by review rather than by script). Supersession is a forward-only
   chain: set it on the new ADR; never edit the prior ADR to add a back-reference.
 - **`supersedes:` cannot say WHICH CLAUSE it supersedes.** A partial supersession — the new ADR
   replaces some clauses of the prior one and leaves the rest in force — must say so in prose, and

@@ -50,16 +50,47 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _releaselib import RELEASE_TAG_PREFIXES, semver_greater, semver_key  # noqa: E402
+from _releaselib import load_targets, semver_greater, semver_key  # noqa: E402
 import payload_scope  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
+DECLARED_TARGETS = REPO / ".codearbiter" / "release-targets.md"
+
+
+def tag_prefixes(targets_path: Path = DECLARED_TARGETS) -> dict[str, str]:
+    """`{payload directory basename: tag prefix}`, DERIVED from the declared
+    release-targets file (A-4.1) rather than from a constant.
+
+    Before this, the map was `_releaselib.RELEASE_TAG_PREFIXES` — a literal
+    in the CI shim listing four plugin names and their namespaces. Two
+    sources of truth for the same fact: a target declared in
+    `.codearbiter/release-targets.md` with a prefix the constant disagreed
+    with would be GATED under one namespace and RELEASED under another, and
+    nothing compared them. Adding a fifth plugin meant editing both, and
+    forgetting the constant produced a `KeyError` at gate time rather than
+    a diagnosable message.
+
+    Keyed on the payload's basename, not on the target NAME, because that
+    is what the caller has: the gate walks `plugins/*` directories and asks
+    "what namespace does this directory release under". A row whose payload
+    is not a single directory (a consumer's `payload: .`) contributes no
+    entry — this gate is a codeArbiter-repo check over `plugins/*`, and a
+    whole-repo payload has no basename to key on.
+    """
+    prefixes: dict[str, str] = {}
+    for row in load_targets(str(targets_path)):
+        payload = (row.get("payload") or "").strip().strip("/")
+        if not payload or payload == ".":
+            continue
+        prefixes[payload.rsplit("/", 1)[-1]] = row["prefix"]
+    return prefixes
 
 # Each gated plugin's manifest, relative to the repo root. `ca-codex` is a Codex
 # package and keeps its manifest under `.codex-plugin/`; the other two are Claude
 # Code plugins under `.claude-plugin/`. The tag namespace is NOT repeated here —
-# it is read from _releaselib.RELEASE_TAG_PREFIXES, so a plugin cannot be gated
-# under one namespace and released under another.
+# it is DERIVED from `.codearbiter/release-targets.md` by `tag_prefixes()` above
+# (A-4.1), so a plugin cannot be gated under one namespace and released under
+# another — the gate and the release lane now read the same declaration.
 #
 # `plugins/ca-pi` is deliberately absent: see the module docstring. Its exclusion
 # is asserted by test_payload_version_gate.py, so adding it here without removing
@@ -161,7 +192,18 @@ def gate(base: str, plugin: str, root: Path = REPO) -> tuple[int, str]:
             f"version published (issue #530). Advance the version."
         )
 
-    tag = f"{RELEASE_TAG_PREFIXES[Path(plugin).name]}{current}"
+    namespaces = tag_prefixes()
+    name = Path(plugin).name
+    if name not in namespaces:
+        return FAIL, (
+            f"{annotate}{plugin}/** is gated here but declares no release target "
+            f"in .codearbiter/release-targets.md, so this gate cannot tell which "
+            f"tag namespace it publishes under. Declare a row for it, or remove "
+            f"it from GATED_MANIFESTS — a gated payload with no declared "
+            f"namespace is exactly the drift this derivation exists to end. "
+            f"(Before A-4.1 this was a KeyError against a hardcoded map.)"
+        )
+    tag = f"{namespaces[name]}{current}"
     if tag_exists(tag, root):
         return FAIL, (
             f"{annotate}{plugin}/** shipped payload changed on version {current}, which is "
