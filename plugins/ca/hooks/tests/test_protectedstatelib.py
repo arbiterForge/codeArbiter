@@ -981,6 +981,27 @@ class TestStateShellHelperOnly(_StateShellFixture):
             with self.subTest(cmd=cmd):
                 self.assertShellBlocked(cmd)
 
+    def test_an_interactive_editor_on_a_helper_only_file_also_blocks(self):
+        # DELIBERATE, not a side effect of putting `vim`/`ex` in the verb
+        # list. `helper-only` exists to make the sanctioned helper the only
+        # writer; opening the board in an editor IS the hand-composed-
+        # markdown path the policy is there to prevent, and it is the more
+        # likely spelling of it than `vim -es -c wq`. `-R` is not an
+        # exception: it is indistinguishable here from a plain open, and
+        # `:w!` leaves read-only mode anyway.
+        self.assertShellBlocked("vim .codearbiter/open-tasks.md")
+        self.assertShellBlocked("vim -R .codearbiter/open-tasks.md")
+
+    def test_reads_of_a_helper_only_file_still_pass(self):
+        # The boundary that keeps the editor block honest: reading is not
+        # writing, and enrolment must not make a protected file opaque.
+        for cmd in ("cat .codearbiter/open-tasks.md",
+                    "grep -n TODO .codearbiter/open-tasks.md",
+                    "view .codearbiter/open-tasks.md",
+                    "git log -- .codearbiter/open-tasks.md"):
+            with self.subTest(cmd=cmd):
+                self.assertShellAllowed(cmd)
+
     def test_git_checkout_blocks(self):
         # F5, through the full dispatch: `git checkout` rewrites a tracked
         # protected-state file through git itself, bypassing every

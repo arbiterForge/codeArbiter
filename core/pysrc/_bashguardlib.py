@@ -549,6 +549,15 @@ _STATE_WRITE_VERBS = (
     # editors driven as batch WRITERS (`-c wq`), which is the same act as
     # `sed -i` by another name; `rsync` overwrites a destination path the
     # way `cp` does.
+    #
+    # `ex`/`vim` consequently block an INTERACTIVE open too, which is
+    # intended rather than tolerated: `helper-only` exists to make the
+    # sanctioned helper the only writer, and opening the board in an editor
+    # is the hand-composed-markdown path the policy prevents — the likelier
+    # spelling of it than `vim -es -c wq`. Reading stays open (`cat`,
+    # `grep`, `view`, `git log`), pinned by
+    # `test_reads_of_a_helper_only_file_still_pass`. `\b` keeps the
+    # two-letter `ex` from matching inside `export`/`eslint`/`extract`.
     r"|unlink|ex|vim|rsync"
 )
 
