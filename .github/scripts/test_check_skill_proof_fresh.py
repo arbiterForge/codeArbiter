@@ -386,6 +386,15 @@ class MainCLITest(unittest.TestCase):
         from contextlib import redirect_stdout
         with tempfile.TemporaryDirectory() as tmp:
             document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
+            # Pin `proof_current` rather than inheriting it. The live artifact
+            # legitimately carries False whenever a batch of skill edits is in
+            # flight, and `check()` short-circuits on that flag BEFORE it ever
+            # compares hashes -- so a fixture that copies the flag tests the
+            # boolean branch while claiming to test the hash branch, and goes
+            # red for a reason that is not a defect. That is the same live-state
+            # coupling the sibling test's comment warns about, left in the one
+            # field the sibling did not patch.
+            document["proof_current"] = True
             document["exercise"]["exercised_skill_sha256"] = "0" * 64
             artifact = Path(tmp) / "agent-lane-proof.json"
             artifact.write_text(json.dumps(document), encoding="utf-8")
@@ -411,6 +420,11 @@ class MainCLITest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
             shipped = REPO_ROOT / "plugins" / "ca" / "skills" / "release" / "SKILL.md"
+            # Both halves of "current" are set here, for the reason spelled out
+            # in the sibling test above: patching only the hash leaves
+            # `proof_current` inherited from live release state, and a False
+            # there fails this test on a day when nothing is wrong.
+            document["proof_current"] = True
             document["exercise"]["exercised_skill_sha256"] = hashlib.sha256(
                 shipped.read_bytes()).hexdigest()
             artifact = Path(tmp) / "agent-lane-proof.json"
@@ -421,6 +435,42 @@ class MainCLITest(unittest.TestCase):
                 code = G.main(repo=REPO_ROOT, artifact_path=artifact)
         self.assertEqual(code, 0, buffer.getvalue())
         self.assertIn("still covers", buffer.getvalue())
+
+    def test_the_cli_reports_a_withdrawn_proof_distinctly_from_a_stale_hash(self):
+        # The two live-artifact tests above each pin `proof_current` so they
+        # exercise the HASH branch. That leaves the flag branch itself with no
+        # coverage -- and it is not hypothetical: run 18 (2026-08-01) recorded
+        # `proof_current: false` deliberately, because a destructive
+        # instruction had to be fixed AFTER the exercise that found it, so the
+        # recorded hash was knowingly one commit behind. An operator meeting
+        # that block needs to be told "the exercise was withdrawn", not "the
+        # skill changed" -- those have different remedies, and folding the
+        # first into the second is the failure this repository has a standing
+        # rule against.
+        import io
+        from contextlib import redirect_stdout
+        with tempfile.TemporaryDirectory() as tmp:
+            document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
+            shipped = REPO_ROOT / "plugins" / "ca" / "skills" / "release" / "SKILL.md"
+            # Hash CORRECT, flag false: the only thing under test is the flag.
+            document["proof_current"] = False
+            document["exercise"]["exercised_skill_sha256"] = hashlib.sha256(
+                shipped.read_bytes()).hexdigest()
+            artifact = Path(tmp) / "agent-lane-proof.json"
+            artifact.write_text(json.dumps(document), encoding="utf-8")
+
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = G.main(repo=REPO_ROOT, artifact_path=artifact)
+        printed = buffer.getvalue()
+        self.assertEqual(code, 1, "a withdrawn proof must block")
+        self.assertIn("::error::", printed)
+        self.assertIn("proof_current", printed,
+                      "the operator must be told the flag is what blocked")
+        self.assertNotIn(
+            "has changed since", printed,
+            "a withdrawn proof must NOT be reported as a changed skill -- the "
+            "hash here is correct, and the two states have different remedies")
 
 
 if __name__ == "__main__":

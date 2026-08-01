@@ -1,278 +1,277 @@
 {
-  "$schema_note": "Agent-judgment exercise record for the release skill (issue #563, spec .codearbiter/specs/release-portable-fixture.md AC-6.6 'agent judgment' layer). EIGHT independent blind exercises were run, each against the skill as the previous one left it. This file records the campaign; `exercise` below is the one run whose hash the freshness gate enforces. It is a record, not a test -- no number in it is re-derived by any test in this suite.",
-  "proof_current": true,
-  "proof_current_note": "TRUE as of run 13 (2026-07-31). `exercise.exercised_skill_sha256` is the hash of the skill an agent actually read and acted on, verified byte-for-byte equal to the shipped payload at record time. Any later edit invalidates it and MUST fail `ca`'s pre-tag gate until a fresh exercise runs; never hand-edit this field to clear a block.",
-  "stopping_rule": {
-    "what_was_applied": "Stop when a run probes a region ALREADY covered by the previous run's fix and finds no HIGH. Runs 5, 6 and 7 each found exactly one HIGH, and each was in a region newly probed -- run 5 by accident (a tag prefix with no tags), runs 6 and 7 by deliberate direction. That is coverage expanding, not the skill degrading, so a clean run in a NEW region would have proved little. Run 8 was aimed at the same region run 7's fix touched (version derivation) and returned no HIGH; that is the condition that ended the campaign.",
-    "what_this_record_does_NOT_claim": "Not convergence. The HIGH sequence is 4, 2, 0, 2, 1, 1, 1, 0 -- run 3's zero was sampling, not settlement, and treating it as convergence at the time was an error corrected here. Two clean runs out of eight is what the evidence supports, and it is what this file says.",
-    "why_stopping_is_safe": "The freshness gate. Every open finding below is FILED rather than fixed, and fixing any of them edits the skill, which invalidates this hash and fails `ca`'s pre-tag gate until a fresh exercise is run. Stopping does not close the loop; it parks it behind a mechanism that reopens on the next edit."
-  },
-  "exercise": {
-    "run": 13,
-    "date": "2026-07-31",
-    "role": "THE RECORDED PROOF. First run with no HIGH since run 8, and the first to exercise every fix from runs 9-12 together: the run-pre-tag content-digest assertion, the commit-before-tagging rule, the single $BASE_VERSION, check-manifests, the adoption floor, classify-window, and the interpreter-fallback convention.",
-    "method": "An agent was handed only the installed release skill and asked to follow it across four consumer shapes: a window containing BREAKING changes in all three spellings (bare `!`, scoped `(api)!`, and a `BREAKING CHANGE:` footer); a two-manifest row with one path DELIBERATELY left un-bumped; a first release whose history predates adoption; and a control. No expected outcomes were given and no prior run's findings were shared.",
-    "exercised_skill_sha256": "39ca82bd2fd66c034f8344cc419c0c8ccac8299952cc310d8669cfa71980b0e1",
-    "exercised_skill_path": "plugins/ca/skills/release/SKILL.md",
-    "exercised_skill_path_note": "59,885 bytes. The `git archive HEAD` extraction hashed identically to the working tree, so the exercised bytes are the COMMITTED bytes.",
-    "high_findings": 0,
-    "agents_own_verdict": "\"Nothing rated HIGH. Every hard block I hit was a correct block, and every guard the skill names fired where it said it would.\"",
-    "fixes_confirmed_working": {
-      "check-manifests (run 12)": "Caught the deliberately partial bump at Phase 1 step 6, exit 1, naming the lagging path -- and confirmed it is the ONLY thing that catches it: continuing past the guard, `classify` returned publish_fresh on the same disagreement, exactly as the run-12 correction says it will.",
-      "run-pre-tag content digest + zero-command no-op (runs 9/10)": "Exit 0 on a row declaring no commands, and correct across the mid-lane dirty-tree state hit in three of four fixtures.",
-      "commit-before-tagging (run 10)": "Every tag named a commit whose tree actually carried the derived version.",
-      "one $BASE_VERSION (runs 6/7)": "max(0.0.0, 0.3.0) = 0.3.0 on the first-release fixture; the tag-only counterfactual (`semver-greater 0.1.0 0.3.0`) exits 1, reproducing the original defect.",
-      "classify-window (run 11)": "All three breaking spellings classified to major through one tested helper.",
-      "--cleanup=verbatim (run 4, issue #569)": "Round-tripped byte-identical; the default-cleanup counterfactual destroyed every heading and notes-match caught it (exit 1)."
-    },
-    "residual_named_by_this_run": "Four mechanical steps still have no helper: computing $BASE_VERSION itself (no semver-max), applying the bump arithmetic, writing the changelog section, and writing the manifest. The first two are checked after the fact by semver-greater; the last two are the only unguarded WRITES in an otherwise guarded lane. Filed to #570."
-  },
-  "campaign": {
-    "high_findings_by_run": [
-      4,
-      2,
-      0,
-      2,
-      1,
-      1,
-      1,
-      0,
-      2,
-      2,
-      1,
-      1,
-      0
-    ],
-    "runs": [
-      {
-        "run": 1,
-        "highs": 4,
-        "note": "Found the back-fill overwrite path -- a data-loss defect -- plus three others. Detail preserved in `findings` below."
-      },
-      {
-        "run": 2,
-        "highs": 2,
-        "note": "Wiring seams: peel-tag absent from the shipped CLI (so the mandated `git tag -a` made a HEALTHY tag classify as abort_mismatch), and backfill-detect omitting latest-eligible. Shipped in 73bd884. Its summary named the pattern the whole campaign kept hitting: 'The mechanisms are individually well tested; what is unspecified is how a caller wires them together.'"
-      },
-      {
-        "run": 3,
-        "highs": 0,
-        "note": "Recorded at the time as convergence. It was not -- see `stopping_rule`."
-      },
-      {
-        "run": 4,
-        "highs": 2,
-        "note": "git tag's default cleanup silently deleting every Markdown heading from the tag message (issue #569, ALREADY FILED and shipped unfixed; it has permanently corrupted this repo's published v2.8.13), and a stale manifest read returning a terminal abort_mismatch on a healthy release. The second was introduced by this campaign's own fix for run 3's findings."
-      },
-      {
-        "run": 5,
-        "highs": 1,
-        "note": "The `<none>` sentinel substituted into `git log <none>..HEAD`, exit 128 -- on the first release of every back-filled project. Run 4 had found this and rated it MEDIUM; filing rather than fixing it was an error, and run 5's HIGH rating was correct."
-      },
-      {
-        "run": 6,
-        "highs": 1,
-        "note": "A project that had shipped 1.4.2 without ever tagging derived 0.1.0 and wrote it over its own manifest, walking the version backward with all three existing guards passing."
-      },
-      {
-        "run": 7,
-        "highs": 1,
-        "note": "Caused by run 6's fix: the base was stated only in the no-tag branch, so a TAGGED project with a leading manifest derived off the tag and then hard-blocked against its own manifest floor, with no remedy stated. Fixed by collapsing two floors into one $BASE_VERSION."
-      },
-      {
-        "run": 8,
-        "highs": 0,
-        "note": "The recorded proof. Same region as run 7's fix; no HIGH."
-      },
-      {
-        "run": 9,
-        "highs": 2,
-        "note": "The pre-tag runner shipped one commit earlier asserted a PRISTINE tree, which blocks every release -- Phase 1 bumps the manifest before that step runs, and must. Also ran commands in the inherited cwd, so a declared check could pass having inspected a different repository."
-      },
-      {
-        "run": 10,
-        "highs": 2,
-        "note": "Step 7 was conditional, so a literal traversal tagged an uncommitted tree; and the mutation assertion compared porcelain LINES, so a command mutating an already-modified $CHANGELOG or $MANIFEST exited 0 undetected."
-      },
-      {
-        "run": 11,
-        "highs": 1,
-        "note": "The exit-6 remedy written one commit earlier could not terminate (the mutation recurs on every invocation), destroyed the composed section, and was inexecutable on a first release."
-      },
-      {
-        "run": 12,
-        "highs": 1,
-        "note": "The skill CLAIMED classify catches a partial manifest bump. It does not: classify_publish_state short-circuits on `if not tag_exists` before comparing versions, so the catch fires only on the resume path. No all-paths guard existed; check-manifests is it."
-      },
-      {
-        "run": 13,
-        "highs": 0,
-        "note": "THE RECORDED PROOF. Exercised every fix from runs 9-12 together and found no HIGH."
-      }
-    ],
-    "what_the_campaign_demonstrated": "Every HIGH after run 1 was in a SEAM -- how a caller wires the mechanisms together -- not in a mechanism. The mechanical suites were green throughout: 272 unit tests, 69 consumer-portability tests, mutation-verified governance rules. None of them could see a prose instruction that names a command nobody can run, sources an argument from the wrong read, or hands an operator a sentinel where a revision is required. Three of the HIGHs were introduced by this campaign's own remediation of an earlier HIGH, which is the strongest available argument for keeping the exercise in the loop rather than trusting a green suite.",
-    "self_inflicted_pattern": "Every HIGH from run 9 through run 12 was introduced by the campaign's own preceding fix, or asserted a property the code did not have. Run 6's fix caused run 7's HIGH; the run-9 runner caused run 10's; the run-10 exit-6 remedy caused run 11's; the run-7 coupling paragraph made the claim run 12 disproved. That is the strongest evidence in this record for keeping a real agent in the loop -- and equally the reason the loop needs a human decision about when to stop, since a green mechanical suite never once saw any of them."
-  },
-  "post_remediation_skill_sha256": {
-    "plugins/ca/skills/release/SKILL.md": "bb4c79287a4e60db530ea64e1a6829ae714d8e47dac579af2c1bbd3bfacba309",
-    "core/surface/skills/release/SKILL.md": "b9cbf3a0e7bb01abcb28aa77c6a18ba55fc21e56a662f2d41c804f3cfdf26945",
-    "plugins/ca-pi/routines/release/SKILL.md": "9c1b916988bcaac72f5e3be1fc7ed1d9bd14d25d8407aa63a1f17220a74e93b4",
-    "plugins/ca-codex/routines/release/SKILL.md": "5b02ee87807188a6045c929d118d92e3b8c675e32b82463b1f0bf666526635ae",
-    "note": "Computed after this remediation's edits, `tools/build-surface.py`, and `tools/sync-core.py`. `build-surface --check` and `sync-core --check` both report OK against these files as of this record. NOT a proof hash -- see `proof_current`."
-  },
-  "findings": [
-    {
-      "id": "HIGH-1",
-      "title": "Back-fill's own trigger could not distinguish a genuinely absent declared file from an existing-but-blockless one, so back-fill could silently overwrite an operator's existing file",
-      "status": "remediated",
-      "mechanism_fix": {
-        "file": "core/pysrc/_releaselib.py",
-        "summary": "Added FileExistsNoBlockError, a SIBLING of AbsentBlockError (not a subclass) under ReleaseTargetsError. load_targets() now raises it when open() succeeds but parse_release_targets() finds no block, so an `except AbsentBlockError:` clause -- the Back-fill lane's trigger -- never catches the existing-file case. parse_release_targets() itself is unchanged: it has no way to know whether a file existed, so a blockless STRING still raises AbsentBlockError exactly as before.",
-        "cli_fix": "core/pysrc/_releaselib.py main(): added _targets_error_exit_code(exc) -- exit 3 for genuinely-absent (AbsentBlockError), exit 4 for every other declared-file error (FileExistsNoBlockError, malformed, empty, ...). Exit 2 is reserved for bad invocation / unrecognised target and is never reused for either declared-file state, so a caller can discriminate by exit code alone, without parsing English. Applied to both `tag-prefix` and the new `list-targets` subcommand."
-      },
-      "prose_fix": {
-        "file": "core/surface/skills/release/SKILL.md",
-        "summary": "\"Targets\" and \"Back-fill\" sections now name FileExistsNoBlockError explicitly, state the CLI exit-code discrimination, and reiterate that the Back-fill lane triggers ONLY on AbsentBlockError. Back-fill step 3 additionally adds a belt-and-braces prose rule on top of the mechanism fix: immediately before minting the marker or writing anything, re-confirm no file exists yet at the target path; if one does (a race, or the lane reached by any route other than the documented AbsentBlockError trigger), STOP without writing and surface it. This closes the task's second, independently-stated requirement ('have it refuse to write over any existing file regardless') -- the mechanism fix makes the TRIGGER correct, this makes the WRITE itself refuse to clobber regardless of how the trigger was reached."
-      },
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: FileExistsNoBlockTest (5 tests)",
-        ".github/scripts/test_release_lib.py: CoreCLITest.test_tag_prefix_absent_declared_file_exits_3_not_a_traceback (renamed/updated from _exits_2_)",
-        ".github/scripts/test_release_lib.py: CoreCLITest.test_tag_prefix_existing_no_block_file_exits_4_distinct_from_absent",
-        ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_* (shares the exit-code discriminator)",
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['HIGH-1: back-fill distinguishes exists-vs-absent'], _GOVERNANCE_RULES['HIGH-1: back-fill re-checks existence at write time, belt-and-braces']"
-      ],
-      "mutation_evidence": "Mechanism (3 real code mutants, run/reverted): (1) load_targets reverted to bare `return parse_release_targets(text)` -> FileExistsNoBlockTest failed 2/5 for the right reason (AbsentBlockError propagated instead of FileExistsNoBlockError; the never-caught-by-except-AbsentBlockError test also failed). (2) _targets_error_exit_code reverted to `return 2` unconditionally -> 3 CoreCLITest tests failed (3 != 2, 3 != 2, 4 != 2). (3) FileExistsNoBlockError's base class changed to AbsentBlockError (subclass instead of sibling) -> both the sibling-not-subclass test AND the never-caught-by-except test failed, proving the sibling relationship is load-bearing. Prose (2 real text mutants, run/reverted against the live SKILL.md, GovernanceSurvivalTest re-run each time): deleting 'mechanically distinct' -> failed naming exactly 'HIGH-1: back-fill distinguishes exists-vs-absent'; deleting 'STOP without writing' (the belt-and-braces sentence) -> failed naming exactly 'HIGH-1: back-fill re-checks existence at write time, belt-and-braces'. All five reverted; full suite (256/256) and build-surface --check re-confirmed green afterward. Token uniqueness was checked (grep-count == 1 per rule's tokens against the real file) before trusting the mutant, after an earlier draft of this file's tokens ('never runs against a file that already exists', 'in any state') were found to occur twice in the real text and would have survived deletion of either single occurrence -- replaced with tokens unique to one sentence."
-    },
-    {
-      "id": "HIGH-2",
-      "title": "Pre-flight's mandatory CONTEXT.md read STOPs a fresh consumer whose only .codearbiter/ file is the one Back-fill itself just wrote, dead-ending the lane Back-fill exists to offer",
-      "status": "remediated",
-      "investigation": "Read core/pysrc/_activationlib.py and every arbiter_active() call site (pre-write.py, pre-edit.py, pre-bash.py, pre-read.py, post-write-edit.py, git-enforce.py, prune-transcript.py). Confirmed: CONTEXT.md's `arbiter: enabled` frontmatter gates HOOK ENFORCEMENT only, not skill invocability. A skill's SKILL.md prose loads and is followed by the agent regardless of CONTEXT.md's presence. Pre-flight's CONTEXT.md STOP is therefore a self-imposed prose rule, not an activation hard-block -- so making it conditional (rather than 'the consumer literally cannot reach this skill') is the correct fix.",
-      "prose_fix": {
-        "file": "core/surface/skills/release/SKILL.md",
-        "summary": "The Pre-flight CONTEXT.md bullet now reads 'when it exists'. Its absence, when the consumer reached this skill only via the Back-fill lane, is no longer a STOP: the default branch is resolved directly via `git symbolic-ref refs/remotes/origin/HEAD` (or asked of the user), narrowly for the one fact this skill uses CONTEXT.md for. A project with no .codearbiter/ state at all and no interest in the release-only footprint is still routed to context-creation, unchanged."
-      },
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['HIGH-2: CONTEXT.md is conditional on the Back-fill path']"
-      ],
-      "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'not itself a STOP' from the Pre-flight CONTEXT.md bullet, re-ran GovernanceSurvivalTest -> failed naming exactly 'HIGH-2: CONTEXT.md is conditional on the Back-fill path' and no other rule. Restored; full suite re-confirmed green."
-    },
-    {
-      "id": "HIGH-3",
-      "title": "Back-fill's own write to release-targets.md dirties the tree inside the payload window it just declared, and the prose never said what to do about it",
-      "status": "remediated",
-      "prose_fix": {
-        "file": "core/surface/skills/release/SKILL.md",
-        "summary": "Back-fill step 3 now: (a) mints the release-targets-authoring marker before writing (release-targets.md is a marker-gated protected-state file per the sibling protected-state-machinery sprint, even though enrolment -- T-33 -- is still PENDING on this branch; the prose is now forward-consistent with that landing rather than needing a second edit then), (b) removes the marker after writing, (c) explicitly instructs committing the new file through commit-gate as `chore: declare release targets` BEFORE re-entering Pre-flight (which STOPs on a dirty tree), and (d) states this is expected and inert: a `chore` commit contributes no bump and no changelog section, so the extra commit changes neither the derived version nor what ships."
-      },
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES[\"HIGH-3: back-fill's own write is committed before Pre-flight\"]"
-      ],
-      "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'This write itself dirties the tree', re-ran GovernanceSurvivalTest -> failed naming exactly \"HIGH-3: back-fill's own write is committed before Pre-flight\" and no other rule. Restored; full suite re-confirmed green."
-    },
-    {
-      "id": "HIGH-4",
-      "title": "resume_publish points at Phase 3 (publish) with no restated authorization requirement, immediately after Phase 2 composes a local, unauthorized tag",
-      "status": "remediated",
-      "assessment": "Considered widening classify_publish_state (core/pysrc/_releaselib.py) to distinguish a pushed tag from a local one. Rejected: doing so needs either a `git ls-remote` round-trip threaded into a currently-pure classifier (breaking its 'no I/O' contract, shared with every other mechanism function in this module) or a 7th CLI positional argument threaded through the CLI, the CI shim, test_release_workflow.py's action-step invocations, and test_release_trace.py -- real, non-trivial blast radius for a case the prose restatement already closes without it: the Phase-3 gate is unconditional on HOW resume_publish was reached.",
-      "prose_fix": {
-        "file": "core/surface/skills/release/SKILL.md",
-        "summary": "Phase 2 step 1's resume_publish branch now explicitly restates that Phase 3 publication still requires explicit user authorization exactly as a fresh publish does, and that a locally-composed tag from a prior Phase 2 invocation is not itself that authorization. The rejected classifier-widening option and why is stated inline."
-      },
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['HIGH-4: resume_publish still requires authorization']"
-      ],
-      "mutation_evidence": "Real mutant run against the live SKILL.md: deleted the entire authorization-restatement clause from Phase 2 step 1, re-ran GovernanceSurvivalTest -> failed exactly one subtest (payload='core/surface (source)') naming exactly 'HIGH-4: resume_publish still requires authorization'. Restored; full suite (256/256) re-confirmed green with build-surface --check and sync-core --check both OK afterward."
-    },
-    {
-      "id": "MEDIUM-changelog-1",
-      "title": "perf is harvested for CHANGELOG: footers but the BLOCK sentence named only feat/fix, so a footerless perf silently bumped and vanished from the changelog",
-      "status": "remediated",
-      "prose_fix": "Phase 1 step 3 (new, moved ahead of the manifest bump) states the BLOCK covers the full harvested set: feat/fix/perf/refactor.",
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['MEDIUM: footer BLOCK covers the full harvested set']"
-      ],
-      "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'MUST carry a `CHANGELOG:` footer', re-ran GovernanceSurvivalTest -> failed naming exactly 'MEDIUM: footer BLOCK covers the full harvested set'. Restored; full suite re-confirmed green.",
-      "operational_impact_on_this_repo": "Checked the symmetric direction of the docs/chore history check above: `git log v2.8.13..HEAD --pretty='%h %s' -- plugins/ca/` (v2.8.13 is `ca`'s real last tag; no v2.9.x/2.10.x/2.11.0 tag exists yet even though CHANGELOG.md and plugin.json already carry composed-but-unpublished sections up to 2.11.0) contains FIVE commits this widened BLOCK now covers and none of the old prose did: `b98c321`/`4e2dae9`/`45f5046`/`5429862` (refactor, the #321 _hooklib partition slices) and `03995ab` (perf, the statusline ledger write). None of the five carries a `CHANGELOG:` footer in its commit body (verified: `git log -1 --pretty=%B <sha> | grep -c '^CHANGELOG:'` returns 0 for all five), even though their content is ALREADY manually present in CHANGELOG.md under already-composed `### Changed` sections for 2.10.7/2.10.8. This means the NEXT real `/release ca` invocation in this repository will BLOCK at the new Phase 1 step 3 on these five commits, requiring operator reconciliation before it can proceed -- this is a genuine, immediate consequence of the fix this finding mandated, not a hypothetical. It is disclosed here rather than silently discovered at tag time; resolving it (retro-fitting footers is not practical on already-merged commits, so the operator's actual path is likely a documented one-time override or backfilling the missing footers via amended trailers on a rebase before the next release) is a maintainer decision this remediation does not make unilaterally."
-    },
-    {
-      "id": "MEDIUM-changelog-2",
-      "title": "refactor bumps patch but was neither harvested nor grouped, so a refactor-only window bumped, composed an empty changelog section, and tripped no BLOCK",
-      "status": "remediated",
-      "decision": "refactor is now harvested into the changelog under a 'Changed' group, matching this repository's OWN existing changelog convention (verified: CHANGELOG.md already uses '### Changed' for refactor-shaped entries, e.g. the #321 _hooklib partition slices) rather than inventing a new convention. refactor is now subject to the same missing-footer BLOCK as feat/fix/perf.",
-      "prose_fix": "Phase 1 step 5 groups Added(feat)/Fixed(fix)/Performance(perf)/Changed(refactor)."
-    },
-    {
-      "id": "MEDIUM-changelog-3",
-      "title": "A CHANGELOG: footer on a non-bumping commit (docs/chore/test/ci) was silently discarded, against the same paragraph's own 'never silently drop a user-visible change' rule",
-      "status": "remediated",
-      "investigation": "Ran `git log --grep='CHANGELOG:' --pretty='%s'` filtered to docs/chore/test/ci-typed subjects against this repository's own history before choosing a resolution: found 8 real, pre-existing examples (docs(site), chore(ca), ci:, chore: relicense, etc.) -- a recurring, evidently intentional pattern in THIS repo's own commit history, not a mistake. A BLOCK on this pattern would therefore block this repository's own next several releases on its own historical norm. Chose harvest-not-drop over BLOCK for this reason.",
-      "decision": "A CHANGELOG: footer on ANY test/docs/chore/ci commit is now harvested into the same section's Changed group when a release is otherwise happening (i.e. some other commit in the window bumps). This does NOT by itself force a release: if the whole window is non-bumping, the existing STOP (nothing to release) still applies even when a non-bumping commit in it carries a footer -- widening what a bare footer alone can trigger was treated as a separate, out-of-scope design question and stated as such in the prose rather than silently decided.",
-      "prose_fix": "Phase 1 step 5's harvesting rule, second sentence.",
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['MEDIUM: a footer on a non-bumping commit is harvested, not dropped']"
-      ],
-      "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'Also harvest a `CHANGELOG:` footer from any', re-ran GovernanceSurvivalTest -> failed naming exactly 'MEDIUM: a footer on a non-bumping commit is harvested, not dropped'. Restored; full suite re-confirmed green."
-    },
-    {
-      "id": "MEDIUM-changelog-4",
-      "title": "Step 3 (old numbering) bumped the manifest before step 4's footer-completeness BLOCK fired, so a BLOCKed release could leave a bumped manifest behind with nothing shipped",
-      "status": "remediated",
-      "prose_fix": "Reordered Phase 1: the footer-completeness check is now step 3, BEFORE the manifest bump (now step 4) and the changelog composition (now step 5). A BLOCK at step 3 now happens before any file is touched."
-    },
-    {
-      "id": "MEDIUM-list-targets",
-      "title": "The single-target rule requires knowing a target's name, but tag-prefix takes the name as INPUT and there was no subcommand to enumerate declared targets, forcing a hand-parse of the grammar the skill says to resolve only through the tested helper",
-      "status": "remediated",
-      "mechanism_fix": {
-        "file": "core/pysrc/_releaselib.py",
-        "summary": "Added the `list-targets` subcommand: prints every declared target's name, one per line, in declaration order. Shares default_targets_path()/--targets-file resolution and the same exit-3/exit-4 discrimination as tag-prefix."
-      },
-      "prose_fix": {
-        "file": "core/surface/skills/release/SKILL.md",
-        "summary": "The 'one command, any number of targets' paragraph now points to `list-targets` for enumeration."
-      },
-      "tests_added": [
-        ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_prints_every_declared_name",
-        ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_absent_file_exits_3",
-        ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_bad_invocation_exits_2",
-        ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['MEDIUM: list-targets exists']"
-      ],
-      "mutation_evidence": "Mechanism: `list-targets`'s row-printing loop replaced with a bare `return 0`; test_list_targets_prints_every_declared_name failed for the right reason (empty output where ['one', 'two'] was expected). Prose: deleted 'sanctioned enumeration' from the live SKILL.md, re-ran GovernanceSurvivalTest -> failed naming exactly 'MEDIUM: list-targets exists' (the token 'list-targets' alone is NOT used as the sole anchor, since it occurs twice in the file -- verified by grep count before choosing the token pair). Both reverted; full suite re-confirmed green."
-    }
-  ],
-  "mutation_testing_note": "Every mechanism-level assertion (HIGH-1's exception hierarchy and CLI exit codes, MEDIUM's list-targets) was verified by an actual revert-run-restore cycle: PYTHONDONTWRITEBYTECODE=1, python -B, targeted -k selection, confirmed red for the stated reason, reverted, confirmed green. Every prose-only fix (HIGH-1's belt-and-braces rule, HIGH-2, HIGH-3, HIGH-4, and all three of the MEDIUM changelog-harvest _GOVERNANCE_RULES entries) was ALSO verified by a real, live mutant against core/surface/skills/release/SKILL.md itself: the load-bearing phrase was deleted, GovernanceSurvivalTest was re-run, the failure was confirmed to name exactly that one rule and no other, and the file was restored (git diff / build-surface --check confirmed byte-identical to the pre-mutant state afterward). Token uniqueness (grep-count == 1 across the real file for each rule's anchor phrase) was checked before trusting any of these mutants -- an earlier draft used tokens that occurred in two separate sentences and would have survived deleting either one alone; those were replaced with phrases unique to the single sentence each rule protects. This closes the gap a purely synthetic-fixture proof (GovernanceRuleCheckerTest.test_deleting_one_rules_tokens_is_detected_and_only_that_one, which proves the CHECKER discriminates in the abstract, not that a given rule's tokens are unique in the REAL file) would have left open. What remains genuinely irreducible, and is NOT closed by any test in this campaign, is whether an agent reading the restored prose actually behaves as it prescribes -- that is the AC-6.6 'agent judgment' layer, and re-running the real agent-judgment exercise against the post-remediation skill is what actually re-validates it.",
-  "verification": {
-    "as_of": "run 8 / commit 5192ef7 (2026-07-31)",
-    "note": "Refreshed at record time. An earlier draft of this file carried run-1-era counts (256 unit tests, 60 consumer-smoke, three pre-tag commands) alongside a CURRENT proof hash, which invites the inference that the whole record was re-verified when only the hash had been. Counts and hash are now from the same commit.",
-    "suites_green": [
-      ".github/scripts/test_release_lib.py (272 tests)",
-      ".github/scripts/test_consumer_smoke.py (69 tests, 1 skipped)",
-      ".github/scripts/test_release_trace.py (28 tests)",
-      ".github/scripts/test_release_workflow.py (60 tests)",
-      ".github/scripts/test_ci_impact.py (54 tests)",
-      ".github/scripts/test_check_skill_proof_fresh.py (20 tests)"
-    ],
-    "build_surface_check": "OK (claude, codex, pi in sync)",
-    "sync_core_check": "OK (55 core file(s) x 3 plugin(s), all byte-identical)",
-    "pre_tag_commands": {
-      "python3 .github/scripts/check_badge_consistency.py": 0,
-      "python3 .github/scripts/check_command_catalog.py": 0,
-      "python3 .github/scripts/check_skill_proof_fresh.py": 0,
-      "python3 tools/build-host-packages.py --check": 0
-    },
-    "pre_tag_note": "All four DECLARED rows executed through load_targets() and run for real, not assumed from the file's text. check_skill_proof_fresh.py is the newly wired one."
-  },
-  "not_remediated_here": [
-    "Run 8's MEDIUM/LOW findings are FILED, not fixed (issue #570). Fixing any of them edits the skill, invalidates this hash, and fails the pre-tag gate until a fresh exercise runs -- which is the mechanism working, not an obstacle to route around.",
-    "The two sharpest: $BASE_VERSION is defined as a MAXIMUM with no command computing it (the same defect class `semver-greater` closed one level down), and Phase 1 step 6's WRITE side names no command at all -- with no stdlib TOML writer, the prose forces the 'typed' edit its own heading forbids.",
-    "The proof covers ONE rendering (the `claude` host's plugins/ca/skills/release/SKILL.md). The ca-codex and ca-pi routine copies are proven byte-consistent with the same core/surface source by sync-core/build-surface --check, but neither has been independently exercised, and check_skill_proof_fresh.py deliberately does not fabricate that coverage.",
-    "Whether an agent reading this prose behaves as prescribed is irreducibly unprovable by any test in this campaign. Eight blind runs is evidence, not proof; the freshness gate exists so the evidence cannot silently go stale."
-  ],
-  "wiring": {
-    "status": "WIRED as of this record.",
-    "row": "`pre-tag: python3 .github/scripts/check_skill_proof_fresh.py` on the [ca] row of .codearbiter/release-targets.md",
-    "decision": "DECISION-0034 (pre-tag commands are check-only and non-mutating). This one reads two files and prints; it never writes.",
-    "consequence": "Every future edit to plugins/ca/skills/release/SKILL.md now fails `ca`'s pre-tag gate until the exercise is re-run and this artifact refreshed. Intended. The cost is one blind run per skill revision; the purpose is that a prose change to the release lane cannot ship on the strength of a green mechanical suite alone -- which all eight runs demonstrated it should not."
+ "$schema_note": "Agent-judgment exercise record for the release skill (issue #563, spec .codearbiter/specs/release-portable-fixture.md AC-6.6 'agent judgment' layer). EIGHT independent blind exercises were run, each against the skill as the previous one left it. This file records the campaign; `exercise` below is the one run whose hash the freshness gate enforces. It is a record, not a test -- no number in it is re-derived by any test in this suite.",
+ "proof_current": false,
+ "proof_current_note": "FALSE, deliberately, as of run 18 (2026-08-01). Run 18 exercised the shipped skill at 33e82a6abdb952058b609c6e4fa5ad8c2d5bab503b5521bb8a5c3a901a5b5010 and returned two HIGHs. One was a prose parenthetical instructing an interactive rebase over ALREADY-PUBLISHED commits, which the same file forbids twice. That could not ship in order to obtain a green gate, so it was fixed AFTER the exercise -- see post_exercise_delta. The recorded hash is therefore one commit behind the shipped skill, and this gate WILL fail until run 19 runs against the final bytes. That is the gate working, not a defect in it. Never hand-edit this field to clear a block.",
+ "stopping_rule": {
+  "what_was_applied": "Agreed BEFORE run 16 and amended once, in writing, in .codearbiter/sprint-log.md. At most two runs per remediation round; the final run files findings at every severity and changes nothing, so its hash is the proof by construction. Amended after run 17, because the final exercise had been staged concurrently with a CI cycle that could still demand skill edits -- and did. The amendment added the terminator the original lacked: if a forcing function moves the skill after the exercise, record against the exercised hash and state the delta, rather than running again.",
+  "what_this_record_does_NOT_claim": "Not convergence, and not a clean run. Run 18 returned two HIGHs. The claim is narrower and checkable: the shipped skill was exercised end-to-end by an agent given no expected outcomes; the four properties runs 16 and 17 fixed were attacked directly and held; and everything found is either fixed or filed with a number. The HIGH sequence across this session is 2, 2, 2 -- each pair in a region the previous pair's fix had not covered, which is coverage expanding rather than the skill degrading, but it is emphatically not settlement."
+ },
+ "exercise": {
+  "run": 18,
+  "date": "2026-08-01",
+  "role": "THE RECORDED PROOF. Staged only after CI went green with zero pending skill edits, so the archived bytes, the worktree bytes and the shipped payload were verified byte-identical before the agent read them. Directed to attack the four specific properties runs 16 and 17 had just fixed, rather than to roam.",
+  "method": "An agent was handed only the installed release skill and the consumer repository, and followed the ca lane from its first line. 58 commands, all read-only against the consumer; every write-bearing behaviour was tested in throwaway scratch repositories. Every helper was additionally run through a plugin root copied to a path containing a space. No expected outcomes were given and no prior run's findings were shared.",
+  "exercised_skill_sha256": "33e82a6abdb952058b609c6e4fa5ad8c2d5bab503b5521bb8a5c3a901a5b5010",
+  "exercised_skill_path": "plugins/ca/skills/release/SKILL.md",
+  "exercised_skill_path_note": "72,531 bytes. `git archive HEAD` and the working tree hashed identically at stage time, so the exercised bytes are the COMMITTED bytes of b74ace58.",
+  "high_findings": 2,
+  "agents_own_verdict": "\"All four attack targets held.\" Both HIGHs sit at the Back-fill seam -- a region no earlier run had probed -- and both are the same shape: two individually correct paragraphs never read against each other.",
+  "fixes_confirmed_working": {
+   "space-in-path quoting (run 16 HIGH-1)": "Every helper ran with no quoting failure from a root spelled 'Plugin Root With Space'. No unquoted straggler anywhere in the file.",
+   "clean-tree exemption and root anchoring (runs 16/17)": "The `:/` form with two `,top` exclusions returns the same correct answer from the repo root and from a subdirectory, filters both remedy-written paths, and still reports real dirt. The bare-`.` counterfactual reproduces the documented silent pass exactly.",
+   "the 6c remedy no longer trips step 7 (run 17 HIGH-2)": "`releasehash.py record` genuinely writes into `.codearbiter/.markers/`, the path the exemption now names.",
+   "rebuild cannot move the lane's cwd (run 17 HIGH-1)": "The subshell contains the `cd`, verified inside a SINGLE bash invocation so the harness's per-call cwd reset could not fake the result.",
+   "manifest-ahead STOP (run 14)": "Fired correctly: LAST_TAG v2.8.13, manifest 2.11.0, newest changelog section [2.11.0]. Local and remote tag sets identical, so the STOP is genuine rather than an unfetched-tags artifact."
   }
+ },
+ "campaign": {
+  "high_findings_by_run": [
+   4,
+   2,
+   0,
+   2,
+   1,
+   1,
+   1,
+   0,
+   2,
+   2,
+   1,
+   1,
+   0
+  ],
+  "runs": [
+   {
+    "run": 1,
+    "highs": 4,
+    "note": "Found the back-fill overwrite path -- a data-loss defect -- plus three others. Detail preserved in `findings` below."
+   },
+   {
+    "run": 2,
+    "highs": 2,
+    "note": "Wiring seams: peel-tag absent from the shipped CLI (so the mandated `git tag -a` made a HEALTHY tag classify as abort_mismatch), and backfill-detect omitting latest-eligible. Shipped in 73bd884. Its summary named the pattern the whole campaign kept hitting: 'The mechanisms are individually well tested; what is unspecified is how a caller wires them together.'"
+   },
+   {
+    "run": 3,
+    "highs": 0,
+    "note": "Recorded at the time as convergence. It was not -- see `stopping_rule`."
+   },
+   {
+    "run": 4,
+    "highs": 2,
+    "note": "git tag's default cleanup silently deleting every Markdown heading from the tag message (issue #569, ALREADY FILED and shipped unfixed; it has permanently corrupted this repo's published v2.8.13), and a stale manifest read returning a terminal abort_mismatch on a healthy release. The second was introduced by this campaign's own fix for run 3's findings."
+   },
+   {
+    "run": 5,
+    "highs": 1,
+    "note": "The `<none>` sentinel substituted into `git log <none>..HEAD`, exit 128 -- on the first release of every back-filled project. Run 4 had found this and rated it MEDIUM; filing rather than fixing it was an error, and run 5's HIGH rating was correct."
+   },
+   {
+    "run": 6,
+    "highs": 1,
+    "note": "A project that had shipped 1.4.2 without ever tagging derived 0.1.0 and wrote it over its own manifest, walking the version backward with all three existing guards passing."
+   },
+   {
+    "run": 7,
+    "highs": 1,
+    "note": "Caused by run 6's fix: the base was stated only in the no-tag branch, so a TAGGED project with a leading manifest derived off the tag and then hard-blocked against its own manifest floor, with no remedy stated. Fixed by collapsing two floors into one $BASE_VERSION."
+   },
+   {
+    "run": 8,
+    "highs": 0,
+    "note": "The recorded proof. Same region as run 7's fix; no HIGH."
+   },
+   {
+    "run": 9,
+    "highs": 2,
+    "note": "The pre-tag runner shipped one commit earlier asserted a PRISTINE tree, which blocks every release -- Phase 1 bumps the manifest before that step runs, and must. Also ran commands in the inherited cwd, so a declared check could pass having inspected a different repository."
+   },
+   {
+    "run": 10,
+    "highs": 2,
+    "note": "Step 7 was conditional, so a literal traversal tagged an uncommitted tree; and the mutation assertion compared porcelain LINES, so a command mutating an already-modified $CHANGELOG or $MANIFEST exited 0 undetected."
+   },
+   {
+    "run": 11,
+    "highs": 1,
+    "note": "The exit-6 remedy written one commit earlier could not terminate (the mutation recurs on every invocation), destroyed the composed section, and was inexecutable on a first release."
+   },
+   {
+    "run": 12,
+    "highs": 1,
+    "note": "The skill CLAIMED classify catches a partial manifest bump. It does not: classify_publish_state short-circuits on `if not tag_exists` before comparing versions, so the catch fires only on the resume path. No all-paths guard existed; check-manifests is it."
+   },
+   {
+    "run": 13,
+    "highs": 0,
+    "note": "THE RECORDED PROOF. Exercised every fix from runs 9-12 together and found no HIGH."
+   }
+  ],
+  "what_the_campaign_demonstrated": "Every HIGH after run 1 was in a SEAM -- how a caller wires the mechanisms together -- not in a mechanism. The mechanical suites were green throughout: 272 unit tests, 69 consumer-portability tests, mutation-verified governance rules. None of them could see a prose instruction that names a command nobody can run, sources an argument from the wrong read, or hands an operator a sentinel where a revision is required. Three of the HIGHs were introduced by this campaign's own remediation of an earlier HIGH, which is the strongest available argument for keeping the exercise in the loop rather than trusting a green suite.",
+  "self_inflicted_pattern": "Every HIGH from run 9 through run 12 was introduced by the campaign's own preceding fix, or asserted a property the code did not have. Run 6's fix caused run 7's HIGH; the run-9 runner caused run 10's; the run-10 exit-6 remedy caused run 11's; the run-7 coupling paragraph made the claim run 12 disproved. That is the strongest evidence in this record for keeping a real agent in the loop -- and equally the reason the loop needs a human decision about when to stop, since a green mechanical suite never once saw any of them."
+ },
+ "post_remediation_skill_sha256": {
+  "plugins/ca/skills/release/SKILL.md": "bb4c79287a4e60db530ea64e1a6829ae714d8e47dac579af2c1bbd3bfacba309",
+  "core/surface/skills/release/SKILL.md": "b9cbf3a0e7bb01abcb28aa77c6a18ba55fc21e56a662f2d41c804f3cfdf26945",
+  "plugins/ca-pi/routines/release/SKILL.md": "9c1b916988bcaac72f5e3be1fc7ed1d9bd14d25d8407aa63a1f17220a74e93b4",
+  "plugins/ca-codex/routines/release/SKILL.md": "5b02ee87807188a6045c929d118d92e3b8c675e32b82463b1f0bf666526635ae",
+  "note": "Computed after this remediation's edits, `tools/build-surface.py`, and `tools/sync-core.py`. `build-surface --check` and `sync-core --check` both report OK against these files as of this record. NOT a proof hash -- see `proof_current`."
+ },
+ "findings": [
+  {
+   "id": "HIGH-1",
+   "title": "Back-fill's own trigger could not distinguish a genuinely absent declared file from an existing-but-blockless one, so back-fill could silently overwrite an operator's existing file",
+   "status": "remediated",
+   "mechanism_fix": {
+    "file": "core/pysrc/_releaselib.py",
+    "summary": "Added FileExistsNoBlockError, a SIBLING of AbsentBlockError (not a subclass) under ReleaseTargetsError. load_targets() now raises it when open() succeeds but parse_release_targets() finds no block, so an `except AbsentBlockError:` clause -- the Back-fill lane's trigger -- never catches the existing-file case. parse_release_targets() itself is unchanged: it has no way to know whether a file existed, so a blockless STRING still raises AbsentBlockError exactly as before.",
+    "cli_fix": "core/pysrc/_releaselib.py main(): added _targets_error_exit_code(exc) -- exit 3 for genuinely-absent (AbsentBlockError), exit 4 for every other declared-file error (FileExistsNoBlockError, malformed, empty, ...). Exit 2 is reserved for bad invocation / unrecognised target and is never reused for either declared-file state, so a caller can discriminate by exit code alone, without parsing English. Applied to both `tag-prefix` and the new `list-targets` subcommand."
+   },
+   "prose_fix": {
+    "file": "core/surface/skills/release/SKILL.md",
+    "summary": "\"Targets\" and \"Back-fill\" sections now name FileExistsNoBlockError explicitly, state the CLI exit-code discrimination, and reiterate that the Back-fill lane triggers ONLY on AbsentBlockError. Back-fill step 3 additionally adds a belt-and-braces prose rule on top of the mechanism fix: immediately before minting the marker or writing anything, re-confirm no file exists yet at the target path; if one does (a race, or the lane reached by any route other than the documented AbsentBlockError trigger), STOP without writing and surface it. This closes the task's second, independently-stated requirement ('have it refuse to write over any existing file regardless') -- the mechanism fix makes the TRIGGER correct, this makes the WRITE itself refuse to clobber regardless of how the trigger was reached."
+   },
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: FileExistsNoBlockTest (5 tests)",
+    ".github/scripts/test_release_lib.py: CoreCLITest.test_tag_prefix_absent_declared_file_exits_3_not_a_traceback (renamed/updated from _exits_2_)",
+    ".github/scripts/test_release_lib.py: CoreCLITest.test_tag_prefix_existing_no_block_file_exits_4_distinct_from_absent",
+    ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_* (shares the exit-code discriminator)",
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['HIGH-1: back-fill distinguishes exists-vs-absent'], _GOVERNANCE_RULES['HIGH-1: back-fill re-checks existence at write time, belt-and-braces']"
+   ],
+   "mutation_evidence": "Mechanism (3 real code mutants, run/reverted): (1) load_targets reverted to bare `return parse_release_targets(text)` -> FileExistsNoBlockTest failed 2/5 for the right reason (AbsentBlockError propagated instead of FileExistsNoBlockError; the never-caught-by-except-AbsentBlockError test also failed). (2) _targets_error_exit_code reverted to `return 2` unconditionally -> 3 CoreCLITest tests failed (3 != 2, 3 != 2, 4 != 2). (3) FileExistsNoBlockError's base class changed to AbsentBlockError (subclass instead of sibling) -> both the sibling-not-subclass test AND the never-caught-by-except test failed, proving the sibling relationship is load-bearing. Prose (2 real text mutants, run/reverted against the live SKILL.md, GovernanceSurvivalTest re-run each time): deleting 'mechanically distinct' -> failed naming exactly 'HIGH-1: back-fill distinguishes exists-vs-absent'; deleting 'STOP without writing' (the belt-and-braces sentence) -> failed naming exactly 'HIGH-1: back-fill re-checks existence at write time, belt-and-braces'. All five reverted; full suite (256/256) and build-surface --check re-confirmed green afterward. Token uniqueness was checked (grep-count == 1 per rule's tokens against the real file) before trusting the mutant, after an earlier draft of this file's tokens ('never runs against a file that already exists', 'in any state') were found to occur twice in the real text and would have survived deletion of either single occurrence -- replaced with tokens unique to one sentence."
+  },
+  {
+   "id": "HIGH-2",
+   "title": "Pre-flight's mandatory CONTEXT.md read STOPs a fresh consumer whose only .codearbiter/ file is the one Back-fill itself just wrote, dead-ending the lane Back-fill exists to offer",
+   "status": "remediated",
+   "investigation": "Read core/pysrc/_activationlib.py and every arbiter_active() call site (pre-write.py, pre-edit.py, pre-bash.py, pre-read.py, post-write-edit.py, git-enforce.py, prune-transcript.py). Confirmed: CONTEXT.md's `arbiter: enabled` frontmatter gates HOOK ENFORCEMENT only, not skill invocability. A skill's SKILL.md prose loads and is followed by the agent regardless of CONTEXT.md's presence. Pre-flight's CONTEXT.md STOP is therefore a self-imposed prose rule, not an activation hard-block -- so making it conditional (rather than 'the consumer literally cannot reach this skill') is the correct fix.",
+   "prose_fix": {
+    "file": "core/surface/skills/release/SKILL.md",
+    "summary": "The Pre-flight CONTEXT.md bullet now reads 'when it exists'. Its absence, when the consumer reached this skill only via the Back-fill lane, is no longer a STOP: the default branch is resolved directly via `git symbolic-ref refs/remotes/origin/HEAD` (or asked of the user), narrowly for the one fact this skill uses CONTEXT.md for. A project with no .codearbiter/ state at all and no interest in the release-only footprint is still routed to context-creation, unchanged."
+   },
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['HIGH-2: CONTEXT.md is conditional on the Back-fill path']"
+   ],
+   "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'not itself a STOP' from the Pre-flight CONTEXT.md bullet, re-ran GovernanceSurvivalTest -> failed naming exactly 'HIGH-2: CONTEXT.md is conditional on the Back-fill path' and no other rule. Restored; full suite re-confirmed green."
+  },
+  {
+   "id": "HIGH-3",
+   "title": "Back-fill's own write to release-targets.md dirties the tree inside the payload window it just declared, and the prose never said what to do about it",
+   "status": "remediated",
+   "prose_fix": {
+    "file": "core/surface/skills/release/SKILL.md",
+    "summary": "Back-fill step 3 now: (a) mints the release-targets-authoring marker before writing (release-targets.md is a marker-gated protected-state file per the sibling protected-state-machinery sprint, even though enrolment -- T-33 -- is still PENDING on this branch; the prose is now forward-consistent with that landing rather than needing a second edit then), (b) removes the marker after writing, (c) explicitly instructs committing the new file through commit-gate as `chore: declare release targets` BEFORE re-entering Pre-flight (which STOPs on a dirty tree), and (d) states this is expected and inert: a `chore` commit contributes no bump and no changelog section, so the extra commit changes neither the derived version nor what ships."
+   },
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES[\"HIGH-3: back-fill's own write is committed before Pre-flight\"]"
+   ],
+   "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'This write itself dirties the tree', re-ran GovernanceSurvivalTest -> failed naming exactly \"HIGH-3: back-fill's own write is committed before Pre-flight\" and no other rule. Restored; full suite re-confirmed green."
+  },
+  {
+   "id": "HIGH-4",
+   "title": "resume_publish points at Phase 3 (publish) with no restated authorization requirement, immediately after Phase 2 composes a local, unauthorized tag",
+   "status": "remediated",
+   "assessment": "Considered widening classify_publish_state (core/pysrc/_releaselib.py) to distinguish a pushed tag from a local one. Rejected: doing so needs either a `git ls-remote` round-trip threaded into a currently-pure classifier (breaking its 'no I/O' contract, shared with every other mechanism function in this module) or a 7th CLI positional argument threaded through the CLI, the CI shim, test_release_workflow.py's action-step invocations, and test_release_trace.py -- real, non-trivial blast radius for a case the prose restatement already closes without it: the Phase-3 gate is unconditional on HOW resume_publish was reached.",
+   "prose_fix": {
+    "file": "core/surface/skills/release/SKILL.md",
+    "summary": "Phase 2 step 1's resume_publish branch now explicitly restates that Phase 3 publication still requires explicit user authorization exactly as a fresh publish does, and that a locally-composed tag from a prior Phase 2 invocation is not itself that authorization. The rejected classifier-widening option and why is stated inline."
+   },
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['HIGH-4: resume_publish still requires authorization']"
+   ],
+   "mutation_evidence": "Real mutant run against the live SKILL.md: deleted the entire authorization-restatement clause from Phase 2 step 1, re-ran GovernanceSurvivalTest -> failed exactly one subtest (payload='core/surface (source)') naming exactly 'HIGH-4: resume_publish still requires authorization'. Restored; full suite (256/256) re-confirmed green with build-surface --check and sync-core --check both OK afterward."
+  },
+  {
+   "id": "MEDIUM-changelog-1",
+   "title": "perf is harvested for CHANGELOG: footers but the BLOCK sentence named only feat/fix, so a footerless perf silently bumped and vanished from the changelog",
+   "status": "remediated",
+   "prose_fix": "Phase 1 step 3 (new, moved ahead of the manifest bump) states the BLOCK covers the full harvested set: feat/fix/perf/refactor.",
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['MEDIUM: footer BLOCK covers the full harvested set']"
+   ],
+   "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'MUST carry a `CHANGELOG:` footer', re-ran GovernanceSurvivalTest -> failed naming exactly 'MEDIUM: footer BLOCK covers the full harvested set'. Restored; full suite re-confirmed green.",
+   "operational_impact_on_this_repo": "Checked the symmetric direction of the docs/chore history check above: `git log v2.8.13..HEAD --pretty='%h %s' -- plugins/ca/` (v2.8.13 is `ca`'s real last tag; no v2.9.x/2.10.x/2.11.0 tag exists yet even though CHANGELOG.md and plugin.json already carry composed-but-unpublished sections up to 2.11.0) contains FIVE commits this widened BLOCK now covers and none of the old prose did: `b98c321`/`4e2dae9`/`45f5046`/`5429862` (refactor, the #321 _hooklib partition slices) and `03995ab` (perf, the statusline ledger write). None of the five carries a `CHANGELOG:` footer in its commit body (verified: `git log -1 --pretty=%B <sha> | grep -c '^CHANGELOG:'` returns 0 for all five), even though their content is ALREADY manually present in CHANGELOG.md under already-composed `### Changed` sections for 2.10.7/2.10.8. This means the NEXT real `/release ca` invocation in this repository will BLOCK at the new Phase 1 step 3 on these five commits, requiring operator reconciliation before it can proceed -- this is a genuine, immediate consequence of the fix this finding mandated, not a hypothetical. It is disclosed here rather than silently discovered at tag time; resolving it (retro-fitting footers is not practical on already-merged commits, so the operator's actual path is likely a documented one-time override or backfilling the missing footers via amended trailers on a rebase before the next release) is a maintainer decision this remediation does not make unilaterally."
+  },
+  {
+   "id": "MEDIUM-changelog-2",
+   "title": "refactor bumps patch but was neither harvested nor grouped, so a refactor-only window bumped, composed an empty changelog section, and tripped no BLOCK",
+   "status": "remediated",
+   "decision": "refactor is now harvested into the changelog under a 'Changed' group, matching this repository's OWN existing changelog convention (verified: CHANGELOG.md already uses '### Changed' for refactor-shaped entries, e.g. the #321 _hooklib partition slices) rather than inventing a new convention. refactor is now subject to the same missing-footer BLOCK as feat/fix/perf.",
+   "prose_fix": "Phase 1 step 5 groups Added(feat)/Fixed(fix)/Performance(perf)/Changed(refactor)."
+  },
+  {
+   "id": "MEDIUM-changelog-3",
+   "title": "A CHANGELOG: footer on a non-bumping commit (docs/chore/test/ci) was silently discarded, against the same paragraph's own 'never silently drop a user-visible change' rule",
+   "status": "remediated",
+   "investigation": "Ran `git log --grep='CHANGELOG:' --pretty='%s'` filtered to docs/chore/test/ci-typed subjects against this repository's own history before choosing a resolution: found 8 real, pre-existing examples (docs(site), chore(ca), ci:, chore: relicense, etc.) -- a recurring, evidently intentional pattern in THIS repo's own commit history, not a mistake. A BLOCK on this pattern would therefore block this repository's own next several releases on its own historical norm. Chose harvest-not-drop over BLOCK for this reason.",
+   "decision": "A CHANGELOG: footer on ANY test/docs/chore/ci commit is now harvested into the same section's Changed group when a release is otherwise happening (i.e. some other commit in the window bumps). This does NOT by itself force a release: if the whole window is non-bumping, the existing STOP (nothing to release) still applies even when a non-bumping commit in it carries a footer -- widening what a bare footer alone can trigger was treated as a separate, out-of-scope design question and stated as such in the prose rather than silently decided.",
+   "prose_fix": "Phase 1 step 5's harvesting rule, second sentence.",
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['MEDIUM: a footer on a non-bumping commit is harvested, not dropped']"
+   ],
+   "mutation_evidence": "Real mutant run against the live SKILL.md: deleted 'Also harvest a `CHANGELOG:` footer from any', re-ran GovernanceSurvivalTest -> failed naming exactly 'MEDIUM: a footer on a non-bumping commit is harvested, not dropped'. Restored; full suite re-confirmed green."
+  },
+  {
+   "id": "MEDIUM-changelog-4",
+   "title": "Step 3 (old numbering) bumped the manifest before step 4's footer-completeness BLOCK fired, so a BLOCKed release could leave a bumped manifest behind with nothing shipped",
+   "status": "remediated",
+   "prose_fix": "Reordered Phase 1: the footer-completeness check is now step 3, BEFORE the manifest bump (now step 4) and the changelog composition (now step 5). A BLOCK at step 3 now happens before any file is touched."
+  },
+  {
+   "id": "MEDIUM-list-targets",
+   "title": "The single-target rule requires knowing a target's name, but tag-prefix takes the name as INPUT and there was no subcommand to enumerate declared targets, forcing a hand-parse of the grammar the skill says to resolve only through the tested helper",
+   "status": "remediated",
+   "mechanism_fix": {
+    "file": "core/pysrc/_releaselib.py",
+    "summary": "Added the `list-targets` subcommand: prints every declared target's name, one per line, in declaration order. Shares default_targets_path()/--targets-file resolution and the same exit-3/exit-4 discrimination as tag-prefix."
+   },
+   "prose_fix": {
+    "file": "core/surface/skills/release/SKILL.md",
+    "summary": "The 'one command, any number of targets' paragraph now points to `list-targets` for enumeration."
+   },
+   "tests_added": [
+    ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_prints_every_declared_name",
+    ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_absent_file_exits_3",
+    ".github/scripts/test_release_lib.py: CoreCLITest.test_list_targets_bad_invocation_exits_2",
+    ".github/scripts/test_release_lib.py: _GOVERNANCE_RULES['MEDIUM: list-targets exists']"
+   ],
+   "mutation_evidence": "Mechanism: `list-targets`'s row-printing loop replaced with a bare `return 0`; test_list_targets_prints_every_declared_name failed for the right reason (empty output where ['one', 'two'] was expected). Prose: deleted 'sanctioned enumeration' from the live SKILL.md, re-ran GovernanceSurvivalTest -> failed naming exactly 'MEDIUM: list-targets exists' (the token 'list-targets' alone is NOT used as the sole anchor, since it occurs twice in the file -- verified by grep count before choosing the token pair). Both reverted; full suite re-confirmed green."
+  }
+ ],
+ "mutation_testing_note": "Every mechanism-level assertion (HIGH-1's exception hierarchy and CLI exit codes, MEDIUM's list-targets) was verified by an actual revert-run-restore cycle: PYTHONDONTWRITEBYTECODE=1, python -B, targeted -k selection, confirmed red for the stated reason, reverted, confirmed green. Every prose-only fix (HIGH-1's belt-and-braces rule, HIGH-2, HIGH-3, HIGH-4, and all three of the MEDIUM changelog-harvest _GOVERNANCE_RULES entries) was ALSO verified by a real, live mutant against core/surface/skills/release/SKILL.md itself: the load-bearing phrase was deleted, GovernanceSurvivalTest was re-run, the failure was confirmed to name exactly that one rule and no other, and the file was restored (git diff / build-surface --check confirmed byte-identical to the pre-mutant state afterward). Token uniqueness (grep-count == 1 across the real file for each rule's anchor phrase) was checked before trusting any of these mutants -- an earlier draft used tokens that occurred in two separate sentences and would have survived deleting either one alone; those were replaced with phrases unique to the single sentence each rule protects. This closes the gap a purely synthetic-fixture proof (GovernanceRuleCheckerTest.test_deleting_one_rules_tokens_is_detected_and_only_that_one, which proves the CHECKER discriminates in the abstract, not that a given rule's tokens are unique in the REAL file) would have left open. What remains genuinely irreducible, and is NOT closed by any test in this campaign, is whether an agent reading the restored prose actually behaves as it prescribes -- that is the AC-6.6 'agent judgment' layer, and re-running the real agent-judgment exercise against the post-remediation skill is what actually re-validates it.",
+ "verification": {
+  "as_of": "run 18 / commit b74ace58 (2026-08-01)",
+  "note": "Counts and hash are from the same commit. The two-sentence safety fix described in post_exercise_delta landed after these counts were taken and changed no test.",
+  "suites_green": [
+   ".github/scripts/test_release_lib.py (346 tests)",
+   ".github/scripts/test_consumer_smoke.py (69 tests, 1 skipped)",
+   ".github/scripts/test_release_trace.py (28 tests)",
+   ".github/scripts/test_release_workflow.py (68 tests)",
+   ".github/scripts/test_ci_impact.py (54 tests)",
+   ".github/scripts/test_check_skill_proof_fresh.py (23 tests)"
+  ],
+  "build_surface_check": "OK (claude, codex, pi in sync)",
+  "ci": "green on b74ace58; all 51 PR checks pass, Pages deploy correctly skipping on a PR"
+ },
+ "not_remediated_here": {
+  "run_18_HIGH_1": "Back-fill's own first release cannot clear Phase 1 step 3. The adoption floor is derived from .codearbiter/CONTEXT.md, which Pre-flight explicitly says a back-filled consumer does not have. An empty floor means the whole history is footer-checked -- the exact unbounded NEEDS-TRIAGE block A-5.5 exists to prevent, on the only path that lane serves. Reproduced in a scratch repo: 4 commits, 4 NEEDS-TRIAGE lines. This is a design gap, not a sentence: the floor needs a source that does not presuppose onboarding.",
+  "run_18_mediums_and_lows": "Four MEDIUMs and three LOWs from run 18.",
+  "earlier_runs": "Run 16's and run 17's non-HIGH findings.",
+  "tracking": "Filed as GitHub issues; the numbers are recorded in PR #576's description."
+ },
+ "wiring": {
+  "status": "WIRED as of this record.",
+  "row": "`pre-tag: python3 .github/scripts/check_skill_proof_fresh.py` on the [ca] row of .codearbiter/release-targets.md",
+  "decision": "DECISION-0034 (pre-tag commands are check-only and non-mutating). This one reads two files and prints; it never writes.",
+  "consequence": "Every future edit to plugins/ca/skills/release/SKILL.md now fails `ca`'s pre-tag gate until the exercise is re-run and this artifact refreshed. Intended. The cost is one blind run per skill revision; the purpose is that a prose change to the release lane cannot ship on the strength of a green mechanical suite alone -- which all eight runs demonstrated it should not."
+ },
+ "post_exercise_delta": {
+  "why_this_key_exists": "The stopping rule agreed before run 16 said the final exercise files everything and changes nothing, so its hash would be the proof by construction. Run 18 returned a finding that could not be filed and shipped: a destructive instruction. The rule's own escape clause applies -- record against the exercised hash and state the delta here, rather than spawning run 19 and restarting the loop.",
+  "commit": "the commit immediately following b74ace58 on sprint/portable-release-and-protected-state",
+  "changed_after_the_exercise": [
+   "Phase 1 step 3's amend/rebase parenthetical. It read 'both are fine at this point, since nothing in this window has been tagged or pushed'. Measured on this repository: 38 of the 57 footer-less commits in the window are already ancestors of origin/main. Following the sentence literally means an interactive rebase over published history and a force-push, which the same file forbids. It now requires a `git merge-base --is-ancestor` check first, and routes an already-published commit to classification-from-message -- which is what the manifest-ahead STOP 30 lines earlier already says about the identical commits.",
+   "Step 7's cross-reference said 'the same single exclusion'; the command it points at has carried two since the .markers/ exemption landed. Wording only."
+  ],
+  "what_run_19_must_do": "Re-exercise against the post-fix hash and set proof_current back to true. Until then this gate correctly blocks ca's pre-tag."
+ }
 }
