@@ -2470,6 +2470,124 @@ class CoreCLITest(unittest.TestCase):
             # Only the NEW path is reported, not the operator's own edits.
             self.assertNotIn("package.json", proc.stderr)
 
+    # ---- A-2.10: pre-tag content-hash confirmation (releasehash.py) ----
+    def _releasehash(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_rh_under_test", os.path.join(REPO_ROOT, "core", "pysrc", "releasehash.py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_pre_tag_hash_is_order_sensitive(self):
+        # The commands run in DECLARED ORDER, and a check that ran after a
+        # rebuild is not the same check as one that ran before it. A
+        # reorder must therefore invalidate the confirmation, not preserve
+        # it -- an order-insensitive digest (sorted, or a set) would call a
+        # reordered lane "confirmed".
+        rh = self._releasehash()
+        self.assertNotEqual(
+            rh.pre_tag_digest(["check_a.py", "check_b.py"]),
+            rh.pre_tag_digest(["check_b.py", "check_a.py"]))
+
+    def test_pre_tag_hash_cannot_collide_across_a_join(self):
+        # The length prefix's ACTUAL job, found by a surviving mutant: my
+        # first version of this test used ["ab","c"] vs ["a","bc"], which
+        # already differ once joined on a newline, so removing the prefix
+        # left the test green. The collision the prefix really prevents
+        # needs a command CONTAINING the separator:
+        #
+        #   ["a\n b"]  -> "1\na\nb"     (one command, embedded newline)
+        #   ["a", "b"] -> "1\na\nb"     (two commands)
+        #
+        # Identical without the prefix. That is not academic here: these
+        # are shell command strings, and a multi-line command in a declared
+        # row would let a two-command list masquerade as the one-command
+        # list an operator confirmed.
+        rh = self._releasehash()
+        self.assertNotEqual(rh.pre_tag_digest(["a\nb"]),
+                            rh.pre_tag_digest(["a", "b"]))
+        # And the plain adjacent-content case, kept for completeness.
+        self.assertNotEqual(rh.pre_tag_digest(["ab", "c"]),
+                            rh.pre_tag_digest(["a", "bc"]))
+
+    def test_pre_tag_hash_never_raises_on_junk(self):
+        # Mechanism invariant: this runs inside a release lane, so a
+        # malformed row must degrade rather than raise mid-release.
+        rh = self._releasehash()
+        for junk in (None, 42, "a string", [None, 7], {}):
+            self.assertEqual(len(rh.pre_tag_digest(junk)), 64)
+
+    def test_pre_tag_hash_state_machine_over_a_real_marker(self):
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            original = ["python3 checks/a.py"]
+            self.assertEqual(
+                rh.confirmation_state(root, "app", original), rh.NEVER)
+            rh.record_confirmation(root, "app", rh.pre_tag_digest(original))
+            self.assertEqual(
+                rh.confirmation_state(root, "app", original), rh.CONFIRMED)
+            # THE case this exists for: the executed commands changed after
+            # somebody confirmed them.
+            self.assertEqual(
+                rh.confirmation_state(root, "app", ["python3 checks/evil.py"]),
+                rh.CHANGED)
+            # Appending is a change too -- a lane that only compared the
+            # first entry would admit a smuggled second command.
+            self.assertEqual(
+                rh.confirmation_state(root, "app", original + ["python3 x.py"]),
+                rh.CHANGED)
+
+    def test_pre_tag_hash_confirmation_is_per_target(self):
+        # A multi-target repo confirming one row must not thereby confirm
+        # its siblings -- that would let a target's commands change under
+        # a confirmation earned by a different target entirely.
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            commands = ["python3 checks/a.py"]
+            rh.record_confirmation(root, "ca", rh.pre_tag_digest(commands))
+            self.assertEqual(rh.confirmation_state(root, "ca", commands), rh.CONFIRMED)
+            self.assertEqual(rh.confirmation_state(root, "ca-pi", commands), rh.NEVER)
+
+    def test_pre_tag_hash_reports_no_commands_distinctly_from_confirmed(self):
+        # A row declaring nothing has nothing to confirm. Reporting it as
+        # "confirmed" would claim an operator approved content that does
+        # not exist; both proceed, but only one is a claim about review.
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            self.assertEqual(rh.confirmation_state(root, "app", []), rh.NO_COMMANDS)
+            self.assertNotEqual(rh.NO_COMMANDS, rh.CONFIRMED)
+
+    def test_pre_tag_hash_unreadable_marker_reads_as_never_confirmed(self):
+        # Conservative direction: an empty or unreadable marker prompts
+        # rather than admits.
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            path = rh.confirmation_path(root, "app")
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("   " + os.linesep)
+            self.assertEqual(
+                rh.confirmation_state(root, "app", ["python3 a.py"]), rh.NEVER)
+
+    def test_pre_tag_hash_module_is_vendored_byte_identically(self):
+        # A-2.10 ships through sync-core, so the plugins' copies must match
+        # core/pysrc exactly -- a lane running a stale vendored copy would
+        # confirm against a different digest construction.
+        source = os.path.join(REPO_ROOT, "core", "pysrc", "releasehash.py")
+        with open(source, "rb") as fh:
+            canonical = fh.read()
+        seen = 0
+        for plugin in ("ca", "ca-codex", "ca-pi"):
+            vendored = os.path.join(REPO_ROOT, "plugins", plugin, "hooks",
+                                    "releasehash.py")
+            if not os.path.isfile(vendored):
+                continue
+            seen += 1
+            with open(vendored, "rb") as fh:
+                self.assertEqual(fh.read(), canonical, f"{plugin} copy drifted")
+        self.assertEqual(seen, 3, "releasehash.py must vendor to all three plugins")
+
     # ---- check-manifests: the all-paths equality guard (run 12 HIGH) ----
     def test_classify_short_circuits_before_comparing_versions_on_a_fresh_publish(self):
         # The defect that motivated check-manifests, pinned as a FACT about

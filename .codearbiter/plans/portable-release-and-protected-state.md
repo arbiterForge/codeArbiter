@@ -192,7 +192,7 @@ repo's rows load, and the release lane is proven behavior-identical. Shippable o
 |---|---|---|---|---|---|---|
 | T-34 | `.github/scripts/check_command_catalog.py` | script exits 0 on a reconciled tree, 1 on drift, mutates nothing | catalog check | A-2.8 | T-33 | ACCEPTED |
 | T-35 | `.codearbiter/release-targets.md` | all declared `pre-tag` commands exit 0 on a clean tree | rows run green | A-2.9 | T-34 | ACCEPTED |
-| T-36 | `core/pysrc/releasehash.py`, `tools/sync-core.py` generated set | `python tools/sync-core.py --check` passes with it enrolled; `SUITE -k test_pre_tag_hash` — changed hash forces re-confirmation | hash re-confirm | A-2.10 | T-35 | PENDING |
+| T-36 | `core/pysrc/releasehash.py`, `tools/sync-core.py` generated set | `python tools/sync-core.py --check` passes with it enrolled; `SUITE -k test_pre_tag_hash` — changed hash forces re-confirmation | hash re-confirm | A-2.10 | T-35 | ACCEPTED |
 | T-37 | `core/pysrc/_releaselib.py` | `-k manifest_declared` — equality asserted, mismatch BLOCKs | manifest assert | A-3.1 | T-36 | PENDING |
 | T-38 | `core/pysrc/_releaselib.py` | `-k manifest_absent` — tag is version source, no assertion | optional manifest | A-3.2 | T-37 | PENDING |
 | T-39 | `core/pysrc/_releaselib.py` | `-k rebuild_artifacts` — stale bundle blocks, cause named | rebuild gate | A-3.3 | T-38 | PENDING |
