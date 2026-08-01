@@ -1372,3 +1372,78 @@ stays valid and no exercise is owed for this slice.
 
 Weighting note: Scalable was given extra weight per standing steer, and it
 is what split finding 1 rather than taking it whole.
+
+## 2026-08-01 — SMARTS: the CI-red trio and the flake behind it (confidence: high)
+
+Four red CI rows on run 30691314813, plus two more revealed once the first
+was cleared, plus one flake found during the final local sweep. Three
+parameter-level calls, all auto-decided.
+
+**Decision: fix 6, file 1.**
+
+- **`$PY` in the lane extractor — FIX.** *Reliable*: the skill resolves the
+  interpreter once and uses `$PY` everywhere after, so a replay harness that
+  runs single invocations never sees the resolution line. Four `setUpClass`
+  fixtures died on `FileNotFoundError: '$PY'`. Not a judgement call — the
+  harness has to follow the spelling the skill actually ships.
+- **The tokenizer arm over the shell round-trip — FIX, and reshape.**
+  *Testable* is decisive. Spawning bare `"bash"` on windows-latest exited 1
+  with both streams empty, indistinguishable from the script under test
+  failing. Two candidate resolutions: skip the test where no shell exists,
+  or assert the property without a shell. Skipping alone would retire the
+  assertion on the platform whose quoting differs most, which is backwards.
+  So the decisive check moved to `shlex` (every platform, no shell) and the
+  round trip became a corroborating arm behind a probe. Mutation-checked:
+  unquoting `show-row` dies to the tokenizer arm alone, on REBUILD and
+  PRE_TAG independently.
+
+  **Correction, after CI run 30692612801.** The stated cause was wrong. The
+  windows job now reports `OK`, not `OK (skipped=1)` — the round trip RAN
+  there and passed, so the probe is not what fixed it. What fixed it was
+  handing `subprocess` the absolute path from `shutil.which("bash")`
+  instead of the bare name: without `shell=True` the lookup falls to
+  `CreateProcess`, whose search order is not `PATH` order and which picked
+  a different, non-working `bash`. The reshape stands on its own merits and
+  the probe is still worth having, but "windows-latest has no usable shell"
+  was a plausible reading of an empty error message, not a measured fact.
+- **`.codearbiter/gate-events.log` spelling — FIX, not exempt.** *Scalable*
+  (weighted heavy): the reference-resolution design already has an arm for
+  project-state paths, and the bare spelling simply was not using it. Adding
+  a new exemption to make a bare path pass would loosen a ratchet that
+  exists to catch this-repo contamination; spelling it `{{PROJECT_DIR}}/…`
+  uses the mechanism as designed. The git pathspec inside the fenced block
+  stays repo-relative — a pathspec has no other correct form, and fenced
+  blocks are excised before extraction.
+- **`bridge.test.ts` hung-tree flake — FILE (#580).** *Scalable*: it lives
+  in `plugins/ca-pi/tools/`, which this branch does not touch; 4 pass / 6
+  fail across ten local runs, and CI has not gone red on it. The fix is a
+  poll-until-gone loop replacing a fixed 1,200 ms sleep — the same shape as
+  open flakes #504 and #535, and it belongs with them rather than widening
+  this PR into a third package.
+
+Weighting note: Scalable carried the two calls that could have gone either
+way (the exemption, and the flake), in both cases against the option that
+would have been faster here and worse later.
+
+## 2026-08-01 — Stopping rule for proof run 16, agreed BEFORE the run
+
+The proof record went stale at `8f101403`; runs 14 and 15 were executed but
+never recorded, and both predate the run-15 remediation (`5bafba91`) and the
+gate-events spelling fix (`84d8bc19`). So the currently shipped skill
+(`81879e4c…`) has been exercised by no blind run at all, and a fresh one is
+required — the record's own text forbids hand-editing `proof_current` to
+clear the block.
+
+Per [[remediation-loops-do-not-converge]], the rule is fixed in advance
+rather than discovered mid-loop:
+
+1. Run 16 is a dry evaluation. **If it reports no HIGH**: file the
+   MEDIUM/LOW findings and record run 16 as the proof. Done.
+2. **If it reports one or more HIGH**: remediate the HIGHs only — nothing
+   below HIGH — then run 17 and record run 17 **whatever it returns**.
+3. **On run 17, findings of every severity are FILED, not fixed.** There is
+   no run 18. A HIGH surviving into run 17 becomes an issue against the
+   next cycle, not another edit to this branch.
+
+The cap is what makes this terminate: at most two runs, and the second one
+cannot change the skill, so its hash is the recorded proof by construction.

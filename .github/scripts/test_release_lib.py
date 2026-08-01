@@ -82,14 +82,25 @@ _BASH_PROBE = []
 def working_bash():
     """Path to a `bash` that actually runs a script fed on stdin, or None.
 
-    `shutil.which("bash")` alone is not enough on Windows: the GitHub
-    `windows-latest` image resolves `bash` to a stub that exits 1 with BOTH
-    streams empty, which is indistinguishable from "the script under test
-    failed silently". Probing with a script whose only job is to print a
-    known token separates "no usable shell here" from "the shell ran and
-    disagreed", so a shell-round-trip test can skip the former and still
-    fail hard on the latter. Result is cached — the probe spawns a process,
-    and the answer cannot change within one run."""
+    RESOLVING the name is the load-bearing half here, and it is why this
+    returns a path rather than a bool. `subprocess.run(["bash", ...])`
+    without `shell=True` leaves the lookup to `CreateProcess`, whose search
+    order is not `PATH` order; on GitHub's `windows-latest` image that
+    picked something which exits 1 with BOTH streams empty — read back as
+    `AssertionError: 1 != 0` with an empty message, indistinguishable from
+    the script under test failing silently. Handing `subprocess` the
+    absolute path `shutil.which` finds by walking `PATH` runs the real Git
+    Bash and the same round trip passes. (Measured: CI run 30691314813 red,
+    run 30692612801 green with no other change to the exec path.)
+
+    The PROBE is the belt to that braces: it separates "no usable shell on
+    this platform" from "the shell ran and disagreed", so the round-trip arm
+    can skip the former while still failing hard on the latter, on some
+    future runner where `which` finds nothing usable either. It is not what
+    fixed windows-latest — that test now passes there rather than skipping.
+
+    Result is cached: the probe spawns a process, and the answer cannot
+    change within one run."""
     if not _BASH_PROBE:
         _BASH_PROBE.append(_probe_bash())
     return _BASH_PROBE[0]
@@ -102,7 +113,12 @@ def _probe_bash():
     try:
         probe = subprocess.run([exe, "-s"], input=b"printf ca-probe-ok\n",
                                capture_output=True, timeout=60)
-    except OSError:
+    # TimeoutExpired is a SubprocessError, NOT an OSError, so catching only
+    # OSError leaves the hole open on the exact platform this probe exists
+    # for: a `bash` that HANGS rather than exits (a WSL stub blocking on an
+    # install prompt is the canonical windows-latest shape) would propagate
+    # out and ERROR the test instead of skipping it.
+    except (OSError, subprocess.TimeoutExpired):
         return None
     if probe.returncode != 0 or probe.stdout.strip() != b"ca-probe-ok":
         return None
