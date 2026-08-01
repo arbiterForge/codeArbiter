@@ -1447,3 +1447,37 @@ rather than discovered mid-loop:
 
 The cap is what makes this terminate: at most two runs, and the second one
 cannot change the skill, so its hash is the recorded proof by construction.
+
+## 2026-08-01 — Amendment to the run-16 stopping rule, and why it was needed
+
+The rule said run 17 would change nothing, so its hash would be the recorded
+proof by construction. That premise did not survive contact.
+
+What happened: run 16's two HIGHs were remediated in `ec983fc8`, run 17 was
+staged against that hash, and then CI went red on `ec983fc8` for two
+references the remediation's own PROSE introduced — an ellipsis-abbreviated
+path in a counter-example, and the exempted git pathspec repeated inline
+where its only prior copy was inside a fenced block the extractor excises.
+Fixing red CI is not optional, so `9feb5156` landed and the shipped skill
+moved out from under the running exercise. Run 17 is now exercising a hash
+that is no longer shipped.
+
+**The error was sequencing, not the rule.** An exercise whose hash must
+become the proof has to be staged against a tree that is already STABLE —
+CI green, no pending edits — because any forcing function that touches the
+skill afterwards invalidates it. I staged run 17 concurrently with a CI
+cycle that could still demand skill edits, and it did.
+
+**Amended rule:**
+
+1. Let run 17 finish and read it — it exercises the substantive remediation
+   and its findings are real regardless of the hash.
+2. Wait for CI green on the final commit with NO skill edits pending.
+3. Run the final exercise against that stable hash. It FILES everything at
+   every severity and changes nothing. Its hash is the recorded proof.
+4. If that exercise's own CI cycle somehow demands a further skill edit,
+   the proof is recorded against the pre-edit hash and the delta is stated
+   explicitly in the record rather than papered over with another run.
+
+Step 4 is the actual terminator, and it is what the original rule was
+missing: a named way to stop that does not require the next run to be clean.
