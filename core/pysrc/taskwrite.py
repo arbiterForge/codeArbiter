@@ -11,7 +11,8 @@
 #   python3 "<plugin>/hooks/taskwrite.py" <verb> ... || python "<plugin>/hooks/taskwrite.py" ...
 #
 # Verbs:
-#   add  "<desc>" [--from ORIGIN] [--id GROUP.TYPE] [--boundaries a,b] [--section "## In-flight"]
+#   add  "<desc>" [--from ORIGIN] [--id GROUP.TYPE] [--boundaries a,b]
+#        [--desc RATIONALE] [--section "## In-flight"]
 #   start <ID-or-"title"> [--as GROUP.TYPE] [--date YYYY-MM-DD]
 #   done  <ID-or-"title"> [--date YYYY-MM-DD]
 #
@@ -96,7 +97,8 @@ def _apply(args, text):
         boundaries = ([b.strip() for b in args.boundaries.split(",")]
                       if args.boundaries is not None else None)
         err = tb.add_error(desc=args.desc, origin=args.origin,
-                           boundaries=boundaries, section=args.section)
+                           boundaries=boundaries, section=args.section,
+                           rationale=args.rationale)
         if err:
             return None, err
         group = typ = None
@@ -105,7 +107,8 @@ def _apply(args, text):
             if err:
                 return None, err
         new = tb.add_entry(text, desc=args.desc, origin=args.origin, group=group,
-                           type=typ, boundaries=boundaries, section=args.section)
+                           type=typ, boundaries=boundaries, section=args.section,
+                           rationale=args.rationale)
         return new, f"added queued task: {args.desc}"
 
     # start / done
@@ -137,6 +140,8 @@ def main(argv=None):
     pa.add_argument("--from", dest="origin", default=None)
     pa.add_argument("--id", dest="gid", default=None, help="GROUP.TYPE to mint a dotted ID")
     pa.add_argument("--boundaries", default=None)
+    pa.add_argument("--desc", dest="rationale", default=None,
+                    help="rationale, emitted as an indented `- Desc:` sub-bullet")
     pa.add_argument("--section", default="## In-flight")
 
     ps = sub.add_parser("start")

@@ -388,14 +388,30 @@ class ClassifyProtectedStateTest(unittest.TestCase):
             target = os.path.join(root, ".codearbiter", "overrides.log")
             self.assertEqual(_hooklib.classify_protected(target, root), {"audit", "state"})
 
-    def test_default_registry_never_classifies_anything_as_state(self):
-        # A direct positive fact about PRODUCTION classify_protected: the
-        # registry is empty at this slice, so nothing in a real repo hits
-        # "state" yet - exercises the REAL default path, not only an
-        # injected synthetic one.
+    def test_default_registry_classifies_its_enrolled_consumer_as_state(self):
+        # A direct positive fact about PRODUCTION classify_protected,
+        # exercising the REAL default path rather than an injected
+        # synthetic registry.
+        #
+        # This asserted the OPPOSITE while the registry shipped empty. T-33
+        # enrolled `.codearbiter/release-targets.md` as the first consumer,
+        # so the production classifier now returns "state" for it — and
+        # that IS the enrolment, on the door `pre-write`/`pre-edit` consult.
         with tempfile.TemporaryDirectory() as root:
             target = os.path.join(root, ".codearbiter", "release-targets.md")
-            self.assertNotIn("state", _hooklib.classify_protected(target, root))
+            self.assertIn("state", _hooklib.classify_protected(target, root))
+
+    def test_default_registry_leaves_an_unenrolled_state_file_alone(self):
+        # The classifier's discrimination, kept honest now that the
+        # registry is non-empty: enrolling one consumer must not silently
+        # protect its neighbours. open-tasks.md and done-tasks.md are
+        # enrolled by their own later tasks.
+        with tempfile.TemporaryDirectory() as root:
+            for name in ("open-tasks.md", "done-tasks.md"):
+                with self.subTest(name=name):
+                    target = os.path.join(root, ".codearbiter", name)
+                    self.assertNotIn(
+                        "state", _hooklib.classify_protected(target, root))
 
 
 class PathGlobTest(unittest.TestCase):

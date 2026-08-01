@@ -548,5 +548,73 @@ class TaskwriteCliTest(unittest.TestCase):
         self.assertEqual(os.listdir(d), [], "no file should be created for an uninitialized repo")
 
 
+class AddRationaleTest(unittest.TestCase):
+    """B-17/T-53: `add` carries a `- Desc:` rationale sub-bullet.
+
+    `debug` Exit (c) used to append its "no action" note to
+    `open-tasks.md` DIRECTLY, because the helper had no way to express a
+    rationale sub-bullet. That made it the last real surface still writing
+    the board by hand — and under the `helper-only` protected-state class
+    the board is heading for, a direct write is exactly what stops being
+    possible. The conversion needed the helper extension first; this is it.
+    """
+
+    BOARD = "# Open tasks\n\n## In-flight\n\n"
+
+    def test_add_rationale_emits_an_indented_desc_sub_bullet(self):
+        out = tb.add_entry(self.BOARD, desc="parser drops the final row",
+                           rationale="no action: upstream fixes it in 4.2")
+        self.assertIn("  - Desc: no action: upstream fixes it in 4.2", out)
+
+    def test_add_rationale_round_trips_through_the_board_parser(self):
+        # The point of routing through the helper: the entry must still be
+        # a task the board's own readers see. A sub-bullet that broke
+        # parsing would drop the note out of the in-flight count, which is
+        # the opposite of what Exit (c) wants.
+        out = tb.add_entry(self.BOARD, desc="parser drops the final row",
+                           rationale="no action", group="debug", type="note")
+        parsed = [tb.parse_board(line) for line in out.splitlines()]
+        tasks = [p[0] for p in parsed if p]
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0].id, "debug.note.0001")
+        self.assertEqual(tasks[0].title, "parser drops the final row")
+        self.assertEqual(tasks[0].state, "queued")
+
+    def test_add_rationale_sits_above_boundaries_when_both_are_given(self):
+        out = tb.add_entry(self.BOARD, desc="d", rationale="why",
+                           boundaries=["a", "b"])
+        body = out.splitlines()
+        desc_at = next(i for i, l in enumerate(body) if "- Desc:" in l)
+        bounds_at = next(i for i, l in enumerate(body) if "- Boundaries:" in l)
+        self.assertLess(desc_at, bounds_at)
+
+    def test_add_rationale_absent_emits_no_sub_bullet(self):
+        # The default path must be byte-identical to before this feature.
+        self.assertNotIn("- Desc:", tb.add_entry(self.BOARD, desc="d"))
+
+    def test_add_rationale_rejects_a_line_break(self):
+        # A newline would emit an orphan physical line the board parser
+        # cannot attribute to any task — the exact schema drift routing
+        # through the helper exists to prevent.
+        self.assertIsNotNone(tb.add_error(desc="d", rationale="a\nb"))
+        self.assertEqual(tb.add_entry(self.BOARD, desc="d", rationale="a\nb"),
+                         self.BOARD, "an invalid field must fail soft, unchanged")
+
+    def test_add_rationale_rejects_blank_and_non_string(self):
+        for bad in ("", "   ", 42, []):
+            with self.subTest(rationale=bad):
+                self.assertIsNotNone(tb.add_error(desc="d", rationale=bad))
+
+    def test_add_rationale_is_exposed_by_the_taskwrite_cli(self):
+        # A helper extension nobody can invoke is the defect class this
+        # campaign already hit once (a mechanism with no CLI entry point
+        # while prose aimed at it), so assert the flag is actually wired.
+        source = os.path.join(HOOKS, "taskwrite.py")
+        with open(source, encoding="utf-8") as handle:
+            text = handle.read()
+        self.assertIn('"--desc"', text)
+        self.assertIn("rationale=args.rationale", text)
+
+
 if __name__ == "__main__":
     unittest.main()

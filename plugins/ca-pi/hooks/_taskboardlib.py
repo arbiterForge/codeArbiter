@@ -627,7 +627,8 @@ def _insert_under_section(text, block, section):
     return f"{base}{section}\n{block}\n"
 
 
-def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
+def add_error(*, desc, origin=None, boundaries=None, section="## In-flight",
+              rationale=None):
     """Return a field-specific error for an add input, else ``None``.
 
     These constraints keep every accepted field on the physical line where the
@@ -646,6 +647,17 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
     if origin is not None and (not isinstance(origin, str)
                                or _LINE_BREAK_RE.search(origin)):
         return "bad --from: expected single-line text"
+    if rationale is not None:
+        # B-17/T-53. `debug` Exit (c) carries a "no action" rationale as an
+        # indented `- Desc:` sub-bullet, which it appended DIRECTLY because
+        # the helper had no way to express it — the last real surface still
+        # writing the board by hand. Same single-line rule as every other
+        # optional field: a line break here would emit an orphan physical
+        # line the board parser cannot attribute to any task.
+        if not isinstance(rationale, str) or not rationale.strip():
+            return "bad --desc: expected nonblank single-line text"
+        if _LINE_BREAK_RE.search(rationale):
+            return "bad --desc: expected nonblank single-line text"
     if boundaries is not None:
         if not isinstance(boundaries, (list, tuple)):
             return "bad --boundaries: expected comma-separated single-line values"
@@ -660,12 +672,13 @@ def add_error(*, desc, origin=None, boundaries=None, section="## In-flight"):
 
 
 def add_entry(text, *, desc, origin=None, group=None, type=None,
-              boundaries=None, section="## In-flight"):
+              boundaries=None, section="## In-flight", rationale=None):
     """Append a queued entry. ID-less by default; mints `<group>.<type>.<NNNN>`
     when both group and type are given. Optional `(from <origin>)` back-ref and a
     `Boundaries` sub-bullet. Invalid fields fail soft by returning ``text``
     unchanged, so no input can inject an orphan/malformed physical line."""
-    if add_error(desc=desc, origin=origin, boundaries=boundaries, section=section):
+    if add_error(desc=desc, origin=origin, boundaries=boundaries,
+                 section=section, rationale=rationale):
         return text
     desc = desc.strip()
     tid = f"{group}.{type}.{next_seq(text, group, type):04d}" if (group and type) else None
@@ -673,6 +686,11 @@ def add_entry(text, *, desc, origin=None, group=None, type=None,
     line = f"- [ ] {body}"
     if origin:
         line += f"  (from {origin})"
+    if rationale:
+        # Emitted BEFORE Boundaries so the rationale reads immediately under
+        # its task — the shape `debug` Exit (c) already produced by hand,
+        # and the shape the board's existing readers already tolerate.
+        line += f"\n  - Desc: {rationale.strip()}"
     if boundaries:
         line += f"\n  - Boundaries: {', '.join(boundaries)}"
     return _insert_under_section(text, line, section)

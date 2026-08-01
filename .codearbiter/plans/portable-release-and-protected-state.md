@@ -246,7 +246,7 @@ generate from it).
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-53 | `core/pysrc/taskwrite.py`, `core/pysrc/_taskboardlib.py` | `python .github/scripts/test_taskwriter.py -k add_rationale` — sub-bullet round-trips; `python tools/sync-core.py --check` passes | helper extension | B-17 | T-52 | PENDING |
+| T-53 | `core/pysrc/taskwrite.py`, `core/pysrc/_taskboardlib.py` | `python .github/scripts/test_taskwriter.py -k add_rationale` — sub-bullet round-trips; `python tools/sync-core.py --check` passes | helper extension | B-17 | T-52 | ACCEPTED |
 | T-54 | `core/surface/skills/debug/SKILL.md` | `python .github/scripts/test_board_sync.py -k debug_uses_helper` — no direct append remains | debug converted | B-16 | T-53 | PENDING |
 | T-55 | `core/surface/skills/context-creation/SKILL.md` | `python .github/scripts/test_board_sync.py -k context_creation_board_route` — seeds via a repeated `taskwrite add` loop; **no file-absent exemption predicate exists** | scaffold route | B-18 | T-54 | PENDING |
 | T-56 | `.github/scripts/test_board_sync.py` | `-k done_flip_retained` — flip classifies RETAINED with enrolment **simulated in a fixture**; live post-enrolment coverage is T-67 | ADR-0008 composition | B-19 | T-55 | PENDING |
