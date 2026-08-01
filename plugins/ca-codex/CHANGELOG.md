@@ -6,6 +6,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-08-01
+
 ### Added
 
 - Protected-state registry (hook `H-22`): `.codearbiter/` files can be enrolled as `marker-gated`, `helper-only`, or `append-only`, enforced across the Write, Edit, and shell flanks. `release-targets.md`, `open-tasks.md`, and `done-tasks.md` are enrolled, one per policy.
@@ -16,16 +18,6 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - The shell flank's interpreter leg missed `py` and PowerShell, leaving it bypassable on Windows, and matched on the interpreter token alone — which blocked the sanctioned helper's own invocation whenever a task description named an enrolled file. It now requires an inline-code switch.
 - Archiving moved only a task's top line, orphaning its `Desc`/`Boundaries` sub-bullets onto the following task, and removed every line matching the target, collapsing two identical done entries into one.
 - An unreadable `done-tasks.md` was treated as empty, so a transient read failure rewrote the append-only archive from scratch and discarded every record.
-
-## [Unreleased]
-
-## [Unreleased]
-
-## [Unreleased]
-
-## [Unreleased]
-
-## [Unreleased]
 
 ## [0.3.7] — 2026-07-30
 

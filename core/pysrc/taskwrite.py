@@ -43,10 +43,18 @@ from _hooklib import (  # noqa: E402
 EXIT_ARCHIVE_UNREADABLE = 3
 
 
-class ArchiveUnreadable(OSError):
+class ArchiveUnreadable(RuntimeError):
     """`done-tasks.md` exists but could not be read, so no archive may be
     computed from it. Raised INSTEAD of proceeding, because the archive
-    write replaces the file wholesale."""
+    write replaces the file wholesale.
+
+    Deliberately NOT an `OSError` subclass, even though an `OSError` is
+    what triggers it. This exception exists precisely because someone
+    treated a failed read as an empty file; making it an `OSError` would
+    let the next `except OSError: text = ""` swallow it and reintroduce
+    the same data loss one level up, invisibly. `RuntimeError` also
+    matches `_releaselib`'s convention for its declared-file errors.
+    """
 
 # reliability-007 (#190): project_root() is now _hooklib.project_root —
 # imported above, not a local copy. The prior local copy ran `git rev-parse

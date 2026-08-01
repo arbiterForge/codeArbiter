@@ -928,6 +928,20 @@ class ArchiveVerbTest(unittest.TestCase):
         self.assertEqual(self._read(root, "done-tasks.md"), historical)
         self.assertEqual(self._read(root, "open-tasks.md"), board_before)
 
+    def test_the_unreadable_refusal_is_not_an_oserror(self):
+        # The refusal must not be catchable by the very idiom that caused
+        # the bug. `except OSError: text = ""` is what destroyed the
+        # archive; if ArchiveUnreadable were an OSError subclass, the next
+        # caller to write that idiom one level up would swallow the refusal
+        # and reintroduce the same data loss silently.
+        self.assertFalse(issubclass(taskwrite_mod.ArchiveUnreadable, OSError))
+        self.assertTrue(issubclass(taskwrite_mod.ArchiveUnreadable, RuntimeError))
+        with self.assertRaises(taskwrite_mod.ArchiveUnreadable):
+            try:
+                raise taskwrite_mod.ArchiveUnreadable("refused")
+            except OSError:                      # must NOT catch it
+                self.fail("a generic OSError handler swallowed the refusal")
+
     def test_archive_still_seeds_an_absent_done_tasks_file(self):
         # The other half of the HIGH-4 split: ABSENT is not UNREADABLE.
         # An existing repo has no done-tasks.md until its first archive,
