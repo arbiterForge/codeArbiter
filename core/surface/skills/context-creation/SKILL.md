@@ -117,7 +117,22 @@ Write the surviving docs to `{{PROJECT_DIR}}/.codearbiter/`. Every doc carries a
 | `open-questions.md` | Every deferred `[CONFIRM-NN]` in `CONFIRM-NN: <description>` form. |
 | `open-tasks.md` | Create the file with its heading only. **Every task goes in through the board helper, one call per item — `python3 "{{PLUGIN_ROOT}}/hooks/taskwrite.py" add "<task>"` — never by writing entries into the file directly** (B-18). The helper owns the board schema the SessionStart hook and the statusline parse, so a backlog seeded this way cannot drift from it; and once `open-tasks.md` is enrolled in the protected-state registry, a direct write is refused outright, which would leave a Write-tool instruction here unfollowable. If scouts found no backlog, the heading-only file stands as the stub. |
 | `overrides.log` | Empty append-only audit log, created so `/override` has a sink. |
-| `release-targets.md` | Conditional, unlike every other row above: written ONLY when Phase 3 drafted it at HIGH confidence (exactly one candidate manifest, exactly one candidate changelog) or Phase 4 resolved its `[CONFIRM-NN]` to a concrete row. Left unwritten otherwise — `/release`'s own back-fill lane (or a later `context-creation` run, once the ambiguity resolves) is the sanctioned way to create it, never a guess made here. |
+| `release-targets.md` | Conditional, unlike every other row above: written ONLY when Phase 3 drafted it at HIGH confidence (exactly one candidate manifest, exactly one candidate changelog) or Phase 4 resolved its `[CONFIRM-NN]` to a concrete row. Left unwritten otherwise — `/release`'s own back-fill lane (or a later `context-creation` run, once the ambiguity resolves) is the sanctioned way to create it, never a guess made here. **This file is marker-gated protected state; it needs the authoring marker below, unlike every other row in this table.** |
+
+**Authoring marker — required for `release-targets.md` only.** That path is enrolled in the protected-state registry as `marker-gated` (hook `H-22`), so a Write against it is refused unless a fresh authoring marker exists. This lane is a sanctioned author of it, so it mints one immediately before the write and removes it immediately after — the same one-pass shape `/release`'s back-fill lane uses:
+
+```bash
+mkdir -p "$(git rev-parse --show-toplevel)/.codearbiter/.markers"
+touch "$(git rev-parse --show-toplevel)/.codearbiter/.markers/release-targets-authoring"
+```
+
+Write the file, then:
+
+```bash
+rm -f "$(git rev-parse --show-toplevel)/.codearbiter/.markers/release-targets-authoring"
+```
+
+Skip both commands entirely when this run is not writing `release-targets.md` — a marker minted for a write that never happens is a 30-minute window nothing needed. No other file in the table above is enrolled, so none of them take a marker.
 
 If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize them as entries under `.codearbiter/decisions/` in the standard ADR format. If a record cannot be fully parsed, summarize what is known, flag the uncertainty, and note the source path for review.
 

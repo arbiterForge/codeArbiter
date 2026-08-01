@@ -376,6 +376,52 @@ class MainCLITest(unittest.TestCase):
         self.assertTrue(errors, "a drifted hash must fail the declared command")
         self.assertTrue(any("has changed since" in e for e in errors), errors)
 
+    def test_the_cli_failing_path_actually_runs(self):
+        # CodeRabbit MAJOR. Every other test here calls `check()`; nothing
+        # ran `main()` against a failure, because `main()` took no
+        # parameters and so could only be pointed at the live repo -- where
+        # the proof is green by construction. The reporting branch, the one
+        # that has to work on the day the gate fires, was never executed.
+        import io
+        from contextlib import redirect_stdout
+        with tempfile.TemporaryDirectory() as tmp:
+            document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
+            document["exercise"]["exercised_skill_sha256"] = "0" * 64
+            artifact = Path(tmp) / "agent-lane-proof.json"
+            artifact.write_text(json.dumps(document), encoding="utf-8")
+
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = G.main(repo=REPO_ROOT, artifact_path=artifact)
+        self.assertEqual(code, 1, "the CLI must exit non-zero on a stale proof")
+        printed = buffer.getvalue()
+        self.assertIn("::error::", printed,
+                      "the failure must be annotated for the CI log")
+        self.assertIn("has changed since", printed)
+
+    def test_the_cli_passing_path_returns_zero_against_a_current_proof(self):
+        # The other half of the CLI, against a FIXTURE rather than the live
+        # repo. Asserting `G.main()` returns 0 here would couple this test
+        # to release state: the proof is legitimately stale during any batch
+        # of skill edits (it is re-recorded once, after the batch), so a
+        # live-repo assertion would fail for a reason that is not a defect —
+        # the same live-state coupling flagged elsewhere in this review.
+        import io
+        from contextlib import redirect_stdout
+        with tempfile.TemporaryDirectory() as tmp:
+            document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
+            shipped = REPO_ROOT / "plugins" / "ca" / "skills" / "release" / "SKILL.md"
+            document["exercise"]["exercised_skill_sha256"] = hashlib.sha256(
+                shipped.read_bytes()).hexdigest()
+            artifact = Path(tmp) / "agent-lane-proof.json"
+            artifact.write_text(json.dumps(document), encoding="utf-8")
+
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = G.main(repo=REPO_ROOT, artifact_path=artifact)
+        self.assertEqual(code, 0, buffer.getvalue())
+        self.assertIn("still covers", buffer.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

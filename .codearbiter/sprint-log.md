@@ -1345,3 +1345,30 @@ where the defects live.
 
 **No skill edit.** These are mechanism criteria, so run 13's recorded proof
 stays valid and no exercise is owed for this slice.
+
+## 2026-08-01 — SMARTS: fix-vs-file on the CodeRabbit prose findings (confidence: medium-high)
+
+**Decision: fix 4, file 1 (scoped), file the 45 minor/trivial.**
+
+- **`||` masking exit codes — SPLIT.** *Reliable* is decisive: `cmd || cmd2`
+  re-runs on ANY non-zero, so a meaningful exit code (run-pre-tag's 5=drift,
+  6=mutation) triggers a second full execution of the declared pre-tag
+  commands and the final code is the SECOND run's. That is not a fallback,
+  it is a retry that hides the answer. *Scalable* (weighted heavy) says the
+  opposite about blast radius: the `python3 … || python …` spelling is the
+  documented cross-host convention in ~40 skills, and rewriting all of them
+  here buries this PR. Resolution: fix it in the release skill, where exit
+  codes are load-bearing by design; file the convention-wide change.
+- **check-manifests ordering — FIX.** *Maintainable*: local, one step, the
+  prose asserts a thing before the step that makes it true.
+- **context-creation Phase 5 marker — FIX (must).** *Available*: this PR's
+  own enrolment blocks the sanctioned writer of the file it enrolled. Same
+  seam class as HIGH-1. Shipping it means shipping a broken lane.
+- **releasehash never invoked — FIX (must).** *Reliable/Testable*: A-2.10
+  was built, tested, and wired to nothing. An inert gate reads as coverage.
+- **45 minor/trivial — FILE.** *Scalable*: stale prose, table formatting and
+  markdownlint items. Real, none load-bearing, and batching them into a
+  follow-up keeps this PR reviewable.
+
+Weighting note: Scalable was given extra weight per standing steer, and it
+is what split finding 1 rather than taking it whole.

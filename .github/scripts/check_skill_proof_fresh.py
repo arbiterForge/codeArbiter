@@ -250,8 +250,18 @@ def check(repo=REPO_ROOT, artifact_path=ARTIFACT_PATH, build_surface=None):
     return []
 
 
-def main():
-    errors = check()
+def main(repo=None, artifact_path=None):
+    """CLI entry. Exit 0 when the proof still covers the shipped skill.
+
+    `repo`/`artifact_path` are pass-throughs to `check`, present ONLY so a
+    test can drive the FAILING branch below against a fixture. Without them
+    `main` could only ever be exercised on the live repo, where the proof is
+    green by definition -- so the error path, the one that has to work on
+    the day it fires, was never run.
+    """
+    errors = check(**{k: v for k, v in
+                      (("repo", repo), ("artifact_path", artifact_path))
+                      if v is not None})
     if errors:
         print("::error::the T-78 agent-judgment proof no longer covers the shipped release skill:")
         for e in errors:

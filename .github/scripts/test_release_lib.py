@@ -2424,12 +2424,28 @@ class CoreCLITest(unittest.TestCase):
                      "changelog: CHANGELOG.md\npayload: .\n"
                      + "".join(f"pre-tag: {c}\n" for c in commands)
                      + "<!-- /release-targets -->\n")
-        for argv in (["init", "-q"], ["config", "user.email", "t@t"],
-                     ["config", "user.name", "t"],
+        # HERMETIC and CHECKED. Unconfigured `subprocess.run(["git"] + argv)`
+        # inherits the developer's global config and ignores the exit code,
+        # so a host with `commit.gpgsign=true`, a `core.hooksPath`, or a
+        # commit template can make `commit` fail while this helper returns a
+        # fixture that merely LOOKS built -- and the test then asserts
+        # against a repo with no commit in it, passing or failing for a
+        # reason that has nothing to do with the code under test.
+        env = dict(os.environ,
+                   GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_SYSTEM=os.devnull,
+                   GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t",
+                   GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
+        base = ["git", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=",
+                "-c", "init.defaultBranch=main"]
+        for argv in (["init", "-q"],
                      ["add", "package.json", "CHANGELOG.md",
                       ".codearbiter/release-targets.md"],
-                     ["commit", "-q", "-m", "init"]):
-            subprocess.run(["git"] + argv, cwd=root, capture_output=True)
+                     ["commit", "-q", "-m", "init", "--no-verify"]):
+            proc = subprocess.run(base + argv, cwd=root, env=env,
+                                  capture_output=True, text=True)
+            self.assertEqual(
+                proc.returncode, 0,
+                f"fixture git {argv[0]} failed: {proc.stderr.strip()}")
         if dirty:
             with open(os.path.join(root, "package.json"), "w") as fh:
                 fh.write('{"version": "1.1.0"}\n')
