@@ -822,7 +822,7 @@ class LastTagPerSeriesTest(unittest.TestCase):
             "ca-sandbox-v0.1.3", "ca-codex-v0.3.0", "v3.0.0-beta.1"]
 
     def test_the_prefix_register_covers_exactly_the_release_targets(self):
-        self.assertEqual(tuple(_releaselib.RELEASE_TAG_PREFIXES),
+        self.assertEqual(tuple(_releaselib.release_tag_prefixes()),
                          _releaselib.RELEASE_TARGETS,
                          "every releasable target needs a tag namespace, and no"
                          " namespace may exist for a target that cannot release")
@@ -834,7 +834,7 @@ class LastTagPerSeriesTest(unittest.TestCase):
             "ca-sandbox": "ca-sandbox-v0.1.3",
             "ca-pi": "ca-pi-v0.1.30",
         }
-        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+        for target, prefix in _releaselib.release_tag_prefixes().items():
             with self.subTest(target=target):
                 self.assertEqual(_releaselib.last_tag_select(self.TAGS, prefix),
                                  expected[target])
@@ -842,11 +842,11 @@ class LastTagPerSeriesTest(unittest.TestCase):
     def test_no_series_resolves_another_series_tag(self):
         # The defect this prevents: basing an entire release on another plugin's
         # baseline, which `git describe --tags` does by commit-graph ancestry.
-        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+        for target, prefix in _releaselib.release_tag_prefixes().items():
             with self.subTest(target=target):
                 chosen = _releaselib.last_tag_select(self.TAGS, prefix)
                 self.assertTrue(chosen.startswith(prefix), chosen)
-                for other, other_prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+                for other, other_prefix in _releaselib.release_tag_prefixes().items():
                     if other == target or not other_prefix.startswith(prefix):
                         continue
                     self.assertFalse(
@@ -870,7 +870,7 @@ class LastTagPerSeriesTest(unittest.TestCase):
                          _releaselib.NONE_SENTINEL)
 
     def test_prereleases_are_excluded_in_every_series(self):
-        for prefix in _releaselib.RELEASE_TAG_PREFIXES.values():
+        for prefix in _releaselib.release_tag_prefixes().values():
             with self.subTest(prefix=prefix):
                 self.assertEqual(
                     _releaselib.last_tag_select(
@@ -943,7 +943,7 @@ class NotesHeadingNamespacedTagTest(unittest.TestCase):
         return f"## [{version}] - 2026-07-26\n\n### Added\n\n- a thing\n"
 
     def test_every_release_series_matches_its_own_notes(self):
-        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+        for target, prefix in _releaselib.release_tag_prefixes().items():
             version = "1.2.3"
             with self.subTest(target=target):
                 self.assertTrue(
@@ -1043,19 +1043,22 @@ class ShimReexportCompletenessTest(unittest.TestCase):
 
 
 class ReleaselibShimTest(unittest.TestCase):
-    """A-1.9 (transitional, retired at T-46 alongside AC-4.4): the shim
-    (`.github/scripts/_releaselib.py`, imported above as `_releaselib`) must
-    be a thin RE-EXPORT of the portable mechanism (`core_releaselib`), not a
-    second implementation, while still exposing this repo's own data
-    constants so the six CI shell-out sites and `payload_version_gate.py`
-    keep working unchanged. See the migration ordering in
-    .codearbiter/specs/release-portable-fixture.md: until slice 4 lands, no
-    commit may leave RELEASE_TAG_PREFIXES unimportable from this module."""
+    """The shim (`.github/scripts/_releaselib.py`, imported above as
+    `_releaselib`) must be a thin RE-EXPORT of the portable mechanism
+    (`core_releaselib`), not a second implementation.
+
+    A-1.9's TRANSITIONAL clause is RETIRED here, as A-4.4 requires in the
+    same commit that removes the constants. That clause said "no commit may
+    leave RELEASE_TAG_PREFIXES unimportable from this module" -- a rule that
+    existed only to keep consumers working while the data still lived here.
+    T-46 removed the literal (payload_version_gate.py derives its own map,
+    nothing else consumed it), so the rule now protects nothing and would
+    forbid the very change it was written to enable."""
 
     def test_releaselib_shim_exports_constants(self):
         # payload_version_gate.py:53 imports exactly these three names from
         # this shim at module load; they must still resolve.
-        self.assertEqual(_releaselib.RELEASE_TAG_PREFIXES,
+        self.assertEqual(_releaselib.release_tag_prefixes(),
                           {"ca": "v", "ca-codex": "ca-codex-v",
                            "ca-sandbox": "ca-sandbox-v", "ca-pi": "ca-pi-v"})
         self.assertTrue(callable(_releaselib.semver_greater))
@@ -1207,8 +1210,9 @@ class DenylistTest(unittest.TestCase):
     """A-1.2: the portable mechanism (core/pysrc/_releaselib.py) must carry no
     literal from this repository's namespace or CI vocabulary. `.github/
     scripts/_releaselib.py` (imported above as `_releaselib`) is EXEMPT — it
-    still temporarily retains this repo's own data constants (A-1.9,
-    transitional) and is deliberately not scanned here."""
+    still carries this repo's own MERGE_READINESS_CHECK (a CI check-run
+    name, which the declared file has no field for) and is deliberately not
+    scanned here."""
 
     DENYLIST = (
         "[REPO]", "ca-pi", "ca-codex", "ca-sandbox", "plugins/",
@@ -3360,8 +3364,9 @@ class CoreCLITest(unittest.TestCase):
 class ThisRepoRowsTest(unittest.TestCase):
     """A-1.10 (T-26): this repository's own `.codearbiter/release-targets.md`
     loads as four rows (`this_repo_rows`) whose `target` and `prefix` equal
-    the pre-change RELEASE_TAG_PREFIXES constants (the shim's
-    temporarily-retained data, A-1.9), and every one of the four declares
+    an INDEPENDENT oracle restated in this class (the shim's own map is now
+    derived from this same file, so comparing against it would be
+    circular), and every one of the four declares
     `provenance-manifest` — a maintainer decision (2026-07-31) tighter than
     the spec's own grammar example, which shows the field on `ca` alone. An
     absent field silently skips the tag-provenance recording step (A-3.5), so
@@ -3383,16 +3388,38 @@ class ThisRepoRowsTest(unittest.TestCase):
         self.assertEqual(len(self.rows), 4)
         self.assertEqual(set(self.by_target), {"ca", "ca-codex", "ca-sandbox", "ca-pi"})
 
+    # The independent oracle. This USED to be a comparison against the
+    # shim's RELEASE_TAG_PREFIXES literal, which was a genuinely separate
+    # source. T-46 made the shim derive that map from this very file, so
+    # the old comparison became CIRCULAR -- the declared file checked
+    # against itself, passing no matter what either said. Restating the
+    # expectation here keeps a second source, now owned by the test.
+    PRE_CHANGE_NAMESPACES = {
+        "ca": "v",
+        "ca-codex": "ca-codex-v",
+        "ca-sandbox": "ca-sandbox-v",
+        "ca-pi": "ca-pi-v",
+    }
+
     def test_this_repo_rows_target_and_prefix_equal_the_pre_change_constants(self):
-        # _releaselib.RELEASE_TAG_PREFIXES is this repo's own pre-change
-        # constant (still carried by the shim, A-1.9); the declared file must
-        # agree with it exactly, in both directions.
-        for target, prefix in _releaselib.RELEASE_TAG_PREFIXES.items():
+        # Both directions against the oracle above: a renamed target, a
+        # changed namespace, an added row, or a dropped row all fail here.
+        for target, prefix in self.PRE_CHANGE_NAMESPACES.items():
             with self.subTest(target=target):
                 self.assertIn(target, self.by_target)
                 self.assertEqual(self.by_target[target]["prefix"], prefix)
-        self.assertEqual(
-            {row["target"] for row in self.rows}, set(_releaselib.RELEASE_TARGETS))
+        self.assertEqual({row["target"] for row in self.rows},
+                         set(self.PRE_CHANGE_NAMESPACES))
+
+    def test_this_repo_rows_the_shim_derivation_matches_the_oracle(self):
+        # The derivation T-46 introduced, checked against the same
+        # independent oracle rather than against its own input -- so a
+        # broken derivation (empty map, wrong key, first-row-only) fails
+        # here instead of agreeing with itself.
+        self.assertEqual(_releaselib.release_tag_prefixes(),
+                         self.PRE_CHANGE_NAMESPACES)
+        self.assertEqual(tuple(_releaselib.RELEASE_TARGETS),
+                         ("ca", "ca-codex", "ca-sandbox", "ca-pi"))
 
     def test_this_repo_rows_every_row_declares_a_provenance_manifest(self):
         for target, row in self.by_target.items():

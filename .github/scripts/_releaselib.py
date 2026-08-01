@@ -5,15 +5,16 @@
 #
 # This file is the PERMANENT shim six sites shell out to directly --
 # release.yml:135,171 and .github/actions/publish-release/action.yml:125,164,
-# 180,228 -- and payload_version_gate.py imports RELEASE_TAG_PREFIXES from it
-# at module load. It is never deleted, only slimmed down: slice 1 (this
-# change) converts it to a thin RE-EXPORT of the portable mechanism now living
-# at core/pysrc/_releaselib.py, while TEMPORARILY retaining this repo's own
-# data constants (RELEASE_TARGETS, RELEASE_TAG_PREFIXES, MERGE_READINESS_CHECK)
-# so every existing caller keeps working unchanged. Slice 4 (T-46) removes the
-# constants once payload_version_gate.py and release.yml read them from the
-# declared .codearbiter/release-targets.md file instead; this shim survives
-# that change too.
+# 180,228. It is never deleted, only slimmed down: it is a thin RE-EXPORT of
+# the portable mechanism at core/pysrc/_releaselib.py, plus the small amount
+# of THIS repo's data that CI needs.
+#
+# As of A-4.4/T-46 that data is DERIVED, not declared here: RELEASE_TARGETS
+# reads .codearbiter/release-targets.md, and RELEASE_TAG_PREFIXES is gone
+# entirely (payload_version_gate.py derives its own map per A-4.1, and nothing
+# else consumed it). Only MERGE_READINESS_CHECK remains a literal, because it
+# is a CI check-run name rather than a release-target fact and the declared
+# file has no field for it.
 #
 # The mechanism module is loaded from core/pysrc/ directly -- not from a
 # vendored plugins/*/hooks/ copy -- because this file executes inside the
@@ -54,7 +55,7 @@
 #   - Stdlib only; zero side effects at import beyond loading the sibling
 #     mechanism module (no git, no argument parsing at import time).
 #   - The wrapper functions below restore this repo's OLD default arguments
-#     (ca's `v` prefix, RELEASE_TARGETS order, MERGE_READINESS_CHECK) so every
+#     (ca's `v` prefix, the declared target order, MERGE_READINESS_CHECK) so every
 #     existing caller -- the six shell-out sites, payload_version_gate.py, and
 #     this module's own CLI -- keeps working unchanged even though the
 #     portable mechanism's equivalents now REQUIRE the parameter that used to
@@ -78,10 +79,12 @@
 #   _bare_version(tag) -> str
 #   NONE_SENTINEL
 #
-# Public API (this repo's DATA -- transitional, see module comment above):
-#   RELEASE_TARGETS, RELEASE_TAG_PREFIXES, MERGE_READINESS_CHECK
+# Public API (this repo's DATA -- RELEASE_TARGETS derived from the declared
+# file; see the module comment above):
+#   RELEASE_TARGETS, MERGE_READINESS_CHECK
 #   last_tag_select(tags, prefix="v") -> str
-#   select_release_target(*confirmations) -> str   (RELEASE_TARGETS order)
+#   select_release_target(*confirmations) -> str   (declared order)
+#   select_release_target_by_name(pairs) -> str    (A-4.2, order-independent)
 #   classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CHECK) -> str
 #
 # The last three back `.github/workflows/release.yml`'s read-only preflight and
@@ -142,38 +145,90 @@ _bare_version = _mechanism._bare_version
 NONE_SENTINEL = _mechanism.NONE_SENTINEL
 
 # --------------------------------------------------------------------------- #
-# DATA -- this repo's own facts. TRANSITIONAL (A-1.9): removed in slice 4
-# (T-46) once payload_version_gate.py and release.yml read
-# .codearbiter/release-targets.md instead. Until then, no commit may leave
-# RELEASE_TAG_PREFIXES unimportable from this module.
+# DATA -- DERIVED, not declared here (A-4.4/T-46).
+#
+# This block used to carry three literals: RELEASE_TARGETS,
+# RELEASE_TAG_PREFIXES, and MERGE_READINESS_CHECK. The first two were a
+# SECOND source of truth for facts `.codearbiter/release-targets.md` already
+# declares, and nothing compared them: a target declared under one prefix and
+# listed here under another would be gated in one namespace and released in
+# the other. Adding a fifth plugin meant editing two files, and forgetting
+# this one produced a KeyError at release time rather than a diagnosis.
+#
+# RELEASE_TARGETS is now read from the declared file, in DECLARATION order.
+# RELEASE_TAG_PREFIXES is gone entirely -- payload_version_gate.py derives its
+# own map (A-4.1), and nothing else consumed it.
 # --------------------------------------------------------------------------- #
 
 # The `ci-passed` aggregate in .github/workflows/ci.yml - the single check run
 # that means "every required job for this commit concluded green". Kept in sync
 # with that job's `name:` by test_release_workflow.py.
+#
+# NOT removed with the other two, deliberately: this is a CI check-run NAME,
+# not a release-target fact, and `.codearbiter/release-targets.md` declares no
+# such field. Deriving it would mean inventing a declaration source for it;
+# leaving it here, named and tested against the workflow, is honest. A-4.4's
+# "data constants" are the two that duplicated the declared file.
 MERGE_READINESS_CHECK = "[GATE ] | [REPO] | Merge readiness"
 
-# Every plugin that has a sanctioned release lane, in dispatch-input order
-# (#382). The names are the labels `select_release_target` returns and the
-# values release.yml's publisher `if:` conditions compare against; adding a
-# plugin here without adding its publisher job turns the workflow contract
-# suite red rather than resolving a target nothing can publish.
-RELEASE_TARGETS = ("ca", "ca-codex", "ca-sandbox", "ca-pi")
+DECLARED_TARGETS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(_HERE)), ".codearbiter", "release-targets.md")
 
-# Each target's tag namespace. `ca` owns the bare `v*` series as the repository's
-# primary release; every sibling is namespaced so it cannot collide with it. The
-# ANCHORED match built from these prefixes is also what keeps one series from
-# resolving another's tag as its own baseline - `^v` cannot match `ca-pi-v0.1.30`
-# - so series isolation is a property of the match rather than an exclusion list
-# somebody has to remember to extend. release.yml's per-lane `tag-prefix` inputs
-# are asserted against this map by the workflow contract suite, so the hosted
-# lane and the /ca:release command cannot disagree about a namespace.
-RELEASE_TAG_PREFIXES = {
-    "ca": "v",
-    "ca-codex": "ca-codex-v",
-    "ca-sandbox": "ca-sandbox-v",
-    "ca-pi": "ca-pi-v",
-}
+
+def _declared_target_names():
+    """Every declared target name, in DECLARATION order.
+
+    Order still matters to the positional `select-target` subcommand this
+    module keeps for its own tests; the workflow itself moved to the
+    name-keyed form (A-4.2) precisely so a release can no longer depend on
+    it. Reading the order from the declaration rather than a literal means
+    the two cannot drift even while both forms exist.
+
+    Raises rather than defaulting: this module is THIS repository's CI
+    entry point, the declared file is committed beside it, and a silent
+    empty register would make `select-target` resolve nothing while
+    looking healthy.
+    """
+    return tuple(row["target"] for row in _mechanism.load_targets(
+        DECLARED_TARGETS_PATH))
+
+
+def __getattr__(name):
+    """Lazy module attributes (PEP 562).
+
+    `RELEASE_TARGETS` is DERIVED from the declared file, and deriving it
+    at import time would give this module a side effect at import -- which
+    its own design invariants forbid, and which broke every harness that
+    imports the shim from a tree containing the scripts but not
+    `.codearbiter/release-targets.md`. Resolving on first ACCESS keeps
+    every existing `_releaselib.RELEASE_TARGETS` caller working while an
+    import that never touches the name stays pure.
+    """
+    if name == "RELEASE_TARGETS":
+        return _declared_target_names()
+    # NOTE: PEP 562 module __getattr__ serves EXTERNAL attribute access
+    # only. Code INSIDE this module must call `_declared_target_names()`
+    # directly -- a bare `RELEASE_TARGETS` here raises NameError, which is
+    # exactly how this was found.
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def release_tag_prefixes():
+    """`{target: tag prefix}`, read from the declared file (A-4.4).
+
+    Replaces the RELEASE_TAG_PREFIXES literal this module used to carry.
+    That literal was a second source of truth for a fact the declared file
+    already states, and nothing compared them -- a target declared under
+    one prefix and listed here under another would be gated in one
+    namespace and released in the other.
+
+    A FUNCTION rather than a module constant on purpose: a constant would
+    freeze the declared file's contents at import time, so a test that
+    writes a fixture declaration and re-reads it would keep seeing the
+    first load. Callers that want the snapshot can bind it themselves.
+    """
+    return {row["target"]: row["prefix"]
+            for row in _mechanism.load_targets(DECLARED_TARGETS_PATH)}
 
 
 def last_tag_select(tags, prefix="v"):
@@ -185,7 +240,7 @@ def last_tag_select(tags, prefix="v"):
     caller (the CLI's bare `last-tag` invocation, this repo's tooling) keeps its
     behaviour unchanged even though the portable mechanism's own
     `last_tag_select` now REQUIRES the prefix (A-1.3). Pass a value from
-    RELEASE_TAG_PREFIXES for a sibling (#382)."""
+    the declared prefix for a sibling (#382)."""
     return _mechanism.last_tag_select(tags, prefix)
 
 
@@ -202,7 +257,8 @@ def select_release_target(*confirmations):
     Delegates to the portable mechanism's `select_release_target`, supplying
     this repo's RELEASE_TARGETS register - which the portable module now
     REQUIRES rather than assumes (A-1.3)."""
-    return _mechanism.select_release_target(*confirmations, targets=RELEASE_TARGETS)
+    return _mechanism.select_release_target(
+        *confirmations, targets=_declared_target_names())
 
 
 def classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CHECK):
@@ -270,7 +326,7 @@ def main(argv):
     if cmd == "tag-prefix" and len(rest) == 1:
         # One source of truth for a namespace: the release skill asks for the
         # prefix rather than restating four of them in prose.
-        prefix = RELEASE_TAG_PREFIXES.get(rest[0])
+        prefix = release_tag_prefixes().get(rest[0])
         if prefix is None:
             sys.stderr.write(f"unknown release target: {rest[0]}\n")
             return 2
@@ -286,7 +342,7 @@ def main(argv):
             tag_exists=b(rest[0]), tag_sha=rest[1], head_sha=rest[2],
             tag_version=rest[3], manifest_version=rest[4], release_is_nondraft=b(rest[5])))
         return 0
-    if cmd == "select-target" and len(rest) == len(RELEASE_TARGETS):
+    if cmd == "select-target" and len(rest) == len(_declared_target_names()):
         print(select_release_target(*rest))
         return 0
     if cmd == "select-target-named" and rest:
@@ -299,7 +355,8 @@ def main(argv):
         # dispatch publishes the wrong plugin, holding a contents:write
         # token, with every downstream check passing because the wrong
         # release is internally consistent.
-        print(_mechanism.select_release_target_by_name(list(rest), RELEASE_TARGETS))
+        print(_mechanism.select_release_target_by_name(
+            list(rest), _declared_target_names()))
         return 0
     if cmd == "merge-readiness" and len(rest) == 2:
         import json

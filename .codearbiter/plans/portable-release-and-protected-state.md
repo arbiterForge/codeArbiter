@@ -226,8 +226,8 @@ generate from it).
 | T-43 | `.github/scripts/payload_version_gate.py` | `python .github/scripts/test_payload_version_gate.py -k no_prefix_literal` | CI reads declared source | A-4.1 | T-42 | ACCEPTED |
 | T-44a | `.github/scripts/_releaselib.py` | `python .github/scripts/test_release_lib.py -k select_target_name_keyed` — `name=value` argv pairs; unknown name fails closed | shim CLI shape | A-4.2 | T-43 | ACCEPTED |
 | T-44b | `.github/workflows/release.yml` | `python .github/scripts/test_release_workflow.py -k name_keyed` — inputs plumbed by name, order-independent | workflow plumbing | A-4.2 | T-44a | ACCEPTED |
-| T-45 | `.github/scripts/test_release_workflow.py` | `-k name_agreement` fails when declared set and workflow inputs disagree | contract test | A-4.3 | T-44b | PENDING |
-| T-46 | `.github/scripts/_releaselib.py` | `python .github/scripts/test_payload_version_gate.py`; `python .github/scripts/test_release_workflow.py`; `python .github/scripts/test_release_lib.py` all green; A-1.9's `test_releaselib_shim_exports_constants` deleted in this commit | shim data removed | A-4.4 | T-45 | PENDING |
+| T-45 | `.github/scripts/test_release_workflow.py` | `-k name_agreement` fails when declared set and workflow inputs disagree | contract test | A-4.3 | T-44b | ACCEPTED |
+| T-46 | `.github/scripts/_releaselib.py` | `python .github/scripts/test_payload_version_gate.py`; `python .github/scripts/test_release_workflow.py`; `python .github/scripts/test_release_lib.py` all green; A-1.9's `test_releaselib_shim_exports_constants` deleted in this commit | shim data removed | A-4.4 | T-45 | ACCEPTED |
 
 ### Step 3 — A slice 5: onboarding and back-fill
 
