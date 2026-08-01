@@ -15,6 +15,8 @@
 #        [--desc RATIONALE] [--section "## In-flight"]
 #   start <ID-or-"title"> [--as GROUP.TYPE] [--date YYYY-MM-DD]
 #   done  <ID-or-"title"> [--date YYYY-MM-DD]
+#   archive <ID-or-"title"> [--allow-undated]  move a done item into
+#           done-tasks.md: append THERE first, then remove here
 #
 # Rerun-safe: start/done are no-ops on an already-matching state; a missing target
 # is reported, never a partial write.
@@ -86,6 +88,71 @@ def _parse_gid(gid, option="--id"):
     return parts[0], parts[1], None
 
 
+def _atomic_write(path, text, prefix):
+    """Write `text` to `path` atomically: sibling temp file, then
+    `os.replace()`. Atomic on POSIX and a same-volume rename on Windows,
+    so a crash between open() and write() never leaves a truncated board.
+
+    Extracted so the archival sweep's TWO writes (done-tasks, then
+    open-tasks) share one implementation. Two hand-rolled copies of an
+    atomic write is how one of them quietly stops being atomic.
+    """
+    directory = os.path.dirname(path)
+    os.makedirs(directory, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=directory, suffix=".tmp", prefix=prefix)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+        os.replace(tmp_path, path)
+    except Exception:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+        raise
+
+
+def _archive(text, args, root):
+    """One archived item: `(new_open_text, action_or_error, wrote_done)`.
+
+    ORDER IS THE WHOLE POINT (B-20/B-22). done-tasks.md is written FIRST,
+    inside the same lock, and only then is open-tasks.md rewritten without
+    the item. An interruption between the two leaves the record in BOTH
+    files -- recoverable, and absorbed by the next run's dedup. The
+    reverse order loses the record outright, and batching all appends
+    before all removals duplicates every item in the batch.
+    """
+    parsed = [p[0] for p in (tb.parse_board(line) for line in text.splitlines()) if p]
+    target = args.target
+    matches = [t for t in parsed
+               if t.state == "done" and (t.id == target or t.title == target)]
+    if not matches:
+        return None, (f"no done task matching {target!r} — archive only moves "
+                      f"items already marked done"), False
+    task = matches[0]
+    if task.done is None and not args.allow_undated:
+        return None, (f"{target!r} is marked done but carries no (done DATE) "
+                      f"stamp, so it cannot be aged. Both `taskwrite done` and "
+                      f"the board classifier require the stamp, so this is a "
+                      f"legacy or override-era entry — pass --allow-undated to "
+                      f"archive it deliberately"), False
+
+    done_path = os.path.join(root, ".codearbiter", "done-tasks.md")
+    try:
+        with open(done_path, encoding="utf-8") as handle:
+            done_text = handle.read()
+    except OSError:
+        done_text = ""
+
+    new_open, new_done = tb.archive_transform(text, done_text, task)
+    if new_open == text and new_done == done_text:
+        return None, f"nothing to archive for {target!r}", False
+
+    # done FIRST, then the caller writes open.
+    _atomic_write(done_path, new_done, "done-tasks.")
+    return new_open, f"archived: {task.id or task.title}", True
+
+
 def _apply(args, text):
     """Pure text -> (new_text, action) | (None, error_msg) transform against
     the board text the caller hands in. Deliberately takes NO lock and does NO
@@ -153,6 +220,12 @@ def main(argv=None):
     pd.add_argument("target")
     pd.add_argument("--date", default=None)
 
+    par = sub.add_parser("archive")
+    par.add_argument("target")
+    par.add_argument("--allow-undated", dest="allow_undated", action="store_true",
+                     help="archive a done item carrying no (done DATE) stamp; "
+                          "requires deliberate per-item confirmation")
+
     args = p.parse_args(argv)
 
     root = project_root()
@@ -184,28 +257,22 @@ def main(argv=None):
             print(f"no board at {board_path} — is this an initialized repo?", file=sys.stderr)
             return 1
 
-        new, action_or_err = _apply(args, text)
+        if args.verb == "archive":
+            # done-tasks.md is written INSIDE `_archive`, before this
+            # function returns the new open-tasks text — the ordering
+            # B-20/B-22 turn on. See `_archive`'s docstring.
+            new, action_or_err, _wrote_done = _archive(text, args, root)
+        else:
+            new, action_or_err = _apply(args, text)
         if new is None:
             print(action_or_err, file=sys.stderr)
             return 1
         action = action_or_err
 
-        # Atomic write: write to a sibling temp file, then os.replace() into
-        # place. os.replace() is atomic on POSIX and a same-volume rename on
-        # Windows, so a crash between open() and f.write() never leaves the
-        # board truncated.
-        board_dir = os.path.dirname(board_path)
-        fd, tmp_path = tempfile.mkstemp(dir=board_dir, suffix=".tmp", prefix="open-tasks.")
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
-                f.write(new)
-            os.replace(tmp_path, board_path)
-        except Exception:
-            try:
-                os.remove(tmp_path)
-            except OSError:
-                pass
-            raise
+        # Atomic write via the shared helper — same sibling-temp-file plus
+        # os.replace() as before, now in one place so the archival sweep's
+        # done-tasks write cannot drift from this one.
+        _atomic_write(board_path, new, "open-tasks.")
     finally:
         release_lock(lock)
     print(action)

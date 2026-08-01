@@ -255,10 +255,10 @@ generate from it).
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-57 | `core/pysrc/_taskboardlib.py` | `test_taskwriter.py -k archive_transform` — pure text→text move | archive transform | B-20 | T-56 | PENDING |
-| T-58 | `core/pysrc/taskwrite.py` | `python .github/scripts/test_taskwriter.py -k archive_verb` — appends then removes, per item; **creates `done-tasks.md` with the canonical header when absent** | archive verb | B-20, B-23 | T-57 | PENDING |
-| T-59 | `.github/scripts/test_taskwriter.py` | `-k archive_rerun` — dotted-ID and exact-text dedup, no duplicate | rerun safety | B-21 | T-58 | PENDING |
-| T-60 | `.github/scripts/test_taskwriter.py` | `-k archive_interrupted` — kill between phases leaves no dup and no loss | interruption safety | B-22 | T-59 | PENDING |
+| T-57 | `core/pysrc/_taskboardlib.py` | `test_taskwriter.py -k archive_transform` — pure text→text move | archive transform | B-20 | T-56 | ACCEPTED |
+| T-58 | `core/pysrc/taskwrite.py` | `python .github/scripts/test_taskwriter.py -k archive_verb` — appends then removes, per item; **creates `done-tasks.md` with the canonical header when absent** | archive verb | B-20, B-23 | T-57 | ACCEPTED |
+| T-59 | `.github/scripts/test_taskwriter.py` | `-k archive_rerun` — dotted-ID and exact-text dedup, no duplicate | rerun safety | B-21 | T-58 | ACCEPTED |
+| T-60 | `.github/scripts/test_taskwriter.py` | `-k archive_interrupted` — kill between phases leaves no dup and no loss | interruption safety | B-22 | T-59 | ACCEPTED |
 | T-61 | `core/pysrc/init-codearbiter.py` | `python .github/scripts/test_taskboardlib.py -k done_tasks_shape` — greenfield scaffold path; `python tools/sync-core.py --check` passes | done-tasks scaffolded | B-23 | T-60 | PENDING |
 | T-62 | `core/pysrc/_taskboardlib.py` | `-k archive_cutoff` — named constant, injected date | cutoff constant | B-25 | T-61 | PENDING |
 | T-63 | `core/pysrc/_taskboardlib.py` | `-k archive_undated` — undated `[x]` items appear in their own section, **excluded from cutoff math**, archivable only per-item | undated rule | B-26 | T-62 | PENDING |

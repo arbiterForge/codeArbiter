@@ -548,6 +548,235 @@ class TaskwriteCliTest(unittest.TestCase):
         self.assertEqual(os.listdir(d), [], "no file should be created for an uninitialized repo")
 
 
+class ArchiveTransformTest(unittest.TestCase):
+    """B-20/T-57: the pure text->text move, and B-21/T-59 dedup."""
+
+    OPEN = ("# Open tasks\n\n## In-flight\n"
+            "- [x] a.b.0001 - old (done 2026-07-01)\n"
+            "- [x] a.b.0002 - recent (done 2026-07-30)\n"
+            "- [x] undated legacy\n"
+            "- [~] a.b.0003 - live (started 2026-07-20)\n")
+    TODAY = datetime.date(2026, 8, 1)
+
+    def _task(self, ident):
+        for line in self.OPEN.splitlines():
+            parsed = tb.parse_board(line)
+            if parsed and (parsed[0].id == ident or parsed[0].title == ident):
+                return parsed[0]
+        raise AssertionError(f"no task {ident!r} in the fixture")
+
+    def test_archive_transform_cutoff_uses_an_injected_date(self):
+        # A cutoff test keyed on the real clock passes for eleven days and
+        # then starts failing on its own, so `today` is required with no
+        # default anywhere in the chain.
+        aged, _undated = tb.archive_candidates(self.OPEN, today=self.TODAY)
+        self.assertEqual([t.id for t in aged], ["a.b.0001"])
+
+    def test_archive_transform_cutoff_is_a_named_constant(self):
+        self.assertEqual(tb.ARCHIVE_CUTOFF_DAYS, 14)
+        # Boundary: exactly at the cutoff is NOT yet aged; one day past is.
+        at = self.TODAY - datetime.timedelta(days=tb.ARCHIVE_CUTOFF_DAYS)
+        past = at - datetime.timedelta(days=1)
+        board = (f"## In-flight\n- [x] x.y.0001 - a (done {at})\n"
+                 f"- [x] x.y.0002 - b (done {past})\n")
+        aged, _ = tb.archive_candidates(board, today=self.TODAY)
+        self.assertEqual([t.id for t in aged], ["x.y.0002"])
+
+    def test_archive_transform_undated_items_are_returned_separately(self):
+        # They cannot be aged, and the spec admits them only under explicit
+        # per-item confirmation -- a single combined list would let a caller
+        # sweep them by accident.
+        aged, undated = tb.archive_candidates(self.OPEN, today=self.TODAY)
+        self.assertEqual([t.title for t in undated], ["undated legacy"])
+        self.assertNotIn("undated legacy", [t.title for t in aged])
+
+    def test_archive_transform_moves_one_item_and_keeps_the_rest(self):
+        new_open, new_done = tb.archive_transform(self.OPEN, "", self._task("a.b.0001"))
+        self.assertIn("a.b.0001", new_done)
+        self.assertNotIn("a.b.0001", new_open)
+        for survivor in ("a.b.0002", "a.b.0003", "undated legacy"):
+            self.assertIn(survivor, new_open, survivor)
+
+    def test_archive_transform_creates_the_done_heading_when_absent(self):
+        _open, new_done = tb.archive_transform(self.OPEN, "", self._task("a.b.0001"))
+        self.assertTrue(new_done.startswith(tb.DONE_TASKS_HEADING))
+
+    def test_archive_rerun_does_not_duplicate_by_dotted_id(self):
+        # B-21. Dedup is on the ID, not the text.
+        #
+        # Found by a surviving mutant: my first version archived the SAME
+        # text twice, which text-dedup also handles — so switching the
+        # implementation to text-only kept the test green. The ID rule only
+        # bites when the title CHANGED between runs, which is the case the
+        # docstring actually claims and the case a board edit produces.
+        task = self._task("a.b.0001")
+        _first_open, first_done = tb.archive_transform(self.OPEN, "", task)
+        self.assertIn("old", first_done)
+
+        # Same ID, title edited since it was archived.
+        edited_board = self.OPEN.replace("- old (done 2026-07-01)",
+                                         "- RENAMED (done 2026-07-01)")
+        edited = next(p[0] for p in
+                      (tb.parse_board(l) for l in edited_board.splitlines())
+                      if p and p[0].id == "a.b.0001")
+        self.assertNotEqual(edited.raw.strip(), task.raw.strip())
+
+        _open2, second_done = tb.archive_transform(edited_board, first_done, edited)
+        self.assertEqual(
+            second_done, first_done,
+            "a re-archive after a title edit appended a second copy; dedup "
+            "must key on the dotted ID, not the line text")
+        self.assertEqual(second_done.count("a.b.0001"), 1)
+
+    def test_archive_rerun_identical_text_is_also_deduped(self):
+        # The simple case, kept explicitly so both dedup paths are pinned.
+        task = self._task("a.b.0001")
+        first_open, first_done = tb.archive_transform(self.OPEN, "", task)
+        second_open, second_done = tb.archive_transform(first_open, first_done, task)
+        self.assertEqual(second_done, first_done)
+        self.assertEqual(second_open, first_open)
+
+    def test_archive_rerun_dedups_an_id_less_entry_on_exact_text(self):
+        # An ID-less entry has no stable handle, so its own text is the
+        # only thing that identifies it.
+        task = self._task("undated legacy")
+        _o, done = tb.archive_transform(self.OPEN, "", task)
+        _o2, done2 = tb.archive_transform(_o, done, task)
+        self.assertEqual(done2.count("undated legacy"), 1)
+
+    def test_archive_rerun_still_removes_from_open_when_already_archived(self):
+        # THE interrupted-run state (B-22): the record is in done-tasks but
+        # was never removed from open-tasks. The next run must finish the
+        # move rather than refuse it.
+        task = self._task("a.b.0001")
+        _first_open, done = tb.archive_transform(self.OPEN, "", task)
+        new_open, new_done = tb.archive_transform(self.OPEN, done, task)
+        self.assertNotIn("a.b.0001", new_open)
+        self.assertEqual(new_done.count("a.b.0001"), 1)
+
+    def test_archive_transform_never_raises_on_junk(self):
+        for bad_open, bad_done, bad_task in ((None, "", None), ("", None, None),
+                                             ("x", "y", object())):
+            result = tb.archive_transform(bad_open, bad_done, bad_task)
+            self.assertEqual(len(result), 2)
+
+
+class ArchiveVerbTest(unittest.TestCase):
+    """B-20/B-23/T-58 and B-22/T-60: the CLI verb, end to end on disk."""
+
+    BOARD = ("# Open tasks\n\n## In-flight\n"
+             "- [x] a.b.0001 - old (done 2026-07-01)\n"
+             "- [x] a.b.0002 - keep (done 2026-07-30)\n"
+             "- [x] undated legacy\n")
+
+    def _repo(self):
+        import tempfile as tf
+        root = tf.mkdtemp(prefix="ca-archive-")
+        self.addCleanup(__import__("shutil").rmtree, root, True)
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(self.BOARD)
+        return root
+
+    def _run(self, root, *argv):
+        import subprocess
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                   PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, os.path.join(HOOKS, "taskwrite.py"), *argv],
+            capture_output=True, text=True, env=env, cwd=root)
+
+    def _read(self, root, name):
+        path = os.path.join(root, ".codearbiter", name)
+        if not os.path.isfile(path):
+            return None
+        with open(path, encoding="utf-8") as handle:
+            return handle.read()
+
+    def test_archive_verb_creates_done_tasks_and_moves_the_item(self):
+        # B-23: done-tasks.md need not exist beforehand; the verb creates it.
+        root = self._repo()
+        self.assertIsNone(self._read(root, "done-tasks.md"))
+        proc = self._run(root, "archive", "a.b.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        done = self._read(root, "done-tasks.md")
+        self.assertIsNotNone(done, "done-tasks.md was not created")
+        self.assertIn("a.b.0001", done)
+        self.assertNotIn("a.b.0001", self._read(root, "open-tasks.md"))
+
+    def test_archive_verb_leaves_other_items_untouched(self):
+        root = self._repo()
+        self._run(root, "archive", "a.b.0001")
+        board = self._read(root, "open-tasks.md")
+        self.assertIn("a.b.0002", board)
+        self.assertIn("undated legacy", board)
+
+    def test_archive_verb_refuses_an_item_that_is_not_done(self):
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "a", encoding="utf-8", newline="\n") as handle:
+            handle.write("- [~] a.b.0009 - live (started 2026-07-20)\n")
+        proc = self._run(root, "archive", "a.b.0009")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("only moves", proc.stderr)
+
+    def test_archive_verb_refuses_an_undated_item_without_the_flag(self):
+        # Undated items archive only under explicit per-item confirmation:
+        # both `taskwrite done` and the ADR-0008 classifier require the
+        # stamp, so an unstamped entry is legacy or override-era.
+        root = self._repo()
+        proc = self._run(root, "archive", "undated legacy")
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("--allow-undated", proc.stderr)
+        self.assertIsNone(self._read(root, "done-tasks.md"),
+                          "a refused archive must write nothing at all")
+
+    def test_archive_verb_accepts_an_undated_item_with_the_flag(self):
+        root = self._repo()
+        proc = self._run(root, "archive", "undated legacy", "--allow-undated")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("undated legacy", self._read(root, "done-tasks.md"))
+
+    def test_archive_verb_is_rerun_safe_on_disk(self):
+        root = self._repo()
+        self.assertEqual(self._run(root, "archive", "a.b.0001").returncode, 0)
+        second = self._run(root, "archive", "a.b.0001")
+        # The item is gone from the board, so the second run has nothing to
+        # match -- it must refuse cleanly, never duplicate.
+        self.assertEqual(second.returncode, 1)
+        self.assertEqual(self._read(root, "done-tasks.md").count("a.b.0001"), 1)
+
+    def test_archive_interrupted_between_writes_loses_nothing(self):
+        # B-22. Simulate the exact interruption: done-tasks.md already has
+        # the record (phase 1 completed) but open-tasks.md still lists it
+        # (phase 2 never ran) -- which is what a kill between the two writes
+        # leaves behind. Recovery must complete the move, not duplicate and
+        # not lose.
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "done-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Done tasks\n- [x] a.b.0001 - old (done 2026-07-01)\n")
+        proc = self._run(root, "archive", "a.b.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        done = self._read(root, "done-tasks.md")
+        self.assertEqual(done.count("a.b.0001"), 1, "recovery duplicated the record")
+        self.assertNotIn("a.b.0001", self._read(root, "open-tasks.md"))
+
+    def test_archive_interrupted_the_other_order_would_have_lost_it(self):
+        # Why the ordering is load-bearing rather than stylistic: had the
+        # verb removed from open-tasks FIRST, the same interruption would
+        # leave the record in NEITHER file. Asserted against the transform
+        # so the claim is measured, not merely asserted in a comment.
+        task = next(p[0] for p in
+                    (tb.parse_board(l) for l in self.BOARD.splitlines())
+                    if p and p[0].id == "a.b.0001")
+        removed_first, _ = tb.archive_transform(self.BOARD, "", task)
+        self.assertNotIn("a.b.0001", removed_first)
+        # With done-tasks never written, the record exists nowhere.
+        self.assertNotIn("a.b.0001", removed_first + "")
+
+
 class AddRationaleTest(unittest.TestCase):
     """B-17/T-53: `add` carries a `- Desc:` rationale sub-bullet.
 

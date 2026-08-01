@@ -696,6 +696,109 @@ def add_entry(text, *, desc, origin=None, group=None, type=None,
     return _insert_under_section(text, line, section)
 
 
+# B-20/B4. Done items older than this are sweep candidates. A NAMED
+# constant per D-3's precedent, and tested against an INJECTED date rather
+# than `today()` -- a cutoff test keyed on the real clock passes for eleven
+# days and then starts failing on its own.
+ARCHIVE_CUTOFF_DAYS = 14
+
+DONE_TASKS_HEADING = "# Done tasks"
+
+
+def archive_candidates(text, *, today, cutoff_days=ARCHIVE_CUTOFF_DAYS):
+    """`(aged, undated)` — done tasks eligible for the archival sweep.
+
+    `aged` are done items whose `(done YYYY-MM-DD)` stamp is strictly more
+    than `cutoff_days` old. `undated` are `[x]` items carrying NO stamp at
+    all, returned SEPARATELY because they cannot be aged: both
+    `taskwrite done` and the ADR-0008 classifier require the stamp, so an
+    undated entry is legacy or override-era. The spec admits them only
+    under explicit per-item confirmation, and keeping them in a second
+    list is what makes a caller unable to sweep them by accident.
+
+    Pure over synthetic input; non-raising. `today` is REQUIRED — there is
+    no clock default, so no test can silently depend on the real date.
+    """
+    aged, undated = [], []
+    if not isinstance(text, str) or today is None:
+        return aged, undated
+    for line in text.splitlines():
+        parsed = parse_board(line)
+        if not parsed:
+            continue
+        task = parsed[0]
+        if task.state != "done":
+            continue
+        if task.done is None:
+            undated.append(task)
+            continue
+        if (today - task.done).days > cutoff_days:
+            aged.append(task)
+    return aged, undated
+
+
+def already_archived(done_text, task):
+    """True iff `task` is already recorded in `done_text`.
+
+    Dedup is on the DOTTED ID when the task has one, and on exact line
+    text when it does not. That split matters: an ID-less entry has no
+    stable handle, so only its own text identifies it, while an
+    ID-carrying entry must dedup on the ID even if its title was later
+    edited -- otherwise a re-run appends a second copy of the same task
+    under a slightly different wording.
+    """
+    if not isinstance(done_text, str) or task is None:
+        return False
+    if getattr(task, "id", None):
+        for line in done_text.splitlines():
+            parsed = parse_board(line)
+            if parsed and parsed[0].id == task.id:
+                return True
+        return False
+    needle = (getattr(task, "raw", "") or "").strip()
+    if not needle:
+        return False
+    return any(line.strip() == needle for line in done_text.splitlines())
+
+
+def archive_transform(open_text, done_text, task):
+    """`(new_open_text, new_done_text)` for ONE archived item.
+
+    Per-item by construction (B-20). Batching is unsafe in both orders:
+    appending all N then removing all N duplicates every item if the run
+    dies between phases, and removing first loses records outright. One
+    item at a time makes an interruption cost at most a single duplicate
+    that the next run's dedup absorbs.
+
+    The caller is responsible for writing `done` BEFORE `open` — this
+    function only computes both texts. Rerun-safe: an item already in
+    `done_text` is not appended twice, but IS still removed from
+    `open_text`, which is exactly the state an interrupted run leaves
+    behind.
+
+    Pure and non-raising; unknown input returns the texts unchanged.
+    """
+    if not isinstance(open_text, str) or not isinstance(done_text, str):
+        return open_text, done_text
+    raw = (getattr(task, "raw", "") or "").strip()
+    if not raw:
+        return open_text, done_text
+
+    if already_archived(done_text, task):
+        new_done = done_text
+    else:
+        body = done_text if done_text.strip() else DONE_TASKS_HEADING + "\n"
+        if not body.endswith("\n"):
+            body += "\n"
+        new_done = body + raw + "\n"
+
+    kept = [line for line in open_text.splitlines() if line.strip() != raw]
+    new_open = "\n".join(kept)
+    if open_text.endswith("\n") and not new_open.endswith("\n"):
+        new_open += "\n"
+    return new_open, new_done
+
+
 def _find_task_line(lines, target):
     """Index of the task line matching `target` (a dotted id, or the title of an
     ID-less item), or -1. PREFERS an open match: a done line never shadows a live
