@@ -1923,17 +1923,27 @@ def main(argv):
             if failure is not None:
                 sys.stderr.write(f"run-pre-tag: cannot read the tree state: {failure}\n")
                 return 6
-            introduced = sorted(
-                rel for rel, digest in current.items()
-                if baseline.get(rel) != digest)
-            if introduced:
+            # The UNION of both key sets, not `current` alone. A path git
+            # reported as changed at baseline and no longer reports has been
+            # REVERTED by the command -- which is a mutation of the tree in
+            # exactly the sense this gate exists to catch, and the most
+            # dangerous one: a pre-tag command that quietly undoes the
+            # lane's own manifest bump or changelog section leaves a release
+            # that tags a version the payload never claims. Walking
+            # `current.items()` could not see it, because a reverted path
+            # simply stops appearing.
+            changed = sorted(
+                rel for rel in set(baseline) | set(current)
+                if baseline.get(rel) != current.get(rel))
+            if changed:
                 sys.stderr.write(
                     f"run-pre-tag: BLOCK -- {command!r} exited 0 but MUTATED "
                     "the tree. Declared pre-tag commands are check-only "
                     "(DECISION-0034); reconciliation is a separate action "
                     "the operator commits before releasing.\n"
-                    "  Introduced by this command:\n    "
-                    + "\n    ".join(introduced) + "\n"
+                    "  Changed by this command (added, edited, or reverted):"
+                    "\n    "
+                    + "\n    ".join(changed) + "\n"
                     "  FIX THE DECLARATION -- do not simply re-run. This "
                     "command mutates the tree every time it is invoked, so "
                     "reverting and re-running cannot converge; make it "

@@ -633,8 +633,14 @@ def _state_write_res(basename):
     write_re = re.compile(
         r"\b(" + _STATE_WRITE_VERBS + r")\b[^|;&\n]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
+    # `[^|;&\n]*` for the SAME reason `write_re` above carries it: a git
+    # subcommand and its pathspec sit on one line, so crossing newlines buys
+    # no coverage and costs false blocks on multi-line commit bodies. This
+    # leg was left on the old unbounded window when `write_re` was fixed --
+    # a sibling two lines away, with the identical defect, missed because the
+    # fix was applied to the reported pattern rather than to the class.
     git_restore_re = re.compile(
-        GIT + r"\s+(?:checkout|restore)\b[^|;&]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+        GIT + r"\s+(?:checkout|restore)\b[^|;&\n]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     interp_re = re.compile(
         r"\b(" + _INTERP_TOKENS + r")\b[^\n]*?" + _INTERP_INLINE_CODE

@@ -1011,6 +1011,22 @@ class TestStateShellHelperOnly(_StateShellFixture):
     def test_git_restore_blocks(self):
         self.assertShellBlocked("git restore open-tasks.md")
 
+    def test_git_restore_window_does_not_cross_a_newline_either(self):
+        # CodeRabbit MAJOR, confirmed. When `write_re`'s window was bounded
+        # to one line, `git_restore_re` two lines below it kept the old
+        # unbounded `[^|;&]*` and so still matched a `git checkout` on one
+        # line of a commit body against a basename on another. The fix had
+        # been applied to the reported pattern rather than to the class.
+        self.assertShellAllowed(
+            'git commit -m "chore: notes\n'
+            '\n'
+            'We did a git checkout of an unrelated branch earlier.\n'
+            '\n'
+            'Separately, open-tasks.md gained an entry."')
+        # The single-line case the leg exists for still blocks.
+        self.assertShellBlocked("git checkout -- .codearbiter/open-tasks.md")
+        self.assertShellBlocked("git restore .codearbiter/open-tasks.md")
+
     def test_python_c_one_liner_blocks(self):
         # F6: reuses the sanctioned helper's own Python file-I/O route
         # while naming the file lexically.

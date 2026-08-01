@@ -2794,6 +2794,33 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(
                 rh.confirmation_state(root, "app", ["python3 a.py"]), rh.NEVER)
 
+    def test_pre_tag_marker_names_do_not_collide_across_targets(self):
+        # CodeRabbit MAJOR, confirmed. The sanitizer folded every
+        # disallowed character to "_", so the legal, distinct target names
+        # `a.b` and `a_b` shared one marker file -- confirming either
+        # silently confirmed the other, which is exactly the cross-target
+        # confirmation `confirmation_path` promises not to do.
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            collide_pairs = [("a.b", "a_b"), ("x/y", "x_y"), ("p q", "p_q")]
+            for left, right in collide_pairs:
+                with self.subTest(pair=(left, right)):
+                    self.assertNotEqual(rh.confirmation_path(root, left),
+                                        rh.confirmation_path(root, right))
+            # Deterministic: the same name must resolve to the same marker
+            # across calls, or a confirmation could never be read back.
+            self.assertEqual(rh.confirmation_path(root, "a.b"),
+                             rh.confirmation_path(root, "a.b"))
+
+    def test_confirming_one_target_does_not_confirm_its_collider(self):
+        # The consequence, driven end to end rather than asserted on paths.
+        rh = self._releasehash()
+        cmds = ["python3 check.py"]
+        with tempfile.TemporaryDirectory() as root:
+            rh.record_confirmation(root, "a.b", rh.pre_tag_digest(cmds))
+            self.assertEqual(rh.confirmation_state(root, "a.b", cmds), rh.CONFIRMED)
+            self.assertEqual(rh.confirmation_state(root, "a_b", cmds), rh.NEVER)
+
     def test_pre_tag_hash_module_is_vendored_byte_identically(self):
         # A-2.10 ships through sync-core, so the plugins' copies must match
         # core/pysrc exactly -- a lane running a stale vendored copy would

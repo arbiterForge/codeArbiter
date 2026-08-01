@@ -144,7 +144,14 @@ def _archive(text, args, root):
     reverse order loses the record outright, and batching all appends
     before all removals duplicates every item in the batch.
     """
-    parsed = [p[0] for p in (tb.parse_board(line) for line in text.splitlines()) if p]
+    # Parse the board ONCE, as a whole. The per-line form this replaces
+    # (`parse_board(line) for line in text.splitlines()`) handed every Task a
+    # `lineno` of 1 and no sub-fields, because a single line has no context:
+    # `task_block`'s index-based location could therefore never match and
+    # silently fell through to its first-matching-line fallback on every
+    # archive. The outcome happened to be right; the mechanism was dead, and
+    # dead code that reads as load-bearing is how the NEXT change breaks it.
+    parsed = tb.parse_board(text)
     target = args.target
     matches = [t for t in parsed
                if t.state == "done" and (t.id == target or t.title == target)]

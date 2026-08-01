@@ -306,6 +306,45 @@ class TestH22ProtectedState(unittest.TestCase):
         self.assertAllowed(self.run_write(
             os.path.join(self.ca, "release-targets.md")))
 
+    def _guard_delete(self, path):
+        """Run ONE canonical `delete` op through the guard.
+
+        Driven at `_guard_op` rather than through a payload, because a
+        `delete` kind only ever arrives from a host whose write tool batches
+        per-file operations (Codex's apply_patch, ADR-0011 M2) -- Claude's
+        Write payload always maps to a single `write`.
+        """
+        import io
+        old = sys.stderr
+        sys.stderr = io.StringIO()
+        try:
+            self.mod._guard_op(self.root, {"file_path": path, "kind": "delete"})
+            return 0, sys.stderr.getvalue()
+        except SystemExit as exc:
+            return exc.code, sys.stderr.getvalue()
+        finally:
+            sys.stderr = old
+
+    def test_a_fresh_marker_does_not_admit_deleting_marker_gated_state(self):
+        # CodeRabbit MAJOR, confirmed. The marker-gated arm admitted any op
+        # kind under a fresh marker, so a self-mintable, friction-grade
+        # token (ADR-0024) became a DELETE capability over protected state.
+        # An authoring lane writes rows; it never removes the file.
+        self._set_registry({".codearbiter/release-targets.md":
+                            self._protectedstatelib.ProtectedPolicy.MARKER_GATED})
+        self._touch_marker("release-targets-authoring")
+        self.assertBlockedH22(self._guard_delete(
+            os.path.join(self.ca, "release-targets.md")))
+
+    def test_delete_of_helper_only_state_stays_blocked(self):
+        # The non-marker policies had no marker path to begin with; pinned
+        # so the new delete arm cannot accidentally become the ONLY thing
+        # blocking them.
+        self._set_registry({".codearbiter/open-tasks.md":
+                            self._protectedstatelib.ProtectedPolicy.HELPER_ONLY})
+        self.assertBlockedH22(self._guard_delete(
+            os.path.join(self.ca, "open-tasks.md")))
+
     def test_marker_gated_write_with_stale_marker_is_blocked(self):
         self._set_registry({".codearbiter/release-targets.md":
                             self._protectedstatelib.ProtectedPolicy.MARKER_GATED})

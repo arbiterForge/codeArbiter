@@ -845,6 +845,48 @@ class ArchiveVerbTest(unittest.TestCase):
         self.assertEqual(survivor.desc, "")
         self.assertEqual(survivor.boundaries, [])
 
+    def test_indented_continuation_prose_does_not_split_the_block(self):
+        # CodeRabbit MAJOR, confirmed. `task_block`'s close scan advanced
+        # only past `- Key:` sub-bullets and blanks, while `parse_board`
+        # keeps a task open across ANY indented line. So an indented
+        # continuation line stopped the block early and orphaned every
+        # sub-bullet after it onto the following task -- re-opening HIGH-2
+        # through a different door. The two rules are now identical.
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Open tasks\n\n## In-flight\n"
+                         "- [x] g.t.0001 - one (done 2026-07-01)\n"
+                         "    continuation prose, indented, not a sub-bullet\n"
+                         "  - Boundaries: egress, secrets\n"
+                         "- [ ] g.t.0002 - two\n")
+        proc = self._run(root, "archive", "g.t.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        open_after = self._read(root, "open-tasks.md")
+        self.assertNotIn("continuation prose", open_after)
+        self.assertNotIn("egress, secrets", open_after)
+        survivor = next(t for t in tb.parse_board(open_after) if t.id == "g.t.0002")
+        self.assertEqual(survivor.boundaries, [])
+        self.assertIn("- Boundaries: egress, secrets", self._read(root, "done-tasks.md"))
+
+    def test_the_board_is_parsed_whole_so_lineno_is_real(self):
+        # CodeRabbit MAJOR, confirmed. `_archive` parsed the board one line
+        # at a time, so every Task carried lineno == 1 and no sub-fields --
+        # meaning `task_block`'s index-based location could never match and
+        # always fell through to its first-line fallback. Asserted on the
+        # parse itself, because the archive OUTCOME was right either way and
+        # so could not detect the dead mechanism.
+        text = ("# Open tasks\n\n## In-flight\n"
+                "- [x] a.b.0001 - one (done 2026-07-01)\n"
+                "- [x] a.b.0002 - two (done 2026-07-01)\n")
+        whole = tb.parse_board(text)
+        self.assertEqual([t.lineno for t in whole], [4, 5])
+        per_line = [p[0] for p in
+                    (tb.parse_board(line) for line in text.splitlines()) if p]
+        self.assertEqual([t.lineno for t in per_line], [1, 1],
+                         "the per-line parse this replaced should still be "
+                         "demonstrably lineno-blind")
+
     def test_archive_of_a_block_is_rerun_safe(self):
         # The interrupted-run recovery property held before this fix and
         # must still hold now that the moved unit is a block: dedup keys

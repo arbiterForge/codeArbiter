@@ -137,6 +137,18 @@ def _guard_op(root, op):
     # construction (its argv/content never reaches this guard).
     if "state" in classes:
         rel, policy = resolve_registered_path(fpath, root)
+        if kind == "delete":
+            # A DELETE is never authoring, so no authoring marker admits it —
+            # for any policy, marker-gated included. The marker means "the
+            # sanctioned lane is writing a row right now"; reading it as
+            # "...and may therefore remove the file entirely" turns a
+            # self-mintable, friction-grade token (ADR-0024) into a delete
+            # capability over protected state, which is strictly more than
+            # the lane it gates can legitimately need.
+            block("H-22", f"'{rel}' is protected project state (#564) — deleting it is "
+                          f"never admitted, including under a fresh authoring marker. "
+                          f"An authoring lane writes rows; it does not remove the file. "
+                          + get_host().cmd_ref("override") + " if this is deliberate.")
         if policy == ProtectedPolicy.MARKER_GATED:
             if not marker_gated_write_admitted(rel, root):
                 block("H-22", f"'{rel}' is marker-gated protected project state (#564) — a "

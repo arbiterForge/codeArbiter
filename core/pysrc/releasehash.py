@@ -97,9 +97,18 @@ def confirmation_path(root, target):
     One marker PER TARGET, never a shared one: a multi-target repository
     confirming `ca`'s commands must not thereby confirm `ca-pi`'s.
     """
-    safe = "".join(ch if (ch.isalnum() or ch in "-_") else "_" for ch in str(target))
+    # The sanitized stem alone is NOT injective: every disallowed character
+    # folds to "_", so `a.b` and `a_b` -- two legal, distinct target names --
+    # would share one marker, and confirming either would silently confirm
+    # the other. That is precisely the cross-target confirmation this
+    # function promises not to do. A short digest of the RAW name restores
+    # the one-marker-per-target property while keeping the stem readable for
+    # whoever is looking in `.markers/` by eye.
+    raw = str(target)
+    safe = "".join(ch if (ch.isalnum() or ch in "-_") else "_" for ch in raw)
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:8]
     return os.path.join(root, ".codearbiter", MARKER_DIRNAME,
-                        CONFIRMED_PREFIX + safe)
+                        CONFIRMED_PREFIX + f"{safe}-{digest}")
 
 
 def read_confirmation(root, target):

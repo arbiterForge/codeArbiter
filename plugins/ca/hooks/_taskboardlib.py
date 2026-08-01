@@ -805,15 +805,26 @@ def task_block(lines, task):
     if start is None:
         return None
 
+    # The close condition MIRRORS `parse_board` exactly: a top-level bullet
+    # opens the next task, and a line that is non-blank AND not indented
+    # closes the current one. Everything else -- blank lines, `- Key:`
+    # sub-bullets, and indented continuation prose -- keeps it open.
+    #
+    # The earlier form advanced only past `_SUB_RE` matches and blanks, and
+    # broke on anything else. That diverged on INDENTED NON-SUB text: an
+    # indented continuation line kept the task open in `parse_board` (which
+    # went on to attach a later `- Desc:` to it) while stopping the block
+    # here, so the sub-bullets past it were orphaned onto the next task --
+    # re-opening the very defect this function exists to close. The two must
+    # agree, so the rule is copied rather than paraphrased.
     end = start + 1
     while end < len(lines):
         line = lines[end]
         if _TOP_RE.match(line):
             break
-        if _SUB_RE.match(line) or not line.strip():
-            end += 1
-            continue
-        break
+        if line.strip() and not line[:1].isspace():
+            break
+        end += 1
     while end > start + 1 and not lines[end - 1].strip():
         end -= 1
     return start, end
