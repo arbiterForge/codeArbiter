@@ -27,6 +27,7 @@ _TOOL = REPO_ROOT / ".github" / "scripts" / "check_tag_immutability.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 SECURITY_CONTROLS = REPO_ROOT / ".codearbiter" / "security-controls.md"
 RELEASE_SKILL = REPO_ROOT / "core" / "surface" / "skills" / "release" / "SKILL.md"
+RELEASE_TARGETS = REPO_ROOT / ".codearbiter" / "release-targets.md"
 
 _spec = importlib.util.spec_from_file_location("check_tag_immutability", _TOOL)
 module = importlib.util.module_from_spec(_spec)
@@ -305,7 +306,27 @@ class RepositoryWiring(unittest.TestCase):
         # file at the moment they would be tempted to.
         skill = RELEASE_SKILL.read_text(encoding="utf-8")
         self.assertIn("MUST NOT move, retarget, delete, or re-point a published tag", skill)
-        self.assertIn(".github/published-tags.json", skill)
+        # The skill must still make the provenance record load-bearing, and
+        # must still name the one edit that destroys the evidence.
+        self.assertIn("PROVENANCE_MANIFEST", skill)
+        self.assertIn("MUST record every newly published tag", skill)
+        self.assertIn("silence a red tag-immutability drift check", skill)
+
+    def test_this_repos_ledger_path_is_declared_rather_than_hardcoded(self):
+        # This assertion used to live above, as `assertIn(
+        # ".github/published-tags.json", skill)`. That became wrong when the
+        # release lane was made portable (#563): the skill ships to
+        # consumers who have no `.github/` of ours, so naming our ledger
+        # path in it is an unfollowable instruction, and
+        # `check_skill_portability.py` now fails exactly that. The two
+        # guards wanted opposite things and the skill could not satisfy both.
+        #
+        # The fact is still worth pinning — it just belongs against the
+        # DECLARED file, which is where a this-repo fact now lives. If the
+        # ledger were silently dropped from our rows, the drift audit would
+        # go blind and nothing else would notice.
+        declared = RELEASE_TARGETS.read_text(encoding="utf-8")
+        self.assertIn("provenance-manifest: .github/published-tags.json", declared)
 
     def test_security_controls_records_tag_immutability_with_no_break_glass(self):
         controls = SECURITY_CONTROLS.read_text(encoding="utf-8")

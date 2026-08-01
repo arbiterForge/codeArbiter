@@ -364,13 +364,22 @@ class ClassifyProtectedStateTest(unittest.TestCase):
         # norm_path() folds separators, so a Windows-style query path must
         # still hit the registry entry (mirrors the existing
         # is_audit_log/is_decisions_path backslash-normalization tests).
+        #
+        # The backslashes go in the REPO-RELATIVE tail, with the root left
+        # native. Backslashing the whole absolute path (what this test used
+        # to do, via `target.replace("/", "\\")`) is a Windows-only
+        # assertion wearing a cross-platform coat: on POSIX the result is
+        # not a path at all but one long filename, which `repo_rel` cannot
+        # resolve against `root`, so the test passed on the author's
+        # machine and failed every Linux and macOS CI job. The real payload
+        # shape is a native root plus a tail spelled the host's way, and
+        # that is what this now exercises on both.
         from _protectedstatelib import ProtectedPolicy
         self._protectedstatelib.REGISTRY = {
             ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
         }
         with tempfile.TemporaryDirectory() as root:
-            target = os.path.join(root, ".codearbiter", "release-targets.md")
-            win_target = target.replace("/", "\\")
+            win_target = os.path.join(root, ".codearbiter\\release-targets.md")
             self.assertIn("state", _hooklib.classify_protected(win_target, root))
 
     def test_state_can_coexist_with_a_legacy_class(self):

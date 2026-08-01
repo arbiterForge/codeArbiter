@@ -105,6 +105,31 @@ import subprocess
 import sys
 
 
+def git_executable():
+    """Git resolved through the trusted-path seam, never a bare `git`.
+
+    Resolved LAZILY and imported inside the call rather than at module
+    scope, because this module is loaded two different ways and only one of
+    them has `_gitexec` importable by name: as an ordinary sibling module
+    in a host's hook directory (a plain import works), and by explicit file
+    path, where nothing put this directory on `sys.path`. A module-level
+    import would break the second, and would also violate the documented
+    invariant that importing this mechanism has no side effects beyond the
+    load itself.
+
+    `_gitexec.py` sits beside this file wherever this file lives, so the
+    fallback adds only this module's own directory.
+    """
+    try:
+        from _gitexec import git_executable as resolve
+    except ImportError:                                    # loaded by path
+        here = os.path.dirname(os.path.abspath(__file__))
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        from _gitexec import git_executable as resolve
+    return resolve()
+
+
 class ReleaseTargetsError(RuntimeError):
     """Base for every declared release-targets-file parse error. Callers that
     only care that the declaration was bad, not which rule it broke, can catch
@@ -1822,8 +1847,14 @@ def main(argv):
             side) get a sentinel rather than being skipped, so a delete is
             a state change like any other.
             """
+            # `git_executable()`, not a bare "git": Pi-reachable modules
+            # must resolve git through the trusted-path seam, because a
+            # host that has no `git` on PATH (or a PATH an attacker can
+            # prepend to) would otherwise silently run the wrong binary or
+            # none at all. Enforced by test_pi_package's
+            # `test_shared_python_contains_no_direct_bare_git_subprocess`.
             probe = subprocess.run(
-                ["git", "status", "--porcelain"],
+                [git_executable(), "status", "--porcelain"],
                 capture_output=True, text=True, cwd=project_root)
             if probe.returncode != 0:
                 return None, (probe.stderr.strip() or "git status failed")
