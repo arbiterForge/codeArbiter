@@ -146,7 +146,7 @@
   },
   {
     "name": "release",
-    "description": "Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. The only path to a version tag.",
+    "description": "Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. Takes the declared target's name as its only argument. The only path to a version tag.",
     "skillPath": "skills/ca-release/SKILL.md"
   },
   {

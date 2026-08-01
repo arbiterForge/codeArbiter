@@ -276,12 +276,12 @@ generate from it).
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-68a | `.github/scripts/check_skill_portability.py` | `python .github/scripts/test_skill_portability.py -k matching_rule` — reference-form rule stated in the docstring; flags an executed `.github/scripts/` path, does **not** flag a scan-target list entry | matching rule | A-6.1 | T-67 | PENDING |
-| T-68b | `.github/scripts/check_skill_portability.py` | guard exits 1 against `core/surface/skills/**` at `469c2fb`, exits 0 after T-41a–d, T-69 and T-70 | guard wiring | A-6.1 | T-68a | PENDING |
-| T-69 | `core/surface/skills/subagent-driven-development/SKILL.md` | guard passes; reference reads `${CLAUDE_PLUGIN_ROOT}/tools/farm.js` | farm.js reference | A-6.2 | T-68b | PENDING |
-| T-70 | `core/surface/skills/decision-lifecycle/SKILL.md` | guard passes; line is a conditional CI reference | ADR-identity reference | A-6.3 | T-69 | PENDING |
-| T-71 | `core/surface/commands/release.md` | `python .github/scripts/check-plugin-refs.py`; documents `[target]` only — `--auto`, `--dry-run` and `<version>` deleted (a real dry-run is tracked as #565); phase numbers match the skill | command surface | A-6.4 | T-70 | PENDING |
-| T-72 | `site/src/content/docs/guides/releasing-a-version.md` | `npm --prefix site test` green | docs guide | A-6.5 | T-71 | PENDING |
+| T-68a | `.github/scripts/check_skill_portability.py` | `python .github/scripts/test_skill_portability.py -k matching_rule` — reference-form rule stated in the docstring; flags an executed `.github/scripts/` path, does **not** flag a scan-target list entry | matching rule | A-6.1 | T-67 | ACCEPTED |
+| T-68b | `.github/scripts/check_skill_portability.py` | guard exits 1 against `core/surface/skills/**` at `469c2fb`, exits 0 after T-41a–d, T-69 and T-70 | guard wiring | A-6.1 | T-68a | ACCEPTED |
+| T-69 | `core/surface/skills/subagent-driven-development/SKILL.md` | guard passes; reference reads `${CLAUDE_PLUGIN_ROOT}/tools/farm.js` | farm.js reference | A-6.2 | T-68b | ACCEPTED |
+| T-70 | `core/surface/skills/decision-lifecycle/SKILL.md` | guard passes; line is a conditional CI reference | ADR-identity reference | A-6.3 | T-69 | ACCEPTED |
+| T-71 | `core/surface/commands/release.md` | `python .github/scripts/check-plugin-refs.py`; documents `[target]` only — `--auto`, `--dry-run` and `<version>` deleted (a real dry-run is tracked as #565); phase numbers match the skill | command surface | A-6.4 | T-70 | ACCEPTED |
+| T-72 | `site/src/content/docs/guides/releasing-a-version.md` | `npm --prefix site test` green | docs guide | A-6.5 | T-71 | ACCEPTED |
 
 ### Step 8 — Completion proof (the sprint is not done without this)
 

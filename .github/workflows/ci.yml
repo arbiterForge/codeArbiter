@@ -1348,6 +1348,21 @@ jobs:
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
         run: python .github/scripts/test_provenancelib.py
+      - name: Run shipped-skill portability guard
+        # A-6.1: a skill under core/surface/skills/** renders into every
+        # plugin and ships to consumers who do not have THIS repository, so
+        # a line naming `.github/scripts/x.py` or `tools/farm.js` is an
+        # instruction nobody can follow. The guard fails on any repo-rooted
+        # artifact path it executes or reads, permitting ${CLAUDE_PLUGIN_ROOT}
+        # / ${CLAUDE_PROJECT_DIR} prefixes, scan-target patterns, and
+        # conditional CI references.
+        run: python .github/scripts/check_skill_portability.py
+      - name: Run shipped-skill portability guard unit tests
+        # The guard's own matching rule, both directions: a bare repo path
+        # is flagged, a resolved prefix and a scan-target list are not, and
+        # a synthetic offending tree still fails - so the guard is shown
+        # able to fail rather than only ever passing.
+        run: python .github/scripts/test_skill_portability.py
       - name: Run README badge-consistency unit tests
         # The guard's own logic: version-badge parse, count-badge parse, prose
         # counts, table-row slugs, and each drift kind (version/count/prose/
