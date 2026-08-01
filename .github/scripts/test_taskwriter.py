@@ -565,14 +565,14 @@ class ArchiveTransformTest(unittest.TestCase):
                 return parsed[0]
         raise AssertionError(f"no task {ident!r} in the fixture")
 
-    def test_archive_transform_cutoff_uses_an_injected_date(self):
+    def test_archive_cutoff_uses_an_injected_date(self):
         # A cutoff test keyed on the real clock passes for eleven days and
         # then starts failing on its own, so `today` is required with no
         # default anywhere in the chain.
         aged, _undated = tb.archive_candidates(self.OPEN, today=self.TODAY)
         self.assertEqual([t.id for t in aged], ["a.b.0001"])
 
-    def test_archive_transform_cutoff_is_a_named_constant(self):
+    def test_archive_cutoff_is_a_named_constant(self):
         self.assertEqual(tb.ARCHIVE_CUTOFF_DAYS, 14)
         # Boundary: exactly at the cutoff is NOT yet aged; one day past is.
         at = self.TODAY - datetime.timedelta(days=tb.ARCHIVE_CUTOFF_DAYS)
@@ -582,7 +582,7 @@ class ArchiveTransformTest(unittest.TestCase):
         aged, _ = tb.archive_candidates(board, today=self.TODAY)
         self.assertEqual([t.id for t in aged], ["x.y.0002"])
 
-    def test_archive_transform_undated_items_are_returned_separately(self):
+    def test_archive_undated_items_are_returned_separately(self):
         # They cannot be aged, and the spec admits them only under explicit
         # per-item confirmation -- a single combined list would let a caller
         # sweep them by accident.
@@ -659,6 +659,60 @@ class ArchiveTransformTest(unittest.TestCase):
                                              ("x", "y", object())):
             result = tb.archive_transform(bad_open, bad_done, bad_task)
             self.assertEqual(len(result), 2)
+
+
+class DoneTasksShapeTest(unittest.TestCase):
+    """B-23/T-61: `done-tasks.md` is scaffolded at init, not conjured on
+    the first archive.
+
+    An append-only file that springs into existence mid-sweep has no
+    reviewed initial content and no header saying what it is — and
+    `archive`'s first write would be the thing that defines the format.
+    Scaffolding it means the shape is reviewed once, in the initializer,
+    like every other `.codearbiter/` artifact.
+    """
+
+    def _init_module(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_init_ca_under_test", os.path.join(HOOKS, "init-codearbiter.py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_done_tasks_shape_is_scaffolded_by_init(self):
+        init = self._init_module()
+        self.assertIn("done-tasks.md", init.FILES)
+
+    def test_done_tasks_shape_states_append_only_and_its_writer(self):
+        init = self._init_module()
+        body = init.FILES["done-tasks.md"]
+        self.assertIn("APPEND-ONLY", body)
+        self.assertIn("taskwrite archive", body)
+        # The stamp rule, because it is what makes an entry ageable and
+        # what `archive` refuses to invent.
+        self.assertIn("(done YYYY-MM-DD)", body)
+
+    def test_done_tasks_shape_heading_matches_what_archive_writes(self):
+        # If the scaffold's heading and the transform's fallback heading
+        # disagreed, an archive into a scaffolded file would produce one
+        # heading and an archive into a missing file another.
+        init = self._init_module()
+        self.assertTrue(
+            init.FILES["done-tasks.md"].startswith(tb.DONE_TASKS_HEADING),
+            "the scaffold heading and DONE_TASKS_HEADING must agree")
+
+    def test_done_tasks_shape_scaffold_is_a_valid_archive_target(self):
+        # The scaffolded text must accept an appended entry without the
+        # transform inventing a second heading.
+        init = self._init_module()
+        scaffold = init.FILES["done-tasks.md"]
+        board = "## In-flight\n- [x] a.b.0001 - t (done 2026-07-01)\n"
+        task = next(p[0] for p in
+                    (tb.parse_board(l) for l in board.splitlines()) if p)
+        _open, done = tb.archive_transform(board, scaffold, task)
+        self.assertEqual(done.count(tb.DONE_TASKS_HEADING), 1)
+        self.assertIn("a.b.0001", done)
 
 
 class ArchiveVerbTest(unittest.TestCase):

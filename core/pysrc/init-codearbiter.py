@@ -92,8 +92,28 @@ OVERRIDES = """\
 # last-checkpoint marker as "overrides since last checkpoint."
 """
 
+DONE_TASKS = """\
+# Done tasks
+
+Completed work swept off the board by `taskwrite archive`, newest last.
+APPEND-ONLY: entries are added here and never edited or removed, so a
+finished task has exactly one permanent record.
+
+Each line is the task's original lifecycle line, moved verbatim from
+`open-tasks.md` with its `(done YYYY-MM-DD)` stamp intact — the stamp is
+what makes an entry ageable, and what `archive` refuses to invent.
+
+Written only by `taskwrite archive`. `/ca:standup` proposes the sweep with
+per-item confirmation; nothing sweeps automatically.
+"""
+
 FILES = {
     "open-tasks.md": OPEN_TASKS,
+    # B-23: scaffolded at init rather than created on first archive. An
+    # append-only file that springs into existence mid-sweep has no
+    # reviewed initial content and no header explaining what it is — and
+    # `archive`'s first write would be the thing that defines the format.
+    "done-tasks.md": DONE_TASKS,
     "open-questions.md": OPEN_QUESTIONS,
     "overrides.log": OVERRIDES,
     "last-checkpoint": "0\n",

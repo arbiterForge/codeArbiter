@@ -259,18 +259,18 @@ generate from it).
 | T-58 | `core/pysrc/taskwrite.py` | `python .github/scripts/test_taskwriter.py -k archive_verb` — appends then removes, per item; **creates `done-tasks.md` with the canonical header when absent** | archive verb | B-20, B-23 | T-57 | ACCEPTED |
 | T-59 | `.github/scripts/test_taskwriter.py` | `-k archive_rerun` — dotted-ID and exact-text dedup, no duplicate | rerun safety | B-21 | T-58 | ACCEPTED |
 | T-60 | `.github/scripts/test_taskwriter.py` | `-k archive_interrupted` — kill between phases leaves no dup and no loss | interruption safety | B-22 | T-59 | ACCEPTED |
-| T-61 | `core/pysrc/init-codearbiter.py` | `python .github/scripts/test_taskboardlib.py -k done_tasks_shape` — greenfield scaffold path; `python tools/sync-core.py --check` passes | done-tasks scaffolded | B-23 | T-60 | PENDING |
-| T-62 | `core/pysrc/_taskboardlib.py` | `-k archive_cutoff` — named constant, injected date | cutoff constant | B-25 | T-61 | PENDING |
-| T-63 | `core/pysrc/_taskboardlib.py` | `-k archive_undated` — undated `[x]` items appear in their own section, **excluded from cutoff math**, archivable only per-item | undated rule | B-26 | T-62 | PENDING |
-| T-64 | `core/surface/commands/standup.md` | `python .github/scripts/test_ux_conversion.py -k standup_sweep` — per-item confirmation | standup owns sweep | B-24 | T-63 | PENDING |
-| T-65 | `core/pysrc/_protectedstatelib.py` | `SUITE -k test_done_tasks_registered` — append-only, archive verb admitted | consumer 3 enrolled | B-15 | T-64 | PENDING |
+| T-61 | `core/pysrc/init-codearbiter.py` | `python .github/scripts/test_taskboardlib.py -k done_tasks_shape` — greenfield scaffold path; `python tools/sync-core.py --check` passes | done-tasks scaffolded | B-23 | T-60 | ACCEPTED |
+| T-62 | `core/pysrc/_taskboardlib.py` | `-k archive_cutoff` — named constant, injected date | cutoff constant | B-25 | T-61 | ACCEPTED |
+| T-63 | `core/pysrc/_taskboardlib.py` | `-k archive_undated` — undated `[x]` items appear in their own section, **excluded from cutoff math**, archivable only per-item | undated rule | B-26 | T-62 | ACCEPTED |
+| T-64 | `core/surface/commands/standup.md` | `python .github/scripts/test_ux_conversion.py -k standup_sweep` — per-item confirmation | standup owns sweep | B-24 | T-63 | ACCEPTED |
+| T-65 | `core/pysrc/_protectedstatelib.py` | `SUITE -k test_done_tasks_registered` — append-only, archive verb admitted | consumer 3 enrolled | B-15 | T-64 | ACCEPTED |
 
 ### Step 6 — B2: open-tasks enrolment (lands last, per sequencing)
 
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
-| T-66 | `core/pysrc/_protectedstatelib.py` | `SUITE -k test_open_tasks_registered` — helper-only, no marker path | consumer 2 enrolled | B-14 | T-65 | PENDING |
-| T-67 | full suite | `SUITE` green; `python .github/scripts/test_taskwriter.py`; `test_board_sync.py` | enrolment regression | B-05, B-12, B-19 | T-66 | PENDING |
+| T-66 | `core/pysrc/_protectedstatelib.py` | `SUITE -k test_open_tasks_registered` — helper-only, no marker path | consumer 2 enrolled | B-14 | T-65 | ACCEPTED |
+| T-67 | full suite | `SUITE` green; `python .github/scripts/test_taskwriter.py`; `test_board_sync.py` | enrolment regression | B-05, B-12, B-19 | T-66 | ACCEPTED |
 
 ### Step 7 — A slice 6: surfaces
 

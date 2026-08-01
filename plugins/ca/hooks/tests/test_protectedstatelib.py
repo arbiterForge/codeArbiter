@@ -192,19 +192,41 @@ class TestRegistryLookup(unittest.TestCase):
         # Two-way: an unreviewed addition AND a silent removal both fail.
         self.assertEqual(
             _protectedstatelib.REGISTRY,
-            {".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED},
+            {".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+             ".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY,
+             ".codearbiter/done-tasks.md": ProtectedPolicy.APPEND_ONLY},
             "the protected-state registry changed. It is a security "
             "boundary and a one-line-per-consumer reviewable list; update "
             "this expectation deliberately in the same commit that enrols "
             "or removes a consumer, never to make a red suite green.")
 
+    def test_open_tasks_registered_helper_only_with_no_marker_path(self):
+        """B-14/T-66. HELPER_ONLY, deliberately NOT marker-gated.
+
+        `taskwrite.py` writes through Python file I/O whose argv never
+        names the file, so it is invisible to every lexical flank by
+        construction. A marker would add nothing for the helper while
+        ADMITTING an agent that hand-composes board markdown under it --
+        the inversion of the goal.
+        """
+        self.assertEqual(lookup_policy(".codearbiter/open-tasks.md"),
+                         ProtectedPolicy.HELPER_ONLY)
+        self.assertNotEqual(lookup_policy(".codearbiter/open-tasks.md"),
+                            ProtectedPolicy.MARKER_GATED)
+
+    def test_done_tasks_registered_append_only(self):
+        """B-15/T-65. A completed task has exactly one permanent record,
+        so mutation is admitted through an append verb alone -- and the
+        archival sweep only ever appends here."""
+        self.assertEqual(lookup_policy(".codearbiter/done-tasks.md"),
+                         ProtectedPolicy.APPEND_ONLY)
+
     def test_an_unregistered_state_file_is_still_unprotected(self):
-        # The registry's discrimination, kept honest now that it is no
-        # longer empty: enrolling one consumer must not silently protect
-        # its neighbours. open-tasks.md and done-tasks.md are enrolled by
-        # their own later tasks (B-14/B-15).
-        self.assertIsNone(lookup_policy(".codearbiter/open-tasks.md"))
-        self.assertIsNone(lookup_policy(".codearbiter/done-tasks.md"))
+        # The registry's discrimination, kept honest now that all three
+        # consumers are enrolled: a neighbour nobody registered must stay
+        # untouched, or "protected" would just mean "under .codearbiter/".
+        self.assertIsNone(lookup_policy(".codearbiter/open-questions.md"))
+        self.assertIsNone(lookup_policy(".codearbiter/tech-stack.md"))
 
     def test_registry_lookup_reads_the_default_module_registry(self):
         # H1: the three "positive lookup" tests above all inject a synthetic
@@ -474,7 +496,10 @@ class TestResolveRegisteredPath(unittest.TestCase):
 
     def test_default_registry_still_resolves_nothing_for_an_unregistered_path(self):
         with tempfile.TemporaryDirectory() as root:
-            target = os.path.join(root, ".codearbiter", "open-tasks.md")
+            # open-tasks.md is enrolled as of T-66, so an UNregistered
+            # neighbour is the right probe here -- otherwise this asserts
+            # the opposite of what the registry now says.
+            target = os.path.join(root, ".codearbiter", "open-questions.md")
             self.assertEqual(resolve_registered_path(target, root), (None, None))
 
     @unittest.skipUnless(_symlinks_supported(), "symlink creation not permitted here")

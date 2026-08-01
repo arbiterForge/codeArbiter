@@ -401,13 +401,22 @@ class ClassifyProtectedStateTest(unittest.TestCase):
             target = os.path.join(root, ".codearbiter", "release-targets.md")
             self.assertIn("state", _hooklib.classify_protected(target, root))
 
-    def test_default_registry_leaves_an_unenrolled_state_file_alone(self):
-        # The classifier's discrimination, kept honest now that the
-        # registry is non-empty: enrolling one consumer must not silently
-        # protect its neighbours. open-tasks.md and done-tasks.md are
-        # enrolled by their own later tasks.
+    def test_default_registry_classifies_the_board_files_as_state(self):
+        # T-65/T-66 enrolled both board files, so the production
+        # classifier now returns "state" for them too.
         with tempfile.TemporaryDirectory() as root:
             for name in ("open-tasks.md", "done-tasks.md"):
+                with self.subTest(name=name):
+                    target = os.path.join(root, ".codearbiter", name)
+                    self.assertIn(
+                        "state", _hooklib.classify_protected(target, root))
+
+    def test_default_registry_leaves_an_unenrolled_state_file_alone(self):
+        # The classifier's discrimination, kept honest now that all three
+        # consumers are enrolled: a neighbour nobody registered must stay
+        # untouched, or "protected" would just mean "under .codearbiter/".
+        with tempfile.TemporaryDirectory() as root:
+            for name in ("open-questions.md", "tech-stack.md"):
                 with self.subTest(name=name):
                     target = os.path.join(root, ".codearbiter", name)
                     self.assertNotIn(

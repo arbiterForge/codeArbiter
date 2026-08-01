@@ -169,6 +169,26 @@ REGISTRY: dict[str, ProtectedPolicy] = {
     # row-edit path), all of which mint the marker. A hard block would
     # leave them no route; the marker is the route.
     ".codearbiter/release-targets.md": ProtectedPolicy.MARKER_GATED,
+
+    # B-14/T-66. HELPER_ONLY, with NO marker path at all — deliberately
+    # unlike release-targets.md above.
+    #
+    # `taskwrite.py` is the board's sole blessed writer and writes through
+    # Python file I/O whose argv never names the file, so it is invisible
+    # to every lexical flank by construction. A marker would therefore add
+    # nothing for the helper while ADMITTING an agent that hand-composes
+    # board markdown under it — the inversion of the goal. That same
+    # construction is what makes enrolment safe rather than circular: the
+    # guard cannot block `/ca:task`, because it never sees the helper's
+    # write (pinned by test_done_flip_retained).
+    ".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY,
+
+    # B-15/T-65. APPEND_ONLY: a completed task has exactly one permanent
+    # record, so mutation is admitted through an append verb alone. The
+    # archival sweep only ever appends here — `taskwrite archive` writes
+    # done-tasks BEFORE removing from open-tasks, so an interrupted run
+    # leaves a duplicate the next run dedups, never a lost record.
+    ".codearbiter/done-tasks.md": ProtectedPolicy.APPEND_ONLY,
 }
 
 
