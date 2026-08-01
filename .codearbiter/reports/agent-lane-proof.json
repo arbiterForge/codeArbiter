@@ -1,28 +1,31 @@
 {
   "$schema_note": "Agent-judgment exercise record for the release skill (issue #563, spec .codearbiter/specs/release-portable-fixture.md AC-6.6 'agent judgment' layer). EIGHT independent blind exercises were run, each against the skill as the previous one left it. This file records the campaign; `exercise` below is the one run whose hash the freshness gate enforces. It is a record, not a test -- no number in it is re-derived by any test in this suite.",
-  "proof_current": false,
-  "proof_current_note": "FALSE as of the T-28..T-32 slice (2026-07-31). The slice edited the release skill -- Phase 1 step 6 now names `run-pre-tag` instead of restating three execution rules as prose -- so run 8's recorded hash no longer covers what ships (recorded e4deb4e456f85ad6..., shipped 63e9dd513820dd7a...). This is the gate operating exactly as designed, on the first change after it was wired, and it is being honoured rather than routed around: `ca`'s pre-tag gate is RED until a fresh blind exercise runs against the new content and this record is updated. Do not hand-edit this field to clear the block -- that defeats the only check covering whether an agent can follow the release prose.",
+  "proof_current": true,
+  "proof_current_note": "TRUE as of run 13 (2026-07-31). `exercise.exercised_skill_sha256` is the hash of the skill an agent actually read and acted on, verified byte-for-byte equal to the shipped payload at record time. Any later edit invalidates it and MUST fail `ca`'s pre-tag gate until a fresh exercise runs; never hand-edit this field to clear a block.",
   "stopping_rule": {
     "what_was_applied": "Stop when a run probes a region ALREADY covered by the previous run's fix and finds no HIGH. Runs 5, 6 and 7 each found exactly one HIGH, and each was in a region newly probed -- run 5 by accident (a tag prefix with no tags), runs 6 and 7 by deliberate direction. That is coverage expanding, not the skill degrading, so a clean run in a NEW region would have proved little. Run 8 was aimed at the same region run 7's fix touched (version derivation) and returned no HIGH; that is the condition that ended the campaign.",
     "what_this_record_does_NOT_claim": "Not convergence. The HIGH sequence is 4, 2, 0, 2, 1, 1, 1, 0 -- run 3's zero was sampling, not settlement, and treating it as convergence at the time was an error corrected here. Two clean runs out of eight is what the evidence supports, and it is what this file says.",
     "why_stopping_is_safe": "The freshness gate. Every open finding below is FILED rather than fixed, and fixing any of them edits the skill, which invalidates this hash and fails `ca`'s pre-tag gate until a fresh exercise is run. Stopping does not close the loop; it parks it behind a mechanism that reopens on the next edit."
   },
   "exercise": {
-    "run": 8,
+    "run": 13,
     "date": "2026-07-31",
-    "role": "THE RECORDED PROOF. Aimed at version derivation -- the region runs 6 and 7 each found a HIGH in, and the region run 7's fix rewrote. Returned no HIGH.",
-    "method": "An agent was handed only the installed release skill (no expected-outcome briefing, no knowledge of prior runs) and asked to follow the prose across four consumer shapes chosen to stress version derivation: a tagged project whose manifest LEADS the tag; a project with no tags at all, through the back-fill lane; a project with two declared manifests in DIFFERENT formats disagreeing on version; and a control with a consistent tag and manifest plus a footerless bumping commit. Three of the four reached an annotated tag; the fourth blocked where designed and completed after the stated remedy. Nothing was pushed or published.",
-    "exercised_skill_sha256": "e4deb4e456f85ad673f7d6df7e11f847e2766157ac0394193103d46761947920",
+    "role": "THE RECORDED PROOF. First run with no HIGH since run 8, and the first to exercise every fix from runs 9-12 together: the run-pre-tag content-digest assertion, the commit-before-tagging rule, the single $BASE_VERSION, check-manifests, the adoption floor, classify-window, and the interpreter-fallback convention.",
+    "method": "An agent was handed only the installed release skill and asked to follow it across four consumer shapes: a window containing BREAKING changes in all three spellings (bare `!`, scoped `(api)!`, and a `BREAKING CHANGE:` footer); a two-manifest row with one path DELIBERATELY left un-bumped; a first release whose history predates adoption; and a control. No expected outcomes were given and no prior run's findings were shared.",
+    "exercised_skill_sha256": "39ca82bd2fd66c034f8344cc419c0c8ccac8299952cc310d8669cfa71980b0e1",
     "exercised_skill_path": "plugins/ca/skills/release/SKILL.md",
-    "exercised_skill_path_note": "52,222 bytes. Verified identical between the working tree and a `git archive HEAD` extraction, so the exercised bytes are the COMMITTED bytes, not a dirty tree. This is the INSTALLED `claude`-host copy the AC-6.8 'shipped skill' language refers to, never core/surface/skills/release/SKILL.md (the source template, which ships to no consumer).",
+    "exercised_skill_path_note": "59,885 bytes. The `git archive HEAD` extraction hashed identically to the working tree, so the exercised bytes are the COMMITTED bytes.",
     "high_findings": 0,
-    "outcomes": {
-      "tag_behind_manifest": "base = max(1.2.0, 1.4.2) = 1.4.2, minor -> 1.5.0, clearing tag, manifest and changelog. The run-7 HIGH does not reproduce: deriving from the tag alone would have yielded 1.3.0, and the agent confirmed `semver-greater 1.3.0 1.4.2` exits 1.",
-      "no_tags_backfill": "Exit 3 triggered back-fill; the emitted block round-tripped through the parser; marker minted and removed; base = max(0.0.0, 1.4.2) = 1.4.2 -> 1.5.0. The run-6 HIGH does not reproduce; `semver-greater 0.1.0 1.4.2` exits 1 as the counterfactual.",
-      "two_manifest_formats": "base = max(tag 2.0.0, {2.0.0, 2.3.1}) = 2.3.1 -> 2.4.0. Both per-format read commands work as written, and applying the JSON reader to the TOML file raises JSONDecodeError exit 1 exactly as the prose says.",
-      "control_with_missing_footer": "BLOCKed with one [NEEDS-TRIAGE] line per offender; manifest still 0.3.0 and tree clean at the BLOCK; derived 0.4.0 after the remedy."
+    "agents_own_verdict": "\"Nothing rated HIGH. Every hard block I hit was a correct block, and every guard the skill names fired where it said it would.\"",
+    "fixes_confirmed_working": {
+      "check-manifests (run 12)": "Caught the deliberately partial bump at Phase 1 step 6, exit 1, naming the lagging path -- and confirmed it is the ONLY thing that catches it: continuing past the guard, `classify` returned publish_fresh on the same disagreement, exactly as the run-12 correction says it will.",
+      "run-pre-tag content digest + zero-command no-op (runs 9/10)": "Exit 0 on a row declaring no commands, and correct across the mid-lane dirty-tree state hit in three of four fixtures.",
+      "commit-before-tagging (run 10)": "Every tag named a commit whose tree actually carried the derived version.",
+      "one $BASE_VERSION (runs 6/7)": "max(0.0.0, 0.3.0) = 0.3.0 on the first-release fixture; the tag-only counterfactual (`semver-greater 0.1.0 0.3.0`) exits 1, reproducing the original defect.",
+      "classify-window (run 11)": "All three breaking spellings classified to major through one tested helper.",
+      "--cleanup=verbatim (run 4, issue #569)": "Round-tripped byte-identical; the default-cleanup counterfactual destroyed every heading and notes-match caught it (exit 1)."
     },
-    "guards_independently_reverified": "The agent re-proved, rather than assumed: --cleanup=verbatim round-trips byte-exact (273 bytes, matching sha256 on both sides) while the default cleanup destroys every heading and notes-match catches it; peel-tag vs bare rev-parse (the latter would produce a spurious abort_mismatch); unquoted empty tag_sha collapsing to five arguments; `git show-ref --tags -d` exiting 1 with zero tags while the pipeline exits 0; exit 3 vs exit 4; a partial step 6 producing abort_mismatch; and `gh release view` reporting no-remote and no-release through the same non-zero exit."
+    "residual_named_by_this_run": "Four mechanical steps still have no helper: computing $BASE_VERSION itself (no semver-max), applying the bump arithmetic, writing the changelog section, and writing the manifest. The first two are checked after the fact by semver-greater; the last two are the only unguarded WRITES in an otherwise guarded lane. Filed to #570."
   },
   "campaign": {
     "high_findings_by_run": [
@@ -31,6 +34,11 @@
       0,
       2,
       1,
+      1,
+      1,
+      0,
+      2,
+      2,
       1,
       1,
       0
@@ -75,9 +83,35 @@
         "run": 8,
         "highs": 0,
         "note": "The recorded proof. Same region as run 7's fix; no HIGH."
+      },
+      {
+        "run": 9,
+        "highs": 2,
+        "note": "The pre-tag runner shipped one commit earlier asserted a PRISTINE tree, which blocks every release -- Phase 1 bumps the manifest before that step runs, and must. Also ran commands in the inherited cwd, so a declared check could pass having inspected a different repository."
+      },
+      {
+        "run": 10,
+        "highs": 2,
+        "note": "Step 7 was conditional, so a literal traversal tagged an uncommitted tree; and the mutation assertion compared porcelain LINES, so a command mutating an already-modified $CHANGELOG or $MANIFEST exited 0 undetected."
+      },
+      {
+        "run": 11,
+        "highs": 1,
+        "note": "The exit-6 remedy written one commit earlier could not terminate (the mutation recurs on every invocation), destroyed the composed section, and was inexecutable on a first release."
+      },
+      {
+        "run": 12,
+        "highs": 1,
+        "note": "The skill CLAIMED classify catches a partial manifest bump. It does not: classify_publish_state short-circuits on `if not tag_exists` before comparing versions, so the catch fires only on the resume path. No all-paths guard existed; check-manifests is it."
+      },
+      {
+        "run": 13,
+        "highs": 0,
+        "note": "THE RECORDED PROOF. Exercised every fix from runs 9-12 together and found no HIGH."
       }
     ],
-    "what_the_campaign_demonstrated": "Every HIGH after run 1 was in a SEAM -- how a caller wires the mechanisms together -- not in a mechanism. The mechanical suites were green throughout: 272 unit tests, 69 consumer-portability tests, mutation-verified governance rules. None of them could see a prose instruction that names a command nobody can run, sources an argument from the wrong read, or hands an operator a sentinel where a revision is required. Three of the HIGHs were introduced by this campaign's own remediation of an earlier HIGH, which is the strongest available argument for keeping the exercise in the loop rather than trusting a green suite."
+    "what_the_campaign_demonstrated": "Every HIGH after run 1 was in a SEAM -- how a caller wires the mechanisms together -- not in a mechanism. The mechanical suites were green throughout: 272 unit tests, 69 consumer-portability tests, mutation-verified governance rules. None of them could see a prose instruction that names a command nobody can run, sources an argument from the wrong read, or hands an operator a sentinel where a revision is required. Three of the HIGHs were introduced by this campaign's own remediation of an earlier HIGH, which is the strongest available argument for keeping the exercise in the loop rather than trusting a green suite.",
+    "self_inflicted_pattern": "Every HIGH from run 9 through run 12 was introduced by the campaign's own preceding fix, or asserted a property the code did not have. Run 6's fix caused run 7's HIGH; the run-9 runner caused run 10's; the run-10 exit-6 remedy caused run 11's; the run-7 coupling paragraph made the claim run 12 disproved. That is the strongest evidence in this record for keeping a real agent in the loop -- and equally the reason the loop needs a human decision about when to stop, since a green mechanical suite never once saw any of them."
   },
   "post_remediation_skill_sha256": {
     "plugins/ca/skills/release/SKILL.md": "bb4c79287a4e60db530ea64e1a6829ae714d8e47dac579af2c1bbd3bfacba309",
@@ -240,10 +274,5 @@
     "row": "`pre-tag: python3 .github/scripts/check_skill_proof_fresh.py` on the [ca] row of .codearbiter/release-targets.md",
     "decision": "DECISION-0034 (pre-tag commands are check-only and non-mutating). This one reads two files and prints; it never writes.",
     "consequence": "Every future edit to plugins/ca/skills/release/SKILL.md now fails `ca`'s pre-tag gate until the exercise is re-run and this artifact refreshed. Intended. The cost is one blind run per skill revision; the purpose is that a prose change to the release lane cannot ship on the strength of a green mechanical suite alone -- which all eight runs demonstrated it should not."
-  },
-  "pending_reexercise": {
-    "shipped_hash_awaiting_proof": "63e9dd513820dd7a8f325a8322c3f4a06efee58025ea64394f1d009bd440783c",
-    "what_changed": "T-28..T-31: Phase 1 step 6 replaced three prose rules (declared order, non-zero exit BLOCKs, clean-tree assertion) with one `run-pre-tag $TARGET` command, and the parser gained a 1024-char cap on every declared value (A-2.4).",
-    "why_a_re_run_is_owed": "The change is precisely the class eight runs showed is riskiest: prose describing how a caller wires a command. It replaced agent-followed procedure with a helper, which should REDUCE that risk -- but the claim that it does is exactly what a blind exercise tests and a green suite cannot."
   }
 }
