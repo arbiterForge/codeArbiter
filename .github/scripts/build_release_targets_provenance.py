@@ -87,6 +87,14 @@ def build(root: Path = REPO):
 
 
 def declared_paths(root: Path = REPO):
+    """Every path the declared release rows make provenance-relevant.
+
+    Derived from the declared file through `provenance_trigger_paths`, never
+    listed here: a second hand-maintained copy of "which paths matter" is a
+    copy that goes stale the first time a row gains a manifest or an
+    artifact, and it would go stale silently, because nothing compares the
+    two.
+    """
     releaselib = _load("_rtp_releaselib_paths", "core/pysrc/_releaselib.py")
     rows = releaselib.load_targets(str(root / ".codearbiter" / "release-targets.md"))
     return releaselib.provenance_trigger_paths(rows)

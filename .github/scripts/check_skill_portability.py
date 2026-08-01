@@ -77,6 +77,12 @@ def _is_conditional_ci_reference(line):
 
 
 def _is_scan_target(line):
+    """True when the line describes WHERE TO SEARCH rather than what to run.
+
+    The sibling `_is_conditional_ci_reference` carried the reasoning for its
+    exemption and this one did not, which made the pair look like one
+    considered rule and one arbitrary one.
+    """
     return bool(_SCAN_CONTEXT.search(line))
 
 
@@ -115,6 +121,13 @@ def scan_file(path, text=None):
 
 
 def scan(root=SKILLS):
+    """`{display_path: [(lineno, path, line)]}` for every skill under `root`.
+
+    The public entry point (`main` and the tests both call this, not
+    `scan_file`). `root` is a PARAMETER rather than the module constant so a
+    test can point it at a synthetic tree and prove the guard can still
+    fail — a guard exercised only against a clean repo asserts nothing.
+    """
     findings = {}
     for dirpath, _dirnames, filenames in os.walk(root):
         for name in sorted(filenames):
