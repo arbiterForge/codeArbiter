@@ -16,9 +16,15 @@
 # and _releaselib.py 15 times. That volume is what forced the deferrals in
 # issues #577 and #578.
 
-# Load-bearing. Repo config OUTRANKS the central arbiterForge/coderabbit config
-# and REPLACES it outright unless this is true. Without it, every org-wide
-# default is silently discarded the moment this file exists.
+# Load-bearing. Repo YAML (priority 2) outranks the central
+# arbiterForge/coderabbit YAML (priority 3), and without this flag it REPLACES
+# the central config outright instead of merging with it, discarding every
+# default that file carries the moment this file exists. With it set, objects
+# deep-merge, arrays take the child's items first followed by unique parent
+# items, and scalars take the child's value.
+#
+# Organization global overrides are unaffected either way: they apply as the
+# final layer after the inheritance chain resolves, whatever this flag says.
 inheritance: true
 
 reviews:
@@ -54,12 +60,10 @@ reviews:
     - "!plugins/ca-pi/ORCHESTRATOR.md"
 
     # --- copied from core/pysrc/ by tools/sync-core.py ---
-    # A single `*` is intended NOT to cross a path separator, so the 55
-    # authored test files under plugins/ca/hooks/tests/ stay reviewed. CodeRabbit
-    # maps these patterns onto git sparse-checkout, where `*` does not cross `/`,
-    # which is the basis for that reading — but it is not stated outright in the
-    # docs. VERIFY on the first PR that touches both a hooks/*.py file and a
-    # hooks/tests/*.py file: the test file must still draw review.
+    # A single `*` matches any filename and does not cross a path separator,
+    # while `**` matches any directory depth (CodeRabbit glossary). These
+    # patterns therefore exclude the 58 generated hook files while leaving the
+    # 55 authored test files under plugins/ca/hooks/tests/ fully reviewed.
     #
     # Known cost: this also drops review of the three authored _host.py files,
     # since re-including them would require a positive pattern. Three small
