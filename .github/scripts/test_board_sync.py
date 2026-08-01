@@ -309,7 +309,95 @@ def test_debug_uses_helper():
           f"expected at least 4 rendered debug copies, found {seen}")
 
 
+def test_done_flip_retained():
+    """B-19/T-56: a `/ca:task done` flip still classifies RETAINED with the
+    protected-state enrolment simulated live, and the helper's own write is
+    invisible to the lexical flanks.
+
+    The circularity hazard: if enrolling `open-tasks.md` could block
+    `/ca:task`, the guard would stop the only sanctioned writer and the
+    board would become unmaintainable. The spec's mitigation is
+    STRUCTURAL, not sequencing -- `taskwrite.py` writes with Python file
+    I/O whose argv never names the file, so the shell flank has nothing to
+    match on. That construction, not "enrolment lands last", is what makes
+    it safe, so it is what gets pinned here.
+
+    Both halves are asserted: the classifier keeps the flip RETAINED (so
+    commit-gate does not read it as scope creep), and a simulated
+    helper-only enrolment does not make the helper's own invocation
+    blockable.
+    """
+    hooks = ROOT / "plugins" / "ca" / "hooks"
+    sys.path.insert(0, str(hooks))
+    try:
+        import _taskboardlib as tb
+        import _protectedstatelib as ps
+        import _bashguardlib as bg
+    finally:
+        if str(hooks) in sys.path:
+            sys.path.remove(str(hooks))
+
+    before = "# Open tasks\n\n## In-flight\n- [~] a.b.0001 - a task (started 2026-07-01)\n"
+    after = "# Open tasks\n\n## In-flight\n- [x] a.b.0001 - a task (started 2026-07-01) (done 2026-07-02)\n"
+    check(tb.classify_board_diff(before, after) is True,
+          "a clean done-flip must classify RETAINED, or commit-gate reads "
+          "the board edit as scope creep and refuses the work commit")
+
+    # The helper's write, as the shell flank would see it. `taskwrite.py`
+    # names the VERB and the task, never open-tasks.md, so a lexical rule
+    # keyed on the filename has nothing to match -- which is exactly why
+    # enrolling the board cannot lock out its own writer.
+    invocation = 'python3 hooks/taskwrite.py done a.b.0001'
+    check("open-tasks" not in invocation,
+          "the helper invocation must not name the board file, or the "
+          "shell flank could block the only sanctioned writer")
+    simulated = dict(ps.REGISTRY)
+    simulated[".codearbiter/open-tasks.md"] = ps.ProtectedPolicy.HELPER_ONLY
+    compiled = bg._build_state_write_res(simulated)
+    check(len(compiled) == len(simulated),
+          "the simulated enrolment did not compile into the shell flank")
+    for entry in compiled:
+        for regex in entry[2:]:
+            check(regex.search(invocation) is None,
+                  f"a flank regex matches the helper's own invocation "
+                  f"({invocation!r}) -- enrolment would block /ca:task")
+
+
+def test_context_creation_board_route():
+    """B-18/T-55: `context-creation` seeds open-tasks.md through the board
+    helper, one call per task, never by writing entries into the file.
+
+    It used to POPULATE the file with the Write tool during doc-writing.
+    Once open-tasks.md is enrolled `helper-only`, that write is refused
+    outright -- so the instruction would survive as one nobody can follow.
+    Seeding through repeated `taskwrite add` also means the backlog cannot
+    drift from the schema the SessionStart hook and statusline parse.
+    """
+    copies = [
+        "core/surface/skills/context-creation/SKILL.md",
+        "plugins/ca/skills/context-creation/SKILL.md",
+        "plugins/ca-codex/routines/context-creation/SKILL.md",
+        "plugins/ca-pi/routines/context-creation/SKILL.md",
+    ]
+    seen = 0
+    for relative in copies:
+        if not (ROOT / relative).exists():
+            continue
+        seen += 1
+        text = read_repo(relative)
+        check("taskwrite.py" in text,
+              f"{relative}: open-tasks seeding does not name the board helper")
+        check("one call per item" in text,
+              f"{relative}: nothing states the per-item helper contract")
+        check("never by writing entries into the file directly" in text,
+              f"{relative}: nothing forbids the direct write it replaced")
+    check(seen >= 4,
+          f"expected at least 4 rendered context-creation copies, found {seen}")
+
+
 TESTS = [
+    test_done_flip_retained,
+    test_context_creation_board_route,
     test_debug_uses_helper,
     test_task_doc_states_commit_colocation,
     test_commit_gate_phase6_board_edit_exemption,

@@ -115,7 +115,7 @@ Write the surviving docs to `<project-root>/.codearbiter/`. Every doc carries ac
 | `coding-standards.md` | Structural patterns, naming conventions, style rules. |
 | `security-controls.md` | Thin: auth mechanism, banned crypto primitives, secret-loading stance. Only what a security boundary actually requires. |
 | `open-questions.md` | Every deferred `[CONFIRM-NN]` in `CONFIRM-NN: <description>` form. |
-| `open-tasks.md` | The task backlog if scouts found one; otherwise a stub noting the user must populate it. |
+| `open-tasks.md` | Create the file with its heading only. **Every task goes in through the board helper, one call per item — `python3 "<plugin-root>/hooks/taskwrite.py" add "<task>"` — never by writing entries into the file directly** (B-18). The helper owns the board schema the SessionStart hook and the statusline parse, so a backlog seeded this way cannot drift from it; and once `open-tasks.md` is enrolled in the protected-state registry, a direct write is refused outright, which would leave a Write-tool instruction here unfollowable. If scouts found no backlog, the heading-only file stands as the stub. |
 | `overrides.log` | Empty append-only audit log, created so `/override` has a sink. |
 | `release-targets.md` | Conditional, unlike every other row above: written ONLY when Phase 3 drafted it at HIGH confidence (exactly one candidate manifest, exactly one candidate changelog) or Phase 4 resolved its `[CONFIRM-NN]` to a concrete row. Left unwritten otherwise — `/release`'s own back-fill lane (or a later `context-creation` run, once the ambiguity resolves) is the sanctioned way to create it, never a guess made here. |
 
