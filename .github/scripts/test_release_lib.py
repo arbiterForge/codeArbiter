@@ -3977,7 +3977,7 @@ _GOVERNANCE_RULES = {
     # being able to detect deletion of the command itself. The ratchet
     # caught this rather than letting it rot.
     "MEDIUM (run 4): the required date check has a runnable command": (
-        "_releaselib.py dates-match <Phase-1 section file> <message-file>",),
+        "_releaselib.py\" dates-match <Phase-1 section file> <message-file>",),
     # Run 5 (2026-07-31).
     "HIGH (run 5): the <none> sentinel is derived into a range, never substituted": (
         "is a sentinel, not a revision", "WINDOW=HEAD"),
@@ -4016,11 +4016,11 @@ _GOVERNANCE_RULES = {
         "cannot converge"),
     "A-5.5 (run 11 prose): the first-release window floors at the adoption commit": (
         "floor the window at the adoption commit",
-        "_releaselib.py adoption-commit"),
+        "_releaselib.py\" adoption-commit"),
     "A-3.6: the interpreter fallback is stated as a file-wide convention": (
         "Interpreter convention, stated once",),
     "HIGH-adjacent (run 11): window classification runs through the helper": (
-        "Two operators writing two parses", "_releaselib.py classify-window"),
+        "Two operators writing two parses", "_releaselib.py\" classify-window"),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the
