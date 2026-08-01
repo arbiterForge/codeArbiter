@@ -240,7 +240,7 @@ generate from it).
 | T-51 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k first_release_baseline` — baseline derived from `git log --diff-filter=A -- .codearbiter/CONTEXT.md`, with a user override offered in the prompt | adoption baseline | A-5.5 | T-50 | ACCEPTED |
 > **T-51 completed (2026-07-31).** Mechanism and CLI landed in `a31d398`; the lane prose that USES them landed with run 11's remediation, batched with T-42's so one exercise covers both. The row is now ACCEPTED because the lane genuinely offers the baseline, not merely because the helper exists.
 
-| T-52 | `.codearbiter/.provenance/release-targets.json` | `python .github/scripts/test_provenancelib.py -k release_targets_triggers` | drift triggers | A-5.6 | T-51 | PENDING |
+| T-52 | `.codearbiter/.provenance/release-targets.json` | `python .github/scripts/test_provenancelib.py -k release_targets_triggers` | drift triggers | A-5.6 | T-51 | ACCEPTED |
 
 ### Step 4 — B3: the two conversions
 

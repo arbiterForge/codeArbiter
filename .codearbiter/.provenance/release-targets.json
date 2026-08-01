@@ -1,0 +1,78 @@
+{
+  "created": "2026-07-31",
+  "doc": "release-targets",
+  "entries": [
+    {
+      "drift_trigger": true,
+      "hash": "a39e18a12f1a3aefaebd5ac80b5519711d6aba84",
+      "path": "CHANGELOG.md"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "ae70e34bb2fea3bbef23b71e00a01c71725da90f",
+      "path": "package.json"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "7a8c2e5487ccea497a3014cf93c1632453cf471e",
+      "path": "plugins/ca-codex/.codex-plugin/plugin.json"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "9199e83dbc60ffb09dc5321ff8990d80200cab46",
+      "path": "plugins/ca-codex/CHANGELOG.md"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "9c1adadf3757e7f995c939b8941702504bf2ad4d",
+      "path": "plugins/ca-pi/CHANGELOG.md"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "b5812f8616f351ba2db9acafff5164a4e2939c87",
+      "path": "plugins/ca-pi/extensions/codearbiter-child.js"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "7e5890e95d06e7f1455a6ee99641c11862f25b12",
+      "path": "plugins/ca-pi/extensions/codearbiter.js"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "ee1837f4f453bc598eff08cc4ebb71a306e8b06d",
+      "path": "plugins/ca-pi/package.json"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "4778082d5ea1466d96a6bb0640eeee58bbb30f0e",
+      "path": "plugins/ca-sandbox/.claude-plugin/plugin.json"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "d2a8c793bcaaceb3649a06076a27533f79eb7161",
+      "path": "plugins/ca-sandbox/CHANGELOG.md"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "6bbd0dc0a4f0a6ab52b1b97e2467c53228861ee9",
+      "path": "plugins/ca-sandbox/tools/claude-inside.js"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "937c440af255c8b6aa97a4edcd4283ec7130c665",
+      "path": "plugins/ca-sandbox/tools/sandbox.js"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "8c98f20f9e4de1cdec10d6f99922e520347a3ba9",
+      "path": "plugins/ca/.claude-plugin/plugin.json"
+    },
+    {
+      "drift_trigger": true,
+      "hash": "ab5064e747807cd68d2433b2aab234883c25d42b",
+      "path": "plugins/ca/tools/farm.js"
+    }
+  ],
+  "interview_derived": false,
+  "schema": 1
+}

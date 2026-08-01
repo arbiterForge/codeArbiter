@@ -521,6 +521,49 @@ _BUMPING_TYPES = {"feat": "minor", "fix": "patch", "perf": "patch",
 _BUMP_RANK = {"none": 0, "patch": 1, "minor": 2, "major": 3}
 
 
+def provenance_trigger_paths(rows):
+    """Every path a declared row REFERENCES, sorted and de-duplicated:
+    each `manifest`, each `changelog`, and each `artifacts` entry (A-5.6).
+
+    These are the drift triggers for `.codearbiter/.provenance/release-
+    targets.json`. The point is that the declaration and the files it names
+    move together: if a manifest path is renamed and the row is not
+    updated, the row now points at nothing, and the release lane resolves
+    it to a missing file at the worst possible moment.
+
+    Deliberately NOT a CONTEXT.md-Scope trigger. `compute_drift` compares
+    whole-file git oids with no section-level machinery, so a Scope trigger
+    would fire on an unrelated `stage:` flip AND stay silent on the thing
+    that matters -- a manifest path moving. Wrong in both directions.
+
+    `payload` and `payload-exclude` are excluded on purpose: they are
+    directory scopes, not files, and hashing a directory path is not
+    something `batch_hash` can do. `pre-tag`/`rebuild`/`generate` are
+    excluded too -- they are commands, not paths, and a command string is
+    not a file whose oid can drift.
+
+    Routine per-release version bumps WILL trip these triggers, by design:
+    a release edits its manifest, which is the point of watching it.
+    `heal_worklist` re-baselines them in the same release commit. That is
+    recorded here so a later maintainer reads it as intended behaviour
+    rather than deleting the triggers to quiet the noise.
+
+    Pure and non-raising over synthetic input.
+    """
+    paths = set()
+    if not isinstance(rows, (list, tuple)):
+        return []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        for key in ("manifest", "changelog", "artifacts", "generated_manifest"):
+            value = row.get(key)
+            for item in (value if isinstance(value, list) else [value]):
+                if isinstance(item, str) and item.strip():
+                    paths.add(item.strip())
+    return sorted(paths)
+
+
 def _manifest_version(path):
     """The `version` a manifest declares, or `None` when it cannot be read
     or parsed. Dispatches on EXTENSION, because the declared-file grammar
