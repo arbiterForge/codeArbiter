@@ -177,10 +177,27 @@ REGISTRY: dict[str, ProtectedPolicy] = {
     # Python file I/O whose argv never names the file, so it is invisible
     # to every lexical flank by construction. A marker would therefore add
     # nothing for the helper while ADMITTING an agent that hand-composes
-    # board markdown under it — the inversion of the goal. That same
-    # construction is what makes enrolment safe rather than circular: the
-    # guard cannot block `/ca:task`, because it never sees the helper's
-    # write (pinned by test_done_flip_retained).
+    # board markdown under it — the inversion of the goal.
+    #
+    # Enrolment is non-circular, but NOT for the reason this comment used
+    # to give. It claimed the guard "never sees the helper's write", which
+    # is true of the write and irrelevant to the guard: the guard reads the
+    # COMMAND LINE, and the helper's own launcher is `python3
+    # ".../taskwrite.py" <verb> …`. The interpreter leg matched that
+    # `python3` and blocked every invocation whose free-text argv named an
+    # enrolled basename — including `done`/`archive` on an ID-less task
+    # whose title names one, where the title IS the target and rewording it
+    # would itself require a board write. The workstream-B adversary drove
+    # the real `pre-bash.py` and confirmed it.
+    #
+    # What actually makes it non-circular is the interpreter leg's
+    # inline-code requirement (`_INTERP_INLINE_CODE` in `_bashguardlib`):
+    # running a FILE and passing the basename as argv is data, executing a
+    # STRING that names it is a write. Pinned by
+    # `test_filename_as_helper_argv_data_passes` and
+    # `test_helper_write_verbs_pass_when_the_title_names_the_file`, both on
+    # the real invocation shape — the prior pins asserted a bare
+    # `taskwrite add …` that no surface emits.
     ".codearbiter/open-tasks.md": ProtectedPolicy.HELPER_ONLY,
 
     # B-15/T-65. APPEND_ONLY: a completed task has exactly one permanent

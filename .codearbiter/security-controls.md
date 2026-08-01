@@ -565,10 +565,16 @@ vague "if the threat model expands to untrusted agents". Any ONE reopens it:
 `_protectedstatelib.py` (B1/#564) is a generic path->policy registry — `marker-
 gated`, `helper-only`, or `append-only` — enforced by a fifth `classify_protected`
 class (`"state"`) across all three flanks: `pre-write.py`/`pre-edit.py` (Write/
-Edit) and `_bashguardlib.py`'s H-22 check (shell). `.codearbiter/release-targets.md` is enrolled as
-`marker-gated` (T-33) -- the first and, as of this slice, only consumer;
-`open-tasks.md` and `done-tasks.md` follow in their own tasks (T-65/T-66).
-It is marker-gated rather than helper-only because it has THREE sanctioned
+Edit) and `_bashguardlib.py`'s H-22 check (shell). All THREE planned consumers
+are now enrolled, one per policy:
+
+| Path | Policy | Task |
+|---|---|---|
+| `.codearbiter/release-targets.md` | `marker-gated` | T-33 |
+| `.codearbiter/open-tasks.md` | `helper-only` | T-66 |
+| `.codearbiter/done-tasks.md` | `append-only` | T-65 |
+
+`release-targets.md` is marker-gated rather than helper-only because it has THREE sanctioned
 authors (`context-creation`, the release skill's back-fill lane, and its
 row-edit path), so a hard block would leave them no route; the marker is the
 route. `git add` on it stays deliberately unblocked, or `commit-gate` could
@@ -637,7 +643,14 @@ H-22). An arbitrary interpreter one-liner
 mirroring `GATE_MARKER_INTERP_RE` (#237) — the `helper-only` policy's whole
 premise is that the sanctioned helper's own Python file I/O is the only
 legitimate route, so an interpreter one-liner reusing that exact route while
-naming the file lexically must be caught the same way #237 already catches it
+naming the file lexically must be caught the same way #237 already catches it.
+That leg matches on an INLINE-CODE SWITCH (`-c`, `-e`, `-r`, `deno eval`,
+PowerShell's `-Command` and its abbreviations), not on the interpreter token
+alone: running a script FILE and passing a protected basename as argv is the
+sanctioned helper's own call shape, and matching it blocked every `/ca:task`
+invocation whose description named an enrolled file. The interpreter list
+covers `py` and `pwsh`/`powershell` — omitting them left the whole leg
+bypassable on this repo's primary dev host
 for gate markers.
 
 **`touch` is deliberately excluded — two positions are recorded, not one.**

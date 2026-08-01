@@ -761,6 +761,64 @@ def already_archived(done_text, task):
     return any(line.strip() == needle for line in done_text.splitlines())
 
 
+def task_block(lines, task):
+    """`(start, end)` half-open line range of `task`'s WHOLE block, or None.
+
+    A task is not one line. `parse_board` opens a task on a top-level
+    bullet and attaches every following `- Key: value` sub-bullet
+    (`Desc`, `Done when`, `Boundaries`) to it, closing only on the next
+    top-level bullet or a non-indented non-bullet line -- a BLANK line
+    does not close it. This function reproduces exactly that rule, so the
+    unit the board moves is the unit the board parses. Any other choice
+    re-attributes the orphaned sub-bullets to whatever task follows,
+    silently rewriting a `Boundaries:` security scope onto an unrelated
+    item (workstream-B adversary HIGH-2).
+
+    Trailing blank lines are TRIMMED off the block: a blank line between
+    two tasks is a separator belonging to the board, not cargo belonging
+    to the task above it.
+
+    Located by INDEX, never by text equality. Two done items may be
+    character-identical -- `taskwrite add` is documented rerun-safe, so
+    two adds of one description is a reachable state -- and removing
+    "every line equal to this one" while appending a single record
+    destroys the duplicate permanently (adversary HIGH-3). `task.lineno`
+    is trusted only when it still points at `task.raw`; otherwise the
+    FIRST matching top-level line wins, so a caller holding a Task parsed
+    from some other text degrades to the old behaviour instead of
+    corrupting the board.
+    """
+    raw = (getattr(task, "raw", "") or "").strip()
+    if not raw:
+        return None
+
+    start = None
+    lineno = getattr(task, "lineno", None)
+    if isinstance(lineno, int) and 0 < lineno <= len(lines):
+        if lines[lineno - 1].strip() == raw:
+            start = lineno - 1
+    if start is None:
+        for i, line in enumerate(lines):
+            if _TOP_RE.match(line) and line.strip() == raw:
+                start = i
+                break
+    if start is None:
+        return None
+
+    end = start + 1
+    while end < len(lines):
+        line = lines[end]
+        if _TOP_RE.match(line):
+            break
+        if _SUB_RE.match(line) or not line.strip():
+            end += 1
+            continue
+        break
+    while end > start + 1 and not lines[end - 1].strip():
+        end -= 1
+    return start, end
+
+
 def archive_transform(open_text, done_text, task):
     """`(new_open_text, new_done_text)` for ONE archived item.
 
@@ -776,13 +834,19 @@ def archive_transform(open_text, done_text, task):
     `open_text`, which is exactly the state an interrupted run leaves
     behind.
 
+    Moves the task's whole BLOCK, not its top line -- see `task_block`
+    for the boundary rule and for why removal is index-based.
+
     Pure and non-raising; unknown input returns the texts unchanged.
     """
     if not isinstance(open_text, str) or not isinstance(done_text, str):
         return open_text, done_text
-    raw = (getattr(task, "raw", "") or "").strip()
-    if not raw:
+    lines = open_text.splitlines()
+    span = task_block(lines, task)
+    if span is None:
         return open_text, done_text
+    start, end = span
+    block = lines[start:end]
 
     if already_archived(done_text, task):
         new_done = done_text
@@ -790,9 +854,9 @@ def archive_transform(open_text, done_text, task):
         body = done_text if done_text.strip() else DONE_TASKS_HEADING + "\n"
         if not body.endswith("\n"):
             body += "\n"
-        new_done = body + raw + "\n"
+        new_done = body + "\n".join(block) + "\n"
 
-    kept = [line for line in open_text.splitlines() if line.strip() != raw]
+    kept = lines[:start] + lines[end:]
     new_open = "\n".join(kept)
     if open_text.endswith("\n") and not new_open.endswith("\n"):
         new_open += "\n"

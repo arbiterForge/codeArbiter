@@ -883,7 +883,32 @@ class TestStateShellHelperOnly(_StateShellFixture):
     def test_filename_as_helper_argv_data_passes(self):
         # B-08 non-regression — the filename appears only as free-text argv
         # DATA to the sanctioned helper, with no adjacent write verb.
-        self.assertShellAllowed('taskwrite add -- "fix open-tasks.md schema"')
+        #
+        # Anchored on the REAL invocation. This test (and the pinned-form
+        # one below) previously asserted a bare `taskwrite add …`, which is
+        # not a command that can occur: `core/surface/commands/task.md`
+        # documents only the `python3 "{{PLUGIN_ROOT}}/hooks/taskwrite.py"
+        # <verb>` shape, and nothing in `core/surface` emits the bare
+        # spelling. So the non-regression was pinned against a form that
+        # never runs while the form that does run BLOCKED, on the
+        # interpreter leg, via the `python3` in the helper's own launcher
+        # (workstream-B adversary HIGH-1).
+        self.assertShellAllowed(
+            'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add -- '
+            '"fix open-tasks.md schema"')
+
+    def test_helper_write_verbs_pass_when_the_title_names_the_file(self):
+        # The half of HIGH-1 with no workaround. For `add` a blocked
+        # description can be reworded; for `done`/`archive` on an ID-less
+        # task the TITLE is the target, and rewording a title requires a
+        # board write, which is `helper-only`. Every sanctioned route was
+        # closed at once, leaving /ca:override as the only exit. The live
+        # board carries such an entry today.
+        for verb in ("done", "archive"):
+            with self.subTest(verb=verb):
+                self.assertShellAllowed(
+                    f'python3 "${{CLAUDE_PLUGIN_ROOT}}/hooks/taskwrite.py" '
+                    f'{verb} "Atomic write for open-tasks.md"')
 
     def test_taskwrite_invocation_passes_with_enrolment_live(self):
         # B-12 circularity proof: the helper's own argv never lexically
@@ -903,13 +928,58 @@ class TestStateShellHelperOnly(_StateShellFixture):
         # `tee open-tasks.md` redirect. This is EXPECTED, current behavior
         # — not a bug to chase with smarter parsing (T-08b design ruling;
         # /ca:override is the sanctioned escape hatch for a false block).
-        self.assertShellBlocked('taskwrite add -- "remember to tee open-tasks.md"')
+        self.assertShellBlocked(
+            'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add -- '
+            '"remember to tee open-tasks.md"')
 
     def test_verb_in_description_residual_pinned_passing_form(self):
         # The B-08 non-regression this residual sits beside: the SAME
         # filename, in the SAME free-text argv position, passes as long as
         # no write-verb word happens to precede it in the command text.
-        self.assertShellAllowed('taskwrite add -- "fix open-tasks.md schema"')
+        self.assertShellAllowed(
+            'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add -- '
+            '"fix open-tasks.md schema"')
+
+    def test_write_verb_window_does_not_cross_a_newline(self):
+        # MEDIUM-3. The verb window was `[^|;&]*`, which matches newlines,
+        # so a `sed -i` early in a multi-line commit body and a protected
+        # basename several lines later formed one match. This branch's own
+        # commit 063b0b4 — the one that enrolled these files — carries
+        # exactly that shape, so the guard would have refused the commit
+        # installing it, through both `-m` and a heredoc.
+        self.assertShellAllowed(
+            'git commit -m "feat(hooks): enrol both board files\n'
+            '\n'
+            'Both a hand-rolled Edit and `sed -i` block, which is the\n'
+            'mitigation working as a property of the helper.\n'
+            '\n'
+            'done-tasks.md is append-only."')
+        # NOT fixed here, and deliberately pinned as still-blocking so the
+        # boundary is visible: `pip install … # … open-tasks.md` puts the
+        # verb and the basename on ONE line, which is the declared T-08b
+        # same-line residual, not the newline defect. The adversary listed
+        # it under MEDIUM-3; it belongs to the residual instead. Narrowing
+        # it means distinguishing coreutils `install` from a package
+        # manager's `install` subcommand — tracked, not done here.
+        self.assertShellBlocked(
+            'pip install -r requirements.txt  # then read open-tasks.md')
+
+    def test_write_verb_and_basename_on_one_line_still_blocks(self):
+        # The other side of the same fix: narrowing the window must not
+        # drop the genuine single-line case, which is the whole verb leg.
+        self.assertShellBlocked("sed -i 's/x/y/' .codearbiter/open-tasks.md")
+        self.assertShellBlocked("cp /tmp/forged .codearbiter/open-tasks.md")
+
+    def test_extended_destructive_verbs_block(self):
+        # MEDIUM-5: `unlink` is `rm`'s direct sibling and the verb list
+        # already carries `shred` and `truncate`; the editor-as-batch-writer
+        # spellings are the same class.
+        for cmd in ("unlink .codearbiter/open-tasks.md",
+                    "ex -sc wq .codearbiter/open-tasks.md",
+                    "vim -es -c wq .codearbiter/open-tasks.md",
+                    "rsync /tmp/x .codearbiter/open-tasks.md"):
+            with self.subTest(cmd=cmd):
+                self.assertShellBlocked(cmd)
 
     def test_git_checkout_blocks(self):
         # F5, through the full dispatch: `git checkout` rewrites a tracked
@@ -925,6 +995,52 @@ class TestStateShellHelperOnly(_StateShellFixture):
         # while naming the file lexically.
         self.assertShellBlocked(
             "python3 -c \"open('open-tasks.md','w').write('forged')\"")
+
+    # A (shape -> verdict) TABLE rather than one case per interpreter, and
+    # it deliberately re-asserts the pre-existing true positives alongside
+    # the new ones. HIGH-1's fix NARROWS this leg (an inline-code switch is
+    # now required), and the failure mode of narrowing a guard is silently
+    # dropping what it used to catch — which a table of only the new cases
+    # would not notice.
+    INTERP_BLOCKS = [
+        # pre-existing true positives — must not regress
+        'python3 -c "open(\'open-tasks.md\',\'w\')"',
+        'python -c "open(\'open-tasks.md\',\'w\')"',
+        'node -e "require(\'fs\').writeFileSync(\'open-tasks.md\',\'x\')"',
+        'ruby -e \'File.write("open-tasks.md","x")\'',
+        # multi-line -c payload (#237 follow-up: [\s\S]* not [^\n]*)
+        'python3 -c "\nimport io\nio.open(\'open-tasks.md\',\'w\')\n"',
+        # HIGH-5: `py` is THE Windows Python launcher; pwsh/powershell were
+        # absent entirely, though the docs claimed interpreter coverage.
+        'py -c "open(\'open-tasks.md\',\'w\').write(1)"',
+        'powershell -Command "[IO.File]::WriteAllText(\'open-tasks.md\',\'x\')"',
+        'powershell -Comm "[IO.File]::WriteAllText(\'open-tasks.md\',\'x\')"',
+        'pwsh -c "[IO.File]::WriteAllText(\'open-tasks.md\',\'x\')"',
+        'python2 -c "open(\'open-tasks.md\',\'w\')"',
+        'deno eval "Deno.writeTextFileSync(\'open-tasks.md\',\'x\')"',
+        'bun -e "await Bun.write(\'open-tasks.md\',\'x\')"',
+        'php -r "file_put_contents(\'open-tasks.md\',\'x\');"',
+    ]
+
+    INTERP_ALLOWS = [
+        # HIGH-1: the sanctioned helper, in every verb, with the basename
+        # as argv data.
+        'python3 ".../hooks/taskwrite.py" add "enrol open-tasks.md in H-22"',
+        'python3 ".../hooks/taskwrite.py" add "x" --desc "mentions open-tasks.md"',
+        'python "$ROOT/hooks/taskwrite.py" archive --allow-undated "tidy open-tasks.md"',
+        # reads and unrelated tooling that merely name the file
+        'python -m pytest -k "open-tasks.md"',
+    ]
+
+    def test_interpreter_leg_blocks_every_inline_code_shape(self):
+        for cmd in self.INTERP_BLOCKS:
+            with self.subTest(cmd=cmd):
+                self.assertShellBlocked(cmd)
+
+    def test_interpreter_leg_allows_a_file_invocation_naming_the_basename(self):
+        for cmd in self.INTERP_ALLOWS:
+            with self.subTest(cmd=cmd):
+                self.assertShellAllowed(cmd)
 
     def test_sponge_blocks(self):
         self.assertShellBlocked("sponge open-tasks.md")

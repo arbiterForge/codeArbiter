@@ -34,6 +34,20 @@ from _hooklib import (  # noqa: E402
     acquire_lock, project_root, release_lock, set_host, utf8_stdio,
 )
 
+# Exit 3, deliberately NOT the generic exit 1 every other refusal uses.
+# Exit 1 means "I read the state and the answer is no" (no such task, the
+# item is undated, the lock is held). This means "I could not read the
+# append-only archive at all", and the two must stay distinguishable: a
+# caller retrying on 1 is retrying a decision, a caller seeing 3 has an
+# unreadable file to fix first. Same split as _releaselib's exit 4-vs-3.
+EXIT_ARCHIVE_UNREADABLE = 3
+
+
+class ArchiveUnreadable(OSError):
+    """`done-tasks.md` exists but could not be read, so no archive may be
+    computed from it. Raised INSTEAD of proceeding, because the archive
+    write replaces the file wholesale."""
+
 # reliability-007 (#190): project_root() is now _hooklib.project_root —
 # imported above, not a local copy. The prior local copy ran `git rev-parse
 # --show-toplevel` from the hook's own cwd and fell back to os.getcwd(),
@@ -138,11 +152,26 @@ def _archive(text, args, root):
                       f"archive it deliberately"), False
 
     done_path = os.path.join(root, ".codearbiter", "done-tasks.md")
+    # ABSENT and UNREADABLE are not the same answer, and folding them
+    # together destroys the archive (workstream-B adversary HIGH-4). The
+    # write below REPLACES done-tasks.md wholesale, so treating a failed
+    # read as "" seeds a fresh heading and drops every historical record
+    # -- with rc=0 and the word "archived". A transient OSError is enough:
+    # an editor or antivirus holding the file, a deny-read ACL, a failing
+    # volume. `append-only` exists precisely to make that record
+    # permanent, so an unreadable archive REFUSES rather than guesses.
     try:
         with open(done_path, encoding="utf-8") as handle:
             done_text = handle.read()
-    except OSError:
-        done_text = ""
+    except FileNotFoundError:
+        done_text = ""          # genuinely absent — seeding one is correct
+    except OSError as exc:
+        raise ArchiveUnreadable(
+            f"cannot read {done_path}: {exc}. Refusing to archive: this "
+            f"file is append-only and rewriting it from an unread state "
+            f"would discard every record it already holds. Nothing was "
+            f"written. Fix the read (close whatever holds the file, or "
+            f"restore its permissions) and retry.")
 
     new_open, new_done = tb.archive_transform(text, done_text, task)
     if new_open == text and new_done == done_text:
@@ -261,7 +290,16 @@ def main(argv=None):
             # done-tasks.md is written INSIDE `_archive`, before this
             # function returns the new open-tasks text — the ordering
             # B-20/B-22 turn on. See `_archive`'s docstring.
-            new, action_or_err, _wrote_done = _archive(text, args, root)
+            #
+            # An unreadable archive aborts HERE, before either write: the
+            # done-tasks write lives inside `_archive` and is reached only
+            # after the read succeeds, and open-tasks is written below. So
+            # this exit leaves BOTH files exactly as they were.
+            try:
+                new, action_or_err, _wrote_done = _archive(text, args, root)
+            except ArchiveUnreadable as exc:
+                print(str(exc), file=sys.stderr)
+                return EXIT_ARCHIVE_UNREADABLE
         else:
             new, action_or_err = _apply(args, text)
         if new is None:

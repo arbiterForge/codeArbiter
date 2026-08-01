@@ -30,6 +30,7 @@ HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 sys.path.insert(0, HOOKS)
 
 import _taskboardlib as tb  # noqa: E402
+import taskwrite as taskwrite_mod  # noqa: E402 — for its declared exit codes
 
 
 def _d(y, m, d):
@@ -801,6 +802,143 @@ class ArchiveVerbTest(unittest.TestCase):
         self.assertEqual(second.returncode, 1)
         self.assertEqual(self._read(root, "done-tasks.md").count("a.b.0001"), 1)
 
+    # ---- workstream-B adversary HIGH-2/HIGH-3/HIGH-4 --------------------
+    #
+    # Every pre-existing archive fixture in this file is pure top-level
+    # bullets, which is exactly why the sub-bullet defects were invisible.
+    # This one carries the shape `add --desc/--boundaries` actually emits.
+    BLOCK_BOARD = ("# Open tasks\n\n## In-flight\n"
+                   "- [x] g.t.0001 - first (done 2026-07-01)\n"
+                   "  - Desc: the rationale that must survive\n"
+                   "  - Boundaries: egress, secrets\n"
+                   "- [ ] g.t.0002 - second\n")
+
+    def _block_repo(self):
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(self.BLOCK_BOARD)
+        return root
+
+    def test_archive_moves_the_sub_bullets_with_the_task(self):
+        # HIGH-2. `archive_transform` moved `task.raw` -- the TOP LINE
+        # alone -- so Desc/Boundaries were left behind and silently
+        # re-attributed to whatever task followed. Boundaries is a
+        # security-scoping field, so the orphan does not merely vanish
+        # from the record: it reappears as a claim about a different task.
+        root = self._block_repo()
+        proc = self._run(root, "archive", "g.t.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+        done = self._read(root, "done-tasks.md")
+        self.assertIn("- Desc: the rationale that must survive", done)
+        self.assertIn("- Boundaries: egress, secrets", done)
+
+        open_after = self._read(root, "open-tasks.md")
+        self.assertNotIn("the rationale that must survive", open_after)
+        self.assertNotIn("egress, secrets", open_after)
+
+        # The decisive assertion: the surviving task must not have
+        # inherited the archived task's fields.
+        survivor = next(t for t in tb.parse_board(open_after)
+                        if t.id == "g.t.0002")
+        self.assertEqual(survivor.desc, "")
+        self.assertEqual(survivor.boundaries, [])
+
+    def test_archive_of_a_block_is_rerun_safe(self):
+        # The interrupted-run recovery property held before this fix and
+        # must still hold now that the moved unit is a block: dedup keys
+        # on the ID while the move keys on the block, so the two operate
+        # on different units and could drift apart.
+        root = self._block_repo()
+        with open(os.path.join(root, ".codearbiter", "done-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Done tasks\n"
+                         "- [x] g.t.0001 - first (done 2026-07-01)\n"
+                         "  - Desc: the rationale that must survive\n"
+                         "  - Boundaries: egress, secrets\n")
+        proc = self._run(root, "archive", "g.t.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        done = self._read(root, "done-tasks.md")
+        self.assertEqual(done.count("g.t.0001"), 1, "recovery duplicated the block")
+        self.assertEqual(done.count("- Desc: the rationale"), 1)
+        self.assertNotIn("g.t.0001", self._read(root, "open-tasks.md"))
+
+    def test_archive_of_one_duplicate_leaves_the_other_on_the_board(self):
+        # HIGH-3. Removal was `line.strip() != raw` over every line, so
+        # two character-identical done entries both disappeared while a
+        # single record was appended -- one task destroyed, rc=0, "archived".
+        # Reachable through the sanctioned helper alone: `add` is
+        # documented rerun-safe, so two adds of one description is an
+        # ordinary state, not a hand-crafted file.
+        root = self._repo()
+        with open(os.path.join(root, ".codearbiter", "open-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("# Open tasks\n\n## In-flight\n"
+                         "- [x] tidy the log (done 2026-06-02)\n"
+                         "- [x] tidy the log (done 2026-06-02)\n")
+        proc = self._run(root, "archive", "tidy the log")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(
+            self._read(root, "open-tasks.md").count("tidy the log"), 1,
+            "archiving one duplicate removed both — a record was destroyed")
+        self.assertEqual(
+            self._read(root, "done-tasks.md").count("tidy the log"), 1)
+
+    def test_an_unreadable_archive_refuses_and_writes_nothing(self):
+        # HIGH-4. `except OSError: done_text = ""` folded "I could not
+        # read it" into "there is nothing there", and the write REPLACES
+        # done-tasks.md wholesale -- so any transient read failure (an
+        # editor holding the file, a deny-read ACL, a failing volume)
+        # silently wiped every historical record with rc=0 and the word
+        # "archived". Injected as PermissionError because the Windows
+        # deny-read ACL that found this surfaces as exactly that in-process.
+        root = self._repo()
+        historical = ("# Done tasks\n"
+                      "- [x] a.b.9001 - historical one (done 2026-01-01)\n"
+                      "- [x] a.b.9002 - historical two (done 2026-02-01)\n")
+        with open(os.path.join(root, ".codearbiter", "done-tasks.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(historical)
+        board_before = self._read(root, "open-tasks.md")
+
+        driver = (
+            "import sys, builtins\n"
+            f"sys.path.insert(0, {HOOKS!r})\n"
+            "import taskwrite\n"
+            "real = builtins.open\n"
+            "def guarded(path, *a, **k):\n"
+            "    if 'done-tasks' in str(path) and 'r' in str(k.get('mode', a[0] if a else 'r')):\n"
+            "        raise PermissionError(13, 'denied')\n"
+            "    return real(path, *a, **k)\n"
+            "builtins.open = guarded\n"
+            "sys.exit(taskwrite.main(['archive', 'a.b.0001']))\n"
+        )
+        import subprocess
+        proc = subprocess.run(
+            [sys.executable, "-c", driver], capture_output=True, text=True,
+            env=dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                     PYTHONDONTWRITEBYTECODE="1"), cwd=root)
+
+        self.assertEqual(proc.returncode, taskwrite_mod.EXIT_ARCHIVE_UNREADABLE,
+                         f"expected the distinct unreadable-archive exit, got "
+                         f"{proc.returncode}: {proc.stderr}")
+        self.assertIn("append-only", proc.stderr)
+        # Neither file moved. This is the assertion the defect failed.
+        self.assertEqual(self._read(root, "done-tasks.md"), historical)
+        self.assertEqual(self._read(root, "open-tasks.md"), board_before)
+
+    def test_archive_still_seeds_an_absent_done_tasks_file(self):
+        # The other half of the HIGH-4 split: ABSENT is not UNREADABLE.
+        # An existing repo has no done-tasks.md until its first archive,
+        # so seeding one must keep working — a fix that refused on every
+        # OSError would break the first archive in every repo.
+        root = self._repo()
+        self.assertIsNone(self._read(root, "done-tasks.md"))
+        proc = self._run(root, "archive", "a.b.0001")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("a.b.0001", self._read(root, "done-tasks.md"))
+
     def test_archive_interrupted_between_writes_loses_nothing(self):
         # B-22. Simulate the exact interruption: done-tasks.md already has
         # the record (phase 1 completed) but open-tasks.md still lists it
@@ -817,18 +955,47 @@ class ArchiveVerbTest(unittest.TestCase):
         self.assertEqual(done.count("a.b.0001"), 1, "recovery duplicated the record")
         self.assertNotIn("a.b.0001", self._read(root, "open-tasks.md"))
 
-    def test_archive_interrupted_the_other_order_would_have_lost_it(self):
-        # Why the ordering is load-bearing rather than stylistic: had the
-        # verb removed from open-tasks FIRST, the same interruption would
-        # leave the record in NEITHER file. Asserted against the transform
-        # so the claim is measured, not merely asserted in a comment.
-        task = next(p[0] for p in
-                    (tb.parse_board(l) for l in self.BOARD.splitlines())
-                    if p and p[0].id == "a.b.0001")
-        removed_first, _ = tb.archive_transform(self.BOARD, "", task)
-        self.assertNotIn("a.b.0001", removed_first)
-        # With done-tasks never written, the record exists nowhere.
-        self.assertNotIn("a.b.0001", removed_first + "")
+    def test_archive_writes_done_before_open_so_a_failed_second_write_keeps_it(self):
+        # M-1 (workstream-B adversary). The test this REPLACES claimed to
+        # measure the ordering and did not: it called `archive_transform`
+        # -- a pure function that writes nothing -- and closed on
+        # `assertNotIn("a.b.0001", removed_first + "")`, which is the
+        # identical string it had just asserted on. The "other order" was
+        # never executed, and a mutant reversing the two writes in
+        # `taskwrite.py` survived the entire suite.
+        #
+        # Measured instead by making the SECOND write fail and looking at
+        # what survived on disk. Under the shipped order (done first) the
+        # record is in done-tasks.md; under the reversed order the
+        # done-tasks write is never reached and the record is in NEITHER
+        # file -- which is the loss the ordering exists to prevent.
+        root = self._repo()
+        driver = (
+            "import sys\n"
+            f"sys.path.insert(0, {HOOKS!r})\n"
+            "import taskwrite\n"
+            "real = taskwrite._atomic_write\n"
+            "def boom(path, text, prefix):\n"
+            "    if prefix == 'open-tasks.':\n"
+            "        raise RuntimeError('simulated crash before the second write')\n"
+            "    return real(path, text, prefix)\n"
+            "taskwrite._atomic_write = boom\n"
+            "taskwrite.main(['archive', 'a.b.0001'])\n"
+        )
+        import subprocess
+        proc = subprocess.run(
+            [sys.executable, "-c", driver], capture_output=True, text=True,
+            env=dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                     PYTHONDONTWRITEBYTECODE="1"), cwd=root)
+        self.assertIn("simulated crash", proc.stderr)
+
+        done = self._read(root, "done-tasks.md") or ""
+        self.assertIn(
+            "a.b.0001", done,
+            "the record was NOT written to done-tasks.md before open-tasks "
+            "was rewritten — reversing the two writes loses it outright")
+        # open-tasks still lists it: recoverable, and the next run dedups.
+        self.assertIn("a.b.0001", self._read(root, "open-tasks.md"))
 
 
 class AddRationaleTest(unittest.TestCase):

@@ -433,8 +433,48 @@ GATE_MARKER_WRITE_RE = re.compile(
 # one-liner wrote .markers/security-gate-passed … EOF)"` — a PR/issue body
 # merely DESCRIBING this very fix), the same D-3 (#223) distinction the
 # other guards already draw.
+# The interpreter alternation, shared by H-19's gate-marker leg below and
+# H-22's per-entry `interp_re` (~line 560). ONE list, because the
+# workstream-B adversary's cross-guard parity probe showed the same
+# omission reaching every guard that carries an interpreter leg: the
+# previous `python3?|node|perl|ruby|sh` missed `py` -- THE canonical
+# Python launcher on Windows, this repo's primary dev host -- and
+# `powershell`/`pwsh` entirely, so `py -c "open('…','w')"` and
+# `powershell -Command "[IO.File]::WriteAllText(…)"` both walked past a
+# guard whose docs affirmatively claimed interpreter coverage.
+#
+# `python2` is spelled out because `python3?` does not match it.
+_INTERP_TOKENS = (r"python3?|python2|py|node|deno|bun|perl|ruby|php"
+                  r"|sh|bash|zsh|pwsh|powershell")
+
+# The inline-code switch that makes an interpreter EXECUTE A STRING rather
+# than run a file. `-c` (python/py/sh/bash/zsh/pwsh), `-e`/`-E` (perl,
+# ruby, node, bun), `-r` (php), `-p`/`--print`/`--eval` (node), and
+# `eval` as a SUBCOMMAND (deno) rather than a flag.
+#
+# The nested-optional `c(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?` spells the
+# prefix family of PowerShell's `-Command`: PowerShell accepts any
+# unambiguous abbreviation, so `-Comm`, `-Co` and `-C` are all valid and a
+# literal `-Command|-c` alternation would miss them.
+#
+# Residual, stated rather than left to fall out of the regex: a script
+# piped into an interpreter on stdin (`echo … | python3`) puts the
+# filename BEFORE the interpreter token and is not reached here, and
+# `deno eval` is covered only in its subcommand spelling.
+_INTERP_INLINE_CODE = (
+    r"(?:-{1,2}(?:c(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?|e|E|r|p"
+    r"|eval|print|encodedcommand|ec)\b|\beval\b)"
+)
+
+# H-19 widens its interpreter list (above) but deliberately does NOT take
+# the inline-code requirement H-22 adds below. Narrowing an existing
+# security guard is not this sprint's scope, and the argument that makes
+# the requirement correct for H-22 does not transfer: handing a
+# gate-marker path to a script as argv is itself the suspicious act,
+# whereas handing a board filename to `taskwrite.py` is the sanctioned
+# call.
 GATE_MARKER_INTERP_RE = re.compile(
-    r"\b(python3?|node|perl|ruby|sh)\b[\s\S]*" + GATE_MARKER, re.I,
+    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + GATE_MARKER, re.I,
 )
 
 # H-22's shell flank: the protected-state registry (B1/#564) — Write/Edit are
@@ -504,6 +544,12 @@ _STATE_WRITE_VERBS = (
     r"rm|del|mv|cp|copy|dd|tee|sed|sponge|ln|install|patch|shred|truncate|ni"
     r"|New-Item|Remove-Item|Move-Item|Copy-Item|Clear-Content|Set-Content"
     r"|Out-File|Add-Content"
+    # workstream-B adversary MEDIUM-5: `unlink` is `rm`'s direct sibling and
+    # this list already carries `shred`/`truncate`; `ex`/`vim -es` are
+    # editors driven as batch WRITERS (`-c wq`), which is the same act as
+    # `sed -i` by another name; `rsync` overwrites a destination path the
+    # way `cp` does.
+    r"|unlink|ex|vim|rsync"
 )
 
 
@@ -533,21 +579,57 @@ def _state_write_res(basename):
     (`python -c "open('open-tasks.md','w')..."`) reuses `helper-only`'s own
     sanctioned Python file-I/O route while naming the target file lexically,
     a flank no verb-list spelling above can see. `[\s\S]*` (not `[^\n]*`,
-    per the #237 follow-up) so the interpreter token and the filename may
+    per the #237 follow-up) so the inline-code switch and the filename may
     sit on different physical lines of the SAME multi-line `-c`/`-e`
     payload — `[^\n]*` cannot cross that newline and would silently reopen
-    the identical hole in its multi-line spelling."""
+    the identical hole in its multi-line spelling.
+
+    An INLINE-CODE SWITCH is required between the interpreter and the
+    filename (`_INTERP_INLINE_CODE`), and this is the load-bearing half of
+    the pattern, not a refinement. Without it the leg matched any command
+    line carrying an interpreter token and the basename in any order --
+    which is the shape of the SANCTIONED CALL: `python3
+    "…/hooks/taskwrite.py" add -- "fix open-tasks.md schema"`. The
+    workstream-B adversary drove the real `pre-bash.py` and found every
+    such invocation BLOCKED, including `done` and `archive` on an ID-less
+    task whose own title names the file -- where the target IS the title,
+    so there is no rewording available and no sanctioned route left at
+    all. That inverted the enrolment's entire premise.
+
+    The discriminator is EXECUTES-A-STRING versus RUNS-A-FILE. `python3
+    script.py <basename>` passes the name as argv DATA to a file this
+    lexical guard could never see inside anyway; `python3 -c "…<basename>…"`
+    puts the write in the command line itself, where the guard can see it.
+    Declared residual, unchanged by this fix and unchanged in kind: a
+    script FILE that writes a registered path is not reachable lexically,
+    which is what ADR-0024's cooperative, friction-grade grading says."""
     name = re.escape(basename)
     redirect_re = re.compile(
         r">>?\|?\s*\S*" + name + _STATE_NAME_RIGHT_EDGE, re.I)
+    # `[^|;&\n]*`, NOT the `[^|;&]*` this was copied from: a shell verb and
+    # the file it targets sit on ONE line, so letting the window cross
+    # newlines buys no coverage and costs real false blocks. The window ran
+    # from a `sed -i` on line 12 of this branch's own commit 063b0b4 to a
+    # `done-tasks.md` on line 15 — meaning the commit that ENROLLED the
+    # board files carries a message the guard it installs would refuse
+    # (workstream-B adversary MEDIUM-3), with no escape: commit-gate
+    # permits `-m` or a heredoc, and `_check_h22_state` scans raw `cmd`
+    # without heredoc stripping (the declared LOW-5 residual), so both
+    # routes hit it. Also caught `pip install -r reqs.txt  # then read
+    # open-tasks.md`.
+    #
+    # The same-line residual (T-08b) is UNCHANGED and still pinned: a write
+    # verb and the basename on one line stay indistinguishable from a real
+    # redirect at this guard's lexical level.
     write_re = re.compile(
-        r"\b(" + _STATE_WRITE_VERBS + r")\b[^|;&]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+        r"\b(" + _STATE_WRITE_VERBS + r")\b[^|;&\n]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     git_restore_re = re.compile(
         GIT + r"\s+(?:checkout|restore)\b[^|;&]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     interp_re = re.compile(
-        r"\b(python3?|node|perl|ruby|sh)\b[\s\S]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+        r"\b(" + _INTERP_TOKENS + r")\b[^\n]*?" + _INTERP_INLINE_CODE
+        + r"[\s\S]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     return redirect_re, write_re, git_restore_re, interp_re
 
