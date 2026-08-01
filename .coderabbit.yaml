@@ -1,0 +1,110 @@
+# yaml-language-server: $schema=https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
+#
+# CodeRabbit configuration for codeArbiter.
+#
+# WHY THIS FILE EXISTS
+# This repo vendors one source of truth into three host plugins:
+#   * tools/sync-core.py    copies core/pysrc/*.py byte-identically into each
+#                           plugin's hooks/ directory (all but _host.py).
+#   * tools/build-surface.py renders core/surface/ into each plugin's commands,
+#                           skills, routines, agents and includes, per the
+#                           rules in core/hosts.json.
+# CI fails if any copy drifts, so a defect in core/ is mechanically present in
+# every copy. Unconfigured, CodeRabbit reviews each copy independently and
+# reports the same defect up to four times. Measured on PR #576: 102 inline
+# comments, 49 of them (48%) on plugins/ trees, with SKILL.md flagged 40 times
+# and _releaselib.py 15 times. That volume is what forced the deferrals in
+# issues #577 and #578.
+
+# Load-bearing. Repo YAML (priority 2) outranks the central
+# arbiterForge/coderabbit YAML (priority 3), and without this flag it REPLACES
+# the central config outright instead of merging with it, discarding every
+# default that file carries the moment this file exists. With it set, objects
+# deep-merge, arrays take the child's items first followed by unique parent
+# items, and scalars take the child's value.
+#
+# Organization global overrides are unaffected either way: they apply as the
+# final layer after the inheritance chain resolves, whatever this flag says.
+inheritance: true
+
+reviews:
+  # Negation patterns only, deliberately. It is undocumented whether a positive
+  # pattern flips this list into allowlist mode and silences every path it does
+  # not name; the downside of guessing wrong is losing review coverage
+  # entirely, so nothing here is a positive pattern.
+  path_filters:
+    # --- rendered from core/surface/ by tools/build-surface.py ---
+    - "!plugins/ca/commands/**"
+    - "!plugins/ca/skills/**"
+    - "!plugins/ca/agents/**"
+    - "!plugins/ca/includes/**"
+    - "!plugins/ca-codex/skills/**"
+    - "!plugins/ca-codex/routines/**"
+    - "!plugins/ca-codex/includes/**"
+    - "!plugins/ca-pi/skills/**"
+    - "!plugins/ca-pi/routines/**"
+    - "!plugins/ca-pi/agents/**"
+    - "!plugins/ca-pi/includes/**"
+
+    # Root-level surface renders. Enumerated per plugin rather than globbed,
+    # so an authored file of the same name in a non-generated plugin (such as
+    # plugins/ca-sandbox/) is never caught by accident.
+    - "!plugins/ca/COMMANDS.md"
+    - "!plugins/ca/SPRINT.md"
+    - "!plugins/ca/ORCHESTRATOR.md"
+    - "!plugins/ca-codex/COMMANDS.md"
+    - "!plugins/ca-codex/SPRINT.md"
+    - "!plugins/ca-codex/ORCHESTRATOR.md"
+    - "!plugins/ca-pi/COMMANDS.md"
+    - "!plugins/ca-pi/SPRINT.md"
+    - "!plugins/ca-pi/ORCHESTRATOR.md"
+
+    # --- copied from core/pysrc/ by tools/sync-core.py ---
+    # A single `*` matches any filename and does not cross a path separator,
+    # while `**` matches any directory depth (CodeRabbit glossary). These
+    # patterns therefore exclude the 58 generated hook files while leaving the
+    # 55 authored test files under plugins/ca/hooks/tests/ fully reviewed.
+    #
+    # Known cost: this also drops review of the three authored _host.py files,
+    # since re-including them would require a positive pattern. Three small
+    # files traded against 55 test files, accepted deliberately.
+    - "!plugins/ca/hooks/*.py"
+    - "!plugins/ca-codex/hooks/*.py"
+    - "!plugins/ca-pi/hooks/*.py"
+
+  # Nothing is filtered here that has not been proven derived. plugins/ca-sandbox/**
+  # is absent from core/hosts.json, and plugins/ca-pi/generated/ is named as
+  # though it were built but has no verified generator, so both stay reviewed.
+  path_instructions:
+    - path: "core/**"
+      instructions: >-
+        This is the single source of truth for all three host plugins.
+        tools/sync-core.py copies core/pysrc/*.py byte-identically into each
+        plugin's hooks/ directory, and tools/build-surface.py renders
+        core/surface/ into each plugin's commands, skills, routines, agents and
+        includes, following core/hosts.json. CI fails the build if any copy
+        drifts from its source. Never suggest editing a file under plugins/ to
+        fix a defect — the fix belongs in core/ and the copies are regenerated
+        from it. Report each defect once, against the core/ file, and do not
+        note that the same issue appears in a vendored copy.
+
+    - path: ".codearbiter/**"
+      instructions: >-
+        Project governance state, not application code: architecture decision
+        records, specs, plans, reports and audit logs. Review these for
+        internal consistency — claims that contradict the code they describe,
+        status headers left stale after a gate cleared, ledgers that disagree
+        with the artifact they summarise, cross-references to issues or commits
+        that do not exist. Do not apply code-style or formatting rules.
+        gate-events.log, overrides.log, triage.log and decisions/decision-log.md
+        are append-only by project rule: never suggest rewriting, reordering,
+        pruning or truncating lines that are already present.
+
+    - path: "**/*.md"
+      instructions: >-
+        Prose in this repo is part of the product — skills and commands are
+        read and executed by agents, so an ambiguous instruction is a defect,
+        not a style nit. Prioritise findings where prose and the mechanism it
+        describes disagree, where a documented command or flag no longer
+        exists, or where an instruction cannot be followed literally without a
+        contradiction. Deprioritise wording, tone and formatting preferences.
