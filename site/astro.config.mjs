@@ -6,9 +6,19 @@ import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
 import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
 
-// Served from https://arbiterforge.github.io/codeArbiter/ — shared by the
-// `base` option below and the rehype plugin that base-prefixes markdown links.
-const BASE = "/codeArbiter";
+// Served from https://codearbiter.dev/ — shared by the `base` option below and
+// the rehype plugin that base-prefixes markdown links.
+//
+// MUST be "" for an apex domain, never "/". rehypeBaseLinks prefixes any
+// root-absolute href/src with this value, and "/" would turn "/diagrams/x.svg"
+// into "//diagrams/x.svg" — a protocol-relative URL pointing at another host,
+// which fails silently. Empty string makes the plugin a correct no-op, because
+// "/diagrams/x.svg" already starts with `${BASE}/`. Astro's own `base` still
+// needs a real path, so it takes `BASE || "/"` below.
+// Exported so the tests that assert base-dependent output derive it from here
+// instead of re-declaring the literal. Three of them previously kept their own
+// copy, which is what turned a one-line base change into a four-test failure.
+export const BASE = "";
 
 // Build the reference sidebar groups from the generator's output. `predev` and
 // `prebuild` run `npm run gen` first, so sidebar.json exists before this loads.
@@ -34,8 +44,8 @@ try {
 }
 
 export default defineConfig({
-  // GitHub Pages project site: served from https://arbiterforge.github.io/codeArbiter/.
-  // `base` also applies in local dev — the dev server serves at /codeArbiter/.
+  // GitHub Pages site on the apex custom domain: served from https://codearbiter.dev/.
+  // `base` also applies in local dev — the dev server serves at the root.
   //
   // BASE-PATH-SAFE LINK PATTERN for downstream authors:
   //   - Starlight does NOT rewrite root-absolute markdown links through the
@@ -44,18 +54,27 @@ export default defineConfig({
   //   - Instead, the `markdown.processor` below runs our local
   //     `rehypeBaseLinks(BASE)` plugin (scripts/rehype-base-links.ts) over
   //     every rendered page. It walks the HAST tree and prefixes any
-  //     root-absolute href/src ("/overview") with BASE ("/codeArbiter/overview"),
-  //     idempotently, so plain root-relative markdown links stay base-safe.
+  //     root-absolute href/src ("/overview") with BASE, idempotently, so plain
+  //     root-relative markdown links stay base-safe. On the apex domain BASE is
+  //     "" and the prefixing is a no-op, but the plugin stays wired so the site
+  //     survives a future move back to a subpath.
   //   - The plugin is passed to `unified({ ... })` from `@astrojs/markdown-remark`,
   //     NOT to the top-level `markdown.rehypePlugins` key. Astro 7.1 deprecated
   //     `markdown.remarkPlugins` / `rehypePlugins` / `remarkRehype` ("will be
   //     removed in a future major") — see the note on `markdown:` below.
   //   - In Astro component href props (not markdown), still use
   //     import.meta.env.BASE_URL: href={`${import.meta.env.BASE_URL}overview/`}
-  //   - Never hardcode "/codeArbiter/" in href strings. That value desyncs
-  //     when the Astro base is changed and is invisible to linting.
-  site: "https://arbiterforge.github.io",
-  base: BASE,
+  //   - Diagram <img> tags in .md/.mdx are the documented exception: raw HTML in
+  //     markdown is not walked by rehypeBaseLinks, so those srcs carry the base
+  //     literally. test/generator/diagram-href-convention.test.ts is the guard,
+  //     and it derives the expected prefix from BASE below rather than repeating
+  //     it — when the base moved to "" for the apex domain, 19 such attributes
+  //     across 16 pages had to change with it, and a hardcoded guard would have
+  //     had to be edited by hand in lockstep.
+  site: "https://codearbiter.dev",
+  // `BASE || "/"`: Astro needs a real path, while rehypeBaseLinks needs the
+  // empty string (see the constant above for why "/" would corrupt links).
+  base: BASE || "/",
   // Old `-2` skill URLs from before per-collection slug dedup (see generate.ts):
   // these six skills shared a name with a same-named command, so the combined
   // dedup pass pushed the skill page to a `-2` slug. Redirect the old URLs to

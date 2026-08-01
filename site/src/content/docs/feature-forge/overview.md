@@ -21,7 +21,7 @@ promoted to **stable** and becomes on by default. The version says the whole pay
 the forge says which individual features have earned trust.
 
 <figure class="ca-art-banner ca-art-banner--forge">
-  <img src="/codeArbiter/art/feature-forge.webp" alt="" loading="lazy" />
+  <img src="/art/feature-forge.webp" alt="" loading="lazy" />
   <figcaption>Preview is not unfinished. It is shipped work still earning the right to become the default.</figcaption>
 </figure>
 
@@ -29,7 +29,7 @@ That is the two-axis model. Read them together and a release is legible: SemVer 
 whole payload, the Feature Forge governs each feature's maturity.
 
 <figure class="ca-diagram">
-  <img src="/codeArbiter/diagrams/two-axis-model.svg" alt="Two-axis labeling model. SemVer governs the whole plugin payload; the Feature Forge governs each feature as preview (opt-in, dormant) or stable (on by default, evidence-promoted)." loading="lazy" />
+  <img src="/diagrams/two-axis-model.svg" alt="Two-axis labeling model. SemVer governs the whole plugin payload; the Feature Forge governs each feature as preview (opt-in, dormant) or stable (on by default, evidence-promoted)." loading="lazy" />
   <figcaption>Two axes: SemVer for the whole payload, the Feature Forge for per-feature maturity.</figcaption>
 </figure>
 

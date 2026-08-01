@@ -20,7 +20,7 @@ Route every new dependency through `/ca:add-dep` before touching the package man
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/lane-add-dep.svg"
+    src="/diagrams/lane-add-dep.svg"
     alt="The /ca:add-dep lane in two rows: Commands (/ca:add-dep) and Agents (dependency-reviewer), with a connector from the command to the agent. The skills row is omitted because this lane uses no skills."
     loading="lazy"
     width="920"

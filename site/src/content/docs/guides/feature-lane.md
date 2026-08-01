@@ -29,7 +29,7 @@ and the author and reviewer agents it dispatches on demand.
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/lane-feature.svg"
+    src="/diagrams/lane-feature.svg"
     alt="The /ca:feature lane in three rows: Commands (/ca:feature, /ca:commit, /ca:pr), Skills (brainstorming, writing-plans, tdd, commit-gate), and Agents (author agents, reviewer agents), with a connector weaving through them in execution order."
     loading="lazy"
     width="920"

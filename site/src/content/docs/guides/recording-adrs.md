@@ -18,7 +18,7 @@ linked to the paths it governs.
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/lane-adr.svg"
+    src="/diagrams/lane-adr.svg"
     alt="The architecture decision lane from a decision prompt through numbered ADR authoring, user attribution, validation, and the decision log."
     loading="lazy"
   />

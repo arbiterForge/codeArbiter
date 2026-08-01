@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { BASE } from "../../astro.config.mjs";
 
 const siteRoot = process.cwd();
 const docsRoot = join(siteRoot, "src", "content", "docs");
@@ -96,8 +97,8 @@ describe("documentation presentation regressions", () => {
     const artwork = join(siteRoot, "public", "art", "feature-forge.webp");
 
     expect(forge).toContain('class="ca-art-banner');
-    expect(forge).toContain('/codeArbiter/art/feature-forge.webp');
-    expect(forge).toContain('/codeArbiter/diagrams/two-axis-model.svg');
+    expect(forge).toContain(`${BASE}/art/feature-forge.webp`);
+    expect(forge).toContain(`${BASE}/diagrams/two-axis-model.svg`);
     expect(existsSync(artwork)).toBe(true);
     expect(themeStyles).toContain(".ca-art-banner");
   });

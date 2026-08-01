@@ -5,9 +5,10 @@
  *
  *   - In .md / .mdx pages (which cannot import an Astro component or read
  *     import.meta.env): the root-absolute, base-safe literal
- *       src="/codeArbiter/diagrams/<name>.svg"
- *     The base /codeArbiter is already owned by astro.config.mjs, so this adds
- *     no coupling the config doesn't already carry.
+ *       src="<BASE>/diagrams/<name>.svg"
+ *     The base is owned by astro.config.mjs and imported here, so this adds no
+ *     coupling the config doesn't already carry. On the apex domain BASE is ""
+ *     and the sanctioned form is simply "/diagrams/<name>.svg".
  *
  *   - In .astro components: import.meta.env.BASE_URL, the base-safe form for
  *     that context, e.g. src={`${baseUrl}/diagrams/<name>.svg`} — the config's
@@ -17,6 +18,7 @@
  * "../diagrams/x.svg", a different hardcoded base) fails the guard.
  */
 import { describe, it, expect } from "vitest";
+import { BASE } from "../../astro.config.mjs";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -45,8 +47,10 @@ function isSanctioned(value: string, ext: string): boolean {
     // import.meta.env.BASE_URL form: `${baseUrl}/diagrams/<name>.svg`
     return /^\$\{baseUrl\}\/diagrams\/[\w.-]+\.svg$/.test(value);
   }
-  // .md / .mdx: the root-absolute base-safe literal.
-  return /^\/codeArbiter\/diagrams\/[\w.-]+\.svg$/.test(value);
+  // .md / .mdx: the root-absolute base-safe literal, with the base derived from
+  // astro.config.mjs rather than repeated here. Repeating it is what let this
+  // guard and the config disagree when the base moved to the apex domain.
+  return new RegExp(`^${BASE}/diagrams/[\\w.-]+\\.svg$`).test(value);
 }
 
 describe("diagram <img src> convention (Task 21)", () => {

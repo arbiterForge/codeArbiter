@@ -46,7 +46,7 @@ your behalf.
    branch only through a pull request. Never a direct write.
 
 <figure class="ca-diagram">
-  <img src="/codeArbiter/diagrams/lane-flow.svg" alt="Lane flow: a command invocation routes to the owning skill, clears its gate, then ships to version control." loading="lazy" />
+  <img src="/diagrams/lane-flow.svg" alt="Lane flow: a command invocation routes to the owning skill, clears its gate, then ships to version control." loading="lazy" />
   <figcaption>One lane, five steps: command, route, gate, ship to a PR.</figcaption>
 </figure>
 

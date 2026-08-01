@@ -17,7 +17,7 @@ already landed on a clean release branch and its verification is green.
 
 <figure class="ca-diagram">
   <img
-    src="/codeArbiter/diagrams/lane-release.svg"
+    src="/diagrams/lane-release.svg"
     alt="The release lane from selecting one plugin target through derived semantic version, changelog and manifest updates, verification, annotated tag, and explicitly authorized publication."
     loading="lazy"
   />
