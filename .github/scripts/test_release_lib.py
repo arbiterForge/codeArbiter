@@ -1178,10 +1178,18 @@ class ReleaselibShimTest(unittest.TestCase):
         # `assertIs` is a genuine identity proof of the shim/consumer wiring
         # — no git, no network, no repo release-state dependency at all.
         import payload_version_gate  # noqa: E402 — needs sys.path mutation above
-        self.assertIs(payload_version_gate.RELEASE_TAG_PREFIXES,
-                      _releaselib.RELEASE_TAG_PREFIXES)
+        # Repointed for A-4.1/T-43: the gate stopped importing
+        # RELEASE_TAG_PREFIXES and now derives every namespace from the
+        # declared file. The test's PURPOSE is unchanged — it proves the
+        # gate's names bind to the shim's own objects — so it follows the
+        # import list rather than being deleted. Retiring it outright
+        # belongs to T-46, which removes the data constants themselves.
+        self.assertIs(payload_version_gate.load_targets, _releaselib.load_targets)
         self.assertIs(payload_version_gate.semver_greater, _releaselib.semver_greater)
         self.assertIs(payload_version_gate.semver_key, _releaselib.semver_key)
+        # And the constant is genuinely no longer reachable through the gate,
+        # so a silent re-import cannot pass this test by accident.
+        self.assertFalse(hasattr(payload_version_gate, "RELEASE_TAG_PREFIXES"))
 
     def test_bare_invocation_exits_2(self):
         # Argparse's own required-argument failure, not a crash -- the args

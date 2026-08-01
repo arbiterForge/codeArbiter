@@ -191,7 +191,7 @@ repo's rows load, and the release lane is proven behavior-identical. Shippable o
 | id | path(s) | verification | maps-to | covers | depends | status |
 |---|---|---|---|---|---|---|
 | T-34 | `.github/scripts/check_command_catalog.py` | script exits 0 on a reconciled tree, 1 on drift, mutates nothing | catalog check | A-2.8 | T-33 | ACCEPTED |
-| T-35 | `.codearbiter/release-targets.md` | all declared `pre-tag` commands exit 0 on a clean tree | rows run green | A-2.9 | T-34 | PENDING |
+| T-35 | `.codearbiter/release-targets.md` | all declared `pre-tag` commands exit 0 on a clean tree | rows run green | A-2.9 | T-34 | ACCEPTED |
 | T-36 | `core/pysrc/releasehash.py`, `tools/sync-core.py` generated set | `python tools/sync-core.py --check` passes with it enrolled; `SUITE -k test_pre_tag_hash` — changed hash forces re-confirmation | hash re-confirm | A-2.10 | T-35 | PENDING |
 | T-37 | `core/pysrc/_releaselib.py` | `-k manifest_declared` — equality asserted, mismatch BLOCKs | manifest assert | A-3.1 | T-36 | PENDING |
 | T-38 | `core/pysrc/_releaselib.py` | `-k manifest_absent` — tag is version source, no assertion | optional manifest | A-3.2 | T-37 | PENDING |
@@ -223,7 +223,7 @@ generate from it).
 > portability proof (A-6.6/6.7) — and all three shared a shape: a criterion set that was
 > internally consistent and silent about a step nobody had named.
 | T-42 | `core/surface/skills/release/SKILL.md` | `-k interpreter_fallback` — uses the shipped `python3 "<p>" … \|\| python "<p>" …` pattern (`taskwrite.py:11`) | interpreter fallback | A-3.6 | T-41e | ACCEPTED |
-| T-43 | `.github/scripts/payload_version_gate.py` | `python .github/scripts/test_payload_version_gate.py -k no_prefix_literal` | CI reads declared source | A-4.1 | T-42 | PENDING |
+| T-43 | `.github/scripts/payload_version_gate.py` | `python .github/scripts/test_payload_version_gate.py -k no_prefix_literal` | CI reads declared source | A-4.1 | T-42 | ACCEPTED |
 | T-44a | `.github/scripts/_releaselib.py` | `python .github/scripts/test_release_lib.py -k select_target_name_keyed` — `name=value` argv pairs; unknown name fails closed | shim CLI shape | A-4.2 | T-43 | PENDING |
 | T-44b | `.github/workflows/release.yml` | `python .github/scripts/test_release_workflow.py -k name_keyed` — inputs plumbed by name, order-independent | workflow plumbing | A-4.2 | T-44a | PENDING |
 | T-45 | `.github/scripts/test_release_workflow.py` | `-k name_agreement` fails when declared set and workflow inputs disagree | contract test | A-4.3 | T-44b | PENDING |

@@ -20,7 +20,6 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import payload_version_gate as gate  # noqa: E402
-from _releaselib import RELEASE_TAG_PREFIXES  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -244,9 +243,92 @@ class TestTheGatedSetMatchesTheRepository(unittest.TestCase):
                 self.assertTrue((REPO_ROOT / manifest).is_file(), f"{manifest} is missing")
 
     def test_every_gated_plugin_has_a_release_tag_namespace(self):
+        # Now asserted against the DERIVED map, not the retired constant.
+        namespaces = gate.tag_prefixes()
         for plugin in gate.GATED_MANIFESTS:
             with self.subTest(plugin=plugin):
-                self.assertIn(Path(plugin).name, RELEASE_TAG_PREFIXES)
+                self.assertIn(Path(plugin).name, namespaces)
+
+    def test_no_prefix_literal_remains_in_the_gate(self):
+        """A-4.1: the gate derives every tag namespace from the declared
+        file, so no namespace string may be written into its source.
+
+        A literal here is not a style nit. It is a SECOND source of truth
+        for the same fact: a target declared in
+        `.codearbiter/release-targets.md` under one prefix, and gated here
+        under another, would be checked in one namespace and released in
+        the other with nothing comparing them.
+
+        Scanned as source text rather than by importing, because a literal
+        can hide in a default argument or a fallback branch that no test
+        input reaches."""
+        source = (REPO_ROOT / ".github" / "scripts"
+                  / "payload_version_gate.py").read_text(encoding="utf-8")
+        code = os.linesep.join(
+            line for line in source.splitlines()
+            if not line.lstrip().startswith("#"))
+        for prefix in gate.tag_prefixes().values():
+            if prefix == "v":
+                # A bare "v" appears in ordinary prose and identifiers; the
+                # namespaced siblings are the discriminating case.
+                continue
+            with self.subTest(prefix=prefix):
+                self.assertNotIn(
+                    f'"{prefix}"', code,
+                    f"tag prefix {prefix!r} is written literally in the gate's "
+                    "source; it must come from the declared file")
+                self.assertNotIn(f"'{prefix}'", code)
+        # Scoped to IMPORT and USE, not to any mention. The gate's own
+        # docstring names the retired constant to explain what replaced it
+        # and why, which is documentation worth keeping -- an assertion
+        # that banned the string outright would force deleting the
+        # rationale to satisfy the test.
+        self.assertNotIn(
+            "import RELEASE_TAG_PREFIXES", code,
+            "the gate must not import the retired constant")
+        self.assertNotIn(
+            "RELEASE_TAG_PREFIXES[", code,
+            "the gate must not read the retired constant")
+        self.assertNotIn(
+            "RELEASE_TAG_PREFIXES,", code,
+            "the gate must not import the retired constant in a list")
+
+    def test_the_derived_map_agrees_with_the_declared_file(self):
+        # The derivation itself, against an independent read of the same
+        # file -- so a bug that returns an empty or partial map is caught
+        # rather than passing vacuously through the membership test above.
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_core_rl_for_gate_test", REPO_ROOT / "core" / "pysrc" / "_releaselib.py")
+        core = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(core)
+        rows = core.load_targets(
+            str(REPO_ROOT / ".codearbiter" / "release-targets.md"))
+        expected = {
+            (r["payload"] or "").strip("/").rsplit("/", 1)[-1]: r["prefix"]
+            for r in rows
+            if (r["payload"] or "").strip("/") not in ("", ".")
+        }
+        self.assertEqual(gate.tag_prefixes(), expected)
+        self.assertGreaterEqual(len(expected), len(gate.GATED_MANIFESTS))
+
+    def test_an_undeclared_gated_payload_fails_with_a_named_reason(self):
+        # Previously a KeyError against the hardcoded map. A gate that
+        # tracebacks tells an operator nothing about what to do.
+        with tempfile.TemporaryDirectory() as tmp:
+            empty = Path(tmp) / "release-targets.md"
+            empty.write_text("\n".join([
+                "<!-- release-targets -->",
+                "[other]",
+                "prefix: other-v",
+                "changelog: CHANGELOG.md",
+                "payload: plugins/other/",
+                "<!-- /release-targets -->",
+                "",
+            ]), encoding="utf-8")
+            namespaces = gate.tag_prefixes(empty)
+        self.assertNotIn("ca", namespaces)
+        self.assertEqual(namespaces, {"other": "other-v"})
 
     def test_ca_pi_is_gated_elsewhere_and_not_here(self):
         """Double-gating ca-pi would apply two rules to one plugin."""
