@@ -1453,11 +1453,23 @@ def _prepare_argv(argv, cwd):
     already-tokenized argv list, returning the adjusted list (never mutates
     the input): a leading bare `python3` becomes `sys.executable`, since
     `python3` is not guaranteed present, especially on Windows (the same
-    substitution T-42 tracks for the skill itself); a leading `git` gets the
+    substitution T-42 tracks for the skill itself).
+
+    `$PY` and `"$PY"` are the SAME case, spelled the way the skill now
+    spells it: the skill opens by resolving `PY=python3` and falling back
+    to `python` when `command -v python3` finds nothing, then invokes the
+    interpreter through `$PY` everywhere after. This extractor replays
+    single invocations, never the whole script, so the resolution line
+    never runs and the variable is never set -- leaving the literal token
+    `$PY` as argv[0] and a `FileNotFoundError: '$PY'`. Resolving it to the
+    same interpreter the skill's own fallback would pick is what makes the
+    extracted invocation runnable at all.
+
+    A leading `git` gets the
     SAME hermetic isolation `_git` gives every other git call in this module
     (a lane-driver-composed `git tag -a` is exactly as reachable by an
     ambient core.hooksPath/gpgsign poison as any other git invocation here)."""
-    if argv and argv[0] == "python3":
+    if argv and argv[0] in ("python3", "python", "$PY"):
         argv = [sys.executable] + argv[1:]
     if argv and argv[0] == "git":
         no_hooks = os.path.join(cwd, ".ca-fixture-no-hooks-dir")

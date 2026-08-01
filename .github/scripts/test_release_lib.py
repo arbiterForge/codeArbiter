@@ -53,6 +53,8 @@ import json
 import os
 import subprocess
 import re
+import shlex
+import shutil
 import sys
 import tempfile
 import unittest
@@ -73,6 +75,38 @@ core_releaselib = importlib.util.module_from_spec(_core_spec)
 # module reads back as a "built-in class" with no source file at all.
 sys.modules[_core_spec.name] = core_releaselib
 _core_spec.loader.exec_module(core_releaselib)
+
+_BASH_PROBE = []
+
+
+def working_bash():
+    """Path to a `bash` that actually runs a script fed on stdin, or None.
+
+    `shutil.which("bash")` alone is not enough on Windows: the GitHub
+    `windows-latest` image resolves `bash` to a stub that exits 1 with BOTH
+    streams empty, which is indistinguishable from "the script under test
+    failed silently". Probing with a script whose only job is to print a
+    known token separates "no usable shell here" from "the shell ran and
+    disagreed", so a shell-round-trip test can skip the former and still
+    fail hard on the latter. Result is cached — the probe spawns a process,
+    and the answer cannot change within one run."""
+    if not _BASH_PROBE:
+        _BASH_PROBE.append(_probe_bash())
+    return _BASH_PROBE[0]
+
+
+def _probe_bash():
+    exe = shutil.which("bash")
+    if not exe:
+        return None
+    try:
+        probe = subprocess.run([exe, "-s"], input=b"printf ca-probe-ok\n",
+                               capture_output=True, timeout=60)
+    except OSError:
+        return None
+    if probe.returncode != 0 or probe.stdout.strip() != b"ca-probe-ok":
+        return None
+    return exe
 
 
 class LastTagSelectTest(unittest.TestCase):
@@ -2860,8 +2894,34 @@ class CoreCLITest(unittest.TestCase):
         self.assertIn("&&", rebuild, "fixture must carry a shell metachar")
         self.assertTrue(rebuild.startswith("REBUILD='"),
                         f"value must be shell-quoted, got: {rebuild}")
-        # The decisive check: hand the whole block to a real shell and prove
-        # it assigns without executing.
+        # The decisive check, and it runs on EVERY platform: POSIX-tokenize
+        # each emitted line and require it to be exactly ONE word. A single
+        # word is an assignment and nothing else -- there is no room after
+        # it for the `&&`, `;` or bare command that the run-15 finding had
+        # `eval` execute. Doing this with `shlex` rather than a real shell
+        # keeps the security property asserted where no usable `bash`
+        # exists (see `working_bash`), instead of silently skipping it on
+        # the platform whose quoting is most likely to differ.
+        for line in out.stdout.splitlines():
+            if not line.strip():
+                continue
+            words = shlex.split(line)
+            self.assertEqual(
+                len(words), 1,
+                f"row line tokenizes to {len(words)} words, so something "
+                f"after the assignment would run: {line!r}")
+            name, sep, _ = words[0].partition("=")
+            self.assertEqual(sep, "=", f"not an assignment: {line!r}")
+            self.assertRegex(name, r"\A[A-Z_][A-Z0-9_]*\Z",
+                             f"assignment target is not a plain shell "
+                             f"variable name: {line!r}")
+        # Corroborating arm: hand the whole block to a real shell and prove
+        # it assigns without executing. Skipped where no working shell
+        # exists, which is why the tokenizer check above is not optional.
+        bash = working_bash()
+        if bash is None:
+            self.skipTest("no working bash on this platform for the "
+                          "shell round-trip arm")
         script = (out.stdout + "\n"
                   + 'printf "%s|%s|%s" "$TAG_PREFIX" "$REBUILD" "$PRE_TAG"\n')
         # Fed on STDIN, not `bash -c <script>`: on Windows the multi-line
@@ -2871,7 +2931,7 @@ class CoreCLITest(unittest.TestCase):
         # BYTES, not text=True: universal-newline translation rewrites every
         # \n as \r\n on Windows, and bash then reports `$'\r': command not
         # found` for a script this test authored correctly.
-        proc = subprocess.run(["bash", "-s"], input=script.encode("utf-8"),
+        proc = subprocess.run([bash, "-s"], input=script.encode("utf-8"),
                               capture_output=True, cwd=REPO_ROOT)
         stderr = proc.stderr.decode("utf-8", "replace")
         stdout = proc.stdout.decode("utf-8", "replace")

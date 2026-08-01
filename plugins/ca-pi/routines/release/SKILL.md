@@ -110,7 +110,7 @@ Read these, or STOP and surface the gap — never guess:
 - `$TARGET` must resolve to a declared row (see "Targets" above). An unrecognised target STOPs; do not guess which project was meant.
 - `git status` must be clean. A dirty tree STOPs — commit or stash via `commit-gate` first.
 
-  **Append-only audit sinks are exempt, and only those** (HIGH, blind exercise run 15). This governance layer's own hooks append to `.codearbiter/gate-events.log` on essentially every command, including the commands this lane runs — so a repo-wide clean-tree check can never pass during an active session, and a compliant traversal STOPs on a file the act of checking just wrote. Exclude the append-only logs from this check and nothing else:
+  **Append-only audit sinks are exempt, and only those** (HIGH, blind exercise run 15). This governance layer's own hooks append to `<project-root>/.codearbiter/gate-events.log` on essentially every command, including the commands this lane runs — so a repo-wide clean-tree check can never pass during an active session, and a compliant traversal STOPs on a file the act of checking just wrote. Exclude the append-only logs from this check and nothing else:
 
   ```sh
   git status --porcelain -- . ':(exclude).codearbiter/gate-events.log'
