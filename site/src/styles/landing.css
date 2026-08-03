@@ -492,6 +492,7 @@ ca-splash-docs {
 
 .ca-feature {
   position: relative;
+  margin-block-start: 0;
   padding: var(--ca-space-6);
 }
 

@@ -241,18 +241,19 @@ class TestActivePaletteCompatibility(unittest.TestCase):
             with open(cases["oversized"], "wb") as handle:
                 handle.write(b" " * (_colorlib.MAX_THEME_BYTES + 1))
 
-            with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "violet"}):
-                violet = sl.render(payload)
+            with mock.patch.object(sl, "git_dirty", return_value=True):
+                with mock.patch.dict(os.environ, {"CODEARBITER_THEME": "violet"}):
+                    violet = sl.render(payload)
 
-            for label, path in cases.items():
-                with self.subTest(case=label), mock.patch.dict(
-                        os.environ, {"CODEARBITER_THEME": "custom",
-                                     "CODEARBITER_THEME_FILE": path}):
-                    rendered = sl.render(payload)
-                    self.assertEqual(rendered, violet)
-                    self.assertEqual(sl._colorlib.ACTIVE_THEME_NAME, "violet")
-                    self.assertIn(sl.fg(90, 60, 150), rendered)
-                    self.assertIn(sl.fg(170, 110, 240), rendered)
+                for label, path in cases.items():
+                    with self.subTest(case=label), mock.patch.dict(
+                            os.environ, {"CODEARBITER_THEME": "custom",
+                                         "CODEARBITER_THEME_FILE": path}):
+                        rendered = sl.render(payload)
+                        self.assertEqual(rendered, violet)
+                        self.assertEqual(sl._colorlib.ACTIVE_THEME_NAME, "violet")
+                        self.assertIn(sl.fg(90, 60, 150), rendered)
+                        self.assertIn(sl.fg(170, 110, 240), rendered)
 
     def test_valid_partial_custom_keeps_custom_as_effective_theme(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -322,6 +323,7 @@ def counted_read(path):
     reads += 1
     return real_read(path)
 sl._colorlib._read_custom = counted_read
+sl.git_dirty = lambda _root: True
 out = sl.render(payload)
 again = sl.render(payload)
 if reads != 2:

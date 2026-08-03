@@ -27,14 +27,14 @@ T-27a..d; spec A-1.11):
                       two-manifest ca-pi shape, the three behaviors most
                       likely to drift in a migration.
 
-Pre-change SHA (T-27b): `6a903e6` — the parent of `0664506` (the commit that
-performed the mechanism split), i.e. the last commit at which
-`.github/scripts/_releaselib.py` was still the ORIGINAL self-contained
-module. Chosen over "origin/main's copy" because origin/main moves and a
-SHA does not; pinning to the immediate pre-split commit is the tightest,
-least-ambiguous "the module as it stood the moment before this migration
-began" reference the spec's `git show <pre-change-sha>:...` instruction
-asks for.
+Pre-change SHA (T-27b): `469c2fb8` — the parent of `8ee5fe11` (the squash
+merge that performed the mechanism split), i.e. the last reachable main
+commit at which `.github/scripts/_releaselib.py` was still the ORIGINAL
+self-contained module. Its module blob is byte-identical to the abandoned
+feature-branch parent originally used here. Chosen over "origin/main's copy"
+because origin/main moves and a SHA does not; pinning to the reachable
+pre-merge commit is the tightest fresh-clone-safe reference the spec's
+`git show <pre-change-sha>:...` instruction asks for.
 
 Honest limit (stated once here, per the spec's own wording, rather than
 repeated at every call site): `.github/scripts/_releaselib.py` at the
@@ -151,9 +151,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(os.path.dirname(HERE))
 FIXTURE_DIR = os.path.join(HERE, "fixtures", "release-trace")
 
-# T-27b: the parent of 0664506 (the mechanism-split commit) — see module
-# docstring for why this SHA rather than "origin/main's copy" was chosen.
-PRE_CHANGE_SHA = "6a903e6"
+# T-27b: the parent of 8ee5fe11 (the mechanism-split squash merge) — see
+# the module docstring for why this reachable SHA was chosen.
+PRE_CHANGE_SHA = "469c2fb8"
 
 CORE_RELEASELIB_PATH = os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py")
 SHIM_RELEASELIB_PATH = os.path.join(REPO_ROOT, ".github", "scripts", "_releaselib.py")
@@ -182,7 +182,7 @@ def setUpModule():
     if not has_commit or not has_tags:
         missing = []
         if not has_commit:
-            missing.append(f"commit {PRE_CHANGE_SHA} is unreachable (shallow history)")
+            missing.append(f"commit {PRE_CHANGE_SHA} is unreachable from this checkout")
         if not has_tags:
             missing.append("no tags are present")
         raise RuntimeError(
@@ -428,6 +428,15 @@ class OldLaneLoadsTest(unittest.TestCase):
             {"ca": "v", "ca-codex": "ca-codex-v",
              "ca-sandbox": "ca-sandbox-v", "ca-pi": "ca-pi-v"})
         self.assertTrue(callable(self.old_lane.last_tag_select))
+
+    def test_pinned_pre_change_commit_is_reachable_from_head(self):
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", PRE_CHANGE_SHA, "HEAD"],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=30)
+        self.assertEqual(
+            result.returncode, 0,
+            f"{PRE_CHANGE_SHA} is not reachable from HEAD; a fresh full-history "
+            "checkout cannot load the pinned pre-change module")
 
     def test_old_lane_loads_a_genuinely_historical_snapshot(self):
         # Proves this is really pinned to git history and not accidentally

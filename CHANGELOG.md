@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.1] — 2026-08-03
+
+### Fixed
+
+- Restored fresh-clone release-trace verification by pinning its historical
+  reference to the reachable pre-migration commit with the same release-library
+  bytes.
+- Stabilized repeated statusline-render tests by isolating their unrelated
+  repository-dirty probes.
+- Kept the landing page's guarantee cards aligned by resetting inherited
+  sibling-flow spacing at the card boundary.
+
 ## [2.11.0] — 2026-07-31
 
 ### Added
