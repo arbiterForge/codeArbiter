@@ -323,6 +323,7 @@ def counted_read(path):
     reads += 1
     return real_read(path)
 sl._colorlib._read_custom = counted_read
+sl.git_dirty = lambda _root: True
 out = sl.render(payload)
 again = sl.render(payload)
 if reads != 2:

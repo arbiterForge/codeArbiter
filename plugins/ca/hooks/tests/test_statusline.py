@@ -825,8 +825,9 @@ class TestRenderParity(unittest.TestCase):
                                "context_window_size": 200000},
             "cost": {"total_cost_usd": 1.23},
         })
-        a = sl.render(payload)
-        b = sl.render(payload)
+        with mock.patch.object(sl, "git_dirty", return_value=True):
+            a = sl.render(payload)
+            b = sl.render(payload)
         self.assertEqual(a, b)
 
     def test_ledger_functions_reachable_via_statusline(self):

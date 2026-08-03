@@ -4,7 +4,7 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "a39e18a12f1a3aefaebd5ac80b5519711d6aba84",
+      "hash": "7933577b4e8985942aed6caf2f859c121c57f7d0",
       "path": "CHANGELOG.md"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "8c98f20f9e4de1cdec10d6f99922e520347a3ba9",
+      "hash": "f963449c0e51f52a78ee77afa03315471dae0be7",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
