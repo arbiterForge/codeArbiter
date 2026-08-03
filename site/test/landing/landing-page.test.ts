@@ -183,6 +183,12 @@ describe("first-class product splash", () => {
     expect(indexMdx).toContain("./guides/uninstalling/");
   });
 
+  it("keeps every guarantee card aligned despite Starlight's sibling flow spacing", () => {
+    expect(landingCss).toMatch(
+      /\.ca-feature\s*\{[^}]*margin-block-start:\s*0;/s,
+    );
+  });
+
   it("uses page-relative internal links instead of a hardcoded deployment base", () => {
     expect(indexMdx).not.toMatch(/href="\/codeArbiter/);
     expect(indexMdx).toMatch(/href="\.\/getting-started\/install\//);
