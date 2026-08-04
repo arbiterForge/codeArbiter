@@ -4,6 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-04
+
+### Fixed
+
+- The shared `_releaselib.py` copy picks up the release lane's `run-pre-tag`
+  exit-code split (could-not-run vs. drift vs. tree-probe failure), the
+  exported `PY` environment variable for declared row commands, and the new
+  `apply-bump` subcommand — no ca-pi-specific behavior change, tracked here
+  because the shared module is vendored into this plugin's `hooks/`
+  directory.
+
 ## [0.2.0] - 2026-08-01
 
 ### Added

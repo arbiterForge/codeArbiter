@@ -12,6 +12,29 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.2] — 2026-08-04
+
+### Fixed
+
+- Gave the release lane's internal tree-state probe the same audit-scratch
+  exemption the skill already requires everywhere else, so a mid-window
+  `gate-events.log` append is no longer misdiagnosed as a mutating pre-tag
+  command.
+- Split `run-pre-tag`'s failure diagnosis into four distinct exit codes: a
+  declared command that ran and reported drift, one that mutated the tree,
+  one whose interpreter or program could not be located at all, and a
+  tree-state probe failure — each with its own remedy, so "could not run"
+  is never reported as "ran and disagreed".
+- Exported the resolved interpreter to every declared release-lane command
+  via a `PY` environment variable, so a declared row can portably spell
+  `"$PY"` instead of a hardcoded interpreter.
+- Mechanized the release lane's version-bump arithmetic behind a new
+  `apply-bump` subcommand, closing the one step still left to hand
+  derivation.
+- Floored the release lane's first-release footer check on the earliest
+  addition of either `CONTEXT.md` or `release-targets.md`, so a Back-fill
+  consumer's own first release can clear Phase 1 step 3.
+
 ## [2.11.1] — 2026-08-03
 
 ### Fixed

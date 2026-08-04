@@ -3293,6 +3293,31 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0)
         self.assertEqual(proc.stdout.strip(), "")
 
+    def test_adoption_commit_cli_two_file_pathspec_prints_the_oldest_addition(self):
+        # #585 (2a): the Back-fill lane's own first release floors the
+        # window from BOTH candidate adoption files (CONTEXT.md and
+        # release-targets.md), fed to `adoption-commit` as ONE combined
+        # `git log --diff-filter=A --format=%H -- CONTEXT.md release-
+        # targets.md` pipeline. This function does not care how many
+        # pathspecs produced its stdin -- it always takes the LAST line,
+        # since `git log` prints newest-first -- so a synthetic two-file
+        # addition history (interleaved, as a real multi-pathspec `git
+        # log` would emit) must still resolve to the OLDEST line.
+        # `test_first_release_baseline_takes_the_EARLIEST_of_several`
+        # above already pins this at the function level with a bare
+        # two-line fixture; this extends the same proof to the actual CLI
+        # entry point with a shape that looks like real two-file output.
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        # Newest-first, as `git log` emits: the release-targets.md
+        # addition (newer, e.g. a Back-fill run today) came after the
+        # CONTEXT.md addition (older, e.g. full onboarding months ago).
+        two_file_log = "bbbbbbb\naaaaaaa\n"
+        proc = subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "adoption-commit"],
+            input=two_file_log, capture_output=True, text=True, env=env)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(proc.stdout.strip(), "aaaaaaa")
+
     def test_run_pre_tag_catches_a_mutation_of_an_ALREADY_MODIFIED_file(self):
         # HIGH, run 10. The assertion was a set difference over porcelain
         # LINES, so a command mutating a file that was already ` M`
@@ -3344,6 +3369,160 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(proc.returncode, 0, proc.stderr)
             self.assertIn("1.1.0", proc.stdout)
 
+    # ---- #584 MEDIUM-1: the tree-state probe exempts the audit scratch ----
+    def _pretag_repo_with_gate_log(self, tmp, commands):
+        """Like `_pretag_repo`, but with `.codearbiter/gate-events.log`
+        created and COMMITTED up front, so a declared command that appends
+        to it mid-window is appending to a TRACKED file -- the shape the
+        hooks actually produce, not an untracked one."""
+        root = os.path.join(tmp, "consumer")
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        with open(os.path.join(root, "package.json"), "w") as fh:
+            fh.write('{"version": "1.0.0"}\n')
+        with open(os.path.join(root, "CHANGELOG.md"), "w") as fh:
+            fh.write("# Changelog\n")
+        with open(os.path.join(root, ".codearbiter", "gate-events.log"), "w") as fh:
+            fh.write("existing-line\n")
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
+            fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
+                     "changelog: CHANGELOG.md\npayload: .\n"
+                     + "".join(f"pre-tag: {c}\n" for c in commands)
+                     + "<!-- /release-targets -->\n")
+        env = dict(os.environ,
+                   GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_SYSTEM=os.devnull,
+                   GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t",
+                   GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
+        base = ["git", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=",
+                "-c", "init.defaultBranch=main"]
+        for argv in (["init", "-q"],
+                     ["add", "package.json", "CHANGELOG.md",
+                      ".codearbiter/release-targets.md",
+                      ".codearbiter/gate-events.log"],
+                     ["commit", "-q", "-m", "init", "--no-verify"]):
+            proc = subprocess.run(base + argv, cwd=root, env=env,
+                                  capture_output=True, text=True)
+            self.assertEqual(
+                proc.returncode, 0,
+                f"fixture git {argv[0]} failed: {proc.stderr.strip()}")
+        return root
+
+    def test_run_pre_tag_exempts_a_mid_window_gate_events_log_append(self):
+        # #584 MEDIUM-1: the hooks append to `.codearbiter/gate-events.log`
+        # on essentially every command, INCLUDING the commands this lane
+        # runs -- so a pre-tag command that (like a real hook append)
+        # writes to the log between the baseline probe and the
+        # post-command probe must not read as a mutation. Before the fix,
+        # this exact shape returned exit 6, whose stated remedy is "fix the
+        # declaration or remove the row entry" -- deleting a release gate
+        # over a blameless audit-log append.
+        appender = (f'"{sys.executable}" -c '
+                    '"open(\'.codearbiter/gate-events.log\',\'a\')'
+                    '.write(chr(10))"')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo_with_gate_log(tmp, [appender])
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    # ---- #583 MEDIUM-2 / #584 MEDIUM-3: PY exported to declared commands ----
+    def test_run_pre_tag_exports_PY_to_declared_commands(self):
+        check = ('python -c "import os,sys;'
+                  'sys.exit(0 if os.environ.get(\'PY\') else 1)"')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [check])
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    # ---- #585 MEDIUM-2 / #584 MEDIUM-1: could-not-run vs. drift ----
+    def test_could_not_run_recognizes_only_the_documented_codes(self):
+        # Platform-independent proof of the exit-code MAPPING itself
+        # (distinct from the end-to-end test below, whose real-world
+        # trigger is platform-dependent -- see that test's own docstring).
+        for code in (126, 127, 9009):
+            with self.subTest(code=code):
+                self.assertTrue(core_releaselib._could_not_run(code))
+        for code in (0, 1, 2, 5, 6, 8, 128, -1):
+            with self.subTest(code=code):
+                self.assertFalse(core_releaselib._could_not_run(code))
+
+    def test_run_pre_tag_exits_7_when_a_declared_command_could_not_run(self):
+        # A row's command exiting one of the documented could-not-run codes
+        # (127: POSIX "command not found") must be diagnosed as "could not
+        # run", never folded into exit 5's "ran and disagreed" (#585
+        # MEDIUM-2 / #584 MEDIUM-1). Spelled as an explicit `sys.exit(127)`
+        # rather than relying on a genuinely-missing PATH entry: a real
+        # "not found" failure's exit code is platform-dependent -- POSIX
+        # shells report 127, but `cmd.exe`'s own "not recognized" error was
+        # MEASURED on a Windows 11 host to report 1, not one of the
+        # documented could-not-run codes (a residual gap, noted in
+        # `_could_not_run`'s own docstring) -- so this test pins the
+        # DIAGNOSIS given a 127, which is the exact code the real-world
+        # motivating case (a hardcoded `python3` absent from PATH) reports
+        # on a POSIX host, portably across every platform this suite runs
+        # on.
+        cmd = f'"{sys.executable}" -c "import sys; sys.exit(127)"'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [cmd])
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 7, proc.stdout + proc.stderr)
+            self.assertIn("COULD NOT RUN", proc.stderr)
+            self.assertIn("NOT drift", proc.stderr)
+
+    # ---- #584 residual: exit 8, the probe itself failing ----
+    def test_run_pre_tag_exits_8_when_the_tree_state_probe_fails(self):
+        # A `_tree_state()` probe failure (here: CLAUDE_PROJECT_DIR points
+        # at a directory that was never `git init`ed, so `git status`
+        # itself exits non-zero) must be diagnosed as "the probe failed, no
+        # verdict exists" -- exit 8 -- never exit 6, which names a
+        # DECLARED COMMAND as the fault and tells the operator to fix or
+        # remove the row. No command has even run yet on this path.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = os.path.join(tmp, "not-a-git-repo")
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                      "w") as fh:
+                fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
+                         "changelog: CHANGELOG.md\npayload: .\n"
+                         "<!-- /release-targets -->\n")
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 8, proc.stdout + proc.stderr)
+            self.assertIn("PROBE itself failed", proc.stderr)
+            self.assertNotIn("MUTATED", proc.stderr)
+
+    # ---- #585 MEDIUM-3: apply-bump mechanizes the version arithmetic ----
+    def test_apply_bump_patch_minor_major(self):
+        self.assertEqual(core_releaselib.apply_bump("2.3.4", "patch"), "2.3.5")
+        self.assertEqual(core_releaselib.apply_bump("2.3.4", "minor"), "2.4.0")
+        self.assertEqual(core_releaselib.apply_bump("2.3.4", "major"), "3.0.0")
+
+    def test_apply_bump_refuses_none_and_nonsense_words(self):
+        # `none` is a deliberate, explicit refusal -- not folded into the
+        # generic "unrecognised word" case -- because a caller must NEVER
+        # apply a non-bump; echoing `base` back unchanged would look like a
+        # successful (if inert) bump rather than the caller's own bug.
+        self.assertIsNone(core_releaselib.apply_bump("2.3.4", "none"))
+        self.assertIsNone(core_releaselib.apply_bump("2.3.4", "nonsense"))
+
+    def test_apply_bump_refuses_a_non_semver_base(self):
+        self.assertIsNone(core_releaselib.apply_bump("not-a-version", "patch"))
+
+    def test_apply_bump_cli_prints_exactly_the_version(self):
+        for word, expected in (("patch", "2.3.5"), ("minor", "2.4.0"),
+                               ("major", "3.0.0")):
+            with self.subTest(word=word):
+                out = self._run_core("apply-bump", "2.3.4", word)
+                self.assertEqual(out.returncode, 0, out.stderr)
+                self.assertEqual(out.stdout.strip(), expected)
+                # stdout is EXACTLY the version -- no decoration, no label.
+                self.assertEqual(out.stdout, expected + "\n")
+
+    def test_apply_bump_cli_exits_2_on_none_nonsense_or_bad_base(self):
+        for base, word in (("2.3.4", "none"), ("2.3.4", "nonsense"),
+                           ("not-a-version", "patch")):
+            with self.subTest(base=base, word=word):
+                out = self._run_core("apply-bump", base, word)
+                self.assertEqual(out.returncode, 2, out.stdout)
+                self.assertEqual(out.stdout, "")
+
     def test_semver_greater_bad_invocation_exits_2(self):
         import io, contextlib
         err = io.StringIO()
@@ -3363,8 +3542,8 @@ class CoreCLITest(unittest.TestCase):
             core_releaselib.main([])
         banner = err.getvalue()
         for name in ("tag-prefix", "list-targets", "last-tag", "notes-match",
-                     "dates-match", "semver-greater", "classify", "peel-tag",
-                     "backfill-detect"):
+                     "dates-match", "semver-greater", "apply-bump", "classify",
+                     "peel-tag", "backfill-detect"):
             self.assertIn(
                 name, banner,
                 f"{name!r} is implemented but missing from the usage banner")
