@@ -12,6 +12,28 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.3] — 2026-08-04
+
+### Fixed
+
+- `post-merge-cleanup` (#586): Phase 1's containment proof no longer relies on
+  SHA-ancestry alone, which fails for every ordinary squash merge in this
+  repo's default merge mode. A squash merge is now proven by the merged PR
+  record (`headRefOid` == HEAD), reported alongside the ancestry check's
+  negative result as a fact rather than a failure. Phase 3's blocked-checkout
+  STOP now distinguishes a genuinely conflicting kept artifact from a stale
+  local default ref. Phase 4 fast-forwards the local default ref before
+  checking it out, so a stale ref can no longer be misattributed to a kept
+  artifact. Phase 5 documents why `git branch -d` can already accept a
+  squash-merged branch via its upstream, and sanctions `git branch -D` only
+  when this run's Phase 1 proof was the PR-record squash proof and `-d`
+  refused.
+- `standup` (#596): stale worktrees can now be confirmed for removal as one
+  explicitly enumerated group naming every member, instead of forcing one
+  confirmation per worktree; declining the group falls back to per-item
+  confirmation. Branch pruning documents the matching squash-merge `-D`
+  exception.
+
 ## [2.11.1] — 2026-08-03
 
 ### Fixed
