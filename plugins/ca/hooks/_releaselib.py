@@ -1626,9 +1626,13 @@ def main(argv):
                                   each (DECISION-0034: check-only, never a
                                   fixer). Each declared command's environment
                                   carries `PY=<this process's own
-                                  interpreter>`, so a row may portably spell
-                                  `"$PY"` instead of a hardcoded interpreter
-                                  (#583 MEDIUM-2 / #584 MEDIUM-3). exit 0 all
+                                  interpreter>`, so a POSIX-hosted row may
+                                  portably spell `"$PY"` instead of a
+                                  hardcoded interpreter -- NOT yet safe on
+                                  Windows, where this command's `shell=True`
+                                  always dispatches via `cmd.exe`, which does
+                                  not expand `$VAR` (#583 MEDIUM-2 / #584
+                                  MEDIUM-3). exit 0 all
                                   passed - 5 a command RAN and reported drift
                                   - 6 a command exited 0 but MUTATED the tree
                                   (or the tree was already dirty on a probe
@@ -2164,13 +2168,20 @@ def main(argv):
                     "program itself could not be located, so it never ran "
                     "and nothing was checked -- do not reconcile it as a "
                     "check failure.\n"
-                    "  Remedy: fix the command's availability on this host "
-                    "(a common cause is a row hardcoding a specific "
+                    "  Remedy: fix the interpreter this row names for THIS "
+                    "host (a common cause is a row hardcoding a specific "
                     "interpreter, e.g. `python3`, on a host that has only "
-                    "`python` -- spell it `\"$PY\"` instead, per the "
-                    "declared-command interpreter convention), then "
-                    "re-run. No release-edit discard is needed: nothing "
-                    "was checked, so there is nothing to undo.\n")
+                    "`python`). On a POSIX host this is commonly `\"$PY\"` "
+                    "-- but NOT on Windows: this command runs via "
+                    "`subprocess.run(shell=True)`, which on Windows always "
+                    "dispatches through `cmd.exe`, and `cmd.exe` does not "
+                    "expand `$VAR` syntax, so a row spelled `\"$PY\"` fails "
+                    "there too (as a literal, unrecognized token) until "
+                    "that dispatch resolves a POSIX-compatible shell on "
+                    "Windows -- a Windows-hosted row should keep a concrete "
+                    "interpreter for now. Then re-run. No release-edit "
+                    "discard is needed: nothing was checked, so there is "
+                    "nothing to undo.\n")
                 return 7
             if proc.returncode != 0:
                 sys.stderr.write(
