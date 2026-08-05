@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-08-05
+
+### Fixed
+
+- Every routine/skill surface that spelled the interpreter fallback as `python3 X || python X` now resolves the interpreter once, by presence, before invoking a helper (#577), so a helper answer that carries information in a nonzero exit code is no longer silently re-run and replaced by a second run's verdict.
+
 ## [0.2.6] - 2026-08-05
 
 ### Changed

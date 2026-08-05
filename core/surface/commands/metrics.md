@@ -16,13 +16,16 @@ glance; reach for `{{CMD:audit}}` when you need the full evidentiary packet.
 ## Flow
 
 1. **Invoke the helper.** Call the thin entry hook `metrics.py`, which wraps
-   `compute` from `_metricslib.py`, via a Windows-safe `python3 … || python …`
-   fallback. Pass `{{PROJECT_DIR}}` as `--root`. If `--window N` was
+   `compute` from `_metricslib.py`. Resolve the interpreter once by presence —
+   `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+   — never `python3 … || python …`, which reruns the helper on any nonzero exit
+   and reports the second run's code instead of the first's (#577). Pass
+   `{{PROJECT_DIR}}` as `--root`. If `--window N` was
    supplied, pass it through as `--window N`; otherwise omit it (the helper
    applies the default of 20).
 
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/metrics.py" --root "{{PROJECT_DIR}}" || python "{{PLUGIN_ROOT}}/hooks/metrics.py" --root "{{PROJECT_DIR}}"
+   "$PY" "{{PLUGIN_ROOT}}/hooks/metrics.py" --root "{{PROJECT_DIR}}"
    ```
 
    > **`ensure_ascii` note — do not remove this.** `metrics.py` calls `json.dumps`
@@ -35,7 +38,7 @@ glance; reach for `{{CMD:audit}}` when you need the full evidentiary packet.
 
    With a custom window size:
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/metrics.py" --root "{{PROJECT_DIR}}" --window N || python "{{PLUGIN_ROOT}}/hooks/metrics.py" --root "{{PROJECT_DIR}}" --window N
+   "$PY" "{{PLUGIN_ROOT}}/hooks/metrics.py" --root "{{PROJECT_DIR}}" --window N
    ```
    Replace `N` with the integer the user supplied.
 

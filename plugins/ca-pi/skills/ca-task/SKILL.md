@@ -15,20 +15,22 @@ pure `_taskboardlib` transforms; this command runs the thin writer
 ## Verbs
 
 Always put `--` before user text (a desc or title) so a value beginning with `-` is not
-parsed as a flag. Interpreter fallback, same shape as the hooks: `python3 … || python …`.
+parsed as a flag. Resolve the interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+— never `python3 … || python …`, which reruns the helper on any nonzero exit and reports the
+second run's code instead of the first's (#577) — then invoke `"$PY"` below.
 
 - **add** — append a queued task. ID-less by default; pass `--id <group>.<type>` to mint
   a dotted ID now, `--from <origin>` for a harvest back-ref, `--boundaries a,b` for the
   security/trust boundaries it touches. The description must be nonblank and
   single-line; origin and boundary values must also stay on one line.
-  - `python3 "<plugin-root>/hooks/taskwrite.py" add [--id group.type] [--from origin] [--boundaries a,b] -- "<desc>" || python "<plugin-root>/hooks/taskwrite.py" add ... -- "<desc>"`
+  - `"$PY" "<plugin-root>/hooks/taskwrite.py" add [--id group.type] [--from origin] [--boundaries a,b] -- "<desc>"`
 - **start** — flip a task to in-progress and **stamp the started date** (so it can never
   be a dateless `[~]`). On an ID-less item, pass `--as <group>.<type>` to mint its dotted
   ID at pick-up. `--date YYYY-MM-DD` overrides today.
-  - `python3 "<plugin-root>/hooks/taskwrite.py" start [--as group.type] [--date YYYY-MM-DD] -- "<id|title>"`
+  - `"$PY" "<plugin-root>/hooks/taskwrite.py" start [--as group.type] [--date YYYY-MM-DD] -- "<id|title>"`
 - **done** — flip an in-progress task to done and stamp the done date (`--date`
   overrides today). A queued task must be `start`ed first.
-  - `python3 "<plugin-root>/hooks/taskwrite.py" done [--date YYYY-MM-DD] -- "<id|title>"`
+  - `"$PY" "<plugin-root>/hooks/taskwrite.py" done [--date YYYY-MM-DD] -- "<id|title>"`
 
 A missing target, an already-matching state, an out-of-order transition, a malformed
 add field or `--date`, or an invalid `GROUP.TYPE` namespace is reported and writes

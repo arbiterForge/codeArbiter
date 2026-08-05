@@ -41,16 +41,18 @@ Pi session file.
 
 ## Flow
 
-1. **status / dry / audit** — run the backing tool and present its output verbatim:
+1. **status / dry / audit** — run the backing tool and present its output verbatim. Resolve the
+   interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+   — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <subcommand> [<path>] || python "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <subcommand> [<path>]
+   "$PY" "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <subcommand> [<path>]
    ```
    For serialized hosts, `dry` analyzes `<path>.copy.jsonl`; Pi active sessions use the native
    semantic planner and return a custom compaction result without session-file writes.
 
 2. **run** — confirm the path is a copy or an inactive session, then:
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <path> --execute [--tier T] || python "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <path> --execute [--tier T]
+   "$PY" "{{PLUGIN_ROOT}}/hooks/prune-transcript.py" <path> --execute [--tier T]
    ```
    Present the per-strategy reduction report; follow with `audit` on the result.
 
