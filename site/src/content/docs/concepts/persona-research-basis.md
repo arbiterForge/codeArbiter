@@ -1,10 +1,10 @@
 ---
 title: The Evidence Behind the Persona
-description: "The published research each orchestrator-persona design decision rests on, with citations, the measurements that shaped the document, and the A/B test that validated the current revision."
+description: "The published research the orchestrator persona and the brainstorming skill's design decisions rest on, with citations, the measurements that shaped them, and the A/B test that validated the persona revision."
 journey:
   level: Power user
-  time: 9 min
-  outcome: "you can trace each structural choice in the orchestrator persona to the specific published finding it rests on, and know which choices are evidence-backed versus operator preference."
+  time: 11 min
+  outcome: "you can trace each structural choice in the orchestrator persona and the brainstorming skill to the specific published finding it rests on, and know which choices are evidence-backed versus operator preference."
   prerequisites:
     - Understand the persona-register split
   proof: "You can name the finding that motivated the excuse table, and the one that reversed a bare recommendation-first policy."
@@ -114,6 +114,46 @@ factual-task accuracy across 162 personas and four model families [19] — measu
 thing. Behavioral and register personas (tone, decision posture) are an open gap in the
 literature; neither that null result nor the positive domain-congruence results [20] apply
 directly. Where the evidence is silent and the incumbent works, the revision made no change.
+
+## The same evidence under the brainstorming skill
+
+The brainstorming skill — the Socratic front of the feature lane — was modernized shortly before
+the persona, and the same research pass retroactively grounds its design. Where the evidence
+pushed harder than the original design, the skill's mechanisms already embody the correction.
+
+**Shape the approach, then challenge it.** The skill proposes genuine candidate approaches with
+each trade-off stated, recommends exactly one, and later subjects the written spec to an
+adversarial pass whose surviving findings are presented *with* the spec at approval. The
+overreliance literature is why the challenge travels with the recommendation: a recommendation
+plus rationale measurably increases acceptance whether or not it is correct [13], and
+recommendation-first designs produce more acceptance of wrong answers than designs that force
+consideration [14]. The user approves a challenged design, not a framed one — the same
+consider-the-opposite structure the persona later adopted for every ask.
+
+**Decide the parameters; ask the forks — fully.** The skill replaced one-question-per-round
+Socratic pacing with a decide-or-ask discipline: routine parameters are decided and recorded for
+review, genuine forks are asked in full with a recommendation. The value of the well-formed ask
+is measured — a well-selected clarifying question produced large downstream gains [16], and
+models trained to ask better questions were preferred on 72% of tasks [17]. The guardrail is
+measured too: models self-classify ambiguity correctly only about half the time [18], which is
+why "routine" is defined by explicit criteria (reversible, one sensible answer, recorded where
+the user reviews it) and an uncertain classification is treated as a fork. Batching independent
+questions into one round carries the same honest label here as in the persona: operator
+preference, with no controlled study either way.
+
+**Closure is a checklist, not a feeling.** The skill's refinement loop ends with a
+rationalization guard — the specific excuses for stopping early ("simple enough," "asked
+enough," "the user seems eager"), each paired with its rebuttal at the point where the model
+decides it understands. This is the same anticipate-the-excuse intervention the persona's table
+uses, resting on the same precedent that a short anticipatory clause measurably changes
+behavior [7] and on the if-then form's d = .65 human evidence base [9].
+
+**The loop has a breaker.** When refinement stops converging — an answer contradicts an earlier
+one, or a settled fork resurfaces — the loop stops and forces one adjudication rather than
+circling. This clause is grounded in project-internal evidence rather than the literature: a
+recorded remediation campaign in this repository ran three consecutive fix rounds in which each
+round's worst defect was introduced by the previous round's fix. Non-convergence is a real
+failure mode of iterative refinement; the breaker converts it into a logged decision.
 
 ## The test before shipping
 

@@ -44,3 +44,6 @@ unresolved becomes a numbered open question on record rather than a guess.
 Approval hands the spec to the test-first gate, where each acceptance criterion becomes one
 obligation to prove. A spec carrying an unresolved blocking question never reaches that handoff —
 it stops for your decision instead.
+
+The research each of this skill's design choices rests on — with citations — is documented in
+[The Evidence Behind the Persona](/concepts/persona-research-basis/).
