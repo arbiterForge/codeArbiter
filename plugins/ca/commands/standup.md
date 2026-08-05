@@ -15,7 +15,10 @@ Arbiter gathers and proposes; you decide every mutation.
 The orchestrator reads the current repo state (reusing the briefing's read-only
 computation — branch, ahead/behind, dirty tree, stashes, prune-candidate branches,
 stale worktrees) and presents it, then offers each applicable action in turn. Skip
-an action that has no candidates; never bundle confirmations.
+an action that has no candidates; never bundle confirmations across different
+actions or items — branch deletions always stay per-item, and the sole exception
+is step 3's explicitly enumerated worktree group, which is still one confirmation
+that names every member, never an implied yes.
 
 1. **Fetch + fast-forward pull** — kick `git fetch`, then offer a **`--ff-only`**
    pull of the current branch. Eligibility is the briefing summary's
@@ -28,9 +31,21 @@ an action that has no candidates; never bundle confirmations.
    (the `: gone]` upstream set), excluding the current branch and the default
    (`main`). Delete a listed branch only after an explicit per-branch confirmation;
    declining leaves it in place.
+
+   A `: gone]` branch that was squash-merged will typically **refuse** plain
+   `git branch -d` — its upstream is already pruned, so `-d` has nothing to test
+   reachability against. Before reporting that as a stop, check for a merged PR
+   record: `gh pr list --head <branch> --state merged --json headRefOid`. When a
+   `MERGED` PR's `headRefOid` equals that branch's local tip, containment is
+   proven and `git branch -D` is permitted — with the proof stated and the
+   branch named in the confirmation — mirroring the `post-merge-cleanup` Phase 5
+   contract. Without that proof, a refusal stays a report-and-stop; never guess.
 3. **Remove stale worktrees** — list stale/merged worktrees (branch gone-or-merged,
-   or path missing on disk), never the main worktree. Remove one only after explicit
-   per-item confirmation; declining leaves it intact.
+   or path missing on disk), never the main worktree. Present the full stale list
+   together with each item's evidence, then offer removal as an explicitly
+   **enumerated group** — one confirmation that names every member — as well as
+   per-item confirmation for anyone who wants to keep some. Declining the group
+   falls back to per-item confirmation, and declining any item leaves it intact.
 4. **Surface stashes / dirty / un-pushed** — list stashes, uncommitted changes, and
    un-pushed commits, each with a suggested next step (`/ca:commit`, `git push`,
    `git stash show`). Report-and-route only: never discard a stash, reset, or push.
@@ -82,8 +97,11 @@ Present a one-line summary of what was done and what was declined.
   commit, never on a dirty tree, never a rebase.
 - MUST exclude the current branch and the default branch from branch pruning, and
   the main worktree from worktree cleanup.
-- MUST confirm each destructive action (branch delete, worktree remove)
-  individually before performing it — no batched or implied yes.
+- MUST confirm branch deletions individually — no batched or implied yes.
+  Worktree removals MAY be confirmed as one explicitly enumerated group (naming
+  every member) or individually; either way there is no implied yes, and
+  declining the group falls back to per-item confirmation rather than removing
+  anything.
 - MUST treat stash / dirty / un-pushed state as report-and-route only — never
   discard, reset, force, or push on the user's behalf.
 - MUST NOT write to or force-push the default branch.

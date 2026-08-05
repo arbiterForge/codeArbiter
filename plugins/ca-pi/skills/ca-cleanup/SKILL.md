@@ -1,6 +1,6 @@
 ---
 name: ca-cleanup
-description: Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; ancestry proven, never assumed.
+description: Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed.
 argument-hint: (none)
 ---
 
@@ -21,7 +21,7 @@ coverage. This is that coverage.
 ## Routes to
 
 The `post-merge-cleanup` skill (`<plugin-root>/routines/post-merge-cleanup/SKILL.md`),
-which owns the ancestry proof, the artifact classification, and the per-item
+which owns the containment proof, the artifact classification, and the per-item
 confirmations.
 
 ## When NOT to use
@@ -36,9 +36,10 @@ confirmations.
 
 ## Hard gate
 
-- MUST prove the current branch is an ancestor of the **fetched** default branch
-  before anything is deleted. An unproven or unfetched ancestry STOPs — a branch
-  that only *looks* merged is not merged.
+- MUST prove the current branch is contained in the **fetched** default branch —
+  SHA-ancestry, or a squash-merge proven by the merged PR record (`headRefOid`
+  == HEAD) — before anything is deleted. An unproven or unfetched comparison
+  STOPs — a branch that only *looks* merged is not merged.
 - MUST classify every dirty or untracked artifact as **unique**, **redundant**,
   or **superseded**, and MUST NOT discard a unique or unclassifiable one without
   explicit per-item confirmation naming it.
@@ -46,7 +47,9 @@ confirmations.
 - MUST reach the default branch with a clean working tree, and MUST fast-forward
   with `--ff-only` only — never a merge commit, never a rebase, never a reset
   that discards work.
-- MUST NOT force-delete a branch, force-push, delete a remote branch, or write to
-  the default branch.
+- MUST use `git branch -d`, and MAY use `-D` only when the squash-merge PR-record
+  proof held this run and `-d` refused, with that proof restated and the branch
+  named in the confirmation. MUST NOT otherwise force-delete a branch, force-push,
+  delete a remote branch, or write to the default branch.
 - MUST NOT require `/ca-override`. This is ordinary lifecycle work; if it
   cannot proceed, the reason is a stated gate, not a bypass.

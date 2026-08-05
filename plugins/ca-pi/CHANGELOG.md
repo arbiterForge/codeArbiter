@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-08-04
+
+### Fixed
+
+- `post-merge-cleanup` (issue #586): the Phase 1 gate no longer STOPs on every squash-merged branch. SHA-ancestry is now one of two accepted containment proofs — the second is the merged PR record (`headRefOid` == HEAD), reported alongside the ancestry check's negative result rather than treated as a failure. Phase 4 now fast-forwards the local default ref before checking it out, so a stale local default can no longer be misattributed to a correctly-kept Phase 3 artifact. Phase 5 documents why `-d` can accept a squash merge via its upstream, and sanctions `-D` only when this run's Phase 1 proof was the PR-record squash proof and `-d` refused.
+- `standup` (issue #596): stale worktrees can now be confirmed as one explicitly enumerated group naming every member, instead of one confirmation per worktree; declining the group falls back to per-item confirmation. Branch pruning documents the same squash-merge `-D` exception as `post-merge-cleanup`.
+
 ## [0.2.1] - 2026-08-04
 
 ### Fixed
