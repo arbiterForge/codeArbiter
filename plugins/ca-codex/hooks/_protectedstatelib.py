@@ -75,11 +75,11 @@
 #                                       classify_protected saw rather than
 #                                       re-deriving membership through an
 #                                       independent check.
-#   MARKER_FRESHNESS_MINUTES -> int    the H-11 marker window (30). Matches
-#                                       the ADR-authoring gate's value by
-#                                       convention, not a shared import - see
-#                                       the constant's own comment for the
-#                                       five independent declarations.
+#   MARKER_FRESHNESS_MINUTES -> int    re-exported from _hooklib (issue #567):
+#                                       the single H-11 marker window (30),
+#                                       now declared exactly once and
+#                                       imported by every flank rather than
+#                                       independently hardcoded.
 #   marker_name_for(rel_path) -> str   a marker basename for a marker-gated
 #                                       path, encoding the path BELOW the
 #                                       repo's .codearbiter/ project-state
@@ -120,7 +120,7 @@ from __future__ import annotations
 import os
 from enum import Enum
 
-from _hooklib import marker_fresh
+from _hooklib import MARKER_FRESHNESS_MINUTES, marker_fresh
 from _pathnorm import norm_path, raw_repo_rel, repo_rel
 
 
@@ -343,16 +343,6 @@ def resolve_registered_path(fpath, root, registry=None):
         if policy is not None:
             return p, policy
     return None, None
-
-
-# The H-11 authoring-marker freshness window, matching the existing
-# ADR-authoring gate's value by convention, NOT by a shared import:
-# pre-write.py, pre-edit.py, _bashguardlib.py, and git-enforce.py each
-# independently hardcode `30` for the same marker shape, and this is a fifth,
-# equally independent, declaration. Widening this constant does not widen
-# theirs, and widening theirs does not widen this one - there is no single
-# source of truth for the window's value across those five sites today.
-MARKER_FRESHNESS_MINUTES = 30
 
 
 def marker_name_for(rel_path):

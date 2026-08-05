@@ -82,8 +82,8 @@ import sys
 
 from _hooklib import (
     AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
-    GATE_MARKER_NAMES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block, content_digest,
-    is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
+    GATE_MARKER_NAMES, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
+    content_digest, is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
 )
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
@@ -1513,7 +1513,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
         marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "security-gate-passed")
-        if not marker_fresh(marker, 30):
+        if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (.codearbiter/.markers/security-gate-passed). Run the "
                        f"{skill} gate (it records the pass), then commit. To bypass a "

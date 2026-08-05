@@ -38,9 +38,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
-    arbiter_active, block, classify_protected, frontmatter_enabled_text,
-    get_host, is_tail_append, marker_fresh, project_root, read_input,
-    set_host, utf8_stdio,
+    MARKER_FRESHNESS_MINUTES, arbiter_active, block, classify_protected,
+    frontmatter_enabled_text, get_host, is_tail_append, marker_fresh,
+    project_root, read_input, set_host, utf8_stdio,
 )
 from _protectedstatelib import (  # noqa: E402
     ProtectedPolicy, marker_gated_write_admitted, resolve_registered_path,
@@ -212,8 +212,8 @@ def _run(root):
         if not os.path.isfile(marker):
             block("H-11", "ADR files are edited only via /adr (ORCHESTRATOR §3) — user "
                           "attribution required.")
-        if not marker_fresh(marker, 30):
-            block("H-11", "ADR authoring marker is stale (>30 min). Re-run /adr.")
+        if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
+            block("H-11", f"ADR authoring marker is stale (>{MARKER_FRESHNESS_MINUTES} min). Re-run /adr.")
 
     # H-22: the protected-state registry (B1/#564) — the SAME generic branch
     # pre-write.py carries (T-06/T-07 design ruling: one branch, not a

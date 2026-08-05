@@ -12,6 +12,20 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.11] — 2026-08-05
+
+### Fixed
+
+- The H-11 authoring-marker freshness window is now a single declaration
+  (`_hooklib.MARKER_FRESHNESS_MINUTES`), imported by every enforcement flank
+  that used to hardcode its own copy of the literal (`pre-write.py`,
+  `pre-edit.py`, `_bashguardlib.py`, `git-enforce.py`,
+  `_protectedstatelib.py`) — a change to the window now moves every flank
+  together instead of silently desyncing them (#567).
+- `_releaselib.py`'s unreachable `_PRERELEASE_MARKERS` dead code — proven
+  unreachable behind the anchored release-tag regex — is removed rather than
+  left as unexplained dead code shipped to every consumer (#568).
+
 ## [2.11.10] — 2026-08-05
 
 ### Fixed
