@@ -12,6 +12,21 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.7] — 2026-08-05
+
+### Changed
+
+- `tdd` Phase 2 gains a rationalization guard: the four known excuses for
+  skipping the red test ("too simple to fail first", test-after equivalence,
+  "would restate the implementation", "already covered") paired with their
+  rebuttals — the already-covered rebuttal carrying its own falsifying
+  instrument. A/B-validated against the prior skill before shipping (7/7 hard
+  requirements both arms, zero over-blocking, sharper domain grounding).
+- `skill-author` Phase 4 adopts the evidence-lens checklist (issue #612):
+  rationalization guards at tempting gates, instruments over self-report,
+  recommendation with counter-case, mechanize-don't-accrete, and
+  letter-vs-spirit — plus A/B validation for behavior-changing gate revisions.
+
 ## [2.11.6] — 2026-08-05
 
 ### Changed

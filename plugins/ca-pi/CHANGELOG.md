@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-08-05
+
+### Changed
+
+- The `tdd` routine's red phase gains a rationalization guard (four skip-red excuses paired with rebuttals, A/B-validated before shipping), and `skill-author` adopts the issue #612 evidence-lens checklist for future authoring passes.
+
 ## [0.2.5] - 2026-08-05
 
 ### Changed

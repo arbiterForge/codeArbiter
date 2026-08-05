@@ -49,6 +49,16 @@ Reject the standard traps: asserting on a mock instead of behavior; a test that 
 snapshot so broad it asserts nothing; coupling to an implementation detail instead of observable
 behavior; asserting on the framework's behavior rather than your own.
 
+The reasons to skip red are known. Hearing one is the tell that this gate is about to be waived —
+never the license to waive it:
+
+| excuse | reality |
+|---|---|
+| "Too simple to fail first." | Simple changes have the cheapest red tests — and "too simple to test" and "too simple to break" have never been the same claim. |
+| "I'll write the test right after." | A test written after green has never been seen red: it is authored against the implementation it was meant to constrain, and its power to catch the bug is never demonstrated. |
+| "The test would just restate the implementation." | Then it is aimed at the wrong seam — assert the observable behavior, not the wiring. A change with no observable behavior to assert is a design finding, not an exemption. |
+| "The existing suite already covers this." | Then the failing test is impossible to write — try it. If it genuinely cannot go red, the obligation is already COVERED and Phase 4 records exactly that; if it goes red, the claim was wrong and you are holding the proof. |
+
 Gate: the runner confirms new tests red (for the right reason) and existing tests green, with every
 obligation `MAPPED` to a failing test. No implementation code is written until this gate clears.
 
