@@ -30,9 +30,9 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS, arbiter_active,
-    content_digest, is_migration_path, line_digest, marker_fresh,
-    sensitive_scan_added_lines, set_host, utf8_stdio,
+    CRYPTO_RE, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS,
+    arbiter_active, content_digest, is_migration_path, line_digest,
+    marker_fresh, sensitive_scan_added_lines, set_host, utf8_stdio,
 )
 
 
@@ -231,7 +231,7 @@ def pre_commit(root):
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
         marker = os.path.join(root, ".codearbiter", ".markers", "security-gate-passed")
-        if not marker_fresh(marker, 30):
+        if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
         approved = _marker_set(root, "security-gate-passed")

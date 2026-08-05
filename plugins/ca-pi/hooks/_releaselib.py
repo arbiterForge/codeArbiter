@@ -221,17 +221,23 @@ class MissingRequiredKeyError(ReleaseTargetsError):
 
 
 # A `2.9.1`-style series tag is exactly `<prefix>MAJOR.MINOR.PATCH` — no
-# suffix. The anchored form already excludes pre-releases (`2.6.0-beta.1`).
+# suffix. The anchored form excludes pre-releases (`2.6.0-beta.1`) outright:
+# the trailing `$` rejects any tag carrying a suffix past MAJOR.MINOR.PATCH,
+# so a pre-release tag never matches this regex at all.
 #
-# _PRERELEASE_MARKERS is UNREACHABLE through the public API as shipped, not a
-# "second line of defense" as this comment previously claimed. The `$` anchor
-# below rejects every suffixed tag, so no tag can both match the regex AND
-# carry a marker in its prefix-stripped version portion — verified by probe.
-# It is retained as a guard that would become load-bearing if the anchor were
-# ever relaxed, and is tested via a monkeypatched unanchored matcher so the
-# behavior is proven rather than assumed. Whether to delete it outright or
-# make it genuinely reachable is tracked as an open question; do not read its
-# presence as evidence that suffixed tags are filtered twice.
+# Issue #568: this module used to also carry `_PRERELEASE_MARKERS = ("-beta",
+# "-rc", "-alpha")` and a second check in `last_tag_select` re-testing the
+# prefix-stripped version against it, documented as a "second line of
+# defense". That check was proven UNREACHABLE through the public API as
+# shipped — the anchor above already rejects every tag the marker check
+# could have caught, so no tag can both match the regex and carry a marker,
+# and mutating the tuple to `()` changed nothing observable. Deleted rather
+# than kept as unreachable dead code or made load-bearing by relaxing the
+# anchor: relaxing the anchor to admit a suffix would also newly admit
+# tags like `v1.0.0+build.5` and `v1.0.0.1` that this anchor currently
+# rejects wholesale, a behavior change with its own blast radius this
+# bug-fix cluster does not take on. If the anchor is ever relaxed, a second
+# check will need to be RE-ADDED deliberately, not un-deleted from history.
 _RELEASE_RE_CACHE = {}
 
 
@@ -243,8 +249,6 @@ def _release_re(prefix):
         _RELEASE_RE_CACHE[prefix] = rx
     return rx
 
-
-_PRERELEASE_MARKERS = ("-beta", "-rc", "-alpha")
 
 # A changelog section heading, in either the `## vX.Y.Z - DATE` form or the
 # Keep-a-Changelog `## [X.Y.Z] - DATE` bracket form. The capture is the bare
@@ -341,8 +345,9 @@ def _bare_version(tag):
 
 def last_tag_select(tags, prefix):
     """Return the highest SemVer tag in `tags` for ONE release series,
-    excluding pre-releases (`-beta`/`-rc`/`-alpha`). Returns NONE_SENTINEL
-    when the series has no release tag yet.
+    excluding pre-releases (`-beta`/`-rc`/`-alpha`) via the anchored
+    `_release_re` match alone (issue #568) — no separate marker check.
+    Returns NONE_SENTINEL when the series has no release tag yet.
 
     `prefix` selects the series and is REQUIRED — this repository's default
     was a repo-specific fact (which series is "the" release) and could not
@@ -370,14 +375,6 @@ def last_tag_select(tags, prefix):
             continue
         m = matcher.match(t)
         if not m:
-            continue
-        # Tested against the VERSION portion only, after the prefix is
-        # stripped — never the whole tag. A consumer's own prefix can
-        # legitimately contain one of these substrings (`web-beta-v`,
-        # `api-rc-v`); testing the whole tag would reject every one of that
-        # series' real releases, reading `<none>` as "never released" for a
-        # series that has releases.
-        if any(marker in t[len(prefix):] for marker in _PRERELEASE_MARKERS):
             continue
         ver = tuple(int(g) for g in m.groups())
         if best is None or ver > best[0]:

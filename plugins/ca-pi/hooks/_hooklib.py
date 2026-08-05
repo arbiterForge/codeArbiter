@@ -70,6 +70,22 @@
 #                                         section (#279 review)
 #   sensitive_scan_added_lines(diff_text) -> list[str]  diff_added_lines() narrowed to the
 #                                         H-09b/H-10b candidate set (exempt paths dropped)
+#   MARKER_FRESHNESS_MINUTES -> int        the single H-11 authoring-marker
+#                                         freshness window (30 minutes). Issue
+#                                         #567: this used to be five
+#                                         independent hardcoded `30` literals
+#                                         (pre-write.py, pre-edit.py,
+#                                         _bashguardlib.py, git-enforce.py,
+#                                         _protectedstatelib.py) with no
+#                                         import relationship, so widening or
+#                                         narrowing one silently desynced the
+#                                         window across enforcement flanks.
+#                                         Declared HERE, beside marker_fresh
+#                                         itself (the one freshness
+#                                         implementation every caller already
+#                                         delegates to) — every flank now
+#                                         imports this name rather than
+#                                         restating the literal.
 #   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
 #   write_text_atomic(path, text) -> None  crash-safe write (temp + os.replace)
 #   acquire_lock(path) -> handle|None     OS-owned cross-process file lock (#271 C-2);
@@ -379,6 +395,18 @@ def release_lock(handle):
             handle.close()
         except OSError:
             pass
+
+
+# The H-11 authoring-marker freshness window (issue #567) — the single
+# declaration every `marker_fresh(marker, minutes)` call site resolves by
+# import. Previously five independent `30` literals (pre-write.py,
+# pre-edit.py, _bashguardlib.py, git-enforce.py, _protectedstatelib.py) with
+# no shared source, so a change to one never propagated to the others and
+# nothing went red. All five call sites use this exact marker-freshness
+# shape (a marker file minted immediately before a gated action and checked
+# fresh at the point of use) with no documented reason to diverge, so this is
+# ONE window, not several disguised as one.
+MARKER_FRESHNESS_MINUTES = 30
 
 
 def marker_fresh(path, minutes):

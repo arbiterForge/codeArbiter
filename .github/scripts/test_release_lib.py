@@ -1856,40 +1856,33 @@ class CorePrereleaseMarkerScopeTest(unittest.TestCase):
             core_releaselib.last_tag_select(tags, "thing-alpha-v"), "thing-alpha-v0.2.0")
 
 
-class CorePrereleaseMarkersSecondLineOfDefenseTest(unittest.TestCase):
-    """Adversarial-review remediation (M-4, 2026-07-31): `_PRERELEASE_MARKERS`
-    is documented in `core/pysrc/_releaselib.py` as an explicit SECOND line of
-    defense behind the anchored `_release_re` matcher — but `_release_re`'s
-    own trailing `$` already rejects any tag carrying a suffix past
-    `MAJOR.MINOR.PATCH`, so a marker-bearing tag never reaches the
-    `_PRERELEASE_MARKERS` check at all through the public `last_tag_select`
-    API today. Mutating `_PRERELEASE_MARKERS` to `()` therefore changes
-    NOTHING observable through that path — confirmed empirically, and
-    exactly what the review found ("survives both suites").
+class CorePrereleaseMarkersRemovedTest(unittest.TestCase):
+    """Issue #568: `_PRERELEASE_MARKERS` and its second `last_tag_select`
+    check were confirmed unreachable through the public API — the anchored
+    `_release_re`'s trailing `$` already rejects any tag carrying a suffix
+    past `MAJOR.MINOR.PATCH`, so no tag could ever both match the regex and
+    carry a marker in its stripped version portion (proven by the deleted
+    `CorePrereleaseMarkersSecondLineOfDefenseTest`, which monkeypatched an
+    UNANCHORED matcher to reach it at all — the only way to exercise code
+    that has no live caller). Deleted rather than kept as unreachable dead
+    code or made load-bearing by relaxing the anchor (that option changes
+    behavior — it would newly admit `v1.0.0+build.5`/`v1.0.0.1`-shaped tags
+    the anchor currently rejects wholesale — and needs its own deliberate
+    analysis, out of scope for this bug-fix cluster).
 
-    A bare `assertEqual(_PRERELEASE_MARKERS, (...))` would die to that
-    mutant too, but would prove only that the tuple's literal value is
-    pinned, not that the defense DOES anything — the constant could be
-    renamed to nonsense words and that test would still only check its own
-    copy of the value. This test instead exercises the second line of
-    defense in the scenario it exists FOR: a hypothetical relaxation of the
-    first line. It monkeypatches `_release_re` to an UNANCHORED matcher (no
-    trailing `$`) for the duration of one call, so a marker-bearing "version"
-    now clears the (weakened) regex and reaches the `_PRERELEASE_MARKERS`
-    check on its own merits — the only way to make this line reachable
-    without weakening the shipped regex itself, which is out of scope here.
-    """
+    `CorePrereleaseMarkerScopeTest` above already proves the property that
+    matters (a prefix containing "beta"/"rc"/"alpha" still resolves its own
+    releases) continues to hold with the anchor alone. This test instead
+    pins that the dead code is actually GONE, so a future edit cannot
+    silently reintroduce it — a mutant re-adding
+    `_PRERELEASE_MARKERS = ("-beta", "-rc", "-alpha")` anywhere in the
+    module fails this test."""
 
-    def test_marker_check_still_excludes_when_the_regex_alone_would_not(self):
-        import re as _re
-        import unittest.mock as mock
-        lax = _re.compile(r"^v(\d+)\.(\d+)\.(\d+)")  # deliberately no trailing $
-        with mock.patch.object(core_releaselib, "_release_re", return_value=lax):
-            tags = ["v1.0.0", "v1.1.0-beta.1"]
-            # Under the lax regex alone, "v1.1.0-beta.1" matches (span
-            # v1.1.0) and is numerically higher than v1.0.0 — only
-            # _PRERELEASE_MARKERS can still exclude it here.
-            self.assertEqual(core_releaselib.last_tag_select(tags, "v"), "v1.0.0")
+    def test_the_dead_marker_tuple_no_longer_exists(self):
+        self.assertFalse(
+            hasattr(core_releaselib, "_PRERELEASE_MARKERS"),
+            "_PRERELEASE_MARKERS was deleted as unreachable dead code "
+            "(issue #568) and must not reappear")
 
 
 class CoreColonInValueTest(unittest.TestCase):

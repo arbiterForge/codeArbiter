@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.4.10] — 2026-08-05
+
+### Fixed
+
+- The H-11 authoring-marker freshness window is now declared exactly once (`_hooklib.MARKER_FRESHNESS_MINUTES`) and imported by every enforcement flank (`pre-write.py`, `pre-edit.py`, `_bashguardlib.py`, `git-enforce.py`, `_protectedstatelib.py`), instead of five independently hardcoded copies of the same literal (#567).
+- `_releaselib.py`'s unreachable `_PRERELEASE_MARKERS` dead code is removed (#568).
+
 ## [0.4.0] — 2026-08-01
 
 ### Added

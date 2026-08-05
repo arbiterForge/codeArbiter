@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-08-05
+
+### Fixed
+
+- The H-11 authoring-marker freshness window is now declared exactly once (`_hooklib.MARKER_FRESHNESS_MINUTES`) and imported by every enforcement flank, instead of five independently hardcoded copies of the same literal (#567).
+- `_releaselib.py`'s unreachable `_PRERELEASE_MARKERS` dead code is removed (#568).
+
 ## [0.2.6] - 2026-08-05
 
 ### Changed

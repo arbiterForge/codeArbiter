@@ -1,6 +1,6 @@
 {
   "name": "ca-pi",
-  "version": "0.2.6",
+  "version": "0.2.11",
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",
