@@ -29,9 +29,11 @@ apply, then:
    `medium-documents` leaf, and apply at least the §3.A em-dash ban and the §3.B copy self-audit to the
    prose. Then `gh pr create`; return the URL.
 6. **Auto-attach the babysitter** — resolve the flag with the canonical resolver, never by eyeballing
-   the env var (so the accepted `on|true|1` spellings and the dormancy gate can't drift):
+   the env var (so the accepted `on|true|1` spellings and the dormancy gate can't drift). Resolve the
+   interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+   — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/babysit.py" --root "{{PROJECT_DIR}}" || python "{{PLUGIN_ROOT}}/hooks/babysit.py" --root "{{PROJECT_DIR}}"
+   "$PY" "{{PLUGIN_ROOT}}/hooks/babysit.py" --root "{{PROJECT_DIR}}"
    ```
    It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
    true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and

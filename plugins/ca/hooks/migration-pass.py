@@ -17,10 +17,9 @@
 # any edit changes the digest -> the backstop re-blocks (closing TOCTOU and
 # enforcing immutability at commit time).
 #
-# Invoked by skill prose as:
-#   python3 "<plugin>/hooks/migration-pass.py" || python "<plugin>/hooks/migration-pass.py"
-# (same interpreter-fallback shape as hooks.json; rerun-safe — recording is a
-# deterministic overwrite.)
+# Invoked by skill prose as (interpreter resolved once by presence, never a
+# `python3 X || python X` fold -- #577):
+#   "$PY" "<plugin>/hooks/migration-pass.py"
 
 import os
 import subprocess

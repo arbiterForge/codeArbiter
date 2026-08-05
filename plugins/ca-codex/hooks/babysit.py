@@ -7,9 +7,9 @@
 # underscore library itself as a script. Mirrors doctor.py / taskwrite.py:
 # entry point stays thin, all resolution logic lives in _babysitlib.
 #
-# Invoked by command prose as:
-#   python3 "<plugin>/hooks/babysit.py" --root "<dir>"
-#   || python "<plugin>/hooks/babysit.py" --root "<dir>"
+# Invoked by command prose as (interpreter resolved once by presence, never a
+# `python3 X || python X` fold -- #577):
+#   "$PY" "<plugin>/hooks/babysit.py" --root "<dir>"
 #
 # Prints one JSON line, e.g. {"enabled": true, "on_red": "propose"}. Fail-safe:
 # _babysitlib.main() itself never raises past its own try/except (any resolver

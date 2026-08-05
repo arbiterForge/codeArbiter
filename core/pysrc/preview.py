@@ -9,9 +9,10 @@
 # doctor.py / taskwrite.py: entry point stays thin, all logic lives in
 # _previewlib.
 #
-# Invoked by commands/preview.md as:
-#   python3 "<plugin>/hooks/preview.py" diff    || python "<plugin>/hooks/preview.py" diff
-#   python3 "<plugin>/hooks/preview.py" secrets || python "<plugin>/hooks/preview.py" secrets
+# Invoked by commands/preview.md as (interpreter resolved once by presence,
+# never a `python3 X || python X` fold -- #577):
+#   "$PY" "<plugin>/hooks/preview.py" diff
+#   "$PY" "<plugin>/hooks/preview.py" secrets
 #
 # Read-only, mirrors _previewlib's own read-only contract (git rev-parse/diff/
 # ls-files and read-only file opens only): this wrapper writes nothing.
