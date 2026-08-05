@@ -12,6 +12,19 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.6] — 2026-08-05
+
+### Changed
+
+- The orchestrator persona is restructured on measured A/B evidence (#609):
+  hard rules move to the head of the document, a rationalization guard and a
+  letter-vs-spirit rule intercept gate-skipping, every user-facing ask leads
+  with a recommendation and its strongest counter-case, a suspicious gate is
+  diagnosed before any bypass, and the startup-presentation instructions move
+  out of the always-on persona and into the SessionStart briefing itself —
+  roughly 20% shorter always-on persona with no observed behavioral
+  regression across the tested scenario suite.
+
 ## [2.11.5] — 2026-08-04
 
 ### Changed
