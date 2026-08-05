@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-08-05
+
+### Fixed
+
+- H-05/H-11/H-18 (audit logs, ADRs, `CONTEXT.md`) gain the interpreter leg H-22/H-19 already carried, closing an inline-code one-liner bypass (`python3 -c`, `py -c`, `pwsh -Command`) (#574).
+- H-22's git-restore leg now also covers restoring a registered file's enclosing directory, and a package manager's `install` subcommand no longer false-blocks against coreutils' `install` verb (#575).
+- The Codex host notes' audit-log append recipe no longer directs Windows PowerShell 5.1 users to bare `>>`, which can write a UTF-16LE tail onto an existing UTF-8 log; it now uses an explicit UTF-8-no-BOM append with a documented verification step (#594).
+
 ## [0.2.6] - 2026-08-05
 
 ### Changed

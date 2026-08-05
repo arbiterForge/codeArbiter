@@ -16,7 +16,25 @@ bodies name *actions* — this file is where those actions map to this host.
 - **Append-only audit logs** (`overrides.log`, `gate-events.log`,
   `sprint-log.md`): patch-based edits are positional and BLOCK outright —
   append via shell redirection (`>>`), which the exec gate permits for
-  tail-appends.
+  tail-appends. **On Windows PowerShell 5.1, do not use bare `>>` (or
+  `Add-Content`) against an existing UTF-8 log.** PowerShell 5.1's default
+  redirection/cmdlet encoding is UTF-16LE, not UTF-8 — appending with `>>`
+  writes the NEW tail as UTF-16LE while the EXISTING file stays UTF-8,
+  introducing NUL bytes and forcing a destructive H-05 override to repair
+  (#594). Use an explicit UTF-8-no-BOM append instead:
+
+  ```powershell
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  [System.IO.File]::AppendAllText('.codearbiter/sprint-log.md', $entry, $utf8NoBom)
+  ```
+
+  This is a plain PowerShell statement (no `powershell`/`pwsh` sub-invocation
+  token on the line), so it reads as an ordinary append to the exec gate —
+  exactly like `>>` — while forcing the encoding the file already uses.
+  **Verify before trusting the write**: a UTF-16LE tail introduces a NUL
+  byte after every ASCII character, so `Select-String -Path
+  .codearbiter/sprint-log.md -Pattern "\x00" -Encoding Byte` returning no
+  match confirms the file stayed single-byte UTF-8 end to end.
 
 ## Degraded / pending surfaces (ledgered in docs/parity.md)
 

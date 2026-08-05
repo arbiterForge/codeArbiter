@@ -241,6 +241,27 @@ def main():
                     "git restore notes.txt; cat .codearbiter/overrides.log"):
             expect_allow(fx, cmd, f"H-05 allow: {cmd}")
 
+        # ---- #574: H-05 had NO interpreter leg — an inline-code one-liner
+        # walked past both LOG_TRUNC_RE and LOG_DESTROY_RE, since neither
+        # regex ever looks for an interpreter token.
+        for cmd in (
+            'python -c "open(\'.codearbiter/overrides.log\', \'w\').write(\'x\')"',
+            'python3 -c "open(\'.codearbiter/overrides.log\', \'w\').write(\'x\')"',
+            # `py` is THE Windows Python launcher, and `pwsh`/`powershell`
+            # were absent from the pre-#564 interpreter list entirely.
+            'py -c "open(\'.codearbiter/sprint-log.md\', \'w\').write(\'x\')"',
+            'pwsh -Command "[IO.File]::WriteAllText(\'.codearbiter/gate-events.log\', \'x\')"',
+            'node -e "require(\'fs\').writeFileSync(\'.codearbiter/triage.log\', \'x\')"',
+            # multi-line -c payload: token and log name on different lines
+            # of the SAME invocation must still be seen.
+            "python3 -c \"\nopen('.codearbiter/overrides.log', 'w').write('x')\n\"",
+        ):
+            expect_block(fx, cmd, "H-05", f"H-05 block (interp leg, #574): {cmd}")
+        # must not over-block a benign interpreter call that never names an
+        # audit log anywhere on the line.
+        for cmd in ('python -c "print(1)"', 'node -e "console.log(1)"'):
+            expect_allow(fx, cmd, f"H-05 allow (benign interpreter, #574): {cmd}")
+
         # ---- H-11: no shell writes into .codearbiter/decisions/ --------------
         for cmd in ("echo '# fake ADR' > .codearbiter/decisions/0009-fake.md",
                     "echo '# fake ADR' >| .codearbiter/decisions/0009-fake.md",
@@ -256,6 +277,18 @@ def main():
                     "ls .codearbiter/decisions/",
                     "grep -r seed .codearbiter/decisions/"):
             expect_allow(fx, cmd, f"H-11 allow: {cmd}")
+
+        # ---- #574: H-11 had NO interpreter leg — the identical gap as H-05,
+        # for the decisions/ directory rather than a single audit-log name.
+        for cmd in (
+            'python -c "open(\'.codearbiter/decisions/0009-fake.md\', \'w\').write(\'x\')"',
+            'python3 -c "open(\'.codearbiter/decisions/0009-fake.md\', \'w\').write(\'x\')"',
+            'py -c "open(\'.codearbiter/decisions/0009-fake.md\', \'w\')"',
+            'pwsh -Command "[IO.File]::WriteAllText(\'.codearbiter/decisions/0009-fake.md\', \'x\')"',
+        ):
+            expect_block(fx, cmd, "H-11", f"H-11 block (interp leg, #574): {cmd}")
+        for cmd in ('python -c "print(1)"', 'node -e "console.log(1)"'):
+            expect_allow(fx, cmd, f"H-11 allow (benign interpreter, #574): {cmd}")
 
         # ---- #528: the arbitration log is H-05, not H-11 ---------------------
         # decisions/decision-log.md is the append-only SMARTS log, not an ADR.

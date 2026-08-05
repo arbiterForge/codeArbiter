@@ -82,6 +82,25 @@ class TestContextShellFlank(_PreBashFixture):
     def test_read_context_is_allowed(self):
         self.assertAllowed(self.run_bash("cat .codearbiter/CONTEXT.md"))
 
+    # #574: H-18 had NO interpreter leg — an inline-code one-liner walked
+    # past both CONTEXT_REDIRECT_RE and CONTEXT_WRITE_RE, the identical gap
+    # H-05/H-11 carried for the audit logs / decisions directory.
+    def test_python_c_one_liner_rewriting_context_is_blocked(self):
+        self.assertBlocked(self.run_bash(
+            "python3 -c \"open('.codearbiter/CONTEXT.md', 'w').write('x')\""), "H-18")
+
+    def test_py_launcher_one_liner_rewriting_context_is_blocked(self):
+        self.assertBlocked(self.run_bash(
+            "py -c \"open('.codearbiter/CONTEXT.md', 'w').write('x')\""), "H-18")
+
+    def test_pwsh_one_liner_rewriting_context_is_blocked(self):
+        self.assertBlocked(self.run_bash(
+            "pwsh -Command \"[IO.File]::WriteAllText('.codearbiter/CONTEXT.md', 'x')\""),
+            "H-18")
+
+    def test_benign_interpreter_call_is_still_allowed(self):
+        self.assertAllowed(self.run_bash('python -c "print(1)"'))
+
 
 class TestGateMarkerShellFlank(_PreBashFixture):
     def test_redirect_forge_security_marker_is_blocked(self):
