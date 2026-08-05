@@ -11,6 +11,31 @@ All notable changes to `ca-pi` are documented in this file.
 - The H-11 authoring-marker freshness window is now declared exactly once (`_hooklib.MARKER_FRESHNESS_MINUTES`) and imported by every enforcement flank, instead of five independently hardcoded copies of the same literal (#567).
 - `_releaselib.py`'s unreachable `_PRERELEASE_MARKERS` dead code is removed (#568).
 
+## [0.2.9] - 2026-08-05
+
+### Fixed
+
+- A linked-worktree session running `security-pass.py`/`migration-pass.py`
+  bare (no `CLAUDE_PROJECT_DIR` in that shell) recorded a gate pass at the
+  worktree's own (gitignored) `.codearbiter/.markers/`, invisible to the
+  H-09b/H-10b/H-14 commit guards, which read markers from the main checkout.
+  A new `marker_root()` host seam gives both sides the same answer without
+  moving the diff/migration scan root itself (#604).
+
+## [0.2.8] - 2026-08-05
+
+### Fixed
+
+- H-05/H-11/H-18 (audit logs, ADRs, `CONTEXT.md`) gain the interpreter leg H-22/H-19 already carried, closing an inline-code one-liner bypass (`python3 -c`, `py -c`, `pwsh -Command`) (#574).
+- H-22's git-restore leg now also covers restoring a registered file's enclosing directory, and a package manager's `install` subcommand no longer false-blocks against coreutils' `install` verb (#575).
+- The Codex host notes' audit-log append recipe no longer directs Windows PowerShell 5.1 users to bare `>>`, which can write a UTF-16LE tail onto an existing UTF-8 log; it now uses an explicit UTF-8-no-BOM append with a documented verification step (#594).
+
+## [0.2.7] - 2026-08-05
+
+### Fixed
+
+- Every routine/skill surface that spelled the interpreter fallback as `python3 X || python X` now resolves the interpreter once, by presence, before invoking a helper (#577), so a helper answer that carries information in a nonzero exit code is no longer silently re-run and replaced by a second run's verdict.
+
 ## [0.2.6] - 2026-08-05
 
 ### Changed

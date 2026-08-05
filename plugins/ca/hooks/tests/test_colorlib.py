@@ -345,8 +345,74 @@ if sl.V2 != sl._colorlib.V2 or sl._boxlib._V0 != sl._colorlib.V0 \
 """
             env = dict(os.environ, PYTHONPATH=_HOOKS_DIR, CODEARBITER_THEME="custom",
                        CODEARBITER_THEME_FILE=path, COLUMNS="80")
+            # #552: without an explicit cwd, this subprocess inherits the test
+            # RUNNER's cwd, and project_root() (no CLAUDE_PROJECT_DIR, no
+            # payload cwd) falls back to a git-toplevel/`.codearbiter` climb
+            # from THERE — on a maintainer's own checkout (as opposed to a
+            # pristine CI clone) that resolves to the REAL repo, and `combined`
+            # then includes whatever real gate-events.log/overrides.log state
+            # happens to be lying around. `tmp` has neither `.git` nor
+            # `.codearbiter`, so the climb finds nothing and `arb` renders
+            # absent — the "required colors present" assertion below no longer
+            # depends on which segments the maintainer's own audit trail
+            # happens to turn on or off.
             run = subprocess.run([sys.executable, "-c", script], text=True,
-                                 capture_output=True, env=env)
+                                 capture_output=True, env=env, cwd=tmp)
+            self.assertEqual(run.returncode, 0, run.stderr)
+
+    def test_custom_palette_survives_arbitrary_appended_codearbiter_state(self):
+        # #552 AC-2: proven by APPENDING rows in the test's OWN fixture, not by
+        # hoping the maintainer's real repo happens not to trip it. Builds a
+        # `.codearbiter/` with a heavily "dirty" audit trail — many override
+        # rows, many gate-event rows, several in-flight tasks, an unresolved
+        # open question — the exact shape #552 reports growing over a repo's
+        # lifetime, and renders the custom-palette statusline against it. Every
+        # required color must still appear regardless of which segments that
+        # state happens to switch on (the arb line's tasks/q/over counts all
+        # render non-zero here, on purpose — the maximally adversarial case).
+        with tempfile.TemporaryDirectory() as tmp:
+            theme_path = os.path.join(tmp, "theme.json")
+            with open(theme_path, "w", encoding="utf-8") as handle:
+                json.dump({"accent": {"deep": "#010203", "primary": "#040506",
+                                       "bright": "#070809"},
+                           "text": {"muted": "#0a0b0c", "normal": "#0d0e0f"},
+                           "gradient": {"from": "#101112", "to": "#131415"}}, handle)
+            ca = os.path.join(tmp, ".codearbiter")
+            os.makedirs(ca)
+            with open(os.path.join(ca, "CONTEXT.md"), "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+            with open(os.path.join(ca, "overrides.log"), "w", encoding="utf-8") as f:
+                f.write("".join(f"2026-01-{n:02d} override #{n} logged\n"
+                                for n in range(1, 41)))
+            with open(os.path.join(ca, "gate-events.log"), "w", encoding="utf-8") as f:
+                f.write("".join(f"2026-01-{n:02d} PASS H-09b gate-event #{n}\n"
+                                for n in range(1, 201)))
+            with open(os.path.join(ca, "open-tasks.md"), "w", encoding="utf-8") as f:
+                f.write("- [~] task one (started 2026-01-01)\n"
+                        "- [~] task two (started 2026-01-02)\n"
+                        "- [ ] task three queued\n")
+            with open(os.path.join(ca, "open-questions.md"), "w", encoding="utf-8") as f:
+                f.write("CONFIRM-01: an unresolved open question\n")
+            script = """
+import json, statusline as sl
+payload = json.dumps({'session_id': 'adversarial-state', 'model': {'display_name': 'Test'},
+                      'context_window': {'used_percentage': 20}})
+sl.git_dirty = lambda _root: True
+out = sl.render(payload)
+box = sl._boxlib.Box(40)
+box.top('status')
+combined = out + box.render() + sl._fmtlib.sparkline([1, 2, 3]) \\
+           + sl._segmentslib.seg_pr({'pr': {'number': 1, 'state': 'merged'}})
+required = [(1,2,3), (4,5,6), (7,8,9), (10,11,12), (13,14,15),
+            (16,17,18), (19,20,21)]
+missing = [rgb for rgb in required if sl.fg(*rgb) not in combined]
+if missing:
+    raise AssertionError('missing custom colors under adversarial state: %r' % (missing,))
+"""
+            env = dict(os.environ, PYTHONPATH=_HOOKS_DIR, CODEARBITER_THEME="custom",
+                       CODEARBITER_THEME_FILE=theme_path, COLUMNS="80")
+            run = subprocess.run([sys.executable, "-c", script], text=True,
+                                 capture_output=True, env=env, cwd=tmp)
             self.assertEqual(run.returncode, 0, run.stderr)
 
     def test_concurrent_theme_switches_never_mix_consumer_palettes(self):

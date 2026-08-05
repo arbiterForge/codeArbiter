@@ -11,8 +11,8 @@ remediation.
 
 ## Flow
 
-1. Run `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/doctor.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/doctor.py"`
-   and present its report verbatim.
+1. Resolve the interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python` — never `python3 X || python X`, which reruns X on any nonzero exit and reports the second run's code instead of the first's (#577). Run
+   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/doctor.py"` and present its report verbatim.
 2. In an arbiter-enabled repo, attempt `git add --all --dry-run` via Bash. `[H-03]` means hooks are
    firing; execution means **CRITICAL: gates dormant**.
 

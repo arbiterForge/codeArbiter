@@ -32,6 +32,7 @@ ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
 import _hooklib  # noqa: E402
+from _helpers import durable_plugin_copy  # noqa: E402
 
 
 def _load_git_enforce():
@@ -69,8 +70,26 @@ class _GitFixture(unittest.TestCase):
         _git(["config", "user.name", "harness"], self.root)
         os.makedirs(os.path.join(self.root, ".codearbiter"))
         self._write(os.path.join(self.root, ".codearbiter", "CONTEXT.md"), self.ARBITER)
+        # #604 test-fidelity: this suite may itself be running from inside a
+        # LINKED WORKTREE (subagents do this routinely). `_githooks._enforcer_path()`
+        # resolves from `_githooks.py`'s own `__file__` — when that's the worktree's
+        # copy, `is_ephemeral_path()` (#441/ADR-0014) correctly REFUSES to pin it
+        # into a fixture repo's shared drop-in dir (an ephemeral path must never be
+        # written into a config that is meant to outlive the process), which
+        # silently no-ops every `_githooks.install()` call below and fails every
+        # real-git-hook-firing test here for reasons having nothing to do with what
+        # they assert. `durable_plugin_copy` gives `_githooks` a plain-temp-dir
+        # (never ephemeral) copy of the whole hooks payload to resolve its own
+        # enforcer path from instead — the same #442 fix already applied to the
+        # statusline-pin suites, so "durable" is a property of the FIXTURE, not of
+        # wherever the developer/subagent happened to run the suite from.
+        durable_root = durable_plugin_copy(self._tmp.name)
+        self._enforcer_patch = mock.patch.object(
+            _githooks, "__file__", os.path.join(durable_root, "hooks", "_githooks.py"))
+        self._enforcer_patch.start()
 
     def tearDown(self):
+        self._enforcer_patch.stop()
         self._tmp.cleanup()
 
     def _write(self, path, text):

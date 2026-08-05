@@ -144,5 +144,137 @@ class BaseHostProjectRootTests(unittest.TestCase):
             self.assertEqual(os.path.realpath(got), os.path.realpath(payload_dir))
 
 
+def _init_repo(root, branch="main"):
+    os.makedirs(root)
+    r = subprocess.run(["git", "init", "-q", "-b", branch], cwd=root,
+                       capture_output=True, timeout=30)
+    if r.returncode != 0:
+        return False
+    subprocess.run(["git", "config", "user.email", "h@example.com"], cwd=root,
+                   capture_output=True, timeout=30)
+    subprocess.run(["git", "config", "user.name", "h"], cwd=root,
+                   capture_output=True, timeout=30)
+    with open(os.path.join(root, "seed.txt"), "w", encoding="utf-8") as f:
+        f.write("seed\n")
+    subprocess.run(["git", "add", "seed.txt"], cwd=root, capture_output=True, timeout=30)
+    r = subprocess.run(["git", "commit", "-q", "-m", "seed"], cwd=root,
+                       capture_output=True, timeout=30)
+    return r.returncode == 0
+
+
+class GitWorktreeMainRootTests(unittest.TestCase):
+    """hostapi.git_worktree_main_root(root) — #604's escalation from a linked
+    worktree's own checkout to the MAIN checkout that owns the shared `.git`
+    directory. Used by Host.marker_root() (below), NOT by Host.project_root()
+    itself — see both docstrings for why the split matters."""
+
+    def setUp(self):
+        if not _git_available():
+            self.skipTest("git unavailable")
+
+    def test_linked_worktree_resolves_to_main_checkout(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            if not _init_repo(main_checkout, branch="main"):
+                self.skipTest("git init/commit failed")
+            wt_dir = os.path.join(top, "linked-worktree")
+            r = subprocess.run(
+                ["git", "worktree", "add", "-b", "feat/x", wt_dir], cwd=main_checkout,
+                capture_output=True, text=True, timeout=30)
+            if r.returncode != 0:
+                self.skipTest(f"git worktree add failed: {r.stderr}")
+            got = hostapi.git_worktree_main_root(wt_dir)
+            self.assertIsNotNone(got)
+            self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
+
+    def test_ordinary_repo_returns_none(self):
+        # An ordinary checkout's `.git` is a DIRECTORY -- nothing to escalate.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            repo = os.path.join(top, "repo")
+            if not _init_repo(repo):
+                self.skipTest("git init failed")
+            self.assertIsNone(hostapi.git_worktree_main_root(repo))
+
+    def test_non_repo_path_returns_none(self):
+        with tempfile.TemporaryDirectory() as plain:
+            self.assertIsNone(hostapi.git_worktree_main_root(plain))
+
+    def test_submodule_style_gitfile_is_not_mistaken_for_a_worktree(self):
+        # A submodule's `.git` is ALSO a FILE, but its `gitdir:` pointer names
+        # `.git/modules/<name>`, never `.git/worktrees/<name>` -- must return
+        # None, not climb to some unrelated "main root".
+        with tempfile.TemporaryDirectory() as top:
+            fake_submodule = os.path.join(top, "sub")
+            os.makedirs(fake_submodule)
+            with open(os.path.join(fake_submodule, ".git"), "w", encoding="utf-8") as f:
+                f.write(f"gitdir: {top}/.git/modules/sub\n")
+            self.assertIsNone(hostapi.git_worktree_main_root(fake_submodule))
+
+
+class MarkerRootTests(unittest.TestCase):
+    """hostapi.Host.marker_root — #604: agrees with project_root() everywhere
+    EXCEPT a linked worktree with no CLAUDE_PROJECT_DIR, where it climbs to
+    the main checkout instead of the worktree's own (gitignored-markers)
+    checkout — the root security-pass.py/migration-pass.py now write to, and
+    the H-09b/H-10b/H-14 guard now agrees with (see test_security_pass.py /
+    test_repo_resolution.py for the end-to-end proof)."""
+
+    def setUp(self):
+        self.host = hostapi.Host()
+        self._env = os.environ.get("CLAUDE_PROJECT_DIR")
+        self._cwd = os.getcwd()
+        if not _git_available():
+            self.skipTest("git unavailable")
+
+    def tearDown(self):
+        os.chdir(self._cwd)
+        if self._env is None:
+            os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        else:
+            os.environ["CLAUDE_PROJECT_DIR"] = self._env
+
+    def test_ordinary_repo_matches_project_root(self):
+        os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            repo = os.path.join(top, "repo")
+            if not _init_repo(repo):
+                self.skipTest("git init failed")
+            os.chdir(repo)
+            self.assertEqual(
+                os.path.realpath(self.host.marker_root()),
+                os.path.realpath(self.host.project_root()))
+
+    def test_claude_project_dir_still_wins_first(self):
+        # Byte-identity with project_root()'s own leg 1 -- marker_root() must
+        # not invent a second, different env-var precedence.
+        with tempfile.TemporaryDirectory() as env_dir:
+            os.environ["CLAUDE_PROJECT_DIR"] = env_dir
+            self.assertEqual(os.path.realpath(self.host.marker_root()),
+                             os.path.realpath(env_dir))
+
+    def test_linked_worktree_cwd_escalates_to_main_checkout_when_env_unset(self):
+        # The #604 case: security-pass.py invoked bare via Bash (no
+        # CLAUDE_PROJECT_DIR in that shell), cwd inside a linked worktree --
+        # marker_root() must name the MAIN checkout, not the worktree.
+        os.environ.pop("CLAUDE_PROJECT_DIR", None)
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            if not _init_repo(main_checkout, branch="main"):
+                self.skipTest("git init/commit failed")
+            wt_dir = os.path.join(top, "linked-worktree")
+            r = subprocess.run(
+                ["git", "worktree", "add", "-b", "feat/y", wt_dir], cwd=main_checkout,
+                capture_output=True, text=True, timeout=30)
+            if r.returncode != 0:
+                self.skipTest(f"git worktree add failed: {r.stderr}")
+            os.chdir(wt_dir)
+            # project_root() stays worktree-local (the diff-scan contract) --
+            # marker_root() alone climbs.
+            self.assertEqual(os.path.realpath(self.host.project_root()),
+                             os.path.realpath(wt_dir))
+            self.assertEqual(os.path.realpath(self.host.marker_root()),
+                             os.path.realpath(main_checkout))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -26,6 +26,65 @@ predate the plugin rewrite and are grouped by date.
   unreachable behind the anchored release-tag regex — is removed rather than
   left as unexplained dead code shipped to every consumer (#568).
 
+## [2.11.10] — 2026-08-05
+
+### Fixed
+
+- Linked-worktree sessions could record a security/migration gate pass that
+  the H-09b/H-10b/H-14 commit guards would never see: `security-pass.py` and
+  `migration-pass.py`, run bare via a Bash tool call (no `CLAUDE_PROJECT_DIR`
+  in that shell), wrote their marker under the worktree's own (gitignored)
+  `.codearbiter/.markers/`, while the guards read it from the main checkout.
+  A new `marker_root()` seam (`hostapi.Host`) gives both sides the same
+  main-checkout answer without moving the diff/migration SCAN root, which
+  must stay bound to the tree actually being committed (#604).
+- `test_colorlib.py`'s palette-compatibility tests read the real project's
+  `.codearbiter/` state when rendered via subprocess with no explicit `cwd`,
+  so a maintainer's own accumulated audit-log rows could make a required
+  custom-palette color intermittently disappear from the assertion window.
+  Isolated to a synthetic, in-fixture `.codearbiter/` (or none at all), plus
+  a new test that appends adversarial override/gate-event/task rows and
+  proves the palette-completeness check still holds (#552).
+- Ten `test_git_hooks.py`/`test_repo_resolution.py` tests failed whenever the
+  suite itself ran from inside a linked git worktree (subagents do this
+  routinely): `_githooks`'s own `__file__` resolved to an ephemeral path,
+  which the existing `is_ephemeral_path` safety check (#441/ADR-0014)
+  correctly refused to register into a fixture's shared drop-in dir. Fixtures
+  now resolve `_githooks`'s enforcer path from a durable temp-dir copy of the
+  hooks payload (`durable_plugin_copy`, the #442 fix's existing pattern).
+
+## [2.11.9] — 2026-08-05
+
+### Fixed
+
+- H-05/H-11/H-18 (the `.codearbiter` audit logs, ADRs under `decisions/`, and
+  `CONTEXT.md`) gain the interpreter leg H-22/H-19 already carried — an
+  inline-code one-liner (`python3 -c "open('overrides.log','w')..."`, `py
+  -c`, `pwsh -Command`) no longer walks past all three shell flanks (#574).
+- H-22's git-restore leg now also covers restoring the ENCLOSING DIRECTORY
+  of a registered file (`git checkout HEAD -- .codearbiter/`), not only the
+  bare basename, and a package manager's `install` SUBCOMMAND (`pip
+  install`, `npm install`, `cargo install`, …) no longer false-blocks
+  against coreutils' `install` verb (#575).
+- The Codex host notes' hook-safe audit-log append recipe no longer directs
+  Windows PowerShell 5.1 users to bare `>>`, which can write a UTF-16LE tail
+  onto an existing UTF-8 log; the recipe now uses an explicit UTF-8-no-BOM
+  `[System.IO.File]::AppendAllText` append with a documented verification
+  step (#594).
+
+## [2.11.8] — 2026-08-05
+
+### Fixed
+
+- Every command/skill surface that spelled the interpreter fallback as
+  `python3 X || python X` now resolves the interpreter once, by presence,
+  before invoking a helper (#577). The `||` fold branches on the helper's
+  EXIT CODE, so any helper answer that carries information as a nonzero code
+  (e.g. `taskwrite.py archive`'s "archive could not be read") got silently
+  re-run under `python` and had its verdict replaced by the second run's.
+  `plugins/*/hooks/hooks.json` is deliberately unchanged — its pass/fail
+  hooks carry no exit-code vocabulary to lose.
+
 ## [2.11.7] — 2026-08-05
 
 ### Changed

@@ -46,8 +46,10 @@ Heavier path (all required, in order):
    ```
    [ISO-8601] | BY: <email> | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
    ```
-4. **Only then** record the bypass. For the crypto/secret commit gate, that means running
-   `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py" || python "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"`,
+4. **Only then** record the bypass. For the crypto/secret commit gate, that means resolving the
+   interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+   — never `python3 X || python X`, which reruns X on any nonzero exit (#577), and running
+   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"`,
    which writes `<project-root>/.codearbiter/.markers/security-gate-passed` bound to the
    sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
    steps 1–3, never to skip the gate proper.

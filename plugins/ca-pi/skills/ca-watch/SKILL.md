@@ -32,9 +32,11 @@ a phantom watcher.
 3. **On red** — retrieve the failing job's logs (`gh run view --log-failed` /
    `gh pr checks`) and act at the configured depth. Resolve that depth with the
    canonical resolver rather than reading the env var by hand (so the accepted
-   values can't drift):
+   values can't drift). Resolve the interpreter once by presence —
+   `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+   — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   python3 "<plugin-root>/hooks/babysit.py" --root "<project-root>" || python "<plugin-root>/hooks/babysit.py" --root "<project-root>"
+   "$PY" "<plugin-root>/hooks/babysit.py" --root "<project-root>"
    ```
    It prints one JSON line; act at its `on_red` value (`CODEARBITER_BABYSIT_ONRED`,
    default `propose`):
