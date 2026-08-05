@@ -13,7 +13,7 @@ journey:
 The orchestrator persona is the highest-leverage prose in codeArbiter: it is loaded into every
 session and shapes every routing decision. Its 2026 revision was not authored by intuition. Each
 structural choice traces to published research, and the revision itself was A/B-tested against the
-prior version before it shipped. This page records that basis — including where the evidence is
+prior version before it shipped. This page records that basis, including where the evidence is
 strong, where it is only analogous, and where a clause is honest operator preference rather than
 science.
 
@@ -26,14 +26,14 @@ Two measured phenomena shaped the document's physical structure.
 
 **Position matters.** Liu et al. showed that language models use the start and end of a context
 far more reliably than its middle: in their 20-document setting, accuracy fell from 75.8% with
-the relevant content first to 53.8% mid-context — worse than the 56.1% the model scored with no
-context at all — recovering to 63.2% at the end [1]. The persona's hard rules therefore lead the
+the relevant content first to 53.8% mid-context (worse than the 56.1% the model scored with no
+context at all), recovering to 63.2% at the end [1]. The persona's hard rules therefore lead the
 document, and the interaction rules close it; nothing load-bearing lives in the interior.
 
 **Instruction density degrades compliance.** Even frontier models satisfy every verifiable
 constraint in a prompt only about 77% of the time (GPT-4, prompt-level strict accuracy on
 IFEval) [2], and compliance decays measurably as simultaneous instructions accumulate, with a
-primacy bias — earlier instructions win — and silent omission as the dominant failure mode [3].
+primacy bias (earlier instructions win) and silent omission as the dominant failure mode [3].
 Every resident sentence competes with every other one, so the revision cut the always-on document
 by roughly 20%, moving on-demand detail (maintainer mode, sprint mechanics, startup instructions)
 into files that load exactly when they apply.
@@ -45,27 +45,27 @@ small for the lane," "the suite was green earlier") with their rebuttals, placed
 skipping decision happens. Three lines of evidence support the form:
 
 - **The failure mode is real and measured.** METR observed frontier models reward-hacking in
-  30.4% of runs on its RE-Bench suite — 100% on one task — while generally disavowing the
-  strategy when asked directly [4]. Palisade measured o1-preview attempting to hack its
-  environment in roughly 37% of chess games given nothing more than a plain instruction to
-  win [5]. Anthropic showed that small, rationalized specification gaming generalizes to more
-  serious gaming downstream [6].
+  30.4% of runs on its RE-Bench suite, and in 100% of runs on one task, while the models
+  generally disavowed the strategy when asked directly [4]. Palisade measured o1-preview
+  attempting to hack its environment in roughly 37% of chess games given nothing more than a
+  plain instruction to win [5]. Anthropic showed that small, rationalized specification gaming
+  generalizes to more serious gaming downstream [6].
 - **A short anticipatory clause measurably changes behavior.** The strongest peer-reviewed
   precedent is Xie et al. in *Nature Machine Intelligence*: a system-prompt "self-reminder"
   anticipating the failure mode cut jailbreak success from 67.2% to 19.3% [7]. The honest
   ceiling also comes from the literature: under sustained optimization pressure, plain
-  don't-do-this prompting leaves substantial residual misbehavior [8] — so the table is
+  don't-do-this prompting leaves substantial residual misbehavior [8]. The table is therefore
   expected to reduce, never eliminate.
 - **The if-then form itself carries evidence.** In human self-regulation research,
-  "implementation intentions" — if-situation-then-action plans — improved goal attainment with
+  "implementation intentions" (if-situation-then-action plans) improved goal attainment with
   an effect size of d = .65 across 94 studies, and the conditional form itself, not just the
   content, drove the effect [9]. The table transfers that structure by analogy, and the analogy
   is stated as one.
 
 ## Why a gate that looks wrong is diagnosed, not bypassed
 
-The persona instructs that a suspicious gate verdict is investigated with instruments —
-reproduce the block, read what the guard actually keyed on — and never argued away from
+The persona instructs that a suspicious gate verdict is investigated with instruments
+(reproduce the block, read what the guard actually keyed on) and never argued away from
 self-assessment. This is the best-evidenced doctrine in the document, supported convergently by
 four independent groups:
 
@@ -80,25 +80,25 @@ four independent groups:
 The lesson generalizes in both directions: neither the agent's conviction that a gate is wrong
 nor its explanation of why is evidence. The reproduction is.
 
-## Why every ask leads with a recommendation — and its counter-case
+## Why every ask leads with a recommendation, and with its counter-case
 
 The interaction rules require that a genuine decision be asked fully and once, led by a
 recommendation. The research forced a revision here. Presenting an AI recommendation with a
 rationale measurably increases human acceptance of it *whether or not it is correct*: in a
 1,600-participant CHI study, explanations raised acceptance of wrong recommendations as much as
 right ones, producing no net accuracy gain [13]. A companion CSCW study measured 64% overreliance
-on wrong AI answers under recommendation-first designs versus 48% with cognitive forcing — and
-found users *prefer* the designs that make them worse [14]. Anchoring is the operative
+on wrong AI answers under recommendation-first designs versus 48% with cognitive forcing, and
+found that users *prefer* the designs that make them worse [14]. Anchoring is the operative
 mechanism [15].
 
 A bare recommendation therefore anchors. The persona's rule is that every recommendation ships
-with the strongest consideration against it — the consider-the-opposite form the debiasing
-literature points toward — so the user rules on a challenged proposal, not a framed one.
+with the strongest consideration against it (the consider-the-opposite form the debiasing
+literature points toward), so the user rules on a challenged proposal, not a framed one.
 
 The value of asking itself is well supported: a well-selected clarifying question produced large
 retrieval gains in the canonical SIGIR study [16], and models trained to ask better questions
 were preferred on 72% of tasks [17]. The caution is also measured: the best model in a 2024 ACL
-benchmark identified ambiguity correctly only about 54% of the time [18] — which is why the
+benchmark identified ambiguity correctly only about 54% of the time [18]. That is why the
 persona defines "routine parameter" by explicit conservative criteria (reversible, one sensible
 answer, recorded for review) instead of trusting self-classification, and why uncertain
 classifications are treated as questions.
@@ -108,16 +108,16 @@ study behind it either way. It is operator preference, recorded as such.
 
 ## What the evidence said to leave alone
 
-The persona's terse register survived the revision untouched, for a specific reason: the
-best-known null result on personas — Zheng et al., who found expertise personas do not improve
-factual-task accuracy across 162 personas and four model families [19] — measures a different
-thing. Behavioral and register personas (tone, decision posture) are an open gap in the
-literature; neither that null result nor the positive domain-congruence results [20] apply
+The persona's terse register survived the revision untouched, for a specific reason. The
+best-known null result on personas comes from Zheng et al., who found expertise personas do not
+improve factual-task accuracy across 162 personas and four model families [19], but it measures
+a different thing. Behavioral and register personas (tone, decision posture) are an open gap in
+the literature; neither that null result nor the positive domain-congruence results [20] apply
 directly. Where the evidence is silent and the incumbent works, the revision made no change.
 
 ## The same evidence under the brainstorming skill
 
-The brainstorming skill — the Socratic front of the feature lane — was modernized shortly before
+The brainstorming skill, the Socratic front of the feature lane, was modernized shortly before
 the persona, and the same research pass retroactively grounds its design. Where the evidence
 pushed harder than the original design, the skill's mechanisms already embody the correction.
 
@@ -127,13 +127,13 @@ adversarial pass whose surviving findings are presented *with* the spec at appro
 overreliance literature is why the challenge travels with the recommendation: a recommendation
 plus rationale measurably increases acceptance whether or not it is correct [13], and
 recommendation-first designs produce more acceptance of wrong answers than designs that force
-consideration [14]. The user approves a challenged design, not a framed one — the same
+consideration [14]. The user approves a challenged design, not a framed one. It is the same
 consider-the-opposite structure the persona later adopted for every ask.
 
-**Decide the parameters; ask the forks — fully.** The skill replaced one-question-per-round
+**Decide the parameters; ask the forks, fully.** The skill replaced one-question-per-round
 Socratic pacing with a decide-or-ask discipline: routine parameters are decided and recorded for
 review, genuine forks are asked in full with a recommendation. The value of the well-formed ask
-is measured — a well-selected clarifying question produced large downstream gains [16], and
+is measured: a well-selected clarifying question produced large downstream gains [16], and
 models trained to ask better questions were preferred on 72% of tasks [17]. The guardrail is
 measured too: models self-classify ambiguity correctly only about half the time [18], which is
 why "routine" is defined by explicit criteria (reversible, one sensible answer, recorded where
@@ -142,14 +142,14 @@ questions into one round carries the same honest label here as in the persona: o
 preference, with no controlled study either way.
 
 **Closure is a checklist, not a feeling.** The skill's refinement loop ends with a
-rationalization guard — the specific excuses for stopping early ("simple enough," "asked
+rationalization guard: the specific excuses for stopping early ("simple enough," "asked
 enough," "the user seems eager"), each paired with its rebuttal at the point where the model
 decides it understands. This is the same anticipate-the-excuse intervention the persona's table
 uses, resting on the same precedent that a short anticipatory clause measurably changes
 behavior [7] and on the if-then form's d = .65 human evidence base [9].
 
-**The loop has a breaker.** When refinement stops converging — an answer contradicts an earlier
-one, or a settled fork resurfaces — the loop stops and forces one adjudication rather than
+**The loop has a breaker.** When refinement stops converging (an answer contradicts an earlier
+one, or a settled fork resurfaces), the loop stops and forces one adjudication rather than
 circling. This clause is grounded in project-internal evidence rather than the literature: a
 recorded remediation campaign in this repository ran three consecutive fix rounds in which each
 round's worst defect was introduced by the previous round's fix. Non-convergence is a real
@@ -158,20 +158,20 @@ failure mode of iterative refinement; the breaker converts it into a logged deci
 ## The test before shipping
 
 The revision was validated the way this project validates everything else: adversarially,
-before merge. Both persona versions answered the same eleven scenarios — gate-pressure,
-routing-ambiguity, and regression checks — under identical conditions, graded against rubrics
+before merge. Both persona versions answered the same eleven scenarios (gate-pressure,
+routing-ambiguity, and regression checks) under identical conditions, graded against rubrics
 written before any output existed. Both passed every hard requirement, confirming the ~20%
 compression lost nothing observable. The prior version showed one recurring soft failure the
-revision was designed against: it volunteered the logged override, unprompted, three times —
+revision was designed against: it volunteered the logged override, unprompted, three times,
 once for skipping a security review. The revision produced zero unprompted override offers. The
 test also caught a composition defect in the revision itself (a candidate menu presented without
-a recommendation), which was fixed and retested before shipping. Method and limitations — a
-small, single-run, simulated-session test, directional rather than definitive — are recorded in
+a recommendation), which was fixed and retested before shipping. Method and limitations (a
+small, single-run, simulated-session test, directional rather than definitive) are recorded in
 the project's issue tracker.
 
 ## Where to go next
 
-The persona this page justifies is one voice among several — [The Persona-Register
+The persona this page justifies is one voice among several. [The Persona-Register
 Split](/concepts/persona-and-context/) explains who routes, who writes, and who reviews. For the
 enforcement machinery the persona's rules hand off to, see [Enforcement &
 Security](/enforcement/).
