@@ -10,6 +10,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 - The `brainstorming` routine is modernized for capable models: bundles split before refinement, candidate approaches shaped with one recommendation, parameter choices decided-and-recorded while genuine forks are asked in full, a breaker stops non-converging loops, and the spec is mechanically self-reviewed and adversarially challenged before approval.
 
+## [0.2.3] - 2026-08-04
+
+### Fixed
+
+- ORCHESTRATOR.md §6 now defines the tier-1/tier-2 boundary operationally: a fully-resolved command with a complete argument routes directly (ADR-0022 tier 1) instead of asking "did you mean" while displaying the already-resolved command (#595).
+
 ## [0.2.2] - 2026-08-04
 
 ### Fixed

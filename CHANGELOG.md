@@ -22,6 +22,18 @@ predate the plugin rewrite and are grouped by date.
   full, a breaker stops non-converging refinement loops, and the spec is
   mechanically self-reviewed and adversarially challenged before approval.
 
+## [2.11.4] — 2026-08-04
+
+### Fixed
+
+- The orchestrator no longer asks "did you mean" when it has already resolved
+  the exact command and its complete argument. `ORCHESTRATOR.md` §6 now draws
+  the tier-1/tier-2 boundary (ADR-0022) by what is already resolved rather than
+  by temperament: an exact command with a complete argument and no competing
+  candidate is unambiguous by definition and routes directly. Tier 2 is
+  reserved for a genuinely incomplete reading — an argument you'd have to
+  invent, or a second plausible command — and the destructive set.
+
 ## [2.11.3] — 2026-08-04
 
 ### Fixed
