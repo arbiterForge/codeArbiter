@@ -570,6 +570,88 @@ class TestStartupStateHostLine(unittest.TestCase):
         self.assertIn("host: unknown", out)
 
 
+class TestStartupInstructionsHostAware(unittest.TestCase):
+    """Issue #609: ORCHESTRATOR.md's §1 ("Present it: stage, blocking CONFIRM-NN
+    items, in-flight tasks, and a pointer to /ca:commands. Then await a
+    command." plus the two uninitialized-repo routing rules) moved OUT of the
+    always-on persona and into this hook's own emitted briefing — the state
+    and the instruction to act on it now travel together. The routing rules
+    (source exists -> create-context, no source -> decompose) already lived
+    here (main(), pre-#609); only the "present it, then await" line is new
+    ground pinned by this class, but all three are asserted together so a
+    regression to any one is caught.
+
+    A FAKE host with spellings that differ from every real host's (rather
+    than the real ClaudeHost, or a hardcoded "/ca:" string) proves the text
+    is produced via host.cmd_ref()/host.command_noun and not a hardcoded
+    claude-shaped string that happens to look host-aware."""
+
+    class _FakeHost(_mod.hostapi.Host):
+        name = "fakehost"
+        command_noun = "fake-command"
+
+        def cmd_ref(self, name):
+            return "$$fake-" + name
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.repo = self._tmp.name
+        self.cad = os.path.join(self.repo, ".codearbiter")
+        os.makedirs(self.cad)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _write_context(self, initialized):
+        body = "<!--INITIALIZED-->\n" if initialized else "_stub, not initialized_\n"
+        with open(os.path.join(self.cad, "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write(f"---\narbiter: enabled\nstage: 1\n---\n\n{body}")
+
+    def _run_main(self, host):
+        buf = io.StringIO()
+        cwd = os.getcwd()
+        os.chdir(self.repo)
+        try:
+            # An initialized repo runs main() all the way through to the
+            # standup briefing, which spawns DETACHED background processes
+            # (git fetch, update-refresh.py). Left unmocked here, those
+            # children can still hold a handle on this test's TemporaryDirectory
+            # when tearDown tries to remove it (Windows: WinError 5). They are
+            # irrelevant to what this class pins, so stub them to a no-op.
+            with mock.patch.object(_mod, "get_host", return_value=host), \
+                 mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.repo}), \
+                 mock.patch.object(_mod, "spawn_background_fetch", return_value=None), \
+                 mock.patch.object(_mod, "spawn_background_update_refresh", return_value=None), \
+                 contextlib.redirect_stdout(buf), \
+                 contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    _mod.main()
+        finally:
+            os.chdir(cwd)
+        return buf.getvalue()
+
+    def test_initialized_repo_presents_state_then_awaits_a_command(self):
+        self._write_context(initialized=True)
+        out = self._run_main(self._FakeHost())
+        self.assertIn("Present this state, then await a fake-command.", out)
+        self.assertIn("Type $$fake-commands for the catalog.", out)
+
+    def test_uninitialized_repo_with_source_routes_to_create_context(self):
+        self._write_context(initialized=False)
+        with open(os.path.join(self.repo, "some_source.py"), "w", encoding="utf-8") as f:
+            f.write("print('hi')\n")
+        out = self._run_main(self._FakeHost())
+        self.assertIn("NOT INITIALIZED: source exists", out)
+        self.assertIn("$$fake-create-context", out)
+        self.assertIn("Type $$fake-commands for the catalog.", out)
+
+    def test_uninitialized_empty_repo_routes_to_decompose(self):
+        self._write_context(initialized=False)
+        out = self._run_main(self._FakeHost())
+        self.assertIn("NOT INITIALIZED: empty project", out)
+        self.assertIn("$$fake-decompose", out)
+
+
 class TestDevExitAudit(unittest.TestCase):
     """observability-001: when SessionStart clears a LIVE dev-active marker (a
     prior session entered /ca:dev and ended without /ca:arbiter), it must append
