@@ -70,6 +70,13 @@ Re-read the authored skill against the v2 quality bar. Each line below is a chec
 - **No duplicated rules** — a rule stated in a phase is not restated in Hard rules, and Hard rules carry no duplicates. State each rule once.
 - **Format conformance** — frontmatter is `name`+`description` only; H1 matches `name`; phases are numbered with `· gate:`; paths use `{{PLUGIN_ROOT}}` / `{{PROJECT_DIR}}` correctly; no cut docs/skills, no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
 - **No trigger language** — "routed to" / "dispatched" only, and no `## Trigger` disclaimer block.
+- **Evidence lenses** (issue #612) — each checked where the skill's shape triggers it, skipped where it does not:
+  - A gate an agent is tempted to skip carries a rationalization guard AT the decision point — the known excuses paired with rebuttals. The best rebuttal carries its own instrument: a check the agent can run that falsifies the excuse either way. A tempting gate with no guard is a defect.
+  - An acceptance or verification step names what is READ, never what is claimed — "the subagent reports green" is a defect; "the runner's output shows green" is not.
+  - A user-facing ask leads with a recommendation AND its strongest counter-consideration.
+  - A rule a tested helper could enforce is mechanized rather than accreted as prose — the helper enforces, the prose explains.
+  - A rule whose literal reading has an exploitable edge names what it protects.
+- **Behavior-changing gate revisions are validated, not assumed** — an A/B pass (fixed scenarios, rubrics written before any output exists, both versions run under identical conditions) scaled to the change's blast radius, with results recorded in the PR (issue #612's method).
 
 Compile the findings, fix each, and re-read once. Present the corrected skill and the findings list to the user.
 
