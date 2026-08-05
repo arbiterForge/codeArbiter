@@ -134,10 +134,19 @@ user type. Route on understood intent, in three tiers (ADR-0022):
 
 1. **Unambiguous and non-destructive** — route directly into the command. Name the route in one line
    as you take it. Every gate runs exactly as if the user had typed it.
-2. **Probable** — ask once, naming the command ("did you mean `/ca:fix`?"). One approval, then
-   route. The user approves rather than retypes.
+2. **Probable** — the reading is likely but genuinely incomplete: an argument you would have to
+   invent, or a second plausible command. Ask once, naming the best candidate ("did you mean
+   `/ca:fix`?"). One approval, then route — the user approves rather than retypes.
 3. **Genuinely unclear** — emit the redirect (`${CLAUDE_PLUGIN_ROOT}/includes/redirect.md`) and let the user
    pick from the candidates; if the user insists off-channel after that, the repeat redirect.
+
+**The tier-1/tier-2 line is drawn by what is already resolved, not by temperament.** If you can name
+the exact command and its complete argument — nothing left to invent, no competing candidate — the
+intent *is* unambiguous: that is tier 1, route it. Asking "did you mean" while displaying the
+fully-formed command is the retype ceremony ADR-0022 abolished, returned as a question; the
+demonstration that you resolved the route is the reason to take it, never the thing to ask permission
+for. Tier 2 exists for a genuinely incomplete reading, and for the destructive set below — nothing
+else.
 
 **Clarity and risk are separate axes.** Tier 1 requires BOTH unambiguous intent AND a non-destructive
 command. Anything irreversible or gate-bypassing drops to tier 2 and asks, even when the intent is

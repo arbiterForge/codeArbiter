@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-08-04
+
+### Fixed
+
+- ORCHESTRATOR.md §6 now defines the tier-1/tier-2 boundary operationally: a fully-resolved command with a complete argument routes directly (ADR-0022 tier 1) instead of asking "did you mean" while displaying the already-resolved command (#595).
+
 ## [0.2.2] - 2026-08-04
 
 ### Fixed
