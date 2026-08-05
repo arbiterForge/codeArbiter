@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.5] — 2026-08-04
+
+### Changed
+
+- Modernized the `brainstorming` skill for capable models: bundled ideas split
+  before refinement, candidate approaches shaped with one recommendation,
+  parameter-level choices decided and recorded while genuine forks are asked in
+  full, a breaker stops non-converging refinement loops, and the spec is
+  mechanically self-reviewed and adversarially challenged before approval.
+
 ## [2.11.4] — 2026-08-04
 
 ### Fixed
