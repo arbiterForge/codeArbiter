@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-08-05
+
+### Changed
+
+- The orchestrator persona is restructured on measured A/B evidence (#609): hard rules move to the head of the document, a rationalization guard and a letter-vs-spirit rule intercept gate-skipping, every user-facing ask leads with a recommendation and its strongest counter-case, a suspicious gate is diagnosed before any bypass, and the startup-presentation instructions move out of the always-on persona and into the SessionStart briefing itself.
+
 ## [0.2.4] - 2026-08-04
 
 ### Changed
