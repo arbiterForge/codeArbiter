@@ -477,6 +477,32 @@ GATE_MARKER_INTERP_RE = re.compile(
     r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + GATE_MARKER, re.I,
 )
 
+# #574: H-05/H-11/H-18 carried NO interpreter leg at all — an inline-code
+# one-liner (`python3 -c "open('.codearbiter/overrides.log','w')..."`) walks
+# past LOG_TRUNC_RE/LOG_DESTROY_RE, DECISIONS_REDIRECT_RE/DECISIONS_WRITE_RE,
+# and CONTEXT_REDIRECT_RE/CONTEXT_WRITE_RE alike, since none of those regexes
+# ever look for an interpreter token. Each of the three below takes the SAME
+# token-only shape as GATE_MARKER_INTERP_RE just above, not H-22's narrower
+# `_state_write_res.interp_re` (which additionally requires
+# `_INTERP_INLINE_CODE`): H-22's inline-code requirement exists ONLY because a
+# sanctioned caller invokes an interpreter against the protected file's own
+# name (`python3 "…/taskwrite.py" add -- "fix open-tasks.md schema"`, HIGH-1),
+# and H-05/H-11/H-18 have no equivalent sanctioned interpreter caller to
+# spare — narrowing them the same way would reopen exactly the gap this
+# closes for no offsetting benefit. `[\s\S]*` (not `[^\n]*`), for the same
+# reason GATE_MARKER_INTERP_RE carries it: the interpreter token and the
+# target name may sit on different physical lines of the SAME multi-line
+# `-c`/`-e` payload.
+LOG_INTERP_RE = re.compile(
+    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + LOG_NAMES, re.I,
+)
+DECISIONS_INTERP_RE = re.compile(
+    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + DECISIONS, re.I,
+)
+CONTEXT_INTERP_RE = re.compile(
+    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + CONTEXT_MD, re.I,
+)
+
 # H-22's shell flank: the protected-state registry (B1/#564) — Write/Edit are
 # guarded via classify_protected's "state" class (pre-write.py/pre-edit.py,
 # T-05a/T-06/T-07); this closes the shell flank the SAME way the four
@@ -561,14 +587,48 @@ _STATE_WRITE_VERBS = (
     r"|unlink|ex|vim|rsync"
 )
 
+# #575: `install` above exists for coreutils' `install` (a genuine
+# copy-with-permissions overwrite verb) — but a PACKAGE MANAGER's `install`
+# SUBCOMMAND (`pip install -r requirements.txt`, `npm install`, `cargo
+# install`, `apt install`, `brew install`, …) is a different verb entirely
+# wearing the same word, and the T-08b same-line window then reaches a
+# protected basename mentioned anywhere later on that line (a trailing
+# comment, a free-text description) — false-blocking a routine dependency
+# install. A PRECEDING-TOKEN check, not a smarter parser: this pattern
+# recognizes the KNOWN package-manager-subcommand spelling specifically, so
+# `_check_h22_state` can blank JUST that phrase out of the text `write_re`
+# scans, leaving the bare coreutils spelling (nothing package-manager-shaped
+# immediately before `install`) to block exactly as before.
+_PKG_MANAGER_INSTALL_RE = re.compile(
+    r"\b(?:pip3?|npm|pnpm|yarn|cargo|apt(?:-get)?|brew|conda|gem|composer"
+    r"|dnf|yum|choco|winget)\s+install\b", re.I,
+)
 
-def _state_write_res(basename):
+
+def _strip_pkg_manager_install(cmd):
+    """#575: blank out every `<package manager> install` phrase in `cmd` so
+    H-22's write-verb leg (`write_re`, built by `_state_write_res` below)
+    never mistakes the SUBCOMMAND spelling for the coreutils overwrite verb
+    it exists to catch. Mirrors `_check_h11_decisions`'s
+    `DECISION_LOG_SHELL_RE.sub(" ", cmd)` — a narrow, single-purpose strip
+    applied only where the verb leg runs; every other guard (redirect,
+    git-restore, interpreter, and every OTHER H-NN check) still sees the
+    unmodified `cmd`."""
+    return _PKG_MANAGER_INSTALL_RE.sub(" ", cmd)
+
+
+def _state_write_res(basename, rel_path=None):
     r"""`(redirect_re, write_re, git_restore_re, interp_re)` for ONE
     protected-state registry entry's bare filename — the compiled set
     `_build_state_write_res` returns one of, per entry. See the module
     comment above for why this is bare-basename, not directory-anchored,
     and `_STATE_NAME_RIGHT_EDGE`/`_STATE_WRITE_VERBS` above for the
     right-anchor and extended verb list (finding F4/F6).
+
+    `rel_path` (#575, optional — every existing caller that passes only
+    `basename` keeps working unchanged) supplies the registry entry's full
+    path so `git_restore_re` can ALSO cover a directory-level restore; see
+    the git_restore_re docstring section below.
 
     `git_restore_re` (finding F5, #564 follow-up): mirrors H-05's
     LOG_GIT_RESTORE_RE (#335) — `git checkout`/`git restore` rewrite a
@@ -582,6 +642,18 @@ def _state_write_res(basename):
     `git add open-tasks.md` on every retained board flip, which must never
     trip H-22) — and structurally cannot: the subcommand alternation here is
     only `checkout|restore`.
+
+    #575 (the non-package-manager half of the lexical-residual issue):
+    `git checkout HEAD -- .codearbiter/` restores the file's ENCLOSING
+    DIRECTORY without naming the file itself — rewriting it (and every
+    sibling tracked file under that directory) through git while matching
+    no basename at all, so the bare-basename alternative above never fires.
+    When `rel_path` carries a directory component, `git_restore_re` gains
+    one alternative PER ANCESTOR DIRECTORY, each anchored (via the SAME
+    `_STATE_NAME_RIGHT_EDGE`, after an optional single trailing slash) to
+    match ONLY the directory itself — never a file living inside it, which
+    stays the basename alternative's job and would otherwise let this leg
+    swallow every sibling path as a substring of the directory name.
 
     `interp_re` (finding F6, #564 follow-up): mirrors GATE_MARKER_INTERP_RE
     (#237) — an arbitrary interpreter one-liner
@@ -639,8 +711,22 @@ def _state_write_res(basename):
     # leg was left on the old unbounded window when `write_re` was fixed --
     # a sibling two lines away, with the identical defect, missed because the
     # fix was applied to the reported pattern rather than to the class.
+    #
+    # #575: one alternative per ANCESTOR DIRECTORY of `rel_path`, alongside
+    # the bare basename — see the docstring section above. `dir_alts` is
+    # empty (no directory component) when `rel_path` is omitted or bare, so
+    # `restore_target` degrades to exactly the old basename-only pattern.
+    restore_target = name
+    if rel_path:
+        parts = [p for p in rel_path.replace("\\", "/").split("/") if p not in ("", ".")]
+        dir_alts = ["/".join(parts[:i]) for i in range(1, len(parts))]
+        if dir_alts:
+            dir_pattern = "|".join(
+                re.escape(d).replace("/", r"[\\/]+") for d in dir_alts)
+            restore_target = "(?:" + name + r"|(?:" + dir_pattern + r")[\\/]?)"
     git_restore_re = re.compile(
-        GIT + r"\s+(?:checkout|restore)\b[^|;&\n]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
+        GIT + r"\s+(?:checkout|restore)\b[^|;&\n]*" + restore_target
+        + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     interp_re = re.compile(
         r"\b(" + _INTERP_TOKENS + r")\b[^\n]*?" + _INTERP_INLINE_CODE
@@ -662,7 +748,7 @@ def _build_state_write_res(registry):
     built = []
     for rel_path, policy in registry.items():
         basename = rel_path.replace("\\", "/").rsplit("/", 1)[-1]
-        redirect_re, write_re, git_restore_re, interp_re = _state_write_res(basename)
+        redirect_re, write_re, git_restore_re, interp_re = _state_write_res(basename, rel_path)
         built.append((rel_path, policy, redirect_re, write_re, git_restore_re, interp_re))
     return tuple(built)
 
@@ -1239,9 +1325,13 @@ def _check_h05_audit_log(cmd):
     instead of a hand-copied literal list, so a future audit log added there
     can never silently skip this shell flank (the exact drift
     security-controls.md § Audit trail centralization exists to prevent)."""
+    # #574: LOG_INTERP_RE closes the interpreter-one-liner flank
+    # (`python3 -c "open('.codearbiter/overrides.log','w')..."`) — the
+    # verb-list and redirect legs above never look for an interpreter token
+    # at all, so this shape walked past both.
     if any(n in cmd for n in AUDIT_LOG_BASENAMES) and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
-            or LOG_GIT_RESTORE_RE.search(cmd)):
+            or LOG_GIT_RESTORE_RE.search(cmd) or LOG_INTERP_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
                       "gate-events.log, decisions/decision-log.md) are append-only "
                       "(ORCHESTRATOR §7). Truncating, overwriting, or deleting the audit "
@@ -1260,8 +1350,14 @@ def _check_h11_decisions(cmd):
     exact path is removed, so a directory-level operation
     (`rm -rf .codearbiter/decisions`) still carries a decisions/ reference and
     still blocks."""
+    # #574: DECISIONS_INTERP_RE closes the interpreter-one-liner flank the
+    # same way LOG_INTERP_RE does for H-05 — scanned against the SAME
+    # decision-log-stripped `cmd` as the two legs above, so an interpreter
+    # append to decisions/decision-log.md stays the #528 carve-out's to
+    # police (via H-05's own LOG_INTERP_RE), not a false H-11 block.
     cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
-    if DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd):
+    if (DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd)
+            or DECISIONS_INTERP_RE.search(cmd)):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
                       "/adr and are immutable history (ORCHESTRATOR §6) — shell writes, "
                       "edits, and deletions there are prohibited.")
@@ -1270,8 +1366,12 @@ def _check_h11_decisions(cmd):
 def _check_h18_context_md(cmd):
     """H-18: CONTEXT.md is the activation switch (#159) — shell flank. A shell
     rewrite/delete of it would make every gate dormant; init writes it via the
-    Write tool, so nothing legitimate is blocked. Reads pass."""
-    if CONTEXT_REDIRECT_RE.search(cmd) or CONTEXT_WRITE_RE.search(cmd):
+    Write tool, so nothing legitimate is blocked. Reads pass.
+
+    #574: CONTEXT_INTERP_RE closes the interpreter-one-liner flank the same
+    way LOG_INTERP_RE/DECISIONS_INTERP_RE do for H-05/H-11."""
+    if (CONTEXT_REDIRECT_RE.search(cmd) or CONTEXT_WRITE_RE.search(cmd)
+            or CONTEXT_INTERP_RE.search(cmd)):
         block("H-18", ".codearbiter/CONTEXT.md is the activation switch every enforcement "
                       "hook reads (#159) — shell rewrites, edits, or deletions that could flip "
                       "`arbiter: enabled` off or corrupt its frontmatter are prohibited. Edit it "
@@ -1330,9 +1430,16 @@ def _check_h22_state(cmd, root):
     ARE covered, but via the separate `git_restore_re` leg (finding F5,
     #564 follow-up) — never the general write-verb list — precisely so that
     isolation holds: `git_restore_re`'s subcommand alternation is only
-    `checkout|restore`, so it structurally cannot also catch `git add`."""
+    `checkout|restore`, so it structurally cannot also catch `git add`.
+
+    #575: `write_re` is matched against `_strip_pkg_manager_install(cmd)`,
+    not raw `cmd` -- every OTHER leg (redirect/git-restore/interp) still
+    scans the unmodified command text; only the write-verb leg needs the
+    strip, since `install` is the one verb in `_STATE_WRITE_VERBS` that is
+    also a common package-manager subcommand."""
+    verb_scan_cmd = _strip_pkg_manager_install(cmd)
     for rel_path, policy, redirect_re, write_re, git_restore_re, interp_re in _STATE_WRITE_RES:
-        if not (redirect_re.search(cmd) or write_re.search(cmd)
+        if not (redirect_re.search(cmd) or write_re.search(verb_scan_cmd)
                 or git_restore_re.search(cmd) or interp_re.search(cmd)):
             continue
         if policy == ProtectedPolicy.MARKER_GATED and marker_gated_write_admitted(rel_path, root):

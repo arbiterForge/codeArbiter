@@ -12,6 +12,25 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.9] — 2026-08-05
+
+### Fixed
+
+- H-05/H-11/H-18 (the `.codearbiter` audit logs, ADRs under `decisions/`, and
+  `CONTEXT.md`) gain the interpreter leg H-22/H-19 already carried — an
+  inline-code one-liner (`python3 -c "open('overrides.log','w')..."`, `py
+  -c`, `pwsh -Command`) no longer walks past all three shell flanks (#574).
+- H-22's git-restore leg now also covers restoring the ENCLOSING DIRECTORY
+  of a registered file (`git checkout HEAD -- .codearbiter/`), not only the
+  bare basename, and a package manager's `install` SUBCOMMAND (`pip
+  install`, `npm install`, `cargo install`, …) no longer false-blocks
+  against coreutils' `install` verb (#575).
+- The Codex host notes' hook-safe audit-log append recipe no longer directs
+  Windows PowerShell 5.1 users to bare `>>`, which can write a UTF-16LE tail
+  onto an existing UTF-8 log; the recipe now uses an explicit UTF-8-no-BOM
+  `[System.IO.File]::AppendAllText` append with a documented verification
+  step (#594).
+
 ## [2.11.8] — 2026-08-05
 
 ### Fixed

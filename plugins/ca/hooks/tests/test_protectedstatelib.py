@@ -620,6 +620,42 @@ class TestStateWriteRes(unittest.TestCase):
         _, _, git_restore_re, _ = _bashguardlib._state_write_res("open-tasks.md")
         self.assertFalse(git_restore_re.search("git add open-tasks.md"))
 
+    def test_git_restore_re_without_rel_path_has_no_directory_leg(self):
+        # #575's directory leg is opt-in via `rel_path` — every pre-existing
+        # caller that passes only `basename` (as every test above does) must
+        # keep the OLD basename-only behavior unchanged.
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res("open-tasks.md")
+        self.assertFalse(git_restore_re.search("git checkout HEAD -- .codearbiter/"))
+
+    def test_git_restore_re_matches_the_enclosing_directory(self):
+        # #575: `git checkout HEAD -- .codearbiter/` restores the DIRECTORY
+        # containing open-tasks.md without naming the file, rewriting it
+        # through git while matching no basename alternative at all.
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res(
+            "open-tasks.md", ".codearbiter/open-tasks.md")
+        self.assertTrue(git_restore_re.search("git checkout HEAD -- .codearbiter/"))
+        self.assertTrue(git_restore_re.search("git checkout -- .codearbiter"))
+        self.assertTrue(git_restore_re.search("git restore .codearbiter/"))
+
+    def test_git_restore_re_directory_leg_does_not_swallow_a_sibling_file(self):
+        # The directory alternative must match ONLY the directory itself
+        # (optionally one trailing slash) — a specific file inside it is the
+        # basename alternative's job, and an unanchored directory match
+        # would over-broaden this leg to every path under `.codearbiter/`.
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res(
+            "open-tasks.md", ".codearbiter/open-tasks.md")
+        self.assertFalse(git_restore_re.search("git checkout -- .codearbiter/CONTEXT.md"))
+
+    def test_git_restore_re_directory_leg_does_not_match_a_lookalike_name(self):
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res(
+            "open-tasks.md", ".codearbiter/open-tasks.md")
+        self.assertFalse(git_restore_re.search("git checkout -- .codearbiterfoo"))
+
+    def test_git_restore_re_directory_leg_still_excludes_git_add(self):
+        _, _, git_restore_re, _ = _bashguardlib._state_write_res(
+            "open-tasks.md", ".codearbiter/open-tasks.md")
+        self.assertFalse(git_restore_re.search("git add .codearbiter/"))
+
     def test_interp_re_matches_a_python_c_one_liner(self):
         # F6: mirrors GATE_MARKER_INTERP_RE (#237) - the sanctioned
         # helper's own Python file-I/O route, reused directly.
@@ -675,6 +711,40 @@ class TestStateWriteRes(unittest.TestCase):
         self.assertEqual(
             {entry[0] for entry in _bashguardlib._STATE_WRITE_RES},
             set(_protectedstatelib.REGISTRY))
+
+
+class TestStripPkgManagerInstall(unittest.TestCase):
+    """#575: `_strip_pkg_manager_install` blanks out the KNOWN
+    package-manager-subcommand spelling of `install` so H-22's write-verb
+    leg never mistakes it for coreutils' `install`."""
+
+    def test_strips_pip_install(self):
+        out = _bashguardlib._strip_pkg_manager_install(
+            "pip install -r requirements.txt")
+        self.assertNotIn("install", out)
+
+    def test_strips_various_package_managers(self):
+        for cmd in ("npm install", "pnpm install", "yarn install",
+                    "cargo install ripgrep", "apt install curl",
+                    "apt-get install curl", "brew install jq",
+                    "conda install numpy", "gem install rails",
+                    "composer install", "dnf install git", "yum install git",
+                    "choco install git", "winget install git"):
+            with self.subTest(cmd=cmd):
+                self.assertNotIn(
+                    "install", _bashguardlib._strip_pkg_manager_install(cmd))
+
+    def test_does_not_strip_coreutils_install(self):
+        # The whole point: nothing package-manager-shaped precedes `install`
+        # here, so it must survive the strip untouched.
+        cmd = "install -m 644 /tmp/forged .codearbiter/open-tasks.md"
+        self.assertEqual(_bashguardlib._strip_pkg_manager_install(cmd), cmd)
+
+    def test_leaves_the_rest_of_the_line_intact(self):
+        out = _bashguardlib._strip_pkg_manager_install(
+            "pip install -r requirements.txt  # then read open-tasks.md")
+        self.assertIn("requirements.txt", out)
+        self.assertIn("open-tasks.md", out)
 
 
 def _comparable_state_res(built):
@@ -954,14 +1024,15 @@ class TestStateShellHelperOnly(_StateShellFixture):
             'mitigation working as a property of the helper.\n'
             '\n'
             'done-tasks.md is append-only."')
-        # NOT fixed here, and deliberately pinned as still-blocking so the
-        # boundary is visible: `pip install … # … open-tasks.md` puts the
-        # verb and the basename on ONE line, which is the declared T-08b
-        # same-line residual, not the newline defect. The adversary listed
-        # it under MEDIUM-3; it belongs to the residual instead. Narrowing
-        # it means distinguishing coreutils `install` from a package
-        # manager's `install` subcommand — tracked, not done here.
-        self.assertShellBlocked(
+        # #575: this WAS deliberately pinned as still-blocking (the T-08b
+        # same-line residual — `install` matching the verb list even as a
+        # package manager's SUBCOMMAND, not coreutils' overwrite verb). #575
+        # narrows exactly this case via `_strip_pkg_manager_install`
+        # (preceding-token check): `pip install` is recognized and blanked
+        # before `write_re` runs, so this routine dependency install no
+        # longer false-blocks merely because a later comment on the same
+        # line happens to mention the protected basename.
+        self.assertShellAllowed(
             'pip install -r requirements.txt  # then read open-tasks.md')
 
     def test_write_verb_and_basename_on_one_line_still_blocks(self):
@@ -969,6 +1040,29 @@ class TestStateShellHelperOnly(_StateShellFixture):
         # drop the genuine single-line case, which is the whole verb leg.
         self.assertShellBlocked("sed -i 's/x/y/' .codearbiter/open-tasks.md")
         self.assertShellBlocked("cp /tmp/forged .codearbiter/open-tasks.md")
+
+    def test_coreutils_install_still_blocks(self):
+        # #575 non-regression: the narrowing targets ONLY the known
+        # package-manager-subcommand spelling of `install` — the bare
+        # coreutils verb, with nothing package-manager-shaped preceding it,
+        # must still block exactly as before.
+        self.assertShellBlocked(
+            "install -m 644 /tmp/forged .codearbiter/open-tasks.md")
+
+    def test_package_manager_install_no_longer_false_blocks(self):
+        # #575: the T-08b same-line residual, narrowed. `pip|npm|cargo|apt
+        # |brew install` is a different verb wearing the coreutils verb's
+        # name; distinguished via a preceding-token check
+        # (`_strip_pkg_manager_install`), not a smarter parser.
+        for cmd in (
+            "pip install -r requirements.txt  # then read open-tasks.md",
+            "npm install  # touches open-tasks.md in a comment",
+            "cargo install ripgrep  # see open-tasks.md for the task",
+            "apt install curl  # open-tasks.md tracks this",
+            "brew install jq  # open-tasks.md tracks this",
+        ):
+            with self.subTest(cmd=cmd):
+                self.assertShellAllowed(cmd)
 
     def test_extended_destructive_verbs_block(self):
         # MEDIUM-5: `unlink` is `rm`'s direct sibling and the verb list
@@ -1026,6 +1120,18 @@ class TestStateShellHelperOnly(_StateShellFixture):
         # The single-line case the leg exists for still blocks.
         self.assertShellBlocked("git checkout -- .codearbiter/open-tasks.md")
         self.assertShellBlocked("git restore .codearbiter/open-tasks.md")
+
+    def test_git_checkout_of_the_enclosing_directory_blocks(self):
+        # #575: `git checkout HEAD -- .codearbiter/` restores the DIRECTORY
+        # containing open-tasks.md without naming the file — the git-restore
+        # leg's stated purpose ("a tracked worktree file can be rewritten
+        # through git itself") but, before this fix, not its coverage.
+        self.assertShellBlocked("git checkout HEAD -- .codearbiter/")
+        self.assertShellBlocked("git checkout -- .codearbiter")
+        self.assertShellBlocked("git restore .codearbiter/")
+
+    def test_git_checkout_of_an_unrelated_directory_still_passes(self):
+        self.assertShellAllowed("git checkout HEAD -- src/")
 
     def test_python_c_one_liner_blocks(self):
         # F6: reuses the sanctioned helper's own Python file-I/O route
