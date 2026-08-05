@@ -29,8 +29,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _hooklib import (  # noqa: E402
-    content_digest, is_migration_path, project_root, set_host, utf8_stdio,
-    warn, write_text_atomic,
+    content_digest, is_migration_path, marker_root, project_root, set_host,
+    utf8_stdio, warn, write_text_atomic,
 )
 
 MAX_FILE_BYTES = 1_000_000  # a blob bigger than this is not a reviewable migration
@@ -86,7 +86,13 @@ def main():
         text = read_text(root, rel)
         if text is not None:
             digests.add(content_digest(text))
-    marker_dir = os.path.join(root, ".codearbiter", ".markers")
+    # #604: same split as security-pass.py — candidate_paths(root)/read_text(root, …)
+    # above must stay bound to wherever this process is actually running (a
+    # linked worktree's own tree), but the MARKER write goes through
+    # marker_root(), which agrees with the H-14 guard's main-checkout-anchored
+    # read (D-2) even when this process has no CLAUDE_PROJECT_DIR set.
+    write_root = marker_root()
+    marker_dir = os.path.join(write_root, ".codearbiter", ".markers")
     os.makedirs(marker_dir, exist_ok=True)
     marker = os.path.join(marker_dir, "migration-gate-passed")
     digests = sorted(digests)
@@ -95,7 +101,7 @@ def main():
     # spurious gate re-run.
     write_text_atomic(marker, "\n".join(digests) + ("\n" if digests else ""))
     print(f"migration-gate pass recorded: {len(digests)} migration file(s) "
-          f"bound to {os.path.relpath(marker, root)}")
+          f"bound to {os.path.relpath(marker, write_root)}")
 
 
 def run(host, argv=None):

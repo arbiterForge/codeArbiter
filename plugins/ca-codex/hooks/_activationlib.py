@@ -113,6 +113,19 @@ def _reset_root_cache():
     still-valid (env, cwd) cache entry) call this between scenarios."""
     _ROOT_CACHE.clear()
 
+
+def marker_root(payload=None):
+    """The root `.codearbiter/.markers/` gate passes (security-pass.py,
+    migration-pass.py, and the H-09b/H-10b/H-14 guards) are written to and
+    read from (#604) — see `hostapi.Host.marker_root`'s docstring for why
+    this is NOT the same thing as `project_root()` in a linked worktree.
+
+    Not memoized like `project_root()` above: called at most once or twice
+    per hook process (the marker checks, or a single `security-pass.py` /
+    `migration-pass.py` run), so the extra git spawn a linked-worktree
+    escalation occasionally costs is not worth a second cache to avoid."""
+    return get_host().marker_root(payload)
+
 ARBITER_RE = re.compile(r"^\s*arbiter:\s*enabled\s*$", re.I)
 
 def frontmatter_enabled_text(text):

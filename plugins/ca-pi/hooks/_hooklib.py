@@ -41,6 +41,10 @@
 #   project_root(payload=None) -> str    CLAUDE_PROJECT_DIR, else git repo root, else cwd
 #                                         (memoized per process, keyed on the
 #                                         inputs that could change it — #260)
+#   marker_root(payload=None) -> str     project_root(payload), escalated to the MAIN
+#                                         checkout when that names a LINKED worktree's
+#                                         own checkout — the root gate MARKERS
+#                                         (.codearbiter/.markers/) live under (#604)
 #   repo_rel(fpath, root) -> str         repo-relative POSIX path, or "" if outside root
 #   line_digest(line) -> str             sha256 hex of one diff line (H-09b/H-10b gate)
 #   content_digest(text) -> str          sha256 hex of a whole file's content (H-14 gate)
@@ -122,6 +126,7 @@ from _activationlib import (  # noqa: F401
     frontmatter_enabled,
     frontmatter_enabled_text,
     get_host,
+    marker_root,
     project_root,
     reset_host,
     set_host,

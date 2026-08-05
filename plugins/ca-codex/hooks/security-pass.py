@@ -27,8 +27,8 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS, is_sensitive_scan_exempt,
-    line_digest, project_root, sensitive_scan_added_lines, set_host,
-    utf8_stdio, warn, write_text_atomic,
+    line_digest, marker_root, project_root, sensitive_scan_added_lines,
+    set_host, utf8_stdio, warn, write_text_atomic,
 )
 
 MAX_UNTRACKED_BYTES = 1_000_000  # an untracked blob bigger than this is not reviewable prose
@@ -97,7 +97,17 @@ def main():
         sys.exit(1)
     sensitive = [ln for ln in candidate_lines(root)
                  if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
-    marker_dir = os.path.join(root, ".codearbiter", ".markers")
+    # #604: the MARKER root is deliberately NOT `root` above. `root` (plain
+    # project_root()) must stay wherever this process is actually running —
+    # candidate_lines(root) just scanned exactly that tree's diff, and binding
+    # digests to a DIFFERENT tree would review lines nobody staged. But in a
+    # linked git worktree, `root` names the worktree's own (gitignored,
+    # never-checked-out) `.codearbiter/.markers/`, while the H-09b/H-10b
+    # guard reads the marker from the MAIN checkout (D-2) — marker_root()
+    # gives the write the same main-checkout answer the guard's read already
+    # has, without moving the scan.
+    write_root = marker_root()
+    marker_dir = os.path.join(write_root, ".codearbiter", ".markers")
     os.makedirs(marker_dir, exist_ok=True)
     marker = os.path.join(marker_dir, "security-gate-passed")
     digests = sorted({line_digest(ln) for ln in sensitive})
@@ -106,7 +116,7 @@ def main():
     # spurious gate re-run.
     write_text_atomic(marker, "\n".join(digests) + ("\n" if digests else ""))
     print(f"security-gate pass recorded: {len(digests)} sensitive line(s) "
-          f"bound to {os.path.relpath(marker, root)}")
+          f"bound to {os.path.relpath(marker, write_root)}")
 
 
 def run(host, argv=None):
