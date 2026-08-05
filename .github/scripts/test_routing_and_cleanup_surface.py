@@ -154,8 +154,18 @@ class TestPostMergeCleanupOwnerExistsOnEveryHost(unittest.TestCase):
             rel = f"{plugin}/{routine}/SKILL.md"
             with self.subTest(rel=rel):
                 text = read(rel)
-                # Ancestry proven against the FETCHED default, not `: gone]` state.
-                self.assertRegex(text, r"(?i)ancestor of the fetched default")
+                # #586: containment proven against the FETCHED default, not bare
+                # `: gone]` state -- and NOT SHA-ancestry alone. This repo
+                # squash-merges by default, so ancestry fails for every ordinary
+                # landing; the squash case is proven instead via the merged PR
+                # record (a MERGED PR whose headRefOid equals local HEAD). Both
+                # phrases are pinned together: dropping either one -- reverting
+                # to the old ancestry-only gate, or losing the squash-proof
+                # instrument -- must fail this test.
+                self.assertRegex(text, r"(?i)contained\s+in\s+the\s+fetched\s+default")
+                self.assertRegex(text, r"(?i)PR-record\s+squash\s+proof")
+                self.assertRegex(text, r"(?i)\bMERGED\b")
+                self.assertRegex(text, r"(?i)headRefOid\s*==\s*HEAD")
                 # Three-way artifact classification, with uncertainty biased to unique.
                 for cls in ("unique", "redundant", "superseded"):
                     self.assertIn(cls, text.lower())
@@ -163,9 +173,14 @@ class TestPostMergeCleanupOwnerExistsOnEveryHost(unittest.TestCase):
                 self.assertRegex(text, r"(?i)without an explicit\s+confirmation naming that item")
                 # Fast-forward only; no merge commit, no rebase, no reset.
                 self.assertIn("--ff-only", text)
-                # Safety-checked delete only, and never the remote branch.
-                self.assertRegex(text, r"(?i)MUST use `git branch -d`, never `-D`")
-                self.assertRegex(text, r"(?i)MUST NOT delete a remote branch")
+                # Safety-checked delete by default. `-D` is forbidden everywhere
+                # EXCEPT the #586-scoped exception -- this run's PR-record squash
+                # proof plus a restated, named confirmation -- never as a blanket
+                # allowance alongside `-d`.
+                self.assertRegex(text, r"(?i)MUST\s+use\s+`git branch -d`")
+                self.assertRegex(text, r"(?i)MAY\s+use\s+`-D`\s+ONLY\s+when")
+                self.assertRegex(text, r"(?i)Everywhere\s+else\s+`-D`\s+is\s+forbidden")
+                self.assertRegex(text, r"(?i)MUST\s+NOT\s+delete\s+a\s+remote\s+branch")
                 # The point of the whole exercise: this never needs an override.
                 self.assertRegex(text, r"(?i)MUST NOT route to `.{0,20}override.{0,20}` when blocked")
 

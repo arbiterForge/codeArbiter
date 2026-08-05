@@ -22,6 +22,51 @@ predate the plugin rewrite and are grouped by date.
   full, a breaker stops non-converging refinement loops, and the spec is
   mechanically self-reviewed and adversarially challenged before approval.
 
+## [2.11.3] — 2026-08-04
+
+### Fixed
+
+- `post-merge-cleanup` (#586): Phase 1's containment proof no longer relies on
+  SHA-ancestry alone, which fails for every ordinary squash merge in this
+  repo's default merge mode. A squash merge is now proven by the merged PR
+  record (`headRefOid` == HEAD), reported alongside the ancestry check's
+  negative result as a fact rather than a failure. Phase 3's blocked-checkout
+  STOP now distinguishes a genuinely conflicting kept artifact from a stale
+  local default ref. Phase 4 fast-forwards the local default ref before
+  checking it out, so a stale ref can no longer be misattributed to a kept
+  artifact. Phase 5 documents why `git branch -d` can already accept a
+  squash-merged branch via its upstream, and sanctions `git branch -D` only
+  when this run's Phase 1 proof was the PR-record squash proof and `-d`
+  refused.
+- `standup` (#596): stale worktrees can now be confirmed for removal as one
+  explicitly enumerated group naming every member, instead of forcing one
+  confirmation per worktree; declining the group falls back to per-item
+  confirmation. Branch pruning documents the matching squash-merge `-D`
+  exception.
+
+## [2.11.2] — 2026-08-04
+
+### Fixed
+
+- Gave the release lane's internal tree-state probe the same audit-scratch
+  exemption the skill already requires everywhere else, so a mid-window
+  `gate-events.log` append is no longer misdiagnosed as a mutating pre-tag
+  command.
+- Split `run-pre-tag`'s failure diagnosis into four distinct exit codes: a
+  declared command that ran and reported drift, one that mutated the tree,
+  one whose interpreter or program could not be located at all, and a
+  tree-state probe failure — each with its own remedy, so "could not run"
+  is never reported as "ran and disagreed".
+- Exported the resolved interpreter to every declared release-lane command
+  via a `PY` environment variable, so a declared row can portably spell
+  `"$PY"` instead of a hardcoded interpreter.
+- Mechanized the release lane's version-bump arithmetic behind a new
+  `apply-bump` subcommand, closing the one step still left to hand
+  derivation.
+- Floored the release lane's first-release footer check on the earliest
+  addition of either `CONTEXT.md` or `release-targets.md`, so a Back-fill
+  consumer's own first release can clear Phase 1 step 3.
+
 ## [2.11.1] — 2026-08-03
 
 ### Fixed

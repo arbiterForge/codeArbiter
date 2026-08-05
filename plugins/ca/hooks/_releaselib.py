@@ -34,6 +34,7 @@
 # Public API:
 #   semver_key(value) -> tuple | None
 #   semver_greater(current, base) -> bool
+#   apply_bump(base, word) -> str | None
 #   last_tag_select(tags, prefix) -> str
 #   notes_heading_matches(notes_text, tag) -> bool
 #   release_dates_consistent(changelog_section, tag_message) -> bool
@@ -953,6 +954,71 @@ def peel_tag(ls_remote_text, tag):
     return peeled or direct
 
 
+_PLAIN_SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+_BUMP_WORDS = ("major", "minor", "patch")
+
+
+def apply_bump(base, word):
+    """Apply a classify-window bump `word` to `base`, a PLAIN SemVer string
+    (`MAJOR.MINOR.PATCH`, no pre-release or build metadata), and return the
+    bumped SemVer string. `major`: `X+1.0.0`. `minor`: `X.Y+1.0`. `patch`:
+    `X.Y.Z+1`.
+
+    Returns `None` -- never raises, per this module's mechanism-function
+    invariant -- when `base` is not plain SemVer (reusing the same
+    no-leading-zero grammar `SEMVER` anchors its own major/minor/patch
+    groups with) or `word` is not exactly one of the three bumping words.
+    This deliberately EXCLUDES `word == "none"`: a caller must never apply a
+    non-bump, and passing `none` here is refused rather than echoing `base`
+    back unchanged, which would silently look like a successful (if inert)
+    bump.
+
+    #585 MEDIUM-3: the bump arithmetic was the single unmechanized judgment
+    left in the release lane -- step 4 had the operator "apply the step-2
+    bump to `$BASE_VERSION`" by hand, and nothing downstream re-derived it,
+    so the hard rule "a `feat` in the window cannot ship as a `patch`" had
+    no enforcement anywhere. `apply-bump` (the CLI subcommand below) is the
+    sanctioned way to do this arithmetic instead of by eye.
+    """
+    if not isinstance(base, str) or not isinstance(word, str):
+        return None
+    match = _PLAIN_SEMVER_RE.fullmatch(base.strip())
+    if match is None or word not in _BUMP_WORDS:
+        return None
+    major, minor, patch = (int(g) for g in match.groups())
+    if word == "major":
+        return f"{major + 1}.0.0"
+    if word == "minor":
+        return f"{major}.{minor + 1}.0"
+    return f"{major}.{minor}.{patch + 1}"
+
+
+# Exit codes a POSIX shell uses to report that a command's INTERPRETER OR
+# PROGRAM ITSELF could not be located or executed, as distinct from the
+# program running and reporting a failure: 127 is POSIX "command not
+# found", 126 is POSIX "found but not executable" (e.g. missing execute
+# bit, or a script with a shebang naming an interpreter that itself is
+# missing), and 9009 is the code Windows' `cmd.exe` is documented to report
+# for an unresolvable command in several invocation shapes (batch-file/npm
+# wrapper contexts). #585 MEDIUM-2 / #584 MEDIUM-1: this is a BEST-EFFORT,
+# POSIX-reliable signal -- a bare `subprocess.run(cmd, shell=True)` "is not
+# recognized" error under a raw `cmd.exe /c` was measured on a Windows 11
+# host to return 1, indistinguishable there from an ordinary command
+# failure, so this set does not catch every Windows "not found" shape. It
+# reliably catches the POSIX shape this campaign's issues were filed
+# against (a row hardcoding `python3` on a host that has only `python`),
+# and any Windows invocation that does surface 9009.
+_COULD_NOT_RUN_CODES = frozenset({126, 127, 9009})
+
+
+def _could_not_run(returncode):
+    """True iff `returncode` is one of the exit codes above that means the
+    declared command's interpreter or program itself was never located --
+    "could not run", never "ran and disagreed" (house rule: the two must
+    never be folded together)."""
+    return returncode in _COULD_NOT_RUN_CODES
+
+
 # --------------------------------------------------------------------------- #
 # Declared-target-file parser. Grammar: per-target `[name]` sub-blocks of
 # `key: value` lines inside the HTML-comment delimiter convention this
@@ -1558,10 +1624,28 @@ def main(argv):
                                   DECLARED ORDER, stopping at the first
                                   non-zero exit, and asserts a clean tree after
                                   each (DECISION-0034: check-only, never a
-                                  fixer). exit 0 all passed - 5 a command
-                                  failed - 6 a command mutated the tree (or the
-                                  tree was already dirty) - 2 bad invocation /
-                                  unknown target - 3/4 declared-file states.
+                                  fixer). Each declared command's environment
+                                  carries `PY=<this process's own
+                                  interpreter>`, so a POSIX-hosted row may
+                                  portably spell `"$PY"` instead of a
+                                  hardcoded interpreter -- NOT yet safe on
+                                  Windows, where this command's `shell=True`
+                                  always dispatches via `cmd.exe`, which does
+                                  not expand `$VAR` (#583 MEDIUM-2 / #584
+                                  MEDIUM-3). exit 0 all
+                                  passed - 5 a command RAN and reported drift
+                                  - 6 a command exited 0 but MUTATED the tree
+                                  (or the tree was already dirty on a probe
+                                  failure path that predates this fix) - 7 a
+                                  command's interpreter or program itself
+                                  could not be located/executed at all --
+                                  NOT drift, no release-edit discard needed
+                                  (#585 MEDIUM-2 / #584 MEDIUM-1) - 8 the
+                                  tree-state PROBE itself failed, so no
+                                  verdict about the declared commands exists
+                                  (distinct from 6, which names a command as
+                                  the fault) - 2 bad invocation / unknown
+                                  target - 3/4 declared-file states.
       semver-greater <candidate> <floor>
                                   exit 0 iff `candidate` is STRICTLY greater
                                   than `floor`; 1 when equal or lesser; 2 when
@@ -1570,6 +1654,14 @@ def main(argv):
                                   including the manifest FLOOR check -- both
                                   were hand-done against a hard rule saying
                                   the version MUST NOT be guessed.
+      apply-bump <base> <word>   prints the SemVer `base` bumped by `word`
+                                  (`major`/`minor`/`patch`; `none` and any
+                                  other value are refused). exit 0 with the
+                                  bumped version on stdout - 2 when `base` is
+                                  not plain SemVer or `word` is not one of
+                                  the three bumping words. The sanctioned way
+                                  to apply the bump `classify-window`
+                                  derived, instead of by eye (#585 MEDIUM-3).
       dates-match <changelog_section_file> <tag_message_file>
                                   exit 0 iff the changelog section's heading
                                   date equals the `Released-at:` date in the
@@ -1620,8 +1712,9 @@ def main(argv):
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
             "payload-pathspec|last-tag|notes-match|dates-match|"
-            "semver-greater|classify|peel-tag|run-pre-tag|adoption-commit|"
-            "classify-window|check-manifests|backfill-detect} ...\n")
+            "semver-greater|apply-bump|classify|peel-tag|run-pre-tag|"
+            "adoption-commit|classify-window|check-manifests|"
+            "backfill-detect} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -1912,9 +2005,21 @@ def main(argv):
         # command. Ordering the lane correctly is the caller's job; making
         # it impossible to conflate the two is this command's.
         #
-        # Exit codes: 0 all passed - 5 a command exited non-zero - 6 a
-        # command left the tree dirty - 2 bad invocation or unknown target
-        # - 3/4 the declared-file states, unchanged.
+        # Exit codes: 0 all passed - 5 a command RAN and reported drift
+        # (non-zero, not one of the could-not-run codes below) - 6 a
+        # command exited 0 but MUTATED the tree - 7 a command's interpreter
+        # or program itself could not be located/executed at all (#585
+        # MEDIUM-2 / #584 MEDIUM-1: "could not run" is never "ran and
+        # disagreed") - 8 the tree-state PROBE itself failed, so no verdict
+        # about the declared commands exists at all (distinct from 6, which
+        # means a command mutated the tree -- a probe failure means this
+        # subcommand never got far enough to know) - 2 bad invocation or
+        # unknown target - 3/4 the declared-file states, unchanged.
+        #
+        # PY env-var contract: every declared command below runs with
+        # `PY` set in its environment to THIS process's own interpreter
+        # (`sys.executable`), so a row may portably spell `"$PY"` instead
+        # of a hardcoded `python3`/`python` (#583 MEDIUM-2 / #584 MEDIUM-3).
         try:
             rows = load_targets(default_targets_path())
         except ReleaseTargetsError as exc:
@@ -1960,8 +2065,21 @@ def main(argv):
             # prepend to) would otherwise silently run the wrong binary or
             # none at all. Enforced by test_pi_package's
             # `test_shared_python_contains_no_direct_bare_git_subprocess`.
+            # `--` plus the same `:/` + `,top`-exclusion pathspec the
+            # release skill's own Pre-flight and step-7 clean-tree checks
+            # are required to spell (#584 MEDIUM-1): the hooks append to
+            # `gate-events.log` on essentially every command, INCLUDING the
+            # commands this probe's own caller (`run-pre-tag`) runs, so a
+            # mid-window append between the baseline snapshot and a
+            # post-command probe put a blameless audit log in the changed
+            # set -- and exit 6's remedy tells the operator to permanently
+            # delete a release gate for it. `.markers/` is exempted for the
+            # same reason the skill exempts it: a per-machine confirmation
+            # marker minted by this same run is not a release surface.
             probe = subprocess.run(
-                [git_executable(), "status", "--porcelain"],
+                [git_executable(), "status", "--porcelain", "--", ":/",
+                 ":(exclude,top).codearbiter/gate-events.log",
+                 ":(exclude,top).codearbiter/.markers/"],
                 capture_output=True, text=True, cwd=project_root)
             if probe.returncode != 0:
                 return None, (probe.stderr.strip() or "git status failed")
@@ -1999,8 +2117,22 @@ def main(argv):
         # through untouched.
         baseline, failure = _tree_state()
         if failure is not None:
-            sys.stderr.write(f"run-pre-tag: cannot read the tree state: {failure}\n")
-            return 6
+            # Exit 8, never 6 (#584 residual / house rule: "could not run"
+            # is never folded into "ran and disagreed", and the same holds
+            # one level up for a PROBE that could not run at all). Exit 6
+            # is a specific, actionable diagnosis -- "a command mutated the
+            # tree" -- and this is not that: the probe failed before any
+            # declared command even ran, so there is no verdict about the
+            # commands to report at all, and exit 6's "fix the declaration"
+            # remedy would misdirect an operator at the wrong problem.
+            sys.stderr.write(
+                f"run-pre-tag: the tree-state PROBE itself failed: {failure}\n"
+                "  This is not a verdict about any declared command -- no "
+                "command has run yet, so nothing has been checked or "
+                "mutated. Investigate why `git status` failed in this tree "
+                "(not a git repository, no readable .git, etc.) before "
+                "re-running.\n")
+            return 8
 
         for command in (row.get("pre_tag") or []):
             # flush=True: the subprocess writes to the same fds directly and
@@ -2009,7 +2141,48 @@ def main(argv):
             # produced what -- actively misleading in the one report an
             # operator reads to decide whether a release is safe.
             print(f"pre-tag: {command}", flush=True)
-            proc = subprocess.run(command, shell=True, cwd=project_root)
+            # `PY` exported to the child's environment (#583 MEDIUM-2 / #584
+            # MEDIUM-3): the interpreter-resolution convention the release
+            # skill establishes for its OWN invocations stopped at the
+            # skill's own commands -- a declared row is operator shell this
+            # lane EXECUTES exactly like any other step, so a row hardcoding
+            # `python3` fails on exactly the host the convention exists for.
+            # `sys.executable` is THIS process's own resolved interpreter,
+            # so a row may portably spell `"$PY"` instead.
+            proc = subprocess.run(
+                command, shell=True, cwd=project_root,
+                env={**os.environ, "PY": sys.executable})
+            if _could_not_run(proc.returncode):
+                # Exit 7, never 5 (#585 MEDIUM-2 / #584 MEDIUM-1): a command
+                # whose interpreter or program itself could not be located
+                # was never actually RUN, so nothing was checked and there
+                # is no drift to reconcile -- the exit-5 remedy below is the
+                # wrong diagnosis for this case and its "discard this run's
+                # uncommitted release edits" step is unnecessary busywork,
+                # since nothing the row asserts was ever evaluated.
+                sys.stderr.write(
+                    f"run-pre-tag: COULD NOT RUN -- {command!r} exited "
+                    f"{proc.returncode} (interpreter or command not "
+                    "found).\n"
+                    "  This is NOT drift. The command's interpreter or "
+                    "program itself could not be located, so it never ran "
+                    "and nothing was checked -- do not reconcile it as a "
+                    "check failure.\n"
+                    "  Remedy: fix the interpreter this row names for THIS "
+                    "host (a common cause is a row hardcoding a specific "
+                    "interpreter, e.g. `python3`, on a host that has only "
+                    "`python`). On a POSIX host this is commonly `\"$PY\"` "
+                    "-- but NOT on Windows: this command runs via "
+                    "`subprocess.run(shell=True)`, which on Windows always "
+                    "dispatches through `cmd.exe`, and `cmd.exe` does not "
+                    "expand `$VAR` syntax, so a row spelled `\"$PY\"` fails "
+                    "there too (as a literal, unrecognized token) until "
+                    "that dispatch resolves a POSIX-compatible shell on "
+                    "Windows -- a Windows-hosted row should keep a concrete "
+                    "interpreter for now. Then re-run. No release-edit "
+                    "discard is needed: nothing was checked, so there is "
+                    "nothing to undo.\n")
+                return 7
             if proc.returncode != 0:
                 sys.stderr.write(
                     f"run-pre-tag: BLOCK -- {command!r} exited "
@@ -2028,8 +2201,14 @@ def main(argv):
                 return 5
             current, failure = _tree_state()
             if failure is not None:
-                sys.stderr.write(f"run-pre-tag: cannot read the tree state: {failure}\n")
-                return 6
+                sys.stderr.write(
+                    f"run-pre-tag: the tree-state PROBE itself failed after "
+                    f"{command!r} ran: {failure}\n"
+                    "  This is not a verdict about the command that just "
+                    "ran -- the probe that would confirm or refute a "
+                    "mutation could not complete, so no verdict about it "
+                    "exists.\n")
+                return 8
             # The UNION of both key sets, not `current` alone. A path git
             # reported as changed at baseline and no longer reports has been
             # REVERTED by the command -- which is a mutation of the tree in
@@ -2095,6 +2274,33 @@ def main(argv):
                     "comparison did not happen\n")
                 return 2
         return 0 if semver_greater(rest[0], rest[1]) else 1
+
+    if cmd == "apply-bump" and len(rest) == 2:
+        # #585 MEDIUM-3: the one number that mattered was the only step
+        # left to the eye. Step 4 had the operator "apply the step-2 bump
+        # to `$BASE_VERSION`" by hand -- none of the other fifteen
+        # subcommands does this arithmetic, and nothing downstream
+        # re-derives it (a minor window mis-applied as a patch still passes
+        # `semver-greater` and `check-manifests`, because both compare
+        # against the same wrong value this step just wrote). This is the
+        # sanctioned way to do it instead: exit 0 with the bumped version
+        # on stdout, or exit 2 with nothing to stdout when `base` is not
+        # plain SemVer or `word` is not exactly one of `major`/`minor`/
+        # `patch` -- `none` included, deliberately: a caller must never
+        # apply a non-bump, and this refuses rather than echoing `base`
+        # back unchanged.
+        base, word = rest
+        result = apply_bump(base, word)
+        if result is None:
+            sys.stderr.write(
+                f"apply-bump: cannot apply bump {word!r} to base {base!r}. "
+                "`base` must be plain MAJOR.MINOR.PATCH SemVer (no "
+                "pre-release or build metadata) and `word` must be exactly "
+                "'major', 'minor', or 'patch' -- 'none' is deliberately "
+                "refused here, since a caller must never apply a non-bump.\n")
+            return 2
+        print(result)
+        return 0
 
     if cmd == "dates-match" and len(rest) == 2:
         # MEDIUM (adversarial review 2026-07-31, run 4): Phase 1 step 5 and

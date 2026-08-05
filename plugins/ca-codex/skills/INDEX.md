@@ -14,7 +14,7 @@ skill is invoked — never bulk-read this directory.
 | `$ca-btw` | Lightweight Q&A about the project — answer from context and return, no routing, no state change. |
 | `$ca-checkpoint` | Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report. |
 | `$ca-chore` | Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose. |
-| `$ca-cleanup` | Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; ancestry proven, never assumed. |
+| `$ca-cleanup` | Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed. |
 | `$ca-commands` | Show the codeArbiter command catalog — the public command list and what each routes to. |
 | `$ca-commit` | Run the full commit gate — the only sanctioned path to a git commit. |
 | `$ca-conflict` | Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation. |
