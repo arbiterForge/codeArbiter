@@ -4,6 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-08-05
+
+### Fixed
+
+- A linked-worktree session running `security-pass.py`/`migration-pass.py`
+  bare (no `CLAUDE_PROJECT_DIR` in that shell) recorded a gate pass at the
+  worktree's own (gitignored) `.codearbiter/.markers/`, invisible to the
+  H-09b/H-10b/H-14 commit guards, which read markers from the main checkout.
+  A new `marker_root()` host seam gives both sides the same answer without
+  moving the diff/migration scan root itself (#604).
+
 ## [0.2.8] - 2026-08-05
 
 ### Fixed

@@ -12,6 +12,33 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.10] — 2026-08-05
+
+### Fixed
+
+- Linked-worktree sessions could record a security/migration gate pass that
+  the H-09b/H-10b/H-14 commit guards would never see: `security-pass.py` and
+  `migration-pass.py`, run bare via a Bash tool call (no `CLAUDE_PROJECT_DIR`
+  in that shell), wrote their marker under the worktree's own (gitignored)
+  `.codearbiter/.markers/`, while the guards read it from the main checkout.
+  A new `marker_root()` seam (`hostapi.Host`) gives both sides the same
+  main-checkout answer without moving the diff/migration SCAN root, which
+  must stay bound to the tree actually being committed (#604).
+- `test_colorlib.py`'s palette-compatibility tests read the real project's
+  `.codearbiter/` state when rendered via subprocess with no explicit `cwd`,
+  so a maintainer's own accumulated audit-log rows could make a required
+  custom-palette color intermittently disappear from the assertion window.
+  Isolated to a synthetic, in-fixture `.codearbiter/` (or none at all), plus
+  a new test that appends adversarial override/gate-event/task rows and
+  proves the palette-completeness check still holds (#552).
+- Ten `test_git_hooks.py`/`test_repo_resolution.py` tests failed whenever the
+  suite itself ran from inside a linked git worktree (subagents do this
+  routinely): `_githooks`'s own `__file__` resolved to an ephemeral path,
+  which the existing `is_ephemeral_path` safety check (#441/ADR-0014)
+  correctly refused to register into a fixture's shared drop-in dir. Fixtures
+  now resolve `_githooks`'s enforcer path from a durable temp-dir copy of the
+  hooks payload (`durable_plugin_copy`, the #442 fix's existing pattern).
+
 ## [2.11.9] — 2026-08-05
 
 ### Fixed

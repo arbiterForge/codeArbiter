@@ -88,6 +88,7 @@ from _hooklib import (
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
                 # gitdir: pointer) project_root() climb (#223)
+from hostapi import git_worktree_main_root  # noqa: #604 marker-root escalation
 import _protectedstatelib  # H-22's shell flank (T-08, #564) — imported as a
                             # module (not `from ... import REGISTRY`) so
                             # _STATE_WRITE_RES below is built from a live
@@ -1456,6 +1457,23 @@ def _check_h22_state(cmd, root):
                           f"this policy. Use the sanctioned helper.")
 
 
+def _marker_root(root):
+    """`root`, escalated to the MAIN checkout when `root` itself names a
+    LINKED git worktree's own checkout (#604) — see
+    `hostapi.git_worktree_main_root`'s docstring.
+
+    `root` (this file's own `project_root()`-derived parameter, D-2) already
+    names the main checkout in the common case: the harness sets
+    `CLAUDE_PROJECT_DIR` once at session start, before a session's cwd ever
+    moves into a linked worktree, so this is a no-op for the reported bug's
+    own scenario. It matters only when THIS hook process ALSO ran without
+    `CLAUDE_PROJECT_DIR` set (uncommon for a registered hook subprocess, but
+    possible) — without this, that edge case would have the guard read from
+    the worktree while `security-pass.py`'s `marker_root()` (hostapi.py)
+    writes to the main checkout, reopening the exact split this closes."""
+    return git_worktree_main_root(root) or root
+
+
 def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
     """H-09b / H-10b: BLOCK a commit that introduces crypto/secret changes without
     a recorded security-gate pass. The crypto-compliance / secret-handling skills
@@ -1494,7 +1512,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
         kind = "crypto/TLS" if touches_crypto else "secret"
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
-        marker = os.path.join(root, ".codearbiter", ".markers", "security-gate-passed")
+        marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "security-gate-passed")
         if not marker_fresh(marker, 30):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (.codearbiter/.markers/security-gate-passed). Run the "
@@ -1556,7 +1574,7 @@ def _check_h14_migration(commit, add, cwd, root):
     staged |= extra
     migs = sorted(p for p in staged if is_migration_path(p, root))
     if migs:
-        marker = os.path.join(root, ".codearbiter", ".markers", "migration-gate-passed")
+        marker = os.path.join(_marker_root(root), ".codearbiter", ".markers", "migration-gate-passed")
         try:
             with open(marker, encoding="utf-8") as f:
                 approved = set(f.read().split())

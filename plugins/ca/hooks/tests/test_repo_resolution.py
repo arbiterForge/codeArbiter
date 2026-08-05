@@ -28,13 +28,16 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
 ENFORCE = os.path.join(HOOKS, "git-enforce.py")
+SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
 
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
+from _helpers import durable_plugin_copy  # noqa: E402
 
 
 def _load_module(name, path):
@@ -377,8 +380,21 @@ class TestGitEnforceOwnRepoResolution(unittest.TestCase):
         _init_repo(self.session_root, branch="feat/work")  # clean feature branch
         self.other_root = os.path.join(self._tmp.name, "other-repo")
         _init_repo(self.other_root, branch="main")  # the repo actually committing
+        # #604 test-fidelity (mirrors test_git_hooks.py's _GitFixture): this
+        # suite may itself run from inside a linked worktree, which makes
+        # `_githooks`'s own `__file__` ephemeral (#441/ADR-0014) and silently
+        # no-ops `_githooks.install()`'s drop-in write below — durable_plugin_copy
+        # gives it a plain-temp-dir copy to resolve its enforcer path from
+        # instead, so the real end-to-end `git commit` in
+        # test_installed_hook_fires_correctly_in_its_own_repo finds a
+        # genuinely-registered enforcer regardless of where the suite runs.
+        durable_root = durable_plugin_copy(self._tmp.name)
+        self._enforcer_patch = mock.patch.object(
+            _githooks, "__file__", os.path.join(durable_root, "hooks", "_githooks.py"))
+        self._enforcer_patch.start()
 
     def tearDown(self):
+        self._enforcer_patch.stop()
         self._tmp.cleanup()
 
     def _stage(self, root, name, content):
@@ -422,6 +438,116 @@ class TestGitEnforceOwnRepoResolution(unittest.TestCase):
         env = {**os.environ, "CLAUDE_PROJECT_DIR": self.session_root}
         res = _sh([sys.executable, ENFORCE, "pre-commit"], feat_root, env=env)
         self.assertEqual(res.returncode, 0, res.stderr)
+
+
+# ---------------------------------------------------------------------------
+# #604: security-pass.py (invoked bare via Bash, no CLAUDE_PROJECT_DIR in
+# that shell) and pre-bash.py's H-09b/H-10b guard (a hook subprocess that
+# inherits a CLAUDE_PROJECT_DIR pinned to the MAIN checkout even after the
+# session's cwd moves into a linked worktree) used to resolve DIFFERENT
+# project roots for the security-gate marker -- a legitimately-recorded pass
+# was written where the guard never looked. marker_root() (hostapi.py) now
+# gives the producer the same main-checkout answer the guard's
+# CLAUDE_PROJECT_DIR-first read already has.
+# ---------------------------------------------------------------------------
+
+CRYPTO_LINE = "const h = createHash('md5');\n"  # matches CRYPTO_RE
+
+
+class TestGateMarkerAgreesAcrossLinkedWorktree(unittest.TestCase):
+    """End-to-end, in a REAL linked git worktree: a gate pass recorded by
+    security-pass.py (run the way the crypto-compliance/secret-handling
+    skill prose actually invokes it -- bare, no CLAUDE_PROJECT_DIR) is
+    honored by pre-bash.py's H-09b guard (run the way the harness actually
+    invokes it -- CLAUDE_PROJECT_DIR pinned to the main checkout)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.main_checkout = os.path.join(self._tmp.name, "main-checkout")
+        os.makedirs(self.main_checkout)
+        _git(["init", "-q", "-b", "main"], self.main_checkout)
+        _git(["config", "user.email", "h@example.com"], self.main_checkout)
+        _git(["config", "user.name", "harness"], self.main_checkout)
+        os.makedirs(os.path.join(self.main_checkout, ".codearbiter"))
+        # #604: CONTEXT.md must be COMMITTED, not merely present on disk in
+        # main_checkout (as `_init_repo` elsewhere in this file leaves it) --
+        # `git worktree add` only checks out TRACKED content, and
+        # security-pass.py's own arbiter-enabled check reads the WORKTREE's
+        # own (unescalated) root, so an untracked CONTEXT.md would leave
+        # `wt_dir/.codearbiter/` missing entirely and fail this fixture
+        # before the behavior under test ever runs.
+        with open(os.path.join(self.main_checkout, ".codearbiter", "CONTEXT.md"),
+                  "w", encoding="utf-8") as f:
+            f.write(ARBITER)
+        _git(["add", ".codearbiter/CONTEXT.md"], self.main_checkout)
+        _git(["commit", "-q", "-m", "seed"], self.main_checkout)
+        self.wt_dir = os.path.join(self._tmp.name, "linked-worktree")
+        _git(["worktree", "add", "-b", "feat/work", self.wt_dir], self.main_checkout)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _bare_env(self):
+        # Simulates security-pass.py invoked via a raw Bash tool call: no
+        # CLAUDE_PROJECT_DIR in that shell at all (the #604 repro condition).
+        env = dict(os.environ)
+        env.pop("CLAUDE_PROJECT_DIR", None)
+        return env
+
+    def _hook_env(self):
+        # Simulates the harness's own PreToolUse hook subprocess: CLAUDE_PROJECT_DIR
+        # pinned to the MAIN checkout, unrefreshed after the session's cwd
+        # moved into the linked worktree.
+        return {**os.environ, "CLAUDE_PROJECT_DIR": self.main_checkout}
+
+    def _stage_crypto_line(self):
+        path = os.path.join(self.wt_dir, "auth.js")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(CRYPTO_LINE)
+        _git(["add", "auth.js"], self.wt_dir)
+
+    def _commit_payload(self):
+        return json.dumps({"tool_name": "Bash",
+                           "tool_input": {"command": "git commit -m x"}})
+
+    def test_marker_written_by_bare_security_pass_lands_at_main_checkout(self):
+        self._stage_crypto_line()
+        res = _sh([sys.executable, SECURITY_PASS], self.wt_dir, env=self._bare_env())
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertIn("1 sensitive line", res.stdout)
+        main_marker = os.path.join(
+            self.main_checkout, ".codearbiter", ".markers", "security-gate-passed")
+        wt_marker = os.path.join(
+            self.wt_dir, ".codearbiter", ".markers", "security-gate-passed")
+        self.assertTrue(os.path.isfile(main_marker),
+                        "the marker must land at the MAIN checkout (D-2)")
+        self.assertFalse(os.path.isfile(wt_marker),
+                         "the marker must NOT be written to the worktree's own, "
+                         "gitignored (never-shared) .codearbiter/.markers/")
+
+    def test_guard_honors_the_gate_pass_security_pass_actually_recorded(self):
+        # The full loop: record the pass the way the skill prose invokes it,
+        # then attempt the commit the way the harness invokes the guard.
+        self._stage_crypto_line()
+        passed = _sh([sys.executable, SECURITY_PASS], self.wt_dir, env=self._bare_env())
+        self.assertEqual(passed.returncode, 0, passed.stderr)
+
+        res = _sh([sys.executable, PRE_BASH], self.wt_dir,
+                  input=self._commit_payload(), env=self._hook_env())
+        self.assertEqual(res.returncode, 0,
+                         f"H-09b must not block a freshly-recorded, correctly-bound "
+                         f"gate pass: {res.stderr}")
+        self.assertNotIn("H-09b", res.stderr)
+
+    def test_guard_still_blocks_without_a_recorded_pass(self):
+        # No-fail-open converse: the SAME staged crypto line, with NO
+        # security-pass.py run first, must still BLOCK -- proves the fix
+        # didn't turn H-09b into a rubber stamp.
+        self._stage_crypto_line()
+        res = _sh([sys.executable, PRE_BASH], self.wt_dir,
+                  input=self._commit_payload(), env=self._hook_env())
+        self.assertEqual(res.returncode, 2, res.stderr)
+        self.assertIn("H-09b", res.stderr)
 
 
 # ---------------------------------------------------------------------------

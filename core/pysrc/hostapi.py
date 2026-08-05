@@ -63,6 +63,63 @@ def git_toplevel(cwd=None):
     return None
 
 
+def git_worktree_main_root(root):
+    """When `root` (an already-resolved project root — a `project_root()`
+    answer, NOT necessarily a fresh `git_toplevel` call) is itself the
+    checkout of a LINKED git worktree, the MAIN checkout's root that owns the
+    shared `.git` directory — else `None`.
+
+    #604: `security-pass.py`/`migration-pass.py` and the H-09b/H-10b/H-14
+    guards were found resolving DIFFERENT roots for GATE MARKERS in a
+    linked-worktree session — a hook subprocess trusts a (possibly stale)
+    `CLAUDE_PROJECT_DIR` naming the MAIN checkout, while `security-pass.py`
+    run bare via Bash (no `CLAUDE_PROJECT_DIR` in that shell) fell through to
+    `git_toplevel()`, which names the WORKTREE's own checkout — so a gate
+    pass recorded by one was never seen by the other. `.codearbiter/
+    .markers/` is gitignored, so a linked worktree's own checkout never has
+    one freshly — the git-hook guard's diff/branch resolution already
+    carries this exact split (`_bashguardlib._effective_exec_root`'s
+    docstring, D-2: gate markers stay pinned to the main checkout regardless
+    of the command's effective exec root).
+
+    Deliberately NOT wired into `Host.project_root()` itself: `project_root()`
+    also backs `security-pass.py`'s DIFF SCAN (`candidate_lines()`), which
+    must stay worktree-local — escalating the general project root to "main"
+    would bind digests to the wrong (unrelated, possibly dirty) tree and
+    silently drop coverage for the diff actually being committed, the exact
+    trap the issue this closes warns against. Callers that specifically need
+    the gate-MARKER root call this as a targeted escalation on top of an
+    already-resolved `project_root()` answer instead — e.g.
+    `git_worktree_main_root(root) or root` — so every OTHER project_root()
+    consumer (diff scans, `arbiter_active`, …) is entirely unaffected, and
+    the two callers agree on marker location without `git_toplevel`'s own
+    `git rev-parse` mechanism being replaced anywhere (deliberate: symlink/
+    8.3 canonicalization, #125).
+
+    Distinguishes a linked worktree from a submodule — both have a `.git`
+    FILE, but only a worktree's `gitdir:` pointer names a path under
+    `.git/worktrees/<name>`; a submodule's names `.git/modules/<name>`, which
+    is not a "main root" to climb to and must fall through untouched (mirrors
+    `_durabilitylib._gitfile_points_at_worktree`'s same distinction)."""
+    git_meta = os.path.join(root, ".git")
+    if not os.path.isfile(git_meta):
+        return None
+    try:
+        with open(git_meta, encoding="utf-8", errors="replace") as f:
+            pointer = f.read().strip()
+    except OSError:
+        return None
+    if not pointer.startswith("gitdir: "):
+        return None
+    gitdir = pointer[len("gitdir: "):].strip().replace("\\", "/")
+    marker = "/.git/worktrees/"
+    idx = gitdir.find(marker)
+    if idx == -1:
+        return None  # not a linked worktree (e.g. a submodule) — nothing to climb to
+    main_git_dir = gitdir[:idx + len("/.git")]
+    return os.path.dirname(main_git_dir) or None
+
+
 class Host:
     """One host's answers to the host-coupled questions the hooks ask.
 
@@ -123,7 +180,11 @@ class Host:
              var.
           3. `git rev-parse --show-toplevel` from the process cwd.
           4. the process cwd.
-        """
+
+        Deliberately climbs no further than the WORKTREE's own toplevel in a
+        linked-worktree session — a caller wanting the gate-MARKER root (which
+        must agree on the MAIN checkout, #604) calls `marker_root()` instead;
+        see its docstring for why the two must not be conflated."""
         env_root = os.environ.get("CLAUDE_PROJECT_DIR")
         if env_root and os.path.isdir(env_root):
             return env_root
@@ -135,6 +196,28 @@ class Host:
         if top:
             return top
         return os.getcwd()
+
+    def marker_root(self, payload=None):
+        """The root `.codearbiter/.markers/` gate passes (security-pass.py,
+        migration-pass.py, and the H-09b/H-10b/H-14 guards) are written to
+        and read from (#604).
+
+        Identical to `project_root(payload)` in every case except one: when
+        that resolves to a LINKED git worktree's own checkout, this escalates
+        to the MAIN checkout that owns the shared `.git` directory instead
+        (`git_worktree_main_root`) — `.codearbiter/.markers/` is gitignored,
+        so a linked worktree's own checkout never has one freshly, and the
+        git-hook guard already anchors every marker READ at the main
+        checkout regardless of a command's real exec root (D-2,
+        `_bashguardlib._effective_exec_root`'s docstring). This gives every
+        marker WRITER that same answer even when it runs without
+        `CLAUDE_PROJECT_DIR` set — `security-pass.py` invoked bare via a Bash
+        tool call, rather than as a registered hook subprocess that inherits
+        it from the harness — closing the loop without touching
+        `project_root()` itself, which other callers (diff scans in
+        particular) need to stay worktree-local."""
+        root = self.project_root(payload)
+        return git_worktree_main_root(root) or root
 
     def plugin_root(self):
         """The plugin payload root: CLAUDE_PLUGIN_ROOT when set, else derived
