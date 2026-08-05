@@ -41,7 +41,7 @@
   },
   {
     "name": "cleanup",
-    "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; ancestry proven, never assumed.",
+    "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed.",
     "skillPath": "skills/ca-cleanup/SKILL.md"
   },
   {

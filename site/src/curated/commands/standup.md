@@ -4,7 +4,7 @@ related: [status, task]
 gates:
   - gate: per-action confirmation
     when: pruning a merged branch or removing a stale worktree
-    effect: each candidate is confirmed individually before it's deleted — declining leaves it in place, and nothing is batched into one implied yes
+    effect: branch deletions are confirmed one at a time; stale worktrees may be confirmed as one explicitly enumerated group naming every member, or individually if you'd rather keep some — either way declining leaves items in place, and nothing is ever an implied yes
   - gate: fast-forward-only pull
     when: the working tree is clean and the branch is behind upstream
     effect: a --ff-only pull is offered; a dirty tree withholds the pull and reports the dirty state instead, and a diverged branch is refused rather than merged
@@ -16,12 +16,23 @@ gates:
 ## What it does
 
 The daily hygiene checklist, made routine and gated: fetch and offer a fast-forward pull, list
-locally-merged branches and stale worktrees for individual confirm-and-delete, surface stashes,
-uncommitted changes, and un-pushed commits with a suggested next step, run a read-only advisory
-board-drift sweep comparing recent merge history against `open-tasks.md`, and offer to archive
-long-done tasks one at a time. Nothing destructive happens without an explicit per-item yes, and
-the task board is never auto-flipped — a drifted task is resolved only through
-`/ca:task done <id>`.
+locally-merged branches for individual confirm-and-delete, list stale worktrees for either
+confirm-and-delete as one named group or individually, surface stashes, uncommitted changes, and
+un-pushed commits with a suggested next step, run a read-only advisory board-drift sweep comparing
+recent merge history against `open-tasks.md`, and offer to archive long-done tasks one at a time.
+Nothing destructive happens without an explicit yes, and the task board is never auto-flipped — a
+drifted task is resolved only through `/ca:task done <id>`.
+
+A locally-merged branch that was squash-merged (its upstream already pruned to `: gone]`) will
+typically refuse a plain `git branch -d`. When that happens, `standup` checks the merged PR record
+for that branch; if it proves containment (the PR's `headRefOid` matching the branch's local tip),
+`-D` is offered instead, with the proof and the branch name both stated in the confirmation.
+Without that proof, a refusal is reported and left alone.
+
+Stale worktrees are presented together with the evidence for each, then offered as one explicitly
+enumerated group — naming every member — so a multi-lane day doesn't turn into four or five
+identical yes prompts. Declining the group falls back to confirming each worktree on its own;
+either way, the main worktree is never touched and nothing is removed without a yes.
 
 The archival sweep exists because long-done tasks accumulate until the in-flight count stops
 meaning anything. Each aged item is proposed separately and moved by its own helper call: the
