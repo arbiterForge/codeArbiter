@@ -201,6 +201,7 @@ export default defineConfig({
             { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
             { label: "Checkpoints", slug: "concepts/checkpoints" },
             { label: "The Persona-Register Split", slug: "concepts/persona-and-context" },
+            { label: "The Evidence Behind the Persona", slug: "concepts/persona-research-basis" },
             { label: "Auditability", slug: "concepts/auditability" },
             { label: "Selected Hardening Notes", slug: "concepts/hardening-history" },
           ],
