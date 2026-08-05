@@ -31,6 +31,19 @@ predate the plugin rewrite and are grouped by date.
   `[System.IO.File]::AppendAllText` append with a documented verification
   step (#594).
 
+## [2.11.8] — 2026-08-05
+
+### Fixed
+
+- Every command/skill surface that spelled the interpreter fallback as
+  `python3 X || python X` now resolves the interpreter once, by presence,
+  before invoking a helper (#577). The `||` fold branches on the helper's
+  EXIT CODE, so any helper answer that carries information as a nonzero code
+  (e.g. `taskwrite.py archive`'s "archive could not be read") got silently
+  re-run under `python` and had its verdict replaced by the second run's.
+  `plugins/*/hooks/hooks.json` is deliberately unchanged — its pass/fail
+  hooks carry no exit-code vocabulary to lose.
+
 ## [2.11.7] — 2026-08-05
 
 ### Changed

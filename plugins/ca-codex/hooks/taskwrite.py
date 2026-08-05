@@ -7,8 +7,9 @@
 # _taskboardlib; this is the thin I/O wrapper (read board -> transform -> write),
 # the same shape as doctor.py / security-pass.py.
 #
-# Invoked by skill/command prose as:
-#   python3 "<plugin>/hooks/taskwrite.py" <verb> ... || python "<plugin>/hooks/taskwrite.py" ...
+# Invoked by skill/command prose as (interpreter resolved once by presence,
+# never a `python3 X || python X` fold -- #577):
+#   "$PY" "<plugin>/hooks/taskwrite.py" <verb> ...
 #
 # Verbs:
 #   add  "<desc>" [--from ORIGIN] [--id GROUP.TYPE] [--boundaries a,b]

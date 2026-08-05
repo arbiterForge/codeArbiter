@@ -4,10 +4,12 @@ The shared mechanism by which `crypto-compliance` and `secret-handling` unblock 
 by both skills' "On pass" step; the only difference between them is which commit hook the marker
 satisfies (H-09b for crypto/TLS, H-10b for secrets).
 
-**On a genuine PASS only**, run:
+**On a genuine PASS only**, resolve the interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+— never `python3 X || python X`, which reruns X on any nonzero exit and reports the second run's
+code instead of the first's (#577) — then run:
 
 ```bash
-python3 "{{PLUGIN_ROOT}}/hooks/security-pass.py" || python "{{PLUGIN_ROOT}}/hooks/security-pass.py"
+"$PY" "{{PLUGIN_ROOT}}/hooks/security-pass.py"
 ```
 
 It writes `{{PROJECT_DIR}}/.codearbiter/.markers/security-gate-passed` containing a digest of

@@ -12,6 +12,12 @@ All notable changes to `ca-pi` are documented in this file.
 - H-22's git-restore leg now also covers restoring a registered file's enclosing directory, and a package manager's `install` subcommand no longer false-blocks against coreutils' `install` verb (#575).
 - The Codex host notes' audit-log append recipe no longer directs Windows PowerShell 5.1 users to bare `>>`, which can write a UTF-16LE tail onto an existing UTF-8 log; it now uses an explicit UTF-8-no-BOM append with a documented verification step (#594).
 
+## [0.2.7] - 2026-08-05
+
+### Fixed
+
+- Every routine/skill surface that spelled the interpreter fallback as `python3 X || python X` now resolves the interpreter once, by presence, before invoking a helper (#577), so a helper answer that carries information in a nonzero exit code is no longer silently re-run and replaced by a second run's verdict.
+
 ## [0.2.6] - 2026-08-05
 
 ### Changed

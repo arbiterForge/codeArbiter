@@ -12,10 +12,9 @@
 # admits a commit only when every sensitive line being committed is in the
 # recorded set.
 #
-# Invoked by skill prose as:
-#   python3 "<plugin>/hooks/security-pass.py" || python "<plugin>/hooks/security-pass.py"
-# (same interpreter-fallback shape as hooks.json; rerun-safe — recording is
-# idempotent).
+# Invoked by skill prose as (interpreter resolved once by presence, never a
+# `python3 X || python X` fold -- #577; recording itself stays idempotent):
+#   "$PY" "<plugin>/hooks/security-pass.py"
 
 import os
 import subprocess

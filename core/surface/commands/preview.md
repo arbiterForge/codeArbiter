@@ -18,9 +18,11 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
 1. **Collect the diff.** Call the thin entry hook `preview.py` in `diff` mode, which wraps
    `collect_diff` from `{{PLUGIN_ROOT}}/hooks/_previewlib.py`. It unions HEAD-vs-worktree
    changes, staged changes, and untracked files (forward-slash paths). Run it from the project
-   root so `_previewlib`/`_hooklib` resolve on the same `sys.path`:
+   root so `_previewlib`/`_hooklib` resolve on the same `sys.path`. Resolve the interpreter once
+   by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
+   — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/preview.py" diff || python "{{PLUGIN_ROOT}}/hooks/preview.py" diff
+   "$PY" "{{PLUGIN_ROOT}}/hooks/preview.py" diff
    ```
    If the result is empty (clean tree, or not a git repo), print a friendly **"Nothing to
    preview"** line and STOP. This is a clean exit, not an error: no stack trace, no failure.
@@ -37,7 +39,7 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
    changed file's current content and returns `SecretFinding(path, line_no, snippet)` for every
    credential line, with the secret VALUE already masked to `****` in `snippet`:
    ```
-   python3 "{{PLUGIN_ROOT}}/hooks/preview.py" secrets || python "{{PLUGIN_ROOT}}/hooks/preview.py" secrets
+   "$PY" "{{PLUGIN_ROOT}}/hooks/preview.py" secrets
    ```
    Report each finding by `path:line_no` with its redacted snippet. The snippet arrives already
    masked: never reconstruct or print a raw secret value.

@@ -7,9 +7,9 @@
 # multi-statement block in command prose. Mirrors doctor.py / taskwrite.py:
 # entry point stays thin, all computation lives in _metricslib.
 #
-# Invoked by commands/metrics.md as:
-#   python3 "<plugin>/hooks/metrics.py" --root "<dir>" [--window N]
-#   || python "<plugin>/hooks/metrics.py" --root "<dir>" [--window N]
+# Invoked by commands/metrics.md as (interpreter resolved once by presence,
+# never a `python3 X || python X` fold -- #577):
+#   "$PY" "<plugin>/hooks/metrics.py" --root "<dir>" [--window N]
 #
 # Read-only: _metricslib.compute() never writes; this wrapper only prints its
 # return value. json.dumps is called with its default ensure_ascii=True so the
