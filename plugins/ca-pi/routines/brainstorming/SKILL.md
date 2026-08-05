@@ -44,7 +44,7 @@ Gate: one approach chosen (user-chosen, or SMARTS-chosen and logged), its trade-
 
 Turn the chosen approach concrete. The discipline is decide-or-ask, never drift:
 
-- **Decide the parameters; ask the forks.** A parameter-level choice — a naming, a default, a threshold, an ordering with one sensible answer — is yours to make: decide it, and record it in the spec where the user will see it at approval. A genuine fork — a real trade-off, a scope boundary, anything irreversible or user-visible — is the user's: ask it IN FULL the first time, leading with your recommendation and its reasoning. Never merely mention that an open decision exists; a named-but-unasked question is an omission wearing a disclaimer.
+- **Decide the parameters; ask the forks.** A parameter-level choice — a naming, a default, a threshold, an ordering with one sensible answer — is yours to make: decide it and record it in this phase's running notes; every recorded decision lands in the spec's **Decided parameters** section when Phase 4 writes the file, which is where the user reads them at approval. A genuine fork — a real trade-off, a scope boundary, anything irreversible or user-visible — is the user's: ask it IN FULL the first time, leading with your recommendation and its reasoning. Never merely mention that an open decision exists; a named-but-unasked question is an omission wearing a disclaimer.
 - **Batch what is independent.** Forks whose answers do not depend on each other are asked together, not serialized into rounds. One round of three real questions beats three rounds of one.
 - Run every answer through three lenses:
   - **Vague language** — force concrete nouns, numbers, and verbs. "Manage", "handle", "support" are not verbs. "Fast", "secure", "scalable" are not specifications. "We'll figure it out later" is not an answer — every "later" becomes a `[CONFIRM-NN]`.
@@ -59,7 +59,7 @@ Turn the chosen approach concrete. The discipline is decide-or-ask, never drift:
 
 Record every genuinely-unresolved unknown as `[CONFIRM-NN]` in `<project-root>/.codearbiter/open-questions.md`, numbered sequentially. A finding that belongs to a different feature or a future scope gets an inline `[NEEDS-TRIAGE]` marker in the notes — never route it to a ticket.
 
-Gate: every vague term made concrete; every fork resolved by the user or recorded as `[CONFIRM-NN]`; every parameter decision recorded in the spec draft; no unresolved "later" outside a `[CONFIRM-NN]`. A blocking `[CONFIRM-NN]` that gates the spec's core stops the loop — surface it and STOP.
+Gate: every vague term made concrete; every fork resolved by the user or recorded as `[CONFIRM-NN]`; every parameter decision recorded in the running notes that seed Phase 4's **Decided parameters** section; no unresolved "later" outside a `[CONFIRM-NN]`. A blocking `[CONFIRM-NN]` that gates the spec's core stops the loop — surface it and STOP.
 
 ## Phase 4 — Write the spec · gate: BLOCK
 
