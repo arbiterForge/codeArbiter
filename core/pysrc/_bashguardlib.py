@@ -741,9 +741,9 @@ def _build_state_write_res(registry):
     interp_re)` for every entry in `registry`, keyed on each entry's bare
     basename via `_state_write_res`. An explicit `registry` PARAMETER (not a
     bare comprehension over the module-level default) so a test can rebuild
-    this exact tuple against a SYNTHETIC registry — the real one ships EMPTY
-    at this slice (T-01–T-08; T-33/T-65/T-66 enroll the three named
-    consumers later) — the same `registry=`-parameter shape
+    this exact tuple against a SYNTHETIC registry — the real one now enrolls
+    three consumers (T-33/T-65/T-66: release-targets.md, open-tasks.md,
+    done-tasks.md) — the same `registry=`-parameter shape
     `_protectedstatelib.lookup_policy` already uses for the identical
     reason."""
     built = []
@@ -756,12 +756,11 @@ def _build_state_write_res(registry):
 
 # performance-002/_scopelib.py:109-117 precedent: compiled ONCE at import
 # from the live (code-constant, never disk-loaded — #564 design ruling)
-# registry, not recompiled per call. Empty at this slice, so
-# `_check_h22_state` is correctly a no-op against every command until a
-# consumer is registered. A test exercises the real logic by rebuilding this
-# EXACT tuple against a synthetic registry (`_build_state_write_res`), never
-# by mutating `_protectedstatelib.REGISTRY` after the fact — this tuple
-# would not see that (it is a one-time import-time snapshot, by design).
+# registry, not recompiled per call. A test exercises the real logic by
+# rebuilding this EXACT tuple against a synthetic registry
+# (`_build_state_write_res`), never by mutating `_protectedstatelib.REGISTRY`
+# after the fact — this tuple would not see that (it is a one-time
+# import-time snapshot, by design).
 _STATE_WRITE_RES = _build_state_write_res(_protectedstatelib.REGISTRY)
 
 

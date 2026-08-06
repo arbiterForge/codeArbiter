@@ -222,6 +222,9 @@ generate from it).
 > in this campaign — the first two were the missing skill rewrite (A-6.0) and the missing
 > portability proof (A-6.6/6.7) — and all three shared a shape: a criterion set that was
 > internally consistent and silent about a step nobody had named.
+
+| id | path(s) | verification | maps-to | covers | depends | status |
+|---|---|---|---|---|---|---|
 | T-42 | `core/surface/skills/release/SKILL.md` | `-k interpreter_fallback` — uses the shipped `python3 "<p>" … \|\| python "<p>" …` pattern (`taskwrite.py:11`) | interpreter fallback | A-3.6 | T-41e | ACCEPTED |
 | T-43 | `.github/scripts/payload_version_gate.py` | `python .github/scripts/test_payload_version_gate.py -k no_prefix_literal` | CI reads declared source | A-4.1 | T-42 | ACCEPTED |
 | T-44a | `.github/scripts/_releaselib.py` | `python .github/scripts/test_release_lib.py -k select_target_name_keyed` — `name=value` argv pairs; unknown name fails closed | shim CLI shape | A-4.2 | T-43 | ACCEPTED |
@@ -238,8 +241,11 @@ generate from it).
 | T-49 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_requires_confirmation` — no write without confirm | back-fill gate | A-5.3 | T-48 | ACCEPTED |
 | T-50 | `core/surface/skills/release/SKILL.md` | `python .github/scripts/test_release_lib.py -k backfill_persists` — second run reads, does not re-detect | back-fill persist | A-5.4 | T-49 | ACCEPTED |
 | T-51 | `core/pysrc/_releaselib.py` | `python .github/scripts/test_release_lib.py -k first_release_baseline` — baseline derived from `git log --diff-filter=A -- .codearbiter/CONTEXT.md`, with a user override offered in the prompt | adoption baseline | A-5.5 | T-50 | ACCEPTED |
+
 > **T-51 completed (2026-07-31).** Mechanism and CLI landed in `a31d398`; the lane prose that USES them landed with run 11's remediation, batched with T-42's so one exercise covers both. The row is now ACCEPTED because the lane genuinely offers the baseline, not merely because the helper exists.
 
+| id | path(s) | verification | maps-to | covers | depends | status |
+|---|---|---|---|---|---|---|
 | T-52 | `.codearbiter/.provenance/release-targets.json` | `python .github/scripts/test_provenancelib.py -k release_targets_triggers` | drift triggers | A-5.6 | T-51 | ACCEPTED |
 
 ### Step 4 — B3: the two conversions
@@ -315,6 +321,9 @@ empty and deletes the ratchet.
 | T-78 | `.codearbiter/reports/agent-lane-proof.json` | **SUBSTITUTED, see note:** eight independent BLIND agent exercises (not the scripted happy-path / missing-footer / back-fill scenarios this row originally specified), each against the skill as the previous run left it, with the **content hash of the shipped skill** recorded for the run the gate enforces | agent judgment layer | A-6.6 | T-77 | ACCEPTED |
 
 > **T-78 scope substitution (2026-07-31).** This row originally specified a SCRIPTED scenario harness. What shipped is eight human-directed blind exercises plus a hash-freshness gate wired as a declared `pre-tag` command. The substitution is recorded rather than silently absorbed: a scripted harness asserts only what its author already thought to script, and every HIGH this campaign found after the first run was in a seam nobody had thought to script. HIGHs by run: 4, 2, 0, 2, 1, 1, 1, 0. Three were introduced by the campaign's own remediation of an earlier HIGH. A scripted harness remains worth building and is NOT claimed by this row.
+
+| id | path(s) | verification | maps-to | covers | depends | status |
+|---|---|---|---|---|---|---|
 | T-79 | `.codearbiter/release-targets.md`, `.github/scripts/check_skill_proof_fresh.py` | a `pre-tag` row asserts the recorded skill hash still matches the shipped skill, so editing the skill without re-running the proof **blocks the next release**; and the known-failures list is asserted empty, retiring the ratchet | proof freshness + ratchet retirement | A-6.8, A-6.1 | T-78 | ACCEPTED |
 
 ## Pre-run dispositions (maintainer-answered 2026-07-31)
@@ -349,8 +358,8 @@ A-1.6→T-22, A-1.7→T-23, A-1.8→T-24, A-1.9→T-25/T-46, A-1.10→T-26, A-1.
 A-2.2→T-29, A-2.3→T-30, A-2.4→T-31, A-2.5→T-32, A-2.6→T-33, A-2.7→T-33, A-2.8→T-34, A-2.9→T-35,
 A-2.10→T-36, A-3.1→T-37, A-3.2→T-38, A-3.3→T-39, A-3.4→T-40, A-3.5→T-41/T-41c, A-3.6→T-42,
 A-4.1→T-43, A-4.2→T-44a/T-44b, A-4.3→T-45, A-4.4→T-46, A-5.1→T-47, A-5.2→T-48, A-5.3→T-49,
-A-5.4→T-50, A-5.5→T-51, A-5.6→T-52, **A-6.0→T-41a/T-41b/T-41c/T-41d/T-41e**, A-6.1→T-68a/T-68b,
-A-6.2→T-69, A-6.3→T-70, A-6.4→T-71, A-6.5→T-72, **A-6.6→T-73/T-74/T-75, A-6.7→T-76**.
+A-5.4→T-50, A-5.5→T-51, A-5.6→T-52, **A-6.0→T-41a/T-41b/T-41c/T-41d/T-41e**, A-6.1→T-68a/T-68b/T-79,
+A-6.2→T-69, A-6.3→T-70, A-6.4→T-71, A-6.5→T-72, **A-6.6→T-73/T-74/T-75/T-76, A-6.7→T-77, A-6.8→T-79**.
 B-01→T-01/02/03/15/T-05a/T-05b, B-02→T-04/T-06, B-03→T-07, B-04→T-08/T-08a, B-05→T-06/07/08/T-67,
 B-06→T-13, B-07→T-09, B-08→T-10/T-08b, B-09→T-11, B-10→T-05, B-11→T-14, B-12→T-12/T-67, B-13→T-33, B-14→T-66,
 B-15→T-65, B-16→T-54, B-17→T-53, B-18→T-55, B-19→T-56/T-67, B-20→T-57/T-58, B-21→T-59, B-22→T-60,

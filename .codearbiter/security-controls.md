@@ -509,8 +509,8 @@ attestations*, not tamper-proof proofs. `security-pass.py` mints the
 security-gate marker by re-deriving the sensitive-line digests from the current
 worktree; direct invocation of the sanctioned producer is the *intended*
 attestation mechanism. A Bash-capable non-cooperating agent can self-mint a pass
-(as it can defeat the `--no-verify` and shell-indirection controls, appsec-002 /
-#175) — this is an accepted trust boundary, out of scope for the product's
+(as it can defeat the `--no-verify` and shell-indirection controls,
+appsec-002 / #175) — this is an accepted trust boundary, out of scope for the product's
 cooperative-orchestrator threat model, not a defect. The marker's value is the
 friction and audit trail it adds on the cooperative path. Reopens (→ non-fabricable
 reviewer-signed binding) only if the threat model expands to untrusted agents. See
