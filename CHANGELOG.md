@@ -12,6 +12,30 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.14] — 2026-08-05
+
+### Added
+
+- `/ca:release --dry-run` is now real: it runs Pre-flight and Phase 1's
+  read-only version derivation, then reports the target, the derived
+  version and rationale, the per-commit classification, and the resolved
+  declared row, without writing a changelog entry, bumping a manifest,
+  committing, or tagging (#565).
+- A new `uncovered_intent` helper (`_intentlib.py`) backstops
+  `writing-plans`' bijective plan/criteria check with a citation check
+  against the spec's own scope bullets and a linked issue's acceptance
+  checkboxes, catching a criterion that both a plan and its own spec
+  quietly missed (#566).
+
+### Fixed
+
+- `writing-plans`' Phase 4 gate is reframed to state only what bijection
+  actually proves — that a plan and its `AC-NN` ledger agree with each
+  other, never that the ledger itself is complete — and both
+  `brainstorming` and `writing-plans` now ask an explicit negative-judgment
+  question ("if every criterion passed, what would still be broken?")
+  that a bijective check cannot mechanize (#566).
+
 ## [2.11.11] — 2026-08-05
 
 ### Fixed
