@@ -351,14 +351,7 @@ function killTree(child, taskkillExecutable) {
       child.kill("SIGKILL");
       return;
     }
-    const result = spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
-      env: minimalEnvironment(),
-      shell: false,
-      stdio: "ignore",
-      timeout: WINDOWS_TASKKILL_TIMEOUT_MS,
-      windowsHide: true
-    });
-    if (result.error !== void 0 || result.status !== 0) child.kill("SIGKILL");
+    void killWindowsTree(child, taskkillExecutable);
     return;
   }
   try {
@@ -366,6 +359,48 @@ function killTree(child, taskkillExecutable) {
   } catch {
     child.kill("SIGKILL");
   }
+}
+function killWindowsTree(child, taskkillExecutable) {
+  return new Promise((resolveKill) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolveKill();
+    };
+    let helper;
+    try {
+      helper = spawn(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
+        env: minimalEnvironment(),
+        shell: false,
+        stdio: "ignore",
+        windowsHide: true
+      });
+    } catch {
+      child.kill("SIGKILL");
+      finish();
+      return;
+    }
+    const timer = setTimeout(() => {
+      try {
+        helper.kill("SIGKILL");
+      } catch {
+      }
+      child.kill("SIGKILL");
+      finish();
+    }, WINDOWS_TASKKILL_TIMEOUT_MS);
+    timer.unref?.();
+    helper.once("error", () => {
+      clearTimeout(timer);
+      child.kill("SIGKILL");
+      finish();
+    });
+    helper.once("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0) child.kill("SIGKILL");
+      finish();
+    });
+  });
 }
 var BRIDGE_CORRELATION_RE = /^[a-f0-9]{64}$/u;
 function normalizedRequest(request) {

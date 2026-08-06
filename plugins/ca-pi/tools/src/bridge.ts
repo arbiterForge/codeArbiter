@@ -583,17 +583,61 @@ function killTree(child: ReturnType<typeof spawn>, taskkillExecutable: string | 
       child.kill("SIGKILL");
       return;
     }
-    const result = spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
-      env: minimalEnvironment(),
-      shell: false,
-      stdio: "ignore",
-      timeout: WINDOWS_TASKKILL_TIMEOUT_MS,
-      windowsHide: true,
-    });
-    if (result.error !== undefined || result.status !== 0) child.kill("SIGKILL");
+    void killWindowsTree(child, taskkillExecutable);
     return;
   }
   try { process.kill(-child.pid, "SIGKILL"); } catch { child.kill("SIGKILL"); }
+}
+
+/**
+ * Issue #580: this used to run taskkill via spawnSync, which blocks the
+ * entire event loop - including this module's own timers - for up to
+ * WINDOWS_TASKKILL_TIMEOUT_MS. That is the same event loop the cancellation
+ * deadline (the thing racing a hostile tree's own mutation) depends on, so a
+ * synchronous kill could itself widen the exact window it exists to close.
+ * process-tree.ts's runTaskkill already does this the non-blocking way; this
+ * mirrors that shape instead of diverging from it. Falls back to a direct
+ * SIGKILL of the immediate child on any failure to start, a timeout, or a
+ * non-zero exit - the same fallback the synchronous version used.
+ */
+function killWindowsTree(child: ReturnType<typeof spawn>, taskkillExecutable: string): Promise<void> {
+  return new Promise((resolveKill) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolveKill();
+    };
+    let helper: ReturnType<typeof spawn>;
+    try {
+      helper = spawn(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
+        env: minimalEnvironment(),
+        shell: false,
+        stdio: "ignore",
+        windowsHide: true,
+      });
+    } catch {
+      child.kill("SIGKILL");
+      finish();
+      return;
+    }
+    const timer = setTimeout(() => {
+      try { helper.kill("SIGKILL"); } catch { /* best-effort: helper may have already exited */ }
+      child.kill("SIGKILL");
+      finish();
+    }, WINDOWS_TASKKILL_TIMEOUT_MS);
+    timer.unref?.();
+    helper.once("error", () => {
+      clearTimeout(timer);
+      child.kill("SIGKILL");
+      finish();
+    });
+    helper.once("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0) child.kill("SIGKILL");
+      finish();
+    });
+  });
 }
 
 /** One SHA-256 digest in lowercase hex: the only correlation shape allowed on the wire. */
