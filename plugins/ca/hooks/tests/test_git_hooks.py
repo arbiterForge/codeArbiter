@@ -1068,5 +1068,90 @@ class TestDropInEntryIsNeverPinnedToAnEphemeralRoot(_GitFixture):
                          "install() from a worktree repointed the main repo's enforcer")
 
 
+class TestFreshnessGuardPreventsStaleFalseBlock(_GitFixture):
+    """AC-4 (#556): pins the EXACT failure the issue reports -- an enforcer
+    copy that predates the #279 sensitive-scan exemption (so it naively scans
+    every staged added line, including gate-events.log's own machine-written
+    audit rows) must not be able to author the H-09b verdict while a fresher,
+    correctly-exempting copy is ALSO registered for this repo. The old copy
+    is never physically rewritten (a `ca` session cannot correctly repoint a
+    sibling `ca-codex` entry it does not own, ADR-0014) -- it is skipped at
+    commit time in favor of the fresher one, which is what AC-1 asks for."""
+
+    def _stale_enforcer(self, name="stale-git-enforce.py"):
+        # A faithful stand-in for the pre-#279 enforcer: no gate-events.log
+        # exemption at all, so it naively scans EVERY staged added line for a
+        # crypto-looking token and blocks exactly like the real H-09b path.
+        path = os.path.join(self.root, name)
+        source = (
+            "import subprocess, sys\n"
+            "r = subprocess.run(['git', 'diff', '--cached', '--unified=0'],\n"
+            "                    capture_output=True, text=True)\n"
+            "added = [ln[1:] for ln in r.stdout.splitlines()\n"
+            "         if ln.startswith('+') and not ln.startswith('+++')]\n"
+            "if any('createHash' in ln for ln in added):\n"
+            "    print('BLOCKED [H-09b]: This commit introduces crypto/TLS "
+            "changes, but no security-gate pass is recorded (#161 git "
+            "backstop).', file=sys.stderr)\n"
+            "    sys.exit(1)\n"
+            "sys.exit(0)\n"
+        )
+        self._write(path, source)
+        return _githooks._shell_path(path)
+
+    def _stage_gate_events_audit_row(self):
+        # The exact #556 repro shape: a machine-written REMIND/WARN/BLOCK
+        # audit row (gate-events.log, #279-exempt) that echoes a detected
+        # crypto keyword back into its own message text -- self-referential,
+        # never an actual crypto change anywhere else in the diff.
+        row = ("[2026-08-05T00:00:00Z] REMIND [H-09] host=codex "
+               "hook=post-write-edit.py | createHash pattern detected in "
+               "staged diff.\n")
+        self._write(os.path.join(self.root, ".codearbiter", "gate-events.log"), row)
+        _git(["add", ".codearbiter/gate-events.log"], self.root)
+
+    def test_stale_sibling_alone_reproduces_the_historic_false_block(self):
+        # Fixture-fidelity check: with ONLY the pre-#279-shaped enforcer
+        # registered, the exact same audit-row diff DOES false-block on
+        # H-09b -- proving the synthetic stale enforcer is a faithful
+        # stand-in for the real #556 fossil, not a strawman that could never
+        # have blocked anything.
+        dropin = _githooks._dropin_dir(self.root)
+        os.makedirs(dropin, exist_ok=True)
+        with open(os.path.join(dropin, "ca-codex.path"), "w",
+                  encoding="utf-8", newline="\n") as f:
+            f.write(self._stale_enforcer() + "\n")
+        hook_dir = os.path.join(self.root, ".git", "hooks")
+        os.makedirs(hook_dir, exist_ok=True)
+        with open(os.path.join(hook_dir, "pre-commit"), "w",
+                  encoding="utf-8", newline="\n") as f:
+            f.write(_githooks._shim(dropin, "pre-commit"))
+        os.chmod(os.path.join(hook_dir, "pre-commit"), 0o755)
+        _git(["checkout", "-q", "-b", "feat/x"], self.root)
+        self._stage_gate_events_audit_row()
+        res = _sh(["sh", "-c", "git commit -m x"], self.root)
+        self.assertNotEqual(res.returncode, 0, "the stale-shaped enforcer should have blocked")
+        self.assertIn("H-09b", res.stderr + res.stdout)
+
+    def test_fresher_registered_copy_shields_the_stale_one(self):
+        # AC-4 proper: register the REAL (current, #279-exempting) enforcer
+        # via install() -- confirmed fresh, its `.seen` heartbeat matches
+        # `.path` -- ALONGSIDE the same pre-#279-shaped stale entry as above,
+        # which has NEVER been confirmed (#556: no live Codex session ever
+        # ran to refresh it, so it has no `.seen` file at all). The freshness
+        # guard must skip the stale one; the same diff that false-blocked
+        # above must now be ALLOWED, with no H-09b anywhere in the output.
+        _githooks.install(self.root)  # this fixture's own entry: real, current, confirmed
+        dropin = _githooks._dropin_dir(self.root)
+        with open(os.path.join(dropin, "ca-codex.path"), "w",
+                  encoding="utf-8", newline="\n") as f:
+            f.write(self._stale_enforcer() + "\n")  # never confirmed -> no .seen
+        _git(["checkout", "-q", "-b", "feat/x"], self.root)
+        self._stage_gate_events_audit_row()
+        res = _sh(["sh", "-c", "git commit -m x"], self.root)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertNotIn("H-09b", res.stderr + res.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()
