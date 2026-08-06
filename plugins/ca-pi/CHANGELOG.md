@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.18] - 2026-08-06
+
+### Fixed
+
+- `bridge.test.ts`'s hung-tree cancellation tests no longer race a fixed wall-clock margin against real Windows process-launch overhead (#580): the hostile test fixture's mutation delay is widened with real headroom and the fixed post-cancellation sleep is replaced with a fail-fast poll, removing a false-flake window measured (in a controlled trial) to leak 8/8 times once the kill trigger fired late and 0/15 times when it fired on schedule. `bridge.ts`'s Windows tree-kill (`killTree`) is also converted from a blocking `spawnSync` taskkill invocation to a non-blocking async one, matching `process-tree.ts`'s own pattern, so a slow kill can no longer stall the event loop it is itself racing.
+- Several `ca-pi` tests that launch real Windows processes under `--coverage` (package.test.ts's live-Pi-loader case, bridge.test.ts's force-settle case) now carry an explicit timeout headroom instead of relying on vitest's 5s default, addressing the same fixed-margin-vs-real-latency shape reported in #559.
+
 ## [0.2.17] - 2026-08-06
 
 ### Fixed

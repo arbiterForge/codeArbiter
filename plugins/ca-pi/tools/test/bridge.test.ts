@@ -202,6 +202,32 @@ function request(tool: string, input: Record<string, unknown>) {
   return { version: 1 as const, event: "tool_call", cwd: projectCwd, tool, input };
 }
 
+// Issue #580: a hostile grandchild's mutation is a single one-way write, not a
+// value that can transition back to "gone" - so this cannot poll for
+// disappearance. What it CAN do is fail the instant the write is observed
+// rather than trusting a fixed sleep to have covered the teardown window
+// (the bug: on a loaded box the real teardown deadline can slip past a fixed
+// wait even though cancellation is still working correctly, because a
+// one-way file write can never be un-written by waiting longer). Polling
+// short-circuits a genuine leak immediately and only asserts "no leak" once
+// the caller-supplied window has fully elapsed with no write observed.
+async function assertNoLeakedMutation(sentinel: string, windowMs: number, pollMs = 40): Promise<void> {
+  const deadline = Date.now() + windowMs;
+  for (;;) {
+    let exists = true;
+    try {
+      await access(sentinel);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") exists = false;
+      else throw error;
+    }
+    if (exists) throw new Error(`cancellation did not prevent the mutation: ${sentinel} was created`);
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) return;
+    await new Promise<void>((resolveWait) => setTimeout(resolveWait, Math.min(pollMs, remaining)));
+  }
+}
+
 async function executeWrappedRead(bridge: BridgePort, cwd: string): Promise<Record<string, unknown>> {
   const definitions = new Map<string, ToolDefinitionPort>();
   const pi: ToolGuardPiPort = {
@@ -537,9 +563,20 @@ describe("BridgeClient", () => {
 
   test("cancels a hung bridge tree and fails mutation closed", async () => {
     const sentinel = resolve(tmpdir(), `ca-pi-bridge-leak-${process.pid}-${Date.now()}`);
+    // Issue #580: this used to be time.sleep(0.8) with a fixed 1,200ms wait
+    // afterward. The hostile grandchild's own launch overhead (two nested
+    // Python interpreter starts) competes with the same process-creation
+    // machinery the bridge's teardown depends on, so on a loaded box that
+    // 0.8s/1.2s pairing left near-zero margin - a leak was observed 8/8 times
+    // in a controlled trial that delayed the kill trigger past ~900ms, while
+    // the kill mechanism itself (once triggered) reliably completed inside
+    // 100-300ms. Widening the hostile delay and polling for an early failure
+    // (rather than trusting a fixed wait to have covered the real deadline)
+    // removes that false-flake margin without weakening what is asserted.
+    const hostileDelayMs = 4_000;
     const source = [
       "import subprocess, sys, time",
-      `subprocess.Popen([sys.executable, '-c', \"import pathlib,sys,time; time.sleep(0.8); pathlib.Path(sys.argv[1]).write_text('leak')\", ${JSON.stringify(sentinel)}])`,
+      `subprocess.Popen([sys.executable, '-c', \"import pathlib,sys,time; time.sleep(${hostileDelayMs / 1000}); pathlib.Path(sys.argv[1]).write_text('leak')\", ${JSON.stringify(sentinel)}])`,
       "time.sleep(30)",
     ].join("\n");
     try {
@@ -547,12 +584,11 @@ describe("BridgeClient", () => {
       const response = await bridge.call(request("edit", { path: "x", edits: [] }), new AbortController().signal);
       expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
       expect(response.message).toContain("timed out");
-      await new Promise((done) => setTimeout(done, 1_200));
-      await expect(access(sentinel)).rejects.toThrow();
+      await assertNoLeakedMutation(sentinel, hostileDelayMs + 2_000);
     } finally {
       await rm(sentinel, { force: true });
     }
-  });
+  }, 15_000);
 
   test("rejects a bridge script outside the installed package", async () => {
     const packageRoot = await mkdtemp(resolve(tmpdir(), "ca-pi-package-"));
@@ -632,9 +668,13 @@ describe("BridgeClient", () => {
 
   test("cancellation terminates the bridge tree and blocks mutation", async () => {
     const sentinel = resolve(tmpdir(), `ca-pi-bridge-cancel-leak-${process.pid}-${Date.now()}`);
+    // Issue #580: see the sibling "cancels a hung bridge tree" test for why
+    // the hostile delay was widened from 0.8s and the fixed post-wait
+    // replaced with assertNoLeakedMutation's fail-fast poll.
+    const hostileDelayMs = 4_000;
     const source = [
       "import subprocess, sys, time",
-      `subprocess.Popen([sys.executable, '-c', \"import pathlib,sys,time; time.sleep(0.8); pathlib.Path(sys.argv[1]).write_text('leak')\", ${JSON.stringify(sentinel)}])`,
+      `subprocess.Popen([sys.executable, '-c', \"import pathlib,sys,time; time.sleep(${hostileDelayMs / 1000}); pathlib.Path(sys.argv[1]).write_text('leak')\", ${JSON.stringify(sentinel)}])`,
       "time.sleep(30)",
     ].join("\n");
     try {
@@ -644,12 +684,11 @@ describe("BridgeClient", () => {
       const response = await bridge.call(request("bash", { command: "true" }), controller.signal);
       expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
       expect(response.message).toContain("cancelled");
-      await new Promise((done) => setTimeout(done, 1_200));
-      await expect(access(sentinel)).rejects.toThrow();
+      await assertNoLeakedMutation(sentinel, hostileDelayMs + 2_000);
     } finally {
       await rm(sentinel, { force: true });
     }
-  });
+  }, 15_000);
 
   test("force-settles a call whose child never emits close after a failed kill", async () => {
     const bridge = await clientFor("import time\ntime.sleep(30)\n", { timeoutMs: 50 });
@@ -670,7 +709,15 @@ describe("BridgeClient", () => {
     expect(response).toMatchObject({ outcome: "block", ruleId: "PI-BRIDGE" });
     expect(response.message).toContain("timed out");
     expect(elapsed).toBeLessThan(5_000);
-  });
+    // Issue #559: this test's own assertion already bounds the force-settle at
+    // 5s, coincidentally the same number as vitest's per-test default - so the
+    // infra deadline and the thing being asserted were the same value by
+    // accident, not by design. Measured under --coverage on a fast, unloaded
+    // box this case still takes ~2.1s (real path validation plus the
+    // KILL_SETTLE_DEADLINE_MS backstop), leaving too little headroom once a
+    // slower/loaded windows-latest host is added on top. A generous, clearly
+    // separate ceiling here means only the assertion above decides pass/fail.
+  }, 15_000);
 
   test("a rejecting validatePaths produces no unhandledRejection and a later call() still fails with the validation error", async () => {
     let unhandled: unknown;

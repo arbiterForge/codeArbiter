@@ -712,14 +712,7 @@ function killTree(child, taskkillExecutable) {
       child.kill("SIGKILL");
       return;
     }
-    const result3 = spawnSync(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
-      env: minimalEnvironment(),
-      shell: false,
-      stdio: "ignore",
-      timeout: WINDOWS_TASKKILL_TIMEOUT_MS,
-      windowsHide: true
-    });
-    if (result3.error !== void 0 || result3.status !== 0) child.kill("SIGKILL");
+    void killWindowsTree(child, taskkillExecutable);
     return;
   }
   try {
@@ -727,6 +720,48 @@ function killTree(child, taskkillExecutable) {
   } catch {
     child.kill("SIGKILL");
   }
+}
+function killWindowsTree(child, taskkillExecutable) {
+  return new Promise((resolveKill) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolveKill();
+    };
+    let helper;
+    try {
+      helper = spawn(taskkillExecutable, ["/pid", String(child.pid), "/t", "/f"], {
+        env: minimalEnvironment(),
+        shell: false,
+        stdio: "ignore",
+        windowsHide: true
+      });
+    } catch {
+      child.kill("SIGKILL");
+      finish();
+      return;
+    }
+    const timer = setTimeout(() => {
+      try {
+        helper.kill("SIGKILL");
+      } catch {
+      }
+      child.kill("SIGKILL");
+      finish();
+    }, WINDOWS_TASKKILL_TIMEOUT_MS);
+    timer.unref?.();
+    helper.once("error", () => {
+      clearTimeout(timer);
+      child.kill("SIGKILL");
+      finish();
+    });
+    helper.once("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0) child.kill("SIGKILL");
+      finish();
+    });
+  });
 }
 var BRIDGE_CORRELATION_RE = /^[a-f0-9]{64}$/u;
 function normalizedRequest(request) {
@@ -9500,7 +9535,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "817a2a7a4789f0ff64053d0c4d01c776d5518504afc992ef81c176fe09b10504"
+        childFingerprint: "9e46ad7e682671a68cd4d2ff02e2610a7251af83664941a5ba903ef120b84d88"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,
