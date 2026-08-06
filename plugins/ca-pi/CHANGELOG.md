@@ -4,6 +4,25 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.17] - 2026-08-06
+
+### Fixed
+
+- Corrected the 2.11.0 changelog entry's protected-state-registry description
+  to name its three enrolled consumers instead of claiming it ships empty;
+  the same stale claim in `_protectedstatelib.py` and `_bashguardlib.py` is
+  corrected to match (shared `core/pysrc/` kernel).
+- The release skill's Phase 3 release-notes command used bracket notation
+  (`--latest[=false]`), which is prose shorthand and not runnable shell;
+  split into the two runnable commands the surrounding prose already
+  describes.
+- Pre-flight's clean-tree requirement and the later rebuild step read as
+  contradictory in isolation; added a note distinguishing the entry
+  condition from the later, deliberately-reconciled exception.
+- `medium-documents` was cited by bare name in the release skill's changelog
+  step while every sibling include in the same sentence carries a full
+  path; pathed it to match.
+
 ## [0.2.15] - 2026-08-05
 
 ### Added

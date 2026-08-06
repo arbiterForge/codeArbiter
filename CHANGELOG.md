@@ -12,6 +12,35 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.17] — 2026-08-06
+
+### Fixed
+
+- Corrected the 2.11.0 changelog entry's protected-state-registry description
+  to name its three enrolled consumers (`release-targets.md`,
+  `open-tasks.md`, `done-tasks.md`) instead of claiming it ships empty; the
+  same stale "ships empty" claim in `_protectedstatelib.py` and
+  `_bashguardlib.py` is corrected to match.
+- The release skill's Phase 3 release-notes command used bracket notation
+  (`--latest[=false]`), which is prose shorthand and not shell `gh` accepts;
+  split into the two runnable commands the surrounding prose already
+  describes.
+- Pre-flight's clean-tree requirement and the later rebuild step read as
+  contradictory in isolation; added a one-sentence note distinguishing the
+  entry condition from the later, deliberately-reconciled exception.
+- `medium-documents` was cited by bare name in the release skill's changelog
+  step while every sibling include in the same sentence carries a full path;
+  pathed it to match.
+- Fixed a markdownlint MD018 trip in `security-controls.md` (a line began
+  with `#175`, which reads as an unspaced ATX heading marker).
+
+### Documentation
+
+- Marked `specs/release-portable-fixture.md` implemented (was "awaiting
+  approval") now that #576 shipped it, and repaired three markdown-table
+  breaks and a stale coverage-proof cross-reference (A-6.7/A-6.8) in
+  `plans/portable-release-and-protected-state.md`.
+
 ## [2.11.15] — 2026-08-05
 
 ### Added
