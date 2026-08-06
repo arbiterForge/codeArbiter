@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.15] - 2026-08-05
+
+### Added
+
+- INDEX.md / routing-table.md consistency is now a CI-checked invariant instead of an authoring discipline: `check_routing_index_parity.py` fails the build when a skill/routine/agent is missing its INDEX row, an INDEX row points at nothing, or `includes/routing-table.md` routes to a name that does not exist — across all four generated surfaces. `skill-author`'s routing-integration phase now cites the check instead of re-stating the hand-verification it replaces (#592).
+
 ## [0.2.11] - 2026-08-05
 
 ### Fixed

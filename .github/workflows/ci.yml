@@ -1214,6 +1214,21 @@ jobs:
         # never-steer-to-override rule, and the cleanup owner's own acceptance
         # gates - on every generated projection.
         run: python .github/scripts/test_routing_and_cleanup_surface.py
+      - name: Run INDEX/routing-surface parity gate (#592)
+        # Issue #592. The skills/agents INDEX.md one-liners and
+        # includes/routing-table.md are the orchestrator's routing surface,
+        # not passive docs -- a stale row can send it to a skill that no
+        # longer exists, or leave a real one unreachable. This was an
+        # authoring discipline (skill-author Phase 5 prose) with nothing
+        # mechanical behind it; check_routing_index_parity.py makes it a
+        # CI-checked invariant: every skill/routine/agent/ca-codex
+        # command-wrapper skill has exactly one INDEX row pointing at a
+        # real file, and no routing-table.md route names something that
+        # does not exist -- across all four generated surfaces
+        # (core/surface, ca, ca-codex, ca-pi).
+        run: python .github/scripts/check_routing_index_parity.py
+      - name: Run INDEX/routing-surface parity gate unit tests
+        run: python .github/scripts/test_check_routing_index_parity.py
       - name: Run cold-install interpreter matrix
         run: python .github/scripts/test_hooks_cold_install.py
       - name: Run ca-codex host-adapter parity suite
