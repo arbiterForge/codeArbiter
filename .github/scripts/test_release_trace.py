@@ -153,7 +153,7 @@ FIXTURE_DIR = os.path.join(HERE, "fixtures", "release-trace")
 
 # T-27b: the parent of 8ee5fe11 (the mechanism-split squash merge) — see
 # the module docstring for why this reachable SHA was chosen.
-PRE_CHANGE_SHA = "469c2fb8"
+PRE_CHANGE_SHA = "469c2fb82555346a739ab72a0f7284f22874aa3e"
 
 CORE_RELEASELIB_PATH = os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py")
 SHIM_RELEASELIB_PATH = os.path.join(REPO_ROOT, ".github", "scripts", "_releaselib.py")

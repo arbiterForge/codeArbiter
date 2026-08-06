@@ -625,6 +625,17 @@ class TestH22ProtectedState(unittest.TestCase):
         self.assertAllowed(self.run_edit(
             os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
 
+    def test_the_real_registry_still_blocks_a_stale_marker(self):
+        # #578 robustness finding: the synthetic-registry class above
+        # (test_marker_gated_edit_with_stale_marker_is_blocked) proves the
+        # freshness check in the abstract, but every real-production-
+        # registry case except this one was fresh-marker-admits or
+        # no-marker-blocks -- the stale case was never run against the
+        # ACTUAL enrolled entry T-33 ships, only against an injected one.
+        self._touch_marker("release-targets-authoring", age_seconds=31 * 60)
+        self.assertBlockedH22(self.run_edit(
+            os.path.join(self.ca, "release-targets.md"), old_string="v", new_string="w"))
+
 
 class TestPreEditAllowPaths(_PreEditFixture):
     """Cases where neither guard should fire."""

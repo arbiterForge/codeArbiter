@@ -1533,6 +1533,78 @@ class FileExistsNoBlockTest(unittest.TestCase):
             core_releaselib.parse_release_targets("just prose, no block\n")
 
 
+class UnreadableTargetsFileTest(unittest.TestCase):
+    """[[never-fold-unreadable-into-absent]] / #578 robustness finding: before
+    this class existed, `load_targets` caught a bare `OSError` and raised
+    `AbsentBlockError` for EVERY unreadable path, including one that exists
+    but could not be opened for a reason other than "not found" (a
+    permissions error, or the path naming a directory). That silently
+    satisfied the release skill's Back-fill lane's ONE sanctioned trigger
+    (`except AbsentBlockError:`), so a declared-targets file an operator
+    could not currently read -- not one that was actually missing -- could
+    drive Back-fill to write a fresh file over it. A directory path is used
+    here as the portable, no-chmod-needed stand-in for "OSError other than
+    FileNotFoundError": opening a directory as a file always fails --
+    `IsADirectoryError` on POSIX, `PermissionError` on Windows (measured on
+    this repository's own CI/dev hosts) -- and either way it is a real,
+    non-ENOENT `OSError`, which is the only property this distinction is
+    keyed on; chmod-based permission tests were avoided because permission
+    semantics differ too much across hosts to pin reliably in a unit test."""
+
+    def test_a_path_that_exists_but_cannot_be_opened_raises_unreadable_not_absent(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            # A directory can never be open()'d as a file -- a real,
+            # non-FileNotFoundError OSError -- the path is there.
+            with self.assertRaises(core_releaselib.UnreadableTargetsFileError):
+                core_releaselib.load_targets(tmp)
+
+    def test_genuinely_missing_file_still_raises_absent_block_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "does-not-exist.md")
+            with self.assertRaises(core_releaselib.AbsentBlockError):
+                core_releaselib.load_targets(path)
+
+    def test_unreadable_is_never_caught_by_except_absent_block_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            caught_as_absent = False
+            try:
+                try:
+                    core_releaselib.load_targets(tmp)
+                except core_releaselib.AbsentBlockError:
+                    caught_as_absent = True
+            except core_releaselib.UnreadableTargetsFileError:
+                pass
+            self.assertFalse(
+                caught_as_absent,
+                "an unreadable-but-present path must never be caught by "
+                "`except AbsentBlockError:` -- that is the Back-fill "
+                "lane's genuinely-absent-only trigger")
+
+    def test_unreadable_targets_file_error_is_a_sibling_not_a_subclass(self):
+        self.assertFalse(
+            issubclass(core_releaselib.UnreadableTargetsFileError,
+                       core_releaselib.AbsentBlockError))
+        self.assertFalse(
+            issubclass(core_releaselib.AbsentBlockError,
+                       core_releaselib.UnreadableTargetsFileError))
+        self.assertTrue(
+            issubclass(core_releaselib.UnreadableTargetsFileError,
+                       core_releaselib.ReleaseTargetsError))
+
+    def test_targets_error_exit_code_maps_unreadable_to_4_not_3(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            try:
+                core_releaselib.load_targets(tmp)
+                self.fail("expected UnreadableTargetsFileError")
+            except core_releaselib.UnreadableTargetsFileError as exc:
+                self.assertEqual(
+                    core_releaselib._targets_error_exit_code(exc), 4)
+
+
 class ParserContractTest(unittest.TestCase):
     """A-1.6: each parser-contract violation raises its own distinguishable
     declared error. Eight cases, matching the spec's enumeration: malformed
@@ -2618,6 +2690,20 @@ class CoreCLITest(unittest.TestCase):
                 ["bare-name"], self.TARGETS),
             "none")
 
+    def test_select_target_name_keyed_ignores_a_blank_name(self):
+        # "=1.2.3" (a stray leading "=") previously fell through the
+        # "name and name not in known" unknown-check -- blank is falsy, so
+        # it skipped that check -- and then appended "" to `selected`,
+        # returning the bare string "" rather than any label in the
+        # documented vocabulary (<target>|none|multiple|unknown). A blank
+        # NAME identifies no target and must be ignored like a pair with no
+        # "=" at all.
+        for pairs in (["=1.2.3"], ["  =1.2.3"]):
+            result = core_releaselib.select_release_target_by_name(
+                pairs, self.TARGETS)
+            self.assertEqual(result, "none", pairs)
+            self.assertIn(result, self.TARGETS + ["none", "multiple", "unknown"])
+
     def test_select_target_name_keyed_never_raises_on_junk(self):
         for pairs in (None, 42, ["ca=1.0.0", None, 7], "ca=1.0.0"):
             result = core_releaselib.select_release_target_by_name(
@@ -2705,6 +2791,22 @@ class CoreCLITest(unittest.TestCase):
         skipped = dict(core_releaselib.row_assertions(self.ROW_BARE)["skipped"])
         self.assertIn("rebuild", skipped)
         self.assertIn("artifacts-clean", skipped)
+
+    def test_blank_rebuild_string_is_treated_as_absent_not_declared(self):
+        # A row spelling `rebuild: ""` or `rebuild: "   "` (a stray blank
+        # value, not an omitted key) previously passed `isinstance(..., str)`
+        # and came back as a truthy-looking "" in `verdict["rebuild"]",
+        # skipping the "rebuild" entry in `skipped` even though no command
+        # was actually declared -- the same class of gap `provenance` (two
+        # lines below in the source) already guards against with a
+        # `.strip()` check. Blank must read the same as omitted.
+        for blank in ("", "   ", "\t\n"):
+            row = dict(self.ROW_BARE, rebuild=blank)
+            verdict = core_releaselib.row_assertions(row)
+            self.assertIsNone(verdict["rebuild"], repr(blank))
+            self.assertIn("rebuild",
+                          [name for name, _reason in verdict["skipped"]],
+                          repr(blank))
 
     def test_provenance_optional_absent_is_skipped_and_reported(self):
         # A-3.5. Absent means the recording step is skipped AND the report

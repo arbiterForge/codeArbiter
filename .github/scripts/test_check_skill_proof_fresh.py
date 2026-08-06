@@ -226,6 +226,26 @@ class CheckFailureModeTest(unittest.TestCase):
             self.assertTrue(errors)
             self.assertIn("not parseable JSON", errors[0])
 
+    def test_json_array_top_level_reports_cleanly_not_attributeerror(self):
+        # #578 robustness finding: valid JSON of `[]` (or `null`) at the top
+        # level has no `.get()` -- calling it unguarded raises AttributeError
+        # instead of returning the clean error list every other malformed-
+        # artifact case returns.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "artifact.json"
+            path.write_text("[]", encoding="utf-8")
+            errors = G.check(artifact_path=path)
+            self.assertTrue(errors)
+            self.assertIn("not a JSON object", errors[0])
+
+    def test_json_null_top_level_reports_cleanly_not_attributeerror(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "artifact.json"
+            path.write_text("null", encoding="utf-8")
+            errors = G.check(artifact_path=path)
+            self.assertTrue(errors)
+            self.assertIn("not a JSON object", errors[0])
+
     def test_proof_current_false(self):
         with tempfile.TemporaryDirectory() as tmp:
             document = _fresh_document()

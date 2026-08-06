@@ -21,10 +21,10 @@
 #                   Consumer: done-tasks.md via the archive verb.
 #
 # THE REGISTRY IS THE DELIVERABLE, NOT THE ENTRIES (spec B1). This module is
-# generic machinery over a policy-tagged path->policy map; it enrolls NO
-# consumer itself. release-targets.md, open-tasks.md, and done-tasks.md are
-# registered by their own later tasks (B-13/B-14/B-15) so this module never
-# special-cases its first consumer.
+# generic machinery over a policy-tagged path->policy map, not hardcoded
+# per-consumer logic. release-targets.md, open-tasks.md, and done-tasks.md
+# were enrolled by their own tasks (B-13/B-14/B-15) below, so no consumer is
+# special-cased in the machinery itself.
 #
 # Library design invariants (mirrors every other _*lib.py, coding-standards.md):
 #   - Zero side effects at import time - no git calls, no file I/O on import.
@@ -41,8 +41,10 @@
 #                                       unknown value raises ValueError
 #                                       (internal error, not user input).
 #   REGISTRY -> dict[str, ProtectedPolicy]   the live path->policy map.
-#                                       Starts EMPTY here; consumers are
-#                                       registered by their own tasks, never
+#                                       Three consumers are registered below
+#                                       (release-targets.md, open-tasks.md,
+#                                       done-tasks.md); a future consumer adds
+#                                       its own entry rather than being
 #                                       hardcoded in this module.
 #   lookup_policy(rel_path, registry=None) -> ProtectedPolicy | None
 #                                       the policy registered for a
@@ -148,11 +150,11 @@ class ProtectedPolicy(str, Enum):
 
 
 # The live protected-state registry: repo-relative path (separator-
-# normalized) -> ProtectedPolicy. Deliberately EMPTY here - B1 (this module)
-# ships the registry mechanism, not entries. release-targets.md/
-# open-tasks.md/done-tasks.md are added by their own later tasks
-# (B-13/B-14/B-15), each a one-line entry, which is the whole point of
-# building this as a registry instead of a per-file hook branch.
+# normalized) -> ProtectedPolicy. B1 (this module) built the registry
+# mechanism; release-targets.md/open-tasks.md/done-tasks.md were added by
+# their own later tasks (B-13/B-14/B-15), each a one-line entry, which is the
+# whole point of building this as a registry instead of a per-file hook
+# branch. A future consumer adds one more entry here, not a new branch.
 REGISTRY: dict[str, ProtectedPolicy] = {
     # B-13/T-33 (spec 2.6). The declared release-target file carries
     # per-row `pre-tag`, `rebuild`, and `generate` shell commands that

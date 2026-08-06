@@ -1,7 +1,7 @@
 # Spec — `/ca:release` as a portable, shippable fixture
 
 **Date:** 2026-07-30 (rev 4, after three adversarial review passes — cleared for planning)
-**Status:** awaiting approval
+**Status:** implemented (#576)
 **Issue:** #563
 **Governs:** core/surface/skills/release/**, core/surface/commands/release.md, core/pysrc/_releaselib.py, plugins/ca/skills/release/**, .github/scripts/_releaselib.py, .codearbiter/release-targets.md
 

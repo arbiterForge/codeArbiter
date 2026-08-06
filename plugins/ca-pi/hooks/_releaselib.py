@@ -32,6 +32,7 @@
 #     letting a bare exception escape from deep inside the parser.
 #
 # Public API:
+#   git_executable() -> str    git resolved through the trusted-path seam
 #   semver_key(value) -> tuple | None
 #   semver_greater(current, base) -> bool
 #   apply_bump(base, word) -> str | None
@@ -40,8 +41,18 @@
 #   release_dates_consistent(changelog_section, tag_message) -> bool
 #   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
 #                          manifest_version, release_is_nondraft) -> str
+#   select_release_target_by_name(pairs, targets) -> str   name-keyed
+#                           resolver (A-4.2); pairs are `name=value` strings
 #   select_release_target(*confirmations, targets) -> str
 #   classify_merge_readiness(check_runs, head_sha, check_name) -> str
+#   row_assertions(row) -> dict   which lane steps a row's declared fields
+#                           turn on (A-3.1..3.5)
+#   window_excludes_payload_paths(paths, payload, payload_exclude)
+#                           -> list[str]   paths filtered to payload, minus
+#                           any payload-exclude entry (A-3.4)
+#   provenance_trigger_paths(rows) -> list[str]   every manifest/changelog/
+#                           generated_manifest/artifacts path a declared row
+#                           references, sorted and de-duplicated (A-5.6)
 #   _manifest_version(path) -> str | None
 #   classify_commit(subject, body) -> dict
 #   classify_window(commits) -> dict
@@ -78,6 +89,8 @@
 #   DuplicateTargetError    — the same `[target]` header declared twice
 #   InvalidBooleanError     — a boolean value that is not exactly true/false
 #   MultipleBlocksError     — more than one delimiter block in the file
+#   ValueTooLongError       — a declared value exceeds VALUE_MAX_CHARS
+#                             (A-2.4); a sibling declared-file error, exits 4
 #   DelimiterInValueError   — a value contains the literal closing delimiter,
 #                             which would otherwise truncate the block under a
 #                             naive non-greedy match
@@ -96,6 +109,16 @@
 #                             genuinely-missing-file case — see "Back-fill
 #                             detection" below for why that distinction is
 #                             load-bearing.
+#   UnreadableTargetsFileError — the declared path EXISTS but `open()` still
+#                             failed for a reason other than "not found"
+#                             (permission denied, a directory, ...). A
+#                             SIBLING of AbsentBlockError, not a subclass,
+#                             for the same reason FileExistsNoBlockError is:
+#                             "unreadable" is not "absent"
+#                             ([[never-fold-unreadable-into-absent]]) and
+#                             must not silently trigger the Back-fill lane's
+#                             `except AbsentBlockError:` on a file that is
+#                             actually there but denied to this process.
 
 from __future__ import annotations
 
@@ -175,6 +198,23 @@ class FileExistsNoBlockError(ReleaseTargetsError):
     text and has no way to know whether a file existed, so its own
     AbsentBlockError-on-no-block behavior against synthetic text is
     unchanged."""
+
+
+class UnreadableTargetsFileError(ReleaseTargetsError):
+    """`open()` on the declared path failed for a reason OTHER than "not
+    found" -- a permissions error, the path naming a directory, or any other
+    `OSError` whose `errno` is not `ENOENT`. The path exists (in the
+    filesystem sense) but this process could not read it.
+
+    Deliberately a SIBLING of `AbsentBlockError`, not a subclass of it, for
+    the identical reason `FileExistsNoBlockError` is one:
+    [[never-fold-unreadable-into-absent]] -- "could not read" is a different
+    fact than "is not there", and folding the two together means a
+    permissions error on an EXISTING declared-targets file would silently
+    satisfy the Back-fill lane's `except AbsentBlockError:` trigger, driving
+    it to write a fresh file over one that was never actually missing, only
+    denied. Only `load_targets` ever raises this -- `parse_release_targets`
+    is pure over text and never touches the filesystem."""
 
 
 class MalformedBlockError(ReleaseTargetsError):
@@ -476,9 +516,10 @@ def select_release_target_by_name(pairs, targets):
 
     Blank-ish values count as not-selected, exactly as in the positional
     form, so a stray space cannot read as a second target. A pair with no
-    `=` at all is ignored rather than fatal — an empty workflow input can
-    arrive as a bare name — but a pair whose NAME is unknown is reported,
-    because that is a real mismatch rather than an empty slot.
+    `=` at all, or whose NAME is blank (e.g. `"=1.2.3"`), is ignored rather
+    than fatal — an empty workflow input can arrive as a bare name or a
+    stray leading `=` — but a pair whose NAME is non-blank and unknown is
+    reported, because that is a real mismatch rather than an empty slot.
 
     Pure and non-raising over synthetic input.
     """
@@ -490,7 +531,12 @@ def select_release_target_by_name(pairs, targets):
             continue
         name, _, value = pair.partition("=")
         name = name.strip()
-        if name and name not in known:
+        if not name:
+            # A blank name (e.g. "=1.2.3") identifies no target -- ignore
+            # it exactly like a pair with no "=" at all, rather than
+            # falling through and selecting "" as if it were a target.
+            continue
+        if name not in known:
             return "unknown"
         if value.strip():
             selected.append(name)
@@ -649,7 +695,8 @@ def row_assertions(row):
     manifests = _list("manifest")
     artifacts = _list("artifacts")
     excludes = _list("payload_exclude")
-    rebuild = row.get("rebuild") if isinstance(row.get("rebuild"), str) else None
+    rebuild = row.get("rebuild")
+    rebuild = rebuild if isinstance(rebuild, str) and rebuild.strip() else None
     provenance = row.get("provenance_manifest")
     provenance = provenance if isinstance(provenance, str) and provenance.strip() else None
 
@@ -713,7 +760,8 @@ def window_excludes_payload_paths(paths, payload, payload_exclude):
 
 def provenance_trigger_paths(rows):
     """Every path a declared row REFERENCES, sorted and de-duplicated:
-    each `manifest`, each `changelog`, and each `artifacts` entry (A-5.6).
+    each `manifest`, each `changelog`, each `artifacts`, and each
+    `generated_manifest` entry (A-5.6).
 
     These are the drift triggers for `.codearbiter/.provenance/release-
     targets.json`. The point is that the declaration and the files it names
@@ -1371,23 +1419,36 @@ def load_targets(path):
     universal-newline translation before this module's own CRLF handling
     ever runs.
 
-    An unreadable path (missing file, permission error, a directory, ...)
+    A genuinely MISSING path (`FileNotFoundError`, i.e. `errno == ENOENT`)
     raises `AbsentBlockError` rather than a bare `OSError` — the same
     declared-error contract `parse_release_targets` gives every other
     violation, so a `contents: write` caller can catch one exception type
     instead of one type for content problems and another for I/O ones. There
-    is, in the end, no block to find at an unreadable path either.
+    is, in the end, no block to find at a path with nothing on it.
+
+    Any OTHER `OSError` (permission denied, the path naming a directory, a
+    transient I/O failure, ...) means the path exists in some form but this
+    process could not read it, and raises `UnreadableTargetsFileError`
+    instead — NOT `AbsentBlockError` — because "unreadable" and "absent" are
+    different facts about the project ([[never-fold-unreadable-into-absent]]):
+    the Back-fill lane's sanctioned trigger is `except AbsentBlockError:`,
+    and a permissions error on an existing declared file must STOP there,
+    never be folded into "nothing here, safe to write a fresh one."
 
     An EXISTING, readable file that simply carries no delimiter block is a
-    DIFFERENT failure (HIGH-1, adversarial review 2026-07-31) and raises
-    `FileExistsNoBlockError` instead — see that class's docstring. This
-    function is the only place that distinction can be made, since it is the
-    only one that knows whether `open()` actually succeeded."""
+    THIRD, different failure (HIGH-1, adversarial review 2026-07-31) and
+    raises `FileExistsNoBlockError` instead — see that class's docstring.
+    This function is the only place any of these three distinctions can be
+    made, since it is the only one that knows whether `open()` actually
+    succeeded and, if not, why."""
     try:
         with open(path, encoding="utf-8", newline="") as fh:
             text = fh.read()
-    except OSError as exc:
+    except FileNotFoundError as exc:
         raise AbsentBlockError(
+            f"could not read release-targets file {path!r}: {exc}") from exc
+    except OSError as exc:
+        raise UnreadableTargetsFileError(
             f"could not read release-targets file {path!r}: {exc}") from exc
     try:
         return parse_release_targets(text)
@@ -1632,9 +1693,12 @@ def _targets_error_exit_code(exc):
            else) -- nothing on disk at all. This is the release skill's
            Back-fill lane's ONE sanctioned trigger.
       4  - every other case: an EXISTING file that has no block
-           (`FileExistsNoBlockError`), or is empty, malformed, or otherwise
-           unparseable. All of these STOP outright per the skill's "Targets"
-           section and must never be mistaken for "safe to back-fill".
+           (`FileExistsNoBlockError`), one this process could not read for
+           any other reason such as a permissions error
+           (`UnreadableTargetsFileError`), or is empty, malformed, or
+           otherwise unparseable. All of these STOP outright per the
+           skill's "Targets" section and must never be mistaken for
+           "safe to back-fill".
 
     Exit code 2 is deliberately NOT reused for either state here: it already
     means "bad CLI invocation" or "unrecognised target name" elsewhere in
@@ -1772,15 +1836,32 @@ def main(argv):
                                   block text and exits 0; on zero or multiple
                                   of either, writes the ambiguity to stderr
                                   and exits 1 — it never prints a guess.
+      show-row <target> [--field NAME]
+                                  prints every field the row declares, one
+                                  `name: value` line each (multi-valued
+                                  fields comma-separated), or just NAME's raw
+                                  value with `--field`. Reads via
+                                  `default_targets_path()` only, no
+                                  `--targets-file` override.
+      payload-pathspec <target>  prints the row's `payload`, minus its
+                                  `payload-exclude` entries, as verbatim git
+                                  pathspec arguments (`:(exclude)` forms
+                                  included) — the sanctioned way to spell a
+                                  window subtraction plain `git log --
+                                  <path>` cannot express. Same declared-file
+                                  resolution as `show-row`.
 
     `--targets-file PATH` overrides `default_targets_path()` for `tag-prefix`
-    and `list-targets` only; every other subcommand needs no declared file
-    at all. `tag-prefix` and `list-targets` exit 3 when the declared file is
-    genuinely absent and 4 for every other declared-file error (HIGH-1,
-    `_targets_error_exit_code`); every other subcommand prints a value/label
-    and exits 0, or writes a short cause to stderr and exits non-zero —
-    never a bare traceback, so a caller shelling out to this file gets a
-    diagnosable failure either way. Returns a process exit code."""
+    and `list-targets` only; `show-row` and `payload-pathspec` always resolve
+    the declared file through `default_targets_path()` with no override, and
+    every remaining subcommand needs no declared file at all. `tag-prefix`,
+    `list-targets`, `show-row`, and `payload-pathspec` all exit 3 when the
+    declared file is genuinely absent and 4 for every other declared-file
+    error (HIGH-1, `_targets_error_exit_code`); every other subcommand
+    prints a value/label and exits 0, or writes a short cause to stderr and
+    exits non-zero — never a bare traceback, so a caller shelling out to
+    this file gets a diagnosable failure either way. Returns a process exit
+    code."""
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|show-row|"

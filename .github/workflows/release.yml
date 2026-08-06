@@ -129,9 +129,6 @@ jobs:
           # The helper prints a label and never raises; the '*' arm below is the
           # fail-closed default, so an unknown label refuses too — and a helper
           # that crashed prints nothing and trips `set -e` on the assignment.
-          # Argument ORDER is the contract (_releaselib.RELEASE_TARGETS): the
-          # helper refuses a wrong-length call with the non-target label `arity`
-          # rather than resolving a plugin from the wrong input.
           # NAME-KEYED (A-4.2). Each input carries the target it belongs
           # to, so selection never depends on the order these are passed.
           # The previous positional form aligned by index against the
