@@ -189,9 +189,14 @@ describe("Pi dispatch contract", () => {
   // through the same redactor as the audit sink before it reaches the next
   // child's PROMPT, not just before it reaches the log.
   test("chain redacts secret-shaped content in a prior child's summary before it reaches the next child's prompt", async () => {
+    // Low-entropy, trigger-word-only fixture (matches redactor.test.ts's own
+    // convention, e.g. "const token = abc;") rather than a realistic-looking
+    // high-entropy key: SECRET_LINE redacts on the bare `token` keyword alone,
+    // so this is sufficient to exercise the redactor without also tripping the
+    // hosted secret scanner's entropy-based generic-api-key rule.
     const secretSummary = [
       "Reviewed the config loader.",
-      "Found api_key = sk-proj-ABCDEFGH12345678 hardcoded in config/prod.js.",
+      "Found a leaked token = abc123 hardcoded in config/prod.js.",
       "Everything else looked fine.",
     ].join("\n");
     const inputs: PiChildRequest[] = [];
@@ -206,8 +211,8 @@ describe("Pi dispatch contract", () => {
     }), neverAbort.signal);
 
     expect(result.state).toBe("accepted");
-    expect(inputs[1]!.task).not.toContain("sk-proj-ABCDEFGH12345678");
-    expect(inputs[1]!.task).not.toContain("api_key = sk-proj-ABCDEFGH12345678");
+    expect(inputs[1]!.task).not.toContain("token = abc123");
+    expect(inputs[1]!.task).not.toContain("leaked token");
     const forwarded = JSON.parse(inputs[1]!.task) as { prior: { summary: string } };
     expect(forwarded.prior.summary).toContain("REDACTED");
     expect(forwarded.prior.summary).toContain("Reviewed the config loader.");
