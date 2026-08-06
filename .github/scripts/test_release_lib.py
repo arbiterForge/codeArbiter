@@ -58,6 +58,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -3481,6 +3482,79 @@ class CoreCLITest(unittest.TestCase):
             self.assertIn("PROBE itself failed", proc.stderr)
             self.assertNotIn("MUTATED", proc.stderr)
 
+    # ---- #602: Windows POSIX dispatch, resolved so `"$PY"` is portable ----
+    def test_run_pre_tag_runs_a_dollar_PY_row_for_real(self):
+        # House rule (dry-run the CALLER's actual path, never a mock): a row
+        # spelled EXACTLY the #601 convention -- `"$PY" <script>` -- run
+        # through the REAL `run-pre-tag` CLI subprocess on THIS host, with
+        # nothing about the dispatch mocked anywhere in the path. Before
+        # #602, this was measured to exit 1 on Windows (`'"$PY"' is not
+        # recognized...` from `cmd.exe`) and be misdiagnosed as drift
+        # (exit 5) rather than a missing interpreter; #602 makes it exit 0
+        # everywhere this suite runs, POSIX or Windows alike.
+        check = ('"$PY" checker.py ok')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [check])
+            with open(os.path.join(root, "checker.py"), "w") as fh:
+                fh.write('import sys\n'
+                         'sys.exit(0 if sys.argv[1:] == ["ok"] else 1)\n')
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_run_pre_tag_exits_9_when_no_posix_shell_can_be_resolved(self):
+        # A genuinely shell-less Windows host (or one whose `git` cannot
+        # answer `--exec-path` and has no `bash` on PATH) must get a
+        # DISTINCT "could not run" exit -- 9, never 7 or 5 -- before ANY
+        # declared command is attempted, per the #585 house rule that
+        # "could not run" is never folded into "ran and disagreed". Forced
+        # by pointing the trusted git-executable seam at `sys.executable`
+        # (which answers `--exec-path` with nothing usable) and stripping
+        # PATH down to directories with no `bash.exe` at all -- the real
+        # resolution algorithm runs against these REAL, if adverse, inputs;
+        # nothing about `_resolve_posix_shell` itself is mocked.
+        check = '"$PY" -c "pass"'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [check])
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                       PYTHONDONTWRITEBYTECODE="1",
+                       CODEARBITER_GIT_EXECUTABLE=sys.executable,
+                       PATH=r"C:\Windows\System32;C:\Windows")
+            proc = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "run-pre-tag", "app"],
+                cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+            if os.name != "nt":
+                self.skipTest(
+                    "exit 9 is Windows-only: shell=True already dispatches "
+                    "through a POSIX shell elsewhere, so `posix_shell` "
+                    "resolution -- and its failure mode -- never triggers "
+                    "off Windows (mirrors the existing exit-7 test's own "
+                    "platform-dependence note)")
+            self.assertEqual(proc.returncode, 9, proc.stdout + proc.stderr)
+            self.assertIn("COULD NOT RUN", proc.stderr)
+            self.assertIn("NOT drift", proc.stderr)
+            self.assertIn("POSIX-compatible shell", proc.stderr)
+
+    def test_run_pre_tag_skips_shell_resolution_for_a_row_with_no_pre_tag(self):
+        # A row declaring NO `pre-tag` commands at all never needs a shell,
+        # so resolution must never even be ATTEMPTED for it -- proven here
+        # as a spy on the real in-process `main()` dispatch (not a
+        # replacement of the behavior under test: git and the tree-state
+        # probe run for real against a real fixture repo; only the call
+        # COUNT on `_resolve_posix_shell` is observed). A subprocess-level
+        # black-box equivalent cannot distinguish "skipped" from "attempted
+        # and happened to succeed" without independently breaking git and
+        # bash resolution in a way that does not itself confound the
+        # tree-state probe -- this in-process spy is the precise instrument
+        # for the specific claim being pinned.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [])
+            with mock.patch.object(
+                    core_releaselib, "_resolve_posix_shell") as spy, \
+                    mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}):
+                exit_code = core_releaselib.main(["run-pre-tag", "app"])
+            self.assertEqual(exit_code, 0)
+            spy.assert_not_called()
+
     # ---- #585 MEDIUM-3: apply-bump mechanizes the version arithmetic ----
     def test_apply_bump_patch_minor_major(self):
         self.assertEqual(core_releaselib.apply_bump("2.3.4", "patch"), "2.3.5")
@@ -3774,6 +3848,134 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(result.stdout.strip(), "v")
 
 
+class ResolvePosixShellTest(unittest.TestCase):
+    """#602: `_resolve_posix_shell()`'s resolution ALGORITHM, exercised with
+    controlled inputs -- each branch pinned individually. This class proves
+    the mechanism function's logic; it is deliberately distinct from
+    `CoreCLITest.test_run_pre_tag_runs_a_dollar_PY_row_for_real` above, which
+    proves the CALLER's actual path end-to-end with nothing mocked (house
+    rule: dry-run the real path, don't just mock the seam)."""
+
+    def test_returns_none_on_a_non_windows_host(self):
+        # No resolution is attempted at all off Windows: `shell=True`
+        # already dispatches through a POSIX shell there. Proven by making
+        # EVERY resolution path available (a would-succeed which() hit) and
+        # asserting the platform check alone still short-circuits to None.
+        with mock.patch.object(core_releaselib.os, "name", "posix"), \
+                mock.patch.object(
+                    core_releaselib.shutil, "which",
+                    return_value=r"C:\Program Files\Git\usr\bin\bash.exe"):
+            self.assertIsNone(core_releaselib._resolve_posix_shell())
+
+    def test_prefers_the_git_exec_path_relative_bash_when_present(self):
+        # The PRIMARY strategy is deterministic, tied to the SAME git this
+        # process already trusts -- proven by making the which() fallback
+        # return a DIFFERENT but otherwise ACCEPTABLE (non-system32,
+        # non-WindowsApps) `bash.exe` and asserting the exec-path candidate
+        # wins anyway. (A which() hit under system32/WindowsApps would be
+        # rejected by the WSL-stub filter regardless of priority order, so
+        # it cannot distinguish "exec-path wins" from "which() was merely
+        # rejected" -- this uses a which() candidate the filter would
+        # otherwise ACCEPT, so only priority ordering explains the result.)
+        with tempfile.TemporaryDirectory() as tmp:
+            exec_path = os.path.join(tmp, "git-install", "mingw64", "libexec",
+                                      "git-core")
+            os.makedirs(exec_path)
+            bin_dir = os.path.join(tmp, "git-install", "bin")
+            os.makedirs(bin_dir)
+            bash_path = os.path.join(bin_dir, "bash.exe")
+            with open(bash_path, "w") as fh:
+                fh.write("")
+            wrong_dir = os.path.join(tmp, "some-other-bash")
+            os.makedirs(wrong_dir)
+            wrong_bash = os.path.join(wrong_dir, "bash.exe")
+            with open(wrong_bash, "w") as fh:
+                fh.write("")
+            fake_proc = subprocess.CompletedProcess(
+                args=[], returncode=0, stdout=exec_path + "\n", stderr="")
+            with mock.patch.object(core_releaselib.os, "name", "nt"), \
+                    mock.patch.object(core_releaselib.subprocess, "run",
+                                       return_value=fake_proc), \
+                    mock.patch.object(
+                        core_releaselib.shutil, "which",
+                        return_value=wrong_bash):
+                self.assertEqual(
+                    core_releaselib._resolve_posix_shell(), bash_path)
+
+    def test_falls_back_to_which_when_the_exec_path_candidate_is_absent(self):
+        with mock.patch.object(core_releaselib.os, "name", "nt"), \
+                mock.patch.object(
+                    core_releaselib.subprocess, "run",
+                    return_value=subprocess.CompletedProcess(
+                        args=[], returncode=0,
+                        stdout=r"C:\nonexistent\mingw64\libexec\git-core" + "\n",
+                        stderr="")), \
+                mock.patch.object(
+                    core_releaselib.shutil, "which",
+                    return_value=r"C:\Program Files\Git\usr\bin\bash.exe"):
+            self.assertEqual(
+                core_releaselib._resolve_posix_shell(),
+                r"C:\Program Files\Git\usr\bin\bash.exe")
+
+    def test_rejects_a_system32_which_hit_the_wsl_launcher_stub(self):
+        # Windows' OWN `bash.exe` stub under system32 launches WSL -- a
+        # SEPARATE Linux filesystem that cannot see a Windows `cwd` or a
+        # Windows interpreter path (`PY`) the same way an MSYS2-based Git
+        # Bash does -- so it is REJECTED even when it is the only which()
+        # hit, rather than silently swapping one misdispatch for another.
+        with mock.patch.object(core_releaselib.os, "name", "nt"), \
+                mock.patch.object(
+                    core_releaselib.subprocess, "run",
+                    return_value=subprocess.CompletedProcess(
+                        args=[], returncode=0, stdout="", stderr="")), \
+                mock.patch.object(
+                    core_releaselib.shutil, "which",
+                    return_value=r"C:\WINDOWS\system32\bash.exe"):
+            self.assertIsNone(core_releaselib._resolve_posix_shell())
+
+    def test_rejects_a_windowsapps_which_hit(self):
+        # The WSL launcher's second same-named home, under the per-user
+        # WindowsApps app-execution-alias directory -- rejected for the
+        # same reason as the system32 hit above.
+        with mock.patch.object(core_releaselib.os, "name", "nt"), \
+                mock.patch.object(
+                    core_releaselib.subprocess, "run",
+                    return_value=subprocess.CompletedProcess(
+                        args=[], returncode=0, stdout="", stderr="")), \
+                mock.patch.object(
+                    core_releaselib.shutil, "which",
+                    return_value=(r"C:\Users\x\AppData\Local\Microsoft"
+                                  r"\WindowsApps\bash.exe")):
+            self.assertIsNone(core_releaselib._resolve_posix_shell())
+
+    def test_returns_none_when_nothing_is_found_at_all(self):
+        with mock.patch.object(core_releaselib.os, "name", "nt"), \
+                mock.patch.object(
+                    core_releaselib.subprocess, "run",
+                    return_value=subprocess.CompletedProcess(
+                        args=[], returncode=0, stdout="", stderr="")), \
+                mock.patch.object(core_releaselib.shutil, "which",
+                                   return_value=None):
+            self.assertIsNone(core_releaselib._resolve_posix_shell())
+
+    def test_a_git_that_cannot_answer_exec_path_does_not_raise(self):
+        # `git --exec-path` failing outright (a transient failure, a git
+        # build with no exec-path support) degrades to the which() fallback
+        # rather than raising -- matching this module's "never raise on
+        # malformed input" mechanism-function convention.
+        def _raise(*a, **k):
+            raise OSError("no such file")
+        with mock.patch.object(core_releaselib.os, "name", "nt"), \
+                mock.patch.object(core_releaselib.subprocess, "run",
+                                   side_effect=_raise), \
+                mock.patch.object(
+                    core_releaselib.shutil, "which",
+                    return_value=r"C:\Program Files\Git\usr\bin\bash.exe"):
+            self.assertEqual(
+                core_releaselib._resolve_posix_shell(),
+                r"C:\Program Files\Git\usr\bin\bash.exe")
+
+
 class ThisRepoRowsTest(unittest.TestCase):
     """A-1.10 (T-26): this repository's own `.codearbiter/release-targets.md`
     loads as four rows (`this_repo_rows`) whose `target` and `prefix` equal
@@ -3983,7 +4185,7 @@ class ThisRepoRowsTest(unittest.TestCase):
 
     # The review's own literal wording ("each pre-tag entry names a script
     # under .github/scripts/") is falsified by ca-pi's real, CORRECT row --
-    # `python3 tools/build-host-packages.py --check`, under the repo-root
+    # `"$PY" tools/build-host-packages.py --check`, under the repo-root
     # `tools/`, not `.github/scripts/`. The allowlist is therefore BOTH
     # roots, not one.
     _PRE_TAG_ALLOWED_ROOTS = (".github/scripts/", "tools/")
@@ -3997,8 +4199,16 @@ class ThisRepoRowsTest(unittest.TestCase):
     _PRE_TAG_KNOWN_PENDING = frozenset()
 
     def test_this_repo_rows_pre_tag_scripts_resolve_under_an_allowlisted_root(self):
+        # #602: every `pre-tag` entry in this repo's OWN declared file was
+        # rewritten from a hardcoded `python3` to the portable `"$PY"`
+        # convention (Part 3 of the #601 remediation, deferred until
+        # `run-pre-tag` resolved a POSIX shell on Windows) -- the pattern
+        # accepts EITHER spelling so a future row using the old
+        # `python3 <script>` form (still valid, just not portable) still
+        # passes, while pinning that every CURRENT row in this file uses
+        # the new one (asserted separately below).
         import re as _re
-        cmd_re = _re.compile(r"^python3\s+(\S+\.py)\b")
+        cmd_re = _re.compile(r'^(?:python3|"\$PY")\s+(\S+\.py)\b')
         for target, row in self.by_target.items():
             for command in row["pre_tag"]:
                 with self.subTest(target=target, command=command):
@@ -4006,7 +4216,8 @@ class ThisRepoRowsTest(unittest.TestCase):
                     self.assertIsNotNone(
                         match,
                         f"{target}: pre-tag {command!r} is not a "
-                        "'python3 <script>[.py] ...' command")
+                        "'python3 <script>[.py] ...' or '\"$PY\" "
+                        "<script>[.py] ...' command")
                     script = match.group(1)
                     self.assertTrue(
                         any(script.startswith(root)
@@ -4025,6 +4236,33 @@ class ThisRepoRowsTest(unittest.TestCase):
                             exists,
                             f"{target}: pre-tag script {script!r} does not exist "
                             "on disk")
+
+    def test_this_repo_rows_every_pre_tag_command_uses_the_dollar_PY_convention(self):
+        # #602 Part 3: EVERY `pre-tag` entry in this file's `[ca]` and
+        # `[ca-pi]` blocks was rewritten from a hardcoded `python3` to
+        # `"$PY"` now that `run-pre-tag` resolves a POSIX shell on Windows
+        # too, so the convention is portable everywhere. This pins the
+        # REWRITE itself (distinct from the test above, which pins the
+        # allowlisted-root/exists-on-disk shape and deliberately still
+        # accepts a `python3`-spelled row as syntactically valid) --
+        # reverting even ONE row back to `python3` must fail here.
+        all_pre_tag = [
+            command
+            for row in self.rows
+            for command in row["pre_tag"]
+        ]
+        self.assertEqual(
+            len(all_pre_tag), 4,
+            "expected exactly 4 declared pre-tag commands across all rows "
+            "(3 on [ca], 1 on [ca-pi]) -- update this count deliberately if "
+            "a row's pre-tag list ever changes shape")
+        for command in all_pre_tag:
+            with self.subTest(command=command):
+                self.assertTrue(
+                    command.startswith('"$PY" '),
+                    f"pre-tag {command!r} does not use the portable "
+                    "\"$PY\" convention (#602 Part 3)")
+                self.assertNotIn("python3", command)
 
 
 # --------------------------------------------------------------------------- #

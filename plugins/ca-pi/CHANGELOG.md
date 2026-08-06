@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.16] - 2026-08-06
+
+### Fixed
+
+- `run-pre-tag` now resolves a POSIX-compatible shell (Git for Windows' own `bash.exe`) to dispatch a target's declared `pre-tag` commands, instead of always dispatching through `cmd.exe` on Windows — so a row spelled `"$PY" <script>` (the #601 convention) now runs correctly on every platform, not just POSIX. A Windows host with no POSIX shell reachable at all now reports a distinct "could not run" diagnosis (exit 9) rather than misreading the absence as drift. This repository's own `.codearbiter/release-targets.md` `pre-tag` rows are rewritten from hardcoded `python3` to `"$PY"` now that the fix makes it portable (#602).
+
 ## [0.2.15] - 2026-08-05
 
 ### Added

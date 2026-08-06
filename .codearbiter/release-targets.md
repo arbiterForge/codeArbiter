@@ -55,9 +55,9 @@ rebuild: cd plugins/ca/tools && npm run build
 artifacts: plugins/ca/tools/farm.js
 provenance-manifest: .github/published-tags.json
 latest-eligible: true
-pre-tag: python3 .github/scripts/check_badge_consistency.py
-pre-tag: python3 .github/scripts/check_command_catalog.py
-pre-tag: python3 .github/scripts/check_skill_proof_fresh.py
+pre-tag: "$PY" .github/scripts/check_badge_consistency.py
+pre-tag: "$PY" .github/scripts/check_command_catalog.py
+pre-tag: "$PY" .github/scripts/check_skill_proof_fresh.py
 
 [ca-codex]
 prefix: ca-codex-v
@@ -92,5 +92,5 @@ artifacts: plugins/ca-pi/extensions/codearbiter.js
 artifacts: plugins/ca-pi/extensions/codearbiter-child.js
 provenance-manifest: .github/published-tags.json
 latest-eligible: false
-pre-tag: python3 tools/build-host-packages.py --check
+pre-tag: "$PY" tools/build-host-packages.py --check
 <!-- /release-targets -->
