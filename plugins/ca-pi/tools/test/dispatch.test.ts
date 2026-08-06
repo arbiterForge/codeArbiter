@@ -184,6 +184,41 @@ describe("Pi dispatch contract", () => {
     expect(inputs[1]!.task).not.toContain("provider");
   });
 
+  // #555 — the prior child's summary is untrusted content (a child reads repo
+  // files; a file carrying a secret-shaped string is enough). It must pass
+  // through the same redactor as the audit sink before it reaches the next
+  // child's PROMPT, not just before it reaches the log.
+  test("chain redacts secret-shaped content in a prior child's summary before it reaches the next child's prompt", async () => {
+    // Low-entropy, trigger-word-only fixture (matches redactor.test.ts's own
+    // convention, e.g. "const token = abc;") rather than a realistic-looking
+    // high-entropy key: SECRET_LINE redacts on the bare `token` keyword alone,
+    // so this is sufficient to exercise the redactor without also tripping the
+    // hosted secret scanner's entropy-based generic-api-key rule.
+    const secretSummary = [
+      "Reviewed the config loader.",
+      "Found a leaked token = abc123 hardcoded in config/prod.js.",
+      "Everything else looked fine.",
+    ].join("\n");
+    const inputs: PiChildRequest[] = [];
+    const runChild = vi.fn(async (input: PiChildRequest) => {
+      inputs.push(input);
+      return completed("accepted", inputs.length === 1 ? secretSummary : "review summary");
+    });
+
+    const result = await dispatcher(runChild)(request({
+      mode: "chain",
+      roles: ["backend-author", "coverage-auditor"],
+    }), neverAbort.signal);
+
+    expect(result.state).toBe("accepted");
+    expect(inputs[1]!.task).not.toContain("token = abc123");
+    expect(inputs[1]!.task).not.toContain("leaked token");
+    const forwarded = JSON.parse(inputs[1]!.task) as { prior: { summary: string } };
+    expect(forwarded.prior.summary).toContain("REDACTED");
+    expect(forwarded.prior.summary).toContain("Reviewed the config loader.");
+    expect(forwarded.prior.summary).toContain("Everything else looked fine.");
+  });
+
   test.each([
     ["unknown role", { roles: ["missing-reviewer"] }, "protocol_error"],
     ["duplicate role", { roles: ["security-reviewer", "security-reviewer"], mode: "parallel" }, "protocol_error"],

@@ -176,3 +176,20 @@ regexes = [
   '''\ALEAKPAYLOADNOTAREALJWT123\z''',
   '''\Aci-bot:Hunter2\z''',
 ]
+
+[[allowlists]]
+description = """
+`sk-proj-ABCDEFGH12345678` was a realistic-looking (but fake) OpenAI-shaped
+project key used as the #555 chain-dispatch-redaction test fixture in
+plugins/ca-pi/tools/test/dispatch.test.ts. It tripped this same hosted scan
+(generic-api-key, two occurrences), so the LIVE test was rewritten in a
+follow-up commit on the same branch to a low-entropy trigger-word-only
+fixture matching redactor.test.ts's own convention (see the waiver above this
+one) - the current test file no longer contains this literal at all. Force-
+push is prohibited (H-02 / ORCHESTRATOR §3), so the earlier commit whose
+patch still carries this string cannot be rewritten out of the branch's
+history; the hosted scan's commit-range step (`git . --log-opts base..HEAD`)
+walks that commit's patch regardless of what a later commit changes, so the
+value is waived here instead. Not a credential for any system.
+"""
+regexes = ['''\Ask-proj-ABCDEFGH12345678\z''']

@@ -11,7 +11,7 @@ import type {
 import { publishActivity } from "./activity.ts";
 import type { ActivityPublisher } from "./activity.ts";
 import { appendAuditLine, auditField } from "./audit-sink.ts";
-import { safeDiagnostic } from "./redaction.ts";
+import { redactSecrets, safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog, validRoleName } from "./roles.ts";
 import type { PiRole } from "./roles.ts";
 import { runPiChild } from "./runner.ts";
@@ -255,10 +255,18 @@ function taskEnvelope(task: string, prior?: InternalChild): string {
   return JSON.stringify({
     protocol: "codearbiter-dispatch-v1",
     task,
+    // #555 — prior.summary is the PRIOR CHILD'S OWN OUTPUT, not the parent's task.
+    // On the chain path it becomes part of the NEXT child's instructions, so it
+    // must cross the same redaction boundary as anything else leaving a child's
+    // trust domain (dispatch.ts's audit sink already does this via
+    // appendDispatchAudit -> safeDiagnostic; this is the missing sibling seam,
+    // not a new mechanism). redactSecrets, not safeDiagnostic: the summary is a
+    // full Markdown report the next child needs intact, so only secret-shaped
+    // lines are stripped here — no truncation, no control-character scrub.
     ...(prior === undefined ? {} : { prior: {
       role: prior.role,
       state: prior.state,
-      summary: prior.summary,
+      summary: redactSecrets(prior.summary ?? ""),
     } }),
     response: {
       exactKeys: ["state", "summary"],

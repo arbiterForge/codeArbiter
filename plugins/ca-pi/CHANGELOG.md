@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.19] - 2026-08-06
+
+### Fixed
+
+- Chain-mode dispatch threaded a prior child's `summary` into the next child's task prompt verbatim, bypassing `redaction.ts` even though the redactor is already imported into `dispatch.ts` and already applied to the audit sink (#555). A child that reads a secret-bearing file could put that text into the next child's *instructions*, not just its own output. `taskEnvelope()` now applies the shared `redactSecrets` to `prior.summary` before it is embedded, closing the wiring gap without truncating or altering the rest of the forwarded Markdown report.
+
 ## [0.2.18] - 2026-08-06
 
 ### Fixed
