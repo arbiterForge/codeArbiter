@@ -1532,6 +1532,78 @@ class FileExistsNoBlockTest(unittest.TestCase):
             core_releaselib.parse_release_targets("just prose, no block\n")
 
 
+class UnreadableTargetsFileTest(unittest.TestCase):
+    """[[never-fold-unreadable-into-absent]] / #578 robustness finding: before
+    this class existed, `load_targets` caught a bare `OSError` and raised
+    `AbsentBlockError` for EVERY unreadable path, including one that exists
+    but could not be opened for a reason other than "not found" (a
+    permissions error, or the path naming a directory). That silently
+    satisfied the release skill's Back-fill lane's ONE sanctioned trigger
+    (`except AbsentBlockError:`), so a declared-targets file an operator
+    could not currently read -- not one that was actually missing -- could
+    drive Back-fill to write a fresh file over it. A directory path is used
+    here as the portable, no-chmod-needed stand-in for "OSError other than
+    FileNotFoundError": opening a directory as a file always fails --
+    `IsADirectoryError` on POSIX, `PermissionError` on Windows (measured on
+    this repository's own CI/dev hosts) -- and either way it is a real,
+    non-ENOENT `OSError`, which is the only property this distinction is
+    keyed on; chmod-based permission tests were avoided because permission
+    semantics differ too much across hosts to pin reliably in a unit test."""
+
+    def test_a_path_that_exists_but_cannot_be_opened_raises_unreadable_not_absent(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            # A directory can never be open()'d as a file -- a real,
+            # non-FileNotFoundError OSError -- the path is there.
+            with self.assertRaises(core_releaselib.UnreadableTargetsFileError):
+                core_releaselib.load_targets(tmp)
+
+    def test_genuinely_missing_file_still_raises_absent_block_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "does-not-exist.md")
+            with self.assertRaises(core_releaselib.AbsentBlockError):
+                core_releaselib.load_targets(path)
+
+    def test_unreadable_is_never_caught_by_except_absent_block_error(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            caught_as_absent = False
+            try:
+                try:
+                    core_releaselib.load_targets(tmp)
+                except core_releaselib.AbsentBlockError:
+                    caught_as_absent = True
+            except core_releaselib.UnreadableTargetsFileError:
+                pass
+            self.assertFalse(
+                caught_as_absent,
+                "an unreadable-but-present path must never be caught by "
+                "`except AbsentBlockError:` -- that is the Back-fill "
+                "lane's genuinely-absent-only trigger")
+
+    def test_unreadable_targets_file_error_is_a_sibling_not_a_subclass(self):
+        self.assertFalse(
+            issubclass(core_releaselib.UnreadableTargetsFileError,
+                       core_releaselib.AbsentBlockError))
+        self.assertFalse(
+            issubclass(core_releaselib.AbsentBlockError,
+                       core_releaselib.UnreadableTargetsFileError))
+        self.assertTrue(
+            issubclass(core_releaselib.UnreadableTargetsFileError,
+                       core_releaselib.ReleaseTargetsError))
+
+    def test_targets_error_exit_code_maps_unreadable_to_4_not_3(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            try:
+                core_releaselib.load_targets(tmp)
+                self.fail("expected UnreadableTargetsFileError")
+            except core_releaselib.UnreadableTargetsFileError as exc:
+                self.assertEqual(
+                    core_releaselib._targets_error_exit_code(exc), 4)
+
+
 class ParserContractTest(unittest.TestCase):
     """A-1.6: each parser-contract violation raises its own distinguishable
     declared error. Eight cases, matching the spec's enumeration: malformed
