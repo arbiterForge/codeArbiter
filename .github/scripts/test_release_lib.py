@@ -4065,11 +4065,35 @@ _build_surface_spec.loader.exec_module(build_surface)
 # live mutation recorded in this remediation's report.
 _GOVERNANCE_RULES = {
     "recovery section": ("## Recovering from a bad release",),
-    "footer BLOCK / never-auto-fill": ("CHANGELOG:", "auto-fill"),
-    "publish read-back": ("gh release view", "non-draft"),
-    "immutable-tag hard rule": ("published tag is immutable",),
+    # Re-anchored (issue #571): "CHANGELOG:" and "auto-fill" each also occur
+    # in the Phase-1 step-3 prose restating this same doctrine, so neither
+    # alone could detect deletion of the Hard Rules bullet. Added the span
+    # unique to that bullet -- verified `text.count(...) == 1` in the source
+    # and all three rendered payloads.
+    "footer BLOCK / never-auto-fill": (
+        "CHANGELOG:", "auto-fill", "MUST NOT auto-fill a missing"),
+    # Re-anchored (issue #571): "gh release view" occurs 3x (the isDraft
+    # probe, the Phase-3 read-back, and this Hard Rules bullet) and
+    # "non-draft" occurs 4x, so neither token alone is unique. Added the
+    # Hard Rules bullet's own unique span.
+    "publish read-back": (
+        "gh release view", "non-draft",
+        "MUST verify the published Release by read-back"),
+    # Re-anchored (issue #571): "published tag is immutable" occurs twice
+    # (once inline in Phase 2's cleanup-mode discussion, once as this
+    # section's own opening hard-rule sentence), so it could not detect
+    # deletion of the "Recovering from a bad release" doctrine on its own.
+    # Added the sentence's own unique continuation.
+    "immutable-tag hard rule": (
+        "published tag is immutable", "Correction means publishing a NEW version"),
     "derive-never-guess": ("MUST NOT guess the version",),
-    "pre-tag BLOCK-on-nonzero": ("pre-tag", "non-zero exit", "BLOCK"),
+    # Re-anchored (issue #571): "pre-tag" (x8), "non-zero exit" (x5), and
+    # "BLOCK" (x11) each recur throughout the file, so their conjunction
+    # could still survive deletion of this specific Hard Rules bullet as
+    # long as each token happened to survive elsewhere. Added the bullet's
+    # own unique span.
+    "pre-tag BLOCK-on-nonzero": (
+        "pre-tag", "non-zero exit", "BLOCK", "BLOCK on a non-zero exit"),
     "payload-scoped window rule": ("$PAYLOAD", "MUST scope"),
     # T-49/T-50 (issue #563, A-5.3/A-5.4): the back-fill lane must not be
     # collapsible to a silent default -- both the requirement to confirm and
@@ -4110,9 +4134,22 @@ _GOVERNANCE_RULES = {
         # lane now actually assigns (blind exercise run 15 -- the literal
         # appeared in seven commands and was never defined anywhere, so the
         # tag/push/release commands were uncopyable as written).
-        "git rev-parse ${TAG_PREFIX}${VERSION}", "peel-tag"),
+        # Re-anchored (issue #571): `git rev-parse ${TAG_PREFIX}${VERSION}`
+        # also occurs in Phase 3 step 5's provenance-recording command, so
+        # it survived deletion of THIS sentence (the "never a raw rev-parse"
+        # rule). Added the sentence's own unique lead-in.
+        "git rev-parse ${TAG_PREFIX}${VERSION}", "peel-tag",
+        "never from a bare `git rev-parse"),
+    # Re-anchored (issue #571): "latest-eligible: true`" occurs 5x and
+    # "single-target" occurs 3x across the file's other `--latest`/back-fill
+    # prose, so neither alone is unique to this specific back-fill
+    # detect-step sentence. Added the sentence's own mechanism-bearing
+    # clause -- not the comma-heavy "is, at this moment, single-target"
+    # tail, which is easy copyedit bait for the exact reason this file's
+    # own header comment warns about.
     "HIGH-2 (re-run): back-fill declares latest-eligible for its one target": (
-        "latest-eligible: true`", "single-target"),
+        "latest-eligible: true`", "single-target",
+        "this lane can only ever propose ONE row"),
     "MEDIUM (re-run): omitted single target resolves via list-targets, not assumption": (
         "mechanically, never by assumption", "list-targets"),
     "MEDIUM (re-run): manifest bump is stated once (step 6), not twice": (
@@ -4211,29 +4248,30 @@ _GOVERNANCE_RULES = {
 # mutation-testing the run-4 rules (issue #571). Declared here as a ratchet
 # rather than silently tolerated: the test below fails in BOTH directions,
 # so a newly-weak rule is caught and a repaired one must be removed from
-# this set. Re-anchoring these six means finding a span unique to each
-# protected sentence, which is prose work on a dense file and is tracked
-# separately rather than rushed into a HIGH-remediation commit.
-_KNOWN_WEAK_ANCHORS = {
-    "footer BLOCK / never-auto-fill",
-    "publish read-back",
-    "immutable-tag hard rule",
-    "pre-tag BLOCK-on-nonzero",
-    "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse",
-    "HIGH-2 (re-run): back-fill declares latest-eligible for its one target",
-}
+# this set. All six were re-anchored on a span unique to their protected
+# sentence (issue #571 remediation) -- verified `text.count(...) == 1` in
+# the source and all three rendered payloads -- so the set is now empty.
+# New rules must be sound from the start; this set stays as the ratchet
+# for whatever the next mutation-testing pass finds.
+_KNOWN_WEAK_ANCHORS = set()
 
 
-def _missing_governance_rules(text):
-    """The subset of `_GOVERNANCE_RULES` names whose token set is NOT fully
-    present in `text`, in declaration order. Empty when every rule survives.
-    A pure function so the checker itself can be exercised against a
-    synthetic fixture, not only against today's real skill text."""
+def _missing_governance_rules_for(text, rules):
+    """The subset of `rules` names whose token set is NOT fully present in
+    `text`, in declaration order. Empty when every rule survives. A pure
+    function so the checker itself can be exercised against a synthetic
+    fixture and an arbitrary rule set -- not only against today's real
+    skill text and the live `_GOVERNANCE_RULES` dict."""
     missing = []
-    for name, tokens in _GOVERNANCE_RULES.items():
+    for name, tokens in rules.items():
         if not all(token in text for token in tokens):
             missing.append(name)
     return missing
+
+
+def _missing_governance_rules(text):
+    """`_missing_governance_rules_for` against the live `_GOVERNANCE_RULES`."""
+    return _missing_governance_rules_for(text, _GOVERNANCE_RULES)
 
 
 class GovernanceRuleCheckerTest(unittest.TestCase):
@@ -4349,6 +4387,170 @@ class GovernanceSurvivalTest(unittest.TestCase):
                     "a deletion of load-bearing doctrine slipped through "
                     "(adversarial review 2026-07-31, the mutation campaign "
                     "this class exists to close)")
+
+
+# --------------------------------------------------------------------------- #
+# Issue #571 remediation: the mutation proof itself. Each of the six rules
+# GovernanceSurvivalTest used to declare in `_KNOWN_WEAK_ANCHORS` is proven
+# here with a RED/GREEN pair against the REAL source skill text -- not a
+# synthetic fixture -- by mutilating the WHOLE guarded sentence (never just
+# the new anchor span in isolation, which would make GREEN tautological --
+# any unique string added as a token catches its own deletion, and the
+# ratchet test above already proves uniqueness; the property actually worth
+# proving is that the anchor lives INSIDE the sentence it names) and
+# checking:
+#
+#   RED  (the pre-#571 defect, reproduced): the OLD token tuple -- pinned
+#        below exactly as it read before this fix, never read from the live
+#        `_GOVERNANCE_RULES` -- stays silent. The mutilated text still
+#        "passes" by the old rule's reckoning, because every one of its
+#        tokens happens to also occur elsewhere in the file, outside the
+#        deleted sentence.
+#   GREEN (the fix): the CURRENT `_GOVERNANCE_RULES` entry for that same
+#        rule name -- read live, so a future re-edit of the anchor is
+#        exercised automatically -- reports the rule missing.
+#
+# Each guarded sentence is located by a (start, end) pair of short literal
+# markers rather than hand-copied prose, so the fixture cannot silently
+# drift from the file's actual em-dashes/curly quotes/backticks -- and each
+# pair's own uniqueness is asserted before it is used to slice anything.
+#
+# A rule that regresses to weak (its anchor accidentally becomes non-unique
+# again) turns this test's GREEN half red, independent of and in addition
+# to `test_every_rule_has_at_least_one_uniquely_occurring_anchor` above.
+# --------------------------------------------------------------------------- #
+
+class DoctrineDeletionMutationProofTest(unittest.TestCase):
+    """RED/GREEN mutation proof for the six rules re-anchored by #571."""
+
+    # The exact anchor tuples as they read BEFORE this remediation -- the
+    # defect being fixed, preserved here as a fixed historical baseline so
+    # this test keeps proving the OLD shape stayed blind even after the
+    # live dict above is edited again in the future.
+    _PRE_571_ANCHORS = {
+        "footer BLOCK / never-auto-fill": ("CHANGELOG:", "auto-fill"),
+        "publish read-back": ("gh release view", "non-draft"),
+        "immutable-tag hard rule": ("published tag is immutable",),
+        "pre-tag BLOCK-on-nonzero": ("pre-tag", "non-zero exit", "BLOCK"),
+        "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse": (
+            "git rev-parse ${TAG_PREFIX}${VERSION}", "peel-tag"),
+        "HIGH-2 (re-run): back-fill declares latest-eligible for its one target": (
+            "latest-eligible: true`", "single-target"),
+    }
+
+    # (start marker, end marker) bounding the WHOLE sentence each rule
+    # protects, each pair verified unique (count == 1) in the source below
+    # before it is trusted to slice anything. The deleted span
+    # `text[find(start) : find(end, from=start) + len(end)]` is the entire
+    # guarded sentence, not merely the new anchor token -- so GREEN below
+    # proves the anchor is actually inside the doctrine it names.
+    _SENTENCE_MARKERS = {
+        "footer BLOCK / never-auto-fill": (
+            "MUST NOT auto-fill a missing", "and stopped."),
+        "publish read-back": (
+            "MUST verify the published Release by read-back",
+            "is not a passing gate."),
+        "immutable-tag hard rule": (
+            "A published tag is immutable. Correction means publishing a "
+            "NEW version",
+            "deleting the old one.**"),
+        "pre-tag BLOCK-on-nonzero": (
+            "MUST run every declared `pre-tag` check",
+            "beyond what the row declares."),
+        "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse": (
+            "Resolve `<tag_exists>` and `<tag_sha>` from the LOCAL ref "
+            "this way",
+            "needed no stopping at all."),
+        "HIGH-2 (re-run): back-fill declares latest-eligible for its one target": (
+            "the command prints the exact `release-targets.md` block it "
+            "would write",
+            "at this moment, single-target."),
+    }
+
+    # The new anchor token added to each rule's tuple by this remediation --
+    # asserted below to fall INSIDE the deleted sentence, so GREEN cannot
+    # pass by coincidence (e.g. a marker pair that accidentally excludes
+    # the very token meant to catch the deletion).
+    _NEW_ANCHOR_TOKEN = {
+        "footer BLOCK / never-auto-fill": "MUST NOT auto-fill a missing",
+        "publish read-back": "MUST verify the published Release by read-back",
+        "immutable-tag hard rule": "Correction means publishing a NEW version",
+        "pre-tag BLOCK-on-nonzero": "BLOCK on a non-zero exit",
+        "HIGH-1 (re-run): tag_sha is peeled, never a raw rev-parse":
+            "never from a bare `git rev-parse",
+        "HIGH-2 (re-run): back-fill declares latest-eligible for its one target":
+            "this lane can only ever propose ONE row",
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        source_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(source_path, encoding="utf-8") as fh:
+            cls.source_text = fh.read()
+
+    def test_the_six_rules_are_exactly_the_ones_pinned_here(self):
+        # Guards the proof itself: if a future edit adds a seventh weak rule
+        # or removes one of these six from `_GOVERNANCE_RULES` entirely,
+        # this test's own bookkeeping (not a silently-vacuous mutation
+        # check) is what should fail first.
+        self.assertEqual(
+            set(self._PRE_571_ANCHORS), set(self._SENTENCE_MARKERS))
+        self.assertEqual(
+            set(self._PRE_571_ANCHORS), set(self._NEW_ANCHOR_TOKEN))
+        for name in self._PRE_571_ANCHORS:
+            self.assertIn(name, _GOVERNANCE_RULES)
+
+    def _mutilated_text(self, rule):
+        start_m, end_m = self._SENTENCE_MARKERS[rule]
+        self.assertEqual(
+            self.source_text.count(start_m), 1,
+            f"{rule}: sentence start marker {start_m!r} is not unique in "
+            "the source -- fixture assumption broken")
+        start = self.source_text.find(start_m)
+        end_marker_idx = self.source_text.find(end_m, start)
+        self.assertNotEqual(
+            end_marker_idx, -1,
+            f"{rule}: sentence end marker {end_m!r} not found after the "
+            "start marker")
+        end = end_marker_idx + len(end_m)
+        deleted = self.source_text[start:end]
+        # The new anchor token must fall INSIDE the deleted span -- proves
+        # the token actually lives in the sentence it is meant to guard,
+        # not merely that some unique string was picked at random.
+        self.assertIn(
+            self._NEW_ANCHOR_TOKEN[rule], deleted,
+            f"{rule}: the new anchor token is not inside the marker-bounded "
+            "sentence -- markers don't actually bound the guarded doctrine")
+        return self.source_text[:start] + self.source_text[end:]
+
+    def test_deleting_the_whole_guarded_sentence_is_red_under_the_old_anchor(self):
+        for rule, old_tokens in self._PRE_571_ANCHORS.items():
+            with self.subTest(rule=rule):
+                mutilated = self._mutilated_text(rule)
+                missing = _missing_governance_rules_for(mutilated, {
+                    rule: old_tokens})
+                self.assertEqual(
+                    missing, [],
+                    f"{rule}: the OLD anchor tuple {old_tokens!r} was "
+                    "expected to stay silent (RED) against a text with the "
+                    "whole guarded sentence deleted -- if it now reports "
+                    "missing, the old tuple was never actually weak "
+                    "against this mutation and this fixture needs "
+                    "revisiting")
+
+    def test_deleting_the_whole_guarded_sentence_is_caught_by_the_current_anchor(self):
+        for rule in self._SENTENCE_MARKERS:
+            with self.subTest(rule=rule):
+                mutilated = self._mutilated_text(rule)
+                missing = _missing_governance_rules_for(mutilated, {
+                    rule: _GOVERNANCE_RULES[rule]})
+                self.assertEqual(
+                    missing, [rule],
+                    f"{rule}: the CURRENT anchor tuple "
+                    f"{_GOVERNANCE_RULES[rule]!r} was expected to catch "
+                    "(GREEN) the whole guarded sentence being deleted -- "
+                    "the re-anchoring regressed")
 
 
 # --------------------------------------------------------------------------- #
