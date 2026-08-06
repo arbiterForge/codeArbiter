@@ -66,6 +66,10 @@ predate the plugin rewrite and are grouped by date.
   as written only by `/ca:task archive`, omitting `/ca:standup`'s per-item
   archival sweep, which the very next paragraph already describes archiving
   into the same file through the same helper.
+- `release.yml`'s preflight step carried a leftover comment describing the
+  OLD positional `select_release_target` call's `arity` contract, directly
+  above the correct explanation of the NAME-KEYED `select-target-named`
+  call that actually runs there today.
 
 ### Documentation
 
