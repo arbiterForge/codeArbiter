@@ -4230,6 +4230,17 @@ _GOVERNANCE_RULES = {
         "Interpreter convention, stated once",),
     "HIGH-adjacent (run 11): window classification runs through the helper": (
         "Two operators writing two parses", "_releaselib.py\" classify-window"),
+    # #565: --dry-run is a prose-only addition to this skill (no
+    # `_releaselib.py` change was needed -- every CLI subcommand it invokes
+    # already existed). Pinned here because a prose-only fix has no other
+    # guard: nothing in `.github/scripts` or `plugins/*/hooks/tests`
+    # exercises the skill's own instructions, only the library functions
+    # they call. Two independently-unique anchors: the stop point after
+    # Phase 1 step 4, and the pre-tag-checks-are-listed-not-run rationale.
+    "#565: dry-run stops after Phase 1 step 4, before any write": (
+        "Stop there, before step 5",),
+    "#565: dry-run lists pre-tag checks but never runs them": (
+        "listed, never executed",),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the

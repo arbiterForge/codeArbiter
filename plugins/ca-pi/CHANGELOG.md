@@ -4,6 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.14] - 2026-08-05
+
+### Added
+
+- `/ca:release --dry-run` is now real: it runs Pre-flight and Phase 1's read-only version derivation, then reports the target, the derived version and rationale, the per-commit classification, and the resolved declared row, without writing a changelog entry, bumping a manifest, committing, or tagging (#565).
+- A new `uncovered_intent` helper (`_intentlib.py`) backstops `writing-plans`' bijective plan/criteria check with a citation check against the spec's own scope bullets and a linked issue's acceptance checkboxes (#566).
+
+### Fixed
+
+- `writing-plans`' Phase 4 gate is reframed to state only what bijection actually proves — plan/ledger agreement, never ledger completeness — and both `brainstorming` and `writing-plans` now ask an explicit negative-judgment question a bijective check cannot mechanize (#566).
+
 ## [0.2.13] - 2026-08-05
 
 ### Fixed

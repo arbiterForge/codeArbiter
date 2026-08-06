@@ -37,18 +37,23 @@ second step.
 ## Usage
 
 ```
-/ca:release [target]
+/ca:release [target] | --dry-run
 ```
 
-The only argument is the name of a row in the declared target file. It is optional when the file
+The main argument is the name of a row in the declared target file. It is optional when the file
 declares exactly one target and required when it declares more — with several declared, a bare
 invocation stops rather than guessing which one you meant.
 
-There is no version argument, and no `--auto` or `--dry-run`. A number you type is a number nobody
-checked, and preventing exactly that is the reason this lane exists — so the version comes from the
-commit history and the declared manifests, every time, with no override. A project with no declared
-file yet enters the skill's back-fill lane, which proposes a row from what it can detect and writes
-nothing without your confirmation.
+`--dry-run` previews a release with nothing written: it resolves the row, derives the version, and
+verifies changelog-footer completeness, then reports exactly what a real run would do and stops
+before anything is edited, committed, or tagged. It combines with `[target]` exactly as a real run
+does.
+
+There is no version argument and no `--auto`. A number you type is a number nobody checked, and
+preventing exactly that is the reason this lane exists — so the version comes from the commit history
+and the declared manifests, every time, with no override. A project with no declared file yet enters
+the skill's back-fill lane, which proposes a row from what it can detect and writes nothing without
+your confirmation.
 
 ## Example
 
