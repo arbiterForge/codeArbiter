@@ -90,11 +90,11 @@ A skill no one routes to is dead code. Wire it in.
 - Add the skill to the routing table — the invocation cue (the `/<command>` or condition), the primary route, any dispatched agents, the hard gate. For a command-invoked skill, also register the `/<command>` in the command reference.
 - For an internal skill, update the named parent so it routes to the new skill explicitly.
 
-Verify no broken references: every path the skill cites resolves, and the `INDEX.md` row matches the file.
+Verify no broken references: every path the skill cites resolves. `INDEX.md` row parity and routing-table dangling-route freedom are no longer a hand-check here — `.github/scripts/check_routing_index_parity.py` enforces both mechanically in CI (issue #592); a missing row, an orphan row, or a route to a name that does not exist fails the build.
 
 Hand off to `commit-gate` — never `git commit` directly. The skill change ships only through the commit gate.
 
-Gate: `INDEX.md` and the routing table updated, no broken references, and the change handed to `commit-gate`.
+Gate: `INDEX.md` and the routing table updated, no broken references, and the change handed to `commit-gate`. CI's routing-parity check is the authority on row/route correctness, not a self-report.
 
 ## Hard rules
 
