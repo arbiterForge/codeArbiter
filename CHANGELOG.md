@@ -25,6 +25,63 @@ predate the plugin rewrite and are grouped by date.
   integration phase now cites the check instead of re-stating the
   hand-verification it replaces (#592).
 
+## [2.11.14] — 2026-08-05
+
+### Added
+
+- `/ca:release --dry-run` is now real: it runs Pre-flight and Phase 1's
+  read-only version derivation, then reports the target, the derived
+  version and rationale, the per-commit classification, and the resolved
+  declared row, without writing a changelog entry, bumping a manifest,
+  committing, or tagging (#565).
+- A new `uncovered_intent` helper (`_intentlib.py`) backstops
+  `writing-plans`' bijective plan/criteria check with a citation check
+  against the spec's own scope bullets and a linked issue's acceptance
+  checkboxes, catching a criterion that both a plan and its own spec
+  quietly missed (#566).
+
+### Fixed
+
+- `writing-plans`' Phase 4 gate is reframed to state only what bijection
+  actually proves — that a plan and its `AC-NN` ledger agree with each
+  other, never that the ledger itself is complete — and both
+  `brainstorming` and `writing-plans` now ask an explicit negative-judgment
+  question ("if every criterion passed, what would still be broken?")
+  that a bijective check cannot mechanize (#566).
+
+## [2.11.13] — 2026-08-05
+
+### Fixed
+
+- Six `.github/scripts/test_release_lib.py` governance rules that pin
+  load-bearing sentences in the release skill — the footer BLOCK /
+  never-auto-fill rule, the publish read-back rule, the immutable-tag hard
+  rule, the pre-tag BLOCK-on-nonzero rule, and two re-run HIGH rules
+  (`tag_sha` peeling, back-fill's `latest-eligible` declaration) — had every
+  anchor token also occurring elsewhere in the skill, so the sentence each
+  one names could be deleted while the rule stayed green. Each is now
+  re-anchored on a span unique to its own guarded sentence, verified against
+  the source and all three rendered payloads (`ca`, `ca-codex`, `ca-pi`),
+  with a pinned RED/GREEN mutation proof against the real skill text (#571).
+
+## [2.11.12] — 2026-08-05
+
+### Fixed
+
+- The git-level hook backstop (#161) could run from an arbitrarily stale
+  host plugin cache — a Codex install that predated the #279 sensitive-scan
+  exemption resurrected that exact false positive, blocking a commit whose
+  only "sensitive" lines were the crypto/secret gate's own machine-written
+  audit rows, with no in-session exit but an override. Each live host's
+  session now records a content-addressed freshness heartbeat
+  (`.git/codearbiter-hooksd/<plugin>.seen`) alongside its registered
+  enforcer entry; the generated shim skips a registered entry whose
+  heartbeat is missing or stale relative to a fresher registered sibling,
+  deferring the verdict to whichever entry a live session most recently
+  confirmed, rather than letting an unrefreshed cache author a block.
+  `/ca:doctor` now surfaces a stale drop-in entry before it can produce a
+  false block (#556).
+
 ## [2.11.11] — 2026-08-05
 
 ### Fixed

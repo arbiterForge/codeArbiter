@@ -27,8 +27,27 @@ against it.
 A criterion the spec leaves ambiguous is a `[CONFIRM-NN]` against
 `<project-root>/.codearbiter/open-questions.md` — surface it, do not invent the intent.
 
-Gate: every acceptance criterion in the spec captured as a numbered `AC-NN`. A partial ledger does
-not pass.
+**Backstop the ledger against the spec's own stated intent, mechanically, before trusting it — this
+runs even when `brainstorming` already ran the same check, because a hole that survived Phase 3
+survives Phase 4's bijection too, silently** (#566): run `"$PY" "<plugin-root>/hooks/_intentlib.py"
+uncovered-intent <project-root>/.codearbiter/specs/<slug>.md [--issue-body <scratch-file>]` —
+`<scratch-file>` holds the linked issue's body when one exists (`gh issue view <N> --json body -q
+.body > <scratch-file>`, written outside the working tree), omitted when none does. A non-empty
+result names an in-scope bullet or an acceptance checkbox the criteria never cited — BLOCK and route
+back to `brainstorming` to add the missing criterion or record a `[CONFIRM-NN]`; never paper over a
+missing criterion by authoring a task for it here instead. This is the LAST point before a hole gets
+laundered through Phase 4's bijection, which only checks the ledger against itself and cannot see
+past it.
+
+Then ask the half this tool cannot mechanize: **if every `AC-NN` passed and nothing else changed,
+what would still be broken?** A real answer names a criterion the ledger is missing even though
+every scope bullet and checkbox is technically cited — judgment, not mechanizable, and not satisfied
+by a rhetorical "nothing." Finding nothing broken is a reportable result, stated in one line, never a
+silent skip.
+
+Gate: every acceptance criterion in the spec captured as a numbered `AC-NN`; the `uncovered_intent`
+backstop above returns empty or every finding is resolved; and the negative question has been asked
+and answered. A partial ledger does not pass.
 
 ## Phase 2 — Task decomposition · gate: BLOCK
 
@@ -57,9 +76,14 @@ is incremental.
 
 Gate: a complete dependency order with no cycle, and an explicitly marked MVP slice.
 
-## Phase 4 — Coverage proof & write · gate: BLOCK
+## Phase 4 — Bijection proof & write · gate: BLOCK
 
-Cross the ledger against the task set, both directions:
+Cross the ledger against the task set, both directions. **This proves the plan and the ledger AGREE
+with each other — it does not prove the ledger itself is COMPLETE relative to the spec's stated
+intent.** A criterion missing from the ledger entirely was never a candidate for either check below;
+that completeness gap is caught earlier, by Phase 1's `uncovered_intent` backstop (and by
+`brainstorming` Phase 3 before that) — never re-derived here, and never implied by this phase's name
+(#566: a prior version of this gate read "coverage proof", which a bijective check does not earn).
 
 - Every `AC-NN` is covered by at least one task's `covers`. An uncovered criterion blocks — author the missing task.
 - Every task advances at least one `AC-NN`. A task that covers nothing is scope creep — cut it or surface it.
@@ -73,10 +97,11 @@ The status column is the pipeline's resume ledger: `subagent-driven-development`
 `ACCEPTED` the moment it accepts it, so an interrupted run (crash, compaction, closed session) is
 re-entered by `/feature` at the first non-`ACCEPTED` task instead of restarted from brainstorming.
 
-Gate: bijective coverage proven — no criterion without a task, no task without a criterion — and the
-plan written to disk. This clears the path to execution: `executing-plans` (checkpointed, via
-`/feature`) or `subagent-driven-development` (autonomous, via `/sprint`) — each routes every task
-through `tdd`. The plan never hands off to `tdd` directly.
+Gate: bijection proven between the plan and the ledger — no criterion without a task, no task without
+a criterion — and the plan written to disk. This proves the two are mutually consistent, nothing more;
+completeness of the ledger itself was Phase 1's gate, not this one. This clears the path to execution:
+`executing-plans` (checkpointed, via `/feature`) or `subagent-driven-development` (autonomous, via
+`/sprint`) — each routes every task through `tdd`. The plan never hands off to `tdd` directly.
 
 ### Phase 4-farm extension (only when `--farm` was requested)
 
@@ -96,6 +121,7 @@ artifacts exist before handing off to `subagent-driven-development`.
 - MUST NOT write the plan while any acceptance criterion is uncovered or any task covers nothing.
 - MUST NOT guess a verification command — cite `tech-stack.md` or STOP.
 - MUST NOT resolve an ambiguous criterion by guessing — raise a `[CONFIRM-NN]`.
+- MUST run the `uncovered_intent` backstop and ask the negative-judgment question in Phase 1, and MUST NOT treat Phase 4's bijection proof as a substitute — bijection proves the plan and the ledger agree with each other, never that the ledger is complete (#566).
 - MUST NOT emit `plan.json` in `--farm` mode without writing and confirming each failing test first.
 - MUST NOT set `meta.model` or `meta.apiBaseUrl` in `plan.json` — these belong to the dispatch step.
 - MUST NOT proceed with `--farm` if `FARM_API_KEY` is absent — cite `<plugin-root>/includes/farm.md` and BLOCK.

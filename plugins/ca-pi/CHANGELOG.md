@@ -10,6 +10,35 @@ All notable changes to `ca-pi` are documented in this file.
 
 - INDEX.md / routing-table.md consistency is now a CI-checked invariant instead of an authoring discipline: `check_routing_index_parity.py` fails the build when a skill/routine/agent is missing its INDEX row, an INDEX row points at nothing, or `includes/routing-table.md` routes to a name that does not exist — across all four generated surfaces. `skill-author`'s routing-integration phase now cites the check instead of re-stating the hand-verification it replaces (#592).
 
+## [0.2.14] - 2026-08-05
+
+### Added
+
+- `/ca:release --dry-run` is now real: it runs Pre-flight and Phase 1's read-only version derivation, then reports the target, the derived version and rationale, the per-commit classification, and the resolved declared row, without writing a changelog entry, bumping a manifest, committing, or tagging (#565).
+- A new `uncovered_intent` helper (`_intentlib.py`) backstops `writing-plans`' bijective plan/criteria check with a citation check against the spec's own scope bullets and a linked issue's acceptance checkboxes (#566).
+
+### Fixed
+
+- `writing-plans`' Phase 4 gate is reframed to state only what bijection actually proves — plan/ledger agreement, never ledger completeness — and both `brainstorming` and `writing-plans` now ask an explicit negative-judgment question a bijective check cannot mechanize (#566).
+
+## [0.2.13] - 2026-08-05
+
+### Fixed
+
+- Six governance rules in `.github/scripts/test_release_lib.py` that pin
+  load-bearing release-skill doctrine had every anchor token also occurring
+  elsewhere in the skill, so deleting the one sentence each names could
+  slip through with the rule staying green. Each is now re-anchored on a
+  span unique to its own guarded sentence — checked against `ca-pi`'s own
+  rendered copy (`routines/release/SKILL.md`) as well as the source and the
+  other two payloads — with a pinned RED/GREEN mutation proof (#571).
+
+## [0.2.12] - 2026-08-05
+
+### Fixed
+
+- The git-level hook backstop (#161) could run from an arbitrarily stale host plugin cache, resurrecting an already-closed false positive (the #279 sensitive-scan exemption) instead of the current, correct enforcement. Each live host's session now records a content-addressed freshness heartbeat (`.git/codearbiter-hooksd/<plugin>.seen`) alongside its registered enforcer entry; the generated shim skips a registered entry whose heartbeat is missing or stale relative to a fresher registered sibling. `/ca:doctor` now surfaces a stale drop-in entry before it can produce a false block (#556).
+
 ## [0.2.11] - 2026-08-05
 
 ### Fixed

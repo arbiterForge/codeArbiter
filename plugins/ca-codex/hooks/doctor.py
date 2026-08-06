@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _gitexec import git_executable  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
+import _githooks  # noqa: E402 — #556: git-hook drop-in registry freshness
 from _hooklib import frontmatter_enabled, get_host, set_host, utf8_stdio  # noqa: E402
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
@@ -169,16 +170,18 @@ def check_payload(root, host=None):
 
 
 def check_repo():
+    """Returns the resolved repo root (for check_git_hook_freshness below), or
+    None when this process isn't inside a git repository at all."""
     r = _run_cmd([git_executable(), "rev-parse", "--show-toplevel"])
     if r.returncode != 0:
         warn("not inside a git repository — repo-level checks skipped")
-        return
+        return None
     root = r.stdout.strip()
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
     if not os.path.isfile(ctx):
         ok(f"no .codearbiter/CONTEXT.md in {root} — codeArbiter is dormant here "
            f"by design (run {get_host().cmd_ref('init')} to opt in)")
-        return
+        return root
     enabled, malformed = frontmatter_enabled(ctx)
     if malformed:
         fail("CONTEXT.md frontmatter opens with --- but never closes — the "
@@ -201,6 +204,40 @@ def check_repo():
         else:
             warn("git user.email is unset — overrides/ADRs cannot be attributed; "
                  "set it before gated work")
+    return root
+
+
+def check_git_hook_freshness(root):
+    """#556 (AC-3): the git-level hook backstop (#161) can be running from a
+    host's plugin cache that nobody has refreshed in a long time — a cache
+    that predates a fix THIS checkout already carries (the #279
+    sensitive-scan exemption, in the issue that motivated this check) is
+    still wired into `.git/hooks` and can still block on stale logic. Before
+    this check existed, nothing surfaced that until it produced a false
+    block. Runs the SAME freshness probe the generated shim itself runs at
+    commit/push time (`_githooks.stale_registered_plugins`), so this can
+    never disagree with what actually happens at commit time.
+
+    A no-op (nothing printed) when `root` is None (not inside a git repo —
+    already reported by check_repo) or the drop-in registry doesn't exist
+    yet (nothing installed, or a host that predates ADR-0014)."""
+    if root is None:
+        return
+    dropin_dir = _githooks._dropin_dir(root)
+    if dropin_dir is None or not os.path.isdir(dropin_dir):
+        return
+    stale = _githooks.stale_registered_plugins(dropin_dir)
+    if stale:
+        names = ", ".join(sorted(stale))
+        plural = "entries" if len(stale) != 1 else "entry"
+        warn(f"the git-hook backstop's drop-in registry (#161/#556) has a stale "
+             f"enforcer {plural} for: {names} — a fresher registered sibling "
+             f"exists (.git/codearbiter-hooksd), and the shim already skips the "
+             f"stale {plural} rather than let it false-block. Start a session for "
+             f"that host, or reinstall it, to refresh {names}.")
+    else:
+        ok("git-hook backstop registry (.git/codearbiter-hooksd) has no stale "
+           "enforcer entries")
 
 
 def check_host(host):
@@ -336,7 +373,8 @@ def main():
     check_host(host)
     check_interpreters()
     check_payload(root, host)
-    check_repo()
+    repo_root = check_repo()
+    check_git_hook_freshness(repo_root)
     check_mcp(host)
     if getattr(host, "has_statusline", True):
         # A host with no statusline surface (Codex) must not read
