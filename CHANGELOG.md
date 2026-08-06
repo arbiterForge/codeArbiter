@@ -27,6 +27,24 @@ predate the plugin rewrite and are grouped by date.
   the source and all three rendered payloads (`ca`, `ca-codex`, `ca-pi`),
   with a pinned RED/GREEN mutation proof against the real skill text (#571).
 
+## [2.11.12] — 2026-08-05
+
+### Fixed
+
+- The git-level hook backstop (#161) could run from an arbitrarily stale
+  host plugin cache — a Codex install that predated the #279 sensitive-scan
+  exemption resurrected that exact false positive, blocking a commit whose
+  only "sensitive" lines were the crypto/secret gate's own machine-written
+  audit rows, with no in-session exit but an override. Each live host's
+  session now records a content-addressed freshness heartbeat
+  (`.git/codearbiter-hooksd/<plugin>.seen`) alongside its registered
+  enforcer entry; the generated shim skips a registered entry whose
+  heartbeat is missing or stale relative to a fresher registered sibling,
+  deferring the verdict to whichever entry a live session most recently
+  confirmed, rather than letting an unrefreshed cache author a block.
+  `/ca:doctor` now surfaces a stale drop-in entry before it can produce a
+  false block (#556).
+
 ## [2.11.11] — 2026-08-05
 
 ### Fixed

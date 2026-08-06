@@ -16,6 +16,12 @@ All notable changes to `ca-pi` are documented in this file.
   rendered copy (`routines/release/SKILL.md`) as well as the source and the
   other two payloads — with a pinned RED/GREEN mutation proof (#571).
 
+## [0.2.12] - 2026-08-05
+
+### Fixed
+
+- The git-level hook backstop (#161) could run from an arbitrarily stale host plugin cache, resurrecting an already-closed false positive (the #279 sensitive-scan exemption) instead of the current, correct enforcement. Each live host's session now records a content-addressed freshness heartbeat (`.git/codearbiter-hooksd/<plugin>.seen`) alongside its registered enforcer entry; the generated shim skips a registered entry whose heartbeat is missing or stale relative to a fresher registered sibling. `/ca:doctor` now surfaces a stale drop-in entry before it can produce a false block (#556).
+
 ## [0.2.11] - 2026-08-05
 
 ### Fixed

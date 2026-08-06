@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.4.11] — 2026-08-05
+
+### Fixed
+
+- The git-level hook backstop (#161) could run from an arbitrarily stale host plugin cache — this plugin's own `0.3.0` cache predating the #279 sensitive-scan exemption resurrected that exact false positive, blocking a commit whose only "sensitive" lines were the crypto/secret gate's own machine-written audit rows. Each live host's session now records a content-addressed freshness heartbeat (`.git/codearbiter-hooksd/<plugin>.seen`) alongside its registered enforcer entry; the generated shim skips a registered entry whose heartbeat is missing or stale relative to a fresher registered sibling. `/ca:doctor` now surfaces a stale drop-in entry before it can produce a false block (#556).
+
 ## [0.4.10] — 2026-08-05
 
 ### Fixed
