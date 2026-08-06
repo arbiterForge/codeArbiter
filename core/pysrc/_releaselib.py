@@ -126,6 +126,7 @@ import hashlib
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 
@@ -1057,6 +1058,76 @@ def _could_not_run(returncode):
     return returncode in _COULD_NOT_RUN_CODES
 
 
+# #602: `run-pre-tag` dispatches every declared `pre-tag` row with
+# `subprocess.run(command, shell=True, …)`. On POSIX that already runs
+# through a POSIX shell (`/bin/sh`), so a row spelled `"$PY"` (the #601
+# convention) already expands there. On WINDOWS, `shell=True` unconditionally
+# dispatches through `cmd.exe` -- a CPython `subprocess` behavior, not host
+# configuration -- and `cmd.exe` performs no `$VAR` expansion, so `"$PY"`
+# passes through as the literal, unrecognized token and fails with an exit
+# code outside the could-not-run set, misdiagnosed as drift (exit 5). This
+# was MEASURED, not hypothesized (issue #602).
+#
+# `_resolve_posix_shell()` finds a POSIX-compatible shell (Git for Windows'
+# own `bash.exe`, an MSYS2 build that runs Windows-native binaries directly
+# -- NOT WSL's `bash.exe`, which runs inside a separate Linux filesystem and
+# cannot see a Windows path like `cwd=project_root` or a Windows `PY`
+# interpreter path the same way) so the caller can dispatch a declared row
+# through it instead of `cmd.exe`.
+def _resolve_posix_shell():
+    """Resolve an absolute path to a POSIX-compatible shell for dispatching
+    declared `pre-tag` rows, or None if none could be found.
+
+    Returns None unconditionally on a non-Windows host: `shell=True` already
+    dispatches through a POSIX shell there (`/bin/sh`), so no resolution is
+    needed and the caller keeps its existing `shell=True` dispatch unchanged.
+
+    On Windows, resolution order:
+      1. Relative to `git --exec-path` (via the trusted `git_executable()`
+         seam). Git for Windows ships its own `bash.exe` at a fixed position
+         relative to the install root -- `<root>/bin/bash.exe` -- and
+         `git --exec-path` reports a path under
+         `<root>/mingw64/libexec/git-core`, so `../../../bin/bash.exe`
+         relative to that finds it deterministically, tied to the SAME git
+         install this process already trusts, even when bash was never
+         added to PATH (Git for Windows' installer does not add it by
+         default). This is the PRIMARY strategy because it cannot resolve
+         to a different program entirely the way a PATH search can.
+      2. `shutil.which("bash")`, as a fallback for a non-standard Git for
+         Windows layout -- but a hit under `system32` or `WindowsApps` is
+         rejected: both are where Windows' own WSL launcher stub installs a
+         same-named `bash.exe` that runs inside a separate Linux
+         filesystem, not a POSIX-on-Windows shell, and accepting it would
+         swap one silent misdispatch for another.
+
+    Never raises: any resolution failure (git not found, `--exec-path`
+    failing, a filesystem error) is treated as "not found", matching every
+    other mechanism function in this module's "never raise on malformed
+    input" convention -- the CALLER decides what a None means (here: report
+    a distinct could-not-run exit rather than silently falling back to
+    `cmd.exe`, the exact misdiagnosis this fix closes).
+    """
+    if os.name != "nt":
+        return None
+    try:
+        exec_path = subprocess.run(
+            [git_executable(), "--exec-path"],
+            capture_output=True, text=True).stdout.strip()
+    except OSError:
+        exec_path = ""
+    if exec_path:
+        candidate = os.path.normpath(
+            os.path.join(exec_path, "..", "..", "..", "bin", "bash.exe"))
+        if os.path.isfile(candidate):
+            return candidate
+    found = shutil.which("bash")
+    if found:
+        normalized = os.path.normpath(found).lower()
+        if "\\system32\\" not in normalized and "\\windowsapps\\" not in normalized:
+            return found
+    return None
+
+
 # --------------------------------------------------------------------------- #
 # Declared-target-file parser. Grammar: per-target `[name]` sub-blocks of
 # `key: value` lines inside the HTML-comment delimiter convention this
@@ -1680,13 +1751,14 @@ def main(argv):
                                   each (DECISION-0034: check-only, never a
                                   fixer). Each declared command's environment
                                   carries `PY=<this process's own
-                                  interpreter>`, so a POSIX-hosted row may
-                                  portably spell `"$PY"` instead of a
-                                  hardcoded interpreter -- NOT yet safe on
-                                  Windows, where this command's `shell=True`
-                                  always dispatches via `cmd.exe`, which does
-                                  not expand `$VAR` (#583 MEDIUM-2 / #584
-                                  MEDIUM-3). exit 0 all
+                                  interpreter>`, so a row may portably spell
+                                  `"$PY"` instead of a hardcoded interpreter
+                                  on every platform (#583 MEDIUM-2 / #584
+                                  MEDIUM-3): on Windows this dispatch resolves
+                                  a POSIX-compatible shell (Git for Windows'
+                                  own `bash.exe`) rather than falling through
+                                  to `shell=True`'s default `cmd.exe`, which
+                                  cannot expand `$VAR` (#602). exit 0 all
                                   passed - 5 a command RAN and reported drift
                                   - 6 a command exited 0 but MUTATED the tree
                                   (or the tree was already dirty on a probe
@@ -1698,8 +1770,12 @@ def main(argv):
                                   tree-state PROBE itself failed, so no
                                   verdict about the declared commands exists
                                   (distinct from 6, which names a command as
-                                  the fault) - 2 bad invocation / unknown
-                                  target - 3/4 declared-file states.
+                                  the fault) - 9 no POSIX-compatible shell
+                                  could be resolved to dispatch a declared
+                                  row on Windows, so NO command ran at all --
+                                  NOT drift, distinct from 7 (#602) - 2 bad
+                                  invocation / unknown target - 3/4
+                                  declared-file states.
       semver-greater <candidate> <floor>
                                   exit 0 iff `candidate` is STRICTLY greater
                                   than `floor`; 1 when equal or lesser; 2 when
@@ -2084,13 +2160,21 @@ def main(argv):
         # disagreed") - 8 the tree-state PROBE itself failed, so no verdict
         # about the declared commands exists at all (distinct from 6, which
         # means a command mutated the tree -- a probe failure means this
-        # subcommand never got far enough to know) - 2 bad invocation or
-        # unknown target - 3/4 the declared-file states, unchanged.
+        # subcommand never got far enough to know) - 9 no POSIX-compatible
+        # shell could be resolved to dispatch a declared row on Windows, so
+        # NO declared command ran at all (#602: distinct from 7, which names
+        # a specific command's own interpreter as unresolvable -- 9 means
+        # the DISPATCH MECHANISM itself is unavailable, before any command
+        # is even attempted) - 2 bad invocation or unknown target - 3/4 the
+        # declared-file states, unchanged.
         #
         # PY env-var contract: every declared command below runs with
         # `PY` set in its environment to THIS process's own interpreter
         # (`sys.executable`), so a row may portably spell `"$PY"` instead
         # of a hardcoded `python3`/`python` (#583 MEDIUM-2 / #584 MEDIUM-3).
+        # This convention now holds on Windows too (#602): the dispatch
+        # below resolves a POSIX-compatible shell there instead of falling
+        # through to `subprocess.run(shell=True)`'s default `cmd.exe`.
         try:
             rows = load_targets(default_targets_path())
         except ReleaseTargetsError as exc:
@@ -2109,6 +2193,41 @@ def main(argv):
         # repository's files, and the clean-tree probe could report an
         # unrelated repo's dirt. Both directions were demonstrated.
         project_root = os.path.dirname(os.path.dirname(default_targets_path())) or "."
+
+        # #602: resolve the POSIX-shell dispatch ONCE, before any declared
+        # command runs (and before the tree-state baseline below, which a
+        # row with no `pre-tag` commands at all does not even need this
+        # resolution to reach). `_resolve_posix_shell()` itself returns None
+        # unconditionally on a non-Windows host, so `posix_shell` stays None
+        # and the dispatch below is byte-identical to the pre-#602 behavior
+        # there. A row declaring no `pre-tag` commands never needs a shell
+        # at all, so resolution -- and its failure mode -- is skipped
+        # entirely rather than blocking a target that never runs anything.
+        pre_tag_commands = row.get("pre_tag") or []
+        posix_shell = (
+            _resolve_posix_shell() if (os.name == "nt" and pre_tag_commands) else None)
+        if os.name == "nt" and pre_tag_commands and posix_shell is None:
+            # Exit 9, never 7 (which names a specific command's own
+            # interpreter as unresolvable): this is the DISPATCH MECHANISM
+            # itself being unavailable, before any declared command was even
+            # attempted -- "could not run" one level up, the same way exit 8
+            # is "the probe could not run" one level up from exit 6.
+            sys.stderr.write(
+                "run-pre-tag: COULD NOT RUN -- no POSIX-compatible shell "
+                "could be resolved on this Windows host.\n"
+                "  This is NOT drift. No declared command has run, so "
+                "nothing was checked -- do not reconcile it as a check "
+                "failure.\n"
+                "  `subprocess.run(shell=True)` dispatches via `cmd.exe` on "
+                "Windows, which cannot expand a row's `\"$PY\"` / `$VAR` "
+                "syntax (#602), so this subcommand requires a POSIX shell "
+                "to dispatch declared rows portably.\n"
+                "  Remedy: install Git for Windows "
+                "(https://git-scm.com/download/win), which ships "
+                "`bash.exe`, or put an existing Git-for-Windows `bash.exe` "
+                "on PATH. Then re-run. No release-edit discard is needed: "
+                "nothing was checked, so there is nothing to undo.\n")
+            return 9
 
         def _tree_state():
             """(paths -> content digest, failure). Content, not just the
@@ -2205,7 +2324,7 @@ def main(argv):
                 "re-running.\n")
             return 8
 
-        for command in (row.get("pre_tag") or []):
+        for command in pre_tag_commands:
             # flush=True: the subprocess writes to the same fds directly and
             # is not buffered, so without this the label lands AFTER the
             # output it labels and the log misattributes which command
@@ -2220,9 +2339,29 @@ def main(argv):
             # `python3` fails on exactly the host the convention exists for.
             # `sys.executable` is THIS process's own resolved interpreter,
             # so a row may portably spell `"$PY"` instead.
-            proc = subprocess.run(
-                command, shell=True, cwd=project_root,
-                env={**os.environ, "PY": sys.executable})
+            if posix_shell is not None:
+                # #602: dispatch via the resolved POSIX shell's OWN `-c`
+                # argv form (`shell=False`), never
+                # `shell=True, executable=posix_shell`. CPython's Windows
+                # `shell=True` path unconditionally builds
+                # `<executable> /c "<command>"` -- cmd.exe-flag syntax --
+                # regardless of what `executable` names, so passing
+                # `executable=<bash.exe>` there would invoke
+                # `bash.exe /c "command"`; `/c` is not a bash option (bash
+                # options start with `-`), so bash would try to run a
+                # nonexistent file literally named `/c` and fail with exit
+                # 127 -- misdiagnosing EVERY row as could-not-run regardless
+                # of whether the row itself is valid. Building the argv
+                # ourselves is the only correct way to dispatch a
+                # POSIX-syntax command string through a specific non-default
+                # shell on Windows.
+                proc = subprocess.run(
+                    [posix_shell, "-c", command], shell=False, cwd=project_root,
+                    env={**os.environ, "PY": sys.executable})
+            else:
+                proc = subprocess.run(
+                    command, shell=True, cwd=project_root,
+                    env={**os.environ, "PY": sys.executable})
             if _could_not_run(proc.returncode):
                 # Exit 7, never 5 (#585 MEDIUM-2 / #584 MEDIUM-1): a command
                 # whose interpreter or program itself could not be located
@@ -2242,17 +2381,10 @@ def main(argv):
                     "  Remedy: fix the interpreter this row names for THIS "
                     "host (a common cause is a row hardcoding a specific "
                     "interpreter, e.g. `python3`, on a host that has only "
-                    "`python`). On a POSIX host this is commonly `\"$PY\"` "
-                    "-- but NOT on Windows: this command runs via "
-                    "`subprocess.run(shell=True)`, which on Windows always "
-                    "dispatches through `cmd.exe`, and `cmd.exe` does not "
-                    "expand `$VAR` syntax, so a row spelled `\"$PY\"` fails "
-                    "there too (as a literal, unrecognized token) until "
-                    "that dispatch resolves a POSIX-compatible shell on "
-                    "Windows -- a Windows-hosted row should keep a concrete "
-                    "interpreter for now. Then re-run. No release-edit "
-                    "discard is needed: nothing was checked, so there is "
-                    "nothing to undo.\n")
+                    "`python`) -- `\"$PY\"` (#601/#602) is the portable "
+                    "spelling on every platform this dispatch supports. "
+                    "Then re-run. No release-edit discard is needed: "
+                    "nothing was checked, so there is nothing to undo.\n")
                 return 7
             if proc.returncode != 0:
                 sys.stderr.write(

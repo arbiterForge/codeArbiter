@@ -22,6 +22,18 @@ All notable changes to `ca-pi` are documented in this file.
 - `medium-documents` was cited by bare name in the release skill's changelog
   step while every sibling include in the same sentence carries a full
   path; pathed it to match.
+- `load_targets()` folded every unreadable declared-targets file into
+  "absent"; added `UnreadableTargetsFileError` so the two cases are
+  distinguishable (shared `core/pysrc/` kernel).
+- The context-creation skill's single-target template omitted
+  `latest-eligible: true`, disagreeing with the release skill's own
+  back-fill detector for the identical shape.
+
+## [0.2.16] - 2026-08-06
+
+### Fixed
+
+- `run-pre-tag` now resolves a POSIX-compatible shell (Git for Windows' own `bash.exe`) to dispatch a target's declared `pre-tag` commands, instead of always dispatching through `cmd.exe` on Windows — so a row spelled `"$PY" <script>` (the #601 convention) now runs correctly on every platform, not just POSIX. A Windows host with no POSIX shell reachable at all now reports a distinct "could not run" diagnosis (exit 9) rather than misreading the absence as drift. This repository's own `.codearbiter/release-targets.md` `pre-tag` rows are rewritten from hardcoded `python3` to `"$PY"` now that the fix makes it portable (#602).
 
 ## [0.2.15] - 2026-08-05
 

@@ -33,6 +33,27 @@ predate the plugin rewrite and are grouped by date.
   pathed it to match.
 - Fixed a markdownlint MD018 trip in `security-controls.md` (a line began
   with `#175`, which reads as an unspaced ATX heading marker).
+- `load_targets()` folded every `OSError` reading a declared release-targets
+  file into `AbsentBlockError`, so a file that exists but cannot be read
+  (permissions, a directory at that path, a transient I/O error) was
+  misreported as "no release-targets block" instead of "could not read it."
+  Added `UnreadableTargetsFileError`, a sibling of `AbsentBlockError`, so the
+  two failure modes are distinguishable and the CLI exits 4 (not 3) for the
+  unreadable case.
+- `check_skill_proof_fresh.py` raised `AttributeError` instead of a clean
+  error list when a proof artifact's top-level JSON value was an array or
+  `null` rather than an object.
+- `test_release_trace.py` pinned `PRE_CHANGE_SHA` with an 8-character
+  abbreviation instead of the full 40-character SHA.
+- `test_consumer_smoke.py` migrated `shutil.rmtree`'s cleanup callback from
+  the deprecated `onerror=` (3-arg, exc_info tuple) spelling to `onexc=`
+  (3-arg, exception instance).
+- The context-creation skill's single-target `release-targets.md` template
+  omitted `latest-eligible: true`, disagreeing with the release skill's own
+  back-fill detector (`detect_candidate_target`), which emits it for the
+  identical shape.
+- Added a real-registry regression case for a stale H-22 protected-state
+  marker (previously only exercised against a synthetic injected registry).
 
 ### Documentation
 
@@ -40,6 +61,21 @@ predate the plugin rewrite and are grouped by date.
   approval") now that #576 shipped it, and repaired three markdown-table
   breaks and a stale coverage-proof cross-reference (A-6.7/A-6.8) in
   `plans/portable-release-and-protected-state.md`.
+
+## [2.11.16] — 2026-08-06
+
+### Fixed
+
+- `run-pre-tag` now resolves a POSIX-compatible shell (Git for Windows'
+  own `bash.exe`) to dispatch a target's declared `pre-tag` commands,
+  instead of always dispatching through `cmd.exe` on Windows — so a row
+  spelled `"$PY" <script>` (the #601 convention) now runs correctly on
+  every platform, not just POSIX. A Windows host with no POSIX shell
+  reachable at all now reports a distinct "could not run" diagnosis
+  (exit 9) rather than misreading the absence as drift. This repository's
+  own `.codearbiter/release-targets.md` `pre-tag` rows are rewritten from
+  hardcoded `python3` to `"$PY"` now that the fix makes it portable
+  (#602).
 
 ## [2.11.15] — 2026-08-05
 
