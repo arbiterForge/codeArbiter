@@ -28,6 +28,11 @@ All notable changes to `ca-pi` are documented in this file.
 - The context-creation skill's single-target template omitted
   `latest-eligible: true`, disagreeing with the release skill's own
   back-fill detector for the identical shape.
+- `row_assertions()` reported a blank `rebuild: ""` string as a declared
+  command instead of "not declared" (shared `core/pysrc/` kernel).
+- `select_release_target_by_name()` returned the bare string `""` for a
+  pair with a blank NAME, outside its own documented result vocabulary
+  (shared `core/pysrc/` kernel).
 
 ## [0.2.16] - 2026-08-06
 

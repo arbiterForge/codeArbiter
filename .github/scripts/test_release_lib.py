@@ -2690,6 +2690,20 @@ class CoreCLITest(unittest.TestCase):
                 ["bare-name"], self.TARGETS),
             "none")
 
+    def test_select_target_name_keyed_ignores_a_blank_name(self):
+        # "=1.2.3" (a stray leading "=") previously fell through the
+        # "name and name not in known" unknown-check -- blank is falsy, so
+        # it skipped that check -- and then appended "" to `selected`,
+        # returning the bare string "" rather than any label in the
+        # documented vocabulary (<target>|none|multiple|unknown). A blank
+        # NAME identifies no target and must be ignored like a pair with no
+        # "=" at all.
+        for pairs in (["=1.2.3"], ["  =1.2.3"]):
+            result = core_releaselib.select_release_target_by_name(
+                pairs, self.TARGETS)
+            self.assertEqual(result, "none", pairs)
+            self.assertIn(result, self.TARGETS + ["none", "multiple", "unknown"])
+
     def test_select_target_name_keyed_never_raises_on_junk(self):
         for pairs in (None, 42, ["ca=1.0.0", None, 7], "ca=1.0.0"):
             result = core_releaselib.select_release_target_by_name(
@@ -2777,6 +2791,22 @@ class CoreCLITest(unittest.TestCase):
         skipped = dict(core_releaselib.row_assertions(self.ROW_BARE)["skipped"])
         self.assertIn("rebuild", skipped)
         self.assertIn("artifacts-clean", skipped)
+
+    def test_blank_rebuild_string_is_treated_as_absent_not_declared(self):
+        # A row spelling `rebuild: ""` or `rebuild: "   "` (a stray blank
+        # value, not an omitted key) previously passed `isinstance(..., str)`
+        # and came back as a truthy-looking "" in `verdict["rebuild"]",
+        # skipping the "rebuild" entry in `skipped` even though no command
+        # was actually declared -- the same class of gap `provenance` (two
+        # lines below in the source) already guards against with a
+        # `.strip()` check. Blank must read the same as omitted.
+        for blank in ("", "   ", "\t\n"):
+            row = dict(self.ROW_BARE, rebuild=blank)
+            verdict = core_releaselib.row_assertions(row)
+            self.assertIsNone(verdict["rebuild"], repr(blank))
+            self.assertIn("rebuild",
+                          [name for name, _reason in verdict["skipped"]],
+                          repr(blank))
 
     def test_provenance_optional_absent_is_skipped_and_reported(self):
         # A-3.5. Absent means the recording step is skipped AND the report

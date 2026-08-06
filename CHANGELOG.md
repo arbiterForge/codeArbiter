@@ -54,6 +54,18 @@ predate the plugin rewrite and are grouped by date.
   identical shape.
 - Added a real-registry regression case for a stale H-22 protected-state
   marker (previously only exercised against a synthetic injected registry).
+- `row_assertions()` reported a blank `rebuild: ""` string as a declared
+  command instead of "not declared", inconsistent with the sibling
+  `provenance_manifest` field two lines below it in the same function,
+  which already strips blanks.
+- `select_release_target_by_name()` returned the bare string `""` — outside
+  its own documented `<target>|none|multiple|unknown` vocabulary — for a
+  pair with a blank NAME (e.g. `"=1.2.3"`); it is now ignored like a pair
+  with no `=` at all.
+- The docs site's `.codearbiter/` directory reference listed `done-tasks.md`
+  as written only by `/ca:task archive`, omitting `/ca:standup`'s per-item
+  archival sweep, which the very next paragraph already describes archiving
+  into the same file through the same helper.
 
 ### Documentation
 

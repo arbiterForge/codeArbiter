@@ -516,9 +516,10 @@ def select_release_target_by_name(pairs, targets):
 
     Blank-ish values count as not-selected, exactly as in the positional
     form, so a stray space cannot read as a second target. A pair with no
-    `=` at all is ignored rather than fatal — an empty workflow input can
-    arrive as a bare name — but a pair whose NAME is unknown is reported,
-    because that is a real mismatch rather than an empty slot.
+    `=` at all, or whose NAME is blank (e.g. `"=1.2.3"`), is ignored rather
+    than fatal — an empty workflow input can arrive as a bare name or a
+    stray leading `=` — but a pair whose NAME is non-blank and unknown is
+    reported, because that is a real mismatch rather than an empty slot.
 
     Pure and non-raising over synthetic input.
     """
@@ -530,7 +531,12 @@ def select_release_target_by_name(pairs, targets):
             continue
         name, _, value = pair.partition("=")
         name = name.strip()
-        if name and name not in known:
+        if not name:
+            # A blank name (e.g. "=1.2.3") identifies no target -- ignore
+            # it exactly like a pair with no "=" at all, rather than
+            # falling through and selecting "" as if it were a target.
+            continue
+        if name not in known:
             return "unknown"
         if value.strip():
             selected.append(name)
@@ -689,7 +695,8 @@ def row_assertions(row):
     manifests = _list("manifest")
     artifacts = _list("artifacts")
     excludes = _list("payload_exclude")
-    rebuild = row.get("rebuild") if isinstance(row.get("rebuild"), str) else None
+    rebuild = row.get("rebuild")
+    rebuild = rebuild if isinstance(rebuild, str) and rebuild.strip() else None
     provenance = row.get("provenance_manifest")
     provenance = provenance if isinstance(provenance, str) and provenance.strip() else None
 

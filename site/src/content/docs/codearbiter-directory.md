@@ -32,7 +32,7 @@ only while a flow is active or after the owning feature first runs (`.decompose-
 | `CONTEXT.md` | `/ca:init`, `/ca:decompose`, `/ca:create-context` | every enforcement hook (`arbiter_active()`), the orchestrator | Yes, but the frontmatter is guarded (see below) |
 | `code-map.md` | `/ca:create-context`, `/ca:decompose`, commit-gate provenance heal | feature/task orientation, context checks | Yes; refresh source-backed claims through `/ca:context-check` |
 | `open-tasks.md` | `/ca:task` only | `/ca:status`, the statusline, `SessionStart` | No: guarded to `/ca:task` (hook `H-22`, helper-only) |
-| `done-tasks.md` | `/ca:task archive` only | the permanent record; read on demand | No: guarded (hook `H-22`, append-only) |
+| `done-tasks.md` | `/ca:task archive`, `/ca:standup`'s per-item archival sweep | the permanent record; read on demand | No: guarded (hook `H-22`, append-only) |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
 | `specs/*.md` | `brainstorming` skill (via `/ca:feature`, `/ca:sprint`) | `writing-plans`, `/ca:status` | Yes |
