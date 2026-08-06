@@ -80,17 +80,20 @@ Every `[CONFIRM-NN]` carries: a sequential ID, one sentence on what is unknown, 
 
 **`.codearbiter/release-targets.md` is HIGH-confidence only when Scout A found exactly one candidate manifest and exactly one candidate changelog at the repository root.** Draft the row then, in the grammar `<plugin-root>/hooks/_releaselib.py`'s module docstring declares — a single-target project needs only `prefix`, `manifest`, `changelog`, `payload`:
 
-```
+```text
 <!-- release-targets -->
 [app]
 prefix: v
 manifest: package.json
 changelog: CHANGELOG.md
 payload: .
+latest-eligible: true
 <!-- /release-targets -->
 ```
 
 (`prefix` defaults to `v` unless Scout A found a different existing tag convention; `payload` is `.` for a single-package repository.) Zero, or more than one, candidate manifest or changelog is LOW confidence — the same "no signal, or conflicting signals" rule above — and gets a `[CONFIRM-NN]` instead of a guessed row; this doc is never scaffolded from an ambiguous scan, and the file is simply not written until the gap is resolved in Phase 4.
+
+**`latest-eligible: true` is not cosmetic.** `/release`'s own back-fill detector (`detect_candidate_target`) emits it for this exact single-target shape, so a project drafted here and one back-filled through `/release` must agree — omitting it here would default the row's Phase-3 publish to `--latest=false`, and the same project would get different release behavior depending on which lane happened to declare it first.
 
 Gate: every surviving doc drafted; every low-confidence inference carries a `[CONFIRM-NN]`. No silent omission. A domain with no scout signal gets a doc with a `[CONFIRM-NN]` for the whole section — never an empty file.
 

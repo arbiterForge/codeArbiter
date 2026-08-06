@@ -199,6 +199,13 @@ def check(repo=REPO_ROOT, artifact_path=ARTIFACT_PATH, build_surface=None):
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
         return [f"{artifact_path!r} is not parseable JSON: {error}"]
 
+    if not isinstance(document, dict):
+        return [
+            f"{artifact_path!r} is valid JSON but not a JSON object "
+            f"(got {type(document).__name__}) — cannot read proof_current "
+            "or exercise from it"
+        ]
+
     if document.get("proof_current") is not True:
         return [
             f"{artifact_path!r} records proof_current={document.get('proof_current')!r}, "

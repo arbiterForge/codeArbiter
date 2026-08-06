@@ -220,7 +220,7 @@ def _force_rmtree(path):
     if not os.path.exists(path):
         return
 
-    def _onerror(func, target, _exc_info):
+    def _onexc(func, target, _exc):
         try:
             os.chmod(target, stat.S_IWRITE)
         except OSError:
@@ -230,7 +230,13 @@ def _force_rmtree(path):
         except OSError:
             pass
 
-    shutil.rmtree(path, onerror=_onerror)
+    # `onerror` (a 3-arg callback taking an exc_info tuple) is deprecated as
+    # of Python 3.12 in favor of `onexc` (a 3-arg callback taking the
+    # exception instance itself, not a tuple) and is slated for eventual
+    # removal; `onexc` is used unconditionally here since it has been
+    # available since 3.12 and this repository's minimum supported
+    # interpreter is newer than that.
+    shutil.rmtree(path, onexc=_onexc)
 
 
 def _clone_head(dest):
