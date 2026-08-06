@@ -12,6 +12,21 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.11.13] — 2026-08-05
+
+### Fixed
+
+- Six `.github/scripts/test_release_lib.py` governance rules that pin
+  load-bearing sentences in the release skill — the footer BLOCK /
+  never-auto-fill rule, the publish read-back rule, the immutable-tag hard
+  rule, the pre-tag BLOCK-on-nonzero rule, and two re-run HIGH rules
+  (`tag_sha` peeling, back-fill's `latest-eligible` declaration) — had every
+  anchor token also occurring elsewhere in the skill, so the sentence each
+  one names could be deleted while the rule stayed green. Each is now
+  re-anchored on a span unique to its own guarded sentence, verified against
+  the source and all three rendered payloads (`ca`, `ca-codex`, `ca-pi`),
+  with a pinned RED/GREEN mutation proof against the real skill text (#571).
+
 ## [2.11.12] — 2026-08-05
 
 ### Fixed

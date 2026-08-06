@@ -4,6 +4,18 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.2.13] - 2026-08-05
+
+### Fixed
+
+- Six governance rules in `.github/scripts/test_release_lib.py` that pin
+  load-bearing release-skill doctrine had every anchor token also occurring
+  elsewhere in the skill, so deleting the one sentence each names could
+  slip through with the rule staying green. Each is now re-anchored on a
+  span unique to its own guarded sentence — checked against `ca-pi`'s own
+  rendered copy (`routines/release/SKILL.md`) as well as the source and the
+  other two payloads — with a pinned RED/GREEN mutation proof (#571).
+
 ## [0.2.12] - 2026-08-05
 
 ### Fixed
