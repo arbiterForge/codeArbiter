@@ -5,6 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] v2.deps.0001 - Bump js-yaml in site/package-lock.json past CVE-2026-59870 (HIGH, quadratic CPU in !!omap): npm audit fix in site/, run site npm test + dependency-reviewer; the production CVE gate reds Deploy docs on every PR until fixed (found on PR #632, unrelated to it)  (done 2026-08-07)
 - [ ] Reconfirm the ca 2.9.0 and ca-codex 0.3.0 version classification against the final merged diff before any release or tag.  (from sprint:auto-safe-open-issues)
 - [ ] Validate the annotated ANSI-free palette evidence format with users; add stable visual captures only if the text artifacts are insufficient.  (from sprint:auto-safe-open-issues)
 - [x] Benchmark the 100 ms statusline dirty-check timeout across representative large repositories and adjust it if fail-soft timeouts hide normal dirty state.  (from sprint:auto-safe-open-issues)  (done 2026-07-20)
