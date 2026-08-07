@@ -455,6 +455,32 @@ def release_dates_consistent(changelog_section, tag_message):
     return cm.group(1) == tm.group(1)
 
 
+def changelog_section(changelog_text, version):
+    """Extract the `## [VERSION] ...` (or `## vVERSION ...`) section from
+    `changelog_text` VERBATIM -- from its own heading line up to (but not
+    including) the next `##` heading, or end of text. Returns the section
+    text with exactly one trailing newline, or `None` when no heading in
+    `changelog_text` names `version` exactly. Non-string input -> `None`.
+
+    This is the mechanical replacement for hand-copying a changelog section:
+    Phase 3's `resume_publish` path needs the SAME text Phase 1 composed,
+    but Phase 1's own scratch copy is explicitly discardable and routinely
+    gone by the time a resumed publish runs. Reading it back out of the
+    COMMITTED `$CHANGELOG` -- which Phase 1 step 7 commits before any tag
+    exists -- is reading the one permanent home of that text, not
+    re-deriving or hand-writing new notes (blind exercise run 19, HIGH-2)."""
+    if not isinstance(changelog_text, str) or not isinstance(version, str):
+        return None
+    matches = list(_HEADING_RE.finditer(changelog_text))
+    for i, m in enumerate(matches):
+        if m.group(1) != version:
+            continue
+        start = m.start()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(changelog_text)
+        return changelog_text[start:end].rstrip("\n") + "\n"
+    return None
+
+
 def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
                            manifest_version, release_is_nondraft):
     """Classify a (re)publish attempt so a release lane can resume a
@@ -1726,6 +1752,20 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
+      changelog-section <changelog_file> <version>
+                                  prints the `## [<version>] ...` section of
+                                  `<changelog_file>` verbatim, from its
+                                  heading up to the next `##` heading or EOF.
+                                  exit 0 with the section on stdout - 1 no
+                                  heading names `<version>` - 3 the file
+                                  could not be read (distinct from 1: "could
+                                  not compare" is never "compared and
+                                  disagreed"). The sanctioned way for
+                                  Phase 3's `resume_publish` path to
+                                  reconstruct release notes when Phase 1's
+                                  own scratch file did not survive to a
+                                  later session (blind exercise run 19,
+                                  HIGH-2).
       check-manifests <target> <version>
                                   asserts EVERY declared `manifest` in the row
                                   equals <version>. exit 0 all match - 1 at
@@ -1865,9 +1905,9 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
-            "payload-pathspec|last-tag|notes-match|dates-match|"
-            "semver-greater|apply-bump|classify|peel-tag|run-pre-tag|"
-            "adoption-commit|classify-window|check-manifests|"
+            "payload-pathspec|last-tag|notes-match|changelog-section|"
+            "dates-match|semver-greater|apply-bump|classify|peel-tag|"
+            "run-pre-tag|adoption-commit|classify-window|check-manifests|"
             "backfill-detect} ...\n")
         return 2
 
@@ -2050,6 +2090,50 @@ def main(argv):
         except OSError:
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+
+    if cmd == "changelog-section" and len(rest) == 2:
+        # Mechanical reconstruction of Phase 1's composed section, for
+        # `resume_publish` -- see `changelog_section`'s docstring. Exit 0
+        # with the section on stdout - 1 the changelog has no heading for
+        # `<version>` (drift between $CHANGELOG and the tag, not a
+        # bad-invocation) - 3 the changelog file could not be read. 3, not
+        # 2, so "unreadable" and "bad invocation" stay distinguishable
+        # (this module's own [never-fold-unreadable-into-absent] rule) --
+        # 2 is reserved for bad invocation across this whole CLI.
+        changelog_path, version = rest
+        try:
+            with open(changelog_path, encoding="utf-8") as fh:
+                changelog_text = fh.read()
+        except OSError as exc:
+            sys.stderr.write(
+                f"changelog-section: cannot read {changelog_path!r}: {exc}\n")
+            return 3
+        section = changelog_section(changelog_text, version)
+        if section is None:
+            sys.stderr.write(
+                f"changelog-section: no '## [{version}]' heading in "
+                f"{changelog_path!r}\n")
+            return 1
+        # `sys.stdout.write` is text-mode: on Windows with no
+        # PYTHONIOENCODING/PYTHONUTF8 set it encodes using the ambient
+        # console codepage (cp1252, not UTF-8) AND translates `\n` to
+        # `\r\n`. A changelog section legitimately contains an em-dash in
+        # every heading (`## [X.Y.Z] — DATE`), so unlike backfill-detect's
+        # deliberately-ASCII-only block (see its own comment on this exact
+        # failure), this output cannot dodge the problem by staying ASCII.
+        # Writing UTF-8 bytes straight to the binary buffer bypasses both
+        # the codepage transcoding and the newline translation. `.buffer`
+        # is absent on an `io.StringIO` (what a direct, in-process
+        # `main(argv)` call under test redirects to) -- that caller already
+        # gets the exact string back with no encoding step in between, so
+        # falling back to plain `.write()` there is not a weaker code path,
+        # it is the correct one for an object that was never bytes.
+        out_buffer = getattr(sys.stdout, "buffer", None)
+        if out_buffer is not None:
+            out_buffer.write(section.encode("utf-8"))
+        else:
+            sys.stdout.write(section)
+        return 0
 
     if cmd == "check-manifests" and len(rest) == 2:
         # HIGH (adversarial review 2026-07-31, run 12). A row MAY declare

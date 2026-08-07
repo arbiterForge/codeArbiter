@@ -2080,6 +2080,79 @@ class CoreNotesHeadingTest(unittest.TestCase):
         self.assertIsNone(core_releaselib._bare_version(None))
 
 
+class CoreChangelogSectionTest(unittest.TestCase):
+    """Blind exercise run 19, HIGH-2: `changelog_section` mechanically
+    reconstructs a Phase-1-composed section from a COMMITTED changelog, so
+    `resume_publish` never needs a `mktemp` scratch file that may not have
+    survived to a later session."""
+
+    _CHANGELOG = (
+        "# Changelog\n"
+        "\n"
+        "## [2.12.0] — 2026-08-07\n"
+        "\n"
+        "### Added\n"
+        "\n"
+        "- newest thing\n"
+        "\n"
+        "## [2.11.0] — 2026-07-31\n"
+        "\n"
+        "### Fixed\n"
+        "\n"
+        "- middle thing\n"
+        "\n"
+        "## [2.8.13] — 2026-07-12\n"
+        "\n"
+        "### Fixed\n"
+        "\n"
+        "- oldest thing\n"
+    )
+
+    def test_extracts_middle_section_verbatim_up_to_next_heading(self):
+        section = core_releaselib.changelog_section(self._CHANGELOG, "2.11.0")
+        self.assertEqual(
+            section,
+            "## [2.11.0] — 2026-07-31\n\n### Fixed\n\n- middle thing\n")
+
+    def test_extracts_first_section_up_to_next_heading(self):
+        section = core_releaselib.changelog_section(self._CHANGELOG, "2.12.0")
+        self.assertEqual(
+            section,
+            "## [2.12.0] — 2026-08-07\n\n### Added\n\n- newest thing\n")
+
+    def test_extracts_last_section_to_end_of_text(self):
+        # No following `##` heading -- the boundary is end-of-string, not an
+        # index error and not a section that swallows a prior one.
+        section = core_releaselib.changelog_section(self._CHANGELOG, "2.8.13")
+        self.assertEqual(
+            section,
+            "## [2.8.13] — 2026-07-12\n\n### Fixed\n\n- oldest thing\n")
+
+    def test_bare_v_prefixed_heading_also_matches(self):
+        section = core_releaselib.changelog_section(
+            "## v0.1.5 - 2026-07-24\n\n### Fixed\n- x\n", "0.1.5")
+        self.assertEqual(section, "## v0.1.5 - 2026-07-24\n\n### Fixed\n- x\n")
+
+    def test_unknown_version_returns_none(self):
+        self.assertIsNone(core_releaselib.changelog_section(self._CHANGELOG, "9.9.9"))
+
+    def test_never_raises_on_non_string_changelog(self):
+        self.assertIsNone(core_releaselib.changelog_section(None, "2.12.0"))
+
+    def test_never_raises_on_non_string_version(self):
+        self.assertIsNone(core_releaselib.changelog_section(self._CHANGELOG, None))
+
+    def test_h3_heading_never_matched_as_a_section_boundary(self):
+        # `### Added` must not be mistaken for a `## [...]` version heading --
+        # a regex anchored on a bare `##` prefix without excluding a third `#`
+        # would swallow the WRONG boundary and either truncate the section
+        # early or merge two versions together.
+        text = "## [1.0.0] — 2026-01-01\n\n### Added\n\n- a\n\n## [0.9.0] — 2025-12-01\n\n- b\n"
+        section = core_releaselib.changelog_section(text, "1.0.0")
+        self.assertIn("### Added", section)
+        self.assertNotIn("0.9.0", section)
+
+
 class CoreReleaseDatesTest(unittest.TestCase):
     """H3: release_dates_consistent exercised against the portable module."""
 
@@ -2453,6 +2526,85 @@ class CoreCLITest(unittest.TestCase):
             _section, message = self._dates_files(tmp, "2026-07-31", "2026-07-31")
             missing = os.path.join(tmp, "does-not-exist.md")
             self.assertEqual(core_releaselib.main(["dates-match", missing, message]), 1)
+
+    # `changelog-section` (blind exercise run 19, HIGH-2). `resume_publish`
+    # needs the exact text Phase 1 composed, and Phase 1's own scratch copy
+    # is explicitly discardable -- this is the mechanical way to read it
+    # back out of the COMMITTED changelog instead.
+    def _write_changelog(self, tmp_dir, text):
+        path = os.path.join(tmp_dir, "CHANGELOG.md")
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        return path
+
+    _SAMPLE_CHANGELOG = (
+        "# Changelog\n\n"
+        "## [2.12.0] — 2026-08-07\n\n### Added\n\n- newest thing\n\n"
+        "## [2.11.0] — 2026-07-31\n\n### Fixed\n\n- middle thing\n"
+    )
+
+    def test_changelog_section_exits_0_and_prints_the_section(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
+            result = self._run_core("changelog-section", path, "2.12.0")
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(
+                result.stdout,
+                "## [2.12.0] — 2026-08-07\n\n### Added\n\n- newest thing\n")
+
+    def test_changelog_section_middle_version_stops_at_next_heading(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
+            result = self._run_core("changelog-section", path, "2.11.0")
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(
+                result.stdout,
+                "## [2.11.0] — 2026-07-31\n\n### Fixed\n\n- middle thing\n")
+
+    def test_changelog_section_unknown_version_exits_1_not_0(self):
+        # exit 1 = "compared and found nothing", distinct from exit 3
+        # ("could not compare at all") -- never folded together.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
+            result = self._run_core("changelog-section", path, "9.9.9")
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("9.9.9", result.stderr)
+
+    def test_changelog_section_unreadable_file_exits_3_not_1(self):
+        # An unreadable changelog is NOT the same answer as "no such
+        # version" -- [never-fold-unreadable-into-absent].
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = os.path.join(tmp, "does-not-exist.md")
+            result = self._run_core("changelog-section", missing, "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_bad_invocation_exits_2(self):
+        result = self._run_core("changelog-section", "only-one-arg")
+        self.assertEqual(result.returncode, 2)
+
+    def test_changelog_section_round_trips_through_a_real_subprocess_as_utf8(self):
+        # Regression for a real bug found while writing this fix: `sys.
+        # stdout.write()` is text-mode, and a genuine child process on
+        # Windows with no PYTHONIOENCODING/PYTHONUTF8 set encodes stdout
+        # using the ambient console codepage (cp1252) rather than UTF-8 --
+        # silently mangling the em-dash every changelog heading carries
+        # (`## [X.Y.Z] — DATE`) into the wrong byte, and translating `\n`
+        # to `\r\n` besides. `core_releaselib.main()` called in-process
+        # against an `io.StringIO` (every other test in this class) cannot
+        # catch this: `StringIO` has no `.buffer` and does no codepage
+        # transcoding at all, so the bug is invisible unless stdout is a
+        # REAL process stream. This test shells out for exactly that reason.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
+            result = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH,
+                 "changelog-section", path, "2.12.0"],
+                capture_output=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            expected = (
+                "## [2.12.0] — 2026-08-07\n\n### Added\n\n"
+                "- newest thing\n").encode("utf-8")
+            self.assertEqual(result.stdout, expected)
 
     # `semver-greater` (run 6). The hard rules say the version MUST NOT be
     # guessed, yet the bump arithmetic and the strictly-greater assertion
@@ -4463,6 +4615,14 @@ _GOVERNANCE_RULES = {
     "MEDIUM: a footer on a non-bumping commit is harvested, not dropped": (
         "Also harvest a `CHANGELOG:` footer from any", "test`/`docs`/`chore`/`ci` commit"),
     "MEDIUM: list-targets exists": ("sanctioned enumeration", "list-targets"),
+    # Blind exercise run 19 (agent-lane-proof.json), fixed as part of the
+    # proof-refresh this run required before the next real release.
+    "HIGH-1 (run 19): --dry-run does not execute rebuild/generate": (
+        "not under `--dry-run`",
+        "Declared `rebuild`/`generate` commands are printed by name, not run"),
+    "HIGH-2 (run 19): resume_publish reconstructs notes via changelog-section": (
+        "This scratch file is not required to survive across a session boundary",
+        "changelog-section"),
     # Re-run of the agent-judgment exercise (2026-07-31): two more HIGH
     # findings and the six MEDIUMs it raised. Distinct key names from the
     # PRIOR round's HIGH-1..4 above -- same date, a different pass, and a
