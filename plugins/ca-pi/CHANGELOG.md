@@ -4,6 +4,20 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-07
+
+### Added
+
+- Recorded intent precedes autonomous scoring and spec shaping (ADR-0025),
+  projected from the shared core: SMARTS Step 0 (scoped to sprint scoring and
+  brainstorming; decision-variance, grader, and decision-challenger exempt by
+  name), the sprint pre-approval intent read with the contradiction hard gate
+  and stale-record valve, the pinned `intent:` sprint-log field position, and
+  the brainstorming routine's deferral-resurrection and accepted-ADR
+  conformance checks. Index-first and fail-soft throughout; a project with no
+  decomposition record proceeds untouched. Pinned across hosts by
+  `test_recorded_intent_surface.py`.
+
 ## [0.2.19] - 2026-08-06
 
 ### Fixed

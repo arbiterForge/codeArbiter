@@ -41,6 +41,8 @@ Option C — Hybrid (only if synthesis is genuinely possible):
 Project context relevant to this decision:
 - <relevant project constraints>
 
+Recorded prior decisions (informational): check the ADR index (${CLAUDE_PROJECT_DIR}/.codearbiter/decisions/ titles, or decision-log.md) and cite any accepted decision touching this variance in your analysis. You are exempt by name from smarts/core.md Step 0 (ADR-0025): you score and cite — you never conform, skip scoring, or route.
+
 Apply the SMARTS framework per ${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md (you have access to it). Follow its hard cell constraints exactly.
 Recommendation strength is one of: strong, moderate, tied. There is no "weak" level.
 

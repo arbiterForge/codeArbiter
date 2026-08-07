@@ -1214,6 +1214,18 @@ jobs:
         # never-steer-to-override rule, and the cleanup owner's own acceptance
         # gates - on every generated projection.
         run: python .github/scripts/test_routing_and_cleanup_surface.py
+      - name: Run recorded-intent surface contract (ADR-0025)
+        # ADR-0025. The recorded-intent check is a prose contract projected
+        # into three host surfaces. This pins Step 0's SCOPING (applies to
+        # /sprint scoring + brainstorming; decision-variance, grader, and
+        # decision-challenger exempt BY NAME - the unscoped form would let a
+        # rank-4 artifact defeat a rank-1 user steer), the authority-order
+        # ranking, the three outcomes, the index-first cost bound, fail-soft
+        # on every surface, SPRINT.md's pre-approval intent read + valve +
+        # intent-field position, the grader's cite-never-conform line, and
+        # brainstorming's four touches - on every projection that carries
+        # each surface (ca-codex ships no agents/, an explicit exemption).
+        run: python .github/scripts/test_recorded_intent_surface.py
       - name: Run INDEX/routing-surface parity gate (#592)
         # Issue #592. The skills/agents INDEX.md one-liners and
         # includes/routing-table.md are the orchestrator's routing surface,

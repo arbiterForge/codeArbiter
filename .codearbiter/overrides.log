@@ -27,3 +27,14 @@
 [2026-07-30T09:25:46.2296648-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: resume docs-site work after upstream replay removed local marker
 [2026-07-30T09:43:51.6342839-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: exit
 2026-07-30T14:43:53.4651428-04:00 | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: continue isolated docs-site brand and design-system work
+# codeArbiter override log â€” append-only audit artifact. Never edit or delete prior lines.
+2026-07-01T20:37:07Z | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: â€”
+[2026-07-01T20:56:02-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: â€”
+2026-07-30T07:22:18.5387323-04:00 | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: â€”
+[2026-08-03T21:52:50-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: -
+[2026-08-04T10:57:36Z] | BY: session-cleanup | HOST: codex | DEV: exit | NOTE: cleared by SessionStart (prior session ended mid-dev without $ca-arbiter)
+[2026-08-04T21:17:06-0400] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: re-enter after cross-host session-cleanup cleared the marker mid-campaign
+[2026-08-05T05:26:42Z] | BY: session-cleanup | HOST: claude | DEV: exit | NOTE: cleared by SessionStart (prior session ended mid-dev without /ca:arbiter)
+[2026-08-06T21:55:04-04:00] | BY: SUaDtL@users.noreply.github.com | GATE: H-05 | REASON: Bypass H-05 once to append SD-142 to .codearbiter/sprint-log.md using UTF-8 without BOM; PowerShell redirection is prohibited because it can append UTF-16LE.
+[2026-08-07T11:23:13-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: —
+[2026-08-07T11:57:47-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: exit | NOTE: routing recorded-intent feature through gated lane

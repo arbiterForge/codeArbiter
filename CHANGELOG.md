@@ -12,6 +12,40 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.12.0] — 2026-08-07
+
+### Added
+
+- Recorded intent now precedes autonomous scoring and spec shaping (ADR-0025).
+  SMARTS gains a scoped Step 0 recorded-intent check: it applies to `/ca:sprint`
+  scoring and `brainstorming`, while `decision-variance`, the `grader`, and the
+  `decision-challenger` are exempt by name, so arbitration keeps ranking the
+  record via the Phase 4 authority order instead of conforming to it. The check
+  ranks an "answered" outcome by that same order (a user steer outranks the log,
+  the log outranks an accepted ADR, an ADR outranks the plans artifacts) and
+  never conforms downward silently.
+- `/ca:sprint` reads the decision record before Phase 1 spec approval and
+  surfaces plausibly-touched ADRs and deferrals at the interactive gate. An
+  auto-decision that would contradict an accepted ADR or a recorded deferral is
+  a hard gate, with a stale-record valve: gate-time pre-rulings carry, a
+  deferral whose recorded re-evaluation trigger has occurred is reopened rather
+  than treated as a contradiction, and each record stops a sprint at most once.
+  Sprint-log entries carry an `intent:` field pinned after the `confidence:`
+  token, keeping harvested board titles clean (fixture-proven).
+- `brainstorming` checks feature framings against recorded deferrals and
+  backlog items (a resurrection is a fork to ask) and candidate approaches
+  against accepted ADRs (a contradiction surfaces with its citation and pairs
+  with a supersession fork; it is never silently dropped or recommended bare).
+  All new reads are index-first and fail-soft: a repository with no
+  decomposition record proceeds untouched, and brownfield repos gain no new
+  block.
+- The contract is pinned across every host projection by
+  `test_recorded_intent_surface.py` (24 deletion mutants killed; ca-codex
+  carries no `agents/` surface and is exempted explicitly), wired into CI as
+  an explicit step. ADR-0026 (destructive operations declared in the routing
+  table, amending ADR-0022) is ratified in this release; its implementation
+  ships with the follow-up kernel restructure.
+
 ## [2.11.17] — 2026-08-06
 
 ### Fixed

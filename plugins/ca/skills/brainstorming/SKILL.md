@@ -15,6 +15,14 @@ Read these, or STOP and surface the gap — never guess scope or stack:
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — the stack the feature must fit; rule out incompatible designs early.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` — existing `[CONFIRM-NN]` items; new ones number sequentially from here.
 
+**Recorded intent — fail-soft, exempt from the read-or-STOP rule above (ADR-0025).** Also
+consult, when present: the `decisions/` index (titles via `decision-log.md` or the filename
+listing — load a full ADR body only when its subject touches this feature) and
+`plans/02-phased-build-plan.md`'s section headings (plus `plans/01-architecture-breakdown.md`
+when the feature touches component boundaries or integrations). Index-first, never a bulk read.
+A missing file or directory here is NOT a gap to surface and never a STOP: record
+`intent: silent — no decomposition record` in the running notes and proceed.
+
 Per-feature and light. NOT decompose's whole-project six-layer interview — one feature, five phases. Depth scales with the feature, not the ceremony: a small feature earns a short pass through every phase, never a skipped one. A spec can be five sentences; it cannot be zero — smallness changes the spec's length, not its existence.
 
 ## Phase 1 — Frame the problem · gate: BLOCK
@@ -25,6 +33,7 @@ Take the one-line idea and pin its boundaries before designing or asking anythin
 - Name the user or caller who feels it, and what "done" looks like to them.
 - Name what this feature explicitly does NOT do — the boundary that keeps scope honest.
 - Check the framing against `CONTEXT.md`: it never contradicts the NOT-building list or redefines domain vocabulary. A contradiction is a conflict — surface it, do not reconcile it silently.
+- Check the framing against the recorded intent (pre-flight, when present): an idea that resurrects a capability `plans/02` records as deferred, or that duplicates a backlog item, is a fork to ask — lead with the recorded deferral rationale and your recommendation; never proceed on it silently (ADR-0025).
 - **Split before you spend.** If the idea bundles more than one independently shippable concern — distinct callers, acceptance criteria that would partition into disjoint sets, separable data or surfaces — say so NOW and negotiate the split with the user before any refinement effort is spent on one piece. Each surviving piece is its own spec and its own run of this skill. A bundle discovered in Phase 4 has already wasted every question asked about the piece that gets cut.
 
 Gate: problem, caller, and out-of-scope boundary stated and consistent with `CONTEXT.md`, and the idea is confirmed to be ONE feature — or the split is agreed and this run proceeds on exactly one piece.
@@ -35,6 +44,7 @@ Before drilling into details, establish WHICH design the details belong to:
 
 - Propose the genuine candidate approaches — usually two or three — each with its real trade-off stated (`X gives you A but costs B`). Recommend exactly one, with the reasoning that picks it. The user chooses under `/feature`; under `/sprint`, SMARTS chooses and the choice is logged with its scoring.
 - **Never manufacture alternatives.** When only one sane approach exists, say so and say why — a padded list of straw options is noise wearing the costume of rigor, and it trains the reader to skim the one section that matters.
+- **Check each candidate against accepted ADRs** (the pre-flight index; ADR-0025). A contradicting candidate is surfaced WITH the ADR citation, never silently dropped — and it may not be recommended except paired with a supersession fork via `/adr`. When the contradicting candidate is the only sane approach, that IS the fork: present it (the user rules under `/feature`; under `/sprint` this surfaces at the interactive Phase 1 gate, where the user is present to rule).
 - Apply the isolation lens to the recommended shape while it is still soft: can each part be understood without reading its internals, and can its internals change without breaking its consumers? A design that fails this here fails it again in review, after the code exists.
 - Apply the YAGNI lens: strike anything the Phase 1 problem statement does not demand. A capability the caller never asked for is scope creep with a head start.
 
@@ -83,7 +93,7 @@ Gate: the spec file exists on disk under `specs/`, with at least one acceptance 
 
 The spec earns its approval; it is not waved through. Two passes over the FILE as written, then the stop:
 
-1. **Mechanical self-review** — one pass, fix inline, no re-review: no placeholder text (`TBD`, `???`, an unfilled section); no criterion that contradicts the scope; nothing that crosses the `CONTEXT.md` NOT-building boundary; every criterion still testable by a single test after the edits; the vague-language lens applied to the spec's own prose.
+1. **Mechanical self-review** — one pass, fix inline, no re-review: no placeholder text (`TBD`, `???`, an unfilled section); no criterion that contradicts the scope; nothing that crosses the `CONTEXT.md` NOT-building boundary; no criterion that contradicts an accepted ADR or `plans/01`'s recorded component boundaries (ADR-0025); every criterion still testable by a single test after the edits; the vague-language lens applied to the spec's own prose.
 2. **Adversarial pass** — build the strongest case AGAINST the design before the user reads it: the failure mode most likely to be real, the criterion most likely to be wrong, the assumption that would invalidate the approach if false. Present what survives WITH the spec at approval — the user rules on a challenged design, not a defended one. Finding nothing is a reportable result, stated in one line, not a silent skip.
 3. **Approval:**
    - **Under `/feature`** — present the spec and the adversarial findings, and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.

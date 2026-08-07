@@ -1481,3 +1481,11 @@ cycle that could still demand skill edits, and it did.
 
 Step 4 is the actual terminator, and it is what the original rule was
 missing: a named way to stop that does not require the next run to be clean.
+
+## SPRINT recorded-intent-kernel-campaign — 2026-08-07 — Phase 1 gate
+- Spec + plan rev 2 (`specs/recorded-intent-kernel-campaign.md`, `plans/recorded-intent-kernel-campaign.md`) explicitly approved by SUaDtL@users.noreply.github.com after a three-lens adversarial subagent review (11 findings applied; 1 CRITICAL scoping defect, 1 unreachable AC, 1 dead-instrument reference caught pre-execution).
+- User rulings locked in spec §User rulings: /ca:sprint lane, all three streams; intent source = approved record incl. decision-log.md; contradiction = hard gate with stale-record valve.
+- Lane 1 begins: ADR-0025/0026 authored as proposed; ratification = interactive STOP (never auto-decided).
+
+## SD-camp-01 — gate-events.log excluded from the feat commit · confidence: high · intent: silent
+Options: (a) commit the 1,723-line month-old accumulation with the feature; (b) unstage, leave for a dedicated hygiene commit. Verdict slot: Maintainable Strong for (b) — the pile predates the campaign, bloats PR review, and has a sanctioned owner (/ca:standup); Reliable Indifferent — append-only union survives either way. Chosen: (b). overrides.log stays staged: 11 lines, all audit-mandated, first-ever commit of the file.

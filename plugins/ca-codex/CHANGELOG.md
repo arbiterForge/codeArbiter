@@ -6,6 +6,20 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-08-07
+
+### Added
+
+- Recorded intent precedes autonomous scoring and spec shaping (ADR-0025),
+  projected from the shared core: SMARTS Step 0 (scoped; arbitration surfaces
+  exempt by name), the `ca-sprint` pre-approval intent read with the
+  contradiction hard gate and stale-record valve, the pinned `intent:`
+  sprint-log field, and the `brainstorming` routine's deferral-resurrection
+  and accepted-ADR conformance checks. Index-first and fail-soft throughout;
+  a repository with no decomposition record proceeds untouched. Codex ships
+  no separate `agents/` surface, so the grader line lands via prose routines
+  only; the cross-host pins live in `test_recorded_intent_surface.py`.
+
 ## [0.4.16] — 2026-08-06
 
 ### Fixed

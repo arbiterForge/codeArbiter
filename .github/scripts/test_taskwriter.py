@@ -268,6 +268,23 @@ class ExtractTest(unittest.TestCase):
         self.assertTrue(all("low" not in c.desc.lower() or "timeout" in c.desc or "naming" in c.desc
                             for c in cands))
 
+    def test_low_confidence_with_trailing_intent_field_keeps_title_clean(self):
+        # ADR-0025: sprint-log headings may carry an `intent:` field AFTER the
+        # confidence token (SPRINT.md pins that order — the parser takes the
+        # title as everything BEFORE `· confidence:`). Prove a conformant
+        # heading extracts an unpolluted title; intent must never leak into
+        # the promoted board description.
+        log = ("# Sprint — bar\n"
+               "## SB-T1 — choose retry shape · confidence: low · intent: silent\n"
+               "## SB-T2 — conform to cache ADR · confidence: high · intent: per ADR-0007\n")
+        cands = tb.extract_low_confidence(log, origin="sprint:bar")
+        self.assertEqual(len(cands), 1)
+        # The parser keeps the heading ID in the desc (existing behavior);
+        # the pin here is that neither field leaks past the confidence token.
+        self.assertEqual(cands[0].desc, "SB-T1 — choose retry shape")
+        self.assertNotIn("intent", cands[0].desc)
+        self.assertNotIn("confidence", cands[0].desc)
+
 
 class PromoteTest(unittest.TestCase):
     """AC-10 / AC-11."""
