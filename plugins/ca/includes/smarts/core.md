@@ -6,6 +6,37 @@ scoring path needs (decision-variance, the grader, the decision-challenger, and 
 scoring). The append-only **decision-log entry format** lives separately in
 [`decision-log-format.md`](decision-log-format.md) — load it only when writing a log line.
 
+## Step 0 — recorded-intent check (before any lens is scored; ADR-0025)
+
+*Applies to `/sprint` autonomous scoring and `brainstorming` (spec shaping) ONLY. Exempt by name:
+`decision-variance`, the `grader`, and the `decision-challenger` — on arbitration surfaces the
+variance IS the recorded-intent check, and the decision-variance Phase 4 authority order, not this
+step, ranks the record.*
+
+Before scoring, check whether the project's record already answers or constrains the decision.
+Sources, ranked by the Phase 4 authority order: an explicit user decision this session (including
+the approved sprint spec) > a recorded, unsuperseded `decision-log.md` entry > an accepted ADR >
+the three `plans/` artifacts; `CONTEXT.md` and `open-questions.md` (including its
+Deferred-decisions sections) constrain at their recorded level. Load index-first: consult the ADR
+index (`decision-log.md` or the `decisions/` filename listing) and plan section headings only;
+load a body only after the index names it relevant; never bulk-read `plans/` or `decisions/`
+(ORCHESTRATOR §3's no-bulk-reads rule).
+
+Three outcomes:
+
+- **Answered** — a source already decides it. Conform to the highest-ranked source and cite it.
+  A wanted contradiction routes to `/reconcile` or ADR supersession in interactive lanes; under
+  `/sprint`, an answered-but-contradicting outcome IS the contradiction hard gate — stop and
+  surface, never a mid-sprint reconcile dispatch. A lower-ranked record answering against a
+  higher-ranked steer follows the steer and logs the divergence with both citations — never
+  silently conform downward.
+- **Constrains** — the record narrows but does not decide. Feed the citation into the affected
+  cells; it satisfies the evidence-specificity rule below.
+- **Silent** — no record speaks. Proceed to the lenses and state `intent: silent`.
+
+Fail-soft: an absent `plans/` or `decisions/` directory is not a gap to surface and never a STOP —
+record `intent: silent — no decomposition record` and proceed.
+
 ## The six lenses
 
 - **Scalable** — supports growth in users, data, throughput, geography without an architectural rewrite. Trap: over-engineering for scale that never arrives, or under-engineering for scale that's on the roadmap.

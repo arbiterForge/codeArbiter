@@ -1216,3 +1216,53 @@ Recorded against the author's original justification, which does not survive scr
 `core/surface/skills/release/SKILL.md` keeps the STOP. `core/surface/commands/release.md` must stop documenting a `ca`-only default when T-71 reconciles it. A test must pin this: an adversarial mutant restoring the hardcoded `ca` default currently survives both suites, so the behavior is asserted by nothing. That test is a follow-up obligation of this decision, not optional.
 
 ---
+
+## DECISION-0037 — adr-0025-ratification — Recorded intent precedes autonomous scoring and spec shaping
+
+**Date:** 2026-08-07
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — content approved at the recorded-intent-kernel-campaign sprint Phase 1 gate; ratified "accept both" same day
+**Decision category:** governance-process
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** n/a — new governance rule; no prior artifact position existed
+- **Scaffold position:** n/a
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0025 accepted: a Step-0 recorded-intent check precedes SMARTS scoring, scoped to /sprint autonomous scoring and brainstorming only; decision-variance, grader, and decision-challenger exempt by name; "answered" ranked by the decision-variance Phase 4 authority order; sprint contradiction is a hard gate with a stale-record valve; index-first loading and fail-soft are normative.
+
+### SMARTS rationale
+Reliable and Maintainable dominate: conformance to the recorded decision trail prevents silent architectural drift overnight, and scoping the check away from arbitration surfaces preserves the single authority order instead of forking it. The unscoped form was killed by adversarial review (rank-4 artifact would defeat a rank-1 user steer).
+
+### Implementation implication
+core/surface/includes/smarts/core.md (Step-0), core/surface/SPRINT.md, core/surface/agents/grader.md, core/surface/skills/brainstorming/SKILL.md; structural test .github/scripts/test_recorded_intent_surface.py wired into ci.yml as an explicit step; regenerated plugin copies on all three hosts.
+
+---
+
+## DECISION-0038 — adr-0026-ratification — Destructive operations declared in the routing table
+
+**Date:** 2026-08-07
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — content approved at the recorded-intent-kernel-campaign sprint Phase 1 gate; ratified "accept both" same day
+**Decision category:** governance-routing
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0022 enumerated the destructive set inside ORCHESTRATOR §6 and recorded the routing-table declaration as its preferred refinement
+- **Scaffold position:** routing-table.md carries no destructive declarations; the parity checker reads cells positionally
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0026 accepted, partially superseding ADR-0022 (placement clause only): routing-table.md gains an operation-scoped "Destructive operations" block as the authority; ORCHESTRATOR §6 keeps a CI-checked resident copy; no new table column. The three-tier routing decision of ADR-0022 remains in force.
+
+### SMARTS rationale
+Maintainable and Reliable dominate: a declared registry with mechanical drift detection replaces reviewer memory as the update path for new destructive commands, and the block form (not a column) keeps check_routing_index_parity.py's positional parsing valid. The per-row-flag alternative could not express 2 of 5 set members and was rejected on adversarial review.
+
+### Implementation implication
+core/surface/includes/routing-table.md (new block), core/surface/ORCHESTRATOR.md §6 (resident copy retained), consistency check extending .github/scripts/test_routing_and_cleanup_surface.py (seeded-mismatch proof with captured failing log), pin at test_routing_and_cleanup_surface.py:79 repointed.
+
+---
