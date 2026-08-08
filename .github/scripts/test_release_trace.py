@@ -924,7 +924,7 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             last_tag, self.head_sha, row["payload"], row["payload_exclude"]))
         unexcluded_window = set(_live_window_shas(
             last_tag, self.head_sha, row["payload"], []))
-        if unexcluded_window == 0:
+        if not unexcluded_window:
             # Same reasoning as the window test above: with no commits in
             # the payload at all, the exclude pathspec has nothing to narrow
             # and "it removed no commits" is arithmetic, not a finding.
@@ -966,10 +966,15 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             "_first_release_section's end boundary is wrong")
 
         last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
-        self.assertTrue(
-            self.core_lane.semver_greater(next_version, self.core_lane._bare_version(last_tag)),
-            f"ca-pi's manifest version {next_version!r} is not a strict "
-            f"SemVer advance over its last tag {last_tag!r}")
+        # >=, not a strict advance: once the tag has caught up to the
+        # manifest (the tag-per-merge automation's steady state), equality
+        # is the expected, correct condition — nothing new to release. Only
+        # the tag running AHEAD of the manifest is a genuine regression.
+        self.assertGreaterEqual(
+            self.core_lane.semver_key(next_version),
+            self.core_lane.semver_key(self.core_lane._bare_version(last_tag)),
+            f"ca-pi's manifest version {next_version!r} is behind its last "
+            f"tag {last_tag!r} — the tag has run ahead of the manifest")
 
         message = _compose_tag_message(section_text, date)
         tag = row["prefix"] + next_version
