@@ -104,9 +104,16 @@ export interface SidebarEntry {
   preview?: boolean;
 }
 
-/** A sidebar group (one per source type). */
+/**
+ * The collection key of a sidebar group: one of the three plugin source types,
+ * or the tribunal-lens documentation collection (lens cards are skill reference
+ * data, not a fourth plugin source type — see `collect-lenses.ts`).
+ */
+export type SidebarGroupType = SourceType | "tribunal-lens";
+
+/** A sidebar group (one per collection). */
 export interface SidebarGroup {
-  type: SourceType;
+  type: SidebarGroupType;
   label: string;
   items: SidebarEntry[];
 }
@@ -117,9 +124,28 @@ export interface IndexResult {
   sidebar: SidebarGroup[];
 }
 
+/** A raw tribunal lens card discovered under `skills/tribunal/references/lenses/`. */
+export interface LensCard {
+  /** The lens slug — the card's file basename (e.g. `appsec`, `secrets-supply`). */
+  slug: string;
+  /** Raw file contents. */
+  raw: string;
+}
+
+/** A rendered tribunal-lens reference page ready to write to disk. */
+export interface LensPage {
+  slug: string;
+  title: string;
+  markdown: string;
+  /** One-sentence description, for the reference index table and sidebar. */
+  description: string;
+}
+
 /** Summary returned by a full generator run. */
 export interface GenerateResult {
   pages: RenderedPage[];
+  /** Tribunal-lens pages, rendered from lens cards (empty when the source tree has none). */
+  lensPages: LensPage[];
   outDir: string;
   sidebarPath: string;
 }

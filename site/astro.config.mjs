@@ -27,14 +27,24 @@ try {
   const sidebarData = JSON.parse(
     readFileSync(new URL("./src/generated/sidebar.json", import.meta.url), "utf8"),
   );
-  referenceGroups = sidebarData.map((g) => ({
-    label: `${g.type.charAt(0).toUpperCase()}${g.type.slice(1)}s`,
-    collapsed: true,
-    items: g.items.map((it) => ({
-      label: it.label,
-      slug: `reference/${g.type}s/${it.slug}`,
-    })),
-  }));
+  referenceGroups = sidebarData.map((g) => {
+    // The tribunal-lens group is not a plugin source type: its label and URL
+    // segment ("tribunal-lenses") don't follow the `<type>s` pluralization the
+    // command/skill/agent groups use.
+    const isLens = g.type === "tribunal-lens";
+    return {
+      label: isLens
+        ? "Tribunal lenses"
+        : `${g.type.charAt(0).toUpperCase()}${g.type.slice(1)}s`,
+      collapsed: true,
+      items: g.items.map((it) => ({
+        label: it.label,
+        slug: isLens
+          ? `reference/tribunal-lenses/${it.slug}`
+          : `reference/${g.type}s/${it.slug}`,
+      })),
+    };
+  });
 } catch {
   // sidebar.json not generated yet — reference groups stay empty.
 }
@@ -88,6 +98,21 @@ export default defineConfig({
     "/reference/skills/refactor-2": `${BASE}/reference/skills/refactor`,
     "/reference/skills/release-2": `${BASE}/reference/skills/release`,
     "/reference/skills/tribunal-2": `${BASE}/reference/skills/tribunal`,
+    // The eleven per-lens tribunal reviewer agents were consolidated into the
+    // one generic tribunal-lens-reviewer agent; the per-lens documentation now
+    // lives in the tribunal-lenses collection. Redirect each retired agent
+    // page URL to its lens page (same base-handling rules as above).
+    "/reference/agents/tribunal-appsec-reviewer": `${BASE}/reference/tribunal-lenses/appsec`,
+    "/reference/agents/tribunal-architecture-reviewer": `${BASE}/reference/tribunal-lenses/architecture`,
+    "/reference/agents/tribunal-coverage-reviewer": `${BASE}/reference/tribunal-lenses/coverage`,
+    "/reference/agents/tribunal-infra-reviewer": `${BASE}/reference/tribunal-lenses/infra`,
+    "/reference/agents/tribunal-migration-reviewer": `${BASE}/reference/tribunal-lenses/migration`,
+    "/reference/agents/tribunal-observability-reviewer": `${BASE}/reference/tribunal-lenses/observability`,
+    "/reference/agents/tribunal-performance-reviewer": `${BASE}/reference/tribunal-lenses/performance`,
+    "/reference/agents/tribunal-reliability-reviewer": `${BASE}/reference/tribunal-lenses/reliability`,
+    "/reference/agents/tribunal-secrets-supply-reviewer": `${BASE}/reference/tribunal-lenses/secrets-supply`,
+    "/reference/agents/tribunal-test-fidelity-reviewer": `${BASE}/reference/tribunal-lenses/test-fidelity`,
+    "/reference/agents/tribunal-typesafety-reviewer": `${BASE}/reference/tribunal-lenses/typesafety`,
   },
   // Astro 7.1 made Sätteri the default Markdown processor and deprecated the
   // top-level `markdown.remarkPlugins` / `rehypePlugins` / `remarkRehype` keys.

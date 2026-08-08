@@ -21,8 +21,11 @@ const counts = result.pages.reduce<Record<string, number>>((acc, p) => {
   acc[p.type] = (acc[p.type] ?? 0) + 1;
   return acc;
 }, {});
+if (result.lensPages.length > 0) {
+  counts["tribunal-lens"] = result.lensPages.length;
+}
 console.log(
-  `Generated ${result.pages.length} reference pages ` +
+  `Generated ${result.pages.length + result.lensPages.length} reference pages ` +
     `(${Object.entries(counts).map(([t, n]) => `${n} ${t}`).join(", ")}) -> ${outDir}`,
 );
 
