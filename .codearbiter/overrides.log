@@ -38,3 +38,4 @@
 [2026-08-06T21:55:04-04:00] | BY: SUaDtL@users.noreply.github.com | GATE: H-05 | REASON: Bypass H-05 once to append SD-142 to .codearbiter/sprint-log.md using UTF-8 without BOM; PowerShell redirection is prohibited because it can append UTF-16LE.
 [2026-08-07T11:23:13-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: enter | NOTE: —
 [2026-08-07T11:57:47-04:00] | BY: SUaDtL@users.noreply.github.com | DEV: exit | NOTE: routing recorded-intent feature through gated lane
+[2026-08-08T12:22:59Z] | BY: SUaDtL@users.noreply.github.com | GATE: H-05 (pre-bash.py append-only audit log guard) | REASON: local stash-induced git conflict markers in .codearbiter/gate-events.log on branch chore/ca-pi-0.3.1-release (both conflict sides are diagnostic hook-reminder lines only, zero audit data at risk; the ca-codex-branch tail already exists independently via open PR #643) - resetting this one file to clean origin/main HEAD content to unblock the commit.
