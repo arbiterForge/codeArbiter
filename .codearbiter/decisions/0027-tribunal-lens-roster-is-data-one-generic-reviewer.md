@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-08-08
 title: Tribunal lens roster is data; one generic lens-reviewer executes it
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,10 +10,10 @@ governs: core/surface/agents/tribunal-lens-reviewer.md, core/surface/skills/trib
 # ADR-0027 — Tribunal lens roster is data; one generic lens-reviewer executes it
 
 ## Status
-Proposed — decision content approved by SUaDtL@users.noreply.github.com on 2026-08-08 (plan
-"tranquil-crunching-fog" v2 approved post-adversarial-review; explicit rulings "Tribunal-only
-collapse" and "publish lens cards + redirects" the same day). Awaiting explicit ratification to
-Accepted.
+Accepted — explicitly ratified by SUaDtL@users.noreply.github.com on 2026-08-08 ("approve the
+adr"). Decision content approved the same day (plan "tranquil-crunching-fog" v2 approved
+post-adversarial-review; explicit rulings "Tribunal-only collapse" and "publish lens cards +
+redirects").
 
 ## Context
 
