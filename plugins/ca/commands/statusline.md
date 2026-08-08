@@ -1,6 +1,6 @@
 ---
 description: Wire codeArbiter's statusline into ~/.claude/settings.json, or remove it.
-argument-hint: install | uninstall | status
+argument-hint: "install | uninstall | status"
 ---
 
 # /ca:statusline — wire-up

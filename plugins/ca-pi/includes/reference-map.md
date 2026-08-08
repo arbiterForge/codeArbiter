@@ -9,7 +9,7 @@ then route to the owning skill or agent. This map answers *what to read before t
 |---|---|---|
 | Any code change | `coding-standards.md` | `tdd` skill |
 | Stack / dependencies | `tech-stack.md`, `security-controls.md` | `dependency-reviewer` agent |
-| Auth, crypto, secrets | `security-controls.md` | `crypto-compliance` / `secret-handling` skill; `auth-crypto-reviewer` agent |
+| Auth, crypto, secrets | `security-controls.md` | `crypto-compliance` / `secret-handling` skill (`<plugin-root>/routines/<name>/SKILL.md`); `auth-crypto-reviewer` agent |
 | Data model / migrations | `tech-stack.md` | `migration-reviewer` agent |
 | Networking / deployment / attack surface | `security-controls.md` | `security-reviewer` agent (H-16 advisory); `security-architecture` skill (`/threat-model`, optional) |
 | New domain concept or component | `CONTEXT.md` | update the vocabulary in `CONTEXT.md` |

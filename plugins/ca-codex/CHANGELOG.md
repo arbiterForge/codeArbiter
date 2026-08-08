@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-08-08
+
+### Changed
+
+- Routine frontmatter carries `disable-model-invocation: true` on the nine chain-internal routines (inert on this host — routines are path-loaded prose) and JSON-quoted scalars per `_yaml_safe_scalar`; route sites cite explicit routine paths.
+
 ## [0.6.0] — 2026-08-08
 
 ### Changed

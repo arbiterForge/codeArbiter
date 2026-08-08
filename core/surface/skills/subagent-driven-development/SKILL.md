@@ -1,6 +1,7 @@
 ---
 name: subagent-driven-development
 description: The implementation engine. Routed to by /sprint (full plan, autonomous) and by executing-plans (scoped batch, checkpoint-gated). One fresh subagent per task — test-first via tdd — followed by spec-compliance review, quality review, and fresh-run verification. No single context accumulates drift, and nothing is accepted on a subagent's word.
+disable-model-invocation: true
 ---
 
 # subagent-driven-development
@@ -56,7 +57,7 @@ on abort). The reference has the full step-by-step.
 (`{{PLUGIN_ROOT}}/agents/<name>.md`). A fresh context per task is the whole point: no carried-over
 assumptions, no accumulated drift.
 
-The subagent works test-first by routing through the `tdd` skill — no implementation code before
+The subagent works test-first by routing through the `tdd` skill (`{{PLUGIN_ROOT}}/skills/tdd/SKILL.md`) — no implementation code before
 `tdd` Phase 1. Brief it with the task's path set, its spec obligation, and its verification command.
 Nothing else from prior tasks leaks in.
 

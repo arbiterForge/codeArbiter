@@ -1316,3 +1316,28 @@ Recording-only entry; the decision's SMARTS rationale lives in DECISION-0039 and
 None beyond the status flip — the ADR's governs: globs became live pushback at edit time on acceptance.
 
 ---
+
+## DECISION-0041 — adr-0028-authored — Chain-internal skills are path-routed and registry-hidden
+
+**Date:** 2026-08-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — plan "tranquil-crunching-fog" v2 approved post-adversarial-review; rulings 2026-08-08: dual-fronted skills stay visible, harness-reserved names documented not renamed. ADR-0028 authored as proposed; ratification pending.
+**Decision category:** framework-structure
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** nine chain-internal skills cost ~1K registry tokens per session and were reached by bare name, with the registry entry as their only resolution path
+- **Scaffold position:** ORCHESTRATOR mandates load-on-invocation; five-round harness spike proved disable-model-invocation works, the colon-drop theory false, and feature/fix/new-skill harness-reserved
+- **Status type:** divergent
+
+### Decision
+Routing is path-defined (routing-table preamble + explicit path citations at every chain-internal route site); the nine chain-internal skills ship disable-model-invocation: true; dual-fronted skills stay visible; frontmatter scalars quote per the _yaml_safe_scalar predicate as a house rule; reserved names documented, not renamed.
+
+### SMARTS rationale
+Reliable dominates: the adversarial finding that bare-name routing had no written fallback made the path rewrite the load-bearing half, with the frontmatter hides only safe on top of it. Token-efficient second: ~1K chars of descriptions leave every session and the registry-budget drop pressure clears. The rejected alternatives (frontmatter-only, user-invocable:false, skillOverrides, renames) are recorded in the ADR.
+
+### Implementation implication
+routing-table.md preamble rule; path citations in feature/checkpoint/review/spike commands, SPRINT.md, subagent-driven-development, dispatching-parallel-agents, commit-gate; 9 SKILL.md frontmatter keys; ~11 frontmatter scalars JSON-quoted; skill-author Phase 4 + template amended; token-efficiency.md findings section; bumps ca 2.14.0 / ca-codex 0.6.1 / ca-pi 0.4.1 + root lockstep.
+
+---

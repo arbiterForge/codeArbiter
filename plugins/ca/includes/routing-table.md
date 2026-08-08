@@ -4,6 +4,10 @@ Loaded on a scope-touch or `/command`, not every turn. This table is the authori
 surface: it answers *what to invoke or route given a trigger*; for *what doc to read before touching a
 scope*, use `reference-map.md`. Follow the primary route; the gate is a hard stop, not a suggestion. A
 command is **invoked**; the orchestrator **routes** to a skill; a skill **dispatches** an agent.
+Routing to a skill means loading its body from `${CLAUDE_PLUGIN_ROOT}/skills/<name>/SKILL.md` — a route
+cell names the skill; this path convention locates it. That resolution never depends on the host's
+skill registry: a chain-internal skill hidden from the registry (`disable-model-invocation`) is
+reached the same way.
 
 | Invocation cue | Primary route | Also dispatch | Hard gate |
 |---|---|---|---|

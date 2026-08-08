@@ -31,9 +31,9 @@ with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan 
 tasks → straight to Phase 2, executing only the remaining tasks; the plan's `status` column is the
 ledger). An interrupted sprint is re-entered, never restarted.
 
-Route to `brainstorming`, scoped to a **sprint** — a coherent chunk of work (several features or one
+Route to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`), scoped to a **sprint** — a coherent chunk of work (several features or one
 goal), not a single feature. Drive it to a concrete sprint spec at
-`${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.md`, then to `writing-plans` for the task
+`${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.md`, then to `writing-plans` (`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) for the task
 breakdown at `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<sprint-slug>.md`.
 
 This is the ONE interactive gate, and it is load-bearing: the thoroughness of the spec is what makes
@@ -61,7 +61,7 @@ sprint spec and the first slice's plan at this gate; subsequent slices proceed u
 
 ## Phase 2 — Autonomous execution · gate: BLOCK
 
-Hand the approved plan to `subagent-driven-development` and run it to completion WITHOUT per-batch
+Hand the approved plan to `subagent-driven-development` (`${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/SKILL.md`) and run it to completion WITHOUT per-batch
 human checkpoints — that is the difference from `/feature`'s `executing-plans`. Each task is
 test-first via `tdd`, two-pass reviewed, and proven on a fresh run.
 

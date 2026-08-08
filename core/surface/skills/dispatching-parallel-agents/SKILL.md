@@ -1,6 +1,7 @@
 ---
 name: dispatching-parallel-agents
-description: The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then checkpoint-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors drops its unit without corrupting the batch.
+description: "The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then checkpoint-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors drops its unit without corrupting the batch."
+disable-model-invocation: true
 ---
 
 # dispatching-parallel-agents
@@ -20,7 +21,7 @@ The caller supplies the work. Confirm it, or STOP and surface the gap — never 
 Split the work into units that do not collide. A unit owns a distinct file or path set; two units in one batch MUST NOT mutate the same path.
 
 - **Independent paths** — units touch disjoint files. Dispatch directly. This is the common, fast case.
-- **Shared paths unavoidable** — units must mutate the same file or tree. Do NOT dispatch into the conflict. Route to `using-git-worktrees` to give each unit an isolated working tree, or serialize the colliding units into one sequential unit. A shared-path collision in a parallel batch is a corruption, not a merge.
+- **Shared paths unavoidable** — units must mutate the same file or tree. Do NOT dispatch into the conflict. Route to `using-git-worktrees` (`{{PLUGIN_ROOT}}/skills/using-git-worktrees/SKILL.md`) to give each unit an isolated working tree, or serialize the colliding units into one sequential unit. A shared-path collision in a parallel batch is a corruption, not a merge.
 
 Tag each unit with its ID, scope, target paths, and the agent kind. Read-only batches (review, scout) skip the collision check — they mutate nothing.
 
