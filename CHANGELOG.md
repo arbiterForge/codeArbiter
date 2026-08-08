@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.12.1] — 2026-08-07
+
+### Fixed
+
+- `/ca:release`'s `--dry-run` no longer executes a declared `rebuild`/`generate`
+  command — it previously ran the row's rebuild unconditionally, overwriting a
+  committed build artifact despite promising not to write anything. Found and
+  fixed by a required pre-tag blind agent-judgment exercise.
+- Phase 3's `resume_publish` path can now reconstruct release notes from the
+  committed CHANGELOG via a new `changelog-section` CLI subcommand, instead of
+  depending on a scratch file that does not survive a session boundary.
+
 ## [2.12.0] — 2026-08-07
 
 ### Added
