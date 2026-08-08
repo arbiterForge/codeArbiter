@@ -1,6 +1,7 @@
 ---
 name: executing-plans
 description: The checkpoint coordinator for /feature. Routed to by /feature once a writing-plans plan exists. Groups tasks into batches, delegates each batch to subagent-driven-development (fresh author agent per task, full review chain, fresh verification), then stops for a human checkpoint before the next batch. The checkpointed counterpart to /sprint's autonomous run.
+disable-model-invocation: true
 ---
 
 # executing-plans

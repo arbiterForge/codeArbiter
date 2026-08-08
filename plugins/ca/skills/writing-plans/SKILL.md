@@ -1,6 +1,7 @@
 ---
 name: writing-plans
 description: The spec-to-plan bridge. Routed to by /feature once the brainstormed spec is approved, and by /sprint before execution. Decomposes the spec into 2–5 minute tasks, each carrying its exact file path(s) and a concrete verification step that maps to a tdd obligation. Writes the plan to .codearbiter/plans/<slug>.md, ordered with dependencies flagged and an MVP slice identifiable. Nothing executes until every task has a path and a verification and the task set covers every acceptance criterion.
+disable-model-invocation: true
 ---
 
 # writing-plans

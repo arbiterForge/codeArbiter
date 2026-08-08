@@ -1,6 +1,6 @@
 ---
 description: SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.
-argument-hint: (none) | "<ADR-id | artifact | scope>"
+argument-hint: "(none) | \"<ADR-id | artifact | scope>\""
 ---
 
 # {{CMD:reconcile}} — architectural arbitration

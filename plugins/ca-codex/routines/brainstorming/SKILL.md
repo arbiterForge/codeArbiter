@@ -1,6 +1,7 @@
 ---
 name: brainstorming
 description: The Socratic spec-refinement front of /feature, and the planning front of /sprint. Routed to BEFORE any code — it takes a one-line idea and drives it to an approved, concrete spec with testable acceptance criteria. Five gated phases — frame, shape, refine, write, review-and-approve. No implementation and no handoff to tdd until the spec is on disk and approved; each acceptance criterion becomes one tdd Phase 1 obligation.
+disable-model-invocation: true
 ---
 
 # brainstorming

@@ -1,11 +1,11 @@
 ---
 description: Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR.
-argument-hint: "[path | #<pr> | <pr-url>]" (defaults to the current diff)
+argument-hint: "[path | #<pr> | <pr-url>] (defaults to the current diff)"
 ---
 
 # /ca:review — diff review
 
-Read-only review of a change. Routes to `dispatching-parallel-agents`: dispatches the reviewer fleet by path matrix, dedupes, then funnels through `finding-triage` → `checkpoint-aggregator` to a single verdict. No code is modified.
+Read-only review of a change. Routes to `dispatching-parallel-agents` (`${CLAUDE_PLUGIN_ROOT}/skills/dispatching-parallel-agents/SKILL.md`): dispatches the reviewer fleet by path matrix, dedupes, then funnels through `finding-triage` → `checkpoint-aggregator` to a single verdict. No code is modified.
 
 **The change under review does not have to be yours.** `/ca:review #123` reviews an inbound pull request through the same fleet, the same matrix, and the same triage. That is the point of issue #80: a tool that only reviews the diff you just wrote is a linter for authors, not a gate for a team, and reviewing code you did NOT write is where a governance gate earns its keep.
 

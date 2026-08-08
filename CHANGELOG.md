@@ -12,6 +12,26 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.14.0] — 2026-08-08
+
+### Changed
+
+- The nine chain-internal skills (`brainstorming`, `writing-plans`, `executing-plans`,
+  `subagent-driven-development`, `tdd`, `using-git-worktrees`, `dispatching-parallel-agents`,
+  `secret-handling`, `crypto-compliance`) carry `disable-model-invocation: true` — their
+  descriptions no longer load into every session's registry (ADR-0028). Every route to them is
+  now an explicit `{{PLUGIN_ROOT}}/skills/<name>/SKILL.md` path load (routing-table preamble +
+  per-site citations), so chains never depended on the hidden entries.
+- Frontmatter scalars that start with `[`/`{` or contain `": "` or `" | "` are JSON-quoted
+  across commands and skills (the `_yaml_safe_scalar` predicate, now also a skill-author house
+  rule) — portability hygiene for hosts that parse frontmatter strictly.
+
+### Fixed
+
+- Documented harness behavior: `feature`, `fix`, and `new-skill` are reserved names suppressed
+  from the model-facing registry by the host (typed invocation unaffected; intent routing runs
+  through ORCHESTRATOR.md). Recorded in docs/investigations/token-efficiency.md.
+
 ## [2.13.0] — 2026-08-08
 
 ### Changed

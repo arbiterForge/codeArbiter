@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-08-08
+
+### Changed
+
+- Routine frontmatter carries `disable-model-invocation: true` on the nine chain-internal routines (inert on this host) and JSON-quoted scalars per `_yaml_safe_scalar`; route sites cite explicit routine paths.
+
 ## [0.4.0] - 2026-08-08
 
 ### Changed
