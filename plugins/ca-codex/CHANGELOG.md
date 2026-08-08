@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-08-08
+
+### Changed
+
+- Tribunal roster consolidated (ADR-0027): the eleven per-lens tribunal reviewer personas
+  are replaced by one generic `tribunal-lens-reviewer` routine role dispatched once per
+  active lens; lens cards under `routines/tribunal/references/lenses/` carry the mandates.
+- Shared reviewer/author contracts extracted to `includes/reviewer-contract.md` and
+  `includes/author-tdd-workflow.md`.
+
 ## [0.5.2] — 2026-08-08
 
 ### Documentation

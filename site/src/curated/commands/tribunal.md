@@ -24,19 +24,21 @@ merge or commit.
 ## The eleven lenses
 
 Each lens judges one concern, in priority waves capped at five in flight. A lens is skipped
-when its concern is absent from scope: a repo with no migrations drops the migration lens.
+when its concern is absent from scope: a repo with no migrations drops the migration lens. Every
+lens run is the same generic [`tribunal-lens-reviewer`](/reference/agents/tribunal-lens-reviewer/)
+agent, dispatched once per lens with that lens's card as its mandate.
 
-1. [`tribunal-appsec-reviewer`](/reference/agents/tribunal-appsec-reviewer/): injection, resource-level authz/IDOR, input validation, JWT, CORS, SSRF.
-2. [`tribunal-architecture-reviewer`](/reference/agents/tribunal-architecture-reviewer/): dead/orphan modules, pattern drift, cosmetic abstractions, god modules, monolith accretion. Distinct from `architecture-drift-reviewer`, which checks conformance to accepted ADRs; this lens judges structural health on its own terms.
-3. [`tribunal-coverage-reviewer`](/reference/agents/tribunal-coverage-reviewer/): risk-path coverage gaps, edge/property gaps, implementation-coupled tests.
-4. [`tribunal-infra-reviewer`](/reference/agents/tribunal-infra-reviewer/): CI/CD correctness and security, container posture, IaC/deploy manifests, release automation.
-5. [`tribunal-migration-reviewer`](/reference/agents/tribunal-migration-reviewer/): migration safety, data-classification tagging, immutability, schema-to-code drift.
-6. [`tribunal-observability-reviewer`](/reference/agents/tribunal-observability-reviewer/): structured logging, tracing/correlation IDs, metrics on critical paths, audit gaps.
-7. [`tribunal-performance-reviewer`](/reference/agents/tribunal-performance-reviewer/): N+1 queries, redundant hot-path work, query/index shape, caching, blocking IO.
-8. [`tribunal-reliability-reviewer`](/reference/agents/tribunal-reliability-reviewer/): async correctness, error propagation, races, resource lifecycle, boundary conditions, orphan state.
-9. [`tribunal-secrets-supply-reviewer`](/reference/agents/tribunal-secrets-supply-reviewer/): hardcoded secrets, weak crypto, cleartext, secrets in logs, supply-chain hygiene.
-10. [`tribunal-test-fidelity-reviewer`](/reference/agents/tribunal-test-fidelity-reviewer/): tests validating fiction, meaning mocks, stubs, or fixtures that drifted from a producer that's since become real.
-11. [`tribunal-typesafety-reviewer`](/reference/agents/tribunal-typesafety-reviewer/): footgun interfaces, weak typing, escape hatches, unhelpful errors, undocumented invariants.
+1. [appsec](/reference/tribunal-lenses/appsec/): injection, resource-level authz/IDOR, input validation, JWT, CORS, SSRF.
+2. [architecture](/reference/tribunal-lenses/architecture/): dead/orphan modules, pattern drift, cosmetic abstractions, god modules, monolith accretion. Distinct from `architecture-drift-reviewer`, which checks conformance to accepted ADRs; this lens judges structural health on its own terms.
+3. [coverage](/reference/tribunal-lenses/coverage/): risk-path coverage gaps, edge/property gaps, implementation-coupled tests.
+4. [infra](/reference/tribunal-lenses/infra/): CI/CD correctness and security, container posture, IaC/deploy manifests, release automation.
+5. [migration](/reference/tribunal-lenses/migration/): migration safety, data-classification tagging, immutability, schema-to-code drift.
+6. [observability](/reference/tribunal-lenses/observability/): structured logging, tracing/correlation IDs, metrics on critical paths, audit gaps.
+7. [performance](/reference/tribunal-lenses/performance/): N+1 queries, redundant hot-path work, query/index shape, caching, blocking IO.
+8. [reliability](/reference/tribunal-lenses/reliability/): async correctness, error propagation, races, resource lifecycle, boundary conditions, orphan state.
+9. [secrets-supply](/reference/tribunal-lenses/secrets-supply/): hardcoded secrets, weak crypto, cleartext, secrets in logs, supply-chain hygiene.
+10. [test-fidelity](/reference/tribunal-lenses/test-fidelity/): tests validating fiction, meaning mocks, stubs, or fixtures that drifted from a producer that's since become real.
+11. [typesafety](/reference/tribunal-lenses/typesafety/): footgun interfaces, weak typing, escape hatches, unhelpful errors, undocumented invariants.
 
 On a large repo, two optional read-only mappers ([`map-structure`](/reference/agents/map-structure/)
 and [`map-deps`](/reference/agents/map-deps/)) build the codebase inventory ahead of the lenses, so

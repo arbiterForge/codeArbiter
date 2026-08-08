@@ -4,6 +4,18 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-08
+
+### Changed
+
+- Tribunal roster consolidated: the eleven per-lens `tribunal-*-reviewer` roles are replaced
+  by one generic `tribunal-lens-reviewer` role dispatched once per active lens; the lens
+  cards under `routines/tribunal/references/lenses/` carry each lens's mandate, scope
+  emphasis, and required reading. `generated/roles.json` reshapes from 28 to 18 roles.
+- Gate reviewers and authors now load their shared findings/output/TDD contracts from
+  `includes/reviewer-contract.md` and `includes/author-tdd-workflow.md` instead of
+  restating them per role.
+
 ## [0.3.1] - 2026-08-07
 
 ### Fixed

@@ -16,6 +16,7 @@ Read-only. Verify the suite covers all TDD obligations and exercises real behavi
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test runner, coverage command, test file convention.
 - `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — `stage:` maturity value (1–4) governing the coverage threshold.
 - `{{PLUGIN_ROOT}}/includes/maturity-coverage.md` — the threshold table AND which metrics bind. Read it; do not carry a remembered copy.
+- `{{PLUGIN_ROOT}}/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
 
 This file previously restated the table inline, and the copies drifted the moment
 the canonical one gained a metric rule (issue #507) — leaving this agent applying
@@ -56,37 +57,8 @@ Flag logical gaps as **MEDIUM**. Flag complete absence of negative-path tests as
 
 ## Findings Format
 
-```
-**Severity:** CRITICAL | HIGH | MEDIUM | LOW
-**File:** <source path> / <test path, if exists>
-**Description:** <specific gap>
-**Remediation:** <what test to write>
-```
+Per `{{PLUGIN_ROOT}}/includes/reviewer-contract.md`, with the subject field `**File:** <source path> / <test path, if exists>` and `**Remediation:**` naming the test to write.
 
 ## Output
 
-```
-## Test Audit Review — <date>
-
-### Coverage
-Current: <N>% | Threshold: <N>% | Status: PASS | BELOW THRESHOLD
-
-### CRITICAL findings (N)
-[findings or "none"]
-
-### HIGH findings (N)
-[findings or "none"]
-
-### MEDIUM findings (N)
-[findings or "none"]
-
-### LOW findings (N)
-[findings or "none"]
-
-### Gate status
-PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
-```
-
-## Out-of-Scope Findings
-
-**Out-of-scope finding:** do not act on it and do not author an ADR for it (ADRs are user-attributed, via `/adr` only). Mark it inline with a `[NEEDS-TRIAGE]` marker; never silently drop it.
+The review output template in `reviewer-contract.md`, with `<Role>` = Coverage.

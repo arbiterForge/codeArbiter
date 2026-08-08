@@ -1,6 +1,12 @@
 # typesafety — lens mandate
 
-Executed by `tribunal-typesafety-reviewer`. Write contract + evidence discipline: `finding-record.md`. Skip entirely if the language has no static type system.
+Executed by `tribunal-lens-reviewer` under the `typesafety` assignment. Write contract + evidence discipline: `finding-record.md`. Skip entirely if the language has no static type system.
+
+## Scope emphasis
+The assigned path slice, weighted to public interfaces and module boundaries. Skip entirely if the language has no static type system.
+
+## Required reading
+- `{{PROJECT_DIR}}/.codearbiter/coding-standards.md` — typing conventions; `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — whether the project is statically typed.
 
 ## Checklist
 - Footgun public interfaces: easy to call wrong, no defaults, silent coercion.
