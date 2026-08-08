@@ -18,7 +18,15 @@
     "in core/surface/skills/release/SKILL.md.",
     "",
     "Verified 2026-07-25 against BOTH the GitHub API and an independent local clone.",
-    "Adding a tag here is a release step; see the release skill."
+    "Adding a tag here is a release step; see the release skill.",
+    "",
+    "ca-codex 0.4.1-0.4.9 and 0.4.12-0.4.13 never got a CHANGELOG section when the",
+    "manifest was bumped: they are shared-core commits (also bumping ca's own",
+    "manifest) whose payload-gate side effect never got a matching entry written",
+    "into plugins/ca-codex/CHANGELOG.md. Backfilled 2026-08-08 by composing each",
+    "section directly from that commit's own CHANGELOG: footer - grounded, not",
+    "invented - then tagging normally. See plugins/ca-codex/CHANGELOG.md history",
+    "for the reconstruction commit."
   ],
   "namespaces": [
     "v*",
@@ -31,6 +39,141 @@
     "ca-codex-v0.2.4": {
       "commit_sha": "1fba34644c85a34c24f4c022f0910744758593e0",
       "object_sha": "a577d48bcbe1d978e111a92c1ab2e72e07549f01",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.0": {
+      "commit_sha": "c799f68ca413ab569f1bab97e07e3a6e0e9bda62",
+      "object_sha": "61708d734b03f9aa1ce54873aab4959a6c6827d4",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.1": {
+      "commit_sha": "f05d06308898e5856f18a2adfd8dc3f31f3280dd",
+      "object_sha": "4cf7af36350d9eeaf307d60ddd02cd248902daa8",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.2": {
+      "commit_sha": "11c28e8e0054f49752cc0e0bc4474b83c29b05d3",
+      "object_sha": "9aa3bd218ff76edc593082b677e3c7263aab82ec",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.3": {
+      "commit_sha": "67cbc7f985d1f7885a4c9aff7cc62e17bd1cae3b",
+      "object_sha": "6a450b3f395b7b7d72772a43c8a357c5b9af2a32",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.4": {
+      "commit_sha": "5429862a37605d80aca00eab2c36dc665bd83e6a",
+      "object_sha": "81dd3861283a7c7d29ca123a1aa0a3e9ac17c2a5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.5": {
+      "commit_sha": "45f5046bbeabb1927cdaeb14fa1986ff47ec601d",
+      "object_sha": "f72e033d840d5f5d029ea9e41bc76bfeb6ae749b",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.6": {
+      "commit_sha": "4e2dae91a5200c5db7a9daf301aff357f893b337",
+      "object_sha": "b2351ba2e311c434f2914e18f3cfb523c8e7b25b",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.7": {
+      "commit_sha": "b98c3217a8aaae3c05fd7f6f71bed5e887c47df5",
+      "object_sha": "0d2d95eb831c4d9d898191cc5dcbb60e72f96522",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.0": {
+      "commit_sha": "8ee5fe119ebdd1b1957e20603e22220e8d7fa4c2",
+      "object_sha": "2d0257e9d4256c3a9745780f8b63970e5b45bf23",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.1": {
+      "commit_sha": "53c788cd82ddbb50c50d657775edf5a01f10dc9e",
+      "object_sha": "229c6ef3b799a50dde2fbfe32f81317d2236cc62",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.2": {
+      "commit_sha": "d956d15006a34b4bf9075908403a7ac436a06097",
+      "object_sha": "e80045955a2d84e9363fb492127c2a9dc6424d85",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.3": {
+      "commit_sha": "762a80a2b8528d2eb48c1e32491ea0391d7c3c2b",
+      "object_sha": "9135d152792bd243908a556d109788321ff5baa2",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.4": {
+      "commit_sha": "f68d667070513fb4277219c612a0640a25686d7b",
+      "object_sha": "959bebf18a76d1eea2ec6bc09cac69a76d4b663c",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.5": {
+      "commit_sha": "6591a73320769d944f76030162d1de03a6727b59",
+      "object_sha": "63256c3fef50f3233ca1ed2661295c9818ab836e",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.6": {
+      "commit_sha": "9392446136e91ecd048b92ac3cffefa0dee6503c",
+      "object_sha": "0fbab53f2d75989fe38809f1a394d2bd93e4807b",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.7": {
+      "commit_sha": "e24f9ecd5af4e95ece876436774e84b0ed48aea8",
+      "object_sha": "32a5e630d2fe3b89a82c5f11697216ab91262da8",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.8": {
+      "commit_sha": "3ce112aeac971d821e5a639af5b606de2d826ac1",
+      "object_sha": "659ede061594b861afa2bd0f45f6a9ac613456bb",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.9": {
+      "commit_sha": "e8fa56d464560180a2a3d09eb528227b02275bfa",
+      "object_sha": "c2c25b2a808b1d5b548920940ecd3f35aa70b7ba",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.10": {
+      "commit_sha": "32b099231c5ec331aa02cc2d86defceb91d20eed",
+      "object_sha": "4e5c71739e6d22b5d1608055faa7ecf7485ef12c",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.11": {
+      "commit_sha": "9cc42369ff5ca54982713f37a1c6ed7f5dbf213b",
+      "object_sha": "130092c555094aae44217a972f3210e90539a2dc",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.12": {
+      "commit_sha": "bd247e6bde72f6f78c166d93416bb3f0c5b35e77",
+      "object_sha": "69c34d73981674b969a42ab89e3805b19b328d15",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.13": {
+      "commit_sha": "72fe591cd3db35c7c10ca27f7c7621b05e1a607a",
+      "object_sha": "dc515bf0524f4e3ddd375acebef7b1425a2cfc1f",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.14": {
+      "commit_sha": "ed6c4c09b6b58ce09186a68d494d035a9aebac27",
+      "object_sha": "7cbf02b102f3b666001b670d178bff75a3ea5597",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.15": {
+      "commit_sha": "b5eda09df8ad86578942dba7708d945bbdbb7774",
+      "object_sha": "d9c13a61a3011caf8fdb90ebb26c6ee7c3b134e5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.16": {
+      "commit_sha": "e3c6a9b2ac1221eabb1b0ceabefdcaf16c07fbbc",
+      "object_sha": "819a32d0e932a11c6ce9f9b1108d61065fd0e6fa",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.5.0": {
+      "commit_sha": "176d17c70a9294ffc90d7eb09190ad40df846a2f",
+      "object_sha": "993d161ec26816927236f04feaa3794d2e1afca5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.5.1": {
+      "commit_sha": "046f4b4e151a3088d1676f4d4a33c5d35a5c6ef1",
+      "object_sha": "267c5c48daa9e7ecf8e8cd2abc1f05c0caac920e",
       "object_type": "tag"
     },
     "ca-sandbox-v0.1.0": {
