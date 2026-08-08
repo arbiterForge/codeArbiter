@@ -61,7 +61,7 @@ class PiChildFixtureContract(unittest.TestCase):
             path for path in (REPO / "core/surface/agents").glob("*.md")
             if path.name != "INDEX.md"
         )
-        self.assertEqual(len(roles), 28)
+        self.assertEqual(len(roles), 18)
         self.assertEqual(sorted(by_name), [path.stem for path in canonical_agents])
         self.assertEqual(by_name["backend-author"]["tools"], ["read", "bash", "edit", "write"])
         self.assertEqual(by_name["backend-author"]["classification"], "author")

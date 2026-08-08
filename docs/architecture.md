@@ -218,7 +218,7 @@ flowchart TD
     C_checkpoint -. "informational" .-> A_drift["architecture-drift-reviewer"]
     A_drift --> FUNNEL
     C_tribunal --> S_tribunal
-    S_tribunal -->|"after cost acknowledgment (STOP gate)"| TRIBROSTER["ELEVEN tribunal-* lens reviewers<br/>(read-only, waved dispatch, resumable from<br/>.codearbiter/reports/&lt;run-id&gt;/)"]
+    S_tribunal -->|"after cost acknowledgment (STOP gate)"| TRIBROSTER["tribunal-lens-reviewer × active lenses<br/>(read-only, waved dispatch, resumable from<br/>.codearbiter/reports/&lt;run-id&gt;/)"]
     S_tribunal -. "large repo" .-> A_mappers["map-structure · map-deps (optional)"]
     TRIBROSTER --> TRIBREPORT([report.md — never a gate])
     TRIBREPORT -. "explicit authorization only" .-> TRIBISSUES([findings filed as GitHub issues])

@@ -1266,3 +1266,28 @@ Maintainable and Reliable dominate: a declared registry with mechanical drift de
 core/surface/includes/routing-table.md (new block), core/surface/ORCHESTRATOR.md §6 (resident copy retained), consistency check extending .github/scripts/test_routing_and_cleanup_surface.py (seeded-mismatch proof with captured failing log), pin at test_routing_and_cleanup_surface.py:79 repointed.
 
 ---
+
+## DECISION-0039 — adr-0027-authored — Tribunal lens roster is data; one generic lens-reviewer executes it
+
+**Date:** 2026-08-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — plan "tranquil-crunching-fog" v2 approved post-adversarial-review 2026-08-08; explicit rulings "Tribunal-only collapse" and "publish lens cards + redirects" the same day. ADR-0027 authored as proposed; ratification pending.
+**Decision category:** framework-structure
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** eleven tribunal-<lens>-reviewer agents, ~73% identical template, each hardcoding its lens card path; cards carry the mandates but not the project-doc pre-reads
+- **Scaffold position:** scout/grader already prove generic-body + injected-assignment; run/triage/telemetry schemas key on lens, never agent name
+- **Status type:** divergent
+
+### Decision
+One generic tribunal-lens-reviewer dispatched once per active lens with a title-first assignment block; the roster is the lens-card set; cards absorb Scope-emphasis and Required-reading from the deleted bodies; shared reviewer/author contracts extracted to includes/reviewer-contract.md and includes/author-tdd-workflow.md; the eleven public agent URLs redirect to a generated per-lens reference collection.
+
+### SMARTS rationale
+Maintainable dominates: one body and one include per contract instead of eleven copies, with a new lens reduced to data. Reliable held after adversarial review closed the two real hazards (nine lenses' project-doc pre-reads migrated into the cards; assignment title line preserves per-lens statusline labels). Token cost falls ~589 per Claude-host session. The rejected alternatives (keep-eleven-with-template, collapse-checkpoint-family, merge-mappers) are recorded in the ADR.
+
+### Implementation implication
+core/surface/agents/tribunal-lens-reviewer.md (new), 11 agent files deleted, 11 lens cards gain Scope-emphasis/Required-reading, skills/tribunal/SKILL.md Phase 2 rewritten, cost-and-models.md re-keyed by lens, includes/reviewer-contract.md + author-tdd-workflow.md (new) with 7 agents rewired, agents/INDEX.md -11/+1, three CI tests re-pinned 28->18, site lens collection + 11 redirects, README badges, manifests ca 2.13.0 / ca-codex 0.6.0 / ca-pi 0.4.0 + root lockstep.
+
+---

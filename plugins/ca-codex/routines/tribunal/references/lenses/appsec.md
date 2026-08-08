@@ -1,6 +1,12 @@
 # appsec — lens mandate
 
-Executed by `tribunal-appsec-reviewer`. Write contract + evidence discipline: `finding-record.md` — every finding needs `path:line` evidence; write it the moment it's found.
+Executed by `tribunal-lens-reviewer` under the `appsec` assignment. Write contract + evidence discipline: `finding-record.md` — every finding needs `path:line` evidence; write it the moment it's found.
+
+## Scope emphasis
+The assigned path slice, weighted to trust-boundary crossings and request handlers.
+
+## Required reading
+- `<project-root>/.codearbiter/security-controls.md` — trust boundaries and approved patterns; and `inventory.md` in the run dir for marked trust boundaries.
 
 ## Checklist
 - Injection surface: user-controlled input reaching SQL (string concatenation, CWE-89), shell execution, filesystem path resolution, HTML/template rendering (XSS, CWE-79), or deserialization. Concatenating input into any query or command is critical regardless of how "clean" the input looks.

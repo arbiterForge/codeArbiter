@@ -12,6 +12,22 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.13.0] — 2026-08-08
+
+### Changed
+
+- Tribunal roster consolidated (ADR-0027): the eleven `tribunal-<lens>-reviewer` agents are
+  replaced by one generic `tribunal-lens-reviewer` dispatched once per active lens with a
+  title-first lens assignment. The lens cards under `skills/tribunal/references/lenses/` are
+  now the roster and carry each lens's scope emphasis and required reading; agent count
+  28 → 18.
+- Gate reviewers share `includes/reviewer-contract.md` (findings format, review output
+  template, out-of-scope rule) and the backend/frontend authors share
+  `includes/author-tdd-workflow.md` instead of restating those blocks per agent.
+- Docs site: the eleven per-lens agent pages are replaced by a generated
+  `/reference/tribunal-lenses/<lens>/` collection sourced from the lens cards, with
+  redirects from the old agent URLs.
+
 ## [2.12.1] — 2026-08-07
 
 ### Fixed

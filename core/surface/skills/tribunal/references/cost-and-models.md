@@ -21,25 +21,25 @@ Present the band, the inputs, and that high-reasoning output tokens dominate. On
 
 ## Model recommendation (state at Phase 0)
 
-Drive this lane with the highest-reasoning model available at high effort. A cheap model inflates false positives, and this lane files real issues. Dispatch models per role:
+Drive this lane with the highest-reasoning model available at high effort. A cheap model inflates false positives, and this lane files real issues. Every lens runs the same agent (`tribunal-lens-reviewer`); the tier varies per LENS at dispatch time:
 
-| Role | Model | Effort |
+| Lens (or role) | Model | Effort |
 |---|---|---|
 | orchestrator (the skill) | Opus 4.8 | high |
-| tribunal-appsec-reviewer | Opus 4.8 | high |
-| tribunal-reliability-reviewer | Opus 4.8 | high |
-| tribunal-architecture-reviewer | Opus 4.8 | high |
-| tribunal-secrets-supply-reviewer | Sonnet 5 | high |
-| tribunal-migration-reviewer | Sonnet 5 | high |
-| tribunal-test-fidelity-reviewer | Sonnet 5 | high |
-| tribunal-performance-reviewer | Sonnet 5 | medium |
-| tribunal-observability-reviewer | Sonnet 5 | medium |
-| tribunal-typesafety-reviewer | Sonnet 5 | medium |
-| tribunal-coverage-reviewer | Sonnet 5 | medium |
-| tribunal-infra-reviewer | Sonnet 5 | medium |
+| appsec | Opus 4.8 | high |
+| reliability | Opus 4.8 | high |
+| architecture | Opus 4.8 | high |
+| secrets-supply | Sonnet 5 | high |
+| migration | Sonnet 5 | high |
+| test-fidelity | Sonnet 5 | high |
+| performance | Sonnet 5 | medium |
+| observability | Sonnet 5 | medium |
+| typesafety | Sonnet 5 | medium |
+| coverage | Sonnet 5 | medium |
+| infra | Sonnet 5 | medium |
 | optional mappers (`map-structure`, `map-deps`) | Haiku 4.5 | low |
 
-Advisory only: agents ship `model: inherit`; a dispatch-time override takes an alias (`haiku`/`sonnet`/`opus`/`fable`), not a pinned ID, and there is no per-dispatch effort control. This table guides the orchestrator's dispatch choices — it is not mechanically enforced.
+Advisory only: `tribunal-lens-reviewer` ships `model: inherit`; a dispatch-time override takes an alias (`haiku`/`sonnet`/`opus`/`fable`), not a pinned ID, and there is no per-dispatch effort control. This table guides the orchestrator's dispatch choices — it is not mechanically enforced.
 
 API strings: `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5-20251001` — as of authoring; substitute the current flagship. `claude-fable-5` now sits above Opus as the highest-reasoning flagship. On proprietary code all tiers must be approved (Anthropic) models — never an external worker.
 
@@ -61,4 +61,4 @@ Concurrency ≤5 lenses in flight regardless of roster size — the roster is a 
 
 ## Optional mappers
 
-On a large/sprawling repo, offload raw file-reading to two cheap mapper subagents so it stays out of the orchestrator's retained context: `map-structure` (tree, languages, entry points, core/shared/test locations, churn) and `map-deps` (manifests, lockfiles, integration surface, env/secret-usage surface). On a small repo, map inline and skip them. Either way, produce the same `inventory.md`. These are the only subagents beyond the eleven lenses, and they carry no `tribunal-` prefix because they are generic extractors, not judges.
+On a large/sprawling repo, offload raw file-reading to two cheap mapper subagents so it stays out of the orchestrator's retained context: `map-structure` (tree, languages, entry points, core/shared/test locations, churn) and `map-deps` (manifests, lockfiles, integration surface, env/secret-usage surface). On a small repo, map inline and skip them. Either way, produce the same `inventory.md`. These are the only subagents beyond the lens reviewer, and they carry no `tribunal-` prefix because they are generic extractors, not judges.

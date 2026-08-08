@@ -1,6 +1,12 @@
 # performance — lens mandate
 
-Executed by `tribunal-performance-reviewer`. Write contract + evidence discipline: `finding-record.md`; flag a signature only where the path is plausibly hot — no speculative micro-optimization.
+Executed by `tribunal-lens-reviewer` under the `performance` assignment. Write contract + evidence discipline: `finding-record.md`; flag a signature only where the path is plausibly hot — no speculative micro-optimization.
+
+## Scope emphasis
+The assigned path slice, weighted to hot paths and data access.
+
+## Required reading
+- `<project-root>/.codearbiter/tech-stack.md` — data layer, ORM, and cache conventions.
 
 ## Checklist
 - N+1 queries and per-iteration IO in loops.
