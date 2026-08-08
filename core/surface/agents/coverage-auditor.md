@@ -61,4 +61,11 @@ Per `{{PLUGIN_ROOT}}/includes/reviewer-contract.md`, with the subject field `**F
 
 ## Output
 
-The review output template in `reviewer-contract.md`, with `<Role>` = Coverage.
+The review output template in `reviewer-contract.md`, with the heading `## Test Audit Review —
+<date>`, its severity sections preceded by the measured-number block this agent's first check
+computes (an audit that hides its number is an unverifiable claim):
+
+```
+### Coverage
+Current: <N>% | Threshold: <N>% | Status: PASS | BELOW THRESHOLD
+```

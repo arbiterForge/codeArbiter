@@ -63,4 +63,17 @@ Per `<plugin-root>/includes/reviewer-contract.md`, with the subject field `**Pac
 
 ## Output
 
-The review output template in `reviewer-contract.md`, with `<Role>` = Dependency and the heading qualified as `## Dependency Review — <package@version> — <date>`.
+The review output template in `reviewer-contract.md`, with `<Role>` = Dependency, the heading
+qualified as `## Dependency Review — <package@version> — <date>`, the severity sections preceded
+by one verdict line per check dimension:
+
+```
+### License: <SPDX> — PASS | BLOCK
+### Provenance: <registry/source> — PASS | BLOCK
+### Maintenance signal: <last release, archived> — PASS | FLAG
+### Known CVEs: N critical, N high — PASS | BLOCK
+### Supply chain: <install script: yes/no; notes> — PASS | FLAG
+```
+
+and the gate-status BLOCK arm worded `BLOCK (N CRITICAL, N HIGH; do not install)` — an install,
+unlike a merge, executes the dependency's code the moment it lands.

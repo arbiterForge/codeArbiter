@@ -1291,3 +1291,28 @@ Maintainable dominates: one body and one include per contract instead of eleven 
 core/surface/agents/tribunal-lens-reviewer.md (new), 11 agent files deleted, 11 lens cards gain Scope-emphasis/Required-reading, skills/tribunal/SKILL.md Phase 2 rewritten, cost-and-models.md re-keyed by lens, includes/reviewer-contract.md + author-tdd-workflow.md (new) with 7 agents rewired, agents/INDEX.md -11/+1, three CI tests re-pinned 28->18, site lens collection + 11 redirects, README badges, manifests ca 2.13.0 / ca-codex 0.6.0 / ca-pi 0.4.0 + root lockstep.
 
 ---
+
+## DECISION-0040 — adr-0027-ratification — Tribunal lens roster is data; one generic lens-reviewer executes it
+
+**Date:** 2026-08-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — explicit ratification "approve the adr", 2026-08-08
+**Decision category:** framework-structure
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0027 authored the same day as proposed (DECISION-0039 recorded "ratification pending" — true at write time; this entry closes it, the prior entry stands unedited per the append-only rule)
+- **Scaffold position:** n/a — ratification of an authored record, no competing artifact
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0027 ratified to accepted (frontmatter and body Status advanced in commit 8e46074 on the PR #647 branch). Content unchanged from authoring.
+
+### SMARTS rationale
+Recording-only entry; the decision's SMARTS rationale lives in DECISION-0039 and the ADR itself.
+
+### Implementation implication
+None beyond the status flip — the ADR's governs: globs became live pushback at edit time on acceptance.
+
+---
