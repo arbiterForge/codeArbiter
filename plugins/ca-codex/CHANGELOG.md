@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.5.2] — 2026-08-08
+
+### Documentation
+
+- Backfilled 11 CHANGELOG sections that were missing when the manifest passed through them (`0.4.1`-`0.4.9`, `0.4.12`, `0.4.13`) — each composed verbatim from that commit's own `CHANGELOG:` footer. No functional change; this entry documents the CHANGELOG.md edit itself, which is why it required its own version.
+
 ## [0.5.1] — 2026-08-07
 
 ### Fixed
