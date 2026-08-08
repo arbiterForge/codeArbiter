@@ -26,7 +26,7 @@
     "ca-codex-v*",
     "ca-pi-v*"
   ],
-  "verified_at": "2026-08-07",
+  "verified_at": "2026-08-08",
   "tags": {
     "ca-codex-v0.2.4": {
       "commit_sha": "1fba34644c85a34c24f4c022f0910744758593e0",
@@ -41,6 +41,16 @@
     "ca-sandbox-v0.1.3": {
       "commit_sha": "f10385395762b02d66dad23d72aa494603083758",
       "object_sha": "c1f1197ac4afaf8d07d86d8a776ce2380c4736c5",
+      "object_type": "tag"
+    },
+    "ca-sandbox-v0.1.4": {
+      "commit_sha": "4f7a9091803af48ea43b3225da00589761317e3e",
+      "object_sha": "15b5a7c884e05e431f95449928e3918aaa5bbba1",
+      "object_type": "tag"
+    },
+    "ca-sandbox-v0.1.5": {
+      "commit_sha": "88af2ae3360fc0f6b2cbc95d739dbb2ba15c68cb",
+      "object_sha": "c5513a2c763a0dc9b844c5740a2e65a2726e5217",
       "object_type": "tag"
     },
     "v2.0.0": {
