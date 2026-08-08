@@ -35,7 +35,7 @@ uncovered-intent ${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md [--issue-bod
 `<scratch-file>` holds the linked issue's body when one exists (`gh issue view <N> --json body -q
 .body > <scratch-file>`, written outside the working tree), omitted when none does. A non-empty
 result names an in-scope bullet or an acceptance checkbox the criteria never cited — BLOCK and route
-back to `brainstorming` to add the missing criterion or record a `[CONFIRM-NN]`; never paper over a
+back to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`) to add the missing criterion or record a `[CONFIRM-NN]`; never paper over a
 missing criterion by authoring a task for it here instead. This is the LAST point before a hole gets
 laundered through Phase 4's bijection, which only checks the ledger against itself and cannot see
 past it.
@@ -112,7 +112,7 @@ produce the farm artifact (`plan.json`) — **one MVP slice at a time** — per
 it owns the per-task failing-test + schema-valid `plan.json` procedure.
 
 Gate: all failing tests written and confirmed failing; `plan.json` written and schema-valid. Both
-artifacts exist before handing off to `subagent-driven-development`.
+artifacts exist before handing off to `subagent-driven-development` (`${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/SKILL.md`).
 
 ## Hard rules
 

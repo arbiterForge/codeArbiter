@@ -5,7 +5,6 @@ description: <One terse sentence: what routes to this skill, the phase count, an
 <!-- Chain-internal skill (never user-typed, reached only via routing-table path loads)?
      Add `disable-model-invocation: true` as a third frontmatter line — ADR-0028. -->
 
-
 # <skill-name>
 
 <One-line intro naming what routes to it: `/<command>` (user-invoked) or the parent skill (internal).>

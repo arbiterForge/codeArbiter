@@ -100,7 +100,7 @@ The spec earns its approval; it is not waved through. Two passes over the FILE a
    - **Under `/feature`** — present the spec and the adversarial findings, and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.
    - **Under `/sprint`** — approval may be granted automatically by SMARTS scoring, logged to the `.codearbiter/` audit trail. A blocking `[CONFIRM-NN]` is never auto-approvable; it escalates to the user and STOPs the sprint flow.
 
-On approval, hand off to the `tdd` skill, which enters Phase 1 against the approved spec — one obligation per acceptance criterion.
+On approval, hand off to the `tdd` skill (`${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md`), which enters Phase 1 against the approved spec — one obligation per acceptance criterion.
 
 Gate: both review passes run against the file on disk, adversarial findings presented, and the spec approved (by the user under `/feature`, or by logged SMARTS auto-approval under `/sprint`) with no unresolved blocking `[CONFIRM-NN]`. Only then does control pass to `tdd`.
 

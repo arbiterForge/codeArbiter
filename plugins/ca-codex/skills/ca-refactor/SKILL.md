@@ -15,7 +15,7 @@ Routes to the `refactor` skill — six phases:
 1. **Surface identification** — lock the exact files, symbols, and public signatures.
 2. **Parity coverage proof** — demonstrate pre-existing tests already cover the named surface, with at
    least one direct test per public method.
-3. **Red parity tests (conditional)** — if the refactor exposes a new test seam, route to `tdd`
+3. **Red parity tests (conditional)** — if the refactor exposes a new test seam, route to `tdd` (`${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md`)
    Phase 1 to write failing tests pinning the seam's contract first.
 4. **Implementation** — apply the restructure mechanically within the surface table; no new behavior,
    branches, error paths, or side effects.

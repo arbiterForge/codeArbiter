@@ -45,7 +45,7 @@ the other is not proven. Where the surface has no coverage tooling, take the no-
 section that omits a command for this surface — and the per-symbol direct-test proof stands alone.
 Without that citation the phase STOPs rather than passing on an unverifiable claim.
 
-If surface coverage is below the maturity threshold on either metric, OR any public method has zero direct tests, halt and route to the `tdd` skill Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
+If surface coverage is below the maturity threshold on either metric, OR any public method has zero direct tests, halt and route to the `tdd` skill (`<plugin-root>/routines/tdd/SKILL.md`) Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
 
 Gate: surface coverage at or above the maturity threshold on BOTH lines and branches AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
 

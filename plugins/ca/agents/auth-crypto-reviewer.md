@@ -40,7 +40,7 @@ These block the PR regardless of context. None is advisory:
 - Session invalidation paths exist (logout, expiry).
 
 **Secrets handling:**
-- Trace every secret read: does it come from the approved store? Consult the `secret-handling` skill for secret-store policy.
+- Trace every secret read: does it come from the approved store? Consult the `secret-handling` skill (`${CLAUDE_PLUGIN_ROOT}/skills/secret-handling/SKILL.md`) for secret-store policy.
 - Trace every secret pass: could it reach a function that logs it?
 - No secret in error messages or HTTP responses.
 

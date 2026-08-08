@@ -44,7 +44,7 @@ Gate: a batch sequence exists and every task has a target path and a verificatio
 
 ## Phase 2 — Execute batch · gate: BLOCK
 
-Invoke `subagent-driven-development` with `scope = [current batch task IDs]`. Pass the plan slug and
+Invoke `subagent-driven-development` (`{{PLUGIN_ROOT}}/skills/subagent-driven-development/SKILL.md`) with `scope = [current batch task IDs]`. Pass the plan slug and
 spec slug so it can read its own pre-flight files. Do not implement anything here — the author agents,
 review chain, and verification all run inside that skill.
 
