@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-08-08
 title: Chain-internal skills are path-routed and registry-hidden
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,9 +10,10 @@ governs: core/surface/includes/routing-table.md, core/surface/skills/*/SKILL.md,
 # ADR-0028 — Chain-internal skills are path-routed and registry-hidden
 
 ## Status
-Proposed — decision content approved by SUaDtL@users.noreply.github.com on 2026-08-08 (plan
-"tranquil-crunching-fog" v2 approved post-adversarial-review; rulings: dual-fronted skills stay
-registry-visible; harness-reserved names documented, not renamed). Awaiting explicit ratification.
+Accepted — explicitly ratified by SUaDtL@users.noreply.github.com on 2026-08-08 ("approve
+adr28"). Decision content approved the same day (plan "tranquil-crunching-fog" v2 approved
+post-adversarial-review; rulings: dual-fronted skills stay registry-visible; harness-reserved
+names documented, not renamed).
 
 ## Context
 
