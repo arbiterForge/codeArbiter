@@ -87,6 +87,25 @@ on:
         description: "Optional release-title summary for the ca-pi release"
         required: false
         default: ""
+  # Auto-tag-on-merge (drift-prevention campaign, adjacent to issue #645).
+  # Fires when `ci` finishes running on a push to `main` — NOT on `push`
+  # directly, because a push-triggered job here would race ci.yml's OWN
+  # concurrent re-run for the same commit and could read "pending" or
+  # "missing" merge-readiness evidence for its own SHA. `workflow_run` only
+  # dispatches once the upstream run has fully concluded, so
+  # `github.event.workflow_run.conclusion` is authoritative with no race,
+  # and no second evidence-fetch is needed the way the manual preflight's
+  # own check-runs query is (#385).
+  #
+  # This trigger always resolves the workflow FILE as committed on the
+  # default branch, regardless of which ref the upstream `ci` run analyzed —
+  # the standard, safe shape for a downstream automation that holds a write
+  # token, and why `auto-preflight` below checks out `head_sha` explicitly
+  # rather than trusting an ambient ref.
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed]
+    branches: [main]
 
 # Least privilege by default. Only the publishing jobs widen this to
 # `contents: write`; the preflight that authorizes them never holds a write
@@ -316,4 +335,179 @@ jobs:
           requested-version: ${{ github.event.inputs.pi_confirm }}
           summary: ${{ github.event.inputs.pi_summary }}
           mark-latest: "false"
+          github-token: ${{ github.token }}
+
+  # ------------------------------------------------------------------------- #
+  # Auto-tag-on-merge (drift-prevention campaign, adjacent to issue #645).
+  # Every push to main that advances a target's manifest past its last
+  # published tag gets that tag created and pushed immediately — no human
+  # dispatch, no batching, no drift to backfill later. Deliberately NEVER
+  # creates a GitHub Release (`create-release: "false"` on every lane below):
+  # publishing a Release stays a separate, human-triggered decision through
+  # the manual dispatch path above. A target whose manifest advanced but
+  # whose CHANGELOG carries no matching section fails loudly (the shared
+  # action's own "no CHANGELOG section found" guard) rather than tagging
+  # silently or inventing content — the exact gap that let ca-codex drift 11
+  # undocumented versions before anyone noticed.
+  # ------------------------------------------------------------------------- #
+
+  auto-preflight:
+    name: "[GATE ] | [RELEASE] | Auto-tag preflight"
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      ca: ${{ steps.eligible.outputs.ca }}
+      ca-codex: ${{ steps.eligible.outputs.ca-codex }}
+      ca-sandbox: ${{ steps.eligible.outputs.ca-sandbox }}
+      ca-pi: ${{ steps.eligible.outputs.ca-pi }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Determine which targets have untagged work
+        id: eligible
+        run: |
+          set -euo pipefail
+          # "Eligible" mirrors payload_version_gate.py's own question, asked
+          # again here rather than trusted from the PR that merged: is the
+          # manifest ACTUALLY ahead of what is already tagged, right now, at
+          # this exact commit? A target whose manifest did not move in this
+          # push is silently skipped — not an error, just nothing to do.
+          TAGS=$(git tag -l)
+          for row in \
+            "ca plugins/ca/.claude-plugin/plugin.json v" \
+            "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
+            "ca-sandbox plugins/ca-sandbox/.claude-plugin/plugin.json ca-sandbox-v" \
+            "ca-pi plugins/ca-pi/package.json ca-pi-v"
+          do
+            set -- $row
+            TARGET="$1"; MANIFEST="$2"; PREFIX="$3"
+            VERSION=$(node -p "require('./$MANIFEST').version")
+            ELIGIBLE=$(printf '%s' "$TAGS" \
+              | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
+            echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
+            echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
+          done
+
+  auto-release:
+    name: CA | [Auto-tag]
+    needs: auto-preflight
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca == 'true'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca
+          manifest: plugins/ca/.claude-plugin/plugin.json
+          changelog: CHANGELOG.md
+          tag-prefix: v
+          title-prefix: codeArbiter
+          requested-version: ""
+          summary: ""
+          mark-latest: "true"
+          create-release: "false"
+          github-token: ${{ github.token }}
+
+  auto-release-codex:
+    name: CA-Codex | [Auto-tag]
+    needs: auto-preflight
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-codex == 'true'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca-codex
+          manifest: plugins/ca-codex/.codex-plugin/plugin.json
+          changelog: plugins/ca-codex/CHANGELOG.md
+          tag-prefix: ca-codex-v
+          title-prefix: ca-codex
+          requested-version: ""
+          summary: ""
+          mark-latest: "false"
+          create-release: "false"
+          github-token: ${{ github.token }}
+
+  auto-release-sandbox:
+    name: CA-Sandbox | [Auto-tag]
+    needs: auto-preflight
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-sandbox == 'true'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca-sandbox
+          manifest: plugins/ca-sandbox/.claude-plugin/plugin.json
+          changelog: plugins/ca-sandbox/CHANGELOG.md
+          tag-prefix: ca-sandbox-v
+          title-prefix: ca-sandbox
+          requested-version: ""
+          summary: ""
+          mark-latest: "false"
+          create-release: "false"
+          github-token: ${{ github.token }}
+
+  auto-release-pi:
+    name: CA-Pi | [Auto-tag]
+    needs: auto-preflight
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-pi == 'true'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: ./.github/actions/publish-release
+        with:
+          target: ca-pi
+          manifest: plugins/ca-pi/package.json
+          companion-manifest: package.json
+          changelog: plugins/ca-pi/CHANGELOG.md
+          tag-prefix: ca-pi-v
+          title-prefix: ca-pi
+          requested-version: ""
+          summary: ""
+          mark-latest: "false"
+          create-release: "false"
           github-token: ${{ github.token }}
