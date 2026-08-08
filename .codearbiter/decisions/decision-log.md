@@ -1341,3 +1341,28 @@ Reliable dominates: the adversarial finding that bare-name routing had no writte
 routing-table.md preamble rule; path citations in feature/checkpoint/review/spike commands, SPRINT.md, subagent-driven-development, dispatching-parallel-agents, commit-gate; 9 SKILL.md frontmatter keys; ~11 frontmatter scalars JSON-quoted; skill-author Phase 4 + template amended; token-efficiency.md findings section; bumps ca 2.14.0 / ca-codex 0.6.1 / ca-pi 0.4.1 + root lockstep.
 
 ---
+
+## DECISION-0042 — adr-0028-ratification — Chain-internal skills are path-routed and registry-hidden
+
+**Date:** 2026-08-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — explicit ratification "approve adr28", 2026-08-08
+**Decision category:** framework-structure
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0028 authored as proposed (DECISION-0041 recorded "ratification pending" — true at write time; this entry closes it, the prior entry stands unedited per the append-only rule)
+- **Scaffold position:** n/a — ratification of an authored record; the implementation merged as PR #649 and verified live before ratification
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0028 ratified to accepted. Content unchanged from authoring; post-merge verification on record (nine skills hidden, dual-fronted skills listed, plugin 2.14.0).
+
+### SMARTS rationale
+Recording-only entry; the decision's rationale lives in DECISION-0041 and the ADR.
+
+### Implementation implication
+None beyond the status flip — the ADR's governs: globs became live pushback at edit time on acceptance.
+
+---
