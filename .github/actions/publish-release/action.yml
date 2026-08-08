@@ -67,6 +67,17 @@ inputs:
       badge, so this defaults to false and a lane has to ask for it.
     required: false
     default: "false"
+  create-release:
+    description: >
+      "false" skips the GitHub Release entirely — only the tag is created and
+      pushed. Used by the auto-tag-on-merge lanes (issue #645-adjacent
+      drift-prevention campaign): every merge that advances a target's
+      manifest gets tagged immediately, but publishing a Release stays a
+      separate, deliberate act a human still triggers via the manual
+      dispatch path. Defaults to "true" so the existing manual dispatch
+      lanes are unchanged.
+    required: false
+    default: "true"
   github-token:
     description: "Token with `contents: write` for the tag and Release"
     required: true
@@ -86,7 +97,12 @@ runs:
         set -euo pipefail
         MANIFEST_VERSION=$(node -p "require('./$MANIFEST').version")
         REQ="$CONFIRM"
-        if [ "$REQ" != "$MANIFEST_VERSION" ]; then
+        # An EMPTY request trusts the manifest's own version outright — the
+        # auto-tag lanes have no dispatch input to compare against, only the
+        # manifest a merge just advanced. The manual dispatch lanes always
+        # supply a non-empty version, so this carve-out never weakens the
+        # existing "requested must equal manifest" guard for them.
+        if [ -n "$REQ" ] && [ "$REQ" != "$MANIFEST_VERSION" ]; then
           echo "::error::requested '$REQ' does not equal $MANIFEST version '$MANIFEST_VERSION' — bump/align first"
           exit 1
         fi
@@ -132,6 +148,7 @@ runs:
         SUMMARY: ${{ inputs.summary }}
         TITLE_PREFIX: ${{ inputs.title-prefix }}
         MARK_LATEST: ${{ inputs.mark-latest }}
+        CREATE_RELEASE: ${{ inputs.create-release }}
         TAG: ${{ steps.v.outputs.tag }}
         VER: ${{ steps.v.outputs.version }}
       run: |
@@ -186,19 +203,27 @@ runs:
             printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
             git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
             git push origin "refs/tags/$TAG"
-            gh release create "$TAG" \
-              --title "$TITLE" \
-              --notes-file notes.md \
-              --target "$GITHUB_SHA" \
-              $LATEST --verify-tag
+            if [ "$CREATE_RELEASE" = "true" ]; then
+              gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file notes.md \
+                --target "$GITHUB_SHA" \
+                $LATEST --verify-tag
+            else
+              echo "create-release is false — tag published, GitHub Release intentionally skipped"
+            fi
             ;;
           resume_publish)
-            echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
-            gh release create "$TAG" \
-              --title "$TITLE" \
-              --notes-file notes.md \
-              --target "$GITHUB_SHA" \
-              $LATEST --verify-tag
+            if [ "$CREATE_RELEASE" = "true" ]; then
+              echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
+              gh release create "$TAG" \
+                --title "$TITLE" \
+                --notes-file notes.md \
+                --target "$GITHUB_SHA" \
+                $LATEST --verify-tag
+            else
+              echo "tag $TAG is already at $GITHUB_SHA; create-release is false — nothing to do"
+            fi
             ;;
           already_published)
             echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
@@ -214,16 +239,24 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
         TAG: ${{ steps.v.outputs.tag }}
+        CREATE_RELEASE: ${{ inputs.create-release }}
       run: |
         set -euo pipefail
         # Verify publication rather than assume it (a create can partially succeed),
         # and verify WHAT was published: non-draft alone says nothing about which
         # commit the tag installs (#380).
-        gh release view "$TAG" --json url,isDraft,tagName
-        DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
-        [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
-        NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
-        [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+        #
+        # The Release-specific checks only apply when one was actually asked
+        # for — the auto-tag lanes (`create-release: "false"`) never call `gh
+        # release create` above, so asserting a Release exists here would fail
+        # every auto-tagged push on the thing it deliberately did not do.
+        if [ "$CREATE_RELEASE" = "true" ]; then
+          gh release view "$TAG" --json url,isDraft,tagName
+          DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
+          [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
+          NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
+          [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+        fi
         FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
           | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
         [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }
