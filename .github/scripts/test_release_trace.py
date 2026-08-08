@@ -931,6 +931,24 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             self.skipTest("ca-pi's payload has no commits since its last tag "
                           "at live HEAD, so payload-exclude has nothing to "
                           "narrow; normal immediately after a ca-pi release")
+        # The strict-subset assertion is only meaningful when some commit in
+        # the window actually touches an excluded path. A window whose
+        # commits all live outside the excluded paths leaves excluded ==
+        # unexcluded as plain arithmetic — the same non-finding as the
+        # empty-window case above, first fired live on PR #647 (the first
+        # ca-pi payload commits after ca-pi-v0.3.1 touched routines/agents
+        # only; same defect family as #645). Probe with the SAME helper,
+        # one positive pathspec per declared exclude entry (payload is a
+        # single-string parameter; payload_exclude is a list).
+        exclude_touching = set()
+        for exclude_path in row["payload_exclude"]:
+            exclude_touching.update(_live_window_shas(
+                last_tag, self.head_sha, exclude_path, []))
+        if not exclude_touching:
+            self.skipTest("no commit since ca-pi's last tag touches its "
+                          "excluded paths at live HEAD, so the exclude has "
+                          "nothing to remove; the strict-subset check needs "
+                          "an exclude-touching commit to be meaningful")
         self.assertTrue(
             excluded_window < unexcluded_window,
             "ca-pi's payload-exclude removed no commits from the release "
@@ -1039,10 +1057,16 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             "_first_release_section's end boundary is wrong")
 
         last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
-        self.assertTrue(
-            self.core_lane.semver_greater(next_version, self.core_lane._bare_version(last_tag)),
-            f"ca's manifest version {next_version!r} is not a strict SemVer "
-            f"advance over its last tag {last_tag!r}")
+        # >=, not a strict advance — the same steady-state reasoning as
+        # ca-pi's arm below: once tag-per-merge automation catches the tag
+        # up to the manifest, equality is the correct resting state (#645;
+        # first fired live when v2.12.1 was auto-tagged). Only a tag AHEAD
+        # of the manifest is a regression.
+        self.assertGreaterEqual(
+            self.core_lane.semver_key(next_version),
+            self.core_lane.semver_key(self.core_lane._bare_version(last_tag)),
+            f"ca's manifest version {next_version!r} is behind its last "
+            f"tag {last_tag!r} — the tag has run ahead of the manifest")
 
         message = _compose_tag_message(section_text, date)
         tag = row["prefix"] + next_version
