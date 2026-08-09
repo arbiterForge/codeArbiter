@@ -47,6 +47,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/test/compaction.test.ts",
     "plugins/ca-pi/tools/test/doctor.test.ts",
     "plugins/ca-pi/tools/test/package.test.ts",
+    "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
     "plugins/ca-pi/tools/test/runner-isolation.test.ts",
 })
 # Issue #388. The receipt's whole value is telling an operator - or an agent
@@ -385,9 +386,12 @@ def normalize_help(raw: str) -> tuple[str, ...]:
 
 def capture_help(executable: str) -> tuple[str, ...]:
     """Run a bounded public-help probe and return its normalized surface."""
+    # Windows npm installs expose only a `pi.cmd` shim, which CreateProcess
+    # cannot exec from a bare argv[0]; PATH-resolve first, like run_contract.
+    resolved = shutil.which(executable) or executable
     try:
         completed = subprocess.run(
-            [executable, "--help"],
+            [resolved, "--help"],
             check=False,
             capture_output=True,
             text=True,
