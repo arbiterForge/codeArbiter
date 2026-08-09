@@ -723,6 +723,17 @@ def _independent_window_count(last_tag, head_sha, payload, payload_exclude=()):
     return int(out.strip())
 
 
+def _commit_payload_files(sha, payload):
+    """The commit's touched files under the payload prefix, via a THIRD git
+    subcommand (`diff-tree`, not `log`/`rev-list`), so the exclusively-
+    excluded probe never depends on the exclusion-pathspec arm it exists
+    to validate."""
+    out = _git(["diff-tree", "--no-commit-id", "--name-only", "-r", sha])
+    prefix = payload.rstrip("/") + "/"
+    return [name for name in (line.strip() for line in out.splitlines())
+            if name and (name == payload or name.startswith(prefix))]
+
+
 def _first_release_section(changelog_text):
     """The first (topmost) CHANGELOG section whose heading names a real
     MAJOR.MINOR.PATCH version — skips any number of leading `## [Unreleased]`
@@ -944,11 +955,30 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
         for exclude_path in row["payload_exclude"]:
             exclude_touching.update(_live_window_shas(
                 last_tag, self.head_sha, exclude_path, []))
-        if not exclude_touching:
-            self.skipTest("no commit since ca-pi's last tag touches its "
-                          "excluded paths at live HEAD, so the exclude has "
-                          "nothing to remove; the strict-subset check needs "
-                          "an exclude-touching commit to be meaningful")
+        # Touching an excluded path is NOT the meaningful precondition: a
+        # commit touching excluded AND non-excluded payload paths correctly
+        # SURVIVES exclusion (it still moves the payload), so with only such
+        # commits in the window, excluded == unexcluded is arithmetic — the
+        # same non-finding as the cases above. First fired live on PR #652,
+        # whose feat commit touched tools/ and the shipped payload at once
+        # (defect family #645/#647). The strict-subset assertion needs a
+        # commit whose payload footprint lies ENTIRELY inside the excluded
+        # paths, probed with `diff-tree` so the probe never rides the
+        # exclusion arm under test. A commit with an empty payload file list
+        # (e.g. a merge) proves nothing and is not counted.
+        exclude_prefixes = tuple(
+            path.rstrip("/") + "/" for path in row["payload_exclude"])
+        exclusively_excluded = set()
+        for sha in exclude_touching:
+            files = _commit_payload_files(sha, row["payload"])
+            if files and all(name.startswith(exclude_prefixes) for name in files):
+                exclusively_excluded.add(sha)
+        if not exclusively_excluded:
+            self.skipTest("no commit since ca-pi's last tag touches ONLY its "
+                          "excluded paths at live HEAD — every exclude-"
+                          "touching commit also moves non-excluded payload "
+                          "and correctly survives exclusion, so equal "
+                          "windows are arithmetic, not a defect")
         self.assertTrue(
             excluded_window < unexcluded_window,
             "ca-pi's payload-exclude removed no commits from the release "
