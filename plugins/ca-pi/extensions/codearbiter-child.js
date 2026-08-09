@@ -713,7 +713,7 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
       if (!isAbsolute2(cliCandidate) || await realpath3(cliCandidate) !== canonicalAnchor) return fail();
     }
     const shippedModule = await realpath3(fileURLToPath(import.meta.url));
-    const extensionPackageRoot = await owningPackageRoot(shippedModule, "ca-pi");
+    const extensionPackageRoot = await owningPackageRoot(shippedModule, "@arbiterforge/ca-pi");
     let cursor = dirname2(canonicalAnchor);
     let manifest;
     let manifestPath = "";
@@ -1836,7 +1836,7 @@ async function codeArbiterPiChild(pi) {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile2(resolve5(packageRoot, "package.json"), "utf8"));
-      if (manifest.name === "ca-pi") break;
+      if (manifest.name === "@arbiterforge/ca-pi") break;
     } catch {
     }
     const parent = dirname3(packageRoot);

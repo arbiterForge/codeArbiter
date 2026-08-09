@@ -114,7 +114,7 @@ async function preparePackage(root: string, catalog: CommandCatalogEntry[]): Pro
   await mkdir(resolve(root, "skills"), { recursive: true });
   await writeFile(resolve(root, "extensions", "codearbiter.js"), "export default () => {};\n", "utf8");
   await writeFile(resolve(root, "package.json"), JSON.stringify({
-    name: "ca-pi",
+    name: "@arbiterforge/ca-pi",
     pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
   }) + "\n", "utf8");
   for (const entry of catalog) {

@@ -13,7 +13,8 @@ journey:
 
 codeArbiter ships `ca-pi` as a third sibling plugin, alongside `ca` (Claude Code) and `ca-codex`
 (Codex). All three activate from the same `.codearbiter/CONTEXT.md` and read and write the same
-checked-in `.codearbiter/` state. `ca-pi` is Git-only: there is no npm release.
+checked-in `.codearbiter/` state. Install `ca-pi` from npm (`@arbiterforge/ca-pi`) or as a pinned
+Git tag — the Git tag is the reproducible pin; npm is the convenience channel.
 
 <div class="ca-callout ca-callout--preview"><p class="ca-callout__label">Feature Forge preview</p><p><code>ca-pi</code> is available for real use now. You are welcome to install it, use it in your repositories, and report what you find. Its automated and hosted promotion matrix is green, but broader real-world testing is still required before codeArbiter claims 100% validation or stable status.</p></div>
 
@@ -42,9 +43,15 @@ Choose an exact tag from that output, pin it in the install source, then inspect
 source and enabled resources:
 
 ```text
-pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
+pi install npm:@arbiterforge/ca-pi
 pi list
 pi config
+```
+
+To pin an exact release instead (the reproducible channel this site's runbooks verify against):
+
+```text
+pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
 Replace `<version>` with only the numeric suffix from the chosen tag. For example, the tag

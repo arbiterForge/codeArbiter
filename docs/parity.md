@@ -79,15 +79,17 @@ runtime; it is not publisher authenticity. Confirm the pinned source with
 
 | Topic | Claude Code | Codex CLI | Pi |
 |---|---|---|---|
-| Distribution | Claude marketplace | Codex plugin marketplace | Feature Forge `preview` via pinned Git package `ca-pi-v*`; no npm release |
+| Distribution | Claude marketplace | Codex plugin marketplace | Feature Forge `preview` via pinned Git package `ca-pi-v*` plus CI-published `npm:@arbiterforge/ca-pi` (ADR-0029) |
 | Versioning | `ca` SemVer | independent `ca-codex` SemVer | independent nested/root synchronized SemVer |
 | `--farm` | Feature Forge `preview`, shared `farm.js` | degraded to the premium path until backend packaging lands | Feature Forge `preview`, parent tool calls the same contained `farm.js` |
 | Farm credentials | farm process only | no backend process | farm process only; ordinary children strip `FARM_API_KEY` |
 | Embedded worker | not applicable | not shipped | future spike on hardened child runner; not a dependency |
 
-npm packaging is a future spike. A Pi-native embedded farm worker is also a
-future spike and must retain the shared plan/result contract; neither changes
-the current Git-only install or promotes `--farm` beyond preview.
+Every `ca-pi-v*` tag also publishes `npm:@arbiterforge/ca-pi` with npm
+provenance (ADR-0029); the pinned Git tag remains the reproducible install. A
+Pi-native embedded farm worker is a future spike and must retain the shared
+plan/result contract; it neither changes the install channels nor promotes
+`--farm` beyond preview.
 
 ## Explicit exception ledger
 
@@ -103,7 +105,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
 | Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.10 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
-| Pi npm package | DEGRADED | Git tags are the only distribution path in this release line. | `docs/pi-parity-testing.md` |
+| Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/npm-publish.yml` |
 <!-- PI-EXCEPTIONS:END -->
 
 ## Reproduce the evidence

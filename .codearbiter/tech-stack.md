@@ -388,4 +388,6 @@ layers:
 - `ca-pi` releases independently as `ca-pi-v<version>`. The nested
   `plugins/ca-pi/package.json` is the version source; regenerate the root
   `package.json`, update `plugins/ca-pi/CHANGELOG.md`, and keep both manifests
-  synchronized. Distribution is pinned Git only; there is no npm release.
+  synchronized. Distribution is the pinned Git tag (reproducible channel) plus
+  the CI-published `npm:@arbiterforge/ca-pi` package on every `ca-pi-v*` tag
+  (ADR-0029, `.github/workflows/npm-publish.yml`).

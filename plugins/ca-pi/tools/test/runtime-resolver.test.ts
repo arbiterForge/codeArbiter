@@ -2,7 +2,7 @@
  * against real temp-directory fixtures, with no mock of the module under test.
  *
  * IMPORTANT: `resolvePiRuntimeIdentity` computes its own "extension package root" via
- * `owningPackageRoot(shippedModule, "ca-pi")`, where `shippedModule` is derived from
+ * `owningPackageRoot(shippedModule, "@arbiterforge/ca-pi")`, where `shippedModule` is derived from
  * `import.meta.url` of runtime-resolver.ts itself (see src/runtime-resolver.ts:113-114). If we
  * import the module directly from its real location (plugins/ca-pi/tools/src/runtime-resolver.ts),
  * `owningPackageRoot` walks up and finds plugins/ca-pi/tools/package.json first, whose "name" is
@@ -35,7 +35,7 @@ let PI_RUNTIME_DIAGNOSIS: RuntimeResolverModule["PI_RUNTIME_DIAGNOSIS"];
 
 beforeAll(async () => {
   // Build a fixture "ca-pi" package whose src/runtime-resolver.ts is an unmodified copy of the
-  // real module, so `owningPackageRoot(shippedModule, "ca-pi")` finds a package.json literally
+  // real module, so `owningPackageRoot(shippedModule, "@arbiterforge/ca-pi")` finds a package.json literally
   // named "ca-pi" at the first ancestor, matching the intended (production-bundle) layout.
   resolverHomeRoot = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-runtime-resolver-home-")));
   const srcDir = resolve(resolverHomeRoot, "src");
@@ -47,7 +47,7 @@ beforeAll(async () => {
     const realSource = await readFile(realSourcePath, "utf8");
     await writeFile(resolve(srcDir, name), realSource, "utf8");
   }
-  await writeFile(resolve(resolverHomeRoot, "package.json"), JSON.stringify({ name: "ca-pi", version: "0.1.0", type: "module" }), "utf8");
+  await writeFile(resolve(resolverHomeRoot, "package.json"), JSON.stringify({ name: "@arbiterforge/ca-pi", version: "0.1.0", type: "module" }), "utf8");
   const module = await import(pathToFileURL(resolve(srcDir, "runtime-resolver.ts")).href) as RuntimeResolverModule;
   resolvePiRuntimeIdentity = module.resolvePiRuntimeIdentity;
   PI_RUNTIME_DIAGNOSIS = module.PI_RUNTIME_DIAGNOSIS;

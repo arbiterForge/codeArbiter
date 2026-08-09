@@ -149,7 +149,7 @@ async function owningCaPackageRoot(): Promise<string> {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile(resolve(cursor, "package.json"), "utf8")) as { name?: unknown };
-      if (manifest.name === "ca-pi") return await realpath(cursor);
+      if (manifest.name === "@arbiterforge/ca-pi") return await realpath(cursor);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
@@ -184,7 +184,7 @@ export async function validateChildLaunch(
 
   const packageRoot = await realpath(dependencies.packageRoot ?? await owningCaPackageRoot());
   const packageManifest = JSON.parse(await readFile(resolve(packageRoot, "package.json"), "utf8")) as { name?: unknown };
-  if (packageManifest.name !== "ca-pi") throw new Error("Pi child package identity is invalid.");
+  if (packageManifest.name !== "@arbiterforge/ca-pi") throw new Error("Pi child package identity is invalid.");
   const childExtensionPath = await canonicalFile(input.childExtensionPath, "Pi child extension");
   const expectedChildExtension = await canonicalFile(resolve(packageRoot, "extensions", "codearbiter-child.js"), "packaged Pi child extension");
   if (childExtensionPath !== expectedChildExtension || !lexicallyInside(childExtensionPath, packageRoot)) {

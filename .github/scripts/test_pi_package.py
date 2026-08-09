@@ -860,11 +860,34 @@ class PiPackageTests(unittest.TestCase):
         self.assertIn(expected, parent)
         self.assertEqual(len(re.findall(re.escape(expected), parent)), 1)
 
-    def test_root_manifest_is_private_dependency_free_pi_metadata(self):
+    def test_root_manifest_is_publishable_dependency_free_pi_metadata(self):
+        # ADR-0029 / spec npm-publish-ca-pi AC-1: the root manifest is the npm
+        # publish unit — scoped name, no private flag, provenance-ready fields.
         data = read_json(REPO / "package.json")
-        self.assertEqual(data["name"], "ca-pi")
+        self.assertEqual(data["name"], "@arbiterforge/ca-pi")
         self.assertEqual(data["version"], read_json(PLUGIN / "package.json")["version"])
-        self.assertIs(data["private"], True)
+        self.assertNotIn("private", data)
+        self.assertEqual(
+            data["publishConfig"], {"access": "public", "provenance": True},
+        )
+        self.assertEqual(
+            data["repository"],
+            {"type": "git", "url": "git+https://github.com/arbiterForge/codeArbiter.git"},
+        )
+        self.assertEqual(
+            data["files"],
+            [
+                "plugins/ca-pi/*.md",
+                "plugins/ca-pi/agents/",
+                "plugins/ca-pi/extensions/",
+                "plugins/ca-pi/generated/",
+                "plugins/ca-pi/helpers/",
+                "plugins/ca-pi/hooks/",
+                "plugins/ca-pi/includes/",
+                "plugins/ca-pi/routines/",
+                "plugins/ca-pi/skills/",
+            ],
+        )
         self.assertEqual(data["engines"], {"node": ">=22.19.0"})
         self.assertEqual(
             data["pi"]["extensions"],
@@ -876,7 +899,7 @@ class PiPackageTests(unittest.TestCase):
 
     def test_nested_manifest_is_the_single_version_source(self):
         data = read_json(PLUGIN / "package.json")
-        self.assertEqual(data["name"], "ca-pi")
+        self.assertEqual(data["name"], "@arbiterforge/ca-pi")
         changelog = (PLUGIN / "CHANGELOG.md").read_text(encoding="utf-8")
         newest = re.search(r"^## \[(\d+\.\d+\.\d+)\] - \d{4}-\d{2}-\d{2}$", changelog, re.M)
         self.assertIsNotNone(newest, "CHANGELOG.md has no dated release section")
@@ -1882,6 +1905,70 @@ class PiPackageTests(unittest.TestCase):
                             stream.close()
                 if reader is not None:
                     reader.join(timeout=2)
+
+
+class NpmPublishContractTest(unittest.TestCase):
+    """ADR-0029 / spec npm-publish-ca-pi: the npm channel ships the same payload
+    the Git install serves, from a tag-triggered provenance workflow."""
+
+    WORKFLOW = REPO / ".github" / "workflows" / "npm-publish.yml"
+
+    def test_npm_pack_contents_match_pi_payload(self):
+        # AC-2: the tarball is exactly the Pi-served payload — offline dry-run.
+        npm = shutil.which("npm")
+        self.assertIsNotNone(npm, "npm is a prerequisite of the package suite")
+        completed = subprocess.run(
+            [npm, "pack", "--dry-run", "--json"],
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr[-2000:])
+        report = json.loads(completed.stdout)
+        paths = {entry["path"].replace("\\", "/") for entry in report[0]["files"]}
+        for required in (
+            "package.json",
+            "LICENSE",
+            "plugins/ca-pi/SKILLS.md",
+            "plugins/ca-pi/extensions/codearbiter.js",
+            "plugins/ca-pi/helpers/windows-supervisor.js",
+        ):
+            self.assertIn(required, paths)
+        self.assertTrue(any(path.startswith("plugins/ca-pi/skills/") for path in paths))
+        self.assertTrue(any(path.startswith("plugins/ca-pi/generated/") for path in paths))
+        self.assertTrue(any(path.startswith("plugins/ca-pi/hooks/") for path in paths))
+        for excluded_prefix in (
+            "plugins/ca-pi/tools/",
+            "plugins/ca/",
+            "plugins/ca-codex/",
+            "plugins/ca-sandbox/",
+            "core/",
+            "site/",
+            ".github/",
+            ".codearbiter/",
+        ):
+            leaked = sorted(path for path in paths if path.startswith(excluded_prefix))
+            self.assertEqual(leaked, [], f"tarball leaks {excluded_prefix}")
+
+    def test_npm_publish_workflow_contract(self):
+        # AC-3: tag-scoped trigger, least-privilege permissions, provenance
+        # publish, a version guard, and no dependency install at all.
+        self.assertTrue(self.WORKFLOW.is_file(), "npm-publish.yml is missing")
+        text = self.WORKFLOW.read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?ms)^on:\n.*push:\n\s+tags:\n\s+- \"ca-pi-v\*\"")
+        self.assertIn("workflow_dispatch:", text)
+        self.assertRegex(text, r"(?ms)^permissions:\n\s+contents: read\n\s+id-token: write\n")
+        self.assertNotIn("contents: write", text)
+        self.assertIn("--provenance", text)
+        self.assertIn("--access public", text)
+        self.assertIn("NODE_AUTH_TOKEN", text)
+        self.assertIn("secrets.NPMJS_TOKEN", text)
+        self.assertNotIn("npm ci", text)
+        self.assertNotIn("npm install", text)
+        for manifest in ("package.json", "plugins/ca-pi/package.json"):
+            self.assertIn(manifest, text)
+        self.assertRegex(text, r"(?is)tag.{0,240}version.{0,240}(mismatch|match|equal)")
 
 
 if __name__ == "__main__":

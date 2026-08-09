@@ -1,0 +1,66 @@
+# npm publish channel for ca-pi (ADR-0029). Every ca-pi-v* tag also publishes
+# the repo-root Pi package as npm:@arbiterforge/ca-pi with npm provenance; the
+# pinned Git tag remains the reproducible install and the evidence anchor.
+#
+# No dependency install runs here on purpose: the package is dependency-free
+# and the extension bundles are committed, reviewed artifacts — there is
+# nothing to build at publish time, and nothing whose lifecycle scripts we
+# would have to trust. The guard step refuses to publish when the tag and the
+# two synchronized manifests disagree, so a mistagged ref cannot ship a
+# mismatched version.
+name: "[SHIP ] | [PI  ] | npm publish"
+
+on:
+  push:
+    tags:
+      - "ca-pi-v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing ca-pi-v* tag to publish (e.g. ca-pi-v0.6.0)"
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - name: Guard — tag and manifest versions must match
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          python3 - << 'EOF'
+          import json
+          import os
+          import sys
+
+          tag = os.environ["RELEASE_TAG"]
+          prefix = "ca-pi-v"
+          if not tag.startswith(prefix):
+              sys.exit(f"refusing to publish: {tag!r} is not a ca-pi release tag")
+          version = tag[len(prefix):]
+          root = json.load(open("package.json", encoding="utf-8"))
+          nested = json.load(open("plugins/ca-pi/package.json", encoding="utf-8"))
+          if not (version == root["version"] == nested["version"]):
+              sys.exit(
+                  "version mismatch: tag {0}, root {1}, nested {2}".format(
+                      version, root["version"], nested["version"],
+                  )
+              )
+          print(f"tag and manifests are equal: {version}")
+          EOF
+      - name: Publish with provenance
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}

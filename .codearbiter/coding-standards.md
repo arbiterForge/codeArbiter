@@ -74,8 +74,9 @@ remains under `core/`; host-specific code is an adapter, never a second kernel.
   extension bundles and `helpers/windows-supervisor.js` are reviewed build
   outputs; stale output is a release blocker.
 - `plugins/ca-pi/package.json` is the independent version source. Generate the
-  root Git-install manifest with `python tools/build-host-packages.py`; npm
-  packaging is future work, not a current distribution path.
+  root manifest with `python tools/build-host-packages.py`; that manifest is
+  both the Git-install unit and the npm publish unit (`@arbiterforge/ca-pi`,
+  ADR-0029) — publishing runs only in CI on `ca-pi-v*` tags, never locally.
 
 ## File headers and copyright
 

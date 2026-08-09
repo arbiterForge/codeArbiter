@@ -29,7 +29,7 @@ export function pluginRootFromModule(): string {
   while (true) {
     try {
       const manifest = JSON.parse(readFileSync(resolve(cursor, "package.json"), "utf8")) as { name?: unknown };
-      if (manifest.name === "ca-pi") return realpathSync(cursor);
+      if (manifest.name === "@arbiterforge/ca-pi") return realpathSync(cursor);
     } catch {
       // Continue toward the filesystem root; ca-pi-tools is intentionally skipped.
     }
@@ -83,7 +83,7 @@ export function declaredPackageOwner(command: SlashCommand, expectedPath: string
       name?: unknown;
       pi?: { extensions?: unknown; skills?: unknown };
     };
-    if (manifest.name !== "ca-pi" || manifest.pi === undefined) return false;
+    if (manifest.name !== "@arbiterforge/ca-pi" || manifest.pi === undefined) return false;
     const declared = command.source === "extension" ? manifest.pi.extensions : manifest.pi.skills;
     if (!Array.isArray(declared) || !declared.every((item) => typeof item === "string")) return false;
     return declared.some((item) => {

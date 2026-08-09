@@ -151,7 +151,7 @@ async function materializedPathRequest(task = "task-secret-sentinel") {
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, "// Task 6 path fixture\n", "utf8");
   }
-  await writeFile(resolve(packageRoot, "package.json"), '{"name":"ca-pi","version":"0.1.0","type":"module"}\n', "utf8");
+  await writeFile(resolve(packageRoot, "package.json"), '{"name":"@arbiterforge/ca-pi","version":"0.1.0","type":"module"}\n', "utf8");
   await mkdir(resolve(packageRoot, "generated"), { recursive: true });
   await writeFile(resolve(packageRoot, "generated", "roles.json"), JSON.stringify([{
     name: "backend-author", classification: "author", charterPath: "agents/backend-author.md",
