@@ -20,6 +20,7 @@ VERSION_LITERAL = re.compile(r'"(?P<version>[^"\r\n]+)"')
 REPOSITORY = Path(__file__).resolve().parents[2]
 OFFICIAL_PROMOTION_PATHS = frozenset({
     ".codearbiter/specs/pi-support.md",
+    "package.json",
     ".codearbiter/tech-stack.md",
     ".github/scripts/test_host_descriptors.py",
     ".github/scripts/test_pi_child_live.py",
@@ -101,6 +102,9 @@ class PromotionTarget:
 class ReleaseSource:
     package_path: Path
     changelog_path: Path
+    # The repo-root manifest is the published npm unit (ADR-0029), rendered
+    # from the nested version; a release bump must advance both in lockstep.
+    root_package_path: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -218,6 +222,8 @@ def load_targets(path: Path) -> Targets:
         parsed_release = ReleaseSource(
             _relative_path(release.get("package_path"), "release.package_path"),
             _relative_path(release.get("changelog_path"), "release.changelog_path"),
+            None if release.get("root_package_path") is None
+            else _relative_path(release.get("root_package_path"), "release.root_package_path"),
         )
     return Targets(
         policy=PolicySource(
@@ -296,12 +302,14 @@ def _enforce_official_write_scope(repo: Path, targets: Targets) -> None:
             str(targets.release.package_path).replace("\\", "/"),
             str(targets.release.changelog_path).replace("\\", "/"),
         })
+        if targets.release.root_package_path is not None:
+            paths.add(str(targets.release.root_package_path).replace("\\", "/"))
     unknown = sorted(paths - OFFICIAL_PROMOTION_PATHS)
     if unknown:
         raise PromotionError(f"promotion recipe declares unapproved write path: {unknown[0]}")
 
 
-def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, date: str) -> tuple[Path, Path]:
+def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, date: str) -> tuple[Path, ...]:
     package_path = _target_path(repo, PromotionTarget("release-package", release.package_path, "release-metadata", "-", "-", "one"))
     changelog_path = _target_path(repo, PromotionTarget("release-changelog", release.changelog_path, "release-metadata", "-", "-", "one"))
     try:
@@ -315,6 +323,26 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
     next_version = f"{major}.{minor}.{patch + 1}"
     package["version"] = next_version
     package_path.write_text(json.dumps(package, indent=2) + "\n", encoding="utf-8", newline="\n")
+    changed: list[Path] = [release.package_path, release.changelog_path]
+    if release.root_package_path is not None:
+        root_path = _target_path(repo, PromotionTarget("release-root-package", release.root_package_path, "release-metadata", "-", "-", "one"))
+        try:
+            root_manifest = json.loads(root_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            raise PromotionError(f"cannot read ca-pi root package metadata: {error}") from error
+        if not isinstance(root_manifest, dict) or root_manifest.get("version") != version:
+            raise PromotionError(
+                "ca-pi root package version does not match the nested manifest; "
+                "regenerate it before promoting",
+            )
+        root_manifest["version"] = next_version
+        # Byte-for-byte the renderer's serialization (tools/build-host-packages.py),
+        # so the generated-manifest byte contract keeps holding after the bump.
+        root_path.write_text(
+            json.dumps(root_manifest, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8", newline="\n",
+        )
+        changed.append(release.root_package_path)
     try:
         changelog = changelog_path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as error:
@@ -327,7 +355,7 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
         f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
     )
     changelog_path.write_text(changelog.replace(marker, marker + entry, 1), encoding="utf-8", newline="\n")
-    return release.package_path, release.changelog_path
+    return tuple(changed)
 
 
 def apply_promotion(
