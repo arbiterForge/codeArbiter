@@ -4,6 +4,18 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-09
+
+### Added
+
+- Rich footer parity gaps closed (spec `pi-footer-parity-gaps`): a per-message
+  token-burn sparkline derived from Pi session entries (last 20 assistant
+  messages, snapshot-independent); refresh-time git repository name and dirty
+  indicator for affirmatively trusted projects (bounded `git` spawn — explicit
+  argv, `shell: false`, 2s timeout, capped output, omit-on-failure); and up to
+  four per-item activity rows with a `+N more` overflow in the wide layout.
+  Rate-window telemetry stays omitted, never fabricated.
+
 ## [0.4.1] - 2026-08-08
 
 ### Changed

@@ -184,6 +184,16 @@ _ISSUE_464_NON_POLICY_ARTIFACTS = frozenset({
 })
 
 
+# Exact artifacts approved by the pi-footer-parity-gaps spec: the refresh-time
+# git enrichment module for the rich footer (bounded explicit-argv spawn,
+# trusted projects only) and its contract suite. Path-exact like every set
+# above, so an unlisted file under tools/ still fails closed.
+_FOOTER_PARITY_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/git-facts.ts",
+    "tools/test/git-facts.test.ts",
+})
+
+
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
@@ -415,6 +425,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_ISSUE_374_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_455_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_464_NON_POLICY_ARTIFACTS)
+        | set(_FOOTER_PARITY_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
