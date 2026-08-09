@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import re
 import subprocess
 import sys
@@ -616,6 +617,50 @@ class DocumentationContractTests(unittest.TestCase):
             contract_path.write_text(json.dumps(document), encoding="utf-8")
             with self.assertRaises(docs.ContractError):
                 docs.load_contract(contract_path)
+
+
+class OfficialWriteScopeTests(unittest.TestCase):
+    """The checked-in recipe must stay executable against its own allowlist.
+
+    Regression: #460 enrolled runner-broker-lifecycle.test.ts in
+    pi-promotion-targets.json without enrolling it in OFFICIAL_PROMOTION_PATHS,
+    which made every hosted promotion run fail at the write-scope gate from
+    2026-07-30 onward — before any Pi contract was ever probed.
+    """
+
+    def test_checked_in_recipe_passes_the_official_write_scope_gate(self):
+        promotion = load_module()
+        targets = promotion.load_targets(REPO / ".github" / "pi-promotion-targets.json")
+        promotion._enforce_official_write_scope(promotion.REPOSITORY, targets)
+
+
+class HelpProbeResolutionTests(unittest.TestCase):
+    """The help probe must launch Pi through PATH resolution, not a raw name.
+
+    Regression: on Windows the npm global install exposes only a `pi.cmd`
+    shim, which CreateProcess cannot exec from a bare argv[0]; the hosted
+    windows-latest promotion cell died with `cannot capture Pi help:
+    FileNotFoundError` before probing anything.
+    """
+
+    def test_capture_help_finds_a_shimmed_executable_on_path(self):
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            shim_dir = Path(raw)
+            if sys.platform == "win32":
+                shim = shim_dir / "ca-probe-pi.cmd"
+                shim.write_text("@echo   --probe-flag ^<value^>  fake probe flag\r\n", encoding="ascii")
+            else:
+                shim = shim_dir / "ca-probe-pi"
+                shim.write_text("#!/bin/sh\necho '  --probe-flag <value>  fake probe flag'\n", encoding="ascii")
+                shim.chmod(0o755)
+            original_path = os.environ.get("PATH", "")
+            os.environ["PATH"] = str(shim_dir) + os.pathsep + original_path
+            try:
+                surface = promotion.capture_help("ca-probe-pi")
+            finally:
+                os.environ["PATH"] = original_path
+        self.assertTrue(surface, "help probe returned an empty surface")
 
 
 if __name__ == "__main__":
