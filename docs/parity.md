@@ -48,7 +48,7 @@ and `ca-pi: 38`.
 | WRITE/EDIT enforcement | Write and Edit hooks | `apply_patch` decomposed per file; opaque blocks | final wrappers around built-in `write` and `edit` arguments |
 | READ notices | native Read hook | host-impossible; post-write notices remain | built-in `read` wrapper and shared notice policy |
 | Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
-| Status | complete Claude statusline | startup state only | rich footer globally; governance row only when enabled and affirmatively trusted; rate windows omitted |
+| Status | complete Claude statusline | startup state only | rich footer globally with a per-message burn sparkline and up to four activity rows; refresh-time git repository/dirty enrichment is trusted-only; governance row only when enabled and affirmatively trusted; rate windows omitted |
 | Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
 | Role dispatch | Claude subagents | host-provided agent threads with retained receipts; bounded inline fallback on older hosts | fresh Pi RPC children: single, chain, parallel |
 | Process cleanup | host-managed subagents | host-managed agent threads (or current-thread lifecycle for an inline fallback) | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
@@ -58,7 +58,7 @@ and `ca-pi: 38`.
 
 | Capability | Status | Pi behavior | Evidence |
 |---|---|---|---|
-| Rich footer | SUPPORTED | Installed in every interactive parent repository; the governance row requires enabled plus affirmatively trusted state. | `plugins/ca-pi/tools/src/status.ts` |
+| Rich footer | SUPPORTED | Installed in every interactive parent repository with a per-message burn sparkline and up to four activity rows; git repository/dirty enrichment is collected at refresh for trusted projects only; the governance row requires enabled plus affirmatively trusted state. | `plugins/ca-pi/tools/src/status.ts` |
 | Execute permission asks | SUPPORTED | Classified reads allow silently; governed mutation and external side effects ask once for the current invocation. | `plugins/ca-pi/tools/src/policy.ts` |
 | Read-only plan mode | SUPPORTED | Plan mode is read-only except for the current canonical spec, plan, and plan ledger. | `plugins/ca-pi/tools/src/plan-mode.ts` |
 | Session-only background jobs | SUPPORTED | Jobs terminate and verify descendants at shutdown and are never restored from Pi session entries. | `plugins/ca-pi/tools/src/background-jobs.ts` |

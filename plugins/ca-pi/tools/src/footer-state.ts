@@ -23,6 +23,8 @@ export interface PiFooterStateSource {
   readonly now?: Date;
   /** Optional composition-owned fact; stock Pi 0.80.10 does not expose update availability. */
   readonly updateVersion?: unknown;
+  /** Refresh-time git enrichment for a trusted project; absent facts stay omitted. */
+  readonly gitFacts?: { readonly repository?: unknown; readonly dirty?: unknown };
   /** Current session-only activity; snapshot failure is contained by the adapter. */
   readonly activity?: ActivitySnapshotSource;
 }
@@ -121,6 +123,24 @@ function normalizeSnapshotToday(value: unknown): FooterDailyUsage | undefined {
   };
 }
 
+const SPARKLINE_MAX_MESSAGES = 20;
+const SPARKLINE_MAX_ENTRIES = 400;
+
+function sparklineSeries(entriesValue: unknown): readonly number[] | undefined {
+  if (!Array.isArray(entriesValue)) return undefined;
+  const values: number[] = [];
+  for (const rawEntry of entriesValue.slice(-SPARKLINE_MAX_ENTRIES)) {
+    const entry = object(rawEntry);
+    const message = object(entry?.message);
+    if (entry?.type !== "message" || message?.role !== "assistant") continue;
+    const usage = object(message.usage);
+    if (!usage) continue;
+    values.push(finite(finite(usage.input, MAX_TOKENS) + finite(usage.output, MAX_TOKENS), MAX_TOKENS));
+  }
+  const bounded = values.slice(-SPARKLINE_MAX_MESSAGES);
+  return bounded.length === 0 ? undefined : bounded;
+}
+
 function sessionAge(headerValue: unknown, now: Date): number | undefined {
   const timestamp = object(headerValue)?.timestamp;
   if (typeof timestamp !== "string") return undefined;
@@ -164,11 +184,16 @@ export function adaptPiFooterState(source: PiFooterStateSource): FooterInput {
   const sessionName = text(callMember(source.pi, "getSessionName"))
     ?? text(callMember(manager, "getSessionName"));
   const branch = text(callMember(source.footerData, "getGitBranch"));
+  const rawFacts = object(source.gitFacts);
+  const repository = text(rawFacts?.repository, 200);
+  const dirty = rawFacts?.dirty === true ? true : rawFacts?.dirty === false ? false : undefined;
   const modelName = text(source.context.model?.id);
   const provider = text(source.context.model?.provider);
   const thinking = text(callMember(source.pi, "getThinkingLevel"));
+  const entriesValue = callMember(manager, "getEntries");
   const snapshotSession = normalizeSnapshotSession(source.usageSnapshot?.session);
-  const usage = snapshotSession ?? aggregateSessionUsage(callMember(manager, "getEntries"));
+  const usage = snapshotSession ?? aggregateSessionUsage(entriesValue);
+  const sparkline = sparklineSeries(entriesValue);
   const ageSeconds = sessionAge(callMember(manager, "getHeader"), now);
   const session = usage ? { ...usage, ...(ageSeconds === undefined ? {} : { ageSeconds }) } : undefined;
   const rawContext = object(callMember(source.context, "getContextUsage"));
@@ -185,7 +210,11 @@ export function adaptPiFooterState(source: PiFooterStateSource): FooterInput {
   return {
     folder,
     ...(sessionName ? { sessionName } : {}),
-    ...(branch ? { git: { branch } } : {}),
+    ...(branch || repository || dirty !== undefined ? { git: {
+      ...(repository ? { repository } : {}),
+      ...(branch ? { branch } : {}),
+      ...(dirty === undefined ? {} : { dirty }),
+    } } : {}),
     ...(modelName ? { model: {
       name: modelName,
       ...(provider ? { provider } : {}),
@@ -196,5 +225,6 @@ export function adaptPiFooterState(source: PiFooterStateSource): FooterInput {
     ...(daily ? { daily } : {}),
     ...(updateVersion ? { update: { version: updateVersion } } : {}),
     ...(activity ? { activity } : {}),
+    ...(sparkline ? { sparkline } : {}),
   };
 }

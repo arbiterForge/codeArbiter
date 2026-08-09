@@ -62,6 +62,8 @@ export interface FooterInput {
   readonly update?: { readonly version: string };
   readonly governance?: FooterGovernance;
   readonly activity?: readonly FooterActivity[];
+  /** Per-message burn series, oldest→newest; the renderer shows the last 20. */
+  readonly sparkline?: readonly number[];
 }
 
 export interface FooterRenderOptions {
@@ -294,13 +296,36 @@ function cacheAndAge(session: FooterUsage): string {
   return bits.map((bit) => colored(COLORS.muted, bit)).join(` ${colored(COLORS.deep, "·")} `);
 }
 
-function activitySegment(activity: readonly FooterActivity[]): string {
-  const rendered = activity.slice(0, 3).map((item) => {
+const ACTIVITY_MAX_ROWS = 4;
+const SPARKLINE_MAX_BARS = 20;
+const SPARK_GLYPHS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"] as const;
+
+function activityRows(activity: readonly FooterActivity[]): string[] {
+  const rows = activity.slice(0, ACTIVITY_MAX_ROWS).map((item) => {
     const glyph = item.state === "active" ? colored(COLORS.ok, "●") : colored(COLORS.muted, "✓");
     const age = item.ageSeconds === undefined ? "" : ` ${formatDuration(item.ageSeconds)}`;
     return `${glyph} ${sanitize(item.kind, "job")}:${sanitize(item.label)}${age}`;
   });
-  return rendered.length ? `${colored(COLORS.bright, "activity")} ${rendered.join(` ${colored(COLORS.deep, "·")} `)}` : "";
+  if (rows.length === 0) return rows;
+  rows[0] = `${colored(COLORS.bright, "activity")} ${rows[0]}`;
+  if (activity.length > ACTIVITY_MAX_ROWS) {
+    rows.push(colored(COLORS.muted, `+${activity.length - ACTIVITY_MAX_ROWS} more`));
+  }
+  return rows;
+}
+
+function sparklineSegment(series: readonly number[]): string {
+  const window = series.slice(-SPARKLINE_MAX_BARS)
+    .map((value) => boundedNumber(value, 0, MAX_TOKENS, 0));
+  if (window.length === 0) return "";
+  const max = Math.max(...window);
+  const bars = window.map((value) => {
+    const level = max > 0 ? Math.max(1, Math.min(8, Math.ceil(value / max * 8))) : 1;
+    return SPARK_GLYPHS[level - 1]!;
+  }).join("");
+  const last = window.at(-1)!;
+  return `${colored(COLORS.muted, "burn")} ${gradient(bars, [120, 80, 200], [205, 140, 255])}`
+    + ` ${colored(COLORS.normal, formatTokens(last))}`;
 }
 
 class Box {
@@ -398,16 +423,18 @@ function renderWide(input: FooterInput, box: Box): void {
   const contextRow = guard(() => context ? contextWide(context, rightWidth) : "", "");
   const dailyRow = guard(() => daily ? usageRow("Today", daily) : "", "");
   const cacheRow = guard(() => session ? cacheAndAge(session) : "", "");
-  if (sessionRow || contextRow || dailyRow || cacheRow) {
+  const sparkRow = guard(() => input.sparkline ? sparklineSegment(input.sparkline) : "", "");
+  if (sessionRow || contextRow || dailyRow || cacheRow || sparkRow) {
     box.separator();
     if (sessionRow || contextRow) box.row(`${pad(sessionRow, leftWidth, box.metrics)} ${colored(COLORS.deep, "│")} ${contextRow}`);
     if (dailyRow || cacheRow) box.row(`${pad(dailyRow, leftWidth, box.metrics)} ${colored(COLORS.deep, "│")} ${cacheRow}`);
+    if (sparkRow) box.row(sparkRow);
   }
 
-  const activity = guard(() => input.activity ? activitySegment(input.activity) : "", "");
-  if (activity) {
+  const rows = guard(() => input.activity ? activityRows(input.activity) : [], [] as string[]);
+  if (rows.length > 0) {
     box.separator();
-    box.row(activity);
+    for (const row of rows) box.row(row);
   }
 }
 

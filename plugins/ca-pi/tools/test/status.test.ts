@@ -1068,3 +1068,96 @@ describe("Pi keyed status lifecycle", () => {
     expect(host.last()).toBeUndefined();
   });
 });
+
+describe("footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4)", () => {
+  function footerComponent(host: StatusHost): { render(width: number): string[] } {
+    const factory = host.footerCalls[0] as (tui: { requestRender(): void }, theme: unknown, data: {
+      getGitBranch(): string;
+    }) => { render(width: number): string[] };
+    return factory({ requestRender: () => undefined }, {}, { getGitBranch: () => "main" });
+  }
+
+  function plainRender(component: { render(width: number): string[] }): string {
+    return component.render(120).join("\n").replace(/\x1b\[[0-9;]*m/gu, "");
+  }
+
+  test("O-3: trusted refresh collects facts once and the render shows repository and dirty marker", async () => {
+    const cwd = await bareProject();
+    const packageRoot = await bareProject();
+    const host = new StatusHost(packageRoot, []);
+    const collected: string[] = [];
+    installParent(host, {
+      bridge: new StatusBridge(),
+      catalog: [],
+      packageRoot,
+      loadPersona: async () => "persona",
+      footerMetrics,
+      collectGitFacts: async (target) => {
+        collected.push(target);
+        return { repository: "arbiterForge/codeArbiter", dirty: true };
+      },
+    });
+    const context = host.context(cwd, true, { interactive: true });
+
+    await host.emit("session_start", context);
+    const component = footerComponent(host);
+    const rendered = plainRender(component);
+
+    expect(rendered).toContain("arbiterForge/codeArbiter");
+    expect(rendered).toContain("main*");
+    expect(collected).toEqual([cwd]);
+
+    plainRender(component);
+    plainRender(component);
+    expect(collected).toEqual([cwd]);
+  });
+
+  test("O-3: an untrusted project never invokes the collector and stays branch-only", async () => {
+    const cwd = await bareProject();
+    const packageRoot = await bareProject();
+    const host = new StatusHost(packageRoot, []);
+    const collected: string[] = [];
+    installParent(host, {
+      bridge: new StatusBridge(),
+      catalog: [],
+      packageRoot,
+      loadPersona: async () => "persona",
+      footerMetrics,
+      collectGitFacts: async (target) => {
+        collected.push(target);
+        return { repository: "arbiterForge/codeArbiter", dirty: true };
+      },
+    });
+    const context = host.context(cwd, false, { interactive: true });
+
+    await host.emit("session_start", context);
+    const rendered = plainRender(footerComponent(host));
+
+    expect(collected).toEqual([]);
+    expect(rendered).not.toContain("arbiterForge/codeArbiter");
+    expect(rendered).toContain("main");
+    expect(rendered).not.toContain("main*");
+  });
+
+  test("O-3: a failing collector degrades to the branch-only segment without breaking the box", async () => {
+    const cwd = await bareProject();
+    const packageRoot = await bareProject();
+    const host = new StatusHost(packageRoot, []);
+    installParent(host, {
+      bridge: new StatusBridge(),
+      catalog: [],
+      packageRoot,
+      loadPersona: async () => "persona",
+      footerMetrics,
+      collectGitFacts: async () => { throw new Error("git unavailable"); },
+    });
+    const context = host.context(cwd, true, { interactive: true });
+
+    await host.emit("session_start", context);
+    const rendered = plainRender(footerComponent(host));
+
+    expect(rendered).toContain("main");
+    expect(rendered).not.toContain("arbiterForge");
+    expect(rendered).not.toContain("unavailable; run /ca-doctor");
+  });
+});

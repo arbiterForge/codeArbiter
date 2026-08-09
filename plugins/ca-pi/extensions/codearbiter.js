@@ -4224,12 +4224,129 @@ async function resolvePiRuntime(cliCandidate) {
   return await loadPiRuntime(identity2);
 }
 
+// src/git-facts.ts
+import { spawn as nodeSpawn } from "node:child_process";
+var DEFAULT_TIMEOUT_MS = 2e3;
+var DEFAULT_MAX_OUTPUT_BYTES = 65536;
+var MAX_REPOSITORY_POINTS = 200;
+var CONTROL_AND_ESCAPE_RE2 = /(?:\x1b\[[0-?]*[ -/]*[@-~]?|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)?|\x1b[@-_]|[\u0000-\u001f\u007f-\u009f])/gu;
+function cleanSegment(value) {
+  return value.replace(CONTROL_AND_ESCAPE_RE2, "").trim();
+}
+function parseOriginRepository(url) {
+  if (typeof url !== "string") return void 0;
+  const clean = cleanSegment(url).replace(/\/+$/u, "");
+  if (!clean || /\s/u.test(clean)) return void 0;
+  let path;
+  const schemeIndex = clean.indexOf("://");
+  if (schemeIndex >= 0) {
+    const segments = clean.slice(schemeIndex + 3).split("/");
+    if (segments.length < 3) return void 0;
+    path = segments.slice(-2).join("/");
+  } else {
+    const scp = /^[^/:]+:(.+)$/u.exec(clean);
+    if (scp === null) return void 0;
+    const segments = scp[1].split("/");
+    if (segments.length < 2) return void 0;
+    path = segments.slice(-2).join("/");
+  }
+  const repository = path.replace(/\.git$/u, "");
+  const [owner, name] = repository.split("/");
+  if (!owner || !name) return void 0;
+  return Array.from(repository).slice(0, MAX_REPOSITORY_POINTS).join("");
+}
+function toplevelBasename(output) {
+  const line = cleanSegment(output.split(/\r?\n/u, 1)[0] ?? "");
+  if (!line) return void 0;
+  const segments = line.split(/[\\/]/u).filter((segment) => segment.length > 0);
+  const basename = segments.at(-1);
+  return basename ? Array.from(basename).slice(0, MAX_REPOSITORY_POINTS).join("") : void 0;
+}
+function runGit(cwd, args, spawnImpl2, timeoutMs, maxOutputBytes) {
+  return new Promise((resolvePromise) => {
+    let child;
+    try {
+      child = spawnImpl2("git", [...args], {
+        cwd,
+        shell: false,
+        windowsHide: true,
+        stdio: ["ignore", "pipe", "ignore"]
+      });
+    } catch {
+      resolvePromise(void 0);
+      return;
+    }
+    let settled = false;
+    let bytes = 0;
+    const chunks = [];
+    const finish = (result3) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolvePromise(result3);
+    };
+    const timer = setTimeout(() => {
+      finish(void 0);
+      try {
+        child.kill();
+      } catch {
+      }
+    }, timeoutMs);
+    try {
+      child.stdout?.on("data", (chunk) => {
+        if (settled) return;
+        bytes += chunk.length;
+        chunks.push(chunk);
+        if (bytes > maxOutputBytes) {
+          finish({ code: 0, stdout: Buffer.concat(chunks).toString("utf8"), capped: true });
+          try {
+            child.kill();
+          } catch {
+          }
+        }
+      });
+      child.on("error", () => finish(void 0));
+      child.on("close", (code) => {
+        finish({ code, stdout: Buffer.concat(chunks).toString("utf8"), capped: false });
+      });
+    } catch {
+      finish(void 0);
+      try {
+        child.kill();
+      } catch {
+      }
+    }
+  });
+}
+async function collectGitFacts(cwd, options = {}) {
+  try {
+    const spawnImpl2 = options.spawn ?? nodeSpawn;
+    const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    const maxOutputBytes = options.maxOutputBytes ?? DEFAULT_MAX_OUTPUT_BYTES;
+    const status = await runGit(cwd, ["status", "--porcelain"], spawnImpl2, timeoutMs, maxOutputBytes);
+    if (status === void 0 || !status.capped && status.code !== 0) return void 0;
+    const dirty = status.stdout.trim().length > 0;
+    let repository;
+    const remote = await runGit(cwd, ["remote", "get-url", "origin"], spawnImpl2, timeoutMs, maxOutputBytes);
+    if (remote !== void 0 && remote.code === 0) {
+      repository = parseOriginRepository(remote.stdout.split(/\r?\n/u, 1)[0]);
+    }
+    if (repository === void 0) {
+      const toplevel = await runGit(cwd, ["rev-parse", "--show-toplevel"], spawnImpl2, timeoutMs, maxOutputBytes);
+      if (toplevel !== void 0 && toplevel.code === 0) repository = toplevelBasename(toplevel.stdout);
+    }
+    return { ...repository === void 0 ? {} : { repository }, dirty };
+  } catch {
+    return void 0;
+  }
+}
+
 // src/footer-state.ts
 var MAX_TEXT_POINTS = 512;
 var MAX_TOKENS = 1e15;
 var MAX_COST = 1e9;
 var MAX_AGE_SECONDS = 3650 * 86400;
-var CONTROL_AND_ESCAPE_RE2 = /(?:\x1b\[[0-?]*[ -/]*[@-~]?|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)?|\x1b[@-_]|[\u0000-\u001f\u007f-\u009f])/gu;
+var CONTROL_AND_ESCAPE_RE3 = /(?:\x1b\[[0-?]*[ -/]*[@-~]?|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)?|\x1b[@-_]|[\u0000-\u001f\u007f-\u009f])/gu;
 function finite(value, maximum) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(maximum, value)) : 0;
 }
@@ -4238,7 +4355,7 @@ function roundedCost(value) {
 }
 function sanitize(value) {
   if (typeof value !== "string") return void 0;
-  const clean = value.replace(CONTROL_AND_ESCAPE_RE2, "");
+  const clean = value.replace(CONTROL_AND_ESCAPE_RE3, "");
   return clean || void 0;
 }
 function text(value, maximum = MAX_TEXT_POINTS) {
@@ -4301,6 +4418,22 @@ function normalizeSnapshotToday(value) {
     costUsd: roundedCost(usage.costUsd)
   };
 }
+var SPARKLINE_MAX_MESSAGES = 20;
+var SPARKLINE_MAX_ENTRIES = 400;
+function sparklineSeries(entriesValue) {
+  if (!Array.isArray(entriesValue)) return void 0;
+  const values = [];
+  for (const rawEntry of entriesValue.slice(-SPARKLINE_MAX_ENTRIES)) {
+    const entry = object(rawEntry);
+    const message = object(entry?.message);
+    if (entry?.type !== "message" || message?.role !== "assistant") continue;
+    const usage = object(message.usage);
+    if (!usage) continue;
+    values.push(finite(finite(usage.input, MAX_TOKENS) + finite(usage.output, MAX_TOKENS), MAX_TOKENS));
+  }
+  const bounded = values.slice(-SPARKLINE_MAX_MESSAGES);
+  return bounded.length === 0 ? void 0 : bounded;
+}
 function sessionAge(headerValue, now) {
   const timestamp = object(headerValue)?.timestamp;
   if (typeof timestamp !== "string") return void 0;
@@ -4337,11 +4470,16 @@ function adaptPiFooterState(source) {
   const folder = text(source.context.cwd) ?? ".";
   const sessionName = text(callMember2(source.pi, "getSessionName")) ?? text(callMember2(manager, "getSessionName"));
   const branch = text(callMember2(source.footerData, "getGitBranch"));
+  const rawFacts = object(source.gitFacts);
+  const repository = text(rawFacts?.repository, 200);
+  const dirty = rawFacts?.dirty === true ? true : rawFacts?.dirty === false ? false : void 0;
   const modelName = text(source.context.model?.id);
   const provider = text(source.context.model?.provider);
   const thinking = text(callMember2(source.pi, "getThinkingLevel"));
+  const entriesValue = callMember2(manager, "getEntries");
   const snapshotSession = normalizeSnapshotSession(source.usageSnapshot?.session);
-  const usage = snapshotSession ?? aggregateSessionUsage(callMember2(manager, "getEntries"));
+  const usage = snapshotSession ?? aggregateSessionUsage(entriesValue);
+  const sparkline = sparklineSeries(entriesValue);
   const ageSeconds = sessionAge(callMember2(manager, "getHeader"), now);
   const session = usage ? { ...usage, ...ageSeconds === void 0 ? {} : { ageSeconds } } : void 0;
   const rawContext = object(callMember2(source.context, "getContextUsage"));
@@ -4354,7 +4492,11 @@ function adaptPiFooterState(source) {
   return {
     folder,
     ...sessionName ? { sessionName } : {},
-    ...branch ? { git: { branch } } : {},
+    ...branch || repository || dirty !== void 0 ? { git: {
+      ...repository ? { repository } : {},
+      ...branch ? { branch } : {},
+      ...dirty === void 0 ? {} : { dirty }
+    } } : {},
     ...modelName ? { model: {
       name: modelName,
       ...provider ? { provider } : {},
@@ -4364,7 +4506,8 @@ function adaptPiFooterState(source) {
     ...context ? { context } : {},
     ...daily ? { daily } : {},
     ...updateVersion ? { update: { version: updateVersion } } : {},
-    ...activity ? { activity } : {}
+    ...activity ? { activity } : {},
+    ...sparkline ? { sparkline } : {}
   };
 }
 
@@ -4544,13 +4687,32 @@ function cacheAndAge(session) {
   if (session.ageSeconds !== void 0) bits.push(`age ${formatDuration(session.ageSeconds)}`);
   return bits.map((bit) => colored(COLORS.muted, bit)).join(` ${colored(COLORS.deep, "\xB7")} `);
 }
-function activitySegment(activity) {
-  const rendered = activity.slice(0, 3).map((item) => {
+var ACTIVITY_MAX_ROWS = 4;
+var SPARKLINE_MAX_BARS = 20;
+var SPARK_GLYPHS = ["\u2581", "\u2582", "\u2583", "\u2584", "\u2585", "\u2586", "\u2587", "\u2588"];
+function activityRows(activity) {
+  const rows = activity.slice(0, ACTIVITY_MAX_ROWS).map((item) => {
     const glyph = item.state === "active" ? colored(COLORS.ok, "\u25CF") : colored(COLORS.muted, "\u2713");
     const age = item.ageSeconds === void 0 ? "" : ` ${formatDuration(item.ageSeconds)}`;
     return `${glyph} ${sanitize2(item.kind, "job")}:${sanitize2(item.label)}${age}`;
   });
-  return rendered.length ? `${colored(COLORS.bright, "activity")} ${rendered.join(` ${colored(COLORS.deep, "\xB7")} `)}` : "";
+  if (rows.length === 0) return rows;
+  rows[0] = `${colored(COLORS.bright, "activity")} ${rows[0]}`;
+  if (activity.length > ACTIVITY_MAX_ROWS) {
+    rows.push(colored(COLORS.muted, `+${activity.length - ACTIVITY_MAX_ROWS} more`));
+  }
+  return rows;
+}
+function sparklineSegment(series) {
+  const window = series.slice(-SPARKLINE_MAX_BARS).map((value) => boundedNumber(value, 0, MAX_TOKENS2, 0));
+  if (window.length === 0) return "";
+  const max = Math.max(...window);
+  const bars = window.map((value) => {
+    const level = max > 0 ? Math.max(1, Math.min(8, Math.ceil(value / max * 8))) : 1;
+    return SPARK_GLYPHS[level - 1];
+  }).join("");
+  const last = window.at(-1);
+  return `${colored(COLORS.muted, "burn")} ${gradient(bars, [120, 80, 200], [205, 140, 255])} ${colored(COLORS.normal, formatTokens(last))}`;
 }
 var Box = class {
   constructor(width, metrics) {
@@ -4636,15 +4798,17 @@ function renderWide(input, box) {
   const contextRow = guard(() => context ? contextWide(context, rightWidth) : "", "");
   const dailyRow = guard(() => daily ? usageRow("Today", daily) : "", "");
   const cacheRow = guard(() => session ? cacheAndAge(session) : "", "");
-  if (sessionRow || contextRow || dailyRow || cacheRow) {
+  const sparkRow = guard(() => input.sparkline ? sparklineSegment(input.sparkline) : "", "");
+  if (sessionRow || contextRow || dailyRow || cacheRow || sparkRow) {
     box.separator();
     if (sessionRow || contextRow) box.row(`${pad(sessionRow, leftWidth, box.metrics)} ${colored(COLORS.deep, "\u2502")} ${contextRow}`);
     if (dailyRow || cacheRow) box.row(`${pad(dailyRow, leftWidth, box.metrics)} ${colored(COLORS.deep, "\u2502")} ${cacheRow}`);
+    if (sparkRow) box.row(sparkRow);
   }
-  const activity = guard(() => input.activity ? activitySegment(input.activity) : "", "");
-  if (activity) {
+  const rows = guard(() => input.activity ? activityRows(input.activity) : [], []);
+  if (rows.length > 0) {
     box.separator();
-    box.row(activity);
+    for (const row of rows) box.row(row);
   }
 }
 function minimalSafeLine(metrics, width) {
@@ -4708,16 +4872,18 @@ function boundedAsciiFallback(width) {
   return "codeArbiter footer unavailable".slice(0, safeWidth);
 }
 var PiFooterLifecycle = class {
-  constructor(pi, bridge, loadMetrics, currentActivity2) {
+  constructor(pi, bridge, loadMetrics, currentActivity2, readGitFacts) {
     this.pi = pi;
     this.bridge = bridge;
     this.loadMetrics = loadMetrics;
     this.currentActivity = currentActivity2;
+    this.readGitFacts = readGitFacts;
   }
   pi;
   bridge;
   loadMetrics;
   currentActivity;
+  readGitFacts;
   generation = 0;
   context;
   footerData;
@@ -4726,6 +4892,7 @@ var PiFooterLifecycle = class {
   usageSnapshot;
   governance;
   updateVersion;
+  gitFacts;
   activationEnabled = false;
   expected = false;
   installed = false;
@@ -4747,6 +4914,7 @@ var PiFooterLifecycle = class {
     this.usageSnapshot = void 0;
     this.governance = void 0;
     this.updateVersion = void 0;
+    this.gitFacts = void 0;
     this.activationEnabled = false;
     if (!interactiveContext(context)) return;
     this.expected = true;
@@ -4803,7 +4971,8 @@ var PiFooterLifecycle = class {
               footerData,
               ...this.usageSnapshot === void 0 ? {} : { usageSnapshot: this.usageSnapshot },
               ...this.updateVersion === void 0 ? {} : { updateVersion: this.updateVersion },
-              ...activity === void 0 ? {} : { activity }
+              ...activity === void 0 ? {} : { activity },
+              ...this.gitFacts === void 0 ? {} : { gitFacts: this.gitFacts }
             });
             const enriched = this.governance === void 0 || !this.activationEnabled || !affirmativeTrust(context) ? input : {
               ...input,
@@ -4865,9 +5034,11 @@ var PiFooterLifecycle = class {
     if (this.context !== context || generation !== this.generation) return;
     const usagePromise = updateFooterUsageSnapshot(this.bridge, context, this.usageCursor, { maxRanges: 1 });
     const governancePromise = readFooterStatusSnapshot(this.bridge, context, options.activation);
-    const [usage, governance] = await Promise.allSettled([
+    const gitFactsPromise = this.readGitFacts !== void 0 && affirmativeTrust(context) ? this.readGitFacts(context.cwd) : Promise.resolve(void 0);
+    const [usage, governance, gitFacts] = await Promise.allSettled([
       usagePromise,
-      governancePromise
+      governancePromise,
+      gitFactsPromise
     ]);
     const updateVersion = options.readUpdateVersion === void 0 ? void 0 : await Promise.resolve().then(async () => await options.readUpdateVersion()).then((value) => ({ status: "fulfilled", value })).catch(() => ({ status: "rejected" }));
     if (this.context !== context || generation !== this.generation) return;
@@ -4877,6 +5048,7 @@ var PiFooterLifecycle = class {
     }
     if (options.activation.enabled !== true || !affirmativeTrust(context)) this.governance = void 0;
     else if (governance.status === "fulfilled" && governance.value !== void 0) this.governance = governance.value;
+    this.gitFacts = !affirmativeTrust(context) ? void 0 : gitFacts.status === "fulfilled" ? gitFacts.value : void 0;
     if (updateVersion?.status === "fulfilled") this.updateVersion = updateVersion.value;
     requestRender(this.tui);
   }
@@ -4890,6 +5062,7 @@ var PiFooterLifecycle = class {
     this.usageSnapshot = void 0;
     this.governance = void 0;
     this.updateVersion = void 0;
+    this.gitFacts = void 0;
     this.activationEnabled = false;
     this.expected = false;
     this.refreshQueue = Promise.resolve();
@@ -9012,7 +9185,13 @@ function installParent(pi, dependencies) {
   const currentActivity2 = () => activity;
   const background = dependencies.installBackground?.(() => readyLifecycle, currentActivity2);
   const loadFooterMetrics = dependencies.loadFooterMetrics ?? (dependencies.footerMetrics === void 0 ? void 0 : async () => dependencies.footerMetrics);
-  const footer = new PiFooterLifecycle(pi, dependencies.bridge, loadFooterMetrics, currentActivity2);
+  const footer = new PiFooterLifecycle(
+    pi,
+    dependencies.bridge,
+    loadFooterMetrics,
+    currentActivity2,
+    dependencies.collectGitFacts ?? collectGitFacts
+  );
   const readActivation = dependencies.readActivation ?? isEnabled;
   dependencies.installDispatch?.(() => readyLifecycle, currentActivity2);
   dependencies.installCompaction?.(() => readyLifecycle);

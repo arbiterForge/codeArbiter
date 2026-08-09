@@ -38,6 +38,7 @@ import { createSessionActivityRegistry } from "./activity.ts";
 import type { ActivityPublisher, SessionActivityRegistry } from "./activity.ts";
 import { loadPiRuntime, resolvePiRuntimeIdentity } from "./runtime-resolver.ts";
 import type { ResolvedPiRuntime } from "./runtime-resolver.ts";
+import { collectGitFacts } from "./git-facts.ts";
 import { PiFooterLifecycle, setArbiterStatus } from "./status.ts";
 import type { FooterTextMetrics } from "./footer.ts";
 import type { PolicyMode } from "./policy.ts";
@@ -80,6 +81,7 @@ export interface ParentDependencies {
   prepareFooterBridge?: (cwd: string, context: ExtensionContextPort) => Promise<void> | void;
   prepareBridge?: (cwd: string, context: ExtensionContextPort) => Promise<void> | void;
   readFooterUpdateVersion?: () => Promise<string | undefined>;
+  collectGitFacts?: (cwd: string) => Promise<{ repository?: string; dirty?: boolean } | undefined>;
   loadFooterMetrics?: () => Promise<FooterTextMetrics>;
   footerMetrics?: FooterTextMetrics;
   installEnforcement?: (
@@ -324,7 +326,13 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
   const background = dependencies.installBackground?.(() => readyLifecycle, currentActivity);
   const loadFooterMetrics = dependencies.loadFooterMetrics
     ?? (dependencies.footerMetrics === undefined ? undefined : async () => dependencies.footerMetrics!);
-  const footer = new PiFooterLifecycle(pi, dependencies.bridge, loadFooterMetrics, currentActivity);
+  const footer = new PiFooterLifecycle(
+    pi,
+    dependencies.bridge,
+    loadFooterMetrics,
+    currentActivity,
+    dependencies.collectGitFacts ?? collectGitFacts,
+  );
   const readActivation = dependencies.readActivation ?? isEnabled;
   dependencies.installDispatch?.(() => readyLifecycle, currentActivity);
   dependencies.installCompaction?.(() => readyLifecycle);
