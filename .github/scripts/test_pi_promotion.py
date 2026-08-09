@@ -654,12 +654,15 @@ class HelpProbeResolutionTests(unittest.TestCase):
                 shim = shim_dir / "ca-probe-pi"
                 shim.write_text("#!/bin/sh\necho '  --probe-flag <value>  fake probe flag'\n", encoding="ascii")
                 shim.chmod(0o755)
-            original_path = os.environ.get("PATH", "")
-            os.environ["PATH"] = str(shim_dir) + os.pathsep + original_path
+            original_path = os.environ.get("PATH")
+            os.environ["PATH"] = str(shim_dir) + os.pathsep + (original_path or "")
             try:
                 surface = promotion.capture_help("ca-probe-pi")
             finally:
-                os.environ["PATH"] = original_path
+                if original_path is None:
+                    os.environ.pop("PATH", None)
+                else:
+                    os.environ["PATH"] = original_path
         self.assertTrue(surface, "help probe returned an empty surface")
 
 
