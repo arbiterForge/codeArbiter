@@ -39,8 +39,8 @@ or substitute the core plugin's release number:
 git ls-remote --tags --refs https://github.com/arbiterForge/codeArbiter.git "ca-pi-v*"
 ```
 
-Choose an exact tag from that output, pin it in the install source, then inspect the installed
-source and enabled resources:
+For the convenience channel, install straight from npm and inspect the installed source and
+enabled resources:
 
 ```text
 pi install npm:@arbiterforge/ca-pi
@@ -48,7 +48,8 @@ pi list
 pi config
 ```
 
-To pin an exact release instead (the reproducible channel this site's runbooks verify against):
+To pin an exact release instead (the reproducible channel this site's runbooks verify against),
+choose an exact tag from the listing above and pin it in the install source:
 
 ```text
 pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>

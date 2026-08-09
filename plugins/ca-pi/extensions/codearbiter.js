@@ -4972,7 +4972,7 @@ var PiFooterLifecycle = class {
               ...this.usageSnapshot === void 0 ? {} : { usageSnapshot: this.usageSnapshot },
               ...this.updateVersion === void 0 ? {} : { updateVersion: this.updateVersion },
               ...activity === void 0 ? {} : { activity },
-              ...this.gitFacts === void 0 ? {} : { gitFacts: this.gitFacts }
+              ...this.gitFacts === void 0 || !affirmativeTrust(context) ? {} : { gitFacts: this.gitFacts }
             });
             const enriched = this.governance === void 0 || !this.activationEnabled || !affirmativeTrust(context) ? input : {
               ...input,

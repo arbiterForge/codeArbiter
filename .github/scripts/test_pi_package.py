@@ -1960,8 +1960,15 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertIn("workflow_dispatch:", text)
         self.assertRegex(text, r"(?ms)^permissions:\n\s+contents: read\n\s+id-token: write\n")
         self.assertNotIn("contents: write", text)
-        self.assertIn("--provenance", text)
-        self.assertIn("--access public", text)
+        # A manual dispatch must resolve its input through refs/tags/ so a
+        # branch name can never be checked out and published as a release.
+        self.assertIn("format('refs/tags/{0}', inputs.tag)", text)
+        # Re-runs are serialized per tag and become no-ops once the exact
+        # version is on the registry (npm versions are immutable; a mismatch
+        # cannot be republished, only investigated).
+        self.assertRegex(text, r"(?ms)^concurrency:\n\s+group: ")
+        self.assertIn("npm view", text)
+        self.assertIn("npm publish --ignore-scripts --provenance --access public", text)
         self.assertIn("NODE_AUTH_TOKEN", text)
         self.assertIn("secrets.NPMJS_TOKEN", text)
         self.assertNotIn("npm ci", text)

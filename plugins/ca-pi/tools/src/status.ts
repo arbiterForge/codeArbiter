@@ -145,7 +145,9 @@ export class PiFooterLifecycle {
               ...(this.usageSnapshot === undefined ? {} : { usageSnapshot: this.usageSnapshot }),
               ...(this.updateVersion === undefined ? {} : { updateVersion: this.updateVersion }),
               ...(activity === undefined ? {} : { activity }),
-              ...(this.gitFacts === undefined ? {} : { gitFacts: this.gitFacts }),
+              ...(this.gitFacts === undefined || !affirmativeTrust(context)
+                ? {}
+                : { gitFacts: this.gitFacts }),
             });
             const enriched = this.governance === undefined || !this.activationEnabled || !affirmativeTrust(context)
               ? input

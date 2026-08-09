@@ -24,6 +24,10 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: "npm-publish-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+  cancel-in-progress: false
+
 jobs:
   publish:
     name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"
@@ -31,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
@@ -60,7 +64,20 @@ jobs:
               )
           print(f"tag and manifests are equal: {version}")
           EOF
+      - name: Preflight — an already-published exact version is success
+        id: preflight
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          version="${RELEASE_TAG#ca-pi-v}"
+          if npm view "@arbiterforge/ca-pi@${version}" version > /dev/null 2>&1; then
+            echo "@arbiterforge/ca-pi@${version} is already on the registry; npm versions are immutable, so this re-run is a no-op success"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Publish with provenance
-        run: npm publish --provenance --access public
+        if: steps.preflight.outputs.skip != 'true'
+        run: npm publish --ignore-scripts --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}

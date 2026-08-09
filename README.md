@@ -149,7 +149,8 @@ codex plugin add ca-codex@codearbiter
 > matrix is green; broader real-world evidence is still required before codeArbiter claims
 > 100% validation or stable status.
 
-Pi distribution is Git-only. List the independently versioned tags, choose one exact result, then
+The quickest install is the npm channel: `pi install npm:@arbiterforge/ca-pi` (ADR-0029). For the
+reproducible pinned install, list the independently versioned tags, choose one exact result, then
 inspect the installed package, grant project trust, and start a fresh session:
 
 ```sh

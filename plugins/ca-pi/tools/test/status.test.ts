@@ -1139,6 +1139,32 @@ describe("footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4)", () =
     expect(rendered).not.toContain("main*");
   });
 
+  test("O-3: facts collected under trust never render after trust is withdrawn", async () => {
+    const cwd = await bareProject();
+    const packageRoot = await bareProject();
+    const host = new StatusHost(packageRoot, []);
+    installParent(host, {
+      bridge: new StatusBridge(),
+      catalog: [],
+      packageRoot,
+      loadPersona: async () => "persona",
+      footerMetrics,
+      collectGitFacts: async () => ({ repository: "arbiterForge/codeArbiter", dirty: true }),
+    });
+    let liveTrust = true;
+    const context = host.context(cwd, true, { interactive: true });
+    context.isProjectTrusted = () => liveTrust;
+
+    await host.emit("session_start", context);
+    const component = footerComponent(host);
+    expect(plainRender(component)).toContain("arbiterForge/codeArbiter");
+
+    liveTrust = false;
+    const rendered = plainRender(component);
+    expect(rendered).not.toContain("arbiterForge/codeArbiter");
+    expect(rendered).toContain("main");
+  });
+
   test("O-3: a failing collector degrades to the branch-only segment without breaking the box", async () => {
     const cwd = await bareProject();
     const packageRoot = await bareProject();
