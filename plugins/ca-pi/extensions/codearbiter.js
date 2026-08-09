@@ -1078,7 +1078,7 @@ function pluginRootFromModule() {
   while (true) {
     try {
       const manifest = JSON.parse(readFileSync(resolve5(cursor, "package.json"), "utf8"));
-      if (manifest.name === "ca-pi") return realpathSync3(cursor);
+      if (manifest.name === "@arbiterforge/ca-pi") return realpathSync3(cursor);
     } catch {
     }
     const parent = dirname2(cursor);
@@ -1120,7 +1120,7 @@ function declaredPackageOwner(command, expectedPath) {
     const canonicalBase = realpathSync3(command.sourceInfo.baseDir);
     if (canonicalPath2 !== canonicalExpected || !lexicallyInside(canonicalPath2, canonicalBase)) return false;
     const manifest = JSON.parse(strictUtf8(resolve5(canonicalBase, "package.json")));
-    if (manifest.name !== "ca-pi" || manifest.pi === void 0) return false;
+    if (manifest.name !== "@arbiterforge/ca-pi" || manifest.pi === void 0) return false;
     const declared = command.source === "extension" ? manifest.pi.extensions : manifest.pi.skills;
     if (!Array.isArray(declared) || !declared.every((item) => typeof item === "string")) return false;
     return declared.some((item) => {
@@ -2059,7 +2059,7 @@ function canonicalSupervisorPath() {
   while (true) {
     try {
       const manifest = JSON.parse(readFileSync2(resolve6(cursor, "package.json"), "utf8"));
-      if (manifest.name === "ca-pi") {
+      if (manifest.name === "@arbiterforge/ca-pi") {
         const packageRoot = realpathSync4(cursor);
         const candidate = realpathSync4(resolve6(cursor, "helpers", "windows-supervisor.js"));
         const suffix = relative3(packageRoot, candidate);
@@ -4140,7 +4140,7 @@ async function resolvePiRuntimeIdentity(cliCandidate) {
       if (!isAbsolute4(cliCandidate) || await realpath3(cliCandidate) !== canonicalAnchor) return fail();
     }
     const shippedModule = await realpath3(fileURLToPath3(import.meta.url));
-    const extensionPackageRoot = await owningPackageRoot(shippedModule, "ca-pi");
+    const extensionPackageRoot = await owningPackageRoot(shippedModule, "@arbiterforge/ca-pi");
     let cursor = dirname5(canonicalAnchor);
     let manifest;
     let manifestPath = "";
@@ -4972,7 +4972,7 @@ var PiFooterLifecycle = class {
               ...this.usageSnapshot === void 0 ? {} : { usageSnapshot: this.usageSnapshot },
               ...this.updateVersion === void 0 ? {} : { updateVersion: this.updateVersion },
               ...activity === void 0 ? {} : { activity },
-              ...this.gitFacts === void 0 ? {} : { gitFacts: this.gitFacts }
+              ...this.gitFacts === void 0 || !affirmativeTrust(context) ? {} : { gitFacts: this.gitFacts }
             });
             const enriched = this.governance === void 0 || !this.activationEnabled || !affirmativeTrust(context) ? input : {
               ...input,
@@ -6181,7 +6181,7 @@ function samePath2(left, right) {
 }
 function diagnosePi(input) {
   const expectedExtension = resolve9(input.package.root, "extensions", "codearbiter.js");
-  const packageHealthy = input.package.declared && input.package.name === "ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && canonicallyInside(input.package.extensionPath, input.package.root);
+  const packageHealthy = input.package.declared && input.package.name === "@arbiterforge/ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
   const versionHealthy = ["0.80.5", "0.80.10"].includes(input.runtime.piVersion) && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
@@ -7413,7 +7413,7 @@ async function owningCaPackageRoot() {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile5(resolve11(cursor, "package.json"), "utf8"));
-      if (manifest.name === "ca-pi") return await realpath5(cursor);
+      if (manifest.name === "@arbiterforge/ca-pi") return await realpath5(cursor);
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
@@ -7441,7 +7441,7 @@ async function validateChildLaunch(input, dependencies = {}) {
   if (incompatibility !== null) throw new Error(incompatibility);
   const packageRoot = await realpath5(dependencies.packageRoot ?? await owningCaPackageRoot());
   const packageManifest = JSON.parse(await readFile5(resolve11(packageRoot, "package.json"), "utf8"));
-  if (packageManifest.name !== "ca-pi") throw new Error("Pi child package identity is invalid.");
+  if (packageManifest.name !== "@arbiterforge/ca-pi") throw new Error("Pi child package identity is invalid.");
   const childExtensionPath = await canonicalFile(input.childExtensionPath, "Pi child extension");
   const expectedChildExtension = await canonicalFile(resolve11(packageRoot, "extensions", "codearbiter-child.js"), "packaged Pi child extension");
   if (childExtensionPath !== expectedChildExtension || !lexicallyInside(childExtensionPath, packageRoot)) {
@@ -9509,7 +9509,7 @@ async function codeArbiterPi(pi) {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile6(resolve15(packageRoot, "package.json"), "utf8"));
-      if (manifest.name === "ca-pi") break;
+      if (manifest.name === "@arbiterforge/ca-pi") break;
     } catch {
     }
     const parent = dirname7(packageRoot);
@@ -9722,7 +9722,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "9e46ad7e682671a68cd4d2ff02e2610a7251af83664941a5ba903ef120b84d88"
+        childFingerprint: "8b2422b7b8daa66b19f140136f0d9a6ebb3681527ae8bad25b049349771011a8"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,

@@ -687,7 +687,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile(resolve(packageRoot, "package.json"), "utf8")) as { name?: unknown };
-      if (manifest.name === "ca-pi") break;
+      if (manifest.name === "@arbiterforge/ca-pi") break;
     } catch {
       // Keep walking to the ca-pi distribution manifest.
     }

@@ -243,7 +243,7 @@ function samePath(left: string, right: string): boolean {
 
 export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
   const expectedExtension = resolve(input.package.root, "extensions", "codearbiter.js");
-  const packageHealthy = input.package.declared && input.package.name === "ca-pi"
+  const packageHealthy = input.package.declared && input.package.name === "@arbiterforge/ca-pi"
     && existsSync(input.package.root) && existsSync(input.package.extensionPath)
     && samePath(input.package.extensionPath, expectedExtension)
     && canonicallyInside(input.package.extensionPath, input.package.root);

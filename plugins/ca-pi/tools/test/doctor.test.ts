@@ -45,7 +45,7 @@ function healthyInput(): PiDoctorInput {
   return {
     package: {
       root: ROOT,
-      name: "ca-pi",
+      name: "@arbiterforge/ca-pi",
       version: "0.1.0",
       extensionPath: `${ROOT}/extensions/codearbiter.js`,
       scope: "user",
@@ -154,7 +154,7 @@ describe("Pi structured doctor", () => {
       remediation: ACTIVE_DISPATCH_REMEDIATION,
     });
     expect(result.find((row) => row.id === "package")?.message).toBe(
-      `ca-pi 0.1.0 is active from ${ROOT} as a user package.`,
+      `@arbiterforge/ca-pi 0.1.0 is active from ${ROOT} as a user package.`,
     );
     expect(result.find((row) => row.id === "module-identity")?.message).toBe(
       `Active Pi CLI ${RUNTIME}/dist/cli.js; module ${RUNTIME}/dist/index.js; ` +

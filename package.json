@@ -1,11 +1,29 @@
 {
-  "name": "ca-pi",
-  "version": "0.5.0",
-  "private": true,
+  "name": "@arbiterforge/ca-pi",
+  "version": "0.6.0",
   "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arbiterForge/codeArbiter.git"
+  },
   "engines": {
     "node": ">=22.19.0"
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "plugins/ca-pi/*.md",
+    "plugins/ca-pi/agents/",
+    "plugins/ca-pi/extensions/",
+    "plugins/ca-pi/generated/",
+    "plugins/ca-pi/helpers/",
+    "plugins/ca-pi/hooks/",
+    "plugins/ca-pi/includes/",
+    "plugins/ca-pi/routines/",
+    "plugins/ca-pi/skills/"
+  ],
   "pi": {
     "extensions": [
       "./plugins/ca-pi/extensions/codearbiter.js"

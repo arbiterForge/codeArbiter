@@ -1366,3 +1366,17 @@ Recording-only entry; the decision's rationale lives in DECISION-0041 and the AD
 None beyond the status flip — the ADR's governs: globs became live pushback at edit time on acceptance.
 
 ---
+
+## DECISION-0043 — adr-0029-authored — Publish ca-pi to npm under the arbiterforge org
+
+**Date:** 2026-08-09
+
+**Decided by:** SUaDtL@users.noreply.github.com — direct directives 2026-08-09: "i'd like to start publishing to NPM in the arbiterforge organization" and "adr for change to publishing route approved"; NPMJS_TOKEN org actions secret created by the owner. ADR-0029 authored and accepted on that attribution.
+
+### SMARTS rationale
+Recording-only entry; the decision's rationale lives in ADR-0029. Scope deliberately ca-pi-only: npm is Pi's native channel; the other three plugins install from marketplaces.
+
+### Implementation implication
+Spec `npm-publish-ca-pi` implements: generator emits publishable root manifest (@arbiterforge/ca-pi, files whitelist, publishConfig, no private), tag-triggered npm-publish workflow with provenance and version guard, documentation posture flip with doc-contract tests repointed.
+
+---

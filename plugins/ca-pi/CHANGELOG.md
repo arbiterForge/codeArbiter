@@ -4,6 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-09
+
+### Added
+
+- npm distribution channel (ADR-0029): the package is now also published as
+  `npm:@arbiterforge/ca-pi` by CI on every `ca-pi-v*` tag, with npm provenance.
+  The root manifest became the publish unit (scoped name, `files` whitelist,
+  `publishConfig`, `repository`; `private` removed); the nested manifest keeps
+  `private: true` as an accidental-publish guard. The pinned Git install
+  remains the reproducible channel. Install: `pi install npm:@arbiterforge/ca-pi`.
+
 ## [0.5.0] - 2026-08-09
 
 ### Added
