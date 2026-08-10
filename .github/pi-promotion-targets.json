@@ -7,7 +7,8 @@
   },
   "release": {
     "package_path": "plugins/ca-pi/package.json",
-    "changelog_path": "plugins/ca-pi/CHANGELOG.md"
+    "changelog_path": "plugins/ca-pi/CHANGELOG.md",
+    "root_package_path": "package.json"
   },
   "targets": [
     {
