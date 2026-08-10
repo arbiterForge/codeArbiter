@@ -85,6 +85,8 @@
   ],
   "version_claim_exempt": [
     ".codearbiter/specs/pi-support.md",
-    ".codearbiter/specs/pi-support-review.md"
+    ".codearbiter/specs/pi-support-review.md",
+    ".codearbiter/open-tasks.md",
+    ".codearbiter/specs/pi-live-experience-parity.md"
   ]
 }
