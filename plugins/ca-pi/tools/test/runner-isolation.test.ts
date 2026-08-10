@@ -328,6 +328,29 @@ describe("Task 6 exact Pi child launch", () => {
       expect(parseChildJsonLine(JSON.stringify(valid))).toEqual(valid);
       expect(() => parseChildJsonLine(JSON.stringify(invalid))).toThrow("schema");
     }
+    // Pi 0.84.0 made RPC message_update delta-only (pi#7290): the wire event
+    // drops the full `message` record and strips `partial` from the assistant
+    // event. Both window shapes are accepted strictly; hybrids of known keys
+    // remain valid, everything else still fails closed.
+    for (const deltaOnly of [
+      { type: "message_update", assistantMessageEvent: { type: "start" } },
+      { type: "message_update", assistantMessageEvent: { type: "toolcall_start", contentIndex: 0 } },
+      { type: "message_update", assistantMessageEvent: { type: "text_delta", contentIndex: 0, delta: "hi" } },
+      { type: "message_update", assistantMessageEvent: { type: "text_end", contentIndex: 0, content: "hi" } },
+      { type: "message_update", assistantMessageEvent: { type: "toolcall_end", contentIndex: 0, toolCall: { type: "toolCall", id: "call", name: "bash", arguments: {} } } },
+    ]) {
+      expect(parseChildJsonLine(JSON.stringify(deltaOnly))).toMatchObject({ type: "message_update" });
+    }
+    for (const stillInvalid of [
+      { type: "message_update" },
+      { type: "message_update", assistantMessageEvent: { type: "start" }, extra: 1 },
+      { type: "message_update", assistantMessageEvent: { type: "start", extra: 1 } },
+      { type: "message_update", assistantMessageEvent: { type: "text_delta", contentIndex: 0, delta: "hi", injected: true } },
+      { type: "message_update", assistantMessageEvent: { type: "text_delta", contentIndex: -1, delta: "hi" } },
+      { type: "message_update", assistantMessageEvent: { type: "unknown_event" } },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(stillInvalid))).toThrow("schema");
+    }
     for (const scratch of [
       { partialArgs: '{"command":"' },
       { partialJson: '{"command":"' },

@@ -4,6 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-10
+
+### Fixed
+
+- Child dispatch protocol accepts Pi ≥0.84.0's delta-only RPC `message_update`
+  events (pi#7290): the wire event dropped the full `message` record and the
+  `partial` field inside assistant events, which the strict validator rejected,
+  degrading every live child dispatch on Pi 0.84.x. Both window shapes now
+  validate with exact key sets — the fail-closed boundary (ADR-0014) is
+  unchanged, only the newly-documented shape is recognized.
+
 ## [0.6.0] - 2026-08-09
 
 ### Added

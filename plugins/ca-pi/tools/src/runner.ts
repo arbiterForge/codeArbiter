@@ -452,27 +452,33 @@ function validPartialAssistantMessage(value: unknown): boolean {
 
 function validAssistantEvent(value: unknown): boolean {
   if (!isRecord(value) || typeof value.type !== "string") return false;
-  const partial = () => validPartialAssistantMessage(value.partial);
+  // Pi ≤0.80.10 attaches the accumulating `partial` message to every streaming
+  // event; Pi ≥0.84.0 strips it on the RPC wire (delta-only, pi#7290). Both
+  // window shapes validate strictly: when `partial` is present it must be a
+  // valid partial assistant message, and the key set stays exact either way.
+  const exactWithOptionalPartial = (base: readonly string[]) => ("partial" in value
+    ? exactKeys(value, [...base, "partial"]) && validPartialAssistantMessage(value.partial)
+    : exactKeys(value, base));
   const contentIndex = () => Number.isSafeInteger(value.contentIndex) && (value.contentIndex as number) >= 0;
   switch (value.type) {
     case "start":
-      return exactKeys(value, ["type", "partial"]) && partial();
+      return exactWithOptionalPartial(["type"]);
     case "text_start":
     case "thinking_start":
     case "toolcall_start":
-      return exactKeys(value, ["type", "contentIndex", "partial"]) && contentIndex() && partial();
+      return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
-      return exactKeys(value, ["type", "contentIndex", "delta", "partial"])
-        && contentIndex() && boundedString(value.delta) && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "delta"])
+        && contentIndex() && boundedString(value.delta);
     case "text_end":
     case "thinking_end":
-      return exactKeys(value, ["type", "contentIndex", "content", "partial"])
-        && contentIndex() && boundedString(value.content) && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "content"])
+        && contentIndex() && boundedString(value.content);
     case "toolcall_end":
-      return exactKeys(value, ["type", "contentIndex", "toolCall", "partial"])
-        && contentIndex() && validContentBlock(value.toolCall, "assistant") && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "toolCall"])
+        && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
       return exactKeys(value, ["type", "reason", "message"])
         && ["stop", "length", "toolUse"].includes(value.reason as string)
@@ -526,8 +532,14 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
         || (!validMessage(record.message) && !validPartialAssistantMessage(record.message))) invalidProtocol();
       break;
     case "message_update":
-      if (!exactKeys(record, ["type", "message", "assistantMessageEvent"])
-        || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent)) invalidProtocol();
+      // Pi ≤0.80.10 carries the full accumulating `message`; Pi ≥0.84.0 sends
+      // the assistant event alone (delta-only RPC, pi#7290). Both key sets are
+      // exact; nothing else passes.
+      if ("message" in record
+        ? (!exactKeys(record, ["type", "message", "assistantMessageEvent"])
+          || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent))
+        : (!exactKeys(record, ["type", "assistantMessageEvent"])
+          || !validAssistantEvent(record.assistantMessageEvent))) invalidProtocol();
       break;
     case "tool_execution_start":
       if (!exactKeys(record, ["type", "toolCallId", "toolName", "args"])

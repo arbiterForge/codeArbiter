@@ -7652,24 +7652,24 @@ function validPartialAssistantMessage(value) {
 }
 function validAssistantEvent(value) {
   if (!isRecord(value) || typeof value.type !== "string") return false;
-  const partial = () => validPartialAssistantMessage(value.partial);
+  const exactWithOptionalPartial = (base) => "partial" in value ? exactKeys4(value, [...base, "partial"]) && validPartialAssistantMessage(value.partial) : exactKeys4(value, base);
   const contentIndex = () => Number.isSafeInteger(value.contentIndex) && value.contentIndex >= 0;
   switch (value.type) {
     case "start":
-      return exactKeys4(value, ["type", "partial"]) && partial();
+      return exactWithOptionalPartial(["type"]);
     case "text_start":
     case "thinking_start":
     case "toolcall_start":
-      return exactKeys4(value, ["type", "contentIndex", "partial"]) && contentIndex() && partial();
+      return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
-      return exactKeys4(value, ["type", "contentIndex", "delta", "partial"]) && contentIndex() && boundedString2(value.delta) && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "delta"]) && contentIndex() && boundedString2(value.delta);
     case "text_end":
     case "thinking_end":
-      return exactKeys4(value, ["type", "contentIndex", "content", "partial"]) && contentIndex() && boundedString2(value.content) && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "content"]) && contentIndex() && boundedString2(value.content);
     case "toolcall_end":
-      return exactKeys4(value, ["type", "contentIndex", "toolCall", "partial"]) && contentIndex() && validContentBlock(value.toolCall, "assistant") && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "toolCall"]) && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
       return exactKeys4(value, ["type", "reason", "message"]) && ["stop", "length", "toolUse"].includes(value.reason) && validMessage(value.message) && value.message.role === "assistant";
     case "error":
@@ -7712,7 +7712,7 @@ function parseChildJsonLine(line) {
       if (!exactKeys4(record2, ["type", "message"]) || !validMessage(record2.message) && !validPartialAssistantMessage(record2.message)) invalidProtocol();
       break;
     case "message_update":
-      if (!exactKeys4(record2, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record2.message) || !validAssistantEvent(record2.assistantMessageEvent)) invalidProtocol();
+      if ("message" in record2 ? !exactKeys4(record2, ["type", "message", "assistantMessageEvent"]) || !validPartialAssistantMessage(record2.message) || !validAssistantEvent(record2.assistantMessageEvent) : !exactKeys4(record2, ["type", "assistantMessageEvent"]) || !validAssistantEvent(record2.assistantMessageEvent)) invalidProtocol();
       break;
     case "tool_execution_start":
       if (!exactKeys4(record2, ["type", "toolCallId", "toolName", "args"]) || typeof record2.toolCallId !== "string" || typeof record2.toolName !== "string" || !validOpaqueJson(record2.args)) invalidProtocol();
