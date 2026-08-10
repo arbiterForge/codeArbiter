@@ -280,6 +280,69 @@ class PromotionPatchTests(unittest.TestCase):
             for path, expected in before.items():
                 self.assertEqual(path.read_bytes(), expected, f"{path.name} was written despite the aborted bump")
 
+    def test_stale_release_metadata_aborts_before_any_target_write(self):
+        """Release-input validation must preflight the whole promotion: a stale
+        root manifest may not leave rewritten targets behind in the checkout."""
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self.fixture_repo(root)
+            package = root / "plugins" / "ca-pi" / "package.json"
+            package.write_text('{"name":"ca-pi","version":"0.1.0"}\n', encoding="utf-8")
+            changelog = root / "plugins" / "ca-pi" / "CHANGELOG.md"
+            changelog.write_text("# Changelog\n\nAll notable changes to `ca-pi` are documented in this file.\n", encoding="utf-8")
+            (root / "package.json").write_text('{"name":"@arbiterforge/ca-pi","version":"0.0.9"}\n', encoding="utf-8")
+            targets_before = {
+                path: path.read_bytes()
+                for path in (
+                    root / "plugins" / "ca-pi" / "tools" / "src" / "compatibility.ts",
+                    root / "docs" / "pi.md",
+                )
+            }
+            document = json.loads(self.targets(root).read_text(encoding="utf-8"))
+            document["release"] = {
+                "package_path": "plugins/ca-pi/package.json",
+                "changelog_path": "plugins/ca-pi/CHANGELOG.md",
+                "root_package_path": "package.json",
+            }
+            target_path = root / "targets-stale-root-preflight.json"
+            target_path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(module.PromotionError):
+                module.apply_promotion(
+                    root, module.load_targets(target_path), module.Candidate("0.80.10"), date="2026-08-09",
+                )
+            for path, expected in targets_before.items():
+                self.assertEqual(path.read_bytes(), expected, f"{path.name} was rewritten despite the aborted release bump")
+
+    def test_release_path_doubling_as_declared_target_is_refused(self):
+        """The release plan snapshots file content before the target loop runs,
+        so a release path that is also a rewrite target would silently lose the
+        loop's rewrite — the recipe must be refused, not half-honored."""
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self.fixture_repo(root)
+            package = root / "plugins" / "ca-pi" / "package.json"
+            package.write_text('{"name":"ca-pi","version":"0.1.0"}\n', encoding="utf-8")
+            changelog = root / "plugins" / "ca-pi" / "CHANGELOG.md"
+            changelog.write_text("# Changelog\n\nAll notable changes to `ca-pi` are documented in this file.\nPi 0.80.6\n", encoding="utf-8")
+            document = json.loads(self.targets(root).read_text(encoding="utf-8"))
+            document["release"] = {
+                "package_path": "plugins/ca-pi/package.json",
+                "changelog_path": "plugins/ca-pi/CHANGELOG.md",
+            }
+            document["targets"].append({
+                "id": "overlapping", "path": "plugins/ca-pi/CHANGELOG.md", "class": "current-doc",
+                "before": "Pi 0.80.6", "after": "Pi {candidate}",
+            })
+            target_path = root / "targets-overlap.json"
+            target_path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(module.PromotionError) as caught:
+                module.apply_promotion(
+                    root, module.load_targets(target_path), module.Candidate("0.80.10"), date="2026-08-09",
+                )
+            self.assertIn("also a declared promotion target", str(caught.exception))
+
     def test_help_delta_rejects_removed_required_flag(self):
         module = load_module()
         delta = module.compare_help(
