@@ -623,16 +623,19 @@ describe("#455 loopback inference broker", () => {
     await once(socket, "connect");
     const peerClosed = once(socket, "close");
     // `server.close()` alone waits for every open connection, so without the destruction loop the
-    // broker cannot finish closing while any child holds a socket open.
+    // broker cannot finish closing while any child holds a socket open. The budget only has to
+    // separate "destroys promptly" from "waits on the idle keep-alive forever" — a keep-alive
+    // default is measured in minutes, so 15s keeps the discrimination while riding out a loaded
+    // shared CI runner (this raced 3s and flaked three hosted macOS promotion cells in a row).
     const closed = await Promise.race([
       broker.close().then(() => "closed" as const),
-      new Promise<"hung">((resolve) => setTimeout(() => resolve("hung"), 3_000)),
+      new Promise<"hung">((resolve) => setTimeout(() => resolve("hung"), 15_000)),
     ]);
     expect(closed).toBe("closed");
     // ...and the connection is torn down from the broker's end, not merely orphaned.
     await Promise.race([
       peerClosed,
-      new Promise((_resolve, reject) => setTimeout(() => reject(new Error("connection survived close()")), 3_000)),
+      new Promise((_resolve, reject) => setTimeout(() => reject(new Error("connection survived close()")), 15_000)),
     ]);
   });
 });
