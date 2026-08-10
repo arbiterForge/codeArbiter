@@ -298,6 +298,27 @@
       "occurrences": "all",
       "before": "if row[\"version\"] in {{\"{minimum}\", \"{last_verified}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:",
       "after": "if row[\"version\"] in {{\"{minimum}\", \"{candidate}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:"
+    },
+    {
+      "id": "readme-promotion-cells-claim",
+      "path": "README.md",
+      "class": "current-doc",
+      "before": "for Pi {minimum} and {last_verified} on Windows",
+      "after": "for Pi {minimum} and {candidate} on Windows"
+    },
+    {
+      "id": "parity-hosted-matrix-claim",
+      "path": "docs/parity.md",
+      "class": "current-doc",
+      "before": "matrix for Pi {minimum}/{last_verified} are green",
+      "after": "matrix for Pi {minimum}/{candidate} are green"
+    },
+    {
+      "id": "site-pi-journey-prerequisite",
+      "path": "site/src/content/docs/getting-started/pi.md",
+      "class": "current-doc",
+      "before": "- \"Pi {minimum} or Pi {last_verified}\"",
+      "after": "- \"Pi {minimum} or Pi {candidate}\""
     }
   ]
 }
