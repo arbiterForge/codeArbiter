@@ -515,12 +515,12 @@ jobs:
         # for this tree - runs the WHOLE suite, so measuring it honestly means
         # installing the host, exactly as `ca-pi-tools` does.
         #
-        # ONE version, not the {0.80.5, 0.80.10} matrix that job carries: this
+        # ONE version, not the whole supported-window matrix that job carries: this
         # measures which LINES execute, and that does not vary by host version in
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: npm install --global @earendil-works/pi-coding-agent@0.80.10 --ignore-scripts
+        run: npm install --global @earendil-works/pi-coding-agent@0.84.1 --ignore-scripts
       - name: Install (locked)
         # --ignore-scripts for the same reason every sibling job uses it: this
         # graph's output is a committed artifact. The graph itself is audited by
@@ -585,12 +585,12 @@ jobs:
         # for this tree - runs the WHOLE suite, so measuring it honestly means
         # installing the host, exactly as `ca-pi-tools` does.
         #
-        # ONE version, not the {0.80.5, 0.80.10} matrix that job carries: this
+        # ONE version, not the whole supported-window matrix that job carries: this
         # measures which LINES execute, and that does not vary by host version in
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: npm install --global @earendil-works/pi-coding-agent@0.80.10 --ignore-scripts
+        run: npm install --global @earendil-works/pi-coding-agent@0.84.1 --ignore-scripts
       - name: Install (locked)
         run: npm ci --ignore-scripts
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0

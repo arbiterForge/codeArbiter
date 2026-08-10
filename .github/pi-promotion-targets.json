@@ -319,6 +319,28 @@
       "class": "current-doc",
       "before": "- \"Pi {minimum} or Pi {last_verified}\"",
       "after": "- \"Pi {minimum} or Pi {candidate}\""
+    },
+    {
+      "id": "ci-single-version-live-installs",
+      "path": ".github/workflows/ci.yml",
+      "class": "ci",
+      "before": "pi-coding-agent@{last_verified} --ignore-scripts",
+      "after": "pi-coding-agent@{candidate} --ignore-scripts",
+      "occurrences": "all"
+    },
+    {
+      "id": "site-presentation-pi-window-literal",
+      "path": "site/test/content/documentation-presentation.test.ts",
+      "class": "generated",
+      "before": "toContain(\"Pi {minimum} or Pi {last_verified}\")",
+      "after": "toContain(\"Pi {minimum} or Pi {candidate}\")"
+    },
+    {
+      "id": "site-presentation-pi-window-negative",
+      "path": "site/test/content/documentation-presentation.test.ts",
+      "class": "generated",
+      "before": "not.toContain(\"Pi {last_verified} or newer\")",
+      "after": "not.toContain(\"Pi {candidate} or newer\")"
     }
   ]
 }
