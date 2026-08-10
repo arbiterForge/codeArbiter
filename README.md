@@ -163,7 +163,7 @@ pi config
 Replace `<version>` with the numeric suffix from the chosen tag while retaining the full
 `ca-pi-v...` tag in the install source.
 
-Pi 0.80.5 and Pi 0.80.10 are the supported hosts for this release line. Generated aliases use `/ca-*`;
+Pi 0.80.5 and Pi 0.84.1 are the supported hosts for this release line. Generated aliases use `/ca-*`;
 `/skill:ca-*` is the host-native fallback. Every `ca-pi-v*` tag is also published to npm as
 `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible
 install. The [Pi runbook](./docs/pi-parity-testing.md) covers isolated install, trust, verification,
@@ -505,7 +505,7 @@ implement the Pi adapter, investigate live failures, review older paths, and con
 across permissions, Windows process-tree cleanup, provenance, audit integrity, generated-source
 drift, CI contracts, and documentation.
 
-The final candidate passed the six Pi platform cells for Pi 0.80.5 and 0.80.10 on Windows, macOS,
+The final candidate passed the six Pi platform cells for Pi 0.80.5 and 0.84.1 on Windows, macOS,
 and Linux, plus security analysis, CodeQL, shared-core contracts, generated-surface contracts, and
 the repository's final verifier. Sanitized evidence:
 
