@@ -39,6 +39,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/src/pi-api.d.ts",
     "site/src/content/docs/getting-started/compatibility.md",
     "site/src/content/docs/getting-started/pi.md",
+    "site/test/content/documentation-presentation.test.ts",
     "site/src/content/docs/guides/troubleshooting.md",
     "plugins/ca-pi/CHANGELOG.md",
     "plugins/ca-pi/package.json",

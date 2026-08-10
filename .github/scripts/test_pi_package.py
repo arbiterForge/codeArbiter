@@ -715,7 +715,7 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["0.80.5", "0.80.10"]',
+        'pi-version: ["0.80.5", "0.84.1"]',
         "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
         "npm ci --ignore-scripts",
     ):
@@ -1107,7 +1107,7 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["0.80.5", "0.80.10"]',
+            'pi-version: ["0.80.5", "0.84.1"]',
             "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
@@ -1482,7 +1482,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 0.80.5/0.80.10 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 0.80.5/0.84.1 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

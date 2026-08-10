@@ -119,11 +119,11 @@ async function materializedRequest(provider = "openai") {
   await mkdir(request.cwd, { recursive: true });
   await mkdir(dirname(request.piCliPath), { recursive: true });
   await writeFile(request.piCliPath, "// broker lifecycle Pi CLI fixture\n", "utf8");
-  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10","bin":{"pi":"dist/cli.js"}}\n', "utf8");
+  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.84.1","bin":{"pi":"dist/cli.js"}}\n', "utf8");
   lifecycleMocks.resolveRuntimeIdentity.mockImplementation(async (candidate: string) => ({
     cliEntry: candidate,
     packageRoot: resolve(dirname(candidate), ".."),
-    version: "0.80.10",
+    version: "0.84.1",
   }));
   return request;
 }

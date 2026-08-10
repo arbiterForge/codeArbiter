@@ -49,7 +49,7 @@ if (
   expansionFingerprints === null
   || typeof expansionFingerprints !== "object"
   || Array.isArray(expansionFingerprints)
-  || JSON.stringify(Object.keys(expansionFingerprints).sort()) !== JSON.stringify(["0.80.5", "0.80.10"].sort())
+  || JSON.stringify(Object.keys(expansionFingerprints).sort()) !== JSON.stringify(["0.80.5", "0.84.1"].sort())
   || Object.values(expansionFingerprints).some((value) => typeof value !== "string" || !/^[a-f0-9]{64}$/u.test(value))
 ) {
   throw new Error("core/hosts.json has no exact Pi skill expansion fingerprint matrix");

@@ -300,25 +300,33 @@
       "after": "if row[\"version\"] in {{\"{minimum}\", \"{candidate}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:"
     },
     {
-      "id": "readme-promotion-cells-claim",
-      "path": "README.md",
-      "class": "current-doc",
-      "before": "for Pi {minimum} and {last_verified} on Windows",
-      "after": "for Pi {minimum} and {candidate} on Windows"
-    },
-    {
-      "id": "parity-hosted-matrix-claim",
-      "path": "docs/parity.md",
-      "class": "current-doc",
-      "before": "matrix for Pi {minimum}/{last_verified} are green",
-      "after": "matrix for Pi {minimum}/{candidate} are green"
-    },
-    {
       "id": "site-pi-journey-prerequisite",
       "path": "site/src/content/docs/getting-started/pi.md",
       "class": "current-doc",
       "before": "- \"Pi {minimum} or Pi {last_verified}\"",
       "after": "- \"Pi {minimum} or Pi {candidate}\""
+    },
+    {
+      "id": "ci-single-version-live-installs",
+      "path": ".github/workflows/ci.yml",
+      "class": "ci",
+      "before": "pi-coding-agent@{last_verified} --ignore-scripts",
+      "after": "pi-coding-agent@{candidate} --ignore-scripts",
+      "occurrences": "all"
+    },
+    {
+      "id": "site-presentation-pi-window-literal",
+      "path": "site/test/content/documentation-presentation.test.ts",
+      "class": "generated",
+      "before": "toContain(\"Pi {minimum} or Pi {last_verified}\")",
+      "after": "toContain(\"Pi {minimum} or Pi {candidate}\")"
+    },
+    {
+      "id": "site-presentation-pi-window-negative",
+      "path": "site/test/content/documentation-presentation.test.ts",
+      "class": "generated",
+      "before": "not.toContain(\"Pi {last_verified} or newer\")",
+      "after": "not.toContain(\"Pi {candidate} or newer\")"
     }
   ]
 }

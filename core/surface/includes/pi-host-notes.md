@@ -65,5 +65,7 @@ file maps those actions to Pi's extension API.
   operator-launched Pi CLI, imported module, package root, and reported version.
   It does not prove publisher authenticity. Verify the source separately with
   `pi list` and `pi config`.
-- Supported promotion targets are Pi 0.80.5 and Pi 0.80.10. npm packaging and a
-  Pi-native embedded farm worker are future spikes, not installed dependencies.
+- Supported promotion targets are Pi 0.80.5 and Pi 0.84.1. The package is
+  published as `npm:@arbiterforge/ca-pi` on every `ca-pi-v*` tag (ADR-0029);
+  the pinned Git tag remains the reproducible install. A Pi-native embedded
+  farm worker is a future spike, not an installed dependency.
