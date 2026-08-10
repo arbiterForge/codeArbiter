@@ -14,7 +14,7 @@ status.
 
 Final Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
 and [machine-readable envelope](./reports/pi-support/promotion.json). Local checks and the hosted
-Windows/macOS/Linux matrix for Pi 0.80.5/0.84.1 are green on implementation candidate
+Windows/macOS/Linux matrix across the then-supported Pi versions (recorded in the artifacts) are green on implementation candidate
 `f764929e02fbb67b43a3b828686c0007445a0316`; scoped CodeQL and the repository aggregate gate are green
 on that same candidate. The final verifier restricts later commits to the sanitized promotion
 artifacts, this public parity ledger, and the append-only governance evidence for that update.

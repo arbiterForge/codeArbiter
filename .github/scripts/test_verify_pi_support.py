@@ -92,7 +92,9 @@ class VerifyPiSupportTest(unittest.TestCase):
         expected = {
             f"[CHECK] | [PI  ] | Adapter contract  <os: {os_name} · runtime: Pi {version}>"
             for os_name in ("ubuntu-latest", "windows-latest", "macos-latest")
-            for version in ("0.80.5", "0.80.10")
+            # Derived from the verifier's own window so a promotion can never
+            # leave this expectation behind (PR #661 review).
+            for version in module.SUPPORTED
         } | {
             # Issue #390 split the host-independent half of the adapter
             # contract - the complete Vitest suite, the parity/security scripts,

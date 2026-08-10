@@ -505,8 +505,8 @@ implement the Pi adapter, investigate live failures, review older paths, and con
 across permissions, Windows process-tree cleanup, provenance, audit integrity, generated-source
 drift, CI contracts, and documentation.
 
-The final candidate passed the six Pi platform cells for Pi 0.80.5 and 0.84.1 on Windows, macOS,
-and Linux, plus security analysis, CodeQL, shared-core contracts, generated-surface contracts, and
+The final candidate passed the six Pi platform cells — both then-supported Pi versions on Windows,
+macOS, and Linux (versions recorded in the linked artifacts), plus security analysis, CodeQL, shared-core contracts, generated-surface contracts, and
 the repository's final verifier. Sanitized evidence:
 
 - [`docs/reports/pi-support/promotion.md`](docs/reports/pi-support/promotion.md)
