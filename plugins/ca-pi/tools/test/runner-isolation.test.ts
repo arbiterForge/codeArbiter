@@ -328,6 +328,41 @@ describe("Task 6 exact Pi child launch", () => {
       expect(parseChildJsonLine(JSON.stringify(valid))).toEqual(valid);
       expect(() => parseChildJsonLine(JSON.stringify(invalid))).toThrow("schema");
     }
+    // Pi 0.84.x widened the message schema with three optional fields:
+    // assistant `rawStopReason` (observed on the live wire rejecting every
+    // 0.84 child dispatch — promotion run 31352831520), assistant `deferred`
+    // (a DeferredHandle), and toolResult `usage`. Each validates strictly
+    // when present; unknown keys still fail closed.
+    const rawStopMessage = {
+      ...assistantMessage,
+      content: [{ type: "toolCall", id: "call-live", name: "bash", arguments: { command: "git add -A" } }],
+      stopReason: "toolUse",
+      responseId: "chatcmpl-live-tool",
+      rawStopReason: "tool_calls",
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "message_end", message: rawStopMessage })))
+      .toMatchObject({ type: "message_end" });
+    const deferredMessage = {
+      ...assistantMessage,
+      deferred: { provider: "openai", modelId: "gpt-test", api: "openai-completions", id: "resp-1", expiresAt: 1, pollAfterMs: 5, data: { row: 1 } },
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "message_end", message: deferredMessage })))
+      .toMatchObject({ type: "message_end" });
+    const usageToolResult = {
+      role: "toolResult", toolCallId: "call", toolName: "bash", content: [],
+      isError: false, timestamp: 1, usage: assistantMessage.usage,
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "turn_end", message: assistantMessage, toolResults: [usageToolResult] })))
+      .toMatchObject({ type: "turn_end" });
+    for (const widenedInvalid of [
+      { type: "message_end", message: { ...assistantMessage, rawStopReason: 7 } },
+      { type: "message_end", message: { ...assistantMessage, deferred: { provider: "openai", modelId: "m", api: "a", id: "i", injected: true } } },
+      { type: "message_end", message: { ...assistantMessage, deferred: { provider: "openai", modelId: "m", api: "a" } } },
+      { type: "turn_end", message: assistantMessage, toolResults: [{ ...usageToolResult, usage: { input: "ten" } }] },
+      { type: "message_end", message: { ...assistantMessage, futureField: true } },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(widenedInvalid))).toThrow("schema");
+    }
     // Pi 0.84.0 made RPC message_update delta-only (pi#7290): the wire event
     // drops the full `message` record and strips `partial` from the assistant
     // event. Both window shapes are accepted strictly; hybrids of known keys

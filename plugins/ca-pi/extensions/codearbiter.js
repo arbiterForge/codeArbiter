@@ -7593,6 +7593,13 @@ function validDiagnostic(value) {
   }
   return value.details === void 0 || validOpaqueJson(value.details);
 }
+function validDeferredHandle(value) {
+  return isRecord(value) && exactKeys4(
+    value,
+    ["provider", "modelId", "api", "id", "expiresAt", "pollAfterMs", "data"],
+    ["provider", "modelId", "api", "id"]
+  ) && ["provider", "modelId", "api", "id"].every((key) => boundedString2(value[key])) && (value.expiresAt === void 0 || typeof value.expiresAt === "number" && Number.isFinite(value.expiresAt)) && (value.pollAfterMs === void 0 || typeof value.pollAfterMs === "number" && Number.isFinite(value.pollAfterMs)) && (value.data === void 0 || validOpaqueJson(value.data));
+}
 function validMessage(value) {
   if (!isRecord(value) || typeof value.role !== "string") return false;
   if (value.role === "user") {
@@ -7601,16 +7608,16 @@ function validMessage(value) {
   if (value.role === "assistant") {
     return exactKeys4(
       value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "timestamp"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"]
-    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && validContent(value.content, "assistant") && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string") && (value.responseModel === void 0 || boundedString2(value.responseModel)) && (value.responseId === void 0 || boundedString2(value.responseId)) && (value.errorMessage === void 0 || boundedString2(value.errorMessage)) && (value.rawStopReason === void 0 || boundedString2(value.rawStopReason)) && (value.deferred === void 0 || validDeferredHandle(value.deferred)) && (value.diagnostics === void 0 || Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)) && validUsage(value.usage) && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
     return exactKeys4(
       value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "timestamp"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"]
-    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
+    ) && typeof value.toolCallId === "string" && typeof value.toolName === "string" && validContent(value.content, "toolResult") && (value.details === void 0 || validOpaqueJson(value.details)) && (value.usage === void 0 || validUsage(value.usage)) && typeof value.isError === "boolean" && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   return false;
 }

@@ -370,6 +370,19 @@ function validDiagnostic(value: unknown): boolean {
   return value.details === undefined || validOpaqueJson(value.details);
 }
 
+/** Pi ≥0.84.0 attaches a provider-deferred-response handle to assistant
+ * messages. Validated strictly when present; never consumed by the runner. */
+function validDeferredHandle(value: unknown): boolean {
+  return isRecord(value)
+    && exactKeys(value,
+      ["provider", "modelId", "api", "id", "expiresAt", "pollAfterMs", "data"],
+      ["provider", "modelId", "api", "id"])
+    && ["provider", "modelId", "api", "id"].every((key) => boundedString(value[key]))
+    && (value.expiresAt === undefined || (typeof value.expiresAt === "number" && Number.isFinite(value.expiresAt)))
+    && (value.pollAfterMs === undefined || (typeof value.pollAfterMs === "number" && Number.isFinite(value.pollAfterMs)))
+    && (value.data === undefined || validOpaqueJson(value.data));
+}
+
 function validMessage(value: unknown): boolean {
   if (!isRecord(value) || typeof value.role !== "string") return false;
   if (value.role === "user") {
@@ -378,26 +391,33 @@ function validMessage(value: unknown): boolean {
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "assistant") {
+    // `rawStopReason` and `deferred` entered the schema in Pi 0.84.x
+    // (rawStopReason observed on the live RPC wire; promotion run
+    // 31352831520 degraded every 0.84 child dispatch on it).
     return exactKeys(value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "timestamp"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"])
       && validContent(value.content, "assistant")
       && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string")
       && (value.responseModel === undefined || boundedString(value.responseModel))
       && (value.responseId === undefined || boundedString(value.responseId))
       && (value.errorMessage === undefined || boundedString(value.errorMessage))
+      && (value.rawStopReason === undefined || boundedString(value.rawStopReason))
+      && (value.deferred === undefined || validDeferredHandle(value.deferred))
       && (value.diagnostics === undefined || (Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)))
       && validUsage(value.usage)
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
+    // `usage` (tool-execution usage) entered the toolResult schema in Pi 0.84.x.
     return exactKeys(value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "timestamp"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"])
       && typeof value.toolCallId === "string"
       && typeof value.toolName === "string"
       && validContent(value.content, "toolResult")
       && (value.details === undefined || validOpaqueJson(value.details))
+      && (value.usage === undefined || validUsage(value.usage))
       && typeof value.isError === "boolean"
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
