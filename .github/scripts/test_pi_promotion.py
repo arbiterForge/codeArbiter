@@ -249,6 +249,37 @@ class PromotionPatchTests(unittest.TestCase):
                 renderer.render_package(host, "0.1.1"),
             )
 
+    def test_release_metadata_writes_nothing_when_root_manifest_disagrees(self):
+        """A stale root manifest must abort the whole release bump before any
+        file is written — not after the nested manifest already advanced."""
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self.fixture_repo(root)
+            package = root / "plugins" / "ca-pi" / "package.json"
+            package.write_text('{"name":"ca-pi","version":"0.1.0"}\n', encoding="utf-8")
+            changelog = root / "plugins" / "ca-pi" / "CHANGELOG.md"
+            changelog.write_text("# Changelog\n\nAll notable changes to `ca-pi` are documented in this file.\n", encoding="utf-8")
+            (root / "package.json").write_text('{"name":"@arbiterforge/ca-pi","version":"0.0.9"}\n', encoding="utf-8")
+            before = {
+                path: path.read_bytes()
+                for path in (package, changelog, root / "package.json")
+            }
+            document = json.loads(self.targets(root).read_text(encoding="utf-8"))
+            document["release"] = {
+                "package_path": "plugins/ca-pi/package.json",
+                "changelog_path": "plugins/ca-pi/CHANGELOG.md",
+                "root_package_path": "package.json",
+            }
+            target_path = root / "targets-stale-root.json"
+            target_path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaises(module.PromotionError):
+                module.apply_promotion(
+                    root, module.load_targets(target_path), module.Candidate("0.80.10"), date="2026-08-09",
+                )
+            for path, expected in before.items():
+                self.assertEqual(path.read_bytes(), expected, f"{path.name} was written despite the aborted bump")
+
     def test_help_delta_rejects_removed_required_flag(self):
         module = load_module()
         delta = module.compare_help(

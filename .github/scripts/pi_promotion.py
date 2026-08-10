@@ -321,9 +321,17 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
         raise PromotionError("ca-pi package version must be a stable exact semver")
     major, minor, patch = _semver_key(version)
     next_version = f"{major}.{minor}.{patch + 1}"
-    package["version"] = next_version
-    package_path.write_text(json.dumps(package, indent=2) + "\n", encoding="utf-8", newline="\n")
-    changed: list[Path] = [release.package_path, release.changelog_path]
+    # Validate every release input before writing any release file, so a stale
+    # or unreadable input cannot leave the checkout with a half-applied bump.
+    try:
+        changelog = changelog_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise PromotionError(f"cannot read ca-pi changelog: {error}") from error
+    marker = "All notable changes to `ca-pi` are documented in this file."
+    if changelog.count(marker) != 1:
+        raise PromotionError("ca-pi changelog has no unique insertion marker")
+    root_path: Path | None = None
+    root_manifest: dict | None = None
     if release.root_package_path is not None:
         root_path = _target_path(repo, PromotionTarget("release-root-package", release.root_package_path, "release-metadata", "-", "-", "one"))
         try:
@@ -335,6 +343,15 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
                 "ca-pi root package version does not match the nested manifest; "
                 "regenerate it before promoting",
             )
+    package["version"] = next_version
+    package_path.write_text(json.dumps(package, indent=2) + "\n", encoding="utf-8", newline="\n")
+    changed: list[Path] = [release.package_path, release.changelog_path]
+    entry = (
+        f"\n\n## [{next_version}] - {date}\n\n### Changed\n\n"
+        f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
+    )
+    changelog_path.write_text(changelog.replace(marker, marker + entry, 1), encoding="utf-8", newline="\n")
+    if root_path is not None and root_manifest is not None:
         root_manifest["version"] = next_version
         # Byte-for-byte the renderer's serialization (tools/build-host-packages.py),
         # so the generated-manifest byte contract keeps holding after the bump.
@@ -343,18 +360,6 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
             encoding="utf-8", newline="\n",
         )
         changed.append(release.root_package_path)
-    try:
-        changelog = changelog_path.read_text(encoding="utf-8")
-    except (OSError, UnicodeError) as error:
-        raise PromotionError(f"cannot read ca-pi changelog: {error}") from error
-    marker = "All notable changes to `ca-pi` are documented in this file."
-    if changelog.count(marker) != 1:
-        raise PromotionError("ca-pi changelog has no unique insertion marker")
-    entry = (
-        f"\n\n## [{next_version}] - {date}\n\n### Changed\n\n"
-        f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
-    )
-    changelog_path.write_text(changelog.replace(marker, marker + entry, 1), encoding="utf-8", newline="\n")
     return tuple(changed)
 
 
