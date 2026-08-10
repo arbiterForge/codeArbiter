@@ -578,19 +578,6 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Install external Pi host (scripts disabled)
-        # ca-pi's suite is NOT runnable without a real Pi runtime: the first run
-        # of this cell failed 20 tests in runner-isolation.test.ts because the
-        # runner had none. `npm run coverage` - the command tech-stack.md names
-        # for this tree - runs the WHOLE suite, so measuring it honestly means
-        # installing the host, exactly as `ca-pi-tools` does.
-        #
-        # ONE version, not the whole supported-window matrix that job carries: this
-        # measures which LINES execute, and that does not vary by host version in
-        # any way a second cell would reveal. Pinned to the upper bound of the
-        # supported window.
-        working-directory: .
-        run: npm install --global @earendil-works/pi-coding-agent@0.84.1 --ignore-scripts
       - name: Install (locked)
         run: npm ci --ignore-scripts
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
