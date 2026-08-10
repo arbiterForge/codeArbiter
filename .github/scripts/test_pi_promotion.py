@@ -343,6 +343,30 @@ class PromotionPatchTests(unittest.TestCase):
                 )
             self.assertIn("also a declared promotion target", str(caught.exception))
 
+    def test_duplicate_release_paths_are_refused(self):
+        """Two release fields naming one file would queue two writes to it,
+        last-write-wins — the recipe is refused before any plan is made."""
+        module = load_module()
+        collisions = (
+            {"package_path": "plugins/ca-pi/CHANGELOG.md", "changelog_path": "plugins/ca-pi/CHANGELOG.md"},
+            {"package_path": "plugins/ca-pi/package.json", "changelog_path": "plugins/ca-pi/CHANGELOG.md",
+             "root_package_path": "plugins/ca-pi/package.json"},
+        )
+        for release in collisions:
+            with self.subTest(release=release):
+                with tempfile.TemporaryDirectory() as raw:
+                    root = Path(raw)
+                    self.fixture_repo(root)
+                    document = json.loads(self.targets(root).read_text(encoding="utf-8"))
+                    document["release"] = release
+                    target_path = root / "targets-duplicate-release.json"
+                    target_path.write_text(json.dumps(document), encoding="utf-8")
+                    with self.assertRaises(module.PromotionError) as caught:
+                        module.apply_promotion(
+                            root, module.load_targets(target_path), module.Candidate("0.80.10"), date="2026-08-09",
+                        )
+                    self.assertIn("release paths must be distinct", str(caught.exception))
+
     def test_help_delta_rejects_removed_required_flag(self):
         module = load_module()
         delta = module.compare_help(

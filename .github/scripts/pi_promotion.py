@@ -384,10 +384,12 @@ def apply_promotion(
     # snapshots release-file content pre-loop, so a release path doubling as a
     # declared target would be clobbered — refuse the recipe outright.
     if targets.release is not None:
-        release_paths = {targets.release.package_path, targets.release.changelog_path}
+        declared_release_paths = [targets.release.package_path, targets.release.changelog_path]
         if targets.release.root_package_path is not None:
-            release_paths.add(targets.release.root_package_path)
-        overlap = sorted(str(path) for path in release_paths & {target.path for target in targets.targets})
+            declared_release_paths.append(targets.release.root_package_path)
+        if len(set(declared_release_paths)) != len(declared_release_paths):
+            raise PromotionError("release paths must be distinct files")
+        overlap = sorted(str(path) for path in set(declared_release_paths) & {target.path for target in targets.targets})
         if overlap:
             raise PromotionError(f"release path is also a declared promotion target: {overlap[0]}")
     release_plan = None if targets.release is None else _plan_release_metadata(repo, targets.release, candidate, date)
