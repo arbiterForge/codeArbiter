@@ -4,6 +4,18 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-08-10
+
+### Fixed
+
+- Child dispatch protocol accepts the three optional message fields Pi 0.84.x
+  added: assistant `rawStopReason` (observed on the live RPC wire, where it
+  degraded every 0.84 child dispatch after the first provider turn), assistant
+  `deferred` (provider deferred-response handle), and toolResult `usage`. Each
+  validates strictly when present; unknown keys still fail closed (ADR-0014).
+  Proven by the live isolated-child contract against real Pi 0.84.1 and
+  0.80.10.
+
 ## [0.6.1] - 2026-08-10
 
 ### Fixed
