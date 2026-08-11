@@ -4,6 +4,23 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-10
+
+### Added
+
+- `/ca-sidebar on|off|toggle|width N`: an optional right-hand sidebar column at
+  pi-sidebar-tui panel parity (session, subagents, workspace, todos), defaulting
+  on in interactive parents at 120 columns or wider, width clamped 24..60. The
+  compositor uses Pi render hooks that are undocumented in every promoted
+  version, so each install is probe-gated at runtime, every paint re-validates
+  terminal geometry inside a synchronized-output envelope, and any failure
+  disposes back to native rendering with a single bounded warning — the sidebar
+  can degrade to unavailable, never wedge the terminal. Workspace and todos
+  panels are trusted-only; the MCP panel renders only when Pi exposes servers,
+  which no promoted version does. `/ca-doctor` gains a sidebar health row, and
+  the activity registry now retains up to 16 concurrent active entries so the
+  sidebar's subagents panel can show the detail the footer cannot fit.
+
 ## [0.6.3] - 2026-08-10
 
 ### Changed

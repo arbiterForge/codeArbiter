@@ -36,6 +36,14 @@ file maps those actions to Pi's extension API.
   globally; rate-window telemetry is omitted rather than fabricated. The
   governance row renders only when the repository is enabled and affirmatively
   trusted.
+- `/ca-sidebar on|off|toggle|width N` composites an optional right-hand sidebar
+  column (session, subagents, workspace, todos panels), defaulting on in
+  interactive parents at 120 columns or wider. It relies on Pi render hooks
+  that are undocumented in every promoted version, so each install is
+  probe-gated at runtime and any failure disposes back to native rendering.
+  Workspace and todos panels are trusted-only; the MCP panel renders only when
+  Pi exposes servers, which no promoted version does. No sidebar preference
+  persists beyond the session.
 - `/ca-prune` selects shared semantic policy. The active Pi session is compacted
   through the native compaction event; codeArbiter does not rewrite Pi session
   JSONL. The private summarizer uses the hardened child runner with zero tools.
@@ -54,7 +62,8 @@ file maps those actions to Pi's extension API.
 - Run `/ca-doctor` to inspect the active package path, canonical Pi CLI and
   package origin, command ownership, supported-version expansion fingerprints,
   Python/core/bridge health, child fingerprint, final mutator wrappers, footer
-  initialization, background-manager health, and the H-03 wrapper self-test.
+  initialization, sidebar availability, background-manager health, and the
+  H-03 wrapper self-test.
 - Unverified background cleanup makes the manager unhealthy, blocks later
   launches, and directs the operator to `/ca-doctor`. Doctor never includes job
   labels or IDs, commands, environment data, or output.

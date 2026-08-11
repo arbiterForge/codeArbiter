@@ -1224,7 +1224,9 @@ import { posix as posix3, win32 as win324 } from "node:path";
 // src/activity.ts
 import { types as utilTypes } from "node:util";
 var ACTIVITY_POLICY = Object.freeze({
-  maxActive: 8,
+  // 16 active rows feed the sidebar subagents panel (spec pi-sidebar-panel);
+  // the footer keeps its own tighter display bound.
+  maxActive: 16,
   maxRecent: 8,
   activeTtlMs: 2 * 60 * 60 * 1e3,
   recentTtlMs: 5 * 60 * 1e3,
@@ -3556,10 +3558,10 @@ function parsePlanLedger(markdown) {
     if (lines.length > MAX_LEDGER_LINES) return void 0;
     let found;
     for (let lineIndex = 0; lineIndex < lines.length - 1; lineIndex += 1) {
-      const header = splitTableRow(lines[lineIndex]);
+      const header2 = splitTableRow(lines[lineIndex]);
       const separator = splitTableRow(lines[lineIndex + 1]);
-      if (header === void 0 || separator === void 0 || !isSeparator(separator, header.length)) continue;
-      const normalizedHeaders = header.map((cell) => cell.toLowerCase().replace(/\s+/gu, " "));
+      if (header2 === void 0 || separator === void 0 || !isSeparator(separator, header2.length)) continue;
+      const normalizedHeaders = header2.map((cell) => cell.toLowerCase().replace(/\s+/gu, " "));
       const taskColumns = normalizedHeaders.flatMap((cell, index) => TASK_HEADERS.has(cell) ? [index] : []);
       const statusColumns = normalizedHeaders.flatMap((cell, index) => cell === "status" ? [index] : []);
       if (taskColumns.length !== 1 || statusColumns.length !== 1) {
@@ -3572,7 +3574,7 @@ function parsePlanLedger(markdown) {
       for (let rowIndex = lineIndex + 2; rowIndex < lines.length; rowIndex += 1) {
         const cells = splitTableRow(lines[rowIndex]);
         if (cells === void 0) break;
-        if (cells.length !== header.length) return void 0;
+        if (cells.length !== header2.length) return void 0;
         const id = cells[taskColumns[0]];
         const status = taskStatus(cells[statusColumns[0]]);
         if (!TASK_ID.test(id) || CONTROL.test(id) || status === void 0 || ids.has(id)) return void 0;
@@ -4479,7 +4481,7 @@ function adaptPiFooterState(source) {
   const entriesValue = callMember2(manager, "getEntries");
   const snapshotSession = normalizeSnapshotSession(source.usageSnapshot?.session);
   const usage = snapshotSession ?? aggregateSessionUsage(entriesValue);
-  const sparkline = sparklineSeries(entriesValue);
+  const sparkline2 = sparklineSeries(entriesValue);
   const ageSeconds = sessionAge(callMember2(manager, "getHeader"), now);
   const session = usage ? { ...usage, ...ageSeconds === void 0 ? {} : { ageSeconds } } : void 0;
   const rawContext = object(callMember2(source.context, "getContextUsage"));
@@ -4507,7 +4509,7 @@ function adaptPiFooterState(source) {
     ...daily ? { daily } : {},
     ...updateVersion ? { update: { version: updateVersion } } : {},
     ...activity ? { activity } : {},
-    ...sparkline ? { sparkline } : {}
+    ...sparkline2 ? { sparkline: sparkline2 } : {}
   };
 }
 
@@ -4693,8 +4695,8 @@ var SPARK_GLYPHS = ["\u2581", "\u2582", "\u2583", "\u2584", "\u2585", "\u2586", 
 function activityRows(activity) {
   const rows = activity.slice(0, ACTIVITY_MAX_ROWS).map((item) => {
     const glyph = item.state === "active" ? colored(COLORS.ok, "\u25CF") : colored(COLORS.muted, "\u2713");
-    const age = item.ageSeconds === void 0 ? "" : ` ${formatDuration(item.ageSeconds)}`;
-    return `${glyph} ${sanitize2(item.kind, "job")}:${sanitize2(item.label)}${age}`;
+    const age2 = item.ageSeconds === void 0 ? "" : ` ${formatDuration(item.ageSeconds)}`;
+    return `${glyph} ${sanitize2(item.kind, "job")}:${sanitize2(item.label)}${age2}`;
   });
   if (rows.length === 0) return rows;
   rows[0] = `${colored(COLORS.bright, "activity")} ${rows[0]}`;
@@ -4767,8 +4769,8 @@ function renderCompact(input, box) {
     if (readValue !== void 0 || writeValue !== void 0) {
       bits.push(`cache ${read + write > 0 ? Math.round(read / (read + write) * 100) : 0}%`);
     }
-    const age = usage.ageSeconds;
-    if (age !== void 0) bits.push(`age ${formatDuration(age)}`);
+    const age2 = usage.ageSeconds;
+    if (age2 !== void 0) bits.push(`age ${formatDuration(age2)}`);
     return bits.join(" \xB7 ");
   }, "");
   const daily = guard(() => {
@@ -4893,12 +4895,23 @@ var PiFooterLifecycle = class {
   governance;
   updateVersion;
   gitFacts;
+  lastInput;
   activationEnabled = false;
   expected = false;
   installed = false;
   refreshQueue = Promise.resolve();
   requestActivityRender() {
     requestRender(this.tui);
+  }
+  /** The live tui handle captured by the footer factory; the sidebar
+   * compositor probes it for the undocumented doRender hook. */
+  currentTui() {
+    return this.tui;
+  }
+  /** The most recently rendered footer input — the sidebar's session,
+   * subagents and workspace panels reuse these already-gathered facts. */
+  lastRenderedInput() {
+    return this.lastInput;
   }
   health() {
     return Object.freeze({
@@ -4986,6 +4999,7 @@ var PiFooterLifecycle = class {
                 ...this.governance.prune === void 0 ? {} : { prune: this.governance.prune }
               }
             };
+            this.lastInput = enriched;
             const rendered = renderFooter(enriched, {
               width,
               noColor: Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR")
@@ -5063,6 +5077,7 @@ var PiFooterLifecycle = class {
     this.governance = void 0;
     this.updateVersion = void 0;
     this.gitFacts = void 0;
+    this.lastInput = void 0;
     this.activationEnabled = false;
     this.expected = false;
     this.refreshQueue = Promise.resolve();
@@ -5078,6 +5093,620 @@ var PiFooterLifecycle = class {
     }
   }
 };
+
+// src/sidebar.ts
+var SIDEBAR_MAX_AGENT_ROWS = 16;
+var MAX_TODO_ROWS = 12;
+var MAX_MCP_ROWS = 8;
+var MAX_LIST_ITEMS = 256;
+var MAX_TEXT_POINTS3 = 512;
+var SPARK_GLYPHS2 = ["\u2581", "\u2582", "\u2583", "\u2584", "\u2585", "\u2586", "\u2587", "\u2588"];
+var ESC2 = "\x1B";
+var RESET2 = `${ESC2}[0m`;
+var HEADER_COLOR = `${ESC2}[38;2;178;102;255m`;
+var MUTED = `${ESC2}[38;2;150;150;162m`;
+var OK = `${ESC2}[38;2;120;220;150m`;
+var WARN = `${ESC2}[38;2;255;184;76m`;
+var OSC_RE2 = /\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)?/gu;
+var CSI_RE2 = /\x1b\[[0-?]*[ -/]*[@-~]?/gu;
+var ESCAPE_RE2 = /\x1b[@-_]/gu;
+var CONTROL_RE3 = /[\u0000-\u001f\u007f-\u009f\u061c\u200b-\u200f\u2028\u2029\u202a-\u202e\u2060-\u206f\ufeff]/gu;
+function sanitize3(value) {
+  if (typeof value !== "string") return "";
+  return value.replace(OSC_RE2, "").replace(CSI_RE2, "").replace(ESCAPE_RE2, "").replace(CONTROL_RE3, "").slice(0, MAX_TEXT_POINTS3);
+}
+function boundedNumber2(value, maximum) {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) return 0;
+  return Math.min(value, maximum);
+}
+var COLOR_PALETTE = { header: HEADER_COLOR, muted: MUTED, ok: OK, warn: WARN, reset: RESET2 };
+var PLAIN_PALETTE = { header: "", muted: "", ok: "", warn: "", reset: "" };
+function fit(text2, context) {
+  const { width, metrics, palette } = context;
+  let value = text2;
+  let visible;
+  try {
+    visible = metrics.visibleWidth(value);
+  } catch {
+    value = "";
+    visible = 0;
+  }
+  if (visible > width) {
+    try {
+      value = metrics.truncateToWidth(value, width, "\u2026");
+      visible = metrics.visibleWidth(value);
+    } catch {
+      value = "";
+      visible = 0;
+    }
+  }
+  if (visible > width) {
+    value = "";
+    visible = 0;
+  }
+  const padded = value + " ".repeat(width - visible);
+  return palette.reset === "" ? padded : padded + palette.reset;
+}
+function header(title, context) {
+  const { width, palette } = context;
+  const label = ` ${title} `;
+  const room = Math.max(0, width - label.length - 2);
+  const bar = "\u2500";
+  const text2 = `${bar}${label}${bar.repeat(room)}`.slice(0, width);
+  return fit(`${palette.header}${text2}`, context);
+}
+function tokensLabel(input, output) {
+  const compact = (value) => value >= 1e3 ? `${(value / 1e3).toFixed(1)}k` : String(value);
+  return `${compact(input)}\u2191 ${compact(output)}\u2193`;
+}
+function sparkline(series) {
+  const bounded = series.slice(-16).map((value) => boundedNumber2(value, Number.MAX_SAFE_INTEGER));
+  if (bounded.length === 0) return "";
+  const maximum = Math.max(...bounded);
+  return bounded.map((value) => {
+    const level = maximum > 0 ? Math.min(8, Math.max(1, Math.ceil(value / maximum * 8))) : 1;
+    return SPARK_GLYPHS2[level - 1];
+  }).join("");
+}
+function sessionPanel(session, context) {
+  const { palette } = context;
+  const lines = [header("session", context)];
+  const model = sanitize3(session.model);
+  const thinking = sanitize3(session.thinkingLevel);
+  if (model !== "") lines.push(fit(` ${model}${thinking === "" ? "" : `${palette.muted} \xB7 ${thinking}`}`, context));
+  const percent = boundedNumber2(session.contextPercent, 999);
+  if (session.contextPercent !== void 0) {
+    const cells = 10;
+    const filled = Math.min(cells, Math.round(Math.min(percent, 100) / 100 * cells));
+    const bar = "\u2588".repeat(filled) + "\u2591".repeat(cells - filled);
+    const tone = percent >= 80 ? palette.warn : palette.ok;
+    lines.push(fit(` ctx ${tone}${bar}${palette.reset === "" ? "" : palette.reset} ${Math.round(percent)}%`, context));
+  }
+  const input = boundedNumber2(session.inputTokens, Number.MAX_SAFE_INTEGER);
+  const output = boundedNumber2(session.outputTokens, Number.MAX_SAFE_INTEGER);
+  const cost = boundedNumber2(session.costUsd, 1e9);
+  if (session.inputTokens !== void 0 || session.outputTokens !== void 0 || session.costUsd !== void 0) {
+    lines.push(fit(` ${tokensLabel(input, output)}${palette.muted} \xB7 $${cost.toFixed(cost >= 100 ? 0 : 2)}`, context));
+  }
+  if (session.burn !== void 0 && session.burn.length > 0) {
+    lines.push(fit(` burn ${sparkline(session.burn)}`, context));
+  }
+  return lines;
+}
+function agentGlyph(row, palette) {
+  if (row.state === "active") return `${palette.ok}\u25CF${palette.reset === "" ? "" : palette.reset}`;
+  return `${palette.muted}\u25CB${palette.reset === "" ? "" : palette.reset}`;
+}
+function age(seconds) {
+  const bounded = boundedNumber2(seconds, 3650 * 86400);
+  if (bounded >= 3600) return `${Math.floor(bounded / 3600)}h`;
+  if (bounded >= 60) return `${Math.floor(bounded / 60)}m`;
+  return `${Math.floor(bounded)}s`;
+}
+function agentsPanel(rows, context) {
+  const { palette } = context;
+  const lines = [header("agents", context)];
+  const bounded = rows.slice(0, MAX_LIST_ITEMS);
+  for (const row of bounded.slice(0, SIDEBAR_MAX_AGENT_ROWS)) {
+    const label = sanitize3(row.label);
+    const kind = row.kind === "job" ? "job" : "child";
+    const suffix = row.ageSeconds === void 0 ? "" : ` ${age(row.ageSeconds)}`;
+    lines.push(fit(` ${agentGlyph(row, palette)} ${label}${palette.muted} \xB7 ${kind}${suffix}`, context));
+  }
+  if (bounded.length > SIDEBAR_MAX_AGENT_ROWS) {
+    lines.push(fit(` ${palette.muted}+${bounded.length - SIDEBAR_MAX_AGENT_ROWS} more`, context));
+  }
+  return lines;
+}
+function workspacePanel(workspace, context) {
+  const { palette } = context;
+  const lines = [header("workspace", context)];
+  const repository = sanitize3(workspace.repository);
+  if (repository !== "") {
+    const dirty = workspace.dirty === true ? `${palette.warn} \u25CF` : "";
+    lines.push(fit(` ${repository}${dirty}`, context));
+  }
+  const cwd = sanitize3(workspace.cwd);
+  if (cwd !== "") lines.push(fit(` ${palette.muted}${cwd}`, context));
+  return lines;
+}
+var TODO_GLYPHS = {
+  done: "\u2713",
+  active: "\u25B8",
+  open: "\xB7"
+};
+function todosPanel(rows, context) {
+  const { palette } = context;
+  const lines = [header("todos", context)];
+  const bounded = rows.slice(0, MAX_LIST_ITEMS);
+  for (const row of bounded.slice(0, MAX_TODO_ROWS)) {
+    const glyph = TODO_GLYPHS[row.state] ?? TODO_GLYPHS.open;
+    const tone = row.state === "done" ? palette.muted : row.state === "active" ? palette.ok : "";
+    lines.push(fit(` ${tone}${glyph} ${sanitize3(row.text)}`, context));
+  }
+  if (bounded.length > MAX_TODO_ROWS) {
+    lines.push(fit(` ${palette.muted}+${bounded.length - MAX_TODO_ROWS} more`, context));
+  }
+  return lines;
+}
+function mcpPanel(rows, context) {
+  const { palette } = context;
+  const lines = [header("mcp", context)];
+  const bounded = rows.slice(0, MAX_LIST_ITEMS);
+  for (const row of bounded.slice(0, MAX_MCP_ROWS)) {
+    const state = sanitize3(row.state);
+    const tone = state === "connected" ? palette.ok : palette.muted;
+    lines.push(fit(` ${tone}\u25CF${palette.reset === "" ? "" : palette.reset} ${sanitize3(row.name)}${palette.muted} \xB7 ${state}`, context));
+  }
+  return lines;
+}
+function renderSidebar(input, width, metrics, options) {
+  const safeWidth = Number.isSafeInteger(width) && width > 0 ? Math.min(width, 160) : 40;
+  const palette = options?.noColor === true ? PLAIN_PALETTE : COLOR_PALETTE;
+  const context = { width: safeWidth, metrics, palette };
+  const lines = [];
+  const panels = [
+    ["session", () => {
+      const session = input.session;
+      return session === void 0 ? void 0 : sessionPanel(session, context);
+    }],
+    ["agents", () => {
+      const rows = input.subagents;
+      return rows === void 0 || rows.length === 0 ? void 0 : agentsPanel(rows, context);
+    }],
+    ["workspace", () => {
+      const workspace = input.workspace;
+      return workspace === void 0 ? void 0 : workspacePanel(workspace, context);
+    }],
+    ["todos", () => {
+      const rows = input.todos;
+      return rows === void 0 || rows.length === 0 ? void 0 : todosPanel(rows, context);
+    }],
+    ["mcp", () => {
+      const rows = input.mcp;
+      return rows === void 0 || rows.length === 0 ? void 0 : mcpPanel(rows, context);
+    }]
+  ];
+  for (const [title, render] of panels) {
+    let rendered;
+    try {
+      rendered = render();
+    } catch {
+      rendered = [header(title, context), fit(` ${palette.muted}(unavailable)`, context)];
+    }
+    if (rendered === void 0 || rendered.length === 0) continue;
+    if (lines.length > 0) lines.push(fit("", context));
+    lines.push(...rendered);
+  }
+  return Object.freeze(lines);
+}
+
+// src/sidebar-compositor.ts
+var SIDEBAR_DEFAULT_WIDTH = 40;
+var SIDEBAR_MIN_WIDTH = 24;
+var SIDEBAR_MAX_WIDTH = 60;
+var SIDEBAR_MAIN_COLUMN_FLOOR = 60;
+var GEOMETRY_FAILURE_LIMIT = 3;
+var ESC3 = "\x1B";
+var SYNC_START = `${ESC3}[?2026h`;
+var SYNC_END = `${ESC3}[?2026l`;
+var CURSOR_SAVE = `${ESC3}7`;
+var CURSOR_RESTORE = `${ESC3}8`;
+var WRAP_OFF = `${ESC3}[?7l`;
+var WRAP_ON = `${ESC3}[?7h`;
+var RESET3 = `${ESC3}[0m`;
+function unavailable(reason) {
+  return Object.freeze({
+    installed: false,
+    reason,
+    setWidth: () => void 0,
+    dispose: () => void 0
+  });
+}
+function columnsDescriptor(terminal) {
+  let target = terminal;
+  while (target !== null) {
+    const descriptor = Object.getOwnPropertyDescriptor(target, "columns");
+    if (descriptor !== void 0) return descriptor;
+    target = Object.getPrototypeOf(target);
+  }
+  return void 0;
+}
+function probeSidebarSupport(tui, terminal, metrics) {
+  if (typeof metrics?.visibleWidth !== "function" || typeof metrics?.truncateToWidth !== "function") {
+    return { ok: false, reason: "no-metrics" };
+  }
+  if (typeof tui?.doRender !== "function") return { ok: false, reason: "no-dorender" };
+  const descriptor = columnsDescriptor(terminal);
+  if (descriptor === void 0 || descriptor.configurable !== true) {
+    return { ok: false, reason: "columns-not-configurable" };
+  }
+  return { ok: true };
+}
+function clampWidth(width) {
+  if (typeof width !== "number" || !Number.isFinite(width)) return SIDEBAR_DEFAULT_WIDTH;
+  return Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, Math.floor(width)));
+}
+var Compositor = class {
+  constructor(ports, width) {
+    this.ports = ports;
+    this.width = width;
+    this.originalDescriptor = columnsDescriptor(ports.terminal);
+    this.originalDoRender = ports.tui.doRender;
+    this.defineNarrowedColumns();
+    const paintAfterRender = (...args) => {
+      const result3 = this.originalDoRender.apply(ports.tui, args);
+      this.paint();
+      return result3;
+    };
+    ports.tui.doRender = paintAfterRender;
+  }
+  ports;
+  active = true;
+  width;
+  geometryFailures = 0;
+  warned = false;
+  narrowedGetter;
+  originalDescriptor;
+  originalDoRender;
+  get installed() {
+    return this.active;
+  }
+  setWidth(width) {
+    if (!this.active) return;
+    this.width = clampWidth(width);
+    this.defineNarrowedColumns();
+    try {
+      this.ports.tui.requestRender();
+    } catch {
+    }
+  }
+  dispose() {
+    if (!this.active) return;
+    this.active = false;
+    try {
+      Object.defineProperty(this.ports.terminal, "columns", this.originalDescriptor);
+    } catch {
+    }
+    try {
+      this.ports.tui.doRender = this.originalDoRender;
+    } catch {
+    }
+    try {
+      this.ports.tui.requestRender();
+    } catch {
+    }
+  }
+  rawGeometry() {
+    const own = Object.getOwnPropertyDescriptor(this.ports.terminal, "columns");
+    if (own?.get !== this.narrowedGetter) return void 0;
+    let rawColumns2;
+    try {
+      rawColumns2 = this.originalDescriptor.get !== void 0 ? this.originalDescriptor.get.call(this.ports.terminal) : this.originalDescriptor.value;
+    } catch {
+      return void 0;
+    }
+    const rows = this.ports.terminal.rows;
+    if (typeof rawColumns2 !== "number" || !Number.isFinite(rawColumns2)) return void 0;
+    if (typeof rows !== "number" || !Number.isFinite(rows) || rows <= 0) return void 0;
+    if (rawColumns2 < this.width + SIDEBAR_MAIN_COLUMN_FLOOR) return void 0;
+    return { rawColumns: Math.floor(rawColumns2), rows: Math.floor(rows) };
+  }
+  defineNarrowedColumns() {
+    const narrowed = () => {
+      const geometry = this.rawGeometry();
+      if (geometry === void 0) {
+        try {
+          return this.originalDescriptor.get !== void 0 ? this.originalDescriptor.get.call(this.ports.terminal) : this.originalDescriptor.value;
+        } catch {
+          return this.width + SIDEBAR_MAIN_COLUMN_FLOOR;
+        }
+      }
+      return geometry.rawColumns - (this.width + 1);
+    };
+    this.narrowedGetter = narrowed;
+    Object.defineProperty(this.ports.terminal, "columns", {
+      configurable: true,
+      enumerable: true,
+      get: narrowed
+    });
+  }
+  /** AC-3: paint inside a synchronized-output envelope; every cycle
+   * re-validates raw geometry first and a persistent failure disposes. */
+  paint() {
+    if (!this.active) return;
+    try {
+      const geometry = this.rawGeometry();
+      if (geometry === void 0) {
+        this.geometryFailures += 1;
+        if (this.geometryFailures >= GEOMETRY_FAILURE_LIMIT) this.dispose();
+        return;
+      }
+      this.geometryFailures = 0;
+      const lines = renderSidebar(this.ports.dataSource(), this.width, this.ports.metrics, {
+        noColor: this.ports.noColor
+      });
+      const column = geometry.rawColumns - this.width;
+      const separatorColumn = column - 1;
+      const parts = [SYNC_START, CURSOR_SAVE, WRAP_OFF];
+      for (let row = 1; row <= geometry.rows; row += 1) {
+        const content = row - 1 < lines.length ? lines[row - 1] : " ".repeat(this.width);
+        parts.push(`${ESC3}[${row};${separatorColumn}H${RESET3}\u2502${content}`);
+      }
+      parts.push(WRAP_ON, CURSOR_RESTORE, SYNC_END);
+      this.ports.writeOut(parts.join(""));
+    } catch {
+      this.dispose();
+      if (!this.warned) {
+        this.warned = true;
+        try {
+          this.ports.notify("codeArbiter sidebar disabled after a paint failure; run /ca-doctor.");
+        } catch {
+        }
+      }
+    }
+  }
+};
+function installSidebar(ports, options) {
+  const probe = probeSidebarSupport(ports.tui, ports.terminal, ports.metrics);
+  if (!probe.ok) return unavailable(probe.reason);
+  const width = clampWidth(options.width);
+  const descriptor = columnsDescriptor(ports.terminal);
+  let rawColumns2;
+  try {
+    rawColumns2 = descriptor.get !== void 0 ? descriptor.get.call(ports.terminal) : descriptor.value;
+  } catch {
+    return unavailable("geometry-unreadable");
+  }
+  if (typeof rawColumns2 !== "number" || !Number.isFinite(rawColumns2) || rawColumns2 < width + SIDEBAR_MAIN_COLUMN_FLOOR) {
+    return unavailable("terminal-too-narrow");
+  }
+  return new Compositor(ports, width);
+}
+
+// src/sidebar-manager.ts
+var SIDEBAR_AUTO_ON_MIN_COLUMNS = 120;
+var SIDEBAR_SYNTAX = "Usage: /ca-sidebar on|off|toggle|width N (N clamped 24..60)";
+var DEGRADED_REASONS = Object.freeze(/* @__PURE__ */ new Set([
+  "no-dorender",
+  "columns-not-configurable",
+  "no-metrics",
+  "geometry-unreadable"
+]));
+function clampWidth2(width) {
+  return Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, Math.floor(width)));
+}
+function rawColumns(terminal) {
+  try {
+    const value = terminal?.columns;
+    return typeof value === "number" && Number.isFinite(value) ? Math.floor(value) : void 0;
+  } catch {
+    return void 0;
+  }
+}
+var Manager = class {
+  constructor(ports) {
+    this.ports = ports;
+  }
+  ports;
+  registered = false;
+  expected = false;
+  compositor;
+  width = SIDEBAR_DEFAULT_WIDTH;
+  userDisabled = false;
+  autoDecided = false;
+  lastReason;
+  metrics;
+  register(context) {
+    if (!interactiveParent(context)) return false;
+    this.expected = true;
+    if (!this.registered) {
+      this.ports.pi.registerCommand("ca-sidebar", {
+        description: "Toggle or resize the codeArbiter sidebar (on|off|toggle|width N).",
+        handler: async (args, commandContext) => {
+          await this.handle(args, commandContext);
+        }
+      });
+      this.registered = true;
+    }
+    return true;
+  }
+  async autoInstall(context) {
+    if (!interactiveParent(context)) return;
+    if (this.autoDecided || this.userDisabled || this.compositor?.installed === true) return;
+    if (this.ports.currentTui() === void 0) return;
+    const columns = rawColumns(this.ports.terminal());
+    if (columns === void 0) return;
+    this.autoDecided = true;
+    if (columns < SIDEBAR_AUTO_ON_MIN_COLUMNS) {
+      this.lastReason = "auto-off-narrow";
+      return;
+    }
+    await this.install(context);
+  }
+  dispose() {
+    try {
+      this.compositor?.dispose();
+    } catch {
+    }
+    this.compositor = void 0;
+    this.expected = false;
+    this.userDisabled = false;
+    this.autoDecided = false;
+    this.lastReason = void 0;
+  }
+  health() {
+    const installed = this.compositor?.installed === true;
+    const reason = installed ? void 0 : this.compositor?.reason ?? this.lastReason;
+    return Object.freeze({
+      expected: this.expected,
+      installed,
+      degraded: !installed && reason !== void 0 && DEGRADED_REASONS.has(reason),
+      ...reason === void 0 ? {} : { reason }
+    });
+  }
+  async install(context) {
+    const tui = this.ports.currentTui();
+    const terminal = this.ports.terminal();
+    if (tui === void 0 || terminal === void 0) {
+      this.lastReason = tui === void 0 ? "no-tui" : "no-terminal";
+      return false;
+    }
+    if (this.metrics === void 0) {
+      try {
+        this.metrics = await this.ports.loadMetrics?.();
+      } catch {
+        this.metrics = void 0;
+      }
+      if (this.metrics === void 0) {
+        this.lastReason = "no-metrics";
+        return false;
+      }
+    }
+    const notify = (message) => {
+      try {
+        context.ui.notify(message, "warning");
+      } catch {
+      }
+    };
+    const compositor = installSidebar({
+      tui,
+      terminal,
+      metrics: this.metrics,
+      writeOut: this.ports.writeOut,
+      notify,
+      dataSource: this.ports.dataSource,
+      noColor: this.ports.noColor()
+    }, { width: this.width });
+    this.compositor = compositor;
+    this.lastReason = compositor.installed ? void 0 : compositor.reason;
+    return compositor.installed;
+  }
+  notifyInfo(context, message, level = "info") {
+    try {
+      context.ui.notify(message, level);
+    } catch {
+    }
+  }
+  async turnOn(context) {
+    this.userDisabled = false;
+    this.autoDecided = true;
+    if (this.compositor?.installed === true) {
+      this.notifyInfo(context, "codeArbiter sidebar is already on.");
+      return;
+    }
+    const installed = await this.install(context);
+    if (!installed) {
+      this.notifyInfo(context, `codeArbiter sidebar unavailable (${this.lastReason ?? "unknown"}); native rendering is untouched.`, "warning");
+    }
+  }
+  turnOff(context) {
+    this.userDisabled = true;
+    this.autoDecided = true;
+    try {
+      this.compositor?.dispose();
+    } catch {
+    }
+    this.compositor = void 0;
+    this.lastReason = "off";
+    this.notifyInfo(context, "codeArbiter sidebar off.");
+  }
+  async handle(rawArgs, context) {
+    if (!interactiveParent(context)) return;
+    const args = typeof rawArgs === "string" ? rawArgs.trim().split(/\s+/u).filter(Boolean) : [];
+    if (args.length === 0 || args.length === 1 && args[0] === "toggle") {
+      if (this.compositor?.installed === true) this.turnOff(context);
+      else await this.turnOn(context);
+      return;
+    }
+    if (args.length === 1 && args[0] === "on") {
+      await this.turnOn(context);
+      return;
+    }
+    if (args.length === 1 && args[0] === "off") {
+      this.turnOff(context);
+      return;
+    }
+    if (args.length === 2 && args[0] === "width" && /^\d{1,4}$/u.test(args[1])) {
+      this.width = clampWidth2(Number(args[1]));
+      if (this.compositor?.installed === true) this.compositor.setWidth(this.width);
+      else this.notifyInfo(context, `codeArbiter sidebar width set to ${this.width}; the sidebar is off.`);
+      return;
+    }
+    this.notifyInfo(context, SIDEBAR_SYNTAX, "warning");
+  }
+};
+function createSidebarManager(ports) {
+  return new Manager(ports);
+}
+
+// src/sidebar-data.ts
+function sessionFromFooter(footer) {
+  const context = footer.context;
+  const contextPercent = context !== void 0 && typeof context.windowTokens === "number" && Number.isFinite(context.windowTokens) && context.windowTokens > 0 && typeof context.usedTokens === "number" && Number.isFinite(context.usedTokens) ? context.usedTokens / context.windowTokens * 100 : void 0;
+  const session = {
+    ...footer.model?.name === void 0 ? {} : { model: footer.model.name },
+    ...footer.model?.thinking === void 0 ? {} : { thinkingLevel: footer.model.thinking },
+    ...contextPercent === void 0 ? {} : { contextPercent },
+    ...footer.session === void 0 ? {} : {
+      inputTokens: footer.session.inputTokens,
+      outputTokens: footer.session.outputTokens,
+      costUsd: footer.session.costUsd
+    },
+    ...footer.sparkline === void 0 || footer.sparkline.length === 0 ? {} : { burn: footer.sparkline }
+  };
+  return Object.keys(session).length === 0 ? void 0 : session;
+}
+function sidebarInputFromFooter(footer) {
+  if (footer === void 0) return {};
+  const session = sessionFromFooter(footer);
+  const subagents = footer.activity !== void 0 && footer.activity.length > 0 ? footer.activity.map((item) => ({
+    kind: item.kind,
+    label: item.label,
+    state: item.state,
+    ...item.ageSeconds === void 0 ? {} : { ageSeconds: item.ageSeconds }
+  })) : void 0;
+  const workspace = footer.git === void 0 ? void 0 : {
+    cwd: footer.folder,
+    ...footer.git.repository === void 0 ? {} : { repository: footer.git.repository },
+    ...footer.git.dirty === void 0 ? {} : { dirty: footer.git.dirty }
+  };
+  return {
+    ...session === void 0 ? {} : { session },
+    ...subagents === void 0 ? {} : { subagents },
+    ...workspace === void 0 ? {} : { workspace }
+  };
+}
+var TODO_STATE = Object.freeze({
+  PENDING: "open",
+  IN_PROGRESS: "active",
+  ACCEPTED: "done"
+});
+function sidebarTodosFromPlan(state) {
+  const tasks = state?.activePlan.tasks;
+  if (tasks === void 0 || tasks.length === 0) return void 0;
+  return tasks.map((task) => ({ text: task.id, state: TODO_STATE[task.status] }));
+}
 
 // src/tool-guard.ts
 import { createHash as createHash5, randomUUID as randomUUID3 } from "node:crypto";
@@ -6127,6 +6756,12 @@ async function collectPiDoctorInput(dependencies) {
       expected: dependencies.footerExpected === true,
       initialized: dependencies.footerInitialized === true
     },
+    sidebar: {
+      expected: dependencies.sidebarExpected === true,
+      installed: dependencies.sidebarInstalled === true,
+      degraded: dependencies.sidebarDegraded === true,
+      ...dependencies.sidebarReason === void 0 ? {} : { reason: dependencies.sidebarReason }
+    },
     background: {
       expected: dependencies.backgroundExpected === true,
       initialized: dependencies.backgroundInitialized === true,
@@ -6163,6 +6798,7 @@ var REMEDIATION = {
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
   footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  sidebar: "Run /ca-sidebar on in a wide terminal; if the probe still reports unavailable, this Pi build changed its render surface \u2014 keep the footer and file an issue.",
   background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
   "active-dispatch": "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28."
 };
@@ -6260,6 +6896,12 @@ function diagnosePi(input) {
       input.footer.expected ? input.footer.initialized : !input.footer.initialized,
       input.footer.expected ? "The rich footer initialized in the current interactive parent session." : "The rich footer is intentionally absent outside an active interactive parent session.",
       input.footer.expected ? "The rich footer did not initialize in the current interactive parent session." : "The rich footer initialized outside an active interactive parent session; isolation is breached."
+    ),
+    diagnosis(
+      "sidebar",
+      !input.sidebar.degraded,
+      input.sidebar.expected ? input.sidebar.installed ? "The probe-gated sidebar compositor is installed." : `The sidebar is not installed (${input.sidebar.reason ?? "off"}); native rendering is untouched.` : "The sidebar is intentionally absent outside an interactive parent session.",
+      `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`
     ),
     diagnosis(
       "background",
@@ -9199,6 +9841,21 @@ function installParent(pi, dependencies) {
     currentActivity2,
     dependencies.collectGitFacts ?? collectGitFacts
   );
+  const sidebar = createSidebarManager({
+    pi,
+    currentTui: () => footer.currentTui(),
+    terminal: () => process.stdout,
+    ...loadFooterMetrics === void 0 ? {} : { loadMetrics: loadFooterMetrics },
+    dataSource: () => {
+      const input = sidebarInputFromFooter(footer.lastRenderedInput());
+      const todos = sidebarTodosFromPlan(plan?.status());
+      return todos === void 0 ? input : { ...input, todos };
+    },
+    writeOut: (text2) => {
+      process.stdout.write(text2);
+    },
+    noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR")
+  });
   const readActivation = dependencies.readActivation ?? isEnabled;
   dependencies.installDispatch?.(() => readyLifecycle, currentActivity2);
   dependencies.installCompaction?.(() => readyLifecycle);
@@ -9233,6 +9890,7 @@ function installParent(pi, dependencies) {
     }
     return Object.freeze({
       footer: footerHealth,
+      sidebar: sidebar.health(),
       background: Object.freeze({
         expected: backgroundExpected,
         initialized: backgroundInitialized,
@@ -9253,6 +9911,7 @@ function installParent(pi, dependencies) {
     activeLifecycle = void 0;
     readyLifecycle = void 0;
     if (background !== void 0) await background.stop("session-switch");
+    sidebar.dispose();
     activity?.dispose();
     activity = void 0;
     dependencies.enforcementReadiness?.deactivate();
@@ -9274,6 +9933,9 @@ function installParent(pi, dependencies) {
       prepareBridge: dependencies.prepareFooterBridge,
       readUpdateVersion: dependencies.readFooterUpdateVersion
     });
+    if (!isCurrent()) return;
+    sidebar.register(context);
+    await sidebar.autoInstall(context);
     if (!isCurrent()) return;
     if (!markerEnabled) {
       activeLifecycle = void 0;
@@ -9371,12 +10033,14 @@ function installParent(pi, dependencies) {
   });
   pi.on("agent_settled", async (_event, context) => {
     await footer.refresh(context, { activation: { enabled: footerActivationEnabled } });
+    await sidebar.autoInstall(context);
     if (enabled) publishStatus(context, degradedStatus());
   });
   const stopSession = async (reason, context) => {
     readyLifecycle = void 0;
     activeLifecycle = void 0;
     await background?.stop(reason);
+    sidebar.dispose();
     activity?.dispose();
     activity = void 0;
     footer.dispose();
@@ -9720,6 +10384,10 @@ async function codeArbiterPi(pi) {
         bridgePrepared: enabledForDoctor && trustedForDoctor && pythonResolutionAttempted,
         footerExpected: health.footer.expected,
         footerInitialized: health.footer.initialized,
+        sidebarExpected: health.sidebar.expected,
+        sidebarInstalled: health.sidebar.installed,
+        sidebarDegraded: health.sidebar.degraded,
+        ...health.sidebar.reason === void 0 ? {} : { sidebarReason: health.sidebar.reason },
         backgroundExpected: health.background.expected,
         backgroundInitialized: health.background.initialized,
         backgroundHealthy: health.background.healthy,

@@ -165,12 +165,14 @@ describe("Pi keyed status lifecycle", () => {
     await host.invoke("ca-doctor", "", trusted);
     expect(facts.at(-1)).toEqual({
       footer: { expected: true, initialized: true },
+      sidebar: { expected: true, installed: false, degraded: false },
       background: { expected: true, initialized: true, healthy: true },
     });
     liveTrust = false;
     await host.invoke("ca-doctor", "", trusted);
     expect(facts.at(-1)).toEqual({
       footer: { expected: true, initialized: true },
+      sidebar: { expected: true, installed: false, degraded: false },
       background: { expected: true, initialized: true, healthy: true },
     });
     liveTrust = true;
@@ -178,12 +180,14 @@ describe("Pi keyed status lifecycle", () => {
     await host.invoke("ca-doctor", "", trusted);
     expect(facts.at(-1)).toEqual({
       footer: { expected: true, initialized: true },
+      sidebar: { expected: true, installed: false, degraded: false },
       background: { expected: true, initialized: true, healthy: false },
     });
     await host.emit("session_shutdown", trusted);
     await host.invoke("ca-doctor", "", trusted);
     expect(facts.at(-1)).toEqual({
       footer: { expected: false, initialized: false },
+      sidebar: { expected: false, installed: false, degraded: false },
       background: { expected: false, initialized: false, healthy: false },
     });
 
@@ -192,6 +196,7 @@ describe("Pi keyed status lifecycle", () => {
     await host.invoke("ca-doctor", "", dormantContext);
     expect(facts.at(-1)).toEqual({
       footer: { expected: true, initialized: true },
+      sidebar: { expected: true, installed: false, degraded: false },
       background: { expected: false, initialized: false, healthy: false },
     });
     await host.emit("session_shutdown", dormantContext);
@@ -201,6 +206,7 @@ describe("Pi keyed status lifecycle", () => {
     await host.invoke("ca-doctor", "", json);
     expect(facts.at(-1)).toEqual({
       footer: { expected: false, initialized: false },
+      sidebar: { expected: false, installed: false, degraded: false },
       background: { expected: false, initialized: false, healthy: false },
     });
   });
@@ -311,6 +317,7 @@ describe("Pi keyed status lifecycle", () => {
     await host.invoke("ca-doctor", "", context);
     expect(health).toEqual({
       footer: { expected: true, initialized: false },
+      sidebar: { expected: true, installed: false, degraded: false },
       background: { expected: true, initialized: false, healthy: false },
     });
   });

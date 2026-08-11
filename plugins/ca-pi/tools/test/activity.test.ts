@@ -105,6 +105,20 @@ describe("Pi session activity registry", () => {
     expect(activity.snapshot()).toEqual([]);
   });
 
+  test("holds sixteen concurrent active entries for the sidebar panel", () => {
+    expect(ACTIVITY_POLICY.maxActive).toBe(16);
+    let now = 1_000;
+    const activity = createSessionActivityRegistry({ now: () => now })!;
+    for (let index = 0; index < 17; index += 1) {
+      activity.publish({ kind: "child", id: `dispatch-${index}`, label: `agent-${index}`, state: "active" });
+      now += 10;
+    }
+    const active = activity.snapshot().filter((item) => item.state === "active");
+    expect(active.length).toBe(16);
+    expect(active.map((item) => item.label)).not.toContain("agent-0");
+    activity.dispose();
+  });
+
   test("rejects invalid construction and contains hostile publishers", () => {
     expect(createSessionActivityRegistry({ maxActive: 0 })).toBeUndefined();
     expect(createSessionActivityRegistry({ maxRecent: Number.POSITIVE_INFINITY })).toBeUndefined();

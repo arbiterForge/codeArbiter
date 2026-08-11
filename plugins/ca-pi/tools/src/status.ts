@@ -10,7 +10,7 @@ import type {
 } from "./contracts.ts";
 import { adaptPiFooterState } from "./footer-state.ts";
 import { renderFooter } from "./footer.ts";
-import type { FooterTextMetrics } from "./footer.ts";
+import type { FooterInput, FooterTextMetrics } from "./footer.ts";
 import type { ActivitySnapshotSource } from "./activity.ts";
 import type { GitFacts } from "./git-facts.ts";
 
@@ -62,6 +62,7 @@ export class PiFooterLifecycle {
   private governance: Awaited<ReturnType<typeof readFooterStatusSnapshot>>;
   private updateVersion: string | undefined;
   private gitFacts: GitFacts | undefined;
+  private lastInput: FooterInput | undefined;
   private activationEnabled = false;
   private expected = false;
   private installed = false;
@@ -77,6 +78,18 @@ export class PiFooterLifecycle {
 
   requestActivityRender(): void {
     requestRender(this.tui);
+  }
+
+  /** The live tui handle captured by the footer factory; the sidebar
+   * compositor probes it for the undocumented doRender hook. */
+  currentTui(): { requestRender(): void } | undefined {
+    return this.tui;
+  }
+
+  /** The most recently rendered footer input — the sidebar's session,
+   * subagents and workspace panels reuse these already-gathered facts. */
+  lastRenderedInput(): FooterInput | undefined {
+    return this.lastInput;
   }
 
   health(): Readonly<{ expected: boolean; initialized: boolean }> {
@@ -163,6 +176,7 @@ export class PiFooterLifecycle {
                   ...(this.governance.prune === undefined ? {} : { prune: this.governance.prune }),
                 },
               };
+            this.lastInput = enriched;
             const rendered = renderFooter(enriched, {
               width,
               noColor: Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR"),
@@ -246,6 +260,7 @@ export class PiFooterLifecycle {
     this.governance = undefined;
     this.updateVersion = undefined;
     this.gitFacts = undefined;
+    this.lastInput = undefined;
     this.activationEnabled = false;
     this.expected = false;
     this.refreshQueue = Promise.resolve();

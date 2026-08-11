@@ -688,6 +688,9 @@ describe("Pi activation", () => {
           bridgePrepared: false,
           footerExpected: health.footer.expected,
           footerInitialized: health.footer.initialized,
+          sidebarExpected: health.sidebar.expected,
+          sidebarInstalled: health.sidebar.installed,
+          sidebarDegraded: health.sidebar.degraded,
           backgroundExpected: health.background.expected,
           backgroundInitialized: health.background.initialized,
           backgroundHealthy: health.background.healthy,
@@ -714,6 +717,7 @@ describe("Pi activation", () => {
     expect(host.userMessages).toHaveLength(1);
     expect(doctorHealth).toEqual({
       footer: { expected: false, initialized: false },
+      sidebar: { expected: false, installed: false, degraded: false },
       background: { expected: false, initialized: false, healthy: false },
     });
   });
