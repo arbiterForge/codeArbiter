@@ -25,6 +25,7 @@ const DEGRADED_REASONS = Object.freeze(new Set([
   "columns-not-configurable",
   "no-metrics",
   "geometry-unreadable",
+  "install-failed",
 ]));
 
 export interface SidebarManagerPorts {

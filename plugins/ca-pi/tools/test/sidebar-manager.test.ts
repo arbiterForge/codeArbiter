@@ -217,7 +217,18 @@ describe("/ca-sidebar command (AC-5)", () => {
     await h.command("on");
     expect(manager.health().installed).toBe(false);
     expect(manager.health().reason).toBe("columns-not-configurable");
+    expect(manager.health().degraded).toBe(true);
     expect(h.notices.join("\n")).toContain("columns-not-configurable");
+  });
+
+  test("a mid-construction install failure reports degraded for the doctor row", async () => {
+    const h = harness({ columns: 200 });
+    Object.freeze((h.ports.currentTui() as object));
+    const manager = createSidebarManager(h.ports);
+    manager.register(h.context());
+    await h.command("on");
+    expect(manager.health()).toMatchObject({ installed: false, reason: "install-failed", degraded: true });
+    expect(h.terminal.columns).toBe(200);
   });
 });
 

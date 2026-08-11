@@ -5544,7 +5544,8 @@ var DEGRADED_REASONS = Object.freeze(/* @__PURE__ */ new Set([
   "no-dorender",
   "columns-not-configurable",
   "no-metrics",
-  "geometry-unreadable"
+  "geometry-unreadable",
+  "install-failed"
 ]));
 function clampWidth2(width) {
   return Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, Math.floor(width)));

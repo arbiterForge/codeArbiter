@@ -92,6 +92,17 @@ describe("sidebar compositor probe (AC-2)", () => {
     expect(narrow.terminal.columns).toBe(90);
   });
 
+  test("an install aborted mid-construction rolls the narrowed columns back", () => {
+    const h = harness();
+    // A sealed tui passes the probe (doRender is present) but rejects the
+    // strict-mode doRender wrap, aborting the constructor after the columns
+    // narrowing already happened.
+    Object.freeze(h.ports.tui);
+    const result = installSidebar(h.ports, { width: 40 });
+    expect(result).toMatchObject({ installed: false, reason: "install-failed" });
+    expect(h.terminal.columns).toBe(200);
+  });
+
   test("a throwing columns getter reports geometry-unreadable without installing", () => {
     const h = harness();
     Object.defineProperty(h.ports.terminal, "columns", {
