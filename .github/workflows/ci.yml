@@ -983,6 +983,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Test package, module identity, compatibility, and native binding
         run: npm test -- test/package.test.ts
+      - name: Test the sidebar hook probe against the installed Pi runtime
+        run: npm test -- test/sidebar-probe-live.test.ts
       # The host-dependent Vitest set, per the partition rule above. bridge,
       # runner-isolation, process-tree and package are platform-gated too, but
       # test_pi_platform_contract.py below already re-runs them in every cell,

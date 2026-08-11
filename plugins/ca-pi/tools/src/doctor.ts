@@ -51,6 +51,7 @@ export interface PiDoctorInput {
   };
   bridge: { healthy: boolean };
   footer: { expected: boolean; initialized: boolean };
+  sidebar: { expected: boolean; installed: boolean; degraded: boolean; reason?: string };
   background: { expected: boolean; initialized: boolean; healthy: boolean };
   child: { present: boolean; artifact: "enforced" | "unknown"; path: string };
   ambientMarker: { present: boolean; validatedChild: boolean };
@@ -75,6 +76,10 @@ export interface PiDoctorCollectorDependencies {
   bridgePrepared: boolean;
   footerExpected: boolean;
   footerInitialized: boolean;
+  sidebarExpected: boolean;
+  sidebarInstalled: boolean;
+  sidebarDegraded: boolean;
+  sidebarReason?: string;
   backgroundExpected: boolean;
   backgroundInitialized: boolean;
   backgroundHealthy: boolean;
@@ -180,6 +185,12 @@ export async function collectPiDoctorInput(
       expected: dependencies.footerExpected === true,
       initialized: dependencies.footerInitialized === true,
     },
+    sidebar: {
+      expected: dependencies.sidebarExpected === true,
+      installed: dependencies.sidebarInstalled === true,
+      degraded: dependencies.sidebarDegraded === true,
+      ...(dependencies.sidebarReason === undefined ? {} : { reason: dependencies.sidebarReason }),
+    },
     background: {
       expected: dependencies.backgroundExpected === true,
       initialized: dependencies.backgroundInitialized === true,
@@ -217,6 +228,7 @@ const REMEDIATION = {
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
   footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  sidebar: "Run /ca-sidebar on in a wide terminal; if the probe still reports unavailable, this Pi build changed its render surface — keep the footer and file an issue.",
   background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
   "active-dispatch": "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.",
 } as const;
@@ -355,6 +367,20 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
       input.footer.expected
         ? "The rich footer did not initialize in the current interactive parent session."
         : "The rich footer initialized outside an active interactive parent session; isolation is breached.",
+    ),
+    diagnosis(
+      "sidebar",
+      input.sidebar.expected
+        ? !input.sidebar.degraded
+        : !input.sidebar.installed && !input.sidebar.degraded,
+      input.sidebar.expected
+        ? input.sidebar.installed
+          ? "The probe-gated sidebar compositor is installed."
+          : `The sidebar is not installed (${input.sidebar.reason ?? "off"}); native rendering is untouched.`
+        : "The sidebar is intentionally absent outside an interactive parent session.",
+      !input.sidebar.expected && input.sidebar.installed
+        ? "The sidebar compositor installed outside an interactive parent session; isolation is breached."
+        : `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`,
     ),
     diagnosis(
       "background",

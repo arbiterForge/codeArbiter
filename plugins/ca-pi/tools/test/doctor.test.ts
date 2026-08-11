@@ -69,6 +69,7 @@ function healthyInput(): PiDoctorInput {
     },
     bridge: { healthy: true },
     footer: { expected: true, initialized: true },
+    sidebar: { expected: true, installed: true, degraded: false },
     background: { expected: true, initialized: true, healthy: true },
     child: { present: true, artifact: "enforced", path: `${ROOT}/extensions/codearbiter-child.js` },
     ambientMarker: { present: false, validatedChild: false },
@@ -100,6 +101,7 @@ const remediation = {
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
   footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  sidebar: "Run /ca-sidebar on in a wide terminal; if the probe still reports unavailable, this Pi build changed its render surface — keep the footer and file an issue.",
   background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
 } as const;
 
@@ -123,6 +125,7 @@ function brokenFixture(id: keyof typeof remediation): PiDoctorInput {
     case "module-identity": input.runtime.moduleEntry = "C:/unrelated/index.js"; break;
     case "final-arguments": input.finalArguments.wrapperSourcePath = "C:/foreign.js"; break;
     case "footer": input.footer.initialized = false; break;
+    case "sidebar": input.sidebar = { expected: true, installed: false, degraded: true, reason: "columns-not-configurable" }; break;
     case "background": input.background.healthy = false; break;
   }
   return input;
@@ -144,7 +147,7 @@ describe("Pi structured doctor", () => {
 
   test("reports exact active origins and limits the module-identity claim", () => {
     const result = diagnosePi(healthyInput());
-    expect(result).toHaveLength(14);
+    expect(result).toHaveLength(15);
     expect(result.filter((row) => !["child", "active-dispatch"].includes(row.id)).every((row) => row.state === "healthy")).toBe(true);
     expect(result.find((row) => row.id === "child")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "active-dispatch")).toEqual({
@@ -164,7 +167,27 @@ describe("Pi structured doctor", () => {
     expect(result.find((row) => row.id === "trust")?.message).toContain("repository is dormant");
     expect(result.find((row) => row.id === "commands")?.message).toContain("0.80.5, 0.84.1");
     expect(result.find((row) => row.id === "footer")).toMatchObject({ state: "healthy" });
+    expect(result.find((row) => row.id === "sidebar")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "background")).toMatchObject({ state: "healthy" });
+  });
+
+  test("a benignly-off sidebar stays healthy while naming its reason", () => {
+    const input = healthyInput();
+    input.sidebar = { expected: true, installed: false, degraded: false, reason: "terminal-too-narrow" };
+    const row = diagnosePi(input).find((item) => item.id === "sidebar");
+    expect(row).toMatchObject({ state: "healthy" });
+    expect(row?.message).toContain("terminal-too-narrow");
+    const absent = healthyInput();
+    absent.sidebar = { expected: false, installed: false, degraded: false };
+    expect(diagnosePi(absent).find((item) => item.id === "sidebar")).toMatchObject({ state: "healthy" });
+  });
+
+  test("a sidebar installed outside an interactive parent session is an isolation breach", () => {
+    const breached = healthyInput();
+    breached.sidebar = { expected: false, installed: true, degraded: false };
+    const row = diagnosePi(breached).find((item) => item.id === "sidebar");
+    expect(row).toMatchObject({ state: "unhealthy" });
+    expect(row?.message).toContain("isolation is breached");
   });
 
   test("diagnoses both command ownership collisions and DECISION-0018 expansion drift", () => {
@@ -209,6 +232,9 @@ describe("Pi structured doctor", () => {
       bridgePrepared: true,
       footerExpected: true,
       footerInitialized: true,
+      sidebarExpected: true,
+      sidebarInstalled: true,
+      sidebarDegraded: false,
       backgroundExpected: true,
       backgroundInitialized: true,
       backgroundHealthy: true,
@@ -242,8 +268,11 @@ describe("Pi structured doctor", () => {
         catalog: [{ name: "doctor", description: "doctor", skillPath: "skills/ca-doctor/SKILL.md" }],
         bridge: { call: async () => ({ version: 1, outcome: "allow" }) },
         bridgePrepared: true,
-        footerExpected: true,
+      footerExpected: true,
         footerInitialized: true,
+        sidebarExpected: true,
+        sidebarInstalled: true,
+        sidebarDegraded: false,
         backgroundExpected: true,
         backgroundInitialized: true,
         backgroundHealthy: true,
@@ -287,6 +316,9 @@ describe("Pi structured doctor", () => {
       bridgePrepared: false,
       footerExpected: true,
       footerInitialized: true,
+      sidebarExpected: true,
+      sidebarInstalled: true,
+      sidebarDegraded: false,
       backgroundExpected: false,
       backgroundInitialized: false,
       backgroundHealthy: true,

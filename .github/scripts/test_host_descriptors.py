@@ -193,6 +193,19 @@ _FOOTER_PARITY_NON_POLICY_ARTIFACTS = frozenset({
     "tools/test/git-facts.test.ts",
 })
 
+_SIDEBAR_PANEL_NON_POLICY_ARTIFACTS = frozenset({
+    "tools/src/sidebar.ts",
+    "tools/src/sidebar-compositor.ts",
+    "tools/src/sidebar-data.ts",
+    "tools/src/sidebar-manager.ts",
+    "tools/test/sidebar.test.ts",
+    "tools/test/sidebar-compositor.test.ts",
+    "tools/test/sidebar-data.test.ts",
+    "tools/test/sidebar-manager.test.ts",
+    "tools/test/sidebar-probe-live.test.ts",
+    "tools/test/sidebar-window-contract.test.ts",
+})
+
 
 def _load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -426,6 +439,7 @@ def _pi_policy_surfaces_from_disk(pi_host):
         | set(_ISSUE_455_NON_POLICY_ARTIFACTS)
         | set(_ISSUE_464_NON_POLICY_ARTIFACTS)
         | set(_FOOTER_PARITY_NON_POLICY_ARTIFACTS)
+        | set(_SIDEBAR_PANEL_NON_POLICY_ARTIFACTS)
         | shared_hooks
         | ({pi_host.catalog} if pi_host.catalog else set())
     )
