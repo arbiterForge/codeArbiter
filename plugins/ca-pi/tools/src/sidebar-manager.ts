@@ -110,6 +110,8 @@ class Manager implements SidebarManager {
     this.userDisabled = false;
     this.autoDecided = false;
     this.lastReason = undefined;
+    // No preference persists beyond the session, width included.
+    this.width = SIDEBAR_DEFAULT_WIDTH;
   }
 
   health(): SidebarHealth {

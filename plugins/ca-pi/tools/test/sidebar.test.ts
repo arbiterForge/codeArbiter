@@ -78,6 +78,8 @@ describe("sidebar renderer (AC-1, AC-6)", () => {
     expect(text).toContain("session");
     expect(text).toContain("agents");
     expect(text).toContain("mcp");
+    expect(text).toContain("todos");
+    expect(text).toContain("(unavailable)");
     for (const line of lines) expect(metrics.visibleWidth(line)).toBe(40);
   });
 
@@ -125,8 +127,9 @@ describe("sidebar renderer (AC-1, AC-6)", () => {
     ];
     const lines = renderSidebar({ todos }, 30, metrics).map(plain);
     for (const line of lines) expect(line.length).toBe(30);
-    const glyphs = lines.join("\n");
-    expect(new Set(["done", "active", "open"].map(() => glyphs)).size).toBe(1);
+    const rows = lines.filter((line) => /[✓▸·]/u.test(line));
+    expect(rows).toHaveLength(3);
+    expect(new Set(rows.map((line) => /[✓▸·]/u.exec(line)![0])).size).toBe(3);
   });
 
   test("bounded against absurd numeric inputs without throwing", () => {

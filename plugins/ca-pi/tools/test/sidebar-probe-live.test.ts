@@ -58,6 +58,10 @@ function doRenderImplementors(module: Record<string, unknown>): string[] {
 describe("sidebar probe against the installed Pi host (AC-7 live)", () => {
   test("the installed pi-tui exposes the probed metrics and doRender surface", async () => {
     const { piVersion, module } = await loadInstalledPiTui();
+    // The version is the axis this matrix exists to cover — assert it before
+    // branching so an unreadable manifest fails by name, not by wrong-class
+    // assertions from the fallthrough branch.
+    expect(piVersion, "installed Pi version outside the promoted window").toMatch(/^0\.(80|84)\./u);
     expect(typeof module.visibleWidth, `pi ${piVersion}`).toBe("function");
     expect(typeof module.truncateToWidth, `pi ${piVersion}`).toBe("function");
 

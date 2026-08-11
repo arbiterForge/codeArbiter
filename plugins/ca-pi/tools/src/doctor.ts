@@ -370,13 +370,17 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
     ),
     diagnosis(
       "sidebar",
-      !input.sidebar.degraded,
+      input.sidebar.expected
+        ? !input.sidebar.degraded
+        : !input.sidebar.installed && !input.sidebar.degraded,
       input.sidebar.expected
         ? input.sidebar.installed
           ? "The probe-gated sidebar compositor is installed."
           : `The sidebar is not installed (${input.sidebar.reason ?? "off"}); native rendering is untouched.`
         : "The sidebar is intentionally absent outside an interactive parent session.",
-      `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`,
+      !input.sidebar.expected && input.sidebar.installed
+        ? "The sidebar compositor installed outside an interactive parent session; isolation is breached."
+        : `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`,
     ),
     diagnosis(
       "background",

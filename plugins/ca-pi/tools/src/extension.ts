@@ -534,10 +534,13 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     if (enabled) publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
   });
   pi.on("agent_settled", async (_event, context) => {
+    const sequence = lifecycleSequence;
     await footer.refresh(context, { activation: { enabled: footerActivationEnabled } });
     // Retry the auto-on default here: the tui handle only exists after Pi has
-    // invoked the footer factory, which may postdate session_start.
-    await sidebar.autoInstall(context);
+    // invoked the footer factory, which may postdate session_start. The
+    // sequence check keeps a stale continuation from re-installing against a
+    // session that switched away while the refresh was pending.
+    if (sequence === lifecycleSequence) await sidebar.autoInstall(context);
     if (enabled) publishStatus(context, degradedStatus());
   });
   const stopSession = async (reason: "session-switch" | "shutdown" | "unload" | "fatal", context: ExtensionContextPort) => {

@@ -182,6 +182,14 @@ describe("Pi structured doctor", () => {
     expect(diagnosePi(absent).find((item) => item.id === "sidebar")).toMatchObject({ state: "healthy" });
   });
 
+  test("a sidebar installed outside an interactive parent session is an isolation breach", () => {
+    const breached = healthyInput();
+    breached.sidebar = { expected: false, installed: true, degraded: false };
+    const row = diagnosePi(breached).find((item) => item.id === "sidebar");
+    expect(row).toMatchObject({ state: "unhealthy" });
+    expect(row?.message).toContain("isolation is breached");
+  });
+
   test("diagnoses both command ownership collisions and DECISION-0018 expansion drift", () => {
     const collision = healthyInput();
     collision.commands.collisions = [{ command: "ca-doctor", reason: "foreign-owner", owner: "C:/foreign.js" }];

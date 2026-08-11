@@ -92,6 +92,9 @@ describe("sidebar probe against the 0.80.5 window surface (AC-7)", () => {
     expect(tui.doRender).not.toBe(original);
     compositor.dispose();
     expect(tui.doRender).toBe(Tui080Shape.prototype.doRender);
+    // Exact restoration: the wrap shadowed an inherited prototype method, so
+    // dispose must delete its own shadow, not pin a copy onto the instance.
+    expect(Object.prototype.hasOwnProperty.call(tui, "doRender")).toBe(false);
   });
 });
 
@@ -109,11 +112,15 @@ describe("sidebar probe against the 0.84.1 window surface (AC-7)", () => {
     expect(compositor.installed).toBe(true);
     // The alt-screen switch replaces the render surface: `columns` gains a
     // foreign descriptor the compositor did not install.
-    Object.defineProperty(term, "columns", { get: () => 200, configurable: true });
+    const foreignGetter = () => 200;
+    Object.defineProperty(term, "columns", { get: foreignGetter, configurable: true });
     tui.doRender();
     tui.doRender();
     tui.doRender();
     expect(compositor.installed).toBe(false);
+    // Disposal must not clobber the foreign owner's descriptor with the
+    // compositor's stale snapshot — the new surface is authoritative.
+    expect(Object.getOwnPropertyDescriptor(term, "columns")?.get).toBe(foreignGetter);
   });
 
   test("a probe against a future surface without doRender fails closed", () => {

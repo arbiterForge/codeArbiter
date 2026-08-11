@@ -5351,15 +5351,18 @@ var Compositor = class {
   constructor(ports, width) {
     this.ports = ports;
     this.width = width;
+    this.hadOwnColumns = Object.getOwnPropertyDescriptor(ports.terminal, "columns") !== void 0;
+    this.hadOwnDoRender = Object.getOwnPropertyDescriptor(ports.tui, "doRender") !== void 0;
     this.originalDescriptor = columnsDescriptor(ports.terminal);
+    this.liveRawColumns = this.originalDescriptor.value;
     this.originalDoRender = ports.tui.doRender;
     this.defineNarrowedColumns();
-    const paintAfterRender = (...args) => {
+    this.paintAfterRender = (...args) => {
       const result3 = this.originalDoRender.apply(ports.tui, args);
       this.paint();
       return result3;
     };
-    ports.tui.doRender = paintAfterRender;
+    ports.tui.doRender = this.paintAfterRender;
   }
   ports;
   active = true;
@@ -5367,8 +5370,15 @@ var Compositor = class {
   geometryFailures = 0;
   warned = false;
   narrowedGetter;
+  /** Live raw width for data-descriptor terminals: the host's resize handler
+   * assigns `terminal.columns = N`, which our accessor's setter records here so
+   * neither the host nor the paint path ever sees a stale install-time width. */
+  liveRawColumns;
+  hadOwnColumns;
+  hadOwnDoRender;
   originalDescriptor;
   originalDoRender;
+  paintAfterRender;
   get installed() {
     return this.active;
   }
@@ -5385,11 +5395,26 @@ var Compositor = class {
     if (!this.active) return;
     this.active = false;
     try {
-      Object.defineProperty(this.ports.terminal, "columns", this.originalDescriptor);
+      const own = Object.getOwnPropertyDescriptor(this.ports.terminal, "columns");
+      if (own?.get === this.narrowedGetter) {
+        if (!this.hadOwnColumns) {
+          delete this.ports.terminal.columns;
+        } else if (this.originalDescriptor.get !== void 0) {
+          Object.defineProperty(this.ports.terminal, "columns", this.originalDescriptor);
+        } else {
+          Object.defineProperty(this.ports.terminal, "columns", {
+            ...this.originalDescriptor,
+            value: this.liveRawColumns
+          });
+        }
+      }
     } catch {
     }
     try {
-      this.ports.tui.doRender = this.originalDoRender;
+      if (this.ports.tui.doRender === this.paintAfterRender) {
+        if (this.hadOwnDoRender) this.ports.tui.doRender = this.originalDoRender;
+        else delete this.ports.tui.doRender;
+      }
     } catch {
     }
     try {
@@ -5397,27 +5422,33 @@ var Compositor = class {
     } catch {
     }
   }
+  readRawColumns() {
+    return this.originalDescriptor.get !== void 0 ? this.originalDescriptor.get.call(this.ports.terminal) : this.liveRawColumns;
+  }
+  /** "too-narrow" is a recoverable skip — the hooks stay installed and the
+   * next paint re-checks; `undefined` means the surface is no longer
+   * understood and counts toward disposal. */
   rawGeometry() {
     const own = Object.getOwnPropertyDescriptor(this.ports.terminal, "columns");
     if (own?.get !== this.narrowedGetter) return void 0;
     let rawColumns2;
     try {
-      rawColumns2 = this.originalDescriptor.get !== void 0 ? this.originalDescriptor.get.call(this.ports.terminal) : this.originalDescriptor.value;
+      rawColumns2 = this.readRawColumns();
     } catch {
       return void 0;
     }
     const rows = this.ports.terminal.rows;
     if (typeof rawColumns2 !== "number" || !Number.isFinite(rawColumns2)) return void 0;
     if (typeof rows !== "number" || !Number.isFinite(rows) || rows <= 0) return void 0;
-    if (rawColumns2 < this.width + SIDEBAR_MAIN_COLUMN_FLOOR) return void 0;
+    if (rawColumns2 < this.width + SIDEBAR_MAIN_COLUMN_FLOOR) return "too-narrow";
     return { rawColumns: Math.floor(rawColumns2), rows: Math.floor(rows) };
   }
   defineNarrowedColumns() {
     const narrowed = () => {
       const geometry = this.rawGeometry();
-      if (geometry === void 0) {
+      if (geometry === void 0 || geometry === "too-narrow") {
         try {
-          return this.originalDescriptor.get !== void 0 ? this.originalDescriptor.get.call(this.ports.terminal) : this.originalDescriptor.value;
+          return this.readRawColumns();
         } catch {
           return this.width + SIDEBAR_MAIN_COLUMN_FLOOR;
         }
@@ -5428,7 +5459,19 @@ var Compositor = class {
     Object.defineProperty(this.ports.terminal, "columns", {
       configurable: true,
       enumerable: true,
-      get: narrowed
+      get: narrowed,
+      // The host's resize handler assigns `columns`; route the assignment to
+      // the original setter, or record it as the live raw width.
+      set: (value) => {
+        if (this.originalDescriptor.set !== void 0) {
+          try {
+            this.originalDescriptor.set.call(this.ports.terminal, value);
+          } catch {
+          }
+        } else {
+          this.liveRawColumns = value;
+        }
+      }
     });
   }
   /** AC-3: paint inside a synchronized-output envelope; every cycle
@@ -5437,6 +5480,7 @@ var Compositor = class {
     if (!this.active) return;
     try {
       const geometry = this.rawGeometry();
+      if (geometry === "too-narrow") return;
       if (geometry === void 0) {
         this.geometryFailures += 1;
         if (this.geometryFailures >= GEOMETRY_FAILURE_LIMIT) this.dispose();
@@ -5446,8 +5490,7 @@ var Compositor = class {
       const lines = renderSidebar(this.ports.dataSource(), this.width, this.ports.metrics, {
         noColor: this.ports.noColor
       });
-      const column = geometry.rawColumns - this.width;
-      const separatorColumn = column - 1;
+      const separatorColumn = geometry.rawColumns - this.width;
       const parts = [SYNC_START, CURSOR_SAVE, WRAP_OFF];
       for (let row = 1; row <= geometry.rows; row += 1) {
         const content = row - 1 < lines.length ? lines[row - 1] : " ".repeat(this.width);
@@ -5481,7 +5524,17 @@ function installSidebar(ports, options) {
   if (typeof rawColumns2 !== "number" || !Number.isFinite(rawColumns2) || rawColumns2 < width + SIDEBAR_MAIN_COLUMN_FLOOR) {
     return unavailable("terminal-too-narrow");
   }
-  return new Compositor(ports, width);
+  const hadOwnColumns = Object.getOwnPropertyDescriptor(ports.terminal, "columns") !== void 0;
+  try {
+    return new Compositor(ports, width);
+  } catch {
+    try {
+      if (hadOwnColumns) Object.defineProperty(ports.terminal, "columns", descriptor);
+      else delete ports.terminal.columns;
+    } catch {
+    }
+    return unavailable("install-failed");
+  }
 }
 
 // src/sidebar-manager.ts
@@ -5554,6 +5607,7 @@ var Manager = class {
     this.userDisabled = false;
     this.autoDecided = false;
     this.lastReason = void 0;
+    this.width = SIDEBAR_DEFAULT_WIDTH;
   }
   health() {
     const installed = this.compositor?.installed === true;
@@ -6899,9 +6953,9 @@ function diagnosePi(input) {
     ),
     diagnosis(
       "sidebar",
-      !input.sidebar.degraded,
+      input.sidebar.expected ? !input.sidebar.degraded : !input.sidebar.installed && !input.sidebar.degraded,
       input.sidebar.expected ? input.sidebar.installed ? "The probe-gated sidebar compositor is installed." : `The sidebar is not installed (${input.sidebar.reason ?? "off"}); native rendering is untouched.` : "The sidebar is intentionally absent outside an interactive parent session.",
-      `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`
+      !input.sidebar.expected && input.sidebar.installed ? "The sidebar compositor installed outside an interactive parent session; isolation is breached." : `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`
     ),
     diagnosis(
       "background",
@@ -10032,8 +10086,9 @@ function installParent(pi, dependencies) {
     if (enabled) publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
   });
   pi.on("agent_settled", async (_event, context) => {
+    const sequence = lifecycleSequence;
     await footer.refresh(context, { activation: { enabled: footerActivationEnabled } });
-    await sidebar.autoInstall(context);
+    if (sequence === lifecycleSequence) await sidebar.autoInstall(context);
     if (enabled) publishStatus(context, degradedStatus());
   });
   const stopSession = async (reason, context) => {

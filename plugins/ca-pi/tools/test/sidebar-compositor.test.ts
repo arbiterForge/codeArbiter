@@ -91,6 +91,16 @@ describe("sidebar compositor probe (AC-2)", () => {
     expect(result.installed).toBe(false);
     expect(narrow.terminal.columns).toBe(90);
   });
+
+  test("a throwing columns getter reports geometry-unreadable without installing", () => {
+    const h = harness();
+    Object.defineProperty(h.ports.terminal, "columns", {
+      get: () => { throw new Error("hostile geometry"); },
+      configurable: true,
+    });
+    const result = installSidebar(h.ports, { width: 40 });
+    expect(result).toMatchObject({ installed: false, reason: "geometry-unreadable" });
+  });
 });
 
 describe("sidebar compositor paint (AC-3)", () => {
@@ -117,16 +127,21 @@ describe("sidebar compositor paint (AC-3)", () => {
     expect(paint).toContain("\x1b[?7h");
     expect(paint).toContain("gpt-test");
     expect(paint).toContain("│");
+    // The separator sits at rawColumns - width; the sidebar body fills the
+    // final `width` columns, so the host's last perceived column survives.
+    expect(paint).toContain("\x1b[1;160H\x1b[0m│");
     compositor.dispose();
   });
 
-  test("a failed geometry re-validation skips the paint and persistent failure disposes", () => {
+  test("a foreign columns redefinition skips the paint and persistent failure disposes", () => {
     const h = harness({ columns: 200 });
     const compositor = installSidebar(h.ports, { width: 40 });
     expect(compositor.installed).toBe(true);
-    // Fullscreen-style surface change: raw width collapses under the floor.
+    // Fullscreen-style surface change: a foreign owner redefines `columns`,
+    // so the compositor's identity check fails on every re-validation.
+    const foreignGetter = () => 80;
     Object.defineProperty(h.ports.terminal, "columns", {
-      get: () => 80,
+      get: foreignGetter,
       configurable: true,
     });
     h.writes.length = 0;
@@ -136,6 +151,32 @@ describe("sidebar compositor paint (AC-3)", () => {
     h.renderNative();
     h.renderNative();
     expect(compositor.installed).toBe(false);
+    // The disposal preserves the foreign owner's descriptor untouched.
+    expect(Object.getOwnPropertyDescriptor(h.ports.terminal, "columns")?.get).toBe(foreignGetter);
+  });
+
+  test("a merely-narrow terminal skips paints recoverably and repaints on recovery", () => {
+    const h = harness({ columns: 200 });
+    const compositor = installSidebar(h.ports, { width: 40 });
+    expect(compositor.installed).toBe(true);
+    // The host's resize handler assigns raw columns through the setter.
+    h.terminal.columns = 90;
+    h.writes.length = 0;
+    h.renderNative();
+    h.renderNative();
+    h.renderNative();
+    h.renderNative();
+    expect(h.writes.join("")).toBe("");
+    expect(compositor.installed).toBe(true);
+    // While too narrow the host perceives the full raw width.
+    expect(h.terminal.columns).toBe(90);
+    h.terminal.columns = 200;
+    h.renderNative();
+    expect(h.writes.join("")).toContain("│");
+    expect(compositor.installed).toBe(true);
+    expect(h.terminal.columns).toBe(200 - 41);
+    compositor.dispose();
+    expect(h.terminal.columns).toBe(200);
   });
 });
 

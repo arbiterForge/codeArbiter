@@ -235,6 +235,20 @@ describe("sidebar manager lifecycle (AC-4/AC-5)", () => {
     expect(h.terminal.columns).toBe(200);
   });
 
+  test("dispose resets a session width back to the default", async () => {
+    const h = harness({ columns: 200 });
+    const manager = createSidebarManager(h.ports);
+    manager.register(h.context());
+    await h.command("on");
+    await h.command("width 50");
+    expect(h.terminal.columns).toBe(200 - 51);
+    manager.dispose();
+    manager.register(h.context());
+    await h.command("on");
+    expect(h.terminal.columns).toBe(200 - 41);
+    manager.dispose();
+  });
+
   test("health reports expected, installed and reason for the doctor row", async () => {
     const h = harness({ columns: 200 });
     const manager = createSidebarManager(h.ports);

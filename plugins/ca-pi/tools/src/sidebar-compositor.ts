@@ -111,21 +111,36 @@ class Compositor implements SidebarCompositor {
   private geometryFailures = 0;
   private warned = false;
   private narrowedGetter: (() => unknown) | undefined;
+  /** Live raw width for data-descriptor terminals: the host's resize handler
+   * assigns `terminal.columns = N`, which our accessor's setter records here so
+   * neither the host nor the paint path ever sees a stale install-time width. */
+  private liveRawColumns: unknown;
+  private readonly hadOwnColumns: boolean;
+  private readonly hadOwnDoRender: boolean;
   private readonly originalDescriptor: PropertyDescriptor;
   private readonly originalDoRender: (...args: unknown[]) => unknown;
+  private readonly paintAfterRender: (...args: unknown[]) => unknown;
 
   constructor(private readonly ports: SidebarCompositorPorts, width: number) {
     this.width = width;
-    // Probe passed: both are known present and configurable.
+    // Probe passed: both are known present and configurable. `columns` and
+    // `doRender` may live on the instance (Node tty, 0.84 screen classes hold
+    // columns as own data) or on a prototype (0.80's TUI class doRender), so
+    // record ownership now — dispose must delete an own shadow it created over
+    // an inherited member, never redefine the prototype member onto the
+    // instance.
+    this.hadOwnColumns = Object.getOwnPropertyDescriptor(ports.terminal, "columns") !== undefined;
+    this.hadOwnDoRender = Object.getOwnPropertyDescriptor(ports.tui, "doRender") !== undefined;
     this.originalDescriptor = columnsDescriptor(ports.terminal as object) as PropertyDescriptor;
+    this.liveRawColumns = this.originalDescriptor.value;
     this.originalDoRender = ports.tui.doRender as (...args: unknown[]) => unknown;
     this.defineNarrowedColumns();
-    const paintAfterRender = (...args: unknown[]): unknown => {
+    this.paintAfterRender = (...args: unknown[]): unknown => {
       const result = this.originalDoRender.apply(ports.tui, args);
       this.paint();
       return result;
     };
-    ports.tui.doRender = paintAfterRender;
+    ports.tui.doRender = this.paintAfterRender;
   }
 
   get installed(): boolean {
@@ -143,44 +158,69 @@ class Compositor implements SidebarCompositor {
     if (!this.active) return;
     this.active = false;
     try {
-      Object.defineProperty(this.ports.terminal, "columns", this.originalDescriptor);
-    } catch { /* The descriptor may already be foreign; native remains authoritative. */ }
+      const own = Object.getOwnPropertyDescriptor(this.ports.terminal, "columns");
+      // Restore only what is still ours. A foreign redefinition (0.84's
+      // fullscreen switch, another extension) is preserved untouched — the
+      // foreign owner's surface is now authoritative.
+      if (own?.get === this.narrowedGetter) {
+        if (!this.hadOwnColumns) {
+          delete (this.ports.terminal as Record<string, unknown>).columns;
+        } else if (this.originalDescriptor.get !== undefined) {
+          Object.defineProperty(this.ports.terminal, "columns", this.originalDescriptor);
+        } else {
+          // Preserve the latest host-assigned raw width, not the install-time
+          // snapshot — the terminal may have been resized while installed.
+          Object.defineProperty(this.ports.terminal, "columns", {
+            ...this.originalDescriptor,
+            value: this.liveRawColumns,
+          });
+        }
+      }
+    } catch { /* The descriptor may be sealed; native remains authoritative. */ }
     try {
-      this.ports.tui.doRender = this.originalDoRender;
+      if (this.ports.tui.doRender === this.paintAfterRender) {
+        if (this.hadOwnDoRender) this.ports.tui.doRender = this.originalDoRender;
+        else delete (this.ports.tui as { doRender?: unknown }).doRender;
+      }
     } catch { /* Same fail-soft posture. */ }
     try { this.ports.tui.requestRender(); } catch { /* A later host render restores the surface. */ }
   }
 
-  private rawGeometry(): FrozenGeometry | undefined {
+  private readRawColumns(): unknown {
+    return this.originalDescriptor.get !== undefined
+      ? this.originalDescriptor.get.call(this.ports.terminal)
+      : this.liveRawColumns;
+  }
+
+  /** "too-narrow" is a recoverable skip — the hooks stay installed and the
+   * next paint re-checks; `undefined` means the surface is no longer
+   * understood and counts toward disposal. */
+  private rawGeometry(): FrozenGeometry | "too-narrow" | undefined {
     // A foreign redefinition of `columns` (Pi 0.84's runtime fullscreen switch
-    // swaps the render surface) means the raw value this compositor snapshotted
-    // no longer describes the live terminal — treat it as a geometry failure.
+    // swaps the render surface) means the raw value this compositor tracks no
+    // longer describes the live terminal — treat it as a geometry failure.
     const own = Object.getOwnPropertyDescriptor(this.ports.terminal, "columns");
     if (own?.get !== this.narrowedGetter) return undefined;
     let rawColumns: unknown;
     try {
-      rawColumns = this.originalDescriptor.get !== undefined
-        ? this.originalDescriptor.get.call(this.ports.terminal)
-        : this.originalDescriptor.value;
+      rawColumns = this.readRawColumns();
     } catch {
       return undefined;
     }
     const rows = (this.ports.terminal as { rows?: unknown }).rows;
     if (typeof rawColumns !== "number" || !Number.isFinite(rawColumns)) return undefined;
     if (typeof rows !== "number" || !Number.isFinite(rows) || rows <= 0) return undefined;
-    if (rawColumns < this.width + SIDEBAR_MAIN_COLUMN_FLOOR) return undefined;
+    if (rawColumns < this.width + SIDEBAR_MAIN_COLUMN_FLOOR) return "too-narrow";
     return { rawColumns: Math.floor(rawColumns), rows: Math.floor(rows) };
   }
 
   private defineNarrowedColumns(): void {
     const narrowed = () => {
         const geometry = this.rawGeometry();
-        if (geometry === undefined) {
+        if (geometry === undefined || geometry === "too-narrow") {
           // Fall back to whatever the host would have seen natively.
           try {
-            return this.originalDescriptor.get !== undefined
-              ? this.originalDescriptor.get.call(this.ports.terminal)
-              : this.originalDescriptor.value;
+            return this.readRawColumns();
           } catch {
             return this.width + SIDEBAR_MAIN_COLUMN_FLOOR;
           }
@@ -192,6 +232,15 @@ class Compositor implements SidebarCompositor {
       configurable: true,
       enumerable: true,
       get: narrowed,
+      // The host's resize handler assigns `columns`; route the assignment to
+      // the original setter, or record it as the live raw width.
+      set: (value: unknown) => {
+        if (this.originalDescriptor.set !== undefined) {
+          try { this.originalDescriptor.set.call(this.ports.terminal, value); } catch { /* Host setter failures stay host-owned. */ }
+        } else {
+          this.liveRawColumns = value;
+        }
+      },
     });
   }
 
@@ -201,6 +250,10 @@ class Compositor implements SidebarCompositor {
     if (!this.active) return;
     try {
       const geometry = this.rawGeometry();
+      // A merely-narrow terminal skips the paint and recovers on the next
+      // cycle; only a surface the compositor no longer understands counts
+      // toward the disposal limit.
+      if (geometry === "too-narrow") return;
       if (geometry === undefined) {
         this.geometryFailures += 1;
         if (this.geometryFailures >= GEOMETRY_FAILURE_LIMIT) this.dispose();
@@ -210,8 +263,10 @@ class Compositor implements SidebarCompositor {
       const lines = renderSidebar(this.ports.dataSource(), this.width, this.ports.metrics, {
         noColor: this.ports.noColor,
       });
-      const column = geometry.rawColumns - this.width;
-      const separatorColumn = column - 1;
+      // Host content ends at rawColumns - width - 1 (it perceives width + 1
+      // fewer columns); the separator sits at rawColumns - width and the
+      // sidebar body fills the final `width` columns exactly.
+      const separatorColumn = geometry.rawColumns - this.width;
       const parts: string[] = [SYNC_START, CURSOR_SAVE, WRAP_OFF];
       for (let row = 1; row <= geometry.rows; row += 1) {
         const content = row - 1 < lines.length ? lines[row - 1] : " ".repeat(this.width);
@@ -252,5 +307,17 @@ export function installSidebar(
     || rawColumns < width + SIDEBAR_MAIN_COLUMN_FLOOR) {
     return unavailable("terminal-too-narrow");
   }
-  return new Compositor(ports, width);
+  const hadOwnColumns = Object.getOwnPropertyDescriptor(ports.terminal, "columns") !== undefined;
+  try {
+    return new Compositor(ports, width);
+  } catch {
+    // An aborted install must leave no narrowed columns behind. The doRender
+    // wrap is the constructor's last statement, so columns is the only state
+    // that can need rolling back here.
+    try {
+      if (hadOwnColumns) Object.defineProperty(ports.terminal, "columns", descriptor);
+      else delete (ports.terminal as Record<string, unknown>).columns;
+    } catch { /* Native remains authoritative. */ }
+    return unavailable("install-failed");
+  }
 }
