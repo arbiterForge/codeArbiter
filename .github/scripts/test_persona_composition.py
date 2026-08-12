@@ -31,7 +31,9 @@ PYSRC = ROOT / "core" / "pysrc"
 ARBITER = SURFACE / "arbiter.md"
 SAFETY_CORE = INCLUDES / "safety-core.md"
 DANGEROUS = INCLUDES / "dangerous-mode.md"
-OPS = INCLUDES / "ops-mode.md"  # T-22, not yet authored (outside the MVP slice) — read as "" if absent
+OPS = INCLUDES / "ops-mode.md"  # T-22
+REDIRECT = INCLUDES / "redirect.md"
+ROUTING_TABLE = INCLUDES / "routing-table.md"
 
 # Mode-body files composed after safety-core, per the spec's decided-parameters "Bodies" line.
 MODE_BODIES = {
@@ -61,6 +63,16 @@ def norm(text):
     otherwise byte-identical anchor sentence."""
     return re.sub(r"\s+", " ", text).strip()
 
+
+# T-22: the exact sentence that scopes the carve-out's blast radius — narrows §0/§6 only,
+# leaves §3/§2/§7 untouched. Anchored as a whole sentence (not the bare tokens "§3"/"§2"/"§7"),
+# because a mutant reading "safety-core's §3 hard rules are relaxed in this mode" keeps every
+# symbol a token-presence check would look for while reversing the claim entirely.
+ANCHOR_OPS_NARROWS_ONLY = norm("This narrows §0 and §6 only")
+ANCHOR_OPS_REST_UNCHANGED = norm(
+    "§3 hard rules, §2 conflict ladder, and §7 diagnose-don't-bypass discipline "
+    "are unchanged"
+)
 
 # ---- Anchors (exact sentences/headings, sourced from safety-core.md) ----------------------
 # T-17: what MUST be in safety-core.md, asserted by named anchor.
@@ -341,6 +353,188 @@ def test_section_citations_resolve():
             )
 
 
+# ---- T-22/T-23: ops-mode.md — the advisory runtime carve-out (AC-43, AC-44) ----------------
+# The discriminator wording, sourced verbatim from the ruling that scoped this task (not
+# paraphrased — a paraphrase-to-nothing edit must fail this test).
+ANCHOR_OPS_PERMITTED = norm(
+    "An operation that starts, observes, or exercises a running system and leaves no change "
+    "in tracked files or git history may be performed in-channel, named in one line as it is "
+    "taken."
+)
+ANCHOR_OPS_REFUSED = norm(
+    "Anything that mutates tracked files, the index, git history, or published state stays "
+    "routed and refused."
+)
+# The set AC-44 requires named explicitly — infrastructure OUTSIDE this repo, never covered by
+# the durable-artifact discriminator because none of it leaves a git-visible trace to review.
+OPS_NAMED_REFUSALS = (
+    "infrastructure teardown",
+    "cluster or namespace deletion",
+    "package publication",
+    "live-database migration",
+    "volume destruction",
+)
+# AC-44's three ambiguous cases, each requiring an explicit verdict (not left implicit).
+OPS_AMBIGUOUS_CASES = ("npm test", "npm ci", "docker compose up")
+
+
+def test_ops_mode_permitted_and_refused_sets():
+    """T-22/AC-43: ops-mode.md enumerates its permitted and refused sets, bound by literal
+    anchor to the persona the injector emits (safety-core + ops-mode.md, per MODE_BODIES)."""
+    check(OPS.is_file(), "includes/ops-mode.md must exist")
+    composed = read(SAFETY_CORE) + "\n" + read_or_empty(OPS)
+    composed_n = norm(composed)
+    check(ANCHOR_OPS_PERMITTED in composed_n,
+          "ops-mode.md: missing the permitted-set anchor (start/observe/exercise, no tracked "
+          "change) in the composed ops persona")
+    check(ANCHOR_OPS_REFUSED in composed_n,
+          "ops-mode.md: missing the refused-set anchor (mutates tracked files/index/history/"
+          "published state) in the composed ops persona")
+    # AC-21/T-25: the carve-out narrows §0/§6 only, never §3/§2/§7 — asserted by the EXACT
+    # scoping sentences, not bare section-number tokens. A token check would still pass a
+    # mutant that kept every "§N" symbol while reversing the claim (e.g. "§3 hard rules ...
+    # are relaxed in this mode").
+    check(ANCHOR_OPS_NARROWS_ONLY in composed_n,
+          "ops-mode.md: missing the exact 'narrows §0 and §6 only' scoping sentence")
+    check(ANCHOR_OPS_REST_UNCHANGED in composed_n,
+          "ops-mode.md: missing the exact '§3/§2/§7 ... are unchanged' sentence")
+
+
+def test_ops_mode_named_refusals_and_ambiguous_verdicts():
+    """T-23/AC-44: the refused set names infra teardown / cluster-ns deletion / publication /
+    live-DB migration / volume destruction; each of npm test, npm ci, docker compose up
+    carries an explicit verdict token (not left ambiguous)."""
+    t = read_or_empty(OPS)
+    low = t.lower()
+    for item in OPS_NAMED_REFUSALS:
+        check(item in low, f"ops-mode.md: refused set must explicitly name '{item}'")
+    check("outside this repo" in low,
+          "ops-mode.md: the named refusals must be scoped as action against state OUTSIDE this repo")
+    for case in OPS_AMBIGUOUS_CASES:
+        check(f"`{case}`" in t, f"ops-mode.md: ambiguous case '{case}' must be named literally (code span)")
+    # A verdict, not silence: each named case must sit near an explicit permitted/refused word
+    # — scoped to that bullet's OWN line (up to the next bullet or blank line), never a fixed
+    # character window: a window wide enough to reach past a short verdict word is also wide
+    # enough to reach into the NEXT bullet and pick up its verdict instead, silently passing
+    # a case whose own verdict was deleted. Caught exactly this way during mutation testing.
+    lines = t.splitlines()
+    for case in OPS_AMBIGUOUS_CASES:
+        needle = f"`{case}`"
+        owning_line = next((ln for ln in lines if needle in ln), None)
+        check(owning_line is not None, f"ops-mode.md: '{case}' anchor not found for verdict-proximity check")
+        low_line = (owning_line or "").lower()
+        check(
+            "permitted" in low_line or "refused" in low_line,
+            f"ops-mode.md: '{case}' has no verdict word (permitted/refused) on its own bullet line",
+        )
+
+
+def test_ops_mode_no_dispatch_surface_named():
+    """Like dangerous-mode.md: the project-state docs are named as flat facts; no dispatch
+    surface is named, or ops silently re-imports routing it does not have."""
+    t = read_or_empty(OPS)
+    for doc in ("CONTEXT.md", "tech-stack.md", "coding-standards.md", "security-controls.md"):
+        check(doc in t, f"ops-mode.md: must name the project-state doc {doc} (two-hop orphan otherwise)")
+    for surface in ("reference-map.md", "routing-table.md", "COMMANDS.md", "redirect.md", "SPRINT.md"):
+        check(surface not in t, f"ops-mode.md: must NOT name the dispatch surface {surface}")
+    check(t.strip() != "", "ops-mode.md: must be non-empty")
+    check(t != read(ARBITER), "ops-mode.md must be mode-distinct from arbiter.md")
+    check(t != read(DANGEROUS), "ops-mode.md must be mode-distinct from dangerous-mode.md")
+
+
+# ---- T-24: redirect.md + routing-table.md carry a runtime-ops row (AC-45) -----------------
+OPS_TOKEN_STRING = "mode --ops"
+
+
+def test_ops_token_bound_across_redirect_and_routing():
+    """AC-45: both surfaces gain a runtime-operations entry naming the ops token, and the
+    documented string is bound — by actually calling the interceptor's own matcher, not by
+    a second hand-copied literal — to what the interceptor accepts as a flip-to-ops token.
+
+    `_modelib` is imported HERE, not at module scope: it transitively imports `_hooklib`
+    (Lane F, live in this same checkout) and `_activationlib`. A mid-edit syntax error in
+    either would otherwise kill this whole suite at import time, before `main()`'s per-test
+    `except` can report anything — every other test in this file would report nothing and the
+    failure would look like a regression in THIS file's own prose checks. Scoping the import
+    to the one test that needs it means a transitive breakage surfaces as exactly one named
+    failure, and the other twelve tests still run and report.
+    """
+    sys.path.insert(0, str(PYSRC))
+    import _modelib  # noqa: E402 — T-24: bind the documented ops token to the interceptor's own matcher
+
+    # The interceptor side: `_modelib.match_mode_token` is the ONE matcher every host's
+    # prompt-seam interceptor imports (Decided parameters). If the documented string does not
+    # flip to "ops" through this exact function, the docs and the code have silently diverged.
+    check(
+        _modelib.match_mode_token(OPS_TOKEN_STRING) == "ops",
+        f"the token this test binds to docs ({OPS_TOKEN_STRING!r}) does not resolve to 'ops' "
+        f"via _modelib.match_mode_token — test's own premise is broken",
+    )
+    for name, path in (("redirect.md", REDIRECT), ("routing-table.md", ROUTING_TABLE)):
+        t = read_or_empty(path)
+        check(f"`{OPS_TOKEN_STRING}`" in t,
+              f"{name}: must name the documented ops token `{OPS_TOKEN_STRING}` in a runtime-operations entry")
+        check("ops-mode.md" in t,
+              f"{name}: the runtime-operations entry must point at includes/ops-mode.md")
+    # Conflict map (plan): "D does both the ops row AND the {{CMD:}} strip; G must not touch
+    # it." redirect.md's tier-2 destructive-set sentence used to list `{{CMD:dev}}` entry —
+    # superseded already in safety-core.md's own irreversible-action set (T-17); this is the
+    # matching strip in the OTHER surface that lists the same set, and it is NOT the locked
+    # act (test_routing_and_cleanup_surface.py pins `{{CMD:dev}}` only across arbiter.md's
+    # four host renders, never redirect.md — verified before this edit was made).
+    check(
+        "{{CMD:dev}}" not in read(REDIRECT) and "{{CMD:arbiter}}" not in read(REDIRECT),
+        "redirect.md: must not reference the retired {{CMD:dev}}/{{CMD:arbiter}} macros",
+    )
+
+
+# ---- T-25/AC-21: no mode body contradicts a safety-core anchor (table is data) ------------
+# Each entry: a safety-core clause label -> phrases that would represent that mode body
+# WEAKENING or reversing the clause. None may appear in ANY composed mode body. The mapping
+# itself is the data under test — extending it to a newly-authored mode body costs one line,
+# never a new function (a-green-job-can-measure-nothing: a table that stops growing goes silent
+# on the next mode, which is why this is a plain dict, not inlined per-mode assertions).
+CONTRADICTION_PHRASES = {
+    "secrets prohibition (§3)": (
+        "may store a raw secret",
+        "secrets may be committed",
+        "secret scanning is disabled",
+    ),
+    "no direct default-branch write / no force-push (§3)": (
+        "may write directly to the default branch",
+        "force-push is permitted",
+        "force-push is allowed",
+    ),
+    "ADR immutability (§3)": (
+        "may edit an adr outside /adr",
+        "adrs may be edited directly",
+    ),
+    "surface-don't-reconcile duty (§3/§7)": (
+        "may silently reconcile",
+        "reconcile without /conflict",
+        "conflicts may be resolved without /conflict",
+    ),
+    "§7 diagnose-don't-bypass": (
+        "gates may be bypassed without diagnosis",
+        "bypass a gate that looks wrong",
+    ),
+}
+
+
+def test_no_mode_body_contradicts_safety_core():
+    for mode, path in MODE_BODIES.items():
+        text = read_or_empty(path).lower()
+        if not text:
+            continue
+        for anchor_name, phrases in CONTRADICTION_PHRASES.items():
+            for phrase in phrases:
+                check(
+                    phrase not in text,
+                    f"{path.name} ({mode}): contains a phrase contradicting safety-core's "
+                    f"{anchor_name} — '{phrase}'",
+                )
+
+
 TESTS = [
     test_safety_core_anchors,
     test_safety_core_ordering,
@@ -350,6 +544,11 @@ TESTS = [
     test_dangerous_mode_names_project_state_docs,
     test_dangerous_mode_does_not_suppress_blocking_questions,
     test_section_citations_resolve,
+    test_ops_mode_permitted_and_refused_sets,
+    test_ops_mode_named_refusals_and_ambiguous_verdicts,
+    test_ops_mode_no_dispatch_surface_named,
+    test_ops_token_bound_across_redirect_and_routing,
+    test_no_mode_body_contradicts_safety_core,
 ]
 
 
