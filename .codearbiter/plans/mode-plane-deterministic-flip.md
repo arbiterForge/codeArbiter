@@ -146,11 +146,11 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-48 | E | `session-start.py` | pinned pre-mode copy leaves no un-closed pair, no orphaned state, never reads the mode file [LL, GR-2] | 42 | T-47 | PENDING |
 | T-49 | E | `_prunepolicy.py` | `test_prune_policy_parity.py` exits 0 + `pinned=True` retains at gentle/standard/**aggressive** and appears in `protected_ids` [LL] | 26 | T-16 | PENDING |
 | T-50 | E | `_prunelib.py:171-179` | a line containing `PERSONA_SENTINEL` builds `SemanticEntry(pinned=True)` [LL, GR-2] | 26 | T-49 | PENDING |
-| T-51 ★ | F | `_arbiterstatelib.py:199-208` | `current_mode(root)` reads via `marker_root`; three values → three distinct tokens [LL, GR-2] | 38 | T-07 | PENDING |
-| T-52 ★ | F | `statusline.py:254,288,556,683` | arbiter byte-identical to pinned output, dangerous keeps red-shift, ops distinct. **Unset `NO_COLOR`.** [LL, GR-2] | 38 | T-51 | PENDING |
-| T-53 ★ | F | `_hooklib.py:552-556` `_STALE_FLOWS` | stale dangerous WARNs; stale arbiter **never** WARNs. Quiet registry — this test is the only signal [LL, GR-2] | 36 | T-51 | PENDING |
+| T-51 ★ | F | `_arbiterstatelib.py:199-208` | `current_mode(root)` reads via `marker_root`; three values → three distinct tokens [LL, GR-2] | 38 | T-07 | ACCEPTED |
+| T-52 ★ | F | `statusline.py:254,288,556,683` | arbiter byte-identical to pinned output, dangerous keeps red-shift, ops distinct. **Unset `NO_COLOR`.** [LL, GR-2] | 38 | T-51 | ACCEPTED |
+| T-53 ★ | F | `_hooklib.py:552-556` `_STALE_FLOWS` | stale dangerous WARNs; stale arbiter **never** WARNs. Quiet registry — this test is the only signal [LL, GR-2] | 36 | T-51 | ACCEPTED |
 | T-54 | F | `_metricslib.py:251-291` | log of `MODE:`+legacy `DEV:` rows → `override_rate` current/prior = 0 [LL, GR-2] | 40 | — | **ACCEPTED** |
-| T-55 | F | `statusline.py` override counter | same corpus → counter 0 [LL, GR-2] | 40 | T-54 | PENDING |
+| T-55 | F | `statusline.py` override counter | same corpus → counter 0 [LL, GR-2] | 40 | T-54 | ACCEPTED |
 | T-56 | C | `pi-bridge.py:30,34-43` | `test_pi_security.py` exits 0; `input` required/allowed key **sets** by equality [LL] | 15,14 | T-12 | PENDING |
 | T-57 | C | `pi-bridge.py` `_mode_flip` | `test_pi_platform_contract.py --fixtures-only` exits 0; handler returns `handled`, mode flips [LL] | 14 | T-56 | PENDING |
 | T-58 | C | `extension.ts` `pi.on("input",…)` | new `test/mode-flip.test.ts`: `{action:"handled"}` on exact match, pass-through on substring [LL] | 14 | T-57 | PENDING |
@@ -229,6 +229,16 @@ default.
   The compaction-generation counter depends on it. Not checked against a live binary; if it fires more
   than once the persona re-injects more often than needed (wasteful, not unsafe), and if it can be
   skipped the compaction hole reopens. → worth a live check before release.
+- **ROOT-RESOLUTION SPLIT, SITE 3 — `core/pysrc/prune-transcript.py:57`.** Its `staleness_check`
+  resolves `project_root(payload)` while the mode marker lives at `marker_root(payload)`; in a linked
+  worktree a genuinely stale non-arbiter session therefore goes **undetected**, and because staleness
+  is a WARN not a gate, nothing fails — it just goes quiet. Found by Lane F while verifying, left as a
+  documented `@unittest.expectedFailure` in `test_staleness_warn_entry.py` as a red-to-green target.
+  **Assigned to Lane E** (grant extended) so one ruling covers all three sites. NOTE: `unittest`
+  reports an *unexpected success* rather than a pass, so whoever fixes the source must also flip the
+  xfail — an xfail that silently starts passing is its own trap.
+- **`pi-bridge.py:406` calls the now-removed `_arbiterstatelib.dev_active`.** Lane C's T-61 already
+  covers it; recorded so it cannot be lost if Lane C is rescoped.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
