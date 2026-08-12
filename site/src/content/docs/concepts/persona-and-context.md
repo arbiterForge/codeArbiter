@@ -34,9 +34,9 @@ Every reviewer is read-only by construction. The roster splits into three famili
   `auth-crypto-reviewer`, `dependency-reviewer`, `migration-reviewer`, `coverage-auditor`,
   `architecture-drift-reviewer`), plus [`design-quality-reviewer`](/reference/agents/design-quality-reviewer/)
   for generated, user-facing output.
-- **The tribunal lenses.** Eleven `tribunal-*` agents, one per lens, dispatched only by
-  [`/ca:tribunal`](/reference/commands/tribunal/). See the [tribunal command](/reference/commands/tribunal/)
-  page for the full roster, starting with [`tribunal-appsec-reviewer`](/reference/agents/tribunal-appsec-reviewer/).
+- **The tribunal lens executor.** One [`tribunal-lens-reviewer`](/reference/agents/tribunal-lens-reviewer/)
+  agent, dispatched once per active lens by [`/ca:tribunal`](/reference/commands/tribunal/). Each dispatch
+  names one of the eleven lens cards, documented under [tribunal lenses](/reference/#tribunal-lenses).
 - **Internal analysts.** Never dispatched directly by a user: `scout`, `grader`,
   `decision-challenger`, `finding-triage`, `checkpoint-aggregator`, `map-structure`,
   `map-deps`.

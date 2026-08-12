@@ -1,6 +1,7 @@
 ---
 name: secret-handling
 description: The secret-source gate. Routed to when changed code reads, writes, or passes a secret — API key, token, password, connection string, signing key, certificate, or any value that grants access. Validates that every secret comes from the approved store and never lands in source, log, test fixture, error response, image, or LLM prompt. The auth-crypto-reviewer agent is dispatched as the reviewer.
+disable-model-invocation: true
 ---
 
 # secret-handling

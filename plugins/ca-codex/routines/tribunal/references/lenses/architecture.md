@@ -1,6 +1,13 @@
 # architecture — lens mandate
 
-Executed by `tribunal-architecture-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `architecture` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+The assigned path slice plus the `inventory.md` import/caller map. Coupling, dead code, abstraction quality, module sizing.
+
+## Required reading
+- `${CLAUDE_PLUGIN_ROOT}/routines/tribunal/references/ai-markers.md` — the structural thresholds the lens checklist cites.
+- `<project-root>/.codearbiter/coding-standards.md` — the conventions structure is judged against; `inventory.md` in the run dir — the import/caller map.
 
 ## Checklist
 - Orphan/dead modules: zero active callers; a module tested but never called in production is dead code masquerading as live.

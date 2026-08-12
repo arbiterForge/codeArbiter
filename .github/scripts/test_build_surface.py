@@ -286,7 +286,7 @@ class PiMappingTest(_RepoCase):
             before_catalog,
         )
 
-    def test_real_pi_role_catalog_is_a_28_role_explicit_resource_bijection(self):
+    def test_real_pi_role_catalog_is_an_18_role_explicit_resource_bijection(self):
         out = B.render_all(str(REPO_ROOT), "pi")
         roles = json.loads(out["generated/roles.json"])
         agents = sorted(
@@ -295,9 +295,15 @@ class PiMappingTest(_RepoCase):
             if path.startswith("agents/") and path.endswith(".md")
             and path != "agents/INDEX.md"
         )
-        self.assertEqual(len(agents), 28)
+        self.assertEqual(len(agents), 18)
         self.assertEqual(sorted(role["name"] for role in roles), agents)
-        self.assertEqual(len({role["name"] for role in roles}), 28)
+        self.assertEqual(len({role["name"] for role in roles}), 18)
+        # security-controls.md assumes these three reviewers exist; a count pin
+        # alone would stay green if one were swapped for an unrelated role.
+        self.assertLessEqual(
+            {"security-reviewer", "auth-crypto-reviewer", "dependency-reviewer"},
+            {role["name"] for role in roles},
+        )
 
         authors = {"backend-author", "frontend-author", "infra-author"}
         skill_map = {

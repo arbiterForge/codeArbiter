@@ -723,6 +723,17 @@ def _independent_window_count(last_tag, head_sha, payload, payload_exclude=()):
     return int(out.strip())
 
 
+def _commit_payload_files(sha, payload):
+    """The commit's touched files under the payload prefix, via a THIRD git
+    subcommand (`diff-tree`, not `log`/`rev-list`), so the exclusively-
+    excluded probe never depends on the exclusion-pathspec arm it exists
+    to validate."""
+    out = _git(["diff-tree", "--no-commit-id", "--name-only", "-r", sha])
+    prefix = payload.rstrip("/") + "/"
+    return [name for name in (line.strip() for line in out.splitlines())
+            if name and (name == payload or name.startswith(prefix))]
+
+
 def _first_release_section(changelog_text):
     """The first (topmost) CHANGELOG section whose heading names a real
     MAJOR.MINOR.PATCH version — skips any number of leading `## [Unreleased]`
@@ -924,13 +935,50 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             last_tag, self.head_sha, row["payload"], row["payload_exclude"]))
         unexcluded_window = set(_live_window_shas(
             last_tag, self.head_sha, row["payload"], []))
-        if unexcluded_window == 0:
+        if not unexcluded_window:
             # Same reasoning as the window test above: with no commits in
             # the payload at all, the exclude pathspec has nothing to narrow
             # and "it removed no commits" is arithmetic, not a finding.
             self.skipTest("ca-pi's payload has no commits since its last tag "
                           "at live HEAD, so payload-exclude has nothing to "
                           "narrow; normal immediately after a ca-pi release")
+        # The strict-subset assertion is only meaningful when some commit in
+        # the window actually touches an excluded path. A window whose
+        # commits all live outside the excluded paths leaves excluded ==
+        # unexcluded as plain arithmetic — the same non-finding as the
+        # empty-window case above, first fired live on PR #647 (the first
+        # ca-pi payload commits after ca-pi-v0.3.1 touched routines/agents
+        # only; same defect family as #645). Probe with the SAME helper,
+        # one positive pathspec per declared exclude entry (payload is a
+        # single-string parameter; payload_exclude is a list).
+        exclude_touching = set()
+        for exclude_path in row["payload_exclude"]:
+            exclude_touching.update(_live_window_shas(
+                last_tag, self.head_sha, exclude_path, []))
+        # Touching an excluded path is NOT the meaningful precondition: a
+        # commit touching excluded AND non-excluded payload paths correctly
+        # SURVIVES exclusion (it still moves the payload), so with only such
+        # commits in the window, excluded == unexcluded is arithmetic — the
+        # same non-finding as the cases above. First fired live on PR #652,
+        # whose feat commit touched tools/ and the shipped payload at once
+        # (defect family #645/#647). The strict-subset assertion needs a
+        # commit whose payload footprint lies ENTIRELY inside the excluded
+        # paths, probed with `diff-tree` so the probe never rides the
+        # exclusion arm under test. A commit with an empty payload file list
+        # (e.g. a merge) proves nothing and is not counted.
+        exclude_prefixes = tuple(
+            path.rstrip("/") + "/" for path in row["payload_exclude"])
+        exclusively_excluded = set()
+        for sha in exclude_touching:
+            files = _commit_payload_files(sha, row["payload"])
+            if files and all(name.startswith(exclude_prefixes) for name in files):
+                exclusively_excluded.add(sha)
+        if not exclusively_excluded:
+            self.skipTest("no commit since ca-pi's last tag touches ONLY its "
+                          "excluded paths at live HEAD — every exclude-"
+                          "touching commit also moves non-excluded payload "
+                          "and correctly survives exclusion, so equal "
+                          "windows are arithmetic, not a defect")
         self.assertTrue(
             excluded_window < unexcluded_window,
             "ca-pi's payload-exclude removed no commits from the release "
@@ -966,10 +1014,15 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             "_first_release_section's end boundary is wrong")
 
         last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
-        self.assertTrue(
-            self.core_lane.semver_greater(next_version, self.core_lane._bare_version(last_tag)),
-            f"ca-pi's manifest version {next_version!r} is not a strict "
-            f"SemVer advance over its last tag {last_tag!r}")
+        # >=, not a strict advance: once the tag has caught up to the
+        # manifest (the tag-per-merge automation's steady state), equality
+        # is the expected, correct condition — nothing new to release. Only
+        # the tag running AHEAD of the manifest is a genuine regression.
+        self.assertGreaterEqual(
+            self.core_lane.semver_key(next_version),
+            self.core_lane.semver_key(self.core_lane._bare_version(last_tag)),
+            f"ca-pi's manifest version {next_version!r} is behind its last "
+            f"tag {last_tag!r} — the tag has run ahead of the manifest")
 
         message = _compose_tag_message(section_text, date)
         tag = row["prefix"] + next_version
@@ -1034,10 +1087,16 @@ class ThisRepoStillReleasesTest(unittest.TestCase):
             "_first_release_section's end boundary is wrong")
 
         last_tag = self.core_lane.last_tag_select(self.live_tags, row["prefix"])
-        self.assertTrue(
-            self.core_lane.semver_greater(next_version, self.core_lane._bare_version(last_tag)),
-            f"ca's manifest version {next_version!r} is not a strict SemVer "
-            f"advance over its last tag {last_tag!r}")
+        # >=, not a strict advance — the same steady-state reasoning as
+        # ca-pi's arm below: once tag-per-merge automation catches the tag
+        # up to the manifest, equality is the correct resting state (#645;
+        # first fired live when v2.12.1 was auto-tagged). Only a tag AHEAD
+        # of the manifest is a regression.
+        self.assertGreaterEqual(
+            self.core_lane.semver_key(next_version),
+            self.core_lane.semver_key(self.core_lane._bare_version(last_tag)),
+            f"ca's manifest version {next_version!r} is behind its last "
+            f"tag {last_tag!r} — the tag has run ahead of the manifest")
 
         message = _compose_tag_message(section_text, date)
         tag = row["prefix"] + next_version

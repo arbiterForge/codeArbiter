@@ -1,6 +1,9 @@
 import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { collectSources } from "./collect-sources";
+import { collectLenses } from "./collect-lenses";
+import { renderLensPage } from "./render-lens-page";
+import { truncateDescription } from "./truncate-description";
 import { parseDoc } from "./parse-doc";
 import { deriveName } from "./derive-name";
 import { assignSlugs } from "./assign-slugs";
@@ -20,6 +23,7 @@ import type {
   PageInput,
   RelatedLink,
   RenderedPage,
+  SidebarGroup,
   SourceType,
 } from "./types";
 
@@ -29,6 +33,9 @@ const TYPE_DIR: Record<SourceType, string> = {
   skill: "skills",
   agent: "agents",
 };
+
+/** Output subdirectory for the tribunal-lens collection (see collect-lenses.ts). */
+const LENS_DIR = "tribunal-lenses";
 
 function renderPage(type: SourceType, input: PageInput): string {
   switch (type) {
@@ -214,11 +221,16 @@ export function generate(
     };
   });
 
+  // Tribunal lens cards are a fourth, self-contained collection: one page per
+  // card under `tribunal-lenses/`, no curated companion (the card body is the
+  // documentation), no slug dedup needed (slugs are unique file basenames).
+  const lensPages = collectLenses(srcDir).map(renderLensPage);
+
   // Clean prior output before writing: a stale file from a previous run (an
   // old `-2` slug, a since-removed entity) must not survive a re-generate.
   // Only the generated subtrees + index are removed — never the whole
   // outDir, which may hold other content-collection files.
-  for (const typeDir of Object.values(TYPE_DIR)) {
+  for (const typeDir of [...Object.values(TYPE_DIR), LENS_DIR]) {
     rmSync(join(outDir, typeDir), { recursive: true, force: true });
   }
   rmSync(join(outDir, "index.md"), { force: true });
@@ -228,6 +240,15 @@ export function generate(
     const dir = join(outDir, TYPE_DIR[page.type]);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
+  }
+
+  // Write one page per tribunal lens card.
+  if (lensPages.length > 0) {
+    const dir = join(outDir, LENS_DIR);
+    mkdirSync(dir, { recursive: true });
+    for (const page of lensPages) {
+      writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
+    }
   }
 
   // Index + sidebar. buildIndex gives the grouped, sorted structure (each item
@@ -256,7 +277,13 @@ export function generate(
     "`codearbiter_dispatch` tool. " +
     "See [Compatibility → Host Differences](/getting-started/compatibility/#host-differences) " +
     "for the full per-surface breakdown across all three hosts.";
-  const indexBody = sidebar
+  // At this point `sidebar` holds only the three entity groups (the
+  // tribunal-lens group is appended below, after the index is rendered); the
+  // filter narrows the type for `TYPE_DIR`/`TABLE_HEADER` indexing.
+  const entityGroups = sidebar.filter(
+    (g): g is SidebarGroup & { type: SourceType } => g.type !== "tribunal-lens",
+  );
+  const indexBody = entityGroups
     .map((group) => {
       const heading = `## ${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
       const rows = group.items.map((it) => {
@@ -271,7 +298,22 @@ export function generate(
       return `${heading}\n\n${TABLE_HEADER[group.type]}\n${rows.join("\n")}`;
     })
     .join("\n\n");
-  const catalogCards = sidebar.map((group) => {
+  // The tribunal-lens collection gets its own index table, after the three
+  // entity catalogs (the group renders adjacent to Agents in the sidebar too).
+  const lensSection =
+    lensPages.length > 0
+      ? `\n\n## Tribunal lenses\n\nEach lens card is the per-lens mandate the ` +
+        `[tribunal-lens-reviewer](./agents/tribunal-lens-reviewer/) agent executes when ` +
+        `[/ca:tribunal](./commands/tribunal/) dispatches it under that lens's assignment.\n\n` +
+        `| Lens | Description |\n|---|---|\n` +
+        lensPages
+          .map(
+            (p) =>
+              `| [${p.slug}](./${LENS_DIR}/${p.slug}/) | ${truncateDescription(p.description)} |`,
+          )
+          .join("\n")
+      : "";
+  const catalogCards = entityGroups.map((group) => {
     const plural = `${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
     const purpose = group.type === "command"
       ? "Public entry points you invoke for an outcome."
@@ -280,12 +322,27 @@ export function generate(
         : "Focused author and reviewer roles a skill may dispatch.";
     return `<a href="#${group.type}s"><span>${group.items.length}</span><strong>${plural}</strong><small>${purpose}</small></a>`;
   }).join("\n");
-  const indexContent = `---\ntitle: Reference\ndescription: Source-backed command, skill, and agent catalogs with host syntax, operating context, gates, relationships, and exact shipped source.\n---\n\nEntity identities, frontmatter, host availability, and exact source embeds regenerate from the shipped payload on every build. Curated operating guidance is hand-reviewed and contract-tested, but it can still lag a source change; when the two disagree, the exact source embed is authoritative. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n<div class="ca-reference-map">\n${catalogCards}\n</div>\n\n<div class="ca-reference-guide">\n<strong>Use the catalog from left to right.</strong>\n<ol>\n<li>Choose the public <strong>command</strong> that matches the outcome you need.</li>\n<li>Follow its owning <strong>skill</strong> to understand phases, stops, and durable artifacts.</li>\n<li>Open an <strong>agent</strong> only to inspect a dispatched role's tools and constraints; agents are not a second command surface.</li>\n</ol>\n<p>Every entity page begins with host-native syntax or dispatch context, then curated operating guidance, gates, related routes, and the exact source used to generate it.</p>\n</div>\n\n${hostNote}\n\n${indexBody}\n`;
+  const indexContent = `---\ntitle: Reference\ndescription: Source-backed command, skill, and agent catalogs with host syntax, operating context, gates, relationships, and exact shipped source.\n---\n\nEntity identities, frontmatter, host availability, and exact source embeds regenerate from the shipped payload on every build. Curated operating guidance is hand-reviewed and contract-tested, but it can still lag a source change; when the two disagree, the exact source embed is authoritative. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n<div class="ca-reference-map">\n${catalogCards}\n</div>\n\n<div class="ca-reference-guide">\n<strong>Use the catalog from left to right.</strong>\n<ol>\n<li>Choose the public <strong>command</strong> that matches the outcome you need.</li>\n<li>Follow its owning <strong>skill</strong> to understand phases, stops, and durable artifacts.</li>\n<li>Open an <strong>agent</strong> only to inspect a dispatched role's tools and constraints; agents are not a second command surface.</li>\n</ol>\n<p>Every entity page begins with host-native syntax or dispatch context, then curated operating guidance, gates, related routes, and the exact source used to generate it.</p>\n</div>\n\n${hostNote}\n\n${indexBody}${lensSection}\n`;
+
+  // Append the tribunal-lens sidebar group after the three entity groups so it
+  // renders directly under Agents. Appended AFTER the index tables/cards above
+  // are built from `sidebar` — those iterate only the entity collections.
+  if (lensPages.length > 0) {
+    sidebar.push({
+      type: "tribunal-lens",
+      label: "tribunal-lens",
+      items: lensPages.map((p) => ({
+        label: p.slug,
+        slug: p.slug,
+        description: truncateDescription(p.description),
+      })),
+    });
+  }
 
   mkdirSync(outDir, { recursive: true });
   mkdirSync(dirname(resolvedSidebarPath), { recursive: true });
   writeFileSync(join(outDir, "index.md"), indexContent);
   writeFileSync(resolvedSidebarPath, JSON.stringify(sidebar, null, 2));
 
-  return { pages, outDir, sidebarPath: resolvedSidebarPath };
+  return { pages, lensPages, outDir, sidebarPath: resolvedSidebarPath };
 }

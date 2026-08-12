@@ -10,8 +10,9 @@ import type {
 } from "./contracts.ts";
 import { adaptPiFooterState } from "./footer-state.ts";
 import { renderFooter } from "./footer.ts";
-import type { FooterTextMetrics } from "./footer.ts";
+import type { FooterInput, FooterTextMetrics } from "./footer.ts";
 import type { ActivitySnapshotSource } from "./activity.ts";
+import type { GitFacts } from "./git-facts.ts";
 
 export function setArbiterStatus(
   context: Pick<ExtensionContextPort, "ui">,
@@ -60,6 +61,8 @@ export class PiFooterLifecycle {
   private usageSnapshot: PiUsageSnapshotPortResult | undefined;
   private governance: Awaited<ReturnType<typeof readFooterStatusSnapshot>>;
   private updateVersion: string | undefined;
+  private gitFacts: GitFacts | undefined;
+  private lastInput: FooterInput | undefined;
   private activationEnabled = false;
   private expected = false;
   private installed = false;
@@ -70,10 +73,23 @@ export class PiFooterLifecycle {
     private readonly bridge: BridgePort,
     private readonly loadMetrics: (() => Promise<FooterTextMetrics>) | undefined,
     private readonly currentActivity?: () => ActivitySnapshotSource | undefined,
+    private readonly readGitFacts?: (cwd: string) => Promise<GitFacts | undefined>,
   ) {}
 
   requestActivityRender(): void {
     requestRender(this.tui);
+  }
+
+  /** The live tui handle captured by the footer factory; the sidebar
+   * compositor probes it for the undocumented doRender hook. */
+  currentTui(): { requestRender(): void } | undefined {
+    return this.tui;
+  }
+
+  /** The most recently rendered footer input — the sidebar's session,
+   * subagents and workspace panels reuse these already-gathered facts. */
+  lastRenderedInput(): FooterInput | undefined {
+    return this.lastInput;
   }
 
   health(): Readonly<{ expected: boolean; initialized: boolean }> {
@@ -91,6 +107,7 @@ export class PiFooterLifecycle {
     this.usageSnapshot = undefined;
     this.governance = undefined;
     this.updateVersion = undefined;
+    this.gitFacts = undefined;
     this.activationEnabled = false;
     if (!interactiveContext(context)) return;
     this.expected = true;
@@ -141,6 +158,9 @@ export class PiFooterLifecycle {
               ...(this.usageSnapshot === undefined ? {} : { usageSnapshot: this.usageSnapshot }),
               ...(this.updateVersion === undefined ? {} : { updateVersion: this.updateVersion }),
               ...(activity === undefined ? {} : { activity }),
+              ...(this.gitFacts === undefined || !affirmativeTrust(context)
+                ? {}
+                : { gitFacts: this.gitFacts }),
             });
             const enriched = this.governance === undefined || !this.activationEnabled || !affirmativeTrust(context)
               ? input
@@ -156,6 +176,7 @@ export class PiFooterLifecycle {
                   ...(this.governance.prune === undefined ? {} : { prune: this.governance.prune }),
                 },
               };
+            this.lastInput = enriched;
             const rendered = renderFooter(enriched, {
               width,
               noColor: Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR"),
@@ -202,9 +223,13 @@ export class PiFooterLifecycle {
 
     const usagePromise = updateFooterUsageSnapshot(this.bridge, context, this.usageCursor, { maxRanges: 1 });
     const governancePromise = readFooterStatusSnapshot(this.bridge, context, options.activation);
-    const [usage, governance] = await Promise.allSettled([
+    const gitFactsPromise = this.readGitFacts !== undefined && affirmativeTrust(context)
+      ? this.readGitFacts(context.cwd)
+      : Promise.resolve(undefined);
+    const [usage, governance, gitFacts] = await Promise.allSettled([
       usagePromise,
       governancePromise,
+      gitFactsPromise,
     ]);
     const updateVersion = options.readUpdateVersion === undefined
       ? undefined
@@ -218,6 +243,8 @@ export class PiFooterLifecycle {
     }
     if (options.activation.enabled !== true || !affirmativeTrust(context)) this.governance = undefined;
     else if (governance.status === "fulfilled" && governance.value !== undefined) this.governance = governance.value;
+    this.gitFacts = !affirmativeTrust(context) ? undefined
+      : gitFacts.status === "fulfilled" ? gitFacts.value : undefined;
     if (updateVersion?.status === "fulfilled") this.updateVersion = updateVersion.value;
     requestRender(this.tui);
   }
@@ -232,6 +259,8 @@ export class PiFooterLifecycle {
     this.usageSnapshot = undefined;
     this.governance = undefined;
     this.updateVersion = undefined;
+    this.gitFacts = undefined;
+    this.lastInput = undefined;
     this.activationEnabled = false;
     this.expected = false;
     this.refreshQueue = Promise.resolve();

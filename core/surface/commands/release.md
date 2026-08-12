@@ -1,6 +1,6 @@
 ---
 description: Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag.
-argument-hint: [target] | --dry-run
+argument-hint: "[target] | --dry-run"
 ---
 
 # {{CMD:release}} — tagged release

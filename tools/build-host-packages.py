@@ -30,12 +30,30 @@ def render_package(
     """Render root Pi Git-package metadata as deterministic UTF-8 bytes."""
     if host.name != "pi":
         raise ValueError(f"root Git package metadata is unsupported for host {host.name!r}")
+    # ADR-0029: the root manifest is also the npm publish unit — scoped name,
+    # provenance-ready repository/publishConfig, and a files whitelist shipping
+    # exactly the Pi-served payload (never the tools/ dev workspace).
     document = {
-        "name": "ca-pi",
+        "name": "@arbiterforge/ca-pi",
         "version": version,
-        "private": True,
         "license": license_spdx,
+        "repository": {
+            "type": "git",
+            "url": "git+https://github.com/arbiterForge/codeArbiter.git",
+        },
         "engines": {"node": ">=22.19.0"},
+        "publishConfig": {"access": "public", "provenance": True},
+        "files": [
+            f"{host.plugin_dir}/*.md",
+            f"{host.plugin_dir}/agents/",
+            f"{host.plugin_dir}/extensions/",
+            f"{host.plugin_dir}/generated/",
+            f"{host.plugin_dir}/helpers/",
+            f"{host.plugin_dir}/hooks/",
+            f"{host.plugin_dir}/includes/",
+            f"{host.plugin_dir}/routines/",
+            f"{host.plugin_dir}/skills/",
+        ],
         "pi": {
             "extensions": [f"./{host.plugin_dir}/extensions/codearbiter.js"],
             "skills": [f"./{host.plugin_dir}/skills"],

@@ -22,7 +22,7 @@ Periodic sweep of the entire codebase with the reviewer fleet, funneled to a sin
    | `coverage-auditor` | test coverage vs. obligations across the tree |
    | `architecture-drift-reviewer` | `decisions/`; drift between code and accepted ADRs |
 
-2. Route to `dispatching-parallel-agents` with that unit list (read-only batch). It dedupes, then
+2. Route to `dispatching-parallel-agents` (`${CLAUDE_PLUGIN_ROOT}/routines/dispatching-parallel-agents/SKILL.md`) with that unit list (read-only batch). It dedupes, then
    funnels through `finding-triage` → `checkpoint-aggregator`.
 3. `checkpoint-aggregator` writes the dated report to
    `<project-root>/.codearbiter/checkpoints/YYYY-MM-DD.md`: findings by severity with

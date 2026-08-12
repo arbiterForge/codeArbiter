@@ -149,7 +149,7 @@ async function owningCaPackageRoot(): Promise<string> {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile(resolve(cursor, "package.json"), "utf8")) as { name?: unknown };
-      if (manifest.name === "ca-pi") return await realpath(cursor);
+      if (manifest.name === "@arbiterforge/ca-pi") return await realpath(cursor);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
@@ -184,7 +184,7 @@ export async function validateChildLaunch(
 
   const packageRoot = await realpath(dependencies.packageRoot ?? await owningCaPackageRoot());
   const packageManifest = JSON.parse(await readFile(resolve(packageRoot, "package.json"), "utf8")) as { name?: unknown };
-  if (packageManifest.name !== "ca-pi") throw new Error("Pi child package identity is invalid.");
+  if (packageManifest.name !== "@arbiterforge/ca-pi") throw new Error("Pi child package identity is invalid.");
   const childExtensionPath = await canonicalFile(input.childExtensionPath, "Pi child extension");
   const expectedChildExtension = await canonicalFile(resolve(packageRoot, "extensions", "codearbiter-child.js"), "packaged Pi child extension");
   if (childExtensionPath !== expectedChildExtension || !lexicallyInside(childExtensionPath, packageRoot)) {
@@ -370,6 +370,19 @@ function validDiagnostic(value: unknown): boolean {
   return value.details === undefined || validOpaqueJson(value.details);
 }
 
+/** Pi ≥0.84.0 attaches a provider-deferred-response handle to assistant
+ * messages. Validated strictly when present; never consumed by the runner. */
+function validDeferredHandle(value: unknown): boolean {
+  return isRecord(value)
+    && exactKeys(value,
+      ["provider", "modelId", "api", "id", "expiresAt", "pollAfterMs", "data"],
+      ["provider", "modelId", "api", "id"])
+    && ["provider", "modelId", "api", "id"].every((key) => boundedString(value[key]))
+    && (value.expiresAt === undefined || (typeof value.expiresAt === "number" && Number.isFinite(value.expiresAt)))
+    && (value.pollAfterMs === undefined || (typeof value.pollAfterMs === "number" && Number.isFinite(value.pollAfterMs)))
+    && (value.data === undefined || validOpaqueJson(value.data));
+}
+
 function validMessage(value: unknown): boolean {
   if (!isRecord(value) || typeof value.role !== "string") return false;
   if (value.role === "user") {
@@ -378,26 +391,33 @@ function validMessage(value: unknown): boolean {
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "assistant") {
+    // `rawStopReason` and `deferred` entered the schema in Pi 0.84.x
+    // (rawStopReason observed on the live RPC wire; promotion run
+    // 31352831520 degraded every 0.84 child dispatch on it).
     return exactKeys(value,
-      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "timestamp"],
+      ["role", "content", "api", "provider", "model", "responseModel", "responseId", "diagnostics", "usage", "stopReason", "errorMessage", "rawStopReason", "deferred", "timestamp"],
       ["role", "content", "api", "provider", "model", "usage", "stopReason", "timestamp"])
       && validContent(value.content, "assistant")
       && ["api", "provider", "model", "stopReason"].every((key) => typeof value[key] === "string")
       && (value.responseModel === undefined || boundedString(value.responseModel))
       && (value.responseId === undefined || boundedString(value.responseId))
       && (value.errorMessage === undefined || boundedString(value.errorMessage))
+      && (value.rawStopReason === undefined || boundedString(value.rawStopReason))
+      && (value.deferred === undefined || validDeferredHandle(value.deferred))
       && (value.diagnostics === undefined || (Array.isArray(value.diagnostics) && value.diagnostics.length <= MAX_JSON_ARRAY && value.diagnostics.every(validDiagnostic)))
       && validUsage(value.usage)
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
   if (value.role === "toolResult") {
+    // `usage` (tool-execution usage) entered the toolResult schema in Pi 0.84.x.
     return exactKeys(value,
-      ["role", "toolCallId", "toolName", "content", "details", "isError", "timestamp"],
+      ["role", "toolCallId", "toolName", "content", "details", "isError", "usage", "timestamp"],
       ["role", "toolCallId", "toolName", "content", "isError", "timestamp"])
       && typeof value.toolCallId === "string"
       && typeof value.toolName === "string"
       && validContent(value.content, "toolResult")
       && (value.details === undefined || validOpaqueJson(value.details))
+      && (value.usage === undefined || validUsage(value.usage))
       && typeof value.isError === "boolean"
       && typeof value.timestamp === "number" && Number.isFinite(value.timestamp);
   }
@@ -452,27 +472,33 @@ function validPartialAssistantMessage(value: unknown): boolean {
 
 function validAssistantEvent(value: unknown): boolean {
   if (!isRecord(value) || typeof value.type !== "string") return false;
-  const partial = () => validPartialAssistantMessage(value.partial);
+  // Pi ≤0.80.10 attaches the accumulating `partial` message to every streaming
+  // event; Pi ≥0.84.0 strips it on the RPC wire (delta-only, pi#7290). Both
+  // window shapes validate strictly: when `partial` is present it must be a
+  // valid partial assistant message, and the key set stays exact either way.
+  const exactWithOptionalPartial = (base: readonly string[]) => ("partial" in value
+    ? exactKeys(value, [...base, "partial"]) && validPartialAssistantMessage(value.partial)
+    : exactKeys(value, base));
   const contentIndex = () => Number.isSafeInteger(value.contentIndex) && (value.contentIndex as number) >= 0;
   switch (value.type) {
     case "start":
-      return exactKeys(value, ["type", "partial"]) && partial();
+      return exactWithOptionalPartial(["type"]);
     case "text_start":
     case "thinking_start":
     case "toolcall_start":
-      return exactKeys(value, ["type", "contentIndex", "partial"]) && contentIndex() && partial();
+      return exactWithOptionalPartial(["type", "contentIndex"]) && contentIndex();
     case "text_delta":
     case "thinking_delta":
     case "toolcall_delta":
-      return exactKeys(value, ["type", "contentIndex", "delta", "partial"])
-        && contentIndex() && boundedString(value.delta) && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "delta"])
+        && contentIndex() && boundedString(value.delta);
     case "text_end":
     case "thinking_end":
-      return exactKeys(value, ["type", "contentIndex", "content", "partial"])
-        && contentIndex() && boundedString(value.content) && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "content"])
+        && contentIndex() && boundedString(value.content);
     case "toolcall_end":
-      return exactKeys(value, ["type", "contentIndex", "toolCall", "partial"])
-        && contentIndex() && validContentBlock(value.toolCall, "assistant") && partial();
+      return exactWithOptionalPartial(["type", "contentIndex", "toolCall"])
+        && contentIndex() && validContentBlock(value.toolCall, "assistant");
     case "done":
       return exactKeys(value, ["type", "reason", "message"])
         && ["stop", "length", "toolUse"].includes(value.reason as string)
@@ -526,8 +552,14 @@ export function parseChildJsonLine(line: string): ProtocolRecord {
         || (!validMessage(record.message) && !validPartialAssistantMessage(record.message))) invalidProtocol();
       break;
     case "message_update":
-      if (!exactKeys(record, ["type", "message", "assistantMessageEvent"])
-        || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent)) invalidProtocol();
+      // Pi ≤0.80.10 carries the full accumulating `message`; Pi ≥0.84.0 sends
+      // the assistant event alone (delta-only RPC, pi#7290). Both key sets are
+      // exact; nothing else passes.
+      if ("message" in record
+        ? (!exactKeys(record, ["type", "message", "assistantMessageEvent"])
+          || !validPartialAssistantMessage(record.message) || !validAssistantEvent(record.assistantMessageEvent))
+        : (!exactKeys(record, ["type", "assistantMessageEvent"])
+          || !validAssistantEvent(record.assistantMessageEvent))) invalidProtocol();
       break;
     case "tool_execution_start":
       if (!exactKeys(record, ["type", "toolCallId", "toolName", "args"])

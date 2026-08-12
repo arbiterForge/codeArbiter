@@ -6,6 +6,28 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-08-08
+
+### Changed
+
+- Routine frontmatter carries `disable-model-invocation: true` on the nine chain-internal routines (inert on this host — routines are path-loaded prose) and JSON-quoted scalars per `_yaml_safe_scalar`; route sites cite explicit routine paths.
+
+## [0.6.0] — 2026-08-08
+
+### Changed
+
+- Tribunal roster consolidated (ADR-0027): the eleven per-lens tribunal reviewer personas
+  are replaced by one generic `tribunal-lens-reviewer` routine role dispatched once per
+  active lens; lens cards under `routines/tribunal/references/lenses/` carry the mandates.
+- Shared reviewer/author contracts extracted to `includes/reviewer-contract.md` and
+  `includes/author-tdd-workflow.md`.
+
+## [0.5.2] — 2026-08-08
+
+### Documentation
+
+- Backfilled 11 CHANGELOG sections that were missing when the manifest passed through them (`0.4.1`-`0.4.9`, `0.4.12`, `0.4.13`) — each composed verbatim from that commit's own `CHANGELOG:` footer. No functional change; this entry documents the CHANGELOG.md edit itself, which is why it required its own version.
+
 ## [0.5.1] — 2026-08-07
 
 ### Fixed
@@ -75,6 +97,18 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - INDEX.md / routing-table.md consistency is now a CI-checked invariant instead of an authoring discipline: `check_routing_index_parity.py` fails the build when a skill/routine/agent is missing its INDEX row, an INDEX row points at nothing, or `includes/routing-table.md` routes to a name that does not exist — across all four generated surfaces. `skill-author`'s routing-integration phase now cites the check instead of re-stating the hand-verification it replaces (#592).
 
+## [0.4.13] — 2026-08-05
+
+### Fixed
+
+- `/ca:release --dry-run` now really previews a release (target, derived version, changelog-footer check, resolved row) with nothing written, and writing-plans/brainstorming gain a mechanical citation backstop plus an explicit negative-judgment question so a spec criterion missed by both sides can no longer pass bijection silently (Closes #565, #566; shared `core/surface/` kernel).
+
+## [0.4.12] — 2026-08-05
+
+### Fixed
+
+- Six governance rules that pin load-bearing release-skill doctrine are re-anchored so deleting the sentence they guard is now detected instead of passing silently (shared `core/pysrc/` kernel).
+
 ## [0.4.11] — 2026-08-05
 
 ### Fixed
@@ -87,6 +121,60 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - The H-11 authoring-marker freshness window is now declared exactly once (`_hooklib.MARKER_FRESHNESS_MINUTES`) and imported by every enforcement flank (`pre-write.py`, `pre-edit.py`, `_bashguardlib.py`, `git-enforce.py`, `_protectedstatelib.py`), instead of five independently hardcoded copies of the same literal (#567).
 - `_releaselib.py`'s unreachable `_PRERELEASE_MARKERS` dead code is removed (#568).
+
+## [0.4.9] — 2026-08-05
+
+### Fixed
+
+- Linked-worktree sessions no longer lose a recorded security/migration gate pass, and the statusline palette test suite no longer depends on the developer's own accumulated `.codearbiter/` audit trail (shared `core/pysrc/` kernel).
+
+## [0.4.8] — 2026-08-05
+
+### Fixed
+
+- H-05/H-11/H-18/H-22 close interpreter and lexical shell-flank bypasses; the Codex PowerShell audit-log append recipe no longer risks UTF-16LE corruption (shared `core/pysrc/` kernel).
+
+## [0.4.7] — 2026-08-05
+
+### Fixed
+
+- Command/skill surfaces resolve the Python interpreter once by presence instead of a python3-or-python exit-code fold that could discard a helper's real verdict (shared `core/pysrc/` kernel).
+
+## [0.4.6] — 2026-08-05
+
+### Added
+
+- `tdd`'s red gate now names and rebuts the four known excuses for skipping the failing test, and `skill-author`'s self-review enforces the evidence-lens authoring doctrine (shared `core/surface/` kernel).
+
+## [0.4.5] — 2026-08-05
+
+### Added
+
+- The orchestrator persona is restructured on measured evidence — hard rules lead the document, a rationalization guard and letter-vs-spirit rule intercept gate-skipping, every user-facing ask leads with a recommendation and its strongest counter-case, a suspicious gate is diagnosed before any bypass, and startup instructions moved into the SessionStart briefing (shared `core/surface/` kernel).
+
+## [0.4.4] — 2026-08-04
+
+### Added
+
+- The brainstorming skill now splits bundled ideas before refining, shapes the approach with a recommendation, decides routine parameters while asking genuine forks in full, and adversarially reviews its own spec before approval (shared `core/surface/` kernel).
+
+## [0.4.3] — 2026-08-04
+
+### Fixed
+
+- The orchestrator no longer asks "did you mean" when it has already resolved the exact command and its complete argument — fully-resolved, non-destructive intent routes directly (ADR-0022 tier 1; shared `core/surface/` kernel).
+
+## [0.4.2] — 2026-08-04
+
+### Fixed
+
+- Post-merge cleanup now proves squash merges via the PR record instead of STOPping on them, fast-forwards a stale local default before checkout, and standup can clear stale worktrees as one named group (shared `core/surface/` kernel).
+
+## [0.4.1] — 2026-08-04
+
+### Fixed
+
+- Release lane: back-fill first releases clear the footer check, run-pre-tag distinguishes could-not-run from drift, and the version bump is mechanized via apply-bump (shared `core/pysrc/` kernel).
 
 ## [0.4.0] — 2026-08-01
 

@@ -1,7 +1,8 @@
 # Pi install and parity-testing runbook
 
-This runbook covers the Git-only `ca-pi` distribution and the evidence needed
-to promote a commit. Pi 0.80.5 is the minimum supported host and Pi 0.80.10 is
+This runbook covers the `ca-pi` distribution — the pinned Git tag plus the
+CI-published npm package (ADR-0029) — and the evidence needed
+to promote a commit. Pi 0.80.5 is the minimum supported host and Pi 0.84.1 is
 the latest verified host in this release line. Node 22.19 or newer and Python 3
 on `PATH` are required.
 
@@ -31,8 +32,10 @@ Git source. In `pi config`, confirm that the package contributes one parent
 extension and the generated `ca-*` skills. Use `-l` only when you deliberately
 want a project-local Pi setting.
 
-There is no npm release. npm packaging is a future spike, so package-manager
-examples that name an npm source do not install `ca-pi` today.
+The convenience install is `pi install npm:@arbiterforge/ca-pi` — every
+`ca-pi-v*` tag is published to npm by CI with provenance (ADR-0029). The
+pinned Git install above remains the reproducible channel this runbook
+verifies against.
 
 The generated public catalog counts are:
 
@@ -78,7 +81,7 @@ scripts disabled in the isolated environment, then run one of:
 
 ```sh
 python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.5
-python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10
+python .github/scripts/test_pi_platform_contract.py --pi-version 0.84.1
 ```
 
 A supported-version run additionally executes the real-host final-argument
@@ -162,10 +165,10 @@ output.
 
 `ca-pi` has independent SemVer. Tags use `ca-pi-v*`; the nested
 `plugins/ca-pi/package.json`, generated root `package.json`, and
-`plugins/ca-pi/CHANGELOG.md` must advance together. There is no npm release in
-this release line.
+`plugins/ca-pi/CHANGELOG.md` must advance together. Each tag is additionally
+published to npm as `npm:@arbiterforge/ca-pi` (ADR-0029).
 
-Two ideas remain non-shipping future spikes: npm packaging, and a Pi-native
+One idea remains a non-shipping future spike: a Pi-native
 embedded farm worker built on the hardened child runner while retaining the
 shared plan/result contract. The embedded farm worker future spike does not
 change the current `--farm` preview route or add a second engine.

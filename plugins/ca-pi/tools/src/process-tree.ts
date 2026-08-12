@@ -720,7 +720,7 @@ function canonicalSupervisorPath(): string {
   while (true) {
     try {
       const manifest = JSON.parse(readFileSync(resolve(cursor, "package.json"), "utf8")) as { name?: unknown };
-      if (manifest.name === "ca-pi") {
+      if (manifest.name === "@arbiterforge/ca-pi") {
         const packageRoot = realpathSync(cursor);
         const candidate = realpathSync(resolve(cursor, "helpers", "windows-supervisor.js"));
         const suffix = relative(packageRoot, candidate);

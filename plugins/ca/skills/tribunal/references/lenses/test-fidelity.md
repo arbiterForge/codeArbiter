@@ -1,6 +1,12 @@
 # test-fidelity — lens mandate
 
-Executed by `tribunal-test-fidelity-reviewer`. Write contract + evidence discipline: `finding-record.md`. Report observable state only; do not assert "written because the producer was absent" unless a comment says so.
+Executed by `tribunal-lens-reviewer` under the `test-fidelity` assignment. Write contract + evidence discipline: `finding-record.md`. Report observable state only; do not assert "written because the producer was absent" unless a comment says so.
+
+## Scope emphasis
+Test files and fixtures in the assigned slice. Doubles, fabricated literals, escape hatches, temporariness confessions.
+
+## Required reading
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — mock patterns, fixture/factory conventions, the real producers (serializers, DTOs, queries).
 
 ## Checklist
 - Tests validating fiction: mocks/stubs/fabricated literals that should now be sourced from a real producer. Signals: `vi.mock`/`jest.mock`, `mockReturnValue`/`mockResolvedValue`/`mockImplementation`, `sinon.stub`, manual doubles, large inline domain-typed literals in fixtures/`beforeEach`.

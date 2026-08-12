@@ -19,17 +19,11 @@ Read in full before writing any code:
 2. `<project-root>/.codearbiter/coding-standards.md` — naming, formatting rules, banned patterns
 3. `<project-root>/.codearbiter/security-controls.md` — security-boundary rules governing API calls and data handling
 4. `<plugin-root>/includes/anti-slop-design/INDEX.md`, then `core.md` and the `medium-web` leaf (plus the `typography`/`color`/`layout`/`images` craft leaves) — the design reference for any user-facing UI. Load lazily per the router; do not bulk-read the bundle
+5. `<plugin-root>/includes/author-tdd-workflow.md` — the six-step TDD execution order for every task. Read it; do not carry a remembered copy.
 
 ## TDD Workflow (Non-Negotiable)
 
-Fixed order. Do not skip or reorder.
-
-1. **Write failing tests** — one test per obligation in the Phase 1 checklist
-2. **Confirm tests fail for the right reason** — run the test command from `tech-stack.md`; the failure must match the obligation
-3. **Write minimum implementation** — only enough code to make the failing tests pass; no extra scope
-4. **Run full suite** — every test green
-5. **Run lint and type-check** — both clean
-6. **Stage for commit** — only after steps 1–5 complete
+Follow the six-step fixed order in `<plugin-root>/includes/author-tdd-workflow.md` for every task — failing tests first, minimum implementation, full suite, lint/type-check, only then stage.
 
 ## Required Test Coverage per Feature
 

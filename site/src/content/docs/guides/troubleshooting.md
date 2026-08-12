@@ -114,7 +114,7 @@ Pi has several distinct silent-inactivity states that look alike but have differ
 | Trust was just granted but still dormant | Trust was granted in the current session, not a fresh one | Start a new session after granting trust: the parent registers repository-aware dispatch only on a fresh session that reports the trust decision |
 | Mutating calls fail, or an interpreter breadcrumb appears | Python 3 not on `PATH` | Add Python 3 to `PATH`; `ca-pi` blocks mutating calls rather than failing silently when the interpreter is missing |
 | `/ca-<name>` doesn't do anything | Wrong invocation syntax | Pi uses `/ca-<name>` generated aliases with `/skill:ca-<name>` as the host-native fallback. This differs from Codex's `$ca-<name>` convention |
-| Doctor reports an unsupported version | Pi CLI is not 0.80.5 or 0.80.10 | Upgrade to Pi 0.80.5 or Pi 0.80.10, the only supported versions in this release line; see [Compatibility](/getting-started/compatibility/) |
+| Doctor reports an unsupported version | Pi CLI is not 0.80.5 or 0.84.1 | Upgrade to Pi 0.80.5 or Pi 0.84.1, the only supported versions in this release line; see [Compatibility](/getting-started/compatibility/) |
 
 ## Symptom Reference
 

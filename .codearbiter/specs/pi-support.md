@@ -199,7 +199,7 @@ operator to Pi's trust workflow and a new session. Project-local install remains
 Pi's own load-time trust rules and the same adapter authorization check.
 
 - Minimum supported Pi: `0.80.5` (source-derived capability floor; must pass the matrix).
-- Last live-verified Pi: `0.80.10`.
+- Last live-verified Pi: `0.84.1`.
 - Latest-canary lane: current npm `latest`, non-blocking until explicitly promoted to last-verified.
 - Minimum Node: `22.19.0` for Pi surfaces; existing Node-20 tools remain unchanged.
 - Python: supported Python 3 interpreters already covered by the cold-install matrix.
@@ -263,7 +263,7 @@ permission to lower full-parity acceptance.
    skills through synchronized root package metadata.
 6. **No runtime Pi dependency:** Distribution manifests contain no bundled/direct Pi runtime
    dependency and a module-identity test proves adapter imports resolve to the host Pi instance.
-7. **Version contract:** Pi `0.80.5` and `0.80.10` pass; an older Pi, Node below `22.19.0`, or missing
+7. **Version contract:** Pi `0.80.5` and `0.84.1` pass; an older Pi, Node below `22.19.0`, or missing
    Python returns an explicit diagnosis instead of partial activation. Latest-canary results report
    separately.
 8. **Dormancy:** A repo without enabled context receives no persona, enforcement, audit mutation, or

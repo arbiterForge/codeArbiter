@@ -120,18 +120,18 @@ async function materializedRequest(task = "task-secret-sentinel") {
   await mkdir(request.cwd, { recursive: true });
   await mkdir(dirname(request.piCliPath), { recursive: true });
   await writeFile(request.piCliPath, "// Task 6 Pi CLI fixture\n", "utf8");
-  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.80.10","bin":{"pi":"dist/cli.js"}}\n', "utf8");
+  await writeFile(resolve(piRoot, "package.json"), '{"name":"@earendil-works/pi-coding-agent","version":"0.84.1","bin":{"pi":"dist/cli.js"}}\n', "utf8");
   runnerMocks.resolveRuntimeIdentity.mockImplementation(async (candidate: string) => ({
     cliEntry: candidate,
     packageRoot: resolve(dirname(candidate), ".."),
-    version: "0.80.10",
+    version: "0.84.1",
   }));
   testValidation.set(request, {
     activeNodePath: process.execPath,
     packageRoot,
     resolveRuntimeIdentity: async (candidate: string) => {
       if (candidate !== request.piCliPath) throw new Error("counterfeit Pi CLI");
-      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "0.80.10" };
+      return { cliEntry: request.piCliPath, packageRoot: piRoot, version: "0.84.1" };
     },
   });
   return request;
@@ -151,7 +151,7 @@ async function materializedPathRequest(task = "task-secret-sentinel") {
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, "// Task 6 path fixture\n", "utf8");
   }
-  await writeFile(resolve(packageRoot, "package.json"), '{"name":"ca-pi","version":"0.1.0","type":"module"}\n', "utf8");
+  await writeFile(resolve(packageRoot, "package.json"), '{"name":"@arbiterforge/ca-pi","version":"0.1.0","type":"module"}\n', "utf8");
   await mkdir(resolve(packageRoot, "generated"), { recursive: true });
   await writeFile(resolve(packageRoot, "generated", "roles.json"), JSON.stringify([{
     name: "backend-author", classification: "author", charterPath: "agents/backend-author.md",
@@ -327,6 +327,64 @@ describe("Task 6 exact Pi child launch", () => {
     for (const [valid, invalid] of validAndInvalid) {
       expect(parseChildJsonLine(JSON.stringify(valid))).toEqual(valid);
       expect(() => parseChildJsonLine(JSON.stringify(invalid))).toThrow("schema");
+    }
+    // Pi 0.84.x widened the message schema with three optional fields:
+    // assistant `rawStopReason` (observed on the live wire rejecting every
+    // 0.84 child dispatch — promotion run 31352831520), assistant `deferred`
+    // (a DeferredHandle), and toolResult `usage`. Each validates strictly
+    // when present; unknown keys still fail closed.
+    const rawStopMessage = {
+      ...assistantMessage,
+      content: [{ type: "toolCall", id: "call-live", name: "bash", arguments: { command: "git add -A" } }],
+      stopReason: "toolUse",
+      responseId: "chatcmpl-live-tool",
+      rawStopReason: "tool_calls",
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "message_end", message: rawStopMessage })))
+      .toMatchObject({ type: "message_end" });
+    const deferredMessage = {
+      ...assistantMessage,
+      deferred: { provider: "openai", modelId: "gpt-test", api: "openai-completions", id: "resp-1", expiresAt: 1, pollAfterMs: 5, data: { row: 1 } },
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "message_end", message: deferredMessage })))
+      .toMatchObject({ type: "message_end" });
+    const usageToolResult = {
+      role: "toolResult", toolCallId: "call", toolName: "bash", content: [],
+      isError: false, timestamp: 1, usage: assistantMessage.usage,
+    };
+    expect(parseChildJsonLine(JSON.stringify({ type: "turn_end", message: assistantMessage, toolResults: [usageToolResult] })))
+      .toMatchObject({ type: "turn_end" });
+    for (const widenedInvalid of [
+      { type: "message_end", message: { ...assistantMessage, rawStopReason: 7 } },
+      { type: "message_end", message: { ...assistantMessage, deferred: { provider: "openai", modelId: "m", api: "a", id: "i", injected: true } } },
+      { type: "message_end", message: { ...assistantMessage, deferred: { provider: "openai", modelId: "m", api: "a" } } },
+      { type: "turn_end", message: assistantMessage, toolResults: [{ ...usageToolResult, usage: { input: "ten" } }] },
+      { type: "message_end", message: { ...assistantMessage, futureField: true } },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(widenedInvalid))).toThrow("schema");
+    }
+    // Pi 0.84.0 made RPC message_update delta-only (pi#7290): the wire event
+    // drops the full `message` record and strips `partial` from the assistant
+    // event. Both window shapes are accepted strictly; hybrids of known keys
+    // remain valid, everything else still fails closed.
+    for (const deltaOnly of [
+      { type: "message_update", assistantMessageEvent: { type: "start" } },
+      { type: "message_update", assistantMessageEvent: { type: "toolcall_start", contentIndex: 0 } },
+      { type: "message_update", assistantMessageEvent: { type: "text_delta", contentIndex: 0, delta: "hi" } },
+      { type: "message_update", assistantMessageEvent: { type: "text_end", contentIndex: 0, content: "hi" } },
+      { type: "message_update", assistantMessageEvent: { type: "toolcall_end", contentIndex: 0, toolCall: { type: "toolCall", id: "call", name: "bash", arguments: {} } } },
+    ]) {
+      expect(parseChildJsonLine(JSON.stringify(deltaOnly))).toMatchObject({ type: "message_update" });
+    }
+    for (const stillInvalid of [
+      { type: "message_update" },
+      { type: "message_update", assistantMessageEvent: { type: "start" }, extra: 1 },
+      { type: "message_update", assistantMessageEvent: { type: "start", extra: 1 } },
+      { type: "message_update", assistantMessageEvent: { type: "text_delta", contentIndex: 0, delta: "hi", injected: true } },
+      { type: "message_update", assistantMessageEvent: { type: "text_delta", contentIndex: -1, delta: "hi" } },
+      { type: "message_update", assistantMessageEvent: { type: "unknown_event" } },
+    ]) {
+      expect(() => parseChildJsonLine(JSON.stringify(stillInvalid))).toThrow("schema");
     }
     for (const scratch of [
       { partialArgs: '{"command":"' },
@@ -1011,7 +1069,7 @@ describe("Task 6 exact Pi child launch", () => {
     const request = await materializedRequest();
     runnerMocks.resolveRuntimeIdentity.mockImplementationOnce(async (candidate: string) => {
       controller.abort();
-      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "0.80.10" };
+      return { cliEntry: candidate, packageRoot: resolve(dirname(candidate), ".."), version: "0.84.1" };
     });
     expect(await runPiChild(request as never, controller.signal)).toEqual({
       terminal: "degraded",
