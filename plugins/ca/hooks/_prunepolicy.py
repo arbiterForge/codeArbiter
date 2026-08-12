@@ -73,6 +73,16 @@ class SemanticEntry:
     byte_size: int
     tool_bearing: bool = False
     marked: bool = False
+    # R-5 / AC-26 (#437, mode-plane-deterministic-flip): True for the entry
+    # carrying an injected persona (`_modelib.PERSONA_SENTINEL` -- set by the
+    # codec that builds SemanticEntry values, e.g. `_prunelib.build_index`,
+    # T-50). A pinned entry is retained at EVERY tier including aggressive,
+    # regardless of where it sits relative to the recent-turn protected tail
+    # -- see plan_prune below. Distinct from `marked`: `marked` means "already
+    # condensed by a prior pass" (still eligible to be LEFT alone, but not
+    # load-bearing the way a pin is); `pinned` means "must never be folded,
+    # condensed, or evicted," full stop.
+    pinned: bool = False
 
 
 @dataclass(frozen=True)
@@ -198,11 +208,19 @@ def plan_prune(entries, policy):
     if [entry.ordinal for entry in entries] != list(range(len(entries))):
         raise ValueError("semantic entry ordinals must be contiguous and ordered")
     boundary = protected_ordinal(entries, policy.keep_recent)
-    protected = tuple(entry.id for entry in entries if entry.ordinal >= boundary)
+    # AC-26: a pinned entry (the injected persona) is protected regardless of
+    # ordinal -- it need not sit in the recent-turn tail at all (the persona
+    # is typically injected once, early, and stays pinned for the rest of the
+    # session). Protection holds at EVERY tier, including aggressive: pinning
+    # is checked before tier selection even runs, so no strategy set can ever
+    # reach a pinned entry.
+    protected = tuple(entry.id for entry in entries
+                      if entry.ordinal >= boundary or entry.pinned)
     selected = select_strategies(policy.tier, policy.strategies)
     actions = tuple((entry.id, _action_for(entry, selected, policy))
-                    for entry in entries if entry.ordinal < boundary)
-    marked = sum(1 for entry in entries if entry.ordinal < boundary and entry.marked)
+                    for entry in entries if entry.ordinal < boundary and not entry.pinned)
+    marked = sum(1 for entry in entries
+                if entry.ordinal < boundary and not entry.pinned and entry.marked)
     metrics = {
         "entries_before": len(entries),
         "candidate_entries": boundary,

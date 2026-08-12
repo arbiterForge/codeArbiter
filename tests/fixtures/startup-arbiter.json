@@ -1,0 +1,22 @@
+{
+  "mode": "arbiter",
+  "host_name": "claude",
+  "ctx_text": "<!--INITIALIZED-->\nstage: 3\n",
+  "oq_text": "- CONFIRM-07: resolve the widget question\n- an unrelated open note\n",
+  "ot_text": "- [ ] 2026-08-01 write the startup-emitter fixture\n- [x] an already-done thing\n",
+  "drift_line": "codeArbiter: 1 doc(s) may be stale relative to source — see .codearbiter/CONTEXT.md",
+  "update_line": "codeArbiter: v9.9.9 is available (installed v1.0.0) — update via your plugin marketplace",
+  "today": "2026-08-12",
+  "expected_lines": [
+    "=== codeArbiter startup state ===",
+    "host: claude",
+    "mode: arbiter",
+    "stage: 3",
+    "BLOCKING questions (CONFIRM-NN): 1 — must resolve before dependent work proceeds:",
+    "  - CONFIRM-07: resolve the widget question",
+    "in-flight tasks: 1",
+    "codeArbiter: 1 doc(s) may be stale relative to source — see .codearbiter/CONTEXT.md",
+    "codeArbiter: v9.9.9 is available (installed v1.0.0) — update via your plugin marketplace",
+    "Present this state, then await a fake-command. Type $$fake-commands for the catalog."
+  ]
+}

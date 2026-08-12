@@ -47,14 +47,34 @@ def staleness_check(payload):
     Only runs when the repo has opted in (arbiter_active). Best-effort: ANY
     failure (missing _hooklib import, a broken root, an unreadable marker)
     degrades to doing nothing — this must never affect prune-transcript.py's
-    hook-mode exit code (always 0) or block the user's prompt."""
+    hook-mode exit code (always 0) or block the user's prompt.
+
+    [[NEEDS-TRIAGE root-resolution split]] (#437, found by Lane F, closed
+    here by Lane E — the ruling covers every site touching mode/marker
+    state, not just this one; see session-start.py's clear_mode_marker
+    module docstring for the sibling fix and the shared rationale). This
+    used to resolve `project_root(payload)` — a LINKED WORKTREE's own
+    checkout — but the flows `_hooklib.staleness_warning` inspects
+    (`.codearbiter/.markers/mode`, the sprint marker) live at `marker_root`,
+    which ESCALATES to the MAIN checkout in a linked worktree (#604):
+    `.codearbiter/.markers/` is gitignored, so a linked worktree's own
+    checkout never has a fresh copy. A genuinely stale non-arbiter session
+    recorded in the main checkout's mode marker was silently invisible to
+    this WARN whenever this hook ran from inside a worktree — quiet exactly
+    where #604 says it must not be, and this repo runs worktree agents
+    routinely. `.codearbiter/CONTEXT.md` (the arbiter_active check) is a
+    normal tracked file present in every checkout including a worktree's
+    own, so resolving IT through marker_root too changes nothing outside a
+    worktree and is the one root every mode/marker-touching caller should
+    share, per the ruling."""
     try:
         import _hooklib
         # Resolve through the host seam (ADR-0011), not the raw payload cwd —
         # a session whose cwd is a repo subdirectory must still resolve the
         # repo root (CLAUDE_PROJECT_DIR -> payload cwd -> git toplevel ->
-        # process cwd), or this WARN silently never fires (#264).
-        root = _hooklib.get_host().project_root(payload)
+        # process cwd), or this WARN silently never fires (#264). marker_root
+        # (not project_root): see the root-resolution-split note above.
+        root = _hooklib.get_host().marker_root(payload)
         if not _hooklib.arbiter_active(root):
             return
         for msg in _hooklib.staleness_warning(root):

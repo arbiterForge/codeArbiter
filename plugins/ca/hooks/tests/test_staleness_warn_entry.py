@@ -157,34 +157,26 @@ class TestStalenessCheckFunction(_Fixture):
         self.assertIn("codeArbiter hook:", buf.getvalue())
         self.assertIn("CONFIRM-09", buf.getvalue())
 
-    @unittest.expectedFailure
-    def test_linked_worktree_mode_marker_is_missed_by_project_root_resolution(self):
-        """KNOWN DEFECT (found while repointing this file for #437,
-        mode-plane-deterministic-flip — the same class of bug the plan's own
-        [NEEDS-TRIAGE] "ROOT-RESOLUTION SPLIT" item names for
-        session-start.py, here in `prune-transcript.py` instead).
+    def test_linked_worktree_mode_marker_is_found_via_marker_root_resolution(self):
+        """FIXED (#437, mode-plane-deterministic-flip, Lane E — the same
+        root-resolution-split ruling applied to session-start.py's
+        clear_mode_marker, extended to this second site once Lane F found
+        it). Was `@unittest.expectedFailure` / KNOWN DEFECT; flipped to a
+        real passing assertion now that `staleness_check` resolves its root
+        via `_hooklib.get_host().marker_root(payload)` instead of
+        `project_root(payload)`.
 
-        `staleness_check` resolves its root via
-        `_hooklib.get_host().project_root(payload)` (prune-transcript.py:57)
-        — a LINKED WORKTREE's own checkout. But the mode marker itself is
-        written and read at `marker_root` (`_modelib.mode_marker_path`),
-        which ESCALATES to the MAIN checkout in a linked worktree (#604) —
-        `.codearbiter/.markers/` is gitignored, so a linked worktree's own
-        checkout never has a fresh copy of it. In a linked worktree these
-        are two DIFFERENT directories, so a genuinely stale non-arbiter
-        session recorded in the main checkout's mode marker is silently
-        invisible to this WARN when prune-transcript.py runs from the
-        worktree — the CONFIRM-09 staleness signal goes quiet exactly where
-        #604 says it must not, and this repo runs worktree agents routinely.
-
-        `@unittest.expectedFailure`, not a fix: `prune-transcript.py`'s root
-        resolution is out of this file's #437 grant (Lane F owns the
-        `_STALE_FLOWS` rename in `_hooklib.py`, not the caller's root
-        resolution) — repointing `staleness_check` onto `marker_root` is a
-        one-line fix for whoever owns `prune-transcript.py` next. This test
-        exists so that fix has a red-to-green target, and so the defect
-        cannot be closed by accident: an unexpected PASS here (XPASS) is
-        itself the signal that someone shipped it.
+        `staleness_check` used to resolve a LINKED WORKTREE's own checkout.
+        But the mode marker itself is written and read at `marker_root`
+        (`_modelib.mode_marker_path`), which ESCALATES to the MAIN checkout
+        in a linked worktree (#604) — `.codearbiter/.markers/` is
+        gitignored, so a linked worktree's own checkout never has a fresh
+        copy of it. In a linked worktree these used to be two DIFFERENT
+        directories, so a genuinely stale non-arbiter session recorded in
+        the main checkout's mode marker was silently invisible to this WARN
+        when prune-transcript.py ran from the worktree — the CONFIRM-09
+        staleness signal went quiet exactly where #604 says it must not,
+        and this repo runs worktree agents routinely.
         """
         worktree_root = os.path.join(self._tmp.name, "worktree")
         os.makedirs(worktree_root)

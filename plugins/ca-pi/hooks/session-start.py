@@ -34,8 +34,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin root + capability flags
 from _durabilitylib import is_ephemeral_path  # noqa: E402
 from _hooklib import (  # noqa: E402
-    frontmatter_enabled, get_host, project_root, set_host, utf8_stdio,
-    write_text_atomic,
+    frontmatter_enabled, get_host, marker_root, project_root, set_host,
+    utf8_stdio, write_text_atomic,
 )
 from _standuplib import (  # noqa: E402
     any_actionable,
@@ -52,8 +52,12 @@ import _provenancelib  # noqa: E402 — shared provenance drift detection (T-16)
 import _updatelib  # noqa: E402 — update-available notifier (cache read + notice text)
 # T-06 (#437): the write-ahead audit-close ledger moved to _modelib.py — see
 # that module's docstring. `_DEV_PENDING_CLOSE_MAX` is re-imported because a
-# pre-existing test reads it off this module's namespace.
+# pre-existing test reads it off this module's namespace. T-42/T-47 (#437,
+# mode-plane-deterministic-flip): the mode plane itself (MODES, current_mode,
+# write_mode, the audit-line builder) is imported as a module so every call
+# site stays explicit about which layer it is calling into.
 from _modelib import _DEV_PENDING_CLOSE_MAX, _settle_dev_close  # noqa: E402,F401
+import _modelib  # noqa: E402
 
 INITIALIZED_RE = re.compile(r"<!--\s*INITIALIZED\s*-->")
 STAGE_RE = re.compile(r"^stage:\s*([0-9]+)", re.I | re.M)
@@ -554,118 +558,163 @@ def _write_dev_session_owner(root, session_id, ts):
 
 # --- #396/T-06: write-ahead ledger machinery extracted to _modelib ----------
 # `_settle_dev_close` and its pending-close record (the durable, retryable
-# DEV: exit machinery) moved to `_modelib.py` (mode-plane-deterministic-flip
-# #437, imported at module top) — that module now owns the mode plane's
-# audit-close ledger generally, and this SessionStart-specific caller
-# (`clear_dev_marker` below) is its only consumer left in this file. Pure
-# move, no behavior change — see `_modelib.py`'s module docstring.
+# exit machinery) moved to `_modelib.py` (mode-plane-deterministic-flip #437,
+# imported at module top) — that module now owns the mode plane's audit-close
+# ledger generally; `clear_mode_marker` below is its SessionStart-specific
+# caller. Pure move, no behavior change to the ledger itself — see
+# `_modelib.py`'s module docstring.
+#
+# T-42/T-47 (#437): `clear_mode_marker` is now the SINGLE SessionStart-time
+# settlement pass over BOTH the mode plane's session-keyed entries (T-42/
+# AC-4) and the legacy repo-global `dev-active` marker (T-47/AC-41) — merged
+# into one function DELIBERATELY, not left as two. An earlier draft split
+# them; both independently called `_read_dev_session_owner`/
+# `_write_dev_session_owner`, and because main() had to run one before the
+# other, the FIRST function's write leaked into the SECOND function's read
+# within the same invocation — a first-ever session with an orphaned legacy
+# marker was wrongly recognised as "the confirmed owner, resuming" (self-
+# defeating T-47's own force-close-when-abandoned contract). One function,
+# one read of the owner record per invocation, removes the seam entirely.
+#
+# The owner-liveness heuristic (prev_sid/prev_ts, DEV_SESSION_LIVENESS_WINDOW)
+# is VERBATIM the pre-#437 `clear_dev_marker`'s own contract (see the module
+# comment above DEV_SESSION_LIVENESS_WINDOW) — this function is that
+# function's direct successor, not a new mechanism. Its `is_owner` branch has
+# ONE new consequence: when the confirmed owner resumes and the legacy
+# marker is STILL live, this is exactly when T-47's conversion fires — write
+# a `dangerous` mode entry for the owner and remove the legacy marker,
+# instead of leaving it untouched forever. No audit row is minted for that
+# conversion: the historical `DEV: enter` row already on the trail keeps
+# backing `dangerous` via `_modelib.ledger_backs`'s legacy acceptance
+# (AC-11) — minting a fresh `MODE: dangerous enter` would misrepresent a
+# storage-format migration as a new operator-initiated transition. Everything
+# ELSE (force-close on an abandoned marker, the liveness window, the
+# unconditional-clear degrade with no session_id/no prior record) is
+# unchanged and is exercised by the SAME test corpus the pre-#437 code was:
+# `TestDevExitAudit` and `TestDevExitRetryablePendingClose`
+# (plugins/ca/hooks/tests/test_session_start.py) — repointed at this
+# function's new name, with exactly two assertions updated where the
+# observable OUTCOME changed (the owner-resume case now converts+removes
+# instead of leaving the marker untouched — see that file for the reasoning
+# on each).
+#
+# A session_id that is NOT recognised as the current owner clears only ITS
+# OWN prior mode-plane entry (T-42), never a different session's — a force-
+# close-other-sessions engine over the MODE PLANE is out of scope (residual:
+# an abandoned foreign session's mode entry can linger indefinitely; nothing
+# UNSAFE follows, since no live session ever reads a dead session_id's mode
+# again). The LEGACY marker's force-close is the one exception, inherited
+# unchanged from the pre-#437 contract: it has no session identity of its
+# own to preserve, so an abandoned marker is safe to close on any session's
+# behalf once the liveness window has genuinely elapsed.
+#
+# CROSS-LANE NOTE for Lane B (prompt-submit.py, AC-23/24/25): this function
+# treats a SessionStart re-fire for the SAME session_id as a "resume/compact
+# heartbeat" and does NOT clear mode-plane state in that case — i.e. mode is
+# designed to SURVIVE compaction for the owning session. No `source` field
+# (startup vs. resume vs. compact) is read from the hook payload anywhere in
+# this repo today (verified by grep before writing this) — the owner-
+# liveness heuristic is a durable proxy for it, not the real signal, so it
+# is imprecise in the same documented way the pre-#437 heuristic always was.
+# If Lane B's AC-25 test seeds a DIFFERENT session_id per "turn" rather than
+# reusing one across a simulated compaction, that test will observe mode
+# reset to arbiter here — please confirm your fixture reuses session_id.
 
 
-def clear_dev_marker(root, host_name=None, session_id=None, now=None):
-    """Clear the per-session /dev statusline marker on startup. If the marker is
-    LIVE (a prior session entered /ca:dev and ended without /ca:arbiter), append a
-    synthetic DEV: exit line to overrides.log BEFORE removing it
-    (observability-001) — otherwise the audit trail keeps an orphaned DEV: enter
-    with no matching close. Append-only (it never rewrites); best-effort — a write
-    or remove failure must never brick session startup.
-
-    #396: "best-effort" is no longer "best-effort ONCE". The close is routed
-    through _settle_dev_close, which stages the owed line durably before
-    attempting the append and clears that retry state only after the append is
-    confirmed — so a locked/failing overrides.log leaves a replayable record
-    instead of an orphaned DEV: enter. Startup itself still fails OPEN: this
-    function returns normally on every path, exactly as before.
-
-    `host_name` (observability-001/ADR-0012) is the resolved host's `.name`
-    ("claude"/"codex"/"unknown"), so the synthetic close line is attributable to
-    the host that wrote it now that three hosts share one overrides.log
-    (ADR-0011). Optional and defaults to resolving it here via `get_host()`
-    (#257) — main() already holds a Host instance and passes its `.name`
-    through to avoid a second resolution, but any other caller (tests
-    included) may omit it.
-
-    `session_id` (#271 C-5) is THIS invocation's own session id from the
-    SessionStart hook payload, when the host supplies one. See the module
-    comment above `DEV_SESSION_LIVENESS_WINDOW` for the full session-scoping
-    contract: a live marker is only force-closed when there is no reason to
-    believe a DIFFERENT, still-running session currently owns it — and the
-    ownership record's timestamp is refreshed ONLY by the owner itself (never
-    by an unrelated session merely observing the marker), so the liveness
-    window is anchored to the owner's last activity, not reset by every
-    passerby SessionStart. `now` (epoch seconds) is injectable for
-    deterministic tests; defaults to `time.time()`."""
+def clear_mode_marker(root, host_name=None, session_id=None, now=None):
+    """The single SessionStart-time mode-plane + legacy-dev-active
+    settlement pass. See the module comment above for the full contract and
+    why this was merged from two functions into one. `now` (epoch seconds)
+    is injectable for deterministic tests; defaults to `time.time()`. Never
+    raises."""
     now = time.time() if now is None else now
     prev_sid, prev_ts = _read_dev_session_owner(root)
-
     marker = os.path.join(root, ".codearbiter", ".markers", "dev-active")
     marker_live = os.path.isfile(marker)
+    is_owner = bool(session_id) and prev_sid == session_id
 
+    if is_owner:
+        # The confirmed owner, resuming/compacting: heartbeat, and
+        # opportunistically CONVERT a still-live legacy marker (T-47) — the
+        # mode-plane entry (if any, set via a direct flip through Lane B's
+        # surface) stays untouched either way, which is what lets AC-25
+        # re-inject the SAME mode's persona after a compaction.
+        _write_dev_session_owner(root, session_id, now)
+        if marker_live and _modelib.write_mode(session_id, "dangerous", root=root):
+            try:
+                os.remove(marker)
+            except OSError:
+                # The conversion landed; a leftover legacy file is harmless
+                # — the NEXT is_owner pass just retries the removal (write_
+                # mode(session_id, "dangerous") is idempotent).
+                pass
+        return
+
+    # Not the recognised owner. Two independent settlements follow.
+
+    # (1) T-42/AC-4: clear session_id's OWN mode-plane entry, if any — never
+    # a different session's (see the module comment's force-close-scope
+    # note). Independent of the legacy marker's liveness window below.
+    if session_id:
+        mode, _diag = _modelib.current_mode(session_id, root=root)
+        if mode != _modelib.MODES[0]:
+            if host_name is None:
+                try:
+                    # get_host() (#257): resolves the SAME Host run(host)
+                    # injected instead of a second load.
+                    host_name = get_host().name
+                except Exception:  # noqa: BLE001 — must never brick session startup
+                    host_name = "unknown"
+            # T-43/AC-35: this line names NO command — unlike the retired
+            # clear_dev_marker's `cmd_ref("arbiter")` (which stamped a
+            # permanent dangling reference into overrides.log once
+            # `/ca:arbiter` was deleted), _modelib._mode_audit_line's NOTE
+            # is a bare "—".
+            line = _modelib._mode_audit_line("exit", mode, host_name=host_name, now=now)
+            # #396: stage-then-append BEFORE the state mutation below, so an
+            # interruption between them leaves the row owed and replayable
+            # rather than silently lost.
+            _settle_dev_close(root, new_line=line, host_name=host_name)
+            _modelib.write_mode(session_id, _modelib.MODES[0], root=root)
+
+    # (2) T-47/legacy: the dev-active marker's owner-liveness-gated
+    # force-close — verbatim the pre-#437 `clear_dev_marker` contract.
     if not marker_live:
-        # No live marker: this record is purely "who could next enter /dev" —
-        # any session refreshing it is harmless and correct. Nothing else to
-        # do — there is no marker to clear, but a close owed by an EARLIER
-        # session whose append failed is still replayed here (#396); that is
-        # precisely the case the old code could never recover from.
-        #
-        # `host_name` is passed through as-is (it only attributes the
-        # cap-overflow note) rather than resolved here: main() already hands
-        # the real host name down, and this branch is the overwhelmingly
-        # common one — it must not pay for a host resolution on every startup.
+        # No live marker: replay anything already owed from an earlier
+        # crash (#396), and record this session as a candidate future owner
+        # — harmless, and exactly what let a later invocation recognise it.
         _settle_dev_close(root, host_name=host_name)
         if session_id:
             _write_dev_session_owner(root, session_id, now)
         return
 
     if session_id and prev_sid:
-        if prev_sid == session_id:
-            # The owner itself, resuming/compacting mid-dev — refresh ITS OWN
-            # heartbeat (this is the only case where a write is safe while the
-            # marker is live) and leave the marker untouched.
-            #
-            # #396: deliberately NO _settle_dev_close here or in the sibling
-            # branch below. Both return with the marker still LIVE, and a
-            # pending record naming a live marker doubles as the "this marker
-            # has already been closed in the trail" tombstone — settling it
-            # against a marker we are not allowed to touch would discard that
-            # tombstone and let a later force-close mint a duplicate row. Any
-            # owed line simply waits for a session that is entitled to act.
-            _write_dev_session_owner(root, session_id, now)
-            return
+        # is_owner was already False above, so prev_sid != session_id here:
+        # a DIFFERENT, possibly still-live session owns this marker.
         if (now - prev_ts) < DEV_SESSION_LIVENESS_WINDOW:
-            # A different session, and the OWNER's own clock hasn't elapsed
-            # yet — do NOT touch the record (an unrelated observer must never
-            # reset a clock it doesn't own) and do not clobber the marker.
+            # The owner's own clock hasn't elapsed yet — do not touch the
+            # record or the marker.
             return
-        # Different session AND the owner's own record is stale beyond the
-        # window: proceed to the force-close below. Deliberately do not write
-        # a fresh record here either — there is no live owner left to anchor
-        # a new one to; the write happens naturally next time /dev is entered.
+        # Stale beyond the window: proceed to force-close below. Deliberately
+        # do not write a fresh owner record here either — there is no live
+        # owner left to anchor a new one to.
 
     if session_id and not prev_sid:
-        # No prior record at all (first session ever, or a dropped record) —
-        # no signal to protect a concurrent owner; seed the record for next
-        # time and fall through to the pre-#271 unconditional-clear behavior.
+        # No prior record at all — no signal to protect a concurrent owner;
+        # seed the record for next time and fall through to force-close.
         _write_dev_session_owner(root, session_id, now)
 
     # Force-close: either no session_id/no prior record (unconditional-clear
     # fallback), or a genuinely stale owner beyond the window.
     if host_name is None:
         try:
-            # get_host() (#257), not a direct hostapi.load_host(): resolves
-            # the SAME Host run(host) injected instead of a second load.
             host_name = get_host().name
         except Exception:  # noqa: BLE001 — must never brick session startup
             host_name = "unknown"
-    try:
-        arbiter_ref = get_host().cmd_ref("arbiter")
-    except Exception:  # noqa: BLE001 — must never brick session startup
-        arbiter_ref = "/ca:arbiter"
     ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     line = (f"[{ts}] | BY: session-cleanup | HOST: {host_name} | DEV: exit | NOTE: cleared by "
-            f"SessionStart (prior session ended mid-dev without {arbiter_ref})\n")
-    # #396: stage-then-append-then-clear, all inside one settlement step. The
-    # append is no longer a fire-and-forget `except OSError: pass` followed by
-    # an unconditional marker delete — the owed line outlives a failed write.
+            f"SessionStart (prior session ended mid-dev with no live owner)\n")
+    # #396: stage-then-append-then-clear, all inside one settlement step.
     _settle_dev_close(root, marker=marker, new_line=line, host_name=host_name)
 
 
@@ -763,23 +812,162 @@ def _session_id_from_stdin():
         return ""
 
 
+# --------------------------------------------------------------------------- #
+# T-44 (#437): startup-state emitters. `session-start.py:1091-1195` (pre-#437)
+# printed everything after the persona unconditionally, gated only on
+# frontmatter — SMARTS ruled (strength `strong`, plan alternatives-considered)
+# against wholesale mode-based suppression and FOR decomposing into per-mode
+# COMPOSABLE emitters instead: the block is eight independent things with
+# different audiences (banner, stage:, CONFIRM-NN, task summary, provenance
+# drift, update notice, trailer, daily briefing), and the lines wholesale
+# suppression would remove are precisely the ones a gates-off session most
+# needs (Securable).
+#
+# Each emitter below is INDIVIDUALLY CALLABLE (AC-30) with its own explicit
+# inputs — no hidden env/global/clock reads inside any of them (a `today`/
+# `now` argument is always accepted for injection) — and prints directly,
+# mirroring this file's pre-existing style (`render_full_briefing` already
+# printed rather than returning lines; T-44 does not change that convention,
+# only names and isolates each piece so it can be exercised alone).
+# --------------------------------------------------------------------------- #
+
+
+def emit_banner(host_name, mode):
+    """AC-32: host + active mode — emitted in EVERY mode, unconditionally."""
+    print(f"host: {host_name}")
+    print(f"mode: {mode}")
+
+
+def emit_not_initialized(root, host, mode):
+    """The NOT-INITIALIZED early-exit banner — mode-aware TEXT, not an
+    unconditional print (a non-arbiter mode has no commands, so instructing
+    the user to run {create-context}/{decompose}/{commands} would name a
+    surface that mode cannot use)."""
+    if mode != _modelib.MODES[0]:
+        print("NOT INITIALIZED: this repo has not opted into codeArbiter's "
+              "governance workflow. No commands are available in this mode.")
+        return
+    if has_source(root):
+        print(f"NOT INITIALIZED: source exists but .codearbiter/CONTEXT.md is a stub. "
+              f"Run {host.cmd_ref('create-context')} before any other command.")
+    else:
+        print(f"NOT INITIALIZED: empty project. Run {host.cmd_ref('decompose')} to begin.")
+    print(f"Type {host.cmd_ref('commands')} for the catalog.")
+
+
+def emit_stage(ctx_text):
+    """AC-32: 'stage: N' — emitted in EVERY mode, unconditionally."""
+    m = STAGE_RE.search(ctx_text)
+    print(f"stage: {m.group(1) if m else '—'}")
+
+
+def emit_confirm_nn(oq_text):
+    """[CONFIRM-NN] surfacing — pinned ON in every mode (never gated on mode:
+    SMARTS's decisive Securable finding is that this is precisely what a
+    gates-off session most needs). `oq_text` of None (file unreadable/absent)
+    emits nothing, matching the pre-#437 behavior."""
+    if oq_text is None:
+        return
+    confirms = CONFIRM_RE.findall(oq_text)
+    if confirms:
+        print(f"BLOCKING questions (CONFIRM-NN): {len(confirms)} — must resolve before "
+              f"dependent work proceeds:")
+        for ln in oq_text.splitlines():
+            if CONFIRM_RE.search(ln):
+                print(f"  {ln}")
+    else:
+        print("open questions: 0")
+
+
+def emit_task_summary(ot_text, today=None):
+    """The open-tasks summary. `today` is injectable for deterministic tests;
+    defaults to the real local date at the I/O edge. `ot_text` of None
+    (file unreadable/absent) emits nothing, matching the pre-#437 behavior."""
+    if ot_text is None:
+        return
+    today = today if today is not None else datetime.date.today()
+    try:
+        for _line in _taskboardlib.startup_summary(ot_text, today):
+            print(_line)
+    except Exception as _e:  # noqa: BLE001 — never crash session startup
+        n = sum(1 for ln in ot_text.splitlines()
+                if ln.startswith("- ") and not ln.startswith("- [x]"))
+        print(f"in-flight tasks: {n}")
+        print(f"codeArbiter: task-board summary degraded ({_e}); "
+              f"check .codearbiter/open-tasks.md", file=sys.stderr)
+
+
+def emit_provenance_drift(drift_line):
+    """The passive provenance-drift notice — ONE line, or none."""
+    if drift_line:
+        print(drift_line)
+
+
+def emit_update_notice(update_line):
+    """The update-available notice — ONE line, or none."""
+    if update_line:
+        print(update_line)
+
+
+def emit_trailer(host):
+    """AC-32: the await-a-command trailer + catalog reference. ARBITER-ONLY —
+    the caller omits this emitter entirely for a non-arbiter startup (a mode
+    with no commands has nothing to 'await')."""
+    print(f"Present this state, then await a {host.command_noun}. "
+          f"Type {host.cmd_ref('commands')} for the catalog.")
+
+
+def emit_daily_briefing(root, summary, date_iso, marker_present, ctx_text=None,
+                         ot_text=None, oq_text=None, host=None):
+    """The daily standup briefing (full/offer/none). AC-32: ARBITER-ONLY —
+    the caller omits this emitter entirely for a non-arbiter startup (every
+    variant of it references {standup}, a command that mode does not have).
+
+    Returns the resolved kind ("full"/"offer"/"none") so the caller knows
+    whether to persist the standup marker — writing that marker is a state
+    mutation kept OUT of this function so its printed output stays a pure
+    function of its inputs (AC-30)."""
+    kind = briefing_mode(marker_present, any_actionable(summary))
+    if kind == "full":
+        print()
+        print(f"=== codeArbiter daily briefing ({date_iso}) ===")
+        print("First session of the day. Daily standup briefing (read-only).")
+        render_full_briefing(root, summary, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
+    elif kind == "offer":
+        print(OFFER_LINE_TEMPLATE.format(standup=(host or get_host()).cmd_ref("standup")))
+    return kind
+
+
 def main():
     utf8_stdio()
     # get_host() (#257): resolves the SAME Host run(host) already primed via
     # set_host(), instead of a second hostapi.load_host() disk/probe.
     host = get_host()
     root = project_root()
+    # [[NEEDS-TRIAGE root-resolution split]] (#437, found by Lane A, closed
+    # here by Lane E): `_modelib.flip()` (prompt-submit.py, Lane B) resolves
+    # BOTH the mode marker and the `MODE: … enter` audit row through
+    # `marker_root`, not `project_root` — `marker_root` exists precisely
+    # because `project_root` splits marker state across linked worktrees
+    # (#604). The close/exit half written by THIS file must resolve the
+    # SAME way, or an `enter` row and its matching `exit` row can land in
+    # two DIFFERENT overrides.log files when this hook runs inside a linked
+    # worktree. `mode_root` is therefore used for every mode-plane read/write
+    # below (clear_mode_marker, current_mode) — `root` (project_root) stays
+    # the source-tree root for everything else (has_source, the task board,
+    # provenance, git hygiene).
+    mode_root = marker_root()
     plugin = host.plugin_root()
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
     session_id = _session_id_from_stdin()
 
-    # /dev developer-override is per-session: clear its statusline marker on
-    # startup — a new session restores orchestration. A live marker means a prior
-    # session never ran /ca:arbiter, so close the DEV audit pair before clearing.
-    # session_id (#271 C-5) lets this distinguish "the same session resuming"
-    # and "a different, possibly still-live session" from a genuinely
-    # abandoned marker — see clear_dev_marker's docstring.
-    clear_dev_marker(root, host.name, session_id)
+    # T-42/T-47 (#437): the single mode-plane settlement pass — see the
+    # module comment above clear_mode_marker for the full contract
+    # (owner-liveness heuristic, the merged dev-active migration, the
+    # cross-lane note for Lane B's compaction test).
+    clear_mode_marker(mode_root, host.name, session_id)
+    mode, _mode_diag = (_modelib.current_mode(session_id, root=mode_root)
+                         if session_id else (_modelib.MODES[0], None))
 
     # Self-heal a stale ca-owned statusLine pin before the dormant gate: the
     # statusline is wired GLOBALLY in ~/.claude/settings.json, so a plugin update
@@ -828,122 +1016,84 @@ def main():
                 or os.environ.get("CODEARBITER_PYTHON_EXECUTABLE")):
             raise
 
-    # --- Arbiter active: inject persona ---
-    orch = os.path.join(plugin, "ORCHESTRATOR.md")
-    orch_text = read_text(orch)
-    if orch_text is not None:
-        sys.stdout.write(orch_text)
-        print()
-    else:
-        print(f"codeArbiter: ORCHESTRATOR.md not found at {orch} — persona not injected. "
-              f"Check CLAUDE_PLUGIN_ROOT.", file=sys.stderr)
+    # T-41 (#437, AC-27): persona injection REMOVED from SessionStart. It
+    # moves to the per-turn prompt seam (Lane B, prompt-submit.py) — the
+    # persona is now `safety-core.md` + the active mode's body, composed and
+    # deduped per (session, mode, compaction generation). SessionStart fires
+    # once per session boundary (and on compact), so it cannot react to a
+    # mid-session mode flip; the per-turn seam can. This hook still emits the
+    # startup-state block below, unconditionally of mode (AC-27: "injects no
+    # persona and still emits the startup-state block").
 
-    # --- Inject live startup state ---
+    # --- Startup-state block: per-mode composable emitters (T-44) ---------
+    # AC-30: each emitter below is individually callable with only its own
+    # explicit inputs. AC-32: host/stage/active-mode are unconditional in
+    # every mode; the await-a-command trailer and the daily briefing (which
+    # references {standup}) are ARBITER-ONLY.
     print("=== codeArbiter startup state ===")
     # observability-004 (#268): name the RESOLVED host so a dormant/broken
     # host (FailClosedHost -> name "unknown", #255) is visible right in the
     # banner instead of being indistinguishable from a working install.
-    print(f"host: {getattr(host, 'name', 'unknown')}")
+    emit_banner(getattr(host, "name", "unknown"), mode)
 
     ctx_text = read_text(ctx) or ""
     if not INITIALIZED_RE.search(ctx_text):
-        if has_source(root):
-            print(f"NOT INITIALIZED: source exists but .codearbiter/CONTEXT.md is a stub. "
-                  f"Run {host.cmd_ref('create-context')} before any other command.")
-        else:
-            print(f"NOT INITIALIZED: empty project. Run {host.cmd_ref('decompose')} to begin.")
-        print(f"Type {host.cmd_ref('commands')} for the catalog.")
+        emit_not_initialized(root, host, mode)
         sys.exit(0)
 
-    m = STAGE_RE.search(ctx_text)
-    print(f"stage: {m.group(1) if m else '—'}")
+    emit_stage(ctx_text)
 
     oq = os.path.join(root, ".codearbiter", "open-questions.md")
     oq_text = read_text(oq)
-    if oq_text is not None:
-        confirms = CONFIRM_RE.findall(oq_text)
-        if confirms:
-            print(f"BLOCKING questions (CONFIRM-NN): {len(confirms)} — must resolve before "
-                  f"dependent work proceeds:")
-            for ln in oq_text.splitlines():
-                if CONFIRM_RE.search(ln):
-                    print(f"  {ln}")
-        else:
-            print("open questions: 0")
+    emit_confirm_nn(oq_text)
 
     ot = os.path.join(root, ".codearbiter", "open-tasks.md")
     ot_text = read_text(ot)
-    if ot_text is not None:
-        # Shared helper: in-flight count (excludes done) + a stale-in-progress
-        # nudge + undated/malformed warnings. Oversize boards degrade to a
-        # one-line notice. Guarded: the task board must never take down the
-        # linchpin hook — on any unexpected parse error, fail LOUD (stderr
-        # breadcrumb) and fall back to the raw count, never go dormant.
-        try:
-            for _line in _taskboardlib.startup_summary(ot_text, datetime.date.today()):
-                print(_line)
-        except Exception as _e:  # noqa: BLE001 — never crash session startup
-            n = sum(1 for ln in ot_text.splitlines()
-                    if ln.startswith("- ") and not ln.startswith("- [x]"))
-            print(f"in-flight tasks: {n}")
-            print(f"codeArbiter: task-board summary degraded ({_e}); "
-                  f"check .codearbiter/open-tasks.md", file=sys.stderr)
+    emit_task_summary(ot_text)
 
     # --- Passive provenance drift notice (T-16, spec pillar 4) ---
-    # ONE line emitted only when drift > 0; silent when docs are fresh or on any
-    # degrade (wrapper swallows all exceptions — never crashes the linchpin hook).
     _drift = provenance_drift_line(root)
-    if _drift:
-        print(_drift)
+    emit_provenance_drift(_drift)
 
     # --- Update-available notice (AC-1/AC-2/AC-3) --------------------------
-    # ONE line, read from the cache only (no network here); silent when the
-    # installed version is current or the cache is absent/stale/corrupt.
     _update = update_notice_line(plugin)
-    if _update:
-        print(_update)
+    emit_update_notice(_update)
 
-    print(f"Present this state, then await a {host.command_noun}. "
-          f"Type {host.cmd_ref('commands')} for the catalog.")
+    if mode == _modelib.MODES[0]:
+        emit_trailer(host)
 
-    # --- Standup briefing (SH-1 full / SH-2 offer) ---
-    # Additive, AFTER the startup-state block. Read-only: no git mutation here.
-    #   first session of the day (no marker)  -> full briefing + drop marker
-    #   later session today, actionable       -> exactly ONE offer line
-    #   later session today, nothing to do    -> emit nothing
-    # The git-derived `summary` (dirty/behind/ahead/prune candidates/worktrees/
-    # stashes) is assembled below from read-only git reads; any_actionable(summary)
-    # then decides whether a later same-day session emits its single offer line. A
-    # clean repo yields an all-quiet summary, so later sessions stay silent — the
-    # conservative default.
-    date_iso = local_date_iso()
-    marker_present = not should_emit_briefing(root, date_iso)
+        # --- Standup briefing (SH-1 full / SH-2 offer) ---------------------
+        # Additive, AFTER the startup-state block. Read-only: no git mutation
+        # here. ARBITER-ONLY (AC-32): every variant references {standup}, a
+        # command a non-arbiter mode does not have.
+        #   first session of the day (no marker)  -> full briefing + drop marker
+        #   later session today, actionable       -> exactly ONE offer line
+        #   later session today, nothing to do    -> emit nothing
+        date_iso = local_date_iso()
+        marker_present = not should_emit_briefing(root, date_iso)
 
-    # Read-only git assembly. ahead/behind comes from the LAST COMPLETED fetch
-    # (current local refs); we annotate it as possibly stale and kick a DETACHED
-    # fetch to refresh for NEXT time without blocking this hook's return.
-    current = head_branch(root)
-    default = os.environ.get("CODEARBITER_BASE_BRANCH") or "main"
-    summary = assemble_summary(root, current=current, default=default)
-    spawn_background_fetch(root)  # detached; never awaited
-    spawn_background_update_refresh(plugin)  # detached; never awaited (AC-3/AC-4)
+        # Read-only git assembly. ahead/behind comes from the LAST COMPLETED
+        # fetch (current local refs); we annotate it as possibly stale and
+        # kick a DETACHED fetch to refresh for NEXT time without blocking
+        # this hook's return.
+        current = head_branch(root)
+        default = os.environ.get("CODEARBITER_BASE_BRANCH") or "main"
+        summary = assemble_summary(root, current=current, default=default)
+        spawn_background_fetch(root)  # detached; never awaited
+        spawn_background_update_refresh(plugin)  # detached; never awaited (AC-3/AC-4)
 
-    mode = briefing_mode(marker_present, any_actionable(summary))
-    if mode == "full":
-        print()
-        print(f"=== codeArbiter daily briefing ({date_iso}) ===")
-        print("First session of the day. Daily standup briefing (read-only).")
         # performance-003 (#194): ctx_text/ot_text/oq_text were already read
         # above for the startup-state block — thread them through so
-        # governance_line's arbiter_state() call doesn't re-read the same three
-        # files a second time in this same invocation.
-        render_full_briefing(root, summary, ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text)
-        try:
-            write_standup_marker(root, date_iso)
-        except Exception:  # noqa: BLE001 — must never brick session startup
-            pass
-    elif mode == "offer":
-        print(OFFER_LINE_TEMPLATE.format(standup=get_host().cmd_ref("standup")))
+        # governance_line's arbiter_state() call doesn't re-read the same
+        # three files a second time in this same invocation.
+        briefing_kind = emit_daily_briefing(
+            root, summary, date_iso, marker_present,
+            ctx_text=ctx_text, ot_text=ot_text, oq_text=oq_text, host=host)
+        if briefing_kind == "full":
+            try:
+                write_standup_marker(root, date_iso)
+            except Exception:  # noqa: BLE001 — must never brick session startup
+                pass
 
     sys.exit(0)
 
