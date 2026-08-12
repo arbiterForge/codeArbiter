@@ -121,11 +121,29 @@ def _persona_for_mode(plugin_root, mode):
     """(safety_core_text, body_text) for `mode`, read off `plugin_root`.  An
     unrecognized mode (should not happen — `_effective_mode` already
     resolves through `_modelib.MODES`) falls back to the arbiter body rather
-    than raising a KeyError on a hot path."""
+    than raising a KeyError on a hot path.
+
+    Either text may come back "" — the callers treat BOTH as required and
+    inject neither half alone; see `_persona_unavailable`."""
     safety = _read_text(os.path.join(plugin_root, _SAFETY_CORE_RELPATH))
     rel = _MODE_BODY_RELPATH.get(mode, _MODE_BODY_RELPATH[_modelib.MODES[0]])
     body = _read_text(os.path.join(plugin_root, rel))
     return safety, body
+
+
+def _persona_unavailable(safety, body):
+    """The composed persona is BOTH halves or neither.
+
+    An earlier form rejected only the case where both reads came back empty,
+    which meant an unreadable `safety-core.md` beside a readable body injected
+    the mode body ALONE. For `dangerous` and `ops` that body is the permissive
+    half — the session would carry the posture's licence with none of its
+    floor, and nothing would say so.
+
+    Suppressing entirely is the safe direction. The model is ungoverned either
+    way, but a missing persona is conspicuous in the transcript while a half
+    persona reads exactly like a whole one."""
+    return not (safety.strip() and body.strip())
 
 
 def _compose_persona(safety_core_text, body_text, limit_tokens=None):
@@ -226,10 +244,39 @@ def _read_compaction_generation(root, session_id):
         return 0
 
 
+def _invalidate_injection_markers(root, session_id):
+    """Remove every `modeinject-` marker for `session_id`, across all modes.
+
+    The fallback when the generation cannot advance. Deleting the markers
+    forces the next turn's `_already_injected` to miss, so the persona is
+    re-injected — the same outcome a successful bump produces, reached by the
+    other side. Never raises: this runs on an already-degraded path, and a
+    failure here costs the re-injection it was trying to guarantee, so it must
+    not also cost the PreCompact turn."""
+    for mode in _modelib.MODES:
+        try:
+            path = _readinjectlib.marker_path(
+                root, session_id, _dedup_key(mode, _read_compaction_generation(root, session_id)),
+                prefix=MODEINJECT_PREFIX)
+            os.remove(path)
+        except Exception:  # noqa: BLE001 — absent is the desired state anyway
+            pass
+
+
 def _bump_compaction_generation(root, session_id):
     """Increment and persist `session_id`'s compaction generation; returns
-    the NEW value. Best-effort (never raises) — a failed bump only costs a
-    redundant re-injection on the next turn, never a crash of PreCompact."""
+    the NEW value. Best-effort (never raises) — PreCompact must not crash.
+
+    A FAILED bump is not the harmless case the earlier docstring claimed. It
+    returned the PRIOR generation, and the marker recorded under that
+    generation still existed — so the first post-compaction turn was
+    SUPPRESSED and the session continued without the persona compaction had
+    just removed. That is precisely the hole this counter exists to close,
+    reopened by its own failure path.
+
+    So when the write fails, the dedup markers are invalidated instead. The
+    generation stays put and the next turn re-injects, which fails toward a
+    redundant persona rather than a missing one."""
     try:
         path = _compaction_gen_path(root)
         try:
@@ -248,6 +295,7 @@ def _bump_compaction_generation(root, session_id):
         _hooklib.write_text_atomic(path, json.dumps(data))
         return data[key]
     except Exception:  # noqa: BLE001
+        _invalidate_injection_markers(root, session_id)
         return _read_compaction_generation(root, session_id)
 
 
@@ -326,8 +374,11 @@ def _inject_claude(payload, host, root, session_id):
     if _already_injected(root, session_id, mode, generation):
         return
     safety, body = _persona_for_mode(host.plugin_root(), mode)
-    if not safety and not body:
-        return  # nothing readable to inject — degrade silently, never crash the turn
+    if _persona_unavailable(safety, body):
+        sys.stderr.write("codeArbiter: persona sources incomplete for mode '{}' — "
+                         "injecting nothing this turn rather than a body without its "
+                         "safety floor.\n".format(mode))
+        return
     composed, _truncated = _compose_persona(safety, body)
     print(composed)
     _record_injected(root, session_id, mode, generation)
@@ -339,7 +390,10 @@ def _inject_codex(payload, host, root, session_id):
     if _already_injected(root, session_id, mode, generation):
         return
     safety, body = _persona_for_mode(host.plugin_root(), mode)
-    if not safety and not body:
+    if _persona_unavailable(safety, body):
+        sys.stderr.write("codeArbiter: persona sources incomplete for mode '{}' — "
+                         "injecting nothing this turn rather than a body without its "
+                         "safety floor.\n".format(mode))
         return
     composed, _truncated = _compose_persona(
         safety, body, limit_tokens=CODEX_ADDITIONAL_CONTEXT_LIMIT)

@@ -428,5 +428,92 @@ class TestDoctorHookScripts(unittest.TestCase):
         self.assertIn('"prompt-submit.py"', text)
 
 
+
+
+class TestBothPersonaSourcesAreRequired(_Fixture):
+    """Composing a mode body WITHOUT safety-core removes the always-on floor.
+
+    `_persona_for_mode` degrades each read to "" independently, and the
+    injectors rejected only the case where BOTH came back empty. So an
+    unreadable `safety-core.md` beside a readable body injected the mode body
+    alone — and for `dangerous`/`ops` that body is the permissive half. The
+    session would then run with the posture's licence and none of its floor,
+    with nothing said.
+
+    Suppressing injection entirely is the safe direction: the model is
+    ungoverned either way, but a missing persona is loud in the transcript
+    while a half persona reads as a complete one.
+    """
+
+    def _unlink_safety_core(self):
+        os.remove(os.path.join(self.plugin_root, "includes", "safety-core.md"))
+
+    def test_claude_injects_nothing_when_safety_core_is_unreadable(self):
+        self._unlink_safety_core()
+        rc, out, err = self.invoke(_ups("go"))
+        self.assertEqual(rc, 0)
+        self.assertNotIn("ARBITER-MODE-MARK", out,
+                         "the mode body was injected without its safety floor")
+        self.assertEqual(out, "")
+        self.assertIn("persona", err.lower(), "the suppression must not be silent")
+
+    def test_claude_injects_nothing_when_the_mode_body_is_unreadable(self):
+        os.remove(os.path.join(self.plugin_root, "arbiter.md"))
+        rc, out, err = self.invoke(_ups("go"))
+        self.assertEqual(rc, 0)
+        self.assertEqual(out, "")
+
+    def test_the_dangerous_body_is_never_injected_without_safety_core(self):
+        """The case that matters most: a permissive body, floor missing."""
+        self.invoke(_ups("mode --dangerous"))
+        self._unlink_safety_core()
+        rc, out, _err = self.invoke(_ups("now do it"))
+        self.assertNotIn("DANGEROUS-MODE-MARK", out)
+
+    def test_codex_suppresses_the_same_way(self):
+        self._unlink_safety_core()
+        rc, out, _err = self.invoke(_ups("go"), host=_CodexHost())
+        self.assertEqual(out, "")
+
+
+class TestFailedGenerationBumpDoesNotSuppressReinjection(_Fixture):
+    """A failed PreCompact bump must not leave the old marker deduping.
+
+    `_bump_compaction_generation` returns the PRIOR generation when its write
+    fails, and the marker recorded under that generation still exists — so the
+    first post-compaction turn is suppressed and the session continues with the
+    persona compaction just removed. That is the exact hole the generation
+    counter exists to close, reopened by its own failure path.
+
+    The bump is best-effort BY DESIGN (PreCompact must not crash), so the fix
+    is not to make the write reliable; it is to invalidate the dedup marker
+    when the generation cannot advance, which fails toward a redundant
+    injection instead of a missing one.
+    """
+
+    def test_reinjects_after_a_compaction_whose_generation_write_failed(self):
+        rc1, out1, _ = self.invoke(_ups("first"))
+        self.assertIn("SAFETY-CORE-MARK", out1)
+        self.assertEqual(self.invoke(_ups("second"))[1], "", "precondition: dedup is live")
+
+        original = _hooklib.write_text_atomic
+
+        def _refuse(path, text):
+            if os.path.basename(path) == ps._COMPACTION_GEN_FILENAME:
+                raise OSError("disk full")
+            return original(path, text)
+
+        _hooklib.write_text_atomic = _refuse
+        try:
+            self.invoke(_precompact())
+        finally:
+            _hooklib.write_text_atomic = original
+
+        _rc, out, _err = self.invoke(_ups("after the compaction"))
+        self.assertIn("SAFETY-CORE-MARK", out,
+                      "a failed generation bump suppressed the post-compaction re-injection")
+
+
+
 if __name__ == "__main__":
     unittest.main()

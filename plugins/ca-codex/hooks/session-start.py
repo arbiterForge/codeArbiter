@@ -561,7 +561,16 @@ def _mode_session_seen_path(root):
 
 
 def _read_mode_session_seen(root):
-    """The session_id whose SessionStart last ran in this repo, or None.
+    """True iff `session_id`'s SessionStart has run in this repo before.
+
+    KEYED BY SESSION, exactly as the mode marker is. An earlier form stored a
+    single repo-global scalar — the id of whichever session started last — and
+    two live sessions then erased each other's record: A starts, B starts, A
+    compacts and reads "not seen", so the compaction clears A's live mode and
+    mints an `exit` row for a mode A never left. That is the SAME observable
+    failure this record was introduced to fix, merely moved from "a concurrent
+    session owns the legacy marker" to "a concurrent session exists at all".
+    A per-session question cannot be answered by a repo-global answer.
 
     DELIBERATELY SEPARATE from `dev-session-owner.json`. That record anchors the
     legacy `dev-active` marker's force-close and is guarded by a liveness window
@@ -575,26 +584,47 @@ def _read_mode_session_seen(root):
     Never raises; an absent or corrupt record reads as "not seen", which routes
     to the conservative branch (clear), never to a silent retain.
     """
+    return _read_mode_session_seen_map(root)
+
+
+def _read_mode_session_seen_map(root):
+    """`{session_id: ts}` for every session seen in this repo, or `{}`.
+
+    Never raises; an absent or corrupt record reads as "nothing seen", which
+    routes to the conservative branch (clear), never to a silent retain."""
     try:
         with open(_mode_session_seen_path(root), encoding="utf-8") as f:
             data = json.load(f)
-        sid = data.get("session_id")
-        if isinstance(sid, str) and sid:
-            return sid
+        if isinstance(data, dict) and not isinstance(data.get("session_id"), str):
+            return {k: v for k, v in data.items() if isinstance(k, str)}
+        # Legacy single-session record ({"session_id": …, "ts": …}) written by
+        # an earlier build. Read it forward rather than discarding it: dropping
+        # it would clear a live mode on the very first compaction after an
+        # upgrade, which is the failure this whole record exists to prevent.
+        if isinstance(data, dict) and isinstance(data.get("session_id"), str):
+            return {data["session_id"]: data.get("ts")}
     except Exception:  # noqa: BLE001 — absent/corrupt record -> no signal
         pass
-    return None
+    return {}
 
 
 def _write_mode_session_seen(root, session_id, ts):
-    """Record that `session_id`'s SessionStart has run. Never raises — a write
-    failure degrades to "not seen", i.e. the next compaction clears the mode.
-    That is the safe direction: it restores `arbiter` (gates ON) rather than
-    silently retaining a gates-off posture on unproven state."""
+    """Record that `session_id`'s SessionStart has run, WITHOUT disturbing any
+    other session's entry. Never raises — a write failure degrades to "not
+    seen", i.e. the next compaction clears the mode. That is the safe
+    direction: it restores `arbiter` (gates ON) rather than silently retaining
+    a gates-off posture on unproven state.
+
+    The read-modify-write here is not serialized, so two simultaneous starts
+    can lose one entry. That fails toward clearing a mode rather than retaining
+    one, which is the direction ADR-0030 requires; the mode marker's own
+    concurrency is tracked separately."""
     try:
         path = _mode_session_seen_path(root)
+        seen = _read_mode_session_seen_map(root)
+        seen[str(session_id)] = ts
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        write_text_atomic(path, json.dumps({"session_id": session_id, "ts": ts}))
+        write_text_atomic(path, json.dumps(seen))
     except Exception:  # noqa: BLE001 — must never brick session startup
         pass
 
@@ -684,18 +714,32 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
     # session is deliberately NOT allowed to claim that record — which used to
     # leave the mode plane with no anchor and let a compaction clear a live
     # mode. See _read_mode_session_seen.
-    mode_seen = bool(session_id) and _read_mode_session_seen(root) == session_id
+    mode_seen = bool(session_id) and str(session_id) in _read_mode_session_seen(root)
     if session_id:
         _write_mode_session_seen(root, session_id, now)
 
     if is_owner:
         # The confirmed owner, resuming/compacting: heartbeat, and
-        # opportunistically CONVERT a still-live legacy marker (T-47) — the
-        # mode-plane entry (if any, set via a direct flip through Lane B's
-        # surface) stays untouched either way, which is what lets AC-25
-        # re-inject the SAME mode's persona after a compaction.
+        # opportunistically CONVERT a still-live legacy marker (T-47) — but
+        # ONLY where there is nothing to convert over.
+        #
+        # An unconditional write here contradicted the claim it sat under. The
+        # marker removal below is best-effort, so a marker that survives one
+        # pass is still live on the next: an owner who flipped back to
+        # `arbiter` mid-session had gates turned OFF again by the next
+        # compaction, with no operator action and no audit row — the exact
+        # unaudited gates-off transition ADR-0030 forbids. Gating on the
+        # arbiter default keeps this a MIGRATION (legacy marker, no mode-plane
+        # opinion yet) instead of an override of the user's live choice, and is
+        # what actually lets AC-25 re-inject the SAME mode after a compaction.
         _write_dev_session_owner(root, session_id, now)
-        if marker_live and _modelib.write_mode(session_id, "dangerous", root=root):
+        # "No opinion yet" is the ABSENCE of an entry, not the arbiter VALUE:
+        # `current_mode` answers `arbiter` for both "never flipped" and
+        # "deliberately flipped back", and only the first may be migrated over.
+        # The raw state map is the only place that distinction survives.
+        mode_state, _diag = _modelib._read_mode_state(root)
+        unconverted = str(session_id) not in mode_state
+        if marker_live and unconverted and _modelib.write_mode(session_id, "dangerous", root=root):
             try:
                 os.remove(marker)
             except OSError:

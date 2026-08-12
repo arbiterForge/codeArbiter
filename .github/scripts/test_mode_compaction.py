@@ -32,12 +32,16 @@ mode-plane-owned "seen" record, independent of the legacy marker's.
 
 Run: python .github/scripts/test_mode_compaction.py
 """
+import ast
 import contextlib
 import importlib.util
 import io
+import json
 import os
 import pathlib
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -61,6 +65,15 @@ def _fresh_repo():
     d = tempfile.mkdtemp()
     os.makedirs(os.path.join(d, ".codearbiter", ".markers"))
     return d
+
+
+def _git():
+    """The real git, resolved once. `_githooks.install` needs a genuine
+    repository, so these tests cannot fake one."""
+    found = shutil.which("git")
+    if not found:
+        raise unittest.SkipTest("git is unavailable")
+    return found
 
 
 def _legacy_marker(root):
@@ -100,10 +113,16 @@ class TestMarkerRootIsPayloadResolved(unittest.TestCase):
         filed separately instead — the same hazard may or may not apply, and that
         needs its own look rather than a blanket sweep.
         """
-        src = (PYSRC / "session-start.py").read_text(encoding="utf-8")
+        # Parsed, not grepped. A line-based regex misses `marker_root(\n)`, so
+        # the exact call it forbids could be reintroduced across two lines and
+        # this guard would report clean — a green check measuring nothing.
+        tree = ast.parse((PYSRC / "session-start.py").read_text(encoding="utf-8"))
         offenders = [
-            n for n, line in enumerate(src.splitlines(), 1)
-            if re.search(r"\bmarker_root\(\s*\)", line.split("#", 1)[0])
+            node.lineno for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and (getattr(node.func, "id", None) == "marker_root"
+                 or getattr(node.func, "attr", None) == "marker_root")
+            and not node.args and not node.keywords
         ]
         self.assertEqual(
             offenders, [],
@@ -162,11 +181,20 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         prev = os.environ.get("CLAUDE_PROJECT_DIR")
         os.environ["CLAUDE_PROJECT_DIR"] = root   # no git spawn for project_root
         err = io.StringIO()
+        # stdin is SUPPLIED, never inherited. `main()` reads it for the hook
+        # payload, and a non-tty stdin that nobody closes (a CI runner, a
+        # backgrounded shell) makes that read block forever — a test that hangs
+        # depending on how it was launched is worse than one that fails.
+        saved_stdin = sys.stdin
+        sys.stdin = io.StringIO(json.dumps({
+            "hook_event_name": "SessionStart", "session_id": "guard", "cwd": root}))
         try:
             with contextlib.redirect_stderr(err):
                 with self.assertRaises(SystemExit) as raised:
                     ss.run(_RaisingModeRootHost())
         finally:
+            sys.stdin = saved_stdin
+            ss._STDIN_PAYLOAD = None   # the payload cache is module-level
             if prev is None:
                 os.environ.pop("CLAUDE_PROJECT_DIR", None)
             else:
@@ -188,6 +216,49 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         _code, err = self._run_dormant()
         self.assertIn("mode plane unavailable", err)
         self.assertIn(ARBITER, err, "the breadcrumb must name the posture it fell back to")
+
+    def test_the_enforcer_is_actually_installed_in_an_enabled_repository(self):
+        """The claim in this class's name, proved where it can be false.
+
+        The dormant fixture above exits at the activation gate, which sits
+        ABOVE the install — so both tests there would pass even if a mode-plane
+        failure did prevent hook installation. They pin "startup survives"; only
+        this pins "the backstop is there afterwards", which is the property
+        that matters. Needs a real git repository, because `_githooks.install`
+        writes into `.git/hooks/`.
+        """
+        root = _fresh_repo()
+        subprocess.run([_git(), "init", "-q", "-b", "feature/mode-guard"], cwd=root,
+                       check=True, capture_output=True)
+        with open(os.path.join(root, ".codearbiter", "CONTEXT.md"), "w",
+                  encoding="utf-8", newline="\n") as f:
+            f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+
+        prev = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = root
+        saved_stdin = sys.stdin
+        sys.stdin = io.StringIO(json.dumps({
+            "hook_event_name": "SessionStart", "session_id": "enabled-guard", "cwd": root}))
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                try:
+                    ss.run(_RaisingModeRootHost())
+                except SystemExit as exc:
+                    self.assertIn(exc.code, (0, None))
+        finally:
+            sys.stdin = saved_stdin
+            ss._STDIN_PAYLOAD = None
+            if prev is None:
+                os.environ.pop("CLAUDE_PROJECT_DIR", None)
+            else:
+                os.environ["CLAUDE_PROJECT_DIR"] = prev
+
+        hooks = os.path.join(root, ".git", "hooks")
+        for name in ("pre-commit", "pre-push"):
+            self.assertTrue(
+                os.path.isfile(os.path.join(hooks, name)),
+                "a raising mode plane cost the repository its {} enforcer; "
+                ".git/hooks holds {}".format(name, sorted(os.listdir(hooks))))
 
 
 class TestModeSurvivesCompaction(unittest.TestCase):
@@ -296,6 +367,96 @@ class TestModeSurvivesCompaction(unittest.TestCase):
             ss.clear_mode_marker(root, host_name="claude", session_id=sid)
         mode, _ = _modelib.current_mode(sid, root=root)
         self.assertEqual(mode, "ops")
+
+
+
+class TestSeenAnchorIsSessionKeyed(unittest.TestCase):
+    """The anchor must answer "has THIS session started before?", per session.
+
+    It was a single repo-global scalar, so two live sessions in one repository
+    overwrote each other's record: A starts (seen=A), B starts (seen=B), then
+    A compacts and reads `mode_seen == False` — the compaction clears A's live
+    mode and mints an `exit` row for a mode A never exited.
+
+    That is the SAME observable failure the anchor was introduced to fix; it
+    was merely moved from "a concurrent session owns the legacy marker" to
+    "a concurrent session started at all". The mode marker itself is keyed by
+    session id, and this record has to be keyed the same way or it cannot
+    answer a per-session question.
+    """
+
+    def test_a_concurrent_session_start_does_not_erase_our_anchor(self):
+        root = _fresh_repo()
+        ss.clear_mode_marker(root, host_name="claude", session_id="A")
+        _modelib.write_mode("A", "dangerous", root=root)
+        ss.clear_mode_marker(root, host_name="claude", session_id="B")   # B starts
+        ss.clear_mode_marker(root, host_name="claude", session_id="A")   # A compacts
+        mode, _ = _modelib.current_mode("A", root=root)
+        self.assertEqual(mode, "dangerous",
+                         "a second session's SessionStart erased the first session's anchor")
+
+    def test_many_interleaved_sessions_each_keep_their_own_mode(self):
+        root = _fresh_repo()
+        for sid, mode in (("A", "dangerous"), ("B", "ops"), ("C", "dangerous")):
+            ss.clear_mode_marker(root, host_name="claude", session_id=sid)
+            _modelib.write_mode(sid, mode, root=root)
+        for sid in ("C", "A", "B"):
+            ss.clear_mode_marker(root, host_name="claude", session_id=sid)
+        self.assertEqual(_modelib.current_mode("A", root=root)[0], "dangerous")
+        self.assertEqual(_modelib.current_mode("B", root=root)[0], "ops")
+        self.assertEqual(_modelib.current_mode("C", root=root)[0], "dangerous")
+
+    def test_an_unseen_session_is_still_cleared(self):
+        """The keying must not turn the anchor into "always seen"."""
+        root = _fresh_repo()
+        _modelib.write_mode("never-started", "dangerous", root=root)
+        ss.clear_mode_marker(root, host_name="claude", session_id="never-started")
+        self.assertEqual(_modelib.current_mode("never-started", root=root)[0], ARBITER)
+
+
+class TestLegacyConversionRespectsAnExplicitMode(unittest.TestCase):
+    """A live `dev-active` marker must not re-arm a mode the user left.
+
+    The conversion writes `dangerous` unconditionally whenever the legacy
+    marker is live. Marker removal is best-effort, so a marker that survived
+    one pass is still live on the next: an owner who flipped back to `arbiter`
+    mid-session then has gates turned OFF again by a compaction — with no
+    operator action and no audit row. The comment above it claimed the
+    mode-plane entry "stays untouched either way"; the call did the opposite.
+
+    The conversion is a MIGRATION, so it applies only where there is nothing
+    to migrate over: the arbiter default.
+    """
+
+    def _live_marker_owned_by(self, root, sid):
+        open(_legacy_marker(root), "w").close()
+        ss._write_dev_session_owner(root, sid, time.time())
+
+    def test_a_flip_back_to_arbiter_survives_the_conversion(self):
+        root = _fresh_repo()
+        sid = "owner"
+        self._live_marker_owned_by(root, sid)
+        _modelib.write_mode(sid, ARBITER, root=root)   # the user flipped back: gates ON
+        ss.clear_mode_marker(root, host_name="claude", session_id=sid)
+        self.assertEqual(_modelib.current_mode(sid, root=root)[0], ARBITER,
+                         "a legacy marker silently re-armed dangerous mode")
+
+    def test_an_explicit_ops_mode_is_not_rewritten_to_dangerous(self):
+        root = _fresh_repo()
+        sid = "owner"
+        self._live_marker_owned_by(root, sid)
+        _modelib.write_mode(sid, "ops", root=root)
+        ss.clear_mode_marker(root, host_name="claude", session_id=sid)
+        self.assertEqual(_modelib.current_mode(sid, root=root)[0], "ops")
+
+    def test_the_migration_still_happens_when_there_is_nothing_to_preserve(self):
+        """The conversion must keep working for its actual case."""
+        root = _fresh_repo()
+        sid = "owner"
+        self._live_marker_owned_by(root, sid)
+        ss.clear_mode_marker(root, host_name="claude", session_id=sid)
+        self.assertEqual(_modelib.current_mode(sid, root=root)[0], "dangerous",
+                         "a live legacy marker must still migrate to the mode plane")
 
 
 if __name__ == "__main__":
