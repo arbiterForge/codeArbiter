@@ -155,9 +155,9 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-57 | C | `pi-bridge.py` `_mode_flip` | `test_pi_platform_contract.py --fixtures-only` exits 0; handler returns `handled`, mode flips [LL] | 14 | T-56 | PENDING |
 | T-58 | C | `extension.ts` `pi.on("input",…)` | new `test/mode-flip.test.ts`: `{action:"handled"}` on exact match, pass-through on substring [LL] | 14 | T-57 | PENDING |
 | T-59 | C | `extension.ts:306,364,485,530,807` | persona re-resolved per turn (closure cache removed); after a flip the next `before_agent_start` carries the new body [LL] | 18,24 | T-58,T-31 | PENDING |
-| T-60 | C | `extension.ts:807`, `test/package.test.ts` | typecheck+test+`test_pi_package.py`; `loadPersona` resolves `arbiter.md` [LL] | 37,46 | T-01,T-59 | PENDING |
-| T-61 | C | `pi-bridge.py` `_footer_status_snapshot`, `test_pi_security.py:127-133` | PI-SEC-FOOTER-TRUST pins the **mode reader** and still fails on a seeded removal [LL] | 39,38 | T-51,T-56 | PENDING |
-| T-62 | C | `footer-state.ts` | three distinct footer renderings, arbiter unchanged [LL] | 38 | T-61 | PENDING |
+| T-60 | C | `extension.ts:807`, `test/package.test.ts` | typecheck+test+`test_pi_package.py`; `loadPersona` resolves `arbiter.md` [LL] | 37,46 | T-01,T-59 | **PARTIAL** — `package.test.ts` rename fallout fixed (it copied the pre-rename persona file and failed at copy time). `extension.ts:807` NOT reviewed. |
+| T-61 | C | `pi-bridge.py` `_footer_status_snapshot`, `test_pi_security.py:127-133` | PI-SEC-FOOTER-TRUST pins the **mode reader** and still fails on a seeded removal [LL] | 39,38 | T-51,T-56 | **ACCEPTED** — footer repointed to `current_mode`; PI-SEC-FOOTER-TRUST repointed AND proven to still fail on a seeded removal (AC-39) |
+| T-62 | C | `footer-state.ts` | three distinct footer renderings, arbiter unchanged [LL] | 38 | T-61 | **ACCEPTED** — three distinct footer renderings; wire widened `dev: boolean` → `mode: PiFooterMode`, badges match statusline, danger colour for `dangerous` only |
 | T-63 | C | `plugins/ca-pi/tools` build | `npm run build` then `git diff --quiet -- dist` [LL] | 48 | T-62 | PENDING |
 | T-64 ★ | G | delete `core/surface/commands/{dev,arbiter}.md` | after `build-surface.py`, none of the three host surfaces has the command [LL] | 33 | T-21 | ACCEPTED |
 | T-65 ★ | G | `COMMANDS.md:82-83`, residual `{{CMD:}}` in `dangerous-mode.md` | `build-surface.py --check` exits 0; `! grep -rn "CMD:dev\|CMD:arbiter" core/` [LL] | 33 | T-64,T-24 | ACCEPTED |
@@ -248,6 +248,21 @@ default.
 - **`tests/test_p05_fixture.py` is pre-existing untracked cruft**, present before this campaign began
   and unrelated to it. Deliberately NOT committed with the mode-plane fixtures under `tests/fixtures/`.
   → user cleanup.
+- **LANE C IS INCOMPLETE — Pi cannot flip its own mode. Named, not hidden.** The lane agent hit a
+  session limit during orientation, before writing code. The curator took only the critical path:
+  Pi was BROKEN on this branch (`pi-bridge.py` called the retired `dev_active`), the footer is
+  repointed, the wire is widened to three modes, and the security contract is repointed and
+  seeded-removal-proven. **Still owed: T-56 (`ALLOWED_KEYS`/`EVENT_KEYS` widening for the flip
+  event), T-57 (`_mode_flip` in the bridge), T-58 (`extension.ts` `pi.on("input", …)` handler),
+  T-59 (the cached-persona staleness fix at `extension.ts:485/530`), T-60's `extension.ts:807`
+  review, and T-63 (the `plugins/ca-pi/tools` build).**
+  Consequence: **Pi reports the mode correctly but cannot change it** — a flip must be issued from
+  Claude or Codex. That is a coherent partial state (Pi is not broken, and nothing is unsafe), but
+  it is NOT the spec's AC-14/AC-15, which stay open.
+  The lane also surfaced a scope question worth recording: making the footer three-valued required
+  widening the parent↔child wire contract, which touches four files no lane owned. That was ruled
+  and done — a boolean cannot carry three postures, and collapsing `ops` into whichever side was
+  closest would have misreported the posture.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
