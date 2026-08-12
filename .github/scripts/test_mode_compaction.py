@@ -32,7 +32,9 @@ mode-plane-owned "seen" record, independent of the legacy marker's.
 
 Run: python .github/scripts/test_mode_compaction.py
 """
+import contextlib
 import importlib.util
+import io
 import os
 import pathlib
 import re
@@ -46,6 +48,7 @@ PYSRC = ROOT / "core" / "pysrc"
 sys.path.insert(0, str(PYSRC))
 
 import _modelib  # noqa: E402
+import hostapi  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location("session_start", str(PYSRC / "session-start.py"))
 ss = importlib.util.module_from_spec(_spec)
@@ -108,6 +111,83 @@ class TestMarkerRootIsPayloadResolved(unittest.TestCase):
             "call can spawn git during SessionStart; on Windows that can execute a "
             "project-local git.exe, and if the spawn misbehaves startup dies before the "
             "git-enforcer install runs. Offending lines: {}".format(offenders))
+
+
+class _RaisingModeRootHost(hostapi.Host):
+    """A host whose `marker_root` raises — the one seam the mode plane needs.
+
+    Not a stub of the whole resolution: `marker_root()` in `_activationlib`
+    delegates to `get_host().marker_root(payload)`, so this exercises the real
+    call chain `session-start.py` takes and raises at exactly the point
+    `hostapi.git_toplevel` can. That function calls `git_executable()` as its
+    FIRST statement, outside its own `try`, and
+    `_gitexec._trusted_environment_path` raises `RuntimeError` when
+    `CODEARBITER_GIT_EXECUTABLE` is relative or names a path that is no longer
+    a file — a live possibility on the Pi bridge, which supplies that identity.
+    """
+
+    name = "fake"
+    has_statusline = False
+
+    def marker_root(self, payload=None):
+        raise RuntimeError("CODEARBITER_GIT_EXECUTABLE is unavailable")
+
+
+class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
+    """SessionStart must survive an unresolvable mode plane.
+
+    The git-enforcer install (`_install_git_hooks`) runs AFTER the mode-plane
+    block in `main()`. An exception escaping that block therefore takes the
+    repository's git-level H-01/H-02 backstop — the one that closes
+    `--no-verify` (ADR-0015) — with it, SILENTLY: the hook is simply never
+    written, and nothing in the session says so. Losing a mode is a papercut;
+    losing the enforcer is a security regression, so the mode plane is never
+    allowed to be the thing that prevents it.
+
+    Direction of the fallback is `arbiter` (gates ON) per ADR-0030: a failed
+    transition INTO dangerous mode is safe, a failed transition OUT of it is
+    not.
+    """
+
+    def _run_dormant(self):
+        """`run()` in a repo with no arbiter frontmatter, returning stderr.
+
+        Dormant deliberately: `main()` exits at the activation gate, which sits
+        BELOW the mode-plane block and above the enforcer install, so this
+        isolates the guard from every later concern (statusline healing, the
+        install itself, the startup-state emitters) while still executing the
+        real `main()` rather than a rehearsal of it.
+        """
+        root = _fresh_repo()
+        prev = os.environ.get("CLAUDE_PROJECT_DIR")
+        os.environ["CLAUDE_PROJECT_DIR"] = root   # no git spawn for project_root
+        err = io.StringIO()
+        try:
+            with contextlib.redirect_stderr(err):
+                with self.assertRaises(SystemExit) as raised:
+                    ss.run(_RaisingModeRootHost())
+        finally:
+            if prev is None:
+                os.environ.pop("CLAUDE_PROJECT_DIR", None)
+            else:
+                os.environ["CLAUDE_PROJECT_DIR"] = prev
+        return raised.exception.code, err.getvalue()
+
+    def test_a_raising_mode_plane_does_not_abort_session_start(self):
+        code, _err = self._run_dormant()
+        self.assertIn(code, (0, None),
+                      "a mode-plane failure aborted SessionStart before the enforcer install")
+
+    def test_the_failure_is_announced_rather_than_swallowed(self):
+        """A silently-absent mode plane is indistinguishable from a working one.
+
+        The breadcrumb is what makes "mode never flips on this host" a
+        diagnosable condition instead of a mystery, and it must name the
+        posture the session actually fell back to.
+        """
+        _code, err = self._run_dormant()
+        self.assertIn("mode plane unavailable", err)
+        self.assertIn(ARBITER, err, "the breadcrumb must name the posture it fell back to")
 
 
 class TestModeSurvivesCompaction(unittest.TestCase):

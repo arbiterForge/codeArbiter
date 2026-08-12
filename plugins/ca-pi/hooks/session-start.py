@@ -1054,18 +1054,41 @@ def main():
     # below (clear_mode_marker, current_mode) — `root` (project_root) stays
     # the source-tree root for everything else (has_source, the task board,
     # provenance, git hygiene).
-    mode_root = marker_root(_stdin_payload())
     plugin = host.plugin_root()
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
-    session_id = _session_id_from_stdin()
 
     # T-42/T-47 (#437): the single mode-plane settlement pass — see the
     # module comment above clear_mode_marker for the full contract
     # (owner-liveness heuristic, the merged dev-active migration, the
     # cross-lane note for Lane B's compaction test).
-    clear_mode_marker(mode_root, host.name, session_id)
-    mode, _mode_diag = (_modelib.current_mode(session_id, root=mode_root)
-                         if session_id else (_modelib.MODES[0], None))
+    #
+    # The whole mode-plane resolution is guarded because NOTHING here may cost
+    # the repository its git-level enforcement backstop. The enforcer install
+    # below is what closes `--no-verify` (ADR-0015, H-01/H-02), and it runs
+    # AFTER this block — so an exception raised here removes that backstop
+    # silently, which is a far worse outcome than an unresolved mode. The raise
+    # is not hypothetical: `marker_root` reaches `hostapi.git_toplevel`, whose
+    # very first statement calls `git_executable()` OUTSIDE its own try, and
+    # `_gitexec._trusted_environment_path` raises RuntimeError on a
+    # CODEARBITER_GIT_EXECUTABLE that is relative or no longer a file.
+    #
+    # The fallback is `arbiter` — gates ON — per ADR-0030's fail direction: a
+    # failed transition INTO dangerous mode is safe, a failed transition out of
+    # it is not, so unresolvable state resolves to the governed posture. The
+    # breadcrumb goes to stderr rather than being swallowed, so a mode plane
+    # that is quietly broken on this host is visible instead of merely absent.
+    mode_root, session_id = root, ""
+    mode, _mode_diag = _modelib.MODES[0], None
+    try:
+        mode_root = marker_root(_stdin_payload())
+        session_id = _session_id_from_stdin()
+        clear_mode_marker(mode_root, host.name, session_id)
+        if session_id:
+            mode, _mode_diag = _modelib.current_mode(session_id, root=mode_root)
+    except Exception as exc:  # noqa: BLE001 — startup must survive this
+        print(f"codeArbiter: mode plane unavailable this session ({type(exc).__name__}: "
+              f"{exc}); continuing as '{_modelib.MODES[0]}' with every gate enforced.",
+              file=sys.stderr)
 
     # Self-heal a stale ca-owned statusLine pin before the dormant gate: the
     # statusline is wired GLOBALLY in ~/.claude/settings.json, so a plugin update
