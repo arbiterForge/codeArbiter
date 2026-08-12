@@ -17,7 +17,7 @@ import type {
 } from "../src/contracts.ts";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import * as extensionModule from "../src/extension.ts";
-import { boundedPiEnvironment, createCodeArbiterPi, installParent, renderPiDoctorReportBlock, resolvePiBackgroundShell } from "../src/extension.ts";
+import { boundedPiEnvironment, createCodeArbiterPi, installParent, loadPersonaFrom, renderPiDoctorReportBlock, resolvePiBackgroundShell } from "../src/extension.ts";
 import { collectPiDoctorInput, diagnosePi, formatPiDoctorReport } from "../src/doctor.ts";
 import type { NativeBackgroundController } from "../src/commands.ts";
 
@@ -817,5 +817,48 @@ describe("Pi activation", () => {
       pythonMajor: 3,
     })(api)).toThrow("/ca-doctor");
     expect(apiAccesses).toBe(0);
+  });
+});
+
+describe("persona composition", () => {
+  // The default loadPersona was the ONE dependency no test ever exercised:
+  // every activation test injects a fake, so the real factory's file path was
+  // unpinned. It named ORCHESTRATOR.md, which #437 renamed, and the resulting
+  // ENOENT is raised INSIDE the same try that wraps the bridge call — so a
+  // missing persona file was reported as "bridge unavailable", session_start
+  // was never sent, and the git-enforcer install behind it never ran. A Pi
+  // session lost its H-01/H-02 backstop and said only that the bridge was
+  // down. These tests pin the paths against the real plugin root.
+  const pluginRoot = resolve(import.meta.dirname, "..", "..");
+
+  test("composes safety-core with the arbiter body from the real plugin root", async () => {
+    const persona = await loadPersonaFrom(pluginRoot);
+    const safetyCore = await readFile(resolve(pluginRoot, "includes", "safety-core.md"), "utf8");
+    const arbiter = await readFile(resolve(pluginRoot, "arbiter.md"), "utf8");
+    const safetyOpening = safetyCore.trimStart().split("\n")[0];
+    const arbiterOpening = arbiter.trimStart().split("\n")[0];
+    expect(persona).toContain(safetyOpening);
+    expect(persona).toContain(arbiterOpening);
+    // Order matters: the always-on floor precedes the mode body, matching the
+    // Claude/Codex injector so all three hosts compose one shape.
+    expect(persona.indexOf(safetyOpening)).toBeLessThan(persona.indexOf(arbiterOpening));
+  });
+
+  test("ends with the persona sentinel", async () => {
+    // The same stable literal the Python injector appends, so a transcript
+    // scan identifies an injected persona identically on every host.
+    const persona = await loadPersonaFrom(pluginRoot);
+    expect(persona.trimEnd().endsWith("<!-- codearbiter:persona-sentinel -->")).toBe(true);
+  });
+
+  test("rejects rather than resolving empty when a persona file is absent", async () => {
+    // Fail LOUD. A resolved-but-empty persona would leave the model ungoverned
+    // while every status line reported a healthy session.
+    const empty = await mkdtemp(resolve(await realpath(tmpdir()), "ca-persona-"));
+    try {
+      await expect(loadPersonaFrom(empty)).rejects.toThrow();
+    } finally {
+      await rm(empty, { recursive: true, force: true });
+    }
   });
 });

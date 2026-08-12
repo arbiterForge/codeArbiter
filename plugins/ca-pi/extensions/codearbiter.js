@@ -9865,6 +9865,19 @@ function ownershipStatus(pi, dependencies, nativePlanRegistered = false, nativeJ
   }
   return `codeArbiter host: pi degraded - ${native.length + jobs.length} native command ownership conflict(s); operations blocked`;
 }
+var PERSONA_SENTINEL = "<!-- codearbiter:persona-sentinel -->";
+async function loadPersonaFrom(packageRoot) {
+  const [safetyCore, body] = await Promise.all([
+    readFile6(resolve15(packageRoot, "includes", "safety-core.md"), "utf8"),
+    readFile6(resolve15(packageRoot, "arbiter.md"), "utf8")
+  ]);
+  return `${safetyCore.replace(/\n+$/, "")}
+
+${body.replace(/\n+$/, "")}
+
+${PERSONA_SENTINEL}
+`;
+}
 function installParent(pi, dependencies) {
   let enabled = false;
   let persona = "";
@@ -10322,7 +10335,7 @@ async function codeArbiterPi(pi) {
       pi.appendEntry(customType, data);
     },
     enforcementReadiness: enforcement,
-    loadPersona: async () => await readFile6(resolve15(packageRoot, "ORCHESTRATOR.md"), "utf8"),
+    loadPersona: async () => await loadPersonaFrom(packageRoot),
     resetBridge,
     prepareFooterBridge: (cwd) => {
       prepareBridgeIdentity(cwd);
@@ -10516,6 +10529,7 @@ async function codeArbiterPi(pi) {
   });
 }
 export {
+  PERSONA_SENTINEL,
   PI_RUNTIME_DIAGNOSIS,
   boundedPiEnvironment,
   compatibilityDirection,
@@ -10527,6 +10541,7 @@ export {
   installParent,
   installPiDispatch,
   installPiFarmPreview,
+  loadPersonaFrom,
   renderPiDoctorReportBlock,
   resolvePiBackgroundShell,
   resolvePiRuntime,
