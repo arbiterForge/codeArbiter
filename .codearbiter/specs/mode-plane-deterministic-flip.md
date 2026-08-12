@@ -106,10 +106,18 @@ and release surfaces; `CONTEXT.md` vocabulary.
 9. Bare `mode` emits the current mode and all three legal values on stderr, exits 2, and writes nothing.
 10. A flip whose state write fails does not report success; the return-to-`arbiter` path is proven
     against an unwritable marker directory and does not wedge the session.
-11. The injector refuses to compose a non-arbiter body when `overrides.log` holds no matching
-    `MODE: <name> enter` row: it resolves `arbiter` and emits a diagnostic.
-12. Exit/close rows route through `_settle_dev_close`; an interruption between stage and append leaves
-    the row owed and the next run appends it exactly once.
+11. The injector refuses to compose a non-arbiter body when the audit trail holds no matching
+    `MODE: <name> enter` row **for that session**: it resolves `arbiter` and emits a diagnostic.
+    The row is an AUTHORIZATION, not merely a record, so it carries `SESSION: <id>` and is matched
+    per session — a repo-wide match would let one session's row authorize another session's
+    gates-off marker, defeating the isolation AC-3 requires everywhere else in the plane. A row
+    written before the field existed authorizes no session and resolves to `arbiter`; the single
+    session-blind exception is a legacy `DEV: enter` row backing `dangerous` only, which predates
+    session attribution and is what the dev-to-dangerous migration runs on.
+12. **Both halves** of a transition route through `_settle_dev_close` — the `enter` row as well as
+    the exit/close row (ADR-0030 position 4: never a bare append). An interruption between stage
+    and append leaves the row owed and the next run appends it exactly once; a flip whose row
+    cannot be confirmed reports `FLIP_FAILED` rather than a success the injector will then refuse.
 
 ### Cross-host interception
 13. On Codex, a token flips the state using the camelCase envelope; the emitted object's key set equals
