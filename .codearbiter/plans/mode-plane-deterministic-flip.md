@@ -279,6 +279,31 @@ default.
   needs disproving rather than assuming); (2) an early return in the restructured startup flow
   reached only on the RPC path; (3) `is_ephemeral_path` resolving differently under the packaged
   layout. Linux and macOS pass, which argues for a path-resolution difference rather than an import.
+  **NARROWED AGAIN 2026-08-12 — suspects (1)-(3) are all dead.** The test now dumps the RPC records
+  on failure instead of dying on `read_text`, and they name it: the extension publishes
+  `codeArbiter host: pi degraded - bridge unavailable`. So `session-start.py` is not crashing and is
+  not being skipped by any branch of its own — the **`session_start` bridge call itself fails**, and
+  the install below it is simply never reached. That status is set by two paths in
+  `extension.ts:499-500` (the `catch`) and `:491` (an `outcome === "warn"` response), and
+  `BridgeClient.call` returns exactly that shape from its own pre-spawn guards
+  (`bridge.ts:770-796`): `path validation failed` when `this.ready` rejects, when
+  `lexicallyInside(paths.git|paths.python, project)` — the poison puts a `git.exe` INSIDE the
+  project — or when `canonicalUserHome` returns undefined, which on Windows compares a `realpath`'d
+  `USERPROFILE` against the project root while the fixture's home and project are siblings under one
+  8.3-shortened temp root (`C:\Users\RUNNER~1\...`).
+  **Not reproducible locally, and that is now a measured fact rather than an impression.** Driving
+  `{"event":"session_start"}` through `pi-bridge.py` by hand on Windows returns a valid envelope and
+  installs the hook in **0.14s** — with the developer environment, with the RPC harness's restricted
+  environment, and with the poison in place. It is also not a timeout: the 10s `BridgeClient` budget
+  is ~70x the observed cost. The difference is in **how Pi invokes the bridge**, not in what the
+  bridge does, so the next instrument is the direct-bridge probe now wired into the failure path.
+  **Independently fixed along the way (commit `e85239b`, stands on its own merits):** the mode-plane
+  block in `main()` could raise and take the enforcer install with it, because `marker_root` reaches
+  `hostapi.git_toplevel`, whose first statement calls `git_executable()` outside its own `try`, and
+  `_gitexec._trusted_environment_path` raises on a `CODEARBITER_GIT_EXECUTABLE` that is relative or
+  no longer a file — an identity **Pi supplies**. It is now guarded, falls back to `arbiter` (gates
+  ON) per ADR-0030's fail direction, and leaves a stderr breadcrumb. This did **not** clear the CI
+  failure, which is itself informative: it confirms the failure is upstream of `session-start.py`.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
