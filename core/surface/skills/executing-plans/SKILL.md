@@ -1,6 +1,7 @@
 ---
 name: executing-plans
 description: The checkpoint coordinator for /feature. Routed to by /feature once a writing-plans plan exists. Groups tasks into batches, delegates each batch to subagent-driven-development (fresh author agent per task, full review chain, fresh verification), then stops for a human checkpoint before the next batch. The checkpointed counterpart to /sprint's autonomous run.
+disable-model-invocation: true
 ---
 
 # executing-plans
@@ -43,7 +44,7 @@ Gate: a batch sequence exists and every task has a target path and a verificatio
 
 ## Phase 2 — Execute batch · gate: BLOCK
 
-Invoke `subagent-driven-development` with `scope = [current batch task IDs]`. Pass the plan slug and
+Invoke `subagent-driven-development` (`{{PLUGIN_ROOT}}/skills/subagent-driven-development/SKILL.md`) with `scope = [current batch task IDs]`. Pass the plan slug and
 spec slug so it can read its own pre-flight files. Do not implement anything here — the author agents,
 review chain, and verification all run inside that skill.
 

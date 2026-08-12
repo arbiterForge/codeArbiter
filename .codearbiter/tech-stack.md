@@ -23,7 +23,7 @@ extension, an enforcement-only child extension, and a Windows supervisor.
 Python 3 remains required for the shared core.
 
 The external Pi runtime is a test and install input, never a checked-in or
-runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.80.10.
+runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.84.1.
 
 ## Test
 
@@ -140,7 +140,7 @@ python .github/scripts/test_public_pi_docs.py
 
 The platform aggregate is `python .github/scripts/test_pi_platform_contract.py
 --fixtures-only`. A supported-version run adds `--pi-version 0.80.5` or
-`--pi-version 0.80.10` after installing that exact external Pi version with
+`--pi-version 0.84.1` after installing that exact external Pi version with
 scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 ## Lint / typecheck
@@ -388,4 +388,6 @@ layers:
 - `ca-pi` releases independently as `ca-pi-v<version>`. The nested
   `plugins/ca-pi/package.json` is the version source; regenerate the root
   `package.json`, update `plugins/ca-pi/CHANGELOG.md`, and keep both manifests
-  synchronized. Distribution is pinned Git only; there is no npm release.
+  synchronized. Distribution is the pinned Git tag (reproducible channel) plus
+  the CI-published `npm:@arbiterforge/ca-pi` package on every `ca-pi-v*` tag
+  (ADR-0029, `.github/workflows/npm-publish.yml`).

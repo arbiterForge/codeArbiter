@@ -15,6 +15,7 @@ Read-only. Evaluate third-party dependencies and container base images before an
 
 - `{{PROJECT_DIR}}/.codearbiter/security-controls.md` — license policy (allowed/denied SPDX identifiers), approved registries, provenance and supply-chain governance.
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — audit command, approved container registries, and allowed licenses if enumerated there.
+- `{{PLUGIN_ROOT}}/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
 
 License policy source: `security-controls.md`. If `tech-stack.md` enumerates allowed licenses, that list governs.
 
@@ -58,40 +59,21 @@ Flag suspicious install scripts as **HIGH**.
 
 ## Findings Format
 
-```
-**Severity:** CRITICAL | HIGH | MEDIUM | LOW
-**Package:** <name@version>
-**Description:** <specific finding>
-**Remediation:** <concrete action>
-```
+Per `{{PLUGIN_ROOT}}/includes/reviewer-contract.md`, with the subject field `**Package:** <name@version>` in place of `**File:**`.
 
 ## Output
 
-```
-## Dependency Review — <package@version> — <date>
+The review output template in `reviewer-contract.md`, with `<Role>` = Dependency, the heading
+qualified as `## Dependency Review — <package@version> — <date>`, the severity sections preceded
+by one verdict line per check dimension:
 
+```
 ### License: <SPDX> — PASS | BLOCK
 ### Provenance: <registry/source> — PASS | BLOCK
 ### Maintenance signal: <last release, archived> — PASS | FLAG
 ### Known CVEs: N critical, N high — PASS | BLOCK
 ### Supply chain: <install script: yes/no; notes> — PASS | FLAG
-
-### CRITICAL findings (N)
-[findings or "none"]
-
-### HIGH findings (N)
-[findings or "none"]
-
-### MEDIUM findings (N)
-[findings or "none"]
-
-### LOW findings (N)
-[findings or "none"]
-
-### Gate status
-PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH; do not install)
 ```
 
-## Out-of-Scope Findings
-
-**Out-of-scope finding:** do not act on it and do not author an ADR for it (ADRs are user-attributed, via `/adr` only). Mark it inline with a `[NEEDS-TRIAGE]` marker; never silently drop it.
+and the gate-status BLOCK arm worded `BLOCK (N CRITICAL, N HIGH; do not install)` — an install,
+unlike a merge, executes the dependency's code the moment it lands.

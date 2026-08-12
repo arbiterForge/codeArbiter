@@ -112,7 +112,7 @@ export async function resolvePiRuntimeIdentity(cliCandidate?: string): Promise<R
       if (!isAbsolute(cliCandidate) || await realpath(cliCandidate) !== canonicalAnchor) return fail();
     }
     const shippedModule = await realpath(fileURLToPath(import.meta.url));
-    const extensionPackageRoot = await owningPackageRoot(shippedModule, "ca-pi");
+    const extensionPackageRoot = await owningPackageRoot(shippedModule, "@arbiterforge/ca-pi");
     let cursor = dirname(canonicalAnchor);
     let manifest: PiManifest | undefined;
     let manifestPath = "";

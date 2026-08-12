@@ -20,6 +20,7 @@ VERSION_LITERAL = re.compile(r'"(?P<version>[^"\r\n]+)"')
 REPOSITORY = Path(__file__).resolve().parents[2]
 OFFICIAL_PROMOTION_PATHS = frozenset({
     ".codearbiter/specs/pi-support.md",
+    "package.json",
     ".codearbiter/tech-stack.md",
     ".github/scripts/test_host_descriptors.py",
     ".github/scripts/test_pi_child_live.py",
@@ -38,6 +39,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/src/pi-api.d.ts",
     "site/src/content/docs/getting-started/compatibility.md",
     "site/src/content/docs/getting-started/pi.md",
+    "site/test/content/documentation-presentation.test.ts",
     "site/src/content/docs/guides/troubleshooting.md",
     "plugins/ca-pi/CHANGELOG.md",
     "plugins/ca-pi/package.json",
@@ -47,6 +49,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/test/compaction.test.ts",
     "plugins/ca-pi/tools/test/doctor.test.ts",
     "plugins/ca-pi/tools/test/package.test.ts",
+    "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
     "plugins/ca-pi/tools/test/runner-isolation.test.ts",
 })
 # Issue #388. The receipt's whole value is telling an operator - or an agent
@@ -100,6 +103,9 @@ class PromotionTarget:
 class ReleaseSource:
     package_path: Path
     changelog_path: Path
+    # The repo-root manifest is the published npm unit (ADR-0029), rendered
+    # from the nested version; a release bump must advance both in lockstep.
+    root_package_path: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -217,6 +223,8 @@ def load_targets(path: Path) -> Targets:
         parsed_release = ReleaseSource(
             _relative_path(release.get("package_path"), "release.package_path"),
             _relative_path(release.get("changelog_path"), "release.changelog_path"),
+            None if release.get("root_package_path") is None
+            else _relative_path(release.get("root_package_path"), "release.root_package_path"),
         )
     return Targets(
         policy=PolicySource(
@@ -295,12 +303,27 @@ def _enforce_official_write_scope(repo: Path, targets: Targets) -> None:
             str(targets.release.package_path).replace("\\", "/"),
             str(targets.release.changelog_path).replace("\\", "/"),
         })
+        if targets.release.root_package_path is not None:
+            paths.add(str(targets.release.root_package_path).replace("\\", "/"))
     unknown = sorted(paths - OFFICIAL_PROMOTION_PATHS)
     if unknown:
         raise PromotionError(f"promotion recipe declares unapproved write path: {unknown[0]}")
 
 
-def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, date: str) -> tuple[Path, Path]:
+@dataclass(frozen=True)
+class _ReleasePlan:
+    """Fully-validated release writes, prepared before any file is touched."""
+    writes: tuple[tuple[Path, str], ...]
+    changed: tuple[Path, ...]
+
+
+def _plan_release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, date: str) -> _ReleasePlan:
+    """Read and validate every release input; return the writes without applying them.
+
+    Planning is separated from writing so `apply_promotion` can preflight the
+    release bump before rewriting any declared target — a stale input aborts
+    the promotion with the checkout untouched, never half-applied.
+    """
     package_path = _target_path(repo, PromotionTarget("release-package", release.package_path, "release-metadata", "-", "-", "one"))
     changelog_path = _target_path(repo, PromotionTarget("release-changelog", release.changelog_path, "release-metadata", "-", "-", "one"))
     try:
@@ -312,8 +335,6 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
         raise PromotionError("ca-pi package version must be a stable exact semver")
     major, minor, patch = _semver_key(version)
     next_version = f"{major}.{minor}.{patch + 1}"
-    package["version"] = next_version
-    package_path.write_text(json.dumps(package, indent=2) + "\n", encoding="utf-8", newline="\n")
     try:
         changelog = changelog_path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as error:
@@ -321,12 +342,33 @@ def _release_metadata(repo: Path, release: ReleaseSource, candidate: Candidate, 
     marker = "All notable changes to `ca-pi` are documented in this file."
     if changelog.count(marker) != 1:
         raise PromotionError("ca-pi changelog has no unique insertion marker")
+    package["version"] = next_version
     entry = (
         f"\n\n## [{next_version}] - {date}\n\n### Changed\n\n"
         f"- Promote the verified Pi host window through exact Pi {candidate.version}.\n"
     )
-    changelog_path.write_text(changelog.replace(marker, marker + entry, 1), encoding="utf-8", newline="\n")
-    return release.package_path, release.changelog_path
+    writes: list[tuple[Path, str]] = [
+        (package_path, json.dumps(package, indent=2) + "\n"),
+        (changelog_path, changelog.replace(marker, marker + entry, 1)),
+    ]
+    changed: list[Path] = [release.package_path, release.changelog_path]
+    if release.root_package_path is not None:
+        root_path = _target_path(repo, PromotionTarget("release-root-package", release.root_package_path, "release-metadata", "-", "-", "one"))
+        try:
+            root_manifest = json.loads(root_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            raise PromotionError(f"cannot read ca-pi root package metadata: {error}") from error
+        if not isinstance(root_manifest, dict) or root_manifest.get("version") != version:
+            raise PromotionError(
+                "ca-pi root package version does not match the nested manifest; "
+                "regenerate it before promoting",
+            )
+        root_manifest["version"] = next_version
+        # Byte-for-byte the renderer's serialization (tools/build-host-packages.py),
+        # so the generated-manifest byte contract keeps holding after the bump.
+        writes.append((root_path, json.dumps(root_manifest, indent=2, ensure_ascii=False) + "\n"))
+        changed.append(release.root_package_path)
+    return _ReleasePlan(writes=tuple(writes), changed=tuple(changed))
 
 
 def apply_promotion(
@@ -338,6 +380,20 @@ def apply_promotion(
 ) -> tuple[Path, ...]:
     _enforce_official_write_scope(repo, targets)
     policy = read_policy(repo, targets)
+    # Preflight the release bump before any target write: a stale release
+    # input aborts the whole promotion with the checkout untouched. The plan
+    # snapshots release-file content pre-loop, so a release path doubling as a
+    # declared target would be clobbered — refuse the recipe outright.
+    if targets.release is not None:
+        declared_release_paths = [targets.release.package_path, targets.release.changelog_path]
+        if targets.release.root_package_path is not None:
+            declared_release_paths.append(targets.release.root_package_path)
+        if len(set(declared_release_paths)) != len(declared_release_paths):
+            raise PromotionError("release paths must be distinct files")
+        overlap = sorted(str(path) for path in set(declared_release_paths) & {target.path for target in targets.targets})
+        if overlap:
+            raise PromotionError(f"release path is also a declared promotion target: {overlap[0]}")
+    release_plan = None if targets.release is None else _plan_release_metadata(repo, targets.release, candidate, date)
     changed = []
     for target in targets.targets:
         path = _target_path(repo, target)
@@ -356,8 +412,10 @@ def apply_promotion(
             newline="\n",
         )
         changed.append(target.path)
-    if targets.release is not None:
-        changed.extend(_release_metadata(repo, targets.release, candidate, date))
+    if release_plan is not None:
+        for path, content in release_plan.writes:
+            path.write_text(content, encoding="utf-8", newline="\n")
+        changed.extend(release_plan.changed)
     return tuple(changed)
 
 
@@ -385,9 +443,12 @@ def normalize_help(raw: str) -> tuple[str, ...]:
 
 def capture_help(executable: str) -> tuple[str, ...]:
     """Run a bounded public-help probe and return its normalized surface."""
+    # Windows npm installs expose only a `pi.cmd` shim, which CreateProcess
+    # cannot exec from a bare argv[0]; PATH-resolve first, like run_contract.
+    resolved = shutil.which(executable) or executable
     try:
         completed = subprocess.run(
-            [executable, "--help"],
+            [resolved, "--help"],
             check=False,
             capture_output=True,
             text=True,

@@ -1,6 +1,6 @@
 ---
 description: Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.
-argument-hint: status | dry | run <path> | audit <path> | on | off
+argument-hint: "status | dry | run <path> | audit <path> | on | off"
 ---
 
 # /ca:prune — session transcript pruner

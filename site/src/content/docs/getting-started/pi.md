@@ -6,14 +6,15 @@ journey:
   time: "12 minutes"
   outcome: "Install a pinned ca-pi preview, trust the project, opt in a repository, and verify a real gate."
   prerequisites:
-    - "Pi 0.80.5 or Pi 0.80.10"
+    - "Pi 0.80.5 or Pi 0.84.1"
     - "Node.js 22.19 or newer"
   proof: "Pi reports the pinned extension and a disposable broad-stage probe is blocked by H-03."
 ---
 
 codeArbiter ships `ca-pi` as a third sibling plugin, alongside `ca` (Claude Code) and `ca-codex`
 (Codex). All three activate from the same `.codearbiter/CONTEXT.md` and read and write the same
-checked-in `.codearbiter/` state. `ca-pi` is Git-only: there is no npm release.
+checked-in `.codearbiter/` state. Install `ca-pi` from npm (`@arbiterforge/ca-pi`) or as a pinned
+Git tag: the Git tag is the reproducible pin, and npm is the convenience channel.
 
 <div class="ca-callout ca-callout--preview"><p class="ca-callout__label">Feature Forge preview</p><p><code>ca-pi</code> is available for real use now. You are welcome to install it, use it in your repositories, and report what you find. Its automated and hosted promotion matrix is green, but broader real-world testing is still required before codeArbiter claims 100% validation or stable status.</p></div>
 
@@ -26,7 +27,7 @@ Confirm all before installing:
   a missing interpreter blocks mutating calls and points to `/ca-doctor` rather than silently
   disabling governance.
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity.
-- **A supported Pi host**: Pi 0.80.5 or Pi 0.80.10 for this release line. See
+- **A supported Pi host**: Pi 0.80.5 or Pi 0.84.1 for this release line. See
   [Compatibility](/getting-started/compatibility/) for the full matrix.
 
 ## 1. Install
@@ -38,13 +39,20 @@ or substitute the core plugin's release number:
 git ls-remote --tags --refs https://github.com/arbiterForge/codeArbiter.git "ca-pi-v*"
 ```
 
-Choose an exact tag from that output, pin it in the install source, then inspect the installed
-source and enabled resources:
+For the convenience channel, install straight from npm and inspect the installed source and
+enabled resources:
+
+```text
+pi install npm:@arbiterforge/ca-pi
+pi list
+pi config
+```
+
+To pin an exact release instead (the reproducible channel this site's runbooks verify against),
+choose an exact tag from the listing above and pin it in the install source:
 
 ```text
 pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
-pi list
-pi config
 ```
 
 Replace `<version>` with only the numeric suffix from the chosen tag. For example, the tag

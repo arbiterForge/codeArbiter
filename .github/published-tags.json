@@ -18,7 +18,15 @@
     "in core/surface/skills/release/SKILL.md.",
     "",
     "Verified 2026-07-25 against BOTH the GitHub API and an independent local clone.",
-    "Adding a tag here is a release step; see the release skill."
+    "Adding a tag here is a release step; see the release skill.",
+    "",
+    "ca-codex 0.4.1-0.4.9 and 0.4.12-0.4.13 never got a CHANGELOG section when the",
+    "manifest was bumped: they are shared-core commits (also bumping ca's own",
+    "manifest) whose payload-gate side effect never got a matching entry written",
+    "into plugins/ca-codex/CHANGELOG.md. Backfilled 2026-08-08 by composing each",
+    "section directly from that commit's own CHANGELOG: footer - grounded, not",
+    "invented - then tagging normally. See plugins/ca-codex/CHANGELOG.md history",
+    "for the reconstruction commit."
   ],
   "namespaces": [
     "v*",
@@ -26,11 +34,301 @@
     "ca-codex-v*",
     "ca-pi-v*"
   ],
-  "verified_at": "2026-08-07",
+  "verified_at": "2026-08-08",
   "tags": {
     "ca-codex-v0.2.4": {
       "commit_sha": "1fba34644c85a34c24f4c022f0910744758593e0",
       "object_sha": "a577d48bcbe1d978e111a92c1ab2e72e07549f01",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.0": {
+      "commit_sha": "c799f68ca413ab569f1bab97e07e3a6e0e9bda62",
+      "object_sha": "61708d734b03f9aa1ce54873aab4959a6c6827d4",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.1": {
+      "commit_sha": "f05d06308898e5856f18a2adfd8dc3f31f3280dd",
+      "object_sha": "4cf7af36350d9eeaf307d60ddd02cd248902daa8",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.2": {
+      "commit_sha": "11c28e8e0054f49752cc0e0bc4474b83c29b05d3",
+      "object_sha": "9aa3bd218ff76edc593082b677e3c7263aab82ec",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.3": {
+      "commit_sha": "67cbc7f985d1f7885a4c9aff7cc62e17bd1cae3b",
+      "object_sha": "6a450b3f395b7b7d72772a43c8a357c5b9af2a32",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.4": {
+      "commit_sha": "5429862a37605d80aca00eab2c36dc665bd83e6a",
+      "object_sha": "81dd3861283a7c7d29ca123a1aa0a3e9ac17c2a5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.5": {
+      "commit_sha": "45f5046bbeabb1927cdaeb14fa1986ff47ec601d",
+      "object_sha": "f72e033d840d5f5d029ea9e41bc76bfeb6ae749b",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.6": {
+      "commit_sha": "4e2dae91a5200c5db7a9daf301aff357f893b337",
+      "object_sha": "b2351ba2e311c434f2914e18f3cfb523c8e7b25b",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.3.7": {
+      "commit_sha": "b98c3217a8aaae3c05fd7f6f71bed5e887c47df5",
+      "object_sha": "0d2d95eb831c4d9d898191cc5dcbb60e72f96522",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.0": {
+      "commit_sha": "8ee5fe119ebdd1b1957e20603e22220e8d7fa4c2",
+      "object_sha": "2d0257e9d4256c3a9745780f8b63970e5b45bf23",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.1": {
+      "commit_sha": "53c788cd82ddbb50c50d657775edf5a01f10dc9e",
+      "object_sha": "229c6ef3b799a50dde2fbfe32f81317d2236cc62",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.2": {
+      "commit_sha": "d956d15006a34b4bf9075908403a7ac436a06097",
+      "object_sha": "e80045955a2d84e9363fb492127c2a9dc6424d85",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.3": {
+      "commit_sha": "762a80a2b8528d2eb48c1e32491ea0391d7c3c2b",
+      "object_sha": "9135d152792bd243908a556d109788321ff5baa2",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.4": {
+      "commit_sha": "f68d667070513fb4277219c612a0640a25686d7b",
+      "object_sha": "959bebf18a76d1eea2ec6bc09cac69a76d4b663c",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.5": {
+      "commit_sha": "6591a73320769d944f76030162d1de03a6727b59",
+      "object_sha": "63256c3fef50f3233ca1ed2661295c9818ab836e",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.6": {
+      "commit_sha": "9392446136e91ecd048b92ac3cffefa0dee6503c",
+      "object_sha": "0fbab53f2d75989fe38809f1a394d2bd93e4807b",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.7": {
+      "commit_sha": "e24f9ecd5af4e95ece876436774e84b0ed48aea8",
+      "object_sha": "32a5e630d2fe3b89a82c5f11697216ab91262da8",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.8": {
+      "commit_sha": "3ce112aeac971d821e5a639af5b606de2d826ac1",
+      "object_sha": "659ede061594b861afa2bd0f45f6a9ac613456bb",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.9": {
+      "commit_sha": "e8fa56d464560180a2a3d09eb528227b02275bfa",
+      "object_sha": "c2c25b2a808b1d5b548920940ecd3f35aa70b7ba",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.10": {
+      "commit_sha": "32b099231c5ec331aa02cc2d86defceb91d20eed",
+      "object_sha": "4e5c71739e6d22b5d1608055faa7ecf7485ef12c",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.11": {
+      "commit_sha": "9cc42369ff5ca54982713f37a1c6ed7f5dbf213b",
+      "object_sha": "130092c555094aae44217a972f3210e90539a2dc",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.12": {
+      "commit_sha": "bd247e6bde72f6f78c166d93416bb3f0c5b35e77",
+      "object_sha": "69c34d73981674b969a42ab89e3805b19b328d15",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.13": {
+      "commit_sha": "72fe591cd3db35c7c10ca27f7c7621b05e1a607a",
+      "object_sha": "dc515bf0524f4e3ddd375acebef7b1425a2cfc1f",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.14": {
+      "commit_sha": "ed6c4c09b6b58ce09186a68d494d035a9aebac27",
+      "object_sha": "7cbf02b102f3b666001b670d178bff75a3ea5597",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.15": {
+      "commit_sha": "b5eda09df8ad86578942dba7708d945bbdbb7774",
+      "object_sha": "d9c13a61a3011caf8fdb90ebb26c6ee7c3b134e5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.4.16": {
+      "commit_sha": "e3c6a9b2ac1221eabb1b0ceabefdcaf16c07fbbc",
+      "object_sha": "819a32d0e932a11c6ce9f9b1108d61065fd0e6fa",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.5.0": {
+      "commit_sha": "176d17c70a9294ffc90d7eb09190ad40df846a2f",
+      "object_sha": "993d161ec26816927236f04feaa3794d2e1afca5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.5.1": {
+      "commit_sha": "046f4b4e151a3088d1676f4d4a33c5d35a5c6ef1",
+      "object_sha": "267c5c48daa9e7ecf8e8cd2abc1f05c0caac920e",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.33": {
+      "commit_sha": "c799f68ca413ab569f1bab97e07e3a6e0e9bda62",
+      "object_sha": "e76770c302f6069d55d1ab9e44bf93a9bc944330",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.34": {
+      "commit_sha": "7274c107d1cc295068ce68f0c565e67196b37722",
+      "object_sha": "55ffa80db58fb09f42815e38c9cb566ec240f461",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.35": {
+      "commit_sha": "c9c5cbc9f627a1304f2996fe232e2f09e9976a8e",
+      "object_sha": "4faafaaa8120890069964505037ec7a692a0dcd0",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.36": {
+      "commit_sha": "2d90a2c1024253a35af39f3f2d157f9111ce0fc2",
+      "object_sha": "14937160e45de387377c4d8264b71716a0608b3f",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.38": {
+      "commit_sha": "55cf2d1e513336fc29136898d0019ed9f5ca575d",
+      "object_sha": "7a4948898be67dedafaeceb383e82b660447ebb2",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.39": {
+      "commit_sha": "f05d06308898e5856f18a2adfd8dc3f31f3280dd",
+      "object_sha": "49d10b714e1088c9cc88870039ae0732c531f1cf",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.40": {
+      "commit_sha": "5429862a37605d80aca00eab2c36dc665bd83e6a",
+      "object_sha": "77840bf52731637c438e163bddcb8a0574b976f5",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.41": {
+      "commit_sha": "45f5046bbeabb1927cdaeb14fa1986ff47ec601d",
+      "object_sha": "064d4a439ab089b39c7bdd50712026bfef40c3d9",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.42": {
+      "commit_sha": "4e2dae91a5200c5db7a9daf301aff357f893b337",
+      "object_sha": "6d11fc722d5b9f42f4f9d51a2f0b4e1b9ca27505",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.1.43": {
+      "commit_sha": "b98c3217a8aaae3c05fd7f6f71bed5e887c47df5",
+      "object_sha": "f70059be12edd278007b54905e59b34582696553",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.0": {
+      "commit_sha": "8ee5fe119ebdd1b1957e20603e22220e8d7fa4c2",
+      "object_sha": "7b2ddd1bca465ee758a1319c7b9de3a493122933",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.1": {
+      "commit_sha": "53c788cd82ddbb50c50d657775edf5a01f10dc9e",
+      "object_sha": "bdd6c6501ea030cf57f3bf64f80dbb98dd532de3",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.2": {
+      "commit_sha": "d956d15006a34b4bf9075908403a7ac436a06097",
+      "object_sha": "8c5b3a19808d44fce5df84fe270349fc821e8d08",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.3": {
+      "commit_sha": "762a80a2b8528d2eb48c1e32491ea0391d7c3c2b",
+      "object_sha": "dd092669eeff2ab71003f92abfcee4e394eff569",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.4": {
+      "commit_sha": "f68d667070513fb4277219c612a0640a25686d7b",
+      "object_sha": "eb522e17eb1976cf46e5f971250dfc88c0c22914",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.5": {
+      "commit_sha": "6591a73320769d944f76030162d1de03a6727b59",
+      "object_sha": "21e8b3743023fc575fbe2341e9c6ad0c00504310",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.6": {
+      "commit_sha": "9392446136e91ecd048b92ac3cffefa0dee6503c",
+      "object_sha": "b3d7a9fc707cee1df2b8163e2991c4c4cb08a4d7",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.7": {
+      "commit_sha": "e24f9ecd5af4e95ece876436774e84b0ed48aea8",
+      "object_sha": "c5a1810f453de2467fb40509b68f42e30257656d",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.8": {
+      "commit_sha": "3ce112aeac971d821e5a639af5b606de2d826ac1",
+      "object_sha": "c8e1e55f17d283db9aa7cde4034b89318de59a01",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.9": {
+      "commit_sha": "e8fa56d464560180a2a3d09eb528227b02275bfa",
+      "object_sha": "3224db91c8d9a7bc4d28b923c001aa12ce0f521c",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.11": {
+      "commit_sha": "32b099231c5ec331aa02cc2d86defceb91d20eed",
+      "object_sha": "5ef6afcae577222d11ea242488af81586faaa369",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.12": {
+      "commit_sha": "9cc42369ff5ca54982713f37a1c6ed7f5dbf213b",
+      "object_sha": "f72babc7d78b4e753888d03ddd28ec9277f0a391",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.13": {
+      "commit_sha": "bd247e6bde72f6f78c166d93416bb3f0c5b35e77",
+      "object_sha": "93c80f58ac840735a65076f08d3a7b988c8008c5",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.14": {
+      "commit_sha": "72fe591cd3db35c7c10ca27f7c7621b05e1a607a",
+      "object_sha": "76c8cb8d9ccc684ba2df6480ad6e0bb204fe1a33",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.15": {
+      "commit_sha": "ed6c4c09b6b58ce09186a68d494d035a9aebac27",
+      "object_sha": "57c6374ae0ab49dd6f10de6c200b8bed03392dda",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.16": {
+      "commit_sha": "b5eda09df8ad86578942dba7708d945bbdbb7774",
+      "object_sha": "01894ca95ba83aefa8eecd450c2ea7165fdfb3ac",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.17": {
+      "commit_sha": "e3c6a9b2ac1221eabb1b0ceabefdcaf16c07fbbc",
+      "object_sha": "d58f0c4363c7cb2d59ad7ae9b71b1df72ad3af09",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.18": {
+      "commit_sha": "c46faa6c521bb86d686c9fa638e50861a583bd81",
+      "object_sha": "75b8484459f191bd639bc299b2ce7d70d573eb68",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.2.19": {
+      "commit_sha": "94f159fa4182d62b29e8e22caabd119596c67e6d",
+      "object_sha": "472c57d6983e7f3654f106d83e70d7e747cd123d",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.3.0": {
+      "commit_sha": "176d17c70a9294ffc90d7eb09190ad40df846a2f",
+      "object_sha": "2ddba1fd27e6886ea0ed1c47f22232a23f38177b",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.3.1": {
+      "commit_sha": "046f4b4e151a3088d1676f4d4a33c5d35a5c6ef1",
+      "object_sha": "4aad168c8aceb6a593ec503ba1aecc3eaaeb05f2",
       "object_type": "tag"
     },
     "ca-sandbox-v0.1.0": {
@@ -41,6 +339,16 @@
     "ca-sandbox-v0.1.3": {
       "commit_sha": "f10385395762b02d66dad23d72aa494603083758",
       "object_sha": "c1f1197ac4afaf8d07d86d8a776ce2380c4736c5",
+      "object_type": "tag"
+    },
+    "ca-sandbox-v0.1.4": {
+      "commit_sha": "4f7a9091803af48ea43b3225da00589761317e3e",
+      "object_sha": "15b5a7c884e05e431f95449928e3918aaa5bbba1",
+      "object_type": "tag"
+    },
+    "ca-sandbox-v0.1.5": {
+      "commit_sha": "88af2ae3360fc0f6b2cbc95d739dbb2ba15c68cb",
+      "object_sha": "c5513a2c763a0dc9b844c5740a2e65a2726e5217",
       "object_type": "tag"
     },
     "v2.0.0": {

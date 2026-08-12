@@ -148,8 +148,8 @@ describe("documentation presentation regressions", () => {
   it("OBL-CONTENT-02 gives Pi exact supported hosts and a mechanical tag lookup", () => {
     const pi = readFileSync(join(docsRoot, "getting-started", "pi.md"), "utf8");
 
-    expect(pi).toContain("Pi 0.80.5 or Pi 0.80.10");
-    expect(pi).not.toContain("Pi 0.80.10 or newer");
+    expect(pi).toContain("Pi 0.80.5 or Pi 0.84.1");
+    expect(pi).not.toContain("Pi 0.84.1 or newer");
     expect(pi).toContain("git ls-remote --tags --refs");
     expect(pi).toContain('"ca-pi-v*"');
   });

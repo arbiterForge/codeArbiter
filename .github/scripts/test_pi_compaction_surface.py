@@ -20,7 +20,7 @@ class PiCompactionSurfaceTests(unittest.TestCase):
         self.assertEqual(rendered_text, source_text.replace("{{PLUGIN_ROOT}}", "<plugin-root>"))
         with open(os.path.join(ROOT, "plugins", "ca-pi", "generated", "roles.json"), encoding="utf-8") as handle:
             roles = json.load(handle)
-        self.assertEqual(len(roles), 28)
+        self.assertEqual(len(roles), 18)
         self.assertNotIn("compaction", {role["name"] for role in roles})
 
     def test_pi_prune_guidance_is_native_and_contains_no_claude_resume_contract(self):

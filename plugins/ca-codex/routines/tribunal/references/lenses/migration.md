@@ -1,6 +1,12 @@
 # migration — lens mandate
 
-Executed by `tribunal-migration-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `migration` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+Migration files in the assigned slice, cross-referenced against schema and query code.
+
+## Required reading
+- `<project-root>/.codearbiter/security-controls.md` — data-classification categories; `<project-root>/.codearbiter/tech-stack.md` — ORM/schema conventions.
 
 ## Checklist
 - Reversibility: rollback/down path present; destructive ops (DROP, TRUNCATE) guarded; NOT NULL added without DEFAULT/backfill; single-step rename that breaks queries mid-deploy.

@@ -231,3 +231,24 @@ This branch (`claude/investigate-token-efficiency-bbf17t`) carries:
 - this plan doc.
 
 Local resume: `git pull`, then run the runbook from Step 0 in your terminal Claude Code (statusline, prune ledger, the 2a test, sampling, and — when ready — the `--farm` test all need the live local session).
+
+## 2026-08-08 — registry visibility findings (surface-tiering campaign, ADR-0028)
+
+Live harness probes (scratch plugin, verbatim-transcription instrument — never a model's own
+inventory report, which confabulates):
+
+- `disable-model-invocation: true` verifiably removes a skill's name AND description from the
+  model-facing listing while the body stays path-loadable. The nine chain-internal skills ship it;
+  routing survives because every route is an explicit `{{PLUGIN_ROOT}}/skills/<name>/SKILL.md`
+  load (routing-table preamble + per-site citations, PR B).
+- **`feature`, `fix`, and `new-skill` are harness-reserved names**: a plugin entry with any of
+  those names is suppressed from the model-facing listing regardless of plugin or frontmatter
+  (verified with clean probes named exactly that). Typed `/ca:feature` still works; only the
+  model's listing loses the entry, and codeArbiter routes intent through ORCHESTRATOR.md, not the
+  registry. Ruling 2026-08-08: document, do not rename.
+- Unquoted `": "` in a description does NOT drop entries on current builds (a byte-exact clone of
+  feature.md's frontmatter rendered fine) — the quoting rule ships as portability hygiene matching
+  `_yaml_safe_scalar`, not as a fix.
+- `dispatching-parallel-agents` was absent for a third reason: the same name + description renders
+  fine from a small plugin, so ca's absence is registry-budget pressure (it was the longest listed
+  skill description). Moot once hidden deliberately.

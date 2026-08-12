@@ -14,7 +14,7 @@ Load and follow the tribunal skill (`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/SKILL
 
 Phase 0 (STOP) — cost estimate, model recommendation, resume check.
 Phase 1 (BLOCK) — map the codebase; risk-rank and mark trust boundaries; record AI-authorship markers and iteration depth.
-Phase 2 (BLOCK) — dispatch the eleven tribunal-* lenses in priority waves (≤5 in flight); each writes one file per finding under its own `findings/<lens>/` dir.
+Phase 2 (BLOCK) — dispatch `tribunal-lens-reviewer` once per active lens in priority waves (≤5 in flight); each dispatch writes one file per finding under its own `findings/<lens>/` dir.
 Phase 3 (BLOCK) — triage per wave from disk: dedup, independent calibration, decision vocabulary.
 Phase 4 (BLOCK) — project the human-readable report from the logs.
 Phase 5 (BLOCK) — on explicit selection, file findings as GitHub issues; idempotent against the tracker.
@@ -28,7 +28,7 @@ Phase 6 (STOP) — optional, opt-in KPI telemetry to the public codeArbiter repo
 
 ## Routes to
 
-`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/SKILL.md` — dispatches the eleven tribunal-* reviewers (and, on a large repo, the optional map-structure / map-deps mappers).
+`${CLAUDE_PLUGIN_ROOT}/skills/tribunal/SKILL.md` — dispatches `tribunal-lens-reviewer` once per active lens (and, on a large repo, the optional map-structure / map-deps mappers).
 
 ## When NOT to use
 

@@ -397,7 +397,7 @@ jobs:
         # showed only "exit code 1" with no summary, no failing test name and no
         # assertion. A cell that cannot say what broke is not worth having.
         run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-blobs/${{ matrix.os }}.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
         # the merge job silently reported `blobs merged: 0` for every run since
@@ -433,7 +433,7 @@ jobs:
           cache-dependency-path: plugins/ca/tools/package-lock.json
       - name: Install (locked)
         run: npm ci --ignore-scripts
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: coverage-blob-ca-os-*
           merge-multiple: true
@@ -515,12 +515,12 @@ jobs:
         # for this tree - runs the WHOLE suite, so measuring it honestly means
         # installing the host, exactly as `ca-pi-tools` does.
         #
-        # ONE version, not the {0.80.5, 0.80.10} matrix that job carries: this
+        # ONE version, not the whole supported-window matrix that job carries: this
         # measures which LINES execute, and that does not vary by host version in
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: npm install --global @earendil-works/pi-coding-agent@0.80.10 --ignore-scripts
+        run: npm install --global @earendil-works/pi-coding-agent@0.84.1 --ignore-scripts
       - name: Install (locked)
         # --ignore-scripts for the same reason every sibling job uses it: this
         # graph's output is a committed artifact. The graph itself is audited by
@@ -538,7 +538,7 @@ jobs:
         # showed only "exit code 1" with no summary, no failing test name and no
         # assertion. A cell that cannot say what broke is not worth having.
         run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-blobs/${{ matrix.os }}.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
         # the merge job silently reported `blobs merged: 0` for every run since
@@ -578,22 +578,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Install external Pi host (scripts disabled)
-        # ca-pi's suite is NOT runnable without a real Pi runtime: the first run
-        # of this cell failed 20 tests in runner-isolation.test.ts because the
-        # runner had none. `npm run coverage` - the command tech-stack.md names
-        # for this tree - runs the WHOLE suite, so measuring it honestly means
-        # installing the host, exactly as `ca-pi-tools` does.
-        #
-        # ONE version, not the {0.80.5, 0.80.10} matrix that job carries: this
-        # measures which LINES execute, and that does not vary by host version in
-        # any way a second cell would reveal. Pinned to the upper bound of the
-        # supported window.
-        working-directory: .
-        run: npm install --global @earendil-works/pi-coding-agent@0.80.10 --ignore-scripts
       - name: Install (locked)
         run: npm ci --ignore-scripts
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: coverage-blob-ca-pi-os-*
           merge-multiple: true
@@ -966,7 +953,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["0.80.5", "0.80.10"]
+        pi-version: ["0.80.5", "0.84.1"]
     runs-on: ${{ matrix.os }}
     # Issue #399. Worst observed cell before this split was 452s (windows-latest,
     # run 30123976665); the Windows cold `npm install --global` dominates and is
@@ -996,6 +983,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Test package, module identity, compatibility, and native binding
         run: npm test -- test/package.test.ts
+      - name: Test the sidebar hook probe against the installed Pi runtime
+        run: npm test -- test/sidebar-probe-live.test.ts
       # The host-dependent Vitest set, per the partition rule above. bridge,
       # runner-isolation, process-tree and package are platform-gated too, but
       # test_pi_platform_contract.py below already re-runs them in every cell,

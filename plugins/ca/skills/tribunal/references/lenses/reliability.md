@@ -1,6 +1,12 @@
 # reliability — lens mandate
 
-Executed by `tribunal-reliability-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `reliability` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+The assigned path slice: async correctness, error propagation, races, resource lifecycle, boundary conditions, orphan state.
+
+## Required reading
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — async model and concurrency primitives.
 
 ## Checklist
 - Async inventory: every `await`, `Promise`, and `.then()` chain has a `.catch`/`try-catch`.

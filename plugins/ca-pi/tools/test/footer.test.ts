@@ -108,7 +108,8 @@ describe("renderFooter", () => {
       │ Session │ ↓  12.3K ↑  4.6K │ $1.23 │ ctx ███████████████████░░░░░░░░░ 68% │
       │ Today │ ↓  98.8K ↑  5.4K │ $7.89 │ cache r 2.5K w 600 hit 81% · age 1h01m │
       ├┄┤
-      │ activity ● job:focused tests 2m · ✓ child:footer review 30s │
+      │ activity ● job:focused tests 2m │
+      │ ✓ child:footer review 30s │
       ╰─╯"
     `);
     for (const line of output.split("\n")) expect(fixtureTerminalWidth(line)).toBe(104);
@@ -431,6 +432,7 @@ describe("Pi footer state adapter", () => {
       },
       context: { usedTokens: 136_000, windowTokens: 200_000 },
       update: { version: "0.80.11" },
+      sparkline: [16_912],
     });
   });
 
@@ -556,6 +558,7 @@ describe("Pi footer state adapter", () => {
         costUsd: 0,
       },
       update: { version: "badversion" },
+      sparkline: [0],
     });
     expect(input).not.toHaveProperty("governance");
     expect(input).not.toHaveProperty("activity");
@@ -579,5 +582,199 @@ describe("Pi footer state adapter", () => {
     expect(failed.folder).toBe("C:/work/codearbiter");
     expect(failed.git).toEqual({ branch: "main" });
     expect(failed).not.toHaveProperty("activity");
+  });
+});
+
+describe("footer parity gaps — burn sparkline (spec pi-footer-parity-gaps O-1/O-2/O-6)", () => {
+  test("O-1: wide layout scales the per-message series into eight block levels with the last value", () => {
+    const output = plain(renderFooter({ folder: "C:/work", sparkline: [0, 1, 2, 4, 8] }, { width: 104, noColor: true }));
+
+    expect(output).toContain("burn ▁▁▂▄█ 8");
+  });
+
+  test("O-1: only the last twenty values render when the series is longer", () => {
+    const series = [999, 999, 999, 999, 999, ...Array.from({ length: 4 }, () => [0, 1, 2, 4, 8]).flat()];
+    const output = plain(renderFooter({ folder: "C:/work", sparkline: series }, { width: 104, noColor: true }));
+
+    expect(output).toContain("burn ▁▁▂▄█▁▁▂▄█▁▁▂▄█▁▁▂▄█ 8");
+    expect(output).not.toContain("█████");
+  });
+
+  test("O-1: the segment is omitted without a series and never renders compact", () => {
+    expect(plain(renderFooter({ folder: "C:/work" }, { width: 104, noColor: true }))).not.toContain("burn");
+    expect(plain(renderFooter({ folder: "C:/work", sparkline: [] }, { width: 104, noColor: true }))).not.toContain("burn");
+    expect(plain(renderFooter({ folder: "C:/work", sparkline: [1, 2, 3] }, { width: 60, compact: true, noColor: true }))).not.toContain("burn");
+  });
+
+  test("O-2/O-6: hostile values are bounded, lines stay width-exact, and NO_COLOR strips every escape", () => {
+    const input: FooterInput = { folder: "C:/work", sparkline: [Number.NaN, Number.POSITIVE_INFINITY, -5, 4] };
+    for (const width of [80, 104]) {
+      const output = renderFooter(input, { width, noColor: true });
+      expect(output).not.toMatch(/\x1b/u);
+      for (const line of output.split("\n")) expect(fixtureTerminalWidth(line)).toBe(width);
+    }
+    expect(plain(renderFooter(input, { width: 104, noColor: true }))).toContain("▁▁▁█");
+  });
+});
+
+describe("footer parity gaps — activity rows (spec pi-footer-parity-gaps O-5/O-6/O-7)", () => {
+  const SIX: FooterInput = {
+    folder: "C:/work",
+    activity: [
+      { kind: "job", label: "one", state: "active", ageSeconds: 120 },
+      { kind: "child", label: "two", state: "completed", ageSeconds: 30 },
+      { kind: "child", label: "three", state: "active", ageSeconds: 5 },
+      { kind: "job", label: "four", state: "completed", ageSeconds: 65 },
+      { kind: "child", label: "five", state: "active", ageSeconds: 1 },
+      { kind: "job", label: "six", state: "completed", ageSeconds: 2 },
+    ],
+  };
+
+  test("O-5: wide layout renders one row per item up to four, then a bounded overflow line", () => {
+    const lines = plain(renderFooter(SIX, { width: 104, noColor: true })).split("\n").map((line) => line.trim());
+
+    expect(lines.some((line) => line.includes("● job:one 2m"))).toBe(true);
+    expect(lines.some((line) => line.includes("✓ child:two 30s"))).toBe(true);
+    expect(lines.some((line) => line.includes("● child:three 5s"))).toBe(true);
+    expect(lines.some((line) => line.includes("✓ job:four 1m"))).toBe(true);
+    expect(lines.some((line) => line.includes("child:five"))).toBe(false);
+    expect(lines.some((line) => line.includes("job:six"))).toBe(false);
+    expect(lines.some((line) => line.includes("+2 more"))).toBe(true);
+    const rowIndexes = ["job:one", "child:two", "child:three", "job:four"]
+      .map((needle) => lines.findIndex((line) => line.includes(needle)));
+    expect([...rowIndexes].sort((left, right) => left - right)).toEqual(rowIndexes);
+    expect(new Set(rowIndexes).size).toBe(4);
+  });
+
+  test("O-5: exactly four items renders four rows and no overflow line", () => {
+    const output = plain(renderFooter(
+      { ...SIX, activity: SIX.activity!.slice(0, 4) },
+      { width: 104, noColor: true },
+    ));
+
+    expect(output).toContain("job:four");
+    expect(output).not.toContain("more");
+  });
+
+  test("O-5/O-6: the compact layout stays activity-free and rows never leak escapes under NO_COLOR", () => {
+    const compact = plain(renderFooter(SIX, { width: 60, compact: true, noColor: true }));
+    expect(compact).not.toContain("job:one");
+    expect(compact).not.toContain("more");
+
+    const wide = renderFooter(SIX, { width: 104, noColor: true });
+    expect(wide).not.toMatch(/\x1b/u);
+    for (const line of wide.split("\n")) expect(fixtureTerminalWidth(line)).toBe(104);
+  });
+
+  test("O-7: no rate segment exists and activity rows carry no token arrows", () => {
+    const output = plain(renderFooter({ ...WIDE_INPUT, ...SIX, sparkline: [1, 2] }, { width: 120, noColor: true }));
+    const activityLines = output.split("\n").filter((line) => /(?:job|child):/u.test(line));
+
+    expect(output).not.toMatch(/\brate\b/iu);
+    expect(activityLines.length).toBeGreaterThan(0);
+    for (const line of activityLines) expect(line).not.toMatch(/[↓↑]/u);
+  });
+});
+
+describe("footer parity gaps — adapter sparkline and git facts (spec pi-footer-parity-gaps O-1/O-2/O-3)", () => {
+  const NOW = new Date("2026-07-18T12:00:00-04:00");
+
+  test("O-1: derives the burn series from per-message entries even while a snapshot is active", () => {
+    const entries = [
+      assistantEntry(10, 5, 0),
+      { type: "message", message: { role: "user" } },
+      assistantEntry(20, 10, 0),
+    ];
+    const input = adaptPiFooterState({
+      pi: {},
+      context: baseContext(entries),
+      footerData: {},
+      now: NOW,
+      usageSnapshot: {
+        session: { inputTokens: 1, outputTokens: 1, costUsd: 0.1 },
+        today: { inputTokens: 1, outputTokens: 1, costUsd: 0.1 },
+      },
+    });
+
+    expect(input.sparkline).toEqual([15, 30]);
+  });
+
+  test("O-1: keeps only the last twenty messages", () => {
+    const entries = Array.from({ length: 25 }, (_, index) => assistantEntry(index + 1, 0, 0));
+    const input = adaptPiFooterState({ pi: {}, context: baseContext(entries), footerData: {}, now: NOW });
+
+    expect(input.sparkline).toEqual(Array.from({ length: 20 }, (_, index) => index + 6));
+  });
+
+  test("O-2: scans at most the final four hundred entries", () => {
+    const entries = [
+      assistantEntry(999, 999, 0),
+      ...Array.from({ length: 399 }, () => ({ type: "message", message: { role: "user" } })),
+      assistantEntry(7, 3, 0),
+    ];
+    const input = adaptPiFooterState({ pi: {}, context: baseContext(entries), footerData: {}, now: NOW });
+
+    expect(input.sparkline).toEqual([10]);
+  });
+
+  test("O-2: skips malformed entries, omits an empty series, and contains a throwing manager", () => {
+    const mixed = adaptPiFooterState({
+      pi: {},
+      context: baseContext([
+        { type: "message", message: { role: "assistant" } },
+        assistantEntry(3, 4, 0),
+      ]),
+      footerData: {},
+      now: NOW,
+    });
+    expect(mixed.sparkline).toEqual([7]);
+
+    const empty = adaptPiFooterState({ pi: {}, context: baseContext([]), footerData: {}, now: NOW });
+    expect(empty).not.toHaveProperty("sparkline");
+
+    const context = baseContext([]);
+    context.sessionManager.getEntries = () => { throw new Error("unavailable"); };
+    const failed = adaptPiFooterState({ pi: {}, context, footerData: {}, now: NOW });
+    expect(failed).not.toHaveProperty("sparkline");
+  });
+
+  test("O-3: merges refresh-time git facts with the Pi-owned branch", () => {
+    const input = adaptPiFooterState({
+      pi: {},
+      context: baseContext([]),
+      footerData: { getGitBranch: () => "main" },
+      now: NOW,
+      gitFacts: { repository: "arbiterForge/codeArbiter", dirty: true },
+    });
+
+    expect(input.git).toEqual({ repository: "arbiterForge/codeArbiter", branch: "main", dirty: true });
+  });
+
+  test("O-3: sanitizes hostile facts, ignores non-boolean dirty, and stays branch-only when absent", () => {
+    const hostile = adaptPiFooterState({
+      pi: {},
+      context: baseContext([]),
+      footerData: { getGitBranch: () => "main" },
+      now: NOW,
+      gitFacts: { repository: "own\x1b[31mer/na\x00me", dirty: "yes" },
+    });
+    expect(hostile.git).toEqual({ repository: "owner/name", branch: "main" });
+
+    const absent = adaptPiFooterState({
+      pi: {},
+      context: baseContext([]),
+      footerData: { getGitBranch: () => "main" },
+      now: NOW,
+    });
+    expect(absent.git).toEqual({ branch: "main" });
+
+    const factsOnly = adaptPiFooterState({
+      pi: {},
+      context: baseContext([]),
+      footerData: {},
+      now: NOW,
+      gitFacts: { repository: "arbiterForge/codeArbiter", dirty: false },
+    });
+    expect(factsOnly.git).toEqual({ repository: "arbiterForge/codeArbiter", dirty: false });
   });
 });

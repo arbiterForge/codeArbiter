@@ -307,6 +307,20 @@ def main(argv):
       merge-readiness <head_sha> <checks_json> prints green | missing | pending |
                                                sha_mismatch | not_successful
       peel-tag <tag>                           stdin=`git ls-remote --tags` -> commit sha / ""
+      auto-eligible <manifest_version> <prefix>
+                                               stdin=tags -> true | false. True iff no
+                                               tag exists yet for this series (first
+                                               introduction) or manifest_version is a
+                                               strict SemVer advance over the series'
+                                               last tag — i.e. there is untagged work
+                                               to publish. Backs the auto-tag-on-merge
+                                               preflight (push-triggered, no dispatch
+                                               input): the same "is this genuinely new"
+                                               question payload_version_gate.py asks
+                                               per-PR, asked again at tag time so a push
+                                               that did not advance a target's manifest
+                                               is silently skipped rather than re-tagging
+                                               or erroring.
 
     The three release.yml subcommands print a LABEL and exit 0; the workflow
     cases on the label with a fail-closed `*)` arm, so an unrecognised label -
@@ -368,6 +382,15 @@ def main(argv):
         return 0
     if cmd == "peel-tag" and len(rest) == 1:
         print(peel_tag(sys.stdin.read(), rest[0]))
+        return 0
+    if cmd == "auto-eligible" and len(rest) == 2:
+        manifest_version, prefix = rest
+        last_tag = last_tag_select(sys.stdin.read().split(), prefix)
+        if last_tag == NONE_SENTINEL:
+            print("true")  # first introduction for this series - always eligible
+            return 0
+        print("true" if semver_greater(manifest_version, _bare_version(last_tag))
+              else "false")
         return 0
     sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")
     return 2

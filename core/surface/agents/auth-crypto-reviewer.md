@@ -15,6 +15,8 @@ Read-only. Enforce whatever `{{PROJECT_DIR}}/.codearbiter/security-controls.md` 
 
 `{{PROJECT_DIR}}/.codearbiter/security-controls.md` — full read: maturity, approved and forbidden crypto primitives, key requirements, TLS requirements, approved secrets store.
 
+`{{PLUGIN_ROOT}}/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
+
 ## Hard Blocks (Always)
 
 These block the PR regardless of context. None is advisory:
@@ -40,7 +42,7 @@ These block the PR regardless of context. None is advisory:
 - Session invalidation paths exist (logout, expiry).
 
 **Secrets handling:**
-- Trace every secret read: does it come from the approved store? Consult the `secret-handling` skill for secret-store policy.
+- Trace every secret read: does it come from the approved store? Consult the `secret-handling` skill (`{{PLUGIN_ROOT}}/skills/secret-handling/SKILL.md`) for secret-store policy.
 - Trace every secret pass: could it reach a function that logs it?
 - No secret in error messages or HTTP responses.
 
@@ -51,35 +53,8 @@ These block the PR regardless of context. None is advisory:
 
 ## Findings Format
 
-```
-**Severity:** CRITICAL | HIGH | MEDIUM | LOW
-**File:** <path>:<line>
-**Description:** <specific finding — name the algorithm, the function, the value>
-**Control:** <section from {{PROJECT_DIR}}/.codearbiter/security-controls.md>
-**Remediation:** <concrete replacement or fix>
-```
+Per `{{PLUGIN_ROOT}}/includes/reviewer-contract.md`, plus a `**Control:**` line — the section from `{{PROJECT_DIR}}/.codearbiter/security-controls.md`. Name the algorithm, the function, the value in the description.
 
 ## Output
 
-```
-## Auth/Crypto Review — <date>
-
-### CRITICAL findings (N)
-[findings or "none"]
-
-### HIGH findings (N)
-[findings or "none"]
-
-### MEDIUM findings (N)
-[findings or "none"]
-
-### LOW findings (N)
-[findings or "none"]
-
-### Gate status
-PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
-```
-
-## Out-of-Scope Findings
-
-**Out-of-scope finding:** do not act on it and do not author an ADR for it (ADRs are user-attributed, via `/adr` only). Mark it inline with a `[NEEDS-TRIAGE]` marker; never silently drop it.
+The review output template in `reviewer-contract.md`, with `<Role>` = Auth/Crypto.
