@@ -251,7 +251,7 @@ children do not receive the parent-only footer, background-job, or nested-dispat
 
 - **Event:** `UserPromptSubmit` and `PreCompact`.
 - **Script:** `prune-transcript.py`.
-- **What it does:** Prunes transcript clutter to extend session lifetime, and emits a cold-miss nudge. The live transcript is only ever touched on the hook path; per-session prune state is recorded for the statusline. On `UserPromptSubmit` it also runs an **audit staleness check**: a non-blocking warning when an active `/sprint` or `/dev` flow has not appended its expected audit-log line within a bounded window (the completeness companion to the H-05 integrity guards; a warn, never a gate).
+- **What it does:** Prunes transcript clutter to extend session lifetime, and emits a cold-miss nudge. The live transcript is only ever touched on the hook path; per-session prune state is recorded for the statusline. On `UserPromptSubmit` it also runs an **audit staleness check**: a non-blocking warning when an active `/sprint` flow, or a session holding a non-default mode (`mode --dangerous` / `mode --ops`), has not appended its expected audit-log line within a bounded window (the completeness companion to the H-05 integrity guards; a warn, never a gate).
 - **Why:** Keeps long sessions inside the context budget, and surfaces an audit flow that has gone silent.
 - **Fail posture:** Non-blocking (always exits 0).
 

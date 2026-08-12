@@ -35,6 +35,7 @@ working-tree state, writes nothing.
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 import unittest
@@ -215,6 +216,37 @@ class TestHistoricalSurfacesAreByteFrozen(unittest.TestCase):
             violations, [],
             f"pre-existing content changed or removed since merge-base {base}: {violations}",
         )
+
+
+class TestEveryCitedSectionNumberResolves(unittest.TestCase):
+    """Hook block messages cite `§N` at the user; those citations must land.
+
+    The numbering rule used to live only in an HTML comment at the top of
+    safety-core.md — invisible in rendered Markdown, and enforced by nothing.
+    A renumbering during an ordinary edit would leave ~30 fail-closed block
+    messages pointing at a section that no longer exists, and the suite would
+    stay green while every one of them dangled.
+
+    Reads the citations out of the enforcement sources rather than hard-coding
+    them, so a NEW citation is covered the moment it is written.
+    """
+
+    _CITATION = re.compile(r"(?:ORCHESTRATOR|safety-core) §([0-9]+)")
+    _HEADING = re.compile(r"^## §([0-9]+)\b", re.M)
+
+    def test_each_section_cited_by_a_hook_exists_in_safety_core(self):
+        cited = set()
+        for path in sorted((REPO / "core" / "pysrc").glob("*.py")):
+            cited |= set(self._CITATION.findall(path.read_text(encoding="utf-8")))
+        self.assertTrue(cited, "no §N citations found — this guard would measure nothing")
+        present = set(self._HEADING.findall(
+            (REPO / "core" / "surface" / "includes" / "safety-core.md").read_text(encoding="utf-8")))
+        self.assertEqual(
+            sorted(cited - present), [],
+            "hook block messages cite section(s) that safety-core.md does not define. "
+            "Section numbers are a public interface: renumbering breaks every citation "
+            "at once, and only the user sees the dangling reference. "
+            "cited={} present={}".format(sorted(cited), sorted(present)))
 
 
 if __name__ == "__main__":

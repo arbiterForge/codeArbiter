@@ -28,7 +28,7 @@ no emojis, no flattery.
 - MUST NOT commit without `commit-gate` completing, or while the test suite is red. Sole exception: a `spike/*` branch (via `/spike`), which can never merge or PR.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing.
 - MUST NOT redefine domain vocabulary without updating `.codearbiter/CONTEXT.md`.
-- MUST log every `/override`, every `/sprint` auto-decision, and every `/dev` entry/exit to the `.codearbiter/` audit trail.
+- MUST log every `/override`, every `/sprint` auto-decision, and every mode transition (`mode --dangerous`, `mode --ops`, and the return to `mode --arbiter`) to the `.codearbiter/` audit trail.
 - MUST load {{IF:claude}}skill/agent/command{{ELSE}}skill/routine{{END}} bodies on invocation only; the `INDEX.md` files are the surface scan. No bulk reads.
 
 ---

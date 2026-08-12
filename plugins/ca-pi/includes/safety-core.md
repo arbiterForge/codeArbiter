@@ -1,14 +1,16 @@
-<!-- codeArbiter — safety core. This file is prepended to whichever mode body is active
-(arbiter, dangerous, ops) at injection time; it is never injected alone. It states the
-invariants that hold regardless of mode. The enforcement hooks under `core/pysrc/` fire
-identically in every mode and their block messages cite a `§N` section number directly, so
-the numbering below MUST NOT change when this file is edited — a citation that stops
-resolving is a defect, not a style choice. -->
+<!-- codeArbiter — safety core. Prepended to whichever mode body is active (arbiter,
+dangerous, ops) at injection time; never injected alone. -->
 
 # Safety core
 
 **Precedence.** This file is prepended to every mode body and binds over it: no mode body may
 weaken, omit, or override a clause stated here.
+
+**Section numbers are a public interface.** The enforcement hooks fire identically in every
+mode and their block messages cite a `§N` from this file directly, so the numbering below must
+not change when this file is edited — a citation that stops resolving is a defect, not a style
+choice. Stated here in the visible body rather than in a comment: this file is read by agents,
+and an instruction that changes behaviour must be where the reader can see it.
 
 ---
 

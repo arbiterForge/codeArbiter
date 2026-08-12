@@ -9,8 +9,11 @@ All notable changes to `ca-pi` are documented in this file.
 ### Added
 
 - Orchestration **mode plane** (ADR-0030): `arbiter`, `dangerous`, and `ops`. The injected persona is
-  now `safety-core.md` plus the active mode's body, composed per turn, and the mode is flipped by a
-  whole-prompt-anchored control token intercepted at the prompt seam with no model turn.
+  now `safety-core.md` plus the active mode's body, composed rather than a single fixed file.
+  **On Pi this release is read-only:** the footer reports the active mode and the shared store is
+  keyed the same way as on the other hosts, but Pi cannot yet CHANGE the mode — the control token is
+  intercepted on Claude and Codex only. A Pi session runs `arbiter`. The input-event handler, the
+  bridge flip path, and the per-turn persona refresh are tracked and not in this release.
 - `ops` mode: an advisory carve-out permitting in-channel work that starts, observes, or exercises a
   running system, keyed on the durable artifact produced. Anything mutating tracked files, the index,
   git history, or published state stays routed and refused.
@@ -26,8 +29,9 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Removed
 
-- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface; the catalog drops
-  from 40 to 38.
+- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface. The shared source
+  catalog under `core/surface/commands/` drops from 40 to 38; Pi's own visible catalog goes 38 → 37,
+  because each host excludes entries it cannot serve and a source count is never a host count.
 
 ### Fixed
 

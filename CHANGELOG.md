@@ -34,8 +34,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Removed
 
-- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface; the catalog drops
-  from 40 to 38.
+- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface. The shared source
+  catalog under `core/surface/commands/` drops from 40 to 38, and `ca`'s own visible catalog from
+  39 to 38 — each host excludes entries it cannot serve, so a source count is never a host count.
 
 ### Fixed
 

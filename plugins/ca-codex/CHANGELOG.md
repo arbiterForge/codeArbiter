@@ -28,8 +28,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Removed
 
-- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface; the catalog drops
-  from 40 to 38.
+- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface. The shared source
+  catalog under `core/surface/commands/` drops from 40 to 38; Codex's own visible catalog goes 37 → 36,
+  because each host excludes entries it cannot serve and a source count is never a host count.
 
 ### Fixed
 
