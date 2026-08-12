@@ -213,6 +213,17 @@ and release surfaces; `CONTEXT.md` vocabulary.
 55. Every enforcement gate produces an identical `(returncode, tag)` for the whole existing
     `test_hook_guards.py` corpus in all three modes.
 
+### End-to-end and cost
+*(AC-56/57 added post-approval by `writing-plans` Phase 1's negative-judgment question — the ledger was
+unit-level throughout and bounded no per-turn cost.)*
+
+56. A live end-to-end run on each host proves the full path: typing the token flips the mode, the next
+    turn's context carries the new mode's composed persona, and a subsequent turn does not re-inject.
+    Verified against observed session behavior, not a self-report.
+57. The interceptor's added per-turn cost is bounded and measured, including the AC-11 ledger read,
+    against `UserPromptSubmit`'s 30-second timeout — with the audit log at its current size and an
+    order-of-magnitude larger.
+
 ## Open questions
 
 None blocking. `[CONFIRM-05]` is unrelated and untouched.
