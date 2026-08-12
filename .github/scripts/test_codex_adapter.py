@@ -348,6 +348,74 @@ class TestPreToolAdapterBrokenInstall(unittest.TestCase):
             self.assertEqual(json.loads(res.stdout).get("decision"), "block")
 
 
+class TestPreToolAdapterExecWorkdir(unittest.TestCase):
+    """The Codex exec surface can name a command-specific ``workdir`` that
+    differs from the session's top-level ``cwd``.  H-01 must judge the former:
+    a linked feature worktree must not inherit the main checkout's branch, and
+    an explicit main workdir must not inherit a feature session's branch.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        td = self._tmp.name
+
+        def live_guard(script):
+            with open(os.path.join(CODEX_HOOKS, script), encoding="utf-8") as f:
+                return f.read()
+
+        self.adapter = stage_codex_hooks(td, live_guard)
+        self.main = stage_repo(td, "main", enabled=True)
+        subprocess.run(["git", "config", "core.autocrlf", "false"], cwd=self.main,
+                       check=True, timeout=60)
+        subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=self.main,
+                       check=True, timeout=60)
+        subprocess.run(["git", "config", "user.email", "h@example.com"],
+                       cwd=self.main, check=True, timeout=60)
+        subprocess.run(["git", "config", "user.name", "harness"],
+                       cwd=self.main, check=True, timeout=60)
+        with open(os.path.join(self.main, "seed.txt"), "w", encoding="utf-8") as f:
+            f.write("seed\n")
+        subprocess.run(["git", "add", ".codearbiter/CONTEXT.md", "seed.txt"],
+                       cwd=self.main, check=True, timeout=60)
+        subprocess.run(["git", "commit", "-q", "-m", "seed"], cwd=self.main,
+                       check=True, timeout=60)
+        self.feature = os.path.join(td, "feature-worktree")
+        subprocess.run(["git", "worktree", "add", "-q", "-b", "codex/feature",
+                        self.feature], cwd=self.main, check=True, timeout=60)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _run(self, session_cwd, command_workdir):
+        payload = {
+            "hook_event_name": "PreToolUse",
+            "tool_name": "exec_command",
+            "cwd": session_cwd,
+            "tool_input": {
+                "command": "git commit -m x",
+                "workdir": command_workdir,
+            },
+        }
+        return subprocess.run(
+            [sys.executable, self.adapter], input=json.dumps(payload), text=True,
+            capture_output=True, timeout=60, cwd=session_cwd, env=adapter_env(),
+        )
+
+    def test_linked_feature_workdir_is_not_blocked_by_main_session_root(self):
+        res = self._run(self.main, self.feature)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual(res.stdout, "", res.stdout)
+        self.assertNotIn("H-01", res.stderr)
+
+    def test_explicit_main_workdir_still_blocks_from_feature_session_root(self):
+        res = self._run(self.feature, self.main)
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertNotEqual(res.stdout, "",
+                            "H-01 must inspect the explicit main workdir")
+        self.assertEqual(json.loads(res.stdout).get("decision"), "block")
+        self.assertIn("H-01", res.stdout)
+
+
 class TestPreToolAdapterWriteToolSet(unittest.TestCase):
     """The adapter routes write-vs-exec off its own literal set because it runs
     BEFORE the shared helpers are imported. That copy is only safe if it is
