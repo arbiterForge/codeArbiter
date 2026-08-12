@@ -188,6 +188,17 @@ Follow the complete
 [first-repository walkthrough](https://arbiterforge.github.io/codeArbiter/getting-started/quickstart/)
 for expected output, proof, and recovery.
 
+## Practice before using your own repository
+
+[Arbiter Academy](https://arbiterforge.github.io/arbiter-academy/) is an optional practice course for
+codeArbiter. It starts in a personal fork of the Academy repository, so you can make real commits,
+inspect governed evidence, and recover from a failed attempt without placing your own project at risk.
+
+The Academy website is the lesson surface. Each published lesson identifies whether an action belongs
+in the browser, native terminal, active harness, or with the agent, then provides a copyable command,
+the result to expect, the evidence to inspect, and a safe recovery path. Start there when you want to
+learn the workflow before protecting a production repository.
+
 ## The docs are the operating manual
 
 The site is designed as a continuous path from first contact to source-backed operation:
