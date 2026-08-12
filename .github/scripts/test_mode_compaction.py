@@ -35,6 +35,7 @@ Run: python .github/scripts/test_mode_compaction.py
 import importlib.util
 import os
 import pathlib
+import re
 import sys
 import tempfile
 import time
@@ -61,6 +62,52 @@ def _fresh_repo():
 
 def _legacy_marker(root):
     return os.path.join(root, ".codearbiter", ".markers", "dev-active")
+
+
+class TestMarkerRootIsPayloadResolved(unittest.TestCase):
+    """`marker_root()` with no payload can SPAWN GIT. That is the regression.
+
+    `_activationlib.marker_root(payload=None)` delegates to the host, whose
+    docstring says to pass the raw hook JSON "for production-correct
+    resolution" and warns that a linked-worktree escalation costs "the extra
+    git spawn". A no-argument call therefore introduces a git subprocess into
+    `SessionStart`.
+
+    On Windows a bare `git` can resolve from the current directory, so a
+    project containing a `git.exe` gets ITS git executed — which is precisely
+    what `test_pi_package.py::test_real_rpc_enabled_start_never_executes_project_git…`
+    poisons a fixture to prove cannot happen. When that spawn misbehaves,
+    startup dies before reaching the git-enforcer install, and the repo loses
+    the H-01/H-02 backstop that closes `--no-verify` (ADR-0015) — silently.
+
+    Asserted at the source rather than behaviourally because the failure needs
+    a real Pi RPC session plus a poisoned PATH to reproduce, and this pins the
+    one-token difference that causes it. The behavioural proof is the RPC test
+    above going green.
+    """
+
+    def test_session_start_resolves_marker_root_from_the_payload(self):
+        """Scoped to `session-start.py` deliberately.
+
+        Three PRE-EXISTING argument-less call sites also exist — `_bashguardlib.py`,
+        `migration-pass.py`, `security-pass.py`. They are NOT in scope here and are
+        not asserted: two are standalone gate producers invoked deliberately rather
+        than on every session start, and none of them was introduced by this branch.
+        Widening this guard to them would block this PR on unrelated code. They are
+        filed separately instead — the same hazard may or may not apply, and that
+        needs its own look rather than a blanket sweep.
+        """
+        src = (PYSRC / "session-start.py").read_text(encoding="utf-8")
+        offenders = [
+            n for n, line in enumerate(src.splitlines(), 1)
+            if re.search(r"\bmarker_root\(\s*\)", line.split("#", 1)[0])
+        ]
+        self.assertEqual(
+            offenders, [],
+            "session-start.py must call marker_root WITH the hook payload. An argument-less "
+            "call can spawn git during SessionStart; on Windows that can execute a "
+            "project-local git.exe, and if the spawn misbehaves startup dies before the "
+            "git-enforcer install runs. Offending lines: {}".format(offenders))
 
 
 class TestModeSurvivesCompaction(unittest.TestCase):

@@ -851,6 +851,47 @@ def spawn_background_update_refresh(plugin, spawner=None):
         return None
 
 
+_STDIN_PAYLOAD = None  # None = not read yet; a dict once read (possibly empty)
+
+
+def _stdin_payload():
+    """The SessionStart hook's raw JSON payload as a dict, read AT MOST ONCE.
+
+    stdin is a stream: whoever reads it first consumes it, so the session_id
+    reader and the `marker_root` payload cannot each do their own read. This
+    caches the parsed dict and both callers share it.
+
+    Why `marker_root` needs the payload at all (#437 regression): its host
+    delegate resolves a linked worktree by SPAWNING GIT when it has no payload
+    to resolve from. An argument-less call therefore adds a git subprocess to
+    every session start, and on Windows a bare `git` can resolve from the
+    current directory — so a repository containing its own `git.exe` gets that
+    one executed. When that spawn misbehaves, startup dies BEFORE the
+    git-enforcer install below, and the repo silently loses the H-01/H-02
+    backstop that closes `--no-verify` (ADR-0015).
+
+    Returns {} on any failure, absence, or malformed payload — the same silent
+    degradation `_session_id_from_stdin` has always had, for the same reason:
+    a host that supplies no payload is a normal condition, not an error worth
+    a breadcrumb on every session start."""
+    global _STDIN_PAYLOAD
+    if _STDIN_PAYLOAD is not None:
+        return _STDIN_PAYLOAD
+    _STDIN_PAYLOAD = {}
+    try:
+        if sys.stdin.isatty():
+            return _STDIN_PAYLOAD
+        raw = sys.stdin.read()
+        if not raw.strip():
+            return _STDIN_PAYLOAD
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            _STDIN_PAYLOAD = data
+    except Exception:  # noqa: BLE001 — must never brick session startup
+        pass
+    return _STDIN_PAYLOAD
+
+
 def _session_id_from_stdin():
     """Best-effort session_id from the SessionStart hook's own JSON payload
     (#271 C-5) — session-start.py has never read its stdin before this. Reads
@@ -864,13 +905,7 @@ def _session_id_from_stdin():
     payload; the caller treats an empty session_id as "unavailable" and
     degrades to the pre-#271 unconditional-clear behavior."""
     try:
-        if sys.stdin.isatty():
-            return ""
-        raw = sys.stdin.read()
-        if not raw.strip():
-            return ""
-        data = json.loads(raw)
-        return str(data.get("session_id") or "") if isinstance(data, dict) else ""
+        return str(_stdin_payload().get("session_id") or "")
     except Exception:  # noqa: BLE001 — must never brick session startup
         return ""
 
@@ -1019,7 +1054,7 @@ def main():
     # below (clear_mode_marker, current_mode) — `root` (project_root) stays
     # the source-tree root for everything else (has_source, the task board,
     # provenance, git hygiene).
-    mode_root = marker_root()
+    mode_root = marker_root(_stdin_payload())
     plugin = host.plugin_root()
     ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
     session_id = _session_id_from_stdin()
