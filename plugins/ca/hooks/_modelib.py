@@ -213,7 +213,26 @@ def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
         return FLIP_NOOP
     if not write_mode(session_id, mode, root=root, payload=payload):
         return FLIP_FAILED
-    _append_override_line(root, _mode_audit_line("enter", mode, host_name=host_name, now=now))
+    # ADR-0030 position 4: EVERY transition row is staged through the #396
+    # write-ahead ledger, never a bare append. The exit half already complied;
+    # this one did not, so an unwritable overrides.log dropped the `MODE: …
+    # enter` row with no replay while `flip` still reported success — an
+    # unaudited entry into a gates-off posture, which is the one transition
+    # that must never be silent.
+    #
+    # Reporting FLIP_FAILED when the row is not confirmed is consistent rather
+    # than pessimistic: `ledger_backs` (AC-11) already refuses to compose a
+    # body whose mode has no matching `enter` row, so an unaudited marker is
+    # not in effect anyway. Saying so out loud beats leaving the user believing
+    # a flip took that the injector will ignore.
+    #
+    # Confirmed by looking for the row itself, not by the settle count: a
+    # settle can append an OLDER owed line and stall on this one, which would
+    # read as success from the count alone.
+    line = _mode_audit_line("enter", mode, host_name=host_name, now=now)
+    _settle_dev_close(root, new_line=line, host_name=host_name)
+    if not _overrides_has_line(root, line):
+        return FLIP_FAILED
     return FLIP_FLIPPED
 
 

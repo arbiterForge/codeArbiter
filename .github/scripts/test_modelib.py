@@ -682,5 +682,59 @@ class TestContextDomainVocabulary(unittest.TestCase):
         self.assertNotIn("SessionStart persona injection", text)
 
 
+class TestEnterRowIsLedgerBacked(unittest.TestCase):
+    """ADR-0030 position 4: every transition row goes through the write-ahead
+    ledger, never a bare append.
+
+    The exit half complied; `flip` did not. An unwritable audit trail therefore
+    dropped the `MODE: <name> enter` row with no replay while `flip` still
+    returned FLIP_FLIPPED — an unaudited entry INTO a gates-off posture, which
+    is the one transition that must never be silent.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _refuse_appends(self):
+        return mock.patch.object(_modelib, "_append_override_line", return_value=False)
+
+    def _trail_text(self):
+        try:
+            with open(_modelib._overrides_log_path(self.root), encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            return ""
+
+    def test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost(self):
+        with self._refuse_appends():
+            _modelib.flip("s1", "dangerous", root=self.root)
+        pending = _modelib._read_dev_pending_close(self.root)
+        self.assertIsNotNone(pending, "the enter row was dropped instead of staged")
+        self.assertTrue(any("MODE: dangerous enter" in line for line in pending["lines"]))
+
+    def test_a_flip_whose_row_never_landed_reports_failure(self):
+        """Consistent, not pessimistic: `ledger_backs` would refuse the mode
+        anyway, so the caller must not be told the flip took."""
+        with self._refuse_appends():
+            result = _modelib.flip("s1", "dangerous", root=self.root)
+        self.assertEqual(result, _modelib.FLIP_FAILED)
+
+    def test_the_owed_row_replays_on_the_next_settle(self):
+        with self._refuse_appends():
+            _modelib.flip("s1", "dangerous", root=self.root)
+        _modelib._settle_dev_close(self.root)
+        self.assertIn("MODE: dangerous enter", self._trail_text())
+
+    def test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row(self):
+        """The ledger route must not double-append or change the happy path."""
+        self.assertEqual(_modelib.flip("s1", "dangerous", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+        self.assertEqual(self._trail_text().count("MODE: dangerous enter"), 1)
+
+
 if __name__ == "__main__":
     unittest.main()
