@@ -804,6 +804,11 @@ def git_cwd(cmd, root):
     return acc
 
 
+_CODEX_EXPLICIT_WORKDIR_TOOLS = frozenset({
+    "shell_command", "exec_command", "unified_exec",
+})
+
+
 def _effective_exec_root(payload, root):
     """The git root that a `-C`-less git command in THIS Bash call actually
     runs against — the command's effective cwd — rather than always the
@@ -841,7 +846,13 @@ def _effective_exec_root(payload, root):
     unchanged — the overwhelmingly common (non-worktree) case sees zero
     behavioral difference. It returns the climbed root only when it names a
     genuinely DIFFERENT filesystem location."""
-    exec_root = _gitlib.project_root(payload if isinstance(payload, dict) else {})
+    data = payload if isinstance(payload, dict) else {}
+    tool_input = data.get("tool_input")
+    workdir = tool_input.get("workdir") if isinstance(tool_input, dict) else None
+    if (data.get("tool_name") in _CODEX_EXPLICIT_WORKDIR_TOOLS
+            and isinstance(workdir, str) and os.path.isdir(workdir)):
+        data = {"cwd": workdir}
+    exec_root = _gitlib.project_root(data)
     if os.path.normpath(os.path.abspath(exec_root)) == os.path.normpath(os.path.abspath(root)):
         return root
     return exec_root

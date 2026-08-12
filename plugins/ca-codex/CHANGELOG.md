@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.6.2] — 2026-08-12
+
+### Fixed
+
+- Codex adapter: an explicit execution workdir is honored, so H-01's branch check reads the
+  repository the command actually runs in rather than the process's own directory.
+
 ## [0.6.1] — 2026-08-08
 
 ### Changed
