@@ -1792,10 +1792,31 @@ class PiPackageTests(unittest.TestCase):
             if not hook_path.is_file():
                 hooks_dir = enabled / ".git" / "hooks"
                 present = sorted(p.name for p in hooks_dir.iterdir()) if hooks_dir.is_dir() else "<no hooks dir>"
+                # The RPC records report only that the bridge went "degraded";
+                # the bridge's own stderr never reaches them. Drive the same
+                # session_start request through the bridge DIRECTLY, in the same
+                # poisoned fixture, so the failure names itself instead of being
+                # inferred from a status string.
+                probe_environment = os.environ.copy()
+                probe_environment["CODEARBITER_GIT_EXECUTABLE"] = str(real_git)
+                probe_environment["CODEARBITER_PYTHON_EXECUTABLE"] = str(Path(sys.executable).resolve())
+                probe_environment.pop("CLAUDE_PROJECT_DIR", None)
+                try:
+                    probe = subprocess.run(
+                        [sys.executable, str(REPO / "plugins" / "ca-pi" / "hooks" / "pi-bridge.py")],
+                        input=json.dumps({"version": 1, "event": "session_start", "cwd": str(enabled)}),
+                        cwd=enabled, env=probe_environment, text=True, encoding="utf-8",
+                        errors="replace", capture_output=True, timeout=120,
+                    )
+                    probe_report = (f"rc={probe.returncode}\n    stdout={probe.stdout[:2000]!r}\n"
+                                    f"    stderr={probe.stderr[-4000:]!r}")
+                except Exception as error:  # noqa: BLE001 — a probe must not mask the real failure
+                    probe_report = f"probe itself failed: {type(error).__name__}: {error}"
                 self.fail(
                     "session_start did not install the git-level enforcement backstop.\n"
                     f"  .git/hooks contains: {present}\n"
                     f"  project-git sentinel fired: {sentinel.exists()}\n"
+                    f"  direct bridge session_start probe: {probe_report}\n"
                     "  RPC records follow:\n    "
                     + "\n    ".join(json.dumps(record)[:2000] for record in records))
             hook = hook_path.read_text(encoding="utf-8")
