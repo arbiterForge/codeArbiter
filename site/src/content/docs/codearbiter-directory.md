@@ -268,12 +268,20 @@ recreate the file on its next append.
 ## overrides.log
 
 The append-only, permanent audit trail of every `/ca:override` bypass and every mode-plane
-`MODE: <name> enter`/`MODE: <name> exit` transition (`mode --dangerous`/`--ops`, a deterministic
-whole-prompt token flip, never a command). Format: `[ISO-8601] | BY: <name> <<email>> | GATE: <gate
-bypassed> | REASON: <reason>`. Readers accept legacy `DEV:` rows too, since existing history is
-append-only and never rewritten. The operator identity comes from `git config user.email`; if it's
-unset, the user is asked once rather than recording an empty `BY:` field. The statusline counts
-entries newer than the `last-checkpoint` marker as "overrides since last checkpoint."
+transition (`mode --dangerous`/`--ops`, a deterministic whole-prompt token flip, never a command).
+
+**Two row formats share this file — do not read one as the other.**
+
+| | Override row | Mode-transition row |
+|---|---|---|
+| Format | `[ISO-8601] \| BY: <name> <<email>> \| GATE: <gate bypassed> \| REASON: <reason>` | `[ISO-8601] \| BY: session-mode \| HOST: <host> \| MODE: <name> enter\|exit \| NOTE: —` |
+| Identity | the operator, from `git config user.email`; if unset the user is asked once rather than recording an empty `BY:` | the literal `session-mode` — a mode flip is a posture change by the session, **not** an act attributed to a person |
+| Fields | `GATE` and `REASON` | `HOST` and `MODE`; no `GATE`, no `REASON` |
+
+A `MODE:` row is therefore **not** a user-attributed override, and counting the two together
+overstates how often a human bypassed a gate. Readers accept legacy `DEV:` rows too, since existing
+history is append-only and never rewritten. The statusline counts entries newer than the
+`last-checkpoint` marker as "overrides since last checkpoint."
 
 **Writers:** `/ca:override`, the mode-plane flip (`prompt-submit.py`, `MODE:` entry/exit lines).
 **Readers:** statusline, `/ca:status`,

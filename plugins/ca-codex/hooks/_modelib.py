@@ -144,6 +144,14 @@ def current_mode(session_id, root=None, payload=None):
     return value, None
 
 
+# How many times `write_mode` will re-read-modify-write before giving up. Small
+# on purpose: this runs on the prompt seam, and the contention it exists for is
+# two sessions writing DIFFERENT keys of one small map — a case that converges
+# immediately, not one that needs backoff. A genuinely unwritable path fails on
+# the first attempt and the rest cost nothing.
+_WRITE_MODE_ATTEMPTS = 3
+
+
 def write_mode(session_id, mode, root=None, payload=None):
     """Persist `mode` for `session_id` (T-08, AC-1).
 
@@ -154,17 +162,42 @@ def write_mode(session_id, mode, root=None, payload=None):
     file, then `os.replace()`; on any failure the temp is removed and `path`
     is left exactly as it was (untouched if it existed, absent if it did
     not). Returns True on a confirmed write, False on failure. Never
-    raises — the caller (`flip`, T-11/T-14) decides what failure means."""
+    raises — the caller (`flip`, T-11/T-14) decides what failure means.
+
+    VERIFIED, not merely attempted. `write_text_atomic` makes each individual
+    replace atomic but does not serialize the read-modify-write PAIR, so two
+    sessions sharing one `.codearbiter/` store interleave: A reads
+    `{A: dangerous}`, B reads the same map and writes `{A: dangerous, B: …}`,
+    then A's write of `{A: arbiter}` is overwritten by B's — or lands and
+    loses B. A silently keeps a `dangerous` entry it explicitly left, and
+    `ledger_backs` does not compensate because A's own earlier `enter` row
+    still authorizes it. This repo runs worktree agents against one store, so
+    the interleaving is reachable rather than theoretical.
+
+    So the write is confirmed by re-reading it, and a lost update is retried.
+    ADR-0030 position 5 requires the return path out of `dangerous` to be "a
+    verified write" that "must surface its failure" — an unverified write that
+    is then overwritten surfaces nothing, which is the one direction the ADR
+    names as unsafe. A write that cannot be confirmed after the retries returns
+    False rather than reporting a success it cannot demonstrate."""
     path = mode_marker_path(root, payload)
-    state, _diag = _read_mode_state(root, payload)
-    state = dict(state)
-    state[session_id] = mode
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        write_text_atomic(path, json.dumps(state), newline="\n")
-        return True
-    except OSError:
-        return False
+    last_error = None
+    for _attempt in range(_WRITE_MODE_ATTEMPTS):
+        state, _diag = _read_mode_state(root, payload)
+        state = dict(state)
+        state[session_id] = mode
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            write_text_atomic(path, json.dumps(state), newline="\n")
+        except OSError as exc:
+            last_error = exc
+            continue
+        # Re-read rather than trusting the write: a concurrent writer's own
+        # replace may have landed after ours, which is invisible from here.
+        observed, _diag = _read_mode_state(root, payload)
+        if observed.get(session_id) == mode:
+            return True
+    return False
 
 
 # ---------------------------------------------------------------------------

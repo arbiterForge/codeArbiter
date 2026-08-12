@@ -238,7 +238,14 @@ class TestWriteMode(unittest.TestCase):
         # The spy: write_mode must not do its own open()/write() -- it must
         # route through write_text_atomic, the module's one atomic-write
         # primitive (mkstemp + os.replace).
-        with mock.patch("_modelib.write_text_atomic") as spy:
+        #
+        # The spy WRAPS the real primitive rather than replacing it. write_mode
+        # now confirms its write by re-reading (the lost-update fix), so a mock
+        # that persists nothing makes every write legitimately unverifiable --
+        # the delegation this test is about would then be masked by a failure
+        # the test itself created.
+        real = _modelib.write_text_atomic
+        with mock.patch("_modelib.write_text_atomic", side_effect=real) as spy:
             ok = _modelib.write_mode("sess-1", "dangerous", root=self.root)
         self.assertTrue(ok)
         spy.assert_called_once()
@@ -680,6 +687,62 @@ class TestContextDomainVocabulary(unittest.TestCase):
         # own vocabulary.
         text = self._context_text()
         self.assertNotIn("SessionStart persona injection", text)
+
+
+class TestWriteModeIsVerified(unittest.TestCase):
+    """A lost update must not read as a successful write.
+
+    `write_text_atomic` makes each replace atomic but does not serialize the
+    read-modify-write PAIR. Two sessions sharing one `.codearbiter/` store
+    interleave: A reads, B reads and writes, A's write lands and drops B — or
+    B's lands last and restores the mode A explicitly LEFT. `ledger_backs`
+    does not compensate, because A's own earlier enter row still authorizes
+    the stale entry. This repo runs worktree agents against one store.
+
+    ADR-0030 position 5 calls the return out of `dangerous` a verified write
+    whose failure must surface; an unverified write that is then overwritten
+    surfaces nothing.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_a_write_clobbered_by_a_concurrent_session_is_retried(self):
+        """Simulates the interleave: the first replace is immediately undone."""
+        original = _modelib.write_text_atomic
+        calls = {"n": 0}
+
+        def clobbering(path, text, **kwargs):
+            original(path, text, **kwargs)
+            calls["n"] += 1
+            if calls["n"] == 1:                      # a concurrent writer lands after us
+                original(path, json.dumps({"other": "ops"}), **kwargs)
+
+        with mock.patch.object(_modelib, "write_text_atomic", clobbering):
+            ok = _modelib.write_mode("mine", "arbiter", root=self.root)
+
+        self.assertTrue(ok, "a clobbered write reported success without landing")
+        state, _ = _modelib._read_mode_state(self.root)
+        self.assertEqual(state.get("mine"), "arbiter")
+
+    def test_a_write_that_never_lands_reports_failure(self):
+        """Never claim a success that cannot be demonstrated."""
+        def swallow(path, text, **kwargs):
+            return None                              # accepts, persists nothing
+
+        with mock.patch.object(_modelib, "write_text_atomic", swallow):
+            self.assertFalse(_modelib.write_mode("mine", "dangerous", root=self.root))
+
+    def test_a_concurrent_sessions_entry_is_preserved(self):
+        _modelib.write_mode("other", "dangerous", root=self.root)
+        _modelib.write_mode("mine", "ops", root=self.root)
+        state, _ = _modelib._read_mode_state(self.root)
+        self.assertEqual(state.get("other"), "dangerous")
+        self.assertEqual(state.get("mine"), "ops")
 
 
 class TestEnterRowIsLedgerBacked(unittest.TestCase):
