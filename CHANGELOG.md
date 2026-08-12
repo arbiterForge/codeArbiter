@@ -43,6 +43,15 @@ predate the plugin rewrite and are grouped by date.
   owner record to decide whether it had seen a session before. It now keeps its own anchor.
 - Mode and marker state resolved through two different roots in three places; in a linked worktree a
   transition pair could split across two audit logs, or a stale session go undetected.
+## [2.14.1] — 2026-08-12
+
+### Fixed
+
+- Shared bash guard refresh. `_bashguardlib` is re-vendored here from `core/pysrc/`, so `ca` carries
+  the same guard as its siblings. The behavior it corrects is Codex execution-workdir handling: an
+  explicit workdir is honored, so H-01's branch check reads the repository the command actually runs
+  in rather than the process's own directory. Nothing changes for a Claude session — this host never
+  sets that workdir — but the payload did, so the version advances with it.
 
 ## [2.14.0] — 2026-08-08
 

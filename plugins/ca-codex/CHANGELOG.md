@@ -37,6 +37,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   owner record to decide whether it had seen a session before. It now keeps its own anchor.
 - Mode and marker state resolved through two different roots in three places; in a linked worktree a
   transition pair could split across two audit logs, or a stale session go undetected.
+## [0.6.2] — 2026-08-12
+
+### Fixed
+
+- Codex adapter: an explicit execution workdir is honored, so H-01's branch check reads the
+  repository the command actually runs in rather than the process's own directory.
 
 ## [0.6.1] — 2026-08-08
 
