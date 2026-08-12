@@ -1784,6 +1784,20 @@ class PiPackageTests(unittest.TestCase):
                 _after_install=poison_project_after_package_install,
             )
             hook_path = enabled / ".git" / "hooks" / "pre-commit"
+            # Report WHY the enforcer is missing rather than dying on read_text.
+            # An absent hook means session_start never reached the install (the
+            # H-01/H-02 backstop that closes `--no-verify`, ADR-0015), and the
+            # RPC records carry the startup failure that explains it. A bare
+            # FileNotFoundError hides that and sends the next reader hunting.
+            if not hook_path.is_file():
+                hooks_dir = enabled / ".git" / "hooks"
+                present = sorted(p.name for p in hooks_dir.iterdir()) if hooks_dir.is_dir() else "<no hooks dir>"
+                self.fail(
+                    "session_start did not install the git-level enforcement backstop.\n"
+                    f"  .git/hooks contains: {present}\n"
+                    f"  project-git sentinel fired: {sentinel.exists()}\n"
+                    "  RPC records follow:\n    "
+                    + "\n    ".join(json.dumps(record)[:2000] for record in records))
             hook = hook_path.read_text(encoding="utf-8")
             shell_candidates = [Path(value) for value in [shutil.which("sh.exe"), shutil.which("sh")] if value]
             for parent in real_git.parents:
