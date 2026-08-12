@@ -1906,6 +1906,38 @@ class DeduplicationTest(unittest.TestCase):
                 "marker_path must be under .codearbiter/.markers/",
             )
 
+    def test_marker_path_default_prefix_is_readinject(self):
+        """marker_path with no prefix argument still yields a readinject- filename
+        (default must remain unchanged for every existing caller)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            p = ril.marker_path(tmpdir, "sess1", "a/b.py")
+            self.assertTrue(
+                os.path.basename(p).startswith("readinject-"),
+                "default prefix must remain 'readinject-': got {!r}".format(p),
+            )
+
+    def test_marker_path_custom_prefix_modeinject(self):
+        """T-30: marker_path(..., prefix='modeinject-') yields a filename starting
+        with 'modeinject-' — a second consumer's namespace, distinct from the
+        790+ existing readinject- markers."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            p = ril.marker_path(tmpdir, "sess1", "a/b.py", prefix="modeinject-")
+            self.assertTrue(
+                os.path.basename(p).startswith("modeinject-"),
+                "prefix='modeinject-' must produce a modeinject- filename: got {!r}".format(p),
+            )
+
+    def test_marker_path_custom_prefix_does_not_collide_with_default(self):
+        """Same (root, session_id, rel) but different prefixes must yield different
+        paths — the two namespaces must never collide."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            p_default = ril.marker_path(tmpdir, "sess1", "a/b.py")
+            p_custom = ril.marker_path(tmpdir, "sess1", "a/b.py", prefix="modeinject-")
+            self.assertNotEqual(
+                p_default, p_custom,
+                "different prefixes must produce different marker paths",
+            )
+
     # ------------------------------------------------------------------
     # record_injection creates .markers/ dir when it does not exist
     # ------------------------------------------------------------------
