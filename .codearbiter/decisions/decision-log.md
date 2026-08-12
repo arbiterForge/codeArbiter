@@ -1405,3 +1405,28 @@ Two sub-decisions were SMARTS-scored rather than asserted. **Startup-block handl
 Spec `.codearbiter/specs/mode-plane-deterministic-flip.md` (57 acceptance criteria) and plan `.codearbiter/plans/mode-plane-deterministic-flip.md` (87 tasks) implement this on branch `feat/mode-plane-deterministic-flip`. New: `core/pysrc/_modelib.py`, the per-turn injector, `core/surface/includes/{safety-core,dangerous-mode,ops-mode}.md`. Renamed: `core/surface/ORCHESTRATOR.md` to `arbiter.md`, carried in `core/hosts.json` `managed_subtrees` under both names during migration so the pruner can see the orphan. Modified: `session-start.py` (persona injection removed, startup block decomposed), `_hooklib._STALE_FLOWS`, `_metricslib.override_rate`, `pi-bridge.py`, `extension.ts`, `hosts.json`, README badge, `CONTRIBUTING.md`, `docs/architecture.md`, `site/scripts/generator/configuration-reference.ts`. Deleted: the two mode-entry command bodies under `core/surface/commands/`. Test pin `test_routing_and_cleanup_surface.py:79-93` is repointed — that edit is the supersession act. Filed separately: #674 (ADR-0026 unimplemented), #675 (ADR content hashing), #676 (`test_ci_impact` worktree walk).
 
 ---
+
+## DECISION-0045 — adr-0030-ratified — ADR-0030 accepted
+
+**Date:** 2026-08-12
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — direct ratification 2026-08-12 ("approved"), given after the authored ADR was presented for review.
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0030 authored as `proposed` (DECISION-0044). Authoring approval predated the document's existence, so it was deliberately not treated as ratification.
+- **Scaffold position:** n/a — ratification of an authored record.
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0030 ratified to `accepted`. Content unchanged from authoring; only the `status:` frontmatter and the mirroring `## Status` body line were edited, per the canonical template's rule that the two must agree.
+
+### SMARTS rationale
+Recording-only entry; the decision's rationale lives in DECISION-0044 and in ADR-0030 itself. The one judgement recorded here is the refusal to self-ratify: an approval to *author* cannot ratify content the approver has not read, and DECISION-0014 exists in this repo precisely because an external agent once fabricated an ADR ratification.
+
+### Implementation implication
+Unblocks the command-deletion cluster, which was gated on an accepted ADR standing behind the ADR-0022 supersession. T-66b (editing the `{{CMD:dev}}` assertion at `test_routing_and_cleanup_surface.py:79-93` — the supersession act itself) is now permitted, and with it T-64 (deleting the two command bodies), T-65 (stripping the 7 surviving `{{CMD:}}` tokens), and T-67 (catalog badge 40 to 38). Acceptance also makes ADR-0030's `governs:` globs live, so edits to the mode bodies, `_modelib.py`, and the injection path now surface a governed-file notice at write time.
+
+---

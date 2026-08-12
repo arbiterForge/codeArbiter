@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-08-12
 title: Orchestration mode plane with a composed, per-turn persona
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,9 +10,11 @@ governs: core/surface/arbiter.md, core/surface/includes/safety-core.md, core/sur
 # ADR-0030 — Orchestration mode plane with a composed, per-turn persona
 
 ## Status
-Proposed — authoring approved by SUaDtL@users.noreply.github.com on 2026-08-12 ("approve adr, route
-through /ca:adr"). Ratification to `accepted` is pending and is the user's to give; the seven
-positions below were each ruled by the user during the #437 session and are recorded, not inferred.
+Accepted — ratified by SUaDtL@users.noreply.github.com on 2026-08-12 ("approved"), after the authored
+document was presented for review. Authoring had been approved separately the same day ("approve adr,
+route through /ca:adr"); that approval was deliberately **not** treated as ratification, because the
+document did not yet exist when it was given. The seven positions below were each ruled by the user
+during the #437 session and are recorded, not inferred. Content is unchanged from authoring.
 
 ## Context
 
