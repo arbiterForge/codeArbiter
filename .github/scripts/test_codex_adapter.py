@@ -367,7 +367,11 @@ class TestPreToolAdapterExecWorkdir(unittest.TestCase):
         self.main = stage_repo(td, "main", enabled=True)
         subprocess.run(["git", "config", "core.autocrlf", "false"], cwd=self.main,
                        check=True, timeout=60)
-        subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=self.main,
+        # `branch -M`, not `checkout -b`: when the developer's `init.defaultBranch`
+        # is already `main`, `git init` created that branch and `checkout -b main`
+        # fails — which would make this whole regression test silently never run.
+        # `-M` renames whatever the initial branch is called, and is idempotent.
+        subprocess.run(["git", "branch", "-M", "main"], cwd=self.main,
                        check=True, timeout=60)
         subprocess.run(["git", "config", "user.email", "h@example.com"],
                        cwd=self.main, check=True, timeout=60)

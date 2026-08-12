@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.14.1] — 2026-08-12
+
+### Fixed
+
+- Codex adapter: an explicit execution workdir is honored, so H-01's branch check reads the
+  repository the command actually runs in rather than the process's own directory.
+
 ## [2.14.0] — 2026-08-08
 
 ### Changed

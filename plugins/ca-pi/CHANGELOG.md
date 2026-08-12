@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-08-12
+
+### Fixed
+
+- Codex adapter: an explicit execution workdir is honored, so H-01's branch check reads the
+  repository the command actually runs in rather than the process's own directory.
+
 ## [0.7.0] - 2026-08-10
 
 ### Added
