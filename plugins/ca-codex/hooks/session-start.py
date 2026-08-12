@@ -556,6 +556,49 @@ def _write_dev_session_owner(root, session_id, ts):
         pass
 
 
+def _mode_session_seen_path(root):
+    return os.path.join(root, ".codearbiter", ".markers", "mode-session-seen.json")
+
+
+def _read_mode_session_seen(root):
+    """The session_id whose SessionStart last ran in this repo, or None.
+
+    DELIBERATELY SEPARATE from `dev-session-owner.json`. That record anchors the
+    legacy `dev-active` marker's force-close and is guarded by a liveness window
+    — a bystander session must NOT overwrite it, or it would force-close a
+    concurrent owner's marker early. The mode plane needs a different question
+    answered ("has THIS session's SessionStart run before?"), and overloading one
+    record with both meanings is what let a compaction clear a live mode: when a
+    different live session owned the legacy marker, `clear_mode_marker` returned
+    early to protect that record, leaving the mode plane with no anchor at all.
+
+    Never raises; an absent or corrupt record reads as "not seen", which routes
+    to the conservative branch (clear), never to a silent retain.
+    """
+    try:
+        with open(_mode_session_seen_path(root), encoding="utf-8") as f:
+            data = json.load(f)
+        sid = data.get("session_id")
+        if isinstance(sid, str) and sid:
+            return sid
+    except Exception:  # noqa: BLE001 — absent/corrupt record -> no signal
+        pass
+    return None
+
+
+def _write_mode_session_seen(root, session_id, ts):
+    """Record that `session_id`'s SessionStart has run. Never raises — a write
+    failure degrades to "not seen", i.e. the next compaction clears the mode.
+    That is the safe direction: it restores `arbiter` (gates ON) rather than
+    silently retaining a gates-off posture on unproven state."""
+    try:
+        path = _mode_session_seen_path(root)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        write_text_atomic(path, json.dumps({"session_id": session_id, "ts": ts}))
+    except Exception:  # noqa: BLE001 — must never brick session startup
+        pass
+
+
 # --- #396/T-06: write-ahead ledger machinery extracted to _modelib ----------
 # `_settle_dev_close` and its pending-close record (the durable, retryable
 # exit machinery) moved to `_modelib.py` (mode-plane-deterministic-flip #437,
@@ -633,6 +676,18 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
     marker_live = os.path.isfile(marker)
     is_owner = bool(session_id) and prev_sid == session_id
 
+    # The mode plane's OWN "have I seen this session" anchor, read before
+    # anything below can return, and re-stamped unconditionally afterwards so
+    # every exit path records it (several of the branches below return early).
+    # It must not be derived from `is_owner`: that answers a different question
+    # (does this session own the legacy dev-active marker?), and a bystander
+    # session is deliberately NOT allowed to claim that record — which used to
+    # leave the mode plane with no anchor and let a compaction clear a live
+    # mode. See _read_mode_session_seen.
+    mode_seen = bool(session_id) and _read_mode_session_seen(root) == session_id
+    if session_id:
+        _write_mode_session_seen(root, session_id, now)
+
     if is_owner:
         # The confirmed owner, resuming/compacting: heartbeat, and
         # opportunistically CONVERT a still-live legacy marker (T-47) — the
@@ -655,7 +710,15 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
     # (1) T-42/AC-4: clear session_id's OWN mode-plane entry, if any — never
     # a different session's (see the module comment's force-close-scope
     # note). Independent of the legacy marker's liveness window below.
-    if session_id:
+    #
+    # `not mode_seen` is what distinguishes a NEW session from this session
+    # resuming or compacting. AC-4 is in fact satisfied structurally — the mode
+    # file is keyed by session_id, so a genuinely new session has no entry and
+    # already reads `arbiter` — which means this clear can only ever fire for a
+    # session that previously flipped. Without the guard that is exactly the
+    # compaction AC-25 exists to preserve, and the mode would be cleared out
+    # from under a live session.
+    if session_id and not mode_seen:
         mode, _diag = _modelib.current_mode(session_id, root=root)
         if mode != _modelib.MODES[0]:
             if host_name is None:
