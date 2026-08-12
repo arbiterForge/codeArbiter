@@ -11,14 +11,25 @@ Canonical-in-`plugins/` exceptions, owned by their lane: `plugins/{ca,ca-codex}/
 `plugins/ca/hooks/tests/**`, `plugins/ca-pi/hooks/pi-bridge.py`, `plugins/ca-pi/tools/**`,
 `plugins/ca/.claude-plugin/plugin.json`, `plugins/*/CHANGELOG.md`, `plugins/ca-pi/package.json`.
 
-**GR-2 — regeneration is Lane Z, serialized, at the end.** Consequence: `sync-core.py --check` and
-`build-surface.py --check` are **RED inside every lane by design**. To run a vendored-import test:
-```sh
-python tools/sync-core.py            # write mode, local only
-<the test>
-git checkout -- plugins/             # MANDATORY before commit
-```
-A lane that commits generated output has broken the design.
+**GR-2 — REVISED 2026-08-12: the curator regenerates at every commit; lanes never regenerate.**
+
+The original rule deferred all regeneration to Lane Z and told lanes to run `sync-core.py` in write
+mode and then `git checkout -- plugins/` to clean up. **That is now forbidden**, because multiple
+lanes run concurrently in ONE checkout while the curator stages and commits their work as it lands —
+so `git checkout -- plugins/` would silently revert content another lane already had committed.
+
+Binding rules for a lane:
+- **Read-only git only.** No `git checkout`, `git restore`, `git clean`, `git stash`, `git add`,
+  `git commit`, `git push`. `status`, `diff`, `log`, `show` are fine.
+- **Never run `tools/sync-core.py` or `tools/build-surface.py` in write mode**, not even intending to
+  undo it — there is no safe undo available to a lane anymore. `--check` is read-only and always fine.
+- Leave your files in the working tree and report; the curator regenerates and commits.
+
+The curator regenerates immediately before staging, every commit — so each commit is honestly green
+rather than deferring all truth to a final integration pass. Consequence: a `--check` may legitimately
+be RED *inside* a lane and is not a lane's problem to fix.
+
+A lane that commits, restores, or regenerates has broken the design.
 
 **GR-3 — verification class.** `[LL]` runs green inside the lane. `[PR]` can only go green in Lane Z;
 the lane's done-ness is the code, Lane Z owns the proof.
@@ -76,7 +87,7 @@ file with zero internal parallelism. Staff it first and alone.
 | `core/surface/arbiter.md` | R creates → D edits | sequential, never concurrent |
 | `README.md` | G (catalog) then H (version badge) | different lines; G lands first |
 | `.github/scripts/test_ux_conversion.py` | R (path) → D (anchors) | sequential |
-| `.codearbiter/CONTEXT.md` | G (T-73) | **H-18 protected** — route via `init-codearbiter.py` or a logged `/ca:override`; never a direct Edit |
+| `.codearbiter/CONTEXT.md` | G (T-73) | **DONE.** H-18 keys on whether the FINAL text still carries a well-formed `arbiter: enabled` — **not on the path** — so a body edit needs no override, and `init-codearbiter.py` has no vocabulary path anyway. Its *shell* flank IS path-lexical and refuses even read-only commands naming the file; mutate through the Edit tool. |
 | `plugins/**` generated | **Z only** | GR-2 |
 
 ## Task table
@@ -158,7 +169,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-70 | G | `docs/{architecture,hooks,parity}.md`, `CONTRIBUTING.md`, `site/VOICE.md`, four `site/src/content/docs/**` | `check_docs_contract.py` exits 0 [LL] | 50 | T-64 | PENDING |
 | T-71 | G | `.github/scripts/test_mode_surface.py` (new) | no live file states the old model or names the dead surfaces. **Carries the explicit AC-51 exclusion list and asserts the list is exactly that set (R-1)** — else AC-50/51 are unsatisfiable. Mutation: reintroduce one token → red [LL] | 50,51 | T-70 | PENDING |
 | T-72 | G | `test_mode_surface.py` | `git diff --exit-code` vs merge base over `gate-events.log`, `decisions/`, `sprint-log.md`, all CHANGELOGs, `docs/reports/` — zero bytes [PR] | 51 | T-71 | PENDING |
-| T-73 | G | `.codearbiter/CONTEXT.md` | three mode names **string-equal** to `_modelib.MODES`. **H-18 — route via `init-codearbiter.py` or a logged `/ca:override`, never a direct Edit** [LL] | 52 | T-07 | PENDING |
+| T-73 | G | `.codearbiter/CONTEXT.md` | three mode names **string-equal** to `_modelib.MODES`. **H-18 — route via `init-codearbiter.py` or a logged `/ca:override`, never a direct Edit** [LL] | 52 | T-07 | ACCEPTED (no override needed — H-18 keys on the resulting frontmatter, not the path) |
 | T-74 | G | `site/test/generator/extract-hook-gates.test.ts` + fixture | `npm --prefix site test` exits 0. **No-op if R-3 preserved the numbering** [LL] | 29 | T-40 | PENDING |
 | T-75 ★ | Z | generated `plugins/*/hooks/**` | `sync-core.py` then `--check` exits 0 [PR] | 46 | all core/pysrc | PENDING |
 | T-76 ★ | Z | generated `plugins/*/**.md` | `build-surface.py` then `--check` exits 0 [PR] | 46 | all core/surface | PENDING |
