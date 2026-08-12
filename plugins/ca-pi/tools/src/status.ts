@@ -172,7 +172,7 @@ export class PiFooterLifecycle {
                   questions: this.governance.questions,
                   overrides: this.governance.overrides,
                   sprint: this.governance.sprint,
-                  dev: this.governance.dev,
+                  mode: this.governance.mode,
                   ...(this.governance.prune === undefined ? {} : { prune: this.governance.prune }),
                 },
               };

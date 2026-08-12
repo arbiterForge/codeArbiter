@@ -268,7 +268,7 @@ async function createPinnedGitFixture(root: string, environment: NodeJS.ProcessE
   await cp(resolve(pluginRoot, "extensions"), resolve(worktree, "plugins", "ca-pi", "extensions"), { recursive: true });
   await cp(resolve(pluginRoot, "generated"), resolve(worktree, "plugins", "ca-pi", "generated"), { recursive: true });
   await cp(resolve(pluginRoot, "skills"), resolve(worktree, "plugins", "ca-pi", "skills"), { recursive: true });
-  await cp(resolve(pluginRoot, "ORCHESTRATOR.md"), resolve(worktree, "plugins", "ca-pi", "ORCHESTRATOR.md"));
+  await cp(resolve(pluginRoot, "arbiter.md"), resolve(worktree, "plugins", "ca-pi", "arbiter.md"));
   const extensionRoot = resolve(worktree, "plugins", "ca-pi", "extensions");
   const poisonRoot = resolve(extensionRoot, "node_modules", "@earendil-works", "pi-coding-agent");
   const wrongRoot = resolve(extensionRoot, "wrong-package");

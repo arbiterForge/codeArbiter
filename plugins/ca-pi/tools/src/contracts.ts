@@ -165,13 +165,18 @@ export interface PiFooterActivationState {
   readonly enabled: boolean;
 }
 
+export type PiFooterMode = "arbiter" | "dangerous" | "ops";
+
 export interface PiFooterStatusSnapshotPortResult {
   readonly stage: string;
   readonly tasks: number;
   readonly questions: number;
   readonly overrides: number;
   readonly sprint: boolean;
-  readonly dev: boolean;
+  /** #437: the orchestration mode. Replaced `dev: boolean` — a boolean
+   *  cannot express three postures, and the footer must render each
+   *  distinctly (AC-38). Values match `_modelib.MODES` exactly. */
+  readonly mode: PiFooterMode;
   readonly prune?: string;
 }
 
