@@ -17,6 +17,8 @@ project context. You decide. codeArbiter enforces.
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
 [Start learning](https://arbiterforge.github.io/codeArbiter/learn/)
+&nbsp;&nbsp;&#183;&nbsp;&nbsp;
+[Practice in Arbiter Academy](https://arbiterforge.github.io/arbiter-academy/)
 &nbsp;&nbsp;·&nbsp;&nbsp;
 [Install](https://arbiterforge.github.io/codeArbiter/getting-started/install/)
 &nbsp;&nbsp;·&nbsp;&nbsp;
@@ -187,6 +189,18 @@ live-fire probe before you treat the repository as governed.
 Follow the complete
 [first-repository walkthrough](https://arbiterforge.github.io/codeArbiter/getting-started/quickstart/)
 for expected output, proof, and recovery.
+
+## Practice in Arbiter Academy
+
+[Arbiter Academy](https://arbiterforge.github.io/arbiter-academy/) is the hands-on course for
+codeArbiter. In Preview 0.6, only F01 and F02 are currently published and guided. Start from your
+own GitHub fork so every exercise branch, reset, and commit remains
+in a repository you control. Each published lesson identifies the exact surface for a step: the
+browser, native terminal, active CodeArbiter harness, or the Academy helper.
+
+Use the Academy before applying the same workflow to a production repository. It preserves failed
+attempts for inspection and gives you an explicit recovery path instead of asking you to recreate
+state by hand.
 
 ## The docs are the operating manual
 
