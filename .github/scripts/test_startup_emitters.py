@@ -830,6 +830,48 @@ class TestPersonaPinningSurvivesTheRealClaudeCodec(unittest.TestCase):
                             "strips the persona's thinking block -- the guard was load-bearing")
 
 
+
+class TestQuotingTheSentinelDoesNotPinTheQuote(unittest.TestCase):
+    """A tool result that merely CONTAINS the sentinel is not the persona.
+
+    The literal ships inside this repo's own sources - `_modelib.py`,
+    `prompt-submit.py`, `extension.ts` and their tests - so a Read of any of
+    them, or a Grep for the sentinel itself, produced a transcript line that
+    pinned permanently at every tier. The transcript kept growing while the
+    pruner reported it protected, and agents here read and grep those files
+    routinely, so this was reachable rather than theoretical.
+
+    AC-26 asks for the INJECTION to be pinned, not every copy of the string.
+    The injection arrives as a message; a file's contents arrive as a tool
+    result, which is the discriminator used here.
+    """
+
+    def _index_for(self, obj):
+        blob = (_prunelib._dumps(obj) + chr(10)).encode("utf-8")
+        lines = _prunelib.load_lines(blob)
+        return _prunelib.build_index(lines, _prunelib.Config(tier="aggressive", keep_recent=0))
+
+    def test_a_tool_result_quoting_the_sentinel_is_not_pinned(self):
+        quoted = "core/pysrc/_modelib.py:44:PERSONA_SENTINEL = " + _modelib.PERSONA_SENTINEL
+        index = self._index_for({
+            "type": "user", "uuid": "r0", "parentUuid": "a0",
+            "message": {"role": "user", "content": [{
+                "type": "tool_result", "tool_use_id": "t0", "content": quoted,
+            }]},
+        })
+        self.assertEqual(index.pinned_ordinals, frozenset(),
+                         "grepping for the sentinel pinned the grep output forever")
+
+    def test_the_injected_persona_message_is_still_pinned(self):
+        """The narrowing must not cost the property it protects."""
+        composed = "safety core body" + chr(10) * 2 + _modelib.PERSONA_SENTINEL
+        index = self._index_for({
+            "type": "user", "uuid": "p0", "parentUuid": None,
+            "message": {"role": "user", "content": composed},
+        })
+        self.assertEqual(len(index.pinned_ordinals), 1)
+
+
 if __name__ == "__main__":
     if "--regen" in sys.argv:
         for name in ("startup-arbiter.json", "startup-dangerous.json"):

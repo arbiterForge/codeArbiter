@@ -217,18 +217,26 @@ def plan_prune(entries, policy):
     protected = tuple(entry.id for entry in entries
                       if entry.ordinal >= boundary or entry.pinned)
     selected = select_strategies(policy.tier, policy.strategies)
-    actions = tuple((entry.id, _action_for(entry, selected, policy))
-                    for entry in entries if entry.ordinal < boundary and not entry.pinned)
-    marked = sum(1 for entry in entries
-                if entry.ordinal < boundary and not entry.pinned and entry.marked)
+    # `candidates` is named once and reused for the actions, the counts and the
+    # audit code, because those three drifted apart the moment pinning arrived:
+    # `marked` excluded pinned entries while `boundary` still counted them, so
+    # a single pinned entry below the boundary capped `marked` at `boundary-1`
+    # and made CA-PRUNE-IDEMPOTENT unreachable — a fully condensed transcript
+    # reporting CA-PRUNE-PLAN forever. That is the normal case, not an edge:
+    # the persona is injected once, early, which puts a pinned entry below the
+    # boundary in essentially every governed session.
+    candidates = tuple(entry for entry in entries
+                       if entry.ordinal < boundary and not entry.pinned)
+    actions = tuple((entry.id, _action_for(entry, selected, policy)) for entry in candidates)
+    marked = sum(1 for entry in candidates if entry.marked)
     metrics = {
         "entries_before": len(entries),
-        "candidate_entries": boundary,
+        "candidate_entries": len(candidates),
         "protected_entries": len(protected),
         "marked_candidates": marked,
     }
-    audit_codes = (("CA-PRUNE-NOOP",) if boundary == 0
-                   else ("CA-PRUNE-IDEMPOTENT",) if marked == boundary
+    audit_codes = (("CA-PRUNE-NOOP",) if not candidates
+                   else ("CA-PRUNE-IDEMPOTENT",) if marked == len(candidates)
                    else ("CA-PRUNE-PLAN",))
     fingerprint_source = {
         "boundary": boundary,

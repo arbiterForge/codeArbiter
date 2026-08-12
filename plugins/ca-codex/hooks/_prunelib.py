@@ -191,7 +191,17 @@ def build_index(lines, cfg):
             kind=("tool-result" if _tool_result_ids(o) else "message"),
             byte_size=len(ln.raw), tool_bearing=bool(_tool_use_ids(o)),
             marked=_has_marker(dumped) if o else False,
-            pinned=(PERSONA_SENTINEL in dumped) if o else False,
+            # A TOOL RESULT that merely quotes the sentinel is not an injected
+            # persona. The literal lives in this repo's own sources
+            # (`_modelib.py`, `prompt-submit.py`, `extension.ts`, their tests),
+            # so a Read of any of them, or a Grep for the sentinel itself,
+            # produced a result that pinned permanently at every tier — the
+            # transcript kept growing while the pruner reported it protected.
+            # Agents here read and grep those files routinely, so this was
+            # reachable rather than theoretical. AC-26 needs the INJECTION
+            # pinned, not every copy of the string; the injection arrives as a
+            # message, never as a tool result.
+            pinned=(PERSONA_SENTINEL in dumped and not _tool_result_ids(o)) if o else False,
         ))
     prot = _policy.protected_ordinal(semantic, cfg.keep_recent)
     idx.protected_from = prot
