@@ -51,6 +51,7 @@ export interface PiDoctorInput {
   };
   bridge: { healthy: boolean };
   footer: { expected: boolean; initialized: boolean };
+  sidebar: { expected: boolean; installed: boolean; degraded: boolean; reason?: string };
   background: { expected: boolean; initialized: boolean; healthy: boolean };
   child: { present: boolean; artifact: "enforced" | "unknown"; path: string };
   ambientMarker: { present: boolean; validatedChild: boolean };
@@ -75,6 +76,10 @@ export interface PiDoctorCollectorDependencies {
   bridgePrepared: boolean;
   footerExpected: boolean;
   footerInitialized: boolean;
+  sidebarExpected: boolean;
+  sidebarInstalled: boolean;
+  sidebarDegraded: boolean;
+  sidebarReason?: string;
   backgroundExpected: boolean;
   backgroundInitialized: boolean;
   backgroundHealthy: boolean;
@@ -180,6 +185,12 @@ export async function collectPiDoctorInput(
       expected: dependencies.footerExpected === true,
       initialized: dependencies.footerInitialized === true,
     },
+    sidebar: {
+      expected: dependencies.sidebarExpected === true,
+      installed: dependencies.sidebarInstalled === true,
+      degraded: dependencies.sidebarDegraded === true,
+      ...(dependencies.sidebarReason === undefined ? {} : { reason: dependencies.sidebarReason }),
+    },
     background: {
       expected: dependencies.backgroundExpected === true,
       initialized: dependencies.backgroundInitialized === true,
@@ -207,16 +218,17 @@ export async function collectPiDoctorInput(
 const REMEDIATION = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.80.5 or 0.80.10 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 0.80.5 or 0.84.1 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.80.5/0.80.10, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 0.80.5/0.84.1, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
   footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  sidebar: "Run /ca-sidebar on in a wide terminal; if the probe still reports unavailable, this Pi build changed its render surface — keep the footer and file an issue.",
   background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
   "active-dispatch": "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.",
 } as const;
@@ -243,13 +255,13 @@ function samePath(left: string, right: string): boolean {
 
 export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
   const expectedExtension = resolve(input.package.root, "extensions", "codearbiter.js");
-  const packageHealthy = input.package.declared && input.package.name === "ca-pi"
+  const packageHealthy = input.package.declared && input.package.name === "@arbiterforge/ca-pi"
     && existsSync(input.package.root) && existsSync(input.package.extensionPath)
     && samePath(input.package.extensionPath, expectedExtension)
     && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = ["0.80.5", "0.80.10"].includes(input.runtime.piVersion)
+  const versionHealthy = ["0.80.5", "0.84.1"].includes(input.runtime.piVersion)
     && versionAtLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !versionAtLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
@@ -357,6 +369,20 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
         : "The rich footer initialized outside an active interactive parent session; isolation is breached.",
     ),
     diagnosis(
+      "sidebar",
+      input.sidebar.expected
+        ? !input.sidebar.degraded
+        : !input.sidebar.installed && !input.sidebar.degraded,
+      input.sidebar.expected
+        ? input.sidebar.installed
+          ? "The probe-gated sidebar compositor is installed."
+          : `The sidebar is not installed (${input.sidebar.reason ?? "off"}); native rendering is untouched.`
+        : "The sidebar is intentionally absent outside an interactive parent session.",
+      !input.sidebar.expected && input.sidebar.installed
+        ? "The sidebar compositor installed outside an interactive parent session; isolation is breached."
+        : `The sidebar hook probe failed (${input.sidebar.reason ?? "unknown"}); this Pi build changed its render surface and native rendering is untouched.`,
+    ),
+    diagnosis(
       "background",
       input.background.expected
         ? input.background.initialized && input.background.healthy
@@ -406,7 +432,7 @@ export function diagnosePi(input: PiDoctorInput): readonly Diagnosis[] {
     {
       id: "active-dispatch",
       state: "degraded",
-      message: "Supported Pi 0.80.5/0.80.10 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
+      message: "Supported Pi 0.80.5/0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
       remediation: REMEDIATION["active-dispatch"],
     },
   ];

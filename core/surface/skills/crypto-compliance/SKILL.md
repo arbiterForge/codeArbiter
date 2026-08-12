@@ -1,6 +1,7 @@
 ---
 name: crypto-compliance
 description: The banned-primitive gate. Routed to when changed code hashes, signs, encrypts, derives keys, generates security-relevant randomness, configures TLS, or imports a crypto library. Rejects broken primitives, disabled TLS verification, and home-rolled crypto; the approved-primitive list lives in security-controls.md. The auth-crypto-reviewer agent is dispatched as the reviewer.
+disable-model-invocation: true
 ---
 
 # crypto-compliance

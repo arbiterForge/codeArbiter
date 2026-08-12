@@ -1,6 +1,7 @@
 ---
 name: tdd
 description: The test-first gate. Routed to by /feature (after the spec is approved), /fix, and /refactor before any implementation code is written. Six gated phases — obligation scan, red, green, obligation verify, coverage, lint. No feature code exists before Phase 1 clears; nothing reaches commit-gate until all six are green.
+disable-model-invocation: true
 ---
 
 # tdd

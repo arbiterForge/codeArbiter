@@ -101,6 +101,18 @@ LANES = {
 PUBLISH_JOBS = tuple(LANES)
 PREFLIGHT_JOB = "preflight"
 
+# Auto-tag-on-merge (drift-prevention campaign, adjacent to #645): one
+# push-triggered write-token job per target, mirroring LANES/PUBLISH_JOBS but
+# never creating a Release (`create-release: "false"` on every one).
+AUTO_LANES = {
+    "auto-release": {"target": "ca"},
+    "auto-release-codex": {"target": "ca-codex"},
+    "auto-release-sandbox": {"target": "ca-sandbox"},
+    "auto-release-pi": {"target": "ca-pi"},
+}
+AUTO_PUBLISH_JOBS = tuple(AUTO_LANES)
+AUTO_PREFLIGHT_JOB = "auto-preflight"
+
 # A job-level `if:` that uses one of these status functions opts OUT of the
 # implicit "all `needs` succeeded" gate — which would let a publisher run after
 # its own preflight refused the dispatch.
@@ -329,6 +341,11 @@ class _ShellHarness(unittest.TestCase):
             "GITHUB_OUTPUT": str(root / "gh-output.txt"),
             # Nothing authenticating is set here: the fake `gh` never signs in
             # and never reaches the network.
+            # Mirrors action.yml's own `create-release` default ("true") so
+            # every existing call site that never mentions it keeps exercising
+            # the manual-dispatch behavior unchanged; a test can still override
+            # via `env={"CREATE_RELEASE": "false"}`.
+            "CREATE_RELEASE": "true",
         })
         environ.update(env or {})
         proc = subprocess.run([BASH, "-c", _STUB_PRELUDE + "\n" + script],
@@ -463,7 +480,8 @@ class PublishExecutionTest(_ShellHarness):
     NAMESPACES = tuple((job, LANES[job]["tag-prefix"] + "9.9.9") for job in LANES)
 
     def _publish(self, tag, version="9.9.9", *, tag_at=None, release="none",
-                 mark_latest="false", summary="", title_prefix="codeArbiter"):
+                 mark_latest="false", summary="", title_prefix="codeArbiter",
+                 create_release="true"):
         ls_remote = ""
         if tag_at:
             ls_remote = (f"9{'0' * 39}\trefs/tags/{tag}\n"
@@ -471,7 +489,8 @@ class PublishExecutionTest(_ShellHarness):
         return self._run(_action_step(self.STEP_NAME),
                          env={"TAG": tag, "VER": version, "SUMMARY": summary,
                               "TITLE_PREFIX": title_prefix,
-                              "MARK_LATEST": mark_latest},
+                              "MARK_LATEST": mark_latest,
+                              "CREATE_RELEASE": create_release},
                          ls_remote=ls_remote, release=release, tagname=tag)
 
     def test_fresh_publish_tags_and_releases(self):
@@ -499,6 +518,84 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("publish state: resume_publish", proc.stdout)
         self.assertNotIn("git tag -a", log)
         self.assertIn("gh release create v9.9.9", log)
+
+    # -- #645-adjacent auto-tag-on-merge: create-release="false" ---------------
+    def test_create_release_false_tags_and_pushes_but_never_calls_release_create(self):
+        proc, log, _ = self._publish("v9.9.9", create_release="false")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("publish state: publish_fresh", proc.stdout)
+        self.assertIn("git tag -a v9.9.9", log)
+        self.assertIn("git push origin refs/tags/v9.9.9", log)
+        self.assertNotIn("gh release create", log)
+
+    def test_create_release_false_on_an_already_tagged_commit_is_a_no_op(self):
+        # Steady state after the FIRST auto-tag run for a version: the tag
+        # already exists at GITHUB_SHA, and there is deliberately no Release
+        # to create — resume_publish must not retry anything.
+        proc, log, _ = self._publish("v9.9.9", tag_at=self.HEAD,
+                                     create_release="false")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("publish state: resume_publish", proc.stdout)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("gh release create", log)
+
+    def test_create_release_false_still_aborts_on_a_tag_at_the_wrong_commit(self):
+        # The #380 tag-integrity guard applies regardless of create-release —
+        # auto-tag must never silently move an existing tag either.
+        proc, log, _ = self._publish("v9.9.9", tag_at=self.OTHER,
+                                     create_release="false")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("abort_mismatch", proc.stdout)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("gh release create", log)
+
+    def test_create_release_true_is_the_default_and_matches_prior_behavior(self):
+        # No `env` override at all — the default the harness sets mirrors
+        # action.yml's own default, so this is what every EXISTING manual
+        # dispatch caller (with no opinion on the input) already gets.
+        proc, log, _ = self._run(_action_step(self.STEP_NAME),
+                                 env={"TAG": "v9.9.9", "VER": "9.9.9",
+                                      "SUMMARY": "", "TITLE_PREFIX": "codeArbiter",
+                                      "MARK_LATEST": "false"})
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("gh release create v9.9.9", log)
+
+    def test_create_release_false_skips_the_release_readback_but_still_verifies_the_tag(self):
+        script = _action_step(self.VERIFY_NAME)
+        # No Release exists at all ("none") — a create_release=true run would
+        # fail here (test_read_back_rejects_a_tag_that_moved... covers that
+        # arm); create_release=false must not even look.
+        proc, _, _ = self._run(script, env={"TAG": "v9.9.9",
+                                            "CREATE_RELEASE": "false"},
+                               release="none",
+                               ls_remote=f"{self.HEAD}\trefs/tags/v9.9.9\n")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_create_release_false_verify_still_rejects_a_tag_at_the_wrong_commit(self):
+        script = _action_step(self.VERIFY_NAME)
+        proc, _, _ = self._run(script, env={"TAG": "v9.9.9",
+                                            "CREATE_RELEASE": "false"},
+                               release="none",
+                               ls_remote=f"{self.OTHER}\trefs/tags/v9.9.9\n")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("not the dispatched commit", proc.stdout + proc.stderr)
+
+    # -- empty requested-version trusts the manifest (auto-tag has no dispatch input)
+    def test_empty_requested_version_trusts_the_manifest(self):
+        proc, _, out = self._resolve(manifest="plugins/ca/.claude-plugin/plugin.json",
+                                     requested="", tag_prefix="v")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("version=9.9.9\n", out)
+        self.assertIn("tag=v9.9.9\n", out)
+
+    def test_a_nonempty_requested_version_still_must_equal_the_manifest(self):
+        # The empty-string carve-out must not weaken the manual dispatch
+        # guard for every caller that DOES supply a version.
+        bad, _, out = self._resolve(manifest="plugins/ca/.claude-plugin/plugin.json",
+                                    requested="9.9.8", tag_prefix="v")
+        self.assertNotEqual(bad.returncode, 0)
+        self.assertIn("bump/align first", bad.stdout + bad.stderr)
+        self.assertEqual(out, "")
 
     def test_already_published_is_a_no_op(self):
         proc, log, _ = self._publish("v9.9.9", tag_at=self.HEAD, release="published")
@@ -661,8 +758,9 @@ class DispatchExclusivityTest(unittest.TestCase):
     def test_only_the_publish_jobs_carry_a_write_token(self):
         writers = sorted(job for job, block in _jobs().items()
                          if re.search(r"(?m)^      contents: write$", block))
-        self.assertEqual(writers, sorted(PUBLISH_JOBS),
-                         "exactly the declared publishers may declare `contents: write`")
+        self.assertEqual(writers, sorted(PUBLISH_JOBS + AUTO_PUBLISH_JOBS),
+                         "exactly the declared publishers (manual + auto-tag) "
+                         "may declare `contents: write`")
 
     def test_preflight_holds_no_write_permission(self):
         block = _jobs()[PREFLIGHT_JOB]
@@ -932,6 +1030,135 @@ class LaneIsolationTest(unittest.TestCase):
         action = PUBLISH_ACTION.read_text(encoding="utf-8")
         self.assertNotIn("merge-readiness", action)
         self.assertNotIn("select-target", action)
+
+
+class AutoTagLaneTest(unittest.TestCase):
+    """Drift-prevention campaign, adjacent to #645: every push to main that
+    advances a target's manifest past its last tag gets tagged immediately,
+    through a `workflow_run`-triggered mirror of the manual dispatch lanes
+    above — never creating a GitHub Release."""
+
+    def test_the_trigger_is_workflow_run_on_ci_completion_not_a_bare_push(self):
+        # A bare `push` trigger here would race ci.yml's OWN concurrent
+        # re-run for the same commit (#385's reasoning, restated for the
+        # push-triggered case): querying check-runs for GITHUB_SHA from a job
+        # that started at the same instant as the run computing them could
+        # read "pending" or "missing" for its own commit.
+        text = _release()
+        self.assertIn('workflows: ["ci"]', text)
+        self.assertIn("types: [completed]", text)
+        header = text.split("jobs:", 1)[0]
+        self.assertNotRegex(header, r"(?m)^  push:\n    branches: \[main\]$",
+                            "a bare push trigger races ci.yml's own re-run")
+
+    def test_auto_preflight_holds_no_write_permission(self):
+        block = _jobs()[AUTO_PREFLIGHT_JOB]
+        self.assertRegex(block, r"(?m)^      contents: read$",
+                         "the auto-tag preflight must pin `contents: read`")
+        self.assertNotIn("contents: write", block)
+
+    def test_auto_preflight_gates_on_a_successful_ci_run_on_main(self):
+        condition = _job_if(_jobs()[AUTO_PREFLIGHT_JOB])
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", condition)
+        self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
+        self.assertIn("github.event_name == 'workflow_run'", condition)
+
+    def test_every_auto_lane_depends_on_the_auto_preflight(self):
+        jobs = _jobs()
+        for job in AUTO_PUBLISH_JOBS:
+            with self.subTest(job=job):
+                self.assertRegex(
+                    jobs[job], r"(?m)^    needs: auto-preflight$",
+                    f"{job} must not start without the auto-preflight's eligibility check")
+
+    def test_every_auto_lane_gates_on_its_own_resolved_eligibility(self):
+        jobs = _jobs()
+        for job, params in AUTO_LANES.items():
+            with self.subTest(job=job):
+                condition = _job_if(jobs[job])
+                target = params["target"]
+                self.assertIn(f"needs.auto-preflight.outputs.{target} == 'true'",
+                              condition,
+                              f"{job} must run only when {target} is eligible")
+
+    def test_every_auto_lane_never_creates_a_release(self):
+        jobs = _jobs()
+        for job in AUTO_PUBLISH_JOBS:
+            with self.subTest(job=job):
+                inputs = _lane_inputs(job)
+                self.assertEqual(inputs.get("create-release"), '"false"',
+                                 f"{job} must never create a GitHub Release")
+
+    def test_every_auto_lane_trusts_the_manifest_rather_than_a_dispatch_input(self):
+        jobs = _jobs()
+        for job in AUTO_PUBLISH_JOBS:
+            with self.subTest(job=job):
+                inputs = _lane_inputs(job)
+                self.assertEqual(inputs.get("requested-version"), '""',
+                                 f"{job} has no dispatch input to compare "
+                                 "against — it must trust the manifest")
+
+    def test_every_auto_lane_matches_its_manual_siblings_manifest_and_namespace(self):
+        # The auto lanes are a MIRROR of the manual ones — same manifest,
+        # changelog, tag-prefix, mark-latest per target — never a second,
+        # independently-drifting declaration of the same facts.
+        jobs = _jobs()
+        manual_by_target = {p["target"]: (job, p) for job, p in LANES.items()}
+        for auto_job, auto_params in AUTO_LANES.items():
+            with self.subTest(job=auto_job):
+                target = auto_params["target"]
+                manual_job, manual_params = manual_by_target[target]
+                auto_inputs = _lane_inputs(auto_job)
+                manual_inputs = _lane_inputs(manual_job)
+                for key in ("manifest", "changelog", "tag-prefix",
+                           "title-prefix", "mark-latest"):
+                    self.assertEqual(
+                        auto_inputs.get(key), manual_inputs.get(key),
+                        f"{auto_job}'s {key!r} must match {manual_job}'s")
+
+    def test_only_the_primary_auto_lane_claims_the_latest_badge(self):
+        jobs = _jobs()
+        for job, params in AUTO_LANES.items():
+            with self.subTest(job=job):
+                inputs = _lane_inputs(job)
+                expected = '"true"' if params["target"] == "ca" else '"false"'
+                self.assertEqual(inputs.get("mark-latest"), expected)
+
+    def test_every_auto_lane_checks_out_the_upstream_run_commit_explicitly(self):
+        # workflow_run does not reliably default GITHUB_SHA / the checkout ref
+        # to the completed run's own commit — every auto lane must pin it
+        # explicitly rather than trust an ambient default.
+        jobs = _jobs()
+        for job in AUTO_PUBLISH_JOBS:
+            with self.subTest(job=job):
+                self.assertIn("github.event.workflow_run.head_sha", jobs[job])
+
+    def test_auto_eligible_first_introduction_and_advance_are_true(self):
+        # The CLI subcommand the preflight's own shell calls, executed
+        # directly: a series with no tag yet, or a manifest strictly ahead
+        # of its last tag, is eligible; equal or behind is not.
+        proc = subprocess.run(
+            [sys.executable, str(HERE / "_releaselib.py"),
+             "auto-eligible", "2.12.1", "v"],
+            input="v2.12.0\nv2.11.0\n", capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(proc.stdout.strip(), "true")
+
+        proc = subprocess.run(
+            [sys.executable, str(HERE / "_releaselib.py"),
+             "auto-eligible", "2.12.0", "v"],
+            input="v2.12.0\nv2.11.0\n", capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(proc.stdout.strip(), "false",
+                         "a manifest equal to the last tag has nothing new to publish")
+
+        proc = subprocess.run(
+            [sys.executable, str(HERE / "_releaselib.py"),
+             "auto-eligible", "1.0.0", "zzz-v"],
+            input="", capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(proc.stdout.strip(), "true",
+                         "a series with no tag yet is a first introduction")
 
 
 class RegistrationTest(unittest.TestCase):

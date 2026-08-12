@@ -1,7 +1,9 @@
 ---
 name: <skill-name>
-description: <One terse sentence: what routes to this skill, the phase count, and the hard gate. No doc refs, no trigger disclaimer. Example: "The only path to X. Routed to when the user invokes /foo. Three gated phases — A, B, C. Nothing ships until every gate clears.">
+description: <One terse sentence: what routes to this skill, the phase count, and the hard gate. No doc refs, no trigger disclaimer. JSON-quote the whole scalar if it starts with `[`/`{` or contains `": "` or `" | "`. Example: "The only path to X. Routed to when the user invokes /foo. Three gated phases — A, B, C. Nothing ships until every gate clears.">
 ---
+<!-- Chain-internal skill (never user-typed, reached only via routing-table path loads)?
+     Add `disable-model-invocation: true` as a third frontmatter line — ADR-0028. -->
 
 # <skill-name>
 

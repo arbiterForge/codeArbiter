@@ -13,6 +13,7 @@ Read-only. Review every migration added or modified. Produce findings. Do not mo
 
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — data classification categories and sensitive-data definitions.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — schema/ORM conventions, known sensitive tables if documented.
+- `${CLAUDE_PLUGIN_ROOT}/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
 
 ## Scope
 
@@ -55,34 +56,8 @@ Flag as **MEDIUM** — not blockers, but address before production.
 
 ## Findings Format
 
-```
-**Severity:** CRITICAL | HIGH | MEDIUM | LOW
-**File:** <path>
-**Description:** <specific finding>
-**Remediation:** <concrete fix>
-```
+Per `${CLAUDE_PLUGIN_ROOT}/includes/reviewer-contract.md`, with `**File:** <path>` (no line number — findings are per migration file).
 
 ## Output
 
-```
-## Migration Review — <date>
-
-### CRITICAL findings (N)
-[findings or "none"]
-
-### HIGH findings (N)
-[findings or "none"]
-
-### MEDIUM findings (N)
-[findings or "none"]
-
-### LOW findings (N)
-[findings or "none"]
-
-### Gate status
-PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
-```
-
-## Out-of-Scope Findings
-
-**Out-of-scope finding:** do not act on it and do not author an ADR for it (ADRs are user-attributed, via `/adr` only). Mark it inline with a `[NEEDS-TRIAGE]` marker; never silently drop it.
+The review output template in `reviewer-contract.md`, with `<Role>` = Migration.

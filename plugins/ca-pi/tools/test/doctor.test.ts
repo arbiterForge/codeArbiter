@@ -45,7 +45,7 @@ function healthyInput(): PiDoctorInput {
   return {
     package: {
       root: ROOT,
-      name: "ca-pi",
+      name: "@arbiterforge/ca-pi",
       version: "0.1.0",
       extensionPath: `${ROOT}/extensions/codearbiter.js`,
       scope: "user",
@@ -53,7 +53,7 @@ function healthyInput(): PiDoctorInput {
     },
     trust: { inspected: true, projectTrusted: false, required: false },
     runtime: {
-      piVersion: "0.80.10",
+      piVersion: "0.84.1",
       nodeVersion: "22.19.0",
       pythonMajor: 3,
       cliEntry: `${RUNTIME}/dist/cli.js`,
@@ -64,11 +64,12 @@ function healthyInput(): PiDoctorInput {
     commands: {
       collisions: [],
       ownerPaths: [`${ROOT}/extensions/codearbiter.js`, `${ROOT}/skills/ca-doctor/SKILL.md`],
-      expansionVerifiedVersions: ["0.80.5", "0.80.10"],
+      expansionVerifiedVersions: ["0.80.5", "0.84.1"],
       expansionMatches: true,
     },
     bridge: { healthy: true },
     footer: { expected: true, initialized: true },
+    sidebar: { expected: true, installed: true, degraded: false },
     background: { expected: true, initialized: true, healthy: true },
     child: { present: true, artifact: "enforced", path: `${ROOT}/extensions/codearbiter-child.js` },
     ambientMarker: { present: false, validatedChild: false },
@@ -90,21 +91,22 @@ function healthyInput(): PiDoctorInput {
 const remediation = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.80.5 or 0.80.10 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 0.80.5 or 0.84.1 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.80.5/0.80.10, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 0.80.5/0.84.1, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
   "module-identity": "Reinstall the active Pi CLI and ca-pi from their approved origins, then restart Pi.",
   "final-arguments": "Reinstall ca-pi, remove competing mutating tool definitions, and run /ca-doctor again.",
   footer: "Restart Pi in an interactive parent session; if the rich footer still fails, reinstall ca-pi and run /ca-doctor again.",
+  sidebar: "Run /ca-sidebar on in a wide terminal; if the probe still reports unavailable, this Pi build changed its render surface — keep the footer and file an issue.",
   background: "Stop active work, restart Pi, and run /ca-doctor before launching another background job.",
 } as const;
 
 const ACTIVE_DISPATCH_MESSAGE =
-  "Supported Pi 0.80.5/0.80.10 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.";
+  "Supported Pi 0.80.5/0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.";
 const ACTIVE_DISPATCH_REMEDIATION =
   "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.";
 
@@ -123,6 +125,7 @@ function brokenFixture(id: keyof typeof remediation): PiDoctorInput {
     case "module-identity": input.runtime.moduleEntry = "C:/unrelated/index.js"; break;
     case "final-arguments": input.finalArguments.wrapperSourcePath = "C:/foreign.js"; break;
     case "footer": input.footer.initialized = false; break;
+    case "sidebar": input.sidebar = { expected: true, installed: false, degraded: true, reason: "columns-not-configurable" }; break;
     case "background": input.background.healthy = false; break;
   }
   return input;
@@ -144,7 +147,7 @@ describe("Pi structured doctor", () => {
 
   test("reports exact active origins and limits the module-identity claim", () => {
     const result = diagnosePi(healthyInput());
-    expect(result).toHaveLength(14);
+    expect(result).toHaveLength(15);
     expect(result.filter((row) => !["child", "active-dispatch"].includes(row.id)).every((row) => row.state === "healthy")).toBe(true);
     expect(result.find((row) => row.id === "child")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "active-dispatch")).toEqual({
@@ -154,17 +157,37 @@ describe("Pi structured doctor", () => {
       remediation: ACTIVE_DISPATCH_REMEDIATION,
     });
     expect(result.find((row) => row.id === "package")?.message).toBe(
-      `ca-pi 0.1.0 is active from ${ROOT} as a user package.`,
+      `@arbiterforge/ca-pi 0.1.0 is active from ${ROOT} as a user package.`,
     );
     expect(result.find((row) => row.id === "module-identity")?.message).toBe(
       `Active Pi CLI ${RUNTIME}/dist/cli.js; module ${RUNTIME}/dist/index.js; ` +
-      `package ${RUNTIME}; version 0.80.10. Module identity is self-consistent with the ` +
+      `package ${RUNTIME}; version 0.84.1. Module identity is self-consistent with the ` +
       "operator-launched Pi runtime; this does not prove publisher authenticity.",
     );
     expect(result.find((row) => row.id === "trust")?.message).toContain("repository is dormant");
-    expect(result.find((row) => row.id === "commands")?.message).toContain("0.80.5, 0.80.10");
+    expect(result.find((row) => row.id === "commands")?.message).toContain("0.80.5, 0.84.1");
     expect(result.find((row) => row.id === "footer")).toMatchObject({ state: "healthy" });
+    expect(result.find((row) => row.id === "sidebar")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "background")).toMatchObject({ state: "healthy" });
+  });
+
+  test("a benignly-off sidebar stays healthy while naming its reason", () => {
+    const input = healthyInput();
+    input.sidebar = { expected: true, installed: false, degraded: false, reason: "terminal-too-narrow" };
+    const row = diagnosePi(input).find((item) => item.id === "sidebar");
+    expect(row).toMatchObject({ state: "healthy" });
+    expect(row?.message).toContain("terminal-too-narrow");
+    const absent = healthyInput();
+    absent.sidebar = { expected: false, installed: false, degraded: false };
+    expect(diagnosePi(absent).find((item) => item.id === "sidebar")).toMatchObject({ state: "healthy" });
+  });
+
+  test("a sidebar installed outside an interactive parent session is an isolation breach", () => {
+    const breached = healthyInput();
+    breached.sidebar = { expected: false, installed: true, degraded: false };
+    const row = diagnosePi(breached).find((item) => item.id === "sidebar");
+    expect(row).toMatchObject({ state: "unhealthy" });
+    expect(row?.message).toContain("isolation is breached");
   });
 
   test("diagnoses both command ownership collisions and DECISION-0018 expansion drift", () => {
@@ -180,8 +203,8 @@ describe("Pi structured doctor", () => {
 
   test("uses an independent version-specific expansion fingerprint and detects local drift", () => {
     expect(verifyNativeSkillExpansion("0.80.5", PI_FINGERPRINTS)).toBe(true);
-    expect(verifyNativeSkillExpansion("0.80.10", PI_FINGERPRINTS)).toBe(true);
-    expect(verifyNativeSkillExpansion("0.80.10", PI_FINGERPRINTS, (...args) => `${args.join(":")} drift`)).toBe(false);
+    expect(verifyNativeSkillExpansion("0.84.1", PI_FINGERPRINTS)).toBe(true);
+    expect(verifyNativeSkillExpansion("0.84.1", PI_FINGERPRINTS, (...args) => `${args.join(":")} drift`)).toBe(false);
     expect(verifyNativeSkillExpansion("0.80.7", PI_FINGERPRINTS)).toBe(false);
   });
 
@@ -209,6 +232,9 @@ describe("Pi structured doctor", () => {
       bridgePrepared: true,
       footerExpected: true,
       footerInitialized: true,
+      sidebarExpected: true,
+      sidebarInstalled: true,
+      sidebarDegraded: false,
       backgroundExpected: true,
       backgroundInitialized: true,
       backgroundHealthy: true,
@@ -242,8 +268,11 @@ describe("Pi structured doctor", () => {
         catalog: [{ name: "doctor", description: "doctor", skillPath: "skills/ca-doctor/SKILL.md" }],
         bridge: { call: async () => ({ version: 1, outcome: "allow" }) },
         bridgePrepared: true,
-        footerExpected: true,
+      footerExpected: true,
         footerInitialized: true,
+        sidebarExpected: true,
+        sidebarInstalled: true,
+        sidebarDegraded: false,
         backgroundExpected: true,
         backgroundInitialized: true,
         backgroundHealthy: true,
@@ -287,6 +316,9 @@ describe("Pi structured doctor", () => {
       bridgePrepared: false,
       footerExpected: true,
       footerInitialized: true,
+      sidebarExpected: true,
+      sidebarInstalled: true,
+      sidebarDegraded: false,
       backgroundExpected: false,
       backgroundInitialized: false,
       backgroundHealthy: true,

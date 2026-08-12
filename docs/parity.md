@@ -14,14 +14,14 @@ status.
 
 Final Pi promotion evidence is available as a [sanitized report](./reports/pi-support/promotion.md)
 and [machine-readable envelope](./reports/pi-support/promotion.json). Local checks and the hosted
-Windows/macOS/Linux matrix for Pi 0.80.5/0.80.10 are green on implementation candidate
+Windows/macOS/Linux matrix across the then-supported Pi versions (recorded in the artifacts) are green on implementation candidate
 `f764929e02fbb67b43a3b828686c0007445a0316`; scoped CodeQL and the repository aggregate gate are green
 on that same candidate. The final verifier restricts later commits to the sanitized promotion
 artifacts, this public parity ledger, and the append-only governance evidence for that update.
 
 Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
 H-03 structured block. Pi's implementation and local supported-version
-contracts target Pi 0.80.5 and Pi 0.80.10. The completed hosted
+contracts target Pi 0.80.5 and Pi 0.84.1. The completed hosted
 Windows/macOS/Linux promotion report records x64 Windows/Linux and arm64 macOS evidence without
 presenting the deliberately nonblocking unsupported-latest canary as supported.
 
@@ -31,7 +31,7 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 |---|---|---|---|---|
 | Public entries | 39 `/ca:*` commands | 37 `$ca-*` entry skills | 38 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
 | Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
-| Role charters | 28 plugin agents | host-provided agent threads load the shared charters; inline is an older-host fallback | 28 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
+| Role charters | 18 plugin agents | host-provided agent threads load the shared charters; inline is an older-host fallback | 18 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
@@ -48,17 +48,18 @@ and `ca-pi: 38`.
 | WRITE/EDIT enforcement | Write and Edit hooks | `apply_patch` decomposed per file; opaque blocks | final wrappers around built-in `write` and `edit` arguments |
 | READ notices | native Read hook | host-impossible; post-write notices remain | built-in `read` wrapper and shared notice policy |
 | Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
-| Status | complete Claude statusline | startup state only | rich footer globally; governance row only when enabled and affirmatively trusted; rate windows omitted |
+| Status | complete Claude statusline | startup state only | rich footer globally with a per-message burn sparkline and up to four activity rows (both wide-layout only); refresh-time git repository/dirty enrichment is trusted-only; governance row only when enabled and affirmatively trusted; rate windows omitted; optional probe-gated right sidebar (`/ca-sidebar`, auto-on at ≥120 columns) with session, subagents, workspace, and todos panels |
 | Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
 | Role dispatch | Claude subagents | host-provided agent threads with retained receipts; bounded inline fallback on older hosts | fresh Pi RPC children: single, chain, parallel |
 | Process cleanup | host-managed subagents | host-managed agent threads (or current-thread lifecycle for an inline fallback) | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
-| Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper plus footer/background health |
+| Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper plus footer/sidebar/background health |
 
 ## Pi live surface classifications
 
 | Capability | Status | Pi behavior | Evidence |
 |---|---|---|---|
-| Rich footer | SUPPORTED | Installed in every interactive parent repository; the governance row requires enabled plus affirmatively trusted state. | `plugins/ca-pi/tools/src/status.ts` |
+| Rich footer | SUPPORTED | Installed in every interactive parent repository with a per-message burn sparkline and up to four activity rows, both rendered in the wide layout only; git repository/dirty enrichment is collected at refresh for trusted projects only; the governance row requires enabled plus affirmatively trusted state. | `plugins/ca-pi/tools/src/status.ts` |
+| Sidebar column | SUPPORTED | `/ca-sidebar` composites an optional right-hand column (session, subagents, workspace, todos panels) through Pi render hooks that are undocumented in every promoted version, so each install is probe-gated at runtime, every paint re-validates terminal geometry, and any failure disposes back to native rendering with a `/ca-doctor` row. Workspace and todos panels are trusted-only; the MCP panel renders only when Pi exposes servers, which no promoted version does. | `plugins/ca-pi/tools/src/sidebar-compositor.ts` |
 | Execute permission asks | SUPPORTED | Classified reads allow silently; governed mutation and external side effects ask once for the current invocation. | `plugins/ca-pi/tools/src/policy.ts` |
 | Read-only plan mode | SUPPORTED | Plan mode is read-only except for the current canonical spec, plan, and plan ledger. | `plugins/ca-pi/tools/src/plan-mode.ts` |
 | Session-only background jobs | SUPPORTED | Jobs terminate and verify descendants at shutdown and are never restored from Pi session entries. | `plugins/ca-pi/tools/src/background-jobs.ts` |
@@ -79,15 +80,17 @@ runtime; it is not publisher authenticity. Confirm the pinned source with
 
 | Topic | Claude Code | Codex CLI | Pi |
 |---|---|---|---|
-| Distribution | Claude marketplace | Codex plugin marketplace | Feature Forge `preview` via pinned Git package `ca-pi-v*`; no npm release |
+| Distribution | Claude marketplace | Codex plugin marketplace | Feature Forge `preview` via pinned Git package `ca-pi-v*` plus CI-published `npm:@arbiterforge/ca-pi` (ADR-0029) |
 | Versioning | `ca` SemVer | independent `ca-codex` SemVer | independent nested/root synchronized SemVer |
 | `--farm` | Feature Forge `preview`, shared `farm.js` | degraded to the premium path until backend packaging lands | Feature Forge `preview`, parent tool calls the same contained `farm.js` |
 | Farm credentials | farm process only | no backend process | farm process only; ordinary children strip `FARM_API_KEY` |
 | Embedded worker | not applicable | not shipped | future spike on hardened child runner; not a dependency |
 
-npm packaging is a future spike. A Pi-native embedded farm worker is also a
-future spike and must retain the shared plan/result contract; neither changes
-the current Git-only install or promotes `--farm` beyond preview.
+Every `ca-pi-v*` tag also publishes `npm:@arbiterforge/ca-pi` with npm
+provenance (ADR-0029); the pinned Git tag remains the reproducible install. A
+Pi-native embedded farm worker is a future spike and must retain the shared
+plan/result contract; it neither changes the install channels nor promotes
+`--farm` beyond preview.
 
 ## Explicit exception ledger
 
@@ -101,14 +104,14 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex packaged agents | DEGRADED | The plugin does not vendor custom agent definitions; current hosts still dispatch host-provided threads loaded with the shared charter, while older hosts may fall back inline. Context creation blocks if isolated scouts are unavailable. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
-| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.80.10 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
+| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
-| Pi npm package | DEGRADED | Git tags are the only distribution path in this release line. | `docs/pi-parity-testing.md` |
+| Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/npm-publish.yml` |
 <!-- PI-EXCEPTIONS:END -->
 
 ## Reproduce the evidence
 
 The deterministic and trusted-live procedure is
 [`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
-added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.80.10 matrix
+added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.84.1 matrix
 and the separately reported nonblocking latest canary complete.

@@ -1,6 +1,12 @@
 # secrets-supply — lens mandate
 
-Executed by `tribunal-secrets-supply-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `secrets-supply` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+Source, config, `.env*`, and dependency manifests/lockfiles in the assigned slice.
+
+## Required reading
+- `{{PROJECT_DIR}}/.codearbiter/security-controls.md` — approved secret store and crypto; `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — dependency manifests.
 
 ## Checklist
 - Literal secrets in source or `.env.example` — JWT/signing keys, API keys, DB connection strings, OAuth secrets, passwords (CWE-798). `.env.example` populated with real values is a common AI regression.

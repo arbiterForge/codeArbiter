@@ -5,6 +5,11 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] Harden git-facts seams flagged by coverage-auditor: pin the timeout/close race and kill-throw paths, add cross-project gitFacts isolation test (start A then B), and an end-to-end control-char sanitization test from collectGitFacts through renderFooter  (from spec:pi-footer-parity-gaps)
+- [x] release.feat.0001 - Publish to npm under the arbiterforge org (NPMJS_TOKEN actions secret is in place): own spec + ADR required — recorded posture is pinned-Git-only / npm-is-future-work (tech-stack.md, coding-standards.md); decide package set, npm provenance, CI publish workflow, and release-skill integration  (from user:2026-08-09)  (done 2026-08-09)
+- [x] sidebar.feat.0001 - Sidebar panel feature for ca-pi (spec B of the agreed split): brainstorm its own spec AFTER pi-footer-parity-gaps ships; hard prerequisite: verify what Pi 0.80.5/0.80.10 expose (setWidget/overlay vs own compositor); build-inspired-by pi-sidebar-tui, never an npm dependency  (from spec:pi-footer-parity-gaps)  (done 2026-08-10)
+- [ ] Add dispatch-outcome glyphs (accepted/changes_requested/blocked) to ca-pi footer activity rows; cut from pi-footer-parity-gaps by YAGNI, candidate to fold into the sidebar feature  (from spec:pi-footer-parity-gaps)
+- [ ] Extend the ca-pi child dispatch protocol so the parent observes per-child token usage (DispatchChild carries none today); feeds the sidebar subagent panel  (from spec:pi-footer-parity-gaps)
 - [x] v2.deps.0001 - Bump js-yaml in site/package-lock.json past CVE-2026-59870 (HIGH, quadratic CPU in !!omap): npm audit fix in site/, run site npm test + dependency-reviewer; the production CVE gate reds Deploy docs on every PR until fixed (found on PR #632, unrelated to it)  (done 2026-08-07)
 - [ ] Reconfirm the ca 2.9.0 and ca-codex 0.3.0 version classification against the final merged diff before any release or tag.  (from sprint:auto-safe-open-issues)
 - [ ] Validate the annotated ANSI-free palette evidence format with users; add stable visual captures only if the text artifacts are insufficient.  (from sprint:auto-safe-open-issues)

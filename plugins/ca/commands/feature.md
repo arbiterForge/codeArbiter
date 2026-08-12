@@ -1,5 +1,5 @@
 ---
-description: Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.
+description: "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation."
 argument-hint: "<what you want to build>"
 ---
 
@@ -21,8 +21,8 @@ compaction, or closed session mid-pipeline loses nothing — the spec, the plan,
    remaining tasks).
 2. **Plan exists, every task `ACCEPTED`** → `commit-gate` (the work is done and verified; it was the
    commit that never happened).
-3. **Spec approved, no plan** → `writing-plans`.
-4. **Spec exists but never approved** → `brainstorming`, at its approval gate — not from scratch.
+3. **Spec approved, no plan** → `writing-plans` (`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`).
+4. **Spec exists but never approved** → `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`), at its approval gate — not from scratch.
 
 Re-running `brainstorming` against an already-approved spec is the failure mode this section exists
 to prevent: it discards approved decisions and re-asks answered questions. Only an explicit user
@@ -48,7 +48,7 @@ confirmation. On confirmation, append one line to `${CLAUDE_PROJECT_DIR}/.codear
 [ISO-8601 timestamp] | BY: <git user.email> | LANE: small | SCOPE: <one-line> | BASIS: <criteria met>
 ```
 
-Then route directly to `tdd` — the confirmed criteria are its Phase 1 obligations; Phases 2–6 run
+Then route directly to `tdd` (`${CLAUDE_PLUGIN_ROOT}/skills/tdd/SKILL.md`) — the confirmed criteria are its Phase 1 obligations; Phases 2–6 run
 unchanged — and exit through the full `commit-gate` and `finishing-a-development-branch` exactly as
 the full lane does. The lane trims ceremony, never gates.
 
@@ -59,16 +59,16 @@ never guesses.
 
 Route through the pipeline in order; each step gates the next:
 
-1. **`brainstorming`** — refine `$ARGUMENTS` into a concrete spec by Socratic questioning: challenge
+1. **`brainstorming`** (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`) — refine `$ARGUMENTS` into a concrete spec by Socratic questioning: challenge
    vague language, surface hidden complexity, force trade-offs. Writes the spec to
    `${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<slug>.md`. **Hard gate: no plan and no code until the
    user approves the spec.** Genuinely-unresolved unknowns become `[CONFIRM-NN]` in
    `open-questions.md`, never guesses.
-2. **`writing-plans`** — decompose the approved spec into small tasks, each with an exact path and a
+2. **`writing-plans`** (`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) — decompose the approved spec into small tasks, each with an exact path and a
    verification that maps to a `tdd` obligation (it does not replace one). Writes
    `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md` with bijective criterion↔task coverage.
-3. **`executing-plans`** — coordinates the plan in small batches with human checkpoints. Each batch is
-   delegated to `subagent-driven-development` (fresh author agent per task, spec-compliance review,
+3. **`executing-plans`** (`${CLAUDE_PLUGIN_ROOT}/skills/executing-plans/SKILL.md`) — coordinates the plan in small batches with human checkpoints. Each batch is
+   delegated to `subagent-driven-development` (`${CLAUDE_PLUGIN_ROOT}/skills/subagent-driven-development/SKILL.md` — fresh author agent per task, spec-compliance review,
    quality review, fresh verification). The user acknowledges between batches; nothing advances until
    they do.
 4. **`commit-gate`** — the only path to a commit; nine gates, including behavioral proof.

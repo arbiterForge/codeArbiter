@@ -38,7 +38,10 @@ import { createSessionActivityRegistry } from "./activity.ts";
 import type { ActivityPublisher, SessionActivityRegistry } from "./activity.ts";
 import { loadPiRuntime, resolvePiRuntimeIdentity } from "./runtime-resolver.ts";
 import type { ResolvedPiRuntime } from "./runtime-resolver.ts";
+import { collectGitFacts } from "./git-facts.ts";
 import { PiFooterLifecycle, setArbiterStatus } from "./status.ts";
+import { createSidebarManager } from "./sidebar-manager.ts";
+import { sidebarInputFromFooter, sidebarTodosFromPlan } from "./sidebar-data.ts";
 import type { FooterTextMetrics } from "./footer.ts";
 import type { PolicyMode } from "./policy.ts";
 import {
@@ -80,6 +83,7 @@ export interface ParentDependencies {
   prepareFooterBridge?: (cwd: string, context: ExtensionContextPort) => Promise<void> | void;
   prepareBridge?: (cwd: string, context: ExtensionContextPort) => Promise<void> | void;
   readFooterUpdateVersion?: () => Promise<string | undefined>;
+  collectGitFacts?: (cwd: string) => Promise<{ repository?: string; dirty?: boolean } | undefined>;
   loadFooterMetrics?: () => Promise<FooterTextMetrics>;
   footerMetrics?: FooterTextMetrics;
   installEnforcement?: (
@@ -93,6 +97,7 @@ export interface ParentDependencies {
     context: ExtensionContextPort,
     health: Readonly<{
       footer: Readonly<{ expected: boolean; initialized: boolean }>;
+      sidebar: Readonly<{ expected: boolean; installed: boolean; degraded: boolean; reason?: string }>;
       background: Readonly<{ expected: boolean; initialized: boolean; healthy: boolean }>;
     }>,
   ) => Promise<string>;
@@ -324,7 +329,26 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
   const background = dependencies.installBackground?.(() => readyLifecycle, currentActivity);
   const loadFooterMetrics = dependencies.loadFooterMetrics
     ?? (dependencies.footerMetrics === undefined ? undefined : async () => dependencies.footerMetrics!);
-  const footer = new PiFooterLifecycle(pi, dependencies.bridge, loadFooterMetrics, currentActivity);
+  const footer = new PiFooterLifecycle(
+    pi,
+    dependencies.bridge,
+    loadFooterMetrics,
+    currentActivity,
+    dependencies.collectGitFacts ?? collectGitFacts,
+  );
+  const sidebar = createSidebarManager({
+    pi,
+    currentTui: () => footer.currentTui(),
+    terminal: () => process.stdout,
+    ...(loadFooterMetrics === undefined ? {} : { loadMetrics: loadFooterMetrics }),
+    dataSource: () => {
+      const input = sidebarInputFromFooter(footer.lastRenderedInput());
+      const todos = sidebarTodosFromPlan(plan?.status());
+      return todos === undefined ? input : { ...input, todos };
+    },
+    writeOut: (text) => { process.stdout.write(text); },
+    noColor: () => Object.prototype.hasOwnProperty.call(process.env, "NO_COLOR"),
+  });
   const readActivation = dependencies.readActivation ?? isEnabled;
   dependencies.installDispatch?.(() => readyLifecycle, currentActivity);
   dependencies.installCompaction?.(() => readyLifecycle);
@@ -359,6 +383,7 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     }
     return Object.freeze({
       footer: footerHealth,
+      sidebar: sidebar.health(),
       background: Object.freeze({
         expected: backgroundExpected,
         initialized: backgroundInitialized,
@@ -384,6 +409,7 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     activeLifecycle = undefined;
     readyLifecycle = undefined;
     if (background !== undefined) await background.stop("session-switch");
+    sidebar.dispose();
     activity?.dispose();
     activity = undefined;
     dependencies.enforcementReadiness?.deactivate();
@@ -405,6 +431,11 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
       prepareBridge: dependencies.prepareFooterBridge,
       readUpdateVersion: dependencies.readFooterUpdateVersion,
     });
+    if (!isCurrent()) return;
+    // The sidebar serves any trusted interactive parent, dormant repos
+    // included, so it registers before the activation-marker early return.
+    sidebar.register(context);
+    await sidebar.autoInstall(context);
     if (!isCurrent()) return;
     if (!markerEnabled) {
       activeLifecycle = undefined;
@@ -503,13 +534,20 @@ export function installParent(pi: ParentPiPort, dependencies: ParentDependencies
     if (enabled) publishStatus(context, degradedStatus() ?? "codeArbiter host: pi governed");
   });
   pi.on("agent_settled", async (_event, context) => {
+    const sequence = lifecycleSequence;
     await footer.refresh(context, { activation: { enabled: footerActivationEnabled } });
+    // Retry the auto-on default here: the tui handle only exists after Pi has
+    // invoked the footer factory, which may postdate session_start. The
+    // sequence check keeps a stale continuation from re-installing against a
+    // session that switched away while the refresh was pending.
+    if (sequence === lifecycleSequence) await sidebar.autoInstall(context);
     if (enabled) publishStatus(context, degradedStatus());
   });
   const stopSession = async (reason: "session-switch" | "shutdown" | "unload" | "fatal", context: ExtensionContextPort) => {
     readyLifecycle = undefined;
     activeLifecycle = undefined;
     await background?.stop(reason);
+    sidebar.dispose();
     activity?.dispose();
     activity = undefined;
     footer.dispose();
@@ -679,7 +717,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
   while (true) {
     try {
       const manifest = JSON.parse(await readFile(resolve(packageRoot, "package.json"), "utf8")) as { name?: unknown };
-      if (manifest.name === "ca-pi") break;
+      if (manifest.name === "@arbiterforge/ca-pi") break;
     } catch {
       // Keep walking to the ca-pi distribution manifest.
     }
@@ -872,6 +910,10 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
         bridgePrepared: enabledForDoctor && trustedForDoctor && pythonResolutionAttempted,
         footerExpected: health.footer.expected,
         footerInitialized: health.footer.initialized,
+        sidebarExpected: health.sidebar.expected,
+        sidebarInstalled: health.sidebar.installed,
+        sidebarDegraded: health.sidebar.degraded,
+        ...(health.sidebar.reason === undefined ? {} : { sidebarReason: health.sidebar.reason }),
         backgroundExpected: health.background.expected,
         backgroundInitialized: health.background.initialized,
         backgroundHealthy: health.background.healthy,

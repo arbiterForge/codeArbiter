@@ -10,10 +10,10 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.12.1" src="https://img.shields.io/badge/version-2.12.1-2b7489">
+<img alt="version 2.14.0" src="https://img.shields.io/badge/version-2.14.0-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-40-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
-<img alt="agents" src="https://img.shields.io/badge/agents-28-555">
+<img alt="agents" src="https://img.shields.io/badge/agents-18-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
 [Start learning](https://arbiterforge.github.io/codeArbiter/learn/)
@@ -119,7 +119,7 @@ Approve the normal plugin trust prompt, open the target repository, and continue
 
 ### Codex CLI
 
-The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.5.1`;
+The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.6.1`;
 the dated end-to-end public-install record discovered `ca-codex 0.2.4` from release `v2.8.13`.
 Current packaging and shared-core parity are continuously verified, while that dated live-install
 record stays labeled rather than being silently promoted to evidence for a newer adapter:
@@ -149,7 +149,8 @@ codex plugin add ca-codex@codearbiter
 > matrix is green; broader real-world evidence is still required before codeArbiter claims
 > 100% validation or stable status.
 
-Pi distribution is Git-only. List the independently versioned tags, choose one exact result, then
+The quickest install is the npm channel: `pi install npm:@arbiterforge/ca-pi` (ADR-0029). For the
+reproducible pinned install, list the independently versioned tags, choose one exact result, then
 inspect the installed package, grant project trust, and start a fresh session:
 
 ```sh
@@ -162,10 +163,11 @@ pi config
 Replace `<version>` with the numeric suffix from the chosen tag while retaining the full
 `ca-pi-v...` tag in the install source.
 
-Pi 0.80.5 and Pi 0.80.10 are the supported hosts for this release line. Generated aliases use `/ca-*`;
-`/skill:ca-*` is the host-native fallback. There is **no npm release**. The
-[Pi runbook](./docs/pi-parity-testing.md) covers isolated install, trust, verification, shared-state
-continuity, and uninstall.
+Pi 0.80.5 and Pi 0.84.1 are the supported hosts for this release line. Generated aliases use `/ca-*`;
+`/skill:ca-*` is the host-native fallback. Every `ca-pi-v*` tag is also published to npm as
+`npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible
+install. The [Pi runbook](./docs/pi-parity-testing.md) covers isolated install, trust, verification,
+shared-state continuity, and uninstall.
 
 ### Protect the first repository
 
@@ -422,8 +424,8 @@ The source-backed
 names every opt-in, off switch, dependency, trust boundary, and promotion signal.
 
 The farm preview uses one checked-in `farm.js` backend across supported hosts. A Pi-native embedded
-farm worker is a future spike, not a shipping dependency or second engine. npm packaging for
-`ca-pi` is also a future spike; pinned Git tags remain the only distribution path.
+farm worker is a future spike, not a shipping dependency or second engine. `ca-pi` distributes as
+the pinned Git tag plus the CI-published `npm:@arbiterforge/ca-pi` package (ADR-0029).
 
 ## Operator details
 
@@ -503,8 +505,8 @@ implement the Pi adapter, investigate live failures, review older paths, and con
 across permissions, Windows process-tree cleanup, provenance, audit integrity, generated-source
 drift, CI contracts, and documentation.
 
-The final candidate passed the six Pi platform cells for Pi 0.80.5 and 0.80.10 on Windows, macOS,
-and Linux, plus security analysis, CodeQL, shared-core contracts, generated-surface contracts, and
+The final candidate passed the six Pi platform cells — both then-supported Pi versions on Windows,
+macOS, and Linux (versions recorded in the linked artifacts), plus security analysis, CodeQL, shared-core contracts, generated-surface contracts, and
 the repository's final verifier. Sanitized evidence:
 
 - [`docs/reports/pi-support/promotion.md`](docs/reports/pi-support/promotion.md)

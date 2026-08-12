@@ -3,7 +3,9 @@ import { types as utilTypes } from "node:util";
 import type { FooterActivity } from "./footer.ts";
 
 export const ACTIVITY_POLICY = Object.freeze({
-  maxActive: 8,
+  // 16 active rows feed the sidebar subagents panel (spec pi-sidebar-panel);
+  // the footer keeps its own tighter display bound.
+  maxActive: 16,
   maxRecent: 8,
   activeTtlMs: 2 * 60 * 60 * 1_000,
   recentTtlMs: 5 * 60 * 1_000,

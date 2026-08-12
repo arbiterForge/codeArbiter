@@ -1,6 +1,12 @@
 # infra — lens mandate
 
-Executed by `tribunal-infra-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `infra` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+CI workflows, Dockerfiles/compose, IaC and deploy manifests, release automation in the assigned slice.
+
+## Required reading
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/security-controls.md` — trust boundaries and approved secret stores; `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — deploy targets and CI conventions.
 
 ## Checklist
 - CI/CD workflows: untrusted input (PR titles, branch names, comments) interpolated into `run:` steps; excessive workflow/token `permissions`; third-party actions pinned to tags, not SHAs; fork-writable cache keys (poisoning); artifacts promoted without provenance; masked failures (swallowed exit codes) ahead of a publish step.

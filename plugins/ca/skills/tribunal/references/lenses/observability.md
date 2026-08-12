@@ -1,6 +1,12 @@
 # observability — lens mandate
 
-Executed by `tribunal-observability-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `observability` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+The assigned path slice, weighted to critical paths and boundaries.
+
+## Required reading
+- `${CLAUDE_PROJECT_DIR}/.codearbiter/tech-stack.md` — logging/tracing/metrics stack; `inventory.md` in the run dir — the boundary map.
 
 ## Checklist
 - Missing or inconsistent structured logging on critical paths.

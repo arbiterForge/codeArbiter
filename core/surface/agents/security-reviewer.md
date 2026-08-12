@@ -15,6 +15,8 @@ Read-only. Review code changes against the project's security controls and bound
 
 `{{PROJECT_DIR}}/.codearbiter/security-controls.md` — full read: maturity, control set, approved primitives, declared security boundaries and their permitted crossings, what is and is not permitted.
 
+`{{PLUGIN_ROOT}}/includes/reviewer-contract.md` — the findings format, review output template, gate-status rule, and out-of-scope rule. Read it; do not carry a remembered copy.
+
 ## Auto-Dispatch Paths
 
 You are dispatched whenever changes appear in any of these:
@@ -29,13 +31,7 @@ You are dispatched whenever changes appear in any of these:
 
 ## Findings Format
 
-```
-**Severity:** CRITICAL | HIGH | MEDIUM | LOW
-**File:** <path>:<line>
-**Description:** <specific problem — no vague claims>
-**Control:** <control ID or section from {{PROJECT_DIR}}/.codearbiter/security-controls.md>
-**Remediation:** <concrete fix>
-```
+Per `{{PLUGIN_ROOT}}/includes/reviewer-contract.md`, plus a `**Control:**` line — the control ID or section from `{{PROJECT_DIR}}/.codearbiter/security-controls.md`.
 
 ## Severity Definitions
 
@@ -73,25 +69,4 @@ You are dispatched whenever changes appear in any of these:
 
 ## Output
 
-```
-## Security Review — <date>
-
-### CRITICAL findings (N)
-[findings or "none"]
-
-### HIGH findings (N)
-[findings or "none"]
-
-### MEDIUM findings (N)
-[findings or "none"]
-
-### LOW findings (N)
-[findings or "none"]
-
-### Gate status
-PASS (no CRITICAL or HIGH) | BLOCK (N CRITICAL, N HIGH must resolve before merge)
-```
-
-## Out-of-Scope Findings
-
-**Out-of-scope finding:** do not act on it and do not author an ADR for it (ADRs are user-attributed, via `/adr` only). Mark it inline with a `[NEEDS-TRIAGE]` marker; never silently drop it.
+The review output template in `reviewer-contract.md`, with `<Role>` = Security.

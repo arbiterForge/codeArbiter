@@ -30,4 +30,4 @@ Return a terse structured summary the orchestrator can fold directly into `inven
 
 ## Out of scope
 
-Judging any of the above (license/supply-chain risk — that is `dependency-reviewer`'s job on an actual dependency change, not this mapper's; security severity of an exposed secret — that is the `tribunal-secrets-supply-reviewer` lens). Never dispatch a further subagent. Anything you can't classify: one-line `[NEEDS-TRIAGE]` in the summary; never drop it silently.
+Judging any of the above (license/supply-chain risk — that is `dependency-reviewer`'s job on an actual dependency change, not this mapper's; security severity of an exposed secret — that is the tribunal `secrets-supply` lens). Never dispatch a further subagent. Anything you can't classify: one-line `[NEEDS-TRIAGE]` in the summary; never drop it silently.

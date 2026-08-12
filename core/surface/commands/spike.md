@@ -22,7 +22,7 @@ it never merges, never PRs, and never becomes the implementation. What survives 
    - **Answered** → write the findings to `{{PROJECT_DIR}}/.codearbiter/spikes/<slug>.md`
      (the question, what was tried, the answer, what it implies), then delete the branch. If the
      answer warrants building, hand the findings to `{{CMD:feature}}` — the spike file seeds
-     `brainstorming`; the spike code is reference material, never the implementation.
+     `brainstorming` (`{{PLUGIN_ROOT}}/skills/brainstorming/SKILL.md`); the spike code is reference material, never the implementation.
    - **Timebox expired, no answer** → record that too (a dead end is a finding), delete the branch.
 
 ## Hard gate

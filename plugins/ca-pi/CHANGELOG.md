@@ -4,6 +4,93 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-10
+
+### Added
+
+- `/ca-sidebar on|off|toggle|width N`: an optional right-hand sidebar column at
+  pi-sidebar-tui panel parity (session, subagents, workspace, todos), defaulting
+  on in interactive parents at 120 columns or wider, width clamped 24..60. The
+  compositor uses Pi render hooks that are undocumented in every promoted
+  version, so each install is probe-gated at runtime, every paint re-validates
+  terminal geometry inside a synchronized-output envelope, and any failure
+  disposes back to native rendering with a single bounded warning — the sidebar
+  can degrade to unavailable, never wedge the terminal. Workspace and todos
+  panels are trusted-only; the MCP panel renders only when Pi exposes servers,
+  which no promoted version does. `/ca-doctor` gains a sidebar health row, and
+  the activity registry now retains up to 16 concurrent active entries so the
+  sidebar's subagents panel can show the detail the footer cannot fit.
+
+## [0.6.3] - 2026-08-10
+
+### Changed
+
+- Promote the verified Pi host window through exact Pi 0.84.1.
+
+## [0.6.2] - 2026-08-10
+
+### Fixed
+
+- Child dispatch protocol accepts the three optional message fields Pi 0.84.x
+  added: assistant `rawStopReason` (observed on the live RPC wire, where it
+  degraded every 0.84 child dispatch after the first provider turn), assistant
+  `deferred` (provider deferred-response handle), and toolResult `usage`. Each
+  validates strictly when present; unknown keys still fail closed (ADR-0014).
+  Proven by the live isolated-child contract against real Pi 0.84.1 and
+  0.80.10.
+
+## [0.6.1] - 2026-08-10
+
+### Fixed
+
+- Child dispatch protocol accepts Pi ≥0.84.0's delta-only RPC `message_update`
+  events (pi#7290): the wire event dropped the full `message` record and the
+  `partial` field inside assistant events, which the strict validator rejected,
+  degrading every live child dispatch on Pi 0.84.x. Both window shapes now
+  validate with exact key sets — the fail-closed boundary (ADR-0014) is
+  unchanged, only the newly-documented shape is recognized.
+
+## [0.6.0] - 2026-08-09
+
+### Added
+
+- npm distribution channel (ADR-0029): the package is now also published as
+  `npm:@arbiterforge/ca-pi` by CI on every `ca-pi-v*` tag, with npm provenance.
+  The root manifest became the publish unit (scoped name, `files` whitelist,
+  `publishConfig`, `repository`; `private` removed); the nested manifest keeps
+  `private: true` as an accidental-publish guard. The pinned Git install
+  remains the reproducible channel. Install: `pi install npm:@arbiterforge/ca-pi`.
+
+## [0.5.0] - 2026-08-09
+
+### Added
+
+- Rich footer parity gaps closed (spec `pi-footer-parity-gaps`): a per-message
+  token-burn sparkline derived from Pi session entries (last 20 assistant
+  messages, snapshot-independent); refresh-time git repository name and dirty
+  indicator for affirmatively trusted projects (bounded `git` spawn — explicit
+  argv, `shell: false`, 2s timeout, capped output, omit-on-failure); and up to
+  four per-item activity rows with a `+N more` overflow in the wide layout.
+  Rate-window telemetry stays omitted, never fabricated.
+
+## [0.4.1] - 2026-08-08
+
+### Changed
+
+- Routine frontmatter carries `disable-model-invocation: true` on the nine chain-internal routines (inert on this host) and JSON-quoted scalars per `_yaml_safe_scalar`; route sites cite explicit routine paths.
+
+## [0.4.0] - 2026-08-08
+
+### Changed
+
+- Tribunal roster consolidated: the eleven per-lens `tribunal-*-reviewer` roles are replaced
+  by one generic `tribunal-lens-reviewer` role dispatched once per active lens; the lens
+  cards under `routines/tribunal/references/lenses/` carry each lens's mandate, scope
+  emphasis, and required reading. `generated/roles.json` reshapes from 28 to 18 roles.
+- Gate reviewers and authors now load their shared findings/output/TDD contracts from
+  `includes/reviewer-contract.md` and `includes/author-tdd-workflow.md` instead of
+  restating them per role.
+
 ## [0.3.1] - 2026-08-07
 
 ### Fixed

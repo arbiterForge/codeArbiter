@@ -219,7 +219,7 @@ describe("Pi activation", () => {
     await mkdir(resolve(packageRoot, "extensions"), { recursive: true });
     await writeFile(resolve(packageRoot, "extensions", "codearbiter.js"), "export default () => {};\n", "utf8");
     await writeFile(resolve(packageRoot, "package.json"), JSON.stringify({
-      name: "ca-pi", pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
+      name: "@arbiterforge/ca-pi", pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
     }), "utf8");
     const ledger = "| Task | Status |\n|---|---|\n| T01 | PENDING |\n";
     const appended: Array<{ customType: string; data: unknown }> = [];
@@ -275,7 +275,7 @@ describe("Pi activation", () => {
     await mkdir(resolve(packageRoot, "extensions"), { recursive: true });
     await writeFile(resolve(packageRoot, "extensions", "codearbiter.js"), "export default () => {};\n", "utf8");
     await writeFile(resolve(packageRoot, "package.json"), JSON.stringify({
-      name: "ca-pi", pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
+      name: "@arbiterforge/ca-pi", pi: { extensions: ["./extensions/codearbiter.js"], skills: ["./skills"] },
     }), "utf8");
     const bridge = new FakeBridge();
     const appended: unknown[] = [];
@@ -472,7 +472,7 @@ describe("Pi activation", () => {
     const fakeHome = await project("");
     const stateRoot = resolve(fakeHome, ".codearbiter");
     await mkdir(stateRoot);
-    await writeFile(resolve(packageRoot, "package.json"), '{"name":"ca-pi","version":"1.4.0"}\n', "utf8");
+    await writeFile(resolve(packageRoot, "package.json"), '{"name":"@arbiterforge/ca-pi","version":"1.4.0"}\n', "utf8");
     await writeFile(resolve(stateRoot, "update-state.json"), '{"latest":"1.5.0","checked_at":1}\n', "utf8");
     const previousProfile = process.env.USERPROFILE;
     process.env.USERPROFILE = fakeHome;
@@ -640,7 +640,7 @@ describe("Pi activation", () => {
     await writeFile(auditPath, "existing-audit\n", "utf8");
     await writeFile(
       resolve(packageRoot, "package.json"),
-      '{"name":"ca-pi","version":"0.1.0","pi":{"extensions":["./extensions/codearbiter.js"],"skills":["./skills"]}}\n',
+      '{"name":"@arbiterforge/ca-pi","version":"0.1.0","pi":{"extensions":["./extensions/codearbiter.js"],"skills":["./skills"]}}\n',
       "utf8",
     );
     await writeFile(extensionPath, "export default () => {};\n", "utf8");
@@ -688,6 +688,9 @@ describe("Pi activation", () => {
           bridgePrepared: false,
           footerExpected: health.footer.expected,
           footerInitialized: health.footer.initialized,
+          sidebarExpected: health.sidebar.expected,
+          sidebarInstalled: health.sidebar.installed,
+          sidebarDegraded: health.sidebar.degraded,
           backgroundExpected: health.background.expected,
           backgroundInitialized: health.background.initialized,
           backgroundHealthy: health.background.healthy,
@@ -714,6 +717,7 @@ describe("Pi activation", () => {
     expect(host.userMessages).toHaveLength(1);
     expect(doctorHealth).toEqual({
       footer: { expected: false, initialized: false },
+      sidebar: { expected: false, installed: false, degraded: false },
       background: { expected: false, initialized: false, healthy: false },
     });
   });

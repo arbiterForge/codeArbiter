@@ -509,6 +509,35 @@ class CLITest(unittest.TestCase):
         rc, _ = self._run(["nonsense"])
         self.assertEqual(rc, 2)
 
+    def test_auto_eligible_true_when_manifest_advances(self):
+        rc, out = self._run(["auto-eligible", "2.12.1", "v"],
+                            "v2.12.0\nv2.11.0\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out, "true")
+
+    def test_auto_eligible_false_when_manifest_equals_last_tag(self):
+        rc, out = self._run(["auto-eligible", "2.12.0", "v"],
+                            "v2.12.0\nv2.11.0\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out, "false")
+
+    def test_auto_eligible_true_on_first_introduction(self):
+        # No tag at all for this series yet — always eligible, the same
+        # "first introduction" pass payload_version_gate.py's base_version()
+        # grants when a target is new on the base.
+        rc, out = self._run(["auto-eligible", "1.0.0", "zzz-v"], "")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out, "true")
+
+    def test_auto_eligible_respects_the_tag_namespace(self):
+        # A last-tag lookup scoped to the wrong prefix must not see the
+        # other series' tag at all — same series-isolation guarantee
+        # last-tag itself carries.
+        rc, out = self._run(["auto-eligible", "0.1.5", "ca-sandbox-v"],
+                            "v2.12.0\nca-pi-v0.3.1\n")
+        self.assertEqual(rc, 0)
+        self.assertEqual(out, "true")
+
     def test_select_target_prints_the_label(self):
         # The workflow cases on the label, so the label — not the exit code —
         # is the contract; an unknown label lands on its fail-closed `*` arm.

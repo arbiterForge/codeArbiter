@@ -57,13 +57,16 @@ class PiInstallRunbookTest(unittest.TestCase):
         self.assertIn("interpreter breadcrumb", prerequisite)
         self.assertNotIn("silently don't run", prerequisite)
 
-    def test_install_is_pinned_git_only_and_names_supported_versions(self):
+    def test_install_documents_git_pin_and_npm_channel(self):
+        # ADR-0029: the pinned Git tag stays the reproducible pin; npm is the
+        # documented convenience channel. Both must be present, neither alone.
         text = read("docs/pi-parity-testing.md")
         self.assertIn("pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v", text)
+        self.assertIn("pi install npm:@arbiterforge/ca-pi", text)
         self.assertIn("Pi 0.80.5", text)
-        self.assertIn("Pi 0.80.10", text)
-        self.assertIn("Git-only", text)
-        self.assertNotIn("npm publish", text)
+        self.assertIn("Pi 0.84.1", text)
+        self.assertNotIn("git-only", text.lower())
+        self.assertNotIn("no npm release", text.lower())
 
     def test_runbook_covers_required_live_checks_and_safe_evidence(self):
         text = read("docs/pi-parity-testing.md")
@@ -229,16 +232,30 @@ class ReleaseShapeTest(unittest.TestCase):
         )
         self.assertIn("--farm", combined)
         self.assertRegex(combined, r"(?is)--farm.{0,160}preview")
-        self.assertRegex(combined, r"(?is)npm packaging.{0,160}future spike")
         self.assertRegex(combined, r"(?is)embedded farm worker.{0,160}future spike")
         self.assertIn("ca-pi-v*", combined)
-        self.assertIn("no npm release", combined.lower())
+        # ADR-0029 flipped the npm posture: the docs must name the npm channel
+        # and the LIVING docs must no longer claim npm is absent or merely
+        # future work. CHANGELOG entries are historical record and keep the
+        # posture that was true when they were written.
+        self.assertIn("npm:@arbiterforge/ca-pi", combined)
+        self.assertIn("ADR-0029", combined)
+        living = "\n".join(
+            read(path)
+            for path in ("README.md", "docs/pi-parity-testing.md", "docs/parity.md")
+        )
+        self.assertNotIn("no npm release", living.lower())
+        self.assertNotRegex(living, r"(?is)npm packaging.{0,160}future spike")
 
-    def test_pi_manifest_is_private_and_versions_are_synchronized(self):
+    def test_pi_manifest_privacy_split_and_versions_are_synchronized(self):
+        # ADR-0029: the root manifest is the npm publish unit and must not be
+        # private; the nested manifest keeps private:true as an accidental-
+        # publish guard because it is never the publish unit.
         nested = json.loads(read("plugins/ca-pi/package.json"))
         root = json.loads(read("package.json"))
         self.assertTrue(nested["private"])
-        self.assertTrue(root["private"])
+        self.assertNotIn("private", root)
+        self.assertEqual(root["publishConfig"], {"access": "public", "provenance": True})
         self.assertEqual(nested["version"], root["version"])
 
     def test_pi_license_is_covered_by_consistency_checker(self):

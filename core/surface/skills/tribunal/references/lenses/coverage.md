@@ -1,6 +1,12 @@
 # coverage — lens mandate
 
-Executed by `tribunal-coverage-reviewer`. Write contract + evidence discipline: `finding-record.md`.
+Executed by `tribunal-lens-reviewer` under the `coverage` assignment. Write contract + evidence discipline: `finding-record.md`.
+
+## Scope emphasis
+Source-and-test pairs on risk paths in the assigned slice (auth, money, data-mutation, error handling).
+
+## Required reading
+- `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test and coverage invocations; `inventory.md` in the run dir — the risk overlay.
 
 ## Checklist
 - Coverage gaps on risk paths (auth, money, data-mutation, error handling).

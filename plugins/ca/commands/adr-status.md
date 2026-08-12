@@ -1,6 +1,6 @@
 ---
 description: Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.
-argument-hint: (none) | --adr N
+argument-hint: "(none) | --adr N"
 ---
 
 # /ca:adr-status — ADR health scan

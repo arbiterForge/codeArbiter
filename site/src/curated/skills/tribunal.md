@@ -13,16 +13,19 @@ gates:
 ## What it does
 
 This is the deepest, most expensive review the project offers: convened rarely, on demand,
-invoked through the tribunal command, and never required as a gate on ordinary work. Eleven
-specialist reviewers each judge one lens of the codebase in parallel, every finding persisted to
-its own file as it's found so the run survives an interruption and resumes from disk rather than
-restarting.
+invoked through the tribunal command, and never required as a gate on ordinary work. One generic
+reviewer agent is dispatched once per active lens, so the eleven lenses judge the codebase in
+parallel, every finding persisted to its own file as it's found so the run survives an
+interruption and resumes from disk rather than restarting.
 
 ## The lenses
 
-The eleven `tribunal-*` agents are named on the [tribunal command page](/reference/commands/tribunal/),
-which carries the full roster and each lens's concern. At most five run concurrently; a lens
-whose concern doesn't exist in scope is skipped rather than run for nothing.
+Every dispatch is the same [`tribunal-lens-reviewer`](/reference/agents/tribunal-lens-reviewer/)
+agent handed a per-lens assignment; the eleven lens cards it executes are published under
+[tribunal lenses](/reference/#tribunal-lenses), and the [tribunal command
+page](/reference/commands/tribunal/) carries the full roster and each lens's concern. At most
+five run concurrently; a lens whose concern doesn't exist in scope is skipped rather than run
+for nothing.
 
 ## On disk
 
