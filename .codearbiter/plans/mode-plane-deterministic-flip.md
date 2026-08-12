@@ -136,16 +136,16 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-38 | B | `plugins/ca-codex/hooks/hooks.json` (**single entry + `commandWindows`, R-2**; explicit `additionalContextLimit`, R-4) | `test_codex_adapter.py` exits 0; emitted key set **==** the seven schema names, `permissionDecision` absent — asserted as a set [LL] | 13 | T-27 | ACCEPTED |
 | T-39 | B | `prompt-submit.py` (Codex arm) | per-mode composed bytes measured against the **explicitly set** limit; over-limit behavior fires and is asserted [LL] | 28 | T-38,T-31 | ACCEPTED |
 | T-40 ★ | D | `safety-core.md` numbering (per R-3) | extract every `§N` from `core/pysrc/*.py` (**36 today**) and assert each resolves to a heading present in the composed persona **for all three modes** [LL] | 29 | T-17 | ACCEPTED |
-| T-41 ★ | E | `session-start.py:1079-1088` | SessionStart stdout has **no** persona text and still has the startup-state banner [LL, GR-2] | 27 | T-06 | PENDING |
-| T-42 ★ | E | `session-start.py` | live `dangerous` file removed by SessionStart; next read → `arbiter` [LL, GR-2] | 4 | T-41,T-08 | PENDING |
-| T-43 ★ | E | `session-start.py:~906` | run `clear_dev_marker`; assert the **emitted `overrides.log` line** names no deleted command — on the line, never a source grep [LL, GR-2] | 35 | T-41 | PENDING |
-| T-44 | E | `session-start.py` | eight named emitters each callable alone; each output a pure function of its args [LL, GR-2] | 30 | T-41 | PENDING |
-| T-45 | E | `session-start.py`, `tests/fixtures/startup-*.json` (new) | arbiter emitter set over the committed fixture = pinned pre-change line set; regen needs `--regen`, bare run refuses [LL, GR-2] | 31 | T-44 | PENDING |
-| T-46 | E | `session-start.py` | dangerous omits trailer/catalog/standup, still emits host+stage+mode; arbiter emits all three [LL, GR-2] | 32 | T-45 | PENDING |
-| T-47 | E | `session-start.py` | `dev-active` converts to dangerous **exactly once**, removed; second run after a flip to arbiter does not resurrect [LL, GR-2] | 41 | T-42 | PENDING |
-| T-48 | E | `session-start.py` | pinned pre-mode copy leaves no un-closed pair, no orphaned state, never reads the mode file [LL, GR-2] | 42 | T-47 | PENDING |
-| T-49 | E | `_prunepolicy.py` | `test_prune_policy_parity.py` exits 0 + `pinned=True` retains at gentle/standard/**aggressive** and appears in `protected_ids` [LL] | 26 | T-16 | PENDING |
-| T-50 | E | `_prunelib.py:171-179` | a line containing `PERSONA_SENTINEL` builds `SemanticEntry(pinned=True)` [LL, GR-2] | 26 | T-49 | PENDING |
+| T-41 ★ | E | `session-start.py:1079-1088` | SessionStart stdout has **no** persona text and still has the startup-state banner [LL, GR-2] | 27 | T-06 | ACCEPTED |
+| T-42 ★ | E | `session-start.py` | live `dangerous` file removed by SessionStart; next read → `arbiter` [LL, GR-2] | 4 | T-41,T-08 | ACCEPTED |
+| T-43 ★ | E | `session-start.py:~906` | run `clear_dev_marker`; assert the **emitted `overrides.log` line** names no deleted command — on the line, never a source grep [LL, GR-2] | 35 | T-41 | ACCEPTED |
+| T-44 | E | `session-start.py` | eight named emitters each callable alone; each output a pure function of its args [LL, GR-2] | 30 | T-41 | ACCEPTED |
+| T-45 | E | `session-start.py`, `tests/fixtures/startup-*.json` (new) | arbiter emitter set over the committed fixture = pinned pre-change line set; regen needs `--regen`, bare run refuses [LL, GR-2] | 31 | T-44 | ACCEPTED |
+| T-46 | E | `session-start.py` | dangerous omits trailer/catalog/standup, still emits host+stage+mode; arbiter emits all three [LL, GR-2] | 32 | T-45 | ACCEPTED |
+| T-47 | E | `session-start.py` | `dev-active` converts to dangerous **exactly once**, removed; second run after a flip to arbiter does not resurrect [LL, GR-2] | 41 | T-42 | ACCEPTED |
+| T-48 | E | `session-start.py` | pinned pre-mode copy leaves no un-closed pair, no orphaned state, never reads the mode file [LL, GR-2] | 42 | T-47 | ACCEPTED |
+| T-49 | E | `_prunepolicy.py` | `test_prune_policy_parity.py` exits 0 + `pinned=True` retains at gentle/standard/**aggressive** and appears in `protected_ids` [LL] | 26 | T-16 | ACCEPTED |
+| T-50 | E | `_prunelib.py:171-179` | a line containing `PERSONA_SENTINEL` builds `SemanticEntry(pinned=True)` [LL, GR-2] | 26 | T-49 | ACCEPTED |
 | T-51 ★ | F | `_arbiterstatelib.py:199-208` | `current_mode(root)` reads via `marker_root`; three values → three distinct tokens [LL, GR-2] | 38 | T-07 | ACCEPTED |
 | T-52 ★ | F | `statusline.py:254,288,556,683` | arbiter byte-identical to pinned output, dangerous keeps red-shift, ops distinct. **Unset `NO_COLOR`.** [LL, GR-2] | 38 | T-51 | ACCEPTED |
 | T-53 ★ | F | `_hooklib.py:552-556` `_STALE_FLOWS` | stale dangerous WARNs; stale arbiter **never** WARNs. Quiet registry — this test is the only signal [LL, GR-2] | 36 | T-51 | ACCEPTED |
@@ -159,16 +159,16 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-61 | C | `pi-bridge.py` `_footer_status_snapshot`, `test_pi_security.py:127-133` | PI-SEC-FOOTER-TRUST pins the **mode reader** and still fails on a seeded removal [LL] | 39,38 | T-51,T-56 | PENDING |
 | T-62 | C | `footer-state.ts` | three distinct footer renderings, arbiter unchanged [LL] | 38 | T-61 | PENDING |
 | T-63 | C | `plugins/ca-pi/tools` build | `npm run build` then `git diff --quiet -- dist` [LL] | 48 | T-62 | PENDING |
-| T-64 ★ | G | delete `core/surface/commands/{dev,arbiter}.md` | after `build-surface.py`, none of the three host surfaces has the command [LL] | 33 | T-21 | PENDING |
-| T-65 ★ | G | `COMMANDS.md:82-83`, residual `{{CMD:}}` in `dangerous-mode.md` | `build-surface.py --check` exits 0; `! grep -rn "CMD:dev\|CMD:arbiter" core/` [LL] | 33 | T-64,T-24 | PENDING |
-| T-66a | G | `test_routing_and_cleanup_surface.py` (**path pin only**) | **SPLIT from T-66.** The rename broke this suite with `FileNotFoundError` on `core/surface/ORCHESTRATOR.md` — a mechanical path repoint, NOT the supersession act. Unblocks AC-46 without touching the `{{CMD:dev}}` assertion. Suite runs without error [LL] | 46 | T-01 | PENDING |
-| T-66b ★ | G | `test_routing_and_cleanup_surface.py:79-93` (**the `{{CMD:dev}}` assertion**) | exits 0 — **editing this assertion IS the ADR-0022 supersession act; do not edit before T-82 is accepted** [PR] | 33 | T-65,T-82 | PENDING |
-| T-67 ★ | G | `README.md` (badge→38, prose echoes, catalog rows) | `check_badge_consistency.py` + `check_command_catalog.py` exit 0 [PR] | 34 | T-64 | PENDING |
-| T-68 | G | delete `site/src/curated/commands/{dev,arbiter}.md`; repair `related:` | `npm --prefix site test` + build + link audit exit 0 [LL] | 49 | T-64 | PENDING |
+| T-64 ★ | G | delete `core/surface/commands/{dev,arbiter}.md` | after `build-surface.py`, none of the three host surfaces has the command [LL] | 33 | T-21 | ACCEPTED |
+| T-65 ★ | G | `COMMANDS.md:82-83`, residual `{{CMD:}}` in `dangerous-mode.md` | `build-surface.py --check` exits 0; `! grep -rn "CMD:dev\|CMD:arbiter" core/` [LL] | 33 | T-64,T-24 | ACCEPTED |
+| T-66a | G | `test_routing_and_cleanup_surface.py` (**path pin only**) | **SPLIT from T-66.** The rename broke this suite with `FileNotFoundError` on `core/surface/ORCHESTRATOR.md` — a mechanical path repoint, NOT the supersession act. Unblocks AC-46 without touching the `{{CMD:dev}}` assertion. Suite runs without error [LL] | 46 | T-01 | ACCEPTED |
+| T-66b ★ | G | `test_routing_and_cleanup_surface.py:79-93` (**the `{{CMD:dev}}` assertion**) | exits 0 — **editing this assertion IS the ADR-0022 supersession act; do not edit before T-82 is accepted** [PR] | 33 | T-65,T-82 | ACCEPTED |
+| T-67 ★ | G | `README.md` (badge→38, prose echoes, catalog rows) | `check_badge_consistency.py` + `check_command_catalog.py` exit 0 [PR] | 34 | T-64 | ACCEPTED |
+| T-68 | G | delete `site/src/curated/commands/{dev,arbiter}.md`; repair `related:` | `npm --prefix site test` + build + link audit exit 0 [LL] | 49 | T-64 | ACCEPTED |
 | T-69 | G | `site/scripts/generator/configuration-reference.ts:23` + its test | `npm --prefix site test` exits 0, no `CODEARBITER_DEV` row [LL] | 50 | — | **ACCEPTED** |
-| T-70 | G | `docs/{architecture,hooks,parity}.md`, `CONTRIBUTING.md`, `site/VOICE.md`, four `site/src/content/docs/**` | `check_docs_contract.py` exits 0 [LL] | 50 | T-64 | PENDING |
-| T-71 | G | `.github/scripts/test_mode_surface.py` (new) | no live file states the old model or names the dead surfaces. **Carries the explicit AC-51 exclusion list and asserts the list is exactly that set (R-1)** — else AC-50/51 are unsatisfiable. Mutation: reintroduce one token → red [LL] | 50,51 | T-70 | PENDING |
-| T-72 | G | `test_mode_surface.py` | `git diff --exit-code` vs merge base over `gate-events.log`, `decisions/`, `sprint-log.md`, all CHANGELOGs, `docs/reports/` — zero bytes [PR] | 51 | T-71 | PENDING |
+| T-70 | G | `docs/{architecture,hooks,parity}.md`, `CONTRIBUTING.md`, `site/VOICE.md`, four `site/src/content/docs/**` | `check_docs_contract.py` exits 0 [LL] | 50 | T-64 | ACCEPTED |
+| T-71 | G | `.github/scripts/test_mode_surface.py` (new) | no live file states the old model or names the dead surfaces. **Carries the explicit AC-51 exclusion list and asserts the list is exactly that set (R-1)** — else AC-50/51 are unsatisfiable. Mutation: reintroduce one token → red [LL] | 50,51 | T-70 | ACCEPTED |
+| T-72 | G | `test_mode_surface.py` | `git diff --exit-code` vs merge base over `gate-events.log`, `decisions/`, `sprint-log.md`, all CHANGELOGs, `docs/reports/` — zero bytes [PR] | 51 | T-71 | ACCEPTED |
 | T-73 | G | `.codearbiter/CONTEXT.md` | three mode names **string-equal** to `_modelib.MODES`. **H-18 — route via `init-codearbiter.py` or a logged `/ca:override`, never a direct Edit** [LL] | 52 | T-07 | ACCEPTED (no override needed — H-18 keys on the resulting frontmatter, not the path) |
 | T-74 | G | `site/test/generator/extract-hook-gates.test.ts` + fixture | `npm --prefix site test` exits 0. **No-op if R-3 preserved the numbering** [LL] | 29 | T-40 | ACCEPTED — verified no-op: R-3 preserved the numbering and the fixtures cite `ORCHESTRATOR §N` as hook MESSAGE text, never as a path; 15/15 pass unchanged |
 | T-75 ★ | Z | generated `plugins/*/hooks/**` | `sync-core.py` then `--check` exits 0 [PR] | 46 | all core/pysrc | PENDING |
@@ -239,6 +239,15 @@ default.
   xfail — an xfail that silently starts passing is its own trap.
 - **`pi-bridge.py:406` calls the now-removed `_arbiterstatelib.dev_active`.** Lane C's T-61 already
   covers it; recorded so it cannot be lost if Lane C is rescoped.
+- **POST-MERGE: re-anchor `TestHistoricalSurfacesAreByteFrozen` (`test_mode_surface.py`).** It diffs
+  against the **merge base**, which equals HEAD once this branch lands — so from then on the diff is
+  always empty and the check is **structurally vacuous**: a green job measuring nothing. The
+  zero-deletions design is correct (T-72's "byte-unchanged" row is impossible given ADR-0030's own
+  additions), so the fix is re-anchoring the comparison ref, not redesigning the check. Flagged by
+  Lane G per the `a-green-job-can-measure-nothing` house rule. → follow-up issue after merge.
+- **`tests/test_p05_fixture.py` is pre-existing untracked cruft**, present before this campaign began
+  and unrelated to it. Deliberately NOT committed with the mode-plane fixtures under `tests/fixtures/`.
+  → user cleanup.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`

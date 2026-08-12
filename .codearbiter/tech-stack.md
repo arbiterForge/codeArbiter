@@ -93,6 +93,34 @@ python .github/scripts/test_readinjectlib.py
 # (pre-read.py): AC-03/09/10/12, miss, and dormant-repo paths
 python .github/scripts/test_pre_read.py
 
+# mode plane core (_modelib) — token matching, marker_root resolution, the
+# asymmetric fail direction, ledger backing, and CONTEXT.md's mode vocabulary
+python .github/scripts/test_modelib.py
+
+# composed persona — safety-core anchors, their ordering, precedence over every
+# mode body, and §N citation resolution in all three modes
+python .github/scripts/test_persona_composition.py
+
+# prompt-seam interceptor (prompt-submit.py) — deterministic flip with no model
+# turn, per-host envelopes, dedup, and the compaction-generation bump
+python .github/scripts/test_prompt_submit.py
+
+# startup emitters (session-start.py) — persona removed, eight composable
+# emitters, per-mode selection, golden fixture with explicit-flag regeneration
+python .github/scripts/test_startup_emitters.py
+
+# mode readers — statusline badges/red-shift, arbiter state, _STALE_FLOWS both
+# arms, and the override counter's exclusion of mode rows
+python .github/scripts/test_mode_readers.py
+
+# mode compaction seam — the mode survives a compaction; an unvouched or corrupt
+# anchor clears to arbiter rather than retaining a gates-off posture
+python .github/scripts/test_mode_compaction.py
+
+# mode surface + docs coverage — no surface or published doc still references a
+# deleted command; the curated site prose has no other gate comparing it
+python .github/scripts/test_mode_surface.py
+
 # plugins/ca/hooks/tests/ — the hook enforcement + helper logic unittest suite
 # (statusline, _ledgerlib, guards, etc.); run in CI via unittest discover
 python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
