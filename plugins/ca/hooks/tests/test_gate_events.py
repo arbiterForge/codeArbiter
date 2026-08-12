@@ -545,8 +545,24 @@ class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
 
 class TestStalenessWarnCONFIRM09(_GateEventsFixture):
     """CONFIRM-09: active-flow audit-log staleness is a WARN, never a gate.
-    Detected from EXISTING markers (.markers/dev-active, sprint-active) —
-    no new state invented."""
+    Detected from EXISTING markers (.markers/mode, sprint-active) — no new
+    state invented.
+
+    #437 (mode-plane-deterministic-flip): repointed from the retired
+    'dev-active' presence marker onto the mode plane's `{session_id: mode}`
+    JSON marker. `_hooklib._STALE_FLOWS`'s 'dev' entry was renamed to
+    'mode' and gained a content check — a session must be recorded as
+    something OTHER than 'arbiter' to count as active; bare file presence
+    is not enough (the file is a persistent map that legitimately keeps
+    existing with only-arbiter entries long after every non-arbiter
+    session has flipped back). Before this repoint, every `dev-active`
+    reference here was silently exercising a marker `_STALE_FLOWS` no
+    longer names at all — the tests that asserted "no warning" kept
+    passing, but for the WRONG reason (nothing was being detected, not
+    "correctly not-yet-stale"), which is exactly the kind of false-green
+    this WARN-not-gate mechanism has no other safety net for.
+    `test_stale_arbiter_only_mode_marker_yields_no_warning` below is new:
+    the negative arm this class had no coverage for at all."""
 
     def _touch(self, path, age_seconds=0):
         with open(path, "w", encoding="utf-8") as f:
@@ -554,25 +570,48 @@ class TestStalenessWarnCONFIRM09(_GateEventsFixture):
         t = time.time() - age_seconds
         os.utime(path, (t, t))
 
+    def _write_mode_marker(self, entries, age_seconds=0):
+        markers = os.path.join(self.cad, ".markers")
+        if not os.path.isdir(markers):
+            os.makedirs(markers)
+        path = os.path.join(markers, "mode")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(json.dumps(entries))
+        t = time.time() - age_seconds
+        os.utime(path, (t, t))
+
     def test_no_markers_present_yields_no_warnings(self):
         self.assertEqual(_hooklib.staleness_warning(self.root), [])
 
-    def test_fresh_dev_marker_is_not_stale(self):
-        os.makedirs(os.path.join(self.cad, ".markers"))
-        self._touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=5)
+    def test_fresh_dangerous_mode_is_not_stale(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=5)
         self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
 
-    def test_stale_dev_marker_with_no_log_activity_warns(self):
-        os.makedirs(os.path.join(self.cad, ".markers"))
-        self._touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+    def test_stale_dangerous_mode_with_no_log_activity_warns(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
         msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
         self.assertEqual(len(msgs), 1)
-        self.assertIn("/dev", msgs[0])
+        self.assertIn("/mode", msgs[0])
         self.assertIn("CONFIRM-09", msgs[0])
 
-    def test_stale_dev_marker_but_recent_log_write_is_not_stale(self):
-        os.makedirs(os.path.join(self.cad, ".markers"))
-        self._touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+    def test_stale_ops_mode_with_no_log_activity_warns(self):
+        # AC-36 covers every non-arbiter mode, not just 'dangerous'.
+        self._write_mode_marker({"sess-x": "ops"}, age_seconds=3600)
+        msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("/mode", msgs[0])
+
+    def test_stale_arbiter_only_mode_marker_yields_no_warning(self):
+        # AC-36 negative arm: the marker file EXISTS and IS old, but every
+        # session recorded in it is 'arbiter'. Presence alone must not trip
+        # the WARN — the retired dev-active boolean marker's exact shape,
+        # and the failure mode that would make this WARN fire on every
+        # repo that has ever used the mode plane at all, arbiter included.
+        self._write_mode_marker({"sess-x": "arbiter", "sess-y": "arbiter"}, age_seconds=3600)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+    def test_stale_dangerous_mode_but_recent_log_write_is_not_stale(self):
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
         # overrides.log was written recently -> the flow IS producing audit
         # activity even though the marker itself is old.
         self._touch(os.path.join(self.cad, "overrides.log"), age_seconds=5)
@@ -585,15 +624,13 @@ class TestStalenessWarnCONFIRM09(_GateEventsFixture):
         self.assertIn("/sprint", msgs[0])
 
     def test_both_flows_stale_yields_two_warnings(self):
-        os.makedirs(os.path.join(self.cad, ".markers"))
-        self._touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
         self._touch(os.path.join(self.cad, "sprint-active"), age_seconds=3600)
         msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
         self.assertEqual(len(msgs), 2)
 
     def test_never_raises_on_a_stat_failure(self):
-        os.makedirs(os.path.join(self.cad, ".markers"))
-        self._touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
         with mock.patch("os.path.getmtime", side_effect=OSError("boom")):
             try:
                 msgs = _hooklib.staleness_warning(self.root, window_minutes=30)
@@ -602,8 +639,7 @@ class TestStalenessWarnCONFIRM09(_GateEventsFixture):
         self.assertEqual(msgs, [])
 
     def test_has_no_side_effects_pure_function(self):
-        os.makedirs(os.path.join(self.cad, ".markers"))
-        self._touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        self._write_mode_marker({"sess-x": "dangerous"}, age_seconds=3600)
         before = set(os.listdir(self.cad))
         _hooklib.staleness_warning(self.root, window_minutes=30)
         after = set(os.listdir(self.cad))

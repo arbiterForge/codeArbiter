@@ -6,9 +6,23 @@ non-blocking and also writes the durable gate-events.log record
 WARN-only contract: the hook-mode entry point (staleness_check / main())
 must NEVER raise and must NEVER change prune-transcript.py's hook-mode exit
 code (always 0), regardless of whether a flow is stale.
+
+#437 (mode-plane-deterministic-flip): repointed from the retired
+'dev-active' presence marker onto the mode plane's `{session_id: mode}`
+JSON marker (`.codearbiter/.markers/mode`) — `_hooklib._STALE_FLOWS`'s
+'dev' entry was renamed to 'mode' and gained a content check (a session
+must be recorded as something OTHER than 'arbiter' to count as "active";
+presence of the file alone is not enough, since it is a persistent map
+that legitimately keeps existing with only-arbiter entries long after
+every non-arbiter session has flipped back). Both directions are kept
+here, matching AC-36: a stale non-arbiter session warns, a stale
+all-arbiter marker never does — the negative arm is what would catch a
+matcher that (wrongly) fires on file presence alone, the retired
+dev-active marker's exact shape.
 """
 import importlib.util
 import io
+import json
 import os
 import sys
 import tempfile
@@ -30,12 +44,16 @@ import _hooklib  # noqa: E402
 from _helpers import redirect_home, restore_home  # noqa: E402
 
 
-def _touch(path, age_seconds=0):
+def _write_mode_marker(cad, entries, age_seconds=0):
+    """Seed `<cad>/.markers/mode` with `entries` ({session_id: mode}) and
+    back-date its mtime — the #437 mode plane's direct successor to the
+    retired `dev-active` presence marker this file used to `_touch`."""
+    path = os.path.join(cad, ".markers", "mode")
     d = os.path.dirname(path)
-    if d and not os.path.isdir(d):
+    if not os.path.isdir(d):
         os.makedirs(d)
     with open(path, "w", encoding="utf-8") as f:
-        f.write("x")
+        f.write(json.dumps(entries))
     t = time.time() - age_seconds
     os.utime(path, (t, t))
 
@@ -59,8 +77,8 @@ class _Fixture(unittest.TestCase):
 
 
 class TestStalenessCheckFunction(_Fixture):
-    def test_stale_dev_flow_emits_a_warn_and_durable_record(self):
-        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+    def test_stale_dangerous_mode_emits_a_warn_and_durable_record(self):
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         buf = io.StringIO()
         # _hooklib.warn()'s durable-sink half resolves its own root via
         # project_root() (CLAUDE_PROJECT_DIR, else a git spawn) independently
@@ -76,8 +94,30 @@ class TestStalenessCheckFunction(_Fixture):
         self.assertIn("WARN", log)
         self.assertIn("CONFIRM-09", log)
 
-    def test_fresh_dev_flow_emits_nothing(self):
-        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=5)
+    def test_stale_ops_mode_emits_a_warn_too(self):
+        # AC-36 covers every non-arbiter mode, not just 'dangerous'.
+        _write_mode_marker(self.cad, {"sess-x": "ops"}, age_seconds=3600)
+        buf = io.StringIO()
+        with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root}):
+            with mock.patch.object(sys, "stderr", buf):
+                pt.staleness_check(self.payload())
+        self.assertIn("CONFIRM-09", buf.getvalue())
+
+    def test_stale_arbiter_only_mode_marker_never_warns(self):
+        # AC-36 negative arm: the marker file EXISTS and IS old, but every
+        # session recorded in it is 'arbiter'. This is the case that would
+        # catch a matcher keyed on file PRESENCE alone — the retired
+        # dev-active boolean marker's exact shape, and the failure mode
+        # that would make this WARN fire on every repo that has ever used
+        # the mode plane at all, arbiter included.
+        _write_mode_marker(self.cad, {"sess-x": "arbiter"}, age_seconds=3600)
+        buf = io.StringIO()
+        with mock.patch.object(sys, "stderr", buf):
+            pt.staleness_check(self.payload())
+        self.assertEqual(buf.getvalue(), "")
+
+    def test_fresh_dangerous_mode_emits_nothing(self):
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=5)
         buf = io.StringIO()
         with mock.patch.object(sys, "stderr", buf):
             pt.staleness_check(self.payload())
@@ -94,7 +134,7 @@ class TestStalenessCheckFunction(_Fixture):
         # arbiter NOT enabled -> the check must not fire at all.
         with open(os.path.join(self.cad, "CONTEXT.md"), "w", encoding="utf-8") as f:
             f.write("---\narbiter: disabled\n---\n# ctx\n")
-        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         buf = io.StringIO()
         with mock.patch.object(sys, "stderr", buf):
             pt.staleness_check(self.payload())
@@ -108,7 +148,7 @@ class TestStalenessCheckFunction(_Fixture):
         # exist) reads as not-enabled and the WARN silently never fires.
         subdir = os.path.join(self.root, "src", "nested")
         os.makedirs(subdir)
-        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         payload = {"hook_event_name": "UserPromptSubmit", "cwd": subdir}
         buf = io.StringIO()
         with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root}):
@@ -117,8 +157,63 @@ class TestStalenessCheckFunction(_Fixture):
         self.assertIn("codeArbiter hook:", buf.getvalue())
         self.assertIn("CONFIRM-09", buf.getvalue())
 
+    @unittest.expectedFailure
+    def test_linked_worktree_mode_marker_is_missed_by_project_root_resolution(self):
+        """KNOWN DEFECT (found while repointing this file for #437,
+        mode-plane-deterministic-flip — the same class of bug the plan's own
+        [NEEDS-TRIAGE] "ROOT-RESOLUTION SPLIT" item names for
+        session-start.py, here in `prune-transcript.py` instead).
+
+        `staleness_check` resolves its root via
+        `_hooklib.get_host().project_root(payload)` (prune-transcript.py:57)
+        — a LINKED WORKTREE's own checkout. But the mode marker itself is
+        written and read at `marker_root` (`_modelib.mode_marker_path`),
+        which ESCALATES to the MAIN checkout in a linked worktree (#604) —
+        `.codearbiter/.markers/` is gitignored, so a linked worktree's own
+        checkout never has a fresh copy of it. In a linked worktree these
+        are two DIFFERENT directories, so a genuinely stale non-arbiter
+        session recorded in the main checkout's mode marker is silently
+        invisible to this WARN when prune-transcript.py runs from the
+        worktree — the CONFIRM-09 staleness signal goes quiet exactly where
+        #604 says it must not, and this repo runs worktree agents routinely.
+
+        `@unittest.expectedFailure`, not a fix: `prune-transcript.py`'s root
+        resolution is out of this file's #437 grant (Lane F owns the
+        `_STALE_FLOWS` rename in `_hooklib.py`, not the caller's root
+        resolution) — repointing `staleness_check` onto `marker_root` is a
+        one-line fix for whoever owns `prune-transcript.py` next. This test
+        exists so that fix has a red-to-green target, and so the defect
+        cannot be closed by accident: an unexpected PASS here (XPASS) is
+        itself the signal that someone shipped it.
+        """
+        worktree_root = os.path.join(self._tmp.name, "worktree")
+        os.makedirs(worktree_root)
+        # A linked worktree's `.git` is a FILE pointing at
+        # `<main>/.git/worktrees/<name>` — hostapi.git_worktree_main_root's
+        # exact recognized shape (pure text match, no real git plumbing
+        # needed for THAT half; see its docstring). The mode marker itself
+        # lives at `self.cad` (the MAIN checkout, matching marker_root's
+        # real escalation target).
+        main_git_worktrees = os.path.join(self.root, ".git", "worktrees", "wt")
+        os.makedirs(main_git_worktrees)
+        with open(os.path.join(worktree_root, ".git"), "w", encoding="utf-8") as f:
+            f.write(f"gitdir: {main_git_worktrees}\n")
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
+        payload = {"hook_event_name": "UserPromptSubmit", "cwd": worktree_root}
+        buf = io.StringIO()
+        # No CLAUDE_PROJECT_DIR: forces project_root(payload) through its
+        # payload-cwd leg (git_toplevel(worktree_root) fails — the fake
+        # worktree has no real git metadata under main_git_worktrees — so it
+        # falls back to worktree_root itself, the wrong root; see #264's
+        # `_hooklib.get_host().project_root` docstring for the exact chain).
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("CLAUDE_PROJECT_DIR", None)
+            with mock.patch.object(sys, "stderr", buf):
+                pt.staleness_check(payload)
+        self.assertIn("CONFIRM-09", buf.getvalue())
+
     def test_never_raises_when_hooklib_import_fails(self):
-        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         with mock.patch.dict(sys.modules, {"_hooklib": None}):
             try:
                 pt.staleness_check(self.payload())
@@ -133,17 +228,18 @@ class TestHookModeNeverBlocks(_Fixture):
     def _run_main(self, payload):
         # Pin CLAUDE_PROJECT_DIR to the tmp fixture: _hooklib.warn()'s durable-
         # sink half resolves its OWN root independently of payload["cwd"] (see
-        # test_stale_dev_flow_emits_a_warn_and_durable_record above) — every
-        # production hook invocation pins this env var, and leaving it unset
-        # here would let project_root()'s git-rev-parse fallback resolve to
-        # whatever repo happens to contain the test run, not the fixture.
+        # test_stale_dangerous_mode_emits_a_warn_and_durable_record above) —
+        # every production hook invocation pins this env var, and leaving it
+        # unset here would let project_root()'s git-rev-parse fallback
+        # resolve to whatever repo happens to contain the test run, not the
+        # fixture.
         raw = __import__("json").dumps(payload)
         env_patch = mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root})
         with env_patch, mock.patch.object(sys, "stdin", io.StringIO(raw)):
             return pt.main([])
 
     def test_stale_flow_present_still_returns_0(self):
-        _touch(os.path.join(self.cad, ".markers", "dev-active"), age_seconds=3600)
+        _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         rc = self._run_main(self.payload())
         self.assertEqual(rc, 0)
 

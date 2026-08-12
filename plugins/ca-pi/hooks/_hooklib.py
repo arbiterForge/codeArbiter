@@ -532,28 +532,67 @@ def warn(msg):
 # active long-running flow's marker has sat around past `window_minutes` with
 # no matching activity in its expected audit log.
 #
-# Only /dev and /sprint have a persistent "in-progress" marker today
-# (.codearbiter/.markers/dev-active and .codearbiter/sprint-active — the same
-# state _arbiterstatelib.dev_active()/arbiter_state() already read). /override
-# is a single synchronous action (announce-then-log in one turn, per
-# override.md) with no analogous "still in progress" marker anywhere in the
-# framework, so per CONFIRM-09's own "do not invent new state" constraint it
-# is not tracked here — there is no existing signal to detect it from.
+# Only the mode plane and /sprint have a persistent "in-progress" marker
+# today (.codearbiter/.markers/mode and .codearbiter/sprint-active — the same
+# state _arbiterstatelib.current_mode()/arbiter_state() already read; the
+# mode marker is #437's direct successor to the retired dev-active marker
+# this comment originally described). /override is a single synchronous
+# action (announce-then-log in one turn, per override.md) with no analogous
+# "still in progress" marker anywhere in the framework, so per CONFIRM-09's
+# own "do not invent new state" constraint it is not tracked here — there is
+# no existing signal to detect it from.
 #
-# #271 C-5: this staleness WARN is presence + age based (marker mtime vs. an
-# audit-log write), which is unaffected by session-start.py's newer
-# session-scoped CLEARING decision for the SAME dev-active marker — the two
-# consumers ask different questions ("has this sat around too long with no
-# matching log activity?" vs. "am I sure enough this belongs to nobody live
-# right now that I should force-close it?") and neither needs to agree with
-# the other's answer. A dev marker owned by a still-live different session
-# can legitimately trip THIS warning (it really has been open a while) even
-# though session-start.py correctly declines to clobber it.
+# #271 C-5 (pre-#437): this staleness WARN is presence + age based (marker
+# mtime vs. an audit-log write), which was unaffected by session-start.py's
+# then-newer session-scoped CLEARING decision for the SAME dev-active
+# marker — the two consumers ask different questions ("has this sat around
+# too long with no matching log activity?" vs. "am I sure enough this
+# belongs to nobody live right now that I should force-close it?") and
+# neither needs to agree with the other's answer. The same reasoning now
+# applies to the mode marker: a non-arbiter entry owned by a still-live
+# different session can legitimately trip THIS warning even though
+# SessionStart correctly declines to clobber a live session's own entry.
 _STALE_FLOWS = (
     # (flow name, marker path parts, expected-log path parts)
-    ("dev", (".markers", "dev-active"), ("overrides.log",)),
+    #
+    # #437 (mode-plane-deterministic-flip): the 'dev'/'dev-active' entry this
+    # tuple used to carry is RENAMED, not removed — the mode marker is the
+    # direct successor of dev-active (Decided parameters: dev-active is not
+    # dual-written; every reader migrates to the mode file). Missing this
+    # rename is the one hazard this whole registry exists to avoid: it is a
+    # WARN, not a gate, so a stale matcher fails PERMANENTLY SILENT with an
+    # otherwise green suite — nothing else in the repo would ever notice.
+    ("mode", (".markers", "mode"), ("overrides.log",)),
     ("sprint", ("sprint-active",), ("sprint-log.md",)),
 )
+
+
+def _mode_marker_has_non_arbiter_entry(marker):
+    """AC-36: True iff the mode marker JSON names at least one session in a
+    non-'arbiter' posture. Presence alone is NOT "active" for this flow the
+    way it was for the old boolean dev-active marker — the mode file is a
+    persistent `{session_id: mode}` map (#437's State: decided parameter)
+    that legitimately keeps existing, with plenty of purely-'arbiter'
+    entries, long after every non-arbiter session has flipped back or
+    ended. Warning on mere file presence would trip AC-36's negative arm
+    (never warn for arbiter) permanently, for every repo that has ever used
+    the mode plane at all — exactly the "warns on everything" matcher the
+    negative-arm assertion exists to catch.
+
+    Deliberately duplicates the literal 'arbiter' value here rather than
+    importing `_modelib.MODES[0]`: `_modelib` imports `write_text_atomic`
+    FROM this module, so importing back the other way would be circular.
+    Never raises: an absent/corrupt/malformed marker answers False — the
+    same fail-toward-silent convention `staleness_warning`'s own try/except
+    already applies to every other stat/read in this loop."""
+    try:
+        with open(marker, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:  # noqa: BLE001 — unreadable/corrupt -> nothing provably active
+        return False
+    if not isinstance(data, dict):
+        return False
+    return any(v != "arbiter" for v in data.values())
 
 
 def staleness_warning(root, now=None, window_minutes=30):
@@ -575,6 +614,8 @@ def staleness_warning(root, now=None, window_minutes=30):
             marker = os.path.join(cad, *marker_parts)
             if not os.path.isfile(marker):
                 continue
+            if name == "mode" and not _mode_marker_has_non_arbiter_entry(marker):
+                continue  # AC-36: never warn for arbiter — presence alone isn't "active"
             marker_mtime = os.path.getmtime(marker)
             if now - marker_mtime < window_minutes * 60:
                 continue  # flow started too recently to call it stale yet
