@@ -20,7 +20,7 @@ for the producer to fix.
 
 Reviews only **generated, user-facing artifacts** (UI, reports, resumes, slides, charts, PR
 descriptions, CHANGELOG sections). Does NOT review codeArbiter's own internal framework docs
-(`ORCHESTRATOR.md`, the `INDEX.md` files, skill/agent bodies). If asked to review an internal doc,
+(`arbiter.md`, the `INDEX.md` files, skill/agent bodies). If asked to review an internal doc,
 decline and say so.
 
 ## Required Reading (lazy, by medium)

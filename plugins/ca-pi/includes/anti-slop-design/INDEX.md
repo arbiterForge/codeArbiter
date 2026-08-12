@@ -6,7 +6,7 @@ Never bulk-read the whole bundle: a website task pulls the web leaf and never se
 
 **Scope of authority:** generated, user-facing artifacts only (UI, PR descriptions, CHANGELOG,
 and any report/slide/chart a producer is told to render). This bundle does NOT govern codeArbiter's
-own internal framework docs (`ORCHESTRATOR.md`, the `INDEX.md` files, skill/agent bodies), whose
+own internal framework docs (`arbiter.md`, the `INDEX.md` files, skill/agent bodies), whose
 house style is set elsewhere.
 
 ## How to use the bundle

@@ -49,7 +49,7 @@ def read(rel: str) -> str:
 def orchestrator_section_six(text: str) -> str:
     """§6's body, from its heading to the next section heading."""
     match = re.search(r"^## §6 .*?$(.*?)^## §7 ", text, re.MULTILINE | re.DOTALL)
-    assert match, "ORCHESTRATOR.md has no §6 section"
+    assert match, "arbiter.md has no §6 section"
     return match.group(1)
 
 
@@ -57,9 +57,9 @@ class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):
     """ADR-0022: route on understood intent, in three tiers."""
 
     def surfaces(self):
-        yield "core/surface/ORCHESTRATOR.md", read("core/surface/ORCHESTRATOR.md")
+        yield "core/surface/arbiter.md", read("core/surface/arbiter.md")
         for plugin, _, _, _ in HOSTS:
-            rel = f"{plugin}/ORCHESTRATOR.md"
+            rel = f"{plugin}/arbiter.md"
             yield rel, read(rel)
 
     def test_section_six_names_all_three_tiers(self):

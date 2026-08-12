@@ -17,7 +17,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 CA = ROOT / "plugins" / "ca"
 
-ORCH = CA / "ORCHESTRATOR.md"
+ORCH = CA / "arbiter.md"
 SPRINT = CA / "SPRINT.md"
 FINISH = CA / "skills" / "finishing-a-development-branch" / "SKILL.md"
 TDD = CA / "skills" / "tdd" / "SKILL.md"

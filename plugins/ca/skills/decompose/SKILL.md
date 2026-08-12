@@ -12,7 +12,7 @@ Spec the project before a line of code exists. Routed to at greenfield startup, 
 Run these ordered checks. Each passes silently or hard-stops with a routing action — never guess:
 
 1. Read `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md`. If it already carries the `<!--INITIALIZED-->` body marker on its own line, STOP — context exists. Route to normal operation.
-2. Scan for meaningful source code: any file outside `.git/`, `.codearbiter/`, `.claude/`, `ORCHESTRATOR.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`, `.gitignore`, `.gitmodules`, and standard tooling dotfiles. If any exist, STOP and route to `/create-context`.
+2. Scan for meaningful source code: any file outside `.git/`, `.codearbiter/`, `.claude/`, `arbiter.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `LICENSE`, `.gitignore`, `.gitmodules`, and standard tooling dotfiles. If any exist, STOP and route to `/create-context`.
 3. Confirm `${CLAUDE_PROJECT_DIR}/.codearbiter/` exists and is writable. If not, surface the gap and STOP.
 
 All three pass → proceed to Phase 1. Later phases consume this pass-status; they do not re-run it.

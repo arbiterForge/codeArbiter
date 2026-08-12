@@ -86,7 +86,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | id | lane | path(s) | verification | covers | dep | status |
 |---|---|---|---|---|---|---|
 | T-01 ★ | R | `core/surface/ORCHESTRATOR.md`→`arbiter.md`; `core/hosts.json` (3× rules, 3× `managed_subtrees`) | `build-surface.py` then all three `plugins/*/arbiter.md` exist AND no `plugins/ca/ORCHESTRATOR.md` (proves orphan pruned) [LL] | 37,46 | — | PENDING |
-| T-02 ★ | R | `core/surface/{COMMANDS,README}.md`, `agents/design-quality-reviewer.md`, `includes/{anti-slop-design/INDEX,smarts/core,dev-mode}.md`, `skills/{decision-lifecycle,decompose}/SKILL.md` | `! grep -rn ORCHESTRATOR core/surface/` [LL] | 50 | T-01 | PENDING |
+| T-02 ★ | R | `core/surface/{COMMANDS,README}.md`, `agents/design-quality-reviewer.md`, `includes/{anti-slop-design/INDEX,smarts/core,dev-mode}.md`, `skills/{decision-lifecycle,decompose}/SKILL.md`, `arbiter.md` Paths section | **CORRECTED** — the blanket `! grep` was unsatisfiable: it contradicts spec line 86, which *mandates* `(formerly ORCHESTRATOR.md)` in `arbiter.md`'s header. Verification is now: the only `ORCHESTRATOR` mentions in `core/surface/` are `arbiter.md:1` (mandated) and `commands/dev.md` (deleted wholesale by T-64) [LL] | 50 | T-01 | **ACCEPTED** |
 | T-03 ★ | R | `.coderabbit.yaml:54,57,60`; `test_ci_impact.py:725`; `test_build_surface.py:75`; `test_ux_conversion.py:20` | those three suites exit 0 [LL] | 46 | T-01 | PENDING |
 | T-04 ★ | R | `.codearbiter/coding-standards.md:5` | `! grep -n ORCHESTRATOR` that file [LL] | 50 | T-01 | PENDING |
 | T-05 | R | `.gitleaks.toml:189` (anchored waiver contains `ORCHESTRATOR §3`) | `test_ci_impact.py` exits 0 [LL] | 46 | T-40 | PENDING |
@@ -114,7 +114,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-27 ★ | B | `core/pysrc/prompt-submit.py` (new) | `test_prompt_submit.py`: stdin `{hook_event_name,prompt,session_id}` → exit 2, named stderr line, mode written [LL] | 7 | T-12,T-08 | PENDING |
 | T-28 ★ | B | `prompt-submit.py` | substring → exit 0, prompt unaltered, mode bytes identical; same test flips on exact-match control [LL] | 8 | T-27 | PENDING |
 | T-29 ★ | B | `prompt-submit.py` | bare `mode` → exit 2, stderr names current mode **and all three values**, nothing written [LL] | 9 | T-27 | PENDING |
-| T-30 ★ | B | `_readinjectlib.py` (`marker_path` gains `prefix`), `test_readinjectlib.py` | existing cases pass with default; new case yields `modeinject-` [LL, GR-2] | 23 | — | PENDING |
+| T-30 ★ | B | `_readinjectlib.py` (`marker_path` gains `prefix`), `test_readinjectlib.py` | existing cases pass with default; new case yields `modeinject-` [LL, GR-2] | 23 | — | **ACCEPTED** |
 | T-31 ★ | B | `prompt-submit.py` | composed persona = safety-core bytes + mode body bytes on **plain stdout**; previous mode's body absent [LL] | 18 | T-27,T-17,T-20 | PENDING |
 | T-32 ★ | B | `prompt-submit.py` | turn 1 emits, turn 2 same (session,mode,gen) emits nothing, new session emits again [LL] | 23 | T-30,T-31 | PENDING |
 | T-33 ★ | B | `prompt-submit.py` | flip turn (exit 2) then next turn emits the **new** body [LL] | 24 | T-32 | PENDING |
@@ -138,7 +138,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-51 ★ | F | `_arbiterstatelib.py:199-208` | `current_mode(root)` reads via `marker_root`; three values → three distinct tokens [LL, GR-2] | 38 | T-07 | PENDING |
 | T-52 ★ | F | `statusline.py:254,288,556,683` | arbiter byte-identical to pinned output, dangerous keeps red-shift, ops distinct. **Unset `NO_COLOR`.** [LL, GR-2] | 38 | T-51 | PENDING |
 | T-53 ★ | F | `_hooklib.py:552-556` `_STALE_FLOWS` | stale dangerous WARNs; stale arbiter **never** WARNs. Quiet registry — this test is the only signal [LL, GR-2] | 36 | T-51 | PENDING |
-| T-54 | F | `_metricslib.py:251-291` | log of `MODE:`+legacy `DEV:` rows → `override_rate` current/prior = 0 [LL, GR-2] | 40 | — | PENDING |
+| T-54 | F | `_metricslib.py:251-291` | log of `MODE:`+legacy `DEV:` rows → `override_rate` current/prior = 0 [LL, GR-2] | 40 | — | **ACCEPTED** |
 | T-55 | F | `statusline.py` override counter | same corpus → counter 0 [LL, GR-2] | 40 | T-54 | PENDING |
 | T-56 | C | `pi-bridge.py:30,34-43` | `test_pi_security.py` exits 0; `input` required/allowed key **sets** by equality [LL] | 15,14 | T-12 | PENDING |
 | T-57 | C | `pi-bridge.py` `_mode_flip` | `test_pi_platform_contract.py --fixtures-only` exits 0; handler returns `handled`, mode flips [LL] | 14 | T-56 | PENDING |
@@ -150,10 +150,11 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-63 | C | `plugins/ca-pi/tools` build | `npm run build` then `git diff --quiet -- dist` [LL] | 48 | T-62 | PENDING |
 | T-64 ★ | G | delete `core/surface/commands/{dev,arbiter}.md` | after `build-surface.py`, none of the three host surfaces has the command [LL] | 33 | T-21 | PENDING |
 | T-65 ★ | G | `COMMANDS.md:82-83`, residual `{{CMD:}}` in `dangerous-mode.md` | `build-surface.py --check` exits 0; `! grep -rn "CMD:dev\|CMD:arbiter" core/` [LL] | 33 | T-64,T-24 | PENDING |
-| T-66 ★ | G | `test_routing_and_cleanup_surface.py:79-93` | exits 0 — **editing this pin IS the ADR-0022 supersession act; do not edit before T-82 is accepted** [PR] | 33,46 | T-65,T-82 | PENDING |
+| T-66a | G | `test_routing_and_cleanup_surface.py` (**path pin only**) | **SPLIT from T-66.** The rename broke this suite with `FileNotFoundError` on `core/surface/ORCHESTRATOR.md` — a mechanical path repoint, NOT the supersession act. Unblocks AC-46 without touching the `{{CMD:dev}}` assertion. Suite runs without error [LL] | 46 | T-01 | PENDING |
+| T-66b ★ | G | `test_routing_and_cleanup_surface.py:79-93` (**the `{{CMD:dev}}` assertion**) | exits 0 — **editing this assertion IS the ADR-0022 supersession act; do not edit before T-82 is accepted** [PR] | 33 | T-65,T-82 | PENDING |
 | T-67 ★ | G | `README.md` (badge→38, prose echoes, catalog rows) | `check_badge_consistency.py` + `check_command_catalog.py` exit 0 [PR] | 34 | T-64 | PENDING |
 | T-68 | G | delete `site/src/curated/commands/{dev,arbiter}.md`; repair `related:` | `npm --prefix site test` + build + link audit exit 0 [LL] | 49 | T-64 | PENDING |
-| T-69 | G | `site/scripts/generator/configuration-reference.ts:23` + its test | `npm --prefix site test` exits 0, no `CODEARBITER_DEV` row [LL] | 50 | — | PENDING |
+| T-69 | G | `site/scripts/generator/configuration-reference.ts:23` + its test | `npm --prefix site test` exits 0, no `CODEARBITER_DEV` row [LL] | 50 | — | **ACCEPTED** |
 | T-70 | G | `docs/{architecture,hooks,parity}.md`, `CONTRIBUTING.md`, `site/VOICE.md`, four `site/src/content/docs/**` | `check_docs_contract.py` exits 0 [LL] | 50 | T-64 | PENDING |
 | T-71 | G | `.github/scripts/test_mode_surface.py` (new) | no live file states the old model or names the dead surfaces. **Carries the explicit AC-51 exclusion list and asserts the list is exactly that set (R-1)** — else AC-50/51 are unsatisfiable. Mutation: reintroduce one token → red [LL] | 50,51 | T-70 | PENDING |
 | T-72 | G | `test_mode_surface.py` | `git diff --exit-code` vs merge base over `gate-events.log`, `decisions/`, `sprint-log.md`, all CHANGELOGs, `docs/reports/` — zero bytes [PR] | 51 | T-71 | PENDING |
@@ -164,6 +165,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-77 | Z | `plugins/ca-pi/generated/**`, root `package.json` | `build-host-packages.py` then `--check` exits 0 [PR] | 46,48 | T-76,T-63 | PENDING |
 | T-78 ★ | Z | `.github/workflows/ci.yml`, `.codearbiter/tech-stack.md` | `test_ci_impact.py` exits 0; all four new test scripts registered with path filters in both [PR] | 46 | T-75,T-76 | PENDING |
 | T-79 ★ | Z | — | full battery (all `tech-stack.md` suites + `check-plugin-refs.py ca` + `check_docs_contract.py` + routing + build-surface) exit 0 [PR] | 46 | T-78 | PENDING |
+| T-87 ★ | Z | `core/hosts.json` `managed_subtrees` ×3 | **NEW — found by Lane R, empirically A/B proven.** `managed_subtrees` must carry BOTH `arbiter.md` and `ORCHESTRATOR.md` during migration: the pruner (`_disk_files()`) only walks listed paths, so a straight replace makes the committed `plugins/*/ORCHESTRATOR.md` blobs **invisible** to it — `--check` reports "in sync" while the orphans survive on disk. The `ORCHESTRATOR.md` entry may be dropped ONLY after T-76 commits the prune. Verify: drop the entry, `build-surface.py --check` still exits 0, and no `plugins/*/ORCHESTRATOR.md` exists [PR] | 46 | T-76 | PENDING |
 | T-80 ★ | H | — | `test_hook_guards.py` run with each of the three modes: **identical `(returncode, tag)` corpus-wide**, diffed byte-for-byte [PR] | 55 | T-79 | PENDING |
 | T-81 | H | — | `prompt-submit.py` p99 over 100 turns at current AND 10× `overrides.log`, stated against the 30 s timeout, ledger read included [PR] | 57 | T-35,T-79 | PENDING |
 | T-82 | H | `.codearbiter/decisions/00NN-*.md` via `/ca:adr` | Accepted, user-attributed, all seven required items; `check_adr_identity.py` exits 0. **Interactive — NOT delegable** [PR] | 53 | T-79 | PENDING |
