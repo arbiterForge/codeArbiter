@@ -88,14 +88,16 @@ Concretely:
 
 - **Safe:** the append-only audit writes (`overrides.log`, `gate-events.log`). Each line now
   carries host attribution, and concurrent writers do not lose records.
-- **Not hardened, and not new to dual-host:** the task board (`open-tasks.md`) and the dev-marker
-  file are mutated with a lock-free read-modify-write. Two sessions racing the same mutation (for
-  example, both flipping the same task, or both entering/exiting `/ca:dev`) can drop an update or
-  clobber the marker, exactly as two concurrent Claude Code sessions on one checkout already can.
-  This is pre-existing, host-agnostic concurrency debt, not a Codex-specific gap.
+- **Not hardened, and not new to dual-host:** the task board (`open-tasks.md`) and the mode-marker
+  file (`.codearbiter/.markers/mode`) are mutated with a lock-free read-modify-write. Two sessions
+  racing the same mutation (for example, both flipping the same task, or both entering/exiting
+  `mode --dangerous`) can drop an update or clobber the marker, exactly as two concurrent Claude
+  Code sessions on one checkout already can. This is pre-existing, host-agnostic concurrency debt,
+  not a Codex-specific gap.
 
-Practical guidance: treat simultaneous *mutating* lanes (commit-gate, task-board writes, `/ca:dev`
-entry/exit) on one checkout as a race regardless of host mix, and sequence them. Read-only lanes
+Practical guidance: treat simultaneous *mutating* lanes (commit-gate, task-board writes, a
+`mode --dangerous`/`--ops` entry/exit) on one checkout as a race regardless of host mix, and
+sequence them. Read-only lanes
 (`/ca:review`, `/ca:checkpoint`, `/ca:status`) and append-only audit writes are safe to run
 concurrently. This is the same discipline `using-git-worktrees` recommends for parallel *agent*
 work inside one session; it applies equally to two *people* sharing one tree.

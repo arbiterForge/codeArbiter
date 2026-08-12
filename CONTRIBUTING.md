@@ -71,9 +71,11 @@ check and cold-install hook guards. A red suite blocks merge.
 codeArbiter governs its own development. Two things follow from that:
 
 1. **Editing the framework itself** (skill/agent/command/hook bodies,
-   `ORCHESTRATOR.md`, settings) goes through **maintainer dev mode**: set
-   `CODEARBITER_DEV=1` and run `/ca:dev`. It's env-gated and logged to
-   `.codearbiter/overrides.log` on entry and exit. `/ca:arbiter` exits it.
+   `arbiter.md`, settings) goes through the **`dangerous` mode plane**: type
+   `mode --dangerous`, a deterministic whole-prompt token flip — friction, not a
+   gate — intercepted before the turn reaches the model. Entry and exit are each
+   logged to `.codearbiter/overrides.log`. `mode --arbiter` exits it explicitly,
+   and a new session always resolves back to `arbiter`.
 
 2. **Everything that ships is a payload change and requires a version bump.** The
    two-axis model: **SemVer** versions the whole payload (any change to shipped
@@ -116,7 +118,7 @@ Python file is `hooks/_host.py`.
 
 ## Working with the markdown surface (generated)
 
-Commands, skills, includes, `COMMANDS.md`, `SPRINT.md`, and `ORCHESTRATOR.md` of
+Commands, skills, includes, `COMMANDS.md`, `SPRINT.md`, and `arbiter.md` of
 **both** plugins are rendered from `core/surface/` templates by
 `python tools/build-surface.py` — see [`core/surface/README.md`](./core/surface/README.md)
 for the token/conditional grammar and the house rules. Never edit a rendered file:

@@ -78,6 +78,15 @@ class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):
 
     def test_tier_one_requires_both_axes_and_enumerates_the_destructive_set(self):
         # Clarity and risk are separate axes: an obvious /override is still tier 2.
+        #
+        # ADR-0030 supersedes ADR-0022:46-49 for dangerous-mode entry ONLY: a
+        # deterministic `mode --dangerous` token flip is friction, not the gate
+        # itself, so dev/dangerous entry no longer belongs to this destructive
+        # set (see #437, mode-plane-deterministic-flip). The other four members
+        # are untouched by that supersession and MUST stay asserted here:
+        # ADR-0022's three-tier decision and its tier-1 dual requirement remain
+        # in force for `/ca:override`, a default-branch merge, branch/worktree
+        # deletion, and release/tag publication.
         for rel, text in self.surfaces():
             with self.subTest(rel=rel):
                 section = orchestrator_section_six(text)
@@ -87,10 +96,6 @@ class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):
                     r"merge to\s+the default branch",  # irreversible on the shared history
                     r"branch or worktree deletion",    # local data loss
                     r"release and tag publication",    # published, immutable (issue #386)
-                    # Gates-off maintainer mode, in every host's rendering of the
-                    # {{CMD:dev}} token: /ca:dev (Claude Code), /ca-dev (Pi),
-                    # $ca-dev (Codex), and the unrendered core template.
-                    r"\{\{CMD:dev\}\}|[/$]ca[:-]dev",
                 ):
                     self.assertRegex(section, rf"(?i){irreversible}")
 

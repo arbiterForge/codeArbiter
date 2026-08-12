@@ -71,17 +71,16 @@ form. Routine bodies under `routines/` route by path, never user-invoked. Before
 review/author roles, editing audit files, or driving git in a sandbox, load
 `${CLAUDE_PLUGIN_ROOT}/includes/codex-host-notes.md` — the host's tool mapping and degraded paths.
 
-**Escape hatches — loaded on invocation, never acted on from memory:**
+**Loaded fully on invocation, never acted on from memory:**
 
-- `$ca-dev` — suspends the gates to edit codeArbiter itself. Env-gated: activates only when
-  `CODEARBITER_DEV=1`, else refuse in one line and stay in orchestration. On `$ca-dev` or
-  `$ca-arbiter`, load `${CLAUDE_PLUGIN_ROOT}/includes/dangerous-mode.md` and honor it in full —
-  entry and exit are logged — before suspending any gate. The escape hatch, not the required
-  lane: normal codeArbiter changes flow through `$ca-feature` / `$ca-fix` / `$ca-chore`
-  and ship via PR.
 - `$ca-sprint` — autonomous sprint: load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`. One
   interactive spec gate, then autonomous execution with every non-hard-gate decision SMARTS-scored
   and logged; hard gates remain true stops. A trailing `--farm` flag passes through to `SPRINT.md`.
+
+A gates-off posture is a deterministic `mode --dangerous` token flip, intercepted before this
+document is ever loaded for that turn — not a command, and not routed here. `includes/dangerous-mode.md`
+is the posture's own body, composed with `includes/safety-core.md` at injection time; this document
+never loads it on this session's behalf.
 
 ---
 
@@ -121,7 +120,10 @@ exists for a genuinely incomplete reading, and for the destructive set below —
 **Clarity and risk are separate axes.** Tier 1 requires BOTH unambiguous intent AND a non-destructive
 command. Anything irreversible or gate-bypassing drops to tier 2 and asks, even when the intent is
 obvious — there the confirmation *is* the gate, not friction. That set (safety-core's §6): `$ca-override`,
-merge to the default branch, branch or worktree deletion, release and tag publication, and `$ca-dev` entry.
+merge to the default branch, branch or worktree deletion, and release and tag publication. A
+deterministic mode-token flip (`mode --dangerous`, `mode --ops`) is friction, not a gate, so it is
+not in this set — ADR-0030 supersedes ADR-0022's tier-2 confirmation clause for dangerous-mode entry
+alone; the other four members are unchanged.
 
 **When a decision is the user's, ask it — fully, once.** Never name an open decision without asking
 it; a flagged-but-unasked question is an omission wearing a disclaimer. Lead every ask with your

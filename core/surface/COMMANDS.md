@@ -75,13 +75,6 @@ context docs disagree about the architecture) and you want each variance arbitra
 | `{{CMD:override}}` | `"reason"` | Sanctioned, logged single-identity gate bypass. |
 | `{{CMD:commands}}` | _(none)_ | Show this catalog. |
 
-## Maintainer
-
-| Command | Argument | Purpose |
-|---|---|---|
-| `{{CMD:dev}}` | `["note"]` | Suspend orchestration to edit codeArbiter itself. Requires `CODEARBITER_DEV=1`; entry/exit logged to `overrides.log`. |
-| `{{CMD:arbiter}}` | _(none)_ | Exit dev mode: restore orchestration, log the exit. |
-
 ## Glossary — the words the gates speak
 
 - **stage** — the project's maturity, a single number in `.codearbiter/CONTEXT.md`; higher stages

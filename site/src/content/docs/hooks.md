@@ -78,7 +78,9 @@ the interpreter and live hook path on the machine actually in use.
 | `PreToolUse` | `Read` | `pre-read.py` |
 | `PostToolUse` | `Write\|Edit` | `post-write-edit.py` |
 | `UserPromptSubmit` | (any) | `prune-transcript.py` |
+| `UserPromptSubmit` | (any) | `prompt-submit.py` |
 | `PreCompact` | (any) | `prune-transcript.py` |
+| `PreCompact` | (any) | `prompt-submit.py` |
 
 ### Codex adapter registrations
 
@@ -93,8 +95,11 @@ returns a Codex-native deny result when blocked.
 | `PreToolUse` | `apply_patch\|Write\|Edit` | `pre-tool-adapter.py` |
 | `PostToolUse` | `apply_patch\|Write\|Edit` | `post-write-edit.py` |
 | `UserPromptSubmit` | (any) | `prune-transcript.py` |
+| `UserPromptSubmit` | (any) | `prompt-submit.py` |
 
-Codex does not register the Claude-only Read injection, `PreCompact`, or statusline surfaces.
+Codex does not register the Claude-only Read injection, `PreCompact`, or statusline surfaces —
+`prompt-submit.py`'s compaction-generation bump is Claude-only for the same reason (Codex registers
+no `PreCompact` hook at all).
 The [host evidence page](/getting-started/claude-code-and-codex/) records that boundary.
 
 ### Pi wrapper events
@@ -119,16 +124,43 @@ children do not receive the parent-only footer, background-job, or nested-dispat
 
 - **Event:** `SessionStart`.
 - **Script:** `session-start.py`.
-- **What it does:** Injects the orchestrator persona and the startup state.
-  - Clears the per-session `/ca:dev` marker. If a prior session entered `/ca:dev` and ended without `/ca:arbiter`, it first appends a synthetic `BY: session-cleanup | DEV: exit` close line to `overrides.log`, so the dev enter/exit trail is never left half-open.
+- **What it does:** Emits the startup state — **not** the persona itself (that composes at the
+  per-turn seam; see `prompt-submit.py` below, and [The Persona-Register Split](/concepts/persona-and-context/)).
+  - Clears the per-session mode marker (`.codearbiter/.markers/mode`), so a new session always
+    resolves `arbiter`. If a prior session flipped to a non-`arbiter` mode and ended without
+    flipping back, it first appends a synthetic `BY: session-cleanup | MODE: <name> exit` close
+    line to `overrides.log` (legacy `DEV: exit` rows from before the mode plane are accepted by
+    the same readers), so the enter/exit trail is never left half-open.
   - Heals the statusline wiring every session, persisting only on a real change (the wired path is absolute and version-pinned, so a plugin update can leave it stale).
-  - Injects `ORCHESTRATOR.md` to plain stdout (the reliable injection path for a plugin-scoped hook).
-  - Prints the startup state: stage, blocking `CONFIRM-NN` open questions, and an in-flight task summary. An uninitialized repo is routed to `/ca:create-context` or `/ca:decompose`.
+  - Prints the startup state: stage, the active mode, blocking `CONFIRM-NN` open questions, and an in-flight task summary. An uninitialized repo is routed to `/ca:create-context` or `/ca:decompose`.
   - Emits a first-of-day standup briefing (working-tree state, ahead/behind annotated as possibly stale, ff-pull eligibility, prune candidates), gated by a per-day marker.
   - Spawns a fully detached `git fetch` that is never awaited, to keep ahead/behind fresh without blocking the hook.
   - Surfaces an **update-available** notice (`update available X → Y`) when the cached check shows a newer published release than the installed plugin, and spawns a fully detached, best-effort, once-daily refresh (`update-refresh.py`) that updates that cache off the hot path. The hook only ever reads the cache; the network fetch never blocks the SessionStart injection.
-- **Why:** One always-loaded persona, plus the project state the orchestrator needs to route the first request.
+- **Why:** The project state the orchestrator needs to route the first request. Persona injection
+  moved off this hook deliberately — `SessionStart` fires once per session boundary, so a
+  mid-session mode flip could never change what it injected.
 - **Fail posture:** Non-blocking (always exits 0). All git here is read-only and degrades per-field. A dormant or malformed repo prints a breadcrumb and exits.
+
+---
+
+### prompt-submit.py
+
+- **Event:** `UserPromptSubmit` and `PreCompact` (Claude); `UserPromptSubmit` (Codex, no
+  `PreCompact` registration).
+- **Script:** `prompt-submit.py`.
+- **What it does:** The mode-plane's prompt-seam interceptor. On a whole-prompt mode control token
+  (`mode`, `mode --arbiter`, `mode --dangerous`, `mode --ops` — matched exactly, never a substring)
+  it flips or reports the mode and the turn never reaches the model. On any other prompt it composes
+  `includes/safety-core.md` with the current mode's body and injects the result, deduplicated per
+  (session, mode, compaction generation) so a steady session pays for one injection per mode change,
+  not per turn. It refuses to compose a non-`arbiter` body the audit trail does not back, falling
+  back to `arbiter` with a diagnostic. On `PreCompact` it bumps the compaction generation so the
+  first turn after a compaction re-injects.
+- **Why:** Composed injection has to live at the per-turn seam, not `SessionStart`, for a
+  mid-session flip to take effect on the next turn at all.
+- **Fail posture:** A failed flip **into** `dangerous`/`ops` leaves gates on (safe, the default
+  direction). A failed flip **back to** `arbiter` must surface rather than silently staying
+  gates-off — see [Enforcement & Security](/enforcement/) for the fail-direction rule.
 
 ---
 

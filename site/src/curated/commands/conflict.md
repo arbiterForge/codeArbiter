@@ -33,7 +33,7 @@ Takes no arguments — it presents whatever conflict triggered it (or the most r
 ## Conflict detected — work halted
 
 ### Source A
-File: plugins/ca/ORCHESTRATOR.md · Last updated: 2026-06-10
+File: plugins/ca/arbiter.md · Last updated: 2026-06-10
 > Direct commit to a protected branch is prohibited.
 
 ### Source B

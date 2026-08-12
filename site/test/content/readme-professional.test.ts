@@ -51,7 +51,7 @@ describe("professional repository README", () => {
   });
 
   it("keeps detailed catalogs collapsible so the README remains an adoption surface", () => {
-    expect(readme).toContain("<summary><strong>All 40 Claude Code commands</strong></summary>");
+    expect(readme).toContain("<summary><strong>All 38 Claude Code commands</strong></summary>");
     expect(readme).toContain("The docs are the operating manual");
   });
 

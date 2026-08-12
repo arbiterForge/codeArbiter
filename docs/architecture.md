@@ -42,10 +42,14 @@ of 100% validation.
 
 ## Context minimization
 
-Standing governance context is exactly **one file**: `ORCHESTRATOR.md`, injected at host startup
-only when `.codearbiter/CONTEXT.md` carries `arbiter: enabled` (and, on Pi, after affirmative
-project trust). Repos without the flag load
-nothing (the `DORMANT` terminal). Everything else — `routing-table.md`, `reference-map.md`, all 22
+Standing governance context is a **composed persona**: `includes/safety-core.md` followed by the
+current mode's body (`arbiter.md`, `includes/dangerous-mode.md`, or `includes/ops-mode.md`), only
+when `.codearbiter/CONTEXT.md` carries `arbiter: enabled` (and, on Pi, after affirmative project
+trust). Repos without the flag load nothing (the `DORMANT` terminal). The persona is no longer
+injected at `SessionStart` — `SessionStart` clears the session's mode marker and emits the
+startup-state block only; the composed persona injects at the per-turn prompt seam instead, deduped
+per (session, mode, compaction generation), so a mid-session `mode --dangerous|--ops|--arbiter` flip
+changes what the next turn carries. Everything else — `routing-table.md`, `reference-map.md`, all 22
 skill bodies, all 18 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
 only when its entry point is invoked, and only for the nodes that entry point actually reaches. A
 typical fix touches the persona + `tdd` + one author + maybe one reviewer, not the full
@@ -57,25 +61,29 @@ to no skill at all.
 ```mermaid
 flowchart TD
     Start([Session opens in a repo]) --> SS{{"SessionStart hook<br/>session-start.py<br/>reads .codearbiter/CONTEXT.md"}}
-    SS -->|"frontmatter arbiter: enabled"| INJECT["Inject ORCHESTRATOR.md<br/>(the ONLY always-loaded context)<br/>+ live startup state"]
+    SS -->|"frontmatter arbiter: enabled"| STARTSTATE["Clear this session's mode marker;<br/>emit live startup state ONLY<br/>(no persona text — a mid-session flip<br/>could not change a SessionStart-time inject)"]
     SS -->|"flag absent / no CONTEXT.md"| DORMANT([Plugin dormant — nothing loaded])
 
-    INJECT --> INITCHK{"CONTEXT.md has<br/>&lt;!--INITIALIZED--&gt; marker?"}
+    STARTSTATE --> INITCHK{"CONTEXT.md has<br/>&lt;!--INITIALIZED--&gt; marker?"}
     INITCHK -->|"no marker, source exists"| C_createctx
     INITCHK -->|"no marker, no source"| C_decompose
     INITCHK -->|"initialized"| READY["Present startup state,<br/>await a /ca: command"]
 
-    INJECT --> BRIEF{{"First session of the day?<br/>(standup marker + any_actionable)"}}
+    STARTSTATE --> BRIEF{{"First session of the day?<br/>(standup marker + any_actionable)"}}
     BRIEF -->|"first session (no marker)"| FULLBRIEF["Full read-only hygiene briefing + drop marker"]
     BRIEF -->|"later session, actionable"| OFFER["One concise offer line: run /ca:standup"]
     BRIEF -->|"later session, nothing to do"| BRIEFNONE([emit nothing additive])
     FULLBRIEF -.->|"user opts in"| C_standup
     OFFER -.->|"user opts in"| C_standup
 
-    READY --> DEVCHK{{"/ca:dev evaluated FIRST every turn<br/>(env CODEARBITER_DEV=1?)"}}
-    DEVCHK -->|"set"| DEVMODE["DEV MODE: gates OFF, no routing<br/>log enter/exit to overrides.log"]
-    DEVCHK -->|"unset"| REFUSE["Refuse in one line, stay in orchestration"]
-    DEVMODE --> C_arbiter
+    READY --> TURN{{"prompt-submit.py — every turn,<br/>before the model runs"}}
+    TURN -->|"whole-prompt match: mode --arbiter / --dangerous / --ops"| FLIP["Flip the session-keyed mode marker<br/>(via marker_root); append MODE: enter/exit<br/>to overrides.log; exit 2 — no model turn"]
+    TURN -->|"no token match"| INJECTCHK{{"persona already injected<br/>for (session, mode, compaction gen)?"}}
+    INJECTCHK -->|"no"| INJECT["Compose + inject safety-core.md<br/>+ the CURRENT mode's body<br/>(arbiter.md / dangerous-mode.md / ops-mode.md)"]
+    INJECTCHK -->|"yes"| NOOPTURN([nothing injected this turn])
+    FLIP --> READY
+    INJECT --> READY
+    NOOPTURN --> READY
 
     READY --> OFFCHANNEL{{"direct off-channel message?"}}
     OFFCHANNEL -->|"yes"| REDIRECT["redirect.md: infer intent, pre-fill closest command"]
@@ -85,7 +93,6 @@ flowchart TD
     READY --> SHIP
     READY --> DEC
     READY --> META
-    READY --> MAINT
 
     subgraph IMPL["Implementation"]
         C_feature["/ca:feature"]
@@ -128,11 +135,6 @@ flowchart TD
         C_prune["/ca:prune"]
         C_commands["/ca:commands"]
     end
-    subgraph MAINT["Maintainer"]
-        C_dev["/ca:dev"]
-        C_arbiter["/ca:arbiter"]
-    end
-
     subgraph SKILLS["Skills (bodies load only on route)"]
         S_brainstorm["brainstorming"]
         S_writeplans["writing-plans"]
@@ -263,8 +265,5 @@ flowchart TD
     C_btw --> BTWRO([answer and return, no state change])
     C_override --> OVERLOG["log to overrides.log, proceed"]
 
-    C_dev --> DEVCHK
-    C_arbiter --> ARBOUT([orchestration restored, exit logged])
-
-    INJECT -.-> NOTE["CONTEXT MINIMIZATION:<br/>Only ORCHESTRATOR.md is always-loaded.<br/>routing-table, reference-map, every skill body,<br/>every agent body, the anti-slop bundle<br/>load ON DEMAND per invoked entry point.<br/>Repos without arbiter:enabled load nothing."]
+    INJECT -.-> NOTE["CONTEXT MINIMIZATION:<br/>Only safety-core.md + the current mode body<br/>is loaded, per turn, deduped by (session, mode,<br/>compaction gen). routing-table, reference-map,<br/>every skill body, every agent body, the<br/>anti-slop bundle load ON DEMAND per invoked<br/>entry point. Repos without arbiter:enabled<br/>load nothing. A mode-token flip is friction,<br/>not a command — it never reaches this routing<br/>fan-out."]
 ```

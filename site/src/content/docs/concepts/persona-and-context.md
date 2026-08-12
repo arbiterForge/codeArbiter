@@ -43,8 +43,9 @@ Every reviewer is read-only by construction. The roster splits into three famili
 
 ## Where it's decided
 
-The orchestrator persona itself lives in `plugins/ca/ORCHESTRATOR.md`. The split is a
-recorded decision, not an accident of file layout. See ADR-0005.
+The orchestrator persona itself is composed at each turn from `plugins/ca/includes/safety-core.md`
+plus the active mode's body — `plugins/ca/arbiter.md` in the ordinary, gated posture. The split is a
+recorded decision, not an accident of file layout. See ADR-0005 and ADR-0030.
 
 ## What this means in practice
 
