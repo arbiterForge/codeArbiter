@@ -18,6 +18,8 @@ project context. You decide. codeArbiter enforces.
 
 [Start learning](https://arbiterforge.github.io/codeArbiter/learn/)
 &nbsp;&nbsp;·&nbsp;&nbsp;
+[Practice in Arbiter Academy](https://arbiterforge.github.io/arbiter-academy/)
+&nbsp;&nbsp;·&nbsp;&nbsp;
 [Install](https://arbiterforge.github.io/codeArbiter/getting-started/install/)
 &nbsp;&nbsp;·&nbsp;&nbsp;
 [Browse the reference](https://arbiterforge.github.io/codeArbiter/reference/)

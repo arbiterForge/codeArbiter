@@ -86,6 +86,12 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIn("getting-started/claude-code-and-codex", self.readme)
         self.assertRegex(self.readme, re.compile(r"Codex CLI\s+0\.144\.1"))
 
+    def test_readme_links_to_arbiter_academy_practice(self):
+        self.assertIn(
+            "[Practice in Arbiter Academy](https://arbiterforge.github.io/arbiter-academy/)",
+            self.readme,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
