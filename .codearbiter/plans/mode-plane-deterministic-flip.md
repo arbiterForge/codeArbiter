@@ -96,7 +96,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 
 | id | lane | path(s) | verification | covers | dep | status |
 |---|---|---|---|---|---|---|
-| T-01 ★ | R | `core/surface/ORCHESTRATOR.md`→`arbiter.md`; `core/hosts.json` (3× rules, 3× `managed_subtrees`) | `build-surface.py` then all three `plugins/*/arbiter.md` exist AND no `plugins/ca/ORCHESTRATOR.md` (proves orphan pruned) [LL] | 37,46 | — | PENDING |
+| T-01 ★ | R | `core/surface/ORCHESTRATOR.md`→`arbiter.md`; `core/hosts.json` (3× rules, 3× `managed_subtrees`) | `build-surface.py` then all three `plugins/*/arbiter.md` exist AND no `plugins/ca/ORCHESTRATOR.md` (proves orphan pruned) [LL] | 37,46 | — | **ACCEPTED** — verified: 3/3 `plugins/*/arbiter.md` present, 3/3 `plugins/*/ORCHESTRATOR.md` pruned. `managed_subtrees` deliberately still carries BOTH names; see the post-merge cleanup note below. |
 | T-02 ★ | R | `core/surface/{COMMANDS,README}.md`, `agents/design-quality-reviewer.md`, `includes/{anti-slop-design/INDEX,smarts/core,dev-mode}.md`, `skills/{decision-lifecycle,decompose}/SKILL.md`, `arbiter.md` Paths section | **CORRECTED** — the blanket `! grep` was unsatisfiable: it contradicts spec line 86, which *mandates* `(formerly ORCHESTRATOR.md)` in `arbiter.md`'s header. Verification is now: the only `ORCHESTRATOR` mentions in `core/surface/` are `arbiter.md:1` (mandated) and `commands/dev.md` (deleted wholesale by T-64) [LL] | 50 | T-01 | **ACCEPTED** |
 | T-03 ★ | R | `.coderabbit.yaml:54,57,60`; `test_ci_impact.py:725`; `test_build_surface.py:75`; `test_ux_conversion.py:20` | those three suites exit 0 [LL] | 46 | T-01 | PENDING |
 | T-04 ★ | R | `.codearbiter/coding-standards.md:5` | `! grep -n ORCHESTRATOR` that file [LL] | 50 | T-01 | PENDING |
@@ -207,6 +207,12 @@ default.
   block and item-for-item CI check do not exist. Found independently by four reviewers. → GitHub issue.
 - **ADRs are immutable (H-11) but not content-hashed**, and the `/adr` marker unlocking H-11 is
   self-mintable by design (ADR-0024). → GitHub issue.
+- **POST-MERGE CLEANUP (not now): drop `"ORCHESTRATOR.md"` from `core/hosts.json` `managed_subtrees`.**
+  It is carried during the migration *because* the pruner only walks listed paths — remove it too early
+  and the orphaned `plugins/*/ORCHESTRATOR.md` becomes invisible, so `build-surface.py --check` reports
+  "in sync" while the stale file survives on disk. The three orphans are pruned and committed **in this
+  checkout**, but anyone with a stale working tree or a warm CI cache still needs the entry to prune
+  theirs. Keep it one release cycle, then delete. → follow-up issue after merge.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
