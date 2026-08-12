@@ -263,6 +263,22 @@ default.
   widening the parent↔child wire contract, which touches four files no lane owned. That was ruled
   and done — a boolean cannot carry three postures, and collapsing `ops` into whichever side was
   closest would have misreported the posture.
+- **OPEN REGRESSION — Windows Pi adapter contract, git-enforcer install. NOT closed.**
+  `test_pi_package.py::test_real_rpc_enabled_start_never_executes_project_git_and_installs_absolute_hook_identities`
+  fails on `windows-latest` for both supported Pi versions: after a real RPC-started session in an
+  enabled repo, `.git/hooks/pre-commit` is absent. **This job passes on `main`**, so the branch caused
+  it. It reproduces locally on Windows.
+  **Why it matters more than a red check:** those hooks are the H-01/H-02 backstop that closes the
+  `--no-verify` escape, and ADR-0015 requires every live git enforcer. A session that silently skips
+  installing them loses git-level enforcement without saying so.
+  **Narrowed, not solved:** invoking `session-start.py` directly against an enabled fixture DOES
+  install the hooks (verified), and the install block itself is intact and correctly gated on
+  `frontmatter_enabled`. So the fault is specific to the **Pi RPC start path**, not to the install
+  logic. Prime suspects, in order: (1) `pi-bridge.py`'s new `import _modelib` failing inside the RPC
+  child's `sys.path` (the module IS vendored and IS inside the packaged `hooks/` whitelist, so this
+  needs disproving rather than assuming); (2) an early return in the restructured startup flow
+  reached only on the RPC path; (3) `is_ephemeral_path` resolving differently under the packaged
+  layout. Linux and macOS pass, which argues for a path-resolution difference rather than an import.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
