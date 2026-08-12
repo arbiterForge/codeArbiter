@@ -270,12 +270,12 @@ recreate the file on its next append.
 The append-only, permanent audit trail of every `/ca:override` bypass and every mode-plane
 transition (`mode --dangerous`/`--ops`, a deterministic whole-prompt token flip, never a command).
 
-**Two row formats share this file — do not read one as the other.**
+**Two row formats share this file. Do not read one as the other.**
 
 | | Override row | Mode-transition row |
 |---|---|---|
 | Format | `[ISO-8601] \| BY: <name> <<email>> \| GATE: <gate bypassed> \| REASON: <reason>` | `[ISO-8601] \| BY: session-mode \| HOST: <host> \| SESSION: <id> \| MODE: <name> enter\|exit \| NOTE: —` |
-| Identity | the operator, from `git config user.email`; if unset the user is asked once rather than recording an empty `BY:` | the literal `session-mode` — a mode flip is a posture change by the session, **not** an act attributed to a person |
+| Identity | the operator, from `git config user.email`; if unset the user is asked once rather than recording an empty `BY:` | the literal `session-mode`, because a mode flip is a posture change by the session and **not** an act attributed to a person |
 | Fields | `GATE` and `REASON` | `HOST`, `SESSION` and `MODE`; no `GATE`, no `REASON` |
 
 The `SESSION` field is load-bearing, not decoration: an `enter` row is what
