@@ -98,9 +98,9 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 |---|---|---|---|---|---|---|
 | T-01 ★ | R | `core/surface/ORCHESTRATOR.md`→`arbiter.md`; `core/hosts.json` (3× rules, 3× `managed_subtrees`) | `build-surface.py` then all three `plugins/*/arbiter.md` exist AND no `plugins/ca/ORCHESTRATOR.md` (proves orphan pruned) [LL] | 37,46 | — | **ACCEPTED** — verified: 3/3 `plugins/*/arbiter.md` present, 3/3 `plugins/*/ORCHESTRATOR.md` pruned. `managed_subtrees` deliberately still carries BOTH names; see the post-merge cleanup note below. |
 | T-02 ★ | R | `core/surface/{COMMANDS,README}.md`, `agents/design-quality-reviewer.md`, `includes/{anti-slop-design/INDEX,smarts/core,dev-mode}.md`, `skills/{decision-lifecycle,decompose}/SKILL.md`, `arbiter.md` Paths section | **CORRECTED** — the blanket `! grep` was unsatisfiable: it contradicts spec line 86, which *mandates* `(formerly ORCHESTRATOR.md)` in `arbiter.md`'s header. Verification is now: the only `ORCHESTRATOR` mentions in `core/surface/` are `arbiter.md:1` (mandated) and `commands/dev.md` (deleted wholesale by T-64) [LL] | 50 | T-01 | **ACCEPTED** |
-| T-03 ★ | R | `.coderabbit.yaml:54,57,60`; `test_ci_impact.py:725`; `test_build_surface.py:75`; `test_ux_conversion.py:20` | those three suites exit 0 [LL] | 46 | T-01 | PENDING |
-| T-04 ★ | R | `.codearbiter/coding-standards.md:5` | `! grep -n ORCHESTRATOR` that file [LL] | 50 | T-01 | PENDING |
-| T-05 | R | `.gitleaks.toml:189` (anchored waiver contains `ORCHESTRATOR §3`) | `test_ci_impact.py` exits 0 [LL] | 46 | T-40 | PENDING |
+| T-03 ★ | R | `.coderabbit.yaml:54,57,60`; `test_ci_impact.py:725`; `test_build_surface.py:75`; `test_ux_conversion.py:20` | those three suites exit 0 [LL] | 46 | T-01 | ACCEPTED — already done by the T-01/T-02 rename commit; verified by grep + all four suites green, no edit needed |
+| T-04 ★ | R | `.codearbiter/coding-standards.md:5` | `! grep -n ORCHESTRATOR` that file [LL] | 50 | T-01 | ACCEPTED — already done by the T-01/T-02 rename commit; verified, no edit needed |
+| T-05 | R | `.gitleaks.toml:189` (anchored waiver contains `ORCHESTRATOR §3`) | `test_ci_impact.py` exits 0 [LL] | 46 | T-40 | ACCEPTED — verified NO EDIT NEEDED: `ORCHESTRATOR §3` is the standing live convention (`git-enforce.py:217` still cites it verbatim) and R-3 preserved that numbering in `safety-core.md`, so the waiver anchor still matches |
 | T-06 ★ | A | `core/pysrc/_modelib.py` (new); `session-start.py:551-810` ledger moved out | `test_modelib.py` replays existing `_settle_dev_close` cases unchanged; `py_compile` [LL] | 12 | T-01 | ACCEPTED |
 | T-07 ★ | A | `_modelib.py` | MODES tuple; absent/empty/chmod-000/garbage → `arbiter`; **unreadable and absent emit different strings** [LL] | 2 | T-06 | ACCEPTED |
 | T-08 ★ | A | `_modelib.py` | `write_mode` uses `write_text_atomic` (spy); mid-write OSError leaves no file and no temp [LL] | 1 | T-07 | ACCEPTED |
@@ -117,11 +117,11 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-19 ★ | D | `safety-core.md` | states its precedence over every mode body, by anchor [LL] | 21 | T-17 | ACCEPTED |
 | T-20 ★ | D | `core/surface/arbiter.md` | no safety-core anchor appears in `arbiter.md` (moved, not copied); non-empty, mode-distinct [LL] | 18,22,37 | T-17 | ACCEPTED |
 | T-21 ★ | D | `includes/dev-mode.md`→`dangerous-mode.md` (+expand) | non-empty, mode-distinct, `! grep CODEARBITER_DEV\|maintainer` [LL] | 22 | T-20 | ACCEPTED |
-| T-22 | D | `includes/ops-mode.md` (new) | literal permitted/refused sets bound to the composed ops persona [LL] | 43 | T-17 | PENDING |
-| T-23 | D | `includes/ops-mode.md` | refused set names infra teardown, cluster/ns deletion, publication, live-DB migration, volume destruction; `npm test`/`npm ci`/`docker compose up` each carry a verdict token [LL] | 44 | T-22 | PENDING |
-| T-24 | D | `includes/{redirect,routing-table}.md` | both carry a runtime-ops row whose token `== _modelib.OPS_TOKEN` [LL] | 45 | T-22,T-12 | PENDING |
-| T-25 | D | `test_persona_composition.py` | per mode, no body sentence contradicts a safety-core anchor (table is data); dies to a mutant weakening one clause [LL] | 21 | T-19,T-21,T-22 | PENDING |
-| T-26 ★ | D | `test_ux_conversion.py` (anchors) | exits 0 with anchors repointed to `safety-core.md` [LL] | 46 | T-03,T-17 | PENDING |
+| T-22 | D | `includes/ops-mode.md` (new) | literal permitted/refused sets bound to the composed ops persona [LL] | 43 | T-17 | ACCEPTED |
+| T-23 | D | `includes/ops-mode.md` | refused set names infra teardown, cluster/ns deletion, publication, live-DB migration, volume destruction; `npm test`/`npm ci`/`docker compose up` each carry a verdict token [LL] | 44 | T-22 | ACCEPTED |
+| T-24 | D | `includes/{redirect,routing-table}.md` | both carry a runtime-ops row whose token `== _modelib.OPS_TOKEN` [LL] | 45 | T-22,T-12 | ACCEPTED |
+| T-25 | D | `test_persona_composition.py` | per mode, no body sentence contradicts a safety-core anchor (table is data); dies to a mutant weakening one clause [LL] | 21 | T-19,T-21,T-22 | ACCEPTED |
+| T-26 ★ | D | `test_ux_conversion.py` (anchors) | exits 0 with anchors repointed to `safety-core.md` [LL] | 46 | T-03,T-17 | ACCEPTED — already green. **Label correction: marked `[LL]` but reads generated `plugins/ca/arbiter.md`, so it is `[PR]` in substance** — re-run after T-76 |
 | T-27 ★ | B | `core/pysrc/prompt-submit.py` (new) | `test_prompt_submit.py`: stdin `{hook_event_name,prompt,session_id}` → exit 2, named stderr line, mode written [LL] | 7 | T-12,T-08 | PENDING |
 | T-28 ★ | B | `prompt-submit.py` | substring → exit 0, prompt unaltered, mode bytes identical; same test flips on exact-match control [LL] | 8 | T-27 | PENDING |
 | T-29 ★ | B | `prompt-submit.py` | bare `mode` → exit 2, stderr names current mode **and all three values**, nothing written [LL] | 9 | T-27 | PENDING |
@@ -179,7 +179,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-87 ★ | Z | `core/hosts.json` `managed_subtrees` ×3 | **NEW — found by Lane R, empirically A/B proven.** `managed_subtrees` must carry BOTH `arbiter.md` and `ORCHESTRATOR.md` during migration: the pruner (`_disk_files()`) only walks listed paths, so a straight replace makes the committed `plugins/*/ORCHESTRATOR.md` blobs **invisible** to it — `--check` reports "in sync" while the orphans survive on disk. The `ORCHESTRATOR.md` entry may be dropped ONLY after T-76 commits the prune. Verify: drop the entry, `build-surface.py --check` still exits 0, and no `plugins/*/ORCHESTRATOR.md` exists [PR] | 46 | T-76 | PENDING |
 | T-80 ★ | H | — | `test_hook_guards.py` run with each of the three modes: **identical `(returncode, tag)` corpus-wide**, diffed byte-for-byte [PR] | 55 | T-79 | PENDING |
 | T-81 | H | — | `prompt-submit.py` p99 over 100 turns at current AND 10× `overrides.log`, stated against the 30 s timeout, ledger read included [PR] | 57 | T-35,T-79 | PENDING |
-| T-82 | H | `.codearbiter/decisions/00NN-*.md` via `/ca:adr` | Accepted, user-attributed, all seven required items; `check_adr_identity.py` exits 0. **Interactive — NOT delegable** [PR] | 53 | T-79 | AUTHORED — status `proposed`; ratification is the user's (blocks T-66b) |
+| T-82 | H | `.codearbiter/decisions/00NN-*.md` via `/ca:adr` | Accepted, user-attributed, all seven required items; `check_adr_identity.py` exits 0. **Interactive — NOT delegable** [PR] | 53 | T-79 | **ACCEPTED** — ADR-0030 authored and ratified 2026-08-12; DECISION-0044 (authoring) + DECISION-0045 (ratification) |
 | T-83 | H | `plugin.json`, README version badge line, dated `CHANGELOG.md` | `check_badge_consistency.py` + `version-bump` job pass [PR] | 47 | T-82,T-67 | PENDING |
 | T-84 | H | `plugins/ca-pi/package.json`, root `package.json`, ca-pi CHANGELOG | `build-host-packages.py --check` + `version-bump-pi` pass [PR] | 48 | T-77,T-82 | PENDING |
 | T-85 | H | comment on #437 | itemizes which of #437's eight ACs close and which defer [PR] | 54 | T-82 | PENDING |
@@ -224,28 +224,14 @@ default.
   **Remedy (proposed, needs Lane E's call):** move the legacy close path onto `marker_root` so both
   halves of a transition pair resolve identically; add a two-root regression test that fails on the
   split. Do NOT close AC-11 until this is resolved — a green AC-11 against a single root proves nothing.
-- **ADR-0030 is authored but `proposed`, not `accepted`.** Authoring was user-approved before the
-  document existed, which cannot double as ratification of content the user has not read; precedent
-  for not self-ratifying is DECISION-0014. → **user ruling needed: accept ADR-0030, or amend it first.**
-
-  **This blocks the WHOLE command-deletion cluster, not just T-66b — verified empirically, not
-  assumed.** The chain is closed in both directions:
-  1. `build-surface.py:168` raises `SurfaceError` on any `{{CMD:<name>}}` token naming a command
-     template that does not exist. **7 such tokens survive** outside the two files being deleted —
-     `arbiter.md` ×4, `COMMANDS.md` ×2, `includes/redirect.md` ×1 — so T-64 (deleting
-     `commands/{dev,arbiter}.md`) fails the entire surface generation until they are removed.
-  2. Removing them is T-65 — but one of the four in `arbiter.md` sits in **§6**, and
-     `test_routing_and_cleanup_surface.py:93` *requires* `\{\{CMD:dev\}\}|[/$]ca[:-]dev` to be present
-     in §6 across all four surfaces. Removing it turns that suite red.
-  3. Editing that assertion is **T-66b**, and editing it **is** the ADR-0022 supersession act, so it
-     needs an accepted ADR behind it.
-
-  **Therefore blocked: T-64, T-65, T-66b, T-67 — and with them AC-13, AC-33, AC-34** (both commands
-  absent from all three host surfaces; no surface references the tokens; badge reads 38).
-  **Consequence for the PR: it lands with the mode plane built and both commands still present, the
-  catalog still reading 40.** That is a coherent intermediate state — modes and the old commands
-  coexist, and nothing is broken — but it is a *stated* decision, not a discovery. It MUST be called
-  out in the PR body so a reviewer does not read the un-flipped badge as an oversight.
+- **RESOLVED 2026-08-12 — ADR-0030 ratified to `accepted`** (DECISION-0045). The whole
+  command-deletion cluster is unblocked: **T-64, T-65, T-66b, T-67** and with them **AC-13,
+  AC-33, AC-34**. The dependency chain that gated them is recorded for the reviewer, since it is
+  non-obvious: `build-surface.py:168` raises on any `{{CMD:<name>}}` token whose template no longer
+  exists, **7 survive** outside the two deleted files (`arbiter.md` x4, `COMMANDS.md` x2,
+  `includes/redirect.md` x1), and removing the one in `arbiter.md` **§6** turns
+  `test_routing_and_cleanup_surface.py:93` red — editing *that* assertion **is** the ADR-0022
+  supersession act, which is why it needed an accepted ADR behind it.
 - **`test_ci_impact.py` walks `.claude/worktrees/`** and reports linked worktrees — full checkouts of
   this same repo — as untested trees. Worked around by deleting 11 stale worktrees; the walk is
   unchanged and recurs for the next person who uses one. → filed as #676, not patched here (the file
