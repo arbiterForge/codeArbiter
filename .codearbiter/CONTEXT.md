@@ -39,8 +39,9 @@ Four sibling plugins in one repository (ADR-0007, ADR-0011, ADR-0013):
   kernel. Independent of `ca`: CI is path-scoped and version bumps are per-plugin.
 
 ## Scope
-- `ca` framework source: `plugins/ca/` — `ORCHESTRATOR.md`, `skills/`, `commands/`,
-  `agents/`, `hooks/`, `tools/`.
+- `ca` framework source: `plugins/ca/` — `arbiter.md` (the arbiter mode's body, formerly
+  `ORCHESTRATOR.md`), `includes/safety-core.md`, `skills/`, `commands/`, `agents/`, `hooks/`,
+  `tools/`.
 - Shared kernel sources: `core/pysrc/` (host-neutral hook logic) and `core/surface/`
   (markdown templates), materialized into `plugins/ca/`, `plugins/ca-codex/`, and
   `plugins/ca-pi/` by `tools/sync-core.py` / `tools/build-surface.py` (ADR-0011).
