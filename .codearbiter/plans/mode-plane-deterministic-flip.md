@@ -207,11 +207,28 @@ default.
   **Remedy (proposed, needs Lane E's call):** move the legacy close path onto `marker_root` so both
   halves of a transition pair resolve identically; add a two-root regression test that fails on the
   split. Do NOT close AC-11 until this is resolved — a green AC-11 against a single root proves nothing.
-- **ADR-0030 is authored but `proposed`, not `accepted`.** T-82 is therefore only half-done and
-  **T-66b stays blocked** (the `{{CMD:dev}}` assertion edit is the supersession act and needs an
-  accepted ADR behind it). Authoring was user-approved before the document existed, which cannot
-  double as ratification of content the user has not read; precedent for not self-ratifying is
-  DECISION-0014. → **user ruling needed: accept ADR-0030, or amend it first.**
+- **ADR-0030 is authored but `proposed`, not `accepted`.** Authoring was user-approved before the
+  document existed, which cannot double as ratification of content the user has not read; precedent
+  for not self-ratifying is DECISION-0014. → **user ruling needed: accept ADR-0030, or amend it first.**
+
+  **This blocks the WHOLE command-deletion cluster, not just T-66b — verified empirically, not
+  assumed.** The chain is closed in both directions:
+  1. `build-surface.py:168` raises `SurfaceError` on any `{{CMD:<name>}}` token naming a command
+     template that does not exist. **7 such tokens survive** outside the two files being deleted —
+     `arbiter.md` ×4, `COMMANDS.md` ×2, `includes/redirect.md` ×1 — so T-64 (deleting
+     `commands/{dev,arbiter}.md`) fails the entire surface generation until they are removed.
+  2. Removing them is T-65 — but one of the four in `arbiter.md` sits in **§6**, and
+     `test_routing_and_cleanup_surface.py:93` *requires* `\{\{CMD:dev\}\}|[/$]ca[:-]dev` to be present
+     in §6 across all four surfaces. Removing it turns that suite red.
+  3. Editing that assertion is **T-66b**, and editing it **is** the ADR-0022 supersession act, so it
+     needs an accepted ADR behind it.
+
+  **Therefore blocked: T-64, T-65, T-66b, T-67 — and with them AC-13, AC-33, AC-34** (both commands
+  absent from all three host surfaces; no surface references the tokens; badge reads 38).
+  **Consequence for the PR: it lands with the mode plane built and both commands still present, the
+  catalog still reading 40.** That is a coherent intermediate state — modes and the old commands
+  coexist, and nothing is broken — but it is a *stated* decision, not a discovery. It MUST be called
+  out in the PR body so a reviewer does not read the un-flipped badge as an oversight.
 - **`test_ci_impact.py` walks `.claude/worktrees/`** and reports linked worktrees — full checkouts of
   this same repo — as untested trees. Worked around by deleting 11 stale worktrees; the walk is
   unchanged and recurs for the next person who uses one. → filed as #676, not patched here (the file
