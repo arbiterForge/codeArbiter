@@ -274,9 +274,14 @@ transition (`mode --dangerous`/`--ops`, a deterministic whole-prompt token flip,
 
 | | Override row | Mode-transition row |
 |---|---|---|
-| Format | `[ISO-8601] \| BY: <name> <<email>> \| GATE: <gate bypassed> \| REASON: <reason>` | `[ISO-8601] \| BY: session-mode \| HOST: <host> \| MODE: <name> enter\|exit \| NOTE: —` |
+| Format | `[ISO-8601] \| BY: <name> <<email>> \| GATE: <gate bypassed> \| REASON: <reason>` | `[ISO-8601] \| BY: session-mode \| HOST: <host> \| SESSION: <id> \| MODE: <name> enter\|exit \| NOTE: —` |
 | Identity | the operator, from `git config user.email`; if unset the user is asked once rather than recording an empty `BY:` | the literal `session-mode` — a mode flip is a posture change by the session, **not** an act attributed to a person |
-| Fields | `GATE` and `REASON` | `HOST` and `MODE`; no `GATE`, no `REASON` |
+| Fields | `GATE` and `REASON` | `HOST`, `SESSION` and `MODE`; no `GATE`, no `REASON` |
+
+The `SESSION` field is load-bearing, not decoration: an `enter` row is what
+**authorizes** a gates-off marker to take effect, so it is matched per session.
+Without it one session's row would authorize another session's marker. Rows
+written before the field existed authorize no session and resolve to `arbiter`.
 
 A `MODE:` row is therefore **not** a user-attributed override, and counting the two together
 overstates how often a human bypassed a gate. Readers accept legacy `DEV:` rows too, since existing

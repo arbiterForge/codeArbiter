@@ -211,15 +211,23 @@ FLIP_NOOP = "noop"
 FLIP_FAILED = "failed"
 
 
-def _mode_audit_line(verb, mode, host_name=None, now=None):
+def _mode_audit_line(verb, mode, host_name=None, now=None, session_id=None):
     """One `MODE: <name> enter|exit` audit row (Decided parameters: Audit
     verb). `now` (epoch seconds) is injectable for deterministic tests;
-    defaults to the real current time."""
+    defaults to the real current time.
+
+    Carries `SESSION:` because the row is an AUTHORIZATION, not just a record:
+    `ledger_backs` reads it to decide whether a gates-off marker is allowed to
+    take effect. Without the field that check is repo-wide, so one session's
+    `enter` row authorizes ANOTHER session's marker — the mode plane is keyed
+    per session everywhere else, and an unkeyed authorization defeats that
+    isolation (AC-3)."""
     ts = (datetime.datetime.fromtimestamp(now, tz=datetime.timezone.utc)
           if now is not None
           else datetime.datetime.now(datetime.timezone.utc))
     ts_str = ts.strftime("%Y-%m-%dT%H:%M:%SZ")
     return (f"[{ts_str}] | BY: session-mode | HOST: {host_name or 'unknown'} "
+            f"| SESSION: {session_id or 'unknown'} "
             f"| MODE: {mode} {verb} | NOTE: —\n")
 
 
@@ -262,7 +270,8 @@ def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
     # Confirmed by looking for the row itself, not by the settle count: a
     # settle can append an OLDER owed line and stall on this one, which would
     # read as success from the count alone.
-    line = _mode_audit_line("enter", mode, host_name=host_name, now=now)
+    line = _mode_audit_line("enter", mode, host_name=host_name, now=now,
+                            session_id=session_id)
     _settle_dev_close(root, new_line=line, host_name=host_name)
     if not _overrides_has_line(root, line):
         return FLIP_FAILED
@@ -318,9 +327,22 @@ def match_mode_token(prompt):
 _LEGACY_DEV_ENTER_RE = re.compile(r"\|\s*DEV:\s*enter\s*(?:\||$)", re.M)
 
 
-def ledger_backs(root, mode):
-    """True iff `overrides.log` (at `root`) holds a matching
-    `MODE: <mode> enter` row.
+def ledger_backs(root, mode, session_id=None):
+    """True iff the audit trail (at `root`) holds a matching
+    `MODE: <mode> enter` row FOR `session_id`.
+
+    Session-scoped, because this row is an authorization rather than a
+    record: it decides whether a gates-off marker takes effect. A repo-wide
+    match let one session's `enter` row authorize a DIFFERENT session's marker
+    — every other part of the mode plane is keyed per session, and an unkeyed
+    authorization defeats that isolation (AC-3). Pass `session_id` at every
+    production call site; omitting it keeps the older repo-wide question,
+    which is only ever the right one for a caller that has no session.
+
+    A row written before this field existed carries no session and therefore
+    backs NO session-scoped query. That fails toward `arbiter` — gates ON, one
+    re-flip — which is the direction ADR-0030 requires; the alternative would
+    reopen the hole for exactly the history that cannot be checked.
 
     A legacy `DEV: enter` row backs `mode == "dangerous"` ONLY — dev was
     retired INTO dangerous (T-47 converts a live `dev-active` marker to
@@ -340,8 +362,21 @@ def ledger_backs(root, mode):
     except Exception:  # noqa: BLE001 — absent/unreadable log -> nothing backs it
         return False
     enter_re = re.compile(r"\|\s*MODE:\s*" + re.escape(mode) + r"\s+enter\s*(?:\||$)", re.M)
-    if enter_re.search(text):
-        return True
+    if session_id is None:
+        if enter_re.search(text):
+            return True
+    else:
+        session_re = re.compile(r"\|\s*SESSION:\s*" + re.escape(str(session_id)) + r"\s*\|")
+        for line in text.splitlines():
+            if session_re.search(line) and enter_re.search(line):
+                return True
+    # The legacy exception, deliberately session-blind: `dev` was retired INTO
+    # `dangerous` (T-47 converts a live `dev-active` marker exactly once), and a
+    # pre-mode-plane `DEV: enter` row predates session attribution entirely, so
+    # requiring one would break the migration it exists to serve. Bounded to
+    # `dangerous` on a repo that already has DEV history — `ops` never gets it,
+    # since accepting a legacy row there would authorize a mode the operator
+    # could not have requested when that row was written.
     if mode == "dangerous" and _LEGACY_DEV_ENTER_RE.search(text):
         return True
     return False

@@ -499,6 +499,35 @@ class TestLedgerBacks(unittest.TestCase):
         self._seed("[2026-01-01T00:00:00Z] | BY: session-mode | MODE: ops enter | NOTE: —\n")
         self.assertFalse(_modelib.ledger_backs(self.root, "dangerous"))
 
+    # --- AC-3: the row is an AUTHORIZATION, so it is scoped to a session -----
+    # A repo-wide match let session A's `enter` row authorize session B's
+    # gates-off marker. Every other part of the mode plane is keyed per
+    # session; an unkeyed authorization defeats that isolation, and it is
+    # reachable here because worktree agents share one `.codearbiter/` store.
+
+    def test_another_sessions_enter_row_does_not_authorize_this_session(self):
+        _modelib.flip("session-a", "dangerous", root=self.root)
+        self.assertTrue(_modelib.ledger_backs(self.root, "dangerous", session_id="session-a"))
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="session-b"),
+            "one session's enter row authorized another session's gates-off marker")
+
+    def test_a_row_written_before_session_attribution_backs_no_session(self):
+        """Fails toward arbiter: gates ON and one re-flip, never a silent pass."""
+        self._seed("[2026-01-01T00:00:00Z] | BY: session-mode | MODE: ops enter | NOTE: —\n")
+        self.assertFalse(_modelib.ledger_backs(self.root, "ops", session_id="s1"))
+
+    def test_the_legacy_dev_migration_still_works_and_is_bounded_to_dangerous(self):
+        """The one deliberate session-blind exception, and its limit.
+
+        A pre-mode-plane `DEV: enter` row predates session attribution, so
+        requiring one would break the very migration it serves. It must never
+        reach `ops`, which did not exist when any DEV row could be written.
+        """
+        self._seed("[2026-01-01T00:00:00Z] | BY: someone | DEV: enter | NOTE: —\n")
+        self.assertTrue(_modelib.ledger_backs(self.root, "dangerous", session_id="s1"))
+        self.assertFalse(_modelib.ledger_backs(self.root, "ops", session_id="s1"))
+
     def test_legacy_dev_enter_row_backs_dangerous(self):
         self._seed("[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n")
         self.assertTrue(_modelib.ledger_backs(self.root, "dangerous"))

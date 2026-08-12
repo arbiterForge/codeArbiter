@@ -777,7 +777,8 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
             # permanent dangling reference into overrides.log once
             # `/ca:arbiter` was deleted), _modelib._mode_audit_line's NOTE
             # is a bare "—".
-            line = _modelib._mode_audit_line("exit", mode, host_name=host_name, now=now)
+            line = _modelib._mode_audit_line("exit", mode, host_name=host_name, now=now,
+                                             session_id=session_id)
             # #396: stage-then-append BEFORE the state mutation below, so an
             # interruption between them leaves the row owed and replayable
             # rather than silently lost.

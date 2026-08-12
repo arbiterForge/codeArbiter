@@ -185,7 +185,7 @@ def _effective_mode(root, session_id, payload):
     `dangerous`, a legacy `DEV: enter` row); it resolves `arbiter` instead and
     reports why. `diagnostic` is None on a clean resolution."""
     mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
-    if mode != _modelib.MODES[0] and not _modelib.ledger_backs(root, mode):
+    if mode != _modelib.MODES[0] and not _modelib.ledger_backs(root, mode, session_id=session_id):
         return _modelib.MODES[0], "mode-not-ledger-backed:" + mode
     return mode, diag
 
