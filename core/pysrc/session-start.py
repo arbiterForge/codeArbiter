@@ -556,6 +556,12 @@ def _write_dev_session_owner(root, session_id, ts):
         pass
 
 
+# Retries for the seen-anchor read-modify-write. Matches
+# `_modelib._WRITE_MODE_ATTEMPTS` on purpose: same hazard, same shape, and two
+# different numbers for one policy is how they drift apart.
+_MODE_SEEN_WRITE_ATTEMPTS = 3
+
+
 def _mode_session_seen_path(root):
     return os.path.join(root, ".codearbiter", ".markers", "mode-session-seen.json")
 
@@ -615,18 +621,30 @@ def _write_mode_session_seen(root, session_id, ts):
     direction: it restores `arbiter` (gates ON) rather than silently retaining
     a gates-off posture on unproven state.
 
-    The read-modify-write here is not serialized, so two simultaneous starts
-    can lose one entry. That fails toward clearing a mode rather than retaining
-    one, which is the direction ADR-0030 requires; the mode marker's own
-    concurrency is tracked separately."""
-    try:
-        path = _mode_session_seen_path(root)
-        seen = _read_mode_session_seen_map(root)
-        seen[str(session_id)] = ts
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        write_text_atomic(path, json.dumps(seen))
-    except Exception:  # noqa: BLE001 — must never brick session startup
-        pass
+    VERIFIED, like `_modelib.write_mode`, and for the same reason.
+    `write_text_atomic` makes each replace atomic but does not serialize the
+    read-modify-write PAIR, so two SessionStarts can read the same map and
+    overwrite each other's entry. A lost anchor is not benign here: the next
+    compaction finds no record, clears that session's live mode, and mints an
+    `exit` row for a mode the user never left — the exact failure this record
+    exists to prevent, reached through its own write path. So the write is
+    re-read and retried on a lost update.
+
+    Still never raises. A write that cannot be confirmed after the retries
+    degrades to "not seen", which clears to `arbiter` — gates ON. That is the
+    safe direction; silently retaining a gates-off posture on state we cannot
+    vouch for is not."""
+    path = _mode_session_seen_path(root)
+    for _attempt in range(_MODE_SEEN_WRITE_ATTEMPTS):
+        try:
+            seen = _read_mode_session_seen_map(root)
+            seen[str(session_id)] = ts
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            write_text_atomic(path, json.dumps(seen))
+        except Exception:  # noqa: BLE001 — must never brick session startup
+            continue
+        if str(session_id) in _read_mode_session_seen_map(root):
+            return
 
 
 # --- #396/T-06: write-ahead ledger machinery extracted to _modelib ----------
@@ -737,8 +755,15 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
         # `current_mode` answers `arbiter` for both "never flipped" and
         # "deliberately flipped back", and only the first may be migrated over.
         # The raw state map is the only place that distinction survives.
-        mode_state, _diag = _modelib._read_mode_state(root)
-        unconverted = str(session_id) not in mode_state
+        # A corrupt or unreadable state file returns `{}` WITH a diagnostic,
+        # which reads as "no entry" and would migrate `dangerous` back on top
+        # of a user who had explicitly returned to `arbiter`. Absence is the
+        # only clean "nothing to convert over"; anything we could not read is
+        # not evidence of anything, and guessing gates-off from unreadable
+        # state is the one direction ADR-0030 forbids.
+        mode_state, state_diag = _modelib._read_mode_state(root)
+        readable = state_diag in (None, _modelib.MODE_DIAG_ABSENT)
+        unconverted = readable and str(session_id) not in mode_state
         if marker_live and unconverted and _modelib.write_mode(session_id, "dangerous", root=root):
             try:
                 os.remove(marker)

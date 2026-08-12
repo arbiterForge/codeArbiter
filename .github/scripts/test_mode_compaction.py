@@ -413,6 +413,66 @@ class TestSeenAnchorIsSessionKeyed(unittest.TestCase):
         ss.clear_mode_marker(root, host_name="claude", session_id="never-started")
         self.assertEqual(_modelib.current_mode("never-started", root=root)[0], ARBITER)
 
+    def test_an_anchor_clobbered_by_a_concurrent_start_is_retried(self):
+        """The anchor write is a read-modify-write, and a lost update is not
+        benign: the next compaction finds no record, clears a live mode, and
+        mints an exit row for a mode the user never left.
+
+        Set up so the ANCHOR is the only thing that can save the mode. A
+        DIFFERENT live session owns the legacy marker, which forces `is_owner`
+        False and skips the owner branch's early return — otherwise
+        `dev-session-owner.json` preserves the mode on its own and the test
+        passes no matter what the anchor does. (It did, before this setup:
+        the first version of this test survived reverting the fix.)
+        """
+        root = _fresh_repo()
+        open(_legacy_marker(root), "w").close()
+        ss._write_dev_session_owner(root, "another-live-session", time.time())
+
+        original = ss.write_text_atomic
+        calls = {"n": 0}
+
+        def clobbering(path, text, **kwargs):
+            original(path, text, **kwargs)
+            if os.path.basename(path) == "mode-session-seen.json":
+                calls["n"] += 1
+                if calls["n"] == 1:                      # a concurrent start lands after us
+                    original(path, json.dumps({"someone-else": 1.0}), **kwargs)
+
+        ss.write_text_atomic = clobbering
+        try:
+            ss.clear_mode_marker(root, host_name="claude", session_id="mine")
+        finally:
+            ss.write_text_atomic = original
+        self.assertGreaterEqual(calls["n"], 1, "the clobber never fired — this measures nothing")
+
+        _modelib.write_mode("mine", "dangerous", root=root)
+        ss.clear_mode_marker(root, host_name="claude", session_id="mine")   # compaction
+        self.assertEqual(_modelib.current_mode("mine", root=root)[0], "dangerous",
+                         "a clobbered anchor let a compaction clear a live mode")
+
+
+class TestCorruptModeStateBlocksTheLegacyMigration(unittest.TestCase):
+    """Unreadable state is not evidence that there is nothing to preserve.
+
+    `_read_mode_state` returns `{}` WITH a diagnostic for a corrupt or
+    unreadable file. Reading that as "no entry" let the legacy conversion write
+    `dangerous` over a user who had explicitly returned to `arbiter` — gates
+    off, on the strength of state nobody could read. Absence is the only clean
+    "nothing to convert over".
+    """
+
+    def test_a_corrupt_mode_file_does_not_trigger_the_conversion(self):
+        root = _fresh_repo()
+        sid = "owner"
+        open(_legacy_marker(root), "w").close()
+        ss._write_dev_session_owner(root, sid, time.time())
+        with open(_modelib.mode_marker_path(root=root), "w", encoding="utf-8") as f:
+            f.write("{ this is not json")
+        ss.clear_mode_marker(root, host_name="claude", session_id=sid)
+        self.assertEqual(_modelib.current_mode(sid, root=root)[0], ARBITER,
+                         "an unreadable mode file was treated as consent to re-arm dangerous")
+
 
 class TestLegacyConversionRespectsAnExplicitMode(unittest.TestCase):
     """A live `dev-active` marker must not re-arm a mode the user left.

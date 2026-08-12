@@ -42,10 +42,19 @@ exception; they route exactly as they would in `arbiter` mode.
 
 - `npm test` — **permitted.** It exercises the suite; a default test
   configuration writes no tracked file.
-- `npm ci` — **permitted.** It reinstalls `node_modules` (untracked) strictly
-  from the existing lockfile; it never writes `package.json` or the lockfile
-  itself — that would be a mutation, and mutation is what the discriminator
-  refuses.
+- `npm ci --ignore-scripts` — **permitted.** It reinstalls `node_modules`
+  (untracked) strictly from the existing lockfile; it never writes
+  `package.json` or the lockfile itself — that would be a mutation, and
+  mutation is what the discriminator refuses.
+- `npm ci` **without** `--ignore-scripts` — **refused, routed.** It runs each
+  dependency's `preinstall`/`install`/`postinstall`/`prepare` scripts, which
+  are arbitrary code that can write anywhere, including tracked files. That
+  the *command* leaves tracked files alone says nothing about what its
+  lifecycle scripts do, and no hook enforces the boundary in this mode — so
+  the discriminator cannot be evaluated in advance and the answer is refuse.
+  The same reasoning applies to any package manager's install (`pnpm`, `yarn`,
+  `uv`, `poetry`, `bundle`): the flag, not the tool, is what makes it
+  in-channel.
 - `docker compose up` — **permitted**, for the same reason: it starts a
   running system and, under a default compose file, leaves tracked files
   untouched. A bind mount that writes into a tracked path flips this to
