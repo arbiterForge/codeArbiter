@@ -8,8 +8,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
-- Codex adapter: an explicit execution workdir is honored, so H-01's branch check reads the
-  repository the command actually runs in rather than the process's own directory.
+- Shared bash guard refresh. `_bashguardlib` is re-vendored here from `core/pysrc/`, so `ca-pi`
+  carries the same guard as its siblings. The behavior it corrects is Codex execution-workdir
+  handling: an explicit workdir is honored, so H-01's branch check reads the repository the command
+  actually runs in rather than the process's own directory. Nothing changes for a Pi session — this
+  host never sets that workdir — but the payload did, so the version advances with it.
 
 ## [0.7.0] - 2026-08-10
 
