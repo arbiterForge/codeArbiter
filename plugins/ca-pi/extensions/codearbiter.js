@@ -291,7 +291,7 @@ var PI_STATUS_RESULT_KEYS = /* @__PURE__ */ new Set([
   "questions",
   "overrides",
   "sprint",
-  "dev",
+  "mode",
   "prune"
 ]);
 function minimalEnvironment(identities, userHome) {
@@ -577,14 +577,14 @@ function statusResult(response) {
   const patch = record(response.resultPatch);
   if (patch === void 0 || !exactKeys(patch, /* @__PURE__ */ new Set(["footerStatus"]))) return void 0;
   const value = record(patch.footerStatus);
-  if (value === void 0 || !exactKeys(value, PI_STATUS_RESULT_KEYS) || value.status !== "ok" || typeof value.stage !== "string" || value.stage.length < 1 || value.stage.length > 128 || CONTROL_RE.test(value.stage) || boundedStatusCount(value.tasks) === void 0 || boundedStatusCount(value.questions) === void 0 || boundedStatusCount(value.overrides) === void 0 || typeof value.sprint !== "boolean" || typeof value.dev !== "boolean" || value.prune !== null && (typeof value.prune !== "string" || value.prune.length > 256 || CONTROL_RE.test(value.prune))) return void 0;
+  if (value === void 0 || !exactKeys(value, PI_STATUS_RESULT_KEYS) || value.status !== "ok" || typeof value.stage !== "string" || value.stage.length < 1 || value.stage.length > 128 || CONTROL_RE.test(value.stage) || boundedStatusCount(value.tasks) === void 0 || boundedStatusCount(value.questions) === void 0 || boundedStatusCount(value.overrides) === void 0 || typeof value.sprint !== "boolean" || value.mode !== "arbiter" && value.mode !== "dangerous" && value.mode !== "ops" || value.prune !== null && (typeof value.prune !== "string" || value.prune.length > 256 || CONTROL_RE.test(value.prune))) return void 0;
   return {
     stage: value.stage,
     tasks: value.tasks,
     questions: value.questions,
     overrides: value.overrides,
     sprint: value.sprint,
-    dev: value.dev,
+    mode: value.mode,
     prune: value.prune === null ? void 0 : value.prune
   };
 }
@@ -4652,9 +4652,10 @@ function gitSegment(git, compact) {
   return `${colored(COLORS.normal, lead)}${divider}${colored(branchColor, `${branch}${git.dirty ? "*" : ""}`)}`;
 }
 function governanceSegment(governance) {
-  const badge = governance.dev ? " [DEV]" : governance.sprint ? " [SPRINT]" : "";
+  const modeBadge = governance.mode === "dangerous" ? " [DANGEROUS]" : governance.mode === "ops" ? " [OPS]" : "";
+  const badge = modeBadge || (governance.sprint ? " [SPRINT]" : "");
   const prune = governance.prune ? sanitize2(governance.prune, "") : "";
-  return `${colored(COLORS.ok, "\u25CF")} ${colored(COLORS.normal, `stage:${sanitize2(governance.stage)}`)} ${colored(COLORS.deep, "\xB7")} ${colored(COLORS.normal, `tasks:${boundedCount(governance.tasks)}`)} ${colored(COLORS.deep, "\xB7")} ${colored(governance.questions > 0 ? COLORS.danger : COLORS.muted, `q:${boundedCount(governance.questions)}`)} ${colored(COLORS.deep, "\xB7")} ${colored(governance.overrides > 0 ? COLORS.danger : COLORS.muted, `over:${boundedCount(governance.overrides)}`)}` + (prune ? ` ${colored(COLORS.deep, "\xB7")} ${colored(COLORS.muted, `prune:${prune}`)}` : "") + (badge ? colored(governance.dev ? COLORS.danger : COLORS.bright, badge) : "");
+  return `${colored(COLORS.ok, "\u25CF")} ${colored(COLORS.normal, `stage:${sanitize2(governance.stage)}`)} ${colored(COLORS.deep, "\xB7")} ${colored(COLORS.normal, `tasks:${boundedCount(governance.tasks)}`)} ${colored(COLORS.deep, "\xB7")} ${colored(governance.questions > 0 ? COLORS.danger : COLORS.muted, `q:${boundedCount(governance.questions)}`)} ${colored(COLORS.deep, "\xB7")} ${colored(governance.overrides > 0 ? COLORS.danger : COLORS.muted, `over:${boundedCount(governance.overrides)}`)}` + (prune ? ` ${colored(COLORS.deep, "\xB7")} ${colored(COLORS.muted, `prune:${prune}`)}` : "") + (badge ? colored(governance.mode === "dangerous" ? COLORS.danger : COLORS.bright, badge) : "");
 }
 function usageRow(label, usage) {
   return `${colored(COLORS.muted, label.padEnd(7))} ${colored(COLORS.deep, "\u2502")} ${colored(COLORS.primary, "\u2193")} ${colored(COLORS.normal, formatTokens(usage.inputTokens).padStart(6))} ${colored(COLORS.primary, "\u2191")} ${colored(COLORS.normal, formatTokens(usage.outputTokens).padStart(6))} ${colored(COLORS.deep, "\u2502")} ${colored(COLORS.ok, formatUsd(usage.costUsd))}`;
@@ -4995,7 +4996,7 @@ var PiFooterLifecycle = class {
                 questions: this.governance.questions,
                 overrides: this.governance.overrides,
                 sprint: this.governance.sprint,
-                dev: this.governance.dev,
+                mode: this.governance.mode,
                 ...this.governance.prune === void 0 ? {} : { prune: this.governance.prune }
               }
             };

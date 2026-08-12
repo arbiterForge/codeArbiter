@@ -326,7 +326,7 @@ the first marker-writing action runs. The load-bearing ones:
 - **`mode`** — a gitignored file holding the session's current posture (`arbiter`, `dangerous`, or
   `ops`), session-keyed, written by the deterministic `mode --dangerous`/`--ops`/`--arbiter` token
   flip and cleared at `SessionStart`. Absent, empty, unreadable, or unrecognized resolves to
-  `arbiter`. Drives the statusline's red-shift in `dangerous`; not itself gate-bearing — no
+  `arbiter`. Drives the statusline's red-shift in `dangerous`; not itself gate-bearing. No
   enforcement hook reads it, only the persona composed at each turn does.
 - **`adr-authoring-active`** — touched by `/ca:adr` while an ADR authoring session is open; the
   one marker a command other than the security-pass helpers legitimately writes directly.

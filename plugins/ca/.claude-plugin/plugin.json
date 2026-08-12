@@ -2,10 +2,20 @@
   "name": "ca",
   "displayName": "codeArbiter",
   "description": "Orchestration layer for Claude Code. Routes every intent through gated skills and reviewer agents, drives spec-driven TDD, mechanically enforces the commit and audit-trail gates, decides via SMARTS, and keeps an append-only audit trail. Requires Python 3 on PATH. Dormant until you opt a repo in; run /ca:init to activate.",
-  "version": "2.14.0",
-  "author": { "name": "arbiterForge" },
+  "version": "2.15.0",
+  "author": {
+    "name": "arbiterForge"
+  },
   "license": "AGPL-3.0-only",
   "homepage": "https://github.com/arbiterForge/codeArbiter",
   "repository": "https://github.com/arbiterForge/codeArbiter",
-  "keywords": ["orchestration", "tdd", "commit-gate", "code-review", "adr", "audit-trail", "governance"]
+  "keywords": [
+    "orchestration",
+    "tdd",
+    "commit-gate",
+    "code-review",
+    "adr",
+    "audit-trail",
+    "governance"
+  ]
 }
