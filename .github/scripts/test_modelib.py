@@ -10,6 +10,7 @@ vendored `plugins/*/hooks/` copies sync-core.py produces."""
 import contextlib
 import json
 import os
+import pathlib
 import sys
 import tempfile
 import unittest
@@ -642,6 +643,43 @@ class TestPersonaSentinel(unittest.TestCase):
     def test_persona_sentinel_does_not_collide_with_the_prune_elision_marker_shape(self):
         self.assertNotIn(_prunepolicy.MARKER_PREFIX, _modelib.PERSONA_SENTINEL)
         self.assertFalse(_modelib.PERSONA_SENTINEL.startswith(_prunepolicy.MARKER_PREFIX))
+
+
+# ---------------------------------------------------------------------------
+# T-73 — the domain vocabulary in .codearbiter/CONTEXT.md must define `mode`
+# and name the three modes STRING-EQUAL to `_modelib.MODES` (AC-52).
+#
+# String equality against the tuple, not a hand-typed list: a docs-only rename
+# of one mode, or a fourth mode added in code and not documented, is exactly the
+# drift this catches. ORCHESTRATOR §3 forbids redefining domain vocabulary
+# without updating CONTEXT.md, so the vocabulary is a governed surface, not prose.
+# ---------------------------------------------------------------------------
+class TestContextDomainVocabulary(unittest.TestCase):
+    def _context_text(self):
+        root = pathlib.Path(__file__).resolve().parents[2]
+        return (root / ".codearbiter" / "CONTEXT.md").read_text(encoding="utf-8")
+
+    def test_context_defines_the_term_mode(self):
+        text = self._context_text()
+        self.assertIn("Domain vocabulary", text,
+                      "CONTEXT.md must carry a domain-vocabulary section")
+        self.assertRegex(text, r"(?m)^\s*[-*]\s*\*\*`?mode`?\*\*",
+                         "CONTEXT.md's domain vocabulary must define the term `mode`")
+
+    def test_context_names_exactly_the_canonical_modes(self):
+        text = self._context_text()
+        for name in _modelib.MODES:
+            self.assertIn("`{}`".format(name), text,
+                          "CONTEXT.md must name the mode `{}` exactly as _modelib.MODES "
+                          "spells it".format(name))
+
+    def test_context_no_longer_claims_sessionstart_injects_the_persona(self):
+        # The activation flag still gates injection, but injection moved to the
+        # per-turn prompt seam. Leaving the old sentence would document a
+        # mechanism that no longer exists, in the file that defines this repo's
+        # own vocabulary.
+        text = self._context_text()
+        self.assertNotIn("SessionStart persona injection", text)
 
 
 if __name__ == "__main__":

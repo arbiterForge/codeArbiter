@@ -13,8 +13,8 @@ plugin for Claude Code; `ca-codex`, the same governance kernel for Codex CLI;
 first three are the **three governance hosts**. This `.codearbiter/` directory is the v2
 project-state store — root-level, outside `.claude/`, so it survives even if the
 codeArbiter plugin is uninstalled. The `arbiter: enabled` frontmatter above is the
-single activation flag: it gates both the SessionStart persona injection and the
-arbiter statusline segments.
+single activation flag: it gates both the persona injection and the arbiter
+statusline segments, and every enforcement hook reads it — never the persona.
 
 ## Identity
 Four sibling plugins in one repository (ADR-0007, ADR-0011, ADR-0013):
@@ -52,6 +52,19 @@ Four sibling plugins in one repository (ADR-0007, ADR-0011, ADR-0013):
 - `ca-sandbox` infrastructure source: `plugins/ca-sandbox/` — `tools/`, `skills/`,
   `commands/`. Adds host deps (Docker, nixpacks) scoped to this plugin only.
 - Shared project state lives here in `.codearbiter/`.
+
+## Domain vocabulary
+- **`mode`** — the orchestration posture a session is in, and the term that selects which
+  persona body is injected. Exactly three: **`arbiter`** (the governed default — routing,
+  skills, and gates in force), **`dangerous`** (a gates-off posture for local exploratory
+  work in any repo), and **`ops`** (arbiter, narrowed to permit starting, observing, and
+  exercising a running system in-channel). The canonical spelling is `_modelib.MODES`;
+  these names must match it exactly. A mode is **session-scoped and transient** — it is not
+  committed, and it never persists across sessions. Changing the mode changes only which
+  prose the model carries: **no enforcement hook reads the mode**, so every gate fires
+  identically in all three (ADR-0030).
+- **`mode body`** — the per-mode markdown injected after `safety-core.md` to form the
+  persona. `arbiter.md` is the arbiter mode's body, not an always-on kernel.
 
 ## NOT this project
 Not a runtime-vendored framework — multi-host support is build-time generation from one
