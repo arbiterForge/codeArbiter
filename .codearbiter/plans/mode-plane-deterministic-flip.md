@@ -90,22 +90,22 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-03 ★ | R | `.coderabbit.yaml:54,57,60`; `test_ci_impact.py:725`; `test_build_surface.py:75`; `test_ux_conversion.py:20` | those three suites exit 0 [LL] | 46 | T-01 | PENDING |
 | T-04 ★ | R | `.codearbiter/coding-standards.md:5` | `! grep -n ORCHESTRATOR` that file [LL] | 50 | T-01 | PENDING |
 | T-05 | R | `.gitleaks.toml:189` (anchored waiver contains `ORCHESTRATOR §3`) | `test_ci_impact.py` exits 0 [LL] | 46 | T-40 | PENDING |
-| T-06 ★ | A | `core/pysrc/_modelib.py` (new); `session-start.py:551-810` ledger moved out | `test_modelib.py` replays existing `_settle_dev_close` cases unchanged; `py_compile` [LL] | 12 | T-01 | PENDING |
-| T-07 ★ | A | `_modelib.py` | MODES tuple; absent/empty/chmod-000/garbage → `arbiter`; **unreadable and absent emit different strings** [LL] | 2 | T-06 | PENDING |
-| T-08 ★ | A | `_modelib.py` | `write_mode` uses `write_text_atomic` (spy); mid-write OSError leaves no file and no temp [LL] | 1 | T-07 | PENDING |
-| T-09 ★ | A | `_modelib.py` | two session ids, one repo: flipping A does not change B's resolved mode [LL] | 3 | T-08 | PENDING |
-| T-10 ★ | A | `_modelib.py` | worktree + main checkout resolve the same path via `marker_root` — asserted on the path [LL] | 5 | T-08 | PENDING |
-| T-11 ★ | A | `_modelib.py` | double flip → no-op sentinel, `overrides.log` byte-identical after the second [LL] | 6 | T-09 | PENDING |
-| T-12 ★ | A | `_modelib.py` | token table: exact + whitespace/case variants match; embedded/multiline do NOT; bare `mode` → report sentinel [LL] | 8,9 | T-07 | PENDING |
-| T-13 ★ | A | `_modelib.py` | `ledger_backs` False without a row, True on `MODE:` and on legacy `DEV:` [LL] | 11 | T-06 | PENDING |
-| T-14 ★ | A | `_modelib.py` | chmod-500 markers dir: flip **to** dangerous returns failure and stays arbiter; flip **back** still resolves arbiter, raises nothing [LL] | 10 | T-08 | PENDING |
-| T-15 | A | `_modelib.py` | interrupted exit row is owed; next `settle()` appends **exactly once** (line count) [LL] | 12 | T-06,T-11 | PENDING |
-| T-16 | A | `_modelib.py` `PERSONA_SENTINEL` | single stable exported literal, matched by the `_prunelib` regex [LL] | 26 | T-07 | PENDING |
-| T-17 ★ | D | `core/surface/includes/safety-core.md` (new) | `test_persona_composition.py`: anchors for §2 ladder, §7 diagnose-don't-bypass, **secrets prohibition**, irreversible set **without** dev-entry, "state is read not remembered", decision-authority rule, surface-don't-reconcile. **Preserves § numbering (R-3).** [LL] | 19 | T-01,T-02 | PENDING |
-| T-18 ★ | D | `safety-core.md` | residual-invariant enumeration's byte offset **&lt;** anti-circumvention sentence's offset (ordering, not presence) [LL] | 20 | T-17 | PENDING |
-| T-19 ★ | D | `safety-core.md` | states its precedence over every mode body, by anchor [LL] | 21 | T-17 | PENDING |
-| T-20 ★ | D | `core/surface/arbiter.md` | no safety-core anchor appears in `arbiter.md` (moved, not copied); non-empty, mode-distinct [LL] | 18,22,37 | T-17 | PENDING |
-| T-21 ★ | D | `includes/dev-mode.md`→`dangerous-mode.md` (+expand) | non-empty, mode-distinct, `! grep CODEARBITER_DEV\|maintainer` [LL] | 22 | T-20 | PENDING |
+| T-06 ★ | A | `core/pysrc/_modelib.py` (new); `session-start.py:551-810` ledger moved out | `test_modelib.py` replays existing `_settle_dev_close` cases unchanged; `py_compile` [LL] | 12 | T-01 | ACCEPTED |
+| T-07 ★ | A | `_modelib.py` | MODES tuple; absent/empty/chmod-000/garbage → `arbiter`; **unreadable and absent emit different strings** [LL] | 2 | T-06 | ACCEPTED |
+| T-08 ★ | A | `_modelib.py` | `write_mode` uses `write_text_atomic` (spy); mid-write OSError leaves no file and no temp [LL] | 1 | T-07 | ACCEPTED |
+| T-09 ★ | A | `_modelib.py` | two session ids, one repo: flipping A does not change B's resolved mode [LL] | 3 | T-08 | ACCEPTED |
+| T-10 ★ | A | `_modelib.py` | worktree + main checkout resolve the same path via `marker_root` — asserted on the path [LL] | 5 | T-08 | ACCEPTED |
+| T-11 ★ | A | `_modelib.py` | double flip → no-op sentinel, `overrides.log` byte-identical after the second [LL] | 6 | T-09 | ACCEPTED |
+| T-12 ★ | A | `_modelib.py` | token table: exact + whitespace/case variants match; embedded/multiline do NOT; bare `mode` → report sentinel [LL] | 8,9 | T-07 | ACCEPTED |
+| T-13 ★ | A | `_modelib.py` | `ledger_backs` False without a row, True on `MODE:` and on legacy `DEV:` [LL] | 11 | T-06 | ACCEPTED |
+| T-14 ★ | A | `_modelib.py` | chmod-500 markers dir: flip **to** dangerous returns failure and stays arbiter; flip **back** still resolves arbiter, raises nothing [LL] | 10 | T-08 | ACCEPTED |
+| T-15 | A | `_modelib.py` | interrupted exit row is owed; next `settle()` appends **exactly once** (line count) [LL] | 12 | T-06,T-11 | ACCEPTED |
+| T-16 | A | `_modelib.py` `PERSONA_SENTINEL` | single stable exported literal, matched by the `_prunelib` regex [LL] | 26 | T-07 | ACCEPTED |
+| T-17 ★ | D | `core/surface/includes/safety-core.md` (new) | `test_persona_composition.py`: anchors for §2 ladder, §7 diagnose-don't-bypass, **secrets prohibition**, irreversible set **without** dev-entry, "state is read not remembered", decision-authority rule, surface-don't-reconcile. **Preserves § numbering (R-3).** [LL] | 19 | T-01,T-02 | ACCEPTED |
+| T-18 ★ | D | `safety-core.md` | residual-invariant enumeration's byte offset **&lt;** anti-circumvention sentence's offset (ordering, not presence) [LL] | 20 | T-17 | ACCEPTED |
+| T-19 ★ | D | `safety-core.md` | states its precedence over every mode body, by anchor [LL] | 21 | T-17 | ACCEPTED |
+| T-20 ★ | D | `core/surface/arbiter.md` | no safety-core anchor appears in `arbiter.md` (moved, not copied); non-empty, mode-distinct [LL] | 18,22,37 | T-17 | ACCEPTED |
+| T-21 ★ | D | `includes/dev-mode.md`→`dangerous-mode.md` (+expand) | non-empty, mode-distinct, `! grep CODEARBITER_DEV\|maintainer` [LL] | 22 | T-20 | ACCEPTED |
 | T-22 | D | `includes/ops-mode.md` (new) | literal permitted/refused sets bound to the composed ops persona [LL] | 43 | T-17 | PENDING |
 | T-23 | D | `includes/ops-mode.md` | refused set names infra teardown, cluster/ns deletion, publication, live-DB migration, volume destruction; `npm test`/`npm ci`/`docker compose up` each carry a verdict token [LL] | 44 | T-22 | PENDING |
 | T-24 | D | `includes/{redirect,routing-table}.md` | both carry a runtime-ops row whose token `== _modelib.OPS_TOKEN` [LL] | 45 | T-22,T-12 | PENDING |
@@ -124,7 +124,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-37 ★ | B | `test_hooks_cold_install.py:913-917`, `core/pysrc/doctor.py:28-29` | matrix report names `prompt-submit.py` [LL, GR-2] | 17 | T-36 | PENDING |
 | T-38 | B | `plugins/ca-codex/hooks/hooks.json` (**single entry + `commandWindows`, R-2**; explicit `additionalContextLimit`, R-4) | `test_codex_adapter.py` exits 0; emitted key set **==** the seven schema names, `permissionDecision` absent — asserted as a set [LL] | 13 | T-27 | PENDING |
 | T-39 | B | `prompt-submit.py` (Codex arm) | per-mode composed bytes measured against the **explicitly set** limit; over-limit behavior fires and is asserted [LL] | 28 | T-38,T-31 | PENDING |
-| T-40 ★ | D | `safety-core.md` numbering (per R-3) | extract every `§N` from `core/pysrc/*.py` (**36 today**) and assert each resolves to a heading present in the composed persona **for all three modes** [LL] | 29 | T-17 | PENDING |
+| T-40 ★ | D | `safety-core.md` numbering (per R-3) | extract every `§N` from `core/pysrc/*.py` (**36 today**) and assert each resolves to a heading present in the composed persona **for all three modes** [LL] | 29 | T-17 | ACCEPTED |
 | T-41 ★ | E | `session-start.py:1079-1088` | SessionStart stdout has **no** persona text and still has the startup-state banner [LL, GR-2] | 27 | T-06 | PENDING |
 | T-42 ★ | E | `session-start.py` | live `dangerous` file removed by SessionStart; next read → `arbiter` [LL, GR-2] | 4 | T-41,T-08 | PENDING |
 | T-43 ★ | E | `session-start.py:~906` | run `clear_dev_marker`; assert the **emitted `overrides.log` line** names no deleted command — on the line, never a source grep [LL, GR-2] | 35 | T-41 | PENDING |
@@ -168,7 +168,7 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-87 ★ | Z | `core/hosts.json` `managed_subtrees` ×3 | **NEW — found by Lane R, empirically A/B proven.** `managed_subtrees` must carry BOTH `arbiter.md` and `ORCHESTRATOR.md` during migration: the pruner (`_disk_files()`) only walks listed paths, so a straight replace makes the committed `plugins/*/ORCHESTRATOR.md` blobs **invisible** to it — `--check` reports "in sync" while the orphans survive on disk. The `ORCHESTRATOR.md` entry may be dropped ONLY after T-76 commits the prune. Verify: drop the entry, `build-surface.py --check` still exits 0, and no `plugins/*/ORCHESTRATOR.md` exists [PR] | 46 | T-76 | PENDING |
 | T-80 ★ | H | — | `test_hook_guards.py` run with each of the three modes: **identical `(returncode, tag)` corpus-wide**, diffed byte-for-byte [PR] | 55 | T-79 | PENDING |
 | T-81 | H | — | `prompt-submit.py` p99 over 100 turns at current AND 10× `overrides.log`, stated against the 30 s timeout, ledger read included [PR] | 57 | T-35,T-79 | PENDING |
-| T-82 | H | `.codearbiter/decisions/00NN-*.md` via `/ca:adr` | Accepted, user-attributed, all seven required items; `check_adr_identity.py` exits 0. **Interactive — NOT delegable** [PR] | 53 | T-79 | PENDING |
+| T-82 | H | `.codearbiter/decisions/00NN-*.md` via `/ca:adr` | Accepted, user-attributed, all seven required items; `check_adr_identity.py` exits 0. **Interactive — NOT delegable** [PR] | 53 | T-79 | AUTHORED — status `proposed`; ratification is the user's (blocks T-66b) |
 | T-83 | H | `plugin.json`, README version badge line, dated `CHANGELOG.md` | `check_badge_consistency.py` + `version-bump` job pass [PR] | 47 | T-82,T-67 | PENDING |
 | T-84 | H | `plugins/ca-pi/package.json`, root `package.json`, ca-pi CHANGELOG | `build-host-packages.py --check` + `version-bump-pi` pass [PR] | 48 | T-77,T-82 | PENDING |
 | T-85 | H | comment on #437 | itemizes which of #437's eight ACs close and which defer [PR] | 54 | T-82 | PENDING |
@@ -197,3 +197,22 @@ default.
 - **ADRs are immutable (H-11) but not content-hashed**, and the `/adr` marker unlocking H-11 is
   self-mintable by design (ADR-0024). → GitHub issue.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
+- **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
+  resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
+  resolves `marker_root(payload)` for both the mode marker and the `MODE: … enter` row. **In a linked
+  worktree these are different directories**, so an `enter` row and its matching `exit`/close row can
+  land in two separate `overrides.log` files — the ledger-backing guarantee degrades *silently* rather
+  than failing loudly, and the suite stays green because no test spans two roots. This is the exact
+  hazard `marker_root` was introduced for (#604), and this repo runs worktree agents constantly.
+  **Remedy (proposed, needs Lane E's call):** move the legacy close path onto `marker_root` so both
+  halves of a transition pair resolve identically; add a two-root regression test that fails on the
+  split. Do NOT close AC-11 until this is resolved — a green AC-11 against a single root proves nothing.
+- **ADR-0030 is authored but `proposed`, not `accepted`.** T-82 is therefore only half-done and
+  **T-66b stays blocked** (the `{{CMD:dev}}` assertion edit is the supersession act and needs an
+  accepted ADR behind it). Authoring was user-approved before the document existed, which cannot
+  double as ratification of content the user has not read; precedent for not self-ratifying is
+  DECISION-0014. → **user ruling needed: accept ADR-0030, or amend it first.**
+- **`test_ci_impact.py` walks `.claude/worktrees/`** and reports linked worktrees — full checkouts of
+  this same repo — as untested trees. Worked around by deleting 11 stale worktrees; the walk is
+  unchanged and recurs for the next person who uses one. → filed as #676, not patched here (the file
+  is outside this feature's ownership).
