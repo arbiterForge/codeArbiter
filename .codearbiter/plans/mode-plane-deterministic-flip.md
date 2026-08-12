@@ -122,19 +122,19 @@ Status: `PENDING` → `ACCEPTED`. `★` = MVP slice. `[LL]`/`[PR]` per GR-3.
 | T-24 | D | `includes/{redirect,routing-table}.md` | both carry a runtime-ops row whose token `== _modelib.OPS_TOKEN` [LL] | 45 | T-22,T-12 | ACCEPTED |
 | T-25 | D | `test_persona_composition.py` | per mode, no body sentence contradicts a safety-core anchor (table is data); dies to a mutant weakening one clause [LL] | 21 | T-19,T-21,T-22 | ACCEPTED |
 | T-26 ★ | D | `test_ux_conversion.py` (anchors) | exits 0 with anchors repointed to `safety-core.md` [LL] | 46 | T-03,T-17 | ACCEPTED — already green. **Label correction: marked `[LL]` but reads generated `plugins/ca/arbiter.md`, so it is `[PR]` in substance** — re-run after T-76 |
-| T-27 ★ | B | `core/pysrc/prompt-submit.py` (new) | `test_prompt_submit.py`: stdin `{hook_event_name,prompt,session_id}` → exit 2, named stderr line, mode written [LL] | 7 | T-12,T-08 | PENDING |
-| T-28 ★ | B | `prompt-submit.py` | substring → exit 0, prompt unaltered, mode bytes identical; same test flips on exact-match control [LL] | 8 | T-27 | PENDING |
-| T-29 ★ | B | `prompt-submit.py` | bare `mode` → exit 2, stderr names current mode **and all three values**, nothing written [LL] | 9 | T-27 | PENDING |
+| T-27 ★ | B | `core/pysrc/prompt-submit.py` (new) | `test_prompt_submit.py`: stdin `{hook_event_name,prompt,session_id}` → exit 2, named stderr line, mode written [LL] | 7 | T-12,T-08 | ACCEPTED |
+| T-28 ★ | B | `prompt-submit.py` | substring → exit 0, prompt unaltered, mode bytes identical; same test flips on exact-match control [LL] | 8 | T-27 | ACCEPTED |
+| T-29 ★ | B | `prompt-submit.py` | bare `mode` → exit 2, stderr names current mode **and all three values**, nothing written [LL] | 9 | T-27 | ACCEPTED |
 | T-30 ★ | B | `_readinjectlib.py` (`marker_path` gains `prefix`), `test_readinjectlib.py` | existing cases pass with default; new case yields `modeinject-` [LL, GR-2] | 23 | — | **ACCEPTED** |
-| T-31 ★ | B | `prompt-submit.py` | composed persona = safety-core bytes + mode body bytes on **plain stdout**; previous mode's body absent [LL] | 18 | T-27,T-17,T-20 | PENDING |
-| T-32 ★ | B | `prompt-submit.py` | turn 1 emits, turn 2 same (session,mode,gen) emits nothing, new session emits again [LL] | 23 | T-30,T-31 | PENDING |
-| T-33 ★ | B | `prompt-submit.py` | flip turn (exit 2) then next turn emits the **new** body [LL] | 24 | T-32 | PENDING |
-| T-34 | B | `prompt-submit.py` | bumping compaction generation re-emits current persona [LL] | 25 | T-32 | PENDING |
-| T-35 ★ | B | `prompt-submit.py` | mode says dangerous, no `MODE: dangerous enter` row → emits **arbiter** composition + stderr diagnostic [LL] | 11 | T-13,T-31 | PENDING |
-| T-36 ★ | B | `plugins/ca/hooks/hooks.json` | two-entry py2 pair present; both slot occupants exercised [LL, GR-2] | 16,7 | T-27 | PENDING |
-| T-37 ★ | B | `test_hooks_cold_install.py:913-917`, `core/pysrc/doctor.py:28-29` | matrix report names `prompt-submit.py` [LL, GR-2] | 17 | T-36 | PENDING |
-| T-38 | B | `plugins/ca-codex/hooks/hooks.json` (**single entry + `commandWindows`, R-2**; explicit `additionalContextLimit`, R-4) | `test_codex_adapter.py` exits 0; emitted key set **==** the seven schema names, `permissionDecision` absent — asserted as a set [LL] | 13 | T-27 | PENDING |
-| T-39 | B | `prompt-submit.py` (Codex arm) | per-mode composed bytes measured against the **explicitly set** limit; over-limit behavior fires and is asserted [LL] | 28 | T-38,T-31 | PENDING |
+| T-31 ★ | B | `prompt-submit.py` | composed persona = safety-core bytes + mode body bytes on **plain stdout**; previous mode's body absent [LL] | 18 | T-27,T-17,T-20 | ACCEPTED |
+| T-32 ★ | B | `prompt-submit.py` | turn 1 emits, turn 2 same (session,mode,gen) emits nothing, new session emits again [LL] | 23 | T-30,T-31 | ACCEPTED |
+| T-33 ★ | B | `prompt-submit.py` | flip turn (exit 2) then next turn emits the **new** body [LL] | 24 | T-32 | ACCEPTED |
+| T-34 | B | `prompt-submit.py` | bumping compaction generation re-emits current persona [LL] | 25 | T-32 | ACCEPTED |
+| T-35 ★ | B | `prompt-submit.py` | mode says dangerous, no `MODE: dangerous enter` row → emits **arbiter** composition + stderr diagnostic [LL] | 11 | T-13,T-31 | ACCEPTED |
+| T-36 ★ | B | `plugins/ca/hooks/hooks.json` | two-entry py2 pair present; both slot occupants exercised [LL, GR-2] | 16,7 | T-27 | ACCEPTED |
+| T-37 ★ | B | `test_hooks_cold_install.py:913-917`, `core/pysrc/doctor.py:28-29` | matrix report names `prompt-submit.py` [LL, GR-2] | 17 | T-36 | ACCEPTED |
+| T-38 | B | `plugins/ca-codex/hooks/hooks.json` (**single entry + `commandWindows`, R-2**; explicit `additionalContextLimit`, R-4) | `test_codex_adapter.py` exits 0; emitted key set **==** the seven schema names, `permissionDecision` absent — asserted as a set [LL] | 13 | T-27 | ACCEPTED |
+| T-39 | B | `prompt-submit.py` (Codex arm) | per-mode composed bytes measured against the **explicitly set** limit; over-limit behavior fires and is asserted [LL] | 28 | T-38,T-31 | ACCEPTED |
 | T-40 ★ | D | `safety-core.md` numbering (per R-3) | extract every `§N` from `core/pysrc/*.py` (**36 today**) and assert each resolves to a heading present in the composed persona **for all three modes** [LL] | 29 | T-17 | ACCEPTED |
 | T-41 ★ | E | `session-start.py:1079-1088` | SessionStart stdout has **no** persona text and still has the startup-state banner [LL, GR-2] | 27 | T-06 | PENDING |
 | T-42 ★ | E | `session-start.py` | live `dangerous` file removed by SessionStart; next read → `arbiter` [LL, GR-2] | 4 | T-41,T-08 | PENDING |
@@ -213,6 +213,22 @@ default.
   "in sync" while the stale file survives on disk. The three orphans are pruned and committed **in this
   checkout**, but anyone with a stale working tree or a warm CI cache still needs the entry to prune
   theirs. Keep it one release cycle, then delete. → follow-up issue after merge.
+- **H-09b false positive filed as #678.** `_sensitivelib.CRYPTO_RE` matches several short legacy
+  cipher names as bare word-boundary tokens, case-insensitively and with no context requirement.
+  One of them collides with an extremely common variable name for *return code, second
+  invocation*, so an ordinary test file reads as a "crypto/TLS change" and blocks the commit.
+  Diagnosed per §7 and fixed at the source by renaming the variable — **the gate was not
+  overridden and not weakened.** Three sibling cipher tokens have the same bare shape.
+  **Do not write the offending spellings into any file in this repo:** `_sensitivelib.py:77-81`
+  documents that the detector re-fires on prose *about* itself, which makes the block permanent
+  in an append-only file. See #678 for the literals.
+- **AC-28 note:** Codex's `additionalContextLimit` is set explicitly to 8000 (R-4). The measured
+  composition is ~3,340 tokens by this codebase's own `ceil(len/4)` proxy — safety-core (~980) plus
+  `arbiter.md` (~2,360) — so the ~2,500 default would have spilled to disk on every turn.
+- **UNVERIFIED ASSUMPTION carried by Lane B:** that `PreCompact` fires exactly once per compaction.
+  The compaction-generation counter depends on it. Not checked against a live binary; if it fires more
+  than once the persona re-injects more often than needed (wasteful, not unsafe), and if it can be
+  skipped the compaction hole reopens. → worth a live check before release.
 - **`tmp-ci-artifacts/`, `tmp-ci-logs/`** are untracked, not gitignored, stale PR#16/#19 artifacts. → user cleanup.
 - **ROOT-RESOLUTION SPLIT — blocks AC-11, found by Lane A, owner Lane E.** `session-start.py:1020`
   resolves `root = project_root()` for `clear_dev_marker`/`_settle_dev_close`, while `_modelib.flip()`
