@@ -1380,3 +1380,28 @@ Recording-only entry; the decision's rationale lives in ADR-0029. Scope delibera
 Spec `npm-publish-ca-pi` implements: generator emits publishable root manifest (@arbiterforge/ca-pi, files whitelist, publishConfig, no private), tag-triggered npm-publish workflow with provenance and version guard, documentation posture flip with doc-contract tests repointed.
 
 ---
+
+## DECISION-0044 — adr-0030-authored — Orchestration mode plane with a composed, per-turn persona
+
+**Date:** 2026-08-12
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — seven positions ruled directly across the #437 session; ADR authoring approved 2026-08-12 ("approve adr, route through /ca:adr").
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Issue #437 proposed a new `/ops` command for local runtime operations.
+- **Scaffold position:** ORCHESTRATOR.md presents itself as the always-on core (`:3`); §0/§6 refuse off-channel runtime work; ADR-0022`:46-49` puts `{{CMD:dev}}` entry at tier 2.
+- **Status type:** divergent
+
+### Decision
+An orchestration mode plane (`arbiter` / `dangerous` / `ops`) replaces the fixed persona. ORCHESTRATOR.md is reframed as the arbiter mode's body and renamed `arbiter.md`; the injected persona becomes `safety-core.md` + the current mode's body, injected at the per-turn prompt seam rather than `SessionStart`, and flipped by a whole-prompt-anchored control token that produces no model turn. The two mode-entry commands are deleted (catalog 40 to 38). ADR-0022's tier-2 clause is superseded for dangerous-mode entry only.
+
+### SMARTS rationale
+Two sub-decisions were SMARTS-scored rather than asserted. **Startup-block handling**: decomposing into per-mode composable emitters beat wholesale suppression at strength `strong` — four dominant lenses aligned, and suppression's only advantage (smallest diff, largest saving) is not a lens and would have hidden `[CONFIRM-NN]`s and override counts in exactly the posture that most needs them. **Durable `profile:` layer**: transient-plus-documented-seam beat implementing both layers now at strength `moderate`; two-layer-now is penalised on Reliable (two sources for one fact) and Securable (a committed gates-off default). Step 0 recorded-intent constrained both: the user ruled twice that hooks here are modifiable, eliminating every option premised on `SessionStart` being fixed.
+
+### Implementation implication
+Spec `.codearbiter/specs/mode-plane-deterministic-flip.md` (57 acceptance criteria) and plan `.codearbiter/plans/mode-plane-deterministic-flip.md` (87 tasks) implement this on branch `feat/mode-plane-deterministic-flip`. New: `core/pysrc/_modelib.py`, the per-turn injector, `core/surface/includes/{safety-core,dangerous-mode,ops-mode}.md`. Renamed: `core/surface/ORCHESTRATOR.md` to `arbiter.md`, carried in `core/hosts.json` `managed_subtrees` under both names during migration so the pruner can see the orphan. Modified: `session-start.py` (persona injection removed, startup block decomposed), `_hooklib._STALE_FLOWS`, `_metricslib.override_rate`, `pi-bridge.py`, `extension.ts`, `hosts.json`, README badge, `CONTRIBUTING.md`, `docs/architecture.md`, `site/scripts/generator/configuration-reference.ts`. Deleted: the two mode-entry command bodies under `core/surface/commands/`. Test pin `test_routing_and_cleanup_surface.py:79-93` is repointed — that edit is the supersession act. Filed separately: #674 (ADR-0026 unimplemented), #675 (ADR content hashing), #676 (`test_ci_impact` worktree walk).
+
+---
