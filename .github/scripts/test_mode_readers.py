@@ -298,6 +298,25 @@ class TestStaleFlowsReadsPerSessionEntries(unittest.TestCase):
                         "an unrelated session's write suppressed a stale "
                         "dangerous session's warning")
 
+    def test_the_newest_non_arbiter_entry_sets_the_clock_not_the_oldest(self):
+        """With several non-arbiter sessions, staleness is judged from the most
+        recent one — the oldest must not trip a warn on its own.
+
+        The scan reads newest-first and stops at the first non-arbiter entry, so
+        an ordering bug here would silently answer with whichever entry the
+        filesystem happened to list first.
+        """
+        _modelib.write_mode("old-one", "dangerous", root=self.root)
+        _age(self._entry("old-one"), age_seconds=3600)
+        _modelib.write_mode("new-one", "dangerous", root=self.root)   # fresh
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [],
+                         "an old entry decided the clock while a newer session "
+                         "in the same posture was still active")
+        _age(self._entry("new-one"), age_seconds=3600)
+        self.assertTrue(
+            any("mode" in m for m in _hooklib.staleness_warning(self.root, window_minutes=30)),
+            "once every non-arbiter entry is old, the warn must fire")
+
     def test_corrupt_entry_never_raises_and_proves_nothing_active(self):
         _modelib.write_mode("sess-1", "dangerous", root=self.root)
         with open(self._entry("sess-1"), "w", encoding="utf-8") as f:

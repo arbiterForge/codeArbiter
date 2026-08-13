@@ -602,6 +602,16 @@ def _mode_marker_has_non_arbiter_entry(marker):
     return any(v != "arbiter" for v in data.values())
 
 
+# Worst-case bound on the entry scan below: the all-arbiter case, where the
+# newest-first early exit never fires and every entry would otherwise be read
+# on every prompt. 64 is far above any plausible count of sessions live at once
+# and far below the unbounded total a long-lived repo accumulates. Capping
+# costs only a WARN — a flow older than the 64 most recently touched sessions
+# goes unreported, which this registry's own contract already tolerates
+# ("a missed warn is acceptable; a crash is not", prune-transcript.py).
+_MODE_ENTRY_SCAN_MAX = 64
+
+
 def _mode_plane_active_since(cad):
     """(#681) Newest mtime among per-session mode entries in a NON-arbiter
     posture, or None when the mode plane is not active.
@@ -617,6 +627,10 @@ def _mode_plane_active_since(cad):
       staleness clock for a different session sitting in `dangerous`. An
       entry's own mtime is that session's own last flip.
 
+    Bounded: entries are examined newest-first and the scan stops at the first
+    non-arbiter one (which is by definition the newest), with a hard
+    `_MODE_ENTRY_SCAN_MAX` ceiling for the all-arbiter case.
+
     Falls back to the pre-split map so a repo upgraded mid-flow keeps warning.
     Never raises: this whole registry is a WARN, and a matcher that stopped
     matching would fail permanently SILENT with a green suite — the exact
@@ -626,25 +640,32 @@ def _mode_plane_active_since(cad):
     `_mode_marker_has_non_arbiter_entry` does: `_modelib` imports
     `write_text_atomic` from this module, so importing back would be circular.
     """
-    newest = None
+    entries = []
     entry_dir = os.path.join(cad, ".markers", "mode.d")
     try:
-        names = os.listdir(entry_dir)
+        with os.scandir(entry_dir) as it:
+            for item in it:
+                try:
+                    entries.append((item.stat().st_mtime, item.path))
+                except OSError:
+                    continue
     except OSError:  # no directory yet -> no per-session entries to weigh
-        names = []
-    for name in names:
-        path = os.path.join(entry_dir, name)
+        entries = []
+    # NEWEST FIRST, and stop at the first non-arbiter entry: that entry IS the
+    # newest non-arbiter mtime, so the ordering turns "read every entry" into
+    # "usually read one". This runs on the prompt seam — `prune-transcript.py`
+    # calls `staleness_warning` on every UserPromptSubmit — and entries are
+    # never reaped, so an unordered full scan would make every prompt pay for
+    # every session the repo has ever had.
+    entries.sort(reverse=True)
+    for mtime, path in entries[:_MODE_ENTRY_SCAN_MAX]:
         try:
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
-            if not isinstance(data, dict) or data.get("mode") in (None, "arbiter"):
-                continue
-            mtime = os.path.getmtime(path)
         except Exception:  # noqa: BLE001 — unreadable entry proves nothing active
             continue
-        newest = mtime if newest is None else max(newest, mtime)
-    if newest is not None:
-        return newest
+        if isinstance(data, dict) and data.get("mode") not in (None, "arbiter"):
+            return mtime
     legacy = os.path.join(cad, ".markers", "mode")
     if os.path.isfile(legacy) and _mode_marker_has_non_arbiter_entry(legacy):
         try:

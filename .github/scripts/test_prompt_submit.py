@@ -115,8 +115,18 @@ class _Fixture(unittest.TestCase):
         with open(path, encoding="utf-8") as f:
             return f.read()
 
-    def mode_marker_bytes(self):
-        path = _modelib.mode_marker_path(root=self.root)
+    def mode_marker_bytes(self, session_id="s1"):
+        """The on-disk bytes of `session_id`'s mode entry, or None when it has
+        none — the "did this turn write anything" probe.
+
+        Reads the per-session entry, NOT the pre-#681 `.markers/mode` map.
+        Left on the map this returned None unconditionally, since nothing
+        writes that file any more: `assertIsNone(...)` and
+        `assertEqual(before, after)` would both hold no matter what a turn
+        did, and the three "writes nothing" assertions built on it would have
+        gone silent together while staying green.
+        """
+        path = _modelib.mode_entry_path(session_id, root=self.root)
         if not os.path.isfile(path):
             return None
         with open(path, "rb") as f:
