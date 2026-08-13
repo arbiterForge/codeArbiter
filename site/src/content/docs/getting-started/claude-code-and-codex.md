@@ -92,8 +92,8 @@ Concretely:
   `.codearbiter/.markers/mode.d/`, so two sessions entering or leaving `mode --dangerous` never
   write the same path and cannot revert or drop each other's mode.
 - **Not hardened, and not new to dual-host:** the task board (`open-tasks.md`) is mutated with a
-  lock-free read-modify-write. Two sessions racing the same mutation — both flipping the same task,
-  say — can drop an update, exactly as two concurrent Claude Code sessions on one checkout already
+  lock-free read-modify-write. Two sessions racing the same mutation (both flipping the same task,
+  say) can drop an update, exactly as two concurrent Claude Code sessions on one checkout already
   can. This is pre-existing, host-agnostic concurrency debt, not a Codex-specific gap.
 
 Practical guidance: treat simultaneous *mutating* lanes (commit-gate, task-board writes) on one
