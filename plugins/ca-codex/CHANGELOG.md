@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.1] — 2026-08-13
+
+### Changed
+
+- `$ca-spike` now preserves only the committed findings file on the parent branch before it deletes the disposable spike branch. Exploratory spike code and spike commits never merge into implementation history.
+
 ## [0.7.0] — 2026-08-12
 
 ### Added
