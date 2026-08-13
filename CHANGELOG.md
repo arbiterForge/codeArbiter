@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.1] — 2026-08-13
+
+### Changed
+
+- `$ca-spike` now carries only its committed findings file back to the parent before deleting the disposable spike branch. Exploratory code and spike commits remain outside implementation history.
+
 ## [2.15.0] — 2026-08-12
 
 ### Added
