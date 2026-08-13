@@ -25,10 +25,13 @@ class SpikeFindingsContractTests(unittest.TestCase):
                 parent_commit = normalized.index("commit that one file through")
                 deletion = normalized.casefold().index("then delete the spike branch")
                 prohibition = normalized.index("Do not transfer spike code")
+                no_merge = normalized.index("no spike commit is merged")
+                self.assertEqual(normalized.count("git restore --source spike/<slug>"), 1)
                 self.assertLess(commit, restore)
                 self.assertLess(restore, parent_commit)
                 self.assertLess(parent_commit, deletion)
                 self.assertLess(deletion, prohibition)
+                self.assertLess(prohibition, no_merge)
 
 
 if __name__ == "__main__":
