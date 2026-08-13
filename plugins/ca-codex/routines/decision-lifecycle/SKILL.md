@@ -30,7 +30,7 @@ Gate: the existing ADRs are indexed by stem and, for `/adr`, the next number is 
 
 Confirm the decision content with the user — context, the decision itself, alternatives, consequences. MUST NOT fill these from inference. Surface any unknown as an inline `[CONFIRM-NN]` placeholder; do not resolve it by guessing.
 
-**Drop the authoring marker first.** The `pre-write`/`pre-edit` hooks block any write to `.codearbiter/decisions/NNNN-*.md` unless a fresh authoring marker is present — that block is the mechanism enforcing "ADRs only via `/adr`" (ORCHESTRATOR §3), so the sanctioned path must arm it itself. Immediately before writing, create the marker at the path the hooks check (project root = git top level):
+**Drop the authoring marker first.** The `pre-write`/`pre-edit` hooks block any write to `.codearbiter/decisions/NNNN-*.md` unless a fresh authoring marker is present — that block is the mechanism enforcing "ADRs only via `/adr`" (arbiter.md §3), so the sanctioned path must arm it itself. Immediately before writing, create the marker at the path the hooks check (project root = git top level):
 
 ```bash
 mkdir -p "$(git rev-parse --show-toplevel)/.codearbiter/.markers"

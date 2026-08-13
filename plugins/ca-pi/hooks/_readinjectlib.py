@@ -827,7 +827,7 @@ def governing_docs(rel, index, runner=None):
 # ---------------------------------------------------------------------------
 
 
-def marker_path(root, session_id, rel):
+def marker_path(root, session_id, rel, prefix="readinject-"):
     """Return the absolute path of the dedup marker for (session_id, rel).
 
     The marker lives under <root>/.codearbiter/.markers/ with a filename
@@ -835,9 +835,15 @@ def marker_path(root, session_id, rel):
     null-byte separator ensures ('ab', 'c') and ('a', 'bc') hash to different
     filenames.
 
+    `prefix` selects the marker namespace within the shared .markers/
+    directory. Defaults to 'readinject-' so every existing caller is
+    unaffected; a second consumer (e.g. mode-flip injection) can pass
+    prefix='modeinject-' to keep its markers distinct from the 790+
+    readinject- markers already on disk.
+
     PURE — no filesystem access of any kind.  Inputs are coerced to str so any
     type is accepted.  Never raises; on the (essentially impossible) error path,
-    returns a fallback path whose last segment is 'readinject-error.marker'
+    returns a fallback path whose last segment is '<prefix>error.marker'
     which will not match any normally-written marker.
     """
     try:
@@ -848,11 +854,11 @@ def marker_path(root, session_id, rel):
             str(root),
             ".codearbiter",
             ".markers",
-            "readinject-{}.marker".format(digest),
+            "{}{}.marker".format(prefix, digest),
         )
     except Exception:  # noqa: BLE001
         return os.path.join(
-            str(root), ".codearbiter", ".markers", "readinject-error.marker"
+            str(root), ".codearbiter", ".markers", "{}error.marker".format(prefix)
         )
 
 

@@ -15,11 +15,6 @@
     "skillPath": "skills/ca-adr-status/SKILL.md"
   },
   {
-    "name": "arbiter",
-    "description": "Exit maintainer dev mode — restore orchestration, remove the dev marker, log the exit.",
-    "skillPath": "skills/ca-arbiter/SKILL.md"
-  },
-  {
     "name": "audit",
     "description": "Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only.",
     "skillPath": "skills/ca-audit/SKILL.md"
@@ -78,11 +73,6 @@
     "name": "decompose",
     "description": "Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized.",
     "skillPath": "skills/ca-decompose/SKILL.md"
-  },
-  {
-    "name": "dev",
-    "description": "Maintainer override — suspend orchestration to edit codeArbiter itself. Env-gated (CODEARBITER_DEV=1), entry/exit logged to overrides.log.",
-    "skillPath": "skills/ca-dev/SKILL.md"
   },
   {
     "name": "doctor",

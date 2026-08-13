@@ -10,8 +10,8 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.14.1" src="https://img.shields.io/badge/version-2.14.1-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-40-555">
+<img alt="version 2.15.0" src="https://img.shields.io/badge/version-2.15.0-2b7489">
+<img alt="commands" src="https://img.shields.io/badge/commands-38-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-18-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
@@ -119,7 +119,7 @@ Approve the normal plugin trust prompt, open the target repository, and continue
 
 ### Codex CLI
 
-The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.6.2`;
+The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.7.0`;
 the dated end-to-end public-install record discovered `ca-codex 0.2.4` from release `v2.8.13`.
 Current packaging and shared-core parity are continuously verified, while that dated live-install
 record stays labeled rather than being silently promoted to evidence for a newer adapter:
@@ -266,7 +266,7 @@ explains who creates, reads, and updates every artifact, plus its recovery rules
 - No raw secret stored in the repository, logs, images, or prompts.
 - No direct write to the default branch and no force-push.
 - No ADR outside `/ca:adr`, with explicit user attribution.
-- Every `/ca:override`, `/ca:dev` entry/exit, and sprint auto-decision is durable and attributable.
+- Every `/ca:override`, `mode --dangerous`/`mode --ops` entry/exit, and sprint auto-decision is durable and attributable.
 - H-18 activation protection has no in-session override path; disabling a repository requires an
   external editor and an explicit audit record.
 
@@ -301,12 +301,12 @@ gate bypasses, merges, and unresolved questions remain true stops. See
 
 Claude Code's catalog is [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md). Codex uses the
 generated [`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md), and Pi uses the generated
-[`plugins/ca-pi/COMMANDS.md`](./plugins/ca-pi/COMMANDS.md). Current generated counts are `ca: 40`,
-`ca-codex: 38`, and `ca-pi: 39`. Codex omits `statusline` and `prune`; Pi omits `statusline` and uses
+[`plugins/ca-pi/COMMANDS.md`](./plugins/ca-pi/COMMANDS.md). Current generated counts are `ca: 38`,
+`ca-codex: 36`, and `ca-pi: 37`. Codex omits `statusline` and `prune`; Pi omits `statusline` and uses
 native compaction for pruning.
 
 <details>
-<summary><strong>All 40 Claude Code commands</strong></summary>
+<summary><strong>All 38 Claude Code commands</strong></summary>
 
 ### Implementation
 
@@ -365,13 +365,6 @@ native compaction for pruning.
 | `/ca:metrics [--window N]` | Read-only override, small-lane, and confidence trends |
 | `/ca:prune [status\|dry\|run\|audit\|on\|off]` | Inspect or trim transcript bulk |
 | `/ca:commands` | Show the public catalog |
-
-### Maintainer
-
-| Command | Purpose |
-|---|---|
-| `/ca:dev ["note"]` | Enter the env-gated, logged maintainer override |
-| `/ca:arbiter` | Exit dev mode and restore orchestration |
 
 </details>
 

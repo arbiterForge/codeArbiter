@@ -247,6 +247,17 @@ def commit_timeline(root):
 import re as _re
 _OVERRIDE_TS_RE = _re.compile(r"^\[([^\]]+)\]")
 
+# Mode-transition rows are ledger bookkeeping, not overrides, and must be
+# excluded from override_rate (AC-40). Two forms appear in overrides.log:
+#   - new:    "MODE: <name> enter" / "MODE: <name> exit"
+#   - legacy: "DEV: enter" / "DEV: exit"
+# Both are matched as a pipe-delimited field (bounded by "|" or end-of-line),
+# the same shape as _SMALL_LANE_RE's field match below, so a REASON/NOTE
+# sentence that merely mentions "mode" or "dev" cannot false-positive.
+_MODE_TRANSITION_RE = _re.compile(
+    r"\|\s*(?:MODE:\s*\S+\s+(?:enter|exit)|DEV:\s*(?:enter|exit))\s*(?:\||$)"
+)
+
 
 def override_rate(lines_or_text, windows):
     """Compute the override rate for the current and prior windows.
@@ -274,6 +285,10 @@ def override_rate(lines_or_text, windows):
         - Lines that start with "#" (after stripping leading whitespace) are
           comment lines and are excluded.
         - Blank and whitespace-only lines are excluded.
+        - Mode-transition rows are excluded: the new form
+          "MODE: <name> enter|exit" and the legacy form "DEV: enter|exit"
+          (AC-40). These are ledger bookkeeping, not overrides — genuine
+          "GATE:" / "SECURITY-OVERRIDE" / other override rows still count.
         - Entries whose parsed timestamp maps to BEFORE_HISTORY are excluded
           from all window counts.
     """
@@ -298,6 +313,11 @@ def override_rate(lines_or_text, windows):
         line = raw.strip()
         # Skip blank lines and comment lines.
         if not line or line.startswith("#"):
+            continue
+
+        # Skip mode-transition rows (new MODE: and legacy DEV: forms) — see
+        # AC-40 and _MODE_TRANSITION_RE above.
+        if _MODE_TRANSITION_RE.search(line):
             continue
 
         # Extract the leading timestamp token "[<ts>]".

@@ -2,7 +2,7 @@
 
 Style, structure, naming, and banned patterns for code in THIS repo. The canonical
 test/lint/build commands live in `tech-stack.md`; this file is conventions only.
-Prose artifacts (skills, commands, agents, `ORCHESTRATOR.md`) are governed by the
+Prose artifacts (skills, commands, agents, `arbiter.md`) are governed by the
 plugin's own authoring gates (`skill-author` v2 house style), not by this file.
 
 ## Where code lives

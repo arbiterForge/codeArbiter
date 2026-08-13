@@ -10,6 +10,7 @@ import type {
   BridgeResponse,
   ExtensionContextPort,
   PiFooterActivationState,
+  PiFooterMode,
   PiFooterStatusSnapshotPortResult,
   PiFooterUsageUpdateResult,
   PiUsageSnapshotPortResult,
@@ -46,7 +47,7 @@ const PI_STATUS_RESULT_KEYS = new Set([
   "questions",
   "overrides",
   "sprint",
-  "dev",
+  "mode",
   "prune",
 ]);
 type BridgeFailureDetail =
@@ -436,7 +437,8 @@ function statusResult(response: BridgeResponse): PiFooterStatusSnapshotPortResul
     || boundedStatusCount(value.tasks) === undefined
     || boundedStatusCount(value.questions) === undefined
     || boundedStatusCount(value.overrides) === undefined
-    || typeof value.sprint !== "boolean" || typeof value.dev !== "boolean"
+    || typeof value.sprint !== "boolean"
+    || (value.mode !== "arbiter" && value.mode !== "dangerous" && value.mode !== "ops")
     || (value.prune !== null && (typeof value.prune !== "string" || value.prune.length > 256
       || CONTROL_RE.test(value.prune)))) return undefined;
   return {
@@ -445,7 +447,7 @@ function statusResult(response: BridgeResponse): PiFooterStatusSnapshotPortResul
     questions: value.questions as number,
     overrides: value.overrides as number,
     sprint: value.sprint,
-    dev: value.dev,
+    mode: value.mode as PiFooterMode,
     prune: value.prune === null ? undefined : value.prune as string,
   };
 }

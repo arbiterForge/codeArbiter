@@ -26,7 +26,8 @@ and push operations, but the repository owner ultimately controls the machine. T
 the plugin, remove hooks, use an external tool, or disable the repository.
 
 The precise guarantee is that **every sanctioned bypass is logged**. `/ca:override` appends an
-attributed line to `overrides.log`; `/ca:dev` records entry and exit. An out-of-band bypass is not
+attributed line to `overrides.log`; the `mode --dangerous`/`--ops` posture flip records its own
+entry and exit the same way. An out-of-band bypass is not
 magically observable, and codeArbiter does not claim otherwise. Uninstalling leaves existing audit
 files on disk, but the uninstall itself is not recorded unless the user records it. See the
 [Hooks reference](/hooks/) for the boundaries each hook actually covers.

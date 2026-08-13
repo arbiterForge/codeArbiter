@@ -722,7 +722,7 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
     def test_shared_surface_template_selects_every_host_surface_contract(self):
         result = module.evaluate(
-            valid_map(), ["core/surface/ORCHESTRATOR.md"], hosts()
+            valid_map(), ["core/surface/arbiter.md"], hosts()
         )
         self.assertFalse(result.fallback)
         self.assertEqual(

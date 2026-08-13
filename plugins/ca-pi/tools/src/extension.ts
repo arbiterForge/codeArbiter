@@ -301,6 +301,31 @@ function ownershipStatus(
   return `codeArbiter host: pi degraded - ${native.length + jobs.length} native command ownership conflict(s); operations blocked`;
 }
 
+/**
+ * The always-on safety floor, then the mode body — the same composition the
+ * Python injector performs for Claude and Codex (`prompt-submit.py`), so all
+ * three hosts present one shape rather than each host's own arrangement of the
+ * same files. Reads the RUNNING plugin's own generated surface, which is plain
+ * text; `core/surface/` still carries unresolved `{{...}}` template tokens.
+ *
+ * Exported so the default dependency has a seam a test can reach. It had none,
+ * which is how it came to name a file that no longer exists: every activation
+ * test injects its own `loadPersona`, so the real one was never executed.
+ *
+ * Deliberately NOT caught here. A missing persona file must surface as a
+ * rejection, because the alternative — resolving to an empty string — leaves
+ * the model ungoverned while every status line reports a healthy session.
+ */
+export const PERSONA_SENTINEL = "<!-- codearbiter:persona-sentinel -->";
+
+export async function loadPersonaFrom(packageRoot: string): Promise<string> {
+  const [safetyCore, body] = await Promise.all([
+    readFile(resolve(packageRoot, "includes", "safety-core.md"), "utf8"),
+    readFile(resolve(packageRoot, "arbiter.md"), "utf8"),
+  ]);
+  return `${safetyCore.replace(/\n+$/, "")}\n\n${body.replace(/\n+$/, "")}\n\n${PERSONA_SENTINEL}\n`;
+}
+
 export function installParent(pi: ParentPiPort, dependencies: ParentDependencies): void {
   let enabled = false;
   let persona = "";
@@ -804,7 +829,7 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
       (pi as ExtensionAPI & { appendEntry(customType: string, data: unknown): void }).appendEntry(customType, data);
     },
     enforcementReadiness: enforcement,
-    loadPersona: async () => await readFile(resolve(packageRoot, "ORCHESTRATOR.md"), "utf8"),
+    loadPersona: async () => await loadPersonaFrom(packageRoot),
     resetBridge,
     prepareFooterBridge: (cwd) => { prepareBridgeIdentity(cwd); },
     readFooterUpdateVersion: async () => await readCachedUpdateVersion(packageRoot),

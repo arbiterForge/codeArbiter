@@ -30,10 +30,16 @@ import sys
 import time
 
 import _hooklib
+import _modelib
 import _prunepolicy as _policy
 
 BOM = b"\xef\xbb\xbf"
 MARKER_PREFIX = _policy.MARKER_PREFIX
+# R-5 (#437, mode-plane-deterministic-flip): the sentinel embedded in every
+# composed persona injection. A line whose serialized content carries it is
+# the injected persona -- built here into SemanticEntry(pinned=True) (T-50)
+# so `_prunepolicy` (AC-26) refuses to fold/condense/evict it at any tier.
+PERSONA_SENTINEL = _modelib.PERSONA_SENTINEL
 
 
 def _dumps(o):
@@ -127,7 +133,7 @@ def _tool_result_ids(o):
 
 class Index:
     __slots__ = ("protected_from", "last_assistant_idx", "tu_ids", "tr_ids",
-                 "edited_paths", "edited_at", "tool_meta")
+                 "edited_paths", "edited_at", "tool_meta", "pinned_ordinals")
 
 
 def build_index(lines, cfg):
@@ -171,14 +177,35 @@ def build_index(lines, cfg):
     semantic = []
     for ln in lines:
         o = ln.obj if isinstance(ln.obj, dict) else {}
+        # T-50: a line whose serialized content carries the injected-persona
+        # sentinel is pinned -- AC-26 requires it survive every strategy at
+        # every tier, not just the recent-turn protected tail (the persona is
+        # typically injected once, early in the transcript, and stays live
+        # for the rest of the session -- well outside `protected_from` by the
+        # time pruning runs). Same _dumps(o)-based check _has_marker already
+        # uses for the elision marker, so re-serialization quirks can't make
+        # the two disagree about the same line.
+        dumped = _dumps(o) if o else ""
         semantic.append(_policy.SemanticEntry(
             id=str(ln.idx), ordinal=ln.idx, role=str(o.get("type", "other")),
             kind=("tool-result" if _tool_result_ids(o) else "message"),
             byte_size=len(ln.raw), tool_bearing=bool(_tool_use_ids(o)),
-            marked=_has_marker(_dumps(o)) if o else False,
+            marked=_has_marker(dumped) if o else False,
+            # A TOOL RESULT that merely quotes the sentinel is not an injected
+            # persona. The literal lives in this repo's own sources
+            # (`_modelib.py`, `prompt-submit.py`, `extension.ts`, their tests),
+            # so a Read of any of them, or a Grep for the sentinel itself,
+            # produced a result that pinned permanently at every tier — the
+            # transcript kept growing while the pruner reported it protected.
+            # Agents here read and grep those files routinely, so this was
+            # reachable rather than theoretical. AC-26 needs the INJECTION
+            # pinned, not every copy of the string; the injection arrives as a
+            # message, never as a tool result.
+            pinned=(PERSONA_SENTINEL in dumped and not _tool_result_ids(o)) if o else False,
         ))
     prot = _policy.protected_ordinal(semantic, cfg.keep_recent)
     idx.protected_from = prot
+    idx.pinned_ordinals = frozenset(e.ordinal for e in semantic if e.pinned)
     idx.last_assistant_idx = last_assistant
     idx.tu_ids = tu
     idx.tr_ids = tr
@@ -194,6 +221,17 @@ def _is_small_scalar(v, limit=200):
     if isinstance(v, str):
         return len(v) <= limit
     return False
+
+
+def _protected(ln, index):
+    """True iff `ln` must not be touched by ANY strategy at ANY tier: either
+    it sits in the recent-turn protected tail, or it is PINNED (T-50/AC-26 --
+    the injected persona, which is typically well before `protected_from` by
+    the time pruning runs). Every strategy's skip-guard below routes through
+    this single predicate so the two protection reasons can never drift
+    apart -- a strategy that checked `ln.idx >= index.protected_from` alone
+    would silently reach a pinned line sitting earlier in the transcript."""
+    return ln.idx >= index.protected_from or ln.idx in index.pinned_ordinals
 
 
 # --------------------------------------------------------------------------- #
@@ -216,7 +254,7 @@ def s_sidecar_collapse(lines, index, cfg, report):
     small scalar fields worth keeping (status, exit codes, agentId, paths)."""
     touched = before = after = 0
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         tur = ln.obj.get("toolUseResult")
         if not isinstance(tur, (dict, list, str)):
@@ -260,7 +298,7 @@ def s_oversize_result_clamp(lines, index, cfg, report):
     touched = before = after = 0
     mb, ml = cfg.max_bytes, 100
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         msg = ln.obj.get("message")
         if not isinstance(msg, dict) or not isinstance(msg.get("content"), list):
@@ -341,7 +379,7 @@ def s_reasoning_fold(lines, index, cfg, report):
     most recent assistant turn is always inside the protected tail."""
     touched = before = 0
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         if ln.obj.get("type") != "assistant":
             continue
@@ -369,7 +407,7 @@ def s_aged_result_condense(lines, index, cfg, report):
     tail. Specific handlers (shell/superseded) run earlier and mark their own."""
     touched = before = after = 0
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         content = _content_list(ln.obj)
         if not content:
@@ -394,7 +432,7 @@ def s_mcp_payload_condense(lines, index, cfg, report):
     """Condense the bulky `input` of mcp__ tool_use blocks (older turns)."""
     touched = before = after = 0
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         content = _content_list(ln.obj)
         if not content:
@@ -435,7 +473,7 @@ def s_shell_tail_keep(lines, index, cfg, report):
     keep_lines = 30
     touched = before = after = 0
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         content = _content_list(ln.obj)
         if not content:
@@ -487,7 +525,7 @@ def s_superseded_read_condense(lines, index, cfg, report):
     transcript — that snapshot is stale; the later edit is the source of truth."""
     touched = before = after = 0
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         content = _content_list(ln.obj)
         if not content:
@@ -536,8 +574,9 @@ def s_repeat_reminder_fold(lines, index, cfg, report):
             if key not in seen:
                 seen.add(key)
                 continue
-            # A later duplicate: fold it (only past the protected tail).
-            if ln.idx >= index.protected_from:
+            # A later duplicate: fold it (only past the protected tail, and
+            # never a pinned line -- T-50/AC-26).
+            if _protected(ln, index):
                 continue
             marker = _marker(txt)
             if len(marker.encode("utf-8")) >= len(txt.encode("utf-8")):
@@ -576,7 +615,7 @@ def s_inline_image_evict(lines, index, cfg, report):
                     changed = True
         return changed
     for ln in lines:
-        if ln.idx >= index.protected_from or not isinstance(ln.obj, dict):
+        if _protected(ln, index) or not isinstance(ln.obj, dict):
             continue
         content = _content_list(ln.obj)
         if not content:

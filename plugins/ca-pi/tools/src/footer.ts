@@ -1,3 +1,9 @@
+// #437: type-only import — erased at compile time, so this leaf renderer
+// stays runtime-dependency-free while the mode union keeps ONE definition.
+// Declaring a second union here is precisely the drift class this campaign
+// keeps finding: two spellings of one fact, with no gate comparing them.
+import type { PiFooterMode } from "./contracts.js";
+
 export interface FooterGit {
   readonly repository?: string;
   readonly branch?: string;
@@ -36,7 +42,10 @@ export interface FooterGovernance {
   readonly questions: number;
   readonly overrides: number;
   readonly sprint?: boolean;
-  readonly dev?: boolean;
+  /** #437: three postures, so a boolean cannot carry it. Optional and
+   *  undefined-tolerant: an older parent that still sends no mode field
+   *  renders as `arbiter` (no badge) rather than throwing. */
+  readonly mode?: PiFooterMode;
   readonly prune?: string;
 }
 
@@ -243,14 +252,21 @@ function gitSegment(git: FooterGit | undefined, compact: boolean): string {
 }
 
 function governanceSegment(governance: FooterGovernance): string {
-  const badge = governance.dev ? " [DEV]" : governance.sprint ? " [SPRINT]" : "";
+  // #437 AC-38: three distinct renderings, matching statusline.py's
+  // convention exactly. `arbiter` shows no mode badge at all (unchanged
+  // from today), and only `dangerous` takes the danger colour — `ops` is
+  // a narrowed arbiter, not a gates-off posture, so colouring it red
+  // would misreport the risk.
+  const modeBadge = governance.mode === "dangerous" ? " [DANGEROUS]"
+    : governance.mode === "ops" ? " [OPS]" : "";
+  const badge = modeBadge || (governance.sprint ? " [SPRINT]" : "");
   const prune = governance.prune ? sanitize(governance.prune, "") : "";
   return `${colored(COLORS.ok, "●")} ${colored(COLORS.normal, `stage:${sanitize(governance.stage)}`)}`
     + ` ${colored(COLORS.deep, "·")} ${colored(COLORS.normal, `tasks:${boundedCount(governance.tasks)}`)}`
     + ` ${colored(COLORS.deep, "·")} ${colored(governance.questions > 0 ? COLORS.danger : COLORS.muted, `q:${boundedCount(governance.questions)}`)}`
     + ` ${colored(COLORS.deep, "·")} ${colored(governance.overrides > 0 ? COLORS.danger : COLORS.muted, `over:${boundedCount(governance.overrides)}`)}`
     + (prune ? ` ${colored(COLORS.deep, "·")} ${colored(COLORS.muted, `prune:${prune}`)}` : "")
-    + (badge ? colored(governance.dev ? COLORS.danger : COLORS.bright, badge) : "");
+    + (badge ? colored(governance.mode === "dangerous" ? COLORS.danger : COLORS.bright, badge) : "");
 }
 
 function usageRow(label: string, usage: FooterUsage | FooterDailyUsage): string {

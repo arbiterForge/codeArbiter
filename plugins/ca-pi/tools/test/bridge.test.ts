@@ -919,7 +919,7 @@ describe("Pi footer bridge adapters", () => {
               questions: 1,
               overrides: 0,
               sprint: true,
-              dev: false,
+              mode: "arbiter",
               prune: null,
             },
           },
@@ -945,7 +945,7 @@ describe("Pi footer bridge adapters", () => {
       questions: 1,
       overrides: 0,
       sprint: true,
-      dev: false,
+      mode: "arbiter",
       prune: undefined,
     });
     expect(calls).toHaveLength(1);
@@ -1439,7 +1439,14 @@ describe("Pi footer bridge adapters", () => {
       questions: 1,
       overrides: 1,
       sprint: true,
-      dev: true,
+      // #437: the fixture above still writes a legacy `.markers/dev-active`,
+      // and this asserts it no longer reaches the footer. The mode plane is the
+      // single source of truth and the legacy marker is NOT dual-written, so a
+      // reader still honouring it would report a gates-off posture that nothing
+      // maintains. `arbiter` is also correct for a second reason worth keeping
+      // explicit: this context supplies no sessionManager, and the mode file is
+      // keyed by session id — no session, no non-default mode.
+      mode: "arbiter",
       prune: undefined,
     });
   });
@@ -1540,8 +1547,8 @@ describe("Pi footer bridge adapters", () => {
       isProjectTrusted: () => true,
     } as Pick<ExtensionContextPort, "cwd" | "signal" | "isProjectTrusted" | "sessionManager">;
     for (const footerStatus of [
-      { status: "ok", stage: "impl\u0080hidden", tasks: 0, questions: 0, overrides: 0, sprint: false, dev: false, prune: null },
-      { status: "ok", stage: "impl", tasks: 0, questions: 0, overrides: 0, sprint: false, dev: false, prune: "cut\u009fhidden" },
+      { status: "ok", stage: "impl\u0080hidden", tasks: 0, questions: 0, overrides: 0, sprint: false, mode: "arbiter", prune: null },
+      { status: "ok", stage: "impl", tasks: 0, questions: 0, overrides: 0, sprint: false, mode: "arbiter", prune: "cut\u009fhidden" },
     ]) {
       const bridge: BridgePort = {
         call: async () => ({ version: 1, outcome: "notice", resultPatch: { footerStatus } }),

@@ -12,6 +12,38 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.0] — 2026-08-12
+
+### Added
+
+- Orchestration **mode plane** (ADR-0030): `arbiter`, `dangerous`, and `ops`. The injected persona is
+  now `safety-core.md` plus the active mode's body, composed per turn, and the mode is flipped by a
+  whole-prompt-anchored control token intercepted at the prompt seam with no model turn.
+- `ops` mode: an advisory carve-out permitting in-channel work that starts, observes, or exercises a
+  running system, keyed on the durable artifact produced. Anything mutating tracked files, the index,
+  git history, or published state stays routed and refused.
+
+### Changed
+
+- `ORCHESTRATOR.md` is renamed `arbiter.md` and reframed as the arbiter mode's body rather than an
+  always-on kernel. Its header records the former name so historical citations stay resolvable.
+- Persona injection moved off `SessionStart` to the per-turn prompt seam; a once-per-session event
+  cannot express a mid-session posture change. The startup block is now per-mode composable emitters.
+- `dev` mode becomes `dangerous`: a general gates-off posture for any repository, with no
+  maintainer-only env gate. No enforcement hook reads the mode, so every gate fires in all modes.
+
+### Removed
+
+- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface. The shared source
+  catalog under `core/surface/commands/` drops from 40 to 38, and `ca`'s own visible catalog from
+  39 to 38 — each host excludes entries it cannot serve, so a source count is never a host count.
+
+### Fixed
+
+- A compaction could silently clear a live mode, because the mode plane borrowed the legacy marker's
+  owner record to decide whether it had seen a session before. It now keeps its own anchor.
+- Mode and marker state resolved through two different roots in three places; in a linked worktree a
+  transition pair could split across two audit logs, or a stale session go undetected.
 ## [2.14.1] — 2026-08-12
 
 ### Fixed

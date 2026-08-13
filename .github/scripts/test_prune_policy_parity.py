@@ -170,5 +170,44 @@ class PrunePolicyParityTests(unittest.TestCase):
         self.assertEqual(duplicate.stderr, "PI bridge error (ProtocolError)\n")
 
 
+
+class TestPinnedEntriesDoNotBreakIdempotence(unittest.TestCase):
+    """`CA-PRUNE-IDEMPOTENT` must stay reachable once anything is pinned.
+
+    The code compares `marked` against `boundary`, but `marked` now excludes
+    pinned entries while `boundary` still counts every entry below the
+    protected tail, pinned included. One pinned entry below the boundary
+    therefore caps `marked` at `boundary - 1` forever, and a fully condensed
+    transcript reports `CA-PRUNE-PLAN` on every single pass.
+
+    This is the NORMAL case, not an edge: the persona is injected once, early,
+    which puts a pinned entry below the boundary in essentially every governed
+    session. The two numbers have to be counted over the same population.
+    """
+
+    def _entries(self, marked_all):
+        return [
+            SemanticEntry("p0", 0, "user", "message", 40, marked=marked_all, pinned=True),
+            SemanticEntry("u1", 1, "user", "message", 40, marked=marked_all),
+            SemanticEntry("a1", 2, "assistant", "message", 60, marked=marked_all),
+            SemanticEntry("u2", 3, "user", "message", 40),
+        ]
+
+    def test_a_fully_condensed_transcript_with_a_pin_reports_idempotent(self):
+        plan = plan_prune(self._entries(True), PrunePolicy(tier="gentle", keep_recent=1, max_bytes=64))
+        self.assertEqual(plan.audit_codes, ("CA-PRUNE-IDEMPOTENT",),
+                         "a pinned entry below the boundary made IDEMPOTENT unreachable")
+
+    def test_an_unmarked_transcript_still_reports_plan(self):
+        """The fix must not make everything idempotent."""
+        plan = plan_prune(self._entries(False), PrunePolicy(tier="gentle", keep_recent=1, max_bytes=64))
+        self.assertEqual(plan.audit_codes, ("CA-PRUNE-PLAN",))
+
+    def test_candidate_entries_counts_the_same_population_as_the_actions(self):
+        """The metric described the wrong set once pinning existed."""
+        plan = plan_prune(self._entries(True), PrunePolicy(tier="gentle", keep_recent=1, max_bytes=64))
+        self.assertEqual(plan.metrics["candidate_entries"], len(plan.actions))
+
+
 if __name__ == "__main__":
     unittest.main()

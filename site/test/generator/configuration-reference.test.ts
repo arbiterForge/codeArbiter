@@ -33,9 +33,13 @@ describe("configuration reference", () => {
     expect(names.every((name) => name === "NO_COLOR" || /^(CODEARBITER|FARM)_/.test(name))).toBe(true);
   });
 
+  it("does not document the removed CODEARBITER_DEV surface", () => {
+    const page = renderConfigurationReference();
+    expect(page).not.toContain("CODEARBITER_DEV");
+  });
+
   it("documents the opt-in and spending-sensitive boundaries", () => {
     const page = renderConfigurationReference();
-    expect(page).toContain("CODEARBITER_DEV");
     expect(page).toContain("CODEARBITER_BASE_BRANCH");
     expect(page).toContain("CODEARBITER_BABYSIT_ONRED");
     expect(page).toContain("CODEARBITER_PRUNE");

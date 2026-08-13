@@ -20,7 +20,7 @@ the three `plans/` artifacts; `CONTEXT.md` and `open-questions.md` (including it
 Deferred-decisions sections) constrain at their recorded level. Load index-first: consult the ADR
 index (`decision-log.md` or the `decisions/` filename listing) and plan section headings only;
 load a body only after the index names it relevant; never bulk-read `plans/` or `decisions/`
-(ORCHESTRATOR §3's no-bulk-reads rule).
+(arbiter.md §3's no-bulk-reads rule).
 
 Three outcomes:
 

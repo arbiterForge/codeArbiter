@@ -1380,3 +1380,53 @@ Recording-only entry; the decision's rationale lives in ADR-0029. Scope delibera
 Spec `npm-publish-ca-pi` implements: generator emits publishable root manifest (@arbiterforge/ca-pi, files whitelist, publishConfig, no private), tag-triggered npm-publish workflow with provenance and version guard, documentation posture flip with doc-contract tests repointed.
 
 ---
+
+## DECISION-0044 — adr-0030-authored — Orchestration mode plane with a composed, per-turn persona
+
+**Date:** 2026-08-12
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — seven positions ruled directly across the #437 session; ADR authoring approved 2026-08-12 ("approve adr, route through /ca:adr").
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Issue #437 proposed a new `/ops` command for local runtime operations.
+- **Scaffold position:** ORCHESTRATOR.md presents itself as the always-on core (`:3`); §0/§6 refuse off-channel runtime work; ADR-0022`:46-49` puts `{{CMD:dev}}` entry at tier 2.
+- **Status type:** divergent
+
+### Decision
+An orchestration mode plane (`arbiter` / `dangerous` / `ops`) replaces the fixed persona. ORCHESTRATOR.md is reframed as the arbiter mode's body and renamed `arbiter.md`; the injected persona becomes `safety-core.md` + the current mode's body, injected at the per-turn prompt seam rather than `SessionStart`, and flipped by a whole-prompt-anchored control token that produces no model turn. The two mode-entry commands are deleted (catalog 40 to 38). ADR-0022's tier-2 clause is superseded for dangerous-mode entry only.
+
+### SMARTS rationale
+Two sub-decisions were SMARTS-scored rather than asserted. **Startup-block handling**: decomposing into per-mode composable emitters beat wholesale suppression at strength `strong` — four dominant lenses aligned, and suppression's only advantage (smallest diff, largest saving) is not a lens and would have hidden `[CONFIRM-NN]`s and override counts in exactly the posture that most needs them. **Durable `profile:` layer**: transient-plus-documented-seam beat implementing both layers now at strength `moderate`; two-layer-now is penalised on Reliable (two sources for one fact) and Securable (a committed gates-off default). Step 0 recorded-intent constrained both: the user ruled twice that hooks here are modifiable, eliminating every option premised on `SessionStart` being fixed.
+
+### Implementation implication
+Spec `.codearbiter/specs/mode-plane-deterministic-flip.md` (57 acceptance criteria) and plan `.codearbiter/plans/mode-plane-deterministic-flip.md` (87 tasks) implement this on branch `feat/mode-plane-deterministic-flip`. New: `core/pysrc/_modelib.py`, the per-turn injector, `core/surface/includes/{safety-core,dangerous-mode,ops-mode}.md`. Renamed: `core/surface/ORCHESTRATOR.md` to `arbiter.md`, carried in `core/hosts.json` `managed_subtrees` under both names during migration so the pruner can see the orphan. Modified: `session-start.py` (persona injection removed, startup block decomposed), `_hooklib._STALE_FLOWS`, `_metricslib.override_rate`, `pi-bridge.py`, `extension.ts`, `hosts.json`, README badge, `CONTRIBUTING.md`, `docs/architecture.md`, `site/scripts/generator/configuration-reference.ts`. Deleted: the two mode-entry command bodies under `core/surface/commands/`. Test pin `test_routing_and_cleanup_surface.py:79-93` is repointed — that edit is the supersession act. Filed separately: #674 (ADR-0026 unimplemented), #675 (ADR content hashing), #676 (`test_ci_impact` worktree walk).
+
+---
+
+## DECISION-0045 — adr-0030-ratified — ADR-0030 accepted
+
+**Date:** 2026-08-12
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — direct ratification 2026-08-12 ("approved"), given after the authored ADR was presented for review.
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0030 authored as `proposed` (DECISION-0044). Authoring approval predated the document's existence, so it was deliberately not treated as ratification.
+- **Scaffold position:** n/a — ratification of an authored record.
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0030 ratified to `accepted`. Content unchanged from authoring; only the `status:` frontmatter and the mirroring `## Status` body line were edited, per the canonical template's rule that the two must agree.
+
+### SMARTS rationale
+Recording-only entry; the decision's rationale lives in DECISION-0044 and in ADR-0030 itself. The one judgement recorded here is the refusal to self-ratify: an approval to *author* cannot ratify content the approver has not read, and DECISION-0014 exists in this repo precisely because an external agent once fabricated an ADR ratification.
+
+### Implementation implication
+Unblocks the command-deletion cluster, which was gated on an accepted ADR standing behind the ADR-0022 supersession. T-66b (editing the `{{CMD:dev}}` assertion at `test_routing_and_cleanup_surface.py:79-93` — the supersession act itself) is now permitted, and with it T-64 (deleting the two command bodies), T-65 (stripping the 7 surviving `{{CMD:}}` tokens), and T-67 (catalog badge 40 to 38). Acceptance also makes ADR-0030's `governs:` globs live, so edits to the mode bodies, `_modelib.py`, and the injection path now surface a governed-file notice at write time.
+
+---

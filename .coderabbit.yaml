@@ -51,13 +51,13 @@ reviews:
     # plugins/ca-sandbox/) is never caught by accident.
     - "!plugins/ca/COMMANDS.md"
     - "!plugins/ca/SPRINT.md"
-    - "!plugins/ca/ORCHESTRATOR.md"
+    - "!plugins/ca/arbiter.md"
     - "!plugins/ca-codex/COMMANDS.md"
     - "!plugins/ca-codex/SPRINT.md"
-    - "!plugins/ca-codex/ORCHESTRATOR.md"
+    - "!plugins/ca-codex/arbiter.md"
     - "!plugins/ca-pi/COMMANDS.md"
     - "!plugins/ca-pi/SPRINT.md"
-    - "!plugins/ca-pi/ORCHESTRATOR.md"
+    - "!plugins/ca-pi/arbiter.md"
 
     # --- copied from core/pysrc/ by tools/sync-core.py ---
     # A single `*` matches any filename and does not cross a path separator,

@@ -377,6 +377,70 @@ class OverrideRateTest(unittest.TestCase):
         self.assertEqual(result["prior"], 0)
 
     # ------------------------------------------------------------------
+    # Mode-transition rows are excluded (AC-40): both the new
+    # `MODE: <name> enter|exit` form and the legacy `DEV: enter|exit` form
+    # must not count toward override_rate. A genuine override/gate row in
+    # the same window must still count.
+    # ------------------------------------------------------------------
+
+    def _make_mode_line(self, ts_str, name, verb, actor="user@example.com"):
+        """Return a synthetic overrides.log MODE: <name> enter|exit row (new form)."""
+        return f"[{ts_str}] | BY: {actor} | MODE: {name} {verb} | NOTE: —"
+
+    def _make_legacy_dev_line(self, ts_str, verb, actor="user@example.com"):
+        """Return a synthetic overrides.log DEV: enter|exit row (legacy form)."""
+        return f"[{ts_str}] | BY: {actor} | DEV: {verb} | NOTE: —"
+
+    def test_mode_and_legacy_dev_rows_excluded_genuine_override_counts(self):
+        """AC-40: MODE: <name> enter|exit and legacy DEV: enter|exit rows are
+        mode-transition bookkeeping, not overrides — they must not count.
+        A genuine override row in the same window must still count."""
+        windows = self._make_windows()
+        current_idx = len(windows) - 1
+        ts_str = self._ts_in_window(windows, current_idx)
+
+        lines = [
+            self._make_mode_line(ts_str, "dangerous", "enter"),
+            self._make_mode_line(ts_str, "dangerous", "exit"),
+            self._make_mode_line(ts_str, "ops", "enter"),
+            self._make_legacy_dev_line(ts_str, "enter"),
+            self._make_legacy_dev_line(ts_str, "exit"),
+            self._make_log_line(ts_str),  # genuine override row — must count
+        ]
+        result = _metricslib.override_rate(lines, windows)
+        self.assertEqual(
+            result["current"], 1,
+            "only the genuine override row should count; MODE:/DEV: rows must "
+            "be excluded",
+        )
+        self.assertEqual(result["prior"], 0)
+
+    def test_only_mode_and_dev_rows_yields_zero(self):
+        """A log containing nothing but MODE: and legacy DEV: rows must yield
+        current == 0, prior == 0 (AC-40 worked example: 'log of MODE:+legacy
+        DEV: rows -> override_rate current/prior = 0')."""
+        windows = self._make_windows()
+        current_idx = len(windows) - 1
+        prior_idx = current_idx - 1
+        cur_ts = self._ts_in_window(windows, current_idx)
+        prior_ts = self._ts_in_window(windows, prior_idx)
+
+        lines = [
+            self._make_mode_line(cur_ts, "dangerous", "enter"),
+            self._make_mode_line(cur_ts, "dangerous", "exit"),
+            self._make_mode_line(cur_ts, "ops", "enter"),
+            self._make_mode_line(cur_ts, "ops", "exit"),
+            self._make_legacy_dev_line(cur_ts, "enter"),
+            self._make_legacy_dev_line(cur_ts, "exit"),
+            self._make_legacy_dev_line(prior_ts, "enter"),
+            self._make_legacy_dev_line(prior_ts, "exit"),
+        ]
+        result = _metricslib.override_rate(lines, windows)
+        self.assertEqual(result["current"], 0)
+        self.assertEqual(result["prior"], 0)
+        self.assertEqual(result["arrow"], "→")
+
+    # ------------------------------------------------------------------
     # Fewer than 2 windows: prior == 0, arrow compares against 0
     # ------------------------------------------------------------------
 

@@ -23,10 +23,10 @@
           {"source_prefix": "agents/", "output_pattern": "agents/{relative}", "exclude": []},
           {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
           {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
-          {"source_prefix": "ORCHESTRATOR.md", "output_pattern": "ORCHESTRATOR.md", "exclude": []},
+          {"source_prefix": "arbiter.md", "output_pattern": "arbiter.md", "exclude": []},
           {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
         ],
-        "managed_subtrees": ["commands", "skills", "includes", "agents", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
+        "managed_subtrees": ["commands", "skills", "includes", "agents", "COMMANDS.md", "SPRINT.md", "arbiter.md", "ORCHESTRATOR.md"],
         "catalog": null
       },
       "tool_classes": {
@@ -62,10 +62,10 @@
           {"source_prefix": "includes/", "output_pattern": "includes/{relative}", "exclude": ["includes/pi-host-notes.md"]},
           {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
           {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
-          {"source_prefix": "ORCHESTRATOR.md", "output_pattern": "ORCHESTRATOR.md", "exclude": []},
+          {"source_prefix": "arbiter.md", "output_pattern": "arbiter.md", "exclude": []},
           {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
         ],
-        "managed_subtrees": ["skills", "routines", "includes", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
+        "managed_subtrees": ["skills", "routines", "includes", "COMMANDS.md", "SPRINT.md", "arbiter.md", "ORCHESTRATOR.md"],
         "catalog": "skills/INDEX.md"
       },
       "tool_classes": {
@@ -103,10 +103,10 @@
           {"source_prefix": "agents/", "output_pattern": "agents/{relative}", "exclude": []},
           {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
           {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
-          {"source_prefix": "ORCHESTRATOR.md", "output_pattern": "ORCHESTRATOR.md", "exclude": []},
+          {"source_prefix": "arbiter.md", "output_pattern": "arbiter.md", "exclude": []},
           {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
         ],
-        "managed_subtrees": ["skills", "routines", "includes", "agents", "COMMANDS.md", "SPRINT.md", "ORCHESTRATOR.md"],
+        "managed_subtrees": ["skills", "routines", "includes", "agents", "COMMANDS.md", "SPRINT.md", "arbiter.md", "ORCHESTRATOR.md"],
         "catalog": "SKILLS.md"
       },
       "tool_classes": {

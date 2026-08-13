@@ -64,6 +64,18 @@
             "statusMessage": "codeArbiter: audit staleness check"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/prompt-submit.py\"",
+            "commandWindows": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/prompt-submit.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: mode plane",
+            "additionalContextLimit": 8000
+          }
+        ]
       }
     ]
   }

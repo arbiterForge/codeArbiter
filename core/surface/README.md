@@ -9,7 +9,7 @@ Every host-facing markdown surface is generated from this tree by
 | `skills/**` | `skills/**` | `routines/**` | `routines/**` |
 | `includes/**` | `includes/**` | `includes/**` | `includes/**` |
 | `agents/**` | `agents/**` | not rendered | `agents/**` (explicit child input, outside discovery roots) |
-| `COMMANDS.md`, `SPRINT.md`, `ORCHESTRATOR.md` | same name | same name | same name |
+| `COMMANDS.md`, `SPRINT.md`, `arbiter.md` | same name | same name | same name |
 | generated catalog | none | `skills/INDEX.md` | `SKILLS.md` |
 
 **Never edit a rendered file.** Rendered trees carry no provenance banner — the

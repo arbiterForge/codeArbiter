@@ -1203,6 +1203,51 @@ jobs:
         # never-steer-to-override rule, and the cleanup owner's own acceptance
         # gates - on every generated projection.
         run: python .github/scripts/test_routing_and_cleanup_surface.py
+      - name: Run mode-plane core contract (ADR-0030)
+        # #437. The mode plane's own library: whole-prompt token matching (a
+        # substring match would let a pasted diff containing the token flip the
+        # mode), marker_root resolution, the asymmetric fail direction, no-op
+        # flips appending nothing, and legacy DEV: rows backing only the
+        # dangerous mode. Also pins CONTEXT.md's domain vocabulary string-equal
+        # to _modelib.MODES, so a docs-only rename fails here.
+        run: python .github/scripts/test_modelib.py
+      - name: Run composed-persona contract (ADR-0030)
+        # #437. safety-core.md + the active mode body IS the injected persona,
+        # so this pins the anchors that must survive every mode (the conflict
+        # ladder, diagnose-don't-bypass, the irreversible set, the secrets
+        # prohibition) and the ORDERING that keeps the anti-circumvention rule
+        # from binding over nothing. Also proves every hook's §N citation
+        # resolves in all three modes.
+        run: python .github/scripts/test_persona_composition.py
+      - name: Run prompt-seam interceptor contract (ADR-0030)
+        # #437. The flip must produce NO model turn, and the Codex envelope is
+        # additionalProperties:false with exactly seven keys - a shape borrowed
+        # from any other event is rejected outright.
+        run: python .github/scripts/test_prompt_submit.py
+      - name: Run startup-emitter contract (ADR-0030)
+        # #437. SessionStart no longer injects the persona, and the block is
+        # eight composable emitters. The arbiter set is pinned against a golden
+        # fixture whose regeneration takes an explicit flag - a bare run refuses
+        # rather than silently rewriting the thing it is supposed to prove.
+        run: python .github/scripts/test_startup_emitters.py
+      - name: Run mode-reader contract (ADR-0030)
+        # #437. The statusline, arbiter state, and staleness flow read the mode
+        # plane. The staleness half is a WARN, not a gate, so a matcher that
+        # stops matching fails NOTHING and goes permanently silent - both arms
+        # are pinned (warns for a stale non-arbiter mode, never for arbiter).
+        run: python .github/scripts/test_mode_readers.py
+      - name: Run mode compaction-seam contract (ADR-0030)
+        # #437. SessionStart fires on compact and nothing reads the event's
+        # source field, so a compaction could clear a live mode out from under
+        # a session. Pins both directions: the mode survives a compaction, and
+        # an unvouched or corrupt anchor clears to arbiter (gates ON) rather
+        # than retaining a gates-off posture on state we cannot vouch for.
+        run: python .github/scripts/test_mode_compaction.py
+      - name: Run mode-surface and docs-coverage contract (ADR-0030)
+        # #437. site/src/curated/ is hand-written and merged by the generator,
+        # and no other gate compares it to the surface it documents - a removed
+        # command can otherwise live on in published docs indefinitely.
+        run: python .github/scripts/test_mode_surface.py
       - name: Run recorded-intent surface contract (ADR-0025)
         # ADR-0025. The recorded-intent check is a prose contract projected
         # into three host surfaces. This pins Step 0's SCOPING (applies to

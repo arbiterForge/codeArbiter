@@ -26,7 +26,8 @@ import _githooks  # noqa: E402 — #556: git-hook drop-in registry freshness
 from _hooklib import frontmatter_enabled, get_host, set_host, utf8_stdio  # noqa: E402
 
 HOOK_SCRIPTS = ("session-start.py", "pre-bash.py", "pre-write.py",
-                "pre-edit.py", "post-write-edit.py", "prune-transcript.py")
+                "pre-edit.py", "post-write-edit.py", "prune-transcript.py",
+                "prompt-submit.py")
 PI_BRIDGE_SCRIPTS = ("pi-bridge.py", "git-enforce.py", "_githooks.py")
 
 # MCP config files are read whole to be counted. `~/.claude.json` also carries

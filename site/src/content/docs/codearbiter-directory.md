@@ -42,10 +42,10 @@ only while a flow is active or after the owning feature first runs (`.decompose-
 | `audits/*.md` | `/ca:audit` | humans (report only) | Yes |
 | `reports/` | `/ca:tribunal` and named handoff/evidence workflows | the owning workflow on resume, humans | Yes, but not while an owning run is in flight |
 | `sprint-log.md` | `/ca:sprint` | `/ca:status`, `/ca:audit` | No: append-only, guarded (H-05) |
-| `overrides.log` | `/ca:override`, `/ca:dev` entry/exit | statusline, `/ca:status`, `/ca:audit`, staleness-warn | No: append-only, guarded (H-05) |
+| `overrides.log` | `/ca:override`, the mode-plane flip (`mode --dangerous`/`--ops`/`--arbiter`, `MODE: <name> enter/exit`) | statusline, `/ca:status`, `/ca:audit`, staleness-warn | No: append-only, guarded (H-05) |
 | `triage.log` | `/ca:feature` small-lane triage | `/ca:metrics`, `/ca:audit` | No: append-only, guarded (H-05) |
 | `gate-events.log` | every `block()`/`remind()`/`warn()` call in the hooks | (durable sink; no reader ships yet) | No: append-only, guarded (H-05) |
-| `.markers/` | `security-pass.py`, `migration-pass.py`, `/ca:dev`, `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No: guarded, and hand-writing one is friction and an audit trail, not a proof (see below) |
+| `.markers/` | `security-pass.py`, `migration-pass.py`, `prompt-submit.py` (mode marker), `/ca:adr` | the commit-gate hooks (`pre-bash.py`, `pre-write.py`, `pre-edit.py`) | No: guarded, and hand-writing one is friction and an audit trail, not a proof (see below) |
 | `.provenance/*.json` | `context-creation`, `decompose`, `context-check` (re-scout/re-baseline) | `SessionStart` (drift line), `commit-gate` (auto-heal) | Not by hand: regenerate via `/ca:context-check` |
 | `security-controls.md`, `tech-stack.md`, `coding-standards.md` | `/ca:create-context` or `/ca:decompose`, kept current by hand or `/ca:context-check` | every reviewer agent, the crypto/secret gates | Yes |
 | `last-checkpoint` | `checkpoint-aggregator` agent | `/ca:status`, the statusline (overrides-since-checkpoint) | Not normally: it's a counter, not a note |
@@ -145,7 +145,7 @@ permanent is lost, which is the one outcome its policy is designed to prevent.
 ## open-questions.md
 
 The record of unresolved `[CONFIRM-NN]` items: numbered placeholders for a question only the
-user can answer, per the terminology lock in `ORCHESTRATOR.md` §0.1. An open `CONFIRM-NN` blocks
+user can answer, per the terminology lock in `arbiter.md` §0.1. An open `CONFIRM-NN` blocks
 the dependent work until it is resolved; it is never guessed at or resolved inside an ADR. The
 `SessionStart` hook and the statusline both count occurrences here.
 
@@ -267,13 +267,29 @@ recreate the file on its next append.
 
 ## overrides.log
 
-The append-only, permanent audit trail of every `/ca:override` bypass and every `/ca:dev`
-entry/exit. Format: `[ISO-8601] | BY: <name> <<email>> | GATE: <gate bypassed> | REASON: <reason>`.
-The operator identity comes from `git config user.email`; if it's unset, the user is asked once
-rather than recording an empty `BY:` field. The statusline counts entries newer than the
+The append-only, permanent audit trail of every `/ca:override` bypass and every mode-plane
+transition (`mode --dangerous`/`--ops`, a deterministic whole-prompt token flip, never a command).
+
+**Two row formats share this file. Do not read one as the other.**
+
+| | Override row | Mode-transition row |
+|---|---|---|
+| Format | `[ISO-8601] \| BY: <name> <<email>> \| GATE: <gate bypassed> \| REASON: <reason>` | `[ISO-8601] \| BY: session-mode \| HOST: <host> \| SESSION: <id> \| MODE: <name> enter\|exit \| NOTE: —` |
+| Identity | the operator, from `git config user.email`; if unset the user is asked once rather than recording an empty `BY:` | the literal `session-mode`, because a mode flip is a posture change by the session and **not** an act attributed to a person |
+| Fields | `GATE` and `REASON` | `HOST`, `SESSION` and `MODE`; no `GATE`, no `REASON` |
+
+The `SESSION` field is load-bearing, not decoration: an `enter` row is what
+**authorizes** a gates-off marker to take effect, so it is matched per session.
+Without it one session's row would authorize another session's marker. Rows
+written before the field existed authorize no session and resolve to `arbiter`.
+
+A `MODE:` row is therefore **not** a user-attributed override, and counting the two together
+overstates how often a human bypassed a gate. Readers accept legacy `DEV:` rows too, since existing
+history is append-only and never rewritten. The statusline counts entries newer than the
 `last-checkpoint` marker as "overrides since last checkpoint."
 
-**Writers:** `/ca:override`, `/ca:dev` (entry/exit lines). **Readers:** statusline, `/ca:status`,
+**Writers:** `/ca:override`, the mode-plane flip (`prompt-submit.py`, `MODE:` entry/exit lines).
+**Readers:** statusline, `/ca:status`,
 `/ca:audit`, the CONFIRM-09 staleness-warn check. **Editable by hand?** No. H-05 guarded, same as
 `sprint-log.md`: append-only, tail-anchored edits only, no truncation or rewrite.
 **Delete it:** the entire override history is gone (a genuine loss, since this is the one
@@ -320,12 +336,15 @@ the first marker-writing action runs. The load-bearing ones:
   launder a later, different change through the freshness window.
 - **`migration-gate-passed`** — the same digest-binding contract, for the H-14 migration-review
   gate, written by `migration-pass.py` against a migration file's current content.
-- **`dev-active`** — a gitignored flag dropped on `/ca:dev` entry and removed on `/ca:arbiter`
-  exit; purely a statusline/UI signal, not itself gate-bearing.
+- **`mode`** — a gitignored file holding the session's current posture (`arbiter`, `dangerous`, or
+  `ops`), session-keyed, written by the deterministic `mode --dangerous`/`--ops`/`--arbiter` token
+  flip and cleared at `SessionStart`. Absent, empty, unreadable, or unrecognized resolves to
+  `arbiter`. Drives the statusline's red-shift in `dangerous`; not itself gate-bearing. No
+  enforcement hook reads it, only the persona composed at each turn does.
 - **`adr-authoring-active`** — touched by `/ca:adr` while an ADR authoring session is open; the
   one marker a command other than the security-pass helpers legitimately writes directly.
 
-**Writers:** `security-pass.py`, `migration-pass.py`, `/ca:dev`, `/ca:adr`.
+**Writers:** `security-pass.py`, `migration-pass.py`, `prompt-submit.py` (mode marker), `/ca:adr`.
 **Readers:** the commit-gate hooks (`pre-bash.py`) that check `security-gate-passed` and
 `migration-gate-passed` before allowing a `git commit`.
 **Editable by hand?** No: `pre-write.py`/`pre-edit.py` block Write/Edit targeting this directory

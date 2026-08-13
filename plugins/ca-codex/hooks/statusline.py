@@ -48,7 +48,7 @@
 #   _segmentslib     the individual content segments (ctx bar, rate cells, pill, …)
 #   _ledgerlib       token/cost ledger (extracted earlier, T-12)
 # `seg_update` / `plugin_root_for_render` (the update-notifier surface) and
-# `dev_active`'s render-time callers stay wired here because a test patches
+# `current_mode`'s render-time callers stay wired here because a test patches
 # `statusline.plugin_root_for_render` directly — that seam must resolve through
 # this module's own globals, not a lib's.
 #
@@ -251,7 +251,7 @@ try:
     frontmatter, count_matches = _arbiterstatelib.frontmatter, _arbiterstatelib.count_matches
     _ARBITER_CACHE, _ARBITER_FILES = _arbiterstatelib._ARBITER_CACHE, _arbiterstatelib._ARBITER_FILES
     _arbiter_mtime_key = _arbiterstatelib._arbiter_mtime_key
-    dev_active = _arbiterstatelib.dev_active
+    current_mode = _arbiterstatelib.current_mode
 
     def _arbiter_enabled(ctx_path):
         return _arbiterstatelib._arbiter_enabled(ctx_path, _frontmatter_enabled)
@@ -285,8 +285,8 @@ except Exception:  # pragma: no cover — never let an import break the statusli
     def arbiter_state(root, ctx_text=None, ot_text=None, oq_text=None):
         return None
 
-    def dev_active(root):
-        return False
+    def current_mode(session_id, root=None, payload=None):
+        return "arbiter"
 
 # --------------------------------------------------------------------------- subagents (_subagentslib)
 try:
@@ -549,12 +549,27 @@ def _render_active_palette(raw):
     root = safe(project_root, data) or os.getcwd()
     sid = data.get("session_id") or data.get("sessionId")
     arb = safe(arbiter_state, root)
+    # #437 (mode-plane-deterministic-flip): resolved ONCE per render and reused
+    # by both the badge below and the redshift gate near the bottom of this
+    # function, rather than re-reading the mode marker twice. Resolves via
+    # `payload=data` (NOT the pre-resolved `root` above) so the mode file is
+    # read at marker_root, agreeing with every other `.markers/` writer in a
+    # linked worktree (AC-5) — `root` here is _gitlib's plain ancestor walk,
+    # a different resolution that must not leak into mode reads.
+    mode = safe(current_mode, sid, payload=data) or "arbiter"
     effort = (get(data, "effort", "level") or "").lower()
     sprint = bool(arb and arb.get("sprint"))
-    # /dev takes precedence over sprint: a textual [DEV] tell rides alongside the
-    # full-bar redshift so dev mode reads even where color is stripped or unseen.
-    if safe(dev_active, root):
-        badge = f"{BOLD}[DEV]{RESET}"
+    # A non-arbiter MODE takes precedence over sprint, mirroring the retired
+    # /dev-over-sprint precedence exactly. Each mode gets its own distinct
+    # textual tell (AC-38) — dangerous keeps the alarming [DEV]-style bracket
+    # tag (renamed) so the full-bar redshift below still reads even where
+    # color is stripped or unseen; ops is advisory-only (no redshift) but
+    # still needs its own unmistakable badge, distinct from both arbiter and
+    # dangerous.
+    if mode == "dangerous":
+        badge = f"{BOLD}[DANGEROUS]{RESET}"
+    elif mode == "ops":
+        badge = f"{BOLD}[OPS]{RESET}"
     elif sprint:
         badge = f"{V3}{BOLD}[SPRINT]{RESET}"   # effort now shows by the model pill
     else:
@@ -680,7 +695,10 @@ def _render_active_palette(raw):
 
     box.bottom(tees=tail_tees)
     out = box.render()
-    out = redshift(out) if safe(dev_active, root) else out
+    # AC-38: only `dangerous` (gates-off) keeps the alarm-red full-bar tell —
+    # `ops` is advisory-only and must render distinctly from both `arbiter`
+    # (no shift) and `dangerous` (redshift), not share dangerous's treatment.
+    out = redshift(out) if mode == "dangerous" else out
     # Honor the NO_COLOR convention by stripping SGR from the final render. Do NOT gate on
     # isatty: a Claude Code statusline is intentionally piped, so an isatty test would drop
     # color in normal use. Width math already ignores ANSI, so stripping keeps alignment.

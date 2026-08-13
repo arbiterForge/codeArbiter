@@ -27,7 +27,9 @@
 #   count_matches_text(text, pattern) -> int          same count, given already-read text (performance-003)
 #   arbiter_state(root, count_in_flight=None, read_board=None, frontmatter_enabled=None,
 #                 ctx_text=None, ot_text=None, oq_text=None) -> dict|None
-#   dev_active(root) -> bool                        True when the /dev marker is present
+#   current_mode(session_id, root=None, payload=None) -> str   one of _modelib.MODES
+#                                                    (#437, mode-plane-deterministic-flip; replaces
+#                                                    the retired dev_active(root) presence check)
 #
 # performance-003 (#194): SessionStart's main() already reads CONTEXT.md,
 # open-tasks.md, and open-questions.md before the display-only governance line
@@ -41,6 +43,15 @@
 
 import os
 import re
+
+# #437 (mode-plane-deterministic-flip, T-51): the mode plane replaces the old
+# presence-only 'dev-active' marker this module used to read. Imported
+# unguarded (like every other sibling import in this file) — statusline.py,
+# this module's only external caller, already wraps `import _arbiterstatelib`
+# in its own try/except, so a failure here degrades the whole module import,
+# exactly like a failure to import `os` would. No circularity risk: _modelib
+# imports _activationlib and _hooklib, neither of which imports this module.
+from _modelib import current_mode as _modelib_current_mode
 
 # mtime-keyed memo: statusline.py is a short-lived subprocess, but a single render
 # can resolve arbiter_state more than once (safe() probes), and the StopHook fires
@@ -155,6 +166,22 @@ def arbiter_state(root, count_in_flight=None, read_board=None, frontmatter_enabl
     return result
 
 
+# AC-40: MODE: <name> enter|exit and legacy DEV: enter|exit rows are ledger
+# bookkeeping (the #437 mode-plane audit trail), not overrides — they must not
+# inflate the statusline's "over:" counter. Mode transitions are about to
+# become routine traffic in overrides.log, so an uncorrected counter would
+# turn from noisy into actively WRONG. Mirrors _metricslib._MODE_TRANSITION_RE's
+# exact matched fragment (kept as an independent literal, not an import: this
+# module has no other reason to depend on _metricslib, and one small regex
+# fragment is cheaper to duplicate than to add a cross-module coupling for).
+_MODE_TRANSITION_FRAGMENT = (
+    r"\|\s*(?:MODE:\s*\S+\s+(?:enter|exit)|DEV:\s*(?:enter|exit))\s*(?:\||$)"
+)
+_OVERRIDE_LINE_RE = (
+    r"^(?!\s*#)(?!\s*$)(?!.*" + _MODE_TRANSITION_FRAGMENT + r").+"
+)
+
+
 def _arbiter_state_uncached(cad, count_in_flight=None, read_board=None, frontmatter_enabled=None,
                              ctx_text=None, ot_text=None, oq_text=None):
     ctx_path = os.path.join(cad, "CONTEXT.md")
@@ -164,7 +191,7 @@ def _arbiter_state_uncached(cad, count_in_flight=None, read_board=None, frontmat
     # open-questions.md text when supplied, instead of a second disk read. `None`
     # (the default) preserves the exact original read-from-disk behavior.
     fm = frontmatter_text(ctx_text) if ctx_text is not None else frontmatter(ctx_path)
-    total_over = count_matches(os.path.join(cad, "overrides.log"), r"^(?!\s*#)(?!\s*$).+")
+    total_over = count_matches(os.path.join(cad, "overrides.log"), _OVERRIDE_LINE_RE)
     # last-checkpoint holds the override COUNT at the last /ca:checkpoint. A value
     # outside [0, total] is not a valid count (e.g. a timestamp from a stale writer)
     # -> fail safe to 0 so overrides are surfaced, never silently hidden.
@@ -196,13 +223,34 @@ def _arbiter_state_uncached(cad, count_in_flight=None, read_board=None, frontmat
     }
 
 
-def dev_active(root):
-    """True when /dev developer-override mode is on — signalled by a transient marker
-    the orchestrator drops on /dev and clears on /arbiter (a local UI flag, not a log).
+def current_mode(session_id, root=None, payload=None):
+    """The session's current orchestration posture — one of `_modelib.MODES`
+    ('arbiter' | 'dangerous' | 'ops') — read off the mode plane (#437,
+    mode-plane-deterministic-flip). Replaces the retired `dev_active(root)`
+    presence check: the 'dev-active' marker is not dual-written (Decided
+    parameters: "Single source of truth" — every reader migrates to the mode
+    file), so a reader that kept checking for that marker would silently and
+    permanently report inactive the moment nothing writes it anymore.
 
-    Presence-only by design, unaffected by #271 C-5's session-scoped clearing:
-    the marker still means "dev mode is on for SOMEONE" regardless of which
-    session owns it. Session-scoping only changes WHEN SessionStart is willing
-    to clear a live marker (never a different, possibly still-live session's
-    own marker) — it does not change what "present" means to this reader."""
-    return os.path.exists(os.path.join(root, ".codearbiter", ".markers", "dev-active"))
+    Deliberately resolves through `_activationlib.marker_root` — via
+    `_modelib.current_mode`'s own `root=None` contract — rather than this
+    module's OTHER readers' pre-resolved `root` (arbiter_state's caller
+    passes a project root suitable for reading CONTEXT.md/overrides.log
+    in-place). `.codearbiter/.markers/` is gitignored, so a linked
+    worktree's own checkout never has a fresh copy of it, and every other
+    `.markers/` writer (security-pass.py, migration-pass.py, the mode flip
+    itself) already resolves through marker_root — the mode marker must
+    agree with them or a linked-worktree session silently reads the wrong
+    file (#604, AC-5).
+
+    Pass `payload` (the raw hook/status-line JSON) for production-correct
+    resolution; `root` is a test-only escape hatch that mirrors
+    `_modelib.current_mode`'s own contract exactly — an explicit root
+    bypasses payload/host resolution entirely and is read verbatim.
+
+    Never raises: an absent/unreadable/malformed marker, or an unrecognized
+    per-session value, degrades to 'arbiter' — the diagnostic half of
+    `_modelib.current_mode`'s return is a maintainer/audit concern, not this
+    render-facing reader's; callers here need only the mode, never why."""
+    mode, _diag = _modelib_current_mode(session_id, root=root, payload=payload)
+    return mode

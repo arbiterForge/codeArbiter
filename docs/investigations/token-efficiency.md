@@ -43,7 +43,7 @@ each justified by measurement, plus a go/no-go read on `--farm`.
 | §3 "cheaper tier for authors" is the only/main saver | **`--farm` is a *supplement*:** it offloads authoring *grunt-work* to an external OpenAI-compatible endpoint (`FARM_API_KEY`, OpenCode Zen) — a billing source separate from the Max pool — while Claude still spends its tokens on specs/tests/review (`includes/farm.md`, `SPRINT.md`). | Not the savior; "extra juice." `preview`/off/"not validated on real runs" (`CONFIRM-05`). **Secondary, tracked.** |
 | §4 Pruner may do "gate-aware retention" | Pruner **exists** (`hooks/_prunelib.py`, `commands/prune.md`) but is **recency-only**: protects the K most recent tool turns + latest assistant msg, trims older bulk. **Not** gate-aware. Ships **off**. | §4 "is it gate-aware?" is answered (no). Its value is *session lifetime at resume/compaction*, provable via its `dry` metrics log. |
 | §4 Pruner trims the *live* context mid-sprint | Gains land at `--resume`/restart/next compaction, **not the current turn** (`commands/prune.md:12`). | Pruner lets a sprint *resume* further; it doesn't lower live burn mid-turn. |
-| §2 MCP residency / resident overhead is a primary line | **No MCP infra or `ENABLE_TOOL_SEARCH` in the plugin.** Standing context is **exactly one file** — `ORCHESTRATOR.md` on `arbiter: enabled`; all skills/agents/routing load **on demand per reached node** (`docs/architecture.md` "Context minimization"; `docs/patterns/lazy-load-bundles.md`). | No resident footprint to trim. Cost is per-*session* accumulation (interactive or sprint) + authoring, not residency. |
+| §2 MCP residency / resident overhead is a primary line | **No MCP infra or `ENABLE_TOOL_SEARCH` in the plugin.** Standing context is the **composed persona** — `includes/safety-core.md` + the current mode's body (`arbiter.md` in the ordinary posture) — injected per turn on `arbiter: enabled`; all skills/agents/routing load **on demand per reached node** (`docs/architecture.md` "Context minimization"; `docs/patterns/lazy-load-bundles.md`). | No resident footprint to trim. Cost is per-*session* accumulation (interactive or sprint) + authoring, not residency. |
 | §5 Sprint fans out the full reviewer set on every change | Quality review runs **once per scope** over the combined diff, **reviewers selected by what the diff touches** "by path matrix" (`subagent-driven-development/SKILL.md` Phase 4; `docs/architecture.md`). | Fan-out already engineered down. Re-frame §5 as a *yield* measurement that also feeds tiering. |
 | §6 "instrument visibility / first-pass rate" needs building | `/ca:statusline` already renders rate limits, context, tokens, API-equiv cost, per-call burn. Farm writes per-task attempts/escalations to `.farm/farm-report.json`. | Instrumentation exists; turn it on and sample. |
 
@@ -244,8 +244,8 @@ inventory report, which confabulates):
 - **`feature`, `fix`, and `new-skill` are harness-reserved names**: a plugin entry with any of
   those names is suppressed from the model-facing listing regardless of plugin or frontmatter
   (verified with clean probes named exactly that). Typed `/ca:feature` still works; only the
-  model's listing loses the entry, and codeArbiter routes intent through ORCHESTRATOR.md, not the
-  registry. Ruling 2026-08-08: document, do not rename.
+  model's listing loses the entry, and codeArbiter routes intent through the composed persona
+  (`arbiter.md`), not the registry. Ruling 2026-08-08: document, do not rename.
 - Unquoted `": "` in a description does NOT drop entries on current builds (a byte-exact clone of
   feature.md's frontmatter rendered fine) — the quoting rule ships as portability hygiene matching
   `_yaml_safe_scalar`, not as a fix.

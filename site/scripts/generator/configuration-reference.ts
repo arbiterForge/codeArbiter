@@ -20,14 +20,6 @@ export interface ConfigurationEntry {
  */
 export const CONFIGURATION_ENTRIES: readonly ConfigurationEntry[] = [
   {
-    name: "CODEARBITER_DEV",
-    group: "Core and safety",
-    defaultValue: "off",
-    accepted: "`1` to arm",
-    purpose: "Allows the logged maintainer dev-mode command to suspend orchestration.",
-    caution: "This does nothing until the dev command is invoked; every entry and exit is audited.",
-  },
-  {
     name: "NO_COLOR",
     group: "Core and safety",
     defaultValue: "unset",

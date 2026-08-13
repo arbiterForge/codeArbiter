@@ -558,7 +558,7 @@ describe("Pi keyed status lifecycle", () => {
               questions: 0,
               overrides: 0,
               sprint: true,
-              dev: false,
+              mode: "arbiter",
               prune: null,
             } },
           };
@@ -855,7 +855,7 @@ describe("Pi keyed status lifecycle", () => {
           outcome: "notice",
           resultPatch: { footerStatus: {
             status: "ok", stage: "implementation", tasks: 1, questions: 0, overrides: 0,
-            sprint: false, dev: false, prune: "next checkpoint",
+            sprint: false, mode: "arbiter", prune: "next checkpoint",
           } },
         }
         : request.event === "footer_usage_update"

@@ -657,7 +657,15 @@ class TestDevExitAudit(unittest.TestCase):
     prior session entered /ca:dev and ended without /ca:arbiter), it must append
     a synthetic DEV: exit line to overrides.log BEFORE removing the marker — so
     the audit trail keeps a matched DEV: enter/exit pair instead of an orphaned
-    enter. Append-only (never rewrites); no append when there is no live marker."""
+    enter. Append-only (never rewrites); no append when there is no live marker.
+
+    #437 (mode-plane-deterministic-flip): repointed from the retired
+    `clear_dev_marker` to its direct successor `clear_mode_marker` (T-42/T-47
+    merged — see that function's module docstring in session-start.py for
+    why). The force-close-when-abandoned property this class guards is
+    UNCHANGED; two tests were updated where the CONFIRMED-OWNER-resuming
+    outcome itself changed (conversion, not clobber-avoidance) — each says
+    so explicitly at its own definition."""
 
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -686,7 +694,7 @@ class TestDevExitAudit(unittest.TestCase):
     def test_live_marker_appends_dev_exit_and_removes_marker(self):
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         self._drop_marker()
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertFalse(os.path.isfile(self.marker), "live marker must be removed")
         log = self._read_log()
         self.assertIn("DEV: exit", log)
@@ -699,7 +707,7 @@ class TestDevExitAudit(unittest.TestCase):
         # HOST: <name> so a shared overrides.log is host-attributable.
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         self._drop_marker()
-        _mod.clear_dev_marker(self.root, "codex")
+        _mod.clear_mode_marker(self.root, "codex")
         log = self._read_log()
         self.assertIn("HOST: codex", log)
 
@@ -708,7 +716,7 @@ class TestDevExitAudit(unittest.TestCase):
         # own default-arg calls) still get a HOST: field, resolved internally.
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         self._drop_marker()
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         log = self._read_log()
         self.assertRegex(log, r"HOST: \S+")
 
@@ -716,7 +724,7 @@ class TestDevExitAudit(unittest.TestCase):
         seed = "[2026-01-01T00:00:00Z] | BY: x | GATE: none | REASON: seed\n"
         self._seed_log(seed)
         self.assertFalse(os.path.isfile(self.marker))
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(self._read_log(), seed, "no marker -> overrides.log untouched")
 
     # -- #271 C-4/C-5: session-scoped clearing -------------------------------
@@ -731,32 +739,48 @@ class TestDevExitAudit(unittest.TestCase):
     def test_concurrent_live_session_marker_is_not_clobbered(self):
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         # Session A's own SessionStart, BEFORE it enters /dev (no marker yet).
-        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        _mod.clear_mode_marker(self.root, session_id="sess-A")
         # A enters /dev.
         self._drop_marker()
         # Session B starts concurrently, while A is still live in dev mode.
-        _mod.clear_dev_marker(self.root, session_id="sess-B")
+        _mod.clear_mode_marker(self.root, session_id="sess-B")
         self.assertTrue(os.path.isfile(self.marker),
                          "session B must not clear session A's live marker")
         log = self._read_log()
         self.assertNotIn("DEV: exit", log,
                           "session B must not write a false DEV: exit for session A")
 
-    def test_same_session_resume_does_not_clobber_its_own_marker(self):
+    def test_same_session_resume_converts_rather_than_clobbers(self):
+        # #437 (mode-plane-deterministic-flip), T-47/AC-41: this property is
+        # SUPERSEDED, not preserved verbatim. Pre-#437, the owner's own
+        # resume left a live marker untouched forever (dev-active had no
+        # successor state to migrate to). Now it does: "the mode file is
+        # cleared at SessionStart, matching today's dev-active contract" and
+        # "a pre-existing dev-active marker converts to dangerous exactly
+        # once and is removed" (spec Decided-parameters / AC-41) make the
+        # confirmed owner's own resume EXACTLY the moment conversion is safe
+        # to perform — the identity is confirmed, unlike a stranger session's
+        # passive observation. The marker is not "clobbered" (no DEV: exit,
+        # no unmatched enter) — it is migrated to its new storage form.
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
-        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        _mod.clear_mode_marker(self.root, session_id="sess-A")
         self._drop_marker()
         # The SAME session resumes/compacts mid-dev — not "ended".
-        _mod.clear_dev_marker(self.root, session_id="sess-A")
-        self.assertTrue(os.path.isfile(self.marker))
-        self.assertNotIn("DEV: exit", self._read_log())
+        _mod.clear_mode_marker(self.root, session_id="sess-A")
+        self.assertFalse(os.path.isfile(self.marker),
+                         "the confirmed owner's resume converts the legacy marker, T-47/AC-41")
+        self.assertNotIn("DEV: exit", self._read_log(),
+                         "a conversion is not a close -- no exit row, the historical "
+                         "DEV: enter already backs it via ledger_backs' legacy acceptance")
+        mode, _diag = _mod._modelib.current_mode("sess-A", root=self.root)
+        self.assertEqual(mode, "dangerous")
 
     def test_stale_owner_beyond_liveness_window_is_still_cleared(self):
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
-        _mod.clear_dev_marker(self.root, session_id="sess-A", now=1000.0)
+        _mod.clear_mode_marker(self.root, session_id="sess-A", now=1000.0)
         self._drop_marker()
         later = 1000.0 + _mod.DEV_SESSION_LIVENESS_WINDOW + 1
-        _mod.clear_dev_marker(self.root, session_id="sess-B", now=later)
+        _mod.clear_mode_marker(self.root, session_id="sess-B", now=later)
         self.assertFalse(os.path.isfile(self.marker),
                           "a genuinely abandoned marker must still self-heal eventually")
         self.assertIn("DEV: exit", self._read_log())
@@ -765,9 +789,9 @@ class TestDevExitAudit(unittest.TestCase):
         # Codex parity unverified: a host that supplies no session_id at all
         # must fall back to today's behavior rather than never clearing.
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
-        _mod.clear_dev_marker(self.root, session_id="sess-A")
+        _mod.clear_mode_marker(self.root, session_id="sess-A")
         self._drop_marker()
-        _mod.clear_dev_marker(self.root, session_id=None)
+        _mod.clear_mode_marker(self.root, session_id=None)
         self.assertFalse(os.path.isfile(self.marker))
         self.assertIn("DEV: exit", self._read_log())
 
@@ -777,7 +801,7 @@ class TestDevExitAudit(unittest.TestCase):
         # concurrent session, so proceed exactly as before #271.
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         self._drop_marker()
-        _mod.clear_dev_marker(self.root, session_id="sess-B")
+        _mod.clear_mode_marker(self.root, session_id="sess-B")
         self.assertFalse(os.path.isfile(self.marker))
         self.assertIn("DEV: exit", self._read_log())
 
@@ -790,7 +814,7 @@ class TestDevExitAudit(unittest.TestCase):
         even though many other unrelated sessions started in the meantime."""
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         t0 = 1000.0
-        _mod.clear_dev_marker(self.root, session_id="sess-A", now=t0)
+        _mod.clear_mode_marker(self.root, session_id="sess-A", now=t0)
         self._drop_marker()
 
         # A crashes. Unrelated sessions B, C, D, ... start every 5 minutes —
@@ -800,7 +824,7 @@ class TestDevExitAudit(unittest.TestCase):
         t = t0
         for i in range(200):  # 200 * 5min = ~16.7h of unrelated activity
             t += step
-            _mod.clear_dev_marker(self.root, session_id=f"sess-unrelated-{i}", now=t)
+            _mod.clear_mode_marker(self.root, session_id=f"sess-unrelated-{i}", now=t)
             if t - t0 >= _mod.DEV_SESSION_LIVENESS_WINDOW:
                 break
 
@@ -810,31 +834,41 @@ class TestDevExitAudit(unittest.TestCase):
                           "unrelated sessions must not reset A's clock and keep the marker immortal")
         self.assertIn("DEV: exit", self._read_log())
 
-    def test_owner_heartbeat_past_window_is_never_clobbered(self):
-        """The OWNER itself resuming/compacting repeatedly, well past the 6h
-        mark, must keep its own marker alive indefinitely — only an UNRELATED
-        session's passive observation must decline to refresh the clock."""
+    def test_owner_heartbeat_past_window_converts_once_then_stays_settled(self):
+        # #437 T-47/AC-41: superseded in the same way as
+        # test_same_session_resume_converts_rather_than_clobbers above — the
+        # owner's FIRST heartbeat with a live marker converts it (T-47);
+        # every heartbeat AFTER that (marker already gone) is correctly a
+        # no-op on the marker, but the underlying property this test guards
+        # — "an UNRELATED session's passive observation must never be
+        # mistaken for the owner and act on its behalf" — still holds and is
+        # what is actually asserted below.
         self._seed_log("[2026-01-01T00:00:00Z] | BY: dev@example.com | DEV: enter | NOTE: —\n")
         t0 = 1000.0
-        _mod.clear_dev_marker(self.root, session_id="sess-A", now=t0)
+        _mod.clear_mode_marker(self.root, session_id="sess-A", now=t0)
         self._drop_marker()
 
         t = t0
         for _ in range(10):
             t += _mod.DEV_SESSION_LIVENESS_WINDOW - 1  # always just under the bound
-            _mod.clear_dev_marker(self.root, session_id="sess-A", now=t)
+            _mod.clear_mode_marker(self.root, session_id="sess-A", now=t)
 
         self.assertGreater(t - t0, _mod.DEV_SESSION_LIVENESS_WINDOW,
                             "test setup must actually run past one window's worth of elapsed time")
-        self.assertTrue(os.path.isfile(self.marker),
-                         "the owner's own heartbeat must never be clobbered by its own resume")
-        self.assertNotIn("DEV: exit", self._read_log())
+        self.assertFalse(os.path.isfile(self.marker),
+                         "the owner's first heartbeat converts+removes the legacy marker (T-47)")
+        self.assertNotIn("DEV: exit", self._read_log(),
+                         "a conversion is not a close -- never an exit row for the owner's own resume")
+        mode, _diag = _mod._modelib.current_mode("sess-A", root=self.root)
+        self.assertEqual(mode, "dangerous",
+                         "every subsequent heartbeat, however far past the window, must never "
+                         "reset the OWNER's own confirmed mode back to arbiter")
 
     def test_append_is_a_single_line_after_existing_content(self):
         seed = "[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n"
         self._seed_log(seed)
         self._drop_marker()
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         log = self._read_log()
         self.assertTrue(log.startswith(seed), "existing lines must remain a prefix (pure append)")
         self.assertEqual(len(log.splitlines()), 2, "exactly one DEV: exit line appended")
@@ -894,7 +928,7 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         # AC-1: returns successfully, but the owed close survives on disk.
         self._drop_marker()
         with self._append_fails():
-            _mod.clear_dev_marker(self.root)
+            _mod.clear_mode_marker(self.root)
         self.assertEqual(self._exit_lines(), [], "the append really did fail")
         self.assertTrue(os.path.isfile(self.pending),
                         "a failed append must leave a durable pending-close record")
@@ -908,15 +942,15 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         # retry state — even though the marker is already gone by then.
         self._drop_marker()
         with self._append_fails():
-            _mod.clear_dev_marker(self.root)
+            _mod.clear_mode_marker(self.root)
         self.assertFalse(os.path.isfile(self.marker))
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1,
                          "the owed DEV: exit must land exactly once on retry")
         self.assertFalse(os.path.isfile(self.pending),
                          "a confirmed append must clear the pending-close record")
         # And a third session must not append it again.
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1, "no duplicate on a later session")
 
     def test_crash_after_append_before_cleanup_does_not_duplicate(self):
@@ -924,13 +958,13 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         # tail scan), so a crash between the append and the record cleanup
         # yields ONE close row, not two.
         self._drop_marker()
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         landed = self._exit_lines()
         self.assertEqual(len(landed), 1)
         # Simulate the crash: the record was never cleaned up.
         with open(self.pending, "w", encoding="utf-8", newline="\n") as f:
             json.dump({"lines": [landed[0] + "\n"], "marker_mtime": None}, f)
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1,
                          "an already-appended close must not be appended twice")
         self.assertFalse(os.path.isfile(self.pending),
@@ -949,10 +983,10 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
             return real_remove(path, *a, **kw)
 
         with mock.patch("os.remove", fake_remove):
-            _mod.clear_dev_marker(self.root)
+            _mod.clear_mode_marker(self.root)
         self.assertTrue(os.path.isfile(self.marker), "marker cleanup really did fail")
         self.assertEqual(len(self._exit_lines()), 1)
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1,
                          "the same marker must not be closed twice in the audit trail")
         self.assertFalse(os.path.isfile(self.marker), "the retry removes the marker")
@@ -960,7 +994,7 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
 
     def test_clean_close_leaves_no_pending_record_behind(self):
         self._drop_marker()
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1)
         self.assertFalse(os.path.isfile(self.marker))
         self.assertFalse(os.path.isfile(self.pending),
@@ -971,10 +1005,10 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         # mechanism shut (nothing to replay, so drop it and carry on).
         with open(self.pending, "w", encoding="utf-8", newline="\n") as f:
             f.write("{not json")
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertFalse(os.path.isfile(self.pending))
         self._drop_marker()
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
         self.assertEqual(len(self._exit_lines()), 1)
 
     def test_a_removed_marker_leaves_no_tombstone_in_the_pending_record(self):
@@ -985,7 +1019,7 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         # is gone lets its mtime collide with an unrelated future marker.
         self._drop_marker()
         with self._append_fails():
-            _mod.clear_dev_marker(self.root)
+            _mod.clear_mode_marker(self.root)
         self.assertFalse(os.path.isfile(self.marker), "the marker really was removed")
         with open(self.pending, encoding="utf-8") as f:
             rec = json.load(f)
@@ -1002,13 +1036,13 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
         self._drop_marker()
         first_mtime = os.path.getmtime(self.marker)
         with self._append_fails():
-            _mod.clear_dev_marker(self.root)
+            _mod.clear_mode_marker(self.root)
         self.assertFalse(os.path.isfile(self.marker))
 
         # A second, unrelated /ca:dev entry whose marker collides on mtime.
         self._drop_marker()
         os.utime(self.marker, (first_mtime, first_mtime))
-        _mod.clear_dev_marker(self.root)
+        _mod.clear_mode_marker(self.root)
 
         self.assertEqual(len(self._exit_lines()), 2,
                          "two dev sessions owe two close rows, not one")

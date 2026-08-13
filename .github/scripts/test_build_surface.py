@@ -72,7 +72,7 @@ class _RepoCase(unittest.TestCase):
         _write(self.repo, "core/surface/COMMANDS.md",
                "# catalog\n\n| {{CMD:init}} | opt in |\n{{IF:claude}}\n| {{CMD:statusline}} | statusline |\n{{END}}\n")
         _write(self.repo, "core/surface/SPRINT.md", "Sprint doc. {{CMD:init}}.\n")
-        _write(self.repo, "core/surface/ORCHESTRATOR.md",
+        _write(self.repo, "core/surface/arbiter.md",
                "Persona. Invoke {{CMD:init}}. Paths: {{PLUGIN_ROOT}}/skills/.\n")
         _write(self.repo, "core/surface/README.md", "Template docs — never rendered.\n")
 

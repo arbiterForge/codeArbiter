@@ -49,7 +49,7 @@ def read(rel: str) -> str:
 def orchestrator_section_six(text: str) -> str:
     """§6's body, from its heading to the next section heading."""
     match = re.search(r"^## §6 .*?$(.*?)^## §7 ", text, re.MULTILINE | re.DOTALL)
-    assert match, "ORCHESTRATOR.md has no §6 section"
+    assert match, "arbiter.md has no §6 section"
     return match.group(1)
 
 
@@ -57,9 +57,9 @@ class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):
     """ADR-0022: route on understood intent, in three tiers."""
 
     def surfaces(self):
-        yield "core/surface/ORCHESTRATOR.md", read("core/surface/ORCHESTRATOR.md")
+        yield "core/surface/arbiter.md", read("core/surface/arbiter.md")
         for plugin, _, _, _ in HOSTS:
-            rel = f"{plugin}/ORCHESTRATOR.md"
+            rel = f"{plugin}/arbiter.md"
             yield rel, read(rel)
 
     def test_section_six_names_all_three_tiers(self):
@@ -78,6 +78,15 @@ class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):
 
     def test_tier_one_requires_both_axes_and_enumerates_the_destructive_set(self):
         # Clarity and risk are separate axes: an obvious /override is still tier 2.
+        #
+        # ADR-0030 supersedes ADR-0022:46-49 for dangerous-mode entry ONLY: a
+        # deterministic `mode --dangerous` token flip is friction, not the gate
+        # itself, so dev/dangerous entry no longer belongs to this destructive
+        # set (see #437, mode-plane-deterministic-flip). The other four members
+        # are untouched by that supersession and MUST stay asserted here:
+        # ADR-0022's three-tier decision and its tier-1 dual requirement remain
+        # in force for `/ca:override`, a default-branch merge, branch/worktree
+        # deletion, and release/tag publication.
         for rel, text in self.surfaces():
             with self.subTest(rel=rel):
                 section = orchestrator_section_six(text)
@@ -87,10 +96,6 @@ class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):
                     r"merge to\s+the default branch",  # irreversible on the shared history
                     r"branch or worktree deletion",    # local data loss
                     r"release and tag publication",    # published, immutable (issue #386)
-                    # Gates-off maintainer mode, in every host's rendering of the
-                    # {{CMD:dev}} token: /ca:dev (Claude Code), /ca-dev (Pi),
-                    # $ca-dev (Codex), and the unrendered core template.
-                    r"\{\{CMD:dev\}\}|[/$]ca[:-]dev",
                 ):
                     self.assertRegex(section, rf"(?i){irreversible}")
 

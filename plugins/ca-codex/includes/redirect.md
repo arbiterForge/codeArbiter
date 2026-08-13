@@ -24,7 +24,9 @@ Run it? Its own gates still apply.
 
 Use this — not tier 1 — whenever the command is irreversible or gate-bypassing, however clear the
 intent: `$ca-override`, merge to the default branch, branch or worktree deletion, release and tag
-publication, `$ca-dev` entry. There the confirmation is the gate, not friction.
+publication. There the confirmation is the gate, not friction. (A deterministic mode-token flip is
+friction, not a gate, which is why `mode --dangerous`/`mode --ops` entry is not in this set — see
+`includes/ops-mode.md` and `includes/dangerous-mode.md`.)
 
 ## Tier 3 — genuinely unclear
 
@@ -67,3 +69,12 @@ A missing owner is a **routing gap**, not an override case. When no command owns
 so and surface the gap — never steer the user toward `$ca-override` to get past a coverage hole.
 That substitution is exactly what issue #308 recorded: a routine post-merge cleanup routed first to
 `$ca-chore`, which does not accept it, and then to `$ca-override`, which exists to be rare.
+
+## Exception — local runtime work
+
+`npm run dev` and its kin have no owning command; in `arbiter` mode that is the routing gap above,
+surfaced in one line. The runtime-operations token `mode --ops` narrows exactly that gap and no
+other: once active, an operation that starts, observes, or exercises a running system and leaves no
+change in tracked files or git history is performed in-channel, named in one line as it is taken —
+see `includes/ops-mode.md`. Anything that mutates tracked files, the index, git history, or
+published state is still a routing gap, `ops` or not.

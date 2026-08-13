@@ -64,13 +64,15 @@ interpreter is named `python3` or `python`:
 
 | Event | Matcher | Script | Blocking? |
 |---|---|---|---|
-| `SessionStart` | — | `session-start.py` | no (injects context) |
+| `SessionStart` | — | `session-start.py` | no (injects live state only, no persona — AC-27) |
 | `PreToolUse` | `Bash` \| `PowerShell` | `pre-bash.py` | **yes** (can block a command) |
 | `PreToolUse` | `Write` | `pre-write.py` | **yes** (can block a write) |
 | `PreToolUse` | `Edit` | `pre-edit.py` | **yes** (can block an edit) |
 | `PostToolUse` | `Write` \| `Edit` | `post-write-edit.py` | no (advisory reminders) |
 | `UserPromptSubmit` | — | `prune-transcript.py` | no (opt-in pruning) |
+| `UserPromptSubmit` | — | `prompt-submit.py` | **yes**, on a mode-token turn only (flips the mode, no model turn); otherwise no (injects the composed persona) |
 | `PreCompact` | — | `prune-transcript.py` | no (opt-in pruning) |
+| `PreCompact` | — | `prompt-submit.py` | no (bumps this session's compaction generation so the next turn re-injects) |
 
 A blocking hook signals a block with exit code `2` and a message on stderr; Claude
 Code surfaces that message and does not run the tool call. Everything else exits `0`.
@@ -81,11 +83,14 @@ Code surfaces that message and does not run the tool call. Everything else exits
 
 ### SessionStart: `session-start.py`
 
-**The activation linchpin.** A plugin has no `CLAUDE.md` to load an always-on
-persona, so this hook does it. On every session start it:
+**The activation linchpin.** A plugin has no `CLAUDE.md` to auto-load anything, so this
+hook is what makes a session's startup state visible at all — the persona composition
+itself now happens at the per-turn seam (`prompt-submit.py`, below), not here. On every
+session start it:
 
-1. **Clears the per-session dev marker** (`.codearbiter/.markers/dev-active`). A new
-   session always restores orchestration after a maintainer `/ca:dev` session.
+1. **Clears the per-session mode marker** (`.codearbiter/.markers/mode`). A new
+   session always resolves `arbiter`, restoring orchestration after any non-arbiter
+   (`dangerous`/`ops`) mode from a prior session.
 2. **Self-heals the statusline wiring.** It refreshes a ca-owned, version-pinned
    statusline path in `~/.claude/settings.json`, but *only if it's stale* (a plugin
    update moves the path). It persists only on a real change and degrades silently
@@ -94,11 +99,18 @@ persona, so this hook does it. On every session start it:
    If `arbiter: enabled` is absent it **exits silently (dormant)**. If the file is
    present but its frontmatter is malformed, it prints a breadcrumb to *stderr* and
    exits dormant (failing loud, not silent).
-4. **Injects the persona and live state** (enabled repos only). It prints
-   `ORCHESTRATOR.md` plus the startup state (stage, blocking `CONFIRM-NN` questions,
-   in-flight task count) to **stdout**, which Claude Code adds to context. Plain
-   stdout is used instead of `additionalContext` because the latter is unreliable
-   for plugin-scoped hooks (claude-code #16538).
+4. **Injects the live state only** (enabled repos only) — **no persona text** (AC-27).
+   It prints the startup state (stage, the active mode, blocking `CONFIRM-NN`
+   questions, in-flight task count, overrides since the last checkpoint) to
+   **stdout**, which Claude Code adds to context. Plain stdout is used instead of
+   `additionalContext` because the latter is unreliable for plugin-scoped hooks
+   (claude-code #16538). The persona itself — `includes/safety-core.md` composed
+   with the current mode's body (`arbiter.md`, `includes/dangerous-mode.md`, or
+   `includes/ops-mode.md`) — does **not** inject here: `SessionStart` fires once
+   per session boundary, so a mid-session mode flip could never change what it
+   injects. Composed injection happens instead at the per-turn seam, see
+   [UserPromptSubmit / PreCompact: `prompt-submit.py`](#userpromptsubmit-precompact-prompt-submitpy)
+   below.
 5. **Emits the daily standup briefing** (first session of the local day only): a
    **read-only** summary of repo hygiene covering working-tree state, ahead/behind
    vs. upstream, merge-able branches, stale worktrees, stashes, and a display-only
@@ -188,6 +200,31 @@ so a relevant gate isn't a surprise later. It runs only in enabled repos.
 `security-controls.md` (for H-15/H-16 detection). **Writes:** a `governs-cache.json` under
 `.codearbiter/.markers/`. That cache is a pure optimization, an mtime-keyed index of
 the ADR `governs:` globs, rebuilt whenever the decisions change. **Network:** none.
+
+### UserPromptSubmit / PreCompact: `prompt-submit.py`
+
+The mode-plane's prompt-seam interceptor (#437). Registered on both events, always on
+for an enabled repo. Two jobs, in priority order:
+
+1. **A whole-prompt mode control token** (`mode`, or `mode --arbiter`/`--dangerous`/`--ops`,
+   matched exactly — never a substring) flips or reports the mode deterministically. No
+   persona is composed on this turn and the turn never reaches the model: on Claude that is
+   exit `2` with a named stderr line; the mode marker write is verified before it is
+   reported, so a failed return-to-`arbiter` surfaces rather than silently leaving gates off.
+2. **Any other prompt** composes `includes/safety-core.md` with the current mode's body and
+   injects it on **stdout**, deduplicated per (session, mode, compaction generation) so a
+   steady-state session pays for one injection per mode change, not per turn. The injector
+   refuses to compose a non-`arbiter` body the audit trail does not back (`overrides.log`
+   has no matching `MODE: <name> enter` row): it falls back to `arbiter` and emits a
+   diagnostic.
+
+On `PreCompact` it additionally bumps the session's compaction generation, so the first
+`UserPromptSubmit` after a compaction re-injects the current mode's persona even though
+`SessionStart` also fires on `compact`.
+
+**Reads:** `.codearbiter/.markers/mode`, `.codearbiter/overrides.log` (AC-11 ledger check),
+`includes/safety-core.md` and the current mode body. **Writes:** `.codearbiter/.markers/mode`
+on a flip; one `MODE: <name> enter|exit` line to `overrides.log` per flip. **Network:** none.
 
 ### UserPromptSubmit / PreCompact: `prune-transcript.py`
 

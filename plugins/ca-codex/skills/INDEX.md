@@ -9,7 +9,6 @@ skill is invoked — never bulk-read this directory.
 | `$ca-add-dep` | Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs. |
 | `$ca-adr` | Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/. |
 | `$ca-adr-status` | Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only. |
-| `$ca-arbiter` | Exit maintainer dev mode — restore orchestration, remove the dev marker, log the exit. |
 | `$ca-audit` | Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only. |
 | `$ca-btw` | Lightweight Q&A about the project — answer from context and return, no routing, no state change. |
 | `$ca-checkpoint` | Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report. |
@@ -22,7 +21,6 @@ skill is invoked — never bulk-read this directory.
 | `$ca-create-context` | Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized. |
 | `$ca-debug` | Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to $ca-fix, $ca-adr, or a no-action close. |
 | `$ca-decompose` | Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized. |
-| `$ca-dev` | Maintainer override — suspend orchestration to edit codeArbiter itself. Env-gated (CODEARBITER_DEV=1), entry/exit logged to overrides.log. |
 | `$ca-doctor` | Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only. |
 | `$ca-feature` | "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation." |
 | `$ca-fix` | "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates." |

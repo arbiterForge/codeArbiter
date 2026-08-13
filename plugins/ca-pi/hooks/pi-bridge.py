@@ -20,6 +20,7 @@ from _prunepolicy import PrunePolicy, SemanticEntry, plan_prune  # noqa: E402
 import _arbiterstatelib  # noqa: E402
 import _hooklib  # noqa: E402
 import _ledgerlib  # noqa: E402
+import _modelib  # noqa: E402
 import _planfilelib  # noqa: E402
 import _segmentslib  # noqa: E402
 import _taskboardlib  # noqa: E402
@@ -402,11 +403,16 @@ def _footer_status_snapshot(request):
             prune = _bounded_footer_text(_segmentslib.seg_prune({}, session_id), FOOTER_MAX_PRUNE)
         except Exception:  # noqa: BLE001 - prune is an independent optional segment
             prune = None
+    # #437: the mode plane replaced the `dev-active` presence check. The
+    # marker is NOT dual-written, so a reader still probing for it would
+    # report inactive forever the moment nothing writes it. `current_mode`
+    # resolves through marker_root, matching every other `.markers/` reader
+    # — a linked worktree must not read a different file (#604).
     try:
-        dev = _arbiterstatelib.dev_active(request["cwd"])
-    except Exception:  # noqa: BLE001 - dev is a fail-soft display fact
+        mode = _arbiterstatelib.current_mode(session_id, root=request["cwd"])
+    except Exception:  # noqa: BLE001 - mode is a fail-soft display fact
         return unavailable
-    if type(dev) is not bool:
+    if mode not in _modelib.MODES:
         return unavailable
     return {
         "version": 1,
@@ -419,7 +425,7 @@ def _footer_status_snapshot(request):
             "questions": counts[1],
             "overrides": counts[2],
             "sprint": sprint,
-            "dev": dev,
+            "mode": mode,
             "prune": prune,
         }},
     }

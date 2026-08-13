@@ -8,7 +8,7 @@ In docs, **"you" is always the reader** — the developer using codeArbiter — 
 model or the orchestrator persona. codeArbiter (or "the plugin") is the thing being
 described; the reader is the one being addressed.
 
-The plugin ships an orchestrator persona (`plugins/ca/ORCHESTRATOR.md`) written in a
+The plugin ships an orchestrator persona (`plugins/ca/arbiter.md`) written in a
 different register: it addresses the *model*, in second person, as an operating
 instruction ("You orchestrate; you do not freelance. You hold the gates; the user holds
 the decisions."). That persona-register text is source material, not doc prose. It may
@@ -42,7 +42,7 @@ comma, a colon, or parentheses instead.
 
 ## Terminology anchors
 
-One meaning each, locked to `plugins/ca/ORCHESTRATOR.md` §0.1. Do not drift or invent a
+One meaning each, locked to `plugins/ca/arbiter.md` §0.1. Do not drift or invent a
 synonym:
 
 - **gate** — a phase exit condition (STOP/BLOCK). Not "checkpoint," not "guardrail."

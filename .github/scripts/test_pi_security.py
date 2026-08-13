@@ -128,7 +128,11 @@ def footer_bridge_results() -> list[dict[str, object]]:
         '"footer_status_snapshot"',
         "def _footer_status_snapshot(",
         "_arbiterstatelib.arbiter_state(",
-        "_arbiterstatelib.dev_active(",
+        # #437: repointed from the retired `dev_active(` presence check to the
+        # mode plane's reader. The marker it used to probe is NOT dual-written,
+        # so a contract still naming it would go green against a reader that
+        # can only ever report the default.
+        "_arbiterstatelib.current_mode(",
         "_segmentslib.seg_prune(",
         '"footerStatus"',
     )) and all(marker in client for marker in (

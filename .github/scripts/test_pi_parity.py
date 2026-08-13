@@ -132,6 +132,49 @@ def load_pi_bridge():
         sys.path.pop(0)
 
 
+class ParityCatalogCounts(unittest.TestCase):
+    """The published per-host counts must equal the generated catalogs.
+
+    Nothing compared them before, and they were wrong: two commands were
+    removed and `docs/parity.md` kept advertising the old 39/37/38 — the same
+    silent-drift shape as hand-written site prose, where a removed entry lives
+    on in published docs because no gate reads both sides.
+
+    Counted from the generated catalogs the table itself names as its evidence,
+    so the test cannot agree with a stale table by construction.
+    """
+
+    _ROW = re.compile(r"(?m)^\| *`")
+    _CATALOGS = {
+        "ca": Path("plugins") / "ca" / "COMMANDS.md",
+        "ca-codex": Path("plugins") / "ca-codex" / "COMMANDS.md",
+        "ca-pi": Path("plugins") / "ca-pi" / "COMMANDS.md",
+    }
+
+    def _generated_count(self, relpath):
+        return len(self._ROW.findall((REPO / relpath).read_text(encoding="utf-8")))
+
+    def test_the_derived_counts_line_matches_the_generated_catalogs(self):
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        for plugin, relpath in self._CATALOGS.items():
+            with self.subTest(plugin=plugin):
+                self.assertRegex(
+                    parity, r"`{}: {}`".format(re.escape(plugin), self._generated_count(relpath)),
+                    "docs/parity.md advertises a catalog count that {} does not have. "
+                    "A source count is never a host count — each host excludes entries it "
+                    "cannot serve.".format(relpath.as_posix()))
+
+    def test_the_public_entries_row_matches_too(self):
+        """The table row and the prose line are two places one fact is stated."""
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        row = next((line for line in parity.splitlines()
+                    if line.startswith("| Public entries ")), None)
+        self.assertIsNotNone(row, "the Public entries row is gone — this guard measures nothing")
+        for plugin, relpath in self._CATALOGS.items():
+            with self.subTest(plugin=plugin):
+                self.assertIn(str(self._generated_count(relpath)), row)
+
+
 class PiParityFixtures(unittest.TestCase):
     def test_parity_ledger_classifies_the_new_pi_surfaces_exactly(self):
         parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")

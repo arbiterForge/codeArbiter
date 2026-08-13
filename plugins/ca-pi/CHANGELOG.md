@@ -4,6 +4,41 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-12
+
+### Added
+
+- Orchestration **mode plane** (ADR-0030): `arbiter`, `dangerous`, and `ops`. The injected persona is
+  now `safety-core.md` plus the active mode's body, composed rather than a single fixed file.
+  **On Pi this release is read-only:** the footer reports the active mode and the shared store is
+  keyed the same way as on the other hosts, but Pi cannot yet CHANGE the mode — the control token is
+  intercepted on Claude and Codex only. A Pi session runs `arbiter`. The input-event handler, the
+  bridge flip path, and the per-turn persona refresh are tracked and not in this release.
+- `ops` mode: an advisory carve-out permitting in-channel work that starts, observes, or exercises a
+  running system, keyed on the durable artifact produced. Anything mutating tracked files, the index,
+  git history, or published state stays routed and refused.
+
+### Changed
+
+- `ORCHESTRATOR.md` is renamed `arbiter.md` and reframed as the arbiter mode's body rather than an
+  always-on kernel. Its header records the former name so historical citations stay resolvable.
+- Persona injection moved off `SessionStart` to the per-turn prompt seam; a once-per-session event
+  cannot express a mid-session posture change. The startup block is now per-mode composable emitters.
+- `dev` mode becomes `dangerous`: a general gates-off posture for any repository, with no
+  maintainer-only env gate. No enforcement hook reads the mode, so every gate fires in all modes.
+
+### Removed
+
+- The `dev` and `arbiter` mode-entry commands. The mode bodies are the surface. The shared source
+  catalog under `core/surface/commands/` drops from 40 to 38; Pi's own visible catalog goes 38 → 37,
+  because each host excludes entries it cannot serve and a source count is never a host count.
+
+### Fixed
+
+- A compaction could silently clear a live mode, because the mode plane borrowed the legacy marker's
+  owner record to decide whether it had seen a session before. It now keeps its own anchor.
+- Mode and marker state resolved through two different roots in three places; in a linked worktree a
+  transition pair could split across two audit logs, or a stale session go undetected.
 ## [0.7.1] - 2026-08-12
 
 ### Fixed
