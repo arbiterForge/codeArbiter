@@ -65,11 +65,17 @@ and release surfaces; `CONTEXT.md` vocabulary.
 - **Token:** `mode --arbiter|--dangerous|--ops`, matched **whole-prompt, never substring**, case- and
   surrounding-whitespace-insensitive. Bare `mode` reports current mode and legal values on stderr, exits
   2, writes nothing.
-- **State:** `.codearbiter/.markers/mode`, keyed by `session_id` (the `dev-session-owner.json` pattern),
-  under **`marker_root`** — *correcting an earlier error: `marker_root` exists precisely because
+- **State:** `.codearbiter/.markers/mode.d/<sha256(session_id)>`, **one file per session**, under
+  **`marker_root`** — *correcting an earlier error: `marker_root` exists precisely because
   `project_root` splits marker state across linked worktrees (#604), and this repo runs worktree agents
   routinely.* Absent, empty, unreadable, or unknown value ⇒ `arbiter` **with a diagnostic that
   distinguishes unreadable from absent** (house rule `never-fold-unreadable-into-absent`).
+  *Amended (#681): this shipped as a single `.markers/mode` file holding a `{session_id: mode}` map.
+  Keying by session inside one file still made every flip a read-modify-write over state other
+  sessions own, so a session holding a map it read moments earlier could reinstate a `dangerous`
+  entry another session had explicitly left — authorized, because `ledger_backs` still matched that
+  session's original `enter` row. Verifying the write did not close it: each writer confirmed only
+  its OWN key. The map is now read-only for migration; nothing writes it.*
 - **Lifetime:** cleared at `SessionStart`, matching today's `dev-active` contract. Gates-off must not
   survive a session boundary.
 - **Single source of truth:** every reader migrates to the mode file; `dev-active` is not dual-written.

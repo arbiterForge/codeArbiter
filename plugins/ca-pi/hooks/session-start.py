@@ -754,16 +754,18 @@ def clear_mode_marker(root, host_name=None, session_id=None, now=None):
         # "No opinion yet" is the ABSENCE of an entry, not the arbiter VALUE:
         # `current_mode` answers `arbiter` for both "never flipped" and
         # "deliberately flipped back", and only the first may be migrated over.
-        # The raw state map is the only place that distinction survives.
-        # A corrupt or unreadable state file returns `{}` WITH a diagnostic,
-        # which reads as "no entry" and would migrate `dangerous` back on top
+        # `session_has_entry` is the only reader that keeps that distinction
+        # (it also consults the pre-#681 shared map, so a session that chose
+        # before the per-session split still counts as having chosen).
+        # A corrupt or unreadable entry answers False WITH a diagnostic, which
+        # would otherwise read as "no entry" and migrate `dangerous` back on top
         # of a user who had explicitly returned to `arbiter`. Absence is the
         # only clean "nothing to convert over"; anything we could not read is
         # not evidence of anything, and guessing gates-off from unreadable
         # state is the one direction ADR-0030 forbids.
-        mode_state, state_diag = _modelib._read_mode_state(root)
+        has_entry, state_diag = _modelib.session_has_entry(session_id, root=root)
         readable = state_diag in (None, _modelib.MODE_DIAG_ABSENT)
-        unconverted = readable and str(session_id) not in mode_state
+        unconverted = readable and not has_entry
         if marker_live and unconverted and _modelib.write_mode(session_id, "dangerous", root=root):
             try:
                 os.remove(marker)

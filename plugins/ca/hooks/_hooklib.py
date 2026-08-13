@@ -533,7 +533,7 @@ def warn(msg):
 # no matching activity in its expected audit log.
 #
 # Only the mode plane and /sprint have a persistent "in-progress" marker
-# today (.codearbiter/.markers/mode and .codearbiter/sprint-active — the same
+# today (.codearbiter/.markers/mode.d/ and .codearbiter/sprint-active — the same
 # state _arbiterstatelib.current_mode()/arbiter_state() already read; the
 # mode marker is #437's direct successor to the retired dev-active marker
 # this comment originally described). /override is a single synchronous
@@ -562,7 +562,14 @@ _STALE_FLOWS = (
     # rename is the one hazard this whole registry exists to avoid: it is a
     # WARN, not a gate, so a stale matcher fails PERMANENTLY SILENT with an
     # otherwise green suite — nothing else in the repo would ever notice.
-    ("mode", (".markers", "mode"), ("overrides.log",)),
+    #
+    # #681 moved the target again, from that one file to the per-session entry
+    # DIRECTORY, for the same reason: pointed at `mode`, this row would have
+    # kept matching a file nothing writes any more and gone silent exactly as
+    # the note above warns. This row's marker is therefore a directory, and
+    # `_mode_plane_active_since` — not `os.path.isfile` + `getmtime` — answers
+    # both "is anything active" and "since when" for it.
+    ("mode", (".markers", "mode.d"), ("overrides.log",)),
     ("sprint", ("sprint-active",), ("sprint-log.md",)),
 )
 
@@ -595,6 +602,58 @@ def _mode_marker_has_non_arbiter_entry(marker):
     return any(v != "arbiter" for v in data.values())
 
 
+def _mode_plane_active_since(cad):
+    """(#681) Newest mtime among per-session mode entries in a NON-arbiter
+    posture, or None when the mode plane is not active.
+
+    Replaces the single marker file's stat for this flow. The plane is now a
+    directory of one-file-per-session entries (`_modelib.mode_entry_dir`),
+    which changes both halves of the question this registry asks:
+
+    - *Active* is still "some session is non-arbiter", but it is now answered
+      per entry rather than over one map's values.
+    - *Since when* gets strictly more accurate. The shared map's mtime was
+      bumped by ANY session's write, so one arbiter session flipping reset the
+      staleness clock for a different session sitting in `dangerous`. An
+      entry's own mtime is that session's own last flip.
+
+    Falls back to the pre-split map so a repo upgraded mid-flow keeps warning.
+    Never raises: this whole registry is a WARN, and a matcher that stopped
+    matching would fail permanently SILENT with a green suite — the exact
+    hazard `_STALE_FLOWS`' own comment names.
+
+    Duplicates the literal 'arbiter' for the same reason
+    `_mode_marker_has_non_arbiter_entry` does: `_modelib` imports
+    `write_text_atomic` from this module, so importing back would be circular.
+    """
+    newest = None
+    entry_dir = os.path.join(cad, ".markers", "mode.d")
+    try:
+        names = os.listdir(entry_dir)
+    except OSError:  # no directory yet -> no per-session entries to weigh
+        names = []
+    for name in names:
+        path = os.path.join(entry_dir, name)
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            if not isinstance(data, dict) or data.get("mode") in (None, "arbiter"):
+                continue
+            mtime = os.path.getmtime(path)
+        except Exception:  # noqa: BLE001 — unreadable entry proves nothing active
+            continue
+        newest = mtime if newest is None else max(newest, mtime)
+    if newest is not None:
+        return newest
+    legacy = os.path.join(cad, ".markers", "mode")
+    if os.path.isfile(legacy) and _mode_marker_has_non_arbiter_entry(legacy):
+        try:
+            return os.path.getmtime(legacy)
+        except OSError:
+            return None
+    return None
+
+
 def staleness_warning(root, now=None, window_minutes=30):
     """(CONFIRM-09) One WARN message per active flow (see _STALE_FLOWS) whose
     marker has existed for at least `window_minutes` with no audit-log
@@ -612,11 +671,15 @@ def staleness_warning(root, now=None, window_minutes=30):
     for name, marker_parts, log_parts in _STALE_FLOWS:
         try:
             marker = os.path.join(cad, *marker_parts)
-            if not os.path.isfile(marker):
-                continue
-            if name == "mode" and not _mode_marker_has_non_arbiter_entry(marker):
-                continue  # AC-36: never warn for arbiter — presence alone isn't "active"
-            marker_mtime = os.path.getmtime(marker)
+            if name == "mode":
+                # AC-36: never warn for arbiter — presence alone isn't "active".
+                marker_mtime = _mode_plane_active_since(cad)
+                if marker_mtime is None:
+                    continue
+            else:
+                if not os.path.isfile(marker):
+                    continue
+                marker_mtime = os.path.getmtime(marker)
             if now - marker_mtime < window_minutes * 60:
                 continue  # flow started too recently to call it stale yet
             log_path = os.path.join(cad, *log_parts)

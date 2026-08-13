@@ -230,6 +230,8 @@ class TestWriteMode(unittest.TestCase):
         self.root = self._tmp.name
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         self.mode_path = os.path.join(self.markers, "mode")
+        self.entry_dir = os.path.join(self.markers, "mode.d")
+        self.entry_path = _modelib.mode_entry_path("sess-1", root=self.root)
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -250,9 +252,30 @@ class TestWriteMode(unittest.TestCase):
         self.assertTrue(ok)
         spy.assert_called_once()
         args, kwargs = spy.call_args
-        self.assertEqual(args[0], self.mode_path)
+        self.assertEqual(args[0], self.entry_path)
         self.assertIn("dangerous", args[1])
         self.assertEqual(kwargs.get("newline"), "\n")
+
+    def test_a_write_touches_only_this_sessions_entry(self):
+        """The structural guarantee, asserted on the filesystem.
+
+        A write that touched any second path would be a shared cell again, and
+        the interleave tests below would be the only thing standing between
+        that and a silent posture revert.
+        """
+        _modelib.write_mode("sess-OTHER", "ops", root=self.root)
+        before = {n: os.stat(os.path.join(self.entry_dir, n)).st_mtime_ns
+                  for n in os.listdir(self.entry_dir)}
+        _modelib.write_mode("sess-1", "dangerous", root=self.root)
+        after = {n: os.stat(os.path.join(self.entry_dir, n)).st_mtime_ns
+                 for n in os.listdir(self.entry_dir)}
+        self.assertEqual(set(after) - set(before),
+                         {os.path.basename(self.entry_path)})
+        for name, stamp in before.items():
+            self.assertEqual(after[name], stamp,
+                             "writing one session's mode rewrote another's entry")
+        self.assertFalse(os.path.exists(self.mode_path),
+                         "the legacy shared map must never be written again")
 
     def test_a_real_write_round_trips_through_current_mode(self):
         ok = _modelib.write_mode("sess-1", "dangerous", root=self.root)
@@ -266,9 +289,11 @@ class TestWriteMode(unittest.TestCase):
         with mock.patch("_modelib.write_text_atomic", side_effect=OSError("disk full")):
             ok = _modelib.write_mode("sess-1", "dangerous", root=self.root)
         self.assertFalse(ok)
-        self.assertFalse(os.path.isfile(self.mode_path),
-                         "an interrupted write must leave no partial mode file")
-        leftovers = [n for n in os.listdir(self.markers) if n.endswith(".tmp")]
+        self.assertFalse(os.path.isfile(self.entry_path),
+                         "an interrupted write must leave no partial mode entry")
+        # Scanned in the entry directory, where the temp now lands. Left
+        # pointed at `.markers/` this would pass while measuring nothing.
+        leftovers = [n for n in os.listdir(self.entry_dir) if n.endswith(".tmp")]
         self.assertEqual(leftovers, [], "no orphaned temp file may survive a failed write")
 
 
@@ -740,23 +765,38 @@ class TestWriteModeIsVerified(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
-    def test_a_write_clobbered_by_a_concurrent_session_is_retried(self):
-        """Simulates the interleave: the first replace is immediately undone."""
+    def test_a_write_undone_before_it_can_be_confirmed_reports_failure(self):
+        """A write that does not survive to its own verification is a failure.
+
+        This case used to assert the opposite — that `write_mode` RETRIED until
+        it landed — because the entry was a shared map any session might
+        replace, so a clobber was routine and recoverable. Per-session entries
+        make it neither: nothing else writes this path, so content that is not
+        ours means the file was corrupted or replaced out of band. Retrying
+        would be a loop that overwrites whatever did that, and reporting
+        success would claim a posture the entry does not carry. ADR-0030
+        position 5 wants the failure surfaced, and `flip` turns this False into
+        FLIP_FAILED.
+        """
         original = _modelib.write_text_atomic
         calls = {"n": 0}
 
         def clobbering(path, text, **kwargs):
             original(path, text, **kwargs)
             calls["n"] += 1
-            if calls["n"] == 1:                      # a concurrent writer lands after us
-                original(path, json.dumps({"other": "ops"}), **kwargs)
+            if calls["n"] == 1:                      # something replaces it behind us
+                original(path, json.dumps({"session": "someone-else",
+                                           "mode": "ops"}), **kwargs)
 
         with mock.patch.object(_modelib, "write_text_atomic", clobbering):
             ok = _modelib.write_mode("mine", "arbiter", root=self.root)
 
-        self.assertTrue(ok, "a clobbered write reported success without landing")
-        state, _ = _modelib._read_mode_state(self.root)
-        self.assertEqual(state.get("mine"), "arbiter")
+        self.assertFalse(ok, "reported success for a write it could not confirm")
+        mode, diag = _modelib.current_mode("mine", root=self.root)
+        self.assertEqual(mode, "arbiter", "an unconfirmed write must resolve safe")
+        self.assertEqual(diag, _modelib.MODE_DIAG_UNRECOGNIZED,
+                         "an entry belonging to another session is an anomaly, "
+                         "not a silent default")
 
     def test_a_write_that_never_lands_reports_failure(self):
         """Never claim a success that cannot be demonstrated."""
@@ -769,9 +809,119 @@ class TestWriteModeIsVerified(unittest.TestCase):
     def test_a_concurrent_sessions_entry_is_preserved(self):
         _modelib.write_mode("other", "dangerous", root=self.root)
         _modelib.write_mode("mine", "ops", root=self.root)
-        state, _ = _modelib._read_mode_state(self.root)
-        self.assertEqual(state.get("other"), "dangerous")
-        self.assertEqual(state.get("mine"), "ops")
+        self.assertEqual(_modelib.current_mode("other", root=self.root)[0], "dangerous")
+        self.assertEqual(_modelib.current_mode("mine", root=self.root)[0], "ops")
+
+    # -- the interleave the own-key verify cannot see ----------------------
+    #
+    # Serial writes both read the LATEST state, so they can never express the
+    # ordering that actually loses data: `other` reads, `mine` writes, `other`
+    # then replaces the file from the map it read BEFORE that write. `other`'s
+    # verify passes — it only ever checks its OWN key — and `mine` has already
+    # returned True, so neither writer can observe the loss.
+    #
+    # `_interleaved_write` reproduces exactly that ordering: it lets `victim`
+    # complete an entire write in the window between the stale writer's read
+    # and its replace.
+
+    def _interleaved_write(self, victim_session, victim_mode):
+        """Patch context: run one full `write_mode(victim…)` inside the next
+        `write_text_atomic` call, before it lands."""
+        original = _modelib.write_text_atomic
+        state = {"fired": False}
+        root = self.root
+
+        def interleave(path, text, **kwargs):
+            if not state["fired"]:
+                state["fired"] = True   # set first: the nested write re-enters here
+                _modelib.write_mode(victim_session, victim_mode, root=root)
+            return original(path, text, **kwargs)
+
+        return mock.patch.object(_modelib, "write_text_atomic", interleave)
+
+    def test_a_stale_writer_cannot_revert_another_sessions_return_to_arbiter(self):
+        """The fail-OPEN direction, and the reason this is not merely state loss.
+
+        `A` enters `dangerous`, then explicitly returns to `arbiter` — gates back
+        on. A concurrent session completes its own write from the map it read
+        before that return, reinstating `dangerous` for `A` with no operator
+        action and no new audit row. `ledger_backs` still matches `A`'s original
+        `enter` row, so the reinstated posture is authorized: exactly the silent
+        gates-off transition ADR-0030 position 5 forbids.
+        """
+        self.assertEqual(_modelib.flip("A", "dangerous", root=self.root),
+                         _modelib.FLIP_FLIPPED)
+
+        # A's return to arbiter happens INSIDE the window — after the other
+        # session has read the map that still says `dangerous`, before its
+        # replace lands. Flipping A back before the window instead would leave
+        # the stale reader holding an already-correct map and prove nothing.
+        with self._interleaved_write("A", "arbiter"):
+            _modelib.write_mode("B", "ops", root=self.root)
+
+        self.assertEqual(
+            _modelib.current_mode("A", root=self.root)[0], "arbiter",
+            "a concurrent session's write reinstated a gates-off mode that A "
+            "had explicitly left — and A's original enter row still backs it: "
+            "ledger_backs={}".format(
+                _modelib.ledger_backs(self.root, "dangerous", session_id="A")))
+
+    def test_a_stale_writer_cannot_erase_another_sessions_entry(self):
+        """The erase direction, which is a distinct defect from the revert.
+
+        A dropped entry does not merely lose a posture: an ABSENT entry is how
+        the compaction path (`session-start.py`, T-47) recognises a session with
+        no mode-plane opinion yet, so erasing one re-arms a legacy `dev-active`
+        marker to be converted to `dangerous` on top of a session that had
+        already chosen.
+        """
+        with self._interleaved_write("A", "dangerous"):
+            _modelib.write_mode("B", "ops", root=self.root)
+
+        self.assertTrue(
+            _modelib.session_has_entry("A", root=self.root)[0],
+            "a concurrent session's write erased A's entry — absence is read as "
+            "'never flipped', which re-arms the legacy dangerous conversion")
+        self.assertEqual(_modelib.current_mode("A", root=self.root)[0], "dangerous")
+
+    def test_two_sessions_never_write_the_same_path(self):
+        """The structural property that makes the two cases above impossible.
+
+        Asserted directly rather than only through the interleave, so a future
+        change that reintroduces a shared cell fails here first, with a message
+        that names the cause instead of a symptom.
+        """
+        self.assertNotEqual(_modelib.mode_entry_path("A", root=self.root),
+                            _modelib.mode_entry_path("B", root=self.root))
+
+    def test_a_session_id_cannot_escape_the_entry_directory(self):
+        """A session id reaches this from host-supplied hook input, so it is
+        untrusted for path construction. Traversal, separators, and reserved
+        names must all resolve inside the entry directory."""
+        entry_dir = os.path.abspath(_modelib.mode_entry_dir(root=self.root))
+        for hostile in ("../../escaped", r"..\..\escaped", "a/b", "a\\b",
+                        ".", "..", "", "con", "x" * 400):
+            with self.subTest(session_id=hostile):
+                path = os.path.abspath(
+                    _modelib.mode_entry_path(hostile, root=self.root))
+                self.assertEqual(os.path.dirname(path), entry_dir,
+                                 "entry path escaped the mode entry directory")
+                self.assertTrue(os.path.basename(path))
+
+    def test_distinct_session_ids_never_share_an_entry_file(self):
+        """Sanitisation must be injective: two ids collapsing onto one filename
+        would reintroduce the shared cell this design removes.
+
+        Compared CASE-INSENSITIVELY, because this repo is Windows-primary and
+        NTFS is case-insensitive — two names differing only in case are one
+        file there. A sanitiser that merely substitutes unsafe characters
+        passes a case-sensitive set comparison while `A` and `a` share an entry
+        on the platform most of this project's sessions run on.
+        """
+        ids = ["a/b", "a\\b", "a_b", "../b", "A", "a", "x" * 400, "x" * 401]
+        names = [os.path.basename(_modelib.mode_entry_path(s, root=self.root))
+                 for s in ids]
+        self.assertEqual(len({n.lower() for n in names}), len(set(ids)))
 
 
 class TestEnterRowIsLedgerBacked(unittest.TestCase):
