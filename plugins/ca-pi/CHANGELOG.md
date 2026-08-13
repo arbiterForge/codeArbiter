@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-08-13
+
+### Changed
+
+- `/ca-spike` now preserves only the committed findings file on the parent before deleting its disposable spike branch. Exploratory spike code and commits never land in implementation history.
+
 ## [0.8.0] - 2026-08-12
 
 ### Added
