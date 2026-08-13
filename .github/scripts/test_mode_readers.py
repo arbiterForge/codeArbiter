@@ -234,6 +234,97 @@ class TestStaleFlowsModeAware(unittest.TestCase):
         self.assertEqual(messages, [])  # corrupt -> nothing provably active, never raises
 
 
+class TestStaleFlowsReadsPerSessionEntries(unittest.TestCase):
+    """(#681) The same AC-36 contract, driven through `write_mode` rather than
+    a hand-seeded legacy map.
+
+    The class above still seeds `.markers/mode` directly, which is now the
+    PRE-SPLIT shape nothing writes any more. Left alone, every one of those
+    cases would keep passing while the matcher no longer saw a single live
+    session — the permanently-silent WARN the Lane F brief names, arrived at
+    from a new direction. These cases go through the writer the running code
+    uses, so the registry is measured against state a real session produces.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        self.cad = os.path.join(self.root, ".codearbiter")
+        os.makedirs(self.cad)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _entry(self, session_id):
+        return _modelib.mode_entry_path(session_id, root=self.root)
+
+    def test_stale_dangerous_session_warns(self):
+        _modelib.write_mode("sess-1", "dangerous", root=self.root)
+        _age(self._entry("sess-1"), age_seconds=3600)
+        messages = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertTrue(any("mode" in m for m in messages), messages)
+
+    def test_stale_ops_session_warns(self):
+        _modelib.write_mode("sess-1", "ops", root=self.root)
+        _age(self._entry("sess-1"), age_seconds=3600)
+        messages = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertTrue(any("mode" in m for m in messages), messages)
+
+    def test_stale_arbiter_only_entries_never_warn(self):
+        for sid in ("sess-1", "sess-2"):
+            _modelib.write_mode(sid, "arbiter", root=self.root)
+            _age(self._entry(sid), age_seconds=3600)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+    def test_fresh_dangerous_session_does_not_warn_yet(self):
+        _modelib.write_mode("sess-1", "dangerous", root=self.root)
+        _age(self._entry("sess-1"), age_seconds=5)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+    def test_another_sessions_flip_no_longer_resets_this_sessions_clock(self):
+        """The accuracy the split buys, asserted so it cannot regress.
+
+        Under the shared map, ANY session's write bumped the one file's mtime,
+        so an unrelated session starting up reset the staleness clock for a
+        session sitting in `dangerous` — the warning could be deferred forever
+        by traffic that had nothing to do with it. Per-session entries make the
+        timestamp the flipping session's own.
+        """
+        _modelib.write_mode("stale-one", "dangerous", root=self.root)
+        _age(self._entry("stale-one"), age_seconds=3600)
+        _modelib.write_mode("busy-one", "arbiter", root=self.root)   # fresh, unrelated
+        messages = _hooklib.staleness_warning(self.root, window_minutes=30)
+        self.assertTrue(any("mode" in m for m in messages),
+                        "an unrelated session's write suppressed a stale "
+                        "dangerous session's warning")
+
+    def test_the_newest_non_arbiter_entry_sets_the_clock_not_the_oldest(self):
+        """With several non-arbiter sessions, staleness is judged from the most
+        recent one — the oldest must not trip a warn on its own.
+
+        The scan reads newest-first and stops at the first non-arbiter entry, so
+        an ordering bug here would silently answer with whichever entry the
+        filesystem happened to list first.
+        """
+        _modelib.write_mode("old-one", "dangerous", root=self.root)
+        _age(self._entry("old-one"), age_seconds=3600)
+        _modelib.write_mode("new-one", "dangerous", root=self.root)   # fresh
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [],
+                         "an old entry decided the clock while a newer session "
+                         "in the same posture was still active")
+        _age(self._entry("new-one"), age_seconds=3600)
+        self.assertTrue(
+            any("mode" in m for m in _hooklib.staleness_warning(self.root, window_minutes=30)),
+            "once every non-arbiter entry is old, the warn must fire")
+
+    def test_corrupt_entry_never_raises_and_proves_nothing_active(self):
+        _modelib.write_mode("sess-1", "dangerous", root=self.root)
+        with open(self._entry("sess-1"), "w", encoding="utf-8") as f:
+            f.write("{not valid json")
+        _age(self._entry("sess-1"), age_seconds=3600)
+        self.assertEqual(_hooklib.staleness_warning(self.root, window_minutes=30), [])
+
+
 # ---------------------------------------------------------------------------
 # T-55 — override counter excludes MODE:/legacy DEV: rows
 # ---------------------------------------------------------------------------

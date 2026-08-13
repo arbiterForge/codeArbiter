@@ -1430,3 +1430,28 @@ Recording-only entry; the decision's rationale lives in DECISION-0044 and in ADR
 Unblocks the command-deletion cluster, which was gated on an accepted ADR standing behind the ADR-0022 supersession. T-66b (editing the `{{CMD:dev}}` assertion at `test_routing_and_cleanup_surface.py:79-93` — the supersession act itself) is now permitted, and with it T-64 (deleting the two command bodies), T-65 (stripping the 7 surviving `{{CMD:}}` tokens), and T-67 (catalog badge 40 to 38). Acceptance also makes ADR-0030's `governs:` globs live, so edits to the mode bodies, `_modelib.py`, and the injection path now surface a governed-file notice at write time.
 
 ---
+
+## DECISION-0046 — mode-state-shape — Per-session mode entry files replace the shared session map
+
+**Date:** 2026-08-13
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** User explicitly accepted recommendation as their decision — the choice between the two candidate fixes was delegated to SMARTS scoring ("yes. and make choice based on smarts", 2026-08-13).
+**Decision category:** architecture
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0030 position 5 requires the return path out of `dangerous` to be a verified write that surfaces its failure; the spec's State line put every session's posture in one `.markers/mode` map.
+- **Scaffold position:** `write_mode` verified only the calling session's own key, so a session holding a map read moments earlier could reinstate a `dangerous` entry another session had explicitly left — with that session's own earlier `enter` row still satisfying `ledger_backs`, so the reinstated gates-off posture was authorized and silent.
+- **Status type:** divergent
+
+### Decision
+The mode plane's state becomes one file per session under `.codearbiter/.markers/mode.d/`, named by the SHA-256 of the session id and carrying that id inside the record. `write_mode` no longer performs a read-modify-write and no longer retries; it writes one path and verifies it. The pre-split `.markers/mode` map is read-only, consulted when a session has no entry of its own, so a session live across the upgrade keeps its posture and an explicit `arbiter` still reads as a choice rather than as "never flipped".
+
+### SMARTS rationale
+Scored against the alternative — serializing the read-modify-write with `_hooklib.acquire_lock`. Reliable and Available drove it: removing the shared cell makes the interleave structurally impossible rather than serialized, and leaves no contention state, where a lock on the prompt seam fail-softs to None after a bounded spin and the only safe reading of None is a failed flip. Securable follows Reliable, since the defect being closed is a fail-open. Testable favours the split too: the guarantee is assertable on the filesystem without simulating an interleave. Maintainable was the lock's one win — it would have touched a single function instead of the reader, the staleness registry, and three vendored copies — which makes this `moderate`, not `strong`. Step 0: ADR-0012 constrains rather than decides, naming "session-scoped markers" as the deferred hardening it declined to demand of the Codex campaign; ADR-0030 position 6 already fixes the plane as transient and session-scoped.
+
+### Implementation implication
+`core/pysrc/_modelib.py` gains `mode_entry_dir` / `mode_entry_path` / `session_has_entry` and drops the retry loop; `session-start.py`'s legacy-conversion check moves from a raw map membership test to `session_has_entry`; `_hooklib._STALE_FLOWS` points at the directory and gains `_mode_plane_active_since`, which also fixes an unrelated session's write resetting a stale session's staleness clock. Regenerated into the three vendored `plugins/*/hooks/` copies. The spec's State line is amended in place; `docs/hooks.md` and the dual-host concurrency section of `site/src/content/docs/getting-started/claude-code-and-codex.md` are corrected, the latter having documented the now-fixed race as accepted debt.
+
+---

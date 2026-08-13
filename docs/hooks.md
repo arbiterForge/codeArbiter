@@ -88,7 +88,8 @@ hook is what makes a session's startup state visible at all — the persona comp
 itself now happens at the per-turn seam (`prompt-submit.py`, below), not here. On every
 session start it:
 
-1. **Clears the per-session mode marker** (`.codearbiter/.markers/mode`). A new
+1. **Clears the session's own mode entry** (`.codearbiter/.markers/mode.d/`, one file
+   per session). A new
    session always resolves `arbiter`, restoring orchestration after any non-arbiter
    (`dangerous`/`ops`) mode from a prior session.
 2. **Self-heals the statusline wiring.** It refreshes a ca-owned, version-pinned
@@ -222,9 +223,10 @@ On `PreCompact` it additionally bumps the session's compaction generation, so th
 `UserPromptSubmit` after a compaction re-injects the current mode's persona even though
 `SessionStart` also fires on `compact`.
 
-**Reads:** `.codearbiter/.markers/mode`, `.codearbiter/overrides.log` (AC-11 ledger check),
-`includes/safety-core.md` and the current mode body. **Writes:** `.codearbiter/.markers/mode`
-on a flip; one `MODE: <name> enter|exit` line to `overrides.log` per flip. **Network:** none.
+**Reads:** this session's entry under `.codearbiter/.markers/mode.d/`, `.codearbiter/overrides.log`
+(AC-11 ledger check), `includes/safety-core.md` and the current mode body. **Writes:** this
+session's own entry under `.codearbiter/.markers/mode.d/` on a flip — never another session's;
+one `MODE: <name> enter|exit` line to `overrides.log` per flip. **Network:** none.
 
 ### UserPromptSubmit / PreCompact: `prune-transcript.py`
 

@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import datetime
+import hashlib
 import json
 import os
 import re
@@ -79,8 +80,133 @@ def mode_marker_path(root=None, payload=None):
     return os.path.join(root, ".codearbiter", ".markers", "mode")
 
 
+def mode_entry_dir(root=None, payload=None):
+    """Absolute path of the per-session entry directory:
+    `<root>/.codearbiter/.markers/mode.d`.
+
+    One file per session, never a shared cell. The single-file
+    `{session_id: mode}` map this replaces made every flip a read-modify-write
+    over state other sessions also own, and `write_text_atomic` serializes the
+    replace, not the PAIR. A session holding a map it read moments earlier
+    could therefore reinstate a `dangerous` entry another session had
+    explicitly left — with that session's own earlier `enter` row still
+    backing it in `ledger_backs`, so nothing downstream noticed. Verifying the
+    write did not close it: each writer only ever confirmed its OWN key, and
+    the victim had already returned success before the clobber landed.
+
+    Splitting the state removes the shared cell rather than serializing access
+    to it, so the interleave has nowhere left to occur. That also matches what
+    the plane already is — ADR-0030 position 6 makes it transient and
+    session-scoped — and is the direction ADR-0012 named ("session-scoped
+    markers") when it deferred this hardening as out of scope for the Codex
+    campaign.
+
+    Locking the map with `_hooklib.acquire_lock` was the real alternative, and
+    a close one: the primitive already exists, is OS-owned (process death
+    releases it, so there is no stale lock to steal), and would have confined
+    the change to this function. It loses on the prompt seam. `acquire_lock`
+    fail-softs to None after a bounded contention spin, and the only safe
+    reading of None here is failure — so under contention a user's flip would
+    stop working rather than serialize, which is the cost taskwrite.py accepts
+    for a board write and this path should not. Removing the shared cell has no
+    contention state at all.
+
+    Resolves through `marker_root` exactly as `mode_marker_path` does."""
+    if root is None:
+        root = marker_root(payload)
+    return os.path.join(root, ".codearbiter", ".markers", "mode.d")
+
+
+def _mode_entry_name(session_id):
+    """The entry filename for `session_id`: its SHA-256 hex digest.
+
+    Hashed rather than sanitized because a session id arrives from host-
+    supplied hook input and is therefore untrusted for path construction. A
+    substitution sanitizer has to be injective to be correct, and on this
+    Windows-primary project it cannot be: NTFS is case-insensitive, so ids
+    differing only in case collapse onto one file — reintroducing the shared
+    cell this design exists to remove, on the platform most sessions run on. A
+    lowercase hex digest is fixed-length, path-safe, case-stable, cannot
+    traverse, and cannot collide with a reserved device name.
+
+    The cost is a directory of opaque names, paid back by the record itself:
+    each entry stores the session id it belongs to, so the mapping is
+    verifiable by reading one file rather than trusted."""
+    return hashlib.sha256(str(session_id).encode("utf-8")).hexdigest()
+
+
+def mode_entry_path(session_id, root=None, payload=None):
+    """Absolute path of `session_id`'s own mode entry."""
+    return os.path.join(mode_entry_dir(root, payload), _mode_entry_name(session_id))
+
+
+def _read_session_entry(session_id, root=None, payload=None):
+    """(value, diagnostic) off `session_id`'s OWN entry file.
+
+    `value` is the raw recorded mode, or None whenever a diagnostic is set —
+    validating it against MODES is `current_mode`'s job, as it was for the map.
+    Diagnostics carry the same three-way distinction the map reader draws
+    ([[never-fold-unreadable-into-absent]]), and `os.path.exists` gates the
+    absent check for the same reason: a directory at that path must report
+    UNREADABLE, not ABSENT.
+
+    An entry whose recorded `session` is not the one asked for is UNRECOGNIZED,
+    never silently honoured. That makes the hash mapping checked rather than
+    assumed — a hand-edited file, a restored backup, or (astronomically) a
+    digest collision resolves toward `arbiter` with a diagnostic instead of
+    handing one session another's posture."""
+    path = mode_entry_path(session_id, root, payload)
+    if not os.path.exists(path):
+        return None, MODE_DIAG_ABSENT
+    try:
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+    except Exception:  # noqa: BLE001 — exists but could not be read
+        return None, MODE_DIAG_UNREADABLE
+    text = text.strip()
+    if not text:
+        return None, MODE_DIAG_UNRECOGNIZED
+    try:
+        data = json.loads(text)
+    except Exception:  # noqa: BLE001 — not valid JSON
+        return None, MODE_DIAG_UNRECOGNIZED
+    if not isinstance(data, dict) or data.get("session") != str(session_id):
+        return None, MODE_DIAG_UNRECOGNIZED
+    return data.get("mode"), None
+
+
+def session_has_entry(session_id, root=None, payload=None):
+    """(has_entry, diagnostic) — whether `session_id` has recorded ANY mode-
+    plane opinion yet, including a deliberate `arbiter`.
+
+    The distinction `current_mode` cannot express: it answers `arbiter` both
+    for a session that never flipped and for one that flipped back, and the
+    SessionStart legacy conversion (T-47) may only migrate over the first.
+    Absence is the only clean "nothing to convert over" — so an unreadable
+    entry reports its diagnostic and `False`, and the caller must treat that
+    as "could not tell", never as absence."""
+    _value, diag = _read_session_entry(session_id, root=root, payload=payload)
+    if diag is None:
+        return True, None
+    if diag != MODE_DIAG_ABSENT:
+        return False, diag
+    state, legacy_diag = _read_mode_state(root, payload)
+    if legacy_diag is not None and legacy_diag != MODE_DIAG_ABSENT:
+        return False, legacy_diag
+    return str(session_id) in {str(k) for k in state}, None
+
+
 def _read_mode_state(root=None, payload=None):
-    """(state, diagnostic) off the mode marker file.
+    """(state, diagnostic) off the LEGACY single-file mode marker.
+
+    Read-only since #681 split the plane into per-session entries
+    (`mode_entry_dir`); nothing writes this file any more. It is still read so
+    a session live across the upgrade keeps the posture it chose, and — more
+    importantly — so `session_has_entry` keeps seeing an explicit `arbiter`
+    that predates the split. Dropping the read would fail SAFE for the mode
+    itself (absent resolves to `arbiter`) but not for that second question: the
+    entry would read as "never flipped", re-arming the legacy `dev-active`
+    conversion to turn gates off under a session that had already chosen.
 
     `state` is the RAW dict mapping session_id -> whatever value was on disk
     for it (validation of an individual session's value is `current_mode`'s
@@ -132,7 +258,21 @@ def current_mode(session_id, root=None, payload=None):
     session's own recorded value is not a legal mode, that is reported the
     same as a file-level unrecognized value (MODE_DIAG_UNRECOGNIZED) — a
     garbage per-session entry is exactly as much an anomaly as a garbage
-    file, and must not be swallowed silently."""
+    file, and must not be swallowed silently.
+
+    Reads `session_id`'s own entry first and falls back to the legacy map ONLY
+    when that entry is absent (never when it is unreadable — an entry we could
+    not read is not evidence that the legacy value is current). Once a session
+    has written once, its own entry is authoritative and the legacy file can
+    never revive a superseded posture."""
+    value, diag = _read_session_entry(session_id, root=root, payload=payload)
+    if diag is None:
+        if value not in MODES:
+            return MODES[0], MODE_DIAG_UNRECOGNIZED
+        return value, None
+    if diag != MODE_DIAG_ABSENT:
+        return MODES[0], diag
+
     state, diag = _read_mode_state(root, payload)
     if diag is not None:
         return MODES[0], diag
@@ -144,60 +284,38 @@ def current_mode(session_id, root=None, payload=None):
     return value, None
 
 
-# How many times `write_mode` will re-read-modify-write before giving up. Small
-# on purpose: this runs on the prompt seam, and the contention it exists for is
-# two sessions writing DIFFERENT keys of one small map — a case that converges
-# immediately, not one that needs backoff. A genuinely unwritable path fails on
-# the first attempt and the rest cost nothing.
-_WRITE_MODE_ATTEMPTS = 3
-
-
 def write_mode(session_id, mode, root=None, payload=None):
-    """Persist `mode` for `session_id` (T-08, AC-1).
+    """Persist `mode` for `session_id` (T-08, AC-1) in that session's OWN entry.
 
-    Read-modify-write over the marker's `{session_id: mode}` JSON object.
-    The write itself is delegated ENTIRELY to `write_text_atomic` — this
-    function does no `open()`/`write()` of its own — so an interrupted write
-    can only ever land in write_text_atomic's own guarantee: a sibling temp
-    file, then `os.replace()`; on any failure the temp is removed and `path`
-    is left exactly as it was (untouched if it existed, absent if it did
-    not). Returns True on a confirmed write, False on failure. Never
-    raises — the caller (`flip`, T-11/T-14) decides what failure means.
+    The write is delegated ENTIRELY to `write_text_atomic` — this function does
+    no `open()`/`write()` of its own — so an interrupted write can only ever
+    land in write_text_atomic's own guarantee: a sibling temp file, then
+    `os.replace()`; on any failure the temp is removed and `path` is left
+    exactly as it was (untouched if it existed, absent if it did not). Returns
+    True on a confirmed write, False on failure. Never raises — the caller
+    (`flip`, T-11/T-14) decides what failure means.
 
-    VERIFIED, not merely attempted. `write_text_atomic` makes each individual
-    replace atomic but does not serialize the read-modify-write PAIR, so two
-    sessions sharing one `.codearbiter/` store interleave: A reads
-    `{A: dangerous}`, B reads the same map and writes `{A: dangerous, B: …}`,
-    then A's write of `{A: arbiter}` is overwritten by B's — or lands and
-    loses B. A silently keeps a `dangerous` entry it explicitly left, and
-    `ledger_backs` does not compensate because A's own earlier `enter` row
-    still authorizes it. This repo runs worktree agents against one store, so
-    the interleaving is reachable rather than theoretical.
+    There is no read-modify-write and therefore no retry loop. Writing one
+    session's posture no longer requires reading state other sessions own, so
+    the interleave that made the old loop necessary — and that the loop could
+    not actually close, because each writer verified only its OWN key while the
+    victim had already returned success — has nowhere to occur. See
+    `mode_entry_dir` for why the shared cell was removed rather than locked.
 
-    So the write is confirmed by re-reading it, and a lost update is retried.
-    ADR-0030 position 5 requires the return path out of `dangerous` to be "a
-    verified write" that "must surface its failure" — an unverified write that
-    is then overwritten surfaces nothing, which is the one direction the ADR
-    names as unsafe. A write that cannot be confirmed after the retries returns
-    False rather than reporting a success it cannot demonstrate."""
-    path = mode_marker_path(root, payload)
-    last_error = None
-    for _attempt in range(_WRITE_MODE_ATTEMPTS):
-        state, _diag = _read_mode_state(root, payload)
-        state = dict(state)
-        state[session_id] = mode
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            write_text_atomic(path, json.dumps(state), newline="\n")
-        except OSError as exc:
-            last_error = exc
-            continue
-        # Re-read rather than trusting the write: a concurrent writer's own
-        # replace may have landed after ours, which is invisible from here.
-        observed, _diag = _read_mode_state(root, payload)
-        if observed.get(session_id) == mode:
-            return True
-    return False
+    VERIFIED, not merely attempted: the entry is re-read and must come back as
+    this session's, carrying this value. ADR-0030 position 5 requires the
+    return path out of `dangerous` to be "a verified write" that "must surface
+    its failure"; a write that cannot be confirmed returns False rather than
+    reporting a success it cannot demonstrate."""
+    path = mode_entry_path(session_id, root, payload)
+    record = json.dumps({"session": str(session_id), "mode": mode})
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        write_text_atomic(path, record, newline="\n")
+    except OSError:
+        return False
+    observed, diag = _read_session_entry(session_id, root=root, payload=payload)
+    return diag is None and observed == mode
 
 
 # ---------------------------------------------------------------------------

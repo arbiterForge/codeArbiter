@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-08-13
+
+### Fixed
+
+- Shared-core mode-plane fix: the orchestration mode is stored one file per session under `.codearbiter/.markers/mode.d/` instead of a single shared map, so sessions sharing one `.codearbiter/` store can no longer overwrite each other's posture. Pi reports the mode read-only, and now reports a value no concurrent session can have silently reverted.
+
 ## [0.8.1] - 2026-08-13
 
 ### Changed

@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.2] — 2026-08-13
+
+### Fixed
+
+- The orchestration mode is now stored one file per session under `.codearbiter/.markers/mode.d/`, replacing the single shared map. Two sessions in one checkout could previously overwrite each other's posture: a session that left `dangerous` for `arbiter` could have `dangerous` silently reinstated by a concurrent write, still authorized by its own earlier audit row. Each session now writes only its own entry, so no flip can revert or drop another's.
+- The mode-plane staleness warning reads each session's own entry, so an unrelated session starting up no longer resets the clock on a session that has sat in `dangerous`.
+
 ## [2.15.1] — 2026-08-13
 
 ### Changed
