@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.2] — 2026-08-13
+
+### Fixed
+
+- Shared-core mode-plane fix: the orchestration mode is stored one file per session under `.codearbiter/.markers/mode.d/` instead of a single shared map, so two sessions sharing one `.codearbiter/` store — including a Codex and a Claude session — can no longer overwrite each other's posture. A session that had returned to `arbiter` could previously have `dangerous` reinstated by a concurrent write, still authorized by its own earlier audit row.
+
 ## [0.7.1] — 2026-08-13
 
 ### Changed
