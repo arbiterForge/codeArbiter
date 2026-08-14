@@ -113,6 +113,17 @@ AUTO_LANES = {
 AUTO_PUBLISH_JOBS = tuple(AUTO_LANES)
 AUTO_PREFLIGHT_JOB = "auto-preflight"
 
+# #654: two triggers share this one file, and every job belongs to exactly one
+# of them. The manual lane reads dispatch inputs that do not exist on the
+# auto-tag lane, so a job that can start on both is not a lane — it is a bug.
+TRIGGERS = ("workflow_dispatch", "workflow_run")
+JOB_TRIGGER = dict(
+    [(PREFLIGHT_JOB, "workflow_dispatch")]
+    + [(job, "workflow_dispatch") for job in PUBLISH_JOBS]
+    + [(AUTO_PREFLIGHT_JOB, "workflow_run")]
+    + [(job, "workflow_run") for job in AUTO_PUBLISH_JOBS]
+)
+
 # A job-level `if:` that uses one of these status functions opts OUT of the
 # implicit "all `needs` succeeded" gate — which would let a publisher run after
 # its own preflight refused the dispatch.
@@ -131,6 +142,61 @@ def _job_if(block: str) -> str:
     """The job-level `if:` expression (two-space indent), '' when absent."""
     match = re.search(r"(?m)^    if:[ ]*(.+)$", block)
     return match.group(1).strip() if match else ""
+
+
+def _job_needs(block: str) -> tuple:
+    """The job's `needs:` targets — scalar, inline-list, or block-list form.
+
+    Every form is read rather than only the scalar one this file happens to
+    use today, because a `needs:` this helper could not parse would read as
+    "depends on nothing", and a job that depends on nothing is exactly what
+    the trigger-isolation walk below treats as ungated.
+    """
+    scalar = re.search(r"(?m)^    needs:[ ]+([\w.-]+)[ ]*$", block)
+    if scalar:
+        return (scalar.group(1),)
+    inline = re.search(r"(?m)^    needs:[ ]*\[(.+)\][ ]*$", block)
+    if inline:
+        return tuple(name.strip().strip("'\"") for name in inline.group(1).split(","))
+    listed = re.search(r"(?m)^    needs:[ ]*\n((?:      - .+\n)+)", block)
+    if listed:
+        return tuple(re.findall(r"-[ ]+([\w.-]+)", listed.group(1)))
+    if re.search(r"(?m)^    needs:", block):
+        raise AssertionError("a `needs:` edge this suite cannot parse — "
+                             "an unreadable dependency must not read as none")
+    return ()
+
+
+def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
+    """Every event name `job` can start on (#654).
+
+    A job's own `if:` pins it when that expression names an event; otherwise
+    it inherits from the jobs it `needs`, because GitHub skips a dependent
+    whose dependency skipped — which is why the four manual publishers carry
+    no event guard of their own and do not need one.
+
+    A job that neither names an event nor reaches one through `needs` starts
+    on every trigger the file declares. That is not a conservative reading:
+    it is precisely what the shipped dispatch preflight did.
+    """
+    if job in chain:
+        raise AssertionError(f"cyclic `needs` chain through {job!r}")
+    if job not in jobs:
+        raise AssertionError(f"`needs` names undeclared job {job!r}")
+    condition = _job_if(jobs[job])
+    named = {t for t in TRIGGERS if f"github.event_name == '{t}'" in condition}
+    if named:
+        # Deliberately the WHOLE set, never the first hit: a guard widened to
+        # `dispatch || workflow_run` still contains the correct clause, and
+        # returning one trigger from it would report the bug as the fix.
+        return named
+    parents = _job_needs(jobs[job])
+    if not parents:
+        return set(TRIGGERS)
+    inherited = set()
+    for parent in parents:
+        inherited |= _gated_triggers(parent, jobs, chain + (job,))
+    return inherited
 
 
 def _extract_run(text: str, name_fragment: str, step_indent: int, where: str) -> str:
@@ -1159,6 +1225,88 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertEqual(proc.stdout.strip(), "true",
                          "a series with no tag yet is a first introduction")
+
+
+class TriggerIsolationTest(unittest.TestCase):
+    """#654: two triggers share this file — a job written for one must never
+    wake up on the other.
+
+    `workflow_dispatch` supplies the four confirmation inputs the manual
+    preflight resolves its single target from. `workflow_run` supplies none
+    of them. The dispatch preflight shipped with no `if:` at all, so every
+    merge to main also woke it on the auto-tag path, where it read four
+    empty inputs, resolved `none`, and exited 1 — twelve consecutive
+    `release` runs concluded `failure` while the auto-tag lanes beside them
+    tagged correctly.
+
+    Nothing was mis-published: the preflight failed CLOSED, and the manual
+    publishers skipped with it. What it cost is the signal. At the run list
+    a permanently-red `release` is indistinguishable from a genuine
+    auto-tag failure — a tag never created, so npm-publish never fires —
+    which is the one alarm this workflow exists to raise.
+    """
+
+    def test_the_dispatch_preflight_runs_only_on_a_dispatch(self):
+        self.assertEqual(
+            _gated_triggers(PREFLIGHT_JOB, _jobs()), {"workflow_dispatch"},
+            "#654: the preflight reads dispatch inputs that exist on no other "
+            "trigger — it must be gated to the trigger that supplies them")
+
+    def test_every_job_is_bound_to_exactly_one_trigger(self):
+        jobs = _jobs()
+        for job in jobs:
+            with self.subTest(job=job):
+                self.assertEqual(
+                    len(_gated_triggers(job, jobs)), 1,
+                    f"{job} can start on more than one of this file's "
+                    "triggers; each lane must belong to exactly one")
+
+    def test_every_job_is_bound_to_the_trigger_its_own_lane_declares(self):
+        # Exactly-one is not enough on its own: a guard inverted to
+        # `!= 'workflow_run'` binds the preflight to one trigger — the wrong
+        # one. Pin which lane each job belongs to.
+        jobs = _jobs()
+        self.assertEqual(sorted(jobs), sorted(JOB_TRIGGER),
+                         "release.yml declares a job no lane accounts for")
+        for job, trigger in JOB_TRIGGER.items():
+            with self.subTest(job=job):
+                self.assertEqual(_gated_triggers(job, jobs), {trigger},
+                                 f"{job} belongs to the {trigger} lane")
+
+    def test_the_walk_reports_an_ungated_job_as_reachable_from_both(self):
+        # The assertions above earn their keep only if the walk actually
+        # discriminates. Proven against synthetic text, not by mutating the
+        # shipped workflow. This first case is #654 itself: no `if:` at all.
+        jobs = {"preflight": "    name: x\n",
+                "release": "    needs: preflight\n"
+                           "    if: needs.preflight.outputs.target == 'ca'\n"}
+        self.assertEqual(_gated_triggers("preflight", jobs), set(TRIGGERS))
+        self.assertEqual(_gated_triggers("release", jobs), set(TRIGGERS),
+                         "a publisher inherits its preflight's reach")
+
+    def test_the_walk_catches_a_guard_widened_to_both_triggers(self):
+        # The mutant a substring assertion survives: the correct clause is
+        # still there, with the wrong one ORed onto it.
+        jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'"
+                             " || github.event_name == 'workflow_run'\n"}
+        self.assertEqual(_gated_triggers("preflight", jobs), set(TRIGGERS))
+
+    def test_the_walk_inherits_a_parents_trigger_through_needs(self):
+        jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+                "release": "    needs: preflight\n"}
+        self.assertEqual(_gated_triggers("release", jobs), {"workflow_dispatch"})
+
+    def test_the_walk_raises_rather_than_reading_an_unresolvable_needs(self):
+        # never-fold-unreadable-into-absent: a `needs:` this suite cannot
+        # parse, or one naming a job that does not exist, must stop the test
+        # rather than resolve to "depends on nothing".
+        for block, why in (("    needs: {a: b}\n", "unparseable form"),
+                           ("    needs: ghost\n", "undeclared dependency")):
+            with self.subTest(case=why):
+                with self.assertRaises(AssertionError):
+                    _gated_triggers("a", {"a": block})
+        with self.assertRaises(AssertionError):
+            _gated_triggers("a", {"a": "    needs: b\n", "b": "    needs: a\n"})
 
 
 class RegistrationTest(unittest.TestCase):
