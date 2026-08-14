@@ -178,6 +178,13 @@ def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     A job that neither names an event nor reaches one through `needs` starts
     on every trigger the file declares. That is not a conservative reading:
     it is precisely what the shipped dispatch preflight did.
+
+    Only the single-quoted `github.event_name == 'X'` form is recognised. A
+    correct guard written some other way (double quotes, or gating on an
+    input's presence) reads here as "names no event" and turns these tests
+    red — fail-closed, and deliberately so, but it means a red from this
+    helper against a guard you believe is right is a signal to WIDEN the
+    pattern below, not to weaken the guard in release.yml.
     """
     if job in chain:
         raise AssertionError(f"cyclic `needs` chain through {job!r}")
