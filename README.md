@@ -26,12 +26,6 @@ project context. You decide. codeArbiter enforces.
 
 </div>
 
-> [!IMPORTANT]
-> **License notice.** Since v2.6.0, codeArbiter is licensed under the
-> [GNU AGPLv3](LICENSE), a change from its earlier MIT license. Copyright (C) 2026 SUaDtL, who
-> reserves the right to dual-license under separate proprietary terms; commercial licenses are not
-> offered at this time. See [License and contributions](#license-and-contributions).
-
 ## Agentic coding, with a record
 
 codeArbiter is for teams and power users who let coding agents do consequential work and need more
