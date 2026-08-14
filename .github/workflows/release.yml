@@ -118,6 +118,18 @@ jobs:
     name: "[GATE ] | [RELEASE] | Dispatch preflight"
     # Read-only authorization for the write-token publishers below. Fails
     # closed on every path: a refusal here skips both of them.
+    #
+    # Gated to the trigger that supplies its inputs (#654). This job resolves
+    # a target from the four dispatch confirmations, which exist on
+    # `workflow_dispatch` alone — on the auto-tag `workflow_run` path it read
+    # four empty inputs, resolved `none`, and exited 1, concluding every
+    # merge's `release` run `failure` while the auto-tag lanes below it
+    # tagged correctly. Nothing was mis-published (it fails closed, and the
+    # publishers skipped with it); what it destroyed was the signal, since a
+    # permanently-red run is indistinguishable from a real auto-tag failure.
+    # The four publishers need no guard of their own — `needs: preflight`
+    # skips them with it, and their conditions carry no status escape.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
