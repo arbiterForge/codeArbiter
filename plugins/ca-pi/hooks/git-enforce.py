@@ -27,6 +27,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+from hostapi import git_worktree_main_root  # noqa: E402 — worktree marker-root escalation (#695)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
@@ -185,6 +186,13 @@ def read_worktree(cwd, rel):
         return None
 
 
+def _marker_root(root):
+    """`root`, escalated to the MAIN checkout when `root` names a LINKED git
+    worktree's checkout (#695) — see `hostapi.git_worktree_main_root`'s
+    docstring."""
+    return git_worktree_main_root(root) or root
+
+
 def _marker_set(root, name):
     try:
         with open(os.path.join(root, ".codearbiter", ".markers", name),
@@ -230,11 +238,12 @@ def pre_commit(root):
         kind = "crypto/TLS" if touches_crypto else "secret"
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
-        marker = os.path.join(root, ".codearbiter", ".markers", "security-gate-passed")
+        mroot = _marker_root(root)
+        marker = os.path.join(mroot, ".codearbiter", ".markers", "security-gate-passed")
         if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
-        approved = _marker_set(root, "security-gate-passed")
+        approved = _marker_set(mroot, "security-gate-passed")
         uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
         if uncovered:
             block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered by the "
@@ -248,7 +257,8 @@ def pre_commit(root):
                       "failing closed (ORCHESTRATOR §2).")
     migs = sorted(p for p in names if is_migration_path(p, root))
     if migs:
-        approved = _marker_set(root, "migration-gate-passed")
+        mroot = _marker_root(root)
+        approved = _marker_set(mroot, "migration-gate-passed")
         uncovered = []
         for rel in migs:
             text = read_worktree(cwd, rel)
