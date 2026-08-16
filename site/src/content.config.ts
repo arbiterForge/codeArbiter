@@ -9,11 +9,15 @@ export const collections = {
     schema: docsSchema({
       extend: z.object({
         journey: z.object({
-          level: z.enum(["Foundation", "Practitioner", "Power user", "Reference", "Labs"]),
+          level: z.enum(["Foundation", "Practitioner", "Power user", "Reference", "Labs", "Academy"]),
           time: z.string(),
           outcome: z.string(),
           prerequisites: z.array(z.string()).optional(),
           proof: z.string().optional(),
+        }).optional(),
+        academySource: z.object({
+          release: z.string(),
+          commit: z.string(),
         }).optional(),
       }),
     }),

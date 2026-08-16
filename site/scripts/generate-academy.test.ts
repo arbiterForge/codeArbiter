@@ -1,0 +1,109 @@
+import { afterEach, describe, expect, it } from "vitest";
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, relative } from "node:path";
+import type { AcademySource } from "./academy-source";
+import { generateAcademy } from "./generate-academy";
+
+const fixtureRoots: string[] = [];
+
+const publicSource: AcademySource = {
+  release: "preview-0.30",
+  commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7",
+  lessons: [
+    {
+      id: "F01-fork-clone-doctor",
+      track: "foundations",
+      guide: [
+        "---",
+        "id: F01-fork-clone-doctor",
+        "track: foundations",
+        "order: 1",
+        "title: Fork, clone, and doctor safety",
+        "outcome: Prove the repository has safe fetch and push boundaries.",
+        "prerequisites: none",
+        "estimated_minutes: 30",
+        "scenario_command: {{action:F01-prepare}}",
+        "checkpoint_command: {{action:F01-check}}",
+        "next_lab: none",
+        "---",
+        "",
+        "# F01 - Fork, clone, and Doctor safety",
+        "",
+        "{{action:F01-prepare}}",
+      ].join("\n"),
+      actions: {
+        schema_version: 1,
+        lesson_contract_version: 1,
+        document_id: "F01-fork-clone-doctor",
+        actions: [],
+      },
+    },
+  ],
+};
+
+function createOutputRoots(): { docsRoot: string; generatedRoot: string } {
+  const root = mkdtempSync(join(tmpdir(), "academy-generation-"));
+  fixtureRoots.push(root);
+  return {
+    docsRoot: join(root, "content", "docs"),
+    generatedRoot: join(root, "generated"),
+  };
+}
+
+function listGeneratedRoutes(docsRoot: string): string[] {
+  const academyRoot = join(docsRoot, "academy");
+  return ["index.mdx", "F01-fork-clone-doctor.mdx", "U99-private.mdx"]
+    .filter((path) => existsSync(join(academyRoot, path)))
+    .map((path) => relative(docsRoot, join(academyRoot, path)).replaceAll("\\", "/"));
+}
+
+afterEach(() => {
+  for (const root of fixtureRoots.splice(0)) rmSync(root, { force: true, recursive: true });
+});
+
+describe("generateAcademy", () => {
+  it("emits one Academy index plus one MDX route for every public lab", () => {
+    const { docsRoot, generatedRoot } = createOutputRoots();
+
+    generateAcademy(publicSource, docsRoot, generatedRoot);
+
+    expect(listGeneratedRoutes(docsRoot)).toEqual([
+      "academy/index.mdx",
+      "academy/F01-fork-clone-doctor.mdx",
+    ]);
+    const lessonPage = readFileSync(
+      join(docsRoot, "academy", "F01-fork-clone-doctor.mdx"),
+      "utf8",
+    );
+    expect(lessonPage).toContain('title: "Fork, clone, and doctor safety"');
+    expect(lessonPage).toContain('description: "Prove the repository has safe fetch and push boundaries."');
+    expect(lessonPage).toContain('release: "preview-0.30"');
+    expect(lessonPage).toContain('commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7"');
+    expect(lessonPage).toContain('<AcademyLesson labId="F01-fork-clone-doctor" />');
+  });
+
+  it("does not emit a route for a lesson absent from the preview manifest", () => {
+    const { docsRoot, generatedRoot } = createOutputRoots();
+    const academyRoot = join(docsRoot, "academy");
+    mkdirSync(academyRoot, { recursive: true });
+    writeFileSync(join(academyRoot, "U99-private.mdx"), "private stale route");
+
+    generateAcademy(publicSource, docsRoot, generatedRoot);
+
+    expect(listGeneratedRoutes(docsRoot)).not.toContain("academy/U99-private.mdx");
+  });
+
+  it("preserves manifest ordering in typed content and sidebar data", () => {
+    const { docsRoot, generatedRoot } = createOutputRoots();
+
+    const result = generateAcademy(publicSource, docsRoot, generatedRoot);
+
+    expect(result.sidebarItems).toEqual([
+      { label: "Fork, clone, and doctor safety", slug: "academy/f01-fork-clone-doctor" },
+    ]);
+    const generatedContent = readFileSync(join(generatedRoot, "academy-content.ts"), "utf8");
+    expect(generatedContent).toContain('id: "F01-fork-clone-doctor"');
+    expect(generatedContent).toContain('markdown: "# F01 - Fork, clone, and Doctor safety\\n\\n{{action:F01-prepare}}"');
+  });
+});

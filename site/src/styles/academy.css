@@ -1,0 +1,183 @@
+/* Native Arbiter Academy lesson treatment. It deliberately uses the shared
+ * codeArbiter tokens and Starlight layout rather than carrying over Academy's
+ * former standalone shell. */
+.academy-lesson {
+  margin-block: var(--ca-space-6);
+}
+
+.academy-lesson__identity {
+  margin-block-end: var(--ca-space-6);
+  padding-block: var(--ca-space-4);
+  border-block: 1px solid var(--ca-line);
+}
+
+.academy-lesson__kicker,
+.academy-action__meta,
+.academy-command > p {
+  margin: 0;
+  color: var(--ca-brand-bright);
+  font-family: var(--ca-font-mono);
+  font-size: var(--ca-text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.academy-lesson__prerequisites {
+  margin: var(--ca-space-3) 0 0;
+  color: var(--ca-ink-muted);
+}
+
+.academy-actions {
+  display: grid;
+  gap: var(--ca-space-7);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.academy-action {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: var(--ca-space-4);
+}
+
+.academy-action:not(:last-child)::before {
+  position: absolute;
+  inset: 2.1rem auto -3.3rem 1.18rem;
+  width: 1px;
+  background: var(--ca-line-strong);
+  content: "";
+}
+
+.academy-action__rail span {
+  display: grid;
+  width: 2.35rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--ca-brand);
+  border-radius: 50%;
+  color: var(--ca-brand-bright);
+  background: var(--ca-bg-raised);
+  font-family: var(--ca-font-mono);
+  font-size: var(--ca-text-sm);
+  font-weight: 700;
+}
+
+.academy-action__body {
+  min-width: 0;
+  padding-block-end: var(--ca-space-1);
+}
+
+.academy-action__header h2 {
+  margin: var(--ca-space-2) 0 0;
+  color: var(--ca-ink);
+  font-size: var(--ca-text-xl);
+  line-height: 1.18;
+}
+
+.academy-action__meta {
+  display: flex;
+  gap: var(--ca-space-3);
+  color: var(--ca-ink-muted);
+}
+
+.academy-action__meta span + span::before {
+  margin-inline-end: var(--ca-space-3);
+  color: var(--ca-brand);
+  content: "•";
+}
+
+.academy-action__instruction {
+  max-width: 68rem;
+  margin: var(--ca-space-4) 0 0;
+  color: var(--ca-ink);
+  font-size: var(--ca-text-lg);
+  line-height: 1.65;
+}
+
+.academy-action__why {
+  margin: var(--ca-space-3) 0 0;
+  color: var(--ca-ink-muted);
+}
+
+.academy-action__resources {
+  margin-block-start: var(--ca-space-4);
+  padding-inline-start: var(--ca-space-4);
+  border-inline-start: 2px solid var(--ca-line-strong);
+}
+
+.academy-action__resources ul { margin: var(--ca-space-2) 0 0; }
+
+.academy-action__commands {
+  display: grid;
+  gap: var(--ca-space-3);
+  margin-block-start: var(--ca-space-5);
+}
+
+.academy-command {
+  overflow: hidden;
+  border: 1px solid var(--ca-line);
+  border-radius: var(--ca-radius-sm);
+  background: var(--ca-bg-raised);
+}
+
+.academy-command summary {
+  cursor: pointer;
+  padding: var(--ca-space-3) var(--ca-space-4);
+  color: var(--ca-ink-muted);
+  border-block-end: 1px solid var(--ca-line);
+  font-family: var(--ca-font-mono);
+  font-size: var(--ca-text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.academy-command:not([open]) summary { border-block-end: 0; }
+.academy-command summary::marker { color: var(--ca-brand); }
+
+.academy-command pre {
+  margin: 0;
+  padding: var(--ca-space-4);
+  overflow-x: auto;
+  background: transparent;
+}
+
+.academy-command code { font-size: var(--ca-text-sm); }
+
+.academy-action__proof {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1px;
+  margin-block-start: var(--ca-space-5);
+  overflow: hidden;
+  border: 1px solid var(--ca-line);
+  background: var(--ca-line);
+}
+
+.academy-action__proof > section,
+.academy-action__recovery {
+  padding: var(--ca-space-4);
+  background: var(--ca-bg-raised);
+}
+
+.academy-action__expected { border-inline-start: 2px solid var(--ca-brand); }
+.academy-action__proof h3,
+.academy-action__recovery summary { color: var(--ca-ink); font-size: var(--ca-text-sm); font-weight: 750; }
+.academy-action__proof p { margin: var(--ca-space-2) 0 0; color: var(--ca-ink-soft); font-size: var(--ca-text-sm); line-height: 1.55; }
+.academy-action__recovery { grid-column: 1 / -1; }
+.academy-action__recovery summary { cursor: pointer; }
+
+@media (max-width: 42rem) {
+  .academy-lesson__identity { margin-block-end: var(--ca-space-5); }
+  .academy-actions { gap: var(--ca-space-6); }
+  .academy-action { grid-template-columns: 1.9rem minmax(0, 1fr); gap: var(--ca-space-3); }
+  .academy-action:not(:last-child)::before { inset: 1.7rem auto -2.9rem 0.9rem; }
+  .academy-action__rail span { width: 1.8rem; font-size: var(--ca-text-xs); }
+  .academy-action__header h2 { font-size: 1.35rem; }
+  .academy-action__instruction { font-size: var(--ca-text-md); }
+  .academy-action__proof { grid-template-columns: 1fr; }
+  .academy-action__recovery { grid-column: auto; }
+}

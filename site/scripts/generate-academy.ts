@@ -1,0 +1,215 @@
+import type { AcademySource } from "./academy-source";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+type AcademyTrack = "foundations" | "practitioner" | "power-user";
+
+type GuideMetadata = {
+  id: string;
+  track: AcademyTrack;
+  order: number;
+  title: string;
+  outcome: string;
+  prerequisites: string[];
+  estimatedMinutes: number;
+  scenarioCommand: string;
+  checkpointCommand: string;
+  nextLab: string | null;
+};
+
+type ParsedGuide = GuideMetadata & {
+  markdown: string;
+};
+
+export type AcademySidebarItem = {
+  label: string;
+  slug: string;
+};
+
+export type AcademyGenerationResult = {
+  sidebarItems: AcademySidebarItem[];
+};
+
+const TRACK_LEVEL: Record<AcademyTrack, "Foundation" | "Practitioner" | "Power user"> = {
+  foundations: "Foundation",
+  practitioner: "Practitioner",
+  "power-user": "Power user",
+};
+
+function parseGuide(guide: string): ParsedGuide {
+  const match = /^---\r?\n(?<frontmatter>[\s\S]*?)\r?\n---(?:\r?\n)?(?<markdown>[\s\S]*)$/.exec(guide);
+  if (!match?.groups) throw new Error("Academy guide must contain closed frontmatter");
+
+  const fields = Object.fromEntries(
+    match.groups.frontmatter.split(/\r?\n/).map((line) => {
+      const separator = line.indexOf(":");
+      if (separator < 1) throw new Error(`Academy guide frontmatter line is invalid: ${line}`);
+      return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
+    }),
+  );
+  const required = (field: string): string => {
+    const value = fields[field];
+    if (!value) throw new Error(`Academy guide frontmatter is missing ${field}`);
+    return value;
+  };
+  const track = required("track");
+  if (track !== "foundations" && track !== "practitioner" && track !== "power-user") {
+    throw new Error(`Academy guide frontmatter has invalid track: ${track}`);
+  }
+  const order = Number(required("order"));
+  const estimatedMinutes = Number(required("estimated_minutes"));
+  if (!Number.isInteger(order) || order < 1 || !Number.isInteger(estimatedMinutes) || estimatedMinutes < 1) {
+    throw new Error("Academy guide order and estimated_minutes must be positive integers");
+  }
+  const prerequisites = required("prerequisites");
+  const nextLab = required("next_lab");
+
+  return {
+    id: required("id"),
+    track,
+    order,
+    title: required("title"),
+    outcome: required("outcome"),
+    prerequisites: prerequisites === "none" ? [] : [prerequisites],
+    estimatedMinutes,
+    scenarioCommand: required("scenario_command"),
+    checkpointCommand: required("checkpoint_command"),
+    nextLab: nextLab === "none" ? null : nextLab,
+    markdown: match.groups.markdown.trim(),
+  };
+}
+
+function yamlString(value: string): string {
+  return JSON.stringify(value);
+}
+
+function academySourceMetadata(source: AcademySource): string {
+  return [
+    "academySource:",
+    `  release: ${yamlString(source.release)}`,
+    `  commit: ${yamlString(source.commit)}`,
+  ].join("\n");
+}
+
+function renderIndex(source: AcademySource, guides: ParsedGuide[]): string {
+  const lessonLinks = guides
+    .map((guide) => `- [${guide.title}](/academy/${guide.id.toLowerCase()}/) - ${guide.outcome}`)
+    .join("\n");
+  return [
+    "---",
+    'title: "Arbiter Academy"',
+    'description: "Guided, evidence-based practice for the CodeArbiter workflow."',
+    "journey:",
+    '  level: "Academy"',
+    '  time: "Self-paced"',
+    '  outcome: "Build governed delivery habits through the published Academy curriculum."',
+    academySourceMetadata(source),
+    "---",
+    "",
+    "Arbiter Academy is the guided practice path for learning CodeArbiter through bounded, verifiable work.",
+    "",
+    "## Published lessons",
+    "",
+    lessonLinks,
+    "",
+  ].join("\n");
+}
+
+function renderLesson(source: AcademySource, guide: ParsedGuide): string {
+  const prerequisites = guide.prerequisites.length
+    ? ["  prerequisites:", ...guide.prerequisites.map((item) => `    - ${yamlString(item)}`)]
+    : [];
+  return [
+    "---",
+    `title: ${yamlString(guide.title)}`,
+    `description: ${yamlString(guide.outcome)}`,
+    "journey:",
+    `  level: ${yamlString(TRACK_LEVEL[guide.track])}`,
+    `  time: ${yamlString(`${guide.estimatedMinutes} minutes`)}`,
+    `  outcome: ${yamlString(guide.outcome)}`,
+    ...prerequisites,
+    academySourceMetadata(source),
+    "---",
+    "",
+    'import AcademyLesson from "../../../components/AcademyLesson.astro";',
+    "",
+    `<AcademyLesson labId=${yamlString(guide.id)} />`,
+    "",
+  ].join("\n");
+}
+
+function typescriptLiteral(value: unknown): string {
+  return JSON.stringify(value, null, 2).replace(
+    /^(\s*)"([A-Za-z_$][A-Za-z0-9_$]*)":/gm,
+    "$1$2:",
+  );
+}
+
+function renderTypedContent(source: AcademySource, guides: ParsedGuide[]): string {
+  const lessons = source.lessons.map((lesson, index) => ({
+    id: lesson.id,
+    track: lesson.track,
+    guide: guides[index],
+    actions: lesson.actions,
+  }));
+  return `// Generated by scripts/generate-academy.ts from the pinned Academy source. Do not edit.\n\n` +
+    `export type AcademyTrack = "foundations" | "practitioner" | "power-user";\n` +
+    `export type AcademyActor = "learner" | "academy" | "agent";\n` +
+    `export type AcademyActionSurface = "browser" | "native-terminal" | "academy-console" | "active-harness" | null;\n` +
+    `export type AcademyVariantSurface = "browser" | "native-terminal" | "harness" | "academy-console";\n` +
+    `export type AcademyOperatingSystem = "all" | "windows" | "macos" | "linux";\n` +
+    `export type AcademyHost = "none" | "claude-code" | "codex" | "pi";\n` +
+    `export type AcademyLanguage = "none" | "powershell" | "sh" | "text" | "codearbiter";\n\n` +
+    `export type AcademyCommandVariant = {\n` +
+    `  id: string;\n  surface: AcademyVariantSurface;\n  operating_system: AcademyOperatingSystem;\n` +
+    `  host: AcademyHost;\n  language: AcademyLanguage;\n  command: string;\n  copy: boolean;\n};\n\n` +
+    `export type AcademyActionResource = { label: string; href: string };\n` +
+    `export type AcademyAction = {\n` +
+    `  id: string;\n  sequence: number;\n  title: string;\n  actor: AcademyActor;\n` +
+    `  surface: AcademyActionSurface;\n  instruction: string;\n  rationale: string | null;\n` +
+    `  resources: AcademyActionResource[];\n  variants: AcademyCommandVariant[];\n` +
+    `  expected_result: string;\n  recovery: string;\n  evidence: string | null;\n};\n\n` +
+    `export type AcademyActionManifest = {\n  schema_version: 1;\n  lesson_contract_version: 1;\n` +
+    `  document_id: string;\n  actions: AcademyAction[];\n};\n\n` +
+    `export type AcademyGuide = {\n  id: string;\n  track: AcademyTrack;\n  order: number;\n` +
+    `  title: string;\n  outcome: string;\n  prerequisites: string[];\n  estimatedMinutes: number;\n` +
+    `  scenarioCommand: string;\n  checkpointCommand: string;\n  nextLab: string | null;\n  markdown: string;\n};\n\n` +
+    `export type AcademyLessonContent = {\n  id: string;\n  track: AcademyTrack;\n` +
+    `  guide: AcademyGuide;\n  actions: AcademyActionManifest;\n};\n\n` +
+    `export type AcademyContent = {\n  release: string;\n  commit: string;\n  lessons: AcademyLessonContent[];\n};\n\n` +
+    `export const academyContent = ${typescriptLiteral({ release: source.release, commit: source.commit, lessons })} as const satisfies AcademyContent;\n\n` +
+    `export const academyLessons = academyContent.lessons;\n`;
+}
+
+export function generateAcademy(
+  source: AcademySource,
+  docsRoot: string,
+  generatedRoot: string,
+): AcademyGenerationResult {
+  const guides = source.lessons.map((lesson) => {
+    const guide = parseGuide(lesson.guide);
+    if (guide.id !== lesson.id || guide.track !== lesson.track) {
+      throw new Error(`Academy guide metadata does not match source lesson ${lesson.id}`);
+    }
+    return guide;
+  });
+  const academyRoot = join(docsRoot, "academy");
+  rmSync(academyRoot, { force: true, recursive: true });
+  mkdirSync(academyRoot, { recursive: true });
+  mkdirSync(generatedRoot, { recursive: true });
+
+  writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source, guides));
+  for (const guide of guides) {
+    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide));
+  }
+
+  const sidebarItems = guides.map((guide) => ({
+    label: guide.title,
+    // Starlight's docs loader normalizes generated path IDs to lowercase.
+    slug: `academy/${guide.id.toLowerCase()}`,
+  }));
+  writeFileSync(join(generatedRoot, "academy-content.ts"), renderTypedContent(source, guides));
+  writeFileSync(join(generatedRoot, "academy-sidebar.json"), `${JSON.stringify(sidebarItems, null, 2)}\n`);
+
+  return { sidebarItems };
+}
