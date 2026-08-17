@@ -1391,7 +1391,7 @@ jobs:
         # own currently-stale artifact failing for exactly that reason.
         run: python .github/scripts/test_check_skill_proof_fresh.py
       - name: Run the unit tests for CI's own machinery
-        # These four suites existed and ran on NOTHING. Each one guards a script
+        # These suites existed and ran on NOTHING. Each one guards a script
         # that CI itself depends on, which is what makes the gap matter rather
         # than merely being untidy:
         #
@@ -1413,6 +1413,7 @@ jobs:
           python .github/scripts/test_sandbox_docker_layers.py
           python .github/scripts/test_license_consistency.py
           python .github/scripts/test_planfilelib.py
+          python .github/scripts/test_spike_findings_contract.py
       - name: Run provenance-store helper unit tests
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
