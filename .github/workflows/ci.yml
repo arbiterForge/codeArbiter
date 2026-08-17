@@ -1406,7 +1406,7 @@ jobs:
         #
         # The repository already states this discipline for payload_scope.py -
         # "payload_scope.py owns the rule; test_payload_scope.py is its only
-        # guard" - and that pair IS wired. These four are the same shape and
+        # guard" - and that pair IS wired. These five are the same shape and
         # were not. A guard whose own guard never runs is a guard on trust.
         run: |
           python .github/scripts/test_pi_promotion.py

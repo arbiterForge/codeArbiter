@@ -25,6 +25,38 @@ type PublicationManifest = {
   guided_labs: unknown;
 };
 
+function isApprovedResourceHref(value: unknown): value is string {
+  if (typeof value !== "string" || value.length === 0 || /\s/.test(value) || value.startsWith("//")) {
+    return false;
+  }
+  try {
+    return new URL(value, "https://academy.invalid/").protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function validateActionResources(actions: unknown, lessonId: string): void {
+  if (typeof actions !== "object" || actions === null || !Array.isArray((actions as { actions?: unknown }).actions)) {
+    throw new Error(`Academy action manifest must contain actions for ${lessonId}`);
+  }
+  for (const action of (actions as { actions: unknown[] }).actions) {
+    if (typeof action !== "object" || action === null) {
+      throw new Error(`Academy action manifest contains an invalid action for ${lessonId}`);
+    }
+    const resources = (action as { resources?: unknown }).resources;
+    if (resources === undefined) continue;
+    if (!Array.isArray(resources)) {
+      throw new Error(`Academy action resources must be an array for ${lessonId}`);
+    }
+    for (const resource of resources) {
+      if (typeof resource !== "object" || resource === null || !isApprovedResourceHref((resource as { href?: unknown }).href)) {
+        throw new Error(`Academy action resource URL must be HTTPS or relative for ${lessonId}`);
+      }
+    }
+  }
+}
+
 function isWithin(root: string, target: string): boolean {
   const pathFromRoot = relative(root, target);
   return pathFromRoot !== "" && !pathFromRoot.startsWith(`..${sep}`) && pathFromRoot !== ".." && !isAbsolute(pathFromRoot);
@@ -84,11 +116,13 @@ export function loadAcademySource(root: string): AcademySource {
 
   const lessons = availableLabs.map((id) => {
     const track = trackFor(id);
+    const actions = parseJson(sourcePath(sourceRoot, "academy", "actions", `${id}.json`));
+    validateActionResources(actions, id);
     return {
       id,
       track,
       guide: readFileSync(sourcePath(sourceRoot, "academy", "tracks", track, `${id}.md`), "utf8"),
-      actions: parseJson(sourcePath(sourceRoot, "academy", "actions", `${id}.json`)),
+      actions,
     };
   });
 

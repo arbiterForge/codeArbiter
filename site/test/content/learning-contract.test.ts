@@ -21,6 +21,7 @@ describe("hand-authored learning contract", () => {
   const handPages = contentFiles(docsRoot).filter((path) => {
     const route = relative(docsRoot, path).replaceAll("\\", "/");
     return !route.startsWith("reference/")
+      && !route.startsWith("academy/")
       && route !== "index.mdx"
       && route !== "changelog.md";
   });

@@ -91,6 +91,30 @@ function academySourceMetadata(source: AcademySource): string {
   ].join("\n");
 }
 
+function actionIds(actions: unknown, lessonId: string): Set<string> {
+  if (typeof actions !== "object" || actions === null || !Array.isArray((actions as { actions?: unknown }).actions)) {
+    throw new Error(`Academy action manifest must contain actions for ${lessonId}`);
+  }
+  const ids = new Set<string>();
+  for (const action of (actions as { actions: unknown[] }).actions) {
+    if (typeof action !== "object" || action === null || typeof (action as { id?: unknown }).id !== "string") {
+      throw new Error(`Academy action manifest contains an invalid action for ${lessonId}`);
+    }
+    ids.add((action as { id: string }).id);
+  }
+  return ids;
+}
+
+function renderGuideMarkdown(guide: ParsedGuide, actions: unknown): string {
+  const ids = actionIds(actions, guide.id);
+  return guide.markdown.replace(/^# [^\r\n]+\r?\n+/, "").replace(/\{\{action:([A-Za-z0-9-]+)\}\}/g, (_match, actionId: string) => {
+    if (!ids.has(actionId)) {
+      throw new Error(`Academy guide ${guide.id} references an unknown action ${actionId}`);
+    }
+    return `<AcademyLesson labId=${yamlString(guide.id)} actionId=${yamlString(actionId)} />`;
+  });
+}
+
 function renderIndex(source: AcademySource, guides: ParsedGuide[]): string {
   const lessonLinks = guides
     .map((guide) => `- [${guide.title}](/academy/${guide.id.toLowerCase()}/) - ${guide.outcome}`)
@@ -115,7 +139,7 @@ function renderIndex(source: AcademySource, guides: ParsedGuide[]): string {
   ].join("\n");
 }
 
-function renderLesson(source: AcademySource, guide: ParsedGuide): string {
+function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknown): string {
   const prerequisites = guide.prerequisites.length
     ? ["  prerequisites:", ...guide.prerequisites.map((item) => `    - ${yamlString(item)}`)]
     : [];
@@ -133,7 +157,7 @@ function renderLesson(source: AcademySource, guide: ParsedGuide): string {
     "",
     'import AcademyLesson from "../../../components/AcademyLesson.astro";',
     "",
-    `<AcademyLesson labId=${yamlString(guide.id)} />`,
+    renderGuideMarkdown(guide, actions),
     "",
   ].join("\n");
 }
@@ -199,8 +223,8 @@ export function generateAcademy(
   mkdirSync(generatedRoot, { recursive: true });
 
   writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source, guides));
-  for (const guide of guides) {
-    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide));
+  for (const [index, guide] of guides.entries()) {
+    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions));
   }
 
   const sidebarItems = guides.map((guide) => ({

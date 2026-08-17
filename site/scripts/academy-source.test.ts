@@ -7,7 +7,10 @@ import { loadAcademySource } from "./academy-source";
 
 const fixtureRoots: string[] = [];
 
-function createFixture(manifestLessons = ["F01-fork-clone-doctor"]): string {
+function createFixture(
+  manifestLessons = ["F01-fork-clone-doctor"],
+  resourceHrefs: string[] = [],
+): string {
   const root = mkdtempSync(join(tmpdir(), "academy-source-"));
   fixtureRoots.push(root);
   const academyRoot = join(root, "academy-source", "academy");
@@ -31,7 +34,13 @@ function createFixture(manifestLessons = ["F01-fork-clone-doctor"]): string {
   );
   writeFileSync(
     join(academyRoot, "actions", "F01-fork-clone-doctor.json"),
-    JSON.stringify({ document_id: "F01-fork-clone-doctor", actions: [] }),
+    JSON.stringify({
+      document_id: "F01-fork-clone-doctor",
+      actions: resourceHrefs.map((href, index) => ({
+        id: `F01-resource-${index}`,
+        resources: [{ label: `Resource ${index}`, href }],
+      })),
+    }),
   );
   const submoduleRoot = join(root, "academy-source");
   execFileSync("git", ["init", "--quiet", submoduleRoot]);
@@ -99,5 +108,17 @@ describe("loadAcademySource", () => {
     );
 
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/public inventories/);
+  });
+
+  it("accepts only HTTPS and relative Academy action resource URLs", () => {
+    const fixtureRoot = createFixture(undefined, ["https://example.com/review", "/academy/f01/", "#evidence"]);
+
+    expect(() => loadAcademySource(fixtureRoot)).not.toThrow();
+  });
+
+  it("rejects an unsafe Academy action resource URL", () => {
+    const fixtureRoot = createFixture(undefined, ["javascript:alert(1)"]);
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/resource URL/);
   });
 });

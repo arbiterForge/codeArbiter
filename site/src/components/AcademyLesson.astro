@@ -3,13 +3,22 @@ import { academyLessons, type AcademyAction, type AcademyCommandVariant } from "
 
 interface Props {
   labId: string;
+  actionId?: string;
 }
 
-const { labId } = Astro.props;
+const { labId, actionId } = Astro.props;
 const lesson = academyLessons.find((candidate) => candidate.id === labId);
 
 if (!lesson) {
   throw new Error(`Academy lesson ${labId} is not present in the pinned Academy source.`);
+}
+
+const actions = actionId
+  ? lesson.actions.actions.filter((action) => action.id === actionId)
+  : lesson.actions.actions;
+
+if (actionId && actions.length !== 1) {
+  throw new Error(`Academy action ${actionId} is not present in lesson ${labId}.`);
 }
 
 const trackLabel = lesson.track === "power-user"
@@ -35,6 +44,8 @@ const variantLabel = (variant: AcademyCommandVariant) => {
 ---
 
 <section class="academy-lesson" aria-label={`${lesson.guide.title} lesson`}>
+  {
+    !actionId && (
   <header class="academy-lesson__identity">
     <p class="academy-lesson__kicker">Arbiter Academy <span aria-hidden="true">/</span> {trackLabel}</p>
     {
@@ -43,10 +54,12 @@ const variantLabel = (variant: AcademyCommandVariant) => {
       )
     }
   </header>
+    )
+  }
 
   <ol class="academy-actions">
     {
-      lesson.actions.actions.map((action) => (
+      actions.map((action) => (
         <li class="academy-action" id={`action-${action.id}`}>
           <div class="academy-action__rail" aria-hidden="true"><span>{action.sequence}</span></div>
           <article class="academy-action__body">

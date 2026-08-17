@@ -31,12 +31,42 @@ const publicSource: AcademySource = {
         "# F01 - Fork, clone, and Doctor safety",
         "",
         "{{action:F01-prepare}}",
+        "",
+        "Continue only after the prepared attempt is ready.",
       ].join("\n"),
       actions: {
         schema_version: 1,
         lesson_contract_version: 1,
         document_id: "F01-fork-clone-doctor",
-        actions: [],
+        actions: [{ id: "F01-prepare" }],
+      },
+    },
+    {
+      id: "F02-orient-to-state",
+      track: "foundations",
+      guide: [
+        "---",
+        "id: F02-orient-to-state",
+        "track: foundations",
+        "order: 2",
+        "title: Orient to repository state",
+        "outcome: Read the current governance state.",
+        "prerequisites: F01-fork-clone-doctor",
+        "estimated_minutes: 15",
+        "scenario_command: {{action:F02-prepare}}",
+        "checkpoint_command: {{action:F02-check}}",
+        "next_lab: none",
+        "---",
+        "",
+        "# F02 - Orient to repository state",
+        "",
+        "{{action:F02-prepare}}",
+      ].join("\n"),
+      actions: {
+        schema_version: 1,
+        lesson_contract_version: 1,
+        document_id: "F02-orient-to-state",
+        actions: [{ id: "F02-prepare" }],
       },
     },
   ],
@@ -53,7 +83,7 @@ function createOutputRoots(): { docsRoot: string; generatedRoot: string } {
 
 function listGeneratedRoutes(docsRoot: string): string[] {
   const academyRoot = join(docsRoot, "academy");
-  return ["index.mdx", "F01-fork-clone-doctor.mdx", "U99-private.mdx"]
+  return ["index.mdx", "F01-fork-clone-doctor.mdx", "F02-orient-to-state.mdx", "U99-private.mdx"]
     .filter((path) => existsSync(join(academyRoot, path)))
     .map((path) => relative(docsRoot, join(academyRoot, path)).replaceAll("\\", "/"));
 }
@@ -71,6 +101,7 @@ describe("generateAcademy", () => {
     expect(listGeneratedRoutes(docsRoot)).toEqual([
       "academy/index.mdx",
       "academy/F01-fork-clone-doctor.mdx",
+      "academy/F02-orient-to-state.mdx",
     ]);
     const lessonPage = readFileSync(
       join(docsRoot, "academy", "F01-fork-clone-doctor.mdx"),
@@ -80,7 +111,9 @@ describe("generateAcademy", () => {
     expect(lessonPage).toContain('description: "Prove the repository has safe fetch and push boundaries."');
     expect(lessonPage).toContain('release: "preview-0.30"');
     expect(lessonPage).toContain('commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7"');
-    expect(lessonPage).toContain('<AcademyLesson labId="F01-fork-clone-doctor" />');
+    expect(lessonPage).not.toContain("# F01 - Fork, clone, and Doctor safety");
+    expect(lessonPage).toContain('<AcademyLesson labId="F01-fork-clone-doctor" actionId="F01-prepare" />');
+    expect(lessonPage).toContain("Continue only after the prepared attempt is ready.");
   });
 
   it("does not emit a route for a lesson absent from the preview manifest", () => {
@@ -101,9 +134,12 @@ describe("generateAcademy", () => {
 
     expect(result.sidebarItems).toEqual([
       { label: "Fork, clone, and doctor safety", slug: "academy/f01-fork-clone-doctor" },
+      { label: "Orient to repository state", slug: "academy/f02-orient-to-state" },
     ]);
     const generatedContent = readFileSync(join(generatedRoot, "academy-content.ts"), "utf8");
-    expect(generatedContent).toContain('id: "F01-fork-clone-doctor"');
-    expect(generatedContent).toContain('markdown: "# F01 - Fork, clone, and Doctor safety\\n\\n{{action:F01-prepare}}"');
+    expect(generatedContent.indexOf('id: "F01-fork-clone-doctor"')).toBeLessThan(
+      generatedContent.indexOf('id: "F02-orient-to-state"'),
+    );
+    expect(generatedContent).toContain('markdown: "# F01 - Fork, clone, and Doctor safety\\n\\n{{action:F01-prepare}}\\n\\nContinue only after the prepared attempt is ready."');
   });
 });
