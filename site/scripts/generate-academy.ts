@@ -107,7 +107,12 @@ function actionIds(actions: unknown, lessonId: string): Set<string> {
 
 function renderGuideMarkdown(guide: ParsedGuide, actions: unknown): string {
   const ids = actionIds(actions, guide.id);
-  return guide.markdown.replace(/^# [^\r\n]+\r?\n+/, "").replace(/\{\{action:([A-Za-z0-9-]+)\}\}/g, (_match, actionId: string) => {
+  return guide.markdown
+    .replace(/^# [^\r\n]+\r?\n+/, "")
+    .replace(/\]\(\.\.\/\.\.\/index\.html/g, "](/academy/")
+    .replace(/\]\(\.\.\/((?:F|P|U)\d{2}-[a-z0-9-]+)\/index\.html/g, (_match, lessonId: string) =>
+      `](/academy/${lessonId.toLowerCase()}/)`)
+    .replace(/\{\{action:([A-Za-z0-9-]+)\}\}/g, (_match, actionId: string) => {
     if (!ids.has(actionId)) {
       throw new Error(`Academy guide ${guide.id} references an unknown action ${actionId}`);
     }

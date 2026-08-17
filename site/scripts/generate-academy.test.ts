@@ -33,6 +33,8 @@ const publicSource: AcademySource = {
         "{{action:F01-prepare}}",
         "",
         "Continue only after the prepared attempt is ready.",
+        "",
+        "See [Academy Home](../../index.html#setup) and [F02](../F02-orient-to-state/index.html).",
       ].join("\n"),
       actions: {
         schema_version: 1,
@@ -114,6 +116,8 @@ describe("generateAcademy", () => {
     expect(lessonPage).not.toContain("# F01 - Fork, clone, and Doctor safety");
     expect(lessonPage).toContain('<AcademyLesson labId="F01-fork-clone-doctor" actionId="F01-prepare" />');
     expect(lessonPage).toContain("Continue only after the prepared attempt is ready.");
+    expect(lessonPage).toContain("[Academy Home](/academy/#setup)");
+    expect(lessonPage).toContain("[F02](/academy/f02-orient-to-state/)");
   });
 
   it("does not emit a route for a lesson absent from the preview manifest", () => {
@@ -140,6 +144,6 @@ describe("generateAcademy", () => {
     expect(generatedContent.indexOf('id: "F01-fork-clone-doctor"')).toBeLessThan(
       generatedContent.indexOf('id: "F02-orient-to-state"'),
     );
-    expect(generatedContent).toContain('markdown: "# F01 - Fork, clone, and Doctor safety\\n\\n{{action:F01-prepare}}\\n\\nContinue only after the prepared attempt is ready."');
+    expect(generatedContent).toContain('markdown: "# F01 - Fork, clone, and Doctor safety\\n\\n{{action:F01-prepare}}\\n\\nContinue only after the prepared attempt is ready.\\n\\nSee [Academy Home](../../index.html#setup) and [F02](../F02-orient-to-state/index.html)."');
   });
 });
