@@ -1,0 +1,124 @@
+---
+import { academyLessons, type AcademyAction, type AcademyCommandVariant } from "../generated/academy-content";
+
+interface Props {
+  labId: string;
+  actionId?: string;
+}
+
+const { labId, actionId } = Astro.props;
+const lesson = academyLessons.find((candidate) => candidate.id === labId);
+
+if (!lesson) {
+  throw new Error(`Academy lesson ${labId} is not present in the pinned Academy source.`);
+}
+
+const actions = actionId
+  ? lesson.actions.actions.filter((action) => action.id === actionId)
+  : lesson.actions.actions;
+
+if (actionId && actions.length !== 1) {
+  throw new Error(`Academy action ${actionId} is not present in lesson ${labId}.`);
+}
+
+const trackLabel = lesson.track === "power-user"
+  ? "Power user"
+  : lesson.track[0].toUpperCase() + lesson.track.slice(1);
+
+const surfaceLabel: Record<NonNullable<AcademyAction["surface"]>, string> = {
+  browser: "Browser",
+  "native-terminal": "Native terminal",
+  "academy-console": "Academy console",
+  "active-harness": "Active harness",
+};
+
+const variantLabel = (variant: AcademyCommandVariant) => {
+  const platform = variant.operating_system === "all"
+    ? "Any OS"
+    : variant.operating_system === "macos"
+      ? "macOS"
+      : variant.operating_system[0].toUpperCase() + variant.operating_system.slice(1);
+  const host = variant.host === "none" ? "" : ` · ${variant.host === "claude-code" ? "Claude Code" : variant.host[0].toUpperCase() + variant.host.slice(1)}`;
+  return `${platform}${host}`;
+};
+---
+
+<section class="academy-lesson" aria-label={`${lesson.guide.title} lesson`}>
+  {
+    !actionId && (
+  <header class="academy-lesson__identity">
+    <p class="academy-lesson__kicker">Arbiter Academy <span aria-hidden="true">/</span> {trackLabel}</p>
+    {
+      lesson.guide.prerequisites.length > 0 && (
+        <p class="academy-lesson__prerequisites"><strong>Before you start:</strong> {lesson.guide.prerequisites.join(" · ")}</p>
+      )
+    }
+  </header>
+    )
+  }
+
+  <ol class="academy-actions">
+    {
+      actions.map((action) => (
+        <li class="academy-action" id={`action-${action.id}`}>
+          <div class="academy-action__rail" aria-hidden="true"><span>{action.sequence}</span></div>
+          <article class="academy-action__body">
+            <header class="academy-action__header">
+              <div>
+                <p class="academy-action__meta">
+                  <span>{action.actor === "academy" ? "Academy" : action.actor === "agent" ? "Your host" : "You"}</span>
+                  {action.surface && <span>{surfaceLabel[action.surface]}</span>}
+                </p>
+                <h2>{action.title}</h2>
+              </div>
+            </header>
+
+            <p class="academy-action__instruction">{action.instruction}</p>
+            {action.rationale && <p class="academy-action__why"><strong>Why this matters:</strong> {action.rationale}</p>}
+
+            {
+              action.resources.length > 0 && (
+                <nav class="academy-action__resources" aria-label={`Resources for ${action.title}`}>
+                  <strong>Reviewed resources</strong>
+                  <ul>
+                    {action.resources.map((resource) => <li><a href={resource.href}>{resource.label}</a></li>)}
+                  </ul>
+                </nav>
+              )
+            }
+
+            {
+              action.variants.length > 0 && (
+                <div class="academy-action__commands">
+                  {action.variants.map((variant, index) => (
+                    <details class="academy-command" open={index === 0}>
+                      <summary>{variantLabel(variant)}</summary>
+                      <pre><code class={`language-${variant.language}`}>{variant.command}</code></pre>
+                    </details>
+                  ))}
+                </div>
+              )
+            }
+
+            <div class="academy-action__proof">
+              <section class="academy-action__expected">
+                <h3>Expected result</h3>
+                <p>{action.expected_result}</p>
+              </section>
+              {action.evidence && (
+                <section class="academy-action__evidence">
+                  <h3>Evidence</h3>
+                  <p>{action.evidence}</p>
+                </section>
+              )}
+              <details class="academy-action__recovery">
+                <summary>If that does not happen</summary>
+                <p>{action.recovery}</p>
+              </details>
+            </div>
+          </article>
+        </li>
+      ))
+    }
+  </ol>
+</section>

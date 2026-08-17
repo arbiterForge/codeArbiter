@@ -15,6 +15,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "vitest run",
+    "test:academy-source": "vitest run scripts/academy-source.test.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "link-audit": "tsx scripts/link-audit.ts",

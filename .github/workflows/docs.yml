@@ -22,6 +22,9 @@ on:
     paths:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
+      - "academy-source" # a submodule pin updates the gitlink itself
+      - "academy-source/**" # Academy lessons are generated from the pinned source checkout
+      - ".gitmodules"
       - ".github/workflows/docs.yml" # this workflow gates the site graph; it must see its own edits
       # Issue #338: the site-voice gate and the detector it calls. Without these
       # a PR that only loosened the rule would skip the job that enforces it -
@@ -33,6 +36,9 @@ on:
     paths:
       - "site/**"
       - "plugins/ca/**"
+      - "academy-source"
+      - "academy-source/**"
+      - ".gitmodules"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -62,6 +68,8 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0
@@ -107,6 +115,8 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0; the action defaults to 20

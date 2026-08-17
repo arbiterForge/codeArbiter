@@ -62,11 +62,16 @@ site/*.log
 # are the reviewable source of truth; the hand-written narrative pages directly
 # under site/src/content/docs/ ARE committed.
 site/src/content/docs/reference/
+site/src/content/docs/academy/
 site/src/generated/
 
 # On-site changelog — regenerated from the repo-root CHANGELOG.md by `npm run gen`
 # (render-changelog.ts). Same never-committed discipline as reference/ above.
 site/src/content/docs/changelog.md
+
+# Academy source is pinned as a submodule. Its generated learner-site output is
+# rebuilt in the Academy checkout and must never appear as product source here.
+academy-source/site/generated/
 
 # Farm dispatcher runtime artifacts — worktrees, reports, integration branch staging.
 # Written per-run in any project using codeArbiter. Never committed to the plugin repo.

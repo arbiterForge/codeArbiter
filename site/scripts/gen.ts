@@ -8,6 +8,8 @@ import { extractHookGates } from "./generator/extract-hook-gates";
 import { renderHooksReference, buildEventMap, type HooksJson } from "./generator/render-hooks-reference";
 import { renderChangelog } from "./generator/render-changelog";
 import { renderConfigurationReference } from "./generator/configuration-reference";
+import { loadAcademySource } from "./academy-source";
+import { generateAcademy } from "./generate-academy";
 
 const here = dirname(fileURLToPath(import.meta.url)); // site/scripts
 const repoRoot = resolve(here, "..", ".."); // -> repo root
@@ -78,3 +80,15 @@ if (existsSync(changelogSourcePath)) {
 } else {
   console.log(`Skipped changelog generation: ${changelogSourcePath} not found`);
 }
+
+// Academy routes are generated from the pinned submodule's publication
+// manifest. Removing the prior generated route directory prevents a lesson
+// dropped from the public inventory from remaining reachable as a stale page.
+const academySource = loadAcademySource(repoRoot);
+const academyDocsRoot = join(here, "..", "src", "content", "docs");
+const academyGeneratedRoot = join(here, "..", "src", "generated");
+const academyResult = generateAcademy(academySource, academyDocsRoot, academyGeneratedRoot);
+console.log(
+  `Generated Academy overview and ${academyResult.sidebarItems.length} public lesson routes ` +
+    `from ${academySource.release} (${academySource.commit})`,
+);
