@@ -114,6 +114,8 @@ describe("generateAcademy", () => {
     expect(lessonPage).toContain('release: "preview-0.30"');
     expect(lessonPage).toContain('commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7"');
     expect(lessonPage).not.toContain("# F01 - Fork, clone, and Doctor safety");
+    expect(lessonPage).toContain('import AcademyCommandPreferences from "../../../components/AcademyCommandPreferences.astro";');
+    expect(lessonPage).toContain('<AcademyCommandPreferences labId="F01-fork-clone-doctor" />');
     expect(lessonPage).toContain('<AcademyLesson labId="F01-fork-clone-doctor" actionId="F01-prepare" />');
     expect(lessonPage).toContain("Continue only after the prepared attempt is ready.");
     expect(lessonPage).toContain("[Academy Home](/academy/#setup)");

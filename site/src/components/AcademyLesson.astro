@@ -38,7 +38,9 @@ const variantLabel = (variant: AcademyCommandVariant) => {
     : variant.operating_system === "macos"
       ? "macOS"
       : variant.operating_system[0].toUpperCase() + variant.operating_system.slice(1);
-  const host = variant.host === "none" ? "" : ` · ${variant.host === "claude-code" ? "Claude Code" : variant.host[0].toUpperCase() + variant.host.slice(1)}`;
+  const host = variant.host === "none"
+    ? ""
+    : ` ${String.fromCharCode(183)} ${variant.host === "claude-code" ? "Claude Code" : variant.host[0].toUpperCase() + variant.host.slice(1)}`;
   return `${platform}${host}`;
 };
 ---
@@ -89,13 +91,26 @@ const variantLabel = (variant: AcademyCommandVariant) => {
 
             {
               action.variants.length > 0 && (
-                <div class="academy-action__commands">
-                  {action.variants.map((variant, index) => (
-                    <details class="academy-command" open={index === 0}>
-                      <summary>{variantLabel(variant)}</summary>
-                      <pre><code class={`language-${variant.language}`}>{variant.command}</code></pre>
-                    </details>
-                  ))}
+                <div class="academy-action__commands" data-academy-command-group>
+                  {action.variants.map((variant) => {
+                    const commandId = `academy-command-${action.id}-${variant.id}`;
+                    const label = variantLabel(variant);
+                    return (
+                      <section
+                        class="academy-command"
+                        data-academy-command-variant
+                        data-os={variant.operating_system}
+                        data-host={variant.host}
+                      >
+                        <p class="academy-command__label" id={`${commandId}-label`}>{label}</p>
+                        <div class="academy-command__shell">
+                          <pre><code id={commandId} class={`language-${variant.language}`} tabindex="0">{variant.command}</code></pre>
+                          {variant.copy && <button type="button" data-academy-copy={commandId} aria-label={`Copy ${label} command`}>Copy</button>}
+                        </div>
+                        {variant.copy && <p class="academy-command__copy-status" data-academy-copy-status aria-live="polite"></p>}
+                      </section>
+                    );
+                  })}
                 </div>
               )
             }
