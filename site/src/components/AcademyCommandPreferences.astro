@@ -1,5 +1,6 @@
 ---
 import { academyLessons } from "../generated/academy-content";
+import { shouldRenderCommandPreferences } from "../scripts/academy-command-preferences";
 
 interface Props {
   labId: string;
@@ -29,10 +30,11 @@ const availableOperatingSystems = operatingSystems.filter((operatingSystem) =>
 const availableHosts = hosts.filter((host) =>
   variants.some((variant) => variant.host === host),
 );
+const shouldRender = shouldRenderCommandPreferences(variants);
 ---
 
 {
-  (availableOperatingSystems.length > 0 || availableHosts.length > 0) && (
+  shouldRender && (
     <ca-academy-preferences class="academy-command-preferences" hidden>
       <div class="academy-command-preferences__intro">
         <strong>Use your setup</strong>
@@ -67,7 +69,7 @@ const availableHosts = hosts.filter((host) =>
 }
 
 <script>
-  import { copyCommand, readPreference, visibleVariantIndexes } from "../scripts/academy-command-preferences";
+  import { copyCommand, readPreferences, visibleVariantIndexes } from "../scripts/academy-command-preferences";
 
   const OPERATING_SYSTEMS = new Set(["windows", "macos", "linux"]);
   const HOSTS = new Set(["claude-code", "codex", "pi"]);
@@ -77,10 +79,7 @@ const availableHosts = hosts.filter((host) =>
       if (this.dataset.initialized === "true") return;
       this.dataset.initialized = "true";
 
-      const preferences = {
-        os: readPreference(window.localStorage, "academy-os", OPERATING_SYSTEMS),
-        host: readPreference(window.localStorage, "academy-host", HOSTS),
-      };
+      const preferences = readPreferences(() => window.localStorage, OPERATING_SYSTEMS, HOSTS);
       const commandGroups = [...document.querySelectorAll<HTMLElement>("[data-academy-command-group]")];
 
       const refresh = () => {

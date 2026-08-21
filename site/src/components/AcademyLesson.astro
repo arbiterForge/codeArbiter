@@ -102,7 +102,7 @@ const variantLabel = (variant: AcademyCommandVariant) => {
                         data-os={variant.operating_system}
                         data-host={variant.host}
                       >
-                        <p id={`${commandId}-label`}>{label}</p>
+                        <p class="academy-command__label" id={`${commandId}-label`}>{label}</p>
                         <div class="academy-command__shell">
                           <pre><code id={commandId} class={`language-${variant.language}`} tabindex="0">{variant.command}</code></pre>
                           {variant.copy && <button type="button" data-academy-copy={commandId} aria-label={`Copy ${label} command`}>Copy</button>}

@@ -12,12 +12,32 @@ export type StorageReader = {
   getItem(key: string): string | null;
 };
 
+export function shouldRenderCommandPreferences(variants: readonly unknown[]): boolean {
+  return variants.length > 0;
+}
+
 export function readPreference(storage: StorageReader, key: string, allowed: Set<string>): string | null {
   try {
     const value = storage.getItem(key);
     return value && allowed.has(value) ? value : null;
   } catch {
     return null;
+  }
+}
+
+export function readPreferences(
+  acquireStorage: () => StorageReader,
+  operatingSystems: Set<string>,
+  hosts: Set<string>,
+): AcademyPreference {
+  try {
+    const storage = acquireStorage();
+    return {
+      os: readPreference(storage, "academy-os", operatingSystems),
+      host: readPreference(storage, "academy-host", hosts),
+    };
+  } catch {
+    return { os: null, host: null };
   }
 }
 

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   copyCommand,
   readPreference,
+  readPreferences,
+  shouldRenderCommandPreferences,
   visibleVariantIndexes,
 } from "../src/scripts/academy-command-preferences";
 
@@ -28,6 +30,19 @@ describe("Academy command preferences", () => {
 
     expect(readPreference(storage, "academy-os", new Set(["windows", "macos", "linux"]))).toBe("linux");
     expect(readPreference(storage, "academy-host", new Set(["codex", "pi"]))).toBeNull();
+  });
+
+  it("keeps command controls usable when acquiring browser storage throws", () => {
+    expect(readPreferences(
+      () => { throw new Error("blocked"); },
+      new Set(["windows", "macos", "linux"]),
+      new Set(["claude-code", "codex", "pi"]),
+    )).toEqual({ os: null, host: null });
+  });
+
+  it("renders the custom element for all/none-only variants so copy handlers still attach", () => {
+    expect(shouldRenderCommandPreferences([{ os: "all", host: "none" }])).toBe(true);
+    expect(shouldRenderCommandPreferences([])).toBe(false);
   });
 
   it("returns a selection fallback when clipboard access is unavailable", async () => {
