@@ -806,6 +806,7 @@ def git_cwd(cmd, root):
 
 _CODEX_EXPLICIT_WORKDIR_TOOLS = frozenset({
     "shell_command", "exec_command", "unified_exec",
+    "functions.exec",
 })
 
 

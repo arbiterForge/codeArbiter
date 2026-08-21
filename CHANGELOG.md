@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.3] - 2026-08-21
+
+### Fixed
+
+- Codex desktop wrapped execution now preserves its explicit worktree directory through the shared H-01 guard. A valid feature-worktree commit is no longer evaluated as an unrelated session checkout on `main`; direct protected-branch commits remain blocked.
+
 ## [2.15.2] — 2026-08-13
 
 ### Fixed

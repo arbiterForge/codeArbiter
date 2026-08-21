@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-08-21
+
+### Fixed
+
+- Codex desktop wrapped execution now carries its explicit worktree directory to H-01. The branch guard allows an intended feature-worktree commit while continuing to block a direct commit on `main`.
+
 ## [0.7.2] — 2026-08-13
 
 ### Fixed

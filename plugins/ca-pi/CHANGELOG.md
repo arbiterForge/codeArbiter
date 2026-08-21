@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-08-21
+
+### Fixed
+
+- Shared hook payload refresh: the explicit-workdir recognition added for Codex desktop wrapped execution is carried by the common guard. Pi does not set this field, so its runtime behavior is unchanged.
+
 ## [0.8.2] - 2026-08-13
 
 ### Fixed
