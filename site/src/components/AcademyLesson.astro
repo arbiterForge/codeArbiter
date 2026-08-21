@@ -94,6 +94,7 @@ const variantLabel = (variant: AcademyCommandVariant) => {
                 <div class="academy-action__commands" data-academy-command-group>
                   {action.variants.map((variant) => {
                     const commandId = `academy-command-${action.id}-${variant.id}`;
+                    const label = variantLabel(variant);
                     return (
                       <section
                         class="academy-command"
@@ -101,10 +102,10 @@ const variantLabel = (variant: AcademyCommandVariant) => {
                         data-os={variant.operating_system}
                         data-host={variant.host}
                       >
-                        <p>{variantLabel(variant)}</p>
+                        <p id={`${commandId}-label`}>{label}</p>
                         <div class="academy-command__shell">
                           <pre><code id={commandId} class={`language-${variant.language}`} tabindex="0">{variant.command}</code></pre>
-                          {variant.copy && <button type="button" data-academy-copy={commandId}>Copy</button>}
+                          {variant.copy && <button type="button" data-academy-copy={commandId} aria-label={`Copy ${label} command`}>Copy</button>}
                         </div>
                         {variant.copy && <p class="academy-command__copy-status" data-academy-copy-status aria-live="polite"></p>}
                       </section>

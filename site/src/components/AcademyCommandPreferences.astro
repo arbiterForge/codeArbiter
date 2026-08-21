@@ -67,6 +67,8 @@ const availableHosts = hosts.filter((host) =>
 }
 
 <script>
+  import { copyCommand, readPreference, visibleVariantIndexes } from "../scripts/academy-command-preferences";
+
   const OPERATING_SYSTEMS = new Set(["windows", "macos", "linux"]);
   const HOSTS = new Set(["claude-code", "codex", "pi"]);
 
@@ -75,32 +77,20 @@ const availableHosts = hosts.filter((host) =>
       if (this.dataset.initialized === "true") return;
       this.dataset.initialized = "true";
 
-      const read = (key: string, allowed: Set<string>) => {
-        try {
-          const value = window.localStorage.getItem(key);
-          return value && allowed.has(value) ? value : null;
-        } catch {
-          return null;
-        }
-      };
       const preferences = {
-        os: read("academy-os", OPERATING_SYSTEMS),
-        host: read("academy-host", HOSTS),
+        os: readPreference(window.localStorage, "academy-os", OPERATING_SYSTEMS),
+        host: readPreference(window.localStorage, "academy-host", HOSTS),
       };
       const commandGroups = [...document.querySelectorAll<HTMLElement>("[data-academy-command-group]")];
 
-      const matches = (variant: HTMLElement) => {
-        const os = variant.dataset.os;
-        const host = variant.dataset.host;
-        return (preferences.os === null || os === "all" || os === preferences.os)
-          && (preferences.host === null || host === "none" || host === preferences.host);
-      };
       const refresh = () => {
         for (const group of commandGroups) {
           const variants = [...group.querySelectorAll<HTMLElement>("[data-academy-command-variant]")];
-          const matching = variants.filter(matches);
-          const visible = matching.length > 0 ? new Set(matching) : new Set(variants);
-          for (const variant of variants) variant.hidden = !visible.has(variant);
+          const visible = new Set(visibleVariantIndexes(
+            variants.map((variant) => ({ os: variant.dataset.os, host: variant.dataset.host })),
+            preferences,
+          ));
+          for (const [index, variant] of variants.entries()) variant.hidden = !visible.has(index);
         }
       };
       const reflect = () => {
@@ -134,17 +124,20 @@ const availableHosts = hosts.filter((host) =>
           const target = document.getElementById(button.dataset.academyCopy ?? "");
           const status = button.closest<HTMLElement>(".academy-command")?.querySelector<HTMLElement>("[data-academy-copy-status]");
           if (!target) return;
-          try {
-            await navigator.clipboard.writeText(target.textContent ?? "");
-            if (status) status.textContent = "Copied.";
-          } catch {
+          const result = await copyCommand(
+            target.textContent ?? "",
+            (text) => navigator.clipboard.writeText(text),
+            () => {
             const range = document.createRange();
             range.selectNodeContents(target);
             const selection = document.getSelection();
             selection?.removeAllRanges();
             selection?.addRange(range);
-            if (status) status.textContent = "Clipboard unavailable. Command selected; press Ctrl+C or Command+C.";
-          }
+            },
+          );
+          if (status) status.textContent = result === "copied"
+            ? "Copied."
+            : "Clipboard unavailable. Command selected; press Ctrl+C or Command+C.";
         });
       }
       reflect();
