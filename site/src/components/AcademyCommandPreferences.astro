@@ -37,31 +37,30 @@ const shouldRender = shouldRenderCommandPreferences(variants);
   shouldRender && (
     <ca-academy-preferences class="academy-command-preferences" hidden>
       <div class="academy-command-preferences__intro">
-        <strong>Use your setup</strong>
-        <p>Choose an operating system or CodeArbiter host to focus every command example in this lesson. Your choices stay on this device.</p>
+        <strong>Show command examples for</strong>
       </div>
       {
         availableOperatingSystems.length > 0 && (
-          <fieldset class="academy-command-preferences__group">
-            <legend>Operating system</legend>
+          <div class="academy-command-preferences__group" role="group" aria-labelledby="academy-operating-system-label">
+            <span class="academy-command-preferences__label" id="academy-operating-system-label">Operating system</span>
             <div>
               {availableOperatingSystems.map((operatingSystem) => (
                 <button type="button" data-academy-os={operatingSystem} aria-pressed="false">{labels[operatingSystem]}</button>
               ))}
             </div>
-          </fieldset>
+          </div>
         )
       }
       {
         availableHosts.length > 0 && (
-          <fieldset class="academy-command-preferences__group">
-            <legend>CodeArbiter host</legend>
+          <div class="academy-command-preferences__group" role="group" aria-labelledby="academy-codearbiter-host-label">
+            <span class="academy-command-preferences__label" id="academy-codearbiter-host-label">CodeArbiter host</span>
             <div>
               {availableHosts.map((host) => (
                 <button type="button" data-academy-host={host} aria-pressed="false">{labels[host]}</button>
               ))}
             </div>
-          </fieldset>
+          </div>
         )
       }
     </ca-academy-preferences>
