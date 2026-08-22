@@ -8,22 +8,22 @@ const styles = readFileSync(join(siteRoot, "src", "styles", "academy.css"), "utf
 const preferenceRule = styles.match(/\.academy-command-preferences \{([^}]*)\}/)?.[1] ?? "";
 
 describe("Academy command preference presentation", () => {
-  it("keeps the selector as a compact lesson toolbar instead of a raised form panel", () => {
-    expect(component).toContain("Show command examples for");
-    expect(preferenceRule).toContain("border-block: 1px solid var(--ca-line);");
-    expect(preferenceRule).not.toContain("background: var(--ca-bg-raised);");
+  it("keeps the setup explanation and choice groups in the original stacked hierarchy", () => {
+    expect(component).toContain("Use your setup");
+    expect(component).toContain("Choose an operating system or CodeArbiter host to focus every command example in this lesson. Your choices stay on this device.");
+    expect(preferenceRule).toContain("display: grid;");
+    expect(preferenceRule).toContain("background: var(--ca-bg-raised);");
   });
 
-  it("keeps each setup group label and its choices on the same compact row when space allows", () => {
-    expect(component).toContain('role="group" aria-labelledby="academy-operating-system-label"');
-    expect(component).toContain('role="group" aria-labelledby="academy-codearbiter-host-label"');
-    expect(styles).toMatch(/\.academy-command-preferences__group \{[\s\S]*align-items: center;/);
-    expect(styles).toMatch(/\.academy-command-preferences__label \{[\s\S]*width: auto;/);
+  it("uses native legends above each choice row", () => {
+    expect(component).toContain('<fieldset class="academy-command-preferences__group">');
+    expect(component).toContain("<legend>Operating system</legend>");
+    expect(component).toContain("<legend>CodeArbiter host</legend>");
   });
 
-  it("gives every operating-system and host choice the same stable control width", () => {
+  it("gives every operating-system and host choice the same stable control size", () => {
     expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*inline-size: 7rem;/);
-    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*block-size: 2\.35rem;/);
+    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*block-size: 2\.75rem;/);
     expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*justify-content: center;/);
   });
 });
