@@ -192,7 +192,7 @@
 .academy-command-preferences__group { display: flex; flex-wrap: wrap; gap: var(--ca-space-2); margin: 0; padding: 0; border: 0; }
 .academy-command-preferences__group legend { width: 100%; margin-block-end: var(--ca-space-2); color: var(--ca-ink-muted); font: 650 var(--ca-text-xs)/1 var(--ca-font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
 .academy-command-preferences__group div { display: flex; flex-wrap: wrap; gap: var(--ca-space-2); }
-.academy-command-preferences button { display: inline-flex; inline-size: 7rem; block-size: 2.35rem; align-items: center; justify-content: center; padding: 0.45rem 0.7rem; }
+.academy-command-preferences button { display: inline-flex; inline-size: 7rem; block-size: 2.75rem; align-items: center; justify-content: center; padding: 0.45rem 0.7rem; }
 .academy-command-preferences button[aria-pressed="true"] { border-color: var(--ca-brand); color: var(--ca-brand-bright); box-shadow: inset 0 -0.18rem 0 var(--ca-brand); }
 
 .academy-action__proof {

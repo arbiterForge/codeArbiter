@@ -21,9 +21,9 @@ describe("Academy command preference presentation", () => {
     expect(component).toContain("<legend>CodeArbiter host</legend>");
   });
 
-  it("gives every operating-system and host choice the same stable control width", () => {
+  it("gives every operating-system and host choice the same stable control size", () => {
     expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*inline-size: 7rem;/);
-    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*block-size: 2\.35rem;/);
+    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*block-size: 2\.75rem;/);
     expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*justify-content: center;/);
   });
 });
