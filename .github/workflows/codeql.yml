@@ -39,7 +39,7 @@ jobs:
             paths-ignore:
               - plugins/ca-pi/tools/node_modules
       - name: Analyze Pi without duplicating default code-scanning uploads
-        uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+        uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         with:
           category: "/language:javascript-typescript"
           output: codeql-results
