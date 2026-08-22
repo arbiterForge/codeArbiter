@@ -22,8 +22,15 @@ describe("Academy command preference presentation", () => {
   });
 
   it("gives every operating-system and host choice the same stable control size", () => {
-    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*inline-size: 7rem;/);
+    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*inline-size: 100%;/);
     expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*block-size: 2\.75rem;/);
     expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*justify-content: center;/);
+  });
+
+  it("keeps each legend above one aligned responsive control grid", () => {
+    expect(styles).toMatch(/\.academy-command-preferences__group \{[^}]*display: grid;/);
+    expect(styles).toMatch(/\.academy-command-preferences__group div \{[^}]*display: grid;[^}]*grid-template-columns: repeat\(auto-fit, minmax\(7rem, 1fr\)\);/);
+    expect(styles).toMatch(/\.academy-command-preferences button \{[\s\S]*inline-size: 100%;/);
+    expect(styles).toMatch(/\.academy-command-preferences__group div button \+ button \{ margin-block-start: 0; \}/);
   });
 });
