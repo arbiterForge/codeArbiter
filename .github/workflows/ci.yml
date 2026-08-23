@@ -86,6 +86,11 @@ on:
       # test_pi_promotion.py guards the promotion workflow itself. A workflow-
       # only edit must start the hooks job that executes that contract suite.
       - ".github/workflows/pi-promotion.yml"
+      - ".github/workflows/codex-desktop-candidate.yml"
+      - ".github/fixtures/codex-skill-resources/**"
+      - ".github/scripts/check_codex_skill_resources.py"
+      - ".github/scripts/test_codex_skill_resources.py"
+      - "docs/reports/codex-skill-resource-resolution.md"
       # The publish mechanics moved out of release.yml into a shared
       # composite action (#382), so the same reasoning covers it.
       - ".github/actions/**"
@@ -110,6 +115,7 @@ jobs:
       hooks: ${{ steps.filter.outputs.hooks }}
       impact: ${{ steps.filter.outputs.impact }}
       manifests: ${{ steps.filter.outputs.manifests }}
+      codex-resources: ${{ steps.filter.outputs.codex-resources }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -266,6 +272,13 @@ jobs:
               - '.gitleaks.toml'
               - '.github/workflows/docs.yml'
               - '.github/workflows/ci.yml'
+            codex-resources:
+              - '.github/fixtures/codex-skill-resources/**'
+              - '.github/scripts/check_codex_skill_resources.py'
+              - '.github/scripts/test_codex_skill_resources.py'
+              - 'docs/reports/codex-skill-resource-resolution.md'
+              - '.github/workflows/codex-desktop-candidate.yml'
+              - '.github/workflows/ci.yml'
             manifests:
               - '**/*.json'
               - '.github/workflows/ci.yml'
@@ -331,6 +344,23 @@ jobs:
         # rule against real throwaway repositories in both directions, including
         # the untagged-but-already-shipped case that produced the issue.
         run: python .github/scripts/test_payload_version_gate.py
+
+  codex-resource-contract:
+    name: "[CHECK] | [CDX ] | Skill resource evidence contract"
+    needs: changes
+    if: needs.changes.outputs.codex-resources == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - name: Test Codex skill-resource and receipt contracts
+        run: python .github/scripts/test_codex_skill_resources.py
+      - name: Validate the tracked fixture without network or credentials
+        run: python .github/scripts/check_codex_skill_resources.py --fixtures-only
 
   coverage-union:
     # Issue #521 / DECISION-0031. The coverage GATE is orchestrator-run (`tdd`
@@ -2130,6 +2160,7 @@ jobs:
       - changes
       - host-descriptors
       - ci-impact
+      - codex-resource-contract
       - tools
       - ca-sandbox-tools
       - ca-pi-checks
@@ -2159,7 +2190,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

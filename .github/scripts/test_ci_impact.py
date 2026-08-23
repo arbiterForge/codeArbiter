@@ -23,6 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+CODEX_DESKTOP_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "codex-desktop-candidate.yml"
 DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
 GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
 # The one audit threshold every dependency graph in this repo is gated at.
@@ -731,6 +732,79 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_codex_desktop_candidate_workflow_is_trusted_narrow_and_pinned(self):
+        workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertNotIn("pull_request:", workflow)
+        permissions = re.search(r"(?ms)^permissions:\n(?P<body>(?:  [^\n]+\n)+)", workflow)
+        self.assertIsNotNone(permissions)
+        self.assertEqual(
+            set(re.findall(r"(?m)^  ([a-z-]+): ([a-z]+)$", permissions.group("body"))),
+            {("contents", "read")},
+        )
+        jobs = workflow_jobs(workflow)
+        self.assertEqual(set(jobs), {"desktop-candidate", "desktop-attestation"})
+        candidate_job = jobs["desktop-candidate"]
+        attestation_job = jobs["desktop-attestation"]
+        self.assertIn("permissions:\n      contents: read", candidate_job)
+        self.assertNotIn("id-token: write", candidate_job)
+        self.assertNotIn("attestations: write", candidate_job)
+        self.assertIn("needs: desktop-candidate", attestation_job)
+        self.assertIn("runs-on: windows-2025", attestation_job)
+        self.assertIn("id-token: write", attestation_job)
+        self.assertIn("attestations: write", attestation_job)
+        self.assertNotIn("Invoke-CodeArbiterDesktopCandidate.ps1", attestation_job)
+        self.assertIn("environment: codex-desktop-candidate", candidate_job)
+        self.assertIn("environment: codex-desktop-candidate", attestation_job)
+        self.assertIn("runs-on: [self-hosted, windows, x64, codex-desktop-ephemeral]", workflow)
+        self.assertNotIn("secrets.", workflow)
+        self.assertNotIn("CODEX_DESKTOP_API_KEY_REF", workflow)
+        self.assertIn("authentication_mode = 'chatgpt-device'", workflow)
+        self.assertIn("user_consent_required = $true", workflow)
+        self.assertIn("persist_auth_artifacts = $false", workflow)
+        self.assertNotIn("desktop-proof-transient.log", workflow)
+        self.assertNotIn("$transientLog", workflow)
+        self.assertIn("& $probe -RequestPath $request -ReceiptPath $receipt *> $null", workflow)
+        precheck = workflow.index("Pre-validate receipt content before attestation")
+        attest = workflow.index("Attest the exact non-secret receipt bytes")
+        verify = workflow.index("Verify receipt schema, candidate bindings, and signer provenance")
+        self.assertLess(precheck, attest)
+        self.assertLess(attest, verify)
+        self.assertIn("--pre-attestation", workflow)
+        self.assertEqual(workflow.count("--desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION"), 3)
+        self.assertEqual(workflow.count("--workflow-run-id $env:TRUSTED_RUN_ID"), 3)
+        self.assertEqual(workflow.count("--workflow-commit $env:TRUSTED_WORKFLOW_COMMIT"), 3)
+        archive_check = workflow.index("--candidate-contract-only")
+        desktop_probe = workflow.index("Exercise actual Store/MSIX desktop")
+        self.assertLess(archive_check, desktop_probe)
+        self.assertIn("persist-credentials: false", workflow)
+        self.assertIn("git -C trusted archive --format=zip", workflow)
+        self.assertIn("refs/pull/$PullRequest/head", workflow)
+        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
+        self.assertIn("actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6", workflow)
+        self.assertIn("actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c", workflow)
+        self.assertIn("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", workflow)
+
+    def test_codex_resource_changes_reach_an_exact_required_lane(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        watched = {
+            ".github/fixtures/codex-skill-resources/**",
+            ".github/scripts/check_codex_skill_resources.py",
+            ".github/scripts/test_codex_skill_resources.py",
+            "docs/reports/codex-skill-resource-resolution.md",
+            ".github/workflows/codex-desktop-candidate.yml",
+        }
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
+        self.assertTrue(watched.issubset(set(push_trigger_paths(ci))))
+        job = workflow_jobs(ci)["codex-resource-contract"]
+        self.assertIn("needs.changes.outputs.codex-resources == 'true'", job)
+        self.assertIn("run: python .github/scripts/test_codex_skill_resources.py", job)
+        self.assertIn(
+            "run: python .github/scripts/check_codex_skill_resources.py --fixtures-only", job
+        )
+        self.assertIn("codex-resource-contract", aggregate_needs(ci))
+        self.assertIn("codex-resource-contract", aggregate_required_results(ci))
+
     def test_every_third_party_action_is_pinned_to_a_commit_sha(self):
         """A `uses:` on a movable tag re-points under us.
 

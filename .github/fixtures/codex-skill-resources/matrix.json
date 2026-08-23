@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "required_cells": [
+    {
+      "surface": "cli",
+      "version": "0.143.0",
+      "desktop_shell_proven": false,
+      "provenance": "npm:@openai/codex@0.143.0",
+      "integrity": "sha512-6h53sNtESIYncWVwU7zEjdVajwcad/0H94MOrgGqhwBMa9RRUDVG6DU9E9euC7yRdtrsKDAkJkz/m5moZ6MU3A==",
+      "native_executable_sha256": "5728e3ddf1480103bad235560e95cf7764ea3069f06029f9b2f39eb74a8066f6"
+    },
+    {
+      "surface": "cli",
+      "version": "0.145.0",
+      "desktop_shell_proven": false,
+      "provenance": "npm:@openai/codex@0.145.0",
+      "integrity": "sha512-/PSPSFujjjmiyVFvG2yu/grOFhsWdokTH8t2KGWhXSo/M5n/dIDsnbsnO82/7bLtIoDuzQf7ATBUMWqPWQINlQ==",
+      "native_executable_sha256": "83751f15cb6a0a7b97df67752c001e3fe1c20e18ffbfec3ff63567296205eb6c"
+    },
+    {
+      "surface": "app-server",
+      "version": "0.143.0",
+      "desktop_shell_proven": false,
+      "provenance": "npm:@openai/codex@0.143.0",
+      "integrity": "sha512-6h53sNtESIYncWVwU7zEjdVajwcad/0H94MOrgGqhwBMa9RRUDVG6DU9E9euC7yRdtrsKDAkJkz/m5moZ6MU3A==",
+      "native_executable_sha256": "5728e3ddf1480103bad235560e95cf7764ea3069f06029f9b2f39eb74a8066f6"
+    },
+    {
+      "surface": "app-server",
+      "version": "0.145.0",
+      "desktop_shell_proven": false,
+      "provenance": "npm:@openai/codex@0.145.0",
+      "integrity": "sha512-/PSPSFujjjmiyVFvG2yu/grOFhsWdokTH8t2KGWhXSo/M5n/dIDsnbsnO82/7bLtIoDuzQf7ATBUMWqPWQINlQ==",
+      "native_executable_sha256": "83751f15cb6a0a7b97df67752c001e3fe1c20e18ffbfec3ff63567296205eb6c"
+    }
+  ],
+  "durable_record": {
+    "status": "pending",
+    "report": "docs/reports/codex-skill-resource-resolution.md",
+    "receipt_directory": "docs/reports/evidence/codex-skill-resource-resolution",
+    "receipt_filename_template": "{surface}-{version}.json",
+    "fixture_sha256_field": "fixture_sha256"
+  }
+}

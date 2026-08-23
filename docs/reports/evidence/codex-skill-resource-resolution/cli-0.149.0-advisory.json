@@ -1,0 +1,68 @@
+{
+  "authentication_mode": "chatgpt",
+  "desktop_shell_proven": false,
+  "effective_approval_policy": "never",
+  "effective_sandbox": "read-only",
+  "entry_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\advisory-0149-auth-20260822T2018Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\skills\\probe\\SKILL.md",
+  "environment": {
+    "base_image": null,
+    "codex_home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\advisory-0149-auth-20260822T2018Z",
+    "execution_environment": "isolated-clean-home",
+    "machine": "AMD64",
+    "os": "nt",
+    "os_identity": "Windows-11-10.0.26200-SP0",
+    "platform": "Windows",
+    "release": "11"
+  },
+  "errors": [
+    "resource reads must name the exact three installed fixture paths",
+    "resource reads must return three distinct nonces",
+    "resource reads do not return the fixture's exact nonces",
+    "operation evidence must contain exactly three completed command events",
+    "operation evidence has no successful direct-read event for probe.md",
+    "operation evidence has no successful direct-read event for SKILL.md",
+    "operation evidence has no successful direct-read event for nested.md",
+    "operation evidence must contain exactly three successful direct reads",
+    "CLI skill invocation evidence: complete skill invocation event set must be exactly one successful codex-skill-resource-probe:probe event at the installed absolute SKILL.md path"
+  ],
+  "errors_sha256": "97c981a03aeb5eca97cc20cee47a553d9cd42017955b045466e56dd53d22c77b",
+  "evidence_class": "advisory",
+  "evidence_contract_sha256": "d7fee53403b48b14ffc5dcf86acaebbff72944ecb25bd0ffbdf4aac11db1d302",
+  "failure": {
+    "classification": "read-only-policy-rejection",
+    "errors_sha256": "97c981a03aeb5eca97cc20cee47a553d9cd42017955b045466e56dd53d22c77b",
+    "operation_transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "53c922fdb983df771b37072c25f9978a4194d6a096c001a8d788feb517b5d039",
+    "stdout_sha256": "ae4d716942c2e2fabc7edf3b924b7b859002425a62dd81c8febfad6a1b23144a"
+  },
+  "fixture_sha256": "a7cb361b93992a3d1d64f87d77650db82847f8a8dc931a1bba01094a63068ec1",
+  "installed_plugin_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\advisory-0149-auth-20260822T2018Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0",
+  "integrity": "sha512-i4dryj2Y1j+00Mb5n+0n71EYnTK9/KDc2cdFo/dXD0d1oTog2bhUssKDEIOnKmnEf51P0Z/HJTWvTKw/UHyOvQ==",
+  "native_executable_sha256": "14b7e6b2356e82d1d9275579eaa588757b4e0a501b65dcc19fccdf77bd83dc00",
+  "network_policy": "model-api-only; tool-network-disabled",
+  "operation_transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "provenance": "npm:@openai/codex@0.149.0",
+  "requested_approval_policy": "never",
+  "requested_sandbox": "read-only",
+  "resource_reads": [
+    {
+      "nonce": "skill-probe-nonce-7f4d",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\advisory-0149-auth-20260822T2018Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\skills\\probe\\SKILL.md"
+    },
+    {
+      "nonce": "unavailable: blocked by filesystem policy",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\advisory-0149-auth-20260822T2018Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\routines\\nested.md"
+    },
+    {
+      "nonce": "unavailable: blocked by filesystem policy",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\advisory-0149-auth-20260822T2018Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\resources\\final.md"
+    }
+  ],
+  "schema_version": 1,
+  "skill_invocation_evidence": null,
+  "stderr_sha256": "53c922fdb983df771b37072c25f9978a4194d6a096c001a8d788feb517b5d039",
+  "stdout_sha256": "ae4d716942c2e2fabc7edf3b924b7b859002425a62dd81c8febfad6a1b23144a",
+  "surface": "cli",
+  "verdict": "FAIL",
+  "version": "0.149.0"
+}
