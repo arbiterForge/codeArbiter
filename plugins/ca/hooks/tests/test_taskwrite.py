@@ -50,6 +50,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -269,6 +270,10 @@ class TaskwriteContentionTest(unittest.TestCase):
         """Launch a REAL taskwrite.py subprocess against the fixture board."""
         env = dict(os.environ)
         env["CLAUDE_PROJECT_DIR"] = self.root
+        # The private hook copy's retry budget is part of this harness, not an
+        # operator-tunable input. An inherited value (especially 0) can make a
+        # correctly contending writer fail soft before the event handshake.
+        env["CA_TEST_LOCK_WAIT"] = str(CONCURRENCY_TEST_WAIT)
         if hold_ms:
             env["CA_TEST_LOCK_HOLD_MS"] = str(hold_ms)
         else:
@@ -349,7 +354,10 @@ class TaskwriteContentionTest(unittest.TestCase):
 
         Genuine overlap is proven by the contended/acquired/release marker
         handshake in `_serialized_add_pair`, without scheduler timing."""
-        p1, p2 = self._serialized_add_pair()
+        # A hostile inherited test knob must not shorten the private copy's
+        # retry budget; `_popen` owns and normalizes it for every child.
+        with mock.patch.dict(os.environ, {"CA_TEST_LOCK_WAIT": "0"}):
+            p1, p2 = self._serialized_add_pair()
 
         rc1, out1, err1 = self._finish(p1)
         rc2, out2, err2 = self._finish(p2)
