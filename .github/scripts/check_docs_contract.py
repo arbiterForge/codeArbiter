@@ -353,7 +353,7 @@ def _html_block_terminator(html_type: str) -> re.Pattern[str] | None:
     if html_type in {"script", "pre", "style", "textarea"}:
         return re.compile(rf"(?i)</{html_type}[ \t]*>")
     return {
-        "comment": re.compile(r"-->"),
+        "comment": re.compile(r"--!?>"),
         "processing": re.compile(r"\?>"),
         "cdata": re.compile(r"\]\]>"),
         "declaration": re.compile(r">"),

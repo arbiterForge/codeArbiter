@@ -72,7 +72,7 @@ ADVISORY_RELEASE = {
 LINK = re.compile(r"\[[^]]+\]\(([^)]+)\)")
 REFERENCE_DEFINITION = re.compile(
     r"(?m)^[ \t]{0,3}\[(?P<label>[^\]\n]+)\]:[ \t]*"
-    r"(?:<(?P<angle>[^>\n]+)>|(?P<plain>(?:\\.|[^\s])+))"
+    r"(?:<(?P<angle>[^>\n]+)>|(?P<plain>(?:\\.|[^\s\\])+))"
     r"(?:[ \t]+(?:\"[^\"\n]*\"|'[^'\n]*'|\([^\)\n]*\)))?[ \t]*$"
 )
 REFERENCE_RESOURCE_LINK = re.compile(
@@ -3504,12 +3504,15 @@ def main(argv: list[str] | None = None) -> int:
                 receipt_path, args.workflow_commit, args.workflow_run_id
             )
             result = validate_desktop_receipt(**validation_arguments, attestation=attestation)
+        public_verdict = "PASS" if result.get("verdict") == "PASS" else "FAIL"
+        raw_errors = result.get("errors")
+        error_count = len(raw_errors) if isinstance(raw_errors, list) else 1
+        public_result = {"error_count": error_count, "verdict": public_verdict}
         if args.json:
-            print(json.dumps(result, indent=2, sort_keys=True))
+            print(json.dumps(public_result, indent=2, sort_keys=True))
         else:
-            for error in result["errors"]:
-                print(f"ERROR: {error}")
-            print(f"desktop receipt {result['verdict']} ({result['receipt_sha256']})")
+            error_label = "error" if error_count == 1 else "errors"
+            print(f"desktop receipt {public_verdict} ({error_count} {error_label})")
         return 0 if result["verdict"] == "PASS" else 1
 
     if args.surface is None or args.codex_version is None:

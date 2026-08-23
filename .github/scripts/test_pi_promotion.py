@@ -1405,6 +1405,25 @@ class DocumentationContractTests(unittest.TestCase):
                 [finding.code for finding in findings], ["DOC-LINK-MISSING"]
             )
 
+    def test_link_scanner_ends_html_comments_at_bang_closer(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "<!-- [ignored](inside.md) --!>\n[missing](missing.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(
+            [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+        )
+
     def test_link_scanner_accepts_github_relative_pull_links(self):
         docs = load_docs_module()
         promotion = load_module()

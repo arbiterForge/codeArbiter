@@ -2342,7 +2342,17 @@ class DesktopReceiptImportTest(CheckerPresentMixin, unittest.TestCase):
 
     def test_pre_attestation_rejects_untrusted_json_before_any_hashing(self):
         valid = json.dumps(self.receipt, sort_keys=True)
-        escaped_secret = r"\u0073\u006b\u002dsecretmaterial123456"
+        escaped_secret = "".join(
+            f"\\u{codepoint:04x}"
+            for codepoint in (
+                0x73, 0x6B, 0x2D, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74,
+                0x6D, 0x61, 0x74, 0x65, 0x72, 0x69, 0x61, 0x6C,
+                0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
+            )
+        )
+        decoded_secret = json.loads(f'"{escaped_secret}"')
+        self.assertIsNotNone(self.checker.SECRET_VALUE.search(decoded_secret))
+        self.assertTrue(self.checker._secret_bearing(decoded_secret))
         cases = {
             "overwritten escaped value": valid.replace(
                 '"package": "ca-codex"',
@@ -2379,7 +2389,15 @@ class DesktopReceiptImportTest(CheckerPresentMixin, unittest.TestCase):
                 self.assertEqual(
                     result["errors"], ["desktop receipt is not valid strict JSON"]
                 )
-                self.assertNotIn("sk-secretmaterial123456", serialized)
+                self.assertEqual(
+                    set(result),
+                    {
+                        "attestation", "candidate_sha256", "desktop_shell_proven",
+                        "errors", "receipt_sha256", "surface", "validation_phase",
+                        "verdict",
+                    },
+                )
+                self.assertNotIn(decoded_secret, serialized)
                 self.assertFalse(digest_calls.called)
 
     def test_valid_pre_attestation_check_is_not_desktop_proof(self):
@@ -2534,6 +2552,77 @@ class CommandInterfaceTest(FakeCodexMixin, CheckerPresentMixin, unittest.TestCas
         self.assertEqual(args.workflow_commit, "1" * 40)
         self.assertEqual(args.candidate_source_commit, "a" * 40)
         self.assertTrue(args.pre_attestation)
+
+    def test_reference_definition_escape_branch_is_disjoint(self):
+        """Escaped characters and ordinary target characters must not overlap."""
+        self.assertIn(r"[^\s\\]", self.checker.REFERENCE_DEFINITION.pattern)
+        self.assertNotIn(r"[^\s]", self.checker.REFERENCE_DEFINITION.pattern)
+
+    def test_desktop_main_emits_only_bounded_validation_status(self):
+        rejected_value = "".join(
+            chr(codepoint)
+            for codepoint in (
+                0x61, 0x70, 0x69, 0x5F, 0x6B, 0x65, 0x79, 0x3D,
+                0x6D, 0x75, 0x73, 0x74, 0x2D, 0x6E, 0x6F, 0x74, 0x2D,
+                0x72, 0x65, 0x61, 0x63, 0x68, 0x2D, 0x6F, 0x75, 0x74,
+                0x70, 0x75, 0x74,
+            )
+        )
+        self.assertIsNotNone(self.checker.SECRET_VALUE.search(rejected_value))
+        cases = (
+            ("PASS", [], 0, "desktop receipt PASS (0 errors)\n"),
+            ("FAIL", [rejected_value], 1, "desktop receipt FAIL (1 error)\n"),
+            ("FAIL", [rejected_value, "second internal error"], 2,
+             "desktop receipt FAIL (2 errors)\n"),
+            ("FAIL", rejected_value, 1, "desktop receipt FAIL (1 error)\n"),
+        )
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            receipt = root / "receipt.json"
+            candidate = root / "candidate"
+            receipt.write_text("{}", encoding="utf-8")
+            candidate.mkdir()
+            arguments = [
+                "--surface", "desktop",
+                "--import-receipt", str(receipt),
+                "--candidate-package", str(candidate),
+                "--candidate-source-commit", "a" * 40,
+                "--candidate-tree", "b" * 40,
+                "--desktop-build", "26.803.10989.0",
+                "--desktop-runtime-version", "0.145.0",
+                "--workflow-run-id", "123456789",
+                "--workflow-commit", "c" * 40,
+                "--pre-attestation",
+            ]
+            for verdict, errors, count, text_output in cases:
+                internal = {
+                    "verdict": verdict,
+                    "errors": errors,
+                    "receipt_sha256": self.checker._sha256_text(rejected_value),
+                    "attestation": {"diagnostic": rejected_value},
+                }
+                for extra in (["--json"], []):
+                    with self.subTest(verdict=verdict, errors=errors, json=bool(extra)):
+                        output = io.StringIO()
+                        with mock.patch.object(
+                            self.checker,
+                            "validate_desktop_receipt",
+                            return_value=internal,
+                        ), mock.patch("sys.stdout", output):
+                            code = self.checker.main(arguments + extra)
+                        rendered = output.getvalue()
+                        self.assertEqual(code, 0 if verdict == "PASS" else 1)
+                        self.assertNotIn(rejected_value, rendered)
+                        self.assertNotIn(
+                            self.checker._sha256_text(rejected_value), rendered
+                        )
+                        if extra:
+                            self.assertEqual(
+                                json.loads(rendered),
+                                {"error_count": count, "verdict": verdict},
+                            )
+                        else:
+                            self.assertEqual(rendered, text_output)
 
 
     def test_parser_accepts_authenticated_home_for_live_backend_only(self):
