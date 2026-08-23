@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.4] - 2026-08-23
+
+### Fixed
+
+- Lock-contention regression tests now use deterministic retry clocks and real-lock event handshakes instead of scheduler-sensitive elapsed-time ceilings and timed holds. This removes intermittent CI failures while preserving the production 0.2-second fail-soft lock budget unchanged.
+
 ## [2.15.3] - 2026-08-21
 
 ### Fixed
