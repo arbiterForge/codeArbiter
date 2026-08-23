@@ -2367,21 +2367,30 @@ class DesktopReceiptImportTest(CheckerPresentMixin, unittest.TestCase):
         for label, raw_receipt in cases.items():
             with self.subTest(label=label):
                 path = self.root / "receipt.json"
-                path.write_text(raw_receipt, encoding="utf-8")
+                original_read_text = Path.read_text
+
+                def injected_read_text(candidate_path, *args, **kwargs):
+                    if candidate_path == path:
+                        return raw_receipt
+                    return original_read_text(candidate_path, *args, **kwargs)
+
                 with mock.patch.object(
-                    self.checker, "sha256_file", wraps=self.checker.sha256_file
-                ) as digest_calls:
-                    result = self.checker.validate_desktop_receipt(
-                        receipt_path=path,
-                        candidate_package=self.candidate,
-                        candidate_source_commit=self.commit,
-                        candidate_tree=self.tree,
-                        desktop_build=self.build,
-                        desktop_runtime_version=self.runtime,
-                        workflow_run_id=self.run_id,
-                        workflow_commit=self.workflow_commit,
-                        attestation=None,
-                    )
+                    Path, "read_text", autospec=True, side_effect=injected_read_text
+                ):
+                    with mock.patch.object(
+                        self.checker, "sha256_file", wraps=self.checker.sha256_file
+                    ) as digest_calls:
+                        result = self.checker.validate_desktop_receipt(
+                            receipt_path=path,
+                            candidate_package=self.candidate,
+                            candidate_source_commit=self.commit,
+                            candidate_tree=self.tree,
+                            desktop_build=self.build,
+                            desktop_runtime_version=self.runtime,
+                            workflow_run_id=self.run_id,
+                            workflow_commit=self.workflow_commit,
+                            attestation=None,
+                        )
                 serialized = json.dumps(result, sort_keys=True)
                 self.assertEqual(result["verdict"], "FAIL", result)
                 self.assertIsNone(result["receipt_sha256"])
