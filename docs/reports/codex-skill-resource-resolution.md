@@ -112,6 +112,11 @@ is promoted into read-only support evidence.
 The tracked backend characterization prerequisite for ADR-0031 is satisfied:
 both supported CLI versions and both supported app-server versions resolve the
 absolute selected skill and follow the identical contained relative resource
-chain under read-only/never policy. The next governed step is ADR-0031
-authoring and explicit lifecycle acceptance. Desktop-shell proof remains a
-separate exact-candidate release gate and is still unproven.
+chain under read-only/never policy. ADR-0031 was accepted on 2026-08-22 with its
+decision content unchanged. The matrix's `durable_record.status: pending` is a
+pre-ingestion declaration by design; the checker derives the terminal
+`durable_evidence.state: complete` result from the bound report and receipt
+bytes without rewriting fixture metadata. After PR 1 lands, the next governed
+implementation boundary is PR 2's root normalization and complete Codex charter
+resolution. Desktop-shell proof remains a separate exact-candidate release
+gate and is still unproven.

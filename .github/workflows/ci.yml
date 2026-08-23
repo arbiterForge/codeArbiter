@@ -58,6 +58,7 @@ on:
       - "README.md"
       - "LICENSE"
       - ".github/workflows/ci.yml"
+      - ".github/actionlint.yaml"
       - ".github/scripts/**"
       - "tools/host_descriptors.py"
       - "tools/build-surface.py"
@@ -91,6 +92,7 @@ on:
       - ".github/scripts/check_codex_skill_resources.py"
       - ".github/scripts/test_codex_skill_resources.py"
       - "docs/reports/codex-skill-resource-resolution.md"
+      - "docs/reports/evidence/codex-skill-resource-resolution/**"
       # The publish mechanics moved out of release.yml into a shared
       # composite action (#382), so the same reasoning covers it.
       - ".github/actions/**"
@@ -272,11 +274,13 @@ jobs:
               - '.gitleaks.toml'
               - '.github/workflows/docs.yml'
               - '.github/workflows/ci.yml'
+              - '.github/actionlint.yaml'
             codex-resources:
               - '.github/fixtures/codex-skill-resources/**'
               - '.github/scripts/check_codex_skill_resources.py'
               - '.github/scripts/test_codex_skill_resources.py'
               - 'docs/reports/codex-skill-resource-resolution.md'
+              - 'docs/reports/evidence/codex-skill-resource-resolution/**'
               - '.github/workflows/codex-desktop-candidate.yml'
               - '.github/workflows/ci.yml'
             manifests:

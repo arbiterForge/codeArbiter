@@ -24,6 +24,7 @@ _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 CODEX_DESKTOP_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "codex-desktop-candidate.yml"
+ACTIONLINT_CONFIG = REPO_ROOT / ".github" / "actionlint.yaml"
 DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
 GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
 # The one audit threshold every dependency graph in this repo is gated at.
@@ -792,7 +793,9 @@ class WorkflowContractTest(unittest.TestCase):
             ".github/scripts/check_codex_skill_resources.py",
             ".github/scripts/test_codex_skill_resources.py",
             "docs/reports/codex-skill-resource-resolution.md",
+            "docs/reports/evidence/codex-skill-resource-resolution/**",
             ".github/workflows/codex-desktop-candidate.yml",
+            ".github/workflows/ci.yml",
         }
         self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
         self.assertTrue(watched.issubset(set(push_trigger_paths(ci))))
@@ -804,6 +807,19 @@ class WorkflowContractTest(unittest.TestCase):
         )
         self.assertIn("codex-resource-contract", aggregate_needs(ci))
         self.assertIn("codex-resource-contract", aggregate_required_results(ci))
+
+    def test_actionlint_knows_the_protected_desktop_runner_label(self):
+        config = ACTIONLINT_CONFIG.read_text(encoding="utf-8")
+        self.assertRegex(config, r"(?m)^self-hosted-runner:\s*$")
+        labels = re.search(
+            r"(?ms)^self-hosted-runner:\s*\n\s+labels:\s*\n(?P<body>(?:\s+-\s+[^\n]+\n?)+)",
+            config,
+        )
+        self.assertIsNotNone(labels)
+        self.assertIn("codex-desktop-ephemeral", labels.group("body"))
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(".github/actionlint.yaml", push_trigger_paths(ci))
+        self.assertIn(".github/actionlint.yaml", paths_filter(ci, "impact"))
 
     def test_every_third_party_action_is_pinned_to_a_commit_sha(self):
         """A `uses:` on a movable tag re-points under us.

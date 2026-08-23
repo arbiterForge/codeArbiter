@@ -66,6 +66,15 @@ class FixtureContractTest(CheckerPresentMixin, unittest.TestCase):
         self.assertEqual(first["fixture_sha256"], second["fixture_sha256"])
         self.assertEqual(len(first["fixture_sha256"]), 64)
 
+    def test_durable_report_records_the_post_acceptance_handoff(self):
+        """The completed evidence report must not route readers back to ADR authoring."""
+        report = (
+            REPO_ROOT / "docs/reports/codex-skill-resource-resolution.md"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("next governed step is ADR-0031\nauthoring", report)
+        self.assertIn("ADR-0031 was accepted", report)
+        self.assertIn("pre-ingestion declaration", report)
+
     def test_link_escape_is_rejected_before_a_host_can_follow_it(self):
         """A link above the plugin root would make a shipped route uncontained."""
         result = self.validate_copy(
