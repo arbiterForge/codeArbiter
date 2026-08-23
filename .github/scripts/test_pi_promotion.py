@@ -717,6 +717,694 @@ class DocumentationContractTests(unittest.TestCase):
             )
         self.assertEqual(findings, [])
 
+    def test_link_scanner_ignores_markdown_inline_code(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Template: `[reviewer](../../agents/<name>.md)`\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(findings, [])
+
+    def test_link_scanner_ignores_multibacktick_inline_code(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Template: `` `[reviewer](../../agents/<name>.md)` ``\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(findings, [])
+
+    def test_link_scanner_ignores_multiline_markdown_inline_code(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "Template: `first line\n[example](missing.md)`\n",
+            "Template: ``first ` line\n[example](missing.md)``\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(findings, [])
+
+    def test_link_scanner_does_not_mask_after_escaped_backtick(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Literal: \\` [missing](missing.md) `\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].code, "DOC-LINK-MISSING")
+
+    def test_link_scanner_does_not_pair_code_delimiters_across_paragraphs(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Before unmatched `\n\n[missing](missing.md) `\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual([finding.code for finding in findings], ["DOC-LINK-MISSING"])
+
+    def test_link_scanner_does_not_pair_code_delimiters_across_fences(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Before unmatched `\n\n```md\nignored\n```\n\n"
+                "[missing](missing.md) `\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual([finding.code for finding in findings], ["DOC-LINK-MISSING"])
+
+    def test_link_scanner_does_not_pair_code_delimiters_across_block_lines(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "# Heading with unmatched `\n[missing](missing.md) `\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual([finding.code for finding in findings], ["DOC-LINK-MISSING"])
+
+    def test_link_scanner_keeps_links_visible_across_adjacent_block_forms(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "Before `\n```md\nignored\n```\n[missing](missing.md) `\n",
+            "- First `\n- [missing](missing.md) `\n",
+            "Before `\n---\n[missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_keeps_links_visible_across_quote_and_setext_boundaries(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "> first `\n>\n> [missing](missing.md) `\n",
+            "Heading `\n===\n[missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_binds_blockquote_boundary_and_multiline_span(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            readme = root / "README.md"
+            readme.write_text(
+                "Before unmatched `\n> [missing](missing.md) `\n",
+                encoding="utf-8",
+            )
+            contract = docs.load_contract(self.broad_current_contract(root))
+            support = promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0))
+            findings = docs.check_documentation(
+                root, contract, support, paths=(Path("README.md"),)
+            )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+            readme.write_text(
+                "> Template: `first line\n> [example](missing.md)`\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root, contract, support, paths=(Path("README.md"),)
+            )
+            self.assertEqual(findings, [])
+
+    def test_link_scanner_keeps_links_visible_across_nested_quote_blocks(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "> # Heading `\n> [missing](missing.md) `\n",
+            "> - first `\n> - [missing](missing.md) `\n",
+            "> Heading `\n> ===\n> [missing](missing.md) `\n",
+            "> Before `\n> ---\n> [missing](missing.md) `\n",
+            "> Before `\n> >\n> [missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_keeps_links_visible_across_nested_list_items(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "- first `\n    - [missing](missing.md) `\n",
+            "1. first `\n    - [missing](missing.md) `\n",
+            "> - first `\n>     - [missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_preserves_indented_markers_in_multiline_code_spans(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "Template: `first\n    - [example](missing.md)`\n",
+            "> Template: `first\n>     - [example](missing.md)`\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(findings, [])
+
+    def test_link_scanner_applies_list_paragraph_interruption_rules(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        ignored_cases = (
+            "Template: `first\n2. [example](missing.md)`\n",
+            "Template: `first\n١. [example](missing.md)`\n",
+            "Template: `first\n１. [example](missing.md)`\n",
+            "Template: `first\n-\n[example](missing.md)`\n",
+            "> Template: `first\n> 2. [example](missing.md)`\n",
+            "> Template: `first\n> -\n> [example](missing.md)`\n",
+        )
+        live_cases = (
+            "Template: `first\n1. [missing](missing.md) `\n",
+            "Template: `first\n01. [missing](missing.md) `\n",
+            "Template: `first\n000000001. [missing](missing.md) `\n",
+            "Template: `first\n- item [missing](missing.md) `\n",
+            "Template: `first\n\n2. [missing](missing.md) `\n",
+            "> Template: `first\n> 1. [missing](missing.md) `\n",
+            "> Template: `first\n> - item [missing](missing.md) `\n",
+        )
+        for text in ignored_cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(findings, [])
+        for text in live_cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_keeps_links_visible_across_quoted_fences(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "> Before `\n> ```md\n> ignored\n> ```\n> [missing](missing.md) `\n",
+            "> > Before `\n> > ~~~md\n> > ignored\n> > ~~~\n"
+            "> > [missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_ends_quoted_fences_at_container_boundary(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "> ```md\n> ignored\n\n[missing](missing.md)\n",
+            "> > ~~~md\n> > ignored\n> [missing](missing.md)\n",
+            "    ```md\n[missing](missing.md)\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_rejects_invalid_backtick_fence_info(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "```bad`\n[missing](missing.md)\n",
+            "> ```bad`\n> [missing](missing.md)\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_keeps_links_visible_across_html_blocks(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "Before `\n<script>\n[ignored](inside.md)\n</script>\n"
+            "[missing](missing.md) `\n",
+            "Before `\n<!-- [ignored](inside.md) -->\n[missing](missing.md) `\n",
+            "> Before `\n> <style>\n> [ignored](inside.md)\n> </style>\n"
+            "> [missing](missing.md) `\n",
+            "Before `\n<div>\n[ignored](inside.md)\n</div>\n\n"
+            "[missing](missing.md) `\n",
+            "Before `\n<table>\n[ignored](inside.md)\n</table>\n\n"
+            "[missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_ignores_type_six_html_block_contents(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "<div>\n[ignored](inside.md)\n</div>\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(findings, [])
+
+    def test_link_scanner_keeps_links_visible_after_list_html_blocks(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "- <script>\n  const value = `\n  </script>\n"
+            "[missing](missing.md) `\n",
+            "1. <!-- ignored `\n   -->\n[missing](missing.md) `\n",
+            "> - <style>\n>   ignored `\n>   </style>\n"
+            "> [missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_keeps_links_visible_after_nested_list_html_blocks(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "- - <script>\n    const value = `\n    </script>\n"
+            "[missing](missing.md) `\n",
+            "1. - <!-- ignored `\n     -->\n[missing](missing.md) `\n",
+            "> - - <style>\n>     ignored `\n>     </style>\n"
+            "> [missing](missing.md) `\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+    def test_link_scanner_tracks_tab_indented_list_html_blocks(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "- <script>\n\tconst value = `\n\t</script>\n"
+            "[missing](missing.md) `\n",
+            "- - <style>\n\tignored `\n\t</style>\n"
+            "[missing](missing.md) `\n",
+            "-\t<script>\n  [missing](missing.md)\n",
+        )
+        for text in cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "-\t<script>\n\t[ignored](inside.md)\n\t</script>\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(findings, [])
+
+    def test_link_scanner_preserves_list_padding_width_rule(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "-     <script>\n  const value = `\n  </script>\n"
+                "[missing](missing.md) `\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+        self.assertEqual(findings, [])
+
+    def test_link_scanner_applies_type_seven_html_block_eligibility(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        live_cases = (
+            "Paragraph\n</script> [missing](missing.md)\n",
+            "Paragraph\n</pre>[missing](missing.md)\n",
+            "Paragraph\n١. <span>\n   [missing](inside.md)\n",
+            "Paragraph\n１. <span>\n   [missing](inside.md)\n",
+        )
+        for text in live_cases:
+            with self.subTest(text=text), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(text, encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            readme = root / "README.md"
+            contract = docs.load_contract(self.broad_current_contract(root))
+            support = promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0))
+            readme.write_text(
+                "Paragraph\n2. <span>\n   [missing](inside.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root, contract, support, paths=(Path("README.md"),)
+            )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+            for text in (
+                "Paragraph\n1. <span>\n   [ignored](inside.md)\n",
+                "Paragraph\n01. <span>\n    [ignored](inside.md)\n",
+                "Paragraph\n000000001. <span>\n           [ignored](inside.md)\n",
+                "Paragraph\n\n2. <span>\n   [ignored](inside.md)\n",
+            ):
+                with self.subTest(text=text):
+                    readme.write_text(text, encoding="utf-8")
+                    findings = docs.check_documentation(
+                        root, contract, support, paths=(Path("README.md"),)
+                    )
+                    self.assertEqual(findings, [])
+
+        for tag in ("<span>", '<custom-element data-kind="example">'):
+            with self.subTest(tag=tag), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                (root / "README.md").write_text(
+                    f"{tag}\n[ignored](inside.md)\n\n[missing](missing.md)\n",
+                    encoding="utf-8",
+                )
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(Path("README.md"),),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Paragraph\n<span> [missing](missing.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "> Paragraph\n> > </script>\n> > [ignored](inside.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+            self.assertEqual(findings, [])
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "> Paragraph\n> </script> [missing](missing.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            readme = root / "README.md"
+            contract = docs.load_contract(self.broad_current_contract(root))
+            support = promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0))
+            readme.write_text(
+                "> Paragraph\n</script>\n[ignored](inside.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root, contract, support, paths=(Path("README.md"),)
+            )
+            self.assertEqual(findings, [])
+
+            readme.write_text(
+                "> Paragraph\n</script> [missing](missing.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root, contract, support, paths=(Path("README.md"),)
+            )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "Paragraph: `first\n</script>\n[example](inside.md)`\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+            self.assertEqual(findings, [])
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "README.md").write_text(
+                "</script>\n[ignored](inside.md)\n\n[missing](missing.md)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("README.md"),),
+            )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
     def test_link_scanner_accepts_github_relative_pull_links(self):
         docs = load_docs_module()
         promotion = load_module()
