@@ -47,6 +47,19 @@ class _CodexHost(hostapi.Host):
     not this module's."""
     name = "codex"
 
+    def plugin_root(self):
+        return self._fixture_plugin_root
+
+
+class _FixtureClaudeHost(hostapi.Host):
+    """Minimal authenticated Claude host for the synthetic payload fixture."""
+
+    def __init__(self, plugin_root):
+        self._fixture_plugin_root = plugin_root
+
+    def plugin_root(self):
+        return self._fixture_plugin_root
+
 
 # --------------------------------------------------------------------- fixtures
 
@@ -97,7 +110,9 @@ class _Fixture(unittest.TestCase):
     def invoke(self, payload, host=None):
         """Run prompt-submit.py's run(host) against `payload` on stdin.
         Returns (rc, stdout, stderr)."""
-        host = host if host is not None else hostapi.Host()
+        host = host if host is not None else _FixtureClaudeHost(self.plugin_root)
+        if isinstance(host, _CodexHost):
+            host._fixture_plugin_root = self.plugin_root
         old_stdin = sys.stdin
         out, err = io.StringIO(), io.StringIO()
         try:

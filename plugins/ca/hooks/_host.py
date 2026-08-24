@@ -25,7 +25,7 @@ import hostapi  # noqa: E402
 
 
 class ClaudeHost(hostapi.Host):
-    """Claude Code host adapter."""
+    """Claude Code host adapter with a matching-only root corroboration."""
 
     def plugin_root(self):
         return hostapi.resolve_plugin_root(
@@ -33,7 +33,6 @@ class ClaudeHost(hostapi.Host):
             manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/_host.py",
             signal_names=("CLAUDE_PLUGIN_ROOT",),
         )
-    """Claude Code — hostapi.Host's defaults ARE this host's behavior."""
 
 
 HOST = ClaudeHost()

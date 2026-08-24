@@ -76,6 +76,10 @@ class _FakeHost(M.hostapi.Host):
     def cmd_ref(self, name):
         return "$$fake-" + name
 
+    def plugin_root(self):
+        """The installed Claude adapter fixture, not core/pysrc itself."""
+        return os.path.join(REPO_ROOT, "plugins", "ca")
+
 
 def _repo(tmp, initialized=True, mode=None, session_id=None):
     """A minimal `.codearbiter` repo under `tmp`. `mode`/`session_id`, when

@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 # #462: an unclosed file handle is not cosmetic on Windows -- it blocks the
@@ -82,7 +83,26 @@ def _read_bytes(path):
         return f.read()
 
 
-class TestFreshInstall(unittest.TestCase):
+class _FixtureHost:
+    """A test-only executing adapter with one authenticated package root."""
+
+    def __init__(self, root_getter):
+        self._root_getter = root_getter
+
+    def plugin_root(self):
+        return self._root_getter()
+
+
+class _WireStatuslineTest(unittest.TestCase):
+    """Run each fixture against its declared executing adapter root."""
+
+    def run(self, result=None):
+        host = _FixtureHost(lambda: self.root)
+        with mock.patch.object(ws._hooklib, "get_host", return_value=host):
+            return super().run(result)
+
+
+class TestFreshInstall(_WireStatuslineTest):
     """Fresh install: no prior statusline → writes ours."""
 
     def setUp(self):
@@ -121,7 +141,7 @@ class TestFreshInstall(unittest.TestCase):
         self.assertTrue(os.path.isfile(absent))
 
 
-class TestInstallWithPriorThirdParty(unittest.TestCase):
+class TestInstallWithPriorThirdParty(_WireStatuslineTest):
     """Install over a third-party statusline → backs up theirs, wires ours."""
 
     def setUp(self):
@@ -164,7 +184,7 @@ class TestInstallWithPriorThirdParty(unittest.TestCase):
         self.assertEqual(_read(spath)[ws.BACKUP_KEY], prior)
 
 
-class TestUninstall(unittest.TestCase):
+class TestUninstall(_WireStatuslineTest):
     """Uninstall → removes our line, restores the backed-up prior setting."""
 
     def setUp(self):
@@ -224,6 +244,7 @@ class TestUninstall(unittest.TestCase):
         ws.main(["install", "--settings", spath,
                  "--plugin-root", self.root, "--interp", "python"])
         source_root = _make_source_plugin_root(self.tmp.name)
+        self.root = source_root
         ws.main(["install", "--settings", spath,
                  "--plugin-root", source_root, "--interp", "python"])
         installed = _read(spath)
@@ -252,7 +273,7 @@ class TestUninstall(unittest.TestCase):
         self.assertNotIn(ws.BACKUP_KEY, data)
 
 
-class TestLegacySourceMigration(unittest.TestCase):
+class TestLegacySourceMigration(_WireStatuslineTest):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = _make_plugin_root(self.tmp.name)
@@ -348,7 +369,7 @@ class TestOwnershipDetection(unittest.TestCase):
         self.assertTrue(ws.is_ours({"type": "command", "command": command}))
 
 
-class TestIdempotentRefresh(unittest.TestCase):
+class TestIdempotentRefresh(_WireStatuslineTest):
     """Already our line → re-install refreshes cleanly, no duplicate."""
 
     def setUp(self):
@@ -377,7 +398,7 @@ class TestIdempotentRefresh(unittest.TestCase):
         self.assertIn("statusline.py", cmd)
 
 
-class TestCorruptedJson(unittest.TestCase):
+class TestCorruptedJson(_WireStatuslineTest):
     """Corrupted JSON input → aborts safely (no file written / overwritten)."""
 
     def setUp(self):
@@ -410,7 +431,7 @@ class TestCorruptedJson(unittest.TestCase):
         self.assertIn("not valid JSON", content)
 
 
-class TestStatusSubcommand(unittest.TestCase):
+class TestStatusSubcommand(_WireStatuslineTest):
     """status subcommand → prints current state, changes nothing."""
 
     def setUp(self):
@@ -478,7 +499,7 @@ class TestStatusSubcommand(unittest.TestCase):
         self.assertIn("YES", output)
 
 
-class TestSpinnerVerbsFreshInstall(unittest.TestCase):
+class TestSpinnerVerbsFreshInstall(_WireStatuslineTest):
     """Fresh install: no prior spinnerVerbs → writes ours."""
 
     def setUp(self):
@@ -514,7 +535,7 @@ class TestSpinnerVerbsFreshInstall(unittest.TestCase):
         self.assertEqual(sv.get("mode"), "replace")
 
 
-class TestSpinnerVerbsWithPriorCustomVerbs(unittest.TestCase):
+class TestSpinnerVerbsWithPriorCustomVerbs(_WireStatuslineTest):
     """Install over existing user spinnerVerbs → backs theirs up, sets ours."""
 
     def setUp(self):
@@ -543,7 +564,7 @@ class TestSpinnerVerbsWithPriorCustomVerbs(unittest.TestCase):
         self.assertEqual(backup, self.prior_verbs)
 
 
-class TestSpinnerVerbsUninstall(unittest.TestCase):
+class TestSpinnerVerbsUninstall(_WireStatuslineTest):
     """Uninstall → removes our verbs, restores prior."""
 
     def setUp(self):
@@ -571,7 +592,7 @@ class TestSpinnerVerbsUninstall(unittest.TestCase):
         self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
 
 
-class TestSpinnerVerbsUninstallNoPrior(unittest.TestCase):
+class TestSpinnerVerbsUninstallNoPrior(_WireStatuslineTest):
     """Uninstall when no prior verbs → removes our key entirely."""
 
     def setUp(self):
@@ -597,7 +618,7 @@ class TestSpinnerVerbsUninstallNoPrior(unittest.TestCase):
         self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
 
 
-class TestSpinnerVerbsIdempotent(unittest.TestCase):
+class TestSpinnerVerbsIdempotent(_WireStatuslineTest):
     """Re-install refreshes verb list cleanly, no duplicate backup."""
 
     def setUp(self):
@@ -624,7 +645,7 @@ class TestSpinnerVerbsIdempotent(unittest.TestCase):
         self.assertGreater(len(verbs), 0)
 
 
-class TestRefreshStalePathOnSessionStart(unittest.TestCase):
+class TestRefreshStalePathOnSessionStart(_WireStatuslineTest):
     """Regression (#fix): a ca-owned statusLine whose command points at an OLD
     plugin-version path must be REFRESHED to the current renderer path on its own
     — without a manual re-install. Previously nothing re-wired after a plugin
@@ -714,6 +735,7 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         # that would 404 — leave settings.json untouched (no mtime churn).
         bare = os.path.join(self.tmp.name, "bareplugin")
         os.makedirs(os.path.join(bare, "hooks"))  # hooks/ but NO statusline.py
+        self.root = bare
         import time
         mtime_before = os.path.getmtime(self.settings)
         time.sleep(0.05)
@@ -736,7 +758,7 @@ class TestRefreshStalePathOnSessionStart(unittest.TestCase):
         self.assertNotIn("2.0.1", cmd)
 
 
-class TestNonDurableRootIsNeverPinned(unittest.TestCase):
+class TestNonDurableRootIsNeverPinned(_WireStatuslineTest):
     """Found in-session on 2026-07-25, after it broke the maintainer's
     statusline three times in one day.
 
@@ -761,6 +783,7 @@ class TestNonDurableRootIsNeverPinned(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.worktree_root = _make_worktree_plugin_root(self.tmp.name)
         self.durable_root = _make_plugin_root(self.tmp.name)
+        self.root = self.worktree_root
         self.stale_cmd = (
             '"python" "C:\\Users\\me\\.claude\\plugins\\cache\\codearbiter\\ca'
             '\\2.0.1\\hooks\\statusline.py"')
@@ -790,6 +813,7 @@ class TestNonDurableRootIsNeverPinned(unittest.TestCase):
     def test_refresh_from_durable_root_still_heals(self):
         # NOT a feature kill-switch: a genuine plugin-cache update still
         # re-points the pin at the new version's renderer.
+        self.root = self.durable_root
         ws.main(["refresh", "--settings", self.settings,
                  "--plugin-root", self.durable_root, "--interp", "python"])
         cmd = _read(self.settings)["statusLine"]["command"]
@@ -815,6 +839,7 @@ class TestNonDurableRootIsNeverPinned(unittest.TestCase):
         with open(os.path.join(root, ".git"), "w", encoding="utf-8",
                   newline="\n") as f:
             f.write("gitdir: C:/Users/me/codeArbiter/.git/worktrees/ca-feature\n")
+        self.root = root
         ws.main(["refresh", "--settings", self.settings,
                  "--plugin-root", root, "--interp", "python"])
         self.assertEqual(_read_bytes(self.settings), self.before)
@@ -834,6 +859,7 @@ class TestNonDurableRootIsNeverPinned(unittest.TestCase):
         self.assertEqual(_read_bytes(self.settings), self.before)
 
     def test_install_from_durable_root_still_wires(self):
+        self.root = self.durable_root
         ws.main(["install", "--settings", self.settings,
                  "--plugin-root", self.durable_root, "--interp", "python"])
         cmd = _read(self.settings)["statusLine"]["command"]
@@ -855,6 +881,38 @@ class TestNonDurableRootIsNeverPinned(unittest.TestCase):
                      "--plugin-root", self.worktree_root])
         self.assertIn("settings.json", captured.getvalue())
         self.assertEqual(_read_bytes(self.settings), self.before)
+
+
+class TestPluginRootBoundary(_WireStatuslineTest):
+    """An explicit path corroborates, never selects, the executing package."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = _make_plugin_root(self.tmp.name)
+        self.foreign_root = _make_plugin_root(
+            os.path.join(self.tmp.name, "foreign"))
+        self.settings = _make_settings(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_explicit_root_mismatch_is_rejected_before_wiring(self):
+        # Mutation killed: returning --plugin-root directly permits this
+        # executing adapter to wire any foreign executable path.
+        with self.assertRaises(SystemExit) as caught:
+            ws.main(["status", "--settings", self.settings,
+                     "--plugin-root", self.foreign_root])
+        self.assertIn("authenticated", str(caught.exception))
+
+    def test_explicit_root_cannot_bypass_missing_adapter_boundary(self):
+        # Mutation killed: an explicit root skips the authenticated executing
+        # host and succeeds even when that host cannot establish its boundary.
+        with mock.patch.object(
+                ws._hooklib, "get_host",
+                side_effect=ws.hostapi.PluginRootError("missing adapter boundary")):
+            with self.assertRaises(ws.hostapi.PluginRootError):
+                ws.main(["status", "--settings", self.settings,
+                         "--plugin-root", self.root])
 
 
 if __name__ == "__main__":

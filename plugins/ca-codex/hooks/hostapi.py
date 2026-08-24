@@ -80,10 +80,15 @@ def resolve_plugin_root(authority_file, *, adapter_name, manifest_relpath,
     anchor_relpath = _safe_relative_path(anchor_relpath, "anchor path")
     env = os.environ if environment is None else environment
 
-    source = os.path.realpath(os.path.abspath(authority_file))
-    root = os.path.dirname(os.path.dirname(source))
+    # Keep the package boundary lexical until after its parent directories are
+    # derived. If hooks/hostapi.py itself is a symlink, realpathing it first
+    # would re-home this adapter in a complete, matching foreign package.
+    lexical_authority = os.path.abspath(authority_file)
+    root = os.path.realpath(os.path.dirname(os.path.dirname(lexical_authority)))
+    source = os.path.realpath(lexical_authority)
     anchor = os.path.realpath(os.path.join(root, anchor_relpath))
-    if not _inside(root, anchor) or anchor != source or not os.path.isfile(anchor):
+    if (not _inside(root, source) or not _inside(root, anchor) or
+            anchor != source or not os.path.isfile(anchor)):
         raise PluginRootError(
             f"executing adapter anchor is outside or missing from its package: {source}")
 
@@ -313,10 +318,11 @@ class Host:
         return git_worktree_main_root(root) or root
 
     def plugin_root(self):
-        """The plugin payload root: CLAUDE_PLUGIN_ROOT when set, else derived
-        from this file's own location (<root>/hooks/hostapi.py -> <root>) —
-        exactly the pre-seam per-entry-script derivation, which resolved
-        relative to a file in the same hooks/ directory."""
+        """The authenticated payload root derived from this executing module.
+
+        CLAUDE_PLUGIN_ROOT may corroborate that derived root, but can never
+        select a different adapter package.
+        """
         return resolve_plugin_root(
             __file__, adapter_name=self.adapter_name,
             manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/hostapi.py",

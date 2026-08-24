@@ -63,28 +63,65 @@ def _load_codex_host():
             sys.modules["hostapi"] = prior
 
 
+@contextlib.contextmanager
+def _codex_root_signals(native=None, legacy=None):
+    """Set only the Codex root signals for one actual-adapter seam call."""
+    names = ("PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT")
+    prior = {name: os.environ.get(name) for name in names}
+    try:
+        for name, value in (("PLUGIN_ROOT", native),
+                            ("CLAUDE_PLUGIN_ROOT", legacy)):
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+        yield
+    finally:
+        for name, value in prior.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+
 class ResolverContractTests(unittest.TestCase):
-    def test_codex_native_root_cannot_redirect_execution(self):
-        # Mutation killed: returning PLUGIN_ROOT before the executing adapter's
-        # root redirects a real hook into another valid-looking package.
-        foreign = tempfile.TemporaryDirectory()
-        old_native = os.environ.get("PLUGIN_ROOT")
-        old_legacy = os.environ.get("CLAUDE_PLUGIN_ROOT")
-        try:
-            os.environ["PLUGIN_ROOT"] = foreign.name
-            os.environ.pop("CLAUDE_PLUGIN_ROOT", None)
+    def test_codex_actual_seam_requires_native_root_signal(self):
+        # Mutation killed: dropping required_signal_names from CodexHost makes
+        # a native Codex hook silently fall back to its file-relative package.
+        with _codex_root_signals():
             with self.assertRaises(RuntimeError):
                 _load_codex_host().plugin_root()
-        finally:
-            foreign.cleanup()
-            if old_native is None:
-                os.environ.pop("PLUGIN_ROOT", None)
-            else:
-                os.environ["PLUGIN_ROOT"] = old_native
-            if old_legacy is None:
-                os.environ.pop("CLAUDE_PLUGIN_ROOT", None)
-            else:
-                os.environ["CLAUDE_PLUGIN_ROOT"] = old_legacy
+
+    def test_codex_actual_seam_accepts_matching_native_root(self):
+        # Mutation killed: removing PLUGIN_ROOT from signal_names rejects the
+        # native corroboration supplied by Codex's executing adapter.
+        root = os.path.realpath(os.path.dirname(CODEX_HOOKS))
+        with _codex_root_signals(native=root):
+            self.assertEqual(_load_codex_host().plugin_root(), root)
+
+    def test_codex_actual_seam_warns_for_matching_legacy_alias(self):
+        # Mutation killed: removing legacy_signal_names or the legacy signal
+        # accepts the alias silently instead of retaining its migration notice.
+        root = os.path.realpath(os.path.dirname(CODEX_HOOKS))
+        warning = io.StringIO()
+        with _codex_root_signals(native=root, legacy=root):
+            with contextlib.redirect_stderr(warning):
+                self.assertEqual(_load_codex_host().plugin_root(), root)
+        self.assertIn("CLAUDE_PLUGIN_ROOT is deprecated", warning.getvalue())
+
+    def test_codex_actual_seam_rejects_mismatching_legacy_alias(self):
+        # Mutation killed: removing the legacy signal allows a mismatching
+        # compatibility alias to redirect unnoticed.
+        root = os.path.realpath(os.path.dirname(CODEX_HOOKS))
+        with tempfile.TemporaryDirectory() as temporary:
+            foreign = _package(
+                temporary, adapter="ca-codex",
+                manifest=(".codex-plugin/plugin.json",
+                          {"name": "ca-codex", "version": "0.7.3"}),
+            )
+            with _codex_root_signals(native=root, legacy=foreign):
+                with self.assertRaises(RuntimeError):
+                    _load_codex_host().plugin_root()
 
     def test_file_root_is_authoritative_when_no_optional_signal_is_set(self):
         # Mutation killed: consulting an unset/ambient value instead of the
@@ -155,6 +192,35 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
                     anchor, adapter_name="ca",
+                    manifest_relpath=".claude-plugin/plugin.json",
+                    anchor_relpath="hooks/hostapi.py", environment={},
+                )
+
+    def test_symlinked_anchor_cannot_rehome_into_matching_foreign_package(self):
+        # Mutation killed: realpathing authority_file BEFORE deriving its root
+        # lets a lexical ca package borrow a complete, matching foreign ca
+        # package and authenticate that foreign package as its own execution.
+        with tempfile.TemporaryDirectory() as temporary:
+            lexical_root = _package(temporary, adapter="lexical-ca",
+                                    manifest=(".claude-plugin/plugin.json",
+                                              {"name": "ca", "version": "1.2.3"}))
+            foreign_root = _package(temporary, adapter="foreign-ca",
+                                    manifest=(".claude-plugin/plugin.json",
+                                              {"name": "ca", "version": "1.2.3"}))
+            lexical_anchor = os.path.join(lexical_root, "hooks", "hostapi.py")
+            foreign_anchor = os.path.join(foreign_root, "hooks", "hostapi.py")
+            os.remove(lexical_anchor)
+            try:
+                os.symlink(foreign_anchor, lexical_anchor)
+            except (NotImplementedError, OSError) as error:
+                self.skipTest(f"symlink creation unavailable: {error}")
+
+            expected_lexical_root = os.path.realpath(
+                os.path.dirname(os.path.dirname(os.path.abspath(lexical_anchor))))
+            self.assertEqual(expected_lexical_root, os.path.realpath(lexical_root))
+            with self.assertRaises(hostapi.PluginRootError):
+                hostapi.resolve_plugin_root(
+                    lexical_anchor, adapter_name="ca",
                     manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
