@@ -1,0 +1,235 @@
+name: Codex desktop candidate evidence
+
+# This trusted default-branch definition is dormant until an approved external
+# ephemeral Windows boundary and protected environment are configured. Defining
+# the contract does not provision or invoke any of those resources.
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: Pull request whose exact head is candidate commit C
+        required: true
+        type: string
+      candidate_commit:
+        description: Exact 40-hex commit C
+        required: true
+        type: string
+      candidate_tree:
+        description: Exact 40-hex tree for commit C
+        required: true
+        type: string
+      candidate_archive_sha256:
+        description: Expected deterministic git-archive SHA-256
+        required: true
+        type: string
+      desktop_build:
+        description: Exact Store/MSIX desktop build under test
+        required: true
+        type: string
+      desktop_runtime_version:
+        description: Exact bundled/runtime version under test
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-desktop-candidate-${{ inputs.pull_request_number }}-${{ inputs.candidate_commit }}
+  cancel-in-progress: false
+
+jobs:
+  desktop-candidate:
+    name: "[GATE ] | [CDX ] | Actual desktop candidate"
+    permissions:
+      contents: read
+    environment: codex-desktop-candidate
+    runs-on: [self-hosted, windows, x64, codex-desktop-ephemeral]
+    timeout-minutes: 90
+    steps:
+      - name: Check out the trusted default-branch verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prove exact PR head, commit, tree, and deterministic archive
+        shell: pwsh
+        env:
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+          EXPECTED_ARCHIVE_SHA256: ${{ inputs.candidate_archive_sha256 }}
+          PULL_REQUEST_NUMBER: ${{ inputs.pull_request_number }}
+          TRUSTED_REF: ${{ github.ref }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          if ($env:TRUSTED_REF -ne 'refs/heads/main') { throw 'workflow must be dispatched from main' }
+          if ($env:CANDIDATE_COMMIT -cnotmatch '^[0-9a-f]{40}$') { throw 'candidate commit must be 40 lowercase hex' }
+          if ($env:CANDIDATE_TREE -cnotmatch '^[0-9a-f]{40}$') { throw 'candidate tree must be 40 lowercase hex' }
+          if ($env:EXPECTED_ARCHIVE_SHA256 -cnotmatch '^[0-9a-f]{64}$') { throw 'archive digest must be 64 lowercase hex' }
+          if ($env:PULL_REQUEST_NUMBER -notmatch '^[1-9][0-9]*$') { throw 'pull request number must be positive' }
+          $PullRequest = $env:PULL_REQUEST_NUMBER
+          git -C trusted fetch --no-tags origin "+refs/pull/$PullRequest/head:refs/remotes/origin/candidate-pr"
+          if ($LASTEXITCODE -ne 0) { throw 'could not fetch the target pull request head' }
+          $head = (git -C trusted rev-parse refs/remotes/origin/candidate-pr).Trim()
+          if ($head -cne $env:CANDIDATE_COMMIT) { throw 'candidate commit is not the exact pull request head' }
+          $tree = (git -C trusted rev-parse "$($env:CANDIDATE_COMMIT)^{tree}").Trim()
+          if ($tree -cne $env:CANDIDATE_TREE) { throw 'candidate tree does not match commit C' }
+          $archive = Join-Path $env:RUNNER_TEMP 'ca-codex-candidate.zip'
+          git -C trusted archive --format=zip --output="$archive" $env:CANDIDATE_COMMIT -- plugins/ca-codex
+          if ($LASTEXITCODE -ne 0) { throw 'candidate archive build failed' }
+           $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
+           if ($actual -cne $env:EXPECTED_ARCHIVE_SHA256) { throw 'candidate archive digest mismatch' }
+
+      - name: Validate candidate archive contract before desktop execution
+        shell: pwsh
+        run: |
+          python trusted/.github/scripts/check_codex_skill_resources.py --candidate-contract-only --candidate-package "$env:RUNNER_TEMP/ca-codex-candidate.zip" --json
+
+      - name: Exercise actual Store/MSIX desktop through approved external boundary
+        shell: pwsh
+        env:
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+          DESKTOP_BUILD: ${{ inputs.desktop_build }}
+          DESKTOP_RUNTIME_VERSION: ${{ inputs.desktop_runtime_version }}
+          TRUSTED_WORKFLOW_COMMIT: ${{ github.sha }}
+          TRUSTED_RUN_ID: ${{ github.run_id }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          $probe = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1'
+          if (-not (Test-Path -LiteralPath $probe -PathType Leaf)) { throw 'approved desktop automation boundary is unavailable' }
+          $request = Join-Path $env:RUNNER_TEMP 'desktop-proof-request.json'
+          $receipt = Join-Path $env:RUNNER_TEMP 'codex-desktop-candidate-receipt.json'
+          @{
+            candidate_archive = (Join-Path $env:RUNNER_TEMP 'ca-codex-candidate.zip')
+            candidate_commit = $env:CANDIDATE_COMMIT
+            candidate_tree = $env:CANDIDATE_TREE
+            desktop_build = $env:DESKTOP_BUILD
+            desktop_runtime_version = $env:DESKTOP_RUNTIME_VERSION
+            workflow_commit = $env:TRUSTED_WORKFLOW_COMMIT
+            run_id = $env:TRUSTED_RUN_ID
+            protected_environment = 'codex-desktop-candidate'
+            authentication_mode = 'chatgpt-device'
+            user_consent_required = $true
+            requested_approval = 'never'
+            required_effective_approval = 'never'
+            requested_sandbox = 'read-only'
+            required_effective_sandbox = 'read-only'
+            persist_auth_artifacts = $false
+            persist_screenshots = $false
+            persist_raw_ui_logs = $false
+            persist_crash_dumps = $false
+          } | ConvertTo-Json | Set-Content -LiteralPath $request -Encoding utf8NoBOM
+          try {
+            & $probe -RequestPath $request -ReceiptPath $receipt *> $null
+            if ($LASTEXITCODE -ne 0) { throw 'desktop automation boundary failed' }
+          } finally {
+            Remove-Item -LiteralPath $request -Force -ErrorAction SilentlyContinue
+          }
+          if (-not (Test-Path -LiteralPath $receipt -PathType Leaf)) { throw 'desktop receipt was not produced' }
+
+      - name: Pre-validate receipt content before attestation
+        shell: pwsh
+        env:
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+          DESKTOP_BUILD: ${{ inputs.desktop_build }}
+          DESKTOP_RUNTIME_VERSION: ${{ inputs.desktop_runtime_version }}
+          TRUSTED_WORKFLOW_COMMIT: ${{ github.sha }}
+          TRUSTED_RUN_ID: ${{ github.run_id }}
+        run: |
+          python trusted/.github/scripts/check_codex_skill_resources.py --surface desktop --desktop-build $env:DESKTOP_BUILD --desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION --workflow-run-id $env:TRUSTED_RUN_ID --workflow-commit $env:TRUSTED_WORKFLOW_COMMIT --import-receipt "$env:RUNNER_TEMP/codex-desktop-candidate-receipt.json" --candidate-package "$env:RUNNER_TEMP/ca-codex-candidate.zip" --candidate-source-commit $env:CANDIDATE_COMMIT --candidate-tree $env:CANDIDATE_TREE --pre-attestation --json
+
+      - name: Transfer only the pre-validated candidate and non-secret receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codex-desktop-candidate-transfer-${{ inputs.candidate_commit }}
+          path: |
+            ${{ runner.temp }}/ca-codex-candidate.zip
+            ${{ runner.temp }}/codex-desktop-candidate-receipt.json
+          if-no-files-found: error
+          retention-days: 1
+          include-hidden-files: false
+          overwrite: false
+
+  desktop-attestation:
+    name: "[GATE ] | [CDX ] | Trusted desktop attestation"
+    needs: desktop-candidate
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    environment: codex-desktop-candidate
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - name: Check out the trusted default-branch verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Download the candidate and receipt into the clean attestation job
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: codex-desktop-candidate-transfer-${{ inputs.candidate_commit }}
+          path: ${{ runner.temp }}/codex-desktop-transfer
+
+      - name: Revalidate transferred bytes before attestation
+        shell: pwsh
+        env:
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+          DESKTOP_BUILD: ${{ inputs.desktop_build }}
+          DESKTOP_RUNTIME_VERSION: ${{ inputs.desktop_runtime_version }}
+          EXPECTED_ARCHIVE_SHA256: ${{ inputs.candidate_archive_sha256 }}
+          TRUSTED_WORKFLOW_COMMIT: ${{ github.sha }}
+          TRUSTED_RUN_ID: ${{ github.run_id }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          $archive = Join-Path $env:RUNNER_TEMP 'codex-desktop-transfer/ca-codex-candidate.zip'
+          $receipt = Join-Path $env:RUNNER_TEMP 'codex-desktop-transfer/codex-desktop-candidate-receipt.json'
+          $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
+          if ($actual -cne $env:EXPECTED_ARCHIVE_SHA256) { throw 'transferred archive digest mismatch' }
+          python trusted/.github/scripts/check_codex_skill_resources.py --candidate-contract-only --candidate-package $archive --json
+          if ($LASTEXITCODE -ne 0) { throw 'transferred candidate contract validation failed' }
+          python trusted/.github/scripts/check_codex_skill_resources.py --surface desktop --desktop-build $env:DESKTOP_BUILD --desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION --workflow-run-id $env:TRUSTED_RUN_ID --workflow-commit $env:TRUSTED_WORKFLOW_COMMIT --import-receipt $receipt --candidate-package $archive --candidate-source-commit $env:CANDIDATE_COMMIT --candidate-tree $env:CANDIDATE_TREE --pre-attestation --json
+          if ($LASTEXITCODE -ne 0) { throw 'transferred receipt pre-attestation validation failed' }
+
+      - name: Attest the exact non-secret receipt bytes
+        id: attest
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: ${{ runner.temp }}/codex-desktop-transfer/codex-desktop-candidate-receipt.json
+
+      - name: Verify receipt schema, candidate bindings, and signer provenance
+        shell: pwsh
+        env:
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+          DESKTOP_BUILD: ${{ inputs.desktop_build }}
+          DESKTOP_RUNTIME_VERSION: ${{ inputs.desktop_runtime_version }}
+          TRUSTED_WORKFLOW_COMMIT: ${{ github.sha }}
+          TRUSTED_RUN_ID: ${{ github.run_id }}
+        run: |
+          python trusted/.github/scripts/check_codex_skill_resources.py --surface desktop --desktop-build $env:DESKTOP_BUILD --desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION --workflow-run-id $env:TRUSTED_RUN_ID --workflow-commit $env:TRUSTED_WORKFLOW_COMMIT --import-receipt "$env:RUNNER_TEMP/codex-desktop-transfer/codex-desktop-candidate-receipt.json" --candidate-package "$env:RUNNER_TEMP/codex-desktop-transfer/ca-codex-candidate.zip" --candidate-source-commit $env:CANDIDATE_COMMIT --candidate-tree $env:CANDIDATE_TREE --json
+
+      - name: Store only the validated non-secret receipt and detached bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codex-desktop-candidate-${{ inputs.candidate_commit }}
+          path: |
+            ${{ runner.temp }}/codex-desktop-transfer/codex-desktop-candidate-receipt.json
+            ${{ steps.attest.outputs.bundle-path }}
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: false
+          overwrite: false

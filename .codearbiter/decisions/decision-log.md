@@ -1455,3 +1455,103 @@ Scored against the alternative — serializing the read-modify-write with `_hook
 `core/pysrc/_modelib.py` gains `mode_entry_dir` / `mode_entry_path` / `session_has_entry` and drops the retry loop; `session-start.py`'s legacy-conversion check moves from a raw map membership test to `session_has_entry`; `_hooklib._STALE_FLOWS` points at the directory and gains `_mode_plane_active_since`, which also fixes an unrelated session's write resetting a stale session's staleness clock. Regenerated into the three vendored `plugins/*/hooks/` copies. The spec's State line is amended in place; `docs/hooks.md` and the dual-host concurrency section of `site/src/content/docs/getting-started/claude-code-and-codex.md` are corrected, the latter having documented the now-fixed race as accepted debt.
 
 ---
+
+## DECISION-0047 - adr-0031-authored - Internal generated kernel, host-native roots, and Codex resource charters
+
+**Date:** 2026-08-22
+**Status:** proposed
+**Supersedes:** DECISION-0011
+**Decided by:** SUaDtL@users.noreply.github.com - approved the six migration positions on 2026-08-21 and explicitly approved the internal kernel packaging boundary on 2026-08-22.
+**Decision category:** architecture / host packaging and dispatch
+**Artifact-section-hash:** d853b7cbef6e4587af607c03ca20877ef33299eb0998ea10c568898cb8cbd369
+
+### Variance summary
+- **Artifact position:** `.codearbiter/plans/cross-host-identity-packaging-migration.md` under `## Recommended architecture decision` specifies host-native root resolution, Codex resource charters, dispatch policy, and bounded compatibility; the user later fixed the kernel packaging boundary.
+- **Scaffold position:** `core/pysrc/`, `core/surface/`, `core/hosts.json`, `tools/sync-core.py`, and `tools/build-surface.py` already implement an internal canonical source with generated independently versioned adapters, while current `ca-codex` omits the charter payload.
+- **Status type:** open-decision-closure
+
+### Decision
+Use the existing `core/` plus deterministic generators as the internal `ca-core` source of truth, not a separately published or runtime package. Publish Claude and Codex as independently versioned host-native adapters, keep Pi Forge-only, resolve roots by validated host-native evidence, and ship all Codex charters as generated resources dispatched through host threads. This partially supersedes only ADR-0011's `.codex/agents/*.toml` scaffolding fallback; the rest of ADR-0011 remains in force.
+
+### SMARTS rationale
+Maintainable and Reliable are decisive: the existing canonical source plus checked generation preserves one behavior contract without adding a fourth release unit or runtime installation coupling. Testable is strong because source-to-payload drift, root precedence, complete route closure, and each supported host can be verified independently. Securable favors file/module-derived roots, corroborating environment values, containment checks, and fail-closed isolation over ambient aliases or project-scaffolded agents. Available and Scalable favor separate host-native packages because one adapter's distribution or host drift does not make the shared governance source unavailable to the other. Precedent: DECISION-0011 established build-time vendoring instead of runtime shared imports; DECISION-0015 extended that generated kernel to Pi; DECISION-0043 kept Pi's native publication route package-specific.
+
+### Implementation implication
+ADR-0031 governs the canonical kernel, generators, Claude/Codex/Pi adapter payloads, route-closure and portability checks, payload version gates, and host-specific release evidence. PR 2 must change canonical source and generated outputs atomically, add all Codex charter resources and dispatch policy, preserve the legacy Codex alias only for the approved window, and block release until exact-candidate Windows desktop proof succeeds without API-key billing or fabricated equivalence.
+
+---
+
+## DECISION-0048 - adr-0031-record-correction - Align the mutable plan and bind its canonical UTF-8 section hash
+
+**Date:** 2026-08-22
+**Status:** proposed
+**Supersedes:** DECISION-0047
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user's 2026-08-22 zero-API-key and internal-kernel approvals control; this entry corrects their durable plan/log representation without changing the decision.
+**Decision category:** record correction / architecture
+**Artifact-section-hash:** 850636eb9e7ef34cf165473f3e6e26d2c1b81bcdd04ce4dffff2aa474b199bdc
+
+### Variance summary
+- **Artifact position:** The mutable migration plan retained an obsolete API-key desktop lane and unauthored-ADR statement after the user prohibited API-key/API-billed substitution, approved ChatGPT browser/device authorization within included access, approved the internal `core/` plus generators boundary, and the four-cell prerequisite passed.
+- **Scaffold position:** ADR-0031 and DECISION-0047 already record the current zero-API-key, internal-kernel architecture as `proposed`; the plan and DECISION-0047's PowerShell-decoded artifact hash lagged that state.
+- **Status type:** divergent
+
+### Decision
+Keep ADR-0031's architecture decision unchanged and proposed. Align the mutable plan to the approved ChatGPT browser/device included-access lane, explicitly prohibit API-key/API-billed substitution, record the backend prerequisite complete and ADR-0031 authored but unratified, and bind this forward correction to the canonical raw-UTF-8 plan-section SHA-256. DECISION-0048 supersedes DECISION-0047 only as the current plan/hash record; it does not rewrite or broaden ADR-0031's Decision-5-only partial supersession of ADR-0011.
+
+### SMARTS rationale
+Recording-only correction. Reliable and Testable require the mutable plan, proposed ADR, and recomputable section hash to agree byte-for-byte; Securable requires the user's no-API-key boundary to replace the obsolete credential lane everywhere active. No architectural option was reopened and no acceptance was inferred.
+
+### Implementation implication
+Reviewers resolve ADR-0031 authoring through DECISION-0048 and SHA-256 `850636eb9e7ef34cf165473f3e6e26d2c1b81bcdd04ce4dffff2aa474b199bdc`; DECISION-0047 remains immutable history of the original authoring record and its corrected H-05 append. Exact-candidate Windows desktop proof remains a release blocker and now uses only explicit ChatGPT browser/device authorization within included access.
+
+---
+
+## DECISION-0049 - adr-0031-ratified - ADR-0031 accepted
+
+**Date:** 2026-08-22
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com - direct ratification after the exact proposed ADR and definitive independent PASS were presented: "Ratify ADR-0031: transition it from proposed to accepted with its content unchanged."
+**Decision category:** architecture lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0031 was authored as `proposed`, corrected forward through DECISION-0048 without changing its architecture, and independently reviewed PASS.
+- **Scaffold position:** n/a - this is the explicit lifecycle transition of the reviewed authored record.
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0031 is accepted with decision content unchanged. Only the authoritative `status:` frontmatter and its mirrored `## Status` text transition from proposed to accepted; the internal generated-kernel boundary, host-native root and Codex resource/dispatch contracts, compatibility window, zero-API-key release boundary, Pi Forge-only positioning, and ADR-0011 Decision-5-only partial supersession remain exactly as reviewed.
+
+### SMARTS rationale
+Recording-only lifecycle entry. The architecture rationale remains in ADR-0031 and DECISION-0048; this entry records the repository user's explicit post-review ratification and preserves the rule that authoring approval, tests, and reviewer PASS cannot self-ratify an ADR.
+
+### Implementation implication
+ADR-0031 now governs its declared paths and unblocks the next governed PR 1 delivery contract. It does not itself authorize staging, committing, pushing, opening or merging a pull request, payload implementation, release, or publication; those actions remain controlled by the campaign's next explicit execution contract and repository gates.
+
+---
+
+## DECISION-0050 - adr-0031-ratification-plan-sync - Bind the accepted lifecycle and ChatGPT-device receipt schema
+
+**Date:** 2026-08-22
+**Status:** accepted
+**Supersedes:** DECISION-0048
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user's direct ADR-0031 ratification and prior zero-API-key approval control this forward synchronization.
+**Decision category:** record correction / architecture lifecycle
+**Artifact-section-hash:** f6fbcf403075c02015bcf0e784a072bce0e21db218dca7591ee6bfb4cb58e4e8
+
+### Variance summary
+- **Artifact position:** After ADR-0031 moved to `accepted`, the mutable migration plan still described it as proposed/unratified and one PR 1 candidate-receipt task still named `api-key` authentication despite the approved ChatGPT browser/device included-access lane.
+- **Scaffold position:** Accepted ADR-0031 and DECISION-0049 already record unchanged architecture, explicit ratification, and the zero-API-key release boundary; only mutable plan lifecycle/schema wording and DECISION-0048's prior plan-section hash lagged that state.
+- **Status type:** divergent
+
+### Decision
+Keep accepted ADR-0031's architecture content unchanged. Align the mutable plan to the explicit ratification, replace the stale candidate-receipt `api-key` label with `chatgpt-device`, retain the prohibition on API-key/API-billed substitution, and bind this forward synchronization to the canonical raw-UTF-8 plan-section SHA-256. DECISION-0050 supersedes DECISION-0048 only as the current plan/hash record; DECISION-0049 remains the authoritative lifecycle acceptance record.
+
+### SMARTS rationale
+Recording-only synchronization. Reliable and Testable require the mutable plan, accepted ADR lifecycle, receipt schema, and recomputable section hash to agree. Securable requires the approved no-extra-spend authentication boundary to be explicit at every active candidate-evidence seam. No architecture option was reopened and no additional authority was inferred.
+
+### Implementation implication
+PR 1 reviewers resolve the current plan record through DECISION-0050 and SHA-256 `f6fbcf403075c02015bcf0e784a072bce0e21db218dca7591ee6bfb4cb58e4e8`. Exact-candidate Windows desktop proof remains deferred to its governed release gate and can be satisfied only by explicit ChatGPT browser/device authorization within included access; no API-key or API-billed substitute is permitted.
+
+---
