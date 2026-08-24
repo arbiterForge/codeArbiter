@@ -296,7 +296,15 @@ def scenario_env(path_value, fixture):
            if k.upper() not in ("PATH", "PYTHONHOME", "PYTHONPATH", "VIRTUAL_ENV",
                                  "HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH")}
     env["PATH"] = path_value
-    env["CLAUDE_PLUGIN_ROOT"] = _CURRENT_PLUGIN_ROOT[0]
+    if _CURRENT_PLUGIN_ROOT[0] == CODEX_PLUGIN_ROOT:
+        # Codex's native hook contract supplies PLUGIN_ROOT. Its legacy
+        # alias is covered by the resolver suite; omitting it here keeps this
+        # cold-install smoke focused on native hook execution.
+        env.pop("CLAUDE_PLUGIN_ROOT", None)
+        env["PLUGIN_ROOT"] = _CURRENT_PLUGIN_ROOT[0]
+    else:
+        env.pop("PLUGIN_ROOT", None)
+        env["CLAUDE_PLUGIN_ROOT"] = _CURRENT_PLUGIN_ROOT[0]
     env["CLAUDE_PROJECT_DIR"] = fixture
     # Sandbox the home dir. Hooks resolve ~/.claude/settings.json via
     # expanduser("~") — notably session-start.py's statusLine self-heal, which

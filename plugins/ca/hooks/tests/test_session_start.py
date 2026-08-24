@@ -441,13 +441,17 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_main_heals_stale_pin_in_dormant_repo(self):
+        host = _mod.hostapi.Host()
         cwd = os.getcwd()
         os.chdir(self.repo)
         try:
-            # expanduser("~") -> our fake HOME, so settings_path resolves into it;
-            # CLAUDE_PLUGIN_ROOT -> the real plugin so statusline.py exists.
+            # The fixture runs the live entry but deliberately injects the
+            # copied payload through main's existing Host seam. An ambient
+            # root may only corroborate the executing module, so it cannot
+            # redirect that live module to this fixture.
             with mock.patch.object(os.path, "expanduser", return_value=self.home), \
-                 mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
+                 mock.patch.object(_mod, "get_host", return_value=host), \
+                 mock.patch.object(host, "plugin_root", return_value=self.plugin), \
                  contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
@@ -502,13 +506,13 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
         cwd = os.getcwd()
         os.chdir(self.repo)
         try:
-            # expanduser("~") -> our fake HOME, so IF the heal ran it would
-            # resolve into it; CLAUDE_PLUGIN_ROOT -> the real plugin so
-            # statusline.py exists (proving a skip, not a load-time failure).
+            # The copied payload is an explicit Host-seam fixture, not an
+            # ambient root for the live adapter under test.
             with mock.patch.object(os.path, "expanduser", return_value=self.home), \
-                 mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
                  mock.patch.object(_mod, "get_host",
                                     return_value=no_statusline_host), \
+                 mock.patch.object(no_statusline_host, "plugin_root",
+                                   return_value=self.plugin), \
                  contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):

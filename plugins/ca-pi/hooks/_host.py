@@ -10,6 +10,7 @@ import hostapi  # noqa: E402
 
 class PiHost(hostapi.Host):
     name = "pi"
+    adapter_name = "@arbiterforge/ca-pi"
     command_noun = "command"
     has_statusline = False
     has_read_tool = True
@@ -40,7 +41,10 @@ class PiHost(hostapi.Host):
         return hostapi.git_toplevel() or os.getcwd()
 
     def plugin_root(self):
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return hostapi.resolve_plugin_root(
+            __file__, adapter_name=self.adapter_name,
+            manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/_host.py",
+        )
 
     def manifest_relpath(self):
         return "package.json"

@@ -27,11 +27,103 @@
 # Behavioral contract for M1: under Claude Code, everything routed through
 # this seam resolves to byte-identical results as the pre-seam inline code.
 
+import json
 import os
+import re
 import subprocess
 import sys
 
 from _gitexec import git_executable
+
+
+class PluginRootError(RuntimeError):
+    """A host adapter's installed package boundary cannot be authenticated."""
+
+
+_VERSION_RE = re.compile(
+    r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.-]*)?(?:\+[0-9A-Za-z][0-9A-Za-z.-]*)?$")
+
+
+def _safe_relative_path(value, label):
+    """Reject an absolute or traversing adapter-relative path before joining."""
+    if not isinstance(value, str) or not value:
+        raise PluginRootError(f"{label} must be a non-empty relative path")
+    normalized = os.path.normpath(value)
+    if (os.path.isabs(value) or normalized == os.pardir or
+            normalized.startswith(os.pardir + os.sep)):
+        raise PluginRootError(f"{label} escapes the adapter: {value!r}")
+    return normalized
+
+
+def _inside(root, candidate):
+    """Whether normalized ``candidate`` is contained by normalized ``root``."""
+    try:
+        return os.path.commonpath((root, candidate)) == root
+    except ValueError:  # distinct Windows volumes are never contained
+        return False
+
+
+def resolve_plugin_root(authority_file, *, adapter_name, manifest_relpath,
+                        anchor_relpath, environment=None, signal_names=(),
+                        required_signal_names=(), legacy_signal_names=()):
+    """Return the authenticated root of the executing adapter, or fail closed.
+
+    The authority is the file/module that is already executing. Environment
+    variables may only corroborate that exact real path; none can select a
+    different, merely plausible package. ``anchor_relpath`` and the manifest
+    are constrained inside that root so traversal and symlink escapes cannot
+    authenticate an external file.
+    """
+    if not isinstance(adapter_name, str) or not adapter_name:
+        raise PluginRootError("adapter name must be a non-empty string")
+    manifest_relpath = _safe_relative_path(manifest_relpath, "manifest path")
+    anchor_relpath = _safe_relative_path(anchor_relpath, "anchor path")
+    env = os.environ if environment is None else environment
+
+    source = os.path.realpath(os.path.abspath(authority_file))
+    root = os.path.dirname(os.path.dirname(source))
+    anchor = os.path.realpath(os.path.join(root, anchor_relpath))
+    if not _inside(root, anchor) or anchor != source or not os.path.isfile(anchor):
+        raise PluginRootError(
+            f"executing adapter anchor is outside or missing from its package: {source}")
+
+    manifest = os.path.realpath(os.path.join(root, manifest_relpath))
+    if not _inside(root, manifest) or not os.path.isfile(manifest):
+        raise PluginRootError(
+            f"{adapter_name}: required manifest is missing or outside the adapter: {manifest}")
+    try:
+        with open(manifest, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError) as error:
+        raise PluginRootError(
+            f"{adapter_name}: required manifest is unreadable: {manifest} ({error})") from error
+    name = data.get("name") if isinstance(data, dict) else None
+    version = data.get("version") if isinstance(data, dict) else None
+    if name != adapter_name:
+        raise PluginRootError(
+            f"adapter manifest mismatch at {manifest}: expected {adapter_name!r}, got {name!r}")
+    if not isinstance(version, str) or not _VERSION_RE.fullmatch(version):
+        raise PluginRootError(
+            f"adapter manifest has invalid version at {manifest}: {version!r}")
+
+    for signal in required_signal_names:
+        if not env.get(signal):
+            raise PluginRootError(
+                f"{adapter_name}: required {signal} is absent; executing root is {root}")
+    for signal in signal_names:
+        value = env.get(signal)
+        if not value:
+            continue
+        claimed = os.path.realpath(os.path.abspath(value))
+        if claimed != root:
+            raise PluginRootError(
+                f"{adapter_name}: {signal} root {claimed} disagrees with "
+                f"executing adapter root {root}")
+        if signal in legacy_signal_names:
+            sys.stderr.write(
+                f"codeArbiter: {signal} is deprecated for {adapter_name}; "
+                "accepted only as matching corroboration.\n")
+    return root
 
 
 def git_toplevel(cwd=None):
@@ -130,6 +222,7 @@ class Host:
     """
 
     name = "claude"
+    adapter_name = "ca"
 
     # Capability flags — what surfaces this host actually has. A hook that
     # heals/queries a statusline gates on has_statusline; a hook registered
@@ -224,10 +317,11 @@ class Host:
         from this file's own location (<root>/hooks/hostapi.py -> <root>) —
         exactly the pre-seam per-entry-script derivation, which resolved
         relative to a file in the same hooks/ directory."""
-        env = os.environ.get("CLAUDE_PLUGIN_ROOT")
-        if env:
-            return env
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return resolve_plugin_root(
+            __file__, adapter_name=self.adapter_name,
+            manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/hostapi.py",
+            signal_names=("CLAUDE_PLUGIN_ROOT",),
+        )
 
     def manifest_relpath(self):
         """The plugin manifest's path, relative to plugin_root() (#263,
