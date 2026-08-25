@@ -17,7 +17,7 @@ the gates that fit it — and nothing it doesn't need. Everything still exits th
   anti-slop copy pass on any user-facing doc in the change; `commit-gate`.
 - **Anti-slop copy pass** — for any user-facing doc the change touches (repo-root community docs
   and `docs/**`; not codeArbiter's own framework bodies), load
-  `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/INDEX.md`, then `core.md` and the
+  [includes/anti-slop-design/INDEX.md](../../includes/anti-slop-design/INDEX.md), then `core.md` and the
   `medium-documents` leaf (§7.A.1), and run the §3.A em-dash ban and the §3.B copy self-audit over
   the authored prose before `commit-gate`. The `H-13` PostToolUse reminder surfaces §3.A separator
   dashes as you write, so the pass is a confirmation, not a discovery.

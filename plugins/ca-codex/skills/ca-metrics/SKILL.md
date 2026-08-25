@@ -26,7 +26,7 @@ glance; reach for `$ca-audit` when you need the full evidentiary packet.
    applies the default of 20).
 
    ```
-   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "<project-root>"
+   "$PY" "[hooks/metrics.py](../../hooks/metrics.py)" --root "<project-root>"
    ```
 
    > **`ensure_ascii` note — do not remove this.** `metrics.py` calls `json.dumps`
@@ -39,7 +39,7 @@ glance; reach for `$ca-audit` when you need the full evidentiary packet.
 
    With a custom window size:
    ```
-   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/metrics.py" --root "<project-root>" --window N
+   "$PY" "[hooks/metrics.py](../../hooks/metrics.py)" --root "<project-root>" --window N
    ```
    Replace `N` with the integer the user supplied.
 

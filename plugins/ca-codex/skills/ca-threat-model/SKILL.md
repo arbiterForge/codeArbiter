@@ -10,7 +10,7 @@ Optional, lightweight pre-implementation security review for a sensitive change 
 
 ## Routes to
 
-`security-architecture` (`${CLAUDE_PLUGIN_ROOT}/routines/security-architecture/SKILL.md`). The skill reads:
+`security-architecture` ([routines/security-architecture/SKILL.md](../../routines/security-architecture/SKILL.md)). The skill reads:
 
 - `<project-root>/.codearbiter/security-controls.md` — compliance requirements.
 - `<project-root>/.codearbiter/decisions/` — existing security-relevant ADRs.

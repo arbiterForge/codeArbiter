@@ -8,7 +8,7 @@ Every host-facing markdown surface is generated from this tree by
 | `commands/<n>.md` | `commands/<n>.md` | `skills/ca-<n>/SKILL.md` | `skills/ca-<n>/SKILL.md` |
 | `skills/**` | `skills/**` | `routines/**` | `routines/**` |
 | `includes/**` | `includes/**` | `includes/**` | `includes/**` |
-| `agents/**` | `agents/**` | not rendered | `agents/**` (explicit child input, outside discovery roots) |
+| `agents/**` | `agents/**` | reserved for Task 3 resource-charter generation; never native registration | `agents/**` (explicit child input, outside discovery roots) |
 | `COMMANDS.md`, `SPRINT.md`, `arbiter.md` | same name | same name | same name |
 | generated catalog | none | `skills/INDEX.md` | `SKILLS.md` |
 
@@ -21,8 +21,11 @@ including orphans). Workflow: edit the template here, run
 
 ## Grammar
 
-- `{{PLUGIN_ROOT}}`, `{{PROJECT_DIR}}`, and `{{CMD:name}}` resolve from the
-  selected descriptor's `tokens` and `command_form` values.
+- `{{PROJECT_DIR}}` and `{{CMD:name}}` resolve from the selected descriptor's
+  `tokens` and `command_form` values. `{{PLUGIN_ROOT}}` remains Claude-native
+  where Claude parses it; Codex renders ordinary Markdown resources as
+  normalized POSIX links relative to the generated file and reserves
+  `${PLUGIN_ROOT}` for hook configuration; Pi retains file-relative semantics.
 - The `IF:<host> … ELSE … END` conditional form accepts any name declared in
   `core/hosts.json`; an unknown condition tag is a hard schema error. Regions
   are single-level, and a marker alone on its line leaves no blank residue.

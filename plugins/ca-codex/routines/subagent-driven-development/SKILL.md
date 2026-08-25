@@ -38,12 +38,12 @@ Gate: exactly one task selected, dependency-clean, with its spec obligation and 
 ## Phase 2 — Implementation dispatch · gate: BLOCK
 
 **Farm path (when `<slug>.plan.json` exists alongside the `.md` plan):** skip the subagent dispatch
-loop below and follow `${CLAUDE_PLUGIN_ROOT}/routines/subagent-driven-development/references/farm-dispatch.md`.
+loop below and follow [routines/subagent-driven-development/references/farm-dispatch.md](references/farm-dispatch.md).
 The farm path replaces only the *authoring* step for the plan's tasks (cheap Zen workers under hard
 gates instead of premium subagents); it does **not** replace review — every task the farm reports green
 is still routed through Phases 3–5 before acceptance. The cost arbitrage is in who *writes* the code,
 never in whether it is *reviewed*. In brief: select a model (canary-probe with a cache→websearch
-fallback ladder), dispatch `${CLAUDE_PLUGIN_ROOT}/tools/farm.js`, honor a circuit-breaker abort as a hard-gate STOP, then for
+fallback ladder), dispatch [tools/farm.js](../../tools/farm.js), honor a circuit-breaker abort as a hard-gate STOP, then for
 each result either accept-after-Phases-3–5 (green) or re-dispatch via premium Phase 2 (escalate).
 Results stream to `.farm/farm-results.jsonl` and are consumed in completion order — Phase 3 + Phase 5
 per green task as it lands, Phase 4 still the once-per-scope barrier (reconcile against `farm-report.json`
@@ -53,10 +53,10 @@ on abort). The reference has the full step-by-step.
 
 **Normal path (no `plan.json`):** dispatch ONE fresh subagent for the selected task — `backend-author`, `frontend-author`, or
 `infra-author` by the scope mapping in `tech-stack.md`
-(`${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`). A fresh context per task is the whole point: no carried-over
+([agents/<name>.md](../../agents/<name>.md)). A fresh context per task is the whole point: no carried-over
 assumptions, no accumulated drift.
 
-The subagent works test-first by routing through the `tdd` skill (`${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md`) — no implementation code before
+The subagent works test-first by routing through the `tdd` skill ([routines/tdd/SKILL.md](../tdd/SKILL.md)) — no implementation code before
 `tdd` Phase 1. Brief it with the task's path set, its spec obligation, and its verification command.
 Nothing else from prior tasks leaks in.
 
@@ -84,13 +84,13 @@ costs more context than the work and catches nothing the batch diff doesn't; the
 where review pays. (A scope of one task reviews that task's diff — same rule, degenerate case.)
 
 Dispatch the reviewers applicable to what the combined diff touches, then `finding-triage`
-(`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) to classify every finding by severity. Select
+([agents/finding-triage.md](../../agents/finding-triage.md)) to classify every finding by severity. Select
 reviewers by the diff, not blanket — dispatching an irrelevant reviewer wastes a context:
 
-- `security-reviewer` (`${CLAUDE_PLUGIN_ROOT}/agents/security-reviewer.md`) — any security-relevant path (authn/authz, deploy, CI, trust boundary).
-- `auth-crypto-reviewer` (`${CLAUDE_PLUGIN_ROOT}/agents/auth-crypto-reviewer.md`) — auth, crypto, key, or secret changes.
-- `dependency-reviewer` (`${CLAUDE_PLUGIN_ROOT}/agents/dependency-reviewer.md`) — `package.json` / lockfile / base-image changes.
-- `migration-reviewer` (`${CLAUDE_PLUGIN_ROOT}/agents/migration-reviewer.md`) — DB migration add/modify.
+- `security-reviewer` ([agents/security-reviewer.md](../../agents/security-reviewer.md)) — any security-relevant path (authn/authz, deploy, CI, trust boundary).
+- `auth-crypto-reviewer` ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) — auth, crypto, key, or secret changes.
+- `dependency-reviewer` ([agents/dependency-reviewer.md](../../agents/dependency-reviewer.md)) — `package.json` / lockfile / base-image changes.
+- `migration-reviewer` ([agents/migration-reviewer.md](../../agents/migration-reviewer.md)) — DB migration add/modify.
 
 (Do NOT dispatch `grader` or `scout` — they are INTERNAL to `decision-variance` and must never be
 dispatched here.) If the change touches none of the above domains, the quality bar is `tdd`'s own gates
@@ -107,7 +107,7 @@ until this passes.
 ## Phase 5 — Verification · gate: BLOCK
 
 Verification-before-completion: apply the shared fresh-run discipline in
-`${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`, with **the task's verification command from the
+[includes/fresh-verification.md](../../includes/fresh-verification.md), with **the task's verification command from the
 plan** as the target. Run it yourself in a clean invocation; do not accept a logged result from Phase 2.
 A non-zero exit, or output that does not demonstrate the obligation, returns the task to Phase 2.
 

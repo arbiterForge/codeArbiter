@@ -6,7 +6,7 @@ Executed by `tribunal-lens-reviewer` under the `architecture` assignment. Write 
 The assigned path slice plus the `inventory.md` import/caller map. Coupling, dead code, abstraction quality, module sizing.
 
 ## Required reading
-- `${CLAUDE_PLUGIN_ROOT}/routines/tribunal/references/ai-markers.md` — the structural thresholds the lens checklist cites.
+- [routines/tribunal/references/ai-markers.md](../ai-markers.md) — the structural thresholds the lens checklist cites.
 - `<project-root>/.codearbiter/coding-standards.md` — the conventions structure is judged against; `inventory.md` in the run dir — the import/caller map.
 
 ## Checklist

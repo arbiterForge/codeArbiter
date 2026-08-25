@@ -20,7 +20,7 @@ coverage. This is that coverage.
 
 ## Routes to
 
-The `post-merge-cleanup` skill (`${CLAUDE_PLUGIN_ROOT}/routines/post-merge-cleanup/SKILL.md`),
+The `post-merge-cleanup` skill ([routines/post-merge-cleanup/SKILL.md](../../routines/post-merge-cleanup/SKILL.md)),
 which owns the containment proof, the artifact classification, and the per-item
 confirmations.
 

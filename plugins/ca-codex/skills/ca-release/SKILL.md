@@ -43,7 +43,7 @@ There is no version or `--auto` argument. The version is always derived from the
 
 ## Routes to
 
-`release` (`${CLAUDE_PLUGIN_ROOT}/routines/release/SKILL.md`), which is authoritative for the phase contents and gates summarized above.
+`release` ([routines/release/SKILL.md](../../routines/release/SKILL.md)), which is authoritative for the phase contents and gates summarized above.
 
 ## When NOT to use
 

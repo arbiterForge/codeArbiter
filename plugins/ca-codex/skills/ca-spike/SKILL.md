@@ -28,7 +28,7 @@ it never merges, never PRs, and never becomes the implementation. What survives 
      committed findings file, review it, and commit that one file through `$ca-commit`; do not
      merge the spike branch. Then delete the spike branch. If the answer warrants building, hand the
      findings to `$ca-feature` — the spike file seeds
-     `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/routines/brainstorming/SKILL.md`); the spike code is reference material, never the implementation.
+     `brainstorming` ([routines/brainstorming/SKILL.md](../../routines/brainstorming/SKILL.md)); the spike code is reference material, never the implementation.
    - **Timebox expired, no answer** → record that in the findings file and use the same findings-only
      transfer before deleting the spike branch.
 

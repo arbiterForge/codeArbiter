@@ -52,7 +52,7 @@ that names every member, never an implied yes.
    `git stash show`). Report-and-route only: never discard a stash, reset, or push.
 5. **Advisory board-drift sweep** — run `git log` over the recent merge window
    (since the last `ca`-scoped tag, or a rolling 30-day window when no tag exists)
-   and pipe that text to `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/boardsync.py" reconcile`. Resolve `$PY`
+   and pipe that text to `"$PY" "[hooks/boardsync.py](../../hooks/boardsync.py)" reconcile`. Resolve `$PY`
    once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577); this resolution
    covers step 6's helper call too.
@@ -68,7 +68,7 @@ that names every member, never an implied yes.
    accumulate on the board and inflate the in-flight count until it stops meaning
    anything. List the done items older than the cutoff, then ask about **each one
    separately** and archive only the ones the user says yes to:
-   `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" archive <id>`.
+   `"$PY" "[hooks/taskwrite.py](../../hooks/taskwrite.py)" archive <id>`.
 
    One confirmation per item, one helper call per item — the two map 1:1 on
    purpose. A batched "archive all 12?" turns twelve decisions into one, and the

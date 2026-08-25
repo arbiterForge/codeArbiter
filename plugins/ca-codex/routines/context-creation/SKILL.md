@@ -78,7 +78,7 @@ Classify every finding by confidence:
 
 Every `[CONFIRM-NN]` carries: a sequential ID, one sentence on what is unknown, why it matters, and what would resolve it. IDs are sequential with `open-questions.md`.
 
-**`.codearbiter/release-targets.md` is HIGH-confidence only when Scout A found exactly one candidate manifest and exactly one candidate changelog at the repository root.** Draft the row then, in the grammar `${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py`'s module docstring declares — a single-target project needs only `prefix`, `manifest`, `changelog`, `payload`:
+**`.codearbiter/release-targets.md` is HIGH-confidence only when Scout A found exactly one candidate manifest and exactly one candidate changelog at the repository root.** Draft the row then, in the grammar [hooks/_releaselib.py](../../hooks/_releaselib.py)'s module docstring declares — a single-target project needs only `prefix`, `manifest`, `changelog`, `payload`:
 
 ```text
 <!-- release-targets -->
@@ -118,7 +118,7 @@ Write the surviving docs to `<project-root>/.codearbiter/`. Every doc carries ac
 | `coding-standards.md` | Structural patterns, naming conventions, style rules. |
 | `security-controls.md` | Thin: auth mechanism, banned crypto primitives, secret-loading stance. Only what a security boundary actually requires. |
 | `open-questions.md` | Every deferred `[CONFIRM-NN]` in `CONFIRM-NN: <description>` form. |
-| `open-tasks.md` | Create the file with its heading only. **Every task goes in through the board helper, one call per item — `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add "<task>"` — never by writing entries into the file directly** (B-18). The helper owns the board schema the SessionStart hook and the statusline parse, so a backlog seeded this way cannot drift from it; and once `open-tasks.md` is enrolled in the protected-state registry, a direct write is refused outright, which would leave a Write-tool instruction here unfollowable. If scouts found no backlog, the heading-only file stands as the stub. |
+| `open-tasks.md` | Create the file with its heading only. **Every task goes in through the board helper, one call per item — `python3 "[hooks/taskwrite.py](../../hooks/taskwrite.py)" add "<task>"` — never by writing entries into the file directly** (B-18). The helper owns the board schema the SessionStart hook and the statusline parse, so a backlog seeded this way cannot drift from it; and once `open-tasks.md` is enrolled in the protected-state registry, a direct write is refused outright, which would leave a Write-tool instruction here unfollowable. If scouts found no backlog, the heading-only file stands as the stub. |
 | `overrides.log` | Empty append-only audit log, created so `/override` has a sink. |
 | `release-targets.md` | Conditional, unlike every other row above: written ONLY when Phase 3 drafted it at HIGH confidence (exactly one candidate manifest, exactly one candidate changelog) or Phase 4 resolved its `[CONFIRM-NN]` to a concrete row. Left unwritten otherwise — `/release`'s own back-fill lane (or a later `context-creation` run, once the ambiguity resolves) is the sanctioned way to create it, never a guess made here. **This file is marker-gated protected state; it needs the authoring marker below, unlike every other row in this table.** |
 
@@ -144,7 +144,7 @@ If scouts found existing decision records (`docs/decisions/`, `adr/`), summarize
 - Write ONE provenance file per derived doc to `.codearbiter/.provenance/<doc>.json` via `_provenancelib.write_provenance` and `new_record`. Each entry carries: `path` (repo-relative), `hash` (the scout's `git hash-object` oid), `drift_trigger` (from `_provenancelib.classify_source(path)`), and the `claims` array with `lines`, `claim`, and `confidence` drawn from the scout evidence.
 - Synthesize `.codearbiter/code-map.md` (concern → path → ≤1-line role) from Scout C (architecture) evidence. Use concern headings (`## <concern>`) and column-0 bullets (`- \`path\` — role`). Keep it coarse — module/concern granularity only, no full file listing.
 
-Do NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
+Do NOT scaffold any cut doc — see [includes/cut-docs.md](../../includes/cut-docs.md) for the canonical never-scaffold list. Maturity lives in the `stage:` frontmatter of `CONTEXT.md`, not a separate file.
 
 Gate: every surviving doc written; `CONTEXT.md` frontmatter carries `arbiter: enabled` and `stage:`; no resolved value left as a placeholder. Deferred `[CONFIRM-NN]` items are acceptable only in `open-questions.md`.
 
@@ -167,5 +167,5 @@ Gate: `arbiter: enabled` set and `<!--INITIALIZED-->` present in `CONTEXT.md`; e
 - MUST NOT run Phase 2 inline — isolated scout subagents are required for the report-only synthesis boundary.
 - MUST NOT load raw source into the orchestrator context after Phase 1 — synthesize from scout reports only.
 - MUST NOT record a scout finding that exposes a secret value — paths and line numbers only.
-- MUST NOT scaffold a cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity is the `stage:` frontmatter number in `CONTEXT.md`.
+- MUST NOT scaffold a cut doc — see [includes/cut-docs.md](../../includes/cut-docs.md) for the canonical never-scaffold list. Maturity is the `stage:` frontmatter number in `CONTEXT.md`.
 - MUST NOT run when `CONTEXT.md` already carries `<!--INITIALIZED-->` — stop and route to normal operation.

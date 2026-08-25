@@ -49,11 +49,11 @@ Trace each secret to all sinks. These are prohibited regardless of project, with
 
 Secrets MUST NOT outlive the request that uses them — no module-level variable, no instance field, no cross-request cache holding a secret value.
 
-Dispatch the `auth-crypto-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/auth-crypto-reviewer.md`) to confirm these findings against `security-controls.md`.
+Dispatch the `auth-crypto-reviewer` agent ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) to confirm these findings against `security-controls.md`.
 
 Gate: no secret reaches a prohibited sink and no secret persists beyond its request.
 
-**On pass — record the gate:** follow `${CLAUDE_PLUGIN_ROOT}/includes/security-gate-record.md` (the shared record mechanism). For this gate the relevant commit hook is **H-10b** (secrets). On any BLOCK, do NOT record the pass.
+**On pass — record the gate:** follow [includes/security-gate-record.md](../../includes/security-gate-record.md) (the shared record mechanism). For this gate the relevant commit hook is **H-10b** (secrets). On any BLOCK, do NOT record the pass.
 
 **Out-of-scope finding:** do not act on it and do not author an ADR (ADRs are user-attributed, via `/adr` only). Mark it inline with `[NEEDS-TRIAGE]`; never silently drop it.
 

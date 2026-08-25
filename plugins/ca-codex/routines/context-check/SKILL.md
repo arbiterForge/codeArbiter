@@ -21,7 +21,7 @@ Read these before computing drift:
 
 1. `.codearbiter/.provenance/` — the per-doc provenance records. Load all
    records via `load_provenance_dir` from
-   `${CLAUDE_PLUGIN_ROOT}/hooks/_provenancelib.py`.
+   [hooks/_provenancelib.py](../../hooks/_provenancelib.py).
 2. `.codearbiter/code-map.md` — coarse concern map; read to orient on which
    modules the stale docs govern.
 

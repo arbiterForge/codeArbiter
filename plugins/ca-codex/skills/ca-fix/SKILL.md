@@ -27,7 +27,7 @@ the defect cannot be pinned by a failing test, STOP and surface the question.
 
 ## Routes to
 
-`tdd` (`${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md`) — all phases, Phase 1 framed for bug confirmation.
+`tdd` ([routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)) — all phases, Phase 1 framed for bug confirmation.
 
 ## When NOT to use
 

@@ -181,7 +181,7 @@ def check_install(home: Path) -> list[dict]:
                             if not isinstance(command, str):
                                 continue
                             for match in re.finditer(
-                                    r"\$\{CLAUDE_PLUGIN_ROOT\}/(\S+?\.py)", command):
+                                    r"\$\{PLUGIN_ROOT\}/(\S+?\.py)", command):
                                 rel = match.group(1)
                                 scripts.add(rel)
                                 if not (plugin_root / rel).is_file():

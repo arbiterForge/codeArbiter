@@ -124,8 +124,10 @@ class TokenTest(_RepoCase):
         text = self.render("codex")["skills/ca-status/SKILL.md"].decode()
         self.assertIn("<project-root>/.codearbiter/CONTEXT.md", text)
         # skills/ -> routines/ rewrite, commands/x.md -> skills/ca-x/SKILL.md rewrite.
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md", text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/skills/ca-init/SKILL.md", text)
+        self.assertIn("[routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)", text)
+        self.assertIn("[skills/ca-init/SKILL.md](../ca-init/SKILL.md)", text)
+        self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", text)
+        self.assertNotIn("${PLUGIN_ROOT}", text)
         self.assertIn("# $ca-status", text)
 
     def test_codex_entry_skill_paths_survive_the_routines_rewrite(self):
@@ -135,8 +137,8 @@ class TokenTest(_RepoCase):
                "{{IF:codex}}see {{PLUGIN_ROOT}}/skills/ca-init/SKILL.md{{END}}\n"
                "shared: {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n")
         text = self.render("codex")["includes/entry.md"].decode()
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/skills/ca-init/SKILL.md", text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md", text)
+        self.assertIn("[skills/ca-init/SKILL.md](../skills/ca-init/SKILL.md)", text)
+        self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text)
 
     def test_unknown_cmd_name_fails(self):
         _write(self.repo, "core/surface/includes/bad.md", "see {{CMD:no-such-cmd}}\n")
@@ -222,6 +224,66 @@ class CodexMappingTest(_RepoCase):
             for rel in self.render(host):
                 self.assertNotIn("README", rel)
 
+    def test_codex_charter_strips_executable_frontmatter_and_keeps_policy_metadata(self):
+        _write(
+            self.repo,
+            "core/surface/agents/backend-author.md",
+            "---\nname: backend-author\ndescription: bounded author\n"
+            "tools: Read, Write\nclassification: author\npi-skills: [tdd]\n"
+            "model: sonnet\n---\n\n# Backend Author\n\n"
+            "Writes only inside the assigned worktree.\n",
+        )
+        charter = self.render("codex")["agents/backend-author.md"].decode()
+        self.assertIn("name: backend-author\n", charter)
+        self.assertIn("description: bounded author\n", charter)
+        self.assertIn("classification: author\n", charter)
+        self.assertNotIn("\ntools:", charter)
+        self.assertNotIn("\npi-skills:", charter)
+        self.assertNotIn("\nmodel:", charter)
+        self.assertIn("Writes only inside the assigned worktree.", charter)
+
+    def test_real_codex_charters_have_exact_inventory_and_dispatch_policy(self):
+        out = B.render_all(str(REPO_ROOT), "codex")
+        expected = {
+            "architecture-drift-reviewer", "auth-crypto-reviewer", "backend-author",
+            "checkpoint-aggregator", "coverage-auditor", "decision-challenger",
+            "dependency-reviewer", "design-quality-reviewer", "finding-triage",
+            "frontend-author", "grader", "infra-author", "map-deps", "map-structure",
+            "migration-reviewer", "scout", "security-reviewer", "tribunal-lens-reviewer",
+        }
+        actual = {
+            path.removeprefix("agents/").removesuffix(".md")
+            for path in out
+            if path.startswith("agents/") and path.endswith(".md")
+            and path != "agents/INDEX.md"
+        }
+        self.assertEqual(actual, expected)
+        index = out["agents/INDEX.md"].decode()
+        self.assertIn("generic agent thread", index)
+        self.assertIn("not native Codex registrations", index)
+        self.assertIn("`backend-author`, `frontend-author`, `infra-author`", index)
+        self.assertIn("fresh isolated worktree/thread required", index)
+        self.assertIn("no file mutation", index)
+        self.assertIn("`scout`, map roles", index)
+        self.assertIn("`checkpoint-aggregator`, `tribunal-lens-reviewer`", index)
+        self.assertIn("declared checkpoint/finding output path", index)
+        self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
+        self.assertNotIn("\nmodel:", index)
+        for name in expected:
+            charter = out[f"agents/{name}.md"].decode()
+            self.assertIn(f"name: {name}\n", charter)
+            self.assertIn("description:", charter)
+            self.assertIn("classification:", charter)
+            self.assertNotIn("\ntools:", charter)
+            self.assertNotIn("\npi-skills:", charter)
+            self.assertNotIn("\nmodel:", charter)
+        manifest = json.loads(
+            (REPO_ROOT / "plugins/ca-codex/.codex-plugin/plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertNotIn("agents", manifest)
+
 
 class PiMappingTest(_RepoCase):
     def test_pi_commands_use_pi_aliases_in_bodies_and_catalog(self):
@@ -251,7 +313,7 @@ class PiMappingTest(_RepoCase):
         codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
         self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
         self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md", codex_text)
+        self.assertIn("[routines/INDEX.md](../INDEX.md)", codex_text)
 
     def test_pi_generated_command_catalog_is_an_orphan_cleaned_managed_surface(self):
         B.write_all(self.repo, hosts=("pi",))

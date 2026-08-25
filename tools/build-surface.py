@@ -26,6 +26,7 @@
 
 import json
 import os
+import posixpath
 import re
 import sys
 
@@ -47,10 +48,32 @@ _TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|PROJECT_DIR)\}\}")
 _CMD_LITERAL = re.compile(r"/ca:([a-z][a-z0-9-]*)")
 _COMMAND_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/commands/([a-z0-9-]+)\.md")
 _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
-_PI_ONLY_AGENT_FRONTMATTER = re.compile(
+_ROOT_RESOURCE = re.compile(
+    r"(?P<tick>`?)\{\{PLUGIN_ROOT\}\}/(?P<path>[A-Za-z0-9_./<>-]+)(?P=tick)"
+)
+_CLAUDE_ONLY_AGENT_FRONTMATTER = re.compile(
     r"^(?:classification|pi-skills):[^\n]*\n", re.MULTILINE
 )
+_CODEX_ONLY_AGENT_FRONTMATTER = re.compile(
+    r"^(?:tools|pi-skills|model):[^\n]*\n", re.MULTILINE
+)
+_AGENT_FRONTMATTER_STRIPPERS = {
+    "host-native": _CLAUDE_ONLY_AGENT_FRONTMATTER,
+    "relative": _CODEX_ONLY_AGENT_FRONTMATTER,
+}
 _PI_ROLE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
+_CODEX_POLICY_NAMES = {
+    "author": frozenset({"backend-author", "frontend-author", "infra-author"}),
+    "read-only reviewer/extractor": frozenset({
+        "architecture-drift-reviewer", "auth-crypto-reviewer", "coverage-auditor",
+        "decision-challenger", "dependency-reviewer", "design-quality-reviewer",
+        "finding-triage", "grader", "map-deps", "map-structure",
+        "migration-reviewer", "scout", "security-reviewer",
+    }),
+    "bounded writer/aggregator": frozenset({
+        "checkpoint-aggregator", "tribunal-lens-reviewer",
+    }),
+}
 
 
 class SurfaceError(Exception):
@@ -123,8 +146,30 @@ def resolve_conditionals(text, host, where, host_names=None):
     return "".join(out)
 
 
+def _render_relative_resources(text, output_path, where):
+    """Render Codex Markdown resources as POSIX links from `output_path`."""
+    if not output_path:
+        raise SurfaceError(f"{where}: Codex relative-resource rendering needs an output path")
+
+    def replace(match):
+        path = match.group("path")
+        suffix = ""
+        while path and path[-1] in ".,;:":
+            suffix = path[-1] + suffix
+            path = path[:-1]
+        if not path:
+            return match.group(0)
+        relative = posixpath.relpath(path, posixpath.dirname(output_path) or ".")
+        return f"[{path}]({relative}){suffix}"
+
+    text = _ROOT_RESOURCE.sub(replace, text)
+    if "{{PLUGIN_ROOT}}" in text:
+        text = text.replace("{{PLUGIN_ROOT}}", "the validated selected-skill root")
+    return text
+
+
 def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
-                host_names=None):
+                host_names=None, output_path=None):
     """Resolve conditionals, descriptor path rules, and descriptor tokens."""
     if descriptor is None or host_names is None:
         descriptors = load_host_descriptors(repo)
@@ -137,8 +182,12 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
     if descriptor is None:
         raise SurfaceError(f"{where}: unknown render host {host!r}")
     text = resolve_conditionals(text, host, where, host_names=host_names)
-    if where.startswith("core/surface/agents/") and host != "pi":
-        text = _PI_ONLY_AGENT_FRONTMATTER.sub("", text)
+    if where.startswith("core/surface/agents/"):
+        stripper = _AGENT_FRONTMATTER_STRIPPERS.get(
+            descriptor.root_contract.ordinary_markdown
+        )
+        if stripper is not None:
+            text = stripper.sub("", text)
 
     def _command_path(match):
         rel = f"commands/{match.group(1)}.md"
@@ -174,6 +223,8 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
         return descriptor.command_form.format(name=name)
 
     text = _CMD.sub(_cmd, text)
+    if descriptor.root_contract.ordinary_markdown == "relative":
+        text = _render_relative_resources(text, output_path, where)
     text = _TOKEN.sub(lambda m: descriptor.tokens[m.group(1)], text)
     if "{{" in text:
         line = text[:text.index("{{")].count("\n") + 1
@@ -309,6 +360,61 @@ def _pi_role_catalog(out):
     return entries
 
 
+def _codex_dispatch_policy(out):
+    """Generate the explicit Codex dispatch policy from charter frontmatter."""
+    entries = {}
+    expected = frozenset().union(*_CODEX_POLICY_NAMES.values())
+    for path in sorted(item for item in out if item.startswith("agents/")
+                       and item.endswith(".md") and item != "agents/INDEX.md"):
+        where = "plugins/ca-codex/" + path
+        text = out[path].decode("utf-8")
+        name = _frontmatter_value(text, "name", where)
+        if not _PI_ROLE_NAME.fullmatch(name) or path != f"agents/{name}.md":
+            raise SurfaceError(f"{where}: Codex charter name must match its filename")
+        if name in entries:
+            raise SurfaceError(f"{where}: duplicate Codex charter name {name!r}")
+        entries[name] = _frontmatter_value(text, "classification", where)
+    if frozenset(entries) != expected:
+        missing = sorted(expected - set(entries))
+        extra = sorted(set(entries) - expected)
+        raise SurfaceError(
+            "plugins/ca-codex/agents: requires exactly the canonical 18 "
+            f"charters (missing={missing!r}, extra={extra!r})"
+        )
+    for name in _CODEX_POLICY_NAMES["author"]:
+        if entries[name] != "author":
+            raise SurfaceError(
+                f"plugins/ca-codex/agents/{name}.md: author policy requires "
+                "classification: author"
+            )
+    for policy in ("read-only reviewer/extractor", "bounded writer/aggregator"):
+        for name in _CODEX_POLICY_NAMES[policy]:
+            if entries[name] != "reviewer":
+                raise SurfaceError(
+                    f"plugins/ca-codex/agents/{name}.md: {policy} requires "
+                    "classification: reviewer"
+                )
+
+    def roles(policy):
+        return ", ".join(
+            f"`{name}`" for name in sorted(_CODEX_POLICY_NAMES[policy])
+        )
+
+    return "\n".join([
+        "", "## Codex resource-charter dispatch", "",
+        "These are packaged Markdown resource charters, not native Codex registrations.",
+        "Read the named charter, create a host-provided generic agent thread with the charter and concrete assignment, and retain the returned thread ID/receipt whenever the workflow requires isolated evidence.",
+        "Block a required review, isolation, or write-containment workflow when the host cannot provide it; use an inline fallback only where its canonical workflow explicitly permits one.",
+        "", "## Codex dispatch policy (generated from charter frontmatter)", "",
+        "| Policy class | Canonical roles | Codex type preference | Permission/write contract | Isolation and fallback | Model behavior |",
+        "|---|---|---|---|---|---|",
+        "| author | " + roles("author") + " | `worker` | write-enabled only inside the assigned worktree/scope; all writes still pass codeArbiter hooks | fresh isolated worktree/thread required; block if the workflow requires isolation and the host cannot provide it | host-supported configured model if an approved mapping exists; otherwise host default and record parity degradation |",
+        "| read-only reviewer/extractor | " + roles("read-only reviewer/extractor") + " | `explorer` when available, otherwise `default` | no file mutation; use a host-enforced read-only sandbox when available | fresh thread; `scout`, map roles, and any workflow declaring isolated evidence block if isolation is unavailable; inline fallback only where the existing canonical workflow explicitly permits it | do not translate Claude `haiku`/`sonnet` names into invented Codex tiers; use an approved host mapping or record host-default degradation |",
+        "| bounded writer/aggregator | " + roles("bounded writer/aggregator") + " | `worker` | writes limited to the charter-declared checkpoint/finding output path; all other writes prohibited and hooks remain active | fresh thread; no inline fallback where an exact per-agent receipt is required | approved host mapping or documented host-default degradation |",
+        "", "Codex built-in type preference is not a permission boundary. Mandatory isolation or write containment blocks when unavailable; it must not silently degrade to prompt-only guidance.", "",
+    ])
+
+
 def _surface_files(repo, descriptors=None):
     """Sorted surface-relative template paths, classified or rejected."""
     surface = os.path.join(repo, "core", "surface")
@@ -382,7 +488,7 @@ def render_all(repo, host, descriptors=None):
         text = _read_template(os.path.join(surface, rel.replace("/", os.sep)), where)
         rendered = render_text(
             text, host, cmd_names, where, repo=repo,
-            descriptor=descriptor, host_names=host_names,
+            descriptor=descriptor, host_names=host_names, output_path=dst,
         )
         if rule.add_skill_frontmatter:
             name = rel[len("commands/"):-len(".md")]
@@ -405,6 +511,9 @@ def render_all(repo, host, descriptors=None):
             raise SurfaceError(f"{descriptor.plugin_dir}/{dst} collides with the "
                                "generated skill catalog")
         out[dst] = _host_catalog(descriptor, sorted(catalog)).encode("utf-8")
+    if descriptor.name == "codex" and "agents/INDEX.md" in out:
+        dst = "agents/INDEX.md"
+        out[dst] += _codex_dispatch_policy(out).encode("utf-8")
     if descriptor.command_form == "/ca-{name}":
         dst = "generated/command-catalog.json"
         if dst in out:

@@ -17,7 +17,7 @@ dependency order:
    Phase 2.
 
 Then write `<project-root>/.codearbiter/plans/<slug>.plan.json` (the current slice's tasks only)
-conforming to `${CLAUDE_PLUGIN_ROOT}/tools/plan.schema.json`:
+conforming to [tools/plan.schema.json](../../../tools/plan.schema.json):
 
 - `meta.name` ← slug
 - `meta.repo` ← project name from CONTEXT.md
@@ -36,7 +36,7 @@ conforming to `${CLAUDE_PLUGIN_ROOT}/tools/plan.schema.json`:
   prohibitively slow.
 
 Validate the JSON against the schema before writing (load the schema from
-`${CLAUDE_PLUGIN_ROOT}/tools/plan.schema.json` and check). A schema-invalid plan BLOCKS.
+[tools/plan.schema.json](../../../tools/plan.schema.json) and check). A schema-invalid plan BLOCKS.
 
 `plan.schema.json` is the **authoring** contract. The dispatcher enforces its own **runtime** contract
 (`PLAN_SHAPE` / `parsePlan()` in `farm.ts`) on the parsed JSON before it touches a single field, and

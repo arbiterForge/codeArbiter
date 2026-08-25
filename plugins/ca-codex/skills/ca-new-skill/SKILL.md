@@ -19,7 +19,7 @@ its routing entry.
 
 ## Routes to
 
-`skill-author` (`${CLAUDE_PLUGIN_ROOT}/routines/skill-author/SKILL.md`) — all five phases.
+`skill-author` ([routines/skill-author/SKILL.md](../../routines/skill-author/SKILL.md)) — all five phases.
 
 ## When NOT to use
 
@@ -31,4 +31,4 @@ its routing entry.
 
 MUST prove the gap is real in Phase 1 before writing any skill content. MUST get user approval on the
 spec before authoring. MUST NOT create a skill that duplicates an existing skill's purpose — surface
-the overlap instead. Skill files live only under `${CLAUDE_PLUGIN_ROOT}/routines/<name>/`.
+the overlap instead. Skill files live only under [routines/<name>/](../../routines/<name>).

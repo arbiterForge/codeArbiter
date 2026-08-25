@@ -12,7 +12,7 @@ The only permitted path to populate `.codearbiter/` when no meaningful source ex
 
 ## Routes to
 
-The `decompose` skill (`${CLAUDE_PLUGIN_ROOT}/routines/decompose/SKILL.md`) — six gated phases:
+The `decompose` skill ([routines/decompose/SKILL.md](../../routines/decompose/SKILL.md)) — six gated phases:
 pre-flight, persona adoption, layered interview, synthesis, population, lock. The skill is canonical
 for the layers and their gates.
 

@@ -10,7 +10,7 @@ The one blessed way to mutate `<project-root>/.codearbiter/open-tasks.md`
 (resolves D-1). Hand-editing the board is no longer the only path; this command keeps
 every entry schema-conformant and every transition dated. The board LOGIC lives in the
 pure `_taskboardlib` transforms; this command runs the thin writer
-`${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py`.
+[hooks/taskwrite.py](../../hooks/taskwrite.py).
 
 ## Verbs
 
@@ -23,14 +23,14 @@ second run's code instead of the first's (#577) — then invoke `"$PY"` below.
   a dotted ID now, `--from <origin>` for a harvest back-ref, `--boundaries a,b` for the
   security/trust boundaries it touches. The description must be nonblank and
   single-line; origin and boundary values must also stay on one line.
-  - `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" add [--id group.type] [--from origin] [--boundaries a,b] -- "<desc>"`
+  - `"$PY" "[hooks/taskwrite.py](../../hooks/taskwrite.py)" add [--id group.type] [--from origin] [--boundaries a,b] -- "<desc>"`
 - **start** — flip a task to in-progress and **stamp the started date** (so it can never
   be a dateless `[~]`). On an ID-less item, pass `--as <group>.<type>` to mint its dotted
   ID at pick-up. `--date YYYY-MM-DD` overrides today.
-  - `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" start [--as group.type] [--date YYYY-MM-DD] -- "<id|title>"`
+  - `"$PY" "[hooks/taskwrite.py](../../hooks/taskwrite.py)" start [--as group.type] [--date YYYY-MM-DD] -- "<id|title>"`
 - **done** — flip an in-progress task to done and stamp the done date (`--date`
   overrides today). A queued task must be `start`ed first.
-  - `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" done [--date YYYY-MM-DD] -- "<id|title>"`
+  - `"$PY" "[hooks/taskwrite.py](../../hooks/taskwrite.py)" done [--date YYYY-MM-DD] -- "<id|title>"`
 
 A missing target, an already-matching state, an out-of-order transition, a malformed
 add field or `--date`, or an invalid `GROUP.TYPE` namespace is reported and writes
@@ -44,7 +44,7 @@ an ID (`$ca-task start --as <group>.<type> -- "<title>"`) to disambiguate.
 ## When NOT to use
 
 - Promoting workflow follow-ups in bulk → that is the harvest
-  (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`), which calls this writer for you.
+  ([includes/harvest.md](../../includes/harvest.md)), which calls this writer for you.
 - Reading the board / counts → `$ca-status` (read-only).
 - Archiving long-settled done items → deferred (D-2); done items stay in-place for now.
 - Filing a separate `chore(board)` PR just to flip a task state → task-board transitions

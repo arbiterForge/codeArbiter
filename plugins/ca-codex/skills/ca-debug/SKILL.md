@@ -12,7 +12,7 @@ If the cause is already known and a regression test is already named, invoke `$c
 
 ## Routes to
 
-The `debug` skill (`${CLAUDE_PLUGIN_ROOT}/routines/debug/SKILL.md`) — five gated phases: symptom
+The `debug` skill ([routines/debug/SKILL.md](../../routines/debug/SKILL.md)) — five gated phases: symptom
 capture, hypothesis generation, evidence gathering, root-cause decision, handoff. Phase 4 forces one
 named exit:
 

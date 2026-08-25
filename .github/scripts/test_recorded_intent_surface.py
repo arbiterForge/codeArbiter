@@ -19,10 +19,9 @@ generated projection that carries the surface:
      position AFTER the `confidence:` token (the harvest parser is
      positional), and names stale-record in the repeated-trip diagnostic.
   3. grader.md carries the informational ADR-citation line AND its explicit
-     Step-0 exemption. plugins/ca-codex ships no `agents/` directory by
-     design (reviewer personas are prose there — see
-     check_routing_index_parity.py), so the grader surface is pinned on
-     core, ca, and ca-pi only. That is a deliberate exemption, NOT a skip.
+     Step-0 exemption. Codex ships it as a packaged Markdown resource charter,
+     never a native agent registration, so the grader surface is pinned on all
+     four generated projections.
   4. brainstorming carries all four touches: the fail-soft pre-flight block
      (explicitly exempt from the read-or-STOP contract), the Phase 1
      deferral-resurrection fork, the Phase 2 accepted-ADR conformance check
@@ -42,8 +41,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 
 # Host layouts (same projection map as test_routing_and_cleanup_surface.py):
-# Claude Code keeps skills/ and agents/; Codex and Pi keep routines/ and,
-# for Codex only, NO agents/ directory at all.
+# Claude Code keeps skills/ and agents/; Codex and Pi keep routines/, and all
+# three host packages ship canonical agent Markdown resources.
 SMARTS_COPIES = (
     "core/surface/includes/smarts/core.md",
     "plugins/ca/includes/smarts/core.md",
@@ -56,10 +55,10 @@ SPRINT_COPIES = (
     "plugins/ca-codex/SPRINT.md",
     "plugins/ca-pi/SPRINT.md",
 )
-# ca-codex intentionally absent: no agents/ surface on that host.
 GRADER_COPIES = (
     "core/surface/agents/grader.md",
     "plugins/ca/agents/grader.md",
+    "plugins/ca-codex/agents/grader.md",
     "plugins/ca-pi/agents/grader.md",
 )
 BRAINSTORMING_COPIES = (
@@ -177,12 +176,12 @@ class TestGraderInformationalCitation(SurfaceCase):
                        r"(?i)exempt by name from smarts/core\.md Step 0",
                        "the grader's Step-0 exemption is stated where the grader reads")
 
-    def test_codex_exemption_is_structural_not_a_silent_skip(self):
-        # ca-codex ships no agents/ directory at all; if one ever appears WITH
-        # a grader, this surface must be re-pinned there too.
-        self.assertFalse(
-            (REPO / "plugins/ca-codex/agents/grader.md").exists(),
-            "ca-codex now ships agents/grader.md — add it to GRADER_COPIES")
+    def test_codex_grader_is_a_packaged_resource_not_native_registration(self):
+        text = read("plugins/ca-codex/agents/grader.md")
+        self.assertNotIn("\ntools:", text)
+        self.assertNotIn("\nmodel:", text)
+        self.assertNotIn("\npi-skills:", text)
+        self.assertIn("classification: reviewer", text)
 
 
 class TestBrainstormingTouches(SurfaceCase):

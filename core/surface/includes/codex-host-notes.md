@@ -39,9 +39,13 @@ bodies name *actions* — this file is where those actions map to this host.
 ## Degraded / pending surfaces (ledgered in docs/parity.md)
 
 - **Subagents are host-provided** — current Codex releases can dispatch and
-  inspect agent threads, but this plugin does not yet vendor custom agent
-  definitions. Load the named reviewer/author charter, dispatch an available
-  host agent with that role, and retain the returned thread ID when a workflow
+  inspect agent threads. Resource charters are Markdown resources, never
+  native custom-agent registrations. Ordinary Markdown routes resolve their
+  resources from the current generated file by normalized relative link; only
+  hook configuration receives the native `PLUGIN_ROOT` token. The legacy
+  `CLAUDE_PLUGIN_ROOT` hook alias is matching corroboration only and emits a
+  non-disruptive deprecation diagnostic. Dispatch an available host agent with
+  the loaded charter and retain the returned thread ID when a workflow
   needs an exact per-agent receipt. `context-creation` requires isolated scout
   reports and MUST NOT run inline; it blocks if the host exposes no isolated
   subagents. For other workflows on an older host, perform the role inline; a
