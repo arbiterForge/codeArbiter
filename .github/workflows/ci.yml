@@ -1840,6 +1840,13 @@ jobs:
           python-version: "3.x"
       - name: Check rendered surfaces match core/surface/ templates (both hosts)
         run: python3 tools/build-surface.py --check
+      - name: Classify every active CLAUDE_PLUGIN_ROOT occurrence
+        # The root token is Claude-native only in the Claude payload.  A Codex
+        # compatibility fixture/input and immutable historical evidence are the
+        # two explicit exceptions; any portable product use is fail-closed.
+        run: |
+          python3 .github/scripts/check-plugin-refs.py --claude-root-inventory
+          python3 .github/scripts/test_check_plugin_refs.py
 
   codex-host:
     name: "[CHECK] | [CDX ] | Real-host install  <codex: ${{ matrix.codex-version }}>"
