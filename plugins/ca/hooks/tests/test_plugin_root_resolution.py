@@ -9,6 +9,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -130,7 +131,8 @@ class ResolverContractTests(unittest.TestCase):
             root = _package(temporary)
             got = hostapi.resolve_plugin_root(
                 os.path.join(root, "hooks", "hostapi.py"),
-                adapter_name="ca", manifest_relpath=".claude-plugin/plugin.json",
+                adapter_name="ca", adapter_version="1.2.3",
+                manifest_relpath=".claude-plugin/plugin.json",
                 anchor_relpath="hooks/hostapi.py", environment={},
             )
             self.assertEqual(got, os.path.realpath(root))
@@ -141,7 +143,8 @@ class ResolverContractTests(unittest.TestCase):
             root = _package(temporary)
             got = hostapi.resolve_plugin_root(
                 os.path.join(root, "hooks", "hostapi.py"),
-                adapter_name="ca", manifest_relpath=".claude-plugin/plugin.json",
+                adapter_name="ca", adapter_version="1.2.3",
+                manifest_relpath=".claude-plugin/plugin.json",
                 anchor_relpath="hooks/hostapi.py",
                 environment={"CLAUDE_PLUGIN_ROOT": os.path.join(root, "hooks", "..")},
                 signal_names=("CLAUDE_PLUGIN_ROOT",),
@@ -156,7 +159,8 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError) as caught:
                 hostapi.resolve_plugin_root(
                     os.path.join(root, "hooks", "hostapi.py"),
-                    adapter_name="ca", manifest_relpath=".claude-plugin/plugin.json",
+                    adapter_name="ca", adapter_version="1.2.3",
+                    manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py",
                     environment={"CLAUDE_PLUGIN_ROOT": foreign},
                     signal_names=("CLAUDE_PLUGIN_ROOT",),
@@ -172,7 +176,8 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
                     os.path.join(root, "hooks", "hostapi.py"),
-                    adapter_name="ca", manifest_relpath="../plugin.json",
+                    adapter_name="ca", adapter_version="1.2.3",
+                    manifest_relpath="../plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
 
@@ -191,7 +196,7 @@ class ResolverContractTests(unittest.TestCase):
                 self.skipTest(f"symlink creation unavailable: {error}")
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
-                    anchor, adapter_name="ca",
+                    anchor, adapter_name="ca", adapter_version="1.2.3",
                     manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
@@ -220,7 +225,7 @@ class ResolverContractTests(unittest.TestCase):
             self.assertEqual(expected_lexical_root, os.path.realpath(lexical_root))
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
-                    lexical_anchor, adapter_name="ca",
+                    lexical_anchor, adapter_name="ca", adapter_version="1.2.3",
                     manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
@@ -233,7 +238,8 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
                     os.path.join(wrong_name, "hooks", "hostapi.py"),
-                    adapter_name="ca", manifest_relpath=".claude-plugin/plugin.json",
+                    adapter_name="ca", adapter_version="1.2.3",
+                    manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
             wrong_version = _package(temporary, adapter="ca-bad", version="not-a-version",
@@ -242,9 +248,79 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
                     os.path.join(wrong_version, "hooks", "hostapi.py"),
-                    adapter_name="ca", manifest_relpath=".claude-plugin/plugin.json",
+                    adapter_name="ca", adapter_version="1.2.3",
+                    manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
+
+    def test_same_adapter_with_different_valid_version_fails_closed(self):
+        # Mutation killed: validating only SemVer syntax authenticates a stale
+        # same-name adapter instead of the exact generated adapter version.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = _package(temporary, adapter="ca", version="9.9.9")
+            with self.assertRaisesRegex(hostapi.PluginRootError, "version mismatch"):
+                hostapi.resolve_plugin_root(
+                    os.path.join(root, "hooks", "hostapi.py"),
+                    adapter_name="ca", adapter_version="1.2.3",
+                    manifest_relpath=".claude-plugin/plugin.json",
+                    anchor_relpath="hooks/hostapi.py", environment={},
+                )
+
+    def test_every_shipped_adapter_binds_its_exact_manifest_version(self):
+        cases = (
+            ("ca", "2.15.6", ".claude-plugin/plugin.json"),
+            ("ca-codex", "0.7.5", ".codex-plugin/plugin.json"),
+            ("@arbiterforge/ca-pi", "0.8.5", "package.json"),
+        )
+        for adapter, expected, manifest in cases:
+            with self.subTest(adapter=adapter):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = _package(
+                        temporary,
+                        adapter=adapter.replace("/", "-"),
+                        manifest=(manifest, {
+                            "name": adapter,
+                            "version": "9.9.9",
+                        }),
+                    )
+                    with self.assertRaisesRegex(
+                        hostapi.PluginRootError, "version mismatch"
+                    ):
+                        hostapi.resolve_plugin_root(
+                            os.path.join(root, "hooks", "hostapi.py"),
+                            adapter_name=adapter,
+                            adapter_version=expected,
+                            manifest_relpath=manifest,
+                            anchor_relpath="hooks/hostapi.py",
+                            environment={},
+                        )
+
+    def test_shipped_adapter_version_constants_match_manifests(self):
+        with open(
+            os.path.join(REPO, "plugins", "ca", ".claude-plugin", "plugin.json"),
+            encoding="utf-8",
+        ) as handle:
+            claude_manifest = json.load(handle)
+        self.assertEqual(hostapi.Host.adapter_version, claude_manifest["version"])
+
+        cases = (
+            ("plugins/ca/hooks/_host.py", "plugins/ca/.claude-plugin/plugin.json"),
+            ("plugins/ca-codex/hooks/_host.py", "plugins/ca-codex/.codex-plugin/plugin.json"),
+            ("plugins/ca-pi/hooks/_host.py", "plugins/ca-pi/package.json"),
+        )
+        for host_relative, manifest_relative in cases:
+            with self.subTest(host=host_relative):
+                with open(
+                    os.path.join(REPO, *host_relative.split("/")), encoding="utf-8"
+                ) as handle:
+                    host_text = handle.read()
+                match = re.search(r'^\s*adapter_version = "([^"]+)"$', host_text, re.MULTILINE)
+                self.assertIsNotNone(match, host_relative)
+                with open(
+                    os.path.join(REPO, *manifest_relative.split("/")), encoding="utf-8"
+                ) as handle:
+                    manifest = json.load(handle)
+                self.assertEqual(match.group(1), manifest["version"])
 
     def test_missing_manifest_or_anchor_is_not_accepted(self):
         # Mutation killed: treating file-relative parent directories as roots
@@ -255,7 +331,8 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
                     os.path.join(root, "hooks", "hostapi.py"),
-                    adapter_name="ca", manifest_relpath=".claude-plugin/plugin.json",
+                    adapter_name="ca", adapter_version="1.2.3",
+                    manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
             root = _package(temporary, adapter="anchorless")
@@ -263,7 +340,7 @@ class ResolverContractTests(unittest.TestCase):
             with self.assertRaises(hostapi.PluginRootError):
                 hostapi.resolve_plugin_root(
                     os.path.join(root, "hooks", "hostapi.py"),
-                    adapter_name="anchorless",
+                    adapter_name="anchorless", adapter_version="1.2.3",
                     manifest_relpath=".claude-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py", environment={},
                 )
@@ -281,7 +358,8 @@ class ResolverContractTests(unittest.TestCase):
             with contextlib.redirect_stderr(err):
                 got = hostapi.resolve_plugin_root(
                     os.path.join(root, "hooks", "hostapi.py"),
-                    adapter_name="ca-codex", manifest_relpath=".codex-plugin/plugin.json",
+                    adapter_name="ca-codex", adapter_version="0.7.3",
+                    manifest_relpath=".codex-plugin/plugin.json",
                     anchor_relpath="hooks/hostapi.py",
                     environment={"PLUGIN_ROOT": root, "CLAUDE_PLUGIN_ROOT": root},
                     signal_names=("PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT"),
@@ -299,7 +377,8 @@ class ResolverContractTests(unittest.TestCase):
                             manifest=(".codex-plugin/plugin.json",
                                       {"name": "ca-codex", "version": "0.7.3"}))
             kwargs = dict(
-                adapter_name="ca-codex", manifest_relpath=".codex-plugin/plugin.json",
+                adapter_name="ca-codex", adapter_version="0.7.3",
+                manifest_relpath=".codex-plugin/plugin.json",
                 anchor_relpath="hooks/hostapi.py", environment={},
                 required_signal_names=("PLUGIN_ROOT",),
             )

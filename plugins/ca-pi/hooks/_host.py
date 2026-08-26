@@ -11,6 +11,7 @@ import hostapi  # noqa: E402
 class PiHost(hostapi.Host):
     name = "pi"
     adapter_name = "@arbiterforge/ca-pi"
+    adapter_version = "0.8.5"
     command_noun = "command"
     has_statusline = False
     has_read_tool = True
@@ -42,7 +43,7 @@ class PiHost(hostapi.Host):
 
     def plugin_root(self):
         return hostapi.resolve_plugin_root(
-            __file__, adapter_name=self.adapter_name,
+            __file__, adapter_name=self.adapter_name, adapter_version=self.adapter_version,
             manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/_host.py",
         )
 

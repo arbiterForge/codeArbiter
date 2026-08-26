@@ -174,6 +174,7 @@ class CodexHost(hostapi.Host):
 
     name = "codex"
     adapter_name = "ca-codex"
+    adapter_version = "0.7.5"
     command_noun = "command"
     has_statusline = False   # no statusline surface exists on Codex
     has_read_tool = False    # no read tool; file reads happen via shell
@@ -238,7 +239,7 @@ class CodexHost(hostapi.Host):
         a matching-only deprecated compatibility alias.
         """
         return hostapi.resolve_plugin_root(
-            __file__, adapter_name=self.adapter_name,
+            __file__, adapter_name=self.adapter_name, adapter_version=self.adapter_version,
             manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/_host.py",
             signal_names=("PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT"),
             required_signal_names=("PLUGIN_ROOT",),

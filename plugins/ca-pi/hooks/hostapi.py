@@ -63,7 +63,7 @@ def _inside(root, candidate):
         return False
 
 
-def resolve_plugin_root(authority_file, *, adapter_name, manifest_relpath,
+def resolve_plugin_root(authority_file, *, adapter_name, adapter_version, manifest_relpath,
                         anchor_relpath, environment=None, signal_names=(),
                         required_signal_names=(), legacy_signal_names=()):
     """Return the authenticated root of the executing adapter, or fail closed.
@@ -76,6 +76,8 @@ def resolve_plugin_root(authority_file, *, adapter_name, manifest_relpath,
     """
     if not isinstance(adapter_name, str) or not adapter_name:
         raise PluginRootError("adapter name must be a non-empty string")
+    if not isinstance(adapter_version, str) or not _VERSION_RE.fullmatch(adapter_version):
+        raise PluginRootError("adapter version must be an exact SemVer string")
     manifest_relpath = _safe_relative_path(manifest_relpath, "manifest path")
     anchor_relpath = _safe_relative_path(anchor_relpath, "anchor path")
     env = os.environ if environment is None else environment
@@ -110,6 +112,10 @@ def resolve_plugin_root(authority_file, *, adapter_name, manifest_relpath,
     if not isinstance(version, str) or not _VERSION_RE.fullmatch(version):
         raise PluginRootError(
             f"adapter manifest has invalid version at {manifest}: {version!r}")
+    if version != adapter_version:
+        raise PluginRootError(
+            f"adapter manifest version mismatch at {manifest}: "
+            f"expected {adapter_version!r}, got {version!r}")
 
     for signal in required_signal_names:
         if not env.get(signal):
@@ -228,6 +234,7 @@ class Host:
 
     name = "claude"
     adapter_name = "ca"
+    adapter_version = "2.15.6"
 
     # Capability flags — what surfaces this host actually has. A hook that
     # heals/queries a statusline gates on has_statusline; a hook registered
@@ -324,7 +331,7 @@ class Host:
         select a different adapter package.
         """
         return resolve_plugin_root(
-            __file__, adapter_name=self.adapter_name,
+            __file__, adapter_name=self.adapter_name, adapter_version=self.adapter_version,
             manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/hostapi.py",
             signal_names=("CLAUDE_PLUGIN_ROOT",),
         )

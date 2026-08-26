@@ -2255,7 +2255,26 @@ def _mask_markdown_literal_regions(text: str) -> str:
     for match in re.finditer(r"<!--[\s\S]*?-->", text):
         blank(*match.span())
     for span in _markdown_html_tag_spans(text):
-        blank(*span)
+        # Generated resource templates deliberately carry destinations such
+        # as ``../agents/<name>.md``.  ``<name>`` is a path placeholder inside
+        # the link destination, not raw HTML.  Preserve only the no-whitespace
+        # inline-destination case; real HTML elsewhere remains masked.
+        line_start = text.rfind("\n", 0, span[0]) + 1
+        line_end = text.find("\n", span[1])
+        if line_end < 0:
+            line_end = len(text)
+        opener = text.rfind("](", line_start, span[0])
+        closer = text.find(")", span[1], line_end)
+        in_inline_destination = (
+            opener >= 0
+            and closer >= 0
+            and not any(
+                character in " \t\r\n"
+                for character in text[opener + 2:closer]
+            )
+        )
+        if not in_inline_destination:
+            blank(*span)
 
     offset = 0
     fence: tuple[str, int] | None = None
@@ -2590,6 +2609,24 @@ def _markdown_resource_links(text: str) -> list[str]:
     return links
 
 
+_TEMPLATE_RESOURCE_DESTINATIONS = (
+    re.compile(r"^agents/<(?:agent|name)>\.md$"),
+    re.compile(r"^routines/<(?:name|other-skill)>/SKILL\.md$"),
+    re.compile(r"^routines/tribunal/references/lenses/<lens-slug>\.md$"),
+    re.compile(r"^skills/ca-<name>/SKILL\.md$"),
+)
+
+
+def _supported_template_resource(resolved: str) -> bool:
+    if not re.search(r"<[A-Za-z][A-Za-z0-9-]*>", resolved):
+        return False
+    if any(pattern.fullmatch(resolved) for pattern in _TEMPLATE_RESOURCE_DESTINATIONS):
+        return True
+    raise ValueError(
+        f"candidate resource link uses an unsupported template destination: {resolved}"
+    )
+
+
 def candidate_resource_contract(path: Path) -> dict[str, Any]:
     """Derive the exact packaged Markdown resource set and contained read graph."""
     files = _candidate_package_files(path)
@@ -2622,7 +2659,13 @@ def candidate_resource_contract(path: Path) -> dict[str, Any]:
             ):
                 continue
             resolved = posixpath.normpath(posixpath.join(posixpath.dirname(source), target))
-            if resolved.startswith("../") or resolved not in resource_set:
+            if resolved.startswith("../"):
+                raise ValueError(
+                    f"candidate resource link is escaped or unresolved: {source} -> {reference}"
+                )
+            if _supported_template_resource(resolved):
+                continue
+            if resolved not in resource_set:
                 raise ValueError(
                     f"candidate resource link is escaped or unresolved: {source} -> {reference}"
                 )
@@ -2989,7 +3032,8 @@ def _invalid_desktop_json_result(attestation: dict[str, Any] | None) -> dict[str
 
 
 def verify_github_attestation(
-    receipt_path: Path, signer_digest: str, workflow_run_id: str
+    receipt_path: Path, signer_digest: str, workflow_run_id: str,
+    *, bundle_path: Path | None = None,
 ) -> dict[str, Any]:
     """Verify the exact receipt subject against the protected workflow identity.
 
@@ -3008,6 +3052,8 @@ def verify_github_attestation(
         "--deny-self-hosted-runners",
         "--format", "json",
     ]
+    if bundle_path is not None:
+        command.extend(("--bundle", str(bundle_path.resolve())))
     try:
         completed = subprocess.run(
             command, capture_output=True, text=True, encoding="utf-8", timeout=120

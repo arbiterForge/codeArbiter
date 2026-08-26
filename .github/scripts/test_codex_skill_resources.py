@@ -2526,6 +2526,23 @@ class DesktopReceiptImportTest(CheckerPresentMixin, unittest.TestCase):
                     )
                 self.assertFalse(result["verified"], result)
 
+    def test_attestation_verifier_binds_the_exact_detached_bundle(self):
+        path = self.root / "receipt.json"
+        bundle = self.root / "attestation.jsonl"
+        path.write_text(json.dumps(self.receipt, sort_keys=True), encoding="utf-8")
+        bundle.write_text("{}\n", encoding="utf-8")
+        completed = subprocess.CompletedProcess([], 1, stdout="", stderr="")
+        with mock.patch.object(
+            self.checker.subprocess, "run", return_value=completed
+        ) as run:
+            result = self.checker.verify_github_attestation(
+                path, self.workflow_commit, self.run_id, bundle_path=bundle
+            )
+
+        self.assertFalse(result["verified"], result)
+        command = run.call_args.args[0]
+        self.assertEqual(command[command.index("--bundle") + 1], str(bundle.resolve()))
+
     def test_attestation_verifier_never_echoes_or_hashes_failure_output(self):
         """Untrusted verifier stderr must not survive in the normalized result."""
         secret = "api_" + "key=" + "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDd"
@@ -2857,6 +2874,36 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
         contract = self.checker.candidate_resource_contract(REPO_ROOT / "plugins" / "ca-codex")
         self.assertTrue(contract["selected_paths"])
         self.assertRegex(contract["sha256"], r"^[0-9a-f]{64}$")
+
+    def test_template_destinations_are_contained_but_not_concrete_reads(self):
+        contained = self.write_zip([(
+            "plugins/ca-codex/skills/probe.md",
+            "[Agent template](../agents/<name>.md)\n",
+        )])
+        contract = self.checker.candidate_resource_contract(contained)
+        self.assertEqual(contract["relative_reads"], [])
+
+        escaped = self.write_zip([(
+            "plugins/ca-codex/skills/probe.md",
+            "[Escaping template](../../../<name>.md)\n",
+        )])
+        with self.assertRaisesRegex(ValueError, "escaped"):
+            self.checker.candidate_resource_contract(escaped)
+
+    def test_template_destinations_reject_unknown_embedded_and_unrouted_placeholders(self):
+        cases = (
+            ("unknown", "../agents/<nam>.md"),
+            ("embedded", "../agents/prefix-<name>.md"),
+            ("unrouted", "../includes/<name>.md"),
+        )
+        for label, target in cases:
+            with self.subTest(label=label):
+                package = self.write_zip([(
+                    "plugins/ca-codex/skills/probe.md",
+                    f"[Unsupported template]({target})\n",
+                )])
+                with self.assertRaisesRegex(ValueError, "unsupported template"):
+                    self.checker.candidate_resource_contract(package)
 
     def test_deep_balanced_destination_is_included_and_nonpunctuation_escape_rejected(self):
         balanced = self.write_zip([

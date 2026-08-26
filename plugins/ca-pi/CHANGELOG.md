@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.5] - 2026-08-26
+
+### Changed
+
+- The shared generated root kernel now derives its internal package root from the executing module and validates containment independently of host-native boundaries; Pi remains Forge-only and keeps its module/file-location semantics.
+- Generated status-line and hook payloads were refreshed in lockstep with the Claude and Codex adapters without adding a separate runtime core package.
+
 ## [0.8.4] - 2026-08-24
 
 ### Fixed

@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-08-26
+
+### Added
+
+- The installed Codex payload now ships the complete canonical set of 18 reviewer/author/scout charters, `agents/INDEX.md`, and generated dispatch policy with executable route-closure and role-policy checks.
+
+### Changed
+
+- Codex root handling now derives the package from the executing module, corroborates the host-native `PLUGIN_ROOT`, validates the internal normalized root, and fails closed on mismatch or containment violations.
+- Pull-request, merge-queue, and release gates now bind the protected desktop receipt and attestation to candidate commit C, the attestation-only commit R, the synthesized merge payload, and squash-safe final-main bytes before a Codex tag can be created.
+
 ## [0.7.4] - 2026-08-24
 
 ### Fixed

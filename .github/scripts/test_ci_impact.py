@@ -733,6 +733,34 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_codex_candidate_provenance_is_required_for_payload_prs(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        watched = {
+            ".github/scripts/verify_codex_candidate_provenance.py",
+            ".github/scripts/test_codex_candidate_provenance.py",
+            "docs/reports/codex-desktop-candidate-resolution.json",
+            "docs/reports/evidence/codex-desktop-candidate/**",
+        }
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "ca-codex"))))
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
+        self.assertTrue(watched.issubset(set(push_trigger_paths(ci))))
+        job = workflow_jobs(ci)["codex-candidate-provenance"]
+        self.assertIn("github.event_name == 'pull_request'", job)
+        self.assertIn("github.event_name == 'merge_group'", job)
+        self.assertIn("needs.changes.outputs.ca-codex == 'true'", job)
+        self.assertIn("actions: read", job)
+        self.assertIn("contents: read", job)
+        self.assertIn("fetch-depth: 0", job)
+        self.assertIn("python .github/scripts/test_codex_candidate_provenance.py", job)
+        self.assertIn("verify_codex_candidate_provenance.py --mode pr", job)
+        self.assertIn("verify_codex_candidate_provenance.py --mode merge-group", job)
+        self.assertIn("--base \"$BASE_SHA\"", job)
+        self.assertIn("--head \"$HEAD_SHA\"", job)
+        self.assertIn("github.event.pull_request.base.sha || github.event.merge_group.base_sha", job)
+        self.assertIn("github.event.pull_request.head.sha || github.event.merge_group.head_sha", job)
+        self.assertIn("codex-candidate-provenance", aggregate_needs(ci))
+        self.assertIn("codex-candidate-provenance", aggregate_required_results(ci))
+
     def test_codex_desktop_candidate_workflow_is_trusted_narrow_and_pinned(self):
         workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", workflow)
