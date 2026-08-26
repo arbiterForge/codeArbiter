@@ -296,6 +296,12 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("`checkpoint-aggregator`, `tribunal-lens-reviewer`", index)
         self.assertIn("declared checkpoint/finding output path", index)
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
+        self.assertIn(
+            "<!-- codearbiter-codex-agent-route-contract: "
+            "literal_route_lines=19 literal_route_occurrences=20 "
+            "generic_route_lines=6 generic_route_occurrences=6 -->",
+            index,
+        )
         self.assertNotIn("\nmodel:", index)
         for name in expected:
             charter = out[f"agents/{name}.md"].decode()

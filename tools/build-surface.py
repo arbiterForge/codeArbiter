@@ -59,6 +59,7 @@ _CLAUDE_ONLY_AGENT_FRONTMATTER = re.compile(
 _CODEX_ONLY_AGENT_FRONTMATTER = re.compile(
     r"^(?:tools|pi-skills|model):[^\n]*\n", re.MULTILINE
 )
+_MARKDOWN_LINK_TARGET = re.compile(r"\]\(([^)]+)\)")
 _AGENT_FRONTMATTER_STRIPPERS = {
     "host-native": _CLAUDE_ONLY_AGENT_FRONTMATTER,
     "relative": _CODEX_ONLY_AGENT_FRONTMATTER,
@@ -436,6 +437,48 @@ def _codex_dispatch_policy(out):
     ])
 
 
+def _codex_agent_route_contract(out):
+    """Generate the route-count receipt from the rendered Codex surface.
+
+    The installed-package checker reads this receipt rather than relying on a
+    hand-maintained count. Regeneration therefore changes the expected
+    literal and generic route closure only when the canonical rendered surface
+    changes deliberately.
+    """
+    literal_lines, generic_lines = set(), set()
+    literal_occurrences = generic_occurrences = 0
+    for source, payload in out.items():
+        if not source.endswith(".md") or source == "agents/INDEX.md":
+            continue
+        for line_number, line in enumerate(payload.decode("utf-8").splitlines(), 1):
+            for match in _MARKDOWN_LINK_TARGET.finditer(line):
+                target = match.group(1).strip().split("#", 1)[0]
+                if target.startswith("<") and target.endswith(">"):
+                    target = target[1:-1].strip()
+                if not target or target.startswith(("http://", "https://", "mailto:")):
+                    continue
+                resolved = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(source), target.replace("\\", "/"))
+                )
+                parts = resolved.split("/")
+                if len(parts) != 2 or parts[0] != "agents" or not parts[1].endswith(".md"):
+                    continue
+                name = parts[1][:-len(".md")]
+                if name in {"<agent>", "<name>"}:
+                    generic_lines.add((source, line_number))
+                    generic_occurrences += 1
+                else:
+                    literal_lines.add((source, line_number))
+                    literal_occurrences += 1
+    return (
+        "\n<!-- codearbiter-codex-agent-route-contract: "
+        f"literal_route_lines={len(literal_lines)} "
+        f"literal_route_occurrences={literal_occurrences} "
+        f"generic_route_lines={len(generic_lines)} "
+        f"generic_route_occurrences={generic_occurrences} -->\n"
+    )
+
+
 def _surface_files(repo, descriptors=None):
     """Sorted surface-relative template paths, classified or rejected."""
     surface = os.path.join(repo, "core", "surface")
@@ -535,6 +578,7 @@ def render_all(repo, host, descriptors=None):
     if descriptor.name == "codex" and "agents/INDEX.md" in out:
         dst = "agents/INDEX.md"
         out[dst] += _codex_dispatch_policy(out).encode("utf-8")
+        out[dst] += _codex_agent_route_contract(out).encode("utf-8")
     if descriptor.command_form == "/ca-{name}":
         dst = "generated/command-catalog.json"
         if dst in out:

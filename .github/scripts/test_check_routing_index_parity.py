@@ -18,6 +18,7 @@ Two kinds of coverage:
 import sys
 import tempfile
 import unittest
+import shutil
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -48,6 +49,159 @@ class TestLiveRepoIsClean(unittest.TestCase):
         self.assertGreater(stats["skills_checked"], 0)
         self.assertGreater(stats["agents_checked"], 0)
         self.assertGreater(stats["routing_rows_checked"], 0)
+
+
+class TestCodexAgentRouteClosure(unittest.TestCase):
+    """The shipped Codex package must close every concrete and generic agent
+    route against its own indexed charter inventory.
+
+    These fixtures mutate a complete copied surface rather than grepping a
+    checker implementation.  That makes each test prove a consumer-visible
+    package break: a copied package can no longer resolve the route that its
+    Markdown advertises.
+    """
+
+    def _repo_copy(self) -> tuple[tempfile.TemporaryDirectory, Path]:
+        temporary = tempfile.TemporaryDirectory()
+        root = Path(temporary.name)
+        shutil.copytree(REPO_ROOT / "core", root / "core")
+        shutil.copytree(REPO_ROOT / "plugins", root / "plugins")
+        return temporary, root
+
+    def _errors_after(self, relative_path: str, old: str, new: str) -> list[str]:
+        temporary, repo = self._repo_copy()
+        self.addCleanup(temporary.cleanup)
+        target = repo / relative_path
+        text = target.read_text(encoding="utf-8")
+        self.assertIn(old, text, f"fixture anchor missing from {relative_path}")
+        target.write_text(text.replace(old, new, 1), encoding="utf-8", newline="\n")
+        errors, _stats = G.check(repo=repo)
+        return errors
+
+    def _symlink_or_skip(self, link: Path, target: Path, *, directory: bool = False):
+        try:
+            link.symlink_to(target, target_is_directory=directory)
+        except (NotImplementedError, OSError) as error:
+            self.skipTest(f"test platform cannot create symlinks: {error}")
+
+    def test_codex_agent_inventory_is_counted_from_shipped_charters(self):
+        errors, stats = G.check(repo=REPO_ROOT)
+        self.assertEqual(errors, [])
+        expected = sum(
+            len(G.dir_agent_names(REPO_ROOT / "plugins" / plugin / "agents"))
+            for plugin in ("ca", "ca-codex", "ca-pi")
+        ) + len(G.dir_agent_names(REPO_ROOT / "core" / "surface" / "agents"))
+        self.assertEqual(stats["agents_checked"], expected)
+
+    def test_missing_literal_codex_agent_route_fails_closed(self):
+        errors = self._errors_after(
+            "plugins/ca-codex/skills/ca-add-dep/SKILL.md",
+            "../../agents/dependency-reviewer.md",
+            "../../agents/missing-reviewer.md",
+        )
+        self.assertTrue(any("missing-reviewer" in error for error in errors), errors)
+
+    def test_deleted_literal_codex_agent_route_fails_the_route_contract(self):
+        errors = self._errors_after(
+            "plugins/ca-codex/skills/ca-add-dep/SKILL.md",
+            "[agents/dependency-reviewer.md](../../agents/dependency-reviewer.md)",
+            "the dependency-reviewer agent",
+        )
+        self.assertTrue(
+            any("literal_route_lines" in error for error in errors),
+            errors,
+        )
+
+    def test_escaping_literal_codex_agent_route_fails_closed(self):
+        errors = self._errors_after(
+            "plugins/ca-codex/skills/ca-add-dep/SKILL.md",
+            "../../agents/dependency-reviewer.md",
+            "../../../agents/escape.md",
+        )
+        self.assertTrue(any("escape" in error for error in errors), errors)
+
+    def test_unsupported_generic_codex_agent_route_fails_closed(self):
+        errors = self._errors_after(
+            "plugins/ca-codex/routines/subagent-driven-development/SKILL.md",
+            "../../agents/<name>.md",
+            "../../agents/<role>.md",
+        )
+        self.assertTrue(any("generic" in error and "role" in error for error in errors), errors)
+
+    def test_wrong_name_or_duplicate_codex_agent_index_row_fails_closed(self):
+        errors = self._errors_after(
+            "plugins/ca-codex/agents/INDEX.md",
+            "| [backend-author](backend-author.md) |",
+            "| [backend-author](frontend-author.md) |\n| [backend-author](backend-author.md) |",
+        )
+        self.assertTrue(any("backend-author" in error and "duplicate" in error for error in errors), errors)
+        self.assertTrue(any("backend-author" in error and "expected" in error for error in errors), errors)
+
+    def test_generic_route_rejects_an_indexed_charter_symlink_escape(self):
+        temporary, repo = self._repo_copy()
+        self.addCleanup(temporary.cleanup)
+        plugin = repo / "plugins" / "ca-codex"
+        ambient = repo / "ambient-backend-author.md"
+        ambient.write_text("# Ambient unreviewed agent\n", encoding="utf-8", newline="\n")
+        charter = plugin / "agents" / "backend-author.md"
+        charter.unlink()
+        self._symlink_or_skip(charter, ambient)
+
+        errors, _stats = G.check(repo=repo)
+
+        self.assertTrue(
+            any("backend-author.md" in error and "symlink" in error for error in errors),
+            errors,
+        )
+
+    def test_agent_directory_symlink_escape_fails_closed(self):
+        temporary, repo = self._repo_copy()
+        self.addCleanup(temporary.cleanup)
+        agents = repo / "plugins" / "ca-codex" / "agents"
+        ambient_agents = repo / "ambient-agents"
+        shutil.copytree(agents, ambient_agents)
+        shutil.rmtree(agents)
+        self._symlink_or_skip(agents, ambient_agents, directory=True)
+
+        errors, _stats = G.check(repo=repo)
+
+        self.assertIn(
+            "plugins/ca-codex/agents/: directory symlink escapes package",
+            errors,
+        )
+
+    def test_agent_index_symlink_escape_fails_closed(self):
+        temporary, repo = self._repo_copy()
+        self.addCleanup(temporary.cleanup)
+        plugin = repo / "plugins" / "ca-codex"
+        index = plugin / "agents" / "INDEX.md"
+        ambient_index = repo / "ambient-agent-index.md"
+        ambient_index.write_bytes(index.read_bytes())
+        index.unlink()
+        self._symlink_or_skip(index, ambient_index)
+
+        errors, _stats = G.check(repo=repo)
+
+        self.assertTrue(
+            any("INDEX.md" in error and "symlink" in error for error in errors),
+            errors,
+        )
+
+    def test_indexed_charter_must_be_a_regular_file(self):
+        temporary, repo = self._repo_copy()
+        self.addCleanup(temporary.cleanup)
+        charter = repo / "plugins" / "ca-codex" / "agents" / "backend-author.md"
+        charter.unlink()
+        charter.mkdir()
+
+        errors, _stats = G.validate_agent_routes(
+            repo / "plugins" / "ca-codex"
+        )
+
+        self.assertTrue(
+            any("backend-author.md" in error and "regular file" in error for error in errors),
+            errors,
+        )
 
 
 class TestSkillIndexParity(unittest.TestCase):

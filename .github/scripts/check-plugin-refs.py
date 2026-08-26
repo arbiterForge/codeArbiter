@@ -24,6 +24,7 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "tools"))
@@ -38,14 +39,13 @@ PLUGINS = {
     "ca-sandbox": {"namespace": "ca-sandbox"},
     # ca-codex (ADR-0011 M3): Codex has no command namespace — the catalog
     # mentions `$ca-<name>` skills and the command bodies live at
-    # skills/ca-<name>/SKILL.md. `pending_prefixes` allowlists plugin-root
-    # references to surfaces a later milestone ships (agents/ arrives with M4
-    # as .codex/agents TOML scaffolding — REMOVE the allowlist entry in M4).
-    # tools/ = the farm execution backend (farm.js, plan.schema.json), which
+    # skills/ca-<name>/SKILL.md. Shipped agent routes are dynamically checked
+    # below.  `pending_prefixes` allowlists only the unavailable tools/
+    # execution backend (farm.js, plan.schema.json), which
     # ca-codex does not vendor yet — --farm is a Feature Forge preview and its
     # Codex packaging is an M5 distribution decision (docs/parity.md row).
     "ca-codex": {"namespace": None, "skill_prefix": "ca-", "catalog_prefix": "$ca-",
-                 "pending_prefixes": ("agents/", "tools/", "tools")},
+                 "pending_prefixes": ("tools/", "tools")},
     # Pi packages generated ca-* entry skills plus /ca-* aliases. Its command
     # catalog uses the alias spelling while the directory bijection remains the
     # same as Codex's namespace-less skill layout.
@@ -115,6 +115,20 @@ def check_plugin(name, cfg):
     if not os.path.isdir(plugin):
         errors.append(f"plugins/{name}: plugin directory missing")
         return
+
+    if name == "ca-codex":
+        from codex_agent_routes import validate_agent_routes
+
+        route_errors, route_stats = validate_agent_routes(Path(plugin))
+        for error in route_errors:
+            errors.append(f"plugins/{name}/{error}")
+        print(
+            "ca-codex agent-route closure: "
+            f"{route_stats['literal_route_lines']} literal lines/"
+            f"{route_stats['literal_route_occurrences']} occurrences, "
+            f"{route_stats['generic_route_lines']} generic lines/"
+            f"{route_stats['generic_route_occurrences']} occurrences"
+        )
 
     # --- A. ${CLAUDE_PLUGIN_ROOT}/... references --------------------------------
     for path in md_files(plugin):

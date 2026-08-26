@@ -45,3 +45,5 @@ Block a required review, isolation, or write-containment workflow when the host 
 | bounded writer/aggregator | `checkpoint-aggregator`, `tribunal-lens-reviewer` | `worker` | writes limited to the charter-declared checkpoint/finding output path; all other writes prohibited and hooks remain active | fresh thread; no inline fallback where an exact per-agent receipt is required | approved host mapping or documented host-default degradation |
 
 Codex built-in type preference is not a permission boundary. Mandatory isolation or write containment blocks when unavailable; it must not silently degrade to prompt-only guidance.
+
+<!-- codearbiter-codex-agent-route-contract: literal_route_lines=19 literal_route_occurrences=20 generic_route_lines=6 generic_route_occurrences=6 -->

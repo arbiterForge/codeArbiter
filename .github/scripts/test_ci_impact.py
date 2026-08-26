@@ -808,6 +808,20 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("codex-resource-contract", aggregate_needs(ci))
         self.assertIn("codex-resource-contract", aggregate_required_results(ci))
 
+    def test_required_codex_host_lane_runs_the_host_checker_regression_suite(self):
+        """The fail-closed installed-host test must block, not merely advise."""
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        required = aggregate_required_results(ci)
+        self.assertIn("codex-host", required)
+        self.assertIn(
+            "run: python3 .github/scripts/test_check_codex_host.py",
+            workflow_jobs(ci)["codex-host"],
+        )
+        self.assertNotIn(
+            "run: python3 .github/scripts/test_check_codex_host.py",
+            workflow_jobs(ci)["codex-host-latest"],
+        )
+
     def test_actionlint_knows_the_protected_desktop_runner_label(self):
         config = ACTIONLINT_CONFIG.read_text(encoding="utf-8")
         self.assertRegex(config, r"(?m)^self-hosted-runner:\s*$")

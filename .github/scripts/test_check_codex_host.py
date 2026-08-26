@@ -51,6 +51,18 @@ class HookScriptContainmentTest(unittest.TestCase):
     def _hook_result(results):
         return next(item for item in results if item["code"] == "CODEX-HOST-HOOK-SCRIPTS")
 
+    @staticmethod
+    def _agent_route_result(results):
+        return next(item for item in results if item["code"] == "CODEX-HOST-AGENT-ROUTES")
+
+    def test_missing_installed_agent_charters_fail_the_real_host_check(self):
+        # The fixture installs hooks only.  A host check that looked at source
+        # paths, or only at the manifest, would incorrectly accept it.
+        result = self._agent_route_result(self._results_for(
+            'python3 "${PLUGIN_ROOT}/hooks/example.py"'
+        ))
+        self.assertEqual(result["status"], "fail")
+
     def test_traversal_hook_target_is_rejected_even_when_outside_file_exists(self):
         def write_outside(root):
             outside = root.parent / "outside.py"

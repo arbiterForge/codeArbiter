@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import importlib.util
 import hashlib
+import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import signal
 import shutil
@@ -18,6 +19,7 @@ import time
 import unittest
 from collections.abc import Callable
 from queue import Empty, Queue
+from unittest import mock
 
 from pi_cli_resolver import resolve_pi_cli_path as _resolve_pi_cli_path
 
@@ -103,6 +105,7 @@ def run_rpc_commands(
     agent_dir: Path,
     home: Path,
     *,
+    package_source: Path = REPO,
     invoke_alias: bool = False,
     invoke_doctor: bool = False,
     invoke_enforcement_fault: bool = False,
@@ -154,7 +157,7 @@ def run_rpc_commands(
     install_environment = dict(environment)
     install_environment.pop("PI_OFFLINE", None)
     installed = subprocess.run(
-        [node, str(cli), "install", str(REPO.resolve()), "--no-approve"],
+        [node, str(cli), "install", str(package_source.resolve()), "--no-approve"],
         cwd=cwd,
         env=install_environment,
         text=True,
@@ -653,6 +656,79 @@ export default function registerCaptureProvider(pi: any) {
                 active_error.add_note(f"Pi RPC cleanup: {message}")
             else:
                 raise AssertionError(f"Pi RPC cleanup failed: {message}")
+
+
+def durable_pi_package_copy(destination: Path) -> Path:
+    """Materialize only regular tracked ca-pi index blobs outside a worktree."""
+    package_root = destination / "durable-plugin" / "ca-pi"
+    package_dirs = {
+        "agents", "extensions", "generated", "helpers", "hooks",
+        "includes", "routines", "skills",
+    }
+    tracked = subprocess.run(
+        ["git", "ls-files", "--stage", "-z", "--", "plugins/ca-pi"],
+        cwd=REPO,
+        check=True,
+        capture_output=True,
+    ).stdout.split(b"\0")
+    entries: list[tuple[str, str, tuple[str, ...]]] = []
+    for record in filter(None, tracked):
+        metadata, separator, encoded_path = record.partition(b"\t")
+        if not separator:
+            raise AssertionError("git ls-files returned a malformed index record")
+        mode, oid, stage = metadata.decode("ascii").split()
+        relative = encoded_path.decode("utf-8")
+        indexed_path = PurePosixPath(relative)
+        if (
+            indexed_path.is_absolute()
+            or indexed_path.as_posix() != relative
+            or any(part in {"", ".", ".."} for part in indexed_path.parts)
+        ):
+            raise AssertionError(f"refusing unsafe ca-pi index path: {relative!r}")
+        parts = indexed_path.parts
+        included = (
+            len(parts) >= 3
+            and parts[:2] == ("plugins", "ca-pi")
+            and (
+                (
+                    len(parts) == 3
+                    and (parts[2] == "package.json" or Path(parts[2]).suffix == ".md")
+                )
+                or parts[2] in package_dirs
+            )
+        )
+        if not included:
+            continue
+        if stage != "0" or mode not in {"100644", "100755"}:
+            raise AssertionError(
+                f"refusing non-regular or unmerged ca-pi index entry: {mode} {stage} {relative}"
+            )
+        entries.append((mode, oid, parts[2:]))
+
+    batch = subprocess.run(
+        ["git", "cat-file", "--batch"],
+        cwd=REPO,
+        input=b"".join(oid.encode("ascii") + b"\n" for _mode, oid, _parts in entries),
+        check=True,
+        capture_output=True,
+    ).stdout
+    stream = io.BytesIO(batch)
+    for mode, oid, relative_parts in entries:
+        header = stream.readline().rstrip(b"\n").split()
+        if len(header) != 3 or header[0].decode("ascii") != oid or header[1] != b"blob":
+            raise AssertionError(f"git cat-file returned an invalid blob header for {oid}")
+        size = int(header[2])
+        blob = stream.read(size)
+        if len(blob) != size or stream.read(1) != b"\n":
+            raise AssertionError(f"git cat-file returned a truncated blob for {oid}")
+        target = package_root.joinpath(*relative_parts)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(blob)
+        if mode == "100755":
+            target.chmod(target.stat().st_mode | 0o111)
+    if stream.read():
+        raise AssertionError("git cat-file returned unexpected trailing output")
+    return package_root
 
 
 def load_build_host_packages():
@@ -1745,10 +1821,50 @@ class PiPackageTests(unittest.TestCase):
             "the real write dispatcher reached its executor after Pi swallowed bootstrap failure",
         )
 
+    def test_durable_package_copy_never_follows_an_escaping_worktree_symlink(self):
+        with tempfile.TemporaryDirectory(prefix="ca-pi-durable-copy-") as directory:
+            root = Path(directory)
+            repo = root / "repo"
+            charter = repo / "plugins" / "ca-pi" / "hooks" / "pi-bridge.py"
+            manifest = repo / "plugins" / "ca-pi" / "package.json"
+            charter.parent.mkdir(parents=True)
+            expected = b"# indexed reviewed bridge\n"
+            charter.write_bytes(expected)
+            manifest.write_text(
+                '{"name":"@arbiterforge/ca-pi","private":true}\n',
+                encoding="utf-8",
+                newline="\n",
+            )
+            subprocess.run(
+                ["git", "init", "-q", "-b", "fixture"],
+                cwd=repo,
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["git", "add", "--", "plugins/ca-pi/hooks/pi-bridge.py", "plugins/ca-pi/package.json"],
+                cwd=repo,
+                check=True,
+                capture_output=True,
+            )
+            ambient = root / "ambient-unreviewed.py"
+            ambient.write_bytes(b"# arbitrary external executable\n")
+            charter.unlink()
+            try:
+                charter.symlink_to(ambient)
+            except (NotImplementedError, OSError) as error:
+                self.skipTest(f"test platform cannot create symlinks: {error}")
+
+            with mock.patch.object(sys.modules[__name__], "REPO", repo):
+                copied = durable_pi_package_copy(root / "copy")
+
+            self.assertEqual((copied / "hooks" / "pi-bridge.py").read_bytes(), expected)
+
     @unittest.skipUnless(os.name == "nt", "Windows executable search canary")
     def test_real_rpc_enabled_start_never_executes_project_git_and_installs_absolute_hook_identities(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-git-poison-") as directory:
             root = Path(directory)
+            package_source = durable_pi_package_copy(root)
             enabled = root / "enabled"
             sentinel = root / "project-git-executed"
             (enabled / ".codearbiter").mkdir(parents=True)
@@ -1781,6 +1897,7 @@ class PiPackageTests(unittest.TestCase):
                 enabled,
                 root / "agent",
                 root / "home",
+                package_source=package_source,
                 _after_install=poison_project_after_package_install,
             )
             hook_path = enabled / ".git" / "hooks" / "pre-commit"
@@ -1803,7 +1920,7 @@ class PiPackageTests(unittest.TestCase):
                 probe_environment.pop("CLAUDE_PROJECT_DIR", None)
                 try:
                     probe = subprocess.run(
-                        [sys.executable, str(REPO / "plugins" / "ca-pi" / "hooks" / "pi-bridge.py")],
+                        [sys.executable, str(package_source / "hooks" / "pi-bridge.py")],
                         input=json.dumps({"version": 1, "event": "session_start", "cwd": str(enabled)}),
                         cwd=enabled, env=probe_environment, text=True, encoding="utf-8",
                         errors="replace", capture_output=True, timeout=120,

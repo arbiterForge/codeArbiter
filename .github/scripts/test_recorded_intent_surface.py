@@ -38,6 +38,8 @@ import re
 import unittest
 from pathlib import Path
 
+from codex_agent_routes import validate_agent_routes
+
 REPO = Path(__file__).resolve().parents[2]
 
 # Host layouts (same projection map as test_routing_and_cleanup_surface.py):
@@ -168,6 +170,15 @@ class TestSprintIntentRead(SurfaceCase):
 
 
 class TestGraderInformationalCitation(SurfaceCase):
+    def test_codex_recorded_intent_charter_routes_close_over_the_shipped_inventory(self):
+        """The grader is a packaged charter, so all advertised Codex agent
+        routes must resolve in the exact package that carries it."""
+        errors, stats = validate_agent_routes(REPO / "plugins" / "ca-codex")
+        self.assertEqual(errors, [])
+        self.assertGreater(stats["agents_indexed"], 0)
+        self.assertGreater(stats["literal_route_occurrences"], 0)
+        self.assertGreater(stats["generic_route_occurrences"], 0)
+
     def test_grader_cites_but_never_conforms(self):
         self.assert_on(GRADER_COPIES,
                        r"(?i)Recorded prior decisions \(informational\)",
