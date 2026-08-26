@@ -21,7 +21,7 @@ choice over web hearsay:
    the *candidate* free model ids (codenames included). This step is candidate **discovery**, not a
    quality judgment.
 3. Run a canary probe to judge quality objectively: set `FARM_CANDIDATE_MODELS=<comma-separated ids>`
-   and invoke `node "[tools/farm.js](../../../tools/farm.js)" --canary "<plan.json>"`. It runs the plan's
+   and invoke `node "tools/farm.js" --canary "<plan.json>"`. It runs the plan's
    smallest task against each candidate and writes `.farm/canary-report.json` ranked by measured
    pass-rate / attempts / latency. Pick the top passing model.
 4. Surface the choice with its measured basis: "Selected `<model-id>` — canary passed in `<n>` attempts,
@@ -39,7 +39,7 @@ choice over web hearsay:
 Invoke the farm dispatcher:
 
 ```
-node "[tools/farm.js](../../../tools/farm.js)" "<project-root>/.codearbiter/plans/<slug>.plan.json"
+node "tools/farm.js" "<project-root>/.codearbiter/plans/<slug>.plan.json"
 ```
 
 

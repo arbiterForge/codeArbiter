@@ -140,6 +140,25 @@ class TokenTest(_RepoCase):
         self.assertIn("[skills/ca-init/SKILL.md](../skills/ca-init/SKILL.md)", text)
         self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text)
 
+    def test_codex_links_only_concrete_packaged_resources(self):
+        _write(
+            self.repo,
+            "core/surface/includes/resource-links.md",
+            "existing: {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n"
+            "generic: {{PLUGIN_ROOT}}/skills/<name>/SKILL.md\n"
+            "absent: {{PLUGIN_ROOT}}/tools/farm.js\n",
+        )
+        text = self.render("codex")["includes/resource-links.md"].decode()
+        self.assertIn(
+            "existing: [routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text
+        )
+        self.assertIn(
+            "generic: [routines/<name>/SKILL.md](../routines/<name>/SKILL.md)",
+            text,
+        )
+        self.assertIn("absent: tools/farm.js", text)
+        self.assertNotIn("[tools/farm.js]", text)
+
     def test_executable_root_token_survives_while_navigation_links_render(self):
         _write(
             self.repo,
@@ -342,6 +361,7 @@ class PiMappingTest(_RepoCase):
             REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
         ).read_text(encoding="utf-8")
         _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+        _write(self.repo, "core/surface/skills/INDEX.md", "# routine catalog\n")
 
         pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
         codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()

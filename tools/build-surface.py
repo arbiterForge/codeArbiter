@@ -149,7 +149,7 @@ def resolve_conditionals(text, host, where, host_names=None):
     return "".join(out)
 
 
-def _render_relative_resources(text, output_path, where):
+def _render_relative_resources(text, output_path, where, resource_paths=None):
     """Render Codex Markdown resources as POSIX links from `output_path`."""
     if not output_path:
         raise SurfaceError(f"{where}: Codex relative-resource rendering needs an output path")
@@ -175,6 +175,13 @@ def _render_relative_resources(text, output_path, where):
         if (path == "hooks/_releaselib.py"
                 and _EXECUTABLE_PY_PREFIX.search(text[:match.start()])):
             return f"{{{{EXECUTABLE_PLUGIN_ROOT}}}}/{path}{suffix}"
+        normalized = validation_path.rstrip("/")
+        prefix = normalized + "/"
+        if (resource_paths is not None and "<" not in path and ">" not in path
+                and normalized not in resource_paths
+                and not any(item.startswith(prefix) for item in resource_paths)):
+            tick = match.group("tick")
+            return f"{tick}{path}{tick}{suffix}"
         relative = posixpath.relpath(path, posixpath.dirname(output_path) or ".")
         return f"[{path}]({relative}){suffix}"
 
@@ -185,7 +192,7 @@ def _render_relative_resources(text, output_path, where):
 
 
 def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
-                host_names=None, output_path=None):
+                host_names=None, output_path=None, resource_paths=None):
     """Resolve conditionals, descriptor path rules, and descriptor tokens."""
     if descriptor is None or host_names is None:
         descriptors = load_host_descriptors(repo)
@@ -240,7 +247,9 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
 
     text = _CMD.sub(_cmd, text)
     if descriptor.root_contract.ordinary_markdown == "relative":
-        text = _render_relative_resources(text, output_path, where)
+        text = _render_relative_resources(
+            text, output_path, where, resource_paths=resource_paths
+        )
     def _token_value(match):
         name = match.group(1)
         if name == "EXECUTABLE_PLUGIN_ROOT":
@@ -542,6 +551,23 @@ def render_all(repo, host, descriptors=None):
     surface = os.path.join(repo, "core", "surface")
     rels = _surface_files(repo, descriptors)
     cmd_names = _command_names(rels)
+    resource_paths = set()
+    for rel in rels:
+        dst, _rule = _output_rel(rel, descriptor)
+        if dst is not None:
+            resource_paths.add(dst)
+    plugin_root = os.path.join(repo, descriptor.plugin_dir.replace("/", os.sep))
+    if os.path.isdir(plugin_root):
+        managed = tuple(item.rstrip("/") for item in descriptor.managed_subtrees)
+        for current, _dirs, files in os.walk(plugin_root):
+            for filename in files:
+                path = os.path.relpath(
+                    os.path.join(current, filename), plugin_root
+                ).replace(os.sep, "/")
+                if any(path == item or path.startswith(item + "/") for item in managed):
+                    continue
+                resource_paths.add(path)
+    resource_paths = frozenset(resource_paths)
     out = {}
     catalog = []  # (skill name, description) for an optional host catalog
     for rel in rels:
@@ -553,6 +579,7 @@ def render_all(repo, host, descriptors=None):
         rendered = render_text(
             text, host, cmd_names, where, repo=repo,
             descriptor=descriptor, host_names=host_names, output_path=dst,
+            resource_paths=resource_paths,
         )
         if rule.add_skill_frontmatter:
             name = rel[len("commands/"):-len(".md")]
