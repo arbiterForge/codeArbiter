@@ -379,13 +379,11 @@ jobs:
           github-token: ${{ github.token }}
 
   # ------------------------------------------------------------------------- #
-  # Auto-tag-on-merge (drift-prevention campaign, adjacent to issue #645).
-  # Every push to main that advances a target's manifest past its last
-  # published tag gets that tag created and pushed immediately — no human
-  # dispatch, no batching, no drift to backfill later. Deliberately NEVER
-  # creates a GitHub Release (`create-release: "false"` on every lane below):
-  # publishing a Release stays a separate, human-triggered decision through
-  # the manual dispatch path above. A target whose manifest advanced but
+  # Auto-publish-on-merge. Every push to main that advances a target's manifest
+  # past its last published tag creates that tag and its GitHub Release after
+  # CI completes successfully — no human dispatch, no batching, and no drift
+  # between an installable tag and a visible release. A target whose manifest
+  # advanced but
   # whose CHANGELOG carries no matching section fails loudly (the shared
   # action's own "no CHANGELOG section found" guard) rather than tagging
   # silently or inventing content — the exact gap that let ca-codex drift 11
@@ -462,7 +460,7 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "true"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
 
   auto-codex-provenance:
@@ -520,7 +518,7 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "false"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
 
   auto-release-sandbox:
@@ -549,7 +547,7 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "false"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
 
   auto-release-pi:
@@ -579,5 +577,5 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "false"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
