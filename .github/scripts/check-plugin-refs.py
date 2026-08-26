@@ -118,7 +118,6 @@ _IMMUTABLE_HISTORY_PREFIXES = (
     "legacy/",
 )
 _FIXTURE_INPUT_PREFIXES = (
-    ".github/scripts/",
     "site/scripts/generator/",
     "site/src/curated/",
     "site/test/",
@@ -128,6 +127,10 @@ _CLAUDE_NATIVE_INPUTS = {"docs/patterns/lazy-load-bundles.md"}
 _CODEX_COMPATIBILITY_INPUTS = {
     "tools/build-surface.py",
     "tools/host_descriptors.py",
+    # These checker implementations interpret the literal as compatibility
+    # input.  Other .github/scripts code is product/CI code and fails closed.
+    ".github/scripts/check-plugin-refs.py",
+    ".github/scripts/check_skill_portability.py",
 }
 _COMMENT_PREFIXES = {
     ".py": "#",
@@ -140,13 +143,9 @@ _COMMENT_PREFIXES = {
 
 
 def _is_test_or_fixture(relative: str) -> bool:
-    parts = relative.split("/")
-    name = parts[-1]
+    name = Path(relative).name
     return (
         relative.startswith(_FIXTURE_INPUT_PREFIXES)
-        or "test" in parts
-        or "tests" in parts
-        or "fixtures" in parts
         or name.startswith("test_")
         or name.endswith(".test.py")
         or name.endswith(".test.ts")

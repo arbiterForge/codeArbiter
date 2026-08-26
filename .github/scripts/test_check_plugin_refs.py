@@ -56,12 +56,20 @@ class ClaudeRootInventoryTest(unittest.TestCase):
 
     def test_codex_compatibility_fixture_input_is_classified(self):
         errors, inventory = self.inventory(
-            ".github/scripts/fixture.py", f'ROOT_LITERAL = "{ROOT_LITERAL}"\n'
+            ".github/scripts/check_skill_portability.py",
+            f'ROOT_LITERAL = "{ROOT_LITERAL}"\n',
         )
         self.assertEqual(errors, [])
         self.assertEqual(
             [entry.category for entry in inventory], ["codex-compatibility-fixture-input"]
         )
+
+    def test_arbitrary_github_script_occurrence_fails_closed(self):
+        errors, _inventory = self.inventory(
+            ".github/scripts/portable_product.py", f'ROOT_LITERAL = "{ROOT_LITERAL}"\n'
+        )
+        self.assertEqual(len(errors), 1)
+        self.assertIn("unclassified portable/product use", errors[0])
 
     def test_immutable_history_is_classified_without_rewrite(self):
         errors, inventory = self.inventory(
