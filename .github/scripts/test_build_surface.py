@@ -140,6 +140,34 @@ class TokenTest(_RepoCase):
         self.assertIn("[skills/ca-init/SKILL.md](../skills/ca-init/SKILL.md)", text)
         self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text)
 
+    def test_executable_root_token_survives_while_navigation_links_render(self):
+        _write(
+            self.repo,
+            "core/surface/includes/release-helper.md",
+            "run `\"$PY\" \"{{PLUGIN_ROOT}}/hooks/_releaselib.py\" list-targets`; "
+            "then see {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n",
+        )
+        codex = self.render("codex")["includes/release-helper.md"].decode()
+        self.assertIn('"${PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', codex)
+        self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", codex)
+        self.assertNotIn("[hooks/_releaselib.py]", codex)
+        claude = self.render("claude")["includes/release-helper.md"].decode()
+        self.assertIn('"${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', claude)
+
+    def test_codex_rejects_unsafe_resource_path_before_rendering_link(self):
+        for resource in (
+                "../escaped.md", "./escaped.md", "nested/./escaped.md",
+                "/escaped.md", "C:/escaped.md", r"C:\\escaped.md",
+                r"nested\\..\\escaped.md"):
+            with self.subTest(resource=resource):
+                _write(
+                    self.repo,
+                    "core/surface/includes/escaped.md",
+                    f"load {{{{PLUGIN_ROOT}}}}/{resource}\n",
+                )
+                with self.assertRaises(B.SurfaceError):
+                    self.render("codex")
+
     def test_unknown_cmd_name_fails(self):
         _write(self.repo, "core/surface/includes/bad.md", "see {{CMD:no-such-cmd}}\n")
         with self.assertRaises(B.SurfaceError):

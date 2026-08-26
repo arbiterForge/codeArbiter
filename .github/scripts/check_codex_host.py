@@ -172,6 +172,7 @@ def check_install(home: Path) -> list[dict]:
         missing: list[str] = []
         scripts: set[str] = set()
         try:
+            installed_root = plugin_root.resolve(strict=True)
             installed = json.loads(cached[0].read_text(encoding="utf-8"))["hooks"]
             for entries in installed.values():
                 for entry in entries:
@@ -184,13 +185,19 @@ def check_install(home: Path) -> list[dict]:
                                     r"\$\{PLUGIN_ROOT\}/(\S+?\.py)", command):
                                 rel = match.group(1)
                                 scripts.add(rel)
-                                if not (plugin_root / rel).is_file():
+                                try:
+                                    target = (installed_root / rel).resolve(strict=True)
+                                    target.relative_to(installed_root)
+                                except (OSError, RuntimeError, ValueError):
+                                    missing.append(rel)
+                                    continue
+                                if not target.is_file():
                                     missing.append(rel)
             record("CODEX-HOST-HOOK-SCRIPTS", not missing and bool(scripts),
                    f"{len(scripts)} script(s) referenced, missing from the install: "
                    f"{sorted(set(missing))}" if missing
                    else "no hook script references were found to check")
-        except (ValueError, KeyError) as error:
+        except (OSError, RuntimeError, ValueError, KeyError) as error:
             record("CODEX-HOST-HOOK-SCRIPTS", False, str(error))
 
     return results

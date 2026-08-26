@@ -25,6 +25,7 @@
 #   python tools/build-surface.py --host pi        # limit to one host
 
 import json
+import ntpath
 import os
 import posixpath
 import re
@@ -44,13 +45,14 @@ CMD_FORM = {item.name: item.command_form for item in _ROOT_DESCRIPTORS}
 
 _MARKER = re.compile(r"\{\{(IF:([a-z][a-z0-9-]*)|ELSE|END)\}\}")
 _CMD = re.compile(r"\{\{CMD:([a-z][a-z0-9-]*)\}\}")
-_TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|PROJECT_DIR)\}\}")
+_TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|EXECUTABLE_PLUGIN_ROOT|PROJECT_DIR)\}\}")
 _CMD_LITERAL = re.compile(r"/ca:([a-z][a-z0-9-]*)")
 _COMMAND_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/commands/([a-z0-9-]+)\.md")
 _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
 _ROOT_RESOURCE = re.compile(
-    r"(?P<tick>`?)\{\{PLUGIN_ROOT\}\}/(?P<path>[A-Za-z0-9_./<>-]+)(?P=tick)"
+    r"(?P<tick>`?)\{\{PLUGIN_ROOT\}\}/(?P<path>[A-Za-z0-9_./<>:\\-]+)(?P=tick)"
 )
+_EXECUTABLE_PY_PREFIX = re.compile(r"[\"']?\$PY[\"']?\s+[\"']?$")
 _CLAUDE_ONLY_AGENT_FRONTMATTER = re.compile(
     r"^(?:classification|pi-skills):[^\n]*\n", re.MULTILINE
 )
@@ -159,6 +161,19 @@ def _render_relative_resources(text, output_path, where):
             path = path[:-1]
         if not path:
             return match.group(0)
+        validation_path = path.replace("\\", "/")
+        if (posixpath.isabs(validation_path) or os.path.isabs(path)
+                or ntpath.isabs(path)):
+            raise SurfaceError(
+                f"{where}: Codex resource path must be relative: {path!r}"
+            )
+        if any(part in (".", "..") for part in validation_path.split("/")):
+            raise SurfaceError(
+                f"{where}: Codex resource path cannot contain '.' or '..': {path!r}"
+            )
+        if (path == "hooks/_releaselib.py"
+                and _EXECUTABLE_PY_PREFIX.search(text[:match.start()])):
+            return f"{{{{EXECUTABLE_PLUGIN_ROOT}}}}/{path}{suffix}"
         relative = posixpath.relpath(path, posixpath.dirname(output_path) or ".")
         return f"[{path}]({relative}){suffix}"
 
@@ -225,7 +240,13 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
     text = _CMD.sub(_cmd, text)
     if descriptor.root_contract.ordinary_markdown == "relative":
         text = _render_relative_resources(text, output_path, where)
-    text = _TOKEN.sub(lambda m: descriptor.tokens[m.group(1)], text)
+    def _token_value(match):
+        name = match.group(1)
+        if name == "EXECUTABLE_PLUGIN_ROOT":
+            return descriptor.tokens["PLUGIN_ROOT"]
+        return descriptor.tokens[name]
+
+    text = _TOKEN.sub(_token_value, text)
     if "{{" in text:
         line = text[:text.index("{{")].count("\n") + 1
         raise SurfaceError(f"{where}: unresolved '{{{{' at line {line}")
