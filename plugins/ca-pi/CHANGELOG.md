@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.4] - 2026-08-24
+
+### Fixed
+
+- The shared Git enforcement hook now resolves linked-worktree security and migration markers through the main-checkout marker root while preserving worktree-local commit inspection.
+
 ## [0.8.3] - 2026-08-21
 
 ### Fixed

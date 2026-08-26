@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-08-24
+
+### Fixed
+
+- Linked-worktree commits now find fresh content-bound security and migration gate markers in the shared main-checkout marker root without redirecting Git or worktree reads away from the commit target.
+
 ## [0.7.3] - 2026-08-21
 
 ### Fixed
