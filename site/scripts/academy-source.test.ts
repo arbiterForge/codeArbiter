@@ -115,6 +115,16 @@ describe("loadAcademySource", () => {
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/Home guide/);
   });
 
+  it("rejects a malformed numbered item before an otherwise valid setup sequence", () => {
+    const fixtureRoot = createFixture();
+    writeFileSync(
+      join(fixtureRoot, "academy-source", "academy", "guides", "home.md"),
+      "# Start here\n\n## Complete these five setup steps before F01\n\n1. Create your practice fork\n1. [Create your practice fork](#create-your-practice-fork).\n2. [Clone it to your computer](#clone-it-to-your-computer).\n3. [Enter the cloned repository](#enter-the-cloned-repository).\n4. [Verify and install the Academy tools](#verify-and-install-the-academy-tools).\n5. [Run readiness checks](#run-readiness-checks).\n",
+    );
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/Home guide/);
+  });
+
   it("rejects a manifest lesson outside its approved track/action paths", () => {
     const unsafeFixtureRoot = createFixture(["../../private"]);
 

@@ -10,6 +10,11 @@ const fixtureRoots: string[] = [];
 const publicSource: AcademySource = {
   release: "preview-0.30",
   commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7",
+  home: {
+    title: "Start here",
+    anchor: "complete-these-five-setup-steps-before-f01",
+    steps: [],
+  },
   lessons: [
     {
       id: "F01-fork-clone-doctor",

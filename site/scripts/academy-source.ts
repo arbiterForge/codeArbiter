@@ -7,6 +7,7 @@ const LESSON_ID = /^(F|P|U)\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const HOME_SETUP_ANCHOR = "complete-these-five-setup-steps-before-f01";
 const HOME_SETUP_HEADING = "Complete these five setup steps before F01";
 const HOME_STEP = /^(\d+)\. \[([^\]]+)\]\(#([a-z0-9]+(?:-[a-z0-9]+)*)\)\.$/;
+const NUMBERED_ITEM = /^\d+\.\s/;
 
 export type AcademyLessonSource = {
   id: string;
@@ -29,12 +30,8 @@ export type AcademyHomeSource = {
 export type AcademySource = {
   release: string;
   commit: string;
-  home?: AcademyHomeSource;
-  lessons: AcademyLessonSource[];
-};
-
-export type LoadedAcademySource = AcademySource & {
   home: AcademyHomeSource;
+  lessons: AcademyLessonSource[];
 };
 
 type PublicationManifest = {
@@ -135,6 +132,12 @@ function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
 
   const steps: AcademyHomeStepSource[] = [];
   const setupLines = lines.slice(setupHeading + 1);
+  for (const line of setupLines) {
+    if (HOME_STEP.test(line)) break;
+    if (NUMBERED_ITEM.test(line)) {
+      throw new Error("Academy Home guide setup steps must be valid Markdown links");
+    }
+  }
   const firstStep = setupLines.findIndex((line) => HOME_STEP.test(line));
   if (firstStep === -1) {
     throw new Error("Academy Home guide must contain five setup steps");
@@ -154,7 +157,7 @@ function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
   return { title, anchor: HOME_SETUP_ANCHOR, steps };
 }
 
-export function loadAcademySource(root: string): LoadedAcademySource {
+export function loadAcademySource(root: string): AcademySource {
   const sourceRoot = realpathSync(resolve(root, "academy-source"));
   const manifestPath = sourcePath(sourceRoot, "academy", "publication", `${RELEASE}.json`);
   const manifest = parseJson(manifestPath) as PublicationManifest;
