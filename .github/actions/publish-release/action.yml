@@ -70,12 +70,8 @@ inputs:
   create-release:
     description: >
       "false" skips the GitHub Release entirely — only the tag is created and
-      pushed. Used by the auto-tag-on-merge lanes (issue #645-adjacent
-      drift-prevention campaign): every merge that advances a target's
-      manifest gets tagged immediately, but publishing a Release stays a
-      separate, deliberate act a human still triggers via the manual
-      dispatch path. Defaults to "true" so the existing manual dispatch
-      lanes are unchanged.
+      pushed. This is useful only for callers that intentionally need a tag
+      without a public release. Defaults to "true".
     required: false
     default: "true"
   github-token:
@@ -247,9 +243,9 @@ runs:
         # commit the tag installs (#380).
         #
         # The Release-specific checks only apply when one was actually asked
-        # for — the auto-tag lanes (`create-release: "false"`) never call `gh
-        # release create` above, so asserting a Release exists here would fail
-        # every auto-tagged push on the thing it deliberately did not do.
+        # for. A caller that deliberately passes `create-release: "false"`
+        # never calls `gh release create` above, so asserting a Release exists
+        # here would reject its intentional tag-only publication.
         if [ "$CREATE_RELEASE" = "true" ]; then
           gh release view "$TAG" --json url,isDraft,tagName
           DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
