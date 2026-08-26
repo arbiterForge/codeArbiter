@@ -1,0 +1,158 @@
+---
+import { academyContent, academyLessons, type AcademyTrack } from "../generated/academy-content";
+
+const trackDefinitions: ReadonlyArray<{
+  id: AcademyTrack;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "foundations",
+    label: "Foundation",
+    description: "Establish safe repository boundaries and learn the evidence-first delivery loop.",
+  },
+  {
+    id: "practitioner",
+    label: "Practitioner",
+    description: "Apply governed workflows to realistic features, fixes, reviews, and decisions.",
+  },
+  {
+    id: "power-user",
+    label: "Power user",
+    description: "Diagnose enforcement, tune governance, and operate advanced delivery paths with proof.",
+  },
+];
+
+const tracks = trackDefinitions.map((definition) => {
+  const lessons = academyLessons.filter((lesson) => lesson.track === definition.id);
+  return {
+    ...definition,
+    lessons,
+    totalMinutes: lessons.reduce((total, lesson) => total + lesson.guide.estimatedMinutes, 0),
+  };
+});
+
+const firstLesson = tracks.find((track) => track.id === "foundations")?.lessons[0];
+
+if (!firstLesson) {
+  throw new Error("The Academy overview requires a published Foundation lesson.");
+}
+
+const lessonHref = (id: string) => `/academy/${id.toLowerCase()}/`;
+---
+
+<div class="academy-overview">
+  <header class="academy-overview__hero" aria-labelledby="academy-overview-title">
+    <p class="academy-overview__eyebrow">Arbiter Academy</p>
+    <h1 id="academy-overview-title">Learn governed delivery by doing the work.</h1>
+    <p class="academy-overview__lede">
+      Build CodeArbiter habits through bounded, verifiable practice in a safe fork you own.
+    </p>
+    <div class="academy-overview__actions">
+      <a
+        class="ca-button ca-button--primary academy-overview__primary"
+        href={`#${academyContent.home.anchor}`}
+      >
+        Set up your practice fork
+      </a>
+      <a class="ca-button academy-overview__secondary" href="#academy-curriculum">
+        Explore the curriculum
+      </a>
+    </div>
+  </header>
+
+  <ul class="academy-overview__orientation" aria-label="Academy at a glance">
+    <li><strong>{academyLessons.length}</strong> hands-on lessons</li>
+    <li><strong>{tracks.length}</strong> progressive tracks</li>
+    <li><strong>Self-paced</strong> practice</li>
+    <li><strong>Learner-owned</strong> proof</li>
+  </ul>
+
+  <section
+    class="academy-overview__setup"
+    id={academyContent.home.anchor}
+    aria-labelledby="academy-setup-title"
+  >
+    <p class="academy-overview__eyebrow">Required setup</p>
+    <h2 id="academy-setup-title">Complete these five setup steps before F01</h2>
+    <p>Prepare your own fork and local clone before you begin the first lesson.</p>
+    <ol class="academy-overview__setup-steps">
+      {academyContent.home.steps.map((step) => (
+        <li id={step.anchor}>{step.title}</li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="academy-overview__start ca-panel" aria-labelledby="academy-start-title">
+    <p class="academy-overview__eyebrow">Start with Foundation</p>
+    <h2 id="academy-start-title">{firstLesson.guide.title}</h2>
+    <p>{firstLesson.guide.outcome}</p>
+    <p>{firstLesson.guide.estimatedMinutes} minutes · Practice in your own fork</p>
+    <a class="ca-text-link academy-overview__start-link" href={lessonHref(firstLesson.id)}>
+      Start F01 <span aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <section
+    class="academy-overview__curriculum"
+    id="academy-curriculum"
+    aria-labelledby="academy-curriculum-title"
+  >
+    <p class="academy-overview__eyebrow">Curriculum</p>
+    <h2 id="academy-curriculum-title">Progress from safe foundations to advanced operation.</h2>
+
+    <div class="academy-overview__tracks">
+      {tracks.map((track) => {
+        const [firstTrackLesson, ...remainingLessons] = track.lessons;
+        return (
+          <section
+            class="academy-overview__track"
+            id={`track-${track.id}`}
+            aria-labelledby={`track-${track.id}-title`}
+          >
+            <h3 id={`track-${track.id}-title`}>{track.label}</h3>
+            <p>{track.description}</p>
+            <p>{track.lessons.length} lessons · {track.totalMinutes} minutes</p>
+
+            {firstTrackLesson && (
+              <article class="academy-overview__lesson ca-panel">
+                <h4><a href={lessonHref(firstTrackLesson.id)}>{firstTrackLesson.guide.title}</a></h4>
+                <p>{firstTrackLesson.guide.outcome}</p>
+                <p>{firstTrackLesson.guide.estimatedMinutes} minutes</p>
+              </article>
+            )}
+
+            {remainingLessons.length > 0 && (
+              <details class="academy-overview__more">
+                <summary>Show {remainingLessons.length} more {track.label} lessons</summary>
+                <div class="academy-overview__lesson-list">
+                  {remainingLessons.map((lesson) => (
+                    <article class="academy-overview__lesson ca-panel">
+                      <h4><a href={lessonHref(lesson.id)}>{lesson.guide.title}</a></h4>
+                      <p>{lesson.guide.outcome}</p>
+                      <p>{lesson.guide.estimatedMinutes} minutes</p>
+                    </article>
+                  ))}
+                </div>
+              </details>
+            )}
+          </section>
+        );
+      })}
+    </div>
+
+    <a class="ca-text-link academy-overview__all-lessons" href="#academy-curriculum">
+      View all lessons <span aria-hidden="true">↑</span>
+    </a>
+  </section>
+
+  <section class="academy-overview__practice" aria-labelledby="academy-practice-title">
+    <p class="academy-overview__eyebrow">How practice works</p>
+    <h2 id="academy-practice-title">A small loop, repeated with evidence.</h2>
+    <ol class="academy-overview__practice-steps">
+      <li><strong>Fork safely.</strong> Work in a repository copy you own and verify its boundaries.</li>
+      <li><strong>Follow a bounded scenario.</strong> Make only the change the lesson asks you to make.</li>
+      <li><strong>Keep the proof.</strong> Run the checkpoint and preserve the evidence it verifies.</li>
+    </ol>
+  </section>
+</div>

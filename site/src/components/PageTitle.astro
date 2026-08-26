@@ -1,15 +1,17 @@
 ---
 /* codeArbiter override: suppress the auto-rendered content-title <h1> on the
-   landing page only.
+   bespoke home and Academy overview routes.
 
    The landing uses a bespoke two-column hero (in index.mdx) that renders its own
-   <h1>, so Starlight's default page-title <h1> would be a duplicate. Every other
-   page falls through to the stock PageTitle unchanged. */
+   <h1>, so Starlight's default page-title <h1> would be a duplicate. The Academy
+   overview follows the same ownership rule. Every other page falls through to
+   the stock PageTitle unchanged. */
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 import PageContext from './PageContext.astro';
 
 const { id, entry } = Astro.locals.starlightRoute;
 const isHome = id === '' || id === 'index';
+const hasBespokeTitle = isHome || id === 'academy';
 const isGeneratedEntity = /^reference\/(?:commands|skills|agents)\//.test(id);
 const explicitJourney = entry.data.journey;
 const inferred = id.startsWith('reference/') || id === 'reference' || id === 'hooks' || id === 'glossary' || id === 'changelog'
@@ -27,7 +29,7 @@ const journey = explicitJourney ?? inferred;
 ---
 
 {
-  !isHome && (
+  !hasBespokeTitle && (
     <>
       <Default><slot /></Default>
       {!isGeneratedEntity && <PageContext {...journey} />}

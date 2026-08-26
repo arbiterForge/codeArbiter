@@ -6,6 +6,7 @@ import type { AcademySource } from "./academy-source";
 import { generateAcademy } from "./generate-academy";
 
 const fixtureRoots: string[] = [];
+const academyOverviewComponent = new URL("../src/components/AcademyOverview.astro", import.meta.url);
 
 const publicSource: AcademySource = {
   release: "preview-0.30",
@@ -111,8 +112,10 @@ describe("generateAcademy", () => {
       "academy/F02-orient-to-state.mdx",
     ]);
     const indexPage = readFileSync(join(docsRoot, "academy", "index.mdx"), "utf8");
+    expect(existsSync(academyOverviewComponent)).toBe(true);
     expect(indexPage).toContain('import AcademyOverview from "../../../components/AcademyOverview.astro";');
     expect(indexPage).toContain("<AcademyOverview />");
+    expect(indexPage).not.toMatch(/<h1\b/i);
     expect(indexPage).not.toContain("## Published lessons");
     const lessonPage = readFileSync(
       join(docsRoot, "academy", "F01-fork-clone-doctor.mdx"),
@@ -154,6 +157,10 @@ describe("generateAcademy", () => {
     const generatedContent = readFileSync(join(generatedRoot, "academy-content.ts"), "utf8");
     expect(generatedContent).toContain('home: {\n    title: "Start here",\n    anchor: "complete-these-five-setup-steps-before-f01",\n    steps: []\n  }');
     expect(generatedContent.match(/\n    \{\n      id: "/g)).toHaveLength(publicSource.lessons.length);
+    for (const lesson of publicSource.lessons) {
+      const canonicalRecord = `\n    {\n      id: "${lesson.id}",\n      track: "${lesson.track}",`;
+      expect(generatedContent.split(canonicalRecord)).toHaveLength(2);
+    }
     expect(generatedContent.indexOf('id: "F01-fork-clone-doctor"')).toBeLessThan(
       generatedContent.indexOf('id: "F02-orient-to-state"'),
     );
