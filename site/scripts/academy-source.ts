@@ -4,6 +4,9 @@ import { isAbsolute, relative, resolve, sep } from "node:path";
 
 const RELEASE = "preview-0.30";
 const LESSON_ID = /^(F|P|U)\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const HOME_SETUP_ANCHOR = "complete-these-five-setup-steps-before-f01";
+const HOME_SETUP_HEADING = "Complete these five setup steps before F01";
+const HOME_STEP = /^(\d+)\. \[([^\]]+)\]\(#([a-z0-9]+(?:-[a-z0-9]+)*)\)\.$/;
 
 export type AcademyLessonSource = {
   id: string;
@@ -12,10 +15,26 @@ export type AcademyLessonSource = {
   actions: unknown;
 };
 
+export type AcademyHomeStepSource = {
+  title: string;
+  anchor: string;
+};
+
+export type AcademyHomeSource = {
+  title: string;
+  anchor: typeof HOME_SETUP_ANCHOR;
+  steps: AcademyHomeStepSource[];
+};
+
 export type AcademySource = {
   release: string;
   commit: string;
+  home?: AcademyHomeSource;
   lessons: AcademyLessonSource[];
+};
+
+export type LoadedAcademySource = AcademySource & {
+  home: AcademyHomeSource;
 };
 
 type PublicationManifest = {
@@ -99,7 +118,43 @@ function trackFor(id: string): AcademyLessonSource["track"] {
   return "power-user";
 }
 
-export function loadAcademySource(root: string): AcademySource {
+function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
+  let guide: string;
+  try {
+    guide = readFileSync(sourcePath(sourceRoot, "academy", "guides", "home.md"), "utf8");
+  } catch (error) {
+    throw new Error("Academy Home guide is required", { cause: error });
+  }
+
+  const lines = guide.split(/\r?\n/);
+  const title = lines[0]?.match(/^# (.+)$/)?.[1];
+  const setupHeading = lines.findIndex((line) => line === `## ${HOME_SETUP_HEADING}`);
+  if (!title || setupHeading === -1) {
+    throw new Error("Academy Home guide has an invalid setup contract");
+  }
+
+  const steps: AcademyHomeStepSource[] = [];
+  const setupLines = lines.slice(setupHeading + 1);
+  const firstStep = setupLines.findIndex((line) => HOME_STEP.test(line));
+  if (firstStep === -1) {
+    throw new Error("Academy Home guide must contain five setup steps");
+  }
+  for (const line of setupLines.slice(firstStep)) {
+    const match = line.match(HOME_STEP);
+    if (!match) break;
+    if (Number(match[1]) !== steps.length + 1) {
+      throw new Error("Academy Home guide setup steps must be ordered");
+    }
+    steps.push({ title: match[2], anchor: match[3] });
+  }
+  if (steps.length !== 5) {
+    throw new Error("Academy Home guide must contain five setup steps");
+  }
+
+  return { title, anchor: HOME_SETUP_ANCHOR, steps };
+}
+
+export function loadAcademySource(root: string): LoadedAcademySource {
   const sourceRoot = realpathSync(resolve(root, "academy-source"));
   const manifestPath = sourcePath(sourceRoot, "academy", "publication", `${RELEASE}.json`);
   const manifest = parseJson(manifestPath) as PublicationManifest;
@@ -113,6 +168,7 @@ export function loadAcademySource(root: string): AcademySource {
   if (manifest.release !== RELEASE) {
     throw new Error(`Academy source manifest must declare ${RELEASE}`);
   }
+  const home = loadHomeGuide(sourceRoot);
 
   const lessons = availableLabs.map((id) => {
     const track = trackFor(id);
@@ -129,6 +185,7 @@ export function loadAcademySource(root: string): AcademySource {
   return {
     release: RELEASE,
     commit: execFileSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+    home,
     lessons,
   };
 }

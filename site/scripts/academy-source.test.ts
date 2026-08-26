@@ -32,6 +32,11 @@ function createFixture(
     join(academyRoot, "tracks", "foundations", "F01-fork-clone-doctor.md"),
     "---\nid: F01-fork-clone-doctor\ntrack: foundations\n---\n# Fork, clone, and doctor safety\n",
   );
+  mkdirSync(join(academyRoot, "guides"), { recursive: true });
+  writeFileSync(
+    join(academyRoot, "guides", "home.md"),
+    "# Start here\n\n## Complete these five setup steps before F01\n\nComplete these steps in order before Prepare in F01:\n\n1. [Create your practice fork](#create-your-practice-fork).\n2. [Clone it to your computer](#clone-it-to-your-computer).\n3. [Enter the cloned repository](#enter-the-cloned-repository).\n4. [Verify and install the Academy tools](#verify-and-install-the-academy-tools).\n5. [Run readiness checks](#run-readiness-checks).\n",
+  );
   writeFileSync(
     join(academyRoot, "actions", "F01-fork-clone-doctor.json"),
     JSON.stringify({
@@ -80,6 +85,34 @@ describe("loadAcademySource", () => {
         encoding: "utf8",
       }).trim(),
     );
+  });
+
+  it("loads the Home guide title and five ordered setup steps", () => {
+    const fixtureRoot = createFixture();
+
+    const source = loadAcademySource(fixtureRoot);
+
+    expect(source.home.anchor).toBe("complete-these-five-setup-steps-before-f01");
+    expect(source.home.steps).toHaveLength(5);
+    expect(source.home.steps[0]).toMatchObject({ title: "Create your practice fork" });
+  });
+
+  it("rejects a missing Home guide", () => {
+    const fixtureRoot = createFixture();
+
+    rmSync(join(fixtureRoot, "academy-source", "academy", "guides", "home.md"));
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/Home guide/);
+  });
+
+  it("rejects a malformed Home guide", () => {
+    const fixtureRoot = createFixture();
+    writeFileSync(
+      join(fixtureRoot, "academy-source", "academy", "guides", "home.md"),
+      "# Start here\n\n## Complete these five setup steps before F01\n\n1. Create your practice fork\n",
+    );
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/Home guide/);
   });
 
   it("rejects a manifest lesson outside its approved track/action paths", () => {
