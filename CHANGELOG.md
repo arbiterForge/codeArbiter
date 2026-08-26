@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.5] - 2026-08-24
+
+### Fixed
+
+- Linked-worktree commits now read content-bound security and migration gate markers from the shared main-checkout marker root while keeping branch, diff, and migration-file reads anchored to the operation worktree.
+
 ## [2.15.4] - 2026-08-23
 
 ### Fixed

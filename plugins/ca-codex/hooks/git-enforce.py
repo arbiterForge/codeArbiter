@@ -194,6 +194,12 @@ def _marker_set(root, name):
         return set()
 
 
+def _marker_root(root):
+    """Escalate only gate-marker reads to the main checkout for a linked
+    worktree; all Git and worktree reads remain anchored at ``root`` (#695)."""
+    return hostapi.git_worktree_main_root(root) or root
+
+
 def pre_commit(root):
     cwd = root
     # H-01: no commit onto a protected branch (or a detached HEAD on its tip).
@@ -230,11 +236,12 @@ def pre_commit(root):
         kind = "crypto/TLS" if touches_crypto else "secret"
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
-        marker = os.path.join(root, ".codearbiter", ".markers", "security-gate-passed")
+        marker_root = _marker_root(root)
+        marker = os.path.join(marker_root, ".codearbiter", ".markers", "security-gate-passed")
         if not marker_fresh(marker, MARKER_FRESHNESS_MINUTES):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
-        approved = _marker_set(root, "security-gate-passed")
+        approved = _marker_set(marker_root, "security-gate-passed")
         uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
         if uncovered:
             block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered by the "
@@ -248,7 +255,7 @@ def pre_commit(root):
                       "failing closed (ORCHESTRATOR §2).")
     migs = sorted(p for p in names if is_migration_path(p, root))
     if migs:
-        approved = _marker_set(root, "migration-gate-passed")
+        approved = _marker_set(_marker_root(root), "migration-gate-passed")
         uncovered = []
         for rel in migs:
             text = read_worktree(cwd, rel)
