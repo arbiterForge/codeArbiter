@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -68,6 +69,17 @@ class ClaudeRootInventoryTest(unittest.TestCase):
         )
         self.assertEqual(errors, [])
         self.assertEqual([entry.category for entry in inventory], ["immutable-history"])
+
+    def test_repository_inventory_ignores_untracked_local_files(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            subprocess.run(["git", "init", "--quiet", str(root)], check=True)
+            write(root, "plugins/ca/arbiter.md", f"Use {ROOT_LITERAL}/hooks/pre-write.py.\n")
+            subprocess.run(["git", "-C", str(root), "add", "plugins/ca/arbiter.md"], check=True)
+            write(root, "README.md", f"Use {ROOT_LITERAL}/hooks/pre-write.py.\n")
+            errors, inventory = CHECKER.check_claude_root_inventory(root)
+        self.assertEqual(errors, [])
+        self.assertEqual([entry.category for entry in inventory], ["claude-native"])
 
     def test_live_repository_inventory_is_closed_and_nontrivial(self):
         errors, inventory = CHECKER.check_claude_root_inventory(CHECKER.REPO)

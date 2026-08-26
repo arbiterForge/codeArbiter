@@ -189,6 +189,21 @@ def _inventory_candidate(relative: str) -> bool:
     return not relative.startswith((".git/", "__pycache__/"))
 
 
+def _inventory_paths(root: Path):
+    """Return tracked worktree files, with a fixture-friendly non-Git fallback."""
+    if (root / ".git").exists():
+        try:
+            listed = subprocess.run(
+                ["git", "-C", str(root), "ls-files", "-z"],
+                check=True,
+                capture_output=True,
+            ).stdout.decode("utf-8", "strict").split("\0")
+            return [root / relative for relative in listed if relative]
+        except (OSError, subprocess.CalledProcessError, UnicodeDecodeError):
+            pass
+    return root.rglob("*")
+
+
 def check_claude_root_inventory(repo: str | Path = REPO) -> tuple[list[str], list[ClaudeRootOccurrence]]:
     """Classify every active CLAUDE_PLUGIN_ROOT use and reject the rest.
 
@@ -200,7 +215,7 @@ def check_claude_root_inventory(repo: str | Path = REPO) -> tuple[list[str], lis
     root = Path(repo)
     errors: list[str] = []
     inventory: list[ClaudeRootOccurrence] = []
-    for path in sorted(root.rglob("*")):
+    for path in sorted(_inventory_paths(root)):
         if not path.is_file() or "node_modules" in path.parts:
             continue
         relative = path.relative_to(root).as_posix()
