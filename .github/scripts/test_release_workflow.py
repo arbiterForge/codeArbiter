@@ -101,9 +101,9 @@ LANES = {
 PUBLISH_JOBS = tuple(LANES)
 PREFLIGHT_JOB = "preflight"
 
-# Auto-tag-on-merge (drift-prevention campaign, adjacent to #645): one
-# push-triggered write-token job per target, mirroring LANES/PUBLISH_JOBS but
-# never creating a Release (`create-release: "false"` on every one).
+# Auto-publish-on-merge: one push-triggered write-token job per target,
+# mirroring LANES/PUBLISH_JOBS and creating the corresponding GitHub Release
+# only after the existing eligibility preflight passes.
 AUTO_LANES = {
     "auto-release": {"target": "ca"},
     "auto-release-codex": {"target": "ca-codex"},
@@ -592,7 +592,7 @@ class PublishExecutionTest(_ShellHarness):
         self.assertNotIn("git tag -a", log)
         self.assertIn("gh release create v9.9.9", log)
 
-    # -- #645-adjacent auto-tag-on-merge: create-release="false" ---------------
+    # -- Explicit tag-only action behavior --------------------------------------
     def test_create_release_false_tags_and_pushes_but_never_calls_release_create(self):
         proc, log, _ = self._publish("v9.9.9", create_release="false")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -602,9 +602,8 @@ class PublishExecutionTest(_ShellHarness):
         self.assertNotIn("gh release create", log)
 
     def test_create_release_false_on_an_already_tagged_commit_is_a_no_op(self):
-        # Steady state after the FIRST auto-tag run for a version: the tag
-        # already exists at GITHUB_SHA, and there is deliberately no Release
-        # to create — resume_publish must not retry anything.
+        # A tag-only caller can revisit an existing tag without creating a
+        # Release. `resume_publish` must not retry anything in that mode.
         proc, log, _ = self._publish("v9.9.9", tag_at=self.HEAD,
                                      create_release="false")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -613,8 +612,8 @@ class PublishExecutionTest(_ShellHarness):
         self.assertNotIn("gh release create", log)
 
     def test_create_release_false_still_aborts_on_a_tag_at_the_wrong_commit(self):
-        # The #380 tag-integrity guard applies regardless of create-release —
-        # auto-tag must never silently move an existing tag either.
+        # The #380 tag-integrity guard applies regardless of create-release.
+        # A tag-only caller must never silently move an existing tag either.
         proc, log, _ = self._publish("v9.9.9", tag_at=self.OTHER,
                                      create_release="false")
         self.assertNotEqual(proc.returncode, 0)
@@ -1106,10 +1105,8 @@ class LaneIsolationTest(unittest.TestCase):
 
 
 class AutoTagLaneTest(unittest.TestCase):
-    """Drift-prevention campaign, adjacent to #645: every push to main that
-    advances a target's manifest past its last tag gets tagged immediately,
-    through a `workflow_run`-triggered mirror of the manual dispatch lanes
-    above — never creating a GitHub Release."""
+    """Every eligible manifest advance publishes its tag and GitHub Release
+    through a `workflow_run`-triggered mirror of the manual dispatch lanes."""
 
     def test_the_trigger_is_workflow_run_on_ci_completion_not_a_bare_push(self):
         # A bare `push` trigger here would race ci.yml's OWN concurrent
@@ -1154,13 +1151,13 @@ class AutoTagLaneTest(unittest.TestCase):
                               condition,
                               f"{job} must run only when {target} is eligible")
 
-    def test_every_auto_lane_never_creates_a_release(self):
+    def test_every_auto_lane_creates_a_release_after_eligibility_preflight(self):
         jobs = _jobs()
         for job in AUTO_PUBLISH_JOBS:
             with self.subTest(job=job):
                 inputs = _lane_inputs(job)
-                self.assertEqual(inputs.get("create-release"), '"false"',
-                                 f"{job} must never create a GitHub Release")
+                self.assertEqual(inputs.get("create-release"), '"true"',
+                                 f"{job} must create a GitHub Release after auto-tagging")
 
     def test_every_auto_lane_trusts_the_manifest_rather_than_a_dispatch_input(self):
         jobs = _jobs()
