@@ -654,7 +654,8 @@ class TestRefreshStalePathOnSessionStart(_WireStatuslineTest):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = _make_plugin_root(self.tmp.name)
-        self.script_abs = os.path.join(self.root, "hooks", "statusline.py")
+        self.script_abs = os.path.realpath(
+            os.path.join(self.root, "hooks", "statusline.py"))
         # A ca-owned line pinned to an OLD version dir (note: still 'ours' — the
         # MARKER 'statusline.py' is present — but a different absolute path).
         self.stale_cmd = (
@@ -817,7 +818,9 @@ class TestNonDurableRootIsNeverPinned(_WireStatuslineTest):
         ws.main(["refresh", "--settings", self.settings,
                  "--plugin-root", self.durable_root, "--interp", "python"])
         cmd = _read(self.settings)["statusLine"]["command"]
-        self.assertIn(os.path.join(self.durable_root, "hooks", "statusline.py"), cmd)
+        expected = os.path.realpath(
+            os.path.join(self.durable_root, "hooks", "statusline.py"))
+        self.assertIn(expected, cmd)
         self.assertNotIn("2.0.1", cmd)
 
     def test_refresh_if_stale_declines_an_ephemeral_script_without_mutating(self):
@@ -863,7 +866,9 @@ class TestNonDurableRootIsNeverPinned(_WireStatuslineTest):
         ws.main(["install", "--settings", self.settings,
                  "--plugin-root", self.durable_root, "--interp", "python"])
         cmd = _read(self.settings)["statusLine"]["command"]
-        self.assertIn(os.path.join(self.durable_root, "hooks", "statusline.py"), cmd)
+        expected = os.path.realpath(
+            os.path.join(self.durable_root, "hooks", "statusline.py"))
+        self.assertIn(expected, cmd)
 
     # --- read-only / removal: never blocked --------------------------------
 
