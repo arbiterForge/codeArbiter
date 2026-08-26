@@ -110,6 +110,10 @@ describe("generateAcademy", () => {
       "academy/F01-fork-clone-doctor.mdx",
       "academy/F02-orient-to-state.mdx",
     ]);
+    const indexPage = readFileSync(join(docsRoot, "academy", "index.mdx"), "utf8");
+    expect(indexPage).toContain('import AcademyOverview from "../../../components/AcademyOverview.astro";');
+    expect(indexPage).toContain("<AcademyOverview />");
+    expect(indexPage).not.toContain("## Published lessons");
     const lessonPage = readFileSync(
       join(docsRoot, "academy", "F01-fork-clone-doctor.mdx"),
       "utf8",
@@ -148,6 +152,8 @@ describe("generateAcademy", () => {
       { label: "Orient to repository state", slug: "academy/f02-orient-to-state" },
     ]);
     const generatedContent = readFileSync(join(generatedRoot, "academy-content.ts"), "utf8");
+    expect(generatedContent).toContain('home: {\n    title: "Start here",\n    anchor: "complete-these-five-setup-steps-before-f01",\n    steps: []\n  }');
+    expect(generatedContent.match(/\n    \{\n      id: "/g)).toHaveLength(publicSource.lessons.length);
     expect(generatedContent.indexOf('id: "F01-fork-clone-doctor"')).toBeLessThan(
       generatedContent.indexOf('id: "F02-orient-to-state"'),
     );
