@@ -8,12 +8,12 @@
   "driver": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopUiDriver.ps1",
-    "sha256": "8fba17327a667911b891ffd7e6c132bf1a55221525ba705ae1d9188bce3db0c8"
+    "sha256": "81abff74fa4f7c755baa3d9997d150a3bae9882d7079231a8e329ff74bb43c7e"
   },
   "probe": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopRouteProbe.ps1",
-    "sha256": "a126d263fadfbc90a9042d3f4b0cd8de528496bce5f223c3fef8eb437cd5dc3c"
+    "sha256": "3dd3efef0fc4953297aaeffbdffa40e4692f9e5150a4065e3451b9a85ffeb94f"
   },
   "image": {
     "id": "windows-11-enterprise-eval-25h2-x64-en-us",

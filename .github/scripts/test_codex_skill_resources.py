@@ -2845,6 +2845,14 @@ class HardenedDesktopReceiptContractTest(CheckerPresentMixin, unittest.TestCase)
             attestation=attestation,
         )
 
+    def test_schema_two_receipt_is_reported_as_retired_schema_three_required(self):
+        result = self.validate(lambda receipt: receipt.update(schema_version=2))
+        self.assertEqual(result["verdict"], "FAIL", result)
+        self.assertEqual(
+            result["errors"],
+            ["desktop receipt schema is retired; schema_version 3 is required"],
+        )
+
     def assert_hardened_receipt_passes(self):
         result = self.validate()
         self.assertEqual(result["verdict"], "PASS", result)

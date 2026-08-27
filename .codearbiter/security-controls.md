@@ -103,7 +103,10 @@ sessions, service accounts, billable API access, or credential reuse.
    attestation action and exact finalized receipt subject. No token value is
    exposed to repository scripts, logs, artifacts, or subsequent jobs.
 
-The device-auth guest has default-deny outbound policy. Before authentication,
+The device-auth guest has default-deny outbound policy. Host-side Store/MSIX
+acquisition and copying precede guest setup; after the default-deny policy is
+active, guest registration and local-plugin installation use only copied local
+bytes and complete without Microsoft network access. Before authentication,
 the broker resolves and pins only `auth.openai.com`, `api.openai.com`,
 `chatgpt.com`, and `ios.chat.openai.com`; the candidate window then disables
 DNS and permits TLS over TCP/443 only to those pinned addresses. Default

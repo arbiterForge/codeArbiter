@@ -4072,7 +4072,7 @@ def _retired_desktop_schema_result(
         "receipt_sha256": None,
         "candidate_sha256": None,
         "attestation": {},
-        "errors": ["desktop receipt schema is retired; schema_version 2 is required"],
+        "errors": ["desktop receipt schema is retired; schema_version 3 is required"],
     }
 
 
@@ -4175,7 +4175,7 @@ def validate_desktop_receipt(
     if _secret_bearing(receipt):
         return _secret_rejected_desktop_result(attestation)
     if receipt.get("schema_version") != 3:
-        if not _desktop_free_strings_safe(
+        if receipt.get("schema_version") == 1 and not _desktop_free_strings_safe(
             receipt,
             desktop_build,
             desktop_runtime_version,

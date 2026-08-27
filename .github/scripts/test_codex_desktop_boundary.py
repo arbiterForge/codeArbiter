@@ -10,7 +10,9 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import struct
 import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -816,6 +818,68 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertIn("/inheritance:r", broker_source)
         self.assertIn("ProcessCreationIncludeCmdLine_Enabled", probe_source)
         self.assertIn("nonallowlisted process ran inside the protected candidate activation window", probe_source)
+        self.assertNotIn("$IsWindows", driver_source)
+        self.assertNotIn("$IsWindows", probe_source)
+        self.assertIn("[Environment]::OSVersion.Platform", driver_source)
+        self.assertIn("[Environment]::OSVersion.Platform", probe_source)
+        self.assertIn("public struct MOUSEINPUT", driver_source)
+        self.assertIn("public struct InputUnion", driver_source)
+        self.assertIn("public InputUnion u", driver_source)
+        self.assertIn(".u.ki.", driver_source)
+        self.assertNotIn("public KEYBDINPUT ki; }", driver_source)
+
+    def test_driver_reports_exact_x64_windows_input_abi_sizes(self):
+        if sys.platform != "win32" or struct.calcsize("P") != 8:
+            self.skipTest("x64 Windows ABI check requires a 64-bit Windows host")
+        windows_powershell = shutil.which("powershell")
+        if windows_powershell is None:
+            self.skipTest("Windows PowerShell 5.1 is unavailable")
+        result = subprocess.run(
+            [
+                windows_powershell, "-NoLogo", "-NoProfile", "-NonInteractive",
+                "-File", str(DRIVER), "-InputAbiOnly",
+                "-ContractPath", str(CONTRACT),
+            ],
+            cwd=REPO_ROOT,
+            env={**os.environ, "CODEARBITER_DESKTOP_BOUNDARY_TEST": "1"},
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout),
+            {"input": 40, "mouse_input": 32, "keyboard_input": 24},
+        )
+
+    def test_guest_network_contract_separates_host_package_acquisition(self):
+        spec = (
+            REPO_ROOT / ".codearbiter" / "specs" /
+            "desktop-proof-contract-hardening.md"
+        ).read_text(encoding="utf-8")
+        controls = (
+            REPO_ROOT / ".codearbiter" / "security-controls.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual(
+            self.contract["network"]["https_fqdns"],
+            [
+                "auth.openai.com",
+                "api.openai.com",
+                "chatgpt.com",
+                "ios.chat.openai.com",
+            ],
+        )
+        spec_lower = spec.lower()
+        self.assertIn("host acquires and copies the store/msix package", spec_lower)
+        self.assertIn("guest registers those copied package bytes", spec_lower)
+        self.assertIn("after its default-deny policy is active", spec_lower)
+        self.assertIn("without microsoft network access", spec_lower)
+        controls_normalized = " ".join(controls.lower().split())
+        self.assertIn("host-side store/msix acquisition", controls_normalized)
+        self.assertIn("guest registration and local-plugin installation", controls_normalized)
+        self.assertIn("without microsoft network access", controls_normalized)
 
     def test_candidate_package_has_exact_inert_hook_inventory_during_desktop_proof(self):
         plugin_root = REPO_ROOT / "plugins" / "ca-codex"

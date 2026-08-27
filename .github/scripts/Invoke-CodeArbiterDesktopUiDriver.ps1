@@ -3,6 +3,9 @@ param(
     [Parameter(ParameterSetName = 'Contract')]
     [switch]$ContractOnly,
 
+    [Parameter(Mandatory, ParameterSetName = 'InputAbi')]
+    [switch]$InputAbiOnly,
+
     [Parameter(Mandatory, ParameterSetName = 'Fixture')]
     [string]$FixturePath,
 
@@ -546,8 +549,15 @@ function Add-InputInterop {
 using System;
 using System.Runtime.InteropServices;
 public static class CodeArbiterDesktopInput {
-  [StructLayout(LayoutKind.Sequential)] public struct INPUT { public uint type; public KEYBDINPUT ki; }
+  [StructLayout(LayoutKind.Sequential)] public struct MOUSEINPUT { public int dx; public int dy; public uint mouseData; public uint dwFlags; public uint time; public UIntPtr dwExtraInfo; }
   [StructLayout(LayoutKind.Sequential)] public struct KEYBDINPUT { public ushort wVk; public ushort wScan; public uint dwFlags; public uint time; public UIntPtr dwExtraInfo; }
+  [StructLayout(LayoutKind.Sequential)] public struct HARDWAREINPUT { public uint uMsg; public ushort wParamL; public ushort wParamH; }
+  [StructLayout(LayoutKind.Explicit)] public struct InputUnion {
+    [FieldOffset(0)] public MOUSEINPUT mi;
+    [FieldOffset(0)] public KEYBDINPUT ki;
+    [FieldOffset(0)] public HARDWAREINPUT hi;
+  }
+  [StructLayout(LayoutKind.Sequential)] public struct INPUT { public uint type; public InputUnion u; }
   [DllImport("user32.dll", SetLastError=true)] public static extern uint SendInput(uint nInputs, INPUT[] inputs, int cbSize);
   [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
   [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint pid);
@@ -562,8 +572,8 @@ function Send-UnicodeText([string]$Text) {
         foreach ($flags in @(0x0004, 0x0006)) {
             $input = [CodeArbiterDesktopInput+INPUT]::new()
             $input.type = 1
-            $input.ki.wScan = [uint16]$character
-            $input.ki.dwFlags = $flags
+            $input.u.ki.wScan = [uint16]$character
+            $input.u.ki.dwFlags = $flags
             $inputs.Add($input)
         }
     }
@@ -576,17 +586,33 @@ function Send-UnicodeText([string]$Text) {
 function Send-Key([uint16]$VirtualKey, [switch]$Control) {
     $keys = [Collections.Generic.List[CodeArbiterDesktopInput+INPUT]]::new()
     if ($Control) {
-        $down = [CodeArbiterDesktopInput+INPUT]::new(); $down.type = 1; $down.ki.wVk = 0x11; $keys.Add($down)
+        $down = [CodeArbiterDesktopInput+INPUT]::new(); $down.type = 1; $down.u.ki.wVk = 0x11; $keys.Add($down)
     }
-    $keyDown = [CodeArbiterDesktopInput+INPUT]::new(); $keyDown.type = 1; $keyDown.ki.wVk = $VirtualKey; $keys.Add($keyDown)
-    $keyUp = [CodeArbiterDesktopInput+INPUT]::new(); $keyUp.type = 1; $keyUp.ki.wVk = $VirtualKey; $keyUp.ki.dwFlags = 0x0002; $keys.Add($keyUp)
+    $keyDown = [CodeArbiterDesktopInput+INPUT]::new(); $keyDown.type = 1; $keyDown.u.ki.wVk = $VirtualKey; $keys.Add($keyDown)
+    $keyUp = [CodeArbiterDesktopInput+INPUT]::new(); $keyUp.type = 1; $keyUp.u.ki.wVk = $VirtualKey; $keyUp.u.ki.dwFlags = 0x0002; $keys.Add($keyUp)
     if ($Control) {
-        $up = [CodeArbiterDesktopInput+INPUT]::new(); $up.type = 1; $up.ki.wVk = 0x11; $up.ki.dwFlags = 0x0002; $keys.Add($up)
+        $up = [CodeArbiterDesktopInput+INPUT]::new(); $up.type = 1; $up.u.ki.wVk = 0x11; $up.u.ki.dwFlags = 0x0002; $keys.Add($up)
     }
     if ([CodeArbiterDesktopInput]::SendInput($keys.Count, $keys.ToArray(),
         [Runtime.InteropServices.Marshal]::SizeOf([type][CodeArbiterDesktopInput+INPUT])) -ne $keys.Count) {
         throw 'desktop key injection was incomplete'
     }
+}
+
+if ($InputAbiOnly) {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') {
+        throw 'input ABI measurement is test-only'
+    }
+    if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT -or -not [Environment]::Is64BitProcess) {
+        throw 'input ABI measurement requires 64-bit Windows'
+    }
+    Add-InputInterop
+    [ordered]@{
+        input = [Runtime.InteropServices.Marshal]::SizeOf([type][CodeArbiterDesktopInput+INPUT])
+        mouse_input = [Runtime.InteropServices.Marshal]::SizeOf([type][CodeArbiterDesktopInput+MOUSEINPUT])
+        keyboard_input = [Runtime.InteropServices.Marshal]::SizeOf([type][CodeArbiterDesktopInput+KEYBDINPUT])
+    } | ConvertTo-Json -Compress
+    exit 0
 }
 
 $loaded = Get-Contract
@@ -622,7 +648,9 @@ if ($PSCmdlet.ParameterSetName -eq 'InventoryFixture') {
 }
 
 if ($PSCmdlet.ParameterSetName -eq 'InventoryProbe') {
-    if (-not $IsWindows) { throw 'post-auth inventory probe requires Windows' }
+    if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+        throw 'post-auth inventory probe requires Windows'
+    }
     $profile = [IO.Path]::GetFullPath($ProfilePath)
     if ([IO.Path]::GetFullPath($env:USERPROFILE) -cne $profile) {
         throw 'post-auth inventory must execute as the disposable desktop identity'
@@ -655,7 +683,9 @@ if ($PSCmdlet.ParameterSetName -eq 'InventoryProbe') {
 }
 
 if ($PSCmdlet.ParameterSetName -eq 'PermissionProbe') {
-    if (-not $IsWindows) { throw 'real Codex permission probe requires Windows' }
+    if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+        throw 'real Codex permission probe requires Windows'
+    }
     $evidence = Invoke-RealPermissionProbe -Runtime $RuntimePath -Repo $ProofRepoPath `
         -PluginRoot $SelectedPluginRoot -Canary $AuthCanaryPath
     $evidence | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $PermissionEvidencePath -Encoding utf8NoBOM
@@ -663,7 +693,9 @@ if ($PSCmdlet.ParameterSetName -eq 'PermissionProbe') {
     exit 0
 }
 
-if (-not $IsWindows) { throw 'desktop UI driver requires Windows' }
+if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+    throw 'desktop UI driver requires Windows'
+}
 if ((Get-Sha256 $RuntimePath) -cne (Get-Sha256 $PackagedRuntimePath)) {
     throw 'runtime bytes do not match the packaged Store resource'
 }

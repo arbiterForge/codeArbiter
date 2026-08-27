@@ -178,7 +178,6 @@ jobs:
           } | ConvertTo-Json | Set-Content -LiteralPath $request -Encoding utf8NoBOM
           try {
             & $installedBroker -RequestPath $request -ReceiptPath $receipt -ContractPath $boundaryPath *> $null
-            if ($LASTEXITCODE -ne 0) { throw 'desktop automation boundary failed' }
           } finally {
             Remove-Item -LiteralPath $request -Force -ErrorAction SilentlyContinue
           }
@@ -196,9 +195,9 @@ jobs:
           $bootstrap_identity_sha256 = $finalized.identities.bootstrap.identity_sha256
           $desktop_identity_sha256 = $finalized.identities.desktop.identity_sha256
           $identity_hashes = @($broker_identity_sha256, $bootstrap_identity_sha256, $desktop_identity_sha256)
-          if ($broker_identity_sha256 -notmatch '^[0-9a-f]{64}$' -or
-              $bootstrap_identity_sha256 -notmatch '^[0-9a-f]{64}$' -or
-              $desktop_identity_sha256 -notmatch '^[0-9a-f]{64}$' -or
+          if ($broker_identity_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+              $bootstrap_identity_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+              $desktop_identity_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
               ($identity_hashes | Sort-Object -Unique).Count -ne 3) {
             throw 'desktop receipt does not bind distinct broker, bootstrap, and disposable desktop identities'
           }

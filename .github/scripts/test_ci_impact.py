@@ -769,6 +769,9 @@ class WorkflowContractTest(unittest.TestCase):
             "& $installedBroker -RequestPath $request -ReceiptPath $receipt -ContractPath $boundaryPath *> $null",
             workflow,
         )
+        broker_launch = workflow.index("& $installedBroker")
+        receipt_check = workflow.index("desktop receipt was not produced", broker_launch)
+        self.assertNotIn("$LASTEXITCODE", workflow[broker_launch:receipt_check])
         precheck = workflow.index("Pre-validate post-teardown receipt")
         attest = workflow.index("Attest the exact non-secret receipt bytes")
         verify = workflow.index("Verify receipt schema, candidate bindings, and signer provenance")
@@ -825,6 +828,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("image_sha256", candidate_job)
         launch = candidate_job.index("& $installedBroker")
         self.assertLess(candidate_job.index("installed broker digest mismatch"), launch)
+        self.assertLess(candidate_job.index("installed desktop driver digest mismatch"), launch)
         self.assertLess(candidate_job.index("installed probe digest mismatch"), launch)
         self.assertNotRegex(candidate_job, r"(?i)&\s+[^\n]*(candidate|archive)")
         python_targets = re.findall(r"(?im)^\s*python\s+(\S+)", candidate_job)
@@ -839,7 +843,14 @@ class WorkflowContractTest(unittest.TestCase):
         workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
         candidate_job = workflow_jobs(workflow)["desktop-candidate"]
         self.assertIn("broker_identity_sha256", candidate_job)
+        self.assertIn("bootstrap_identity_sha256", candidate_job)
         self.assertIn("desktop_identity_sha256", candidate_job)
+        identity_validation = candidate_job[
+            candidate_job.index("if ($broker_identity_sha256"):candidate_job.index(
+                "desktop receipt does not bind distinct", candidate_job.index("if ($broker_identity_sha256")
+            )
+        ]
+        self.assertEqual(identity_validation.count("-cnotmatch '^[0-9a-f]{64}$'"), 3)
         self.assertIn("receipt_phase = 'post-teardown'", candidate_job)
         self.assertIn("receipt_finalizer = 'outer-broker'", candidate_job)
         validate = candidate_job.index("Pre-validate post-teardown receipt")

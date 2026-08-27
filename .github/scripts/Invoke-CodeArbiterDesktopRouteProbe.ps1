@@ -74,6 +74,11 @@ function Get-TextSha256 {
     }
 }
 
+function Convert-NativePathForComparison {
+    param([Parameter(Mandatory)][string]$Value)
+    [IO.Path]::GetFullPath($Value).Replace('/', '\').TrimEnd('\')
+}
+
 function Get-Contract {
     $resolved = (Resolve-Path -LiteralPath $ContractPath).Path
     $contract = Get-Content -LiteralPath $resolved -Raw -Encoding utf8 | ConvertFrom-Json
@@ -194,25 +199,30 @@ function Convert-RouteEvidence {
     }
 
     $firstPath = [IO.Path]::GetFullPath([string]$orderedRecords[0].object_name)
+    $firstPathComparable = Convert-NativePathForComparison $firstPath
     $firstRelative = ([string]$Contract.route_corpus.paths[0]).Replace('/', '\')
-    if (-not $firstPath.EndsWith('\' + $firstRelative, [StringComparison]::OrdinalIgnoreCase)) {
+    if (-not $firstPathComparable.EndsWith('\' + $firstRelative, [StringComparison]::OrdinalIgnoreCase)) {
         throw 'first audited path is not the selected skill entry'
     }
-    $root = $firstPath.Substring(0, $firstPath.Length - $firstRelative.Length - 1).TrimEnd('\')
-    if ([IO.Path]::GetFullPath([string]$InputValue.plugin_root).TrimEnd('\') -cne $root) {
+    $root = [IO.Path]::GetFullPath([string]$InputValue.plugin_root).TrimEnd('\','/')
+    $rootComparable = Convert-NativePathForComparison $root
+    $auditedRootComparable = $firstPathComparable.Substring(
+        0, $firstPathComparable.Length - $firstRelative.Length - 1).TrimEnd('\')
+    if ($rootComparable -cne $auditedRootComparable) {
         throw 'expected plugin root does not match the audited selected-skill root'
     }
     $suffix = ('\.codex\plugins\cache\{0}\{1}\' -f
         $Contract.marketplace.name, $Contract.marketplace.plugin)
-    if ($root -notmatch ('(?i)' + [regex]::Escape($suffix) + $Contract.marketplace.version_regex + '$')) {
+    if ($rootComparable -notmatch ('(?i)' + [regex]::Escape($suffix) + $Contract.marketplace.version_regex + '$')) {
         throw 'audited root is not a versioned Codex marketplace root'
     }
 
     $paths = @($Contract.route_corpus.paths | ForEach-Object {
-        [IO.Path]::GetFullPath((Join-Path $root ([string]$_).Replace('/', '\')))
+        [IO.Path]::GetFullPath((Join-Path $root ([string]$_)))
     })
     foreach ($path in $paths) {
-        if (-not $path.StartsWith($root + '\', [StringComparison]::OrdinalIgnoreCase) -or
+        if (-not (Convert-NativePathForComparison $path).StartsWith(
+                $rootComparable + '\', [StringComparison]::OrdinalIgnoreCase) -or
             -not (Test-Path -LiteralPath $path -PathType Leaf)) {
             throw 'audited route path escapes or is missing from the selected root'
         }
@@ -327,10 +337,11 @@ function Convert-RouteEvidence {
 
 function Get-RoutePaths {
     param([Parameter(Mandatory)]$Contract, [Parameter(Mandatory)][string]$Root)
-    $resolvedRoot = [IO.Path]::GetFullPath($Root).TrimEnd('\')
+    $resolvedRoot = [IO.Path]::GetFullPath($Root).TrimEnd('\','/')
+    $comparableRoot = Convert-NativePathForComparison $resolvedRoot
     $expectedSuffix = ('\.codex\plugins\cache\{0}\{1}\{2}' -f
         $Contract.marketplace.name, $Contract.marketplace.plugin, $Contract.marketplace.version_pattern)
-    if ($resolvedRoot -notmatch ('(?i)' + [regex]::Escape($expectedSuffix).Replace(
+    if ($comparableRoot -notmatch ('(?i)' + [regex]::Escape($expectedSuffix).Replace(
         [regex]::Escape($Contract.marketplace.version_pattern), $Contract.marketplace.version_regex
     ) + '$')) {
         throw 'plugin root is not the versioned Codex marketplace-selected root'
@@ -338,7 +349,8 @@ function Get-RoutePaths {
     $paths = @()
     foreach ($relative in $Contract.route_corpus.paths) {
         $candidate = [IO.Path]::GetFullPath((Join-Path $resolvedRoot $relative))
-        if (-not $candidate.StartsWith($resolvedRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
+        if (-not (Convert-NativePathForComparison $candidate).StartsWith(
+                $comparableRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
             throw 'route corpus path escapes the selected plugin root'
         }
         if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
@@ -532,7 +544,9 @@ if ($PSCmdlet.ParameterSetName -eq 'Fixture') {
     exit 0
 }
 
-if (-not $IsWindows) { throw 'desktop route auditing requires Windows' }
+if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+    throw 'desktop route auditing requires Windows'
+}
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = [Security.Principal.WindowsPrincipal]::new($identity)
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
