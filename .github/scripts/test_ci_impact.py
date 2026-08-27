@@ -765,8 +765,11 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("persist_auth_artifacts = $false", workflow)
         self.assertNotIn("desktop-proof-transient.log", workflow)
         self.assertNotIn("$transientLog", workflow)
-        self.assertIn("& $probe -RequestPath $request -ReceiptPath $receipt *> $null", workflow)
-        precheck = workflow.index("Pre-validate receipt content before attestation")
+        self.assertIn(
+            "& $installedBroker -RequestPath $request -ReceiptPath $receipt -ContractPath $boundaryPath *> $null",
+            workflow,
+        )
+        precheck = workflow.index("Pre-validate post-teardown receipt")
         attest = workflow.index("Attest the exact non-secret receipt bytes")
         verify = workflow.index("Verify receipt schema, candidate bindings, and signer provenance")
         self.assertLess(precheck, attest)
@@ -786,11 +789,65 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c", workflow)
         self.assertIn("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", workflow)
 
+    def test_codex_desktop_candidate_executes_only_digest_bound_trusted_boundary_code(self):
+        """O-01/O-03: candidate bytes stay inert and installed tools match trusted main."""
+        workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
+        candidate_job = workflow_jobs(workflow)["desktop-candidate"]
+        self.assertIn("trusted/.github/desktop-proof-boundary.json", candidate_job)
+        self.assertIn(
+            "trusted/.github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
+            candidate_job,
+        )
+        self.assertIn(
+            "trusted/.github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
+            candidate_job,
+        )
+        self.assertIn(
+            "trusted/.github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
+            candidate_job,
+        )
+        self.assertIn(
+            r"C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1",
+            candidate_job,
+        )
+        self.assertIn("Get-FileHash -Algorithm SHA256", candidate_job)
+        self.assertIn("broker_sha256", candidate_job)
+        self.assertIn("driver_sha256", candidate_job)
+        self.assertIn("probe_sha256", candidate_job)
+        self.assertIn("image_sha256", candidate_job)
+        launch = candidate_job.index("& $installedBroker")
+        self.assertLess(candidate_job.index("installed broker digest mismatch"), launch)
+        self.assertLess(candidate_job.index("installed probe digest mismatch"), launch)
+        self.assertNotRegex(candidate_job, r"(?i)&\s+[^\n]*(candidate|archive)")
+        python_targets = re.findall(r"(?im)^\s*python\s+(\S+)", candidate_job)
+        self.assertGreaterEqual(len(python_targets), 3)
+        self.assertEqual(
+            set(python_targets),
+            {"trusted/.github/scripts/check_codex_skill_resources.py"},
+        )
+
+    def test_codex_desktop_candidate_uploads_only_outer_broker_post_teardown_receipt(self):
+        """O-04/O-05/O-13: teardown and identity separation precede transfer."""
+        workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
+        candidate_job = workflow_jobs(workflow)["desktop-candidate"]
+        self.assertIn("broker_identity_sha256", candidate_job)
+        self.assertIn("desktop_identity_sha256", candidate_job)
+        self.assertIn("receipt_phase = 'post-teardown'", candidate_job)
+        self.assertIn("receipt_finalizer = 'outer-broker'", candidate_job)
+        validate = candidate_job.index("Pre-validate post-teardown receipt")
+        upload = candidate_job.index("Transfer only the finalized candidate and non-secret receipt")
+        self.assertLess(validate, upload)
+
     def test_codex_resource_changes_reach_an_exact_required_lane(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         watched = {
+            ".github/desktop-proof-boundary.json",
             ".github/fixtures/codex-skill-resources/**",
+            ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
+            ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
+            ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
             ".github/scripts/check_codex_skill_resources.py",
+            ".github/scripts/test_codex_desktop_boundary.py",
             ".github/scripts/test_codex_skill_resources.py",
             "docs/reports/codex-skill-resource-resolution.md",
             "docs/reports/evidence/codex-skill-resource-resolution/**",
@@ -802,6 +859,7 @@ class WorkflowContractTest(unittest.TestCase):
         job = workflow_jobs(ci)["codex-resource-contract"]
         self.assertIn("needs.changes.outputs.codex-resources == 'true'", job)
         self.assertIn("run: python .github/scripts/test_codex_skill_resources.py", job)
+        self.assertIn("run: python .github/scripts/test_codex_desktop_boundary.py", job)
         self.assertIn(
             "run: python .github/scripts/check_codex_skill_resources.py --fixtures-only", job
         )

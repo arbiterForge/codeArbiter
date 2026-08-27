@@ -89,6 +89,43 @@ jobs:
         run: |
           python trusted/.github/scripts/check_codex_skill_resources.py --candidate-contract-only --candidate-package "$env:RUNNER_TEMP/ca-codex-candidate.zip" --json
 
+      - name: Verify trusted boundary, installed copies, and approved VM image
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          $boundaryPath = Join-Path $env:GITHUB_WORKSPACE 'trusted/.github/desktop-proof-boundary.json'
+          python trusted/.github/scripts/check_codex_skill_resources.py --desktop-boundary-contract-only --json
+          if ($LASTEXITCODE -ne 0) { throw 'trusted desktop boundary contract validation failed' }
+          $boundary = Get-Content -LiteralPath $boundaryPath -Raw -Encoding utf8 | ConvertFrom-Json
+          $trustedBroker = Join-Path $env:GITHUB_WORKSPACE 'trusted/.github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1'
+          $trustedDriver = Join-Path $env:GITHUB_WORKSPACE 'trusted/.github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1'
+          $trustedProbe = Join-Path $env:GITHUB_WORKSPACE 'trusted/.github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1'
+          $installedBroker = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1'
+          $installedDriver = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopUiDriver.ps1'
+          $installedProbe = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopRouteProbe.ps1'
+          $imagePath = 'C:\codearbiter-runner\images\windows-11-enterprise-eval-25h2-x64-en-us.iso'
+          foreach ($path in @($installedBroker, $installedDriver, $installedProbe, $imagePath)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw 'approved desktop boundary prerequisite is unavailable' }
+          }
+          $trustedBrokerHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $trustedBroker).Hash.ToLowerInvariant()
+          $trustedDriverHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $trustedDriver).Hash.ToLowerInvariant()
+          $trustedProbeHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $trustedProbe).Hash.ToLowerInvariant()
+          $installedBrokerHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $installedBroker).Hash.ToLowerInvariant()
+          $installedDriverHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $installedDriver).Hash.ToLowerInvariant()
+          $installedProbeHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $installedProbe).Hash.ToLowerInvariant()
+          $imageHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $imagePath).Hash.ToLowerInvariant()
+          if ($trustedBrokerHash -cne $boundary.broker.sha256 -or $installedBrokerHash -cne $boundary.broker.sha256) {
+            throw 'installed broker digest mismatch'
+          }
+          if ($trustedDriverHash -cne $boundary.driver.sha256 -or $installedDriverHash -cne $boundary.driver.sha256) {
+            throw 'installed desktop driver digest mismatch'
+          }
+          if ($trustedProbeHash -cne $boundary.probe.sha256 -or $installedProbeHash -cne $boundary.probe.sha256) {
+            throw 'installed probe digest mismatch'
+          }
+          if ($imageHash -cne $boundary.image.sha256) { throw 'approved VM image digest mismatch' }
+
       - name: Exercise actual Store/MSIX desktop through approved external boundary
         shell: pwsh
         env:
@@ -101,8 +138,12 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
-          $probe = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1'
-          if (-not (Test-Path -LiteralPath $probe -PathType Leaf)) { throw 'approved desktop automation boundary is unavailable' }
+          $boundaryPath = Join-Path $env:GITHUB_WORKSPACE 'trusted/.github/desktop-proof-boundary.json'
+          $boundary = Get-Content -LiteralPath $boundaryPath -Raw -Encoding utf8 | ConvertFrom-Json
+          $installedBroker = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1'
+          $installedDriver = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopUiDriver.ps1'
+          $installedProbe = 'C:\codearbiter-runner\Invoke-CodeArbiterDesktopRouteProbe.ps1'
+          $imagePath = 'C:\codearbiter-runner\images\windows-11-enterprise-eval-25h2-x64-en-us.iso'
           $request = Join-Path $env:RUNNER_TEMP 'desktop-proof-request.json'
           $receipt = Join-Path $env:RUNNER_TEMP 'codex-desktop-candidate-receipt.json'
           @{
@@ -124,16 +165,43 @@ jobs:
             persist_screenshots = $false
             persist_raw_ui_logs = $false
             persist_crash_dumps = $false
+            boundary_contract_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $boundaryPath).Hash.ToLowerInvariant()
+            broker_sha256 = $boundary.broker.sha256
+            driver_sha256 = $boundary.driver.sha256
+            probe_sha256 = $boundary.probe.sha256
+            installed_driver = $installedDriver
+            installed_probe = $installedProbe
+            image_path = $imagePath
+            image_sha256 = $boundary.image.sha256
           } | ConvertTo-Json | Set-Content -LiteralPath $request -Encoding utf8NoBOM
           try {
-            & $probe -RequestPath $request -ReceiptPath $receipt *> $null
+            & $installedBroker -RequestPath $request -ReceiptPath $receipt -ContractPath $boundaryPath *> $null
             if ($LASTEXITCODE -ne 0) { throw 'desktop automation boundary failed' }
           } finally {
             Remove-Item -LiteralPath $request -Force -ErrorAction SilentlyContinue
           }
           if (-not (Test-Path -LiteralPath $receipt -PathType Leaf)) { throw 'desktop receipt was not produced' }
+          $finalized = Get-Content -LiteralPath $receipt -Raw -Encoding utf8 | ConvertFrom-Json
+          $receiptContract = @{
+            receipt_phase = 'post-teardown'
+            receipt_finalizer = 'outer-broker'
+          }
+          if ($finalized.boundary.receipt_phase -cne $receiptContract.receipt_phase -or
+              $finalized.boundary.receipt_finalizer -cne $receiptContract.receipt_finalizer) {
+            throw 'desktop receipt was not finalized by the outer broker after teardown'
+          }
+          $broker_identity_sha256 = $finalized.identities.broker.identity_sha256
+          $bootstrap_identity_sha256 = $finalized.identities.bootstrap.identity_sha256
+          $desktop_identity_sha256 = $finalized.identities.desktop.identity_sha256
+          $identity_hashes = @($broker_identity_sha256, $bootstrap_identity_sha256, $desktop_identity_sha256)
+          if ($broker_identity_sha256 -notmatch '^[0-9a-f]{64}$' -or
+              $bootstrap_identity_sha256 -notmatch '^[0-9a-f]{64}$' -or
+              $desktop_identity_sha256 -notmatch '^[0-9a-f]{64}$' -or
+              ($identity_hashes | Sort-Object -Unique).Count -ne 3) {
+            throw 'desktop receipt does not bind distinct broker, bootstrap, and disposable desktop identities'
+          }
 
-      - name: Pre-validate receipt content before attestation
+      - name: Pre-validate post-teardown receipt
         shell: pwsh
         env:
           CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
@@ -145,7 +213,7 @@ jobs:
         run: |
           python trusted/.github/scripts/check_codex_skill_resources.py --surface desktop --desktop-build $env:DESKTOP_BUILD --desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION --workflow-run-id $env:TRUSTED_RUN_ID --workflow-commit $env:TRUSTED_WORKFLOW_COMMIT --import-receipt "$env:RUNNER_TEMP/codex-desktop-candidate-receipt.json" --candidate-package "$env:RUNNER_TEMP/ca-codex-candidate.zip" --candidate-source-commit $env:CANDIDATE_COMMIT --candidate-tree $env:CANDIDATE_TREE --pre-attestation --json
 
-      - name: Transfer only the pre-validated candidate and non-secret receipt
+      - name: Transfer only the finalized candidate and non-secret receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: codex-desktop-candidate-transfer-${{ inputs.candidate_commit }}
