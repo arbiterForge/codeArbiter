@@ -55,6 +55,9 @@ def run_fixture(
     fixture: dict,
     *,
     fail_after: str | None = None,
+    cleanup_failure: str | None = None,
+    receipt_failure: str | None = None,
+    receipt_cleanup_failure: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     with tempfile.TemporaryDirectory() as temp:
         fixture_path = Path(temp) / "fixture.json"
@@ -65,6 +68,12 @@ def run_fixture(
         ]
         if fail_after is not None:
             command.extend(["-TestFailAfter", fail_after])
+        if cleanup_failure is not None:
+            command.extend(["-TestCleanupFailure", cleanup_failure])
+        if receipt_failure is not None:
+            command.extend(["-TestReceiptFailure", receipt_failure])
+        if receipt_cleanup_failure:
+            command.append("-TestReceiptCleanupFailure")
         environment = os.environ.copy()
         environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
         return subprocess.run(
@@ -1408,6 +1417,111 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertNotIn("Invoke-TestLifecycle", broker_source)
         self.assertIn("Invoke-BrokerStage $lifecycle", broker_source)
         self.assertIn("Invoke-BrokerCleanupStage $lifecycle", broker_source)
+
+    def test_broker_retries_destructive_cleanup_and_verifies_final_absence(self):
+        for stage in ["vm-destroyed", "run-root-destroyed"]:
+            with self.subTest(stage=stage, failure="transient"):
+                recovered = run_fixture(
+                    BROKER,
+                    self.broker_fixture,
+                    cleanup_failure=f"{stage}:once",
+                )
+                self.assertEqual(recovered.returncode, 0, recovered.stdout + recovered.stderr)
+                result = json.loads(recovered.stdout)
+                self.assertTrue(result["receipt_would_finalize"])
+                self.assertEqual(result["cleanup_attempts"][stage], 2)
+                self.assertTrue(all(result["cleanup_observations"].values()))
+                self.assertEqual(result["trace"].count(stage), 1)
+
+            with self.subTest(stage=stage, failure="permanent"):
+                blocked = run_fixture(
+                    BROKER,
+                    self.broker_fixture,
+                    cleanup_failure=f"{stage}:always",
+                )
+                self.assertNotEqual(blocked.returncode, 0)
+                self.assertIn('"receipt_would_finalize":false', blocked.stdout)
+                self.assertIn('"cleanup_retry_exhausted":true', blocked.stdout)
+                result = json.loads(blocked.stdout)
+                self.assertEqual(result["cleanup_attempts"][stage], 3)
+                self.assertFalse(result["cleanup_observations"][stage])
+                self.assertEqual(
+                    result["cleanup_observations"]["vhdx-destroyed"],
+                    stage == "vm-destroyed",
+                )
+                self.assertNotIn("receipt-finalized", result["trace"])
+                self.assertIn("artifact-inventory-cleared", result["attempted_cleanup"])
+                self.assertTrue(result["cleanup_errors"])
+
+    def test_broker_removes_receipt_after_late_finalization_failure(self):
+        expected_errors = {
+            "write-after-persist": "injected receipt failure after bytes persisted",
+            "post-write-inventory": "injected post-write receipt inventory failure",
+        }
+        for failure, expected_error in expected_errors.items():
+            with self.subTest(failure=failure):
+                blocked = run_fixture(
+                    BROKER,
+                    self.broker_fixture,
+                    receipt_failure=failure,
+                )
+                self.assertNotEqual(blocked.returncode, 0)
+                result = json.loads(blocked.stdout)
+                self.assertFalse(result["receipt_would_finalize"])
+                self.assertTrue(result["receipt_absent"])
+                self.assertEqual(result["cleanup_attempts"]["receipt-absent"], 1)
+                self.assertEqual(result["original_failure"], expected_error)
+                self.assertEqual(result["reported_failure"], expected_error)
+                self.assertNotIn("receipt-finalized", result["trace"])
+
+    def test_broker_preserves_original_error_when_receipt_removal_exhausts(self):
+        blocked = run_fixture(
+            BROKER,
+            self.broker_fixture,
+            receipt_failure="write-after-persist",
+            receipt_cleanup_failure=True,
+        )
+        self.assertNotEqual(blocked.returncode, 0)
+        result = json.loads(blocked.stdout)
+        original = "injected receipt failure after bytes persisted"
+        self.assertFalse(result["receipt_absent"])
+        self.assertEqual(result["cleanup_attempts"]["receipt-absent"], 3)
+        self.assertEqual(result["original_failure"], original)
+        self.assertEqual(result["inner_failure"], original)
+        self.assertIn("receipt-absent cleanup retry exhausted", result["reported_failure"])
+        self.assertTrue(result["cleanup_errors"])
+
+    def test_production_catch_uses_shared_failure_finalizer_after_cleanup_loop(self):
+        broker_source = BROKER.read_text(encoding="utf-8")
+        finalizer_token = "function Invoke-BrokerFailureFinalization"
+        self.assertIn(finalizer_token, broker_source)
+        finalizer = broker_source[broker_source.index(finalizer_token):]
+        self.assertLess(
+            finalizer.index("Remove-BrokerReceiptAfterFailure"),
+            finalizer.index("Assert-BrokerCleanupObservations"),
+        )
+        self.assertLess(
+            finalizer.index("Assert-BrokerCleanupObservations"),
+            finalizer.index("New-BrokerReportedFailure"),
+        )
+
+        fixture_start = broker_source.index("function Invoke-BrokerReceiptFailureFixture")
+        fixture_end = broker_source.index("function Complete-BrokerLifecycle", fixture_start)
+        fixture_body = broker_source[fixture_start:fixture_end]
+        self.assertIn("Invoke-BrokerFailureFinalization", fixture_body)
+
+        production_catch = broker_source[broker_source.index("    $failure = $_", fixture_end):]
+        cleanup_loop = production_catch.index(
+            "while($lifecycle.CleanupIndex -lt $script:BrokerCleanupStages.Count)"
+        )
+        finalizer_call = production_catch.index(
+            "Invoke-BrokerFailureFinalization $lifecycle $failure $ReceiptPath"
+        )
+        self.assertLess(cleanup_loop, finalizer_call)
+        self.assertNotIn(
+            "Remove-BrokerReceiptAfterFailure $lifecycle $ReceiptPath",
+            production_catch,
+        )
 
 
 if __name__ == "__main__":

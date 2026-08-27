@@ -9,6 +9,14 @@ param(
     [string]$FixturePath,
     [Parameter(ParameterSetName = 'Fixture')]
     [string]$TestFailAfter,
+    [Parameter(ParameterSetName = 'Fixture')]
+    [ValidatePattern('^(vm-destroyed|run-root-destroyed):(once|always)$')]
+    [string]$TestCleanupFailure,
+    [Parameter(ParameterSetName = 'Fixture')]
+    [ValidateSet('write-after-persist','post-write-inventory')]
+    [string]$TestReceiptFailure,
+    [Parameter(ParameterSetName = 'Fixture')]
+    [switch]$TestReceiptCleanupFailure,
     [Parameter(Mandatory, ParameterSetName = 'CandidateSurfaceFixture')]
     [string]$CandidateSurfaceFixturePath,
     [Parameter(Mandatory, ParameterSetName = 'ReceiptContractFixture')]
@@ -675,8 +683,12 @@ function New-BrokerLifecycle {
     [pscustomobject]@{
         Trace = [Collections.Generic.List[string]]::new()
         Errors = [Collections.Generic.List[string]]::new()
+        AttemptedCleanup = [Collections.Generic.List[string]]::new()
+        CleanupAttempts = [ordered]@{}
+        CleanupObservations = [ordered]@{}
         ForwardIndex = 0
         CleanupIndex = 0
+        CleanupRetryExhausted = $false
         Failed = $false
     }
 }
@@ -709,6 +721,7 @@ function Invoke-BrokerCleanupStage($Lifecycle, [string]$Name, [scriptblock]$Oper
         $script:BrokerCleanupStages[$Lifecycle.CleanupIndex] -cne $Name) {
         throw "broker cleanup transition is invalid: $Name"
     }
+    $null = $Lifecycle.AttemptedCleanup.Add($Name)
     try {
         $result = & $Operation
         $null = $Lifecycle.Trace.Add($Name)
@@ -722,6 +735,166 @@ function Invoke-BrokerCleanupStage($Lifecycle, [string]$Name, [scriptblock]$Oper
     }
 }
 
+function Invoke-BoundedCleanupOperation(
+    $Lifecycle,
+    [string]$Name,
+    [scriptblock]$Operation,
+    [scriptblock]$Verify,
+    [int]$MaxAttempts = 3,
+    [int]$DelayMilliseconds = 200
+) {
+    if ($MaxAttempts -lt 1 -or $MaxAttempts -gt 5 -or $DelayMilliseconds -lt 0 -or $DelayMilliseconds -gt 2000) {
+        throw 'cleanup retry policy is outside the reviewed bounds'
+    }
+    $lastError = $null
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        $Lifecycle.CleanupAttempts[$Name] = $attempt
+        try {
+            $null = & $Operation
+            if (-not (& $Verify)) { throw "$Name absence was not observed" }
+            $Lifecycle.CleanupObservations[$Name] = $true
+            return $true
+        } catch {
+            $lastError = $_.Exception
+            if ($attempt -lt $MaxAttempts -and $DelayMilliseconds -gt 0) {
+                Start-Sleep -Milliseconds $DelayMilliseconds
+            }
+        }
+    }
+    $Lifecycle.CleanupRetryExhausted = $true
+    $Lifecycle.CleanupObservations[$Name] = $false
+    throw "$Name cleanup retry exhausted after $MaxAttempts attempt(s): $($lastError.Message)"
+}
+
+function Assert-BrokerCleanupObservations($Lifecycle, [Collections.IDictionary]$Observations) {
+    $required = @(
+        'account-disabled','account-deleted','profile-destroyed','vm-destroyed',
+        'vhdx-destroyed','run-root-destroyed','receipt-absent'
+    )
+    $missing = [Collections.Generic.List[string]]::new()
+    foreach ($name in $required) {
+        $observed = $Observations.Contains($name) -and [bool]$Observations[$name]
+        $Lifecycle.CleanupObservations[$name] = $observed
+        if (-not $observed) { $null = $missing.Add($name) }
+    }
+    if ($missing.Count -gt 0) {
+        throw "final cleanup absence was not observed: $($missing -join ', ')"
+    }
+    $true
+}
+
+function Write-BrokerReceiptArtifact(
+    [string]$ReceiptPath,
+    [string]$Serialized,
+    [string]$TestFailure = ''
+) {
+    $receiptDirectory = Split-Path -Parent ([IO.Path]::GetFullPath($ReceiptPath))
+    $receiptLeaf = Split-Path -Leaf $ReceiptPath
+    $Serialized | Set-Content -LiteralPath $ReceiptPath -Encoding utf8NoBOM -ErrorAction Stop
+    if($TestFailure -ceq 'write-after-persist'){
+        throw 'injected receipt failure after bytes persisted'
+    }
+    if($TestFailure -ceq 'post-write-inventory'){
+        throw 'injected post-write receipt inventory failure'
+    }
+    $ownedArtifacts = @(Get-ChildItem -LiteralPath $receiptDirectory -File -ErrorAction Stop |
+        Where-Object { $_.Name.StartsWith($receiptLeaf,[StringComparison]::OrdinalIgnoreCase) })
+    if($ownedArtifacts.Count-ne 1-or[IO.Path]::GetFullPath($ownedArtifacts[0].FullName)-cne[IO.Path]::GetFullPath($ReceiptPath)){
+        Remove-Item -LiteralPath $ReceiptPath -Force -ErrorAction SilentlyContinue
+        throw 'broker produced durable artifacts other than the finalized receipt'
+    }
+    $true
+}
+
+function Remove-BrokerReceiptAfterFailure(
+    $Lifecycle,
+    [string]$ReceiptPath,
+    [switch]$TestAlwaysFail
+) {
+    try {
+        $null = Invoke-BoundedCleanupOperation $Lifecycle 'receipt-absent' {
+            if($TestAlwaysFail){throw 'injected receipt removal failure'}
+            if(Test-Path -LiteralPath $ReceiptPath){
+                Remove-Item -LiteralPath $ReceiptPath -Force -ErrorAction Stop
+            }
+        } { -not(Test-Path -LiteralPath $ReceiptPath) } 3 200
+    } catch {
+        if($Lifecycle.Errors -notcontains $_.Exception.Message){$null=$Lifecycle.Errors.Add($_.Exception.Message)}
+    }
+}
+
+function New-BrokerReportedFailure($Failure, $Lifecycle) {
+    $cleanupErrors = @($Lifecycle.Errors | Select-Object -Unique)
+    if($cleanupErrors.Count){
+        return [InvalidOperationException]::new(
+            "$($Failure.Exception.Message) | cleanup blockers: $($cleanupErrors -join '; ')",
+            $Failure.Exception
+        )
+    }
+    $Failure.Exception
+}
+
+function Invoke-BrokerFailureFinalization(
+    $Lifecycle,
+    $Failure,
+    [string]$ReceiptPath,
+    [scriptblock]$ObserveCleanup,
+    [switch]$TestReceiptCleanupFailure
+) {
+    Remove-BrokerReceiptAfterFailure $Lifecycle $ReceiptPath -TestAlwaysFail:$TestReceiptCleanupFailure
+    $observations = & $ObserveCleanup
+    try {
+        $null = Assert-BrokerCleanupObservations $Lifecycle $observations
+    } catch {
+        if($Lifecycle.Errors -notcontains $_.Exception.Message){$null=$Lifecycle.Errors.Add($_.Exception.Message)}
+    }
+    throw (New-BrokerReportedFailure $Failure $Lifecycle)
+}
+
+function Invoke-BrokerReceiptFailureFixture(
+    [string]$Failure,
+    [string]$FixturePath,
+    [switch]$TestCleanupFailure
+) {
+    $lifecycle = New-BrokerLifecycle
+    $receiptPath = Join-Path (Split-Path -Parent ([IO.Path]::GetFullPath($FixturePath))) 'late-pass-receipt.json'
+    $original = $null
+    try {
+        $null = Write-BrokerReceiptArtifact $receiptPath '{"verdict":"PASS"}' $Failure
+        throw 'receipt failure fixture did not inject its required failure'
+    } catch {
+        $original = $_
+    }
+    $reported = $null
+    try {
+        Invoke-BrokerFailureFinalization $lifecycle $original $receiptPath {
+            [ordered]@{
+                'account-disabled' = $true
+                'account-deleted' = $true
+                'profile-destroyed' = $true
+                'vm-destroyed' = $true
+                'vhdx-destroyed' = $true
+                'run-root-destroyed' = $true
+                'receipt-absent' = -not(Test-Path -LiteralPath $receiptPath)
+            }
+        } -TestReceiptCleanupFailure:$TestCleanupFailure
+    } catch {
+        $reported = $_.Exception
+    }
+    $cleanupErrors = @($lifecycle.Errors | Select-Object -Unique)
+    [pscustomobject]@{
+        ExitCode = 1
+        Json = ([ordered]@{
+            test_result='FAILED';trace=@($lifecycle.Trace);receipt_would_finalize=$false
+            receipt_absent=-not(Test-Path -LiteralPath $receiptPath)
+            cleanup_attempts=$lifecycle.CleanupAttempts;cleanup_observations=$lifecycle.CleanupObservations
+            original_failure=$original.Exception.Message;reported_failure=$reported.Message
+            inner_failure=if($reported.InnerException){$reported.InnerException.Message}else{$null}
+            cleanup_errors=$cleanupErrors
+        } | ConvertTo-Json -Compress)
+    }
+}
+
 function Complete-BrokerLifecycle($Lifecycle) {
     if ($Lifecycle.Failed -or
         $Lifecycle.ForwardIndex -ne $script:BrokerForwardStages.Count -or
@@ -731,8 +904,23 @@ function Complete-BrokerLifecycle($Lifecycle) {
     $null = $Lifecycle.Trace.Add('receipt-finalized')
 }
 
-function Invoke-BrokerFixtureStateMachine([string]$FailAfter) {
+function Invoke-BrokerFixtureStateMachine([string]$FailAfter, [string]$CleanupFailure) {
     $lifecycle = New-BrokerLifecycle
+    $cleanupState = [ordered]@{
+        'account-disabled' = $false
+        'account-deleted' = $false
+        'profile-destroyed' = $false
+        'vm-destroyed' = $false
+        'vhdx-destroyed' = $false
+        'run-root-destroyed' = $false
+        'receipt-absent' = $true
+        'artifact-inventory-cleared' = $false
+    }
+    $cleanupTarget = ''
+    $cleanupMode = ''
+    if ($CleanupFailure) {
+        $cleanupTarget, $cleanupMode = $CleanupFailure.Split(':', 2)
+    }
     try {
         foreach ($stage in $script:BrokerForwardStages) {
             $null = Invoke-BrokerStage $lifecycle $stage { $true } $FailAfter
@@ -742,20 +930,48 @@ function Invoke-BrokerFixtureStateMachine([string]$FailAfter) {
         $null = $lifecycle.Errors.Add($_.Exception.Message)
     } finally {
         foreach ($stage in $script:BrokerCleanupStages) {
-            $null = Invoke-BrokerCleanupStage $lifecycle $stage { $true } $FailAfter
+            $null = Invoke-BrokerCleanupStage $lifecycle $stage {
+                if ($stage -in @('vm-destroyed','run-root-destroyed')) {
+                    $null = Invoke-BoundedCleanupOperation $lifecycle $stage {
+                        $attempt = [int]$lifecycle.CleanupAttempts[$stage]
+                        if ($stage -ceq $cleanupTarget -and ($cleanupMode -ceq 'always' -or $attempt -eq 1)) {
+                            throw "injected cleanup operation failure for $stage"
+                        }
+                        $cleanupState[$stage] = $true
+                        if ($stage -ceq 'run-root-destroyed') { $cleanupState['vhdx-destroyed'] = $true }
+                    } { [bool]$cleanupState[$stage] } 3 0
+                } else {
+                    $lifecycle.CleanupAttempts[$stage] = 1
+                    $cleanupState[$stage] = $true
+                }
+                $true
+            } $FailAfter
         }
     }
     try {
+        $null = Assert-BrokerCleanupObservations $lifecycle $cleanupState
         Complete-BrokerLifecycle $lifecycle
         [pscustomobject]@{
             ExitCode = 0
-            Json = ([ordered]@{ test_result='SUCCEEDED'; trace=@($lifecycle.Trace); receipt_would_finalize=$true } |
+            Json = ([ordered]@{
+                test_result='SUCCEEDED';trace=@($lifecycle.Trace);receipt_would_finalize=$true
+                attempted_cleanup=@($lifecycle.AttemptedCleanup);cleanup_attempts=$lifecycle.CleanupAttempts
+                cleanup_observations=$lifecycle.CleanupObservations;cleanup_retry_exhausted=$lifecycle.CleanupRetryExhausted
+            } |
                 ConvertTo-Json -Compress)
         }
     } catch {
+        if ($lifecycle.Errors -notcontains $_.Exception.Message) {
+            $null = $lifecycle.Errors.Add($_.Exception.Message)
+        }
         [pscustomobject]@{
             ExitCode = 1
-            Json = ([ordered]@{ test_result='FAILED'; trace=@($lifecycle.Trace); receipt_would_finalize=$false; cleanup_errors=@($lifecycle.Errors) } |
+            Json = ([ordered]@{
+                test_result='FAILED';trace=@($lifecycle.Trace);receipt_would_finalize=$false
+                attempted_cleanup=@($lifecycle.AttemptedCleanup);cleanup_attempts=$lifecycle.CleanupAttempts
+                cleanup_observations=$lifecycle.CleanupObservations
+                cleanup_retry_exhausted=$lifecycle.CleanupRetryExhausted;cleanup_errors=@($lifecycle.Errors)
+            } |
                 ConvertTo-Json -Compress)
         }
     }
@@ -918,7 +1134,12 @@ if ($PSCmdlet.ParameterSetName -eq 'Fixture') {
     }
     Assert-ChannelResponse $fixture.channel
     Assert-MeasuredProof $fixture.measurements (2 * @($contract.network.https_fqdns).Count)
-    $result = Invoke-BrokerFixtureStateMachine $TestFailAfter
+    if($TestReceiptFailure){
+        $result = Invoke-BrokerReceiptFailureFixture $TestReceiptFailure $FixturePath -TestCleanupFailure:$TestReceiptCleanupFailure
+        Write-Output $result.Json
+        exit $result.ExitCode
+    }
+    $result = Invoke-BrokerFixtureStateMachine $TestFailAfter $TestCleanupFailure
     Write-Output $result.Json
     exit $result.ExitCode
 }
@@ -1031,6 +1252,7 @@ $preAuthEvidence = $null
 $postAuthEvidence = $null
 $measurements = $null
 $authCompletionObserved = $false
+$torn = $null
 $lifecycle = New-BrokerLifecycle
 
 try {
@@ -1486,20 +1708,35 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
         if($null-eq$torn-or-not$torn.profile_destroyed){throw 'disposable desktop profile was not destroyed'};$true
     } ''
     $vmDestroyed = Invoke-BrokerCleanupStage $lifecycle 'vm-destroyed' {
-        if($session){Remove-PSSession $session -ErrorAction SilentlyContinue};$script:session=$null
-        if($vmConnect-and-not$vmConnect.HasExited){Stop-Process $vmConnect.Id -Force -ErrorAction SilentlyContinue}
-        if(Get-VM $vmName -ErrorAction SilentlyContinue){Stop-VM $vmName -TurnOff -Force -ErrorAction SilentlyContinue;Remove-VM $vmName -Force}
-        $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue)
+        Invoke-BoundedCleanupOperation $lifecycle 'vm-destroyed' {
+            if($session){Remove-PSSession $session -ErrorAction SilentlyContinue};$script:session=$null
+            if($vmConnect-and-not$vmConnect.HasExited){Stop-Process $vmConnect.Id -Force -ErrorAction SilentlyContinue}
+            if(Get-VM $vmName -ErrorAction SilentlyContinue){
+                Stop-VM $vmName -TurnOff -Force -ErrorAction SilentlyContinue
+                Remove-VM $vmName -Force -ErrorAction Stop
+            }
+        } { $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue) } 3 500
     } ''
     $runRootDestroyed = Invoke-BrokerCleanupStage $lifecycle 'run-root-destroyed' {
-        if(Test-Path $runRoot){Remove-Item $runRoot -Recurse -Force}
-        -not(Test-Path $runRoot)
+        Invoke-BoundedCleanupOperation $lifecycle 'run-root-destroyed' {
+            if(Test-Path -LiteralPath $runRoot){Remove-Item -LiteralPath $runRoot -Recurse -Force -ErrorAction Stop}
+        } { -not(Test-Path -LiteralPath $runRoot) } 3 500
     } ''
     $artifactSidecars = @(Get-ChildItem -LiteralPath $receiptDirectory -File -ErrorAction Stop |
         Where-Object { $_.Name.StartsWith($receiptLeaf,[StringComparison]::OrdinalIgnoreCase) }).Count
     $null = Invoke-BrokerCleanupStage $lifecycle 'artifact-inventory-cleared' {
         if($artifactSidecars-ne 0){throw 'durable receipt sidecars exist before finalization'};$true
     } ''
+    $finalCleanupObservations = [ordered]@{
+        'account-disabled' = [bool]($torn -and $torn.disabled)
+        'account-deleted' = [bool]($torn -and $torn.deleted)
+        'profile-destroyed' = [bool]($torn -and $torn.profile_destroyed)
+        'vm-destroyed' = $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue)
+        'vhdx-destroyed' = -not(Test-Path -LiteralPath $diskPath)
+        'run-root-destroyed' = -not(Test-Path -LiteralPath $runRoot)
+        'receipt-absent' = -not(Test-Path -LiteralPath $ReceiptPath)
+    }
+    $null = Assert-BrokerCleanupObservations $lifecycle $finalCleanupObservations
     Complete-BrokerLifecycle $lifecycle
     $measurements = [pscustomobject]@{
         fresh_iso_applied = [bool]$diskEvidence.fresh_iso_applied
@@ -1581,13 +1818,7 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
     }
     $serialized=$receipt|ConvertTo-Json -Depth 12
     if($serialized-match '(?i)(sk-[A-Za-z0-9_-]{8,}|Bearer\s+\S+|device[_ -]?code|access[_ -]?token|refresh[_ -]?token)'){throw 'receipt contains prohibited credential-shaped material'}
-    $serialized|Set-Content -LiteralPath $ReceiptPath -Encoding utf8NoBOM
-    $ownedArtifacts = @(Get-ChildItem -LiteralPath $receiptDirectory -File -ErrorAction Stop |
-        Where-Object { $_.Name.StartsWith($receiptLeaf,[StringComparison]::OrdinalIgnoreCase) })
-    if($ownedArtifacts.Count-ne 1-or[IO.Path]::GetFullPath($ownedArtifacts[0].FullName)-cne[IO.Path]::GetFullPath($ReceiptPath)){
-        Remove-Item -LiteralPath $ReceiptPath -Force -ErrorAction SilentlyContinue
-        throw 'broker produced durable artifacts other than the finalized receipt'
-    }
+    $null = Write-BrokerReceiptArtifact $ReceiptPath $serialized
 } catch {
     $failure = $_
     $lifecycle.Failed = $true
@@ -1628,16 +1859,21 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
             }
             'vm-destroyed' {
                 $null = Invoke-BrokerCleanupStage $lifecycle $cleanupName {
-                    if($session){Remove-PSSession $session -ErrorAction SilentlyContinue};$script:session=$null
-                    if($vmConnect-and-not$vmConnect.HasExited){Stop-Process $vmConnect.Id -Force -ErrorAction SilentlyContinue}
-                    if(Get-VM $vmName -ErrorAction SilentlyContinue){Stop-VM $vmName -TurnOff -Force -ErrorAction SilentlyContinue;Remove-VM $vmName -Force -ErrorAction Stop}
-                    if(Get-VM $vmName -ErrorAction SilentlyContinue){throw 'failed-run VM destruction was not observed'};$true
+                    Invoke-BoundedCleanupOperation $lifecycle 'vm-destroyed' {
+                        if($session){Remove-PSSession $session -ErrorAction SilentlyContinue};$script:session=$null
+                        if($vmConnect-and-not$vmConnect.HasExited){Stop-Process $vmConnect.Id -Force -ErrorAction SilentlyContinue}
+                        if(Get-VM $vmName -ErrorAction SilentlyContinue){
+                            Stop-VM $vmName -TurnOff -Force -ErrorAction SilentlyContinue
+                            Remove-VM $vmName -Force -ErrorAction Stop
+                        }
+                    } { $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue) } 3 500
                 } ''
             }
             'run-root-destroyed' {
                 $null = Invoke-BrokerCleanupStage $lifecycle $cleanupName {
-                    if(Test-Path $runRoot){Remove-Item $runRoot -Recurse -Force}
-                    if(Test-Path $runRoot){throw 'failed-run root destruction was not observed'};$true
+                    Invoke-BoundedCleanupOperation $lifecycle 'run-root-destroyed' {
+                        if(Test-Path -LiteralPath $runRoot){Remove-Item -LiteralPath $runRoot -Recurse -Force -ErrorAction Stop}
+                    } { -not(Test-Path -LiteralPath $runRoot) } 3 500
                 } ''
             }
             'artifact-inventory-cleared' {
@@ -1648,7 +1884,26 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
             }
         }
     }
-    throw $failure
+    Invoke-BrokerFailureFinalization $lifecycle $failure $ReceiptPath {
+        if($catchTorn){
+            $identityObservation = $catchTorn
+        } elseif($torn){
+            $identityObservation = $torn
+        } elseif($lifecycle.Trace -notcontains 'identity-created'){
+            $identityObservation = [pscustomobject]@{disabled=$true;deleted=$true;profile_destroyed=$true}
+        } else {
+            $identityObservation = [pscustomobject]@{disabled=$false;deleted=$false;profile_destroyed=$false}
+        }
+        [ordered]@{
+            'account-disabled' = [bool]$identityObservation.disabled
+            'account-deleted' = [bool]$identityObservation.deleted
+            'profile-destroyed' = [bool]$identityObservation.profile_destroyed
+            'vm-destroyed' = $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue)
+            'vhdx-destroyed' = -not(Test-Path -LiteralPath $diskPath)
+            'run-root-destroyed' = -not(Test-Path -LiteralPath $runRoot)
+            'receipt-absent' = -not(Test-Path -LiteralPath $ReceiptPath)
+        }
+    }
 } finally {
     $desktopPassword=$null;$bootstrapPassword=$null;$bootstrapSecure=$null;$bootstrap=$null
     $challengeKey=$null;$challengeNonce=$null
