@@ -59,7 +59,7 @@ try {
     );
   }
 
-  process.stdout.write("Academy non-root base build: 20 lesson links remain beneath /docs/academy/.\n");
+  process.stdout.write("Academy non-root base build: 19 lesson links remain beneath /docs/academy/.\n");
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }

@@ -3,7 +3,7 @@
 **Status:** APPROVED 2026-08-26 by brennonhuff@gmail.com after independent hostile review
 **Lane:** `/ca:feature`
 **Slug:** `academy-front-door`
-**Governs:** `site/scripts/generate-academy.ts`, `site/src/components/`, `site/src/styles/academy.css`, and their tests
+**Governs:** `site/scripts/academy-source.ts`, `site/scripts/generate-academy.ts`, `site/src/components/`, `site/src/styles/academy.css`, and their tests
 
 ## Problem
 
@@ -48,6 +48,7 @@ The Home setup appears immediately after the orientation and uses the authoritat
 readiness flow from the pinned Academy source. It owns the stable
 `complete-these-five-setup-steps-before-f01` anchor expected by F01's source backlink. The setup
 section clearly links to F01 only after the reader sees its prerequisites.
+It also retains a tested `#setup` compatibility alias while any pinned Academy guide still links to it.
 
 F01 then appears as the visually dominant first-lesson card. It shows title, outcome, estimated
 time, and a clear start action. It must not pretend the exercise is a sandbox: the copy accurately
@@ -105,7 +106,8 @@ tokens and primitives. No separate CSS framework, new dependency, or competing s
 1. `/academy/` has a practical hero, exactly one visually primary action to the Home setup section,
    and an orientation strip naming lesson count, tracks, self-paced pace, and learner-owned proof.
 2. The authoritative five-step Home setup appears before F01 and preserves the exact
-   `complete-these-five-setup-steps-before-f01` anchor expected by the pinned F01 source backlink.
+   `complete-these-five-setup-steps-before-f01` anchor expected by the pinned F01 source backlink,
+   with a tested `#setup` compatibility alias for legacy guide links.
 3. The first Foundation lesson is visible after setup and displays title, outcome, estimated time,
    and a link to its existing lesson route.
 4. Foundation, Practitioner, and Power user each render from the pinned source with accurate
@@ -118,8 +120,8 @@ tokens and primitives. No separate CSS framework, new dependency, or competing s
 7. The built Academy overview contains exactly one H1, keeps a logical H1→H2 heading order, exposes
    keyboard-reachable primary/card/disclosure controls in visual order, and gives each disclosure a
    descriptive accessible name and native expanded/collapsed state.
-8. The generator rejects malformed or incomplete Home or lesson landing data rather than emitting a misleading
-   overview.
+8. The source-loading/generation pipeline rejects malformed or incomplete Home or lesson landing data rather
+   than emitting a misleading overview.
 9. No new package or remote runtime service is added.
 10. `npm --prefix site run typecheck`, `npm --prefix site run test`, `npm --prefix site run build`,
    and `npm --prefix site run link-audit` pass. The existing Academy source and command-preference

@@ -315,6 +315,12 @@ describe("loadAcademySource", () => {
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/public inventories/);
   });
 
+  it("rejects duplicate lesson IDs in the public inventories", () => {
+    const fixtureRoot = createFixture([...fixtureLessonIds, fixtureLessonIds[0]]);
+
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(/must not repeat lesson IDs/);
+  });
+
   it("accepts only HTTPS and relative Academy action resource URLs", () => {
     const fixtureRoot = createFixture(undefined, ["https://example.com/review", "/academy/f01/", "#evidence"]);
 

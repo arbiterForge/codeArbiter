@@ -67,7 +67,7 @@
   export type AcademyHome = {
     title: string;
     anchor: "complete-these-five-setup-steps-before-f01";
-    steps: Array<{ title: string; instruction: string }>;
+    steps: Array<{ title: string; anchor: string; action: AcademyAction }>;
   };
   ```
 

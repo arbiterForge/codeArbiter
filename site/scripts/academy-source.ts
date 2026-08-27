@@ -270,6 +270,9 @@ export function loadAcademySource(root: string): AcademySource {
   if (!sameIds(availableLabs, runnableLabs) || !sameIds(availableLabs, guidedLabs)) {
     throw new Error("Academy public inventories must contain the same ordered lesson IDs");
   }
+  if (new Set(availableLabs).size !== availableLabs.length) {
+    throw new Error("Academy public inventories must not repeat lesson IDs");
+  }
   if (manifest.release !== RELEASE) {
     throw new Error(`Academy source manifest must declare ${RELEASE}`);
   }
