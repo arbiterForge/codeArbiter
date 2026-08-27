@@ -14,6 +14,7 @@ this file is the stale one; fix it here.
   a release blocker.
 - **Everything else** — prose (skills, commands, agents, ORCHESTRATOR.md),
   governed by the plugin's own authoring gates, not by CI.
+- **Protected Codex desktop proof boundary** (`.github/scripts/Invoke-CodeArbiterDesktop*.ps1`) — PowerShell 7 plus inbox Windows/Hyper-V cmdlets only. The broker runs only on an elevated Windows self-hosted runner; contract-only mode and byte binding run in portable CI. Guest coordination uses authenticated PowerShell Direct over local VMBus, not guest networking or a custom socket service.
 
 ## Pi adapter
 
@@ -30,6 +31,15 @@ runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.84.1.
 Run all of these; ALL must pass before any commit:
 
 ```sh
+# Trusted desktop broker/probe byte bindings, mutation checks, and contract-only entry points
+python .github/scripts/test_codex_desktop_boundary.py
+
+# Codex packaged-resource and desktop receipt schemas
+python .github/scripts/test_codex_skill_resources.py
+
+# Workflow trust separation and exact CI impact routing
+python .github/scripts/test_ci_impact.py
+
 # Hook guard decisions — every blocked spelling blocks, every legit one allows
 python .github/scripts/test_hook_guards.py
 
@@ -175,6 +185,9 @@ scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 - Python hooks: no linter is configured. The floor is a syntax check —
   `python -m py_compile plugins/ca/hooks/<file>.py` for any touched hook.
+- Protected desktop PowerShell: parse all changed broker/driver/probe scripts with
+  `[System.Management.Automation.Language.Parser]::ParseFile(...)`; PSScriptAnalyzer
+  is not a repository dependency and is not silently installed by the gate.
 - TypeScript: `npm run typecheck` in `plugins/ca/tools` (only when tools changed).
 
 ## Coverage

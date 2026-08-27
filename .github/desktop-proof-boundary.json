@@ -1,0 +1,134 @@
+{
+  "schema_version": 2,
+  "broker": {
+    "source_path": ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
+    "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopCandidate.ps1",
+    "sha256": "0c31a080ba1173c075a0155ca14900d4605d521c0f9aea872df1eb462d64a72e"
+  },
+  "driver": {
+    "source_path": ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
+    "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopUiDriver.ps1",
+    "sha256": "81abff74fa4f7c755baa3d9997d150a3bae9882d7079231a8e329ff74bb43c7e"
+  },
+  "probe": {
+    "source_path": ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
+    "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopRouteProbe.ps1",
+    "sha256": "3dd3efef0fc4953297aaeffbdffa40e4692f9e5150a4065e3451b9a85ffeb94f"
+  },
+  "image": {
+    "id": "windows-11-enterprise-eval-25h2-x64-en-us",
+    "product": "Windows 11 Enterprise Evaluation",
+    "version": "25H2",
+    "architecture": "x64",
+    "locale": "en-US",
+    "sha256": "a61adeab895ef5a4db436e0a7011c92a2ff17bb0357f58b13bbc4062e535e7b9",
+    "provisioning_mode": "iso-apply-fresh-vhdx",
+    "download_page": "https://www.microsoft.com/en-us/evalcenter/evaluate-windows-11-enterprise",
+    "hash_document": "https://go.microsoft.com/fwlink/?linkid=2334901"
+  },
+  "application": {
+    "package_name": "OpenAI.Codex",
+    "publisher": "CN=50BDFD77-8903-4850-9FFE-6E8522F64D5B",
+    "package_full_name_regex": "^OpenAI\\.Codex_[0-9]+(?:\\.[0-9]+){3}_x64__2p2nqsd0c76g0$",
+    "application_id": "App",
+    "executable_relative_path": "app/ChatGPT.exe",
+    "runtime_relative_path": "app/resources/codex.exe"
+  },
+  "marketplace": {
+    "name": "codearbiter",
+    "plugin": "ca-codex",
+    "version_pattern": "{version}",
+    "version_regex": "[0-9][0-9A-Za-z.+-]{0,63}"
+  },
+  "candidate_surface": {
+    "kind": "known-hook-paths-disabled",
+    "hook_path_set_sha256": "d44b6fb94cf07035f3dc51da74c55d97c9ace63943854ba873bd943feb46dbfa",
+    "hooks_manifest_sha256": "2b12c7eb5e35bbbddf69e38a6f8966c21f3b43c87bddfd36a2b9c764a23a58fd"
+  },
+  "candidate_archive": {
+    "max_archive_bytes": 8388608,
+    "max_entries": 1024,
+    "max_entry_uncompressed_bytes": 2097152,
+    "max_total_uncompressed_bytes": 33554432,
+    "max_compression_ratio": 100
+  },
+  "route_corpus": {
+    "id": "desktop-ca-review-dispatch-v2",
+    "submission_method": "windows-sendinput-unicode",
+    "desktop_request": "$ca-review desktop-proof-fixture.ps1 -- read-only protected route proof; dispatch the required coverage-auditor unit and do not modify files.",
+    "event_source": "desktop-thread-plus-windows-4688-4663",
+    "paths": [
+      "skills/ca-review/SKILL.md",
+      "routines/dispatching-parallel-agents/SKILL.md",
+      "agents/coverage-auditor.md"
+    ],
+    "references": [
+      "$ca-review",
+      "../../routines/dispatching-parallel-agents/SKILL.md",
+      "../../agents/coverage-auditor.md"
+    ],
+    "event_kinds": [
+      "desktop-skill-read",
+      "linked-routine-read",
+      "dispatched-charter-read"
+    ],
+    "dispatch_agent": "coverage-auditor"
+  },
+  "channel": {
+    "transport": "powershell-direct-vmbus",
+    "authentication": "powershell-direct-explicit-credential",
+    "challenge": "hmac-sha256",
+    "max_queries": 32,
+    "max_audit_records": 4096,
+    "max_messages": 16,
+    "max_message_bytes": 4096,
+    "timeout_seconds": 900
+  },
+  "network": {
+    "default_outbound_action": "block",
+    "disable_preexisting_outbound_allow_rules": true,
+    "resolution_mode": "pre-resolve-pin-hosts-then-disable-dns",
+    "dns_allowed_during_candidate": false,
+    "dns_protocols": ["UDP", "TCP"],
+    "dns_port": 53,
+    "https_protocol": "TCP",
+    "https_port": 443,
+    "https_fqdns": [
+      "auth.openai.com",
+      "api.openai.com",
+      "chatgpt.com",
+      "ios.chat.openai.com"
+    ]
+  },
+  "authentication": {
+    "mode": "chatgpt-device",
+    "pause_before_consent": true,
+    "permission_profile_id": "desktop-proof",
+    "denial_canary_filename": "desktop-proof-auth-isolation-canary.txt",
+    "denial_canary_prompt_prefix": "Use one local shell command to read this exact non-secret sandbox canary and report only whether access was denied:",
+    "doctor_required_checks": [
+      "auth.credentials",
+      "config.load",
+      "installation",
+      "network.provider_reachability",
+      "network.websocket_reachability",
+      "runtime.provenance",
+      "sandbox.helpers"
+    ],
+    "api_keys_allowed": false,
+    "access_tokens_allowed": false,
+    "copied_sessions_allowed": false,
+    "billable_api_access_allowed": false
+  },
+  "evidence": {
+    "receipt_schema_version": 3,
+    "finalizer": "outer-broker",
+    "phase": "post-teardown",
+    "raw_prompts_allowed": false,
+    "raw_responses_allowed": false,
+    "raw_ui_logs_allowed": false,
+    "screenshots_allowed": false,
+    "crash_dumps_allowed": false,
+    "auth_artifacts_allowed": false
+  }
+}
