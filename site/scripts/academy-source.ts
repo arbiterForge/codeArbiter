@@ -19,6 +19,22 @@ export type AcademyLessonSource = {
 export type AcademyHomeStepSource = {
   title: string;
   anchor: string;
+  action: AcademyHomeActionSource;
+};
+
+export type AcademyHomeActionSource = {
+  id: string;
+  sequence: number;
+  title: string;
+  actor: "learner" | "academy" | "agent";
+  surface: "browser" | "native-terminal" | "academy-console" | "active-harness" | null;
+  instruction: string;
+  rationale: string | null;
+  resources: Array<{ label: string; href: string }>;
+  variants: unknown[];
+  expected_result: string;
+  recovery: string;
+  evidence: string | null;
 };
 
 export type AcademyHomeSource = {
@@ -115,6 +131,39 @@ function trackFor(id: string): AcademyLessonSource["track"] {
   return "power-user";
 }
 
+function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSource> {
+  let manifest: unknown;
+  try {
+    manifest = parseJson(sourcePath(sourceRoot, "academy", "actions", "home.json"));
+  } catch (error) {
+    throw new Error("Academy Home action manifest is required", { cause: error });
+  }
+  if (typeof manifest !== "object" || manifest === null ||
+      (manifest as { document_id?: unknown }).document_id !== "home" ||
+      !Array.isArray((manifest as { actions?: unknown }).actions)) {
+    throw new Error("Academy Home action manifest has an invalid contract");
+  }
+  validateActionResources(manifest, "home");
+  const actions = new Map<string, AcademyHomeActionSource>();
+  for (const candidate of (manifest as { actions: unknown[] }).actions) {
+    if (typeof candidate !== "object" || candidate === null) {
+      throw new Error("Academy Home action manifest contains an invalid action");
+    }
+    const action = candidate as Partial<AcademyHomeActionSource>;
+    if (typeof action.id !== "string" || !Number.isInteger(action.sequence) ||
+        typeof action.title !== "string" || typeof action.instruction !== "string" ||
+        !Array.isArray(action.resources) || !Array.isArray(action.variants) ||
+        typeof action.expected_result !== "string" || typeof action.recovery !== "string") {
+      throw new Error("Academy Home action manifest contains an incomplete action");
+    }
+    if (actions.has(action.id)) {
+      throw new Error(`Academy Home action manifest repeats ${action.id}`);
+    }
+    actions.set(action.id, action as AcademyHomeActionSource);
+  }
+  return actions;
+}
+
 function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
   let guide: string;
   try {
@@ -130,7 +179,7 @@ function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
     throw new Error("Academy Home guide has an invalid setup contract");
   }
 
-  const steps: AcademyHomeStepSource[] = [];
+  const setupLinks: Array<{ title: string; anchor: string }> = [];
   const setupLines = lines.slice(setupHeading + 1);
   for (const line of setupLines) {
     if (HOME_STEP.test(line)) break;
@@ -145,13 +194,35 @@ function loadHomeGuide(sourceRoot: string): AcademyHomeSource {
   for (const line of setupLines.slice(firstStep)) {
     const match = line.match(HOME_STEP);
     if (!match) break;
-    if (Number(match[1]) !== steps.length + 1) {
+    if (Number(match[1]) !== setupLinks.length + 1) {
       throw new Error("Academy Home guide setup steps must be ordered");
     }
-    steps.push({ title: match[2], anchor: match[3] });
+    setupLinks.push({ title: match[2], anchor: match[3] });
   }
-  if (steps.length !== 5) {
+  if (setupLinks.length !== 5) {
     throw new Error("Academy Home guide must contain five setup steps");
+  }
+
+  const actions = loadHomeActions(sourceRoot);
+  const steps = setupLinks.map((step, index) => {
+    const heading = lines.findIndex((line, lineIndex) => lineIndex > setupHeading && line === `## ${step.title}`);
+    if (heading === -1) {
+      throw new Error(`Academy Home guide is missing the ${step.title} section`);
+    }
+    const nextHeading = lines.findIndex((line, lineIndex) => lineIndex > heading && line.startsWith("## "));
+    const section = lines.slice(heading + 1, nextHeading === -1 ? undefined : nextHeading);
+    const actionIds = section.flatMap((line) => line.match(/^\{\{action:([A-Za-z0-9-]+)\}\}$/)?.slice(1) ?? []);
+    if (actionIds.length !== 1) {
+      throw new Error(`Academy Home guide section ${step.title} must contain one action`);
+    }
+    const action = actions.get(actionIds[0]);
+    if (!action || action.sequence !== index + 1) {
+      throw new Error(`Academy Home action for ${step.title} is missing or out of order`);
+    }
+    return { ...step, action };
+  });
+  if (actions.size !== steps.length) {
+    throw new Error("Academy Home action manifest must match the five setup steps");
   }
 
   return { title, anchor: HOME_SETUP_ANCHOR, steps };
@@ -170,6 +241,17 @@ export function loadAcademySource(root: string): AcademySource {
   }
   if (manifest.release !== RELEASE) {
     throw new Error(`Academy source manifest must declare ${RELEASE}`);
+  }
+  const requiredTracks: Array<[AcademyLessonSource["track"], string]> = [
+    ["foundations", "Foundation"],
+    ["practitioner", "Practitioner"],
+    ["power-user", "Power user"],
+  ];
+  const publishedTracks = new Set(availableLabs.map(trackFor));
+  for (const [track, label] of requiredTracks) {
+    if (!publishedTracks.has(track)) {
+      throw new Error(`Academy public inventory requires a published ${label} lesson`);
+    }
   }
   const home = loadHomeGuide(sourceRoot);
 

@@ -348,7 +348,7 @@
   list-style: none;
 }
 
-.academy-overview__setup-steps li {
+.academy-overview__setup-steps > li {
   display: grid;
   grid-template-rows: auto 1fr;
   gap: var(--ca-space-3);
@@ -364,7 +364,7 @@
   counter-increment: academy-setup;
 }
 
-.academy-overview__setup-steps li::before {
+.academy-overview__setup-steps > li::before {
   display: grid;
   inline-size: 2rem;
   block-size: 2rem;
@@ -374,6 +374,23 @@
   color: var(--ca-brand-bright);
   font: 700 var(--ca-text-sm)/1 var(--ca-font-mono);
   content: counter(academy-setup, decimal-leading-zero);
+}
+
+.academy-overview__setup-step summary {
+  min-block-size: 2.75rem;
+  color: var(--ca-ink);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.academy-overview__setup-action,
+.academy-overview__setup-resources {
+  display: grid;
+  gap: var(--ca-space-3);
+}
+
+.academy-overview__setup-action {
+  margin-block-start: var(--ca-space-3);
 }
 
 .academy-overview__start {

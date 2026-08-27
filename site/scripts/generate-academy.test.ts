@@ -80,6 +80,62 @@ const publicSource: AcademySource = {
         actions: [{ id: "F02-prepare" }],
       },
     },
+    {
+      id: "P01-practice",
+      track: "practitioner",
+      guide: [
+        "---",
+        "id: P01-practice",
+        "track: practitioner",
+        "order: 1",
+        "title: Practice governed delivery",
+        "outcome: Complete a realistic governed workflow.",
+        "prerequisites: F02-orient-to-state",
+        "estimated_minutes: 20",
+        "scenario_command: {{action:P01-prepare}}",
+        "checkpoint_command: {{action:P01-check}}",
+        "next_lab: none",
+        "---",
+        "",
+        "# P01 - Practice governed delivery",
+        "",
+        "{{action:P01-prepare}}",
+      ].join("\n"),
+      actions: {
+        schema_version: 1,
+        lesson_contract_version: 1,
+        document_id: "P01-practice",
+        actions: [{ id: "P01-prepare" }],
+      },
+    },
+    {
+      id: "U01-operate",
+      track: "power-user",
+      guide: [
+        "---",
+        "id: U01-operate",
+        "track: power-user",
+        "order: 1",
+        "title: Operate advanced delivery",
+        "outcome: Diagnose an advanced delivery boundary.",
+        "prerequisites: P01-practice",
+        "estimated_minutes: 25",
+        "scenario_command: {{action:U01-prepare}}",
+        "checkpoint_command: {{action:U01-check}}",
+        "next_lab: none",
+        "---",
+        "",
+        "# U01 - Operate advanced delivery",
+        "",
+        "{{action:U01-prepare}}",
+      ].join("\n"),
+      actions: {
+        schema_version: 1,
+        lesson_contract_version: 1,
+        document_id: "U01-operate",
+        actions: [{ id: "U01-prepare" }],
+      },
+    },
   ],
 };
 
@@ -94,7 +150,14 @@ function createOutputRoots(): { docsRoot: string; generatedRoot: string } {
 
 function listGeneratedRoutes(docsRoot: string): string[] {
   const academyRoot = join(docsRoot, "academy");
-  return ["index.mdx", "F01-fork-clone-doctor.mdx", "F02-orient-to-state.mdx", "U99-private.mdx"]
+  return [
+    "index.mdx",
+    "F01-fork-clone-doctor.mdx",
+    "F02-orient-to-state.mdx",
+    "P01-practice.mdx",
+    "U01-operate.mdx",
+    "U99-private.mdx",
+  ]
     .filter((path) => existsSync(join(academyRoot, path)))
     .map((path) => relative(docsRoot, join(academyRoot, path)).replaceAll("\\", "/"));
 }
@@ -123,6 +186,9 @@ describe("generateAcademy", () => {
 
     expect(academyHtml.match(/<h1\b/g)).toHaveLength(1);
     expect(academyHtml.match(/id="complete-these-five-setup-steps-before-f01"/g)).toHaveLength(1);
+    expect(academyHtml).toContain("Open the Academy fork page, choose your GitHub account as the owner");
+    expect(academyHtml).toContain('href="https://github.com/arbiterForge/arbiter-academy/fork"');
+    expect(academyHtml).toContain("git clone https://github.com/&lt;your-account&gt;/arbiter-academy.git");
     expect(academyHtml).not.toContain("ca-page-context");
     expect(publicLessonIds.length).toBeGreaterThan(0);
     for (const lessonId of publicLessonIds) {
@@ -131,6 +197,13 @@ describe("generateAcademy", () => {
     expect(academyHtml).toContain('data-academy-show-all aria-controls="track-foundations-more track-practitioner-more track-power-user-more"');
     expect(academyHtml.match(/<details[^>]+id="track-(?:foundations|practitioner|power-user)-more"/g)).toHaveLength(3);
   }, 30_000);
+
+  it("uses Astro's configured base URL for component-authored Academy lesson links", () => {
+    const component = readFileSync(academyOverviewComponent, "utf8");
+
+    expect(component).toContain('import.meta.env.BASE_URL.replace(/\\/$/, "")');
+    expect(component).not.toContain('=> `/academy/${id.toLowerCase()}/`');
+  });
 
   it("emits one Academy index plus one MDX route for every public lab", () => {
     const { docsRoot, generatedRoot } = createOutputRoots();
@@ -141,6 +214,8 @@ describe("generateAcademy", () => {
       "academy/index.mdx",
       "academy/F01-fork-clone-doctor.mdx",
       "academy/F02-orient-to-state.mdx",
+      "academy/P01-practice.mdx",
+      "academy/U01-operate.mdx",
     ]);
     const indexPage = readFileSync(join(docsRoot, "academy", "index.mdx"), "utf8");
     expect(existsSync(academyOverviewComponent)).toBe(true);
@@ -176,6 +251,16 @@ describe("generateAcademy", () => {
     expect(listGeneratedRoutes(docsRoot)).not.toContain("academy/U99-private.mdx");
   });
 
+  it("rejects landing data missing any required Academy track", () => {
+    const { docsRoot, generatedRoot } = createOutputRoots();
+    const withoutPractitioner: AcademySource = {
+      ...publicSource,
+      lessons: publicSource.lessons.filter((lesson) => lesson.track !== "practitioner"),
+    };
+
+    expect(() => generateAcademy(withoutPractitioner, docsRoot, generatedRoot)).toThrow(/Practitioner/);
+  });
+
   it("preserves manifest ordering in typed content and sidebar data", () => {
     const { docsRoot, generatedRoot } = createOutputRoots();
 
@@ -184,6 +269,8 @@ describe("generateAcademy", () => {
     expect(result.sidebarItems).toEqual([
       { label: "Fork, clone, and doctor safety", slug: "academy/f01-fork-clone-doctor" },
       { label: "Orient to repository state", slug: "academy/f02-orient-to-state" },
+      { label: "Practice governed delivery", slug: "academy/p01-practice" },
+      { label: "Operate advanced delivery", slug: "academy/u01-operate" },
     ]);
     const generatedContent = readFileSync(join(generatedRoot, "academy-content.ts"), "utf8");
     expect(generatedContent).toContain('home: {\n    title: "Start here",\n    anchor: "complete-these-five-setup-steps-before-f01",\n    steps: []\n  }');

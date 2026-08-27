@@ -201,7 +201,7 @@ function renderTypedContent(source: AcademySource, guides: ParsedGuide[]): strin
     `export type AcademyGuide = {\n  id: string;\n  track: AcademyTrack;\n  order: number;\n` +
     `  title: string;\n  outcome: string;\n  prerequisites: string[];\n  estimatedMinutes: number;\n` +
     `  scenarioCommand: string;\n  checkpointCommand: string;\n  nextLab: string | null;\n  markdown: string;\n};\n\n` +
-    `export type AcademyHomeStep = { title: string; anchor: string };\n` +
+    `export type AcademyHomeStep = { title: string; anchor: string; action: AcademyAction };\n` +
     `export type AcademyHome = { title: string; anchor: string; steps: AcademyHomeStep[] };\n\n` +
     `export type AcademyLessonContent = {\n  id: string;\n  track: AcademyTrack;\n` +
     `  guide: AcademyGuide;\n  actions: AcademyActionManifest;\n};\n\n` +
@@ -222,6 +222,16 @@ export function generateAcademy(
     }
     return guide;
   });
+  const requiredTracks: Array<[AcademyTrack, string]> = [
+    ["foundations", "Foundation"],
+    ["practitioner", "Practitioner"],
+    ["power-user", "Power user"],
+  ];
+  for (const [track, label] of requiredTracks) {
+    if (!guides.some((guide) => guide.track === track)) {
+      throw new Error(`Academy overview requires a published ${label} lesson`);
+    }
+  }
   const academyRoot = join(docsRoot, "academy");
   rmSync(academyRoot, { force: true, recursive: true });
   mkdirSync(academyRoot, { recursive: true });
