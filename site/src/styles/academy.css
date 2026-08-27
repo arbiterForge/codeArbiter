@@ -340,7 +340,7 @@
 
 .academy-overview__setup-steps {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   gap: var(--ca-space-3);
   margin: var(--ca-space-3) 0 0;
   padding: 0;
@@ -572,10 +572,6 @@
 }
 
 @media (max-width: 60rem) {
-  .academy-overview__setup-steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .academy-overview__tracks {
     grid-template-columns: 1fr;
     gap: var(--ca-space-7);
@@ -629,7 +625,6 @@
     inline-size: 100%;
   }
 
-  .academy-overview__setup-steps,
   .academy-overview__tracks {
     grid-template-columns: 1fr;
   }
