@@ -168,15 +168,21 @@ function listGeneratedRoutes(docsRoot: string): string[] {
 }
 
 class InteractiveElement extends EventTarget {
-  open = false;
+  open: boolean;
   textContent: string;
-  readonly attributes = new Map<string, string>();
-  readonly label?: InteractiveElement;
+  readonly attributes: Map<string, string>;
+  readonly children: InteractiveElement[];
 
-  constructor(textContent = "", label?: InteractiveElement) {
+  constructor(
+    textContent = "",
+    attributes = new Map<string, string>(),
+    children: InteractiveElement[] = [],
+  ) {
     super();
+    this.open = attributes.has("open");
     this.textContent = textContent;
-    this.label = label;
+    this.attributes = attributes;
+    this.children = children;
   }
 
   setAttribute(name: string, value: string): void {
@@ -188,8 +194,24 @@ class InteractiveElement extends EventTarget {
   }
 
   querySelector(selector: string): InteractiveElement | null {
-    return selector === "[data-academy-show-all-label]" ? this.label ?? null : null;
+    return this.children.find((element) => element.matches(selector)) ?? null;
   }
+
+  matches(selector: string): boolean {
+    const attributeSelector = selector.match(/^\[([a-z0-9-]+)\]$/i);
+    if (attributeSelector) return this.attributes.has(attributeSelector[1]);
+    if (selector.startsWith(".")) {
+      return (this.attributes.get("class") ?? "").split(/\s+/).includes(selector.slice(1));
+    }
+    return false;
+  }
+}
+
+function parseAttributes(tag: string): Map<string, string> {
+  return new Map(
+    [...tag.matchAll(/\s([a-z][a-z0-9-]*)(?:="([^"]*)")?/gi)]
+      .map((match) => [match[1], match[2] ?? ""]),
+  );
 }
 
 afterEach(() => {
@@ -238,19 +260,43 @@ describe("generateAcademy", () => {
     });
 
     const academyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
-    const disclosureCount = academyHtml.match(/<details class="academy-overview__more"/g)?.length ?? 0;
+    const disclosureTags = [...academyHtml.matchAll(
+      /<details\b(?=[^>]*class="[^"]*\bacademy-overview__more\b[^"]*")[^>]*>/g,
+    )].map((match) => match[0]);
+    const revealControlMarkup = academyHtml.match(
+      /(<a\b(?=[^>]*class="[^"]*\bacademy-overview__all-lessons\b[^"]*")[^>]*>)([\s\S]*?)<\/a>/,
+    );
+    const revealLabelMarkup = revealControlMarkup?.[2].match(/(<span\b[^>]*>)([^<]*)<\/span>/);
     const pageScript = [...academyHtml.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
       .map((match) => match[1])
       .find((script) => script.includes("data-academy-show-all"));
-    const label = new InteractiveElement("View all lessons");
-    const showAll = new InteractiveElement("", label);
-    const disclosures = Array.from({ length: disclosureCount }, () => new InteractiveElement());
+    expect(revealControlMarkup).not.toBeNull();
+    expect(revealLabelMarkup).not.toBeNull();
+
+    const label = new InteractiveElement(
+      revealLabelMarkup![2],
+      parseAttributes(revealLabelMarkup![1]),
+    );
+    const showAll = new InteractiveElement(
+      "",
+      parseAttributes(revealControlMarkup![1]),
+      [label],
+    );
+    const disclosures = disclosureTags.map((tag) => new InteractiveElement("", parseAttributes(tag)));
     const documentHarness = {
-      querySelector: (selector: string) => selector === "[data-academy-show-all]" ? showAll : null,
-      querySelectorAll: (selector: string) => selector === ".academy-overview__more" ? disclosures : [],
+      querySelector: (selector: string) => showAll.matches(selector) ? showAll : null,
+      querySelectorAll: (selector: string) => disclosures.filter((element) => element.matches(selector)),
     };
 
-    expect(disclosureCount).toBe(3);
+    expect(disclosures).toHaveLength(3);
+    expect(showAll.attributes.has("data-academy-show-all")).toBe(true);
+    expect(showAll.getAttribute("aria-controls")).toBe(
+      disclosures.map((details) => details.getAttribute("id")).join(" "),
+    );
+    expect(showAll.getAttribute("aria-expanded")).toBe("false");
+    expect(label.attributes.has("data-academy-show-all-label")).toBe(true);
+    expect(label.textContent).toBe("View all lessons");
+    expect(disclosures.every((details) => !details.open)).toBe(true);
     expect(pageScript).toBeDefined();
     Function("document", pageScript!)(documentHarness);
 
@@ -259,15 +305,17 @@ describe("generateAcademy", () => {
     expect(showAll.getAttribute("aria-expanded")).toBe("true");
     expect(label.textContent).toBe("All lessons shown");
 
-    disclosures[0].open = false;
-    disclosures[0].dispatchEvent(new Event("toggle"));
-    expect(showAll.getAttribute("aria-expanded")).toBe("false");
-    expect(label.textContent).toBe("View all lessons");
+    for (const details of disclosures) {
+      details.open = false;
+      details.dispatchEvent(new Event("toggle"));
+      expect(showAll.getAttribute("aria-expanded")).toBe("false");
+      expect(label.textContent).toBe("View all lessons");
 
-    disclosures[0].open = true;
-    disclosures[0].dispatchEvent(new Event("toggle"));
-    expect(showAll.getAttribute("aria-expanded")).toBe("true");
-    expect(label.textContent).toBe("All lessons shown");
+      details.open = true;
+      details.dispatchEvent(new Event("toggle"));
+      expect(showAll.getAttribute("aria-expanded")).toBe("true");
+      expect(label.textContent).toBe("All lessons shown");
+    }
   }, 30_000);
 
   it("emits one Academy index plus one MDX route for every public lab", () => {
