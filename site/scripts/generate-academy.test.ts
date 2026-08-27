@@ -167,6 +167,31 @@ function listGeneratedRoutes(docsRoot: string): string[] {
     .map((path) => relative(docsRoot, join(academyRoot, path)).replaceAll("\\", "/"));
 }
 
+class InteractiveElement extends EventTarget {
+  open = false;
+  textContent: string;
+  readonly attributes = new Map<string, string>();
+  readonly label?: InteractiveElement;
+
+  constructor(textContent = "", label?: InteractiveElement) {
+    super();
+    this.textContent = textContent;
+    this.label = label;
+  }
+
+  setAttribute(name: string, value: string): void {
+    this.attributes.set(name, value);
+  }
+
+  getAttribute(name: string): string | null {
+    return this.attributes.get(name) ?? null;
+  }
+
+  querySelector(selector: string): InteractiveElement | null {
+    return selector === "[data-academy-show-all-label]" ? this.label ?? null : null;
+  }
+}
+
 afterEach(() => {
   for (const root of fixtureRoots.splice(0)) rmSync(root, { force: true, recursive: true });
 });
@@ -203,12 +228,47 @@ describe("generateAcademy", () => {
     expect(academyHtml.match(/<details[^>]+id="track-(?:foundations|practitioner|power-user)-more"/g)).toHaveLength(3);
   }, 30_000);
 
-  it("uses Astro's configured base URL for component-authored Academy lesson links", () => {
-    const component = readFileSync(academyOverviewComponent, "utf8");
+  it("executes the emitted View all lessons script and keeps its disclosure state synchronized", () => {
+    const npmCli = process.env.npm_execpath;
+    if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
 
-    expect(component).toContain('import.meta.env.BASE_URL.replace(/\\/$/, "")');
-    expect(component).not.toContain('=> `/academy/${id.toLowerCase()}/`');
-  });
+    execFileSync(process.execPath, [npmCli, "run", "build"], {
+      cwd: siteRoot,
+      stdio: "pipe",
+    });
+
+    const academyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
+    const disclosureCount = academyHtml.match(/<details class="academy-overview__more"/g)?.length ?? 0;
+    const pageScript = [...academyHtml.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+      .map((match) => match[1])
+      .find((script) => script.includes("data-academy-show-all"));
+    const label = new InteractiveElement("View all lessons");
+    const showAll = new InteractiveElement("", label);
+    const disclosures = Array.from({ length: disclosureCount }, () => new InteractiveElement());
+    const documentHarness = {
+      querySelector: (selector: string) => selector === "[data-academy-show-all]" ? showAll : null,
+      querySelectorAll: (selector: string) => selector === ".academy-overview__more" ? disclosures : [],
+    };
+
+    expect(disclosureCount).toBe(3);
+    expect(pageScript).toBeDefined();
+    Function("document", pageScript!)(documentHarness);
+
+    showAll.dispatchEvent(new Event("click"));
+    expect(disclosures.every((details) => details.open)).toBe(true);
+    expect(showAll.getAttribute("aria-expanded")).toBe("true");
+    expect(label.textContent).toBe("All lessons shown");
+
+    disclosures[0].open = false;
+    disclosures[0].dispatchEvent(new Event("toggle"));
+    expect(showAll.getAttribute("aria-expanded")).toBe("false");
+    expect(label.textContent).toBe("View all lessons");
+
+    disclosures[0].open = true;
+    disclosures[0].dispatchEvent(new Event("toggle"));
+    expect(showAll.getAttribute("aria-expanded")).toBe("true");
+    expect(label.textContent).toBe("All lessons shown");
+  }, 30_000);
 
   it("emits one Academy index plus one MDX route for every public lab", () => {
     const { docsRoot, generatedRoot } = createOutputRoots();
