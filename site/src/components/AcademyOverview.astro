@@ -1,0 +1,246 @@
+---
+import {
+  academyContent,
+  academyLessons,
+  type AcademyAction,
+  type AcademyCommandVariant,
+  type AcademyTrack,
+} from "../generated/academy-content";
+
+const trackDefinitions: ReadonlyArray<{
+  id: AcademyTrack;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "foundations",
+    label: "Foundation",
+    description: "Establish safe repository boundaries and learn the evidence-first delivery loop.",
+  },
+  {
+    id: "practitioner",
+    label: "Practitioner",
+    description: "Apply governed workflows to realistic features, fixes, reviews, and decisions.",
+  },
+  {
+    id: "power-user",
+    label: "Power user",
+    description: "Diagnose enforcement, tune governance, and operate advanced delivery paths with proof.",
+  },
+];
+
+const tracks = trackDefinitions.map((definition) => {
+  const lessons = academyLessons.filter((lesson) => lesson.track === definition.id);
+  return {
+    ...definition,
+    lessons,
+    totalMinutes: lessons.reduce((total, lesson) => total + lesson.guide.estimatedMinutes, 0),
+  };
+});
+
+const firstLesson = tracks.find((track) => track.id === "foundations")?.lessons[0];
+const missingTrack = tracks.find((track) => track.lessons.length === 0);
+
+if (!firstLesson || missingTrack) {
+  throw new Error(`The Academy overview requires a published ${missingTrack?.label ?? "Foundation"} lesson.`);
+}
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const lessonHref = (id: string) => `${basePath}/academy/${id.toLowerCase()}/`;
+const tracksWithHiddenLessons = tracks.filter((track) => track.lessons.length > 1);
+const disclosureIds = tracksWithHiddenLessons.map((track) => `track-${track.id}-more`).join(" ");
+const surfaceLabel: Record<NonNullable<AcademyAction["surface"]>, string> = {
+  browser: "Browser",
+  "native-terminal": "Native terminal",
+  "academy-console": "Academy console",
+  "active-harness": "Active harness",
+};
+const variantLabel = (variant: AcademyCommandVariant) =>
+  variant.operating_system === "macos"
+    ? "macOS"
+    : variant.operating_system === "all"
+      ? "Any OS"
+      : variant.operating_system[0].toUpperCase() + variant.operating_system.slice(1);
+---
+
+<div class="academy-overview">
+  <header class="academy-overview__hero" aria-labelledby="academy-overview-title">
+    <p class="academy-overview__eyebrow">Arbiter Academy</p>
+    <h1 id="academy-overview-title">Learn governed delivery by doing the work.</h1>
+    <p class="academy-overview__lede">
+      Build CodeArbiter habits through bounded, verifiable practice in a safe fork you own.
+    </p>
+    <div class="academy-overview__actions">
+      <a
+        class="ca-button ca-button--primary academy-overview__primary"
+        href={`#${academyContent.home.anchor}`}
+      >
+        Set up your practice fork
+      </a>
+      <a class="ca-button academy-overview__secondary" href="#academy-curriculum">
+        Explore the curriculum
+      </a>
+    </div>
+  </header>
+
+  <ul class="academy-overview__orientation" aria-label="Academy at a glance">
+    <li><strong>{academyLessons.length}</strong> hands-on lessons</li>
+    <li><strong>{tracks.length}</strong> progressive tracks</li>
+    <li><strong>Self-paced</strong> practice</li>
+    <li><strong>Learner-owned</strong> proof</li>
+  </ul>
+
+  <section
+    class="academy-overview__setup"
+    id={academyContent.home.anchor}
+    aria-labelledby="academy-setup-title"
+  >
+    <span id="setup" aria-hidden="true"></span>
+    <p class="academy-overview__eyebrow">Required setup</p>
+    <h2 id="academy-setup-title">Complete these five setup steps before F01</h2>
+    <p>Prepare your own fork and local clone before you begin the first lesson.</p>
+    <ol class="academy-overview__setup-steps">
+      {academyContent.home.steps.map((step) => (
+        <li id={step.anchor}>
+          <details class="academy-overview__setup-step" open={step.action.sequence === 1}>
+            <summary>{step.title}</summary>
+            <div class="academy-overview__setup-action">
+              <p class="academy-action__meta">
+                <span>{step.action.actor === "learner" ? "You" : step.action.actor === "agent" ? "Your host" : "Academy"}</span>
+                {step.action.surface && <span>{surfaceLabel[step.action.surface]}</span>}
+              </p>
+              <p>{step.action.instruction}</p>
+              {step.action.resources.length > 0 && (
+                <nav class="academy-overview__setup-resources" aria-label={`Resources for ${step.title}`}>
+                  {step.action.resources.map((resource) => <a href={resource.href}>{resource.label}</a>)}
+                </nav>
+              )}
+              {step.action.variants.length > 0 && (
+                <div class="academy-action__commands">
+                  {step.action.variants.map((variant) => (
+                    <section class="academy-command">
+                      <p class="academy-command__label">{variantLabel(variant)}</p>
+                      <div class="academy-command__shell">
+                        <pre><code class={`language-${variant.language}`} tabindex="0">{variant.command}</code></pre>
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              )}
+              <p><strong>Expected result:</strong> {step.action.expected_result}</p>
+              <details class="academy-action__recovery">
+                <summary>If that does not happen</summary>
+                <p>{step.action.recovery}</p>
+              </details>
+            </div>
+          </details>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="academy-overview__start ca-panel" aria-labelledby="academy-start-title">
+    <p class="academy-overview__eyebrow">Start with Foundation</p>
+    <h2 id="academy-start-title">{firstLesson.guide.title}</h2>
+    <p>{firstLesson.guide.outcome}</p>
+    <p>{firstLesson.guide.estimatedMinutes} minutes · Practice in your own fork</p>
+    <a class="ca-text-link academy-overview__start-link" href={lessonHref(firstLesson.id)}>
+      Start F01 <span aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <section
+    class="academy-overview__curriculum"
+    id="academy-curriculum"
+    aria-labelledby="academy-curriculum-title"
+  >
+    <p class="academy-overview__eyebrow">Curriculum</p>
+    <h2 id="academy-curriculum-title">Progress from safe foundations to advanced operation.</h2>
+
+    <div class="academy-overview__tracks">
+      {tracks.map((track) => {
+        const [firstTrackLesson, ...remainingLessons] = track.lessons;
+        return (
+          <section
+            class="academy-overview__track"
+            id={`track-${track.id}`}
+            aria-labelledby={`track-${track.id}-title`}
+          >
+            <h3 id={`track-${track.id}-title`}>{track.label}</h3>
+            <p>{track.description}</p>
+            <p>{track.lessons.length} lessons · {track.totalMinutes} minutes</p>
+
+            {firstTrackLesson && (
+              <article
+                class="academy-overview__lesson ca-panel"
+                data-academy-lesson={firstTrackLesson.id}
+              >
+                <h4><a href={lessonHref(firstTrackLesson.id)}>{firstTrackLesson.guide.title}</a></h4>
+                <p>{firstTrackLesson.guide.outcome}</p>
+                <p>{firstTrackLesson.guide.estimatedMinutes} minutes</p>
+              </article>
+            )}
+
+            {remainingLessons.length > 0 && (
+              <details class="academy-overview__more" id={`track-${track.id}-more`}>
+                <summary>Show {remainingLessons.length} more {track.label} lessons</summary>
+                <div class="academy-overview__lesson-list">
+                  {remainingLessons.map((lesson) => (
+                    <article class="academy-overview__lesson ca-panel" data-academy-lesson={lesson.id}>
+                      <h4><a href={lessonHref(lesson.id)}>{lesson.guide.title}</a></h4>
+                      <p>{lesson.guide.outcome}</p>
+                      <p>{lesson.guide.estimatedMinutes} minutes</p>
+                    </article>
+                  ))}
+                </div>
+              </details>
+            )}
+          </section>
+        );
+      })}
+    </div>
+
+    {tracksWithHiddenLessons.length > 0 && (
+      <a
+        class="ca-text-link academy-overview__all-lessons"
+        href="#academy-curriculum"
+        data-academy-show-all
+        aria-controls={disclosureIds}
+        aria-expanded="false"
+      >
+        <span data-academy-show-all-label>View all lessons</span> <span aria-hidden="true">↓</span>
+      </a>
+    )}
+  </section>
+
+  <section class="academy-overview__practice" aria-labelledby="academy-practice-title">
+    <p class="academy-overview__eyebrow">How practice works</p>
+    <h2 id="academy-practice-title">A small loop, repeated with evidence.</h2>
+    <ol class="academy-overview__practice-steps">
+      <li><strong>Fork safely.</strong> Work in a repository copy you own and verify its boundaries.</li>
+      <li><strong>Follow a bounded scenario.</strong> Make only the change the lesson asks you to make.</li>
+      <li><strong>Keep the proof.</strong> Run the checkpoint and preserve the evidence it verifies.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+  const showAll = document.querySelector<HTMLAnchorElement>("[data-academy-show-all]");
+  const disclosures = [
+    ...document.querySelectorAll<HTMLDetailsElement>(".academy-overview__more"),
+  ];
+
+  const syncShowAllState = () => {
+    if (!showAll) return;
+    const allOpen = disclosures.every((details) => details.open);
+    showAll.setAttribute("aria-expanded", String(allOpen));
+    const label = showAll.querySelector<HTMLElement>("[data-academy-show-all-label]");
+    if (label) label.textContent = allOpen ? "All lessons shown" : "View all lessons";
+  };
+
+  showAll?.addEventListener("click", () => {
+    for (const details of disclosures) details.open = true;
+    syncShowAllState();
+  });
+  for (const details of disclosures) details.addEventListener("toggle", syncShowAllState);
+</script>

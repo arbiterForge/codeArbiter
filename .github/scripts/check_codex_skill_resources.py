@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import io
 import json
 import ntpath
 import os
@@ -94,6 +95,17 @@ TRUSTED_DESKTOP_SIGNER = (
     f"{TRUSTED_REPOSITORY}/{TRUSTED_DESKTOP_WORKFLOW_PATH}"
 )
 TRUSTED_DESKTOP_ENVIRONMENT = "codex-desktop-candidate"
+DESKTOP_BOUNDARY_CONTRACT_PATH = REPO_ROOT / ".github" / "desktop-proof-boundary.json"
+EXPECTED_CANDIDATE_ARCHIVE_LIMITS = {
+    "max_archive_bytes": 8 * 1024 * 1024,
+    "max_entries": 1024,
+    "max_entry_uncompressed_bytes": 2 * 1024 * 1024,
+    "max_total_uncompressed_bytes": 32 * 1024 * 1024,
+    "max_compression_ratio": 100,
+}
+APPROVED_DESKTOP_IMAGE_SHA256 = (
+    "a61adeab895ef5a4db436e0a7011c92a2ff17bb0357f58b13bbc4062e535e7b9"
+)
 SECRET_VALUE = re.compile(
     r"(?i)(?:\bBearer\s+\S+|-----BEGIN [A-Z ]*PRIVATE KEY-----|"
     r"\b(?:sk|gh[oprsu])[-_][A-Za-z0-9_-]{8,}|"
@@ -102,7 +114,7 @@ SECRET_VALUE = re.compile(
     r"key|credential|private|cert|access[_-]?token|refresh[_-]?token|oauth[_-]?token|"
     r"device[_-]?code|session(?:[_-]?(?:id|token))?|cookie)"
     r"\s*[:=]\s*[A-Za-z0-9._~+/=-]{8,}|"
-    r"(?-i:(?<![A-Z0-9])[A-Z0-9]{4}(?:-[A-Z0-9]{4}){1,3}(?![A-Z0-9])))"
+    r"(?-i:(?<![A-Z0-9-])[A-Z0-9]{4}(?:-[A-Z0-9]{4}){1,3}(?![A-Z0-9-])))"
 )
 STORE_PACKAGE_IDENTITY = re.compile(r"^OpenAI\.Codex_[A-Za-z0-9._-]{1,120}$")
 DESKTOP_VERSION_ID = re.compile(r"^[0-9][0-9A-Za-z._-]{0,63}$")
@@ -2021,6 +2033,20 @@ def _candidate_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _candidate_archive_limits() -> dict[str, int]:
+    """Load the exact reviewed ZIP resource limits without trusting the candidate."""
+    try:
+        contract = json.loads(
+            DESKTOP_BOUNDARY_CONTRACT_PATH.read_text(encoding="utf-8")
+        )
+    except (FileNotFoundError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("trusted desktop boundary contract is unreadable") from exc
+    limits = contract.get("candidate_archive") if isinstance(contract, dict) else None
+    if limits != EXPECTED_CANDIDATE_ARCHIVE_LIMITS:
+        raise ValueError("trusted candidate archive limits are invalid")
+    return EXPECTED_CANDIDATE_ARCHIVE_LIMITS
+
+
 def _candidate_package_files(path: Path) -> dict[str, bytes]:
     """Read candidate-owned package files without trusting receipt declarations."""
     path_metadata = path.lstat() if path.exists() or path.is_symlink() else None
@@ -2033,11 +2059,20 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
         raise ValueError("candidate package argument must not be a symbolic link")
     path = path.resolve()
     files: dict[str, bytes] = {}
+    if path.is_file():
+        limits = _candidate_archive_limits()
+        if path.stat().st_size > limits["max_archive_bytes"]:
+            raise ValueError("candidate archive exceeds the archive-byte limit")
     if path.is_file() and zipfile.is_zipfile(path):
         prefix = "plugins/ca-codex/"
         entries: list[tuple[str, zipfile.ZipInfo]] = []
+        archive_paths: list[tuple[str, bool]] = []
         with zipfile.ZipFile(path) as archive:
-            for info in archive.infolist():
+            archive_entries = archive.infolist()
+            if len(archive_entries) > limits["max_entries"]:
+                raise ValueError("candidate archive exceeds the entry-count limit")
+            total_uncompressed = 0
+            for info in archive_entries:
                 name = info.filename
                 if "\\" in name:
                     raise ValueError("candidate archive path uses a Windows separator")
@@ -2052,7 +2087,7 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     if directory.startswith(prefix):
                         relative_directory = directory[len(prefix):]
                         if relative_directory:
-                            _windows_candidate_key(relative_directory)
+                            archive_paths.append((relative_directory, True))
                     continue
                 if kind == stat.S_IFDIR:
                     raise ValueError("candidate archive file has a directory mode")
@@ -2068,10 +2103,38 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     raise ValueError("candidate archive has an unsafe path")
                 if info.flag_bits & 0x1:
                     raise ValueError("candidate archive contains an encrypted file")
+                if info.file_size > limits["max_entry_uncompressed_bytes"]:
+                    raise ValueError("candidate archive entry exceeds the size limit")
+                if info.file_size > limits["max_total_uncompressed_bytes"] - total_uncompressed:
+                    raise ValueError("candidate archive exceeds the total expansion limit")
+                total_uncompressed += info.file_size
+                if info.file_size and (
+                    info.compress_size == 0
+                    or info.file_size
+                    > info.compress_size * limits["max_compression_ratio"]
+                ):
+                    raise ValueError("candidate archive exceeds the compression-ratio limit")
+                archive_paths.append((normalized, False))
                 entries.append((normalized, info))
-            _validate_candidate_paths(relative for relative, _ in entries)
+            _validate_candidate_archive_paths(archive_paths)
+            actual_total = 0
             for relative, info in entries:
-                files[relative] = archive.read(info)
+                output = io.BytesIO()
+                actual_entry = 0
+                with archive.open(info, "r") as source:
+                    while chunk := source.read(64 * 1024):
+                        actual_entry += len(chunk)
+                        actual_total += len(chunk)
+                        if (
+                            actual_entry > info.file_size
+                            or actual_entry > limits["max_entry_uncompressed_bytes"]
+                            or actual_total > limits["max_total_uncompressed_bytes"]
+                        ):
+                            raise ValueError("candidate archive expanded beyond declared bounds")
+                        output.write(chunk)
+                if actual_entry != info.file_size:
+                    raise ValueError("candidate archive entry size does not match metadata")
+                files[relative] = output.getvalue()
         return files
     if path.is_dir():
         package_root = path / "plugins" / "ca-codex"
@@ -2150,6 +2213,21 @@ def _validate_candidate_paths(paths: Any) -> None:
     for key in keyed:
         if any(key[:index] in keyed for index in range(1, len(key))):
             raise ValueError("candidate package contains a file/directory prefix collision")
+
+
+def _validate_candidate_archive_paths(paths: Any) -> None:
+    """Validate explicit ZIP files and directories using Windows extraction semantics."""
+    keyed: dict[tuple[str, ...], tuple[str, bool]] = {}
+    for relative, is_directory in paths:
+        key = _windows_candidate_key(relative)
+        if key in keyed:
+            raise ValueError("candidate package contains a case or Unicode-normalized path collision")
+        keyed[key] = (relative, is_directory)
+    for key in keyed:
+        for index in range(1, len(key)):
+            prefix = keyed.get(key[:index])
+            if prefix is not None and not prefix[1]:
+                raise ValueError("candidate package contains a file/directory prefix collision")
 
 
 def _markdown_reference_label(value: str) -> str:
@@ -2694,6 +2772,1001 @@ def candidate_resource_contract(path: Path) -> dict[str, Any]:
     }
 
 
+def validate_desktop_boundary_contract(
+    path: Path = DESKTOP_BOUNDARY_CONTRACT_PATH,
+) -> dict[str, Any]:
+    """Validate the trusted desktop boundary and its executable byte bindings."""
+    errors: list[str] = []
+    try:
+        contract = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, UnicodeDecodeError, json.JSONDecodeError):
+        contract = {}
+        errors.append("trusted desktop boundary contract is unreadable")
+    top_fields = {
+        "schema_version", "broker", "driver", "probe", "image", "application",
+        "marketplace", "candidate_surface", "candidate_archive", "route_corpus", "channel", "network", "authentication",
+        "evidence",
+    }
+    if not isinstance(contract, dict) or set(contract) != top_fields:
+        errors.append("trusted desktop boundary contract fields must be exact")
+        contract = contract if isinstance(contract, dict) else {}
+    if contract.get("schema_version") != 2:
+        errors.append("trusted desktop boundary schema_version must be 2")
+
+    executable_fields = {"source_path", "installed_path", "sha256"}
+    executable_values: dict[str, str] = {}
+    for name, expected_source, expected_installed in (
+        (
+            "broker",
+            ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
+            r"C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1",
+        ),
+        (
+            "probe",
+            ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
+            r"C:\codearbiter-runner\Invoke-CodeArbiterDesktopRouteProbe.ps1",
+        ),
+        (
+            "driver",
+            ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
+            r"C:\codearbiter-runner\Invoke-CodeArbiterDesktopUiDriver.ps1",
+        ),
+    ):
+        value = contract.get(name)
+        if not isinstance(value, dict) or set(value) != executable_fields:
+            errors.append(f"trusted desktop {name} fields must be exact")
+            continue
+        if value.get("source_path") != expected_source:
+            errors.append(f"trusted desktop {name} source path is untrusted")
+        if value.get("installed_path") != expected_installed:
+            errors.append(f"trusted desktop {name} installed path is untrusted")
+        digest = value.get("sha256")
+        if not isinstance(digest, str) or not SHA256.fullmatch(digest):
+            errors.append(f"trusted desktop {name} sha256 is invalid")
+            continue
+        source = REPO_ROOT / expected_source
+        if not source.is_file() or sha256_file(source) != digest:
+            errors.append(f"trusted desktop {name} digest does not match tracked bytes")
+        executable_values[f"{name}_sha256"] = digest
+
+    image = contract.get("image")
+    image_fields = {
+        "id", "product", "version", "architecture", "locale", "sha256",
+        "provisioning_mode", "download_page", "hash_document",
+    }
+    if not isinstance(image, dict) or set(image) != image_fields:
+        errors.append("trusted desktop image fields must be exact")
+        image = {}
+    expected_image = {
+        "id": "windows-11-enterprise-eval-25h2-x64-en-us",
+        "product": "Windows 11 Enterprise Evaluation",
+        "version": "25H2",
+        "architecture": "x64",
+        "locale": "en-US",
+        "sha256": APPROVED_DESKTOP_IMAGE_SHA256,
+        "provisioning_mode": "iso-apply-fresh-vhdx",
+        "download_page": (
+            "https://www.microsoft.com/en-us/evalcenter/"
+            "evaluate-windows-11-enterprise"
+        ),
+        "hash_document": "https://go.microsoft.com/fwlink/?linkid=2334901",
+    }
+    if image != expected_image:
+        errors.append("trusted desktop image must be the approved Microsoft evaluation image")
+
+    application = contract.get("application")
+    if application != {
+        "package_name": "OpenAI.Codex",
+        "publisher": "CN=50BDFD77-8903-4850-9FFE-6E8522F64D5B",
+        "package_full_name_regex": (
+            r"^OpenAI\.Codex_[0-9]+(?:\.[0-9]+){3}_x64__2p2nqsd0c76g0$"
+        ),
+        "application_id": "App",
+        "executable_relative_path": "app/ChatGPT.exe",
+        "runtime_relative_path": "app/resources/codex.exe",
+    }:
+        errors.append("trusted desktop Store application contract is invalid")
+
+    marketplace = contract.get("marketplace")
+    if marketplace != {
+        "name": "codearbiter",
+        "plugin": "ca-codex",
+        "version_pattern": "{version}",
+        "version_regex": r"[0-9][0-9A-Za-z.+-]{0,63}",
+    }:
+        errors.append("trusted desktop marketplace selection contract is invalid")
+    candidate_surface = contract.get("candidate_surface")
+    if candidate_surface != {
+        "kind": "known-hook-paths-disabled",
+        "hook_path_set_sha256": "d44b6fb94cf07035f3dc51da74c55d97c9ace63943854ba873bd943feb46dbfa",
+        "hooks_manifest_sha256": "2b12c7eb5e35bbbddf69e38a6f8966c21f3b43c87bddfd36a2b9c764a23a58fd",
+    }:
+        errors.append("trusted desktop candidate surface contract is invalid")
+    if contract.get("candidate_archive") != EXPECTED_CANDIDATE_ARCHIVE_LIMITS:
+        errors.append("trusted desktop candidate archive limits are invalid")
+    route = contract.get("route_corpus")
+    if route != {
+        "id": "desktop-ca-review-dispatch-v2",
+        "submission_method": "windows-sendinput-unicode",
+        "desktop_request": (
+            "$ca-review desktop-proof-fixture.ps1 -- read-only protected route proof; "
+            "dispatch the required coverage-auditor unit and do not modify files."
+        ),
+        "event_source": "desktop-thread-plus-windows-4688-4663",
+        "paths": [
+            "skills/ca-review/SKILL.md",
+            "routines/dispatching-parallel-agents/SKILL.md",
+            "agents/coverage-auditor.md",
+        ],
+        "references": [
+            "$ca-review",
+            "../../routines/dispatching-parallel-agents/SKILL.md",
+            "../../agents/coverage-auditor.md",
+        ],
+        "event_kinds": [
+            "desktop-skill-read", "linked-routine-read", "dispatched-charter-read"
+        ],
+        "dispatch_agent": "coverage-auditor",
+    }:
+        errors.append("trusted desktop route corpus is invalid")
+    channel = contract.get("channel")
+    if channel != {
+        "transport": "powershell-direct-vmbus",
+        "authentication": "powershell-direct-explicit-credential",
+        "challenge": "hmac-sha256",
+        "max_queries": 32,
+        "max_audit_records": 4096,
+        "max_messages": 16,
+        "max_message_bytes": 4096,
+        "timeout_seconds": 900,
+    }:
+        errors.append("trusted desktop channel bounds are invalid")
+    network = contract.get("network")
+    if network != {
+        "default_outbound_action": "block",
+        "disable_preexisting_outbound_allow_rules": True,
+        "resolution_mode": "pre-resolve-pin-hosts-then-disable-dns",
+        "dns_allowed_during_candidate": False,
+        "dns_protocols": ["UDP", "TCP"],
+        "dns_port": 53,
+        "https_protocol": "TCP",
+        "https_port": 443,
+        "https_fqdns": [
+            "auth.openai.com", "api.openai.com", "chatgpt.com", "ios.chat.openai.com"
+        ],
+    }:
+        errors.append("trusted desktop network policy contract is invalid")
+    authentication = contract.get("authentication")
+    if authentication != {
+        "mode": "chatgpt-device",
+        "pause_before_consent": True,
+        "permission_profile_id": "desktop-proof",
+        "denial_canary_filename": "desktop-proof-auth-isolation-canary.txt",
+        "denial_canary_prompt_prefix": (
+            "Use one local shell command to read this exact non-secret sandbox canary "
+            "and report only whether access was denied:"
+        ),
+        "doctor_required_checks": [
+            "auth.credentials",
+            "config.load",
+            "installation",
+            "network.provider_reachability",
+            "network.websocket_reachability",
+            "runtime.provenance",
+            "sandbox.helpers",
+        ],
+        "api_keys_allowed": False,
+        "access_tokens_allowed": False,
+        "copied_sessions_allowed": False,
+        "billable_api_access_allowed": False,
+    }:
+        errors.append("trusted desktop authentication contract is invalid")
+    evidence = contract.get("evidence")
+    if evidence != {
+        "receipt_schema_version": 3,
+        "finalizer": "outer-broker",
+        "phase": "post-teardown",
+        "raw_prompts_allowed": False,
+        "raw_responses_allowed": False,
+        "raw_ui_logs_allowed": False,
+        "screenshots_allowed": False,
+        "crash_dumps_allowed": False,
+        "auth_artifacts_allowed": False,
+    }:
+        errors.append("trusted desktop evidence contract is invalid")
+    return {
+        "verdict": "PASS" if not errors else "FAIL",
+        "errors": errors,
+        "contract_sha256": sha256_file(path) if path.is_file() and not errors else None,
+        "broker_sha256": executable_values.get("broker_sha256"),
+        "driver_sha256": executable_values.get("driver_sha256"),
+        "probe_sha256": executable_values.get("probe_sha256"),
+        "image_sha256": image.get("sha256") if isinstance(image, dict) else None,
+        "contract": contract if not errors else {},
+    }
+
+
+def _candidate_plugin_version(candidate_package: Path) -> str:
+    try:
+        files = _candidate_package_files(candidate_package)
+        manifest = json.loads(files[".codex-plugin/plugin.json"].decode("utf-8"))
+    except (KeyError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return ""
+    version = manifest.get("version") if isinstance(manifest, dict) else None
+    return version if isinstance(version, str) and DESKTOP_VERSION_ID.fullmatch(version) else ""
+
+
+def _desktop_v2_path_safe(value: object) -> bool:
+    if not isinstance(value, str) or not value or len(value) > 4096:
+        return False
+    if any(ord(character) < 32 for character in value) or SECRET_VALUE.search(value):
+        return False
+    normalized = value.replace("\\", "/")
+    for index, component in enumerate(normalized.split("/")):
+        if component in ("", ".", ".."):
+            continue
+        if index == 0 and re.fullmatch(r"[A-Za-z]:", component):
+            continue
+        if (
+            re.fullmatch(r"[A-Za-z0-9.][A-Za-z0-9._()+ -]{0,127}", component) is None
+            or OPAQUE_CREDENTIAL_COMPONENT.search(component) is not None
+        ):
+            return False
+    return True
+
+
+def _desktop_v3_receipt_result(
+    *,
+    receipt: dict[str, Any],
+    receipt_path: Path,
+    candidate_package: Path,
+    candidate_source_commit: str,
+    candidate_tree: str,
+    desktop_build: str,
+    desktop_runtime_version: str,
+    workflow_run_id: str,
+    workflow_commit: str,
+    attestation: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Validate the measured, post-destruction schema-v3 desktop proof."""
+    errors: list[str] = []
+    top_fields = {
+        "schema_version", "surface", "verdict", "blockers", "candidate", "desktop",
+        "boundary", "identities", "lifecycle", "isolation", "authentication",
+        "policy", "resources", "channel", "workflow", "events", "evidence",
+    }
+    if set(receipt) != top_fields:
+        errors.append("desktop receipt v3 top-level fields must be exact")
+    shapes = {
+        "candidate": {
+            "archive_sha256", "source_commit", "source_tree", "package",
+            "package_version", "resource_manifest_sha256",
+        },
+        "desktop": {
+            "distribution", "package_identity", "publisher", "build", "runtime_version",
+            "desktop_executable_sha256", "runtime_executable_sha256",
+        },
+        "boundary": {
+            "contract_sha256", "broker_sha256", "driver_sha256", "probe_sha256",
+            "image_id", "image_sha256", "provisioning_mode", "receipt_finalizer",
+            "receipt_phase",
+        },
+        "identities": {"broker", "bootstrap", "desktop"},
+        "lifecycle": {
+            "probe_teardown_requested", "account_disabled", "account_deleted",
+            "profile_destroyed", "vm_destroyed", "run_root_destroyed",
+            "finalized_after_teardown",
+        },
+        "isolation": {
+            "hypervisor", "fresh_iso_applied", "enhanced_session_enabled",
+            "guest_service_interface_enabled", "host_profile_mounted",
+            "host_shared_folders", "network_policy_sha256", "enabled_allow_rules",
+            "outside_allow_rules",
+        },
+        "authentication": {
+            "mode", "prompt_ready_observed", "consent_completion_observed",
+            "app_account_mode", "permission_profile_id", "storage_backend",
+            "keyring_target_count", "reusable_state_file_count", "denial_canary_observed",
+            "canary_content_observed", "eligible_runtime_process_count",
+            "autologon_material_cleared", "api_key_auth_detected", "copied_session_source_detected",
+        },
+        "policy": {
+            "requested_approval", "effective_approval", "requested_sandbox",
+            "effective_sandbox", "permission_consumer", "restricted_filesystem",
+            "restricted_network", "hooks_enabled", "startup_warning_count",
+            "windows_sandbox", "guest_acl_boundary",
+        },
+        "resources": {
+            "marketplace", "plugin", "version", "plugin_root", "package_sha256",
+            "selection_source", "route_corpus_id", "request_sha256",
+            "thread_id_sha256", "dispatch_agent", "route_events", "cache_glob_used",
+            "path_escape_detected", "unresolved_routes",
+        },
+        "channel": {
+            "transport", "authentication", "challenge", "challenge_nonce_sha256",
+            "challenge_response_sha256", "max_audit_records", "max_messages",
+            "max_message_bytes", "max_queries", "observed_queries", "observed_messages", "response_utf8_bytes",
+            "sequence_complete", "timed_out",
+        },
+        "workflow": {"repository", "path", "commit", "run_id", "protected_environment"},
+        "events": {
+            "route_events_sha256", "security_records_sha256", "causal_window_sha256",
+            "teardown_events_sha256",
+        },
+        "evidence": {
+            "raw_content_persisted", "auth_profile_destroyed", "vm_destroyed",
+            "run_root_destroyed", "durable_artifact_inventory",
+        },
+    }
+    values: dict[str, dict[str, Any]] = {}
+    for name, fields in shapes.items():
+        value = receipt.get(name)
+        if not isinstance(value, dict) or set(value) != fields:
+            errors.append(f"desktop receipt v3 {name} fields must be exact")
+            values[name] = value if isinstance(value, dict) else {}
+        else:
+            values[name] = value
+    candidate = values["candidate"]
+    desktop = values["desktop"]
+    boundary = values["boundary"]
+    identities = values["identities"]
+    lifecycle = values["lifecycle"]
+    isolation = values["isolation"]
+    authentication = values["authentication"]
+    policy = values["policy"]
+    resources = values["resources"]
+    channel = values["channel"]
+    workflow = values["workflow"]
+    events = values["events"]
+    evidence = values["evidence"]
+
+    if receipt.get("schema_version") != 3 or receipt.get("surface") != "desktop":
+        errors.append("desktop receipt must use schema_version 3 and surface desktop")
+    if receipt.get("verdict") != "PASS" or receipt.get("blockers") != []:
+        errors.append("desktop receipt v3 must be an unblocked PASS")
+
+    package_digest = _candidate_sha256(candidate_package)
+    package_version = _candidate_plugin_version(candidate_package)
+    try:
+        resource_contract = candidate_resource_contract(candidate_package)
+        candidate_files = _candidate_package_files(candidate_package)
+    except ValueError as error:
+        resource_contract = {"sha256": ""}
+        candidate_files = {}
+        errors.append(str(error))
+    expected_candidate = {
+        "archive_sha256": package_digest,
+        "source_commit": candidate_source_commit,
+        "source_tree": candidate_tree,
+        "package": "ca-codex",
+        "package_version": package_version,
+        "resource_manifest_sha256": resource_contract["sha256"],
+    }
+    if candidate != expected_candidate or not package_version:
+        errors.append("desktop receipt v3 candidate binding is invalid")
+
+    boundary_result = validate_desktop_boundary_contract()
+    contract = boundary_result.get("contract", {})
+    application = contract.get("application", {}) if isinstance(contract, dict) else {}
+    expected_desktop = {
+        "distribution": "store-msix",
+        "package_identity": f"OpenAI.Codex_{desktop_build}_x64__2p2nqsd0c76g0",
+        "publisher": application.get("publisher"),
+        "build": desktop_build,
+        "runtime_version": desktop_runtime_version,
+    }
+    if (
+        any(desktop.get(key) != value for key, value in expected_desktop.items())
+        or not SHA256.fullmatch(str(desktop.get("desktop_executable_sha256", "")))
+        or not SHA256.fullmatch(str(desktop.get("runtime_executable_sha256", "")))
+        or desktop.get("desktop_executable_sha256") == desktop.get("runtime_executable_sha256")
+    ):
+        errors.append("desktop receipt v3 Store/MSIX runtime identity is invalid")
+
+    expected_boundary = {
+        "contract_sha256": boundary_result.get("contract_sha256"),
+        "broker_sha256": boundary_result.get("broker_sha256"),
+        "driver_sha256": boundary_result.get("driver_sha256"),
+        "probe_sha256": boundary_result.get("probe_sha256"),
+        "image_id": contract.get("image", {}).get("id"),
+        "image_sha256": APPROVED_DESKTOP_IMAGE_SHA256,
+        "provisioning_mode": "iso-apply-fresh-vhdx",
+        "receipt_finalizer": "outer-broker",
+        "receipt_phase": "post-teardown",
+    }
+    if boundary_result.get("verdict") != "PASS" or boundary != expected_boundary:
+        errors.append("desktop receipt v3 boundary or image binding is invalid")
+
+    identity_shapes = {
+        "broker": {"kind", "identity_sha256"},
+        "bootstrap": {"kind", "identity_sha256"},
+        "desktop": {"kind", "identity_sha256", "account_name", "profile_root"},
+    }
+    for name, fields in identity_shapes.items():
+        if not isinstance(identities.get(name), dict) or set(identities.get(name, {})) != fields:
+            errors.append(f"desktop receipt v3 {name} identity fields must be exact")
+    broker_identity = identities.get("broker", {})
+    bootstrap_identity = identities.get("bootstrap", {})
+    desktop_identity = identities.get("desktop", {})
+    account_name = desktop_identity.get("account_name")
+    profile_root = _windows_normalized(desktop_identity.get("profile_root"))
+    identity_hashes = {
+        str(broker_identity.get("identity_sha256", "")),
+        str(bootstrap_identity.get("identity_sha256", "")),
+        str(desktop_identity.get("identity_sha256", "")),
+    }
+    if (
+        broker_identity.get("kind") != "github-runner"
+        or bootstrap_identity.get("kind") != "ephemeral-guest-bootstrap"
+        or desktop_identity.get("kind") != "disposable-windows-account"
+        or len(identity_hashes) != 3
+        or any(not SHA256.fullmatch(value) for value in identity_hashes)
+        or not isinstance(account_name, str)
+        or re.fullmatch(r"ca-desktop-disposable-[1-9][0-9]{0,19}", account_name) is None
+        or profile_root != _windows_normalized(rf"C:\Users\{account_name}")
+    ):
+        errors.append("desktop receipt v3 identities are not distinct and disposable")
+
+    if lifecycle != {
+        "probe_teardown_requested": True,
+        "account_disabled": True,
+        "account_deleted": True,
+        "profile_destroyed": True,
+        "vm_destroyed": True,
+        "run_root_destroyed": True,
+        "finalized_after_teardown": True,
+    }:
+        errors.append("desktop receipt v3 was not finalized after complete destruction")
+    network = contract.get("network", {}) if isinstance(contract, dict) else {}
+    expected_allow_rules = 2 * len(network.get("https_fqdns", []))
+    if (
+        isolation.get("hypervisor") != "hyper-v"
+        or isolation.get("fresh_iso_applied") is not True
+        or isolation.get("enhanced_session_enabled") is not False
+        or isolation.get("guest_service_interface_enabled") is not False
+        or isolation.get("host_profile_mounted") is not False
+        or isolation.get("host_shared_folders") is not False
+        or not SHA256.fullmatch(str(isolation.get("network_policy_sha256", "")))
+        or isolation.get("enabled_allow_rules") != expected_allow_rules
+        or isolation.get("outside_allow_rules") != 0
+    ):
+        errors.append("desktop receipt v3 measured VM isolation is invalid")
+    if authentication != {
+        "mode": "chatgpt-device",
+        "prompt_ready_observed": True,
+        "consent_completion_observed": True,
+        "app_account_mode": "chatgpt",
+        "permission_profile_id": "desktop-proof",
+        "storage_backend": "file",
+        "keyring_target_count": 0,
+        "reusable_state_file_count": 1,
+        "denial_canary_observed": True,
+        "canary_content_observed": False,
+        "eligible_runtime_process_count": 1,
+        "autologon_material_cleared": True,
+        "api_key_auth_detected": False,
+        "copied_session_source_detected": False,
+    }:
+        errors.append("desktop receipt v3 authentication contract is invalid")
+    if policy != {
+        "requested_approval": "never",
+        "effective_approval": "never",
+        "requested_sandbox": "read-only",
+        "effective_sandbox": "read-only",
+        "permission_consumer": "codex-sandbox-permission-profile",
+        "restricted_filesystem": True,
+        "restricted_network": True,
+        "hooks_enabled": False,
+        "startup_warning_count": 0,
+        "windows_sandbox": "elevated",
+        "guest_acl_boundary": True,
+    }:
+        errors.append("desktop receipt v3 policy contract is invalid")
+
+    marketplace = contract.get("marketplace", {}) if isinstance(contract, dict) else {}
+    route = contract.get("route_corpus", {}) if isinstance(contract, dict) else {}
+    expected_root = (
+        profile_root / ".codex" / "plugins" / "cache" / "codearbiter" / "ca-codex" /
+        package_version if profile_root is not None and package_version else None
+    )
+    plugin_root = _windows_normalized(resources.get("plugin_root"))
+    if (
+        resources.get("marketplace") != marketplace.get("name")
+        or resources.get("plugin") != marketplace.get("plugin")
+        or resources.get("version") != package_version
+        or plugin_root is None or expected_root is None
+        or tuple(part.casefold() for part in plugin_root.parts)
+        != tuple(part.casefold() for part in expected_root.parts)
+        or not _desktop_v2_path_safe(resources.get("plugin_root"))
+        or resources.get("package_sha256") != package_digest
+        or resources.get("selection_source") != "audited-desktop-skill-read"
+        or resources.get("route_corpus_id") != route.get("id")
+        or not SHA256.fullmatch(str(resources.get("request_sha256", "")))
+        or not SHA256.fullmatch(str(resources.get("thread_id_sha256", "")))
+        or resources.get("dispatch_agent") != route.get("dispatch_agent")
+        or resources.get("cache_glob_used") is not False
+        or resources.get("path_escape_detected") is not False
+        or resources.get("unresolved_routes") != []
+    ):
+        errors.append("desktop receipt v3 marketplace-selected plugin root is invalid")
+
+    route_events = resources.get("route_events")
+    expected_paths = route.get("paths", []) if isinstance(route, dict) else []
+    expected_refs = route.get("references", []) if isinstance(route, dict) else []
+    expected_kinds = route.get("event_kinds", []) if isinstance(route, dict) else []
+    route_event_fields = {
+        "sequence", "kind", "reference", "resolved_path", "content_sha256", "event_sha256",
+    }
+    canonical_event_hashes: list[str] = []
+    if not isinstance(route_events, list) or len(route_events) != len(expected_paths):
+        errors.append("desktop receipt v3 route event corpus is incomplete")
+        route_events = []
+    for index, event in enumerate(route_events):
+        if not isinstance(event, dict) or set(event) != route_event_fields:
+            errors.append("desktop receipt v3 route event fields must be exact")
+            continue
+        expected_resolved = plugin_root / PureWindowsPath(expected_paths[index]) if (
+            plugin_root is not None and index < len(expected_paths)
+        ) else None
+        resolved = _windows_normalized(event.get("resolved_path"))
+        content = candidate_files.get(expected_paths[index], b"") if index < len(expected_paths) else b""
+        content_hash = hashlib.sha256(content).hexdigest() if content else ""
+        canonical = (
+            "codearbiter.desktop-route.v2|"
+            f"{index + 1}|{expected_kinds[index]}|{expected_refs[index]}|"
+            f"{expected_paths[index]}|{content_hash}"
+        ) if index < len(expected_kinds) and index < len(expected_refs) else ""
+        expected_event_hash = _sha256_text(canonical) if canonical else ""
+        if (
+            event.get("sequence") != index + 1
+            or index >= len(expected_kinds) or event.get("kind") != expected_kinds[index]
+            or index >= len(expected_refs) or event.get("reference") != expected_refs[index]
+            or resolved is None or expected_resolved is None
+            or tuple(part.casefold() for part in resolved.parts)
+            != tuple(part.casefold() for part in expected_resolved.parts)
+            or not _desktop_v2_path_safe(event.get("resolved_path"))
+            or event.get("content_sha256") != content_hash
+            or event.get("event_sha256") != expected_event_hash
+        ):
+            errors.append("desktop receipt v3 route event does not match the audited corpus")
+        canonical_event_hashes.append(expected_event_hash)
+
+    channel_contract = contract.get("channel", {}) if isinstance(contract, dict) else {}
+    if (
+        channel.get("transport") != channel_contract.get("transport")
+        or channel.get("authentication") != channel_contract.get("authentication")
+        or channel.get("challenge") != channel_contract.get("challenge")
+        or not SHA256.fullmatch(str(channel.get("challenge_nonce_sha256", "")))
+        or not SHA256.fullmatch(str(channel.get("challenge_response_sha256", "")))
+        or channel.get("max_queries") != channel_contract.get("max_queries")
+        or not isinstance(channel.get("observed_queries"), int)
+        or not 0 < channel.get("observed_queries", 0) <= channel_contract.get("max_queries", 0)
+        or channel.get("max_audit_records") != channel_contract.get("max_audit_records")
+        or channel.get("max_messages") != channel_contract.get("max_messages")
+        or channel.get("max_message_bytes") != channel_contract.get("max_message_bytes")
+        or channel.get("observed_messages") != len(route_events)
+        or not isinstance(channel.get("response_utf8_bytes"), int)
+        or not 0 < channel.get("response_utf8_bytes", 0) <= channel_contract.get("max_message_bytes", 0)
+        or channel.get("sequence_complete") is not True
+        or channel.get("timed_out") is not False
+    ):
+        errors.append("desktop receipt v3 authenticated bounded channel is invalid")
+
+    expected_workflow = {
+        "repository": TRUSTED_REPOSITORY,
+        "path": TRUSTED_DESKTOP_WORKFLOW_PATH,
+        "commit": workflow_commit,
+        "run_id": workflow_run_id,
+        "protected_environment": TRUSTED_DESKTOP_ENVIRONMENT,
+    }
+    if workflow != expected_workflow:
+        errors.append("desktop receipt v3 trusted workflow binding is invalid")
+    expected_route_hash = _sha256_text(
+        "codearbiter.desktop-route-set.v2|" + "|".join(canonical_event_hashes)
+    ) if len(canonical_event_hashes) == len(expected_paths) else ""
+    expected_teardown_hash = _sha256_text(
+        "codearbiter.desktop-teardown.v2|"
+        f"{desktop_identity.get('identity_sha256')}|True|True|True|"
+        "vm-destroyed|run-root-destroyed"
+    )
+    if (
+        not all(SHA256.fullmatch(str(value)) for value in events.values())
+        or events.get("route_events_sha256") != expected_route_hash
+        or events.get("teardown_events_sha256") != expected_teardown_hash
+    ):
+        errors.append("desktop receipt v3 event aggregate hashes are invalid")
+    if evidence != {
+        "raw_content_persisted": False,
+        "auth_profile_destroyed": True,
+        "vm_destroyed": True,
+        "run_root_destroyed": True,
+        "durable_artifact_inventory": "receipt-only",
+    }:
+        errors.append("desktop receipt v3 contains prohibited durable evidence")
+
+    content_valid = not errors
+    receipt_digest = sha256_file(receipt_path) if content_valid else None
+    if attestation is not None and content_valid:
+        expected_attestation = {
+            "verified": True,
+            "repository": TRUSTED_REPOSITORY,
+            "signer_workflow": TRUSTED_DESKTOP_SIGNER,
+            "signer_digest": workflow_commit,
+            "subject_sha256": receipt_digest,
+            "protected_environment": TRUSTED_DESKTOP_ENVIRONMENT,
+            "source_digest": workflow_commit,
+            "run_id": workflow_run_id,
+            "runner_environment": "github-hosted",
+        }
+        if any(attestation.get(key) != value for key, value in expected_attestation.items()):
+            errors.append("desktop receipt v3 attestation is missing or untrusted")
+    return {
+        "surface": "desktop",
+        "validation_phase": "pre-attestation" if attestation is None else "full",
+        "desktop_shell_proven": attestation is not None and not errors,
+        "verdict": "PASS" if not errors else "FAIL",
+        "receipt_sha256": receipt_digest,
+        "candidate_sha256": package_digest if content_valid else None,
+        "attestation": dict(attestation) if attestation is not None else {},
+        "errors": errors,
+    }
+
+
+def _desktop_v2_receipt_result(
+    *,
+    receipt: dict[str, Any],
+    receipt_path: Path,
+    candidate_package: Path,
+    candidate_source_commit: str,
+    candidate_tree: str,
+    desktop_build: str,
+    desktop_runtime_version: str,
+    workflow_run_id: str,
+    workflow_commit: str,
+    attestation: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Validate schema-v2 proof without trusting candidate or receipt declarations."""
+    errors: list[str] = []
+    top_fields = {
+        "schema_version", "surface", "verdict", "blockers", "candidate", "desktop",
+        "boundary", "identities", "lifecycle", "isolation", "authentication",
+        "policy", "resources", "channel", "workflow", "events", "evidence",
+    }
+    if set(receipt) != top_fields:
+        errors.append("desktop receipt v2 top-level fields must be exact")
+
+    shapes = {
+        "candidate": {
+            "archive_sha256", "source_commit", "source_tree", "package",
+            "package_version", "resource_manifest_sha256",
+        },
+        "desktop": {"distribution", "package_identity", "build", "runtime_version"},
+        "boundary": {
+            "contract_sha256", "broker_sha256", "probe_sha256", "image_id",
+            "image_sha256", "receipt_finalizer", "receipt_phase",
+        },
+        "identities": {"broker", "desktop"},
+        "lifecycle": {
+            "probe_teardown_requested", "account_disabled", "account_deleted",
+            "profile_destroyed", "guest_disposition", "finalized_after_teardown",
+        },
+        "isolation": {
+            "hypervisor", "host_profile_mounted", "host_shared_folders",
+            "clipboard_integration", "unrelated_credentials_present", "network_policy",
+        },
+        "authentication": {
+            "mode", "paused_before_consent", "user_consent_observed", "api_key_used",
+            "access_token_used", "service_account_used", "copied_session_used",
+            "repository_user_credentials_used", "billable_api_access_used",
+        },
+        "policy": {
+            "requested_approval", "effective_approval", "requested_sandbox",
+            "effective_sandbox",
+        },
+        "resources": {
+            "marketplace", "plugin", "version", "plugin_root", "package_sha256",
+            "selection_source", "route_corpus_id", "route_events", "cache_glob_used",
+            "path_escape_detected", "unresolved_routes",
+        },
+        "channel": {
+            "nonce_sha256", "peer_acl_sha256", "mutual_nonce_acknowledged",
+            "max_messages", "max_message_bytes", "observed_messages",
+            "sequence_complete", "timed_out",
+        },
+        "workflow": {"repository", "path", "commit", "run_id", "protected_environment"},
+        "events": {
+            "route_events_sha256", "security_records_sha256", "teardown_events_sha256",
+        },
+        "evidence": {
+            "secret_output_detected", "raw_auth_output_persisted", "raw_ui_logs_persisted",
+            "screenshots_persisted", "crash_dumps_persisted", "device_code_persisted",
+            "callback_persisted", "cookies_persisted", "tokens_persisted",
+            "auth_files_persisted", "credential_store_material_persisted",
+            "derivative_secret_hash_persisted",
+        },
+    }
+    values: dict[str, dict[str, Any]] = {}
+    for name, fields in shapes.items():
+        value = receipt.get(name)
+        if not isinstance(value, dict) or set(value) != fields:
+            errors.append(f"desktop receipt v2 {name} fields must be exact")
+            values[name] = value if isinstance(value, dict) else {}
+        else:
+            values[name] = value
+    candidate = values["candidate"]
+    desktop = values["desktop"]
+    boundary = values["boundary"]
+    identities = values["identities"]
+    lifecycle = values["lifecycle"]
+    isolation = values["isolation"]
+    authentication = values["authentication"]
+    policy = values["policy"]
+    resources = values["resources"]
+    channel = values["channel"]
+    workflow = values["workflow"]
+    events = values["events"]
+    evidence = values["evidence"]
+
+    if receipt.get("schema_version") != 2 or receipt.get("surface") != "desktop":
+        errors.append("desktop receipt must use schema_version 2 and surface desktop")
+    if receipt.get("verdict") != "PASS" or receipt.get("blockers") != []:
+        errors.append("desktop receipt v2 must be an unblocked PASS")
+
+    package_digest = _candidate_sha256(candidate_package)
+    package_version = _candidate_plugin_version(candidate_package)
+    try:
+        resource_contract = candidate_resource_contract(candidate_package)
+        candidate_files = _candidate_package_files(candidate_package)
+    except ValueError as error:
+        resource_contract = {"sha256": ""}
+        candidate_files = {}
+        errors.append(str(error))
+    expected_candidate = {
+        "archive_sha256": package_digest,
+        "source_commit": candidate_source_commit,
+        "source_tree": candidate_tree,
+        "package": "ca-codex",
+        "package_version": package_version,
+        "resource_manifest_sha256": resource_contract["sha256"],
+    }
+    if candidate != expected_candidate or not package_version:
+        errors.append("desktop receipt v2 candidate binding is invalid")
+
+    if desktop != {
+        "distribution": "store-msix",
+        "package_identity": f"OpenAI.Codex_{desktop_build}_x64__2p2nqsd0c76g0",
+        "build": desktop_build,
+        "runtime_version": desktop_runtime_version,
+    }:
+        errors.append("desktop receipt v2 Store/MSIX identity is invalid")
+
+    boundary_result = validate_desktop_boundary_contract()
+    contract = boundary_result.get("contract", {})
+    expected_boundary = {
+        "contract_sha256": boundary_result.get("contract_sha256"),
+        "broker_sha256": boundary_result.get("broker_sha256"),
+        "probe_sha256": boundary_result.get("probe_sha256"),
+        "image_id": "windows-11-enterprise-eval-25h2-x64-en-us",
+        "image_sha256": APPROVED_DESKTOP_IMAGE_SHA256,
+        "receipt_finalizer": "outer-broker",
+        "receipt_phase": "post-teardown",
+    }
+    if boundary_result.get("verdict") != "PASS" or boundary != expected_boundary:
+        errors.append("desktop receipt v2 boundary or image binding is invalid")
+
+    broker_identity = identities.get("broker")
+    desktop_identity = identities.get("desktop")
+    if not isinstance(broker_identity, dict) or set(broker_identity) != {
+        "kind", "identity_sha256"
+    } or broker_identity.get("kind") != "github-runner" or not SHA256.fullmatch(
+        str(broker_identity.get("identity_sha256", ""))
+    ):
+        errors.append("desktop receipt v2 broker identity is invalid")
+    if not isinstance(desktop_identity, dict) or set(desktop_identity) != {
+        "kind", "identity_sha256", "account_name", "profile_root"
+    }:
+        errors.append("desktop receipt v2 disposable identity fields must be exact")
+        desktop_identity = desktop_identity if isinstance(desktop_identity, dict) else {}
+    account_name = desktop_identity.get("account_name")
+    profile_root = _windows_normalized(desktop_identity.get("profile_root"))
+    if (
+        desktop_identity.get("kind") != "disposable-windows-account"
+        or not SHA256.fullmatch(str(desktop_identity.get("identity_sha256", "")))
+        or not isinstance(account_name, str)
+        or re.fullmatch(r"ca-desktop-disposable-[1-9][0-9]{0,19}", account_name) is None
+        or profile_root != _windows_normalized(rf"C:\Users\{account_name}")
+        or desktop_identity.get("identity_sha256") == broker_identity.get("identity_sha256")
+    ):
+        errors.append("desktop receipt v2 identities are not distinct and disposable")
+
+    if lifecycle != {
+        "probe_teardown_requested": True,
+        "account_disabled": True,
+        "account_deleted": True,
+        "profile_destroyed": True,
+        "guest_disposition": "destroyed",
+        "finalized_after_teardown": True,
+    }:
+        errors.append("desktop receipt v2 was not finalized after complete teardown")
+    if isolation != {
+        "hypervisor": "hyper-v",
+        "host_profile_mounted": False,
+        "host_shared_folders": False,
+        "clipboard_integration": False,
+        "unrelated_credentials_present": False,
+        "network_policy": "deny-by-default-reviewed-allowlist",
+    }:
+        errors.append("desktop receipt v2 VM isolation contract is invalid")
+    if authentication != {
+        "mode": "chatgpt-device",
+        "paused_before_consent": True,
+        "user_consent_observed": True,
+        "api_key_used": False,
+        "access_token_used": False,
+        "service_account_used": False,
+        "copied_session_used": False,
+        "repository_user_credentials_used": False,
+        "billable_api_access_used": False,
+    }:
+        errors.append("desktop receipt v2 authentication contract is invalid")
+    if policy != {
+        "requested_approval": "never",
+        "effective_approval": "never",
+        "requested_sandbox": "read-only",
+        "effective_sandbox": "read-only",
+    }:
+        errors.append("desktop receipt v2 policy contract is invalid")
+
+    marketplace = contract.get("marketplace", {}) if isinstance(contract, dict) else {}
+    route = contract.get("route_corpus", {}) if isinstance(contract, dict) else {}
+    expected_root = (
+        profile_root / ".codex" / "plugins" / "cache" / "codearbiter" / "ca-codex" /
+        package_version if profile_root is not None and package_version else None
+    )
+    plugin_root = _windows_normalized(resources.get("plugin_root"))
+    if (
+        resources.get("marketplace") != marketplace.get("name")
+        or resources.get("plugin") != marketplace.get("plugin")
+        or resources.get("version") != package_version
+        or plugin_root is None
+        or expected_root is None
+        or tuple(part.casefold() for part in plugin_root.parts)
+        != tuple(part.casefold() for part in expected_root.parts)
+        or not _desktop_v2_path_safe(resources.get("plugin_root"))
+        or resources.get("package_sha256") != package_digest
+        or resources.get("selection_source") != "desktop-selected-skill-event"
+        or resources.get("route_corpus_id") != route.get("id")
+        or resources.get("cache_glob_used") is not False
+        or resources.get("path_escape_detected") is not False
+        or resources.get("unresolved_routes") != []
+    ):
+        errors.append("desktop receipt v2 marketplace-selected plugin root is invalid")
+
+    route_events = resources.get("route_events")
+    expected_paths = route.get("paths", []) if isinstance(route, dict) else []
+    expected_refs = route.get("references", []) if isinstance(route, dict) else []
+    expected_kinds = route.get("event_kinds", []) if isinstance(route, dict) else []
+    route_event_fields = {
+        "sequence", "kind", "source_path", "reference", "resolved_path",
+        "content_sha256", "event_sha256",
+    }
+    canonical_event_hashes: list[str] = []
+    if not isinstance(route_events, list) or len(route_events) != len(expected_paths):
+        errors.append("desktop receipt v2 route event corpus is incomplete")
+        route_events = []
+    for index, event in enumerate(route_events):
+        if not isinstance(event, dict) or set(event) != route_event_fields:
+            errors.append("desktop receipt v2 route event fields must be exact")
+            continue
+        resolved = _windows_normalized(event.get("resolved_path"))
+        source = _windows_normalized(event.get("source_path"))
+        expected_resolved = plugin_root / PureWindowsPath(expected_paths[index]) if (
+            plugin_root is not None and index < len(expected_paths)
+        ) else None
+        expected_source_relative = expected_paths[0] if index == 0 else expected_paths[index - 1]
+        expected_source = plugin_root / PureWindowsPath(expected_source_relative) if (
+            plugin_root is not None
+        ) else None
+        content = candidate_files.get(expected_paths[index], b"") if index < len(expected_paths) else b""
+        content_hash = hashlib.sha256(content).hexdigest() if content else ""
+        if (
+            event.get("sequence") != index + 1
+            or index >= len(expected_kinds)
+            or event.get("kind") != expected_kinds[index]
+            or index >= len(expected_refs)
+            or event.get("reference") != expected_refs[index]
+            or source is None
+            or resolved is None
+            or expected_source is None
+            or expected_resolved is None
+            or tuple(part.casefold() for part in source.parts)
+            != tuple(part.casefold() for part in expected_source.parts)
+            or tuple(part.casefold() for part in resolved.parts)
+            != tuple(part.casefold() for part in expected_resolved.parts)
+            or not _desktop_v2_path_safe(event.get("source_path"))
+            or not _desktop_v2_path_safe(event.get("resolved_path"))
+            or event.get("content_sha256") != content_hash
+        ):
+            errors.append("desktop receipt v2 route event does not match the observable corpus")
+            continue
+        canonical = (
+            "codearbiter.desktop-route.v1|"
+            f"{index + 1}|{expected_kinds[index]}|{expected_source_relative}|"
+            f"{expected_refs[index]}|{expected_paths[index]}|{content_hash}"
+        )
+        expected_event_hash = _sha256_text(canonical)
+        if event.get("event_sha256") != expected_event_hash:
+            errors.append("desktop receipt v2 route event hash is invalid")
+        canonical_event_hashes.append(expected_event_hash)
+
+    channel_contract = contract.get("channel", {}) if isinstance(contract, dict) else {}
+    if (
+        not SHA256.fullmatch(str(channel.get("nonce_sha256", "")))
+        or not SHA256.fullmatch(str(channel.get("peer_acl_sha256", "")))
+        or channel.get("mutual_nonce_acknowledged") is not True
+        or channel.get("max_messages") != channel_contract.get("max_messages")
+        or channel.get("max_message_bytes") != channel_contract.get("max_message_bytes")
+        or channel.get("observed_messages") != len(route_events)
+        or channel.get("sequence_complete") is not True
+        or channel.get("timed_out") is not False
+    ):
+        errors.append("desktop receipt v2 authenticated event channel is invalid")
+
+    expected_workflow = {
+        "repository": TRUSTED_REPOSITORY,
+        "path": TRUSTED_DESKTOP_WORKFLOW_PATH,
+        "commit": workflow_commit,
+        "run_id": workflow_run_id,
+        "protected_environment": TRUSTED_DESKTOP_ENVIRONMENT,
+    }
+    if workflow != expected_workflow:
+        errors.append("desktop receipt v2 trusted workflow binding is invalid")
+    expected_route_hash = _sha256_text(
+        "codearbiter.desktop-route-set.v1|" + "|".join(canonical_event_hashes)
+    ) if len(canonical_event_hashes) == len(expected_paths) else ""
+    expected_teardown_hash = _sha256_text(
+        "codearbiter.desktop-teardown.v1|"
+        f"{desktop_identity.get('identity_sha256')}|"
+        "disabled|deleted|profile-destroyed|vm-destroyed"
+    )
+    if (
+        set(events) != shapes["events"]
+        or not all(SHA256.fullmatch(str(value)) for value in events.values())
+        or events.get("route_events_sha256") != expected_route_hash
+        or events.get("teardown_events_sha256") != expected_teardown_hash
+    ):
+        errors.append("desktop receipt v2 event aggregate hashes are invalid")
+    if any(value is not False for value in evidence.values()) or set(evidence) != shapes["evidence"]:
+        errors.append("desktop receipt v2 contains prohibited durable evidence")
+
+    content_valid = not errors
+    receipt_digest = sha256_file(receipt_path) if content_valid else None
+    if attestation is not None and content_valid:
+        expected_attestation = {
+            "verified": True,
+            "repository": TRUSTED_REPOSITORY,
+            "signer_workflow": TRUSTED_DESKTOP_SIGNER,
+            "signer_digest": workflow_commit,
+            "subject_sha256": receipt_digest,
+            "protected_environment": TRUSTED_DESKTOP_ENVIRONMENT,
+            "source_digest": workflow_commit,
+            "run_id": workflow_run_id,
+            "runner_environment": "github-hosted",
+        }
+        if any(attestation.get(key) != value for key, value in expected_attestation.items()):
+            errors.append("desktop receipt v2 attestation is missing or untrusted")
+    return {
+        "surface": "desktop",
+        "validation_phase": "pre-attestation" if attestation is None else "full",
+        "desktop_shell_proven": attestation is not None and not errors,
+        "verdict": "PASS" if not errors else "FAIL",
+        "receipt_sha256": receipt_digest,
+        "candidate_sha256": package_digest if content_valid else None,
+        "attestation": dict(attestation) if attestation is not None else {},
+        "errors": errors,
+    }
+
+
 def _desktop_mapping(
     parent: object, key: str, required: frozenset[str], errors: list[str]
 ) -> dict[str, Any]:
@@ -3031,6 +4104,21 @@ def _invalid_desktop_json_result(attestation: dict[str, Any] | None) -> dict[str
     }
 
 
+def _retired_desktop_schema_result(
+    attestation: dict[str, Any] | None,
+) -> dict[str, Any]:
+    return {
+        "surface": "desktop",
+        "validation_phase": "pre-attestation" if attestation is None else "full",
+        "desktop_shell_proven": False,
+        "verdict": "FAIL",
+        "receipt_sha256": None,
+        "candidate_sha256": None,
+        "attestation": {},
+        "errors": ["desktop receipt schema is retired; schema_version 3 is required"],
+    }
+
+
 def verify_github_attestation(
     receipt_path: Path, signer_digest: str, workflow_run_id: str,
     *, bundle_path: Path | None = None,
@@ -3132,6 +4220,31 @@ def validate_desktop_receipt(
         return _invalid_desktop_json_result(attestation)
     if _secret_bearing(receipt):
         return _secret_rejected_desktop_result(attestation)
+    if receipt.get("schema_version") != 3:
+        if receipt.get("schema_version") == 1 and not _desktop_free_strings_safe(
+            receipt,
+            desktop_build,
+            desktop_runtime_version,
+            workflow_run_id,
+            workflow_commit,
+        ):
+            return _secret_rejected_desktop_result(attestation)
+        return _retired_desktop_schema_result(attestation)
+    return _desktop_v3_receipt_result(
+        receipt=receipt,
+        receipt_path=receipt_path,
+        candidate_package=candidate_package,
+        candidate_source_commit=candidate_source_commit,
+        candidate_tree=candidate_tree,
+        desktop_build=desktop_build,
+        desktop_runtime_version=desktop_runtime_version,
+        workflow_run_id=workflow_run_id,
+        workflow_commit=workflow_commit,
+        attestation=attestation,
+    )
+
+    # Retained below for history until the schema-v2 maintenance PR lands. This
+    # branch is unreachable: schema 1 is intentionally not proof-compatible.
     if not _desktop_free_strings_safe(
         receipt, desktop_build, desktop_runtime_version, workflow_run_id, workflow_commit
     ):
@@ -3418,6 +4531,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--candidate-contract-only", action="store_true",
         help="validate and derive the candidate package resource contract without a desktop run",
     )
+    parser.add_argument(
+        "--desktop-boundary-contract-only", action="store_true",
+        help="validate the trusted desktop boundary manifest and tracked script digests",
+    )
     parser.add_argument("--candidate-source-commit", help="candidate source commit bound by a receipt")
     parser.add_argument("--candidate-tree", help="candidate tree bound by a receipt")
     parser.add_argument(
@@ -3449,12 +4566,44 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     modes = sum(bool(value) for value in (
         args.fixtures_only, args.live, args.import_receipt, args.candidate_contract_only,
+        args.desktop_boundary_contract_only,
     ))
     if modes != 1:
         parser.error(
             "select exactly one of --fixtures-only, --live, --import-receipt, "
-            "or --candidate-contract-only"
+            "--candidate-contract-only, or --desktop-boundary-contract-only"
         )
+
+    if args.desktop_boundary_contract_only:
+        disallowed = any((
+            args.fixtures_only, args.live, args.surface, args.codex_version,
+            args.codex_binary, args.authenticated_codex_home, args.desktop_build,
+            args.desktop_runtime_version, args.workflow_run_id, args.workflow_commit,
+            args.import_receipt, args.candidate_package, args.candidate_contract_only,
+            args.candidate_source_commit, args.candidate_tree, args.pre_attestation,
+            args.advisory,
+        ))
+        if disallowed:
+            parser.error(
+                "desktop/backend switches cannot be combined with "
+                "--desktop-boundary-contract-only"
+            )
+        result = validate_desktop_boundary_contract()
+        public_result = {
+            key: result.get(key)
+            for key in (
+                "verdict", "errors", "contract_sha256", "broker_sha256",
+                "driver_sha256", "probe_sha256", "image_sha256",
+            )
+        }
+        if args.json:
+            print(json.dumps(public_result, indent=2, sort_keys=True))
+        else:
+            for error in public_result["errors"]:
+                print(f"ERROR: {error}")
+            if not public_result["errors"]:
+                print("trusted desktop boundary contract valid")
+        return 0 if public_result["verdict"] == "PASS" else 1
 
     if args.candidate_contract_only:
         disallowed = any((

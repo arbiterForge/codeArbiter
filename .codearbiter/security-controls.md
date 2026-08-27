@@ -52,6 +52,85 @@ running untrusted code is stealable, `--with-claude` is hard-defaulted to
 offline/Anthropic-only egress and its credential volume is never co-mounted with
 an untrusted source volume (`TokenCoMountRejectedError`).
 
+### Protected Codex desktop-proof secrets
+
+The protected Codex desktop-proof lane declared by
+`.github/desktop-proof-boundary.json` has four additional, narrowly scoped
+secret classes. They are approved only for the trusted default-branch workflow
+and its hash-identical local Hyper-V proof boundary. They are not general
+repository credentials and do not authorize API keys, access tokens, copied
+sessions, service accounts, billable API access, or credential reuse.
+
+1. **Guest bootstrap password.** The elevated outer broker generates 24 random
+   bytes with .NET `RandomNumberGenerator`, renders them as hexadecimal plus the
+   fixed Windows complexity suffix `!aA1`, and uses the value only to create the
+   disposable `ca-bootstrap` administrator and its explicit PowerShell Direct
+   credential. The clear value exists in broker memory and in the disposable
+   VHDX's `Unattend.xml`; both are bounded to that VM run. It may cross only over
+   local Hyper-V VMBus as the explicit PowerShell Direct credential. The VHDX/VM
+   and run root are destroyed on success or failure, and broker references are
+   cleared in `finally`. It must never enter a receipt, log, artifact, command
+   transcript, repository file, host credential store, or reusable image.
+2. **Disposable desktop password.** The broker independently generates another
+   24 random bytes with the same rendering. It may be supplied only to Windows
+   scheduled-task registration for the one disposable desktop account and, for
+   one interactive boot, to Winlogon's `DefaultPassword`. A SYSTEM logon task
+   removes `DefaultPassword`, `DefaultUserName`, `AutoAdminLogon`,
+   `ForceAutoLogon`, and `AutoLogonCount` immediately after that logon; the
+   broker verifies both the cleanup marker and absence of every value before it
+   accepts device-auth completion. Scheduled tasks are unregistered, the account
+   is disabled and deleted, its profile is removed, the guest is destroyed, and
+   broker references are cleared. The password has no approved durable or
+   observable sink beyond those disposable Windows stores.
+3. **Desktop channel HMAC key.** The broker generates exactly 32 random bytes
+   with `RandomNumberGenerator`. It remains in broker memory, crosses only in the
+   authenticated PowerShell Direct invocation to the freshly rehashed privileged
+   guest probe, and keys HMAC-SHA-256 over the exact VM, bootstrap SID, desktop
+   SID, nonce, request, dispatch, causal-window, auth-isolation, route-response,
+   and record-sequence binding. Only the fixed-time-verified response digest may
+   reach the receipt. The key is never written to guest disk, logs, diagnostics,
+   receipts, or artifacts, and its broker reference is cleared in `finally`.
+4. **ChatGPT device authorization and hosted attestation.** The exact Store/MSIX
+   runtime may run only `login --device-auth` inside the disposable interactive
+   profile. The authorization URL and device code are visible only in that VM's
+   interactive console for explicit user consent; prompt-ready/completion marker
+   files contain timestamps and status only. Codex is forced to file-backed auth,
+   so exactly one `.codex/auth.json` may exist after login, solely inside the
+   disposable profile. It is never copied, hashed into evidence, opened by model
+   tools, uploaded, or retained; account/profile/VM destruction is required
+   before receipt finalization. The clean attestation job may request a GitHub
+   Actions OIDC token only through job-scoped `id-token: write` for the pinned
+   attestation action and exact finalized receipt subject. No token value is
+   exposed to repository scripts, logs, artifacts, or subsequent jobs.
+
+The device-auth guest has default-deny outbound policy. Host-side Store/MSIX
+acquisition and copying precede guest setup; after the default-deny policy is
+active, guest registration and local-plugin installation use only copied local
+bytes and complete without Microsoft network access. Before authentication,
+the broker resolves and pins only `auth.openai.com`, `api.openai.com`,
+`chatgpt.com`, and `ios.chat.openai.com`; the candidate window then disables
+DNS and permits TLS over TCP/443 only to those pinned addresses. Default
+certificate verification is mandatory. PowerShell Direct remains local VMBus
+transport and exposes no guest network listener.
+
+The event-selected candidate ZIP remains inert data. Before reading any entry
+content or creating the extraction destination, trusted default-branch code
+rejects an archive larger than 8 MiB, more than 1,024 entries, any regular file
+larger than 2 MiB uncompressed, more than 32 MiB total uncompressed content, or
+any entry whose declared compression ratio exceeds 100:1. It accepts only safe
+`plugins/ca-codex/` paths and bounded regular files, validates the complete ZIP
+directory before writes, then streams each file while re-enforcing declared and
+aggregate sizes. The resulting validated tree, rather than the archive or any
+candidate-supplied program, is copied into the disposable guest.
+
+Every success and failure path is fail-closed: no PASS receipt or transferable
+artifact exists before one-time autologon clearing, account disable/delete,
+profile removal, VM destruction, run-root destruction, and a clean durable
+artifact inventory. Device codes, callbacks, cookies, tokens, auth files, raw
+prompts/responses, UI or auth logs, screenshots, crash dumps, passwords, HMAC
+keys, and opaque credential-shaped values are prohibited from all durable
+outputs.
+
 Pi host authentication is an external trusted-runtime boundary. **No provider
 credential enters an isolated child in any form** (ADR-0019, superseding the
 credential-projection clause of ADR-0016). ADR-0016 permitted projecting the
@@ -765,6 +844,10 @@ immutable Releases are available.
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
 | Declared release-target commands | `.codearbiter/release-targets.md` rows carry `pre-tag`, `rebuild`, and `generate` shell commands that `/ca:release` executes before composing a tag, on a lane that later holds `contents: write` | Operator-authored executable input, on the `plan.json` `gate.commands` model above and length-capped identically (≤1024 chars, `VALUE_MAX_CHARS`, ADR-0002 precedent). Three controls bound it: commands are **check-only** and a clean-tree assertion runs after each (DECISION-0034), so a mutation blocks the release rather than reaching a tag; the runner (`_releaselib.py run-pre-tag`) enforces order, first-failure stop, and that assertion mechanically rather than by agent compliance; and the declaring file is itself protected under H-22 (ADR-0024), so planting a command requires a fresh authoring marker rather than any write. The residual is the cooperative-agent one ADR-0010 already accepts: a marker-holding session can still declare a command, and this is a governance boundary, not a sandbox |
+| Protected Hyper-V guest credentials | The outer broker generates per-run bootstrap and desktop passwords for one fresh evaluation-image VM | CSPRNG values are confined to broker memory plus the disposable VHDX/Windows credential stores described above; one-time Winlogon material is cleared and verified before auth completion, and account/profile/VM/run-root destruction is required before finalization |
+| ChatGPT device authorization | The exact Store/MSIX runtime writes one file-backed `auth.json` inside the disposable desktop profile after visible user consent | Device auth is the only allowed mode; the URL/code are visible-only, no reusable auth state is copied or persisted, egress is pinned TLS-only, and profile/VM destruction precedes any receipt |
+| PowerShell Direct proof channel | A 32-byte per-run HMAC key crosses from the broker to the freshly rehashed privileged probe over explicit-credential Hyper-V VMBus | No guest listener or network transport is created; exact VM/SID/nonce/evidence bindings, fixed-time HMAC verification, count/size/sequence/timeout limits, and key non-persistence bound the channel |
+| GitHub OIDC receipt attestation | The clean attestation job has job-scoped `id-token: write` and `attestations: write` for the pinned attestation action | The subject is only the exact teardown-finalized non-secret receipt; the token is not exposed to repository scripts or retained, and candidate code never executes in the attestation job |
 
 ### Closed exceptions
 

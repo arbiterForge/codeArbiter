@@ -14,13 +14,14 @@
     "prebuild": "npm run gen",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "vitest run",
+    "test": "vitest run && npm run test:academy-base",
+    "test:academy-base": "node scripts/test-academy-non-root-base.mjs",
     "test:academy-source": "vitest run scripts/academy-source.test.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "link-audit": "tsx scripts/link-audit.ts",
     "audit:diagrams": "tsx scripts/diagram-audit.ts",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage && npm run test:academy-base"
   },
   "overrides": {
     "esbuild": "^0.28.1"

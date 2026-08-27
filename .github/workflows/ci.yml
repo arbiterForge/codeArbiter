@@ -88,8 +88,13 @@ on:
       # only edit must start the hooks job that executes that contract suite.
       - ".github/workflows/pi-promotion.yml"
       - ".github/workflows/codex-desktop-candidate.yml"
+      - ".github/desktop-proof-boundary.json"
       - ".github/fixtures/codex-skill-resources/**"
+      - ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1"
+      - ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1"
+      - ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1"
       - ".github/scripts/check_codex_skill_resources.py"
+      - ".github/scripts/test_codex_desktop_boundary.py"
       - ".github/scripts/test_codex_skill_resources.py"
       - ".github/scripts/verify_codex_candidate_provenance.py"
       - ".github/scripts/test_codex_candidate_provenance.py"
@@ -284,8 +289,13 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.github/actionlint.yaml'
             codex-resources:
+              - '.github/desktop-proof-boundary.json'
               - '.github/fixtures/codex-skill-resources/**'
+              - '.github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1'
+              - '.github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1'
+              - '.github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1'
               - '.github/scripts/check_codex_skill_resources.py'
+              - '.github/scripts/test_codex_desktop_boundary.py'
               - '.github/scripts/test_codex_skill_resources.py'
               - '.github/scripts/verify_codex_candidate_provenance.py'
               - '.github/scripts/test_codex_candidate_provenance.py'
@@ -375,6 +385,8 @@ jobs:
           python-version: "3.x"
       - name: Test Codex skill-resource and receipt contracts
         run: python .github/scripts/test_codex_skill_resources.py
+      - name: Test the trusted desktop boundary contracts
+        run: python .github/scripts/test_codex_desktop_boundary.py
       - name: Validate the tracked fixture without network or credentials
         run: python .github/scripts/check_codex_skill_resources.py --fixtures-only
 

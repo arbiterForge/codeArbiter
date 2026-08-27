@@ -120,10 +120,7 @@ function renderGuideMarkdown(guide: ParsedGuide, actions: unknown): string {
   });
 }
 
-function renderIndex(source: AcademySource, guides: ParsedGuide[]): string {
-  const lessonLinks = guides
-    .map((guide) => `- [${guide.title}](/academy/${guide.id.toLowerCase()}/) - ${guide.outcome}`)
-    .join("\n");
+function renderIndex(source: AcademySource): string {
   return [
     "---",
     'title: "Arbiter Academy"',
@@ -135,11 +132,9 @@ function renderIndex(source: AcademySource, guides: ParsedGuide[]): string {
     academySourceMetadata(source),
     "---",
     "",
-    "Arbiter Academy is the guided practice path for learning CodeArbiter through bounded, verifiable work.",
+    'import AcademyOverview from "../../../components/AcademyOverview.astro";',
     "",
-    "## Published lessons",
-    "",
-    lessonLinks,
+    "<AcademyOverview />",
     "",
   ].join("\n");
 }
@@ -206,10 +201,12 @@ function renderTypedContent(source: AcademySource, guides: ParsedGuide[]): strin
     `export type AcademyGuide = {\n  id: string;\n  track: AcademyTrack;\n  order: number;\n` +
     `  title: string;\n  outcome: string;\n  prerequisites: string[];\n  estimatedMinutes: number;\n` +
     `  scenarioCommand: string;\n  checkpointCommand: string;\n  nextLab: string | null;\n  markdown: string;\n};\n\n` +
+    `export type AcademyHomeStep = { title: string; anchor: string; action: AcademyAction };\n` +
+    `export type AcademyHome = { title: string; anchor: string; steps: AcademyHomeStep[] };\n\n` +
     `export type AcademyLessonContent = {\n  id: string;\n  track: AcademyTrack;\n` +
     `  guide: AcademyGuide;\n  actions: AcademyActionManifest;\n};\n\n` +
-    `export type AcademyContent = {\n  release: string;\n  commit: string;\n  lessons: AcademyLessonContent[];\n};\n\n` +
-    `export const academyContent = ${typescriptLiteral({ release: source.release, commit: source.commit, lessons })} as const satisfies AcademyContent;\n\n` +
+    `export type AcademyContent = {\n  release: string;\n  commit: string;\n  home: AcademyHome;\n  lessons: AcademyLessonContent[];\n};\n\n` +
+    `export const academyContent = ${typescriptLiteral({ release: source.release, commit: source.commit, home: source.home, lessons })} as const satisfies AcademyContent;\n\n` +
     `export const academyLessons = academyContent.lessons;\n`;
 }
 
@@ -225,12 +222,22 @@ export function generateAcademy(
     }
     return guide;
   });
+  const requiredTracks: Array<[AcademyTrack, string]> = [
+    ["foundations", "Foundation"],
+    ["practitioner", "Practitioner"],
+    ["power-user", "Power user"],
+  ];
+  for (const [track, label] of requiredTracks) {
+    if (!guides.some((guide) => guide.track === track)) {
+      throw new Error(`Academy overview requires a published ${label} lesson`);
+    }
+  }
   const academyRoot = join(docsRoot, "academy");
   rmSync(academyRoot, { force: true, recursive: true });
   mkdirSync(academyRoot, { recursive: true });
   mkdirSync(generatedRoot, { recursive: true });
 
-  writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source, guides));
+  writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source));
   for (const [index, guide] of guides.entries()) {
     writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions));
   }
