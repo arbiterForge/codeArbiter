@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import base64
 import hashlib
+import io
 import json
 import ntpath
 import os
@@ -95,6 +96,13 @@ TRUSTED_DESKTOP_SIGNER = (
 )
 TRUSTED_DESKTOP_ENVIRONMENT = "codex-desktop-candidate"
 DESKTOP_BOUNDARY_CONTRACT_PATH = REPO_ROOT / ".github" / "desktop-proof-boundary.json"
+EXPECTED_CANDIDATE_ARCHIVE_LIMITS = {
+    "max_archive_bytes": 8 * 1024 * 1024,
+    "max_entries": 1024,
+    "max_entry_uncompressed_bytes": 2 * 1024 * 1024,
+    "max_total_uncompressed_bytes": 32 * 1024 * 1024,
+    "max_compression_ratio": 100,
+}
 APPROVED_DESKTOP_IMAGE_SHA256 = (
     "a61adeab895ef5a4db436e0a7011c92a2ff17bb0357f58b13bbc4062e535e7b9"
 )
@@ -2025,6 +2033,20 @@ def _candidate_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _candidate_archive_limits() -> dict[str, int]:
+    """Load the exact reviewed ZIP resource limits without trusting the candidate."""
+    try:
+        contract = json.loads(
+            DESKTOP_BOUNDARY_CONTRACT_PATH.read_text(encoding="utf-8")
+        )
+    except (FileNotFoundError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("trusted desktop boundary contract is unreadable") from exc
+    limits = contract.get("candidate_archive") if isinstance(contract, dict) else None
+    if limits != EXPECTED_CANDIDATE_ARCHIVE_LIMITS:
+        raise ValueError("trusted candidate archive limits are invalid")
+    return EXPECTED_CANDIDATE_ARCHIVE_LIMITS
+
+
 def _candidate_package_files(path: Path) -> dict[str, bytes]:
     """Read candidate-owned package files without trusting receipt declarations."""
     path_metadata = path.lstat() if path.exists() or path.is_symlink() else None
@@ -2037,11 +2059,20 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
         raise ValueError("candidate package argument must not be a symbolic link")
     path = path.resolve()
     files: dict[str, bytes] = {}
+    if path.is_file():
+        limits = _candidate_archive_limits()
+        if path.stat().st_size > limits["max_archive_bytes"]:
+            raise ValueError("candidate archive exceeds the archive-byte limit")
     if path.is_file() and zipfile.is_zipfile(path):
         prefix = "plugins/ca-codex/"
         entries: list[tuple[str, zipfile.ZipInfo]] = []
+        archive_paths: list[tuple[str, bool]] = []
         with zipfile.ZipFile(path) as archive:
-            for info in archive.infolist():
+            archive_entries = archive.infolist()
+            if len(archive_entries) > limits["max_entries"]:
+                raise ValueError("candidate archive exceeds the entry-count limit")
+            total_uncompressed = 0
+            for info in archive_entries:
                 name = info.filename
                 if "\\" in name:
                     raise ValueError("candidate archive path uses a Windows separator")
@@ -2056,7 +2087,7 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     if directory.startswith(prefix):
                         relative_directory = directory[len(prefix):]
                         if relative_directory:
-                            _windows_candidate_key(relative_directory)
+                            archive_paths.append((relative_directory, True))
                     continue
                 if kind == stat.S_IFDIR:
                     raise ValueError("candidate archive file has a directory mode")
@@ -2072,10 +2103,38 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     raise ValueError("candidate archive has an unsafe path")
                 if info.flag_bits & 0x1:
                     raise ValueError("candidate archive contains an encrypted file")
+                if info.file_size > limits["max_entry_uncompressed_bytes"]:
+                    raise ValueError("candidate archive entry exceeds the size limit")
+                if info.file_size > limits["max_total_uncompressed_bytes"] - total_uncompressed:
+                    raise ValueError("candidate archive exceeds the total expansion limit")
+                total_uncompressed += info.file_size
+                if info.file_size and (
+                    info.compress_size == 0
+                    or info.file_size
+                    > info.compress_size * limits["max_compression_ratio"]
+                ):
+                    raise ValueError("candidate archive exceeds the compression-ratio limit")
+                archive_paths.append((normalized, False))
                 entries.append((normalized, info))
-            _validate_candidate_paths(relative for relative, _ in entries)
+            _validate_candidate_archive_paths(archive_paths)
+            actual_total = 0
             for relative, info in entries:
-                files[relative] = archive.read(info)
+                output = io.BytesIO()
+                actual_entry = 0
+                with archive.open(info, "r") as source:
+                    while chunk := source.read(64 * 1024):
+                        actual_entry += len(chunk)
+                        actual_total += len(chunk)
+                        if (
+                            actual_entry > info.file_size
+                            or actual_entry > limits["max_entry_uncompressed_bytes"]
+                            or actual_total > limits["max_total_uncompressed_bytes"]
+                        ):
+                            raise ValueError("candidate archive expanded beyond declared bounds")
+                        output.write(chunk)
+                if actual_entry != info.file_size:
+                    raise ValueError("candidate archive entry size does not match metadata")
+                files[relative] = output.getvalue()
         return files
     if path.is_dir():
         package_root = path / "plugins" / "ca-codex"
@@ -2154,6 +2213,21 @@ def _validate_candidate_paths(paths: Any) -> None:
     for key in keyed:
         if any(key[:index] in keyed for index in range(1, len(key))):
             raise ValueError("candidate package contains a file/directory prefix collision")
+
+
+def _validate_candidate_archive_paths(paths: Any) -> None:
+    """Validate explicit ZIP files and directories using Windows extraction semantics."""
+    keyed: dict[tuple[str, ...], tuple[str, bool]] = {}
+    for relative, is_directory in paths:
+        key = _windows_candidate_key(relative)
+        if key in keyed:
+            raise ValueError("candidate package contains a case or Unicode-normalized path collision")
+        keyed[key] = (relative, is_directory)
+    for key in keyed:
+        for index in range(1, len(key)):
+            prefix = keyed.get(key[:index])
+            if prefix is not None and not prefix[1]:
+                raise ValueError("candidate package contains a file/directory prefix collision")
 
 
 def _markdown_reference_label(value: str) -> str:
@@ -2667,7 +2741,7 @@ def validate_desktop_boundary_contract(
         errors.append("trusted desktop boundary contract is unreadable")
     top_fields = {
         "schema_version", "broker", "driver", "probe", "image", "application",
-        "marketplace", "candidate_surface", "route_corpus", "channel", "network", "authentication",
+        "marketplace", "candidate_surface", "candidate_archive", "route_corpus", "channel", "network", "authentication",
         "evidence",
     }
     if not isinstance(contract, dict) or set(contract) != top_fields:
@@ -2765,6 +2839,8 @@ def validate_desktop_boundary_contract(
         "hooks_manifest_sha256": "2b12c7eb5e35bbbddf69e38a6f8966c21f3b43c87bddfd36a2b9c764a23a58fd",
     }:
         errors.append("trusted desktop candidate surface contract is invalid")
+    if contract.get("candidate_archive") != EXPECTED_CANDIDATE_ARCHIVE_LIMITS:
+        errors.append("trusted desktop candidate archive limits are invalid")
     route = contract.get("route_corpus")
     if route != {
         "id": "desktop-ca-review-dispatch-v2",
@@ -2953,7 +3029,9 @@ def _desktop_v3_receipt_result(
         },
         "policy": {
             "requested_approval", "effective_approval", "requested_sandbox",
-            "effective_sandbox",
+            "effective_sandbox", "permission_consumer", "restricted_filesystem",
+            "restricted_network", "hooks_enabled", "startup_warning_count",
+            "windows_sandbox", "guest_acl_boundary",
         },
         "resources": {
             "marketplace", "plugin", "version", "plugin_root", "package_sha256",
@@ -3132,6 +3210,13 @@ def _desktop_v3_receipt_result(
         "effective_approval": "never",
         "requested_sandbox": "read-only",
         "effective_sandbox": "read-only",
+        "permission_consumer": "codex-sandbox-permission-profile",
+        "restricted_filesystem": True,
+        "restricted_network": True,
+        "hooks_enabled": False,
+        "startup_warning_count": 0,
+        "windows_sandbox": "elevated",
+        "guest_acl_boundary": True,
     }:
         errors.append("desktop receipt v3 policy contract is invalid")
 

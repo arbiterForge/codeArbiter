@@ -11,6 +11,14 @@ param(
     [string]$TestFailAfter,
     [Parameter(Mandatory, ParameterSetName = 'CandidateSurfaceFixture')]
     [string]$CandidateSurfaceFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'ReceiptContractFixture')]
+    [string]$ReceiptContractFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'ArchiveExtractionFixture')]
+    [string]$ArchiveExtractionFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'ArchiveExtractionFixture')]
+    [string]$ArchiveExtractionDestination,
+    [Parameter(Mandatory, ParameterSetName = 'CandidateMetadataFixture')]
+    [string]$CandidateMetadataFixturePath,
     [Parameter(ParameterSetName = 'Contract')]
     [switch]$ContractOnly
 )
@@ -205,6 +213,51 @@ function Assert-ExactFields($Value, [string[]]$Required, [string]$Label) {
     }
 }
 
+function New-ReceiptPolicyAndChannel($Fixture, $Contract) {
+    Assert-ExactFields $Fixture @('schema_version','policy','channel') 'receipt contract fixture'
+    if ($Fixture.schema_version -ne 1) { throw 'receipt contract fixture schema is invalid' }
+    Assert-ExactFields $Fixture.policy @(
+        'requested_approval','effective_approval','requested_sandbox','effective_sandbox',
+        'permission_consumer','restricted_filesystem','restricted_network','hooks_enabled',
+        'startup_warning_count','windows_sandbox','guest_acl_boundary'
+    ) 'receipt policy'
+    Assert-ExactFields $Fixture.channel @(
+        'challenge_nonce','challenge_response_sha256','observed_queries','observed_messages',
+        'response_utf8_bytes','sequence_complete','timed_out'
+    ) 'receipt channel'
+    [ordered]@{
+        policy = [ordered]@{
+            requested_approval = [string]$Fixture.policy.requested_approval
+            effective_approval = [string]$Fixture.policy.effective_approval
+            requested_sandbox = [string]$Fixture.policy.requested_sandbox
+            effective_sandbox = [string]$Fixture.policy.effective_sandbox
+            permission_consumer = [string]$Fixture.policy.permission_consumer
+            restricted_filesystem = [bool]$Fixture.policy.restricted_filesystem
+            restricted_network = [bool]$Fixture.policy.restricted_network
+            hooks_enabled = [bool]$Fixture.policy.hooks_enabled
+            startup_warning_count = [int]$Fixture.policy.startup_warning_count
+            windows_sandbox = [string]$Fixture.policy.windows_sandbox
+            guest_acl_boundary = [bool]$Fixture.policy.guest_acl_boundary
+        }
+        channel = [ordered]@{
+            transport = [string]$Contract.channel.transport
+            authentication = [string]$Contract.channel.authentication
+            challenge = [string]$Contract.channel.challenge
+            challenge_nonce_sha256 = Get-TextSha256 ([string]$Fixture.channel.challenge_nonce)
+            challenge_response_sha256 = [string]$Fixture.channel.challenge_response_sha256
+            max_queries = [int]$Contract.channel.max_queries
+            observed_queries = [int]$Fixture.channel.observed_queries
+            max_audit_records = [int]$Contract.channel.max_audit_records
+            max_messages = [int]$Contract.channel.max_messages
+            max_message_bytes = [int]$Contract.channel.max_message_bytes
+            observed_messages = [int]$Fixture.channel.observed_messages
+            response_utf8_bytes = [int]$Fixture.channel.response_utf8_bytes
+            sequence_complete = [bool]$Fixture.channel.sequence_complete
+            timed_out = [bool]$Fixture.channel.timed_out
+        }
+    }
+}
+
 function Get-Contract {
     $resolved = (Resolve-Path -LiteralPath $ContractPath).Path
     $contract = Get-Content -LiteralPath $resolved -Raw -Encoding utf8 | ConvertFrom-Json
@@ -212,6 +265,22 @@ function Get-Contract {
         $contract.image.provisioning_mode -cne 'iso-apply-fresh-vhdx' -or
         $contract.channel.transport -cne 'powershell-direct-vmbus') {
         throw 'boundary contract identity is invalid'
+    }
+    Assert-ExactFields $contract.candidate_archive @(
+        'max_archive_bytes','max_entries','max_entry_uncompressed_bytes',
+        'max_total_uncompressed_bytes','max_compression_ratio'
+    ) 'candidate archive limits'
+    $expectedArchiveLimits = [ordered]@{
+        max_archive_bytes = 8388608L
+        max_entries = 1024L
+        max_entry_uncompressed_bytes = 2097152L
+        max_total_uncompressed_bytes = 33554432L
+        max_compression_ratio = 100L
+    }
+    foreach ($name in $expectedArchiveLimits.Keys) {
+        if ([long]$contract.candidate_archive.$name -ne [long]$expectedArchiveLimits[$name]) {
+            throw 'candidate archive limits are not the reviewed values'
+        }
     }
     $root = (Resolve-Path -LiteralPath (Join-Path (Split-Path $resolved -Parent) '..')).Path
     foreach ($name in @('broker','driver','probe')) {
@@ -224,6 +293,172 @@ function Get-Contract {
         throw 'approved Windows evaluation image digest mismatch'
     }
     [pscustomobject]@{ Contract = $contract; Root = $root }
+}
+
+function Expand-BoundedCandidateArchive {
+    param(
+        [Parameter(Mandatory)][string]$ArchivePath,
+        [Parameter(Mandatory)][string]$DestinationPath,
+        [Parameter(Mandatory)]$Contract,
+        [string]$ExpectedSha256
+    )
+    if (-not (Test-Path -LiteralPath $ArchivePath -PathType Leaf)) {
+        throw 'candidate archive is missing'
+    }
+    $archiveItem = Get-Item -LiteralPath $ArchivePath -Force
+    if (($archiveItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw 'candidate archive must not be a reparse point'
+    }
+    if ([long]$archiveItem.Length -gt [long]$Contract.candidate_archive.max_archive_bytes) {
+        throw 'candidate archive exceeds the archive-byte limit'
+    }
+    $destination = [IO.Path]::GetFullPath($DestinationPath)
+    if (Test-Path -LiteralPath $destination) {
+        throw 'candidate archive destination must not pre-exist'
+    }
+
+    Add-Type -AssemblyName System.IO.Compression
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $fileStream = $null
+    $archive = $null
+    $records = [Collections.Generic.List[object]]::new()
+    $pathKinds = [Collections.Generic.Dictionary[string,bool]]::new([StringComparer]::OrdinalIgnoreCase)
+    $totalUncompressed = 0L
+    try {
+        $fileStream = [IO.File]::Open($archiveItem.FullName,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+        if ($ExpectedSha256) {
+            if ($ExpectedSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'candidate archive binding digest is invalid' }
+            $algorithm = [Security.Cryptography.SHA256]::Create()
+            try {
+                $actualSha256 = -join @($algorithm.ComputeHash($fileStream) | ForEach-Object { $_.ToString('x2') })
+            } finally { $algorithm.Dispose() }
+            if ($actualSha256 -cne $ExpectedSha256) { throw 'candidate archive changed after validation' }
+            $fileStream.Position = 0
+        }
+        $archive = [IO.Compression.ZipArchive]::new($fileStream,[IO.Compression.ZipArchiveMode]::Read,$false)
+        $allEntries = @($archive.Entries)
+        if ($allEntries.Count -gt [long]$Contract.candidate_archive.max_entries) {
+            throw 'candidate archive exceeds the entry-count limit'
+        }
+        foreach ($entry in $allEntries) {
+            $name = [string]$entry.FullName
+            if ([string]::IsNullOrEmpty($name) -or $name.Contains('\')) {
+                throw 'candidate archive path is invalid'
+            }
+            $isDirectory = $name.EndsWith('/',[StringComparison]::Ordinal)
+            $external = [uint32]([int64]$entry.ExternalAttributes -band 0xFFFFFFFFL)
+            $mode = ($external -shr 16) -band 0xFFFF
+            $kind = $mode -band 0xF000
+            if (($external -band 0x400) -ne 0 -or $kind -notin @(0,0x4000,0x8000)) {
+                throw 'candidate archive contains a non-regular file'
+            }
+            if ($isDirectory -and $kind -notin @(0,0x4000)) {
+                throw 'candidate archive directory has a non-directory mode'
+            }
+            if (-not $isDirectory -and $kind -eq 0x4000) {
+                throw 'candidate archive file has a directory mode'
+            }
+            if ($name -in @('plugins/','plugins/ca-codex/')) {
+                if (-not $isDirectory) { throw 'candidate archive ancestor is not a directory' }
+                continue
+            }
+            if (-not $name.StartsWith('plugins/ca-codex/',[StringComparison]::Ordinal)) {
+                throw 'candidate archive contains an entry outside plugins/ca-codex'
+            }
+            $relative = $name.Substring('plugins/ca-codex/'.Length)
+            if ($isDirectory) { $relative = $relative.TrimEnd('/') }
+            if ([string]::IsNullOrEmpty($relative)) { continue }
+            $components = @($relative.Split('/'))
+            $normalizedComponents = [Collections.Generic.List[string]]::new()
+            foreach ($component in $components) {
+                if ([string]::IsNullOrEmpty($component) -or $component -in @('.','..') -or
+                    $component.EndsWith(' ') -or $component.EndsWith('.') -or
+                    $component -match '[<>:"|?*\x00-\x1f]' -or
+                    $component -match '^(?i:CON|PRN|AUX|NUL|COM[1-9¹²³]|LPT[1-9¹²³])(?:[ .]|$)') {
+                    throw 'candidate archive has a Windows-unsafe path'
+                }
+                $normalizedComponents.Add($component.Normalize([Text.NormalizationForm]::FormC))
+            }
+            $pathKey = $normalizedComponents -join '/'
+            if ($pathKinds.ContainsKey($pathKey)) {
+                throw 'candidate archive contains a Windows-ambiguous path collision'
+            }
+            $pathKinds.Add($pathKey,$isDirectory)
+            if ($isDirectory) { continue }
+            if ([long]$entry.Length -gt [long]$Contract.candidate_archive.max_entry_uncompressed_bytes) {
+                throw 'candidate archive entry exceeds the size limit'
+            }
+            if ([long]$entry.Length -gt [long]$Contract.candidate_archive.max_total_uncompressed_bytes - $totalUncompressed) {
+                throw 'candidate archive exceeds the total expansion limit'
+            }
+            $totalUncompressed += [long]$entry.Length
+            if ([long]$entry.Length -gt 0 -and
+                ([long]$entry.CompressedLength -eq 0 -or
+                 ([decimal]$entry.Length / [decimal]$entry.CompressedLength) -gt [decimal]$Contract.candidate_archive.max_compression_ratio)) {
+                throw 'candidate archive exceeds the compression-ratio limit'
+            }
+            $records.Add([pscustomobject]@{ Relative=$relative; Entry=$entry })
+        }
+
+        foreach ($pathKey in @($pathKinds.Keys)) {
+            $keyComponents = @($pathKey.Split('/'))
+            for ($index = 1; $index -lt $keyComponents.Count; $index++) {
+                $prefixKey = $keyComponents[0..($index - 1)] -join '/'
+                if ($pathKinds.ContainsKey($prefixKey) -and -not $pathKinds[$prefixKey]) {
+                    throw 'candidate archive contains a file/directory prefix collision'
+                }
+            }
+        }
+
+        $null = New-Item -ItemType Directory -Path $destination -Force
+        $destinationPrefix = $destination.TrimEnd('\','/') + [IO.Path]::DirectorySeparatorChar
+        $actualTotal = 0L
+        try {
+            foreach ($record in $records) {
+                $target = [IO.Path]::GetFullPath((Join-Path $destination ($record.Relative.Replace('/','\'))))
+                if (-not $target.StartsWith($destinationPrefix,[StringComparison]::OrdinalIgnoreCase)) {
+                    throw 'candidate archive extraction escaped its destination'
+                }
+                $parent = Split-Path -Parent $target
+                $null = New-Item -ItemType Directory -Path $parent -Force
+                $inputStream = $null
+                $outputStream = $null
+                $actualEntry = 0L
+                try {
+                    $inputStream = $record.Entry.Open()
+                    $outputStream = [IO.File]::Open($target,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+                    $buffer = [byte[]]::new(65536)
+                    while (($read = $inputStream.Read($buffer,0,$buffer.Length)) -gt 0) {
+                        $actualEntry += $read
+                        $actualTotal += $read
+                        if ($actualEntry -gt [long]$record.Entry.Length -or
+                            $actualEntry -gt [long]$Contract.candidate_archive.max_entry_uncompressed_bytes -or
+                            $actualTotal -gt [long]$Contract.candidate_archive.max_total_uncompressed_bytes) {
+                            throw 'candidate archive expanded beyond declared bounds'
+                        }
+                        $outputStream.Write($buffer,0,$read)
+                    }
+                } finally {
+                    if ($outputStream) { $outputStream.Dispose() }
+                    if ($inputStream) { $inputStream.Dispose() }
+                }
+                if ($actualEntry -ne [long]$record.Entry.Length) {
+                    throw 'candidate archive entry size does not match metadata'
+                }
+            }
+        } catch {
+            Remove-Item -LiteralPath $destination -Recurse -Force -ErrorAction SilentlyContinue
+            throw
+        }
+        [ordered]@{
+            entry_count = $allEntries.Count
+            file_count = $records.Count
+            total_uncompressed_bytes = $actualTotal
+        }
+    } finally {
+        if ($archive) { $archive.Dispose() }
+        if ($fileStream) { $fileStream.Dispose() }
+    }
 }
 
 function Assert-TrustedAclEvidence($Evidence, [string]$RunnerSid) {
@@ -294,32 +529,34 @@ function Assert-TrustedRunnerPath([string]$LiteralPath, [switch]$Leaf) {
     $full
 }
 
-function Get-CandidateMetadata([string]$Archive, [string]$Checker) {
-    $validated = & python $Checker --candidate-contract-only --candidate-package $Archive --json |
+function Get-CandidateMetadata([string]$PackageRoot, [string]$Checker) {
+    $root = (Resolve-Path -LiteralPath $PackageRoot).Path
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) {
+        throw 'validated candidate plugin root is missing'
+    }
+    $validated = & python $Checker --candidate-contract-only --candidate-package $root --json |
         ConvertFrom-Json
     if ($LASTEXITCODE -ne 0 -or $validated.verdict -cne 'PASS') {
         throw 'candidate contract failed'
     }
-    Add-Type -AssemblyName System.IO.Compression.FileSystem
-    $zip = [IO.Compression.ZipFile]::OpenRead($Archive)
-    try {
-        $entry = @($zip.Entries | Where-Object {
-            $_.FullName -ceq 'plugins/ca-codex/.codex-plugin/plugin.json'
-        })
-        if ($entry.Count -ne 1) { throw 'candidate plugin manifest must be unique' }
-        $reader = [IO.StreamReader]::new($entry[0].Open(), [Text.UTF8Encoding]::new($false, $true))
-        try { $manifest = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
-        $paths = @($zip.Entries | Where-Object { $_.Name } | ForEach-Object {
-            if (-not $_.FullName.StartsWith('plugins/ca-codex/',[StringComparison]::Ordinal)) {
-                throw 'candidate archive contains a file outside the ca-codex package'
-            }
-            $_.FullName.Substring('plugins/ca-codex/'.Length)
-        })
-        $hooksEntry = @($zip.Entries | Where-Object { $_.FullName -ceq 'plugins/ca-codex/hooks/hooks.json' })
-        if ($hooksEntry.Count -ne 1) { throw 'candidate hooks manifest must be unique' }
-        $hooksReader = [IO.StreamReader]::new($hooksEntry[0].Open(), [Text.UTF8Encoding]::new($false, $true))
-        try { $hooksManifestText = $hooksReader.ReadToEnd() } finally { $hooksReader.Dispose() }
-    } finally { $zip.Dispose() }
+    $manifestPath = Join-Path $root '.codex-plugin\plugin.json'
+    $hooksPath = Join-Path $root 'hooks\hooks.json'
+    foreach ($path in @($manifestPath,$hooksPath)) {
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            throw 'validated candidate metadata file is missing'
+        }
+    }
+    $utf8 = [Text.UTF8Encoding]::new($false,$true)
+    $manifest = $utf8.GetString([IO.File]::ReadAllBytes($manifestPath)) | ConvertFrom-Json
+    $hooksManifestText = $utf8.GetString([IO.File]::ReadAllBytes($hooksPath))
+    $rootPrefix = $root.TrimEnd('\') + '\'
+    $paths = @([IO.Directory]::EnumerateFiles($root,'*',[IO.SearchOption]::AllDirectories) | ForEach-Object {
+        $full = [IO.Path]::GetFullPath($_)
+        if (-not $full.StartsWith($rootPrefix,[StringComparison]::OrdinalIgnoreCase)) {
+            throw 'validated candidate metadata path escaped the plugin root'
+        }
+        $full.Substring($rootPrefix.Length).Replace('\','/')
+    })
     $null = Assert-BoundedCandidateSurface -Manifest $manifest -HooksManifestText $hooksManifestText -Paths $paths
     [pscustomobject]@{ Version = $manifest.version; ResourceSha256 = $validated.sha256 }
 }
@@ -652,6 +889,24 @@ if ($PSCmdlet.ParameterSetName -eq 'CandidateSurfaceFixture') {
     Assert-BoundedCandidateSurface -Manifest $fixture.manifest -HooksManifestText ([string]$fixture.hooks_manifest_text) -Paths @($fixture.paths) | ConvertTo-Json -Compress
     exit 0
 }
+if ($PSCmdlet.ParameterSetName -eq 'ReceiptContractFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'receipt contract fixture mode is test-only' }
+    $fixture = Get-Content -LiteralPath $ReceiptContractFixturePath -Raw -Encoding utf8 | ConvertFrom-Json
+    New-ReceiptPolicyAndChannel $fixture $contract | ConvertTo-Json -Depth 6 -Compress
+    exit 0
+}
+if ($PSCmdlet.ParameterSetName -eq 'ArchiveExtractionFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'archive extraction fixture mode is test-only' }
+    Expand-BoundedCandidateArchive -ArchivePath $ArchiveExtractionFixturePath -DestinationPath $ArchiveExtractionDestination -Contract $contract |
+        ConvertTo-Json -Compress
+    exit 0
+}
+if ($PSCmdlet.ParameterSetName -eq 'CandidateMetadataFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'candidate metadata fixture mode is test-only' }
+    Get-CandidateMetadata $CandidateMetadataFixturePath (Join-Path $loaded.Root '.github\scripts\check_codex_skill_resources.py') |
+        ConvertTo-Json -Compress
+    exit 0
+}
 if ($PSCmdlet.ParameterSetName -eq 'Fixture') {
     if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'fixture mode is test-only' }
     $fixture = Get-Content -LiteralPath $FixturePath -Raw -Encoding utf8 | ConvertFrom-Json
@@ -682,7 +937,7 @@ if ((Get-VMHost).EnableEnhancedSessionMode) {
 
 $request = Get-Content -LiteralPath $RequestPath -Raw -Encoding utf8 | ConvertFrom-Json
 $requestFields = @(
-    'candidate_archive','candidate_commit','candidate_tree','desktop_build','desktop_runtime_version','workflow_commit','run_id',
+    'candidate_archive','candidate_archive_sha256','candidate_commit','candidate_tree','desktop_build','desktop_runtime_version','workflow_commit','run_id',
     'protected_environment','authentication_mode','user_consent_required','requested_approval',
     'required_effective_approval','requested_sandbox','required_effective_sandbox',
     'persist_auth_artifacts','persist_screenshots','persist_raw_ui_logs','persist_crash_dumps',
@@ -712,7 +967,8 @@ foreach ($pair in @(
     @((Get-Sha256 $installedProbe),$contract.probe.sha256),
     @((Get-Sha256 $imagePath),$contract.image.sha256)
 )) { if ($pair[0] -cne $pair[1]) { throw 'desktop request boundary or image bytes are not exact' } }
-if ($request.candidate_commit -notmatch '^[0-9a-f]{40}$' -or
+if ($request.candidate_archive_sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+    $request.candidate_commit -notmatch '^[0-9a-f]{40}$' -or
     $request.candidate_tree -notmatch '^[0-9a-f]{40}$' -or
     $request.workflow_commit -notmatch '^[0-9a-f]{40}$' -or
     $request.run_id -notmatch '^[1-9][0-9]*$' -or
@@ -723,7 +979,9 @@ if ($request.candidate_commit -notmatch '^[0-9a-f]{40}$' -or
 
 $archive = (Resolve-Path -LiteralPath $request.candidate_archive).Path
 $candidateHash = Get-Sha256 $archive
-$candidate = Get-CandidateMetadata $archive (Join-Path $loaded.Root '.github\scripts\check_codex_skill_resources.py')
+if ($candidateHash -cne [string]$request.candidate_archive_sha256) {
+    throw 'candidate archive does not match the workflow-authorized digest'
+}
 $store = Get-StorePackageEvidence $contract $request.desktop_build
 $storeDesktopPath = Join-Path $store.Package.InstallLocation $contract.application.executable_relative_path
 $storeRuntimePath = Join-Path $store.Package.InstallLocation $contract.application.runtime_relative_path
@@ -736,11 +994,12 @@ if (-not (Get-VMSwitch -Name $VmSwitchName -ErrorAction SilentlyContinue)) {
 $suffix = $request.run_id.Substring([Math]::Max(0, $request.run_id.Length - 10))
 $vmName = "ca-desktop-$suffix"
 $runRoot = Join-Path $WorkingRoot $vmName
+$hostMarketplace = Join-Path $runRoot 'marketplace'
+$hostPluginRoot = Join-Path $hostMarketplace 'plugins\ca-codex'
 $diskPath = Join-Path $runRoot 'guest.vhdx'
 $guestTrustedRoot = 'C:\CodeArbiterTrusted'
 $guestRunRoot = 'C:\CodeArbiterProof'
 $guestExchangeRoot = 'C:\CodeArbiterExchange'
-$guestArchive = Join-Path $guestRunRoot 'candidate.zip'
 $guestContract = Join-Path $guestTrustedRoot 'desktop-proof-boundary.json'
 $guestDriver = Join-Path $guestTrustedRoot 'Invoke-CodeArbiterDesktopUiDriver.ps1'
 $guestProbe = Join-Path $guestTrustedRoot 'Invoke-CodeArbiterDesktopRouteProbe.ps1'
@@ -751,7 +1010,8 @@ $permissionEvidencePath = Join-Path $guestExchangeRoot 'permission-evidence.json
 $inventoryEvidencePath = Join-Path $guestExchangeRoot 'inventory-evidence.json'
 $frozenObservationPath = Join-Path $guestTrustedRoot 'frozen-driver-observation.json'
 $account = "ca-desktop-disposable-$suffix"
-$permissionProfile = New-DesktopProofPermissionProfile $contract $account $candidate.Version $proofRepo
+$candidate = $null
+$permissionProfile = $null
 $bootstrapPassword = (Get-RandomHex 24) + '!aA1'
 $desktopPassword = (Get-RandomHex 24) + '!aA1'
 $bootstrapSecure = ConvertTo-SecureString $bootstrapPassword -AsPlainText -Force
@@ -778,6 +1038,13 @@ try {
     if (Test-Path -LiteralPath $runRoot) { throw 'ephemeral run root already exists' }
     $null = New-Item -ItemType Directory -Path $runRoot -Force
     $null = Assert-TrustedRunnerPath $runRoot
+    $archiveEvidence = Expand-BoundedCandidateArchive -ArchivePath $archive -DestinationPath $hostPluginRoot -Contract $contract -ExpectedSha256 ([string]$request.candidate_archive_sha256)
+    if ($archiveEvidence.file_count -lt 1 -or $archiveEvidence.total_uncompressed_bytes -lt 1) {
+        throw 'candidate archive contains no regular-file payload'
+    }
+    $null = Assert-TrustedRunnerPath $hostPluginRoot
+    $candidate = Get-CandidateMetadata $hostPluginRoot (Join-Path $loaded.Root '.github\scripts\check_codex_skill_resources.py')
+    $permissionProfile = New-DesktopProofPermissionProfile $contract $account $candidate.Version $proofRepo
     if ((Get-Sha256 $imagePath) -cne $contract.image.sha256) { throw 'approved image changed after boundary verification' }
     $diskEvidence = New-FreshGuestDisk $imagePath $diskPath $bootstrapPassword
     $null = Invoke-BrokerStage $lifecycle 'iso-applied-to-fresh-vhdx' {
@@ -892,7 +1159,7 @@ try {
     $null = Assert-TrustedRunnerPath $installedProbe -Leaf
     if ((Get-Sha256 $installedDriver) -cne $contract.driver.sha256 -or
         (Get-Sha256 $installedProbe) -cne $contract.probe.sha256) { throw 'trusted boundary program changed before guest transfer' }
-    Copy-Item -ToSession $session -LiteralPath $archive -Destination $guestArchive
+    Copy-Item -ToSession $session -LiteralPath $hostMarketplace -Destination $guestRunRoot -Recurse -Force
     Copy-Item -ToSession $session -LiteralPath $ContractPath -Destination $guestContract
     Copy-Item -ToSession $session -LiteralPath $installedDriver -Destination $guestDriver
     Copy-Item -ToSession $session -LiteralPath $installedProbe -Destination $guestProbe
@@ -907,10 +1174,9 @@ try {
         $guestRuntimeResource = $storeRuntimeSha
     }
     Assert-GuestTrustedBytes -Session $session -Bindings $guestBoundaryBindings
-    Assert-GuestTrustedBytes -Session $session -Bindings @{$guestArchive=$candidateHash}
 
-    $installed = Invoke-Command -Session $session -ArgumentList $account,$desktopPassword,$profile,$guestRunRoot,$guestArchive,$guestPackage,$candidate.Version,$contract,$setup.resolved_endpoints -ScriptBlock {
-        param($Account,$Password,$Profile,$Root,$Archive,$PackageRoot,$Version,$Contract,$ResolvedEndpoints)
+    $installed = Invoke-Command -Session $session -ArgumentList $account,$desktopPassword,$profile,$guestRunRoot,$guestPackage,$candidate.Version,$contract,$setup.resolved_endpoints -ScriptBlock {
+        param($Account,$Password,$Profile,$Root,$PackageRoot,$Version,$Contract,$ResolvedEndpoints)
         $manifest = Join-Path $PackageRoot 'AppxManifest.xml'
         $desktop = Join-Path $PackageRoot $Contract.application.executable_relative_path
         $runtime = Join-Path $PackageRoot $Contract.application.runtime_relative_path
@@ -921,7 +1187,8 @@ try {
             New-NetFirewallRule -DisplayName "CA Desktop CLI HTTPS $index" -DisplayGroup $group -Direction Outbound -Action Allow -Enabled True -Profile Any -Program $runtime -Protocol TCP -RemotePort 443 -RemoteAddress $addresses | Out-Null
             New-NetFirewallRule -DisplayName "CA Desktop App HTTPS $index" -DisplayGroup $group -Direction Outbound -Action Allow -Enabled True -Profile Any -Program $desktop -Protocol TCP -RemotePort 443 -RemoteAddress $addresses | Out-Null
         }
-        $market=Join-Path $Root 'marketplace'; Expand-Archive $Archive $market -Force
+        $market=Join-Path $Root 'marketplace'
+        if(-not(Test-Path -LiteralPath (Join-Path $market 'plugins\ca-codex') -PathType Container)){throw 'validated candidate marketplace root is missing'}
         New-Item -ItemType Directory (Join-Path $market '.codex-plugin') -Force | Out-Null
         @{name='codearbiter';plugins=@(@{name='ca-codex';source=@{source='local';path='./plugins/ca-codex'};policy=@{installation='AVAILABLE';authentication='ON_INSTALL'};category='Developer Tools'})} |
             ConvertTo-Json -Depth 8 | Set-Content (Join-Path $market '.codex-plugin\marketplace.json') -Encoding utf8
@@ -1271,6 +1538,31 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
 
     $routeHash=Get-TextSha256 ('codearbiter.desktop-route-set.v2|' + (@($route.route_events|ForEach-Object event_sha256)-join '|'))
     $teardownHash=Get-TextSha256 "codearbiter.desktop-teardown.v2|$desktopSha|$($torn.disabled)|$($torn.deleted)|$($torn.profile_destroyed)|vm-destroyed|run-root-destroyed"
+    $receiptContract = New-ReceiptPolicyAndChannel ([pscustomobject]@{
+        schema_version = 1
+        policy = [pscustomobject]@{
+            requested_approval = $request.requested_approval
+            effective_approval = $driverObservation.effective_approval
+            requested_sandbox = $request.requested_sandbox
+            effective_sandbox = $driverObservation.effective_sandbox
+            permission_consumer = $measurements.permission_consumer
+            restricted_filesystem = $measurements.permission_restricted_filesystem
+            restricted_network = $measurements.permission_restricted_network
+            hooks_enabled = $measurements.permission_hooks_enabled
+            startup_warning_count = $measurements.permission_startup_warning_count
+            windows_sandbox = $measurements.permission_windows_sandbox
+            guest_acl_boundary = $measurements.guest_acl_boundary
+        }
+        channel = [pscustomobject]@{
+            challenge_nonce = $challengeNonce
+            challenge_response_sha256 = $route.challenge_response_sha256
+            observed_queries = $driverObservation.app_server_query_count
+            observed_messages = $route.observed_messages
+            response_utf8_bytes = $routeResponseBytes
+            sequence_complete = $route.sequence_complete
+            timed_out = $route.timed_out
+        }
+    }) $contract
     $receipt=[ordered]@{
         schema_version=3;surface='desktop';verdict='PASS';blockers=@()
         candidate=[ordered]@{archive_sha256=$candidateHash;source_commit=$request.candidate_commit;source_tree=$request.candidate_tree;package='ca-codex';package_version=$candidate.Version;resource_manifest_sha256=$candidate.ResourceSha256}
@@ -1280,9 +1572,9 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
         lifecycle=[ordered]@{probe_teardown_requested=$route.teardown_requested;account_disabled=$torn.disabled;account_deleted=$torn.deleted;profile_destroyed=$torn.profile_destroyed;vm_destroyed=$vmDestroyed;run_root_destroyed=$runRootDestroyed;finalized_after_teardown=($vmDestroyed-and$runRootDestroyed-and$torn.profile_destroyed)}
         isolation=[ordered]@{hypervisor='hyper-v';fresh_iso_applied=$measurements.fresh_iso_applied;enhanced_session_enabled=$measurements.enhanced_session_enabled;guest_service_interface_enabled=$measurements.guest_service_interface_enabled;host_profile_mounted=$measurements.host_profile_mounted;host_shared_folders=$measurements.host_shared_folders;network_policy_sha256=$measurements.network_policy_sha256;enabled_allow_rules=$measurements.enabled_allow_rules;outside_allow_rules=$measurements.outside_allow_rules}
         authentication=[ordered]@{mode='chatgpt-device';prompt_ready_observed=$measurements.auth_prompt_ready;consent_completion_observed=$measurements.auth_completed;app_account_mode=$measurements.app_account_mode;permission_profile_id=$measurements.permission_profile_id;storage_backend=$measurements.auth_storage_mode;keyring_target_count=$measurements.postauth_credential_targets;reusable_state_file_count=$measurements.postauth_auth_files;denial_canary_observed=$measurements.auth_canary_denied;canary_content_observed=$measurements.auth_canary_content_observed;eligible_runtime_process_count=$measurements.eligible_runtime_process_count;autologon_material_cleared=$autologonCleared.marker;api_key_auth_detected=([int]$measurements.preauth_api_key_variables-ne 0);copied_session_source_detected=([int]$measurements.preauth_auth_files-ne 0-or[int]$measurements.preauth_credential_targets-ne 0)}
-        policy=[ordered]@{requested_approval=$request.requested_approval;effective_approval=$driverObservation.effective_approval;requested_sandbox=$request.requested_sandbox;effective_sandbox=$driverObservation.effective_sandbox;permission_consumer=$measurements.permission_consumer;restricted_filesystem=$measurements.permission_restricted_filesystem;restricted_network=$measurements.permission_restricted_network;hooks_enabled=$measurements.permission_hooks_enabled;startup_warning_count=$measurements.permission_startup_warning_count;windows_sandbox=$measurements.permission_windows_sandbox;guest_acl_boundary=$measurements.guest_acl_boundary}
+        policy=$receiptContract.policy
         resources=[ordered]@{marketplace=$contract.marketplace.name;plugin=$contract.marketplace.plugin;version=$candidate.Version;plugin_root=$route.selected_plugin_root;package_sha256=$candidateHash;selection_source='audited-desktop-skill-read';route_corpus_id=$contract.route_corpus.id;request_sha256=$route.request_sha256;thread_id_sha256=$route.thread_id_sha256;dispatch_agent=$route.dispatch_agent;route_events=@($route.route_events);cache_glob_used=$false;path_escape_detected=$false;unresolved_routes=@()}
-        channel=[ordered]@{transport=$contract.channel.transport;authentication=$contract.channel.authentication;challenge=$contract.channel.challenge;challenge_nonce_sha256=Get-TextSha256 $challengeNonce;challenge_response_sha256=$route.challenge_response_sha256;max_queries=[int]$contract.channel.max_queries;observed_queries=[int]$driverObservation.app_server_query_count;max_audit_records=[int]$contract.channel.max_audit_records;max_messages=[int]$contract.channel.max_messages;observed_messages=[int]$route.observed_messages;response_utf8_bytes=[int]$routeResponseBytes;sequence_complete=$route.sequence_complete;timed_out=$route.timed_out}
+        channel=$receiptContract.channel
         workflow=[ordered]@{repository='arbiterForge/codeArbiter';path='.github/workflows/codex-desktop-candidate.yml';commit=$request.workflow_commit;run_id=$request.run_id;protected_environment=$request.protected_environment}
         events=[ordered]@{route_events_sha256=$routeHash;security_records_sha256=$route.security_records_sha256;causal_window_sha256=$route.causal_window_sha256;teardown_events_sha256=$teardownHash}
         evidence=[ordered]@{raw_content_persisted=$measurements.raw_content_persisted;auth_profile_destroyed=$torn.profile_destroyed;vm_destroyed=$vmDestroyed;run_root_destroyed=$runRootDestroyed;durable_artifact_inventory=if($measurements.artifact_sidecars-eq 0){'receipt-only'}else{'unexpected-sidecar'}}

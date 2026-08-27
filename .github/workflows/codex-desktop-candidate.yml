@@ -131,6 +131,7 @@ jobs:
         env:
           CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
           CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+          EXPECTED_ARCHIVE_SHA256: ${{ inputs.candidate_archive_sha256 }}
           DESKTOP_BUILD: ${{ inputs.desktop_build }}
           DESKTOP_RUNTIME_VERSION: ${{ inputs.desktop_runtime_version }}
           TRUSTED_WORKFLOW_COMMIT: ${{ github.sha }}
@@ -148,6 +149,7 @@ jobs:
           $receipt = Join-Path $env:RUNNER_TEMP 'codex-desktop-candidate-receipt.json'
           @{
             candidate_archive = (Join-Path $env:RUNNER_TEMP 'ca-codex-candidate.zip')
+            candidate_archive_sha256 = $env:EXPECTED_ARCHIVE_SHA256
             candidate_commit = $env:CANDIDATE_COMMIT
             candidate_tree = $env:CANDIDATE_TREE
             desktop_build = $env:DESKTOP_BUILD

@@ -3,7 +3,7 @@
   "broker": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopCandidate.ps1",
-    "sha256": "27b54b3a15eb3354212e8eb63d087d699d40e3fe53bd27627381963a560122ba"
+    "sha256": "d16e272611a676c1d173048b186a78115b6837470e135951b992a8aa4979e5a9"
   },
   "driver": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
@@ -44,6 +44,13 @@
     "kind": "known-hook-paths-disabled",
     "hook_path_set_sha256": "d44b6fb94cf07035f3dc51da74c55d97c9ace63943854ba873bd943feb46dbfa",
     "hooks_manifest_sha256": "2b12c7eb5e35bbbddf69e38a6f8966c21f3b43c87bddfd36a2b9c764a23a58fd"
+  },
+  "candidate_archive": {
+    "max_archive_bytes": 8388608,
+    "max_entries": 1024,
+    "max_entry_uncompressed_bytes": 2097152,
+    "max_total_uncompressed_bytes": 33554432,
+    "max_compression_ratio": 100
   },
   "route_corpus": {
     "id": "desktop-ca-review-dispatch-v2",

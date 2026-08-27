@@ -27,6 +27,36 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CHECKER = REPO_ROOT / ".github" / "scripts" / "check_codex_skill_resources.py"
 FIXTURE = REPO_ROOT / ".github" / "fixtures" / "codex-skill-resources"
+BROKER = REPO_ROOT / ".github" / "scripts" / "Invoke-CodeArbiterDesktopCandidate.ps1"
+DESKTOP_CONTRACT = REPO_ROOT / ".github" / "desktop-proof-boundary.json"
+
+
+def powershell():
+    executable = shutil.which("pwsh") or shutil.which("powershell")
+    if executable is None:
+        raise unittest.SkipTest("PowerShell is unavailable")
+    return executable
+
+
+def run_broker_receipt_contract_fixture(fixture):
+    with tempfile.TemporaryDirectory() as temporary:
+        fixture_path = Path(temporary) / "receipt-contract-fixture.json"
+        fixture_path.write_text(json.dumps(fixture), encoding="utf-8")
+        environment = os.environ.copy()
+        environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
+        return subprocess.run(
+            [
+                powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
+                str(BROKER), "-ReceiptContractFixturePath", str(fixture_path),
+                "-ContractPath", str(DESKTOP_CONTRACT),
+            ],
+            cwd=REPO_ROOT,
+            env=environment,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
 
 
 def load_checker():
@@ -2719,6 +2749,13 @@ class HardenedDesktopReceiptContractTest(CheckerPresentMixin, unittest.TestCase)
                 "effective_approval": "never",
                 "requested_sandbox": "read-only",
                 "effective_sandbox": "read-only",
+                "permission_consumer": "codex-sandbox-permission-profile",
+                "restricted_filesystem": True,
+                "restricted_network": True,
+                "hooks_enabled": False,
+                "startup_warning_count": 0,
+                "windows_sandbox": "elevated",
+                "guest_acl_boundary": True,
             },
             "resources": {
                 "marketplace": "codearbiter",
@@ -2945,6 +2982,45 @@ class HardenedDesktopReceiptContractTest(CheckerPresentMixin, unittest.TestCase)
             with self.subTest(label=label):
                 self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
 
+    def test_broker_receipt_policy_and_channel_pass_the_real_validator(self):
+        """The production receipt builder and trusted validator must share one schema."""
+        fixture = {
+            "schema_version": 1,
+            "policy": {
+                "requested_approval": "never",
+                "effective_approval": "never",
+                "requested_sandbox": "read-only",
+                "effective_sandbox": "read-only",
+                "permission_consumer": "codex-sandbox-permission-profile",
+                "restricted_filesystem": True,
+                "restricted_network": True,
+                "hooks_enabled": False,
+                "startup_warning_count": 0,
+                "windows_sandbox": "elevated",
+                "guest_acl_boundary": True,
+            },
+            "channel": {
+                "challenge_nonce": "desktop-proof-challenge-nonce",
+                "challenge_response_sha256": "b" * 64,
+                "observed_queries": 8,
+                "observed_messages": 3,
+                "response_utf8_bytes": 2048,
+                "sequence_complete": True,
+                "timed_out": False,
+            },
+        }
+        produced = run_broker_receipt_contract_fixture(fixture)
+        self.assertEqual(produced.returncode, 0, produced.stdout + produced.stderr)
+        fragments = json.loads(produced.stdout)
+        self.assertEqual(
+            set(fragments),
+            {"policy", "channel"},
+        )
+        self.assertEqual(fragments["channel"]["max_message_bytes"], 4096)
+        self.receipt["policy"] = fragments["policy"]
+        self.receipt["channel"] = fragments["channel"]
+        self.assert_hardened_receipt_passes()
+
     def test_hardened_receipt_rejects_secret_bearing_durable_output(self):
         """O-10: raw desktop/auth evidence can never become a durable receipt."""
         self.assert_hardened_receipt_passes()
@@ -3157,9 +3233,9 @@ class CommandInterfaceTest(FakeCodexMixin, CheckerPresentMixin, unittest.TestCas
 
 
 class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase):
-    def write_zip(self, entries):
-        path = Path(self.temporary.name) / "candidate.zip"
-        with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
+    def write_zip(self, entries, *, name="candidate.zip", compression=zipfile.ZIP_STORED):
+        path = Path(self.temporary.name) / name
+        with zipfile.ZipFile(path, "w", compression=compression) as archive:
             for name, value in entries:
                 if isinstance(value, zipfile.ZipInfo):
                     archive.writestr(value, "../outside.md")
@@ -3175,6 +3251,62 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
             ("plugins/ca-codex/skills/probe.md", "[Agent](../agents/probe.md)\n"),
             ("plugins/ca-codex/agents/probe.md", "# Agent\n"),
         ]
+
+    def test_rejects_candidate_archive_resource_exhaustion_before_reading_entries(self):
+        """ARC-01: hostile ZIP metadata or expansion must fail before full entry reads."""
+        archive_bytes = self.write_zip(
+            [
+                (f"plugins/ca-codex/agents/archive-{index}.bin", os.urandom(1800 * 1024))
+                for index in range(5)
+            ],
+            name="archive-bytes.zip",
+        )
+        entry_count = self.write_zip(
+            [
+                (f"plugins/ca-codex/agents/entry-{index:04d}.md", "# entry\n")
+                for index in range(1025)
+            ],
+            name="entry-count.zip",
+        )
+        per_entry = self.write_zip(
+            [("plugins/ca-codex/agents/oversized.bin", b"x" * (2 * 1024 * 1024 + 1))],
+            name="per-entry.zip",
+        )
+        moderately_compressible = b"".join(
+            os.urandom(32 * 1024) * 8 for _ in range(8)
+        )
+        total_expansion = self.write_zip(
+            [
+                (f"plugins/ca-codex/agents/total-{index:02d}.bin", moderately_compressible)
+                for index in range(17)
+            ],
+            name="total-expansion.zip",
+            compression=zipfile.ZIP_DEFLATED,
+        )
+        high_ratio = self.write_zip(
+            [("plugins/ca-codex/agents/high-ratio.bin", b"z" * (1024 * 1024))],
+            name="high-ratio.zip",
+            compression=zipfile.ZIP_DEFLATED,
+        )
+
+        self.assertGreater(archive_bytes.stat().st_size, 8 * 1024 * 1024)
+        with zipfile.ZipFile(entry_count) as archive:
+            self.assertEqual(len(archive.infolist()), 1025)
+        self.assertEqual(len(moderately_compressible), 2 * 1024 * 1024)
+        self.assertGreater(17 * len(moderately_compressible), 32 * 1024 * 1024)
+        with zipfile.ZipFile(high_ratio) as archive:
+            ratio_entry = archive.infolist()[0]
+            self.assertGreater(ratio_entry.file_size / ratio_entry.compress_size, 100)
+
+        for label, path in {
+            "archive bytes": archive_bytes,
+            "entry count": entry_count,
+            "per-entry expansion": per_entry,
+            "total expansion": total_expansion,
+            "compression ratio": high_ratio,
+        }.items():
+            with self.subTest(label=label), self.assertRaises(ValueError):
+                self.checker._candidate_package_files(path)
 
     def test_rejects_windows_ambiguous_archive_paths(self):
         for label, additions in {
@@ -3205,6 +3337,17 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
             "file directory collision": [
                 ("plugins/ca-codex/agents/collision", "file\n"),
                 ("plugins/ca-codex/agents/collision/child.md", "# child\n"),
+            ],
+            "explicit directory case collision": [
+                ("plugins/ca-codex/Agents/", b""),
+                ("plugins/ca-codex/agents/", b""),
+            ],
+            "explicit directory unicode collision": [
+                ("plugins/ca-codex/agents/é/", b""),
+                ("plugins/ca-codex/agents/e\u0301/", b""),
+            ],
+            "explicit directory file collision": [
+                ("plugins/ca-codex/agents/probe.md/", b""),
             ],
         }.items():
             with self.subTest(label=label):

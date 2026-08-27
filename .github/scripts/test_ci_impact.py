@@ -783,6 +783,14 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertLess(archive_check, desktop_probe)
         self.assertIn("persist-credentials: false", workflow)
         self.assertIn("git -C trusted archive --format=zip", workflow)
+        self.assertEqual(
+            workflow.count("EXPECTED_ARCHIVE_SHA256: ${{ inputs.candidate_archive_sha256 }}"),
+            3,
+        )
+        self.assertIn(
+            "candidate_archive_sha256 = $env:EXPECTED_ARCHIVE_SHA256",
+            workflow,
+        )
         self.assertIn("refs/pull/$PullRequest/head", workflow)
         self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
         self.assertIn("actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6", workflow)

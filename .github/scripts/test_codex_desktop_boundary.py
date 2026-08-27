@@ -9,9 +9,11 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import tempfile
 import unittest
+import zipfile
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -115,6 +117,54 @@ def run_candidate_surface_fixture(fixture: dict) -> subprocess.CompletedProcess[
             timeout=30,
             check=False,
         )
+
+
+def run_archive_extraction_fixture(
+    archive: Path,
+    destination: Path,
+    executable: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    environment = os.environ.copy()
+    environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
+    shell = executable or powershell()
+    if Path(shell).name.casefold() == "powershell.exe":
+        # A pwsh parent exports its own module path, which masks the inbox
+        # Windows PowerShell modules instead of representing the runner.
+        for name in tuple(environment):
+            if name.casefold() == "psmodulepath":
+                environment.pop(name)
+    return subprocess.run(
+        [
+            shell, "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
+            str(BROKER), "-ArchiveExtractionFixturePath", str(archive),
+            "-ArchiveExtractionDestination", str(destination),
+            "-ContractPath", str(CONTRACT),
+        ],
+        cwd=REPO_ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+
+
+def run_candidate_metadata_fixture(package_root: Path) -> subprocess.CompletedProcess[str]:
+    environment = os.environ.copy()
+    environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
+    return subprocess.run(
+        [
+            powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
+            str(BROKER), "-CandidateMetadataFixturePath", str(package_root),
+            "-ContractPath", str(CONTRACT),
+        ],
+        cwd=REPO_ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
 
 
 class DesktopBoundaryContractTest(unittest.TestCase):
@@ -754,12 +804,32 @@ class DesktopBoundaryContractTest(unittest.TestCase):
 
     def test_candidate_package_has_exact_inert_hook_inventory_during_desktop_proof(self):
         plugin_root = REPO_ROOT / "plugins" / "ca-codex"
+        ignored_runtime_artifact = (
+            plugin_root / "hooks" / "__pycache__" / "desktop-proof-regression.pyc"
+        )
+        ignored_runtime_artifact.parent.mkdir(parents=True, exist_ok=True)
+        ignored_runtime_artifact.write_bytes(b"ignored runtime artifact")
+        self.addCleanup(ignored_runtime_artifact.unlink, missing_ok=True)
         manifest = json.loads(
             (plugin_root / ".codex-plugin" / "plugin.json").read_text(
                 encoding="utf-8"
             )
         )
         hooks_manifest_text = (plugin_root / "hooks" / "hooks.json").read_text(encoding="utf-8")
+        tracked = subprocess.run(
+            ["git", "ls-files", "-z", "--", "plugins/ca-codex"],
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(tracked.returncode, 0, tracked.stderr)
+        plugin_prefix = "plugins/ca-codex/"
+        tracked_plugin_paths = sorted(
+            path.removeprefix(plugin_prefix)
+            for path in tracked.stdout.split("\0")
+            if path.startswith(plugin_prefix)
+        )
 
         def mutate_hooks(value: dict, callback) -> None:
             payload = json.loads(value["hooks_manifest_text"])
@@ -770,11 +840,7 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "schema_version": 1,
             "manifest": manifest,
             "hooks_manifest_text": hooks_manifest_text,
-            "paths": sorted(
-                path.relative_to(plugin_root).as_posix()
-                for path in plugin_root.rglob("*")
-                if path.is_file()
-            ),
+            "paths": tracked_plugin_paths,
         }
         success = run_candidate_surface_fixture(fixture)
         self.assertEqual(success.returncode, 0, success.stdout + success.stderr)
@@ -806,6 +872,189 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 mutate(changed)
                 failed = run_candidate_surface_fixture(changed)
                 self.assertNotEqual(failed.returncode, 0)
+
+    def test_candidate_archive_extraction_is_bounded_before_writes(self):
+        """ARC-01: the privileged extractor enforces every bound on real ZIPs."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+
+            def write_archive(name, entries, compression=zipfile.ZIP_STORED):
+                path = root / name
+                with zipfile.ZipFile(path, "w", compression=compression) as archive:
+                    for entry_name, content in entries:
+                        archive.writestr(entry_name, content)
+                return path
+
+            legitimate = write_archive(
+                "legitimate.zip",
+                [
+                    ("plugins/ca-codex/.codex-plugin/plugin.json", b'{"name":"ca-codex"}'),
+                    ("plugins/ca-codex/skills/probe/SKILL.md", b"# Probe\n"),
+                ],
+            )
+            legitimate_destination = root / "legitimate-extracted"
+            success = run_archive_extraction_fixture(legitimate, legitimate_destination)
+            self.assertEqual(success.returncode, 0, success.stdout + success.stderr)
+            self.assertEqual(
+                json.loads(success.stdout),
+                {"entry_count": 2, "file_count": 2, "total_uncompressed_bytes": 27},
+            )
+            self.assertEqual(
+                (legitimate_destination / ".codex-plugin" / "plugin.json").read_bytes(),
+                b'{"name":"ca-codex"}',
+            )
+            self.assertEqual(
+                (legitimate_destination / "skills" / "probe" / "SKILL.md").read_bytes(),
+                b"# Probe\n",
+            )
+            broker_source = BROKER.read_text(encoding="utf-8")
+            self.assertIn(
+                "$hostPluginRoot = Join-Path $hostMarketplace 'plugins\\ca-codex'",
+                broker_source,
+            )
+            self.assertIn(
+                "-DestinationPath $hostPluginRoot -Contract $contract -ExpectedSha256 ([string]$request.candidate_archive_sha256)",
+                broker_source,
+            )
+            self.assertIn(
+                "-LiteralPath $hostMarketplace -Destination $guestRunRoot -Recurse -Force",
+                broker_source,
+            )
+            windows_powershell = shutil.which("powershell")
+            if windows_powershell:
+                legacy_success = run_archive_extraction_fixture(
+                    legitimate,
+                    root / "legacy-extracted",
+                    executable=windows_powershell,
+                )
+                self.assertEqual(
+                    legacy_success.returncode,
+                    0,
+                    legacy_success.stdout + legacy_success.stderr,
+                )
+
+            moderately_compressible = b"".join(
+                os.urandom(32 * 1024) * 8 for _ in range(8)
+            )
+            symlink = zipfile.ZipInfo("plugins/ca-codex/agents/link.md")
+            symlink.create_system = 3
+            symlink.external_attr = (stat.S_IFLNK | 0o777) << 16
+            hostile = {
+                "archive bytes": write_archive(
+                    "archive-bytes.zip",
+                    [
+                        (f"plugins/ca-codex/agents/archive-{index}.bin", os.urandom(1800 * 1024))
+                        for index in range(5)
+                    ],
+                ),
+                "entry count": write_archive(
+                    "entry-count.zip",
+                    [
+                        (f"plugins/ca-codex/agents/entry-{index:04d}.md", b"# entry\n")
+                        for index in range(1025)
+                    ],
+                ),
+                "per-entry expansion": write_archive(
+                    "per-entry.zip",
+                    [("plugins/ca-codex/agents/oversized.bin", b"x" * (2 * 1024 * 1024 + 1))],
+                ),
+                "total expansion": write_archive(
+                    "total-expansion.zip",
+                    [
+                        (f"plugins/ca-codex/agents/total-{index:02d}.bin", moderately_compressible)
+                        for index in range(17)
+                    ],
+                    zipfile.ZIP_DEFLATED,
+                ),
+                "compression ratio": write_archive(
+                    "high-ratio.zip",
+                    [("plugins/ca-codex/agents/high-ratio.bin", b"z" * (1024 * 1024))],
+                    zipfile.ZIP_DEFLATED,
+                ),
+                "late outside-prefix entry": write_archive(
+                    "late-outside-prefix.zip",
+                    [
+                        ("plugins/ca-codex/agents/first.md", b"must not be written\n"),
+                        ("outside/late.md", b"invalid\n"),
+                    ],
+                ),
+                "path traversal": write_archive(
+                    "path-traversal.zip",
+                    [("plugins/ca-codex/../escape.md", b"invalid\n")],
+                ),
+                "Windows case collision": write_archive(
+                    "case-collision.zip",
+                    [
+                        ("plugins/ca-codex/agents/Probe.md", b"one\n"),
+                        ("plugins/ca-codex/agents/probe.md", b"two\n"),
+                    ],
+                ),
+                "explicit directory collision": write_archive(
+                    "directory-collision.zip",
+                    [
+                        ("plugins/ca-codex/Agents/", b""),
+                        ("plugins/ca-codex/agents/", b""),
+                    ],
+                ),
+                "file-directory prefix collision": write_archive(
+                    "prefix-collision.zip",
+                    [
+                        ("plugins/ca-codex/agents", b"file\n"),
+                        ("plugins/ca-codex/agents/probe.md", b"invalid\n"),
+                    ],
+                ),
+                "symbolic link": write_archive(
+                    "symbolic-link.zip",
+                    [(symlink, b"target.md")],
+                ),
+            }
+            for index, (label, archive) in enumerate(hostile.items()):
+                with self.subTest(label=label):
+                    destination = root / f"rejected-{index}"
+                    failed = run_archive_extraction_fixture(archive, destination)
+                    self.assertNotEqual(failed.returncode, 0)
+                    self.assertFalse(destination.exists())
+
+    def test_candidate_metadata_is_derived_only_after_digest_bound_extraction(self):
+        """ARC-01: receipt/install metadata comes from the protected extracted tree."""
+        with tempfile.TemporaryDirectory() as temporary:
+            package_root = Path(temporary) / "ca-codex"
+            tracked = subprocess.run(
+                ["git", "ls-files", "-z", "--", "plugins/ca-codex"],
+                cwd=REPO_ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(tracked.returncode, 0, tracked.stderr)
+            prefix = "plugins/ca-codex/"
+            for source_name in tracked.stdout.split("\0"):
+                if not source_name.startswith(prefix):
+                    continue
+                relative = source_name.removeprefix(prefix)
+                source = REPO_ROOT / source_name
+                target = package_root / Path(relative)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, target)
+
+            metadata = run_candidate_metadata_fixture(package_root)
+            self.assertEqual(metadata.returncode, 0, metadata.stdout + metadata.stderr)
+            observed = json.loads(metadata.stdout)
+            manifest = json.loads(
+                (package_root / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(observed["Version"], manifest["version"])
+            self.assertRegex(observed["ResourceSha256"], r"^[0-9a-f]{64}$")
+
+        broker_source = BROKER.read_text(encoding="utf-8")
+        extraction = broker_source.index(
+            "$archiveEvidence = Expand-BoundedCandidateArchive"
+        )
+        metadata_read = broker_source.index(
+            "$candidate = Get-CandidateMetadata $hostPluginRoot"
+        )
+        self.assertLess(extraction, metadata_read)
+        self.assertNotIn("Get-CandidateMetadata $archive", broker_source)
 
     def _route_fixture(self, root: Path) -> dict:
         route = self.contract["route_corpus"]
