@@ -91,6 +91,24 @@ function Assert-HexSha256([object]$Value, [string]$Label) {
     }
 }
 
+function Convert-WindowsEvidencePath([string]$Value) {
+    if ([string]::IsNullOrWhiteSpace($Value) -or $Value.IndexOf([char]0) -ge 0) {
+        throw 'Windows evidence path is empty or invalid'
+    }
+    $normalized = $Value.Replace('/','\')
+    if ($normalized -cnotmatch '^[A-Za-z]:\\') {
+        throw 'Windows evidence path is not drive-rooted'
+    }
+    $components = @($normalized.Substring(3).Split('\'))
+    if ($components.Count -eq 0 -or @($components | Where-Object {
+        [string]::IsNullOrEmpty($_) -or $_ -in @('.','..') -or
+        $_.EndsWith(' ') -or $_.EndsWith('.') -or $_ -match '[<>:"|?*\x00-\x1f]'
+    }).Count) {
+        throw 'Windows evidence path is not canonical'
+    }
+    $normalized.Substring(0,3) + ($components -join '\')
+}
+
 function Assert-PermissionProbeEvidence {
     param([Parameter(Mandatory)]$Evidence)
     if ($Evidence.schema_version -ne 1) { throw 'permission probe schema is invalid' }
@@ -126,8 +144,8 @@ function Assert-PermissionProbeEvidence {
 
 function Test-ReusableStatePath {
     param([Parameter(Mandatory)][string]$LiteralPath, [Parameter(Mandatory)][string]$Profile)
-    $codexRoot = [IO.Path]::GetFullPath((Join-Path $Profile '.codex')).TrimEnd('\')
-    $path = [IO.Path]::GetFullPath($LiteralPath)
+    $codexRoot = (Convert-WindowsEvidencePath $Profile).TrimEnd('\') + '\.codex'
+    $path = Convert-WindowsEvidencePath $LiteralPath
     if (-not $path.StartsWith($codexRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { return $false }
     $relative = $path.Substring($codexRoot.Length + 1).Replace('/', '\')
     $relative -match '^(?i:auth\.json(?:\..+)?|\.credentials\.json(?:\..+)?|credentials\.json(?:\..+)?|(?:credentials|sessions|tokens)(?:\\|$))'
@@ -148,13 +166,13 @@ function Measure-PostAuthInventory {
         $doctorProperties.Count -eq 0 -or $invalidDoctorChecks.Count -or $missingRequiredChecks.Count) {
         throw 'post-auth Codex doctor did not complete with an all-ok diagnostic set'
     }
-    $profile = [IO.Path]::GetFullPath([string]$InputValue.profile)
+    $profile = Convert-WindowsEvidencePath ([string]$InputValue.profile)
     if ([string]$InputValue.config_text -cnotmatch '(?m)^\s*cli_auth_credentials_store\s*=\s*["'']file["'']\s*$') {
         throw 'Codex auth storage is not explicitly file-only'
     }
     $reusable = @($InputValue.files | Where-Object { Test-ReusableStatePath -LiteralPath ([string]$_) -Profile $profile })
-    $expectedAuth = [IO.Path]::GetFullPath((Join-Path (Join-Path $profile '.codex') 'auth.json'))
-    if ($reusable.Count -ne 1 -or [IO.Path]::GetFullPath([string]$reusable[0]) -cne $expectedAuth) {
+    $expectedAuth = $profile.TrimEnd('\') + '\.codex\auth.json'
+    if ($reusable.Count -ne 1 -or (Convert-WindowsEvidencePath ([string]$reusable[0])) -cne $expectedAuth) {
         throw 'post-auth reusable state is not exactly one auth.json file'
     }
     $targets = @($InputValue.credential_targets | Where-Object { [string]$_ -match '(?i)(codex|openai|chatgpt)' })
@@ -249,7 +267,7 @@ function Convert-Observation {
     })
     if ($dispatches.Count -ne 1) { throw 'canonical desktop thread lacks one completed coverage-auditor dispatch' }
     $authIsolation = $InputValue.auth_isolation
-    $canaryPath = [IO.Path]::GetFullPath([string]$authIsolation.canary_path)
+    $canaryPath = Convert-WindowsEvidencePath ([string]$authIsolation.canary_path)
     $canaryLeaf = [string]$Contract.authentication.denial_canary_filename
     if (-not $canaryPath.EndsWith("\.codex\$canaryLeaf", [StringComparison]::OrdinalIgnoreCase)) {
         throw 'auth-isolation canary is outside the disposable Codex profile'
@@ -314,7 +332,7 @@ function Convert-Observation {
         driver_process_command_line_sha256 = [string]$InputValue.driver_process.command_line_sha256
         driver_process_started_at = $driverStarted.ToString('o')
         driver_script_sha256 = [string]$InputValue.driver_process.script_sha256
-        driver_script_path = [IO.Path]::GetFullPath([string]$InputValue.driver_process.script_path)
+        driver_script_path = Convert-WindowsEvidencePath ([string]$InputValue.driver_process.script_path)
         runtime_process_started_at = $runtimeStarted.ToString('o')
         candidate_activated_at = $candidateActivated.ToString('o')
         request_submitted_at = $requestSubmitted.ToString('o')

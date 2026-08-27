@@ -3,12 +3,12 @@
   "broker": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopCandidate.ps1",
-    "sha256": "59ea51b3b85039057cd9244fe1dec6c2443c36c46ea36dd7fdec2f62c3f4c6ba"
+    "sha256": "0c31a080ba1173c075a0155ca14900d4605d521c0f9aea872df1eb462d64a72e"
   },
   "driver": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopUiDriver.ps1",
-    "sha256": "d16d88d572b29007b27b2f3be9525b423946d80ea34f9e28a907095ff89ec130"
+    "sha256": "8fba17327a667911b891ffd7e6c132bf1a55221525ba705ae1d9188bce3db0c8"
   },
   "probe": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",

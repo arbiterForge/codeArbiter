@@ -650,6 +650,12 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "canary path mismatch": lambda value: value["auth_isolation"].update(
                 canary_path=r"C:\Users\proof\desktop-proof-auth-isolation-canary.txt"
             ),
+            "canary path contains a normalizable traversal": lambda value: value["auth_isolation"].update(
+                canary_path=(
+                    "C:\\Users\\proof\\scratch\\..\\.codex\\"
+                    "desktop-proof-auth-isolation-canary.txt"
+                )
+            ),
             "dispatch precedes request": lambda value: value["thread"].update(
                 dispatch_completed_at="2026-08-26T11:59:58Z"
             ),

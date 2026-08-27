@@ -557,13 +557,13 @@ function Get-CandidateMetadata([string]$PackageRoot, [string]$Checker) {
     $utf8 = [Text.UTF8Encoding]::new($false,$true)
     $manifest = $utf8.GetString([IO.File]::ReadAllBytes($manifestPath)) | ConvertFrom-Json
     $hooksManifestText = $utf8.GetString([IO.File]::ReadAllBytes($hooksPath))
-    $rootPrefix = $root.TrimEnd('\') + '\'
+    $rootPrefix = $root.TrimEnd('\','/') + [IO.Path]::DirectorySeparatorChar
     $paths = @([IO.Directory]::EnumerateFiles($root,'*',[IO.SearchOption]::AllDirectories) | ForEach-Object {
         $full = [IO.Path]::GetFullPath($_)
         if (-not $full.StartsWith($rootPrefix,[StringComparison]::OrdinalIgnoreCase)) {
             throw 'validated candidate metadata path escaped the plugin root'
         }
-        $full.Substring($rootPrefix.Length).Replace('\','/')
+        $full.Substring($rootPrefix.Length).Replace('\','/').Replace([IO.Path]::DirectorySeparatorChar.ToString(),'/')
     })
     $null = Assert-BoundedCandidateSurface -Manifest $manifest -HooksManifestText $hooksManifestText -Paths $paths
     [pscustomobject]@{ Version = $manifest.version; ResourceSha256 = $validated.sha256 }
