@@ -10,6 +10,7 @@ import { generateAcademy } from "./generate-academy";
 const fixtureRoots: string[] = [];
 const academyOverviewComponent = new URL("../src/components/AcademyOverview.astro", import.meta.url);
 const siteRoot = fileURLToPath(new URL("..", import.meta.url));
+const emittedScriptPattern = /<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi;
 const requiredTracks = [
   ["foundations", "Foundation"],
   ["practitioner", "Practitioner"],
@@ -267,7 +268,7 @@ describe("generateAcademy", () => {
       /(<a\b(?=[^>]*class="[^"]*\bacademy-overview__all-lessons\b[^"]*")[^>]*>)([\s\S]*?)<\/a>/,
     );
     const revealLabelMarkup = revealControlMarkup?.[2].match(/(<span\b[^>]*>)([^<]*)<\/span>/);
-    const pageScript = [...academyHtml.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+    const pageScript = [...academyHtml.matchAll(emittedScriptPattern)]
       .map((match) => match[1])
       .find((script) => script.includes("data-academy-show-all"));
     expect(revealControlMarkup).not.toBeNull();
@@ -351,6 +352,14 @@ describe("generateAcademy", () => {
     expect(lessonPage).toContain("Continue only after the prepared attempt is ready.");
     expect(lessonPage).toContain("[Academy Home](/academy/#setup)");
     expect(lessonPage).toContain("[F02](/academy/f02-orient-to-state/)");
+  });
+
+  it("extracts scripts when HTML uses uppercase SCRIPT tags", () => {
+    const uppercaseScript = "<SCRIPT>document.body.dataset.ready = \"true\";</SCRIPT>";
+
+    expect([...uppercaseScript.matchAll(emittedScriptPattern)].map((match) => match[1])).toEqual([
+      'document.body.dataset.ready = "true";',
+    ]);
   });
 
   it("does not emit a route for a lesson absent from the preview manifest", () => {
