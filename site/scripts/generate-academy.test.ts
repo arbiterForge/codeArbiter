@@ -10,6 +10,11 @@ import { generateAcademy } from "./generate-academy";
 const fixtureRoots: string[] = [];
 const academyOverviewComponent = new URL("../src/components/AcademyOverview.astro", import.meta.url);
 const siteRoot = fileURLToPath(new URL("..", import.meta.url));
+const requiredTracks = [
+  ["foundations", "Foundation"],
+  ["practitioner", "Practitioner"],
+  ["power-user", "Power user"],
+] as const;
 
 const publicSource: AcademySource = {
   release: "preview-0.30",
@@ -251,14 +256,14 @@ describe("generateAcademy", () => {
     expect(listGeneratedRoutes(docsRoot)).not.toContain("academy/U99-private.mdx");
   });
 
-  it("rejects landing data missing any required Academy track", () => {
+  it.each(requiredTracks)("rejects landing data missing the %s Academy track", (track, label) => {
     const { docsRoot, generatedRoot } = createOutputRoots();
-    const withoutPractitioner: AcademySource = {
+    const withoutRequiredTrack: AcademySource = {
       ...publicSource,
-      lessons: publicSource.lessons.filter((lesson) => lesson.track !== "practitioner"),
+      lessons: publicSource.lessons.filter((lesson) => lesson.track !== track),
     };
 
-    expect(() => generateAcademy(withoutPractitioner, docsRoot, generatedRoot)).toThrow(/Practitioner/);
+    expect(() => generateAcademy(withoutRequiredTrack, docsRoot, generatedRoot)).toThrow(new RegExp(label));
   });
 
   it("preserves manifest ordering in typed content and sidebar data", () => {

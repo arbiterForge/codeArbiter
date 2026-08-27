@@ -8,6 +8,12 @@ const HOME_SETUP_ANCHOR = "complete-these-five-setup-steps-before-f01";
 const HOME_SETUP_HEADING = "Complete these five setup steps before F01";
 const HOME_STEP = /^(\d+)\. \[([^\]]+)\]\(#([a-z0-9]+(?:-[a-z0-9]+)*)\)\.$/;
 const NUMBERED_ITEM = /^\d+\.\s/;
+const ACTION_ACTORS = ["learner", "academy", "agent"] as const;
+const ACTION_SURFACES = ["browser", "native-terminal", "academy-console", "active-harness"] as const;
+const VARIANT_SURFACES = ["browser", "native-terminal", "harness", "academy-console"] as const;
+const OPERATING_SYSTEMS = ["all", "windows", "macos", "linux"] as const;
+const HOSTS = ["none", "claude-code", "codex", "pi"] as const;
+const LANGUAGES = ["none", "powershell", "sh", "text", "codearbiter"] as const;
 
 export type AcademyLessonSource = {
   id: string;
@@ -31,10 +37,27 @@ export type AcademyHomeActionSource = {
   instruction: string;
   rationale: string | null;
   resources: Array<{ label: string; href: string }>;
-  variants: unknown[];
+  variants: AcademyCommandVariantSource[];
   expected_result: string;
   recovery: string;
   evidence: string | null;
+};
+
+export type AcademyCommandVariantSource = {
+  id: string;
+  surface: typeof VARIANT_SURFACES[number];
+  operating_system: typeof OPERATING_SYSTEMS[number];
+  host: typeof HOSTS[number];
+  language: typeof LANGUAGES[number];
+  command: string;
+  copy: boolean;
+};
+
+type AcademyActionManifestSource = {
+  schema_version: 1;
+  lesson_contract_version: 1;
+  document_id: string;
+  actions: AcademyHomeActionSource[];
 };
 
 export type AcademyHomeSource = {
@@ -68,22 +91,45 @@ function isApprovedResourceHref(value: unknown): value is string {
   }
 }
 
-function validateActionResources(actions: unknown, lessonId: string): void {
-  if (typeof actions !== "object" || actions === null || !Array.isArray((actions as { actions?: unknown }).actions)) {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isOneOf<T extends string>(value: unknown, allowed: readonly T[]): value is T {
+  return typeof value === "string" && allowed.some((candidate) => candidate === value);
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
+}
+
+function validateActionManifest(actions: unknown, lessonId: string): asserts actions is AcademyActionManifestSource {
+  if (!isRecord(actions) || actions.schema_version !== 1 || actions.lesson_contract_version !== 1 ||
+      actions.document_id !== lessonId || !Array.isArray(actions.actions)) {
     throw new Error(`Academy action manifest must contain actions for ${lessonId}`);
   }
-  for (const action of (actions as { actions: unknown[] }).actions) {
-    if (typeof action !== "object" || action === null) {
+  for (const action of actions.actions) {
+    if (!isRecord(action) || typeof action.id !== "string" || !Number.isInteger(action.sequence) ||
+        typeof action.title !== "string" || !isOneOf(action.actor, ACTION_ACTORS) ||
+        (action.surface !== null && !isOneOf(action.surface, ACTION_SURFACES)) ||
+        typeof action.instruction !== "string" || !isNullableString(action.rationale) ||
+        !Array.isArray(action.resources) || !Array.isArray(action.variants) ||
+        typeof action.expected_result !== "string" || typeof action.recovery !== "string" ||
+        !isNullableString(action.evidence)) {
       throw new Error(`Academy action manifest contains an invalid action for ${lessonId}`);
     }
-    const resources = (action as { resources?: unknown }).resources;
-    if (resources === undefined) continue;
-    if (!Array.isArray(resources)) {
-      throw new Error(`Academy action resources must be an array for ${lessonId}`);
-    }
-    for (const resource of resources) {
-      if (typeof resource !== "object" || resource === null || !isApprovedResourceHref((resource as { href?: unknown }).href)) {
+    for (const resource of action.resources) {
+      if (!isRecord(resource) || typeof resource.label !== "string" || !isApprovedResourceHref(resource.href)) {
         throw new Error(`Academy action resource URL must be HTTPS or relative for ${lessonId}`);
+      }
+    }
+    for (const variant of action.variants) {
+      if (!isRecord(variant) || typeof variant.id !== "string" ||
+          !isOneOf(variant.surface, VARIANT_SURFACES) ||
+          !isOneOf(variant.operating_system, OPERATING_SYSTEMS) ||
+          !isOneOf(variant.host, HOSTS) || !isOneOf(variant.language, LANGUAGES) ||
+          typeof variant.command !== "string" || typeof variant.copy !== "boolean") {
+        throw new Error(`Academy action manifest contains an invalid command variant for ${lessonId}`);
       }
     }
   }
@@ -138,28 +184,13 @@ function loadHomeActions(sourceRoot: string): Map<string, AcademyHomeActionSourc
   } catch (error) {
     throw new Error("Academy Home action manifest is required", { cause: error });
   }
-  if (typeof manifest !== "object" || manifest === null ||
-      (manifest as { document_id?: unknown }).document_id !== "home" ||
-      !Array.isArray((manifest as { actions?: unknown }).actions)) {
-    throw new Error("Academy Home action manifest has an invalid contract");
-  }
-  validateActionResources(manifest, "home");
+  validateActionManifest(manifest, "home");
   const actions = new Map<string, AcademyHomeActionSource>();
-  for (const candidate of (manifest as { actions: unknown[] }).actions) {
-    if (typeof candidate !== "object" || candidate === null) {
-      throw new Error("Academy Home action manifest contains an invalid action");
-    }
-    const action = candidate as Partial<AcademyHomeActionSource>;
-    if (typeof action.id !== "string" || !Number.isInteger(action.sequence) ||
-        typeof action.title !== "string" || typeof action.instruction !== "string" ||
-        !Array.isArray(action.resources) || !Array.isArray(action.variants) ||
-        typeof action.expected_result !== "string" || typeof action.recovery !== "string") {
-      throw new Error("Academy Home action manifest contains an incomplete action");
-    }
+  for (const action of manifest.actions) {
     if (actions.has(action.id)) {
       throw new Error(`Academy Home action manifest repeats ${action.id}`);
     }
-    actions.set(action.id, action as AcademyHomeActionSource);
+    actions.set(action.id, action);
   }
   return actions;
 }
@@ -258,7 +289,7 @@ export function loadAcademySource(root: string): AcademySource {
   const lessons = availableLabs.map((id) => {
     const track = trackFor(id);
     const actions = parseJson(sourcePath(sourceRoot, "academy", "actions", `${id}.json`));
-    validateActionResources(actions, id);
+    validateActionManifest(actions, id);
     return {
       id,
       track,

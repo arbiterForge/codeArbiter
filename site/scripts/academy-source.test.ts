@@ -1,14 +1,23 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadAcademySource } from "./academy-source";
 
 const fixtureRoots: string[] = [];
+const fixtureLessonIds = ["F01-fork-clone-doctor", "P01-practice", "U01-operate"] as const;
+
+const requiredTracks = [
+  ["Foundation", "F01-fork-clone-doctor"],
+  ["Practitioner", "P01-practice"],
+  ["Power user", "U01-operate"],
+] as const;
+
+type JsonRecord = Record<string, unknown>;
 
 function createFixture(
-  manifestLessons = ["F01-fork-clone-doctor", "P01-practice", "U01-operate"],
+  manifestLessons: readonly string[] = fixtureLessonIds,
   resourceHrefs: string[] = [],
 ): string {
   const root = mkdtempSync(join(tmpdir(), "academy-source-"));
@@ -83,15 +92,27 @@ function createFixture(
       })),
     }),
   );
-  for (const lessonId of ["F01-fork-clone-doctor", "P01-practice", "U01-operate"]) {
+  for (const lessonId of fixtureLessonIds) {
     writeFileSync(
       join(academyRoot, "actions", `${lessonId}.json`),
       JSON.stringify({
+        schema_version: 1,
+        lesson_contract_version: 1,
         document_id: lessonId,
         actions: lessonId === "F01-fork-clone-doctor"
           ? resourceHrefs.map((href, index) => ({
               id: `F01-resource-${index}`,
+              sequence: index + 1,
+              title: `F01 resource ${index}`,
+              actor: "learner",
+              surface: "browser",
+              instruction: `Open resource ${index}.`,
+              rationale: null,
               resources: [{ label: `Resource ${index}`, href }],
+              variants: [],
+              expected_result: `Resource ${index} opens.`,
+              recovery: `Recover resource ${index}.`,
+              evidence: null,
             }))
           : [],
       }),
@@ -115,6 +136,21 @@ function createFixture(
   ]);
 
   return root;
+}
+
+function mutateHomeActionManifest(fixtureRoot: string, mutate: (manifest: JsonRecord) => void): void {
+  const manifestPath = join(fixtureRoot, "academy-source", "academy", "actions", "home.json");
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as JsonRecord;
+  mutate(manifest);
+  writeFileSync(manifestPath, JSON.stringify(manifest));
+}
+
+function homeAction(manifest: JsonRecord, index = 0): JsonRecord {
+  return (manifest.actions as JsonRecord[])[index];
+}
+
+function firstHomeVariant(manifest: JsonRecord): JsonRecord {
+  return (homeAction(manifest, 1).variants as JsonRecord[])[0];
 }
 
 afterEach(() => {
@@ -171,10 +207,56 @@ describe("loadAcademySource", () => {
     expect(() => loadAcademySource(fixtureRoot)).toThrow(/Home action manifest/);
   });
 
-  it("rejects an inventory missing a required Academy track", () => {
-    const fixtureRoot = createFixture(["F01-fork-clone-doctor", "U01-operate"]);
+  it.each(requiredTracks)("rejects an inventory missing the %s track", (label, missingLessonId) => {
+    const fixtureRoot = createFixture(fixtureLessonIds.filter((id) => id !== missingLessonId));
 
-    expect(() => loadAcademySource(fixtureRoot)).toThrow(/Practitioner/);
+    expect(() => loadAcademySource(fixtureRoot)).toThrow(new RegExp(label));
+  });
+
+  it("rejects malformed fields before routing Academy actions", () => {
+    const malformedFields: Array<[string, (manifest: JsonRecord) => void]> = [
+      ["schema_version", (manifest) => { manifest.schema_version = 2; }],
+      ["lesson_contract_version", (manifest) => { manifest.lesson_contract_version = "1"; }],
+      ["document_id", (manifest) => { manifest.document_id = "F01-fork-clone-doctor"; }],
+      ["id", (manifest) => { homeAction(manifest).id = 1; }],
+      ["sequence", (manifest) => { homeAction(manifest).sequence = "1"; }],
+      ["title", (manifest) => { homeAction(manifest).title = 1; }],
+      ["actor", (manifest) => { homeAction(manifest).actor = "student"; }],
+      ["surface", (manifest) => { homeAction(manifest).surface = "terminal"; }],
+      ["instruction", (manifest) => { homeAction(manifest).instruction = 1; }],
+      ["rationale", (manifest) => { homeAction(manifest).rationale = false; }],
+      ["resources", (manifest) => { homeAction(manifest).resources = {}; }],
+      ["resource.label", (manifest) => {
+        ((homeAction(manifest).resources as JsonRecord[])[0]).label = 7;
+      }],
+      ["resource.href", (manifest) => {
+        ((homeAction(manifest).resources as JsonRecord[])[0]).href = "javascript:alert(1)";
+      }],
+      ["variants", (manifest) => { homeAction(manifest, 1).variants = {}; }],
+      ["variant.id", (manifest) => { firstHomeVariant(manifest).id = 1; }],
+      ["variant.surface", (manifest) => { firstHomeVariant(manifest).surface = "terminal"; }],
+      ["variant.operating_system", (manifest) => { firstHomeVariant(manifest).operating_system = "bsd"; }],
+      ["variant.host", (manifest) => { firstHomeVariant(manifest).host = "chatgpt"; }],
+      ["variant.language", (manifest) => { firstHomeVariant(manifest).language = "bash"; }],
+      ["variant.command", (manifest) => { firstHomeVariant(manifest).command = 1; }],
+      ["variant.copy", (manifest) => { firstHomeVariant(manifest).copy = "yes"; }],
+      ["expected_result", (manifest) => { homeAction(manifest).expected_result = 1; }],
+      ["recovery", (manifest) => { homeAction(manifest).recovery = 1; }],
+      ["evidence", (manifest) => { homeAction(manifest).evidence = false; }],
+    ];
+
+    const acceptedMalformedFields = malformedFields.flatMap(([field, mutate]) => {
+      const fixtureRoot = createFixture();
+      mutateHomeActionManifest(fixtureRoot, mutate);
+      try {
+        loadAcademySource(fixtureRoot);
+        return [field];
+      } catch {
+        return [];
+      }
+    });
+
+    expect(acceptedMalformedFields).toEqual([]);
   });
 
   it("rejects a missing Home guide", () => {
