@@ -1,12 +1,15 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { AcademySource } from "./academy-source";
 import { generateAcademy } from "./generate-academy";
 
 const fixtureRoots: string[] = [];
 const academyOverviewComponent = new URL("../src/components/AcademyOverview.astro", import.meta.url);
+const siteRoot = fileURLToPath(new URL("..", import.meta.url));
 
 const publicSource: AcademySource = {
   release: "preview-0.30",
@@ -101,6 +104,34 @@ afterEach(() => {
 });
 
 describe("generateAcademy", () => {
+  it("builds one accessible Academy overview from the canonical public inventory", () => {
+    const npmCli = process.env.npm_execpath;
+    if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
+
+    execFileSync(process.execPath, [npmCli, "run", "build"], {
+      cwd: siteRoot,
+      stdio: "pipe",
+    });
+
+    const academyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
+    const generatedContent = readFileSync(
+      join(siteRoot, "src", "generated", "academy-content.ts"),
+      "utf8",
+    );
+    const publicLessonIds = [...generatedContent.matchAll(/\n    \{\n      id: "([^"]+)",\n      track:/g)]
+      .map((match) => match[1]);
+
+    expect(academyHtml.match(/<h1\b/g)).toHaveLength(1);
+    expect(academyHtml.match(/id="complete-these-five-setup-steps-before-f01"/g)).toHaveLength(1);
+    expect(academyHtml).not.toContain("ca-page-context");
+    expect(publicLessonIds.length).toBeGreaterThan(0);
+    for (const lessonId of publicLessonIds) {
+      expect(academyHtml.match(new RegExp(`data-academy-lesson="${lessonId}"`, "g")) ?? []).toHaveLength(1);
+    }
+    expect(academyHtml).toContain('data-academy-show-all aria-controls="track-foundations-more track-practitioner-more track-power-user-more"');
+    expect(academyHtml.match(/<details[^>]+id="track-(?:foundations|practitioner|power-user)-more"/g)).toHaveLength(3);
+  }, 30_000);
+
   it("emits one Academy index plus one MDX route for every public lab", () => {
     const { docsRoot, generatedRoot } = createOutputRoots();
 

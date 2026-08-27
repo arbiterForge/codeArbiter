@@ -39,6 +39,7 @@ if (!firstLesson) {
 }
 
 const lessonHref = (id: string) => `/academy/${id.toLowerCase()}/`;
+const disclosureIds = tracks.map((track) => `track-${track.id}-more`).join(" ");
 ---
 
 <div class="academy-overview">
@@ -115,7 +116,10 @@ const lessonHref = (id: string) => `/academy/${id.toLowerCase()}/`;
             <p>{track.lessons.length} lessons · {track.totalMinutes} minutes</p>
 
             {firstTrackLesson && (
-              <article class="academy-overview__lesson ca-panel">
+              <article
+                class="academy-overview__lesson ca-panel"
+                data-academy-lesson={firstTrackLesson.id}
+              >
                 <h4><a href={lessonHref(firstTrackLesson.id)}>{firstTrackLesson.guide.title}</a></h4>
                 <p>{firstTrackLesson.guide.outcome}</p>
                 <p>{firstTrackLesson.guide.estimatedMinutes} minutes</p>
@@ -123,11 +127,11 @@ const lessonHref = (id: string) => `/academy/${id.toLowerCase()}/`;
             )}
 
             {remainingLessons.length > 0 && (
-              <details class="academy-overview__more">
+              <details class="academy-overview__more" id={`track-${track.id}-more`}>
                 <summary>Show {remainingLessons.length} more {track.label} lessons</summary>
                 <div class="academy-overview__lesson-list">
                   {remainingLessons.map((lesson) => (
-                    <article class="academy-overview__lesson ca-panel">
+                    <article class="academy-overview__lesson ca-panel" data-academy-lesson={lesson.id}>
                       <h4><a href={lessonHref(lesson.id)}>{lesson.guide.title}</a></h4>
                       <p>{lesson.guide.outcome}</p>
                       <p>{lesson.guide.estimatedMinutes} minutes</p>
@@ -141,8 +145,14 @@ const lessonHref = (id: string) => `/academy/${id.toLowerCase()}/`;
       })}
     </div>
 
-    <a class="ca-text-link academy-overview__all-lessons" href="#academy-curriculum">
-      View all lessons <span aria-hidden="true">↑</span>
+    <a
+      class="ca-text-link academy-overview__all-lessons"
+      href="#academy-curriculum"
+      data-academy-show-all
+      aria-controls={disclosureIds}
+      aria-expanded="false"
+    >
+      <span data-academy-show-all-label>View all lessons</span> <span aria-hidden="true">↓</span>
     </a>
   </section>
 
@@ -156,3 +166,24 @@ const lessonHref = (id: string) => `/academy/${id.toLowerCase()}/`;
     </ol>
   </section>
 </div>
+
+<script>
+  const showAll = document.querySelector<HTMLAnchorElement>("[data-academy-show-all]");
+  const disclosures = [
+    ...document.querySelectorAll<HTMLDetailsElement>(".academy-overview__more"),
+  ];
+
+  const syncShowAllState = () => {
+    if (!showAll) return;
+    const allOpen = disclosures.every((details) => details.open);
+    showAll.setAttribute("aria-expanded", String(allOpen));
+    const label = showAll.querySelector<HTMLElement>("[data-academy-show-all-label]");
+    if (label) label.textContent = allOpen ? "All lessons shown" : "View all lessons";
+  };
+
+  showAll?.addEventListener("click", () => {
+    for (const details of disclosures) details.open = true;
+    syncShowAllState();
+  });
+  for (const details of disclosures) details.addEventListener("toggle", syncShowAllState);
+</script>
