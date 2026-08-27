@@ -8,6 +8,15 @@ const styles = readFileSync(join(siteRoot, "src", "styles", "academy.css"), "utf
 const preferenceRule = styles.match(/\.academy-command-preferences \{([^}]*)\}/)?.[1] ?? "";
 
 describe("Academy command preference presentation", () => {
+  it("keeps setup cards at a readable width instead of forcing five columns", () => {
+    expect(styles).toMatch(
+      /\.academy-overview__setup-steps \{[^}]*grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, 14rem\), 1fr\)\);/,
+    );
+    expect(styles).not.toMatch(
+      /\.academy-overview__setup-steps\s*\{\s*grid-template-columns:\s*repeat\((?:1|2|5),/,
+    );
+  });
+
   it("keeps the setup explanation and choice groups in the original stacked hierarchy", () => {
     expect(component).toContain("Use your setup");
     expect(component).toContain("Choose an operating system or CodeArbiter host to focus every command example in this lesson. Your choices stay on this device.");
