@@ -2879,7 +2879,7 @@ def validate_desktop_boundary_contract(
     if candidate_surface != {
         "kind": "known-hook-paths-disabled",
         "hook_path_set_sha256": "d44b6fb94cf07035f3dc51da74c55d97c9ace63943854ba873bd943feb46dbfa",
-        "hooks_manifest_sha256": "2b12c7eb5e35bbbddf69e38a6f8966c21f3b43c87bddfd36a2b9c764a23a58fd",
+        "hooks_manifest_sha256": "b13fc7bc70569a0885ef6bbd1be553b983ce0daf95753d287a64edc846b0b9cf",
     }:
         errors.append("trusted desktop candidate surface contract is invalid")
     if contract.get("candidate_archive") != EXPECTED_CANDIDATE_ARCHIVE_LIMITS:

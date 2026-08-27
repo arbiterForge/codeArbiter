@@ -473,9 +473,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the trusted default-branch verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Check out the exact completed-run candidate as inert data
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+          path: candidate
           fetch-depth: 0
           persist-credentials: false
       - name: Download and verify the exact attested Codex candidate
@@ -483,12 +492,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          RECEIPT=docs/reports/codex-desktop-candidate-resolution.json
+          RECEIPT=candidate/docs/reports/codex-desktop-candidate-resolution.json
           CANDIDATE_COMMIT=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["candidate"]["source_commit"])' "$RECEIPT")
           RUN_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["workflow"]["run_id"])' "$RECEIPT")
           DEST="$RUNNER_TEMP/codex-desktop-candidate"
           gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "codex-desktop-candidate-transfer-$CANDIDATE_COMMIT" --dir "$DEST"
-          python3 .github/scripts/verify_codex_candidate_provenance.py --mode release \
+          python3 trusted/.github/scripts/verify_codex_candidate_provenance.py --mode release \
+            --repo candidate \
             --receipt "$RECEIPT" --final-ref ${{ github.event.workflow_run.head_sha }} \
             --candidate-archive "$DEST/ca-codex-candidate.zip" --json
 

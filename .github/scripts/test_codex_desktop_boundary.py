@@ -932,6 +932,9 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "root executable": lambda value: value["paths"].append("evil.exe"),
             "nested Python": lambda value: value["paths"].append("skills/ca-review/evil.py"),
             "new hook payload": lambda value: value["paths"].append("hooks/evil.py"),
+            "obsolete Claude hook root": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(
+                command=payload["hooks"]["SessionStart"][0]["hooks"][0]["command"].replace("${PLUGIN_ROOT}", "${CLAUDE_PLUGIN_ROOT}"),
+                commandWindows=payload["hooks"]["SessionStart"][0]["hooks"][0]["commandWindows"].replace("${PLUGIN_ROOT}", "${CLAUDE_PLUGIN_ROOT}"))),
             "undeclared hook command": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(
                 command='python3 "${CLAUDE_PLUGIN_ROOT}/hooks/evil.py"', commandWindows='python "${CLAUDE_PLUGIN_ROOT}/hooks/evil.py"')),
             "inline hook arguments": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(

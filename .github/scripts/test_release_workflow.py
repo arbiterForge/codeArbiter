@@ -142,6 +142,17 @@ def _jobs() -> dict:
     return workflow_jobs(_release())
 
 
+def _named_step(job: str, name: str) -> str:
+    """Return one named workflow step without borrowing evidence from siblings."""
+    match = re.search(
+        rf"(?ms)^      - name: {re.escape(name)}\n.*?(?=^      - |\Z)",
+        job,
+    )
+    if not match:
+        raise AssertionError(f"missing workflow step: {name}")
+    return match.group(0)
+
+
 def _job_if(block: str) -> str:
     """The job-level `if:` expression (two-space indent), '' when absent."""
     match = re.search(r"(?m)^    if:[ ]*(.+)$", block)
@@ -1279,6 +1290,44 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
         self.assertIn("--final-ref ${{ github.sha }}", manual)
         self.assertIn("ref: ${{ github.event.workflow_run.head_sha }}", automatic)
         self.assertIn("--final-ref ${{ github.event.workflow_run.head_sha }}", automatic)
+
+    def test_auto_provenance_executes_only_trusted_default_branch_code(self):
+        automatic = _jobs()[AUTO_CODEX_PROVENANCE_JOB]
+        trusted_checkout = _named_step(
+            automatic, "Check out the trusted default-branch verifier"
+        )
+        candidate_checkout = _named_step(
+            automatic, "Check out the exact completed-run candidate as inert data"
+        )
+        verifier = _named_step(
+            automatic, "Download and verify the exact attested Codex candidate"
+        )
+
+        self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
+        self.assertIn("path: trusted", trusted_checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", trusted_checkout)
+        self.assertIn(
+            "ref: ${{ github.event.workflow_run.head_sha }}", candidate_checkout
+        )
+        self.assertIn("path: candidate", candidate_checkout)
+        self.assertNotIn("ref: ${{ github.sha }}", candidate_checkout)
+        self.assertIn(
+            "RECEIPT=candidate/docs/reports/codex-desktop-candidate-resolution.json",
+            verifier,
+        )
+        self.assertIn(
+            "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py",
+            verifier,
+        )
+        self.assertIn("--repo candidate", verifier)
+        self.assertNotIn(
+            "python3 candidate/.github/scripts/verify_codex_candidate_provenance.py",
+            automatic,
+        )
+        self.assertNotIn(
+            "python3 .github/scripts/verify_codex_candidate_provenance.py",
+            automatic,
+        )
 
 
 class TriggerIsolationTest(unittest.TestCase):
