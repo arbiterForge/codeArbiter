@@ -478,15 +478,23 @@ jobs:
         with:
           ref: ${{ github.sha }}
           path: trusted
-          fetch-depth: 1
-          persist-credentials: false
-      - name: Check out the exact completed-run candidate as inert data
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          path: candidate
           fetch-depth: 0
           persist-credentials: false
+      - name: Materialize the exact completed-run candidate as inert data
+        env:
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          case "$CANDIDATE_SHA" in
+            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
+          esac
+          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
+            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
+            exit 1
+          fi
+          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
+          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
+          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
       - name: Download and verify the exact attested Codex candidate
         env:
           GH_TOKEN: ${{ github.token }}

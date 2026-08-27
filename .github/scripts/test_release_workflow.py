@@ -1288,7 +1288,9 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
         automatic = jobs[AUTO_CODEX_PROVENANCE_JOB]
         self.assertIn("ref: ${{ github.sha }}", manual)
         self.assertIn("--final-ref ${{ github.sha }}", manual)
-        self.assertIn("ref: ${{ github.event.workflow_run.head_sha }}", automatic)
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}", automatic
+        )
         self.assertIn("--final-ref ${{ github.event.workflow_run.head_sha }}", automatic)
 
     def test_auto_provenance_executes_only_trusted_default_branch_code(self):
@@ -1296,8 +1298,8 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
         trusted_checkout = _named_step(
             automatic, "Check out the trusted default-branch verifier"
         )
-        candidate_checkout = _named_step(
-            automatic, "Check out the exact completed-run candidate as inert data"
+        candidate_materialization = _named_step(
+            automatic, "Materialize the exact completed-run candidate as inert data"
         )
         verifier = _named_step(
             automatic, "Download and verify the exact attested Codex candidate"
@@ -1306,11 +1308,33 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
         self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
         self.assertIn("path: trusted", trusted_checkout)
         self.assertNotIn("github.event.workflow_run.head_sha", trusted_checkout)
-        self.assertIn(
-            "ref: ${{ github.event.workflow_run.head_sha }}", candidate_checkout
+        self.assertEqual(
+            automatic.count("uses: actions/checkout@"), 1,
+            "the privileged provenance job may use actions/checkout only for "
+            "trusted default-branch code",
         )
-        self.assertIn("path: candidate", candidate_checkout)
-        self.assertNotIn("ref: ${{ github.sha }}", candidate_checkout)
+        self.assertNotIn(
+            "ref: ${{ github.event.workflow_run.head_sha }}", automatic,
+            "event-selected content must never enter this privileged job via "
+            "actions/checkout",
+        )
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}",
+            candidate_materialization,
+        )
+        required_materialization_controls = (
+            'case "$CANDIDATE_SHA" in',
+            '""|*[!0-9a-f]*)',
+            '[ "${#CANDIDATE_SHA}" -ne 40 ]',
+            'git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"',
+            'git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" '
+            '"${{ github.sha }}"',
+            'git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"',
+        )
+        for control in required_materialization_controls:
+            with self.subTest(control=control):
+                self.assertIn(control, candidate_materialization)
+        self.assertNotIn("|| true", candidate_materialization)
         self.assertIn(
             "RECEIPT=candidate/docs/reports/codex-desktop-candidate-resolution.json",
             verifier,
