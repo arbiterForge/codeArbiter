@@ -10,12 +10,31 @@ import { generateAcademy } from "./generate-academy";
 const fixtureRoots: string[] = [];
 const academyOverviewComponent = new URL("../src/components/AcademyOverview.astro", import.meta.url);
 const siteRoot = fileURLToPath(new URL("..", import.meta.url));
-const emittedScriptPattern = /<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi;
 const requiredTracks = [
   ["foundations", "Foundation"],
   ["practitioner", "Practitioner"],
   ["power-user", "Power user"],
 ] as const;
+
+function extractEmittedScripts(html: string): string[] {
+  const normalizedHtml = html.toLowerCase();
+  const scripts: string[] = [];
+  let cursor = 0;
+
+  while (cursor < html.length) {
+    const openingTagStart = normalizedHtml.indexOf("<script", cursor);
+    if (openingTagStart < 0) return scripts;
+    const openingTagEnd = normalizedHtml.indexOf(">", openingTagStart);
+    const closingTagStart = normalizedHtml.indexOf("</script", openingTagEnd + 1);
+    const closingTagEnd = normalizedHtml.indexOf(">", closingTagStart);
+    if (openingTagEnd < 0 || closingTagStart < 0 || closingTagEnd < 0) return scripts;
+
+    scripts.push(html.slice(openingTagEnd + 1, closingTagStart));
+    cursor = closingTagEnd + 1;
+  }
+
+  return scripts;
+}
 
 const publicSource: AcademySource = {
   release: "preview-0.30",
@@ -239,6 +258,7 @@ describe("generateAcademy", () => {
 
     expect(academyHtml.match(/<h1\b/g)).toHaveLength(1);
     expect(academyHtml.match(/id="complete-these-five-setup-steps-before-f01"/g)).toHaveLength(1);
+    expect(academyHtml.match(/id="setup"/g)).toHaveLength(1);
     expect(academyHtml).toContain("Open the Academy fork page, choose your GitHub account as the owner");
     expect(academyHtml).toContain('href="https://github.com/arbiterForge/arbiter-academy/fork"');
     expect(academyHtml).toContain("git clone https://github.com/&lt;your-account&gt;/arbiter-academy.git");
@@ -268,8 +288,7 @@ describe("generateAcademy", () => {
       /(<a\b(?=[^>]*class="[^"]*\bacademy-overview__all-lessons\b[^"]*")[^>]*>)([\s\S]*?)<\/a>/,
     );
     const revealLabelMarkup = revealControlMarkup?.[2].match(/(<span\b[^>]*>)([^<]*)<\/span>/);
-    const pageScript = [...academyHtml.matchAll(emittedScriptPattern)]
-      .map((match) => match[1])
+    const pageScript = extractEmittedScripts(academyHtml)
       .find((script) => script.includes("data-academy-show-all"));
     expect(revealControlMarkup).not.toBeNull();
     expect(revealLabelMarkup).not.toBeNull();
@@ -354,12 +373,21 @@ describe("generateAcademy", () => {
     expect(lessonPage).toContain("[F02](/academy/f02-orient-to-state/)");
   });
 
-  it("extracts scripts when HTML uses uppercase SCRIPT tags", () => {
-    const uppercaseScript = "<SCRIPT>document.body.dataset.ready = \"true\";</SCRIPT>";
+  it("extracts scripts with uppercase tags and whitespace before the closing bracket", () => {
+    const uppercaseScript = "<SCRIPT>document.body.dataset.ready = \"true\";</SCRIPT >";
 
-    expect([...uppercaseScript.matchAll(emittedScriptPattern)].map((match) => match[1])).toEqual([
+    expect(extractEmittedScripts(uppercaseScript)).toEqual([
       'document.body.dataset.ready = "true";',
     ]);
+  });
+
+  it("only exposes View all lessons when a track has hidden lessons", () => {
+    const component = readFileSync(academyOverviewComponent, "utf8");
+
+    expect(component).toContain(
+      "const tracksWithHiddenLessons = tracks.filter((track) => track.lessons.length > 1);",
+    );
+    expect(component).toContain("{tracksWithHiddenLessons.length > 0 && (");
   });
 
   it("does not emit a route for a lesson absent from the preview manifest", () => {

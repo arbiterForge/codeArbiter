@@ -47,7 +47,8 @@ if (!firstLesson || missingTrack) {
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const lessonHref = (id: string) => `${basePath}/academy/${id.toLowerCase()}/`;
-const disclosureIds = tracks.map((track) => `track-${track.id}-more`).join(" ");
+const tracksWithHiddenLessons = tracks.filter((track) => track.lessons.length > 1);
+const disclosureIds = tracksWithHiddenLessons.map((track) => `track-${track.id}-more`).join(" ");
 const surfaceLabel: Record<NonNullable<AcademyAction["surface"]>, string> = {
   browser: "Browser",
   "native-terminal": "Native terminal",
@@ -94,6 +95,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
     id={academyContent.home.anchor}
     aria-labelledby="academy-setup-title"
   >
+    <span id="setup" aria-hidden="true"></span>
     <p class="academy-overview__eyebrow">Required setup</p>
     <h2 id="academy-setup-title">Complete these five setup steps before F01</h2>
     <p>Prepare your own fork and local clone before you begin the first lesson.</p>
@@ -198,15 +200,17 @@ const variantLabel = (variant: AcademyCommandVariant) =>
       })}
     </div>
 
-    <a
-      class="ca-text-link academy-overview__all-lessons"
-      href="#academy-curriculum"
-      data-academy-show-all
-      aria-controls={disclosureIds}
-      aria-expanded="false"
-    >
-      <span data-academy-show-all-label>View all lessons</span> <span aria-hidden="true">↓</span>
-    </a>
+    {tracksWithHiddenLessons.length > 0 && (
+      <a
+        class="ca-text-link academy-overview__all-lessons"
+        href="#academy-curriculum"
+        data-academy-show-all
+        aria-controls={disclosureIds}
+        aria-expanded="false"
+      >
+        <span data-academy-show-all-label>View all lessons</span> <span aria-hidden="true">↓</span>
+      </a>
+    )}
   </section>
 
   <section class="academy-overview__practice" aria-labelledby="academy-practice-title">
