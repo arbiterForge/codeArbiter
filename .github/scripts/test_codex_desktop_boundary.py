@@ -34,7 +34,9 @@ def sha256_text(value: str) -> str:
 
 def normalize_process_diagnostic(result: subprocess.CompletedProcess[str]) -> str:
     """Remove host formatting while preserving the diagnostic's exact words."""
-    combined = result.stdout + result.stderr
+    combined = "\n".join(
+        part for part in (result.stdout, result.stderr) if part
+    )
     without_ansi = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", combined)
     without_gutters = re.sub(r"(?m)^[ \t]*\|[ \t]+", "", without_ansi)
     return " ".join(without_gutters.split())
@@ -937,6 +939,18 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertNotIn(
             "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
             normalized,
+        )
+
+    def test_process_diagnostic_normalization_preserves_stdout_stderr_boundary(self):
+        split_streams = subprocess.CompletedProcess(
+            args=["pwsh"],
+            returncode=1,
+            stdout="candidate hooks manifest bytes differ from the reviewed inert payload",
+            stderr="declaration\n",
+        )
+        self.assertIn(
+            "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
+            normalize_process_diagnostic(split_streams),
         )
 
     def test_candidate_package_has_exact_inert_hook_inventory_during_desktop_proof(self):
