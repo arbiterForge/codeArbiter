@@ -8,6 +8,7 @@ import hmac
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import stat
 import struct
@@ -29,6 +30,16 @@ CHECKER = SCRIPTS / "check_codex_skill_resources.py"
 
 def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def normalize_process_diagnostic(result: subprocess.CompletedProcess[str]) -> str:
+    """Remove host formatting while preserving the diagnostic's exact words."""
+    combined = "\n".join(
+        part for part in (result.stdout, result.stderr) if part
+    )
+    without_ansi = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", combined)
+    without_gutters = re.sub(r"(?m)^[ \t]*\|[ \t]+", "", without_ansi)
+    return " ".join(without_gutters.split())
 
 
 def powershell() -> str:
@@ -109,17 +120,34 @@ def run_driver_boundary_fixture(parameter: str, fixture: dict) -> subprocess.Com
         )
 
 
-def run_candidate_surface_fixture(fixture: dict) -> subprocess.CompletedProcess[str]:
+def run_candidate_surface_fixture(
+    fixture: dict,
+    *,
+    bind_fixture_hooks: bool = False,
+) -> subprocess.CompletedProcess[str]:
     with tempfile.TemporaryDirectory() as temp:
         fixture_path = Path(temp) / "candidate-surface-fixture.json"
         fixture_path.write_text(json.dumps(fixture), encoding="utf-8")
+        contract_path = CONTRACT
+        if bind_fixture_hooks:
+            trusted_root = Path(temp) / "trusted"
+            trusted_scripts = trusted_root / ".github" / "scripts"
+            trusted_scripts.mkdir(parents=True)
+            for trusted_script in (BROKER, DRIVER, PROBE):
+                shutil.copy2(trusted_script, trusted_scripts / trusted_script.name)
+            contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
+            contract["candidate_surface"]["hooks_manifest_sha256"] = sha256_text(
+                fixture["hooks_manifest_text"]
+            )
+            contract_path = trusted_root / ".github" / "desktop-proof-boundary.json"
+            contract_path.write_text(json.dumps(contract), encoding="utf-8")
         environment = os.environ.copy()
         environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
         return subprocess.run(
             [
                 powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
                 str(BROKER), "-CandidateSurfaceFixturePath", str(fixture_path),
-                "-ContractPath", str(CONTRACT),
+                "-ContractPath", str(contract_path),
             ],
             cwd=REPO_ROOT,
             env=environment,
@@ -881,6 +909,50 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertIn("guest registration and local-plugin installation", controls_normalized)
         self.assertIn("without microsoft network access", controls_normalized)
 
+    def test_process_diagnostic_normalization_preserves_wrapped_powershell_error(self):
+        wrapped = subprocess.CompletedProcess(
+            args=["pwsh"],
+            returncode=1,
+            stdout="",
+            stderr=(
+                "\x1b[31;1mcandidate hooks manifest bytes differ from the reviewed inert payload\x1b[0m\n"
+                "\x1b[36;1m     | \x1b[31;1mdeclaration\x1b[0m\n"
+            ),
+        )
+        self.assertIn(
+            "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
+            normalize_process_diagnostic(wrapped),
+        )
+
+    def test_process_diagnostic_normalization_preserves_inline_pipe_semantics(self):
+        inline_pipe = subprocess.CompletedProcess(
+            args=["pwsh"],
+            returncode=1,
+            stdout="",
+            stderr=(
+                "candidate hooks manifest bytes differ from the reviewed inert "
+                "payload | declaration\n"
+            ),
+        )
+        normalized = normalize_process_diagnostic(inline_pipe)
+        self.assertIn("payload | declaration", normalized)
+        self.assertNotIn(
+            "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
+            normalized,
+        )
+
+    def test_process_diagnostic_normalization_preserves_stdout_stderr_boundary(self):
+        split_streams = subprocess.CompletedProcess(
+            args=["pwsh"],
+            returncode=1,
+            stdout="candidate hooks manifest bytes differ from the reviewed inert payload",
+            stderr="declaration\n",
+        )
+        self.assertIn(
+            "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
+            normalize_process_diagnostic(split_streams),
+        )
+
     def test_candidate_package_has_exact_inert_hook_inventory_during_desktop_proof(self):
         plugin_root = REPO_ROOT / "plugins" / "ca-codex"
         ignored_runtime_artifact = (
@@ -894,7 +966,18 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        hooks_manifest_text = (plugin_root / "hooks" / "hooks.json").read_text(encoding="utf-8")
+        legacy_hooks_manifest_text = (
+            plugin_root / "hooks" / "hooks.json"
+        ).read_text(encoding="utf-8")
+        hooks_manifest_text = legacy_hooks_manifest_text.replace(
+            "${CLAUDE_PLUGIN_ROOT}", "${PLUGIN_ROOT}"
+        )
+        self.assertNotEqual(hooks_manifest_text, legacy_hooks_manifest_text)
+        self.assertEqual(
+            sha256_text(hooks_manifest_text),
+            "b13fc7bc70569a0885ef6bbd1be553b983ce0daf95753d287a64edc846b0b9cf",
+            "the inert fixture must remain byte-identical to PR #711's native Codex hooks",
+        )
         tracked = subprocess.run(
             ["git", "ls-files", "-z", "--", "plugins/ca-codex"],
             cwd=REPO_ROOT,
@@ -923,8 +1006,17 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         }
         success = run_candidate_surface_fixture(fixture)
         self.assertEqual(success.returncode, 0, success.stdout + success.stderr)
+        rebound_success = run_candidate_surface_fixture(
+            fixture,
+            bind_fixture_hooks=True,
+        )
+        self.assertEqual(
+            rebound_success.returncode,
+            0,
+            rebound_success.stdout + rebound_success.stderr,
+        )
 
-        mutations = {
+        surface_mutations = {
             "MCP manifest": lambda value: value["manifest"].update(mcpServers={"evil": {}}),
             "server file": lambda value: value["paths"].append("servers/evil.json"),
             "app file": lambda value: value["paths"].append("apps/evil.json"),
@@ -932,10 +1024,17 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "root executable": lambda value: value["paths"].append("evil.exe"),
             "nested Python": lambda value: value["paths"].append("skills/ca-review/evil.py"),
             "new hook payload": lambda value: value["paths"].append("hooks/evil.py"),
+        }
+        semantic_command_mutations = {
+            "obsolete Claude hook root": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(
+                command=payload["hooks"]["SessionStart"][0]["hooks"][0]["command"].replace("${PLUGIN_ROOT}", "${CLAUDE_PLUGIN_ROOT}"),
+                commandWindows=payload["hooks"]["SessionStart"][0]["hooks"][0]["commandWindows"].replace("${PLUGIN_ROOT}", "${CLAUDE_PLUGIN_ROOT}"))),
             "undeclared hook command": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(
-                command='python3 "${CLAUDE_PLUGIN_ROOT}/hooks/evil.py"', commandWindows='python "${CLAUDE_PLUGIN_ROOT}/hooks/evil.py"')),
+                command='python3 "${PLUGIN_ROOT}/hooks/evil.py"', commandWindows='python "${PLUGIN_ROOT}/hooks/evil.py"')),
             "inline hook arguments": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(
-                command='python3 "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py" --evil')),
+                command='python3 "${PLUGIN_ROOT}/hooks/session-start.py" --evil')),
+        }
+        exact_byte_mutations = {
             "extra hook event": lambda value: mutate_hooks(value, lambda payload: payload["hooks"].update(Evil=[])),
             "changed matcher": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["PreToolUse"][0].update(matcher="Bash|Evil")),
             "changed timeout": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["SessionStart"][0]["hooks"][0].update(timeout=999)),
@@ -945,12 +1044,32 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "duplicate hook group": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["PreToolUse"].append(payload["hooks"]["PreToolUse"][0])),
             "reordered hook groups": lambda value: mutate_hooks(value, lambda payload: payload["hooks"]["PreToolUse"].reverse()),
         }
-        for label, mutate in mutations.items():
+        for label, mutate in surface_mutations.items():
             with self.subTest(label=label):
                 changed = json.loads(json.dumps(fixture))
                 mutate(changed)
                 failed = run_candidate_surface_fixture(changed)
                 self.assertNotEqual(failed.returncode, 0)
+        for label, mutate in semantic_command_mutations.items():
+            with self.subTest(label=label):
+                changed = json.loads(json.dumps(fixture))
+                mutate(changed)
+                failed = run_candidate_surface_fixture(changed, bind_fixture_hooks=True)
+                self.assertNotEqual(failed.returncode, 0)
+                self.assertIn(
+                    "candidate hook declaration is not a single reviewed inert hook path",
+                    normalize_process_diagnostic(failed),
+                )
+        for label, mutate in exact_byte_mutations.items():
+            with self.subTest(label=label):
+                changed = json.loads(json.dumps(fixture))
+                mutate(changed)
+                failed = run_candidate_surface_fixture(changed)
+                self.assertNotEqual(failed.returncode, 0)
+                self.assertIn(
+                    "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
+                    normalize_process_diagnostic(failed),
+                )
 
     def test_candidate_archive_extraction_is_bounded_before_writes(self):
         """ARC-01: the privileged extractor enforces every bound on real ZIPs."""
@@ -1115,6 +1234,16 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 target = package_root / Path(relative)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(source, target)
+
+            hooks_path = package_root / "hooks" / "hooks.json"
+            native_hooks = hooks_path.read_text(encoding="utf-8").replace(
+                "${CLAUDE_PLUGIN_ROOT}", "${PLUGIN_ROOT}"
+            )
+            self.assertEqual(
+                sha256_text(native_hooks),
+                "b13fc7bc70569a0885ef6bbd1be553b983ce0daf95753d287a64edc846b0b9cf",
+            )
+            hooks_path.write_text(native_hooks, encoding="utf-8", newline="")
 
             metadata = run_candidate_metadata_fixture(package_root)
             self.assertEqual(metadata.returncode, 0, metadata.stdout + metadata.stderr)

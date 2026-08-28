@@ -617,8 +617,8 @@ function Assert-BoundedCandidateSurface {
                     [string]$hook.type -cne 'command' -or [int]$hook.timeout -le 0) {
                     throw 'candidate hook declaration schema is outside the reviewed boundary'
                 }
-                $unix = [regex]::Match([string]$hook.command, '^python3 "\$\{CLAUDE_PLUGIN_ROOT\}/(hooks/[A-Za-z0-9_-]+\.py)"$')
-                $windows = [regex]::Match([string]$hook.commandWindows, '^python "\$\{CLAUDE_PLUGIN_ROOT\}/(hooks/[A-Za-z0-9_-]+\.py)"$')
+                $unix = [regex]::Match([string]$hook.command, '^python3 "\$\{PLUGIN_ROOT\}/(hooks/[A-Za-z0-9_-]+\.py)"$')
+                $windows = [regex]::Match([string]$hook.commandWindows, '^python "\$\{PLUGIN_ROOT\}/(hooks/[A-Za-z0-9_-]+\.py)"$')
                 if (-not $unix.Success -or -not $windows.Success -or
                     $unix.Groups[1].Value -cne $windows.Groups[1].Value -or
                     $unix.Groups[1].Value -cnotin $hookPaths) {
