@@ -3,7 +3,7 @@
   "broker": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopCandidate.ps1",
-    "sha256": "0c31a080ba1173c075a0155ca14900d4605d521c0f9aea872df1eb462d64a72e"
+    "sha256": "26a4f93449590ecdcafcaabe6b4a02d30a097c6f5180c5d6405b0f5141b99063"
   },
   "driver": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
@@ -43,7 +43,7 @@
   "candidate_surface": {
     "kind": "known-hook-paths-disabled",
     "hook_path_set_sha256": "d44b6fb94cf07035f3dc51da74c55d97c9ace63943854ba873bd943feb46dbfa",
-    "hooks_manifest_sha256": "2b12c7eb5e35bbbddf69e38a6f8966c21f3b43c87bddfd36a2b9c764a23a58fd"
+    "hooks_manifest_sha256": "b13fc7bc70569a0885ef6bbd1be553b983ce0daf95753d287a64edc846b0b9cf"
   },
   "candidate_archive": {
     "max_archive_bytes": 8388608,
