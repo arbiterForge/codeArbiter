@@ -8,6 +8,7 @@ import hmac
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import stat
 import struct
@@ -29,6 +30,13 @@ CHECKER = SCRIPTS / "check_codex_skill_resources.py"
 
 def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def normalize_process_diagnostic(result: subprocess.CompletedProcess[str]) -> str:
+    """Remove host formatting while preserving the diagnostic's exact words."""
+    combined = result.stdout + result.stderr
+    without_ansi = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", combined)
+    return " ".join(without_ansi.split())
 
 
 def powershell() -> str:
@@ -898,6 +906,21 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertIn("guest registration and local-plugin installation", controls_normalized)
         self.assertIn("without microsoft network access", controls_normalized)
 
+    def test_process_diagnostic_normalization_preserves_wrapped_powershell_error(self):
+        wrapped = subprocess.CompletedProcess(
+            args=["pwsh"],
+            returncode=1,
+            stdout="",
+            stderr=(
+                "\x1b[31;1mcandidate hooks manifest bytes differ from the reviewed inert payload\x1b[0m\n"
+                "\x1b[31;1mdeclaration\x1b[0m\n"
+            ),
+        )
+        self.assertIn(
+            "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
+            normalize_process_diagnostic(wrapped),
+        )
+
     def test_candidate_package_has_exact_inert_hook_inventory_during_desktop_proof(self):
         plugin_root = REPO_ROOT / "plugins" / "ca-codex"
         ignored_runtime_artifact = (
@@ -1003,7 +1026,7 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 self.assertNotEqual(failed.returncode, 0)
                 self.assertIn(
                     "candidate hook declaration is not a single reviewed inert hook path",
-                    failed.stdout + failed.stderr,
+                    normalize_process_diagnostic(failed),
                 )
         for label, mutate in exact_byte_mutations.items():
             with self.subTest(label=label):
@@ -1013,7 +1036,7 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 self.assertNotEqual(failed.returncode, 0)
                 self.assertIn(
                     "candidate hooks manifest bytes differ from the reviewed inert payload declaration",
-                    failed.stdout + failed.stderr,
+                    normalize_process_diagnostic(failed),
                 )
 
     def test_candidate_archive_extraction_is_bounded_before_writes(self):
