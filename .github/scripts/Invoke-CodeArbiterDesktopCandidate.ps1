@@ -27,6 +27,12 @@ param(
     [string]$ArchiveExtractionDestination,
     [Parameter(Mandatory, ParameterSetName = 'CandidateMetadataFixture')]
     [string]$CandidateMetadataFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'AdkBoundaryFixture')]
+    [string]$AdkBoundaryFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'AdkExecutionLeaseFixture')]
+    [string]$AdkExecutionLeaseFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'CleanupObservationFixture')]
+    [string]$CleanupObservationFixturePath,
     [Parameter(ParameterSetName = 'Contract')]
     [switch]$ContractOnly
 )
@@ -221,6 +227,205 @@ function Assert-ExactFields($Value, [string[]]$Required, [string]$Label) {
     }
 }
 
+function Convert-CanonicalWindowsAbsolutePath([string]$Value) {
+    if ([string]::IsNullOrWhiteSpace($Value) -or $Value.Contains('/') -or
+        $Value -cnotmatch '^(?<drive>[A-Za-z]):\\(?<tail>.+)$') {
+        throw 'Windows boundary path is not an absolute drive path'
+    }
+    $drive = [string]$Matches.drive
+    $tail = [string]$Matches.tail
+    $segments = @($tail -split '\\')
+    if (@($segments | Where-Object { -not $_ -or $_ -in @('.','..') -or $_.Contains(':') }).Count) {
+        throw 'Windows boundary path contains an invalid segment'
+    }
+    $drive.ToUpperInvariant() + ':\' + ($segments -join '\')
+}
+
+function Convert-CanonicalWindowsRelativePath([string]$Value) {
+    if ([string]::IsNullOrWhiteSpace($Value) -or $Value.Contains('/') -or $Value.Contains(':') -or
+        $Value.StartsWith('\',[StringComparison]::Ordinal)) {
+        throw 'Windows boundary relative path is invalid'
+    }
+    $segments = @($Value -split '\\')
+    if (@($segments | Where-Object { -not $_ -or $_ -in @('.','..') }).Count) {
+        throw 'Windows boundary relative path contains an invalid segment'
+    }
+    $segments -join '\'
+}
+
+function Assert-DeploymentToolsContract($Tools) {
+    Assert-ExactFields $Tools @(
+        'product','version','servicing_update','protected_root','executable_relative_path',
+        'acquisition','servicing','license','files'
+    ) 'deployment tools contract'
+    if ([string]$Tools.product -cne 'Microsoft Windows ADK Deployment Tools' -or
+        [string]$Tools.version -cne '10.1.26100.2454' -or
+        [string]$Tools.servicing_update -cne 'KB5101684' -or
+        (Convert-CanonicalWindowsAbsolutePath ([string]$Tools.protected_root)) -cne
+            'C:\codearbiter-runner\toolchains\windows-adk\10.1.26100.2454-kb5101684' -or
+        (Convert-CanonicalWindowsRelativePath ([string]$Tools.executable_relative_path)) -cne
+            'amd64\BCDBoot\bcdboot.exe') {
+        throw 'deployment tools identity is not the reviewed boundary'
+    }
+    Assert-ExactFields $Tools.acquisition @('source_url','length','sha256','signer_thumbprint') 'ADK acquisition'
+    Assert-ExactFields $Tools.servicing @('source_url','length','sha256') 'ADK servicing'
+    Assert-ExactFields $Tools.license @('spdx','length','sha256') 'ADK license'
+    if ([string]$Tools.acquisition.source_url -cne 'https://download.microsoft.com/download/2/d/9/2d9c8902-3fcd-48a6-a22a-432b08bed61e/ADK/adksetup.exe' -or
+        [long]$Tools.acquisition.length -ne 2234632L -or
+        [string]$Tools.acquisition.sha256 -cne '7f61e29f2314bcdd7e0abf67a8367d83a05aa4a7b9223f85c5fd2582a35cc6f4' -or
+        [string]$Tools.acquisition.signer_thumbprint -cne '0bd8c56733fdcc06f8cb919ff5a200e39b1acf71' -or
+        [string]$Tools.servicing.source_url -cne 'https://download.microsoft.com/download/a087a851-4056-4f7f-9791-02a20509b706/Windows_ADK_10.1.26100.2454_Update_KB5101684.zip' -or
+        [long]$Tools.servicing.length -ne 411048362L -or
+        [string]$Tools.servicing.sha256 -cne 'dc19725a2fb0cce44c32ac14059a85a25257b9534ba21c93b479f4f09fb5af38' -or
+        [string]$Tools.license.spdx -cne 'LicenseRef-Microsoft-Windows-ADK-EULA' -or
+        [long]$Tools.license.length -ne 192576L -or
+        [string]$Tools.license.sha256 -cne '3c0c45033614cd4882ff0195ca7f77c8077f2f4917806ada519855f7f87da595') {
+        throw 'deployment tools provenance is not the reviewed boundary'
+    }
+    $expectedFiles = [ordered]@{
+        'amd64\BCDBoot\bcdboot.exe' = @(300608L,'0395497dfb048791cc52bbaea7c304317d546e06198875bf83e0bb186fb09cc5')
+        'amd64\BCDBoot\bcdedit.exe' = @(525888L,'9cfb9375debfe6392c1f133d9b0e0b5df1ab68ac2170b70b9e385d7c25b2a965')
+        'amd64\BCDBoot\bootsect.exe' = @(116272L,'a5f66774b5c72ae0c39ba9a87c38ccc68e58ba4886a6b8348e396e0ba95ab599')
+    }
+    $signer = 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'
+    if (@($Tools.files).Count -ne $expectedFiles.Count) { throw 'deployment tools file closure is incomplete' }
+    $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($file in @($Tools.files)) {
+        Assert-ExactFields $file @('path','length','sha256','signer_subject') 'deployment tools file'
+        $path = Convert-CanonicalWindowsRelativePath ([string]$file.path)
+        if (-not $seen.Add($path) -or -not $expectedFiles.Contains($path) -or
+            [long]$file.length -ne [long]$expectedFiles[$path][0] -or
+            [string]$file.sha256 -cne [string]$expectedFiles[$path][1] -or [string]$file.signer_subject -cne $signer) {
+            throw 'deployment tools file is not in the reviewed closure'
+        }
+    }
+}
+
+function Assert-AdkAclEvidence {
+    param(
+        $Evidence,
+        [string]$RunnerSid,
+        [ValidateSet('Root','Descendant')][string]$Topology,
+        [switch]$ExecutionLocked
+    )
+    Assert-ExactFields $Evidence @('owner_sid','protected','access') 'ADK protected-path ACL evidence'
+    if ([string]$Evidence.owner_sid -notin @('S-1-5-18','S-1-5-32-544')) {
+        throw 'approved ADK boundary is not owned by SYSTEM or Administrators'
+    }
+    if (($Topology -ceq 'Root' -and -not [bool]$Evidence.protected) -or
+        ($Topology -ceq 'Descendant' -and [bool]$Evidence.protected)) {
+        throw 'ADK protected-path DACL inheritance topology is invalid'
+    }
+    if ($RunnerSid -cnotmatch '^S-1-5-(?:21-[0-9-]+|[0-9-]+)$' -or
+        $RunnerSid -in @('S-1-5-18','S-1-5-32-544')) {
+        throw 'ADK runner SID is invalid'
+    }
+    $mutationMask = [Security.AccessControl.FileSystemRights]::Write -bor
+        [Security.AccessControl.FileSystemRights]::Delete -bor
+        [Security.AccessControl.FileSystemRights]::DeleteSubdirectoriesAndFiles -bor
+        [Security.AccessControl.FileSystemRights]::ChangePermissions -bor
+        [Security.AccessControl.FileSystemRights]::TakeOwnership -bor
+        [Security.AccessControl.FileSystemRights]::CreateFiles -bor
+        [Security.AccessControl.FileSystemRights]::CreateDirectories -bor
+        [Security.AccessControl.FileSystemRights]::AppendData -bor
+        [Security.AccessControl.FileSystemRights]::WriteData
+    $approved = @('S-1-5-18','S-1-5-32-544',$RunnerSid)
+    $runnerReadExecute = $false
+    $runnerMutationDenied = $false
+    $privilegedFullControl = [ordered]@{'S-1-5-18'=$false;'S-1-5-32-544'=$false}
+    foreach ($entry in @($Evidence.access)) {
+        Assert-ExactFields $entry @('sid','type','rights','inherited') 'ADK protected-path ACL entry'
+        $sid = [string]$entry.sid
+        $type = [string]$entry.type
+        $rights = [Security.AccessControl.FileSystemRights][string]$entry.rights
+        $isRunnerMutationDeny = $type -ceq 'Deny' -and $sid -ceq $RunnerSid -and
+            -not [bool]$entry.inherited -and (($rights -band $mutationMask) -eq $mutationMask)
+        if ($isRunnerMutationDeny) {
+            if (-not $ExecutionLocked) {
+                throw 'ADK runner mutation deny exists outside the execution lock'
+            }
+            $runnerMutationDenied = $true
+            continue
+        }
+        if ($type -cne 'Allow') { throw 'ADK protected path contains an unapproved deny rule' }
+        if (($Topology -ceq 'Root' -and [bool]$entry.inherited) -or
+            ($Topology -ceq 'Descendant' -and -not [bool]$entry.inherited)) {
+            throw 'ADK protected-path ACE inheritance topology is invalid'
+        }
+        if ($sid -notin $approved) { throw 'ADK protected path contains an unexpected principal' }
+        if ($type -ceq 'Allow' -and ($rights -band $mutationMask) -and
+            $sid -notin @('S-1-5-18','S-1-5-32-544')) {
+            throw 'ADK protected path grants mutation rights outside SYSTEM or Administrators'
+        }
+        if ($type -ceq 'Allow' -and $sid -ceq $RunnerSid -and
+            (($rights -band [Security.AccessControl.FileSystemRights]::ReadAndExecute) -eq
+                [Security.AccessControl.FileSystemRights]::ReadAndExecute)) {
+            $runnerReadExecute = $true
+        }
+        if ($type -ceq 'Allow' -and $sid -in @('S-1-5-18','S-1-5-32-544') -and
+            (($rights -band [Security.AccessControl.FileSystemRights]::FullControl) -eq
+                [Security.AccessControl.FileSystemRights]::FullControl)) {
+            $privilegedFullControl[$sid] = $true
+        }
+    }
+    if (-not $runnerReadExecute -or @($privilegedFullControl.Values | Where-Object { -not $_ }).Count -or
+        ($ExecutionLocked -and -not $runnerMutationDenied)) {
+        throw 'ADK protected path ACL does not contain the exact required access classes'
+    }
+}
+
+function Assert-ApprovedAdkBcdBootObservation($Tools, $Observation, [switch]$ExecutionLocked) {
+    Assert-DeploymentToolsContract $Tools
+    Assert-ExactFields $Observation @(
+        'schema_version','runner_sid','root','root_acl','root_reparse',
+        'executable_path','directories','files'
+    ) 'ADK boundary observation'
+    if ([int]$Observation.schema_version -ne 1) { throw 'ADK boundary observation schema is invalid' }
+    $root = Convert-CanonicalWindowsAbsolutePath ([string]$Observation.root)
+    if ($root -cne [string]$Tools.protected_root) { throw 'ADK boundary root is not approved' }
+    if ([bool]$Observation.root_reparse) { throw 'ADK boundary root is a reparse point' }
+    Assert-AdkAclEvidence $Observation.root_acl ([string]$Observation.runner_sid) 'Root' -ExecutionLocked:$ExecutionLocked
+    $executable = Convert-CanonicalWindowsAbsolutePath ([string]$Observation.executable_path)
+    $expectedExecutable = $root + '\' + [string]$Tools.executable_relative_path
+    if ($executable -cne $expectedExecutable) { throw 'BCDBoot executable is outside the approved toolchain' }
+    $expectedDirectories = @('amd64','amd64\BCDBoot')
+    if (@($Observation.directories).Count -ne $expectedDirectories.Count) {
+        throw 'ADK boundary directory closure is not exact'
+    }
+    foreach ($directory in @($Observation.directories)) {
+        Assert-ExactFields $directory @('path','acl','reparse') 'ADK boundary directory observation'
+        $directoryPath = Convert-CanonicalWindowsRelativePath ([string]$directory.path)
+        if ($directoryPath -notin $expectedDirectories -or
+            @($Observation.directories | Where-Object { [string]$_.path -ceq $directoryPath }).Count -ne 1) {
+            throw 'ADK boundary directory is missing, duplicated, or unapproved'
+        }
+        if ([bool]$directory.reparse) { throw 'ADK boundary directory is a reparse point' }
+        Assert-AdkAclEvidence $directory.acl ([string]$Observation.runner_sid) 'Descendant' -ExecutionLocked:$ExecutionLocked
+    }
+    if (@($Observation.files).Count -ne @($Tools.files).Count) { throw 'ADK boundary file closure is not exact' }
+    foreach ($expected in @($Tools.files)) {
+        $matches = @($Observation.files | Where-Object { [string]$_.path -ceq [string]$expected.path })
+        if ($matches.Count -ne 1) { throw 'ADK boundary file is missing or duplicated' }
+        $actual = $matches[0]
+        Assert-ExactFields $actual @(
+            'path','length','sha256','signature_status','signer_subject','acl','reparse'
+        ) 'ADK boundary file observation'
+        if ([bool]$actual.reparse) { throw 'ADK boundary file is a reparse point' }
+        Assert-AdkAclEvidence $actual.acl ([string]$Observation.runner_sid) 'Descendant' -ExecutionLocked:$ExecutionLocked
+        if ([long]$actual.length -ne [long]$expected.length -or
+            [string]$actual.sha256 -cne [string]$expected.sha256 -or
+            [string]$actual.signature_status -cne 'Valid' -or
+            [string]$actual.signer_subject -cne [string]$expected.signer_subject) {
+            throw 'ADK boundary file evidence does not match the reviewed closure'
+        }
+    }
+    $bcdboot = @($Tools.files | Where-Object {
+        [string]$_.path -ceq [string]$Tools.executable_relative_path
+    })
+    if ($bcdboot.Count -ne 1) { throw 'approved BCDBoot file is not unique' }
+    [ordered]@{bcdboot_path=$executable;bcdboot_sha256=[string]$bcdboot[0].sha256}
+}
+
 function New-ReceiptPolicyAndChannel($Fixture, $Contract) {
     Assert-ExactFields $Fixture @('schema_version','policy','channel') 'receipt contract fixture'
     if ($Fixture.schema_version -ne 1) { throw 'receipt contract fixture schema is invalid' }
@@ -274,6 +479,7 @@ function Get-Contract {
         $contract.channel.transport -cne 'powershell-direct-vmbus') {
         throw 'boundary contract identity is invalid'
     }
+    Assert-DeploymentToolsContract $contract.deployment_tools
     Assert-ExactFields $contract.candidate_archive @(
         'max_archive_bytes','max_entries','max_entry_uncompressed_bytes',
         'max_total_uncompressed_bytes','max_compression_ratio'
@@ -508,6 +714,28 @@ function Get-AclEvidence([string]$LiteralPath) {
     [pscustomobject]@{owner_sid=$ownerSid;access=$access}
 }
 
+function Get-AdkAclEvidence([string]$LiteralPath) {
+    $acl = Get-Acl -LiteralPath $LiteralPath
+    $ownerSid = try {
+        ([Security.Principal.NTAccount]$acl.Owner).Translate([Security.Principal.SecurityIdentifier]).Value
+    } catch { [string]$acl.Owner }
+    $access = @($acl.Access | ForEach-Object {
+        $sid = try { $_.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value }
+            catch { [string]$_.IdentityReference.Value }
+        [pscustomobject]@{
+            sid=$sid
+            type=$_.AccessControlType.ToString()
+            rights=$_.FileSystemRights.ToString()
+            inherited=[bool]$_.IsInherited
+        }
+    })
+    [pscustomobject]@{
+        owner_sid=$ownerSid
+        protected=[bool]$acl.AreAccessRulesProtected
+        access=$access
+    }
+}
+
 function Assert-TrustedRunnerPath([string]$LiteralPath, [switch]$Leaf) {
     $full = [IO.Path]::GetFullPath($LiteralPath)
     $root = [IO.Path]::GetFullPath($RunnerRoot).TrimEnd('\')
@@ -535,6 +763,194 @@ function Assert-TrustedRunnerPath([string]$LiteralPath, [switch]$Leaf) {
         Assert-TrustedAclEvidence (Get-AclEvidence $current) $identity
     }
     $full
+}
+
+function Get-ApprovedBcdBootPath($Tools, [switch]$ExecutionLocked) {
+    Assert-DeploymentToolsContract $Tools
+    $root = Assert-TrustedRunnerPath ([string]$Tools.protected_root)
+    $runnerSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $allowedDirectories = @('amd64','amd64\BCDBoot')
+    $observedDirectories = [Collections.Generic.List[object]]::new()
+    $observedFiles = [Collections.Generic.List[object]]::new()
+    foreach ($item in @(Get-ChildItem -LiteralPath $root -Force -Recurse)) {
+        $relative = $item.FullName.Substring($root.Length).TrimStart('\')
+        if ($item.PSIsContainer) {
+            if ($relative -notin $allowedDirectories) { throw 'approved ADK boundary contains an extra directory' }
+            $null = Assert-TrustedRunnerPath $item.FullName
+            $null = $observedDirectories.Add([pscustomobject]@{
+                path = $relative
+                acl = Get-AdkAclEvidence $item.FullName
+                reparse = (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+            })
+            continue
+        }
+        $full = Assert-TrustedRunnerPath $item.FullName -Leaf
+        $signature = Get-AuthenticodeSignature -LiteralPath $full
+        $null = $observedFiles.Add([pscustomobject]@{
+            path = $relative
+            length = [long]$item.Length
+            sha256 = Get-Sha256 $full
+            signature_status = [string]$signature.Status
+            signer_subject = if ($signature.SignerCertificate) { [string]$signature.SignerCertificate.Subject } else { '' }
+            acl = Get-AdkAclEvidence $full
+            reparse = (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+        })
+    }
+    $rootItem = Get-Item -LiteralPath $root -Force
+    $observation = [pscustomobject]@{
+        schema_version = 1
+        runner_sid = $runnerSid
+        root = $root
+        root_acl = Get-AdkAclEvidence $root
+        root_reparse = (($rootItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+        executable_path = Join-Path $root ([string]$Tools.executable_relative_path)
+        directories = @($observedDirectories)
+        files = @($observedFiles)
+    }
+    (Assert-ApprovedAdkBcdBootObservation $Tools $observation -ExecutionLocked:$ExecutionLocked).bcdboot_path
+}
+
+function Initialize-AdkExecutionLeaseNative {
+    if ($null -ne ('CodeArbiterAdkLeaseNative' -as [type])) { return }
+    $source = @'
+using System;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+public static class CodeArbiterAdkLeaseNative {
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    public static extern SafeFileHandle CreateFileW(
+        string path, uint access, uint share, IntPtr security,
+        uint creation, uint flags, IntPtr template);
+    [DllImport("advapi32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetKernelObjectSecurity(
+        SafeFileHandle handle, int securityInformation, byte[] securityDescriptor);
+}
+'@
+    $null = Add-Type -TypeDefinition $source
+}
+
+function Get-AdkSecurityDescriptorBytes([string]$LiteralPath) {
+    $acl = Get-Acl -LiteralPath $LiteralPath
+    $acl.GetSecurityDescriptorBinaryForm()
+}
+
+function Open-AdkExecutionLeaseHandle([string]$LiteralPath) {
+    Initialize-AdkExecutionLeaseNative
+    $desiredAccess = [uint32]2147876864 # GENERIC_READ | READ_CONTROL | WRITE_DAC
+    $handle = [CodeArbiterAdkLeaseNative]::CreateFileW(
+        $LiteralPath, $desiredAccess, [uint32]1, [IntPtr]::Zero,
+        [uint32]3, [uint32]33554432, [IntPtr]::Zero
+    )
+    if ($handle.IsInvalid) {
+        $errorCode = [Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        $handle.Dispose()
+        throw "could not acquire ADK execution lease handle: $errorCode"
+    }
+    $handle
+}
+
+function Get-AdkMutationMask {
+    [Security.AccessControl.FileSystemRights]::Write -bor
+        [Security.AccessControl.FileSystemRights]::Delete -bor
+        [Security.AccessControl.FileSystemRights]::DeleteSubdirectoriesAndFiles -bor
+        [Security.AccessControl.FileSystemRights]::ChangePermissions -bor
+        [Security.AccessControl.FileSystemRights]::TakeOwnership -bor
+        [Security.AccessControl.FileSystemRights]::CreateFiles -bor
+        [Security.AccessControl.FileSystemRights]::CreateDirectories -bor
+        [Security.AccessControl.FileSystemRights]::AppendData -bor
+        [Security.AccessControl.FileSystemRights]::WriteData
+}
+
+function Add-AdkRunnerMutationDeny([string]$LiteralPath, [string]$RunnerSid) {
+    $acl = Get-Acl -LiteralPath $LiteralPath
+    $rule = [Security.AccessControl.FileSystemAccessRule]::new(
+        [Security.Principal.SecurityIdentifier]::new($RunnerSid),
+        (Get-AdkMutationMask),
+        [Security.AccessControl.InheritanceFlags]::None,
+        [Security.AccessControl.PropagationFlags]::None,
+        [Security.AccessControl.AccessControlType]::Deny
+    )
+    $null = $acl.AddAccessRule($rule)
+    Set-Acl -LiteralPath $LiteralPath -AclObject $acl
+}
+
+function Restore-AdkExecutionLeaseDescriptors($Lease) {
+    $errors = [Collections.Generic.List[string]]::new()
+    $entries = @($Lease.Entries)
+    [array]::Reverse($entries)
+    foreach ($entry in $entries) {
+        if (-not [CodeArbiterAdkLeaseNative]::SetKernelObjectSecurity(
+            $entry.Handle, 4, $entry.SecurityDescriptor
+        )) {
+            $null = $errors.Add(
+                "$($entry.Path):$([Runtime.InteropServices.Marshal]::GetLastWin32Error())"
+            )
+        }
+    }
+    if ($errors.Count) { throw ('could not restore ADK execution ACLs: ' + ($errors -join ',')) }
+}
+
+function Open-AdkExecutionSecurityLease([string[]]$LiteralPaths, [string]$RunnerSid) {
+    if ($null -eq $LiteralPaths -or $LiteralPaths.Count -lt 1) {
+        throw 'ADK execution security lease requires at least one path'
+    }
+    $entries = [Collections.Generic.List[object]]::new()
+    $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    try {
+        foreach ($path in $LiteralPaths) {
+            $full = [IO.Path]::GetFullPath([string]$path)
+            if (-not $seen.Add($full)) { throw 'ADK execution security lease contains a duplicate path' }
+            if (-not (Test-Path -LiteralPath $full)) { throw 'ADK execution security lease path is missing' }
+            $item = Get-Item -LiteralPath $full -Force
+            if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                throw 'ADK execution security lease path is a reparse point'
+            }
+            $null = $entries.Add([pscustomobject]@{
+                Path = $full
+                Handle = Open-AdkExecutionLeaseHandle $full
+                SecurityDescriptor = Get-AdkSecurityDescriptorBytes $full
+            })
+        }
+        foreach ($entry in @($entries)) { Add-AdkRunnerMutationDeny $entry.Path $RunnerSid }
+        [pscustomobject]@{
+            Entries = @($entries)
+            Paths = @($seen)
+            RunnerSid = $RunnerSid
+            Count = $entries.Count
+        }
+    } catch {
+        $lease = [pscustomobject]@{Entries=@($entries)}
+        try { Restore-AdkExecutionLeaseDescriptors $lease } catch { }
+        foreach ($entry in @($entries)) { $entry.Handle.Dispose() }
+        throw
+    }
+}
+
+function Close-ApprovedAdkExecutionLease($Lease) {
+    if ($null -eq $Lease) { return }
+    $failure = $null
+    try { Restore-AdkExecutionLeaseDescriptors $Lease } catch { $failure = $_ }
+    foreach ($entry in @($Lease.Entries)) {
+        if ($null -ne $entry.Handle) { $entry.Handle.Dispose() }
+    }
+    if ($failure) { throw $failure }
+    if ($Lease.PSObject.Properties.Name -contains 'Tools') {
+        $null = Get-ApprovedBcdBootPath $Lease.Tools
+    }
+}
+
+function Open-ApprovedAdkExecutionLease($Tools) {
+    Assert-DeploymentToolsContract $Tools
+    $root = Convert-CanonicalWindowsAbsolutePath ([string]$Tools.protected_root)
+    $paths = @($root, (Join-Path $root 'amd64'), (Join-Path $root 'amd64\BCDBoot')) + @($Tools.files | ForEach-Object {
+        Join-Path $root (Convert-CanonicalWindowsRelativePath ([string]$_.path))
+    })
+    $runnerSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $lease = Open-AdkExecutionSecurityLease $paths $runnerSid
+    $lease | Add-Member -NotePropertyName Tools -NotePropertyValue $Tools
+    $lease | Add-Member -NotePropertyName FileCount -NotePropertyValue @($Tools.files).Count
+    $lease
 }
 
 function Get-CandidateMetadata([string]$PackageRoot, [string]$Checker) {
@@ -732,6 +1148,60 @@ function Invoke-BrokerCleanupStage($Lifecycle, [string]$Name, [scriptblock]$Oper
         $null = $Lifecycle.Errors.Add($_.Exception.Message)
     } finally {
         $Lifecycle.CleanupIndex++
+    }
+}
+
+function Get-FailedIdentityCleanupObservation(
+    $Lifecycle,
+    $Session,
+    $Setup,
+    [string]$Account,
+    [bool]$IdentityCreationAttempted,
+    $ObservedIdentityState
+) {
+    if (-not $IdentityCreationAttempted -and $Lifecycle.Trace -notcontains 'identity-created') {
+        return [pscustomobject]@{disabled=$true;deleted=$true;profile_destroyed=$true}
+    }
+    if ($null -ne $ObservedIdentityState) {
+        if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') {
+            throw 'injected identity cleanup evidence is test-only'
+        }
+        Assert-ExactFields $ObservedIdentityState @('disabled','deleted','profile_destroyed') 'identity cleanup observation'
+        return [pscustomobject]@{
+            disabled = [bool]$ObservedIdentityState.disabled
+            deleted = [bool]$ObservedIdentityState.deleted
+            profile_destroyed = [bool]$ObservedIdentityState.profile_destroyed
+        }
+    }
+    if (-not $Session) {
+        throw 'guest identity cleanup could not obtain its production session'
+    }
+    $setupSid = if ($Setup) { [string]$Setup.sid } else { '' }
+    Invoke-Command -Session $Session -ArgumentList $Account,$setupSid -ScriptBlock {
+        param($Account,$SetupSid)
+        $user = Get-LocalUser $Account -ErrorAction SilentlyContinue
+        if ($user) { Disable-LocalUser $Account }
+        $disabled = $null -eq (Get-LocalUser $Account -ErrorAction SilentlyContinue) -or
+            -not (Get-LocalUser $Account).Enabled
+        'CodeArbiter-DesktopDriver','CodeArbiter-Desktop','CodeArbiter-DeviceAuth','CodeArbiter-ClearAutologon' |
+            ForEach-Object { Unregister-ScheduledTask $_ -Confirm:$false -ErrorAction SilentlyContinue }
+        Remove-LocalUser $Account -ErrorAction SilentlyContinue
+        $deleted = $null -eq (Get-LocalUser $Account -ErrorAction SilentlyContinue)
+        $sid = if ($user) { [string]$user.Sid.Value } else { $SetupSid }
+        $profilePath = "C:\Users\$Account"
+        $profiles = @(Get-CimInstance Win32_UserProfile | Where-Object {
+            ($sid -and [string]$_.SID -ceq $sid) -or [string]$_.LocalPath -ceq $profilePath
+        })
+        foreach ($profile in $profiles) { Remove-CimInstance $profile }
+        [pscustomobject]@{
+            disabled = $disabled
+            deleted = $deleted
+            profile_destroyed = @(
+                Get-CimInstance Win32_UserProfile | Where-Object {
+                    ($sid -and [string]$_.SID -ceq $sid) -or [string]$_.LocalPath -ceq $profilePath
+                }
+            ).Count -eq 0
+        }
     }
 }
 
@@ -997,7 +1467,12 @@ function Remove-EphemeralVm([string]$VMName, [string]$RunRoot) {
 }
 
 function New-FreshGuestDisk {
-    param([string]$IsoPath, [string]$DiskPath, [string]$BootstrapPassword)
+    param(
+        [string]$IsoPath,
+        [string]$DiskPath,
+        [string]$BootstrapPassword,
+        [Parameter(Mandatory)]$DeploymentTools
+    )
     $mountedIso = $null
     $mountedVhd = $null
     $applied = $null
@@ -1028,8 +1503,15 @@ function New-FreshGuestDisk {
         $efiRoot = "$($efi.DriveLetter):"
         Expand-WindowsImage -ImagePath $imagePath -Index $windowsImage[0].ImageIndex -ApplyPath $osRoot |
             Out-Null
-        & bcdboot.exe "$osRoot`Windows" /s $efiRoot /f UEFI | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw 'could not create the fresh guest boot files' }
+        $adkExecutionLease = $null
+        try {
+            $adkExecutionLease = Open-ApprovedAdkExecutionLease $DeploymentTools
+            $approvedBcdBootPath = Get-ApprovedBcdBootPath $DeploymentTools -ExecutionLocked
+            & $approvedBcdBootPath "$osRoot`Windows" /s $efiRoot /f UEFI | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw 'could not create the fresh guest boot files' }
+        } finally {
+            Close-ApprovedAdkExecutionLease $adkExecutionLease
+        }
 
         $escaped = [Security.SecurityElement]::Escape($BootstrapPassword)
         $unattend = @"
@@ -1095,6 +1577,97 @@ if ($ContractOnly -or $PSCmdlet.ParameterSetName -eq 'Contract') {
         probe_sha256=$contract.probe.sha256; image_sha256=$contract.image.sha256
         provisioning_mode=$contract.image.provisioning_mode; route_corpus_id=$contract.route_corpus.id
     } | ConvertTo-Json -Compress
+    exit 0
+}
+if ($PSCmdlet.ParameterSetName -eq 'AdkBoundaryFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'ADK boundary fixture mode is test-only' }
+    $fixture = Get-Content -LiteralPath $AdkBoundaryFixturePath -Raw -Encoding utf8 | ConvertFrom-Json
+    Assert-ApprovedAdkBcdBootObservation $contract.deployment_tools $fixture | ConvertTo-Json -Compress
+    exit 0
+}
+if ($PSCmdlet.ParameterSetName -eq 'AdkExecutionLeaseFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'ADK execution lease fixture mode is test-only' }
+    $fixtureRoot = [IO.Path]::GetFullPath($AdkExecutionLeaseFixturePath)
+    $fixtureDirectories = @($fixtureRoot, (Join-Path $fixtureRoot 'amd64'), (Join-Path $fixtureRoot 'amd64\BCDBoot'))
+    $fixtureFiles = @('bcdboot.exe','bcdedit.exe','bootsect.exe') | ForEach-Object {
+        Join-Path $fixtureRoot ("amd64\BCDBoot\" + $_)
+    }
+    $fixtureLease = Open-AdkExecutionSecurityLease (@($fixtureDirectories) + @($fixtureFiles)) ([Security.Principal.WindowsIdentity]::GetCurrent().User.Value)
+    $fileReplacementBlocked = $false
+    $rootReplacementBlocked = $false
+    $siblingDllCreationBlocked = $false
+    $manifestCreationBlocked = $false
+    $localRedirectCreationBlocked = $false
+    $daclMutationBlocked = $false
+    try {
+        try {
+            Move-Item -LiteralPath $fixtureFiles[0] -Destination ($fixtureFiles[0] + '.swapped') -ErrorAction Stop
+        } catch { $fileReplacementBlocked = $true }
+        try {
+            Move-Item -LiteralPath $fixtureRoot -Destination ($fixtureRoot + '.swapped') -ErrorAction Stop
+        } catch { $rootReplacementBlocked = $true }
+        $bcdbootRoot = $fixtureDirectories[2]
+        try { [IO.File]::WriteAllBytes((Join-Path $bcdbootRoot 'unreviewed.dll'), [byte[]](1)) }
+            catch { $siblingDllCreationBlocked = $true }
+        try { [IO.File]::WriteAllText((Join-Path $bcdbootRoot 'bcdboot.exe.manifest'), 'unreviewed') }
+            catch { $manifestCreationBlocked = $true }
+        try { $null = New-Item -ItemType Directory -Path (Join-Path $bcdbootRoot 'bcdboot.exe.local') -ErrorAction Stop }
+            catch { $localRedirectCreationBlocked = $true }
+        try {
+            $fixtureAcl = Get-Acl -LiteralPath $bcdbootRoot
+            $fixtureAcl.SetAccessRuleProtection($true, $true)
+            Set-Acl -LiteralPath $bcdbootRoot -AclObject $fixtureAcl
+        } catch { $daclMutationBlocked = $true }
+    } finally {
+        Close-ApprovedAdkExecutionLease $fixtureLease
+    }
+    $aclRestored = $false
+    try {
+        $restoreProbe = Join-Path $fixtureDirectories[2] 'after-close-fixture.txt'
+        [IO.File]::WriteAllText($restoreProbe, 'restored')
+        Remove-Item -LiteralPath $restoreProbe -Force
+        $aclRestored = $true
+    } catch { }
+    [ordered]@{
+        file_replacement_blocked = $fileReplacementBlocked
+        root_replacement_blocked = $rootReplacementBlocked
+        sibling_dll_creation_blocked = $siblingDllCreationBlocked
+        manifest_creation_blocked = $manifestCreationBlocked
+        local_redirect_creation_blocked = $localRedirectCreationBlocked
+        dacl_mutation_blocked = $daclMutationBlocked
+        acl_restored = $aclRestored
+        leased_file_count = $fixtureFiles.Count
+    } | ConvertTo-Json -Compress
+    exit 0
+}
+if ($PSCmdlet.ParameterSetName -eq 'CleanupObservationFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'cleanup observation fixture mode is test-only' }
+    $fixture = Get-Content -LiteralPath $CleanupObservationFixturePath -Raw -Encoding utf8 | ConvertFrom-Json
+    Assert-ExactFields $fixture @(
+        'schema_version','identity_created','identity_creation_attempted','guest_observation'
+    ) 'cleanup observation fixture'
+    if ([int]$fixture.schema_version -ne 1) { throw 'cleanup observation fixture schema is invalid' }
+    $fixtureLifecycle = New-BrokerLifecycle
+    if ([bool]$fixture.identity_created) { $null = $fixtureLifecycle.Trace.Add('identity-created') }
+    $fixtureTorn = Invoke-BrokerCleanupStage $fixtureLifecycle 'account-disabled' {
+        $observation = Get-FailedIdentityCleanupObservation $fixtureLifecycle $null $null `
+            'ca-desktop-disposable-fixture' ([bool]$fixture.identity_creation_attempted) $fixture.guest_observation
+        if (-not $observation.disabled) { throw 'fixture account disable was not observed' }
+        $observation
+    } ''
+    $null = Invoke-BrokerCleanupStage $fixtureLifecycle 'account-deleted' {
+        if ($null -eq $fixtureTorn -or -not $fixtureTorn.deleted) { throw 'fixture account deletion was not observed' }
+        $true
+    } ''
+    $null = Invoke-BrokerCleanupStage $fixtureLifecycle 'profile-destroyed' {
+        if ($null -eq $fixtureTorn -or -not $fixtureTorn.profile_destroyed) { throw 'fixture profile destruction was not observed' }
+        $true
+    } ''
+    if ($fixtureLifecycle.Errors.Count) { throw ($fixtureLifecycle.Errors -join '; ') }
+    [ordered]@{
+        observation = $fixtureTorn
+        cleanup_trace = @($fixtureLifecycle.Trace)
+    } | ConvertTo-Json -Depth 4 -Compress
     exit 0
 }
 if ($PSCmdlet.ParameterSetName -eq 'CandidateSurfaceFixture') {
@@ -1252,6 +1825,7 @@ $preAuthEvidence = $null
 $postAuthEvidence = $null
 $measurements = $null
 $authCompletionObserved = $false
+$identityCreationAttempted = $false
 $torn = $null
 $lifecycle = New-BrokerLifecycle
 
@@ -1268,7 +1842,8 @@ try {
     $candidate = Get-CandidateMetadata $hostPluginRoot (Join-Path $loaded.Root '.github\scripts\check_codex_skill_resources.py')
     $permissionProfile = New-DesktopProofPermissionProfile $contract $account $candidate.Version $proofRepo
     if ((Get-Sha256 $imagePath) -cne $contract.image.sha256) { throw 'approved image changed after boundary verification' }
-    $diskEvidence = New-FreshGuestDisk $imagePath $diskPath $bootstrapPassword
+    $null = Get-ApprovedBcdBootPath $contract.deployment_tools
+    $diskEvidence = New-FreshGuestDisk $imagePath $diskPath $bootstrapPassword $contract.deployment_tools
     $null = Invoke-BrokerStage $lifecycle 'iso-applied-to-fresh-vhdx' {
         if ($diskEvidence.fresh_iso_applied -ne $true) { throw 'fresh ISO application was not measured' }
         $true
@@ -1303,6 +1878,7 @@ try {
     $session = Wait-DirectSession $vmName $bootstrap
     $vmId = (Get-VM -Name $vmName).Id.Guid.ToString('D')
 
+    $identityCreationAttempted = $true
     $setup = Invoke-Command -Session $session -ArgumentList $account,$desktopPassword,$guestTrustedRoot,$guestRunRoot,$guestExchangeRoot,$proofRepo,$contract.network,$permissionProfile.Toml -ScriptBlock {
         param($Account,$Password,$TrustedRoot,$RunRoot,$ExchangeRoot,$Repo,$Network,$PermissionToml)
         Remove-Item -LiteralPath 'C:\Windows\Panther\Unattend.xml' -Force -ErrorAction SilentlyContinue
@@ -1827,24 +2403,11 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
         $cleanupName = $script:BrokerCleanupStages[$lifecycle.CleanupIndex]
         switch($cleanupName){
             'account-disabled' {
-                $null = Invoke-BrokerCleanupStage $lifecycle $cleanupName {
-                    if($lifecycle.Trace -notcontains 'identity-created'){
-                        $catchTorn=[pscustomobject]@{disabled=$true;deleted=$true;profile_destroyed=$true}
-                    } elseif($session -and $setup){
-                        $catchTorn=Invoke-Command -Session $session -ArgumentList $account,[string]$setup.sid -ScriptBlock {
-                            param($Account,$Sid)
-                            $user=Get-LocalUser $Account -ErrorAction SilentlyContinue
-                            if($user){Disable-LocalUser $Account}
-                            $disabled=$null-eq(Get-LocalUser $Account -ErrorAction SilentlyContinue)-or-not(Get-LocalUser $Account).Enabled
-                            'CodeArbiter-DesktopDriver','CodeArbiter-Desktop','CodeArbiter-DeviceAuth','CodeArbiter-ClearAutologon'|ForEach-Object{Unregister-ScheduledTask $_ -Confirm:$false -ErrorAction SilentlyContinue}
-                            Remove-LocalUser $Account -ErrorAction SilentlyContinue
-                            $deleted=$null-eq(Get-LocalUser $Account -ErrorAction SilentlyContinue)
-                            $p=Get-CimInstance Win32_UserProfile|Where-Object SID -eq $Sid;if($p){Remove-CimInstance $p}
-                            [pscustomobject]@{disabled=$disabled;deleted=$deleted;profile_destroyed=$null-eq(Get-CimInstance Win32_UserProfile|Where-Object SID -eq $Sid)}
-                        }
-                    } else { throw 'guest identity cleanup could not obtain its production session' }
-                    if(-not$catchTorn.disabled){throw 'failed-run account disable was not observed'}
-                    $true
+                $catchTorn = Invoke-BrokerCleanupStage $lifecycle $cleanupName {
+                    $observation = Get-FailedIdentityCleanupObservation $lifecycle $session $setup `
+                        $account $identityCreationAttempted $null
+                    if(-not$observation.disabled){throw 'failed-run account disable was not observed'}
+                    $observation
                 } ''
             }
             'account-deleted' {
