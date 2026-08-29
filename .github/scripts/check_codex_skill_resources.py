@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+from bisect import bisect_right
 import hashlib
 import io
 import json
@@ -78,6 +79,16 @@ REFERENCE_DEFINITION = re.compile(
 )
 REFERENCE_RESOURCE_LINK = re.compile(
     r"\[(?P<text>[^\]\n]+)\]\[(?P<label>[^\]\n]*)\]"
+)
+SYMBOLIC_SEGMENT = re.compile(r"<[a-z][a-z0-9-]*>")
+SYMBOLIC_TARGET_CHARS = re.compile(r"^[A-Za-z0-9_./<>-]+$")
+SYMBOLIC_SENTINEL = ":codearbiter-symbol:"
+SYMBOLIC_INLINE_LINK = re.compile(
+    r"\[[^\]\r\n]*\]\("
+    r"(?P<target>[A-Za-z0-9_./-]*(?:<[a-z][a-z0-9-]*>"
+    r"[A-Za-z0-9_./-]*)+)"
+    r"(?:[ \t\r\n]+(?:\"[^\"\r\n]*\"|'[^'\r\n]*'|\([^\)\r\n]*\)))?"
+    r"[ \t\r\n]*\)"
 )
 NONCE = re.compile(r"(?m)^nonce:\s*([^\s]+)\s*$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -2324,6 +2335,27 @@ def _markdown_html_tag_spans(text: str) -> list[tuple[int, int]]:
 def _mask_markdown_literal_regions(text: str) -> str:
     """Blank CommonMark literal regions while preserving offsets and line breaks."""
     masked = list(text)
+    symbolic_targets = [
+        (match.group("target"), match.start("target"))
+        for match in SYMBOLIC_INLINE_LINK.finditer(text)
+        if not _escaped_at(text, match.start())
+        and not (
+            match.start() > 0
+            and text[match.start() - 1] == "!"
+            and not _escaped_at(text, match.start() - 1)
+        )
+    ]
+    symbolic_targets.extend(
+        (match.group("plain"), match.start("plain"))
+        for match in REFERENCE_DEFINITION.finditer(text)
+        if match.group("plain") is not None
+        and SYMBOLIC_SEGMENT.search(match.group("plain"))
+    )
+    symbolic_segments = {
+        (offset + segment.start(), offset + segment.end())
+        for target, offset in symbolic_targets
+        for segment in SYMBOLIC_SEGMENT.finditer(target)
+    }
 
     def blank(start: int, end: int) -> None:
         for index in range(start, end):
@@ -2333,25 +2365,7 @@ def _mask_markdown_literal_regions(text: str) -> str:
     for match in re.finditer(r"<!--[\s\S]*?-->", text):
         blank(*match.span())
     for span in _markdown_html_tag_spans(text):
-        # Generated resource templates deliberately carry destinations such
-        # as ``../agents/<name>.md``.  ``<name>`` is a path placeholder inside
-        # the link destination, not raw HTML.  Preserve only the no-whitespace
-        # inline-destination case; real HTML elsewhere remains masked.
-        line_start = text.rfind("\n", 0, span[0]) + 1
-        line_end = text.find("\n", span[1])
-        if line_end < 0:
-            line_end = len(text)
-        opener = text.rfind("](", line_start, span[0])
-        closer = text.find(")", span[1], line_end)
-        in_inline_destination = (
-            opener >= 0
-            and closer >= 0
-            and not any(
-                character in " \t\r\n"
-                for character in text[opener + 2:closer]
-            )
-        )
-        if not in_inline_destination:
+        if span not in symbolic_segments:
             blank(*span)
 
     offset = 0
@@ -2502,7 +2516,8 @@ def _mask_markdown_literal_regions(text: str) -> str:
 
 
 def _inside(span_start: int, spans: list[tuple[int, int]]) -> bool:
-    return any(start <= span_start < end for start, end in spans)
+    index = bisect_right(spans, (span_start, sys.maxsize)) - 1
+    return index >= 0 and span_start < spans[index][1]
 
 
 def _escaped_at(text: str, index: int) -> bool:
@@ -2657,9 +2672,10 @@ def _markdown_resource_links(text: str) -> list[str]:
     inline_spans = [span for _, span in inline_matches]
     links = [_markdown_target(target) for target, _ in inline_matches]
     reference_spans: list[tuple[int, int]] = []
+    definition_or_inline_spans = sorted(definition_spans + inline_spans)
     for match in REFERENCE_RESOURCE_LINK.finditer(visible):
         if (
-            _inside(match.start(), definition_spans + inline_spans)
+            _inside(match.start(), definition_or_inline_spans)
             or _escaped_at(visible, match.start())
             or match.start() > 0
             and visible[match.start() - 1] == "!"
@@ -2671,7 +2687,7 @@ def _markdown_resource_links(text: str) -> list[str]:
             raise ValueError("candidate resource contains an unresolved reference-style link")
         links.append(definitions[label])
         reference_spans.append(match.span())
-    occupied = definition_spans + inline_spans + reference_spans
+    occupied = sorted(definition_or_inline_spans + reference_spans)
     for match in re.finditer(r"\[([^\]\n]+)\]", visible):
         if (
             _inside(match.start(), occupied)
@@ -2728,6 +2744,36 @@ def candidate_resource_contract(path: Path) -> dict[str, Any]:
             raise ValueError(f"candidate resource is not UTF-8: {source}") from error
         for reference in _markdown_resource_links(text):
             target = reference.split("#", 1)[0]
+            if SYMBOLIC_SEGMENT.search(target):
+                if not target.casefold().endswith(".md"):
+                    continue
+                symbolic, symbolic_count = SYMBOLIC_SEGMENT.subn(SYMBOLIC_SENTINEL, target)
+                if (
+                    not SYMBOLIC_TARGET_CHARS.fullmatch(target)
+                    or "<" in symbolic
+                    or ">" in symbolic
+                ):
+                    raise ValueError(
+                        f"candidate resource link has an invalid symbolic target: "
+                        f"{source} -> {reference}"
+                    )
+                resolved = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(source), symbolic)
+                )
+                if resolved.count(SYMBOLIC_SENTINEL) != symbolic_count:
+                    raise ValueError(
+                        f"candidate resource link normalization removes a symbolic segment: "
+                        f"{source} -> {reference}"
+                    )
+                if target.startswith(("/", "\\")) or resolved.startswith("../"):
+                    raise ValueError(
+                        f"candidate resource link is escaped: {source} -> {reference}"
+                    )
+                resolved_template = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(source), target)
+                )
+                _supported_template_resource(resolved_template)
+                continue
             if (
                 not target
                 or target.startswith(("#", "/", "\\"))

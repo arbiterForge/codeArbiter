@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import time
 import unittest
 import warnings
 import zipfile
@@ -3496,6 +3497,142 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
                 )])
                 with self.assertRaisesRegex(ValueError, "unsupported template"):
                     self.checker.candidate_resource_contract(package)
+
+    def test_symbolic_markdown_template_link_is_not_a_runtime_read(self):
+        sources = {
+            "inline": "[Agent template](../agents/<name>.md)\n",
+            "inline title": "[Agent template](../agents/<name>.md 'route')\n",
+            "escaped image marker": "\\![Agent template](../agents/<name>.md)\n",
+            "full reference": (
+                "[Agent template][Template]\n\n"
+                "[Template]: ../agents/<name>.md\n"
+            ),
+            "collapsed reference": (
+                "[Template][]\n\n[Template]: ../agents/<name>.md\n"
+            ),
+        }
+        for label, source in sources.items():
+            with self.subTest(label=label):
+                path = self.write_zip([
+                    ("plugins/ca-codex/skills/probe.md", source),
+                    ("plugins/ca-codex/agents/probe.md", "# Agent\n"),
+                ], name=f"symbolic-{label.replace(' ', '-')}.zip")
+                self.assertEqual(
+                    self.checker.candidate_resource_contract(path)["relative_reads"],
+                    [],
+                )
+
+    def test_symbolic_markdown_template_link_cannot_escape_candidate(self):
+        sources = {
+            "relative inline": "[Agent template](../../../../<name>.md)\n",
+            "root inline": "[Agent template](/agents/<name>.md)\n",
+            "relative reference": (
+                "[Agent template][Template]\n\n"
+                "[Template]: ../../../../<name>.md\n"
+            ),
+        }
+        for label, source in sources.items():
+            with self.subTest(label=label):
+                path = self.write_zip([
+                    ("plugins/ca-codex/skills/probe.md", source),
+                ], name=f"symbolic-escape-{label.replace(' ', '-')}.zip")
+                with self.assertRaisesRegex(
+                    ValueError, "candidate resource link is escaped"
+                ):
+                    self.checker.candidate_resource_contract(path)
+
+    def test_symbolic_markdown_template_survives_path_normalization(self):
+        sources = {
+            "inline": "[Agent template](../agents/<name>/../probe.md)\n",
+            "reference": (
+                "[Agent template][Template]\n\n"
+                "[Template]: ../agents/<name>/../probe.md\n"
+            ),
+        }
+        for label, source in sources.items():
+            with self.subTest(label=label):
+                path = self.write_zip([
+                    ("plugins/ca-codex/skills/probe.md", source),
+                    ("plugins/ca-codex/agents/probe.md", "# Agent\n"),
+                ], name=f"symbolic-normalization-{label}.zip")
+                with self.assertRaisesRegex(
+                    ValueError, "normalization removes a symbolic segment"
+                ):
+                    self.checker.candidate_resource_contract(path)
+
+    def test_symbolic_markdown_link_scan_is_bounded_near_entry_limit(self):
+        source = "[Template](../agents/<name>.md)\n" * 30_000
+        started = time.perf_counter()
+        links = self.checker._markdown_resource_links(source)
+        elapsed = time.perf_counter() - started
+        self.assertEqual(len(links), 30_000)
+        self.assertLess(
+            elapsed,
+            5.0,
+            f"symbolic Markdown link scan took {elapsed:.2f}s near the entry limit",
+        )
+
+    def test_dense_symbolic_target_is_bounded_near_entry_limit(self):
+        target = "../agents/" + "<a>" * 64_000 + ".md"
+        path = self.write_zip([
+            ("plugins/ca-codex/skills/probe.md", f"[Template]({target})\n"),
+        ], name="dense-symbolic-target.zip")
+        started = time.perf_counter()
+        with self.assertRaisesRegex(ValueError, "unsupported template"):
+            self.checker.candidate_resource_contract(path)
+        elapsed = time.perf_counter() - started
+        self.assertLess(
+            elapsed,
+            5.0,
+            f"dense symbolic target validation took {elapsed:.2f}s near the entry limit",
+        )
+
+    def test_symbolic_targets_remain_inert_only_in_supported_markdown_contexts(self):
+        inert_sources = {
+            "non-markdown route": "[Route](../agents/<name>.json)\n",
+            "inline code": "`[Template](../agents/<name>.md)`\n",
+            "fenced code": "```md\n[Template](../agents/<name>.md)\n```\n",
+            "comment": "<!-- [Template](../agents/<name>.md) -->\n",
+            "raw html": '<span title="[Template](../agents/<name>.md)">x</span>\n',
+        }
+        for label, source in inert_sources.items():
+            with self.subTest(label=label):
+                path = self.write_zip([
+                    ("plugins/ca-codex/skills/probe.md", source),
+                ], name=f"symbolic-context-{label.replace(' ', '-')}.zip")
+                self.assertEqual(
+                    self.checker.candidate_resource_contract(path)["relative_reads"],
+                    [],
+                )
+
+        invalid = self.write_zip([
+            (
+                "plugins/ca-codex/skills/probe.md",
+                "[Template][Route]\n\n[Route]: ../agents/<name>@.md\n",
+            ),
+        ], name="invalid-symbolic-target.zip")
+        with self.assertRaisesRegex(ValueError, "invalid symbolic target"):
+            self.checker.candidate_resource_contract(invalid)
+
+    def test_characterizes_malformed_title_and_unresolved_concrete_markdown(self):
+        malformed_title = self.write_zip([
+            (
+                "plugins/ca-codex/skills/probe.md",
+                "[Agent](../agents/probe.md unsupported-title)\n",
+            ),
+            ("plugins/ca-codex/agents/probe.md", "# Agent\n"),
+        ], name="malformed-inline-title.zip")
+        with self.assertRaisesRegex(ValueError, "unsupported inline link title"):
+            self.checker.candidate_resource_contract(malformed_title)
+
+        unresolved = self.write_zip([
+            (
+                "plugins/ca-codex/skills/probe.md",
+                "[Missing](../agents/missing.md)\n",
+            ),
+        ], name="unresolved-concrete-markdown.zip")
+        with self.assertRaisesRegex(ValueError, "escaped or unresolved"):
+            self.checker.candidate_resource_contract(unresolved)
 
     def test_deep_balanced_destination_is_included_and_nonpunctuation_escape_rejected(self):
         balanced = self.write_zip([
