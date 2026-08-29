@@ -215,7 +215,7 @@ jobs:
           python trusted/.github/scripts/check_codex_skill_resources.py --surface desktop --desktop-build $env:DESKTOP_BUILD --desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION --workflow-run-id $env:TRUSTED_RUN_ID --workflow-commit $env:TRUSTED_WORKFLOW_COMMIT --import-receipt "$env:RUNNER_TEMP/codex-desktop-candidate-receipt.json" --candidate-package "$env:RUNNER_TEMP/ca-codex-candidate.zip" --candidate-source-commit $env:CANDIDATE_COMMIT --candidate-tree $env:CANDIDATE_TREE --pre-attestation --json
 
       - name: Transfer only the finalized candidate and non-secret receipt
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: codex-desktop-candidate-transfer-${{ inputs.candidate_commit }}
           path: |
@@ -292,7 +292,7 @@ jobs:
           python trusted/.github/scripts/check_codex_skill_resources.py --surface desktop --desktop-build $env:DESKTOP_BUILD --desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION --workflow-run-id $env:TRUSTED_RUN_ID --workflow-commit $env:TRUSTED_WORKFLOW_COMMIT --import-receipt "$env:RUNNER_TEMP/codex-desktop-transfer/codex-desktop-candidate-receipt.json" --candidate-package "$env:RUNNER_TEMP/codex-desktop-transfer/ca-codex-candidate.zip" --candidate-source-commit $env:CANDIDATE_COMMIT --candidate-tree $env:CANDIDATE_TREE --json
 
       - name: Store only the validated non-secret receipt and detached bundle
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: codex-desktop-candidate-${{ inputs.candidate_commit }}
           path: |
