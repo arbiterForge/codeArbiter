@@ -420,10 +420,12 @@ jobs:
           if [ "$EVENT_NAME" = "pull_request" ]; then
             python .github/scripts/verify_codex_candidate_provenance.py --mode pr \
               --receipt docs/reports/codex-desktop-candidate-resolution.json \
+              --allow-missing-receipt \
               --base "$BASE_SHA" --head "$HEAD_SHA" --json
           else
             python .github/scripts/verify_codex_candidate_provenance.py --mode merge-group \
               --receipt docs/reports/codex-desktop-candidate-resolution.json \
+              --allow-missing-receipt \
               --head "$HEAD_SHA" --json
           fi
 

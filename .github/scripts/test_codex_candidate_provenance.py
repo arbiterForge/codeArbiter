@@ -3,9 +3,12 @@
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -101,6 +104,168 @@ class CandidateGraphTest(unittest.TestCase):
         git(repo, "commit", "-qm", "receipt R")
         head = git(repo, "rev-parse", "HEAD")
         return temporary, repo, base, candidate, head, receipt
+
+    def test_optional_pr_receipt_is_non_blocking_only_when_the_file_is_absent(self):
+        """An ordinary plugin PR does not need synthetic desktop evidence."""
+        module = self.load_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            missing = root / "desktop-receipt.json"
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                try:
+                    result = module.main([
+                        "--mode", "pr",
+                        "--repo", str(root),
+                        "--receipt", str(missing),
+                        "--base", "a" * 40,
+                        "--head", "b" * 40,
+                        "--allow-missing-receipt",
+                        "--json",
+                    ])
+                except SystemExit as error:
+                    result = error.code
+
+            self.assertEqual(result, 0)
+            self.assertEqual(
+                json.loads(stdout.getvalue()),
+                {
+                    "reason": "desktop receipt not supplied",
+                    "verdict": "NOT_APPLICABLE",
+                },
+            )
+
+    def test_missing_pr_receipt_remains_strict_without_the_opt_in_flag(self):
+        """The verifier is strict by default even for pull requests."""
+        module = self.load_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = module.main([
+                    "--mode", "pr",
+                    "--repo", str(root),
+                    "--receipt", str(root / "missing-receipt.json"),
+                    "--base", "a" * 40,
+                    "--head", "b" * 40,
+                    "--json",
+                ])
+
+            self.assertEqual(result, 1)
+            self.assertIn("candidate receipt is not valid UTF-8 JSON", stderr.getvalue())
+
+    def test_optional_merge_group_receipt_is_non_blocking_only_when_absent(self):
+        """Merge-queue candidates share the PR absence-only contract."""
+        module = self.load_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                result = module.main([
+                    "--mode", "merge-group",
+                    "--repo", str(root),
+                    "--receipt", str(root / "missing-receipt.json"),
+                    "--head", "b" * 40,
+                    "--allow-missing-receipt",
+                    "--json",
+                ])
+
+            self.assertEqual(result, 0)
+            self.assertEqual(json.loads(stdout.getvalue())["verdict"], "NOT_APPLICABLE")
+
+    def test_optional_pr_receipt_still_rejects_malformed_present_evidence(self):
+        """The optional boundary is absence-only, never validation-optional."""
+        module = self.load_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            receipt = root / "desktop-receipt.json"
+            receipt.write_text("not json\n", encoding="utf-8")
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                try:
+                    result = module.main([
+                        "--mode", "pr",
+                        "--repo", str(root),
+                        "--receipt", str(receipt),
+                        "--base", "a" * 40,
+                        "--head", "b" * 40,
+                        "--allow-missing-receipt",
+                        "--json",
+                    ])
+                except (SystemExit, ValueError) as error:
+                    result = getattr(error, "code", 2)
+
+            self.assertEqual(result, 1)
+            self.assertIn("candidate receipt is not valid UTF-8 JSON", stderr.getvalue())
+
+    def test_optional_pr_receipt_still_runs_strict_attestation_validation(self):
+        """Valid JSON without the strict desktop fields remains untrusted evidence."""
+        module = self.load_module()
+        temporary, repo, base, _candidate, head, _receipt = self.make_graph()
+        self.addCleanup(temporary.cleanup)
+        receipt_path = repo / "docs/reports/codex-desktop-candidate-resolution.json"
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            result = module.main([
+                "--mode", "pr",
+                "--repo", str(repo),
+                "--receipt", str(receipt_path),
+                "--base", base,
+                "--head", head,
+                "--allow-missing-receipt",
+                "--json",
+            ])
+
+        self.assertEqual(result, 1)
+        self.assertIn("receipt desktop object is missing", stderr.getvalue())
+
+    def test_optional_pr_receipt_rejects_a_dangling_receipt_symlink(self):
+        """A present filesystem object cannot masquerade as an absent receipt."""
+        module = self.load_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            receipt = root / "desktop-receipt.json"
+            try:
+                os.symlink(root / "missing-target.json", receipt)
+            except OSError as error:
+                self.skipTest(f"symlink creation is unavailable: {error}")
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = module.main([
+                    "--mode", "pr",
+                    "--repo", str(root),
+                    "--receipt", str(receipt),
+                    "--base", "a" * 40,
+                    "--head", "b" * 40,
+                    "--allow-missing-receipt",
+                    "--json",
+                ])
+
+            self.assertEqual(result, 1)
+            self.assertIn("candidate receipt is not valid UTF-8 JSON", stderr.getvalue())
+
+    def test_release_cannot_opt_out_of_desktop_receipt_verification(self):
+        """Release verification always requires the strict receipt boundary."""
+        module = self.load_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    module.main([
+                        "--mode", "release",
+                        "--repo", str(root),
+                        "--receipt", str(root / "missing-receipt.json"),
+                        "--final-ref", "a" * 40,
+                        "--candidate-archive", str(root / "candidate.zip"),
+                        "--allow-missing-receipt",
+                    ])
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn(
+                "--allow-missing-receipt is not valid in release mode",
+                stderr.getvalue(),
+            )
 
     def test_accepts_one_attestation_only_r_commit_and_unchanged_merge_candidate(self):
         """A valid C→R graph must survive merge synthesis without payload drift."""

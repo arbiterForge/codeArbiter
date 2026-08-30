@@ -733,7 +733,7 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
-    def test_codex_candidate_provenance_is_required_for_payload_prs(self):
+    def test_codex_candidate_verifier_is_required_but_desktop_receipt_is_optional(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         watched = {
             ".github/scripts/verify_codex_candidate_provenance.py",
@@ -754,6 +754,15 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("python .github/scripts/test_codex_candidate_provenance.py", job)
         self.assertIn("verify_codex_candidate_provenance.py --mode pr", job)
         self.assertIn("verify_codex_candidate_provenance.py --mode merge-group", job)
+        self.assertEqual(job.count("--allow-missing-receipt"), 2)
+        self.assertRegex(
+            job,
+            r"(?s)--mode pr \\\n.*?--allow-missing-receipt \\\n.*?--base",
+        )
+        self.assertRegex(
+            job,
+            r"(?s)--mode merge-group \\\n.*?--allow-missing-receipt \\\n.*?--head",
+        )
         self.assertIn("--base \"$BASE_SHA\"", job)
         self.assertIn("--head \"$HEAD_SHA\"", job)
         self.assertIn("github.event.pull_request.base.sha || github.event.merge_group.base_sha", job)

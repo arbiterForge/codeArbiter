@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -357,12 +358,41 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--head")
     parser.add_argument("--final-ref")
     parser.add_argument("--candidate-archive")
+    parser.add_argument("--allow-missing-receipt", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
     repo = Path(args.repo).resolve()
-    receipt_path = Path(args.receipt).resolve()
+    receipt_path = Path(args.receipt).absolute()
     bundle_path = (repo / ATTESTATION_BUNDLE_PATH).resolve()
-    receipt = _load_receipt(receipt_path)
+
+    if args.mode == "pr":
+        if not args.base or not args.head or args.final_ref or args.candidate_archive:
+            parser.error("PR mode requires --base and --head only")
+    elif args.mode == "merge-group":
+        if not args.head or args.base or args.final_ref or args.candidate_archive:
+            parser.error("merge-group mode requires --head only")
+    else:
+        if not args.final_ref or not args.candidate_archive or args.base or args.head:
+            parser.error("release mode requires --final-ref and --candidate-archive only")
+        if args.allow_missing_receipt:
+            parser.error("--allow-missing-receipt is not valid in release mode")
+
+    if args.allow_missing_receipt and not os.path.lexists(receipt_path):
+        result = {
+            "verdict": "NOT_APPLICABLE",
+            "reason": "desktop receipt not supplied",
+        }
+        if args.json:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        else:
+            print("ca-codex candidate provenance NOT_APPLICABLE (desktop receipt not supplied)")
+        return 0
+
+    try:
+        receipt = _load_receipt(receipt_path)
+    except ValueError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
     try:
         candidate = _object_id(
             _mapping(receipt, "candidate").get("source_commit"), "candidate commit"
@@ -372,8 +402,6 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.mode == "pr":
-            if not args.base or not args.head or args.final_ref or args.candidate_archive:
-                parser.error("PR mode requires --base and --head only")
             with tempfile.TemporaryDirectory() as temporary:
                 archive = Path(temporary) / "candidate.zip"
                 _archive(repo, candidate, archive)
@@ -382,8 +410,6 @@ def main(argv: list[str] | None = None) -> int:
                 repo=repo, receipt=receipt, base=args.base, head=args.head
             )
         elif args.mode == "merge-group":
-            if not args.head or args.base or args.final_ref or args.candidate_archive:
-                parser.error("merge-group mode requires --head only")
             with tempfile.TemporaryDirectory() as temporary:
                 archive = Path(temporary) / "candidate.zip"
                 _archive(repo, candidate, archive)
@@ -392,10 +418,6 @@ def main(argv: list[str] | None = None) -> int:
                 repo=repo, receipt=receipt, head=args.head
             )
         else:
-            if not args.final_ref or not args.candidate_archive or args.base or args.head:
-                parser.error(
-                    "release mode requires --final-ref and --candidate-archive only"
-                )
             archive = Path(args.candidate_archive).resolve()
             verify_strict_receipt(receipt_path, archive, bundle_path=bundle_path)
             result = verify_release_candidate_payload(
