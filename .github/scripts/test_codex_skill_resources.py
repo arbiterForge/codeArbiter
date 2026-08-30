@@ -2672,8 +2672,9 @@ class HardenedDesktopReceiptContractTest(CheckerPresentMixin, unittest.TestCase)
         )
         desktop_identity = "3" * 64
         teardown_hash = self.checker._sha256_text(
-            "codearbiter.desktop-teardown.v2|"
-            f"{desktop_identity}|True|True|True|vm-destroyed|run-root-destroyed"
+            "codearbiter.desktop-teardown.v3|"
+            f"{desktop_identity}|True|True|True|vm-destroyed|run-root-destroyed|"
+            "vm-switch-inventory-unchanged"
         )
         self.receipt = {
             "schema_version": 3,
@@ -2899,6 +2900,15 @@ class HardenedDesktopReceiptContractTest(CheckerPresentMixin, unittest.TestCase)
         for label, mutate in mutations.items():
             with self.subTest(label=label):
                 self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
+
+    def test_hardened_receipt_binds_unchanged_vm_switch_inventory_into_teardown(self):
+        desktop_identity = self.receipt["identities"]["desktop"]["identity_sha256"]
+        self.receipt["events"]["teardown_events_sha256"] = self.checker._sha256_text(
+            "codearbiter.desktop-teardown.v3|"
+            f"{desktop_identity}|True|True|True|vm-destroyed|run-root-destroyed|"
+            "vm-switch-inventory-unchanged"
+        )
+        self.assert_hardened_receipt_passes()
 
     def test_hardened_receipt_separates_broker_desktop_and_vm_credentials(self):
         """O-04/O-09/O-11: identities, VM isolation, and device auth fail closed."""

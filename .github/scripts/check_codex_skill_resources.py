@@ -2881,7 +2881,7 @@ def validate_desktop_boundary_contract(
         contract = {}
         errors.append("trusted desktop boundary contract is unreadable")
     top_fields = {
-        "schema_version", "broker", "driver", "probe", "image", "deployment_tools", "application",
+        "schema_version", "broker", "driver", "probe", "vm_switch", "image", "deployment_tools", "application",
         "marketplace", "candidate_surface", "candidate_archive", "route_corpus", "channel", "network", "authentication",
         "evidence",
     }
@@ -2890,6 +2890,15 @@ def validate_desktop_boundary_contract(
         contract = contract if isinstance(contract, dict) else {}
     if contract.get("schema_version") != 2:
         errors.append("trusted desktop boundary schema_version must be 2")
+
+    if contract.get("vm_switch") != {
+        "name": "Default Switch",
+        "switch_type": "Internal",
+        "creation_allowed": False,
+        "mutation_allowed": False,
+        "physical_adapter_binding_allowed": False,
+    }:
+        errors.append("trusted desktop VM switch contract is invalid")
 
     executable_fields = {"source_path", "installed_path", "sha256"}
     executable_values: dict[str, str] = {}
@@ -3466,9 +3475,9 @@ def _desktop_v3_receipt_result(
         "codearbiter.desktop-route-set.v2|" + "|".join(canonical_event_hashes)
     ) if len(canonical_event_hashes) == len(expected_paths) else ""
     expected_teardown_hash = _sha256_text(
-        "codearbiter.desktop-teardown.v2|"
+        "codearbiter.desktop-teardown.v3|"
         f"{desktop_identity.get('identity_sha256')}|True|True|True|"
-        "vm-destroyed|run-root-destroyed"
+        "vm-destroyed|run-root-destroyed|vm-switch-inventory-unchanged"
     )
     if (
         not all(SHA256.fullmatch(str(value)) for value in events.values())

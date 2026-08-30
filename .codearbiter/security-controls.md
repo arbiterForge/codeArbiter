@@ -113,6 +113,18 @@ DNS and permits TLS over TCP/443 only to those pinned addresses. Default
 certificate verification is mandatory. PowerShell Direct remains local VMBus
 transport and exposes no guest network listener.
 
+The outer broker uses only the existing Hyper-V `Default Switch` declared by
+the trusted boundary. It must observe exactly one switch with that exact name,
+require Hyper-V to report it as `Internal`, and require no physical-adapter
+interface description. The broker has no authority to create, rename, mutate,
+or remove any switch. Before VM creation it records every switch's stable ID and
+the complete declarative and security-relevant `Get-VMSwitch` projection,
+including physical bindings, extensions, acceleration, queue, bandwidth, and
+management-OS settings. It requires that canonical inventory to remain
+byte-identical after VM and run-root destruction on success and failure, and
+binds the `vm-switch-inventory-unchanged` verdict into the teardown-event hash
+before a receipt can finalize.
+
 The event-selected candidate ZIP remains inert data. Before reading any entry
 content or creating the extraction destination, trusted default-branch code
 rejects an archive larger than 8 MiB, more than 1,024 entries, any regular file

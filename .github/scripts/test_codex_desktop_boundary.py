@@ -63,6 +63,89 @@ def run_contract(script: Path, contract: Path = CONTRACT) -> subprocess.Complete
     )
 
 
+def run_contract_payload(
+    script: Path,
+    payload: dict,
+) -> subprocess.CompletedProcess[str]:
+    descriptor, raw_path = tempfile.mkstemp(
+        prefix=".desktop-proof-boundary-",
+        suffix=".json",
+        dir=CONTRACT.parent,
+    )
+    os.close(descriptor)
+    contract_path = Path(raw_path)
+    try:
+        contract_path.write_text(json.dumps(payload), encoding="utf-8")
+        return run_contract(script, contract_path)
+    finally:
+        contract_path.unlink(missing_ok=True)
+
+
+def vm_switch_observation(
+    name: str = "Default Switch",
+    switch_id: str = "11111111-1111-1111-1111-111111111111",
+) -> dict:
+    return {
+        "id": switch_id,
+        "name": name,
+        "switch_type": "Internal",
+        "notes": "",
+        "allow_management_os": True,
+        "allow_net_lbfo_teams": False,
+        "physical_adapter_interface_description": None,
+        "physical_adapter_interface_descriptions": [],
+        "physical_adapter_interface_guids": [],
+        "bandwidth_reservation_mode": "Absolute",
+        "bandwidth_percentage": 0,
+        "default_flow_minimum_bandwidth_absolute": 0,
+        "default_flow_minimum_bandwidth_weight": 0,
+        "default_queue_vmmq_enabled": False,
+        "default_queue_vmmq_enabled_requested": False,
+        "default_queue_vrss_enabled": False,
+        "default_queue_vrss_enabled_requested": False,
+        "default_queue_vrss_exclude_primary_processor": False,
+        "default_queue_vrss_exclude_primary_processor_requested": False,
+        "default_queue_vrss_max_queue_pairs": 0,
+        "default_queue_vrss_max_queue_pairs_requested": 0,
+        "default_queue_vrss_min_queue_pairs": 0,
+        "default_queue_vrss_min_queue_pairs_requested": 0,
+        "default_queue_vrss_queue_scheduling_mode": "Dynamic",
+        "default_queue_vrss_queue_scheduling_mode_requested": "Dynamic",
+        "embedded_teaming_enabled": False,
+        "iov_enabled": False,
+        "iov_queue_pair_count": 0,
+        "iov_queue_pairs_in_use": 0,
+        "iov_support": False,
+        "iov_support_reasons": [],
+        "iov_virtual_function_count": 0,
+        "iov_virtual_functions_in_use": 0,
+        "packet_direct_enabled": False,
+        "packet_direct_in_use": False,
+        "rsc_offload_enabled": False,
+        "software_rsc_enabled": False,
+        "available_ipsec_sa": 0,
+        "number_ipsec_sa_allocated": 0,
+        "available_vm_queues": 0,
+        "number_vmq_allocated": 0,
+        "extensions": [
+            {
+                "id": "22222222-2222-2222-2222-222222222222",
+                "name": "Microsoft NDIS Capture",
+                "extension_type": "Capture",
+                "enabled": False,
+                "running": True,
+                "parent_extension_id": "",
+                "parent_extension_name": "",
+                "switch_id": switch_id,
+                "vendor": "Microsoft",
+                "version": "1.0",
+            }
+        ],
+        "computer_name": "CODEARBITER-HOST",
+        "is_deleted": False,
+    }
+
+
 def run_fixture(
     script: Path,
     fixture: dict,
@@ -373,6 +456,20 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 "raw_content_persisted": False,
                 "artifact_sidecars": 0,
             },
+            "vm_switch_before_inventory": [
+                vm_switch_observation(),
+                vm_switch_observation(
+                    "WSL (Hyper-V firewall)",
+                    "33333333-3333-3333-3333-333333333333",
+                ),
+            ],
+            "vm_switch_after_inventory": [
+                vm_switch_observation(
+                    "WSL (Hyper-V firewall)",
+                    "33333333-3333-3333-3333-333333333333",
+                ),
+                vm_switch_observation(),
+            ],
         }
         self.driver_fixture = {
             "schema_version": 1,
@@ -478,6 +575,266 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 result = run_contract(script)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assertEqual(json.loads(result.stdout)["verdict"], "PASS")
+
+    def test_contract_declares_the_existing_non_mutating_default_switch(self):
+        expected = {
+            "name": "Default Switch",
+            "switch_type": "Internal",
+            "creation_allowed": False,
+            "mutation_allowed": False,
+            "physical_adapter_binding_allowed": False,
+        }
+        self.assertEqual(self.contract.get("vm_switch"), expected)
+
+        accepted = run_contract(BROKER)
+        self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+        payload = json.loads(accepted.stdout)
+        self.assertEqual(payload.get("vm_switch_name"), "Default Switch")
+        self.assertEqual(payload.get("vm_switch_type"), "Internal")
+
+    def test_broker_rejects_unapproved_vm_switch_contracts(self):
+        approved = {
+            "name": "Default Switch",
+            "switch_type": "Internal",
+            "creation_allowed": False,
+            "mutation_allowed": False,
+            "physical_adapter_binding_allowed": False,
+        }
+        mutations = {
+            "renamed": lambda value: value.update(name="CodeArbiter-Desktop-Proof"),
+            "external": lambda value: value.update(switch_type="External"),
+            "creation": lambda value: value.update(creation_allowed=True),
+            "mutation": lambda value: value.update(mutation_allowed=True),
+            "physical binding": lambda value: value.update(
+                physical_adapter_binding_allowed=True
+            ),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                contract = json.loads(json.dumps(self.contract))
+                contract["vm_switch"] = dict(approved)
+                mutate(contract["vm_switch"])
+                rejected = run_contract_payload(BROKER, contract)
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn(
+                    "VM switch contract is invalid",
+                    normalize_process_diagnostic(rejected),
+                )
+
+    def test_broker_accepts_only_the_internal_unbound_default_switch_and_unchanged_inventory(self):
+        default_switch = vm_switch_observation()
+        wsl_switch = vm_switch_observation(
+            "WSL (Hyper-V firewall)", "33333333-3333-3333-3333-333333333333"
+        )
+        fixture = {
+            "schema_version": 1,
+            "before_inventory": [default_switch, wsl_switch],
+            "after_inventory": [wsl_switch, default_switch],
+        }
+        accepted = run_broker_json_fixture("-VmSwitchBoundaryFixturePath", fixture)
+        self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+        payload = json.loads(accepted.stdout)
+        self.assertEqual(payload["name"], "Default Switch")
+        self.assertEqual(payload["switch_type"], "Internal")
+        self.assertTrue(payload["inventory_unchanged"])
+        self.assertRegex(payload["before_inventory_sha256"], r"^[0-9a-f]{64}$")
+        self.assertEqual(
+            payload["before_inventory_sha256"], payload["after_inventory_sha256"]
+        )
+
+        mutations = {
+            "missing": (
+                lambda value: value.update(before_inventory=[wsl_switch]),
+                "approved VM switch is missing",
+            ),
+            "duplicate": (
+                lambda value: value.update(
+                    before_inventory=[default_switch, dict(default_switch), wsl_switch]
+                ),
+                "approved VM switch is not unique",
+            ),
+            "renamed": (
+                lambda value: value["before_inventory"][0].update(
+                    name="Renamed Default Switch"
+                ),
+                "approved VM switch is missing",
+            ),
+            "external": (
+                lambda value: value["before_inventory"][0].update(
+                    switch_type="External"
+                ),
+                "approved VM switch type is not Internal",
+            ),
+            "private": (
+                lambda value: value["before_inventory"][0].update(
+                    switch_type="Private"
+                ),
+                "approved VM switch type is not Internal",
+            ),
+            "physical adapter": (
+                lambda value: value["before_inventory"][0].update(
+                    physical_adapter_interface_description="Intel(R) Wi-Fi 7 BE200"
+                ),
+                "approved VM switch is physically bound",
+            ),
+            "physical adapter descriptions": (
+                lambda value: value["before_inventory"][0].update(
+                    physical_adapter_interface_descriptions=["Intel(R) Wi-Fi 7 BE200"]
+                ),
+                "approved VM switch is physically bound",
+            ),
+            "physical adapter GUIDs": (
+                lambda value: value["before_inventory"][0].update(
+                    physical_adapter_interface_guids=[
+                        "66666666-6666-6666-6666-666666666666"
+                    ]
+                ),
+                "approved VM switch is physically bound",
+            ),
+            "inventory drift": (
+                lambda value: value["after_inventory"].append(
+                    vm_switch_observation(
+                        "Unexpected Switch",
+                        "55555555-5555-5555-5555-555555555555",
+                    )
+                ),
+                "Hyper-V switch inventory changed during desktop proof",
+            ),
+        }
+        for label, (mutate, diagnostic) in mutations.items():
+            with self.subTest(label=label):
+                changed = json.loads(json.dumps(fixture))
+                mutate(changed)
+                rejected = run_broker_json_fixture(
+                    "-VmSwitchBoundaryFixturePath", changed
+                )
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn(diagnostic, normalize_process_diagnostic(rejected))
+
+        for field, original in default_switch.items():
+            with self.subTest(changed_inventory_field=field):
+                changed = json.loads(json.dumps(fixture))
+                observed = next(
+                    item for item in changed["after_inventory"]
+                    if item["name"] == "Default Switch"
+                )
+                if field == "id":
+                    replacement_id = "44444444-4444-4444-4444-444444444444"
+                    observed[field] = replacement_id
+                    for extension in observed["extensions"]:
+                        extension["switch_id"] = replacement_id
+                elif field == "extensions":
+                    observed[field][0]["enabled"] = not observed[field][0]["enabled"]
+                elif isinstance(original, bool):
+                    observed[field] = not original
+                elif isinstance(original, int):
+                    observed[field] = original + 1
+                elif isinstance(original, list):
+                    observed[field] = [*original, "changed"]
+                elif original is None:
+                    observed[field] = "changed"
+                else:
+                    observed[field] = f"{original}-changed"
+                rejected = run_broker_json_fixture(
+                    "-VmSwitchBoundaryFixturePath", changed
+                )
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn(
+                    (
+                        "observed VM switch identity is invalid"
+                        if field == "switch_type"
+                        else "Hyper-V switch inventory changed during desktop proof"
+                    ),
+                    normalize_process_diagnostic(rejected),
+                )
+
+        default_extension = default_switch["extensions"][0]
+        for field, original in default_extension.items():
+            with self.subTest(changed_extension_field=field):
+                changed = json.loads(json.dumps(fixture))
+                observed = next(
+                    item for item in changed["after_inventory"]
+                    if item["name"] == "Default Switch"
+                )
+                extension = observed["extensions"][0]
+                if field == "id":
+                    extension[field] = "77777777-7777-7777-7777-777777777777"
+                elif field == "switch_id":
+                    replacement_id = "88888888-8888-8888-8888-888888888888"
+                    observed["id"] = replacement_id
+                    extension[field] = replacement_id
+                elif field == "parent_extension_id":
+                    extension[field] = "99999999-9999-9999-9999-999999999999"
+                elif isinstance(original, bool):
+                    extension[field] = not original
+                else:
+                    extension[field] = f"{original}-changed"
+                rejected = run_broker_json_fixture(
+                    "-VmSwitchBoundaryFixturePath", changed
+                )
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn(
+                    "Hyper-V switch inventory changed during desktop proof",
+                    normalize_process_diagnostic(rejected),
+                )
+
+        reordered = json.loads(json.dumps(fixture))
+        second_extension = json.loads(json.dumps(default_extension))
+        second_extension.update(
+            id="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+            name="Microsoft WFP Switch Extension",
+        )
+        for inventory in (
+            reordered["before_inventory"], reordered["after_inventory"]
+        ):
+            observed = next(
+                item for item in inventory if item["name"] == "Default Switch"
+            )
+            observed["extensions"].append(json.loads(json.dumps(second_extension)))
+        reordered["after_inventory"][1]["extensions"].reverse()
+        accepted_reordering = run_broker_json_fixture(
+            "-VmSwitchBoundaryFixturePath", reordered
+        )
+        self.assertEqual(
+            accepted_reordering.returncode,
+            0,
+            accepted_reordering.stdout + accepted_reordering.stderr,
+        )
+        reordered_payload = json.loads(accepted_reordering.stdout)
+        self.assertEqual(
+            reordered_payload["before_inventory_sha256"],
+            reordered_payload["after_inventory_sha256"],
+        )
+
+    def test_broker_has_no_hyper_v_switch_mutation_commands(self):
+        environment = os.environ.copy()
+        environment["CODEARBITER_BROKER_AST_PATH"] = str(BROKER)
+        inspected = subprocess.run(
+            [
+                powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-Command",
+                "$tokens=$null;$errors=$null;"
+                "$ast=[System.Management.Automation.Language.Parser]::ParseFile("
+                "$env:CODEARBITER_BROKER_AST_PATH,[ref]$tokens,[ref]$errors);"
+                "if($errors.Count){$errors|ForEach-Object{$_.Message}|Write-Error;exit 2};"
+                "$names=@($ast.FindAll({param($node)"
+                "$node -is [System.Management.Automation.Language.CommandAst]},$true)|"
+                "ForEach-Object{$_.GetCommandName()}|Where-Object{$_});"
+                "$family=@((Get-Command -Module Hyper-V -Name '*VMSwitch*').Name);"
+                "$used=@($names|ForEach-Object{$_.Split([char]92)[-1]}|"
+                "Where-Object{$family -ccontains $_});"
+                "[ordered]@{family=$family;used=$used}|ConvertTo-Json -Compress",
+            ],
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+            env=environment,
+        )
+        self.assertEqual(inspected.returncode, 0, inspected.stdout + inspected.stderr)
+        command_inventory = json.loads(inspected.stdout)
+        self.assertIn("Set-VMSwitch", command_inventory["family"])
+        self.assertEqual(command_inventory["used"], ["Get-VMSwitch"])
 
     def test_boundary_requires_direct_iso_application_not_a_template_vhd(self):
         self.assertEqual(self.contract["image"]["provisioning_mode"], "iso-apply-fresh-vhdx")
@@ -1917,7 +2274,7 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         trace = payload["trace"]
         teardown = [
             "account-disabled", "account-deleted", "profile-destroyed",
-            "vm-destroyed", "run-root-destroyed",
+            "vm-destroyed", "run-root-destroyed", "vm-switch-inventory-unchanged",
         ]
         for item in teardown:
             self.assertLess(trace.index(item), trace.index("receipt-finalized"))
@@ -1930,7 +2287,8 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "device-auth-prompt-ready", "device-auth-completed", "desktop-route-observed",
             "network-policy-measured",
             "account-disabled", "account-deleted", "profile-destroyed", "vm-destroyed",
-            "run-root-destroyed", "artifact-inventory-cleared",
+            "run-root-destroyed", "vm-switch-inventory-unchanged",
+            "artifact-inventory-cleared",
         ]
         for fail_after in fail_points:
             with self.subTest(fail_after=fail_after):
@@ -1941,9 +2299,33 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 self.assertNotIn("receipt-finalized", result["trace"])
                 for cleanup in [
                     "account-disabled", "account-deleted", "profile-destroyed",
-                    "vm-destroyed", "run-root-destroyed", "artifact-inventory-cleared",
+                    "vm-destroyed", "run-root-destroyed",
+                    "vm-switch-inventory-unchanged", "artifact-inventory-cleared",
                 ]:
                     self.assertIn(cleanup, result["trace"])
+
+        for fail_after in (None, "contract-verified"):
+            with self.subTest(vm_switch_inventory_drift=True, fail_after=fail_after):
+                changed = json.loads(json.dumps(self.broker_fixture))
+                changed["vm_switch_after_inventory"][1]["extensions"][0][
+                    "enabled"
+                ] = True
+                blocked = run_fixture(BROKER, changed, fail_after=fail_after)
+                self.assertNotEqual(blocked.returncode, 0)
+                result = json.loads(blocked.stdout)
+                self.assertFalse(result["receipt_would_finalize"])
+                self.assertFalse(
+                    result["cleanup_observations"]["vm-switch-inventory-unchanged"]
+                )
+                self.assertIn(
+                    "vm-switch-inventory-unchanged", result["attempted_cleanup"]
+                )
+                self.assertTrue(
+                    any(
+                        "Hyper-V switch inventory changed during desktop proof" in error
+                        for error in result["cleanup_errors"]
+                    )
+                )
 
         broker_source = BROKER.read_text(encoding="utf-8")
         self.assertNotIn("Invoke-TestLifecycle", broker_source)

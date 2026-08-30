@@ -3,7 +3,7 @@
   "broker": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopCandidate.ps1",
-    "sha256": "2ffc8b4ef398b0f5be8f676f4a8ba7c5ddde7f7acc58ac3466c84a4a2acc8005"
+    "sha256": "299c10b6aff68b8b64d8b15b58cbc0b12765e397ced4392089bfdcb9180e293c"
   },
   "driver": {
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
@@ -14,6 +14,13 @@
     "source_path": ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
     "installed_path": "C:\\codearbiter-runner\\Invoke-CodeArbiterDesktopRouteProbe.ps1",
     "sha256": "3dd3efef0fc4953297aaeffbdffa40e4692f9e5150a4065e3451b9a85ffeb94f"
+  },
+  "vm_switch": {
+    "name": "Default Switch",
+    "switch_type": "Internal",
+    "creation_allowed": false,
+    "mutation_allowed": false,
+    "physical_adapter_binding_allowed": false
   },
   "image": {
     "id": "windows-11-enterprise-eval-25h2-x64-en-us",
