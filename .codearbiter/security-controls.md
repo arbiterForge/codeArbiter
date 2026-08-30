@@ -120,8 +120,10 @@ interface description. The broker has no authority to create, rename, mutate,
 or remove any switch. Before VM creation it records every switch's stable ID and
 the complete declarative and security-relevant `Get-VMSwitch` projection,
 including physical bindings, extensions, acceleration, queue, bandwidth, and
-management-OS settings. It requires that canonical inventory to remain
-byte-identical after VM and run-root destruction on success and failure, and
+management-OS settings. Immediately after VM creation, it requires the sole VM
+network adapter to report both the exact switch name and the captured stable
+switch ID. It requires the canonical inventory to remain byte-identical after
+VM and run-root destruction on success and failure, and
 binds the `vm-switch-inventory-unchanged` verdict into the teardown-event hash
 before a receipt can finalize.
 

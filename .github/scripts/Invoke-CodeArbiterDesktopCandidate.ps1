@@ -92,11 +92,15 @@ function ConvertTo-OrdinalSortedStrings($Values) {
     $normalized
 }
 
-function ConvertTo-CanonicalVmSwitchExtensions($Extensions, [string]$SwitchId) {
+function ConvertTo-CanonicalVmSwitchExtensions(
+    $Extensions,
+    [string]$SwitchId,
+    [string]$SwitchName
+) {
     @($Extensions | ForEach-Object {
         Assert-ExactFields $_ @(
-            'id','name','extension_type','enabled','running','parent_extension_id',
-            'parent_extension_name','switch_id','vendor','version'
+            'id','name','extension_type','enabled','running','computer_name','is_deleted',
+            'parent_extension_id','parent_extension_name','switch_id','switch_name','vendor','version'
         ) 'observed VM switch extension'
         $parsedExtensionId = [guid]::Empty
         $parsedSwitchId = [guid]::Empty
@@ -107,7 +111,8 @@ function ConvertTo-CanonicalVmSwitchExtensions($Extensions, [string]$SwitchId) {
         }
         $extensionId = $parsedExtensionId.ToString('D').ToLowerInvariant()
         $extensionSwitchId = $parsedSwitchId.ToString('D').ToLowerInvariant()
-        if ($extensionSwitchId -cne $SwitchId) {
+        if ($extensionSwitchId -cne $SwitchId -or
+            [string]$_.switch_name -cne $SwitchName) {
             throw 'observed VM switch extension is bound to another switch'
         }
         $parentExtensionId = [string]$_.parent_extension_id
@@ -124,9 +129,12 @@ function ConvertTo-CanonicalVmSwitchExtensions($Extensions, [string]$SwitchId) {
             extension_type = [string]$_.extension_type
             enabled = [bool]$_.enabled
             running = [bool]$_.running
+            computer_name = [string]$_.computer_name
+            is_deleted = [bool]$_.is_deleted
             parent_extension_id = $parentExtensionId
             parent_extension_name = [string]$_.parent_extension_name
             switch_id = $extensionSwitchId
+            switch_name = [string]$_.switch_name
             vendor = [string]$_.vendor
             version = [string]$_.version
         }
@@ -225,7 +233,7 @@ function ConvertTo-CanonicalVmSwitchInventory($Inventory) {
             number_ipsec_sa_allocated = [long]$_.number_ipsec_sa_allocated
             available_vm_queues = [long]$_.available_vm_queues
             number_vmq_allocated = [long]$_.number_vmq_allocated
-            extensions = @(ConvertTo-CanonicalVmSwitchExtensions $_.extensions $id)
+            extensions = @(ConvertTo-CanonicalVmSwitchExtensions $_.extensions $id $name)
             computer_name = [string]$_.computer_name
             is_deleted = [bool]$_.is_deleted
         }
@@ -260,11 +268,24 @@ function Assert-ApprovedVmSwitchBoundary($SwitchContract, $Inventory) {
         throw 'approved VM switch is physically bound'
     }
     [pscustomobject]@{
+        Id = [string]$matching[0].id
         Name = [string]$matching[0].name
         SwitchType = [string]$matching[0].switch_type
         BeforeInventoryJson = [string]$canonical.Json
         BeforeInventorySha256 = [string]$canonical.Sha256
     }
+}
+
+function Assert-ApprovedVmNetworkAdapterBinding($Adapters, $Boundary) {
+    $observed = @($Adapters)
+    $adapterSwitchId = [guid]::Empty
+    if ($observed.Count -ne 1 -or
+        [string]$observed[0].SwitchName -cne [string]$Boundary.Name -or
+        -not [guid]::TryParse([string]$observed[0].SwitchId, [ref]$adapterSwitchId) -or
+        $adapterSwitchId.ToString('D').ToLowerInvariant() -cne [string]$Boundary.Id) {
+        throw 'VM network adapter is not bound to the approved switch identity'
+    }
+    $true
 }
 
 function Assert-UnchangedVmSwitchInventory($Boundary, $Inventory) {
@@ -335,9 +356,12 @@ function Get-ObservedVmSwitchInventory {
                     extension_type = [string]$_.ExtensionType
                     enabled = [bool]$_.Enabled
                     running = [bool]$_.Running
+                    computer_name = [string]$_.ComputerName
+                    is_deleted = [bool]$_.IsDeleted
                     parent_extension_id = [string]$_.ParentExtensionId
                     parent_extension_name = [string]$_.ParentExtensionName
                     switch_id = [string]$_.SwitchId
+                    switch_name = [string]$_.SwitchName
                     vendor = [string]$_.Vendor
                     version = [string]$_.Version
                 }
@@ -1877,10 +1901,11 @@ if ($PSCmdlet.ParameterSetName -eq 'VmSwitchBoundaryFixture') {
     if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'VM switch boundary fixture mode is test-only' }
     $fixture = Get-Content -LiteralPath $VmSwitchBoundaryFixturePath -Raw -Encoding utf8 | ConvertFrom-Json
     Assert-ExactFields $fixture @(
-        'schema_version','before_inventory','after_inventory'
+        'schema_version','before_inventory','after_inventory','adapter_observation'
     ) 'VM switch boundary fixture'
     if ([int]$fixture.schema_version -ne 1) { throw 'VM switch boundary fixture schema is invalid' }
     $fixtureBoundary = Assert-ApprovedVmSwitchBoundary $contract.vm_switch @($fixture.before_inventory)
+    $null = Assert-ApprovedVmNetworkAdapterBinding @($fixture.adapter_observation) $fixtureBoundary
     Assert-UnchangedVmSwitchInventory $fixtureBoundary @($fixture.after_inventory) |
         ConvertTo-Json -Compress
     exit 0
@@ -2165,6 +2190,7 @@ try {
     $hardDisks = @(Get-VMHardDiskDrive -VMName $vmName)
     $dvdMounts = @(Get-VMDvdDrive -VMName $vmName | Where-Object Path)
     $adapters = @(Get-VMNetworkAdapter -VMName $vmName)
+    $null = Assert-ApprovedVmNetworkAdapterBinding $adapters $vmSwitchBoundary
     $guestService = Get-VMIntegrationService -VMName $vmName -Name 'Guest Service Interface'
     $expectedDisk = [IO.Path]::GetFullPath($diskPath)
     $hostProfileRoot = [IO.Path]::GetFullPath([Environment]::GetFolderPath('UserProfile')).TrimEnd('\') + '\'
@@ -2178,7 +2204,7 @@ try {
         host_shared_folders = [bool]$guestService.Enabled
     }
     if ($hardDisks.Count -ne 1 -or [IO.Path]::GetFullPath($hardDisks[0].Path) -cne $expectedDisk -or
-        $dvdMounts.Count -ne 0 -or $adapters.Count -ne 1 -or $adapters[0].SwitchName -cne $vmSwitchBoundary.Name -or
+        $dvdMounts.Count -ne 0 -or
         $hostIsolation.enhanced_session_enabled -or $hostIsolation.guest_service_interface_enabled -or
         $hostIsolation.host_profile_mounted -or $hostIsolation.host_shared_folders) {
         throw 'measured Hyper-V isolation does not match the reviewed boundary'

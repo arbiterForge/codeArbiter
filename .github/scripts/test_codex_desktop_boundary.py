@@ -134,9 +134,12 @@ def vm_switch_observation(
                 "extension_type": "Capture",
                 "enabled": False,
                 "running": True,
+                "computer_name": "CODEARBITER-HOST",
+                "is_deleted": False,
                 "parent_extension_id": "",
                 "parent_extension_name": "",
                 "switch_id": switch_id,
+                "switch_name": name,
                 "vendor": "Microsoft",
                 "version": "1.0",
             }
@@ -630,6 +633,10 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             "schema_version": 1,
             "before_inventory": [default_switch, wsl_switch],
             "after_inventory": [wsl_switch, default_switch],
+            "adapter_observation": {
+                "SwitchName": "Default Switch",
+                "SwitchId": "11111111-1111-1111-1111-111111111111",
+            },
         }
         accepted = run_broker_json_fixture("-VmSwitchBoundaryFixturePath", fixture)
         self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
@@ -654,8 +661,12 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 "approved VM switch is not unique",
             ),
             "renamed": (
-                lambda value: value["before_inventory"][0].update(
-                    name="Renamed Default Switch"
+                lambda value: (
+                    value["before_inventory"][0].update(name="Renamed Default Switch"),
+                    [
+                        extension.update(switch_name="Renamed Default Switch")
+                        for extension in value["before_inventory"][0]["extensions"]
+                    ],
                 ),
                 "approved VM switch is missing",
             ),
@@ -700,6 +711,12 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 ),
                 "Hyper-V switch inventory changed during desktop proof",
             ),
+            "same-name replacement adapter": (
+                lambda value: value["adapter_observation"].update(
+                    SwitchId="44444444-4444-4444-4444-444444444444"
+                ),
+                "VM network adapter is not bound to the approved switch identity",
+            ),
         }
         for label, (mutate, diagnostic) in mutations.items():
             with self.subTest(label=label):
@@ -723,6 +740,11 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                     observed[field] = replacement_id
                     for extension in observed["extensions"]:
                         extension["switch_id"] = replacement_id
+                elif field == "name":
+                    replacement_name = "Changed Default Switch"
+                    observed[field] = replacement_name
+                    for extension in observed["extensions"]:
+                        extension["switch_name"] = replacement_name
                 elif field == "extensions":
                     observed[field][0]["enabled"] = not observed[field][0]["enabled"]
                 elif isinstance(original, bool):
@@ -763,6 +785,10 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                     replacement_id = "88888888-8888-8888-8888-888888888888"
                     observed["id"] = replacement_id
                     extension[field] = replacement_id
+                elif field == "switch_name":
+                    replacement_name = "Changed Default Switch"
+                    observed["name"] = replacement_name
+                    extension[field] = replacement_name
                 elif field == "parent_extension_id":
                     extension[field] = "99999999-9999-9999-9999-999999999999"
                 elif isinstance(original, bool):
