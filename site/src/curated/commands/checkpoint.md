@@ -17,8 +17,9 @@ re-zeros the `over:N` overrides-since-checkpoint counter the statusline shows, b
 current `overrides.log` line count to `.codearbiter/last-checkpoint`. This is a report, not a
 promotion gate — it surfaces findings and enforces no sign-off.
 
-On current Codex hosts, codeArbiter loads each reviewer charter into a host-provided agent thread and
-retains its thread receipt. An older host may run a review role inline rather than skip it — see
+The Codex source candidate includes each packaged reviewer resource charter for host-provided agent
+threads; exact-candidate proof gates release. An older adapter may run a review role inline rather
+than skip it — see
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 

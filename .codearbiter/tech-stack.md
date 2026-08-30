@@ -6,14 +6,23 @@ this file is the stale one; fix it here.
 
 ## Stack
 
-- **Hooks** (`plugins/ca/hooks/*.py`) — Python 3, stdlib only. No dependencies,
-  ever: hooks must run on a stock Windows/macOS/Linux Python with nothing
-  installed. The cold-install matrix exists to prove exactly that.
-- **Farm dispatcher** (`plugins/ca/tools/`) — TypeScript on Node 20, tested with
-  vitest. The plugin ships the built `farm.js`, not `farm.ts` — a stale build is
-  a release blocker.
-- **Everything else** — prose (skills, commands, agents, ORCHESTRATOR.md),
-  governed by the plugin's own authoring gates, not by CI.
+- **Canonical shared source** (`core/pysrc/`, `core/surface/`) — these directories
+  are the canonical shared source for stdlib-only Python enforcement logic and
+  markdown templates. Generators materialize this internal kernel into host packages;
+  `core/` is not published as a separate runtime package.
+- **Claude Code adapter** (`plugins/ca/`) — native hooks, commands, skills, agents,
+  and the Node 20 farm dispatcher under `plugins/ca/tools/`. Hooks are Python 3,
+  stdlib only; the dispatcher is TypeScript tested with Vitest and ships built
+  `farm.js`.
+- **Codex adapter** (`plugins/ca-codex/`) — Codex manifest and hook shims plus
+  generated skills and packaged resource charters. The source candidate packages
+  those resources for host-provided thread dispatch; exact-candidate proof gates
+  release, and older adapters retain the bounded inline fallback. They are not
+  native Codex plugin-agent registrations.
+- **Pi adapter** (`plugins/ca-pi/`) — generated Python/policy payload plus its thin
+  TypeScript host extension and supervised child-process boundary.
+- **Infrastructure sibling** (`plugins/ca-sandbox/`) — isolated exploration tools;
+  it is not part of the governance kernel.
 - **Protected Codex desktop proof boundary** (`.github/scripts/Invoke-CodeArbiterDesktop*.ps1`) — PowerShell 7 plus inbox Windows/Hyper-V cmdlets only. The broker runs only on an elevated Windows self-hosted runner; contract-only mode and byte binding run in portable CI. Guest coordination uses authenticated PowerShell Direct over local VMBus, not guest networking or a custom socket service.
 
 ## Pi adapter

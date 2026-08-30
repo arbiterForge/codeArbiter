@@ -10,11 +10,11 @@ journey:
   proof: "Given a blocked action, you can name its hook flank, gate id, and sanctioned remediation."
 ---
 
-codeArbiter's gates are not advice the model can talk past. They run as Claude Code or Codex
-[hooks](/glossary/#hook) at the tool-call boundary, in Python, with no third-party dependencies.
-Both plugins vendor the same guard core. Claude Code receives its exit-2 verdict directly; Codex's
-`pre-tool-adapter.py` converts the same verdict to a structured deny response so Windows shell exit
-handling cannot weaken the block. See the
+codeArbiter's gates are not advice the model can talk past. They run at each host's tool-call
+boundary with no third-party Python dependencies. All three governance adapters consume the same
+guard core. Claude Code receives its exit-2 verdict directly; Codex's `pre-tool-adapter.py`
+converts the same verdict to a structured deny response so Windows shell exit handling cannot
+weaken the block; Pi's trusted wrapper carries the shared verdict through its bridge. See the
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/).
 
 For the per-hook breakdown, see the [Hooks reference](/hooks).

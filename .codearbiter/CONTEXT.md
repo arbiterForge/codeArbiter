@@ -6,29 +6,35 @@ stage: 2
 
 # Project: codeArbiter
 
-The orchestration framework itself, plus siblings. This repo contains
-**four sibling plugins** (ADR-0007, ADR-0011, ADR-0013): `ca`, the governance/orchestration
-plugin for Claude Code; `ca-codex`, the same governance kernel for Codex CLI;
-`ca-pi`, the same kernel for Pi; and `ca-sandbox`, an infrastructure plugin. The
-first three are the **three governance hosts**. This `.codearbiter/` directory is the v2
+The orchestration framework itself, plus its host adapters and infrastructure sibling.
+The canonical governance kernel lives in `core/`; generated payloads carry it into the
+Claude Code adapter (`ca`), Codex adapter (`ca-codex`), and Pi adapter (`ca-pi`). A
+fourth sibling, `ca-sandbox`, is an infrastructure plugin (ADR-0007, ADR-0011,
+ADR-0013). The first three are the **three governance hosts**. This `.codearbiter/`
+directory is the v2
 project-state store — root-level, outside `.claude/`, so it survives even if the
 codeArbiter plugin is uninstalled. The `arbiter: enabled` frontmatter above is the
 single activation flag: it gates both the persona injection and the arbiter
 statusline segments, and every enforcement hook reads it — never the persona.
 
 ## Identity
-Four sibling plugins in one repository (ADR-0007, ADR-0011, ADR-0013):
+One canonical governance kernel, three generated host adapters, and one infrastructure
+sibling in the repository (ADR-0007, ADR-0011, ADR-0013):
 
-- **`ca` (governance)** — the kernel. A Claude Code plugin that routes work through
+- **`core/` (governance)** — the canonical governance kernel: shared stdlib-only
+  Python and generated markdown sources. It is an internal source boundary, not a
+  separately published or runtime package (ADR-0031).
+- **`ca` (governance, Claude Code host)** — the Claude Code adapter. It routes work through
   gated skills and reviewer agents, enforces spec-driven TDD and commit gates,
   decides via SMARTS, and keeps an append-only audit trail. Decisive, terse,
-  high-authority. Its identity and gates are unchanged by the siblings.
-- **`ca-codex` (governance, Codex CLI host)** — the same kernel targeting Codex CLI.
-  Generated from shared sources (`core/pysrc/`, `core/surface/`) alongside `ca`;
+  high-authority. Its host-native identity and gates are unchanged by the siblings.
+- **`ca-codex` (governance, Codex CLI host)** — the Codex adapter. Generated from
+  shared sources (`core/pysrc/`, `core/surface/`) alongside `ca`; it packages the
+  shared role charters as resources for host-provided thread dispatch rather than
+  registering native plugin agents.
   CI enforces byte-identity between `core/` and each plugin's vendored copy. One
-  `.codearbiter/` store per project serves all three governance hosts. Beta until
-  live-Codex verification (ADR-0011).
-- **`ca-pi` (governance, Pi host)** — the same generated kernel behind a thin
+  `.codearbiter/` store per project serves all three governance hosts (ADR-0011).
+- **`ca-pi` (governance, Pi host)** — the Pi adapter: the same generated kernel behind a thin
   TypeScript extension and the shared stdlib-only Python core. The Git-installed
   package is independently versioned, requires Node 22.19+ and Python 3, and
   shares the project's `.codearbiter/` store with Claude Code and Codex CLI.
@@ -39,7 +45,7 @@ Four sibling plugins in one repository (ADR-0007, ADR-0011, ADR-0013):
   kernel. Independent of `ca`: CI is path-scoped and version bumps are per-plugin.
 
 ## Scope
-- `ca` framework source: `plugins/ca/` — `arbiter.md` (the arbiter mode's body, formerly
+- Claude Code adapter: `plugins/ca/` — `arbiter.md` (the arbiter mode's body, formerly
   `ORCHESTRATOR.md`), `includes/safety-core.md`, `skills/`, `commands/`, `agents/`, `hooks/`,
   `tools/`.
 - Shared kernel sources: `core/pysrc/` (host-neutral hook logic) and `core/surface/`
