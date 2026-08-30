@@ -127,7 +127,7 @@ JOB_TRIGGER = dict(
 # A job-level `if:` that uses one of these status functions opts OUT of the
 # implicit "all `needs` succeeded" gate — which would let a publisher run after
 # its own preflight refused the dispatch.
-_STATUS_ESCAPES = ("always()", "!cancelled()", "cancelled()", "failure()")
+_STATUS_ESCAPES = ("always", "cancelled", "failure")
 
 
 def _release() -> str:
@@ -167,6 +167,21 @@ def _job_needs(block: str) -> tuple:
     return ()
 
 
+def _condition_triggers(condition: str) -> set:
+    """The workflow triggers permitted by one supported job condition."""
+    if any(re.search(rf"(?<![\w.]){escape}\s*\(", condition, re.IGNORECASE)
+           for escape in _STATUS_ESCAPES):
+        raise AssertionError("a status function bypasses the implicit needs gate")
+    if "github.event_name" not in condition:
+        return set(TRIGGERS)
+    if "||" in condition:
+        raise AssertionError("unsupported boolean event guard")
+    named = re.findall(r"github\.event_name == '([\w_]+)'", condition)
+    if len(named) != 1 or named[0] not in TRIGGERS:
+        raise AssertionError("unsupported boolean event guard")
+    return {named[0]}
+
+
 def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     """Every event name `job` can start on (#654).
 
@@ -191,19 +206,13 @@ def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     if job not in jobs:
         raise AssertionError(f"`needs` names undeclared job {job!r}")
     condition = _job_if(jobs[job])
-    named = {t for t in TRIGGERS if f"github.event_name == '{t}'" in condition}
-    if named:
-        # Deliberately the WHOLE set, never the first hit: a guard widened to
-        # `dispatch || workflow_run` still contains the correct clause, and
-        # returning one trigger from it would report the bug as the fix.
-        return named
+    permitted = _condition_triggers(condition)
     parents = _job_needs(jobs[job])
     if not parents:
-        return set(TRIGGERS)
-    inherited = set()
+        return permitted
     for parent in parents:
-        inherited |= _gated_triggers(parent, jobs, chain + (job,))
-    return inherited
+        permitted &= _gated_triggers(parent, jobs, (*chain, job))
+    return permitted
 
 
 def _extract_run(text: str, name_fragment: str, step_indent: int, where: str) -> str:
@@ -1288,17 +1297,49 @@ class TriggerIsolationTest(unittest.TestCase):
         self.assertEqual(_gated_triggers("release", jobs), set(TRIGGERS),
                          "a publisher inherits its preflight's reach")
 
-    def test_the_walk_catches_a_guard_widened_to_both_triggers(self):
-        # The mutant a substring assertion survives: the correct clause is
-        # still there, with the wrong one ORed onto it.
+    def test_the_walk_rejects_an_or_widened_event_guard(self):
+        # An event-name substring is not a complete condition: an OR can make
+        # the job reachable on a lane this textual contract cannot model.
         jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'"
                              " || github.event_name == 'workflow_run'\n"}
-        self.assertEqual(_gated_triggers("preflight", jobs), set(TRIGGERS))
+        with self.assertRaisesRegex(AssertionError, "unsupported boolean"):
+            _gated_triggers("preflight", jobs)
 
     def test_the_walk_inherits_a_parents_trigger_through_needs(self):
         jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'\n",
                 "release": "    needs: preflight\n"}
         self.assertEqual(_gated_triggers("release", jobs), {"workflow_dispatch"})
+
+    def test_the_walk_intersects_its_guard_with_every_parents_lane(self):
+        jobs = {
+            "auto-preflight": "    if: github.event_name == 'workflow_run'\n",
+            "release": "    needs: auto-preflight\n"
+                       "    if: github.event_name == 'workflow_dispatch'\n",
+        }
+        self.assertEqual(_gated_triggers("release", jobs), set(),
+                         "a job cannot run on a trigger its required parent skips")
+
+    def test_the_walk_intersects_multiple_parents_rather_than_unions_them(self):
+        jobs = {
+            "dispatch-preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+            "auto-preflight": "    if: github.event_name == 'workflow_run'\n",
+            "release": "    needs: [dispatch-preflight, auto-preflight]\n",
+        }
+        self.assertEqual(_gated_triggers("release", jobs), set(),
+                         "all required parents must be runnable on the trigger")
+
+    def test_the_walk_rejects_a_status_function_that_bypasses_needs(self):
+        for condition in (
+            "always() || github.event_name == 'workflow_dispatch'",
+            "always () && github.event_name == 'workflow_dispatch'",
+            "Always() && github.event_name == 'workflow_dispatch'",
+        ):
+            with self.subTest(condition=condition):
+                jobs = {"release": "    needs: preflight\n"
+                                   f"    if: {condition}\n",
+                        "preflight": "    if: github.event_name == 'workflow_dispatch'\n"}
+                with self.assertRaisesRegex(AssertionError, "status function"):
+                    _gated_triggers("release", jobs)
 
     def test_the_walk_raises_rather_than_reading_an_unresolvable_needs(self):
         # never-fold-unreadable-into-absent: a `needs:` this suite cannot
