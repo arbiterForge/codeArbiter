@@ -116,8 +116,9 @@ transport and exposes no guest network listener.
 The outer broker uses only the existing Hyper-V `Default Switch` declared by
 the trusted boundary. It must observe exactly one switch with that exact name,
 require Hyper-V to report it as `Internal`, and require no physical-adapter
-interface description. The broker has no authority to create, rename, mutate,
-or remove any switch. Before VM creation it records every switch's stable ID and
+interface description, interface-description list, or interface GUID. The
+broker has no authority to create, rename, mutate, or remove any switch. Before
+VM creation it records every switch's stable ID and
 the complete declarative and security-relevant `Get-VMSwitch` projection,
 including physical bindings, extensions, acceleration, queue, bandwidth, and
 management-OS settings. Immediately after VM creation, it requires the sole VM
