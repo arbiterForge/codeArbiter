@@ -106,6 +106,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex native Read event | HOST-IMPOSSIBLE | Codex exposes no equivalent read hook; governed notices still run after writes. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex transcript compaction | HOST-IMPOSSIBLE | Claude transcript JSONL is not a Codex session format. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Codex packaged agents | DEGRADED | The source candidate contains 18 packaged resource charters for host-provided threads, but exact-candidate desktop proof gates release and older releases retain the bounded inline fallback. | `plugins/ca-codex/agents/`, `docs/codex-parity-testing.md` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
 | Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |

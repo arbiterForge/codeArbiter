@@ -12,6 +12,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 class PublicCodexDocsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        """Load the repository README once for the public documentation checks."""
         cls.readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
     def test_the_codex_support_claim_separates_continuous_from_manual(self):
@@ -57,6 +58,7 @@ class PublicCodexDocsTest(unittest.TestCase):
             "the recorded baseline names no ca-codex version, so staleness cannot be judged")
 
     def test_readme_announces_all_hosts_and_shared_parity(self):
+        """The README presents one product and all supported host adapters."""
         self.assertIn(
             "Shared enforcement and project-context parity across Claude Code, Codex CLI, and Pi",
             self.readme,
@@ -68,6 +70,7 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIn(".codearbiter/", opening)
 
     def test_readme_contains_codex_install_and_verification_path(self):
+        """The README keeps the current Codex install and verification route."""
         for text in (
             "codex plugin marketplace add arbiterForge/codeArbiter",
             "codex plugin add ca-codex@codearbiter",
@@ -82,11 +85,13 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertNotIn("available after the Codex-support release", self.readme)
 
     def test_readme_links_catalog_and_evidence(self):
+        """The README links the command catalog and pinned support evidence."""
         self.assertIn("plugins/ca-codex/COMMANDS.md", self.readme)
         self.assertIn("getting-started/claude-code-and-codex", self.readme)
         self.assertRegex(self.readme, re.compile(r"Codex CLI\s+0\.144\.1"))
 
     def test_project_context_assigns_kernel_and_adapter_ownership(self):
+        """Project context assigns canonical source and adapter ownership."""
         context = (ROOT / ".codearbiter" / "CONTEXT.md").read_text(encoding="utf-8")
         tech_stack = (ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
 
@@ -111,6 +116,7 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertNotIn("Host dispatch loads those resources", tech_stack)
 
     def test_contributor_and_security_guides_describe_the_multi_host_product(self):
+        """Contributor, security, and install prose matches the host topology."""
         contributing = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
         security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
         enforcement = (
@@ -174,7 +180,28 @@ class PublicCodexDocsTest(unittest.TestCase):
                 self.assertNotIn("no npm release", text)
                 self.assertIn("npm is the convenience channel", text)
 
+    def test_contributor_marketplace_example_uses_the_current_repository(self):
+        """The local marketplace command resolves after entering the clone."""
+        contributing = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
+        self.assertIn("/plugin marketplace add .", contributing)
+        self.assertNotIn("/plugin marketplace add ./codeArbiter", contributing)
+
+    def test_pi_uninstall_channels_are_separate_copyable_alternatives(self):
+        """Pi uninstall guidance never combines both package channels."""
+        uninstall = (
+            ROOT / "site" / "src" / "content" / "docs" / "guides" / "uninstalling.md"
+        ).read_text(encoding="utf-8")
+        self.assertRegex(
+            uninstall,
+            re.compile(
+                r"(?s)```sh\s+pi remove npm:@arbiterforge/ca-pi\s+```"
+                r"\s+```sh\s+pi remove git:github\.com/arbiterForge/codeArbiter@"
+                r"ca-pi-v<version>\s+```"
+            ),
+        )
+
     def test_active_codex_role_docs_name_packaged_resource_charters(self):
+        """Active Codex prose names packaged charters without overclaiming release."""
         paths = (
             "docs/architecture.md",
             "docs/parity.md",
@@ -201,7 +228,10 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertEqual(18, len(charter_files))
 
         parity = (ROOT / "docs" / "parity.md").read_text(encoding="utf-8")
-        self.assertNotIn("| Codex packaged agents |", parity)
+        self.assertRegex(
+            parity,
+            re.compile(r"(?m)^\| Codex packaged agents \| DEGRADED \|"),
+        )
         self.assertIn("plugins/ca-codex/agents/", parity)
         self.assertNotIn("plugins/ca-codex/resources/agents/", parity)
         self.assertIn("source candidate", parity)

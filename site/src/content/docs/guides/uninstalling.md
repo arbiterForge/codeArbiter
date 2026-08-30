@@ -197,6 +197,9 @@ command; see [Pi](#pi) above):
 
 ```sh
 pi remove npm:@arbiterforge/ca-pi
+```
+
+```sh
 pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
