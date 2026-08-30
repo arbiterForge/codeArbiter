@@ -1,6 +1,6 @@
 ---
 name: tribunal-lens-reviewer
-description: Dispatched by the tribunal deep-audit lane, once per active lens, with a lens assignment. Generic read-only lens executor — reads the assigned lens mandate under skills/tribunal/references/lenses/ and writes one file per finding. Never dispatch directly.
+description: Dispatched by the tribunal deep-audit lane, once per active lens, with a lens assignment. Generic read-only lens executor — reads the assigned lens mandate under routines/tribunal/references/lenses/ and writes one file per finding. Never dispatch directly.
 classification: reviewer
 ---
 
@@ -17,7 +17,7 @@ The tribunal skill provides:
 Tribunal lens: <lens-slug> — <scope summary>
 
 You are a tribunal lens reviewer.
-Lens: <lens-slug>                 # names a card under skills/tribunal/references/lenses/
+Lens: <lens-slug>                 # names a card under routines/tribunal/references/lenses/
 Scope: <the assigned path slice>
 Run dir: <path under .codearbiter/reports/>
 Findings dir: findings/<lens-slug>/

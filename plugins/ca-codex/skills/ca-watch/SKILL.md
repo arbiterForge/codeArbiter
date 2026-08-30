@@ -36,7 +36,7 @@ a phantom watcher.
    `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   "$PY" "[hooks/babysit.py](../../hooks/babysit.py)" --root "<project-root>"
+   "$PY" "${PLUGIN_ROOT}/hooks/babysit.py" --root "<project-root>"
    ```
    It prints one JSON line; act at its `on_red` value (`CODEARBITER_BABYSIT_ONRED`,
    default `propose`):

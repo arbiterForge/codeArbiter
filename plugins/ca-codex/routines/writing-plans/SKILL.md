@@ -30,7 +30,7 @@ A criterion the spec leaves ambiguous is a `[CONFIRM-NN]` against
 
 **Backstop the ledger against the spec's own stated intent, mechanically, before trusting it — this
 runs even when `brainstorming` already ran the same check, because a hole that survived Phase 3
-survives Phase 4's bijection too, silently** (#566): run `"$PY" "[hooks/_intentlib.py](../../hooks/_intentlib.py)"
+survives Phase 4's bijection too, silently** (#566): run `"$PY" "${PLUGIN_ROOT}/hooks/_intentlib.py"
 uncovered-intent <project-root>/.codearbiter/specs/<slug>.md [--issue-body <scratch-file>]` —
 `<scratch-file>` holds the linked issue's body when one exists (`gh issue view <N> --json body -q
 .body > <scratch-file>`, written outside the working tree), omitted when none does. A non-empty

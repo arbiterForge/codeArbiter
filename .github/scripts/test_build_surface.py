@@ -162,6 +162,11 @@ class TokenTest(_RepoCase):
     def test_executable_root_token_survives_while_navigation_links_render(self):
         _write(
             self.repo,
+            "plugins/ca-codex/hooks/_releaselib.py",
+            "#!/usr/bin/env python3\n",
+        )
+        _write(
+            self.repo,
             "core/surface/includes/release-helper.md",
             "run `\"$PY\" \"{{PLUGIN_ROOT}}/hooks/_releaselib.py\" list-targets`; "
             "then see {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n",
@@ -173,11 +178,104 @@ class TokenTest(_RepoCase):
         claude = self.render("claude")["includes/release-helper.md"].decode()
         self.assertIn('"${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', claude)
 
+    def test_packaged_python_hook_in_executable_position_keeps_runtime_root(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        for interpreter in ('"$PY"', "python", "python3"):
+            with self.subTest(interpreter=interpreter):
+                _write(
+                    self.repo,
+                    "core/surface/includes/tribunal-helper.md",
+                    f'run `{interpreter} "{{{{PLUGIN_ROOT}}}}/'
+                    'hooks/tribunal-usage.py" observe`\n',
+                )
+                codex = self.render("codex")[
+                    "includes/tribunal-helper.md"
+                ].decode()
+                self.assertIn(
+                    '"${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe', codex
+                )
+                self.assertNotIn("[hooks/tribunal-usage.py]", codex)
+
+    def test_missing_python_hook_is_not_promoted_to_executable_path(self):
+        for interpreter in ('"$PY"', "python", "python3"):
+            with self.subTest(interpreter=interpreter):
+                _write(
+                    self.repo,
+                    "core/surface/includes/missing-helper.md",
+                    f'run `{interpreter} "{{{{PLUGIN_ROOT}}}}/'
+                    'hooks/not-packaged.py" observe`\n',
+                )
+                codex = self.render("codex")[
+                    "includes/missing-helper.md"
+                ].decode()
+                self.assertIn('"hooks/not-packaged.py" observe', codex)
+                self.assertNotIn("${PLUGIN_ROOT}/hooks/not-packaged.py", codex)
+
+    def test_packaged_python_hook_outside_executable_position_stays_a_link(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/tribunal-helper.md",
+            "read {{PLUGIN_ROOT}}/hooks/tribunal-usage.py first\n",
+        )
+        codex = self.render("codex")["includes/tribunal-helper.md"].decode()
+        self.assertIn(
+            "[hooks/tribunal-usage.py](../hooks/tribunal-usage.py)", codex
+        )
+        self.assertNotIn("${PLUGIN_ROOT}/hooks/tribunal-usage.py", codex)
+
+    def test_packaged_python_hook_requires_same_line_exact_interpreter_token(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        for prefix in ("python\n", "notpython ", "not-python ", "my_python "):
+            with self.subTest(prefix=prefix):
+                _write(
+                    self.repo,
+                    "core/surface/includes/tribunal-helper.md",
+                    f"{prefix}{{{{PLUGIN_ROOT}}}}/hooks/tribunal-usage.py\n",
+                )
+                codex = self.render("codex")[
+                    "includes/tribunal-helper.md"
+                ].decode()
+                self.assertIn(
+                    "[hooks/tribunal-usage.py](../hooks/tribunal-usage.py)",
+                    codex,
+                )
+                self.assertNotIn("${PLUGIN_ROOT}/hooks/tribunal-usage.py", codex)
+
+    def test_codex_normalizes_backslash_resource_links_to_posix(self):
+        _write(
+            self.repo,
+            "core/surface/skills/foo/SKILL.md",
+            "---\nname: foo\ndescription: Foo.\n---\n\n# foo\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/backslash-link.md",
+            "see {{PLUGIN_ROOT}}/routines\\foo\\SKILL.md\n",
+        )
+        codex = self.render("codex")["includes/backslash-link.md"].decode()
+        self.assertIn(
+            "[routines/foo/SKILL.md](../routines/foo/SKILL.md)", codex
+        )
+        self.assertNotIn("\\", codex)
+
     def test_codex_rejects_unsafe_resource_path_before_rendering_link(self):
         for resource in (
                 "../escaped.md", "./escaped.md", "nested/./escaped.md",
-                "/escaped.md", "C:/escaped.md", r"C:\\escaped.md",
-                r"nested\\..\\escaped.md"):
+                "/escaped.md", "C:/escaped.md", r"C:\escaped.md",
+                r"nested\..\escaped.md"):
             with self.subTest(resource=resource):
                 _write(
                     self.repo,
@@ -204,6 +302,59 @@ class TokenTest(_RepoCase):
         with self.assertRaises(B.SurfaceError):
             self.render("claude")
 
+
+class ReviewFeedbackRegressionTest(unittest.TestCase):
+    def test_surface_readme_describes_active_codex_agent_output(self):
+        text = (REPO_ROOT / "core" / "surface" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "| `agents/**` | `agents/**` | `agents/**` "
+            "(Markdown resource charters; never native registration) |",
+            text,
+        )
+        self.assertNotIn("reserved for Task 3 resource-charter generation", text)
+
+    def test_codex_tribunal_usage_receipt_resolves_interpreter_and_hook(self):
+        codex = B.render_all(REPO_ROOT, "codex")[
+            "routines/tribunal/SKILL.md"
+        ].decode()
+        self.assertIn(
+            "PY=python3; { command -v python3 >/dev/null 2>&1 && "
+            "python3 --version >/dev/null 2>&1; } || PY=python",
+            codex,
+        )
+        self.assertIn(
+            '"$PY" "${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe '
+            "--thread-id <agent-thread-id>",
+            codex,
+        )
+        self.assertNotIn(
+            "Run `hooks/tribunal-usage.py observe --thread-id", codex
+        )
+
+    def test_tribunal_lens_directory_matches_each_host_surface(self):
+        codex = B.render_all(REPO_ROOT, "codex")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under routines/tribunal/references/lenses/", codex)
+        self.assertIn(
+            "names a card under routines/tribunal/references/lenses/", codex
+        )
+        claude = B.render_all(REPO_ROOT, "claude")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under skills/tribunal/references/lenses/", claude)
+        self.assertIn(
+            "names a card under skills/tribunal/references/lenses/", claude
+        )
+        pi = B.render_all(REPO_ROOT, "pi")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under skills/tribunal/references/lenses/", pi)
+        self.assertIn(
+            "names a card under skills/tribunal/references/lenses/", pi
+        )
 
 class ExtractionInversionTest(_RepoCase):
     def test_claude_render_inverts_extract(self):

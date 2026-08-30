@@ -52,7 +52,10 @@ _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
 _ROOT_RESOURCE = re.compile(
     r"(?P<tick>`?)\{\{PLUGIN_ROOT\}\}/(?P<path>[A-Za-z0-9_./<>:\\-]+)(?P=tick)"
 )
-_EXECUTABLE_PY_PREFIX = re.compile(r"[\"']?\$PY[\"']?\s+[\"']?$")
+_EXECUTABLE_PY_PREFIX = re.compile(
+    r"(?:^|[ \t`|;&(])(?:[\"']?\$PY[\"']?|python3?)[ \t]+[\"']?$",
+    re.MULTILINE,
+)
 _CLAUDE_ONLY_AGENT_FRONTMATTER = re.compile(
     r"^(?:classification|pi-skills):[^\n]*\n", re.MULTILINE
 )
@@ -172,18 +175,19 @@ def _render_relative_resources(text, output_path, where, resource_paths=None):
             raise SurfaceError(
                 f"{where}: Codex resource path cannot contain '.' or '..': {path!r}"
             )
-        if (path == "hooks/_releaselib.py"
-                and _EXECUTABLE_PY_PREFIX.search(text[:match.start()])):
-            return f"{{{{EXECUTABLE_PLUGIN_ROOT}}}}/{path}{suffix}"
         normalized = validation_path.rstrip("/")
+        if (normalized.startswith("hooks/") and normalized.endswith(".py")
+                and resource_paths is not None and normalized in resource_paths
+                and _EXECUTABLE_PY_PREFIX.search(text[:match.start()])):
+            return f"{{{{EXECUTABLE_PLUGIN_ROOT}}}}/{normalized}{suffix}"
         prefix = normalized + "/"
         if (resource_paths is not None and "<" not in path and ">" not in path
                 and normalized not in resource_paths
                 and not any(item.startswith(prefix) for item in resource_paths)):
             tick = match.group("tick")
-            return f"{tick}{path}{tick}{suffix}"
-        relative = posixpath.relpath(path, posixpath.dirname(output_path) or ".")
-        return f"[{path}]({relative}){suffix}"
+            return f"{tick}{validation_path}{tick}{suffix}"
+        relative = posixpath.relpath(validation_path, posixpath.dirname(output_path) or ".")
+        return f"[{validation_path}]({relative}){suffix}"
 
     text = _ROOT_RESOURCE.sub(replace, text)
     if "{{PLUGIN_ROOT}}" in text:

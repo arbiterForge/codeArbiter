@@ -8,7 +8,7 @@ Every host-facing markdown surface is generated from this tree by
 | `commands/<n>.md` | `commands/<n>.md` | `skills/ca-<n>/SKILL.md` | `skills/ca-<n>/SKILL.md` |
 | `skills/**` | `skills/**` | `routines/**` | `routines/**` |
 | `includes/**` | `includes/**` | `includes/**` | `includes/**` |
-| `agents/**` | `agents/**` | reserved for Task 3 resource-charter generation; never native registration | `agents/**` (explicit child input, outside discovery roots) |
+| `agents/**` | `agents/**` | `agents/**` (Markdown resource charters; never native registration) | `agents/**` (explicit child input, outside discovery roots) |
 | `COMMANDS.md`, `SPRINT.md`, `arbiter.md` | same name | same name | same name |
 | generated catalog | none | `skills/INDEX.md` | `SKILLS.md` |
 

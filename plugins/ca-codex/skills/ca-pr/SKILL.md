@@ -34,7 +34,7 @@ apply, then:
    interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   "$PY" "[hooks/babysit.py](../../hooks/babysit.py)" --root "<project-root>"
+   "$PY" "${PLUGIN_ROOT}/hooks/babysit.py" --root "<project-root>"
    ```
    It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
    true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and
