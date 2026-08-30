@@ -845,10 +845,19 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 "$names=@($ast.FindAll({param($node)"
                 "$node -is [System.Management.Automation.Language.CommandAst]},$true)|"
                 "ForEach-Object{$_.GetCommandName()}|Where-Object{$_});"
-                "$family=@((Get-Command -Module Hyper-V -Name '*VMSwitch*').Name);"
-                "$used=@($names|ForEach-Object{$_.Split([char]92)[-1]}|"
+                "$normalized=@($names|ForEach-Object{$_.Split([char]92)[-1]});"
+                "$astVmSwitchCommands=@($normalized|Where-Object{"
+                "$_ -match '^(?:Add|Disable|Enable|Get|New|Remove|Rename|Set)-VMSwitch'});"
+                "$moduleAvailable=(@(Get-Module -ListAvailable -Name Hyper-V).Count -gt 0);"
+                "$family=@();"
+                "if($moduleAvailable){"
+                "$family=@(Get-Command -Module Hyper-V -Name '*VMSwitch*' "
+                "-ErrorAction Stop|ForEach-Object{$_.Name}|Where-Object{$_})};"
+                "$used=@($normalized|"
                 "Where-Object{$family -ccontains $_});"
-                "[ordered]@{family=$family;used=$used}|ConvertTo-Json -Compress",
+                "[ordered]@{module_available=$moduleAvailable;family=$family;"
+                "ast_vmswitch_commands=$astVmSwitchCommands;used=$used}|"
+                "ConvertTo-Json -Compress",
             ],
             cwd=REPO_ROOT,
             text=True,
@@ -859,8 +868,14 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         )
         self.assertEqual(inspected.returncode, 0, inspected.stdout + inspected.stderr)
         command_inventory = json.loads(inspected.stdout)
-        self.assertIn("Set-VMSwitch", command_inventory["family"])
-        self.assertEqual(command_inventory["used"], ["Get-VMSwitch"])
+        self.assertNotIn(None, command_inventory["family"])
+        self.assertEqual(command_inventory["ast_vmswitch_commands"], ["Get-VMSwitch"])
+        if command_inventory["module_available"]:
+            self.assertIn("Set-VMSwitch", command_inventory["family"])
+            self.assertEqual(command_inventory["used"], ["Get-VMSwitch"])
+        else:
+            self.assertEqual(command_inventory["family"], [])
+            self.assertEqual(command_inventory["used"], [])
 
     def test_boundary_requires_direct_iso_application_not_a_template_vhd(self):
         self.assertEqual(self.contract["image"]["provisioning_mode"], "iso-apply-fresh-vhdx")
