@@ -117,6 +117,58 @@ EXPECTED_CANDIDATE_ARCHIVE_LIMITS = {
 APPROVED_DESKTOP_IMAGE_SHA256 = (
     "a61adeab895ef5a4db436e0a7011c92a2ff17bb0357f58b13bbc4062e535e7b9"
 )
+EXPECTED_DEPLOYMENT_TOOLS_BOUNDARY = {
+    "product": "Microsoft Windows ADK Deployment Tools",
+    "version": "10.1.26100.2454",
+    "servicing_update": "KB5101684",
+    "protected_root": (
+        r"C:\codearbiter-runner\toolchains\windows-adk\10.1.26100.2454-kb5101684"
+    ),
+    "executable_relative_path": r"amd64\BCDBoot\bcdboot.exe",
+    "acquisition": {
+        "source_url": (
+            "https://download.microsoft.com/download/2/d/9/"
+            "2d9c8902-3fcd-48a6-a22a-432b08bed61e/ADK/adksetup.exe"
+        ),
+        "length": 2234632,
+        "sha256": "7f61e29f2314bcdd7e0abf67a8367d83a05aa4a7b9223f85c5fd2582a35cc6f4",
+        "signer_thumbprint": "0bd8c56733fdcc06f8cb919ff5a200e39b1acf71",
+    },
+    "servicing": {
+        "source_url": (
+            "https://download.microsoft.com/download/"
+            "a087a851-4056-4f7f-9791-02a20509b706/"
+            "Windows_ADK_10.1.26100.2454_Update_KB5101684.zip"
+        ),
+        "length": 411048362,
+        "sha256": "dc19725a2fb0cce44c32ac14059a85a25257b9534ba21c93b479f4f09fb5af38",
+    },
+    "license": {
+        "spdx": "LicenseRef-Microsoft-Windows-ADK-EULA",
+        "length": 192576,
+        "sha256": "3c0c45033614cd4882ff0195ca7f77c8077f2f4917806ada519855f7f87da595",
+    },
+    "files": [
+        {
+            "path": r"amd64\BCDBoot\bcdboot.exe",
+            "length": 300608,
+            "sha256": "0395497dfb048791cc52bbaea7c304317d546e06198875bf83e0bb186fb09cc5",
+            "signer_subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        },
+        {
+            "path": r"amd64\BCDBoot\bcdedit.exe",
+            "length": 525888,
+            "sha256": "9cfb9375debfe6392c1f133d9b0e0b5df1ab68ac2170b70b9e385d7c25b2a965",
+            "signer_subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        },
+        {
+            "path": r"amd64\BCDBoot\bootsect.exe",
+            "length": 116272,
+            "sha256": "a5f66774b5c72ae0c39ba9a87c38ccc68e58ba4886a6b8348e396e0ba95ab599",
+            "signer_subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        },
+    ],
+}
 SECRET_VALUE = re.compile(
     r"(?i)(?:\bBearer\s+\S+|-----BEGIN [A-Z ]*PRIVATE KEY-----|"
     r"\b(?:sk|gh[oprsu])[-_][A-Za-z0-9_-]{8,}|"
@@ -2829,7 +2881,7 @@ def validate_desktop_boundary_contract(
         contract = {}
         errors.append("trusted desktop boundary contract is unreadable")
     top_fields = {
-        "schema_version", "broker", "driver", "probe", "image", "application",
+        "schema_version", "broker", "driver", "probe", "image", "deployment_tools", "application",
         "marketplace", "candidate_surface", "candidate_archive", "route_corpus", "channel", "network", "authentication",
         "evidence",
     }
@@ -2899,6 +2951,9 @@ def validate_desktop_boundary_contract(
     }
     if image != expected_image:
         errors.append("trusted desktop image must be the approved Microsoft evaluation image")
+
+    if contract.get("deployment_tools") != EXPECTED_DEPLOYMENT_TOOLS_BOUNDARY:
+        errors.append("trusted desktop Deployment Tools boundary is invalid")
 
     application = contract.get("application")
     if application != {

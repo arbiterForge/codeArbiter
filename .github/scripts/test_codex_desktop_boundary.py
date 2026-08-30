@@ -7,7 +7,7 @@ import hashlib
 import hmac
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import shutil
 import stat
@@ -204,6 +204,30 @@ def run_candidate_metadata_fixture(package_root: Path) -> subprocess.CompletedPr
         timeout=30,
         check=False,
     )
+
+
+def run_broker_json_fixture(
+    parameter: str,
+    fixture: dict,
+) -> subprocess.CompletedProcess[str]:
+    with tempfile.TemporaryDirectory() as temp:
+        fixture_path = Path(temp) / "broker-json-fixture.json"
+        fixture_path.write_text(json.dumps(fixture), encoding="utf-8")
+        environment = os.environ.copy()
+        environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
+        return subprocess.run(
+            [
+                powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
+                str(BROKER), parameter, str(fixture_path),
+                "-ContractPath", str(CONTRACT),
+            ],
+            cwd=REPO_ROOT,
+            env=environment,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
 
 
 class DesktopBoundaryContractTest(unittest.TestCase):
@@ -855,6 +879,316 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertIn("public InputUnion u", driver_source)
         self.assertIn(".u.ki.", driver_source)
         self.assertNotIn("public KEYBDINPUT ki; }", driver_source)
+
+    def test_broker_executes_only_the_exact_protected_adk_bcdboot_closure(self):
+        toolchain = self.contract["deployment_tools"]
+        root_acl = {
+            "owner_sid": "S-1-5-18",
+            "protected": True,
+            "access": [
+                {"sid": "S-1-5-18", "type": "Allow", "rights": "FullControl", "inherited": False},
+                {"sid": "S-1-5-32-544", "type": "Allow", "rights": "FullControl", "inherited": False},
+                {"sid": self.runner_sid, "type": "Allow", "rights": "ReadAndExecute", "inherited": False},
+            ],
+        }
+        descendant_acl = {
+            "owner_sid": "S-1-5-18",
+            "protected": False,
+            "access": [
+                {"sid": "S-1-5-18", "type": "Allow", "rights": "FullControl", "inherited": True},
+                {"sid": "S-1-5-32-544", "type": "Allow", "rights": "FullControl", "inherited": True},
+                {"sid": self.runner_sid, "type": "Allow", "rights": "ReadAndExecute", "inherited": True},
+            ],
+        }
+        expected_files = [
+            {
+                "path": item["path"],
+                "length": item["length"],
+                "sha256": item["sha256"],
+                "signature_status": "Valid",
+                "signer_subject": item["signer_subject"],
+                "acl": descendant_acl,
+                "reparse": False,
+            }
+            for item in toolchain["files"]
+        ]
+        fixture = {
+            "schema_version": 1,
+            "runner_sid": self.runner_sid,
+            "root": toolchain["protected_root"],
+            "root_acl": root_acl,
+            "root_reparse": False,
+            "executable_path": str(
+                PureWindowsPath(toolchain["protected_root"])
+                / PureWindowsPath(toolchain["executable_relative_path"])
+            ),
+            "directories": [
+                {"path": "amd64", "acl": descendant_acl, "reparse": False},
+                {"path": r"amd64\BCDBoot", "acl": descendant_acl, "reparse": False},
+            ],
+            "files": expected_files,
+        }
+        accepted = run_broker_json_fixture("-AdkBoundaryFixturePath", fixture)
+        self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+        accepted_payload = json.loads(accepted.stdout)
+        self.assertEqual(
+            accepted_payload["bcdboot_sha256"],
+            "0395497dfb048791cc52bbaea7c304317d546e06198875bf83e0bb186fb09cc5",
+        )
+
+        mutations = {
+            "ambient host bcdboot": lambda value: value.update(
+                executable_path=r"C:\Windows\System32\bcdboot.exe"
+            ),
+            "applied guest bcdboot": lambda value: value.update(
+                executable_path=r"F:\Windows\System32\bcdboot.exe"
+            ),
+            "protected-root escape": lambda value: value.update(
+                root=r"C:\codearbiter-runner\toolchains\windows-adk\..\escape"
+            ),
+            "missing sibling": lambda value: value["files"].pop(),
+            "extra sibling": lambda value: value["files"].append(
+                {
+                    "path": "amd64/BCDBoot/unreviewed.dll",
+                    "length": 1,
+                    "sha256": "f" * 64,
+                    "signature_status": "Valid",
+                    "signer_subject": "CN=Microsoft Corporation",
+                    "acl": descendant_acl,
+                    "reparse": False,
+                }
+            ),
+            "digest mismatch": lambda value: value["files"][0].update(
+                sha256="f" * 64
+            ),
+            "length mismatch": lambda value: value["files"][0].update(length=1),
+            "signature invalid": lambda value: value["files"][0].update(
+                signature_status="HashMismatch"
+            ),
+            "signer mismatch": lambda value: value["files"][0].update(
+                signer_subject="CN=Unapproved"
+            ),
+            "runner writable root": lambda value: value["root_acl"]["access"][2].update(
+                rights="FullControl"
+            ),
+            "runner writable file": lambda value: value["files"][0]["acl"]["access"][2].update(
+                rights="Modify"
+            ),
+            "unapproved owner": lambda value: value["directories"][0]["acl"].update(
+                owner_sid=self.runner_sid
+            ),
+            "inheritance-enabled root": lambda value: value["root_acl"].update(
+                protected=False
+            ),
+            "inherited root ACE": lambda value: value["root_acl"]["access"][0].update(
+                inherited=True
+            ),
+            "protected descendant": lambda value: value["directories"][0]["acl"].update(
+                protected=True
+            ),
+            "direct descendant ACE": lambda value: value["files"][0]["acl"]["access"][0].update(
+                inherited=False
+            ),
+            "root reparse": lambda value: value.update(root_reparse=True),
+            "directory reparse": lambda value: value["directories"][1].update(
+                reparse=True
+            ),
+            "file reparse": lambda value: value["files"][0].update(reparse=True),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(boundary=label):
+                changed = json.loads(json.dumps(fixture))
+                mutate(changed)
+                rejected = run_broker_json_fixture(
+                    "-AdkBoundaryFixturePath", changed
+                )
+                self.assertNotEqual(rejected.returncode, 0)
+
+        broker_source = BROKER.read_text(encoding="utf-8")
+        self.assertNotRegex(broker_source, r"(?m)&\s+bcdboot(?:\.exe)?\b")
+        self.assertNotIn('"$osRoot`Windows\\System32\\bcdboot.exe"', broker_source)
+        exact_invocation = (
+            '& $approvedBcdBootPath "$osRoot`Windows" /s $efiRoot /f UEFI | Out-Null'
+        )
+        self.assertIn(exact_invocation, broker_source)
+        self.assertNotRegex(
+            broker_source,
+            r"(?im)^\s*&\s+(?:(?:bcdedit|bootsect)(?:\.exe)?|\$\w*(?:bcdedit|bootsect)\w*)\b",
+        )
+        self.assertNotRegex(
+            broker_source,
+            r"(?i)(?:Registry::)?HKEY_LOCAL_MACHINE\\BCD00000000|"
+            r"\breg(?:\.exe)?\s+(?:load|unload|add|delete)\b[^\r\n]*BCD00000000",
+        )
+        approval = broker_source.index(
+            "$null = Get-ApprovedBcdBootPath $contract.deployment_tools"
+        )
+        disk_creation = broker_source.index(
+            "New-FreshGuestDisk $imagePath $diskPath $bootstrapPassword "
+            "$contract.deployment_tools"
+        )
+        invocation = broker_source.index(exact_invocation)
+        self.assertLess(approval, disk_creation)
+        self.assertLess(invocation, disk_creation)
+
+    def test_broker_holds_final_adk_observation_under_nonreplaceable_lease(self):
+        if os.name != "nt":
+            self.skipTest("the ADK namespace lease requires real Windows ACL semantics")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "toolchain"
+            bcdboot_root = root / "amd64" / "BCDBoot"
+            bcdboot_root.mkdir(parents=True)
+            for name in ("bcdboot.exe", "bcdedit.exe", "bootsect.exe"):
+                (bcdboot_root / name).write_bytes(name.encode("ascii"))
+
+            environment = os.environ.copy()
+            environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
+            result = subprocess.run(
+                [
+                    powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
+                    str(BROKER), "-AdkExecutionLeaseFixturePath", str(root),
+                    "-ContractPath", str(CONTRACT),
+                ],
+                cwd=REPO_ROOT,
+                env=environment,
+                text=True,
+                capture_output=True,
+                timeout=30,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            observed = json.loads(result.stdout)
+            self.assertTrue(observed["file_replacement_blocked"])
+            self.assertTrue(observed["root_replacement_blocked"])
+            self.assertTrue(observed.get("sibling_dll_creation_blocked", False))
+            self.assertTrue(observed.get("manifest_creation_blocked", False))
+            self.assertTrue(observed.get("local_redirect_creation_blocked", False))
+            self.assertTrue(observed.get("dacl_mutation_blocked", False))
+            self.assertTrue(observed.get("acl_restored", False))
+            self.assertEqual(observed["leased_file_count"], 3)
+            self.assertTrue(root.is_dir())
+            self.assertTrue((bcdboot_root / "bcdboot.exe").is_file())
+            restored_probe = bcdboot_root / "after-close.txt"
+            restored_probe.write_text("restored", encoding="utf-8")
+            self.assertEqual(restored_probe.read_text(encoding="utf-8"), "restored")
+
+        broker_source = BROKER.read_text(encoding="utf-8")
+        disk_start = broker_source.index("function New-FreshGuestDisk")
+        disk_end = broker_source.index("function ", disk_start + 1)
+        disk_body = broker_source[disk_start:disk_end]
+        lease = disk_body.index(
+            "$adkExecutionLease = Open-ApprovedAdkExecutionLease $DeploymentTools"
+        )
+        final_observation = disk_body.index(
+            "$approvedBcdBootPath = Get-ApprovedBcdBootPath "
+            "$DeploymentTools -ExecutionLocked",
+            lease,
+        )
+        invocation = disk_body.index(
+            '& $approvedBcdBootPath "$osRoot`Windows" /s $efiRoot /f UEFI | Out-Null',
+            final_observation,
+        )
+        release = disk_body.index(
+            "Close-ApprovedAdkExecutionLease $adkExecutionLease",
+            invocation,
+        )
+        self.assertLess(lease, final_observation)
+        self.assertLess(final_observation, invocation)
+        self.assertLess(invocation, release)
+        self.assertNotIn("[string]$approvedBcdBootPath", disk_body)
+        self.assertIn(
+            "New-FreshGuestDisk $imagePath $diskPath $bootstrapPassword "
+            "$contract.deployment_tools",
+            broker_source,
+        )
+
+    def test_pre_identity_failure_observes_non_creation_without_child_scope_loss(self):
+        result = run_broker_json_fixture(
+            "-CleanupObservationFixturePath",
+            {
+                "schema_version": 1,
+                "identity_created": False,
+                "identity_creation_attempted": False,
+                "guest_observation": None,
+            },
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout),
+            {
+                "observation": {
+                    "disabled": True,
+                    "deleted": True,
+                    "profile_destroyed": True,
+                },
+                "cleanup_trace": [
+                    "account-disabled",
+                    "account-deleted",
+                    "profile-destroyed",
+                ],
+            },
+        )
+        partial_creation = run_broker_json_fixture(
+            "-CleanupObservationFixturePath",
+            {
+                "schema_version": 1,
+                "identity_created": False,
+                "identity_creation_attempted": True,
+                "guest_observation": {
+                    "disabled": True,
+                    "deleted": True,
+                    "profile_destroyed": True,
+                },
+            },
+        )
+        self.assertEqual(
+            partial_creation.returncode,
+            0,
+            partial_creation.stdout + partial_creation.stderr,
+        )
+        self.assertEqual(
+            json.loads(partial_creation.stdout)["cleanup_trace"],
+            ["account-disabled", "account-deleted", "profile-destroyed"],
+        )
+        unobserved_attempt = run_broker_json_fixture(
+            "-CleanupObservationFixturePath",
+            {
+                "schema_version": 1,
+                "identity_created": False,
+                "identity_creation_attempted": True,
+                "guest_observation": None,
+            },
+        )
+        self.assertNotEqual(unobserved_attempt.returncode, 0)
+        failed_cleanup = run_broker_json_fixture(
+            "-CleanupObservationFixturePath",
+            {
+                "schema_version": 1,
+                "identity_created": False,
+                "identity_creation_attempted": True,
+                "guest_observation": {
+                    "disabled": True,
+                    "deleted": False,
+                    "profile_destroyed": True,
+                },
+            },
+        )
+        self.assertNotEqual(failed_cleanup.returncode, 0)
+        broker_source = BROKER.read_text(encoding="utf-8")
+        production_catch = broker_source[broker_source.index("    $failure = $_"):]
+        self.assertIn(
+            "$catchTorn = Invoke-BrokerCleanupStage $lifecycle $cleanupName",
+            production_catch,
+        )
+        account_disabled = production_catch[
+            production_catch.index("'account-disabled'"):
+            production_catch.index("'account-deleted'")
+        ]
+        assignments = re.findall(r"(?m)^\s*\$catchTorn\s*=", account_disabled)
+        self.assertEqual(assignments, ["                $catchTorn ="])
+        setup_start = broker_source.index("$setup = Invoke-Command")
+        attempt_marker = broker_source.index("$identityCreationAttempted = $true")
+        self.assertLess(attempt_marker, setup_start)
 
     def test_driver_reports_exact_x64_windows_input_abi_sizes(self):
         if sys.platform != "win32" or struct.calcsize("P") != 8:
