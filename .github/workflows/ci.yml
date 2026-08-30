@@ -96,8 +96,12 @@ on:
       - ".github/scripts/check_codex_skill_resources.py"
       - ".github/scripts/test_codex_desktop_boundary.py"
       - ".github/scripts/test_codex_skill_resources.py"
+      - ".github/scripts/verify_codex_candidate_provenance.py"
+      - ".github/scripts/test_codex_candidate_provenance.py"
       - "docs/reports/codex-skill-resource-resolution.md"
       - "docs/reports/evidence/codex-skill-resource-resolution/**"
+      - "docs/reports/codex-desktop-candidate-resolution.json"
+      - "docs/reports/evidence/codex-desktop-candidate/**"
       # The publish mechanics moved out of release.yml into a shared
       # composite action (#382), so the same reasoning covers it.
       - ".github/actions/**"
@@ -154,6 +158,10 @@ jobs:
             ca-codex:
               - 'plugins/ca-codex/**'
               - 'core/**'
+              - '.github/scripts/verify_codex_candidate_provenance.py'
+              - '.github/scripts/test_codex_candidate_provenance.py'
+              - 'docs/reports/codex-desktop-candidate-resolution.json'
+              - 'docs/reports/evidence/codex-desktop-candidate/**'
               - '.github/workflows/ci.yml'
             ca-pi:
               - 'plugins/ca-pi/**'
@@ -289,8 +297,12 @@ jobs:
               - '.github/scripts/check_codex_skill_resources.py'
               - '.github/scripts/test_codex_desktop_boundary.py'
               - '.github/scripts/test_codex_skill_resources.py'
+              - '.github/scripts/verify_codex_candidate_provenance.py'
+              - '.github/scripts/test_codex_candidate_provenance.py'
               - 'docs/reports/codex-skill-resource-resolution.md'
               - 'docs/reports/evidence/codex-skill-resource-resolution/**'
+              - 'docs/reports/codex-desktop-candidate-resolution.json'
+              - 'docs/reports/evidence/codex-desktop-candidate/**'
               - '.github/workflows/codex-desktop-candidate.yml'
               - '.github/workflows/ci.yml'
             manifests:
@@ -377,6 +389,45 @@ jobs:
         run: python .github/scripts/test_codex_desktop_boundary.py
       - name: Validate the tracked fixture without network or credentials
         run: python .github/scripts/check_codex_skill_resources.py --fixtures-only
+
+  codex-candidate-provenance:
+    name: "[GATE ] | [CDX ] | Candidate provenance"
+    needs: changes
+    if: (github.event_name == 'pull_request' || github.event_name == 'merge_group') && needs.changes.outputs.ca-codex == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - name: Test the candidate graph and payload verifier
+        run: python .github/scripts/test_codex_candidate_provenance.py
+      - name: Verify trusted receipt, C-to-R graph, and synthesized merge payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            python .github/scripts/verify_codex_candidate_provenance.py --mode pr \
+              --receipt docs/reports/codex-desktop-candidate-resolution.json \
+              --allow-missing-receipt \
+              --base "$BASE_SHA" --head "$HEAD_SHA" --json
+          else
+            python .github/scripts/verify_codex_candidate_provenance.py --mode merge-group \
+              --receipt docs/reports/codex-desktop-candidate-resolution.json \
+              --allow-missing-receipt \
+              --head "$HEAD_SHA" --json
+          fi
 
   coverage-union:
     # Issue #521 / DECISION-0031. The coverage GATE is orchestrator-run (`tdd`
@@ -1852,6 +1903,13 @@ jobs:
           python-version: "3.x"
       - name: Check rendered surfaces match core/surface/ templates (both hosts)
         run: python3 tools/build-surface.py --check
+      - name: Classify every active CLAUDE_PLUGIN_ROOT occurrence
+        # The root token is Claude-native only in the Claude payload.  A Codex
+        # compatibility fixture/input and immutable historical evidence are the
+        # two explicit exceptions; any portable product use is fail-closed.
+        run: |
+          python3 .github/scripts/check-plugin-refs.py --claude-root-inventory
+          python3 .github/scripts/test_check_plugin_refs.py
 
   codex-host:
     name: "[CHECK] | [CDX ] | Real-host install  <codex: ${{ matrix.codex-version }}>"
@@ -1898,6 +1956,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
+      - name: Verify the installed-host checker regression suite
+        # This mutation-proves the fail-closed hook and charter-route checks
+        # that the required real-host probe below executes at both boundaries.
+        run: python3 .github/scripts/test_check_codex_host.py
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
@@ -2177,6 +2239,7 @@ jobs:
       - host-descriptors
       - ci-impact
       - codex-resource-contract
+      - codex-candidate-provenance
       - tools
       - ca-sandbox-tools
       - ca-pi-checks
@@ -2206,7 +2269,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

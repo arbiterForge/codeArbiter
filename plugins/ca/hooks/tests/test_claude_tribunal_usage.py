@@ -232,7 +232,11 @@ class ClaudeSurfaceWiringTests(unittest.TestCase):
         routine = self._read(
             "plugins", "ca-codex", "routines", "tribunal", "SKILL.md")
 
-        self.assertIn("tribunal-usage.py observe --thread-id", routine)
+        self.assertIn(
+            '"$PY" "${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe '
+            "--thread-id",
+            routine,
+        )
         self.assertNotIn("tribunal-usage.py observe --agent-id", routine)
 
 

@@ -517,6 +517,31 @@ def _host_descriptor_ci_contract_violations(ci):
 
 
 class DescriptorContractTest(unittest.TestCase):
+    def test_codex_root_contract_uses_native_hook_token_and_legacy_corroboration(self):
+        module = _descriptors()
+        codex = module.host_descriptor("codex", str(REPO))
+        self.assertEqual(codex.tokens["PLUGIN_ROOT"], "${PLUGIN_ROOT}")
+        self.assertEqual(codex.root_contract.ordinary_markdown, "relative")
+        self.assertEqual(codex.root_contract.hook_token, "${PLUGIN_ROOT}")
+        self.assertEqual(
+            codex.root_contract.legacy_corroboration,
+            "${CLAUDE_PLUGIN_ROOT}",
+        )
+
+        mutated = _valid_document()
+        codex_document = next(
+            host for host in mutated["hosts"] if host["name"] == "codex"
+        )
+        codex_document["tokens"]["PLUGIN_ROOT"] = "${CLAUDE_PLUGIN_ROOT}"
+        with tempfile.TemporaryDirectory() as repo:
+            core = Path(repo) / "core"
+            core.mkdir()
+            (core / "hosts.json").write_text(
+                json.dumps(mutated), encoding="utf-8", newline="\n"
+            )
+            with self.assertRaises(module.DescriptorError):
+                module.load_host_descriptors(repo)
+
     def test_live_experience_catalog_paths_are_host_specific(self):
         module = _descriptors()
         catalogs = {

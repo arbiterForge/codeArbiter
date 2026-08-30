@@ -9,6 +9,11 @@
         "PLUGIN_ROOT": "${CLAUDE_PLUGIN_ROOT}",
         "PROJECT_DIR": "${CLAUDE_PROJECT_DIR}"
       },
+      "root_contract": {
+        "ordinary_markdown": "host-native",
+        "hook_token": "${CLAUDE_PLUGIN_ROOT}",
+        "legacy_corroboration": null
+      },
       "capabilities": {
         "agents": true,
         "prune": true,
@@ -46,8 +51,13 @@
       "hooks_dir": "plugins/ca-codex/hooks",
       "command_form": "$ca-{name}",
       "tokens": {
-        "PLUGIN_ROOT": "${CLAUDE_PLUGIN_ROOT}",
+        "PLUGIN_ROOT": "${PLUGIN_ROOT}",
         "PROJECT_DIR": "<project-root>"
+      },
+      "root_contract": {
+        "ordinary_markdown": "relative",
+        "hook_token": "${PLUGIN_ROOT}",
+        "legacy_corroboration": "${CLAUDE_PLUGIN_ROOT}"
       },
       "capabilities": {
         "agents": false,
@@ -60,12 +70,13 @@
           {"source_prefix": "commands/", "output_pattern": "skills/ca-{name}/SKILL.md", "exclude": ["commands/prune.md", "commands/statusline.md"], "add_skill_frontmatter": true},
           {"source_prefix": "skills/", "output_pattern": "routines/{relative}", "exclude": []},
           {"source_prefix": "includes/", "output_pattern": "includes/{relative}", "exclude": ["includes/pi-host-notes.md"]},
+          {"source_prefix": "agents/", "output_pattern": "agents/{relative}", "exclude": []},
           {"source_prefix": "COMMANDS.md", "output_pattern": "COMMANDS.md", "exclude": []},
           {"source_prefix": "SPRINT.md", "output_pattern": "SPRINT.md", "exclude": []},
           {"source_prefix": "arbiter.md", "output_pattern": "arbiter.md", "exclude": []},
           {"source_prefix": "README.md", "output_pattern": "README.md", "exclude": ["README.md"]}
         ],
-        "managed_subtrees": ["skills", "routines", "includes", "COMMANDS.md", "SPRINT.md", "arbiter.md", "ORCHESTRATOR.md"],
+        "managed_subtrees": ["skills", "routines", "includes", "agents", "COMMANDS.md", "SPRINT.md", "arbiter.md", "ORCHESTRATOR.md"],
         "catalog": "skills/INDEX.md"
       },
       "tool_classes": {
@@ -88,6 +99,11 @@
       "tokens": {
         "PLUGIN_ROOT": "<plugin-root>",
         "PROJECT_DIR": "<project-root>"
+      },
+      "root_contract": {
+        "ordinary_markdown": "file-relative",
+        "hook_token": null,
+        "legacy_corroboration": null
       },
       "capabilities": {
         "agents": true,

@@ -117,6 +117,7 @@ import importlib.util
 import io
 import json
 import os
+import posixpath
 import re
 import shlex
 import shutil
@@ -126,6 +127,9 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from pathlib import Path
+
+from codex_agent_routes import expected_route_stats, validate_agent_routes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(os.path.dirname(HERE))
@@ -453,6 +457,26 @@ class ConsumerFixtureTest(unittest.TestCase):
     materialization mechanism is hermetic by construction — proven against
     two REAL artifacts of the exact classes a recursive copy would have
     carried and `git archive` does not."""
+
+    def test_archived_codex_package_closes_every_agent_route(self):
+        """The clean consumer archive retains every advertised charter.
+
+        Removing a charter, changing an INDEX target, or making a generic
+        route unsupported makes this fail; the validator reads the archived
+        package rather than the checkout.
+        """
+        expected, contract_errors = expected_route_stats(
+            Path(REPO_ROOT) / "plugins" / "ca-codex"
+        )
+        self.assertEqual(contract_errors, [])
+        errors, stats = validate_agent_routes(
+            Path(_FIXTURE.codex_plugin_root), expected
+        )
+        self.assertEqual(errors, [])
+        self.assertGreater(stats["literal_route_lines"], 0)
+        self.assertGreater(stats["literal_route_occurrences"], 0)
+        self.assertGreater(stats["generic_route_lines"], 0)
+        self.assertGreater(stats["generic_route_occurrences"], 0)
 
     def test_plugin_root_carries_the_committed_release_skill_byte_identically(self):
         # LOW finding (adversarial review 2026-07-31): text-mode `open()`
@@ -787,6 +811,7 @@ def _load_host_tokens():
 
 
 _FENCED_CODE_BLOCK_RE = re.compile(r'```.*?```', re.DOTALL)
+_MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
 def _extract_refs(skill_text):
@@ -814,7 +839,15 @@ def _extract_refs(skill_text):
     string) keeps line numbers stable for anything that reports them."""
     skill_text = _FENCED_CODE_BLOCK_RE.sub('\n', skill_text)
     refs = set()
+    for match in _MARKDOWN_LINK_RE.finditer(skill_text):
+        target = match.group(1).split("#", 1)[0].strip()
+        refs.update(_PATH_REF_RE.findall(target))
+        refs.update(_GLOB_DIR_REF_RE.findall(target))
     for span in re.findall(r'`([^`]+)`', skill_text):
+        # The Codex projection renders package resources as Markdown links.
+        # Only the destination is a path; the human-readable label may look
+        # like a repo-relative path but is never resolved by the host.
+        span = _MARKDOWN_LINK_RE.sub(lambda match: match.group(1), span)
         refs.update(_PATH_REF_RE.findall(span))
         refs.update(_GLOB_DIR_REF_RE.findall(span))
     return refs
@@ -853,7 +886,7 @@ def _project_dir_is_exempt(rel):
 
 def _resolves(ref, plugin_root, consumer_root,
               plugin_token="${CLAUDE_PLUGIN_ROOT}",
-              project_token="${CLAUDE_PROJECT_DIR}"):
+              project_token="${CLAUDE_PROJECT_DIR}", source_relpath=None):
     """Classify one extracted path reference against the two scratch roots.
     `plugin_token`/`project_token` are the placeholder SPELLING the host
     that rendered this skill copy uses (`_load_host_tokens`); they default
@@ -907,6 +940,16 @@ def _resolves(ref, plugin_root, consumer_root,
         if _project_dir_is_exempt(rel):
             return True
         return os.path.exists(os.path.join(consumer_root, *rel.split("/")))
+    if source_relpath is not None and ref.startswith(("./", "../")):
+        package_root = os.path.realpath(plugin_root)
+        source_dir = os.path.join(package_root, os.path.dirname(source_relpath))
+        target = os.path.realpath(os.path.join(source_dir, *ref.split("/")))
+        try:
+            if os.path.commonpath((package_root, target)) != package_root:
+                return False
+        except ValueError:
+            return False
+        return os.path.isfile(target)
     if not _within_bounds(ref):
         return False
     return os.path.exists(os.path.join(consumer_root, *ref.split("/")))
@@ -963,12 +1006,15 @@ class ReferenceResolutionTest(unittest.TestCase):
             unresolved = {
                 ref for ref in extracted
                 if not _resolves(ref, plugin_root, _FIXTURE.consumer_root,
-                                  plugin_token, project_token)
+                                    plugin_token, project_token, relpath)
             }
             cls.per_payload[label] = {
                 "extracted": extracted,
                 "unresolved": unresolved,
-                "anchor": plugin_token + "/" + anchor_suffix,
+                "anchor": (
+                    posixpath.relpath(anchor_suffix, posixpath.dirname(relpath))
+                    if host == "codex" else plugin_token + "/" + anchor_suffix
+                ),
             }
             cls.extracted_total += len(extracted)
             cls.unresolved |= unresolved
@@ -1043,6 +1089,25 @@ class ResolverUnitTest(unittest.TestCase):
     def test_plugin_root_arm_present(self):
         self.assertTrue(_resolves(
             _STABLE_ANCHOR_REF, _FIXTURE.plugin_root, _FIXTURE.consumer_root))
+
+    def test_markdown_resource_link_extracts_only_its_resolvable_target(self):
+        # A rendered Codex resource link is an executable/readable package
+        # path.  Treating its display label as a second consumer-root path
+        # makes a portable installed route look contaminated.
+        self.assertEqual(
+            _extract_refs('`"$PY" "[hooks/releasehash.py](../../hooks/releasehash.py)"`'),
+            {"../../hooks/releasehash.py"},
+        )
+
+    def test_relative_markdown_resource_link_resolves_inside_its_package(self):
+        self.assertTrue(_resolves(
+            "../../hooks/releasehash.py", _FIXTURE.codex_plugin_root,
+            _FIXTURE.consumer_root, source_relpath="routines/release/SKILL.md"
+        ))
+        self.assertFalse(_resolves(
+            "../../../agents/escape.md", _FIXTURE.codex_plugin_root,
+            _FIXTURE.consumer_root, source_relpath="routines/release/SKILL.md"
+        ))
 
     def test_plugin_root_arm_absent(self):
         self.assertFalse(_resolves(

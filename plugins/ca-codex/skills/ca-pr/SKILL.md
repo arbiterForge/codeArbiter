@@ -26,7 +26,7 @@ apply, then:
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to
    any ADR the change implements or contradicts. The PR body is a user-facing deliverable: before
-   composing it, load `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` and the
+   composing it, load [includes/anti-slop-design/core.md](../../includes/anti-slop-design/core.md) and the
    `medium-documents` leaf, and apply at least the §3.A em-dash ban and the §3.B copy self-audit to the
    prose. Then `gh pr create`; return the URL.
 6. **Auto-attach the babysitter** — resolve the flag with the canonical resolver, never by eyeballing
@@ -34,7 +34,7 @@ apply, then:
    interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "<project-root>"
+   "$PY" "${PLUGIN_ROOT}/hooks/babysit.py" --root "<project-root>"
    ```
    It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
    true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and
@@ -44,7 +44,7 @@ apply, then:
 
 ## Routes to
 
-`finishing-a-development-branch` (`${CLAUDE_PLUGIN_ROOT}/routines/finishing-a-development-branch/SKILL.md`),
+`finishing-a-development-branch` ([routines/finishing-a-development-branch/SKILL.md](../../routines/finishing-a-development-branch/SKILL.md)),
 open-PR path.
 
 ## When NOT to use

@@ -12,7 +12,7 @@ decided, not what was considered (`"Use PostgreSQL as the primary database"`, no
 
 ## Routes to
 
-The `decision-lifecycle` skill (`${CLAUDE_PLUGIN_ROOT}/routines/decision-lifecycle/SKILL.md`). The skill
+The `decision-lifecycle` skill ([routines/decision-lifecycle/SKILL.md](../../routines/decision-lifecycle/SKILL.md)). The skill
 owns numbering, the file template, the `proposed → accepted → superseded | rejected` status lifecycle,
 and writes the file to `<project-root>/.codearbiter/decisions/`. Status transitions require
 explicit user instruction; the orchestrator never advances an ADR on its own.

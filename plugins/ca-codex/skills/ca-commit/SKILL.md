@@ -12,7 +12,7 @@ state (staged files, diff, test results) and decides whether every gate is green
 
 ## Routes to
 
-The `commit-gate` skill (`${CLAUDE_PLUGIN_ROOT}/routines/commit-gate/SKILL.md`) — all phases. The skill
+The `commit-gate` skill ([routines/commit-gate/SKILL.md](../../routines/commit-gate/SKILL.md)) — all phases. The skill
 is canonical for its phases, gates, and output format.
 
 ## When NOT to use

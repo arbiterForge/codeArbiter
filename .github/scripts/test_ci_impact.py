@@ -733,6 +733,43 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_codex_candidate_verifier_is_required_but_desktop_receipt_is_optional(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        watched = {
+            ".github/scripts/verify_codex_candidate_provenance.py",
+            ".github/scripts/test_codex_candidate_provenance.py",
+            "docs/reports/codex-desktop-candidate-resolution.json",
+            "docs/reports/evidence/codex-desktop-candidate/**",
+        }
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "ca-codex"))))
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
+        self.assertTrue(watched.issubset(set(push_trigger_paths(ci))))
+        job = workflow_jobs(ci)["codex-candidate-provenance"]
+        self.assertIn("github.event_name == 'pull_request'", job)
+        self.assertIn("github.event_name == 'merge_group'", job)
+        self.assertIn("needs.changes.outputs.ca-codex == 'true'", job)
+        self.assertIn("actions: read", job)
+        self.assertIn("contents: read", job)
+        self.assertIn("fetch-depth: 0", job)
+        self.assertIn("python .github/scripts/test_codex_candidate_provenance.py", job)
+        self.assertIn("verify_codex_candidate_provenance.py --mode pr", job)
+        self.assertIn("verify_codex_candidate_provenance.py --mode merge-group", job)
+        self.assertEqual(job.count("--allow-missing-receipt"), 2)
+        self.assertRegex(
+            job,
+            r"(?s)--mode pr \\\n.*?--allow-missing-receipt \\\n.*?--base",
+        )
+        self.assertRegex(
+            job,
+            r"(?s)--mode merge-group \\\n.*?--allow-missing-receipt \\\n.*?--head",
+        )
+        self.assertIn("--base \"$BASE_SHA\"", job)
+        self.assertIn("--head \"$HEAD_SHA\"", job)
+        self.assertIn("github.event.pull_request.base.sha || github.event.merge_group.base_sha", job)
+        self.assertIn("github.event.pull_request.head.sha || github.event.merge_group.head_sha", job)
+        self.assertIn("codex-candidate-provenance", aggregate_needs(ci))
+        self.assertIn("codex-candidate-provenance", aggregate_required_results(ci))
+
     def test_codex_desktop_candidate_workflow_is_trusted_narrow_and_pinned(self):
         workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", workflow)
@@ -884,6 +921,20 @@ class WorkflowContractTest(unittest.TestCase):
         )
         self.assertIn("codex-resource-contract", aggregate_needs(ci))
         self.assertIn("codex-resource-contract", aggregate_required_results(ci))
+
+    def test_required_codex_host_lane_runs_the_host_checker_regression_suite(self):
+        """The fail-closed installed-host test must block, not merely advise."""
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        required = aggregate_required_results(ci)
+        self.assertIn("codex-host", required)
+        self.assertIn(
+            "run: python3 .github/scripts/test_check_codex_host.py",
+            workflow_jobs(ci)["codex-host"],
+        )
+        self.assertNotIn(
+            "run: python3 .github/scripts/test_check_codex_host.py",
+            workflow_jobs(ci)["codex-host-latest"],
+        )
 
     def test_actionlint_knows_the_protected_desktop_runner_label(self):
         config = ACTIONLINT_CONFIG.read_text(encoding="utf-8")

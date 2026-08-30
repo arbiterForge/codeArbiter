@@ -181,8 +181,8 @@ The dispatch skill surfaces the underlying model identity so you can make an inf
 
 ## Invocation
 
-Direct (dev): `cd "${CLAUDE_PLUGIN_ROOT}/tools" && npm run farm -- <plan.json>`
-Via plugin: `node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" <plan.json>`
+Direct (dev): `cd "tools" && npm run farm -- <plan.json>`
+Via plugin: `node "tools/farm.js" <plan.json>`
 
 Normal use: `$ca-sprint --farm` — the skill handles model selection and dispatch automatically.
 

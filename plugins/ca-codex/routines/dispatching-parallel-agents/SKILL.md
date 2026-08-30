@@ -13,7 +13,7 @@ Fan out, collect everything, funnel before consuming. Plumbing other skills disp
 The caller supplies the work. Confirm it, or STOP and surface the gap — never invent units or pick an agent on a hunch:
 
 - **The unit list** — N discrete, independently-completable units of work, each with its scope and target paths.
-- **The agent kind** — which agent kind to dispatch per unit (e.g. `backend-author`, `frontend-author`, `scout`, `security-reviewer` at `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`). One kind per batch.
+- **The agent kind** — which agent kind to dispatch per unit (e.g. `backend-author`, `frontend-author`, `scout`, `security-reviewer` at [agents/<name>.md](../../agents/<name>.md)). One kind per batch.
 - **The completion contract** — what each agent must return: a structured result, its unit ID, and a pass/fail/error status. Self-reports are claims, not evidence (see Phase 4).
 
 ## Phase 1 — Partition · gate: BLOCK
@@ -21,7 +21,7 @@ The caller supplies the work. Confirm it, or STOP and surface the gap — never 
 Split the work into units that do not collide. A unit owns a distinct file or path set; two units in one batch MUST NOT mutate the same path.
 
 - **Independent paths** — units touch disjoint files. Dispatch directly. This is the common, fast case.
-- **Shared paths unavoidable** — units must mutate the same file or tree. Do NOT dispatch into the conflict. Route to `using-git-worktrees` (`${CLAUDE_PLUGIN_ROOT}/routines/using-git-worktrees/SKILL.md`) to give each unit an isolated working tree, or serialize the colliding units into one sequential unit. A shared-path collision in a parallel batch is a corruption, not a merge.
+- **Shared paths unavoidable** — units must mutate the same file or tree. Do NOT dispatch into the conflict. Route to `using-git-worktrees` ([routines/using-git-worktrees/SKILL.md](../using-git-worktrees/SKILL.md)) to give each unit an isolated working tree, or serialize the colliding units into one sequential unit. A shared-path collision in a parallel batch is a corruption, not a merge.
 
 Tag each unit with its ID, scope, target paths, and the agent kind. Read-only batches (review, scout) skip the collision check — they mutate nothing.
 
@@ -59,8 +59,8 @@ Gate: the result set is deduped, contradictions surfaced, and completion claims 
 
 The batch is consumed only here, through the fixed funnel — never directly by the caller.
 
-1. Dispatch `finding-triage` (`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) over the deduped result set: it classifies severity, marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker, and discards noise.
-2. Hand the triaged set to `checkpoint-aggregator` (`${CLAUDE_PLUGIN_ROOT}/agents/checkpoint-aggregator.md`): it aggregates into the single batch verdict the caller consumes — pass, or a blocking finding list.
+1. Dispatch `finding-triage` ([agents/finding-triage.md](../../agents/finding-triage.md)) over the deduped result set: it classifies severity, marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker, and discards noise.
+2. Hand the triaged set to `checkpoint-aggregator` ([agents/checkpoint-aggregator.md](../../agents/checkpoint-aggregator.md)): it aggregates into the single batch verdict the caller consumes — pass, or a blocking finding list.
 
 The errored and deferred units from Phase 3 ride through the funnel as findings — an `ERRORED` unit is a finding the caller must see, not a silent gap.
 

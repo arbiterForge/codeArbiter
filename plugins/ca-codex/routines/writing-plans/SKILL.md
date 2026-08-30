@@ -17,7 +17,7 @@ Read these, or STOP and surface the gap — never plan against an unapproved or 
 - `<project-root>/.codearbiter/tech-stack.md` — file layout, build/test/lint invocations. A verification step cites a real command from here, never a guess.
 - `<project-root>/.codearbiter/coding-standards.md` — structure and naming, so a task names the right path.
 
-**If `--farm` was requested:** check that `FARM_API_KEY` is set in the environment (or `.env` at `${CLAUDE_PLUGIN_ROOT}/tools/.env`). If absent, BLOCK immediately — cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` for setup instructions. Do not proceed; the farm dispatcher cannot run without an API key. Model selection happens later (at dispatch time in `subagent-driven-development`), so no model research is needed here.
+**If `--farm` was requested:** check that `FARM_API_KEY` is set in the environment (or `.env` at `tools/.env`). If absent, BLOCK immediately — cite [includes/farm.md](../../includes/farm.md) for setup instructions. Do not proceed; the farm dispatcher cannot run without an API key. Model selection happens later (at dispatch time in `subagent-driven-development`), so no model research is needed here.
 
 ## Phase 1 — Criterion extraction · gate: BLOCK
 
@@ -30,12 +30,12 @@ A criterion the spec leaves ambiguous is a `[CONFIRM-NN]` against
 
 **Backstop the ledger against the spec's own stated intent, mechanically, before trusting it — this
 runs even when `brainstorming` already ran the same check, because a hole that survived Phase 3
-survives Phase 4's bijection too, silently** (#566): run `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/_intentlib.py"
+survives Phase 4's bijection too, silently** (#566): run `"$PY" "${PLUGIN_ROOT}/hooks/_intentlib.py"
 uncovered-intent <project-root>/.codearbiter/specs/<slug>.md [--issue-body <scratch-file>]` —
 `<scratch-file>` holds the linked issue's body when one exists (`gh issue view <N> --json body -q
 .body > <scratch-file>`, written outside the working tree), omitted when none does. A non-empty
 result names an in-scope bullet or an acceptance checkbox the criteria never cited — BLOCK and route
-back to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/routines/brainstorming/SKILL.md`) to add the missing criterion or record a `[CONFIRM-NN]`; never paper over a
+back to `brainstorming` ([routines/brainstorming/SKILL.md](../brainstorming/SKILL.md)) to add the missing criterion or record a `[CONFIRM-NN]`; never paper over a
 missing criterion by authoring a task for it here instead. This is the LAST point before a hole gets
 laundered through Phase 4's bijection, which only checks the ledger against itself and cannot see
 past it.
@@ -108,11 +108,11 @@ completeness of the ledger itself was Phase 1's gate, not this one. This clears 
 
 When `--farm` was requested, after the bijective coverage gate passes and the `.md` plan is written,
 produce the farm artifact (`plan.json`) — **one MVP slice at a time** — per
-`${CLAUDE_PLUGIN_ROOT}/routines/writing-plans/references/farm-plan.md`. Load that leaf and follow it;
+[routines/writing-plans/references/farm-plan.md](references/farm-plan.md). Load that leaf and follow it;
 it owns the per-task failing-test + schema-valid `plan.json` procedure.
 
 Gate: all failing tests written and confirmed failing; `plan.json` written and schema-valid. Both
-artifacts exist before handing off to `subagent-driven-development` (`${CLAUDE_PLUGIN_ROOT}/routines/subagent-driven-development/SKILL.md`).
+artifacts exist before handing off to `subagent-driven-development` ([routines/subagent-driven-development/SKILL.md](../subagent-driven-development/SKILL.md)).
 
 ## Hard rules
 
@@ -125,5 +125,5 @@ artifacts exist before handing off to `subagent-driven-development` (`${CLAUDE_P
 - MUST run the `uncovered_intent` backstop and ask the negative-judgment question in Phase 1, and MUST NOT treat Phase 4's bijection proof as a substitute — bijection proves the plan and the ledger agree with each other, never that the ledger is complete (#566).
 - MUST NOT emit `plan.json` in `--farm` mode without writing and confirming each failing test first.
 - MUST NOT set `meta.model` or `meta.apiBaseUrl` in `plan.json` — these belong to the dispatch step.
-- MUST NOT proceed with `--farm` if `FARM_API_KEY` is absent — cite `${CLAUDE_PLUGIN_ROOT}/includes/farm.md` and BLOCK.
-- MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` out-of-scope items — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so they don't die in the plan file.
+- MUST NOT proceed with `--farm` if `FARM_API_KEY` is absent — cite [includes/farm.md](../../includes/farm.md) and BLOCK.
+- MUST, at exit, run the follow-up harvest ([includes/harvest.md](../../includes/harvest.md)) over any `[NEEDS-TRIAGE]` out-of-scope items — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so they don't die in the plan file.

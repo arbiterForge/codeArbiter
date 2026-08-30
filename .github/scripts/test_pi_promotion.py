@@ -734,6 +734,58 @@ class DocumentationContractTests(unittest.TestCase):
             )
         self.assertEqual(findings, [])
 
+    def test_link_scanner_accepts_safe_symbolic_template_targets(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            document = root / "plugins" / "ca-codex" / "routines" / "skill-author" / "SKILL.md"
+            document.parent.mkdir(parents=True)
+            document.write_text(
+                "[reviewer](../../agents/<name>.md)\n"
+                "[skill](../<other-skill>/SKILL.md)\n"
+                "[directory](../<name>)\n",
+                encoding="utf-8",
+            )
+            findings = docs.check_documentation(
+                root,
+                docs.load_contract(self.broad_current_contract(root)),
+                promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                paths=(Path("plugins/ca-codex/routines/skill-author/SKILL.md"),),
+            )
+        self.assertEqual(findings, [])
+
+    def test_link_scanner_rejects_unsafe_symbolic_template_targets(self):
+        docs = load_docs_module()
+        promotion = load_module()
+        cases = (
+            "../../../../../<name>.md",
+            "../../agents/<Name>.md",
+            "../../agents/<name.md",
+            "../../agents/<<name>>.md",
+            "../../agents/<name>.md?x=1",
+        )
+        for target in cases:
+            with self.subTest(target=target), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                document = (
+                    root / "plugins" / "ca-codex" / "routines" /
+                    "skill-author" / "SKILL.md"
+                )
+                document.parent.mkdir(parents=True)
+                document.write_text(f"[resource]({target})\n", encoding="utf-8")
+                findings = docs.check_documentation(
+                    root,
+                    docs.load_contract(self.broad_current_contract(root)),
+                    promotion.SupportPolicy("0.80.5", "0.80.10", (22, 19, 0)),
+                    paths=(
+                        Path("plugins/ca-codex/routines/skill-author/SKILL.md"),
+                    ),
+                )
+            self.assertEqual(
+                [finding.code for finding in findings], ["DOC-LINK-MISSING"]
+            )
+
     def test_link_scanner_ignores_multibacktick_inline_code(self):
         docs = load_docs_module()
         promotion = load_module()

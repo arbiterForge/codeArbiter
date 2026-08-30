@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.6] - 2026-08-26
+
+### Changed
+
+- Plugin-root discovery now treats the executing module location as authoritative, validates the internal normalized root separately from Claude's native root, and fails closed on mismatch, traversal, symlink escape, or an invalid package anchor.
+- Shared status-line and hook wiring now preserve host-native root semantics while consuming the same deterministically generated internal kernel across adapters.
+
 ## [2.15.5] - 2026-08-24
 
 ### Fixed

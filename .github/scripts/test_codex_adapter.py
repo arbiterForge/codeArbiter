@@ -1131,7 +1131,7 @@ class TestCodexHooksJson(unittest.TestCase):
                     "one OS-specific handler")
 
     def _scripts(self, cmd):
-        return re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/hooks/([\w.-]+\.py)", cmd or "")
+        return re.findall(r"\$\{PLUGIN_ROOT\}/hooks/([\w.-]+\.py)", cmd or "")
 
     def test_every_registered_script_exists(self):
         for event in self.hooks:
@@ -1180,8 +1180,10 @@ class TestCodexHooksJson(unittest.TestCase):
             for _, h in self._entries(event):
                 self.assertIn("commandWindows", h)
                 self.assertIsInstance(h.get("timeout"), int)
-                self.assertIn("${CLAUDE_PLUGIN_ROOT}", h["commandWindows"])
-                self.assertIn("${CLAUDE_PLUGIN_ROOT}", h["command"])
+                self.assertIn("${PLUGIN_ROOT}", h["commandWindows"])
+                self.assertIn("${PLUGIN_ROOT}", h["command"])
+                self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", h["commandWindows"])
+                self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", h["command"])
 
 
 class TestHooksJsonToolMapDriftGuard(unittest.TestCase):

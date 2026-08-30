@@ -173,6 +173,8 @@ class CodexHost(hostapi.Host):
     """OpenAI Codex CLI (>= rust-v0.143.0) — the second host (ADR-0011)."""
 
     name = "codex"
+    adapter_name = "ca-codex"
+    adapter_version = "0.7.5"
     command_noun = "command"
     has_statusline = False   # no statusline surface exists on Codex
     has_read_tool = False    # no read tool; file reads happen via shell
@@ -231,14 +233,18 @@ class CodexHost(hostapi.Host):
         return os.getcwd()
 
     def plugin_root(self):
-        """CLAUDE_PLUGIN_ROOT (Codex sets it as an explicit compat alias,
-        discovery.rs L227-235) -> PLUGIN_ROOT (the native name) ->
-        file-relative fallback (<root>/hooks/_host.py -> <root>)."""
-        for var in ("CLAUDE_PLUGIN_ROOT", "PLUGIN_ROOT"):
-            env = os.environ.get(var)
-            if env:
-                return env
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        """Authenticate this executing Codex adapter's payload root.
+
+        PLUGIN_ROOT is required matching corroboration; CLAUDE_PLUGIN_ROOT is
+        a matching-only deprecated compatibility alias.
+        """
+        return hostapi.resolve_plugin_root(
+            __file__, adapter_name=self.adapter_name, adapter_version=self.adapter_version,
+            manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/_host.py",
+            signal_names=("PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT"),
+            required_signal_names=("PLUGIN_ROOT",),
+            legacy_signal_names=("CLAUDE_PLUGIN_ROOT",),
+        )
 
     def manifest_relpath(self):
         """ca-codex ships its manifest at `.codex-plugin/plugin.json` ONLY

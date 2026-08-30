@@ -124,8 +124,10 @@ class TokenTest(_RepoCase):
         text = self.render("codex")["skills/ca-status/SKILL.md"].decode()
         self.assertIn("<project-root>/.codearbiter/CONTEXT.md", text)
         # skills/ -> routines/ rewrite, commands/x.md -> skills/ca-x/SKILL.md rewrite.
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md", text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/skills/ca-init/SKILL.md", text)
+        self.assertIn("[routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)", text)
+        self.assertIn("[skills/ca-init/SKILL.md](../ca-init/SKILL.md)", text)
+        self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", text)
+        self.assertNotIn("${PLUGIN_ROOT}", text)
         self.assertIn("# $ca-status", text)
 
     def test_codex_entry_skill_paths_survive_the_routines_rewrite(self):
@@ -135,8 +137,153 @@ class TokenTest(_RepoCase):
                "{{IF:codex}}see {{PLUGIN_ROOT}}/skills/ca-init/SKILL.md{{END}}\n"
                "shared: {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n")
         text = self.render("codex")["includes/entry.md"].decode()
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/skills/ca-init/SKILL.md", text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md", text)
+        self.assertIn("[skills/ca-init/SKILL.md](../skills/ca-init/SKILL.md)", text)
+        self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text)
+
+    def test_codex_links_only_concrete_packaged_resources(self):
+        _write(
+            self.repo,
+            "core/surface/includes/resource-links.md",
+            "existing: {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n"
+            "generic: {{PLUGIN_ROOT}}/skills/<name>/SKILL.md\n"
+            "absent: {{PLUGIN_ROOT}}/tools/farm.js\n",
+        )
+        text = self.render("codex")["includes/resource-links.md"].decode()
+        self.assertIn(
+            "existing: [routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text
+        )
+        self.assertIn(
+            "generic: [routines/<name>/SKILL.md](../routines/<name>/SKILL.md)",
+            text,
+        )
+        self.assertIn("absent: tools/farm.js", text)
+        self.assertNotIn("[tools/farm.js]", text)
+
+    def test_executable_root_token_survives_while_navigation_links_render(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/_releaselib.py",
+            "#!/usr/bin/env python3\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/release-helper.md",
+            "run `\"$PY\" \"{{PLUGIN_ROOT}}/hooks/_releaselib.py\" list-targets`; "
+            "then see {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n",
+        )
+        codex = self.render("codex")["includes/release-helper.md"].decode()
+        self.assertIn('"${PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', codex)
+        self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", codex)
+        self.assertNotIn("[hooks/_releaselib.py]", codex)
+        claude = self.render("claude")["includes/release-helper.md"].decode()
+        self.assertIn('"${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', claude)
+
+    def test_packaged_python_hook_in_executable_position_keeps_runtime_root(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        for interpreter in ('"$PY"', "python", "python3"):
+            with self.subTest(interpreter=interpreter):
+                _write(
+                    self.repo,
+                    "core/surface/includes/tribunal-helper.md",
+                    f'run `{interpreter} "{{{{PLUGIN_ROOT}}}}/'
+                    'hooks/tribunal-usage.py" observe`\n',
+                )
+                codex = self.render("codex")[
+                    "includes/tribunal-helper.md"
+                ].decode()
+                self.assertIn(
+                    '"${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe', codex
+                )
+                self.assertNotIn("[hooks/tribunal-usage.py]", codex)
+
+    def test_missing_python_hook_is_not_promoted_to_executable_path(self):
+        for interpreter in ('"$PY"', "python", "python3"):
+            with self.subTest(interpreter=interpreter):
+                _write(
+                    self.repo,
+                    "core/surface/includes/missing-helper.md",
+                    f'run `{interpreter} "{{{{PLUGIN_ROOT}}}}/'
+                    'hooks/not-packaged.py" observe`\n',
+                )
+                codex = self.render("codex")[
+                    "includes/missing-helper.md"
+                ].decode()
+                self.assertIn('"hooks/not-packaged.py" observe', codex)
+                self.assertNotIn("${PLUGIN_ROOT}/hooks/not-packaged.py", codex)
+
+    def test_packaged_python_hook_outside_executable_position_stays_a_link(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/tribunal-helper.md",
+            "read {{PLUGIN_ROOT}}/hooks/tribunal-usage.py first\n",
+        )
+        codex = self.render("codex")["includes/tribunal-helper.md"].decode()
+        self.assertIn(
+            "[hooks/tribunal-usage.py](../hooks/tribunal-usage.py)", codex
+        )
+        self.assertNotIn("${PLUGIN_ROOT}/hooks/tribunal-usage.py", codex)
+
+    def test_packaged_python_hook_requires_same_line_exact_interpreter_token(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        for prefix in ("python\n", "notpython ", "not-python ", "my_python "):
+            with self.subTest(prefix=prefix):
+                _write(
+                    self.repo,
+                    "core/surface/includes/tribunal-helper.md",
+                    f"{prefix}{{{{PLUGIN_ROOT}}}}/hooks/tribunal-usage.py\n",
+                )
+                codex = self.render("codex")[
+                    "includes/tribunal-helper.md"
+                ].decode()
+                self.assertIn(
+                    "[hooks/tribunal-usage.py](../hooks/tribunal-usage.py)",
+                    codex,
+                )
+                self.assertNotIn("${PLUGIN_ROOT}/hooks/tribunal-usage.py", codex)
+
+    def test_codex_normalizes_backslash_resource_links_to_posix(self):
+        _write(
+            self.repo,
+            "core/surface/skills/foo/SKILL.md",
+            "---\nname: foo\ndescription: Foo.\n---\n\n# foo\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/backslash-link.md",
+            "see {{PLUGIN_ROOT}}/routines\\foo\\SKILL.md\n",
+        )
+        codex = self.render("codex")["includes/backslash-link.md"].decode()
+        self.assertIn(
+            "[routines/foo/SKILL.md](../routines/foo/SKILL.md)", codex
+        )
+        self.assertNotIn("\\", codex)
+
+    def test_codex_rejects_unsafe_resource_path_before_rendering_link(self):
+        for resource in (
+                "../escaped.md", "./escaped.md", "nested/./escaped.md",
+                "/escaped.md", "C:/escaped.md", r"C:\escaped.md",
+                r"nested\..\escaped.md"):
+            with self.subTest(resource=resource):
+                _write(
+                    self.repo,
+                    "core/surface/includes/escaped.md",
+                    f"load {{{{PLUGIN_ROOT}}}}/{resource}\n",
+                )
+                with self.assertRaises(B.SurfaceError):
+                    self.render("codex")
 
     def test_unknown_cmd_name_fails(self):
         _write(self.repo, "core/surface/includes/bad.md", "see {{CMD:no-such-cmd}}\n")
@@ -155,6 +302,59 @@ class TokenTest(_RepoCase):
         with self.assertRaises(B.SurfaceError):
             self.render("claude")
 
+
+class ReviewFeedbackRegressionTest(unittest.TestCase):
+    def test_surface_readme_describes_active_codex_agent_output(self):
+        text = (REPO_ROOT / "core" / "surface" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "| `agents/**` | `agents/**` | `agents/**` "
+            "(Markdown resource charters; never native registration) |",
+            text,
+        )
+        self.assertNotIn("reserved for Task 3 resource-charter generation", text)
+
+    def test_codex_tribunal_usage_receipt_resolves_interpreter_and_hook(self):
+        codex = B.render_all(REPO_ROOT, "codex")[
+            "routines/tribunal/SKILL.md"
+        ].decode()
+        self.assertIn(
+            "PY=python3; { command -v python3 >/dev/null 2>&1 && "
+            "python3 --version >/dev/null 2>&1; } || PY=python",
+            codex,
+        )
+        self.assertIn(
+            '"$PY" "${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe '
+            "--thread-id <agent-thread-id>",
+            codex,
+        )
+        self.assertNotIn(
+            "Run `hooks/tribunal-usage.py observe --thread-id", codex
+        )
+
+    def test_tribunal_lens_directory_matches_each_host_surface(self):
+        codex = B.render_all(REPO_ROOT, "codex")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under routines/tribunal/references/lenses/", codex)
+        self.assertIn(
+            "names a card under routines/tribunal/references/lenses/", codex
+        )
+        claude = B.render_all(REPO_ROOT, "claude")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under skills/tribunal/references/lenses/", claude)
+        self.assertIn(
+            "names a card under skills/tribunal/references/lenses/", claude
+        )
+        pi = B.render_all(REPO_ROOT, "pi")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under skills/tribunal/references/lenses/", pi)
+        self.assertIn(
+            "names a card under skills/tribunal/references/lenses/", pi
+        )
 
 class ExtractionInversionTest(_RepoCase):
     def test_claude_render_inverts_extract(self):
@@ -222,6 +422,72 @@ class CodexMappingTest(_RepoCase):
             for rel in self.render(host):
                 self.assertNotIn("README", rel)
 
+    def test_codex_charter_strips_executable_frontmatter_and_keeps_policy_metadata(self):
+        _write(
+            self.repo,
+            "core/surface/agents/backend-author.md",
+            "---\nname: backend-author\ndescription: bounded author\n"
+            "tools: Read, Write\nclassification: author\npi-skills: [tdd]\n"
+            "model: sonnet\n---\n\n# Backend Author\n\n"
+            "Writes only inside the assigned worktree.\n",
+        )
+        charter = self.render("codex")["agents/backend-author.md"].decode()
+        self.assertIn("name: backend-author\n", charter)
+        self.assertIn("description: bounded author\n", charter)
+        self.assertIn("classification: author\n", charter)
+        self.assertNotIn("\ntools:", charter)
+        self.assertNotIn("\npi-skills:", charter)
+        self.assertNotIn("\nmodel:", charter)
+        self.assertIn("Writes only inside the assigned worktree.", charter)
+
+    def test_real_codex_charters_have_exact_inventory_and_dispatch_policy(self):
+        out = B.render_all(str(REPO_ROOT), "codex")
+        expected = {
+            "architecture-drift-reviewer", "auth-crypto-reviewer", "backend-author",
+            "checkpoint-aggregator", "coverage-auditor", "decision-challenger",
+            "dependency-reviewer", "design-quality-reviewer", "finding-triage",
+            "frontend-author", "grader", "infra-author", "map-deps", "map-structure",
+            "migration-reviewer", "scout", "security-reviewer", "tribunal-lens-reviewer",
+        }
+        actual = {
+            path.removeprefix("agents/").removesuffix(".md")
+            for path in out
+            if path.startswith("agents/") and path.endswith(".md")
+            and path != "agents/INDEX.md"
+        }
+        self.assertEqual(actual, expected)
+        index = out["agents/INDEX.md"].decode()
+        self.assertIn("generic agent thread", index)
+        self.assertIn("not native Codex registrations", index)
+        self.assertIn("`backend-author`, `frontend-author`, `infra-author`", index)
+        self.assertIn("fresh isolated worktree/thread required", index)
+        self.assertIn("no file mutation", index)
+        self.assertIn("`scout`, map roles", index)
+        self.assertIn("`checkpoint-aggregator`, `tribunal-lens-reviewer`", index)
+        self.assertIn("declared checkpoint/finding output path", index)
+        self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
+        self.assertIn(
+            "<!-- codearbiter-codex-agent-route-contract: "
+            "literal_route_lines=19 literal_route_occurrences=20 "
+            "generic_route_lines=6 generic_route_occurrences=6 -->",
+            index,
+        )
+        self.assertNotIn("\nmodel:", index)
+        for name in expected:
+            charter = out[f"agents/{name}.md"].decode()
+            self.assertIn(f"name: {name}\n", charter)
+            self.assertIn("description:", charter)
+            self.assertIn("classification:", charter)
+            self.assertNotIn("\ntools:", charter)
+            self.assertNotIn("\npi-skills:", charter)
+            self.assertNotIn("\nmodel:", charter)
+        manifest = json.loads(
+            (REPO_ROOT / "plugins/ca-codex/.codex-plugin/plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertNotIn("agents", manifest)
+
 
 class PiMappingTest(_RepoCase):
     def test_pi_commands_use_pi_aliases_in_bodies_and_catalog(self):
@@ -246,12 +512,13 @@ class PiMappingTest(_RepoCase):
             REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
         ).read_text(encoding="utf-8")
         _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+        _write(self.repo, "core/surface/skills/INDEX.md", "# routine catalog\n")
 
         pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
         codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
         self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
         self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md", codex_text)
+        self.assertIn("[routines/INDEX.md](../INDEX.md)", codex_text)
 
     def test_pi_generated_command_catalog_is_an_orphan_cleaned_managed_surface(self):
         B.write_all(self.repo, hosts=("pi",))

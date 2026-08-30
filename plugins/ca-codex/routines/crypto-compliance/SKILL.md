@@ -23,11 +23,11 @@ Scan every crypto operation in the changed code against `security-controls.md`. 
 - **Home-rolled crypto** — a hand-built cipher, AEAD, KDF, signature scheme, or any reimplementation of a primitive in userland instead of a vetted, approved one.
 - **Unapproved primitive or library** — any algorithm, mode, key size, or crypto library not on the approved list in `security-controls.md`.
 
-Dispatch the `auth-crypto-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/auth-crypto-reviewer.md`) to confirm these findings against `security-controls.md`.
+Dispatch the `auth-crypto-reviewer` agent ([agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md)) to confirm these findings against `security-controls.md`.
 
 Gate: no banned or unapproved primitive, no disabled TLS verification, and no home-rolled crypto in the changed code.
 
-**On pass — record the gate:** follow `${CLAUDE_PLUGIN_ROOT}/includes/security-gate-record.md` (the shared record mechanism). For this gate the relevant commit hook is **H-09b** (crypto/TLS). On any BLOCK, do NOT record the pass.
+**On pass — record the gate:** follow [includes/security-gate-record.md](../../includes/security-gate-record.md) (the shared record mechanism). For this gate the relevant commit hook is **H-09b** (crypto/TLS). On any BLOCK, do NOT record the pass.
 
 **Out-of-scope finding:** do not act on it and do not author an ADR (ADRs are user-attributed, via `/adr` only). Mark it inline with `[NEEDS-TRIAGE]`; never silently drop it.
 

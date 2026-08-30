@@ -24,6 +24,8 @@ import os
 import re
 import subprocess
 import sys
+from dataclasses import dataclass
+from pathlib import Path
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "tools"))
@@ -38,14 +40,13 @@ PLUGINS = {
     "ca-sandbox": {"namespace": "ca-sandbox"},
     # ca-codex (ADR-0011 M3): Codex has no command namespace — the catalog
     # mentions `$ca-<name>` skills and the command bodies live at
-    # skills/ca-<name>/SKILL.md. `pending_prefixes` allowlists plugin-root
-    # references to surfaces a later milestone ships (agents/ arrives with M4
-    # as .codex/agents TOML scaffolding — REMOVE the allowlist entry in M4).
-    # tools/ = the farm execution backend (farm.js, plan.schema.json), which
+    # skills/ca-<name>/SKILL.md. Shipped agent routes are dynamically checked
+    # below.  `pending_prefixes` allowlists only the unavailable tools/
+    # execution backend (farm.js, plan.schema.json), which
     # ca-codex does not vendor yet — --farm is a Feature Forge preview and its
     # Codex packaging is an M5 distribution decision (docs/parity.md row).
     "ca-codex": {"namespace": None, "skill_prefix": "ca-", "catalog_prefix": "$ca-",
-                 "pending_prefixes": ("agents/", "tools/", "tools")},
+                 "pending_prefixes": ("tools/", "tools")},
     # Pi packages generated ca-* entry skills plus /ca-* aliases. Its command
     # catalog uses the alias spelling while the directory bijection remains the
     # same as Codex's namespace-less skill layout.
@@ -96,6 +97,149 @@ def read(p):
 
 PLUGIN_REF = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^\s`\"')]+)")
 MD_LINK = re.compile(r"\]\(([^)]+)\)")
+CLAUDE_ROOT = "${CLAUDE_PLUGIN_ROOT}"
+
+
+@dataclass(frozen=True)
+class ClaudeRootOccurrence:
+    """One tracked, active root-token occurrence and its exclusive class."""
+
+    path: str
+    line: int
+    category: str
+
+
+_IMMUTABLE_HISTORY_PREFIXES = (
+    ".codearbiter/decisions/",
+    ".codearbiter/plans/",
+    ".codearbiter/reports/",
+    ".codearbiter/specs/",
+    ".superpowers/sdd/",
+    "legacy/",
+)
+_FIXTURE_INPUT_PREFIXES = (
+    "site/scripts/generator/",
+    "site/src/curated/",
+    "site/test/",
+)
+_CLAUDE_NATIVE_PREFIXES = ("plugins/ca/", "plugins/ca-sandbox/", "core/surface/")
+_CLAUDE_NATIVE_INPUTS = {"docs/patterns/lazy-load-bundles.md"}
+_CODEX_COMPATIBILITY_INPUTS = {
+    "tools/build-surface.py",
+    "tools/host_descriptors.py",
+    # These checker implementations interpret the literal as compatibility
+    # input.  Other .github/scripts code is product/CI code and fails closed.
+    ".github/scripts/check-plugin-refs.py",
+    ".github/scripts/check_skill_portability.py",
+}
+_COMMENT_PREFIXES = {
+    ".py": "#",
+    ".js": "//",
+    ".ts": "//",
+    ".mjs": "//",
+    ".yml": "#",
+    ".yaml": "#",
+}
+
+
+def _is_test_or_fixture(relative: str) -> bool:
+    name = Path(relative).name
+    return (
+        relative.startswith(_FIXTURE_INPUT_PREFIXES)
+        or name.startswith("test_")
+        or name.endswith(".test.py")
+        or name.endswith(".test.ts")
+    )
+
+
+def _is_comment(relative: str, line: str) -> bool:
+    prefix = _COMMENT_PREFIXES.get(Path(relative).suffix)
+    return prefix is not None and line.lstrip().startswith(prefix)
+
+
+def _core_host_category(host: str | None, line: str) -> str | None:
+    """Classify the descriptor's only legal literal root-token fields."""
+    if host == "claude" and '"${CLAUDE_PLUGIN_ROOT}"' in line:
+        return "claude-native"
+    if host == "codex" and '"legacy_corroboration"' in line:
+        return "codex-compatibility-fixture-input"
+    return None
+
+
+def _classify_claude_root_occurrence(
+    relative: str, line: str, descriptor_host: str | None
+) -> str | None:
+    """Return the one sanctioned class, or None for a forbidden active use."""
+    if relative == "CHANGELOG.md" or relative.startswith(_IMMUTABLE_HISTORY_PREFIXES):
+        return "immutable-history"
+    if _is_test_or_fixture(relative):
+        return "codex-compatibility-fixture-input"
+    if relative == "core/hosts.json":
+        return _core_host_category(descriptor_host, line)
+    if relative in _CODEX_COMPATIBILITY_INPUTS:
+        return "codex-compatibility-fixture-input"
+    if relative in _CLAUDE_NATIVE_INPUTS or relative.startswith(_CLAUDE_NATIVE_PREFIXES):
+        return "claude-native"
+    return None
+
+
+def _inventory_candidate(relative: str) -> bool:
+    """Inspect all repository text; classification, not path selection, is the boundary."""
+    return not relative.startswith((".git/", "__pycache__/"))
+
+
+def _inventory_paths(root: Path):
+    """Return tracked worktree files, with a fixture-friendly non-Git fallback."""
+    if (root / ".git").exists():
+        try:
+            listed = subprocess.run(
+                ["git", "-C", str(root), "ls-files", "-z"],
+                check=True,
+                capture_output=True,
+            ).stdout.decode("utf-8", "strict").split("\0")
+            return [root / relative for relative in listed if relative]
+        except (OSError, subprocess.CalledProcessError, UnicodeDecodeError):
+            pass
+    return root.rglob("*")
+
+
+def check_claude_root_inventory(repo: str | Path = REPO) -> tuple[list[str], list[ClaudeRootOccurrence]]:
+    """Classify every active CLAUDE_PLUGIN_ROOT use and reject the rest.
+
+    The three classes are deliberately exclusive: native Claude product syntax,
+    Codex compatibility fixtures/inputs, and immutable historical evidence.
+    Comments in portable Python/TypeScript code are not executable occurrences;
+    an actual token expression there remains a fail-closed finding.
+    """
+    root = Path(repo)
+    errors: list[str] = []
+    inventory: list[ClaudeRootOccurrence] = []
+    for path in sorted(_inventory_paths(root)):
+        if not path.is_file() or "node_modules" in path.parts:
+            continue
+        relative = path.relative_to(root).as_posix()
+        if not _inventory_candidate(relative):
+            continue
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except UnicodeDecodeError:
+            continue
+        descriptor_host: str | None = None
+        for number, line in enumerate(lines, start=1):
+            name = re.search(r'"name"\s*:\s*"([^"]+)"', line)
+            if name:
+                descriptor_host = name.group(1)
+            if CLAUDE_ROOT not in line or _is_comment(relative, line):
+                continue
+            category = _classify_claude_root_occurrence(relative, line, descriptor_host)
+            if category is None:
+                errors.append(
+                    f"{relative}:{number}: unclassified portable/product use of "
+                    "${CLAUDE_PLUGIN_ROOT}"
+                )
+                continue
+            inventory.append(ClaudeRootOccurrence(relative, number, category))
+    return errors, inventory
 
 
 def check_index(index_path, present, label):
@@ -115,6 +259,20 @@ def check_plugin(name, cfg):
     if not os.path.isdir(plugin):
         errors.append(f"plugins/{name}: plugin directory missing")
         return
+
+    if name == "ca-codex":
+        from codex_agent_routes import validate_agent_routes
+
+        route_errors, route_stats = validate_agent_routes(Path(plugin))
+        for error in route_errors:
+            errors.append(f"plugins/{name}/{error}")
+        print(
+            "ca-codex agent-route closure: "
+            f"{route_stats['literal_route_lines']} literal lines/"
+            f"{route_stats['literal_route_occurrences']} occurrences, "
+            f"{route_stats['generic_route_lines']} generic lines/"
+            f"{route_stats['generic_route_occurrences']} occurrences"
+        )
 
     # --- A. ${CLAUDE_PLUGIN_ROOT}/... references --------------------------------
     for path in md_files(plugin):
@@ -221,6 +379,31 @@ def check_plugin(name, cfg):
 def main():
     plugins = plugin_configs()
     requested = sys.argv[1:]
+    if requested == ["--claude-root-inventory"]:
+        inventory_errors, inventory = check_claude_root_inventory()
+        counts = {
+            category: sum(entry.category == category for entry in inventory)
+            for category in (
+                "claude-native",
+                "codex-compatibility-fixture-input",
+                "immutable-history",
+            )
+        }
+        print(
+            "CLAUDE_PLUGIN_ROOT inventory: "
+            f"{len(inventory)} classified "
+            f"(claude-native={counts['claude-native']}, "
+            "codex-compatibility-fixture-input="
+            f"{counts['codex-compatibility-fixture-input']}, "
+            f"immutable-history={counts['immutable-history']})"
+        )
+        if inventory_errors:
+            print("CLAUDE_PLUGIN_ROOT inventory FAILED:", file=sys.stderr)
+            for error in inventory_errors:
+                print(f"  - {error}", file=sys.stderr)
+            sys.exit(1)
+        print("every active CLAUDE_PLUGIN_ROOT occurrence has one sanctioned class")
+        return
     if requested:
         unknown = [p for p in requested if p not in plugins]
         if unknown:

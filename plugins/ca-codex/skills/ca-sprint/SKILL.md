@@ -14,7 +14,7 @@ Nothing is hidden behind autonomy.
 
 ## Flow
 
-Load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md` — it is the procedure. In brief:
+Load and follow [SPRINT.md](../../SPRINT.md) — it is the procedure. In brief:
 
 1. **Sprint spec (STOP)** — `brainstorming` scoped to a sprint, then `writing-plans`. Explicit user
    approval of spec AND plan before autonomy begins.
@@ -34,7 +34,7 @@ unresolvable `[CONFIRM-NN]`, merge-to-default — are NEVER auto-decided. They h
 
 ## Routes to
 
-`${CLAUDE_PLUGIN_ROOT}/SPRINT.md` (mode body), which routes through `brainstorming`,
+[SPRINT.md](../../SPRINT.md) (mode body), which routes through `brainstorming`,
 `writing-plans`, `subagent-driven-development`, `commit-gate`, `finishing-a-development-branch`.
 
 ## When NOT to use

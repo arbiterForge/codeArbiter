@@ -12,7 +12,7 @@ The only permitted path to populate `.codearbiter/` when meaningful source code 
 
 ## Routes to
 
-The `context-creation` skill (`${CLAUDE_PLUGIN_ROOT}/routines/context-creation/SKILL.md`) — six gated
+The `context-creation` skill ([routines/context-creation/SKILL.md](../../routines/context-creation/SKILL.md)) — six gated
 phases: pre-flight, scout dispatch, synthesis, gap interview, write, lock. Scouts return paths, line
 numbers, and named values only — never raw source or secret values. The skill is canonical for the
 phases and their gates.

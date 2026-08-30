@@ -2755,6 +2755,24 @@ def _markdown_resource_links(text: str) -> list[str]:
     return links
 
 
+_TEMPLATE_RESOURCE_DESTINATIONS = (
+    re.compile(r"^agents/<(?:agent|name)>\.md$"),
+    re.compile(r"^routines/<(?:name|other-skill)>/SKILL\.md$"),
+    re.compile(r"^routines/tribunal/references/lenses/<lens-slug>\.md$"),
+    re.compile(r"^skills/ca-<name>/SKILL\.md$"),
+)
+
+
+def _supported_template_resource(resolved: str) -> bool:
+    if not re.search(r"<[A-Za-z][A-Za-z0-9-]*>", resolved):
+        return False
+    if any(pattern.fullmatch(resolved) for pattern in _TEMPLATE_RESOURCE_DESTINATIONS):
+        return True
+    raise ValueError(
+        f"candidate resource link uses an unsupported template destination: {resolved}"
+    )
+
+
 def candidate_resource_contract(path: Path) -> dict[str, Any]:
     """Derive the exact packaged Markdown resource set and contained read graph."""
     files = _candidate_package_files(path)
@@ -2803,6 +2821,10 @@ def candidate_resource_contract(path: Path) -> dict[str, Any]:
                     raise ValueError(
                         f"candidate resource link is escaped: {source} -> {reference}"
                     )
+                resolved_template = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(source), target)
+                )
+                _supported_template_resource(resolved_template)
                 continue
             if (
                 not target
@@ -2813,7 +2835,13 @@ def candidate_resource_contract(path: Path) -> dict[str, Any]:
             ):
                 continue
             resolved = posixpath.normpath(posixpath.join(posixpath.dirname(source), target))
-            if resolved.startswith("../") or resolved not in resource_set:
+            if resolved.startswith("../"):
+                raise ValueError(
+                    f"candidate resource link is escaped or unresolved: {source} -> {reference}"
+                )
+            if _supported_template_resource(resolved):
+                continue
+            if resolved not in resource_set:
                 raise ValueError(
                     f"candidate resource link is escaped or unresolved: {source} -> {reference}"
                 )
@@ -4193,7 +4221,8 @@ def _retired_desktop_schema_result(
 
 
 def verify_github_attestation(
-    receipt_path: Path, signer_digest: str, workflow_run_id: str
+    receipt_path: Path, signer_digest: str, workflow_run_id: str,
+    *, bundle_path: Path | None = None,
 ) -> dict[str, Any]:
     """Verify the exact receipt subject against the protected workflow identity.
 
@@ -4212,6 +4241,8 @@ def verify_github_attestation(
         "--deny-self-hosted-runners",
         "--format", "json",
     ]
+    if bundle_path is not None:
+        command.extend(("--bundle", str(bundle_path.resolve())))
     try:
         completed = subprocess.run(
             command, capture_output=True, text=True, encoding="utf-8", timeout=120

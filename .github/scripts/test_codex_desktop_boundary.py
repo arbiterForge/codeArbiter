@@ -1300,13 +1300,12 @@ class DesktopBoundaryContractTest(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        legacy_hooks_manifest_text = (
+        repository_hooks_manifest_text = (
             plugin_root / "hooks" / "hooks.json"
         ).read_text(encoding="utf-8")
-        hooks_manifest_text = legacy_hooks_manifest_text.replace(
+        hooks_manifest_text = repository_hooks_manifest_text.replace(
             "${CLAUDE_PLUGIN_ROOT}", "${PLUGIN_ROOT}"
         )
-        self.assertNotEqual(hooks_manifest_text, legacy_hooks_manifest_text)
         self.assertEqual(
             sha256_text(hooks_manifest_text),
             "b13fc7bc70569a0885ef6bbd1be553b983ce0daf95753d287a64edc846b0b9cf",

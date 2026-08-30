@@ -17,6 +17,8 @@ REPO = Path(__file__).resolve().parents[2]
 INLINE_LINK = re.compile(r"(?<!!)\[[^]]*\]\((?P<target>[^)\s]+)(?:\s+[^)]*)?\)")
 URL_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 GITHUB_RELATIVE = re.compile(r"^(?:\.\./)+(?:pull|issues|commit|compare|releases)/.+")
+SYMBOLIC_SEGMENT = re.compile(r"<[a-z][a-z0-9-]*>")
+SYMBOLIC_TARGET_CHARS = re.compile(r"^[A-Za-z0-9_./<>-]+$")
 ATX_HEADING = re.compile(r"^[ \t]{0,3}#{1,6}(?:[ \t]+|$)")
 LIST_ITEM = re.compile(
     r"^[ \t]{0,3}(?:(?P<bullet>[*+-])|(?P<number>[0-9]{1,9})[.)])"
@@ -192,7 +194,9 @@ def _relative_targets(text: str) -> Iterable[str]:
         _without_html_blocks(_without_fenced_code(text))
     )
     for match in INLINE_LINK.finditer(without_code):
-        target = match.group("target").strip().strip("<>")
+        target = match.group("target").strip()
+        if target.startswith("<") and target.endswith(">"):
+            target = target[1:-1]
         target = target.split("#", 1)[0]
         if target and not target.startswith("/") and not URL_SCHEME.match(target):
             yield target
@@ -543,6 +547,12 @@ def _link_finding(repo: Path, source: Path, target: str) -> Finding | None:
     if GITHUB_RELATIVE.fullmatch(target):
         return None
     root = repo.resolve()
+    symbolic = SYMBOLIC_SEGMENT.sub("symbol", target)
+    if (symbolic != target and SYMBOLIC_TARGET_CHARS.fullmatch(target)
+            and "<" not in symbolic and ">" not in symbolic):
+        candidate = (root / source.parent / symbolic).resolve()
+        if candidate.is_relative_to(root):
+            return None
     site_root = root / "site" / "src" / "content" / "docs"
     if source.as_posix().startswith("site/src/content/docs/") and target.endswith("/"):
         route = target

@@ -112,6 +112,8 @@ AUTO_LANES = {
 }
 AUTO_PUBLISH_JOBS = tuple(AUTO_LANES)
 AUTO_PREFLIGHT_JOB = "auto-preflight"
+MANUAL_CODEX_PROVENANCE_JOB = "codex-provenance"
+AUTO_CODEX_PROVENANCE_JOB = "auto-codex-provenance"
 
 # #654: two triggers share this one file, and every job belongs to exactly one
 # of them. The manual lane reads dispatch inputs that do not exist on the
@@ -120,14 +122,16 @@ TRIGGERS = ("workflow_dispatch", "workflow_run")
 JOB_TRIGGER = dict(
     [(PREFLIGHT_JOB, "workflow_dispatch")]
     + [(job, "workflow_dispatch") for job in PUBLISH_JOBS]
+    + [(MANUAL_CODEX_PROVENANCE_JOB, "workflow_dispatch")]
     + [(AUTO_PREFLIGHT_JOB, "workflow_run")]
     + [(job, "workflow_run") for job in AUTO_PUBLISH_JOBS]
+    + [(AUTO_CODEX_PROVENANCE_JOB, "workflow_run")]
 )
 
 # A job-level `if:` that uses one of these status functions opts OUT of the
 # implicit "all `needs` succeeded" gate — which would let a publisher run after
 # its own preflight refused the dispatch.
-_STATUS_ESCAPES = ("always()", "!cancelled()", "cancelled()", "failure()")
+_STATUS_ESCAPES = ("always", "cancelled", "failure")
 
 
 def _release() -> str:
@@ -136,6 +140,17 @@ def _release() -> str:
 
 def _jobs() -> dict:
     return workflow_jobs(_release())
+
+
+def _named_step(job: str, name: str) -> str:
+    """Return one named workflow step without borrowing evidence from siblings."""
+    match = re.search(
+        rf"(?ms)^      - name: {re.escape(name)}\n.*?(?=^      - |\Z)",
+        job,
+    )
+    if not match:
+        raise AssertionError(f"missing workflow step: {name}")
+    return match.group(0)
 
 
 def _job_if(block: str) -> str:
@@ -167,6 +182,23 @@ def _job_needs(block: str) -> tuple:
     return ()
 
 
+def _condition_triggers(condition: str) -> set:
+    """Return the workflow triggers permitted by one supported condition."""
+    if any(
+        re.search(rf"(?<![\w.]){escape}\s*\(", condition, re.IGNORECASE)
+        for escape in _STATUS_ESCAPES
+    ):
+        raise AssertionError("a status function bypasses the implicit needs gate")
+    if "github.event_name" not in condition:
+        return set(TRIGGERS)
+    if "||" in condition:
+        raise AssertionError("unsupported boolean event guard")
+    named = re.findall(r"github\.event_name == '([\w_]+)'", condition)
+    if len(named) != 1 or named[0] not in TRIGGERS:
+        raise AssertionError("unsupported boolean event guard")
+    return {named[0]}
+
+
 def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     """Every event name `job` can start on (#654).
 
@@ -191,19 +223,13 @@ def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     if job not in jobs:
         raise AssertionError(f"`needs` names undeclared job {job!r}")
     condition = _job_if(jobs[job])
-    named = {t for t in TRIGGERS if f"github.event_name == '{t}'" in condition}
-    if named:
-        # Deliberately the WHOLE set, never the first hit: a guard widened to
-        # `dispatch || workflow_run` still contains the correct clause, and
-        # returning one trigger from it would report the bug as the fix.
-        return named
+    permitted = _condition_triggers(condition)
     parents = _job_needs(jobs[job])
     if not parents:
-        return set(TRIGGERS)
-    inherited = set()
+        return permitted
     for parent in parents:
-        inherited |= _gated_triggers(parent, jobs, chain + (job,))
-    return inherited
+        permitted &= _gated_triggers(parent, jobs, (*chain, job))
+    return permitted
 
 
 def _extract_run(text: str, name_fragment: str, step_indent: int, where: str) -> str:
@@ -852,8 +878,8 @@ class DispatchExclusivityTest(unittest.TestCase):
         jobs = _jobs()
         for job in PUBLISH_JOBS:
             with self.subTest(job=job):
-                self.assertRegex(
-                    jobs[job], r"(?m)^    needs: preflight$",
+                self.assertIn(
+                    PREFLIGHT_JOB, _job_needs(jobs[job]),
                     f"{job} must not start without the preflight's authorization")
 
     def test_publish_jobs_gate_on_the_single_resolved_target(self):
@@ -1137,8 +1163,8 @@ class AutoTagLaneTest(unittest.TestCase):
         jobs = _jobs()
         for job in AUTO_PUBLISH_JOBS:
             with self.subTest(job=job):
-                self.assertRegex(
-                    jobs[job], r"(?m)^    needs: auto-preflight$",
+                self.assertIn(
+                    AUTO_PREFLIGHT_JOB, _job_needs(jobs[job]),
                     f"{job} must not start without the auto-preflight's eligibility check")
 
     def test_every_auto_lane_gates_on_its_own_resolved_eligibility(self):
@@ -1231,6 +1257,103 @@ class AutoTagLaneTest(unittest.TestCase):
                          "a series with no tag yet is a first introduction")
 
 
+class CodexCandidateProvenanceTest(unittest.TestCase):
+    """A ca-codex tag is authorized only for the attested candidate bytes."""
+
+    def test_manual_and_auto_codex_publishers_need_read_only_provenance(self):
+        jobs = _jobs()
+        expected = {
+            "release-codex": MANUAL_CODEX_PROVENANCE_JOB,
+            "auto-release-codex": AUTO_CODEX_PROVENANCE_JOB,
+        }
+        for publisher, provenance in expected.items():
+            with self.subTest(publisher=publisher):
+                self.assertIn(provenance, jobs)
+                self.assertIn(provenance, _job_needs(jobs[publisher]))
+                block = jobs[provenance]
+                self.assertIn("actions: read", block)
+                self.assertIn("contents: read", block)
+                self.assertNotIn("contents: write", block)
+                self.assertIn(
+                    "docs/reports/codex-desktop-candidate-resolution.json", block
+                )
+                self.assertIn("codex-desktop-candidate-transfer-$CANDIDATE_COMMIT", block)
+                self.assertIn("gh run download \"$RUN_ID\"", block)
+                self.assertIn("verify_codex_candidate_provenance.py --mode release", block)
+                self.assertIn("--candidate-archive", block)
+
+    def test_manual_and_auto_provenance_pin_the_exact_final_main_commit(self):
+        jobs = _jobs()
+        manual = jobs[MANUAL_CODEX_PROVENANCE_JOB]
+        automatic = jobs[AUTO_CODEX_PROVENANCE_JOB]
+        self.assertIn("ref: ${{ github.sha }}", manual)
+        self.assertIn("--final-ref ${{ github.sha }}", manual)
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}", automatic
+        )
+        self.assertIn("--final-ref ${{ github.event.workflow_run.head_sha }}", automatic)
+
+    def test_auto_provenance_executes_only_trusted_default_branch_code(self):
+        automatic = _jobs()[AUTO_CODEX_PROVENANCE_JOB]
+        trusted_checkout = _named_step(
+            automatic, "Check out the trusted default-branch verifier"
+        )
+        candidate_materialization = _named_step(
+            automatic, "Materialize the exact completed-run candidate as inert data"
+        )
+        verifier = _named_step(
+            automatic, "Download and verify the exact attested Codex candidate"
+        )
+
+        self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
+        self.assertIn("path: trusted", trusted_checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", trusted_checkout)
+        self.assertEqual(
+            automatic.count("uses: actions/checkout@"), 1,
+            "the privileged provenance job may use actions/checkout only for "
+            "trusted default-branch code",
+        )
+        self.assertNotIn(
+            "ref: ${{ github.event.workflow_run.head_sha }}", automatic,
+            "event-selected content must never enter this privileged job via "
+            "actions/checkout",
+        )
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}",
+            candidate_materialization,
+        )
+        required_materialization_controls = (
+            'case "$CANDIDATE_SHA" in',
+            '""|*[!0-9a-f]*)',
+            '[ "${#CANDIDATE_SHA}" -ne 40 ]',
+            'git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"',
+            'git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" '
+            '"${{ github.sha }}"',
+            'git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"',
+        )
+        for control in required_materialization_controls:
+            with self.subTest(control=control):
+                self.assertIn(control, candidate_materialization)
+        self.assertNotIn("|| true", candidate_materialization)
+        self.assertIn(
+            "RECEIPT=candidate/docs/reports/codex-desktop-candidate-resolution.json",
+            verifier,
+        )
+        self.assertIn(
+            "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py",
+            verifier,
+        )
+        self.assertIn("--repo candidate", verifier)
+        self.assertNotIn(
+            "python3 candidate/.github/scripts/verify_codex_candidate_provenance.py",
+            automatic,
+        )
+        self.assertNotIn(
+            "python3 .github/scripts/verify_codex_candidate_provenance.py",
+            automatic,
+        )
+
+
 class TriggerIsolationTest(unittest.TestCase):
     """#654: two triggers share this file — a job written for one must never
     wake up on the other.
@@ -1288,17 +1411,46 @@ class TriggerIsolationTest(unittest.TestCase):
         self.assertEqual(_gated_triggers("release", jobs), set(TRIGGERS),
                          "a publisher inherits its preflight's reach")
 
-    def test_the_walk_catches_a_guard_widened_to_both_triggers(self):
-        # The mutant a substring assertion survives: the correct clause is
-        # still there, with the wrong one ORed onto it.
+    def test_the_walk_rejects_an_or_widened_event_guard(self):
         jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'"
                              " || github.event_name == 'workflow_run'\n"}
-        self.assertEqual(_gated_triggers("preflight", jobs), set(TRIGGERS))
+        with self.assertRaisesRegex(AssertionError, "unsupported boolean"):
+            _gated_triggers("preflight", jobs)
 
     def test_the_walk_inherits_a_parents_trigger_through_needs(self):
         jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'\n",
                 "release": "    needs: preflight\n"}
         self.assertEqual(_gated_triggers("release", jobs), {"workflow_dispatch"})
+
+    def test_the_walk_intersects_its_guard_with_every_parents_lane(self):
+        jobs = {
+            "auto-preflight": "    if: github.event_name == 'workflow_run'\n",
+            "release": "    needs: auto-preflight\n"
+                       "    if: github.event_name == 'workflow_dispatch'\n",
+        }
+        self.assertEqual(_gated_triggers("release", jobs), set())
+
+    def test_the_walk_intersects_multiple_parents_rather_than_unions_them(self):
+        jobs = {
+            "dispatch-preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+            "auto-preflight": "    if: github.event_name == 'workflow_run'\n",
+            "release": "    needs: [dispatch-preflight, auto-preflight]\n",
+        }
+        self.assertEqual(_gated_triggers("release", jobs), set())
+
+    def test_the_walk_rejects_a_status_function_that_bypasses_needs(self):
+        for condition in (
+            "always() || github.event_name == 'workflow_dispatch'",
+            "always () && github.event_name == 'workflow_dispatch'",
+            "Always() && github.event_name == 'workflow_dispatch'",
+        ):
+            with self.subTest(condition=condition):
+                jobs = {
+                    "release": "    needs: preflight\n" f"    if: {condition}\n",
+                    "preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+                }
+                with self.assertRaisesRegex(AssertionError, "status function"):
+                    _gated_triggers("release", jobs)
 
     def test_the_walk_raises_rather_than_reading_an_unresolvable_needs(self):
         # never-fold-unreadable-into-absent: a `needs:` this suite cannot

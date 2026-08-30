@@ -4,7 +4,7 @@ All user intent flows through these commands. A direct instruction outside a com
 redirect to the closest command (see the §6 redirect). Every command ships as a `ca-`-prefixed
 skill — invoke `$ca-<name>`.
 
-This table is the surface scan. A command body (`${CLAUDE_PLUGIN_ROOT}/skills/ca-<name>/SKILL.md`) loads
+This table is the surface scan. A command body ([skills/ca-<name>/SKILL.md](skills/ca-<name>/SKILL.md)) loads
 ONLY when that command is invoked — never bulk-read the directory.
 
 ## Implementation

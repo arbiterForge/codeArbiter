@@ -5,7 +5,7 @@ at per-turn injection time (the other two are `includes/dangerous-mode.md` and
 secrets/branch/ADR rules, the irreversible-action set, the anti-circumvention rule — live in
 `safety-core.md`, not here; this file is what's distinct about ordinary orchestrated work.
 Routing detail, the reference
-map, and skill/routine bodies load on demand from ${CLAUDE_PLUGIN_ROOT}/. -->
+map, and skill/routine bodies load on demand from the validated selected-skill root/. -->
 
 # codeArbiter
 
@@ -60,7 +60,7 @@ not the reason to skip it:
 - The user **invokes** `$ca-command`; the orchestrator **routes** to a skill; a skill **dispatches** agents. Never "trigger", "runs", or "fires".
 - Hard-rule modals: **MUST / MUST NOT / MAY / SHOULD** only. Exactly two bracketed markers exist: `[CONFIRM-NN]` (an unresolved unknown only the user can answer; numbered, lives in `open-questions.md`) and `[NEEDS-TRIAGE]` (an out-of-scope finding set aside inline, never acted on in place).
 
-**Paths.** Framework: `${CLAUDE_PLUGIN_ROOT}/` (`arbiter.md`, `skills/` — the user-invocable
+**Paths.** Framework: `the validated selected-skill root/` (`arbiter.md`, `skills/` — the user-invocable
 `ca-` entry skills, `routines/` — the orchestrator routine bodies this document routes to,
 `hooks/`, `includes/`). Project state: `<project-root>/.codearbiter/`. No vendoring, no dual root.
 
@@ -69,11 +69,11 @@ prefixed `ca-` — the user invokes `$ca-feature`, `$ca-commit`, `$ca-commands`,
 `/feature` shorthand means the `ca-feature` skill; when telling the user what to type, use the `$ca-`
 form. Routine bodies under `routines/` route by path, never user-invoked. Before dispatching
 review/author roles, editing audit files, or driving git in a sandbox, load
-`${CLAUDE_PLUGIN_ROOT}/includes/codex-host-notes.md` — the host's tool mapping and degraded paths.
+[includes/codex-host-notes.md](includes/codex-host-notes.md) — the host's tool mapping and degraded paths.
 
 **Loaded fully on invocation, never acted on from memory:**
 
-- `$ca-sprint` — autonomous sprint: load and follow `${CLAUDE_PLUGIN_ROOT}/SPRINT.md`. One
+- `$ca-sprint` — autonomous sprint: load and follow [SPRINT.md](SPRINT.md). One
   interactive spec gate, then autonomous execution with every non-hard-gate decision SMARTS-scored
   and logged; hard gates remain true stops. A trailing `--farm` flag passes through to `SPRINT.md`.
 
@@ -88,9 +88,9 @@ never loads it on this session's behalf.
 
 Before acting on a scope-touch (auth/crypto/secrets, dependencies, migrations, telemetry,
 decisions), read the governing `.codearbiter/*.md` doc first and route to the owning skill/agent.
-The full reference map and routing table live at `${CLAUDE_PLUGIN_ROOT}/includes/reference-map.md`
-and `${CLAUDE_PLUGIN_ROOT}/includes/routing-table.md` — load them on a scope-touch or `/command`,
-not every turn. `${CLAUDE_PLUGIN_ROOT}/COMMANDS.md` is the command catalog.
+The full reference map and routing table live at [includes/reference-map.md](includes/reference-map.md)
+and [includes/routing-table.md](includes/routing-table.md) — load them on a scope-touch or `/command`,
+not every turn. [COMMANDS.md](COMMANDS.md) is the command catalog.
 
 ---
 
@@ -105,7 +105,7 @@ user type. Route on understood intent, in three tiers (ADR-0022):
 2. **Probable** — the reading is likely but genuinely incomplete: an argument you would have to
    invent, or a second plausible command. Ask once, naming the best candidate ("did you mean
    `$ca-fix`?"). One approval, then route — the user approves rather than retypes.
-3. **Genuinely unclear** — emit the redirect (`${CLAUDE_PLUGIN_ROOT}/includes/redirect.md`) and let
+3. **Genuinely unclear** — emit the redirect ([includes/redirect.md](includes/redirect.md)) and let
    the user pick from the candidates; if the user insists off-channel after that, the repeat redirect.
    The asking discipline below governs tier-2 and tier-3 asks alike: a candidate list still leads
    with your recommendation and its strongest counter-consideration — "pick one" without a

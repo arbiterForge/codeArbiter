@@ -25,7 +25,9 @@
 #   python tools/build-surface.py --host pi        # limit to one host
 
 import json
+import ntpath
 import os
+import posixpath
 import re
 import sys
 
@@ -43,14 +45,41 @@ CMD_FORM = {item.name: item.command_form for item in _ROOT_DESCRIPTORS}
 
 _MARKER = re.compile(r"\{\{(IF:([a-z][a-z0-9-]*)|ELSE|END)\}\}")
 _CMD = re.compile(r"\{\{CMD:([a-z][a-z0-9-]*)\}\}")
-_TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|PROJECT_DIR)\}\}")
+_TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|EXECUTABLE_PLUGIN_ROOT|PROJECT_DIR)\}\}")
 _CMD_LITERAL = re.compile(r"/ca:([a-z][a-z0-9-]*)")
 _COMMAND_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/commands/([a-z0-9-]+)\.md")
 _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
-_PI_ONLY_AGENT_FRONTMATTER = re.compile(
+_ROOT_RESOURCE = re.compile(
+    r"(?P<tick>`?)\{\{PLUGIN_ROOT\}\}/(?P<path>[A-Za-z0-9_./<>:\\-]+)(?P=tick)"
+)
+_EXECUTABLE_PY_PREFIX = re.compile(
+    r"(?:^|[ \t`|;&(])(?:[\"']?\$PY[\"']?|python3?)[ \t]+[\"']?$",
+    re.MULTILINE,
+)
+_CLAUDE_ONLY_AGENT_FRONTMATTER = re.compile(
     r"^(?:classification|pi-skills):[^\n]*\n", re.MULTILINE
 )
+_CODEX_ONLY_AGENT_FRONTMATTER = re.compile(
+    r"^(?:tools|pi-skills|model):[^\n]*\n", re.MULTILINE
+)
+_MARKDOWN_LINK_TARGET = re.compile(r"\]\(([^)]+)\)")
+_AGENT_FRONTMATTER_STRIPPERS = {
+    "host-native": _CLAUDE_ONLY_AGENT_FRONTMATTER,
+    "relative": _CODEX_ONLY_AGENT_FRONTMATTER,
+}
 _PI_ROLE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
+_CODEX_POLICY_NAMES = {
+    "author": frozenset({"backend-author", "frontend-author", "infra-author"}),
+    "read-only reviewer/extractor": frozenset({
+        "architecture-drift-reviewer", "auth-crypto-reviewer", "coverage-auditor",
+        "decision-challenger", "dependency-reviewer", "design-quality-reviewer",
+        "finding-triage", "grader", "map-deps", "map-structure",
+        "migration-reviewer", "scout", "security-reviewer",
+    }),
+    "bounded writer/aggregator": frozenset({
+        "checkpoint-aggregator", "tribunal-lens-reviewer",
+    }),
+}
 
 
 class SurfaceError(Exception):
@@ -123,8 +152,51 @@ def resolve_conditionals(text, host, where, host_names=None):
     return "".join(out)
 
 
+def _render_relative_resources(text, output_path, where, resource_paths=None):
+    """Render Codex Markdown resources as POSIX links from `output_path`."""
+    if not output_path:
+        raise SurfaceError(f"{where}: Codex relative-resource rendering needs an output path")
+
+    def replace(match):
+        path = match.group("path")
+        suffix = ""
+        while path and path[-1] in ".,;:":
+            suffix = path[-1] + suffix
+            path = path[:-1]
+        if not path:
+            return match.group(0)
+        validation_path = path.replace("\\", "/")
+        if (posixpath.isabs(validation_path) or os.path.isabs(path)
+                or ntpath.isabs(path)):
+            raise SurfaceError(
+                f"{where}: Codex resource path must be relative: {path!r}"
+            )
+        if any(part in (".", "..") for part in validation_path.split("/")):
+            raise SurfaceError(
+                f"{where}: Codex resource path cannot contain '.' or '..': {path!r}"
+            )
+        normalized = validation_path.rstrip("/")
+        if (normalized.startswith("hooks/") and normalized.endswith(".py")
+                and resource_paths is not None and normalized in resource_paths
+                and _EXECUTABLE_PY_PREFIX.search(text[:match.start()])):
+            return f"{{{{EXECUTABLE_PLUGIN_ROOT}}}}/{normalized}{suffix}"
+        prefix = normalized + "/"
+        if (resource_paths is not None and "<" not in path and ">" not in path
+                and normalized not in resource_paths
+                and not any(item.startswith(prefix) for item in resource_paths)):
+            tick = match.group("tick")
+            return f"{tick}{validation_path}{tick}{suffix}"
+        relative = posixpath.relpath(validation_path, posixpath.dirname(output_path) or ".")
+        return f"[{validation_path}]({relative}){suffix}"
+
+    text = _ROOT_RESOURCE.sub(replace, text)
+    if "{{PLUGIN_ROOT}}" in text:
+        text = text.replace("{{PLUGIN_ROOT}}", "the validated selected-skill root")
+    return text
+
+
 def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
-                host_names=None):
+                host_names=None, output_path=None, resource_paths=None):
     """Resolve conditionals, descriptor path rules, and descriptor tokens."""
     if descriptor is None or host_names is None:
         descriptors = load_host_descriptors(repo)
@@ -137,8 +209,12 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
     if descriptor is None:
         raise SurfaceError(f"{where}: unknown render host {host!r}")
     text = resolve_conditionals(text, host, where, host_names=host_names)
-    if where.startswith("core/surface/agents/") and host != "pi":
-        text = _PI_ONLY_AGENT_FRONTMATTER.sub("", text)
+    if where.startswith("core/surface/agents/"):
+        stripper = _AGENT_FRONTMATTER_STRIPPERS.get(
+            descriptor.root_contract.ordinary_markdown
+        )
+        if stripper is not None:
+            text = stripper.sub("", text)
 
     def _command_path(match):
         rel = f"commands/{match.group(1)}.md"
@@ -174,7 +250,17 @@ def render_text(text, host, cmd_names, where, repo=REPO, descriptor=None,
         return descriptor.command_form.format(name=name)
 
     text = _CMD.sub(_cmd, text)
-    text = _TOKEN.sub(lambda m: descriptor.tokens[m.group(1)], text)
+    if descriptor.root_contract.ordinary_markdown == "relative":
+        text = _render_relative_resources(
+            text, output_path, where, resource_paths=resource_paths
+        )
+    def _token_value(match):
+        name = match.group(1)
+        if name == "EXECUTABLE_PLUGIN_ROOT":
+            return descriptor.tokens["PLUGIN_ROOT"]
+        return descriptor.tokens[name]
+
+    text = _TOKEN.sub(_token_value, text)
     if "{{" in text:
         line = text[:text.index("{{")].count("\n") + 1
         raise SurfaceError(f"{where}: unresolved '{{{{' at line {line}")
@@ -309,6 +395,103 @@ def _pi_role_catalog(out):
     return entries
 
 
+def _codex_dispatch_policy(out):
+    """Generate the explicit Codex dispatch policy from charter frontmatter."""
+    entries = {}
+    expected = frozenset().union(*_CODEX_POLICY_NAMES.values())
+    for path in sorted(item for item in out if item.startswith("agents/")
+                       and item.endswith(".md") and item != "agents/INDEX.md"):
+        where = "plugins/ca-codex/" + path
+        text = out[path].decode("utf-8")
+        name = _frontmatter_value(text, "name", where)
+        if not _PI_ROLE_NAME.fullmatch(name) or path != f"agents/{name}.md":
+            raise SurfaceError(f"{where}: Codex charter name must match its filename")
+        if name in entries:
+            raise SurfaceError(f"{where}: duplicate Codex charter name {name!r}")
+        entries[name] = _frontmatter_value(text, "classification", where)
+    if frozenset(entries) != expected:
+        missing = sorted(expected - set(entries))
+        extra = sorted(set(entries) - expected)
+        raise SurfaceError(
+            "plugins/ca-codex/agents: requires exactly the canonical 18 "
+            f"charters (missing={missing!r}, extra={extra!r})"
+        )
+    for name in _CODEX_POLICY_NAMES["author"]:
+        if entries[name] != "author":
+            raise SurfaceError(
+                f"plugins/ca-codex/agents/{name}.md: author policy requires "
+                "classification: author"
+            )
+    for policy in ("read-only reviewer/extractor", "bounded writer/aggregator"):
+        for name in _CODEX_POLICY_NAMES[policy]:
+            if entries[name] != "reviewer":
+                raise SurfaceError(
+                    f"plugins/ca-codex/agents/{name}.md: {policy} requires "
+                    "classification: reviewer"
+                )
+
+    def roles(policy):
+        return ", ".join(
+            f"`{name}`" for name in sorted(_CODEX_POLICY_NAMES[policy])
+        )
+
+    return "\n".join([
+        "", "## Codex resource-charter dispatch", "",
+        "These are packaged Markdown resource charters, not native Codex registrations.",
+        "Read the named charter, create a host-provided generic agent thread with the charter and concrete assignment, and retain the returned thread ID/receipt whenever the workflow requires isolated evidence.",
+        "Block a required review, isolation, or write-containment workflow when the host cannot provide it; use an inline fallback only where its canonical workflow explicitly permits one.",
+        "", "## Codex dispatch policy (generated from charter frontmatter)", "",
+        "| Policy class | Canonical roles | Codex type preference | Permission/write contract | Isolation and fallback | Model behavior |",
+        "|---|---|---|---|---|---|",
+        "| author | " + roles("author") + " | `worker` | write-enabled only inside the assigned worktree/scope; all writes still pass codeArbiter hooks | fresh isolated worktree/thread required; block if the workflow requires isolation and the host cannot provide it | host-supported configured model if an approved mapping exists; otherwise host default and record parity degradation |",
+        "| read-only reviewer/extractor | " + roles("read-only reviewer/extractor") + " | `explorer` when available, otherwise `default` | no file mutation; use a host-enforced read-only sandbox when available | fresh thread; `scout`, map roles, and any workflow declaring isolated evidence block if isolation is unavailable; inline fallback only where the existing canonical workflow explicitly permits it | do not translate Claude `haiku`/`sonnet` names into invented Codex tiers; use an approved host mapping or record host-default degradation |",
+        "| bounded writer/aggregator | " + roles("bounded writer/aggregator") + " | `worker` | writes limited to the charter-declared checkpoint/finding output path; all other writes prohibited and hooks remain active | fresh thread; no inline fallback where an exact per-agent receipt is required | approved host mapping or documented host-default degradation |",
+        "", "Codex built-in type preference is not a permission boundary. Mandatory isolation or write containment blocks when unavailable; it must not silently degrade to prompt-only guidance.", "",
+    ])
+
+
+def _codex_agent_route_contract(out):
+    """Generate the route-count receipt from the rendered Codex surface.
+
+    The installed-package checker reads this receipt rather than relying on a
+    hand-maintained count. Regeneration therefore changes the expected
+    literal and generic route closure only when the canonical rendered surface
+    changes deliberately.
+    """
+    literal_lines, generic_lines = set(), set()
+    literal_occurrences = generic_occurrences = 0
+    for source, payload in out.items():
+        if not source.endswith(".md") or source == "agents/INDEX.md":
+            continue
+        for line_number, line in enumerate(payload.decode("utf-8").splitlines(), 1):
+            for match in _MARKDOWN_LINK_TARGET.finditer(line):
+                target = match.group(1).strip().split("#", 1)[0]
+                if target.startswith("<") and target.endswith(">"):
+                    target = target[1:-1].strip()
+                if not target or target.startswith(("http://", "https://", "mailto:")):
+                    continue
+                resolved = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(source), target.replace("\\", "/"))
+                )
+                parts = resolved.split("/")
+                if len(parts) != 2 or parts[0] != "agents" or not parts[1].endswith(".md"):
+                    continue
+                name = parts[1][:-len(".md")]
+                if name in {"<agent>", "<name>"}:
+                    generic_lines.add((source, line_number))
+                    generic_occurrences += 1
+                else:
+                    literal_lines.add((source, line_number))
+                    literal_occurrences += 1
+    return (
+        "\n<!-- codearbiter-codex-agent-route-contract: "
+        f"literal_route_lines={len(literal_lines)} "
+        f"literal_route_occurrences={literal_occurrences} "
+        f"generic_route_lines={len(generic_lines)} "
+        f"generic_route_occurrences={generic_occurrences} -->\n"
+    )
+
+
 def _surface_files(repo, descriptors=None):
     """Sorted surface-relative template paths, classified or rejected."""
     surface = os.path.join(repo, "core", "surface")
@@ -372,6 +555,23 @@ def render_all(repo, host, descriptors=None):
     surface = os.path.join(repo, "core", "surface")
     rels = _surface_files(repo, descriptors)
     cmd_names = _command_names(rels)
+    resource_paths = set()
+    for rel in rels:
+        dst, _rule = _output_rel(rel, descriptor)
+        if dst is not None:
+            resource_paths.add(dst)
+    plugin_root = os.path.join(repo, descriptor.plugin_dir.replace("/", os.sep))
+    if os.path.isdir(plugin_root):
+        managed = tuple(item.rstrip("/") for item in descriptor.managed_subtrees)
+        for current, _dirs, files in os.walk(plugin_root):
+            for filename in files:
+                path = os.path.relpath(
+                    os.path.join(current, filename), plugin_root
+                ).replace(os.sep, "/")
+                if any(path == item or path.startswith(item + "/") for item in managed):
+                    continue
+                resource_paths.add(path)
+    resource_paths = frozenset(resource_paths)
     out = {}
     catalog = []  # (skill name, description) for an optional host catalog
     for rel in rels:
@@ -382,7 +582,8 @@ def render_all(repo, host, descriptors=None):
         text = _read_template(os.path.join(surface, rel.replace("/", os.sep)), where)
         rendered = render_text(
             text, host, cmd_names, where, repo=repo,
-            descriptor=descriptor, host_names=host_names,
+            descriptor=descriptor, host_names=host_names, output_path=dst,
+            resource_paths=resource_paths,
         )
         if rule.add_skill_frontmatter:
             name = rel[len("commands/"):-len(".md")]
@@ -405,6 +606,10 @@ def render_all(repo, host, descriptors=None):
             raise SurfaceError(f"{descriptor.plugin_dir}/{dst} collides with the "
                                "generated skill catalog")
         out[dst] = _host_catalog(descriptor, sorted(catalog)).encode("utf-8")
+    if descriptor.name == "codex" and "agents/INDEX.md" in out:
+        dst = "agents/INDEX.md"
+        out[dst] += _codex_dispatch_policy(out).encode("utf-8")
+        out[dst] += _codex_agent_route_contract(out).encode("utf-8")
     if descriptor.command_form == "/ca-{name}":
         dst = "generated/command-catalog.json"
         if dst in out:
