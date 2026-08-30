@@ -44,7 +44,7 @@ For example, load the Claude Code adapter as a local marketplace to dogfood that
 host's changes:
 
 ```text
-/plugin marketplace add ./codeArbiter
+/plugin marketplace add .
 /plugin install ca@codearbiter
 ```
 
