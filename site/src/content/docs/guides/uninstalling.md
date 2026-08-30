@@ -83,8 +83,9 @@ required. H-18 only blocks disabling the switch, not re-enabling it.
 `ca-pi` currently ships as a Feature Forge `preview`. Real use and feedback are
 welcome while broader testing continues before stable status.
 
-`ca-pi` is distributed Git-only, versioned independently as `ca-pi-v<version>` tags (not tied to
-the `ca`/`ca-codex` release cadence). There is no npm release and no auto-update.
+`ca-pi` is versioned independently from the `ca`/`ca-codex` release cadence. Each
+`ca-pi-v<version>` tag is the reproducible evidence channel, while npm is the convenience channel
+at `npm:@arbiterforge/ca-pi`. Pi does not auto-update either channel.
 
 List the published tags, then compare them with the exact source shown by `pi list`:
 
@@ -93,14 +94,29 @@ git ls-remote --tags --refs https://github.com/arbiterForge/codeArbiter.git "ca-
 pi list
 ```
 
-**Upgrade or pin a version:** choose an exact tag from the first command and re-run `pi install`
+**Upgrade through npm:** reinstall the convenience package:
+
+```text
+pi install npm:@arbiterforge/ca-pi
+```
+
+**Upgrade or pin through Git:** choose an exact tag from the first command and re-run `pi install`
 with that full tag:
 
 ```text
 pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<new-version>
 ```
 
-**Uninstall:** copy the exact installed Git source from `pi list` so the removal target matches:
+**Uninstall:** copy the exact installed source from `pi list` so the removal target matches. Remove
+the npm package or the pinned Git source, whichever is listed.
+
+For an npm install:
+
+```text
+pi remove npm:@arbiterforge/ca-pi
+```
+
+For a pinned-Git install:
 
 ```text
 pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
@@ -176,9 +192,11 @@ Codex:
 codex plugin remove ca-codex@codearbiter
 ```
 
-Pi (Git-only; use `pi list` to copy the installed source and the tag lookup in [Pi](#pi) above):
+Pi (use `pi list` to copy the installed npm or pinned-Git source, then run exactly one matching
+command; see [Pi](#pi) above):
 
 ```sh
+pi remove npm:@arbiterforge/ca-pi
 pi remove git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>
 ```
 
@@ -190,8 +208,8 @@ The effect is host-specific:
   behind when the marketplace version string has not changed, so `uninstall` is the clean path.
 - **Codex removes** the `ca-codex@codearbiter` plugin registration and stops discovering its packaged
   skills and hooks in subsequent sessions.
-- **Pi removes** the selected Git package source from Pi's installed packages. New sessions stop
-  loading the codeArbiter extension, skills, prompts, and theme from that source.
+- **Pi removes** the selected npm or pinned-Git package source from Pi's installed packages. New
+  sessions stop loading the codeArbiter extension, skills, prompts, and theme from that source.
 
 The marketplace entry (`codearbiter`) itself was added at install time with
 `/plugin marketplace add arbiterForge/codeArbiter`. If you want that gone too, you can manage it

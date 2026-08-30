@@ -11,12 +11,13 @@ journey:
   proof: "The host lists the adapter, and doctor reports the cached payload version after repository opt-in."
 ---
 
-codeArbiter ships four sibling plugins from one marketplace. Three are governance hosts: `ca` (Claude
-Code), `ca-codex` (Codex), and `ca-pi` (Pi). The fourth, `ca-sandbox`, is an infrastructure plugin
-unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). This page covers Claude Code
-and Codex install; Pi has its own dedicated walkthrough at [Install for Pi](/getting-started/pi/) (a
-different distribution model: Git-only, no npm release). All three governance hosts enforce the same
-`.codearbiter/` project store. The
+codeArbiter is one governance product with three host adapters: `ca` (Claude Code), `ca-codex`
+(Codex), and `ca-pi` (Pi). The Claude Code marketplace also carries `ca-sandbox`, an infrastructure
+plugin unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)); the Codex marketplace
+carries `ca-codex`, while Pi uses npm with pinned Git tags as the reproducible channel. This page
+covers Claude Code and Codex install; Pi has its own dedicated walkthrough at
+[Install for Pi](/getting-started/pi/). All three governance hosts enforce the same `.codearbiter/`
+project store. The
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) defines the verified boundary,
 and [Compatibility](/getting-started/compatibility/) has the full host-differences matrix.
 
@@ -91,12 +92,14 @@ Verify an opted-in repository with `$ca-doctor`.
 
 ### Pi
 
-Pi is a third governance host, `ca-pi`, distributed Git-only (no npm release) with its own version
-line and prerequisites. The complete adapter is a Feature Forge `preview`: it is available and
-welcomed for real use, with broader testing still required before stable status or a claim of 100%
-validation. It is not covered here; see [Install for Pi](/getting-started/pi/) for the full flow,
-  including mechanical tag discovery, an exact pinned `ca-pi-v<version>` install, and the
-  project-trust step Pi requires before it activates.
+Pi is a third governance host, `ca-pi`, distributed through
+`npm:@arbiterforge/ca-pi` as the convenience channel and matching pinned Git tags as the
+reproducible channel, with its own version line and prerequisites. The complete adapter is a
+Feature Forge `preview`: it is available and welcomed for real use, with broader testing still
+required before stable status or a claim of 100% validation. It is not covered here; see
+[Install for Pi](/getting-started/pi/) for the full flow, including npm install, mechanical tag
+discovery, an exact pinned `ca-pi-v<version>` install, and the project-trust step Pi requires before
+it activates.
 
 ## 2. Scaffold and Activate the Repo
 

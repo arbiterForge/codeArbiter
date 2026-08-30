@@ -15,10 +15,10 @@ result while retaining the public-marketplace smoke test as a release gate.
 
 **Shared enforcement and project-context parity across Claude Code and Codex.**
 
-Of codeArbiter's four sibling plugins, this page covers two: `ca` for Claude Code and `ca-codex` for
+This page covers two adapters of one governance product: `ca` for Claude Code and `ca-codex` for
 OpenAI Codex (see [Pi](/getting-started/pi/) for the third governance host, currently a Feature Forge
-`preview` with real use and feedback welcome, and
-[ca-sandbox](/guides/ca-sandbox/) for the non-governance infrastructure plugin). Both activate from
+`preview` with real use and feedback welcome, and [ca-sandbox](/guides/ca-sandbox/) for the separate
+Claude-marketplace infrastructure plugin). Both activate from
 the same `.codearbiter/CONTEXT.md`, enforce the same project rules, and read and write the same
 checked-in `.codearbiter/` state. One person can alternate between hosts, or two people can use
 different hosts in the same repository, without creating parallel governance state.
@@ -140,7 +140,7 @@ absence. That closes the public-installation gate with the same GitHub-slug comm
 | Statusline | Available | No Codex statusline surface; startup state carries governance status |
 | Transcript pruning | Claude transcript-pruning engine available | No transcript pruning; the host-neutral audit-staleness warning remains |
 | Governed-file Read hook | Available on Claude's Read tool | No Codex Read hook; reads happen through shell, while write-time notices remain |
-| Reviewer roles | Packaged plugin agents can be dispatched | Host-provided agent threads load the role charter and return a retained thread receipt; older hosts may fall back inline, except context creation requires isolated scouts |
+| Reviewer roles | Packaged plugin agents can be dispatched | The source candidate includes packaged resource charters for host-provided agent threads; exact-candidate proof gates release, and older adapters may fall back inline, except context creation requires isolated scouts |
 
 These differences are host capabilities and packaging choices. They do not create a second project
 context, weaken the blocking shell/write gates, or split the audit trail.

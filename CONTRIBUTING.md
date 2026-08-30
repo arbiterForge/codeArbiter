@@ -1,9 +1,10 @@
 # Contributing to codeArbiter
 
-Thanks for considering a contribution. codeArbiter is a Claude Code plugin that
-enforces development discipline through gates, so it holds itself to the same bar.
-This guide explains how to get set up, what the gates expect, and how to get a
-change merged.
+Thanks for considering a contribution. codeArbiter is one repository-owned
+governance product with a shared internal core and three governance adapters for
+Claude Code, Codex, and Pi. It enforces development discipline through gates, so
+it holds itself to the same bar. This guide explains how to get set up, what the
+gates expect, and how to get a change merged.
 
 By participating you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
@@ -23,11 +24,14 @@ By participating you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.m
 ## Prerequisites
 
 - **Python 3 on `PATH`.** Every hook is Python (stdlib only; no third-party
-  packages). Without it the gates and the startup injection silently don't run.
+  packages). Without it, Claude Code can leave an unresolved hook inactive,
+  Codex reports a handler failure, and Pi blocks mutating calls with an
+  interpreter breadcrumb. None of those states is active governance.
 - **`git config user.email` set.** Overrides and ADRs are attributed to that
   identity; the audit trail depends on a real attribution.
-- **Node.js**, only if you touch the cost-arbitrage farm dispatcher under
-  `plugins/ca/tools/` (TypeScript + Vitest).
+- **Node.js**, if you touch the cost-arbitrage farm dispatcher under
+  `plugins/ca/tools/`, the Pi adapter under `plugins/ca-pi/tools/`, or the docs
+  site (TypeScript + Vitest/Astro).
 
 ## Getting set up
 
@@ -36,7 +40,8 @@ git clone https://github.com/arbiterForge/codeArbiter
 cd codeArbiter
 ```
 
-Then load it as a local marketplace in Claude Code to dogfood your changes:
+For example, load the Claude Code adapter as a local marketplace to dogfood that
+host's changes:
 
 ```text
 /plugin marketplace add ./codeArbiter
@@ -77,11 +82,12 @@ codeArbiter governs its own development. Two things follow from that:
    logged to `.codearbiter/overrides.log`. `mode --arbiter` exits it explicitly,
    and a new session always resolves back to `arbiter`.
 
-2. **Everything that ships is a payload change and requires a version bump.** The
-   two-axis model: **SemVer** versions the whole payload (any change to shipped
-   plugin files bumps the version, and CI enforces this), while the **Feature Forge**
-   label marks per-feature previews that are off by default until real-world data
-   earns promotion. New behavior ships `preview` and opt-in first.
+2. **Every shipped adapter-payload change requires that adapter's version bump.**
+   Repository-only docs and tests are not adapter payload. The two-axis model: the
+   affected adapter's SemVer versions its complete payload (any change to shipped
+   adapter files bumps that adapter's version, and CI enforces this), while the
+   **Feature Forge** label marks per-feature previews that are off by default until
+   real-world data earns promotion. New behavior ships `preview` and opt-in first.
 
 ## Submitting a change
 
@@ -107,9 +113,11 @@ through a merged PR, never a direct write.
 ## Working with the hooks
 
 If your change touches the hooks, read [`docs/hooks.md`](./docs/hooks.md) first. It
-documents every hook, what it reads/writes, and the invariant that **no hook makes a
-network call**. Preserve that invariant: hooks are stdlib-only Python, must degrade
-safely on failure, and must exit `0` (do nothing) in a repo that hasn't opted in.
+documents every hook, what it reads/writes, and the two bounded, nonblocking
+background network operations: remote refresh through `git fetch` and the daily
+GitHub Releases check. Preserve those boundaries: hooks are stdlib-only Python,
+must degrade safely on failure, and guard hooks must exit `0` (do nothing) in a
+repo that hasn't opted in.
 
 Hook Python is canonical in `core/pysrc/` and vendored byte-identically into each
 plugin's `hooks/` by `python tools/sync-core.py` (CI gates it with `--check`). Edit
@@ -118,8 +126,8 @@ Python file is `hooks/_host.py`.
 
 ## Working with the markdown surface (generated)
 
-Commands, skills, includes, `COMMANDS.md`, `SPRINT.md`, and `arbiter.md` of
-**both** plugins are rendered from `core/surface/` templates by
+The shared command, skill, include, orchestrator, and role-charter sources are
+rendered from `core/surface/` templates into each applicable host adapter by
 `python tools/build-surface.py` — see [`core/surface/README.md`](./core/surface/README.md)
 for the token/conditional grammar and the house rules. Never edit a rendered file:
 edit the template, run the tool, commit templates and outputs together. CI's

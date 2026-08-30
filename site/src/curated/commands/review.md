@@ -24,8 +24,9 @@ Findings are surfaced by severity (CRITICAL/HIGH/MEDIUM/LOW), file:line, remedia
 security findings — the specific control in `.codearbiter/security-controls.md` they map to. Raw
 per-reviewer output is never consumed directly; only the triaged, aggregated verdict is.
 
-On current Codex hosts, codeArbiter loads each reviewer charter into a host-provided agent thread and
-retains its thread receipt. An older host may run a review role inline rather than skip it — see
+The Codex source candidate includes each packaged reviewer resource charter for host-provided agent
+threads; exact-candidate proof gates release. An older adapter may run a review role inline rather
+than skip it — see
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 

@@ -1,6 +1,6 @@
 ---
 title: Pi
-description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi Git-only install, supported versions, and version pinning."
+description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi npm and pinned-Git channels, supported versions, and version pinning."
 journey:
   level: "Foundation"
   time: "12 minutes"
@@ -32,7 +32,8 @@ Confirm all before installing:
 
 ## 1. Install
 
-Pi distribution is Git-only. First list the repository's published Pi tags; do not guess a version
+Pi's pinned Git tags are the reproducible evidence channel, while npm is the convenience channel.
+First list the repository's published Pi tags; do not guess a version
 or substitute the core plugin's release number:
 
 ```sh
