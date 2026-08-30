@@ -33,6 +33,8 @@ param(
     [string]$AdkExecutionLeaseFixturePath,
     [Parameter(Mandatory, ParameterSetName = 'CleanupObservationFixture')]
     [string]$CleanupObservationFixturePath,
+    [Parameter(Mandatory, ParameterSetName = 'VmSwitchBoundaryFixture')]
+    [string]$VmSwitchBoundaryFixturePath,
     [Parameter(ParameterSetName = 'Contract')]
     [switch]$ContractOnly
 )
@@ -41,7 +43,6 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $RunnerRoot = 'C:\codearbiter-runner'
 $WorkingRoot = 'C:\codearbiter-runner\desktop-proof-runs'
-$VmSwitchName = 'CodeArbiter-Desktop-Proof'
 
 function Get-Sha256([string]$LiteralPath) {
     (Get-FileHash -Algorithm SHA256 -LiteralPath $LiteralPath).Hash.ToLowerInvariant()
@@ -69,6 +70,282 @@ function Get-TextSha256([string]$Value) {
         -join @($algorithm.ComputeHash([Text.Encoding]::UTF8.GetBytes($Value)) |
             ForEach-Object { $_.ToString('x2') })
     } finally { $algorithm.Dispose() }
+}
+
+function Assert-VmSwitchContract($Switch) {
+    Assert-ExactFields $Switch @(
+        'name','switch_type','creation_allowed','mutation_allowed',
+        'physical_adapter_binding_allowed'
+    ) 'VM switch contract'
+    if ([string]$Switch.name -cne 'Default Switch' -or
+        [string]$Switch.switch_type -cne 'Internal' -or
+        $Switch.creation_allowed -ne $false -or
+        $Switch.mutation_allowed -ne $false -or
+        $Switch.physical_adapter_binding_allowed -ne $false) {
+        throw 'VM switch contract is invalid'
+    }
+}
+
+function ConvertTo-OrdinalSortedStrings($Values) {
+    [string[]]$normalized = @($Values | ForEach-Object { [string]$_ })
+    [Array]::Sort($normalized, [StringComparer]::Ordinal)
+    $normalized
+}
+
+function ConvertTo-CanonicalVmSwitchExtensions($Extensions, [string]$SwitchId) {
+    @($Extensions | ForEach-Object {
+        Assert-ExactFields $_ @(
+            'id','name','extension_type','enabled','running','parent_extension_id',
+            'parent_extension_name','switch_id','vendor','version'
+        ) 'observed VM switch extension'
+        $parsedExtensionId = [guid]::Empty
+        $parsedSwitchId = [guid]::Empty
+        if (-not [guid]::TryParse([string]$_.id, [ref]$parsedExtensionId) -or
+            -not [guid]::TryParse([string]$_.switch_id, [ref]$parsedSwitchId) -or
+            [string]::IsNullOrWhiteSpace([string]$_.name)) {
+            throw 'observed VM switch extension identity is invalid'
+        }
+        $extensionId = $parsedExtensionId.ToString('D').ToLowerInvariant()
+        $extensionSwitchId = $parsedSwitchId.ToString('D').ToLowerInvariant()
+        if ($extensionSwitchId -cne $SwitchId) {
+            throw 'observed VM switch extension is bound to another switch'
+        }
+        $parentExtensionId = [string]$_.parent_extension_id
+        if (-not [string]::IsNullOrWhiteSpace($parentExtensionId)) {
+            $parsedParentId = [guid]::Empty
+            if (-not [guid]::TryParse($parentExtensionId, [ref]$parsedParentId)) {
+                throw 'observed VM switch extension parent identity is invalid'
+            }
+            $parentExtensionId = $parsedParentId.ToString('D').ToLowerInvariant()
+        }
+        [ordered]@{
+            id = $extensionId
+            name = [string]$_.name
+            extension_type = [string]$_.extension_type
+            enabled = [bool]$_.enabled
+            running = [bool]$_.running
+            parent_extension_id = $parentExtensionId
+            parent_extension_name = [string]$_.parent_extension_name
+            switch_id = $extensionSwitchId
+            vendor = [string]$_.vendor
+            version = [string]$_.version
+        }
+    } | Sort-Object `
+        { [string]$_['id'] },
+        { [string]$_['name'] },
+        { [string]$_['extension_type'] })
+}
+
+function ConvertTo-CanonicalVmSwitchInventory($Inventory) {
+    $normalized = @($Inventory | ForEach-Object {
+        Assert-ExactFields $_ @(
+            'id','name','switch_type','notes','allow_management_os',
+            'allow_net_lbfo_teams','physical_adapter_interface_description',
+            'physical_adapter_interface_descriptions','physical_adapter_interface_guids',
+            'bandwidth_reservation_mode','bandwidth_percentage',
+            'default_flow_minimum_bandwidth_absolute',
+            'default_flow_minimum_bandwidth_weight','default_queue_vmmq_enabled',
+            'default_queue_vmmq_enabled_requested','default_queue_vrss_enabled',
+            'default_queue_vrss_enabled_requested',
+            'default_queue_vrss_exclude_primary_processor',
+            'default_queue_vrss_exclude_primary_processor_requested',
+            'default_queue_vrss_max_queue_pairs',
+            'default_queue_vrss_max_queue_pairs_requested',
+            'default_queue_vrss_min_queue_pairs',
+            'default_queue_vrss_min_queue_pairs_requested',
+            'default_queue_vrss_queue_scheduling_mode',
+            'default_queue_vrss_queue_scheduling_mode_requested',
+            'embedded_teaming_enabled','iov_enabled','iov_queue_pair_count',
+            'iov_queue_pairs_in_use','iov_support','iov_support_reasons',
+            'iov_virtual_function_count','iov_virtual_functions_in_use',
+            'packet_direct_enabled','packet_direct_in_use','rsc_offload_enabled',
+            'software_rsc_enabled','available_ipsec_sa','number_ipsec_sa_allocated',
+            'available_vm_queues','number_vmq_allocated','extensions',
+            'computer_name','is_deleted'
+        ) 'observed VM switch'
+        $parsedId = [guid]::Empty
+        if (-not [guid]::TryParse([string]$_.id, [ref]$parsedId)) {
+            throw 'observed VM switch ID is invalid'
+        }
+        $id = $parsedId.ToString('D').ToLowerInvariant()
+        $name = [string]$_.name
+        $switchType = [string]$_.switch_type
+        if ([string]::IsNullOrWhiteSpace($name) -or
+            $switchType -notin @('Internal','External','Private')) {
+            throw 'observed VM switch identity is invalid'
+        }
+        $physicalAdapter = if ($null -eq $_.physical_adapter_interface_description) {
+            $null
+        } else {
+            [string]$_.physical_adapter_interface_description
+        }
+        [ordered]@{
+            id = $id
+            name = $name
+            switch_type = $switchType
+            notes = [string]$_.notes
+            allow_management_os = [bool]$_.allow_management_os
+            allow_net_lbfo_teams = [bool]$_.allow_net_lbfo_teams
+            physical_adapter_interface_description = $physicalAdapter
+            physical_adapter_interface_descriptions = @(
+                ConvertTo-OrdinalSortedStrings $_.physical_adapter_interface_descriptions
+            )
+            physical_adapter_interface_guids = @(
+                ConvertTo-OrdinalSortedStrings $_.physical_adapter_interface_guids
+            )
+            bandwidth_reservation_mode = [string]$_.bandwidth_reservation_mode
+            bandwidth_percentage = [long]$_.bandwidth_percentage
+            default_flow_minimum_bandwidth_absolute = [long]$_.default_flow_minimum_bandwidth_absolute
+            default_flow_minimum_bandwidth_weight = [long]$_.default_flow_minimum_bandwidth_weight
+            default_queue_vmmq_enabled = [bool]$_.default_queue_vmmq_enabled
+            default_queue_vmmq_enabled_requested = [bool]$_.default_queue_vmmq_enabled_requested
+            default_queue_vrss_enabled = [bool]$_.default_queue_vrss_enabled
+            default_queue_vrss_enabled_requested = [bool]$_.default_queue_vrss_enabled_requested
+            default_queue_vrss_exclude_primary_processor = [bool]$_.default_queue_vrss_exclude_primary_processor
+            default_queue_vrss_exclude_primary_processor_requested = [bool]$_.default_queue_vrss_exclude_primary_processor_requested
+            default_queue_vrss_max_queue_pairs = [long]$_.default_queue_vrss_max_queue_pairs
+            default_queue_vrss_max_queue_pairs_requested = [long]$_.default_queue_vrss_max_queue_pairs_requested
+            default_queue_vrss_min_queue_pairs = [long]$_.default_queue_vrss_min_queue_pairs
+            default_queue_vrss_min_queue_pairs_requested = [long]$_.default_queue_vrss_min_queue_pairs_requested
+            default_queue_vrss_queue_scheduling_mode = [string]$_.default_queue_vrss_queue_scheduling_mode
+            default_queue_vrss_queue_scheduling_mode_requested = [string]$_.default_queue_vrss_queue_scheduling_mode_requested
+            embedded_teaming_enabled = [bool]$_.embedded_teaming_enabled
+            iov_enabled = [bool]$_.iov_enabled
+            iov_queue_pair_count = [long]$_.iov_queue_pair_count
+            iov_queue_pairs_in_use = [long]$_.iov_queue_pairs_in_use
+            iov_support = [bool]$_.iov_support
+            iov_support_reasons = @(ConvertTo-OrdinalSortedStrings $_.iov_support_reasons)
+            iov_virtual_function_count = [long]$_.iov_virtual_function_count
+            iov_virtual_functions_in_use = [long]$_.iov_virtual_functions_in_use
+            packet_direct_enabled = [bool]$_.packet_direct_enabled
+            packet_direct_in_use = [bool]$_.packet_direct_in_use
+            rsc_offload_enabled = [bool]$_.rsc_offload_enabled
+            software_rsc_enabled = [bool]$_.software_rsc_enabled
+            available_ipsec_sa = [long]$_.available_ipsec_sa
+            number_ipsec_sa_allocated = [long]$_.number_ipsec_sa_allocated
+            available_vm_queues = [long]$_.available_vm_queues
+            number_vmq_allocated = [long]$_.number_vmq_allocated
+            extensions = @(ConvertTo-CanonicalVmSwitchExtensions $_.extensions $id)
+            computer_name = [string]$_.computer_name
+            is_deleted = [bool]$_.is_deleted
+        }
+    } | Sort-Object `
+        { [string]$_['id'] },
+        { [string]$_['name'] },
+        { [string]$_['switch_type'] })
+    $serialized = ConvertTo-Json -InputObject @($normalized) -Depth 6 -Compress
+    [pscustomobject]@{
+        Entries = @($normalized)
+        Json = $serialized
+        Sha256 = Get-TextSha256 $serialized
+    }
+}
+
+function Assert-ApprovedVmSwitchBoundary($SwitchContract, $Inventory) {
+    Assert-VmSwitchContract $SwitchContract
+    $canonical = ConvertTo-CanonicalVmSwitchInventory $Inventory
+    $matching = @($canonical.Entries | Where-Object {
+        [string]$_.name -ceq [string]$SwitchContract.name
+    })
+    if ($matching.Count -eq 0) { throw 'approved VM switch is missing' }
+    if ($matching.Count -ne 1) { throw 'approved VM switch is not unique' }
+    if ([string]$matching[0].switch_type -cne 'Internal') {
+        throw 'approved VM switch type is not Internal'
+    }
+    if (-not [string]::IsNullOrWhiteSpace(
+        [string]$matching[0].physical_adapter_interface_description
+    ) -or
+        @($matching[0].physical_adapter_interface_descriptions).Count -ne 0 -or
+        @($matching[0].physical_adapter_interface_guids).Count -ne 0) {
+        throw 'approved VM switch is physically bound'
+    }
+    [pscustomobject]@{
+        Name = [string]$matching[0].name
+        SwitchType = [string]$matching[0].switch_type
+        BeforeInventoryJson = [string]$canonical.Json
+        BeforeInventorySha256 = [string]$canonical.Sha256
+    }
+}
+
+function Assert-UnchangedVmSwitchInventory($Boundary, $Inventory) {
+    $canonical = ConvertTo-CanonicalVmSwitchInventory $Inventory
+    if ([string]$canonical.Sha256 -cne [string]$Boundary.BeforeInventorySha256 -or
+        [string]$canonical.Json -cne [string]$Boundary.BeforeInventoryJson) {
+        throw 'Hyper-V switch inventory changed during desktop proof'
+    }
+    [pscustomobject]@{
+        name = [string]$Boundary.Name
+        switch_type = [string]$Boundary.SwitchType
+        before_inventory_sha256 = [string]$Boundary.BeforeInventorySha256
+        after_inventory_sha256 = [string]$canonical.Sha256
+        inventory_unchanged = $true
+    }
+}
+
+function Get-ObservedVmSwitchInventory {
+    @((Get-VMSwitch -ErrorAction Stop) | ForEach-Object {
+        [pscustomobject]@{
+            id = $_.Id.ToString('D').ToLowerInvariant()
+            name = [string]$_.Name
+            switch_type = [string]$_.SwitchType
+            notes = [string]$_.Notes
+            allow_management_os = [bool]$_.AllowManagementOS
+            allow_net_lbfo_teams = [bool]$_.AllowNetLbfoTeams
+            physical_adapter_interface_description = $_.NetAdapterInterfaceDescription
+            physical_adapter_interface_descriptions = @($_.NetAdapterInterfaceDescriptions)
+            physical_adapter_interface_guids = @($_.NetAdapterInterfaceGuid | ForEach-Object {
+                $_.ToString('D').ToLowerInvariant()
+            })
+            bandwidth_reservation_mode = [string]$_.BandwidthReservationMode
+            bandwidth_percentage = [long]$_.BandwidthPercentage
+            default_flow_minimum_bandwidth_absolute = [long]$_.DefaultFlowMinimumBandwidthAbsolute
+            default_flow_minimum_bandwidth_weight = [long]$_.DefaultFlowMinimumBandwidthWeight
+            default_queue_vmmq_enabled = [bool]$_.DefaultQueueVmmqEnabled
+            default_queue_vmmq_enabled_requested = [bool]$_.DefaultQueueVmmqEnabledRequested
+            default_queue_vrss_enabled = [bool]$_.DefaultQueueVrssEnabled
+            default_queue_vrss_enabled_requested = [bool]$_.DefaultQueueVrssEnabledRequested
+            default_queue_vrss_exclude_primary_processor = [bool]$_.DefaultQueueVrssExcludePrimaryProcessor
+            default_queue_vrss_exclude_primary_processor_requested = [bool]$_.DefaultQueueVrssExcludePrimaryProcessorRequested
+            default_queue_vrss_max_queue_pairs = [long]$_.DefaultQueueVrssMaxQueuePairs
+            default_queue_vrss_max_queue_pairs_requested = [long]$_.DefaultQueueVrssMaxQueuePairsRequested
+            default_queue_vrss_min_queue_pairs = [long]$_.DefaultQueueVrssMinQueuePairs
+            default_queue_vrss_min_queue_pairs_requested = [long]$_.DefaultQueueVrssMinQueuePairsRequested
+            default_queue_vrss_queue_scheduling_mode = [string]$_.DefaultQueueVrssQueueSchedulingMode
+            default_queue_vrss_queue_scheduling_mode_requested = [string]$_.DefaultQueueVrssQueueSchedulingModeRequested
+            embedded_teaming_enabled = [bool]$_.EmbeddedTeamingEnabled
+            iov_enabled = [bool]$_.IovEnabled
+            iov_queue_pair_count = [long]$_.IovQueuePairCount
+            iov_queue_pairs_in_use = [long]$_.IovQueuePairsInUse
+            iov_support = [bool]$_.IovSupport
+            iov_support_reasons = @($_.IovSupportReasons)
+            iov_virtual_function_count = [long]$_.IovVirtualFunctionCount
+            iov_virtual_functions_in_use = [long]$_.IovVirtualFunctionsInUse
+            packet_direct_enabled = [bool]$_.PacketDirectEnabled
+            packet_direct_in_use = [bool]$_.PacketDirectInUse
+            rsc_offload_enabled = [bool]$_.RscOffloadEnabled
+            software_rsc_enabled = [bool]$_.SoftwareRscEnabled
+            available_ipsec_sa = [long]$_.AvailableIPSecSA
+            number_ipsec_sa_allocated = [long]$_.NumberIPSecSAAllocated
+            available_vm_queues = [long]$_.AvailableVMQueues
+            number_vmq_allocated = [long]$_.NumberVmqAllocated
+            extensions = @($_.Extensions | ForEach-Object {
+                [pscustomobject]@{
+                    id = [string]$_.Id
+                    name = [string]$_.Name
+                    extension_type = [string]$_.ExtensionType
+                    enabled = [bool]$_.Enabled
+                    running = [bool]$_.Running
+                    parent_extension_id = [string]$_.ParentExtensionId
+                    parent_extension_name = [string]$_.ParentExtensionName
+                    switch_id = [string]$_.SwitchId
+                    vendor = [string]$_.Vendor
+                    version = [string]$_.Version
+                }
+            })
+            computer_name = [string]$_.ComputerName
+            is_deleted = [bool]$_.IsDeleted
+        }
+    })
 }
 
 function Get-RandomHex([int]$Bytes) {
@@ -479,6 +756,7 @@ function Get-Contract {
         $contract.channel.transport -cne 'powershell-direct-vmbus') {
         throw 'boundary contract identity is invalid'
     }
+    Assert-VmSwitchContract $contract.vm_switch
     Assert-DeploymentToolsContract $contract.deployment_tools
     Assert-ExactFields $contract.candidate_archive @(
         'max_archive_bytes','max_entries','max_entry_uncompressed_bytes',
@@ -1117,7 +1395,7 @@ $script:BrokerForwardStages = @(
 )
 $script:BrokerCleanupStages = @(
     'account-disabled','account-deleted','profile-destroyed','vm-destroyed',
-    'run-root-destroyed','artifact-inventory-cleared'
+    'run-root-destroyed','vm-switch-inventory-unchanged','artifact-inventory-cleared'
 )
 
 function Invoke-BrokerStage($Lifecycle, [string]$Name, [scriptblock]$Operation, [string]$FailAfter) {
@@ -1239,7 +1517,7 @@ function Invoke-BoundedCleanupOperation(
 function Assert-BrokerCleanupObservations($Lifecycle, [Collections.IDictionary]$Observations) {
     $required = @(
         'account-disabled','account-deleted','profile-destroyed','vm-destroyed',
-        'vhdx-destroyed','run-root-destroyed','receipt-absent'
+        'vhdx-destroyed','run-root-destroyed','vm-switch-inventory-unchanged','receipt-absent'
     )
     $missing = [Collections.Generic.List[string]]::new()
     foreach ($name in $required) {
@@ -1345,6 +1623,7 @@ function Invoke-BrokerReceiptFailureFixture(
                 'vm-destroyed' = $true
                 'vhdx-destroyed' = $true
                 'run-root-destroyed' = $true
+                'vm-switch-inventory-unchanged' = $true
                 'receipt-absent' = -not(Test-Path -LiteralPath $receiptPath)
             }
         } -TestReceiptCleanupFailure:$TestCleanupFailure
@@ -1374,7 +1653,15 @@ function Complete-BrokerLifecycle($Lifecycle) {
     $null = $Lifecycle.Trace.Add('receipt-finalized')
 }
 
-function Invoke-BrokerFixtureStateMachine([string]$FailAfter, [string]$CleanupFailure) {
+function Invoke-BrokerFixtureStateMachine(
+    $SwitchContract,
+    $VmSwitchBeforeInventory,
+    $VmSwitchAfterInventory,
+    [string]$FailAfter,
+    [string]$CleanupFailure
+) {
+    $fixtureVmSwitchBoundary = Assert-ApprovedVmSwitchBoundary `
+        $SwitchContract @($VmSwitchBeforeInventory)
     $lifecycle = New-BrokerLifecycle
     $cleanupState = [ordered]@{
         'account-disabled' = $false
@@ -1383,6 +1670,7 @@ function Invoke-BrokerFixtureStateMachine([string]$FailAfter, [string]$CleanupFa
         'vm-destroyed' = $false
         'vhdx-destroyed' = $false
         'run-root-destroyed' = $false
+        'vm-switch-inventory-unchanged' = $false
         'receipt-absent' = $true
         'artifact-inventory-cleared' = $false
     }
@@ -1410,6 +1698,11 @@ function Invoke-BrokerFixtureStateMachine([string]$FailAfter, [string]$CleanupFa
                         $cleanupState[$stage] = $true
                         if ($stage -ceq 'run-root-destroyed') { $cleanupState['vhdx-destroyed'] = $true }
                     } { [bool]$cleanupState[$stage] } 3 0
+                } elseif ($stage -ceq 'vm-switch-inventory-unchanged') {
+                    $lifecycle.CleanupAttempts[$stage] = 1
+                    $switchEvidence = Assert-UnchangedVmSwitchInventory `
+                        $fixtureVmSwitchBoundary @($VmSwitchAfterInventory)
+                    $cleanupState[$stage] = [bool]$switchEvidence.inventory_unchanged
                 } else {
                     $lifecycle.CleanupAttempts[$stage] = 1
                     $cleanupState[$stage] = $true
@@ -1576,7 +1869,20 @@ if ($ContractOnly -or $PSCmdlet.ParameterSetName -eq 'Contract') {
         verdict='PASS'; broker_sha256=$contract.broker.sha256; driver_sha256=$contract.driver.sha256
         probe_sha256=$contract.probe.sha256; image_sha256=$contract.image.sha256
         provisioning_mode=$contract.image.provisioning_mode; route_corpus_id=$contract.route_corpus.id
+        vm_switch_name=$contract.vm_switch.name; vm_switch_type=$contract.vm_switch.switch_type
     } | ConvertTo-Json -Compress
+    exit 0
+}
+if ($PSCmdlet.ParameterSetName -eq 'VmSwitchBoundaryFixture') {
+    if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'VM switch boundary fixture mode is test-only' }
+    $fixture = Get-Content -LiteralPath $VmSwitchBoundaryFixturePath -Raw -Encoding utf8 | ConvertFrom-Json
+    Assert-ExactFields $fixture @(
+        'schema_version','before_inventory','after_inventory'
+    ) 'VM switch boundary fixture'
+    if ([int]$fixture.schema_version -ne 1) { throw 'VM switch boundary fixture schema is invalid' }
+    $fixtureBoundary = Assert-ApprovedVmSwitchBoundary $contract.vm_switch @($fixture.before_inventory)
+    Assert-UnchangedVmSwitchInventory $fixtureBoundary @($fixture.after_inventory) |
+        ConvertTo-Json -Compress
     exit 0
 }
 if ($PSCmdlet.ParameterSetName -eq 'AdkBoundaryFixture') {
@@ -1700,7 +2006,10 @@ if ($PSCmdlet.ParameterSetName -eq 'Fixture') {
     if ($env:CODEARBITER_DESKTOP_BOUNDARY_TEST -cne '1') { throw 'fixture mode is test-only' }
     $fixture = Get-Content -LiteralPath $FixturePath -Raw -Encoding utf8 | ConvertFrom-Json
     if ($fixture.schema_version -ne 1) { throw 'broker fixture schema is invalid' }
-    Assert-ExactFields $fixture @('schema_version','runner_sid','acl_chain','channel','route_response','measurements') 'broker fixture'
+    Assert-ExactFields $fixture @(
+        'schema_version','runner_sid','acl_chain','channel','route_response','measurements',
+        'vm_switch_before_inventory','vm_switch_after_inventory'
+    ) 'broker fixture'
     foreach ($aclEvidence in @($fixture.acl_chain)) { Assert-TrustedAclEvidence $aclEvidence $fixture.runner_sid }
     if ((Get-RouteResponseBinding $fixture.route_response) -cne [string]$fixture.channel.response_binding_sha256) {
         throw 'broker fixture route response binding is invalid'
@@ -1712,7 +2021,9 @@ if ($PSCmdlet.ParameterSetName -eq 'Fixture') {
         Write-Output $result.Json
         exit $result.ExitCode
     }
-    $result = Invoke-BrokerFixtureStateMachine $TestFailAfter $TestCleanupFailure
+    $result = Invoke-BrokerFixtureStateMachine `
+        $contract.vm_switch $fixture.vm_switch_before_inventory `
+        $fixture.vm_switch_after_inventory $TestFailAfter $TestCleanupFailure
     Write-Output $result.Json
     exit $result.ExitCode
 }
@@ -1781,9 +2092,7 @@ $storeDesktopPath = Join-Path $store.Package.InstallLocation $contract.applicati
 $storeRuntimePath = Join-Path $store.Package.InstallLocation $contract.application.runtime_relative_path
 $storeDesktopSha = Get-Sha256 $storeDesktopPath
 $storeRuntimeSha = Get-Sha256 $storeRuntimePath
-if (-not (Get-VMSwitch -Name $VmSwitchName -ErrorAction SilentlyContinue)) {
-    throw 'fixed CodeArbiter desktop-proof VM switch is missing'
-}
+$vmSwitchBoundary = Assert-ApprovedVmSwitchBoundary $contract.vm_switch (Get-ObservedVmSwitchInventory)
 
 $suffix = $request.run_id.Substring([Math]::Max(0, $request.run_id.Length - 10))
 $vmName = "ca-desktop-$suffix"
@@ -1827,6 +2136,7 @@ $measurements = $null
 $authCompletionObserved = $false
 $identityCreationAttempted = $false
 $torn = $null
+$vmSwitchInventoryEvidence = $null
 $lifecycle = New-BrokerLifecycle
 
 try {
@@ -1848,7 +2158,7 @@ try {
         if ($diskEvidence.fresh_iso_applied -ne $true) { throw 'fresh ISO application was not measured' }
         $true
     } ''
-    $null = New-VM -Name $vmName -Generation 2 -VHDPath $diskPath -SwitchName $VmSwitchName -MemoryStartupBytes 8GB
+    $null = New-VM -Name $vmName -Generation 2 -VHDPath $diskPath -SwitchName $vmSwitchBoundary.Name -MemoryStartupBytes 8GB
     Set-VM -Name $vmName -ProcessorCount 4 -AutomaticCheckpointsEnabled $false -CheckpointType Disabled
     Set-VMFirmware -VMName $vmName -EnableSecureBoot On -SecureBootTemplate MicrosoftWindows
     Disable-VMIntegrationService -VMName $vmName -Name 'Guest Service Interface'
@@ -1868,7 +2178,7 @@ try {
         host_shared_folders = [bool]$guestService.Enabled
     }
     if ($hardDisks.Count -ne 1 -or [IO.Path]::GetFullPath($hardDisks[0].Path) -cne $expectedDisk -or
-        $dvdMounts.Count -ne 0 -or $adapters.Count -ne 1 -or $adapters[0].SwitchName -cne $VmSwitchName -or
+        $dvdMounts.Count -ne 0 -or $adapters.Count -ne 1 -or $adapters[0].SwitchName -cne $vmSwitchBoundary.Name -or
         $hostIsolation.enhanced_session_enabled -or $hostIsolation.guest_service_interface_enabled -or
         $hostIsolation.host_profile_mounted -or $hostIsolation.host_shared_folders) {
         throw 'measured Hyper-V isolation does not match the reviewed boundary'
@@ -2298,6 +2608,9 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
             if(Test-Path -LiteralPath $runRoot){Remove-Item -LiteralPath $runRoot -Recurse -Force -ErrorAction Stop}
         } { -not(Test-Path -LiteralPath $runRoot) } 3 500
     } ''
+    $vmSwitchInventoryEvidence = Invoke-BrokerCleanupStage $lifecycle 'vm-switch-inventory-unchanged' {
+        Assert-UnchangedVmSwitchInventory $vmSwitchBoundary (Get-ObservedVmSwitchInventory)
+    } ''
     $artifactSidecars = @(Get-ChildItem -LiteralPath $receiptDirectory -File -ErrorAction Stop |
         Where-Object { $_.Name.StartsWith($receiptLeaf,[StringComparison]::OrdinalIgnoreCase) }).Count
     $null = Invoke-BrokerCleanupStage $lifecycle 'artifact-inventory-cleared' {
@@ -2310,6 +2623,7 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
         'vm-destroyed' = $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue)
         'vhdx-destroyed' = -not(Test-Path -LiteralPath $diskPath)
         'run-root-destroyed' = -not(Test-Path -LiteralPath $runRoot)
+        'vm-switch-inventory-unchanged' = [bool]($vmSwitchInventoryEvidence -and $vmSwitchInventoryEvidence.inventory_unchanged)
         'receipt-absent' = -not(Test-Path -LiteralPath $ReceiptPath)
     }
     $null = Assert-BrokerCleanupObservations $lifecycle $finalCleanupObservations
@@ -2350,7 +2664,7 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
     Assert-MeasuredProof $measurements (2 * @($contract.network.https_fqdns).Count)
 
     $routeHash=Get-TextSha256 ('codearbiter.desktop-route-set.v2|' + (@($route.route_events|ForEach-Object event_sha256)-join '|'))
-    $teardownHash=Get-TextSha256 "codearbiter.desktop-teardown.v2|$desktopSha|$($torn.disabled)|$($torn.deleted)|$($torn.profile_destroyed)|vm-destroyed|run-root-destroyed"
+    $teardownHash=Get-TextSha256 "codearbiter.desktop-teardown.v3|$desktopSha|$($torn.disabled)|$($torn.deleted)|$($torn.profile_destroyed)|vm-destroyed|run-root-destroyed|vm-switch-inventory-unchanged"
     $receiptContract = New-ReceiptPolicyAndChannel ([pscustomobject]@{
         schema_version = 1
         policy = [pscustomobject]@{
@@ -2439,6 +2753,11 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
                     } { -not(Test-Path -LiteralPath $runRoot) } 3 500
                 } ''
             }
+            'vm-switch-inventory-unchanged' {
+                $vmSwitchInventoryEvidence = Invoke-BrokerCleanupStage $lifecycle $cleanupName {
+                    Assert-UnchangedVmSwitchInventory $vmSwitchBoundary (Get-ObservedVmSwitchInventory)
+                } ''
+            }
             'artifact-inventory-cleared' {
                 $null = Invoke-BrokerCleanupStage $lifecycle $cleanupName {
                     if($ReceiptPath-and(Test-Path $ReceiptPath)){Remove-Item $ReceiptPath -Force}
@@ -2464,6 +2783,7 @@ while(-not `$process.StandardOutput.EndOfStream){`$line=`$process.StandardOutput
             'vm-destroyed' = $null-eq(Get-VM $vmName -ErrorAction SilentlyContinue)
             'vhdx-destroyed' = -not(Test-Path -LiteralPath $diskPath)
             'run-root-destroyed' = -not(Test-Path -LiteralPath $runRoot)
+            'vm-switch-inventory-unchanged' = [bool]($vmSwitchInventoryEvidence -and $vmSwitchInventoryEvidence.inventory_unchanged)
             'receipt-absent' = -not(Test-Path -LiteralPath $ReceiptPath)
         }
     }
