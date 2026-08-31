@@ -65,7 +65,7 @@ governs:
   - plugins/ca-codex/**
 ```
 
-Append the required user-attributed decision-log entry. Keep the ADR `proposed` until the user explicitly ratifies it.
+Append the required user-attributed decision-log entry. ADR-0032 was explicitly ratified and is now `accepted` under DECISION-0052.
 
 - [ ] **Step 2: Update mutable security and test documentation**
 
@@ -155,12 +155,12 @@ The function reads once through `_candidate_package_files`, validates `.codex-pl
 
 ```python
 {
-    "name": "ca-codex",
-    "version": manifest["version"],
-    "file_count": len(files),
-    "resource_count": len(resource_contract["resources"]),
-    "resource_manifest_sha256": resource_contract["sha256"],
-    "package_tree_sha256": deterministic_file_map_sha256(files),
+    "sha256": package_sha256,
+    "package_sha256": package_sha256,
+    "plugin_version": version,
+    "selected_paths": resources["selected_paths"],
+    "relative_reads": resources["relative_reads"],
+    "resource_sha256": resources["sha256"],
 }
 ```
 
