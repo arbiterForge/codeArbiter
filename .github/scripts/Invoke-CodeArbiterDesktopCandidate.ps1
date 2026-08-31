@@ -313,8 +313,10 @@ function Get-ObservedVmSwitchInventory {
             allow_management_os = [bool]$_.AllowManagementOS
             allow_net_lbfo_teams = [bool]$_.AllowNetLbfoTeams
             physical_adapter_interface_description = $_.NetAdapterInterfaceDescription
-            physical_adapter_interface_descriptions = @($_.NetAdapterInterfaceDescriptions)
-            physical_adapter_interface_guids = @($_.NetAdapterInterfaceGuid | ForEach-Object {
+            physical_adapter_interface_descriptions = @($_.NetAdapterInterfaceDescriptions |
+                Where-Object { $null -ne $_ })
+            physical_adapter_interface_guids = @($_.NetAdapterInterfaceGuid |
+                Where-Object { $null -ne $_ } | ForEach-Object {
                 $_.ToString('D').ToLowerInvariant()
             })
             bandwidth_reservation_mode = [string]$_.BandwidthReservationMode
