@@ -28,36 +28,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CHECKER = REPO_ROOT / ".github" / "scripts" / "check_codex_skill_resources.py"
 FIXTURE = REPO_ROOT / ".github" / "fixtures" / "codex-skill-resources"
-BROKER = REPO_ROOT / ".github" / "scripts" / "Invoke-CodeArbiterDesktopCandidate.ps1"
-DESKTOP_CONTRACT = REPO_ROOT / ".github" / "desktop-proof-boundary.json"
-
-
-def powershell():
-    executable = shutil.which("pwsh") or shutil.which("powershell")
-    if executable is None:
-        raise unittest.SkipTest("PowerShell is unavailable")
-    return executable
-
-
-def run_broker_receipt_contract_fixture(fixture):
-    with tempfile.TemporaryDirectory() as temporary:
-        fixture_path = Path(temporary) / "receipt-contract-fixture.json"
-        fixture_path.write_text(json.dumps(fixture), encoding="utf-8")
-        environment = os.environ.copy()
-        environment["CODEARBITER_DESKTOP_BOUNDARY_TEST"] = "1"
-        return subprocess.run(
-            [
-                powershell(), "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
-                str(BROKER), "-ReceiptContractFixturePath", str(fixture_path),
-                "-ContractPath", str(DESKTOP_CONTRACT),
-            ],
-            cwd=REPO_ROOT,
-            env=environment,
-            text=True,
-            capture_output=True,
-            timeout=30,
-            check=False,
-        )
 
 
 def load_checker():
@@ -1907,1301 +1877,11 @@ class AppServerLiveHarnessTest(FakeCodexMixin, CheckerPresentMixin, unittest.Tes
         self.assertEqual(receipt["stderr_sha256"], self.checker._sha256_text(""))
 
 
-class DesktopReceiptImportTest(CheckerPresentMixin, unittest.TestCase):
-    """A desktop PASS is candidate-bound evidence from the trusted signer lane."""
-
-    def setUp(self):
-        super().setUp()
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
-        self.candidate = self.root / "ca-codex.zip"
-        with zipfile.ZipFile(self.candidate, "w", compression=zipfile.ZIP_STORED) as archive:
-            archive.writestr(
-                "plugins/ca-codex/skills/probe/SKILL.md",
-                '# Probe\n\n[Nested](../../routines/nested.md "Nested route")\n',
-            )
-            archive.writestr(
-                "plugins/ca-codex/routines/nested.md",
-                "# Nested\n\n[Agent][probe]\n\n[Anchored](../agents/probe.md#rules)\n\n"
-                "[probe]: ../agents/probe.md 'Agent route'\n",
-            )
-            archive.writestr("plugins/ca-codex/agents/probe.md", "# Agent\n")
-        self.commit = "a" * 40
-        self.tree = "b" * 40
-        self.build = "26.803.10989.0"
-        self.runtime = "0.145.0"
-        self.run_id = "123456789"
-        self.workflow_commit = "1" * 40
-        profile = r"C:\Users\ca-desktop-ephemeral-1042"
-        plugin = profile + r"\AppData\Local\codeArbiter\plugins\ca-codex"
-        skill = plugin + r"\skills\probe\SKILL.md"
-        routine = plugin + r"\routines\nested.md"
-        agent = plugin + r"\agents\probe.md"
-        self.receipt = {
-            "schema_version": 1,
-            "surface": "desktop",
-            "verdict": "PASS",
-            "blockers": [],
-            "candidate": {
-                "archive_sha256": self.checker.sha256_file(self.candidate),
-                "source_commit": self.commit,
-                "source_tree": self.tree,
-                "package": "ca-codex",
-                "resource_manifest_sha256": self.checker.candidate_resource_contract(
-                    self.candidate
-                )["sha256"],
-            },
-            "desktop": {
-                "distribution": "store-msix",
-                "package_identity": "OpenAI.Codex_26.803.10989.0_x64__2p2nqsd0c76g0",
-                "build": self.build,
-                "runtime_version": self.runtime,
-            },
-            "runner": {
-                "ephemeral": True,
-                "provider": "approved-external-windows-boundary",
-                "image": "windows-11-codex-desktop-2026-08",
-                "image_digest": "d" * 64,
-                "account_identity": "ca-desktop-ephemeral-1042",
-                "account_kind": "ephemeral",
-                "profile_root": profile,
-                "profile_isolated": True,
-                "profile_destroyed": True,
-                "repository_user_profile_mounted": False,
-            },
-            "authentication": {
-                "mode": "chatgpt-device",
-                "user_consent_observed": True,
-                "api_key_used": False,
-                "service_account_used": False,
-                "copied_session_used": False,
-                "repository_user_credentials_used": False,
-            },
-            "policy": {
-                "requested_approval": "never",
-                "effective_approval": "never",
-                "requested_sandbox": "read-only",
-                "effective_sandbox": "read-only",
-            },
-            "resources": {
-                "plugin_root": plugin,
-                "selected_paths": [skill, routine, agent],
-                "relative_reads": [
-                    {
-                        "source_path": skill,
-                        "reference": "../../routines/nested.md",
-                        "resolved_path": routine,
-                        "event_sha256": "e" * 64,
-                    },
-                    {
-                        "source_path": routine,
-                        "reference": "../agents/probe.md",
-                        "resolved_path": agent,
-                        "event_sha256": "f" * 64,
-                    },
-                    {
-                        "source_path": routine,
-                        "reference": "../agents/probe.md#rules",
-                        "resolved_path": agent,
-                        "event_sha256": "7" * 64,
-                    },
-                ],
-                "search_glob_used": False,
-                "path_escape_detected": False,
-                "unresolved_routes": [],
-            },
-            "workflow": {
-                "repository": "arbiterForge/codeArbiter",
-                "path": ".github/workflows/codex-desktop-candidate.yml",
-                "commit": self.workflow_commit,
-                "run_id": self.run_id,
-                "protected_environment": "codex-desktop-candidate",
-            },
-            "events": {
-                "thread_id_sha256": "2" * 64,
-                "transcript_sha256": "3" * 64,
-                "resource_events_sha256": "4" * 64,
-            },
-            "evidence": {
-                "secret_output_detected": False,
-                "raw_auth_output_persisted": False,
-                "screenshots_persisted": False,
-                "device_code_persisted": False,
-                "callback_persisted": False,
-                "cookies_persisted": False,
-                "tokens_persisted": False,
-                "auth_files_persisted": False,
-                "credential_store_material_persisted": False,
-                "derivative_secret_hash_persisted": False,
-            },
-        }
-
-    def validate(self, mutate=None, attestation=True, pre_attestation=False):
-        receipt = json.loads(json.dumps(self.receipt))
-        if mutate:
-            mutate(receipt)
-        path = self.root / "receipt.json"
-        path.write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
-        provenance = None
-        if not pre_attestation:
-            provenance = {
-                "verified": attestation,
-                "repository": "arbiterForge/codeArbiter",
-                "signer_workflow": "arbiterForge/codeArbiter/.github/workflows/codex-desktop-candidate.yml",
-                "signer_digest": receipt["workflow"]["commit"],
-                "subject_sha256": self.checker.sha256_file(path),
-                "protected_environment": "codex-desktop-candidate",
-                "source_digest": receipt["workflow"]["commit"],
-                "run_id": receipt["workflow"]["run_id"],
-                "runner_environment": "github-hosted",
-            }
-        return self.checker.validate_desktop_receipt(
-            receipt_path=path,
-            candidate_package=self.candidate,
-            candidate_source_commit=self.commit,
-            candidate_tree=self.tree,
-            desktop_build=self.build,
-            desktop_runtime_version=self.runtime,
-            workflow_run_id=self.run_id,
-            workflow_commit=self.workflow_commit,
-            attestation=provenance,
-        )
-
-    def test_legacy_schema_cannot_claim_desktop_proof(self):
-        """The self-attested teardown/static-manifest schema is retired, not grandfathered."""
-        result = self.validate()
-        self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertIsNone(result["receipt_sha256"])
-        self.assertFalse(result["desktop_shell_proven"])
-
-    def test_missing_mismatched_or_untrusted_bindings_fail_closed(self):
-        mutations = {
-            "missing candidate digest": lambda r: r["candidate"].pop("archive_sha256"),
-            "wrong source commit": lambda r: r["candidate"].update(source_commit="9" * 40),
-            "wrong source tree": lambda r: r["candidate"].update(source_tree="8" * 40),
-            "wrong desktop build": lambda r: r["desktop"].update(build="wrong"),
-            "wrong desktop runtime": lambda r: r["desktop"].update(runtime_version="999.0-unrequested"),
-            "wrong workflow": lambda r: r["workflow"].update(path=".github/workflows/untrusted.yml"),
-            "wrong workflow commit": lambda r: r["workflow"].update(commit="8" * 40),
-            "wrong workflow run": lambda r: r["workflow"].update(run_id="999999999999"),
-            "wrong environment": lambda r: r["workflow"].update(protected_environment="unprotected"),
-            "wrong resource manifest": lambda r: r["candidate"].update(resource_manifest_sha256="9" * 64),
-            "missing policy": lambda r: r.pop("policy"),
-            "wrong approval": lambda r: r["policy"].update(effective_approval="on-request"),
-            "wrong sandbox": lambda r: r["policy"].update(effective_sandbox="workspace-write"),
-            "selected-path subset": lambda r: r["resources"].update(selected_paths=r["resources"]["selected_paths"][:1]),
-            "relative-read subset": lambda r: r["resources"].update(relative_reads=r["resources"]["relative_reads"][:1]),
-            "pass with blocker": lambda r: r["blockers"].append("desktop route unresolved"),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                result = self.validate(mutate)
-                self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertEqual(self.validate(attestation=False)["verdict"], "FAIL")
-
-    def test_pre_attestation_rejects_secret_before_emitting_any_receipt_digest(self):
-        secret = "ABCD-EFGH-IJKL"
-        original_sha256_file = self.checker.sha256_file
-        with mock.patch.object(
-            self.checker, "sha256_file", wraps=original_sha256_file
-        ) as digest_calls:
-            result = self.validate(
-                lambda r: r["resources"]["selected_paths"].append(
-                    rf"C:\outside\{secret}"
-                ),
-                pre_attestation=True,
-            )
-        self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertIsNone(result["receipt_sha256"])
-        receipt_path = (self.root / "receipt.json").resolve()
-        self.assertFalse(any(
-            Path(call.args[0]).resolve() == receipt_path
-            for call in digest_calls.call_args_list
-        ))
-        self.assertFalse(result["desktop_shell_proven"])
-        self.assertEqual(result["validation_phase"], "pre-attestation")
-        serialized = json.dumps(result, sort_keys=True)
-        self.assertNotIn(secret, serialized)
-        self.assertNotIn(self.checker._sha256_text(secret), serialized)
-        self.assertEqual(result["errors"], ["desktop receipt contains secret-bearing output"])
-
-    def test_pre_attestation_rejects_secret_key_before_diagnostics_or_hashing(self):
-        secret_key = "sk-secret-keyname-123456"
-        original_sha256_file = self.checker.sha256_file
-        with mock.patch.object(
-            self.checker, "sha256_file", wraps=original_sha256_file
-        ) as digest_calls:
-            result = self.validate(
-                lambda r: r.__setitem__(secret_key, False),
-                pre_attestation=True,
-            )
-        serialized = json.dumps(result, sort_keys=True)
-        self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertIsNone(result["receipt_sha256"])
-        self.assertNotIn(secret_key, serialized)
-        self.assertNotIn(self.checker._sha256_text(secret_key), serialized)
-        receipt_path = (self.root / "receipt.json").resolve()
-        self.assertFalse(any(
-            Path(call.args[0]).resolve() == receipt_path
-            for call in digest_calls.call_args_list
-        ))
-        self.assertEqual(result["errors"], ["desktop receipt contains secret-bearing output"])
-
-    def test_pre_attestation_rejects_credential_shapes_in_every_string_leaf(self):
-        """No durable string slot can carry named or opaque credentials into hashing."""
-        credentials = tuple(
-            f"{name}=AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDd"
-            for name in (
-                "password", "secret", "token", "key", "credential", "api_key",
-                "apikey", "private", "cert", "passphrase",
-            )
-        ) + (
-            "ABCD-EFGH",
-            "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDdEeFf",
-            "QWxwaGExMjM0NTY3ODkwL29wYXF1ZS10b2tlbi1tYXRlcmlhbA==",
-        )
-
-        def string_paths(value, prefix=()):
-            paths = []
-            if isinstance(value, dict):
-                for key, item in value.items():
-                    paths.extend(string_paths(item, (*prefix, key)))
-            elif isinstance(value, list):
-                for index, item in enumerate(value):
-                    paths.extend(string_paths(item, (*prefix, index)))
-            elif isinstance(value, str):
-                paths.append(prefix)
-            return paths
-
-        paths = string_paths(self.receipt)
-        self.assertGreaterEqual(len(paths), 30)
-        for credential in credentials:
-            for path_parts in paths:
-                with self.subTest(credential=credential[:16], path=path_parts):
-                    def mutate(receipt, parts=path_parts, value=credential):
-                        target = receipt
-                        for part in parts[:-1]:
-                            target = target[part]
-                        target[parts[-1]] = value
-
-                    with mock.patch.object(
-                        self.checker, "candidate_resource_contract",
-                        wraps=self.checker.candidate_resource_contract,
-                    ) as candidate_calls:
-                        result = self.validate(mutate, pre_attestation=True)
-                    serialized = json.dumps(result, sort_keys=True)
-                    self.assertEqual(result["verdict"], "FAIL", result)
-                    self.assertIsNone(result["receipt_sha256"])
-                    self.assertIsNone(result["candidate_sha256"])
-                    self.assertFalse(candidate_calls.called)
-                    self.assertNotIn(credential, serialized)
-                    self.assertNotIn(self.checker._sha256_text(credential), serialized)
-                    self.assertEqual(
-                        result["errors"],
-                        ["desktop receipt contains secret-bearing output"],
-                    )
-
-    def test_pre_attestation_rejects_unreviewed_member_names_generically(self):
-        member_names = (
-            "api_key=AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDd",
-            "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDdEeFf",
-            "QWxwaGExMjM0NTY3ODkwL29wYXF1ZS10b2tlbi1tYXRlcmlhbA==",
-        )
-        for member_name in member_names:
-            for container in ("top", "runner"):
-                with self.subTest(member_name=member_name[:16], container=container):
-                    def mutate(receipt, key=member_name, location=container):
-                        target = receipt if location == "top" else receipt["runner"]
-                        target[key] = False
-
-                    result = self.validate(mutate, pre_attestation=True)
-                    serialized = json.dumps(result, sort_keys=True)
-                    self.assertEqual(result["verdict"], "FAIL", result)
-                    self.assertIsNone(result["receipt_sha256"])
-                    self.assertIsNone(result["candidate_sha256"])
-                    self.assertNotIn(member_name, serialized)
-                    self.assertEqual(
-                        result["errors"],
-                        ["desktop receipt contains secret-bearing output"],
-                    )
-
-    def test_pre_attestation_binds_plugin_root_below_exact_ephemeral_profile(self):
-        original = self.receipt["resources"]["plugin_root"]
-        relocated = r"C:\ABCD-EFGH"
-
-        def mutate(receipt):
-            resources = receipt["resources"]
-            resources["plugin_root"] = relocated
-            resources["selected_paths"] = [
-                path.replace(original, relocated) for path in resources["selected_paths"]
-            ]
-            for read in resources["relative_reads"]:
-                read["source_path"] = read["source_path"].replace(original, relocated)
-                read["resolved_path"] = read["resolved_path"].replace(original, relocated)
-
-        result = self.validate(mutate, pre_attestation=True)
-        self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertIsNone(result["receipt_sha256"])
-        self.assertIsNone(result["candidate_sha256"])
-        self.assertEqual(
-            result["errors"], ["desktop receipt contains secret-bearing output"]
-        )
-
-    def test_pre_attestation_rejects_opaque_credential_path_components(self):
-        credential = "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDdEeFf"
-        plugin = self.receipt["resources"]["plugin_root"]
-        cases = {
-            "selected": lambda receipt: receipt["resources"]["selected_paths"].__setitem__(
-                0, plugin + rf"\skills\probe\{credential}.md"
-            ),
-            "source": lambda receipt: receipt["resources"]["relative_reads"][0].update(
-                source_path=plugin + rf"\skills\probe\{credential}.md"
-            ),
-            "resolved": lambda receipt: receipt["resources"]["relative_reads"][0].update(
-                resolved_path=plugin + rf"\routines\{credential}.md"
-            ),
-            "reference": lambda receipt: receipt["resources"]["relative_reads"][0].update(
-                reference=f"../../../../{credential}.md"
-            ),
-        }
-        for label, mutate in cases.items():
-            with self.subTest(label=label):
-                with mock.patch.object(
-                    self.checker, "candidate_resource_contract",
-                    wraps=self.checker.candidate_resource_contract,
-                ) as candidate_calls, mock.patch.object(
-                    self.checker, "_candidate_sha256", wraps=self.checker._candidate_sha256,
-                ) as candidate_hash_calls:
-                    result = self.validate(mutate, pre_attestation=True)
-                serialized = json.dumps(result, sort_keys=True)
-                self.assertEqual(result["verdict"], "FAIL", result)
-                self.assertIsNone(result["receipt_sha256"])
-                self.assertIsNone(result["candidate_sha256"])
-                self.assertFalse(candidate_calls.called)
-                self.assertFalse(candidate_hash_calls.called)
-                self.assertNotIn(credential, serialized)
-                self.assertNotIn(self.checker._sha256_text(credential), serialized)
-                self.assertEqual(
-                    result["errors"],
-                    ["desktop receipt contains secret-bearing output"],
-                )
-
-    def test_pre_attestation_rejects_adjacent_opaque_path_and_identity_shapes(self):
-        credential = "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDdEeFf"
-        plugin = self.receipt["resources"]["plugin_root"]
-        cases = {
-            "suffixed selected path": lambda receipt: receipt["resources"][
-                "selected_paths"
-            ].__setitem__(0, plugin + rf"\skills\probe\{credential}.backup.md"),
-            "hex reference": lambda receipt: receipt["resources"]["relative_reads"][0].update(
-                reference="../../../../" + ("a" * 64) + ".md"
-            ),
-            "package identity suffix": lambda receipt: receipt["desktop"].update(
-                package_identity=(
-                    "OpenAI.Codex_26.803.10989.0_x64__2p2nqsd0c76g0."
-                    + credential[:24] + "." + credential[24:]
-                )
-            ),
-        }
-        for label, mutate in cases.items():
-            with self.subTest(label=label), mock.patch.object(
-                self.checker, "_candidate_sha256", wraps=self.checker._candidate_sha256,
-            ) as candidate_hash_calls:
-                result = self.validate(mutate, pre_attestation=True)
-            self.assertEqual(result["verdict"], "FAIL", result)
-            self.assertIsNone(result["receipt_sha256"])
-            self.assertIsNone(result["candidate_sha256"])
-            self.assertFalse(candidate_hash_calls.called)
-
-    def test_late_semantic_credential_mismatch_returns_no_digests(self):
-        """Unrecognized credential encodings cannot receive receipt/candidate digests."""
-        aws_shape = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-        plugin = self.receipt["resources"]["plugin_root"]
-        opaque = "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDdEeFf"
-        cases = {
-            "selected AWS shape": lambda receipt: receipt["resources"][
-                "selected_paths"
-            ].__setitem__(0, plugin + "\\skills\\probe\\" + aws_shape + ".md"),
-            "reference AWS shape": lambda receipt: receipt["resources"][
-                "relative_reads"
-            ][0].update(reference="../../../../" + aws_shape + ".md"),
-            "split package identity": lambda receipt: receipt["desktop"].update(
-                package_identity=(
-                    "OpenAI.Codex_26.803.10989.0_x64__2p2nqsd0c76g0."
-                    + opaque[:20] + "." + opaque[20:40] + "." + opaque[40:]
-                )
-            ),
-        }
-        for label, mutate in cases.items():
-            with self.subTest(label=label):
-                result = self.validate(mutate, pre_attestation=True)
-            serialized = json.dumps(result, sort_keys=True)
-            self.assertEqual(result["verdict"], "FAIL", result)
-            self.assertIsNone(result["receipt_sha256"])
-            self.assertIsNone(result["candidate_sha256"])
-            self.assertNotIn(aws_shape, serialized)
-            self.assertNotIn(self.checker._sha256_text(aws_shape), serialized)
-
-    def test_pre_attestation_allows_descriptive_hyphenated_path_component(self):
-        receipt = json.loads(json.dumps(self.receipt))
-        plugin = receipt["resources"]["plugin_root"]
-        receipt["resources"]["selected_paths"][0] = (
-            plugin + r"\skills\probe\BuildArtifact-2026-Characterization-Route-Alpha42.md"
-        )
-
-        self.assertTrue(
-            self.checker._desktop_free_strings_safe(
-                receipt, self.build, self.runtime, self.run_id, self.workflow_commit
-            )
-        )
-
-    def test_pre_attestation_rejects_named_and_opaque_credential_shapes(self):
-        """Device, OAuth, session, and opaque base64url forms fail generically."""
-        credentials = (
-            "device_code=ABCD-EFGH-IJKL",
-            "oauth_token=oauth-secret-material-123456",
-            "session=opaque-session-material-123456",
-            "QWxwaGExMjM0NTY3ODkwX29wYXF1ZS10b2tlbi1tYXRlcmlhbA",
-        )
-        for credential in credentials:
-            with self.subTest(credential_kind=credential.split("=", 1)[0]):
-                result = self.validate(
-                    lambda r, value=credential: r["runner"].update(
-                        account_identity=value
-                    ),
-                    pre_attestation=True,
-                )
-                serialized = json.dumps(result, sort_keys=True)
-                self.assertEqual(result["verdict"], "FAIL", result)
-                self.assertIsNone(result["receipt_sha256"])
-                self.assertNotIn(credential, serialized)
-                self.assertEqual(
-                    result["errors"],
-                    ["desktop receipt contains secret-bearing output"],
-                )
-
-    def test_pre_attestation_rejects_untrusted_json_before_any_hashing(self):
-        valid = json.dumps(self.receipt, sort_keys=True)
-        escaped_secret = "".join(
-            f"\\u{codepoint:04x}"
-            for codepoint in (
-                0x73, 0x6B, 0x2D, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74,
-                0x6D, 0x61, 0x74, 0x65, 0x72, 0x69, 0x61, 0x6C,
-                0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
-            )
-        )
-        decoded_secret = json.loads(f'"{escaped_secret}"')
-        self.assertIsNotNone(self.checker.SECRET_VALUE.search(decoded_secret))
-        self.assertTrue(self.checker._secret_bearing(decoded_secret))
-        cases = {
-            "overwritten escaped value": valid.replace(
-                '"package": "ca-codex"',
-                f'"package": "{escaped_secret}", "package": "ca-codex"',
-            ),
-            "duplicate escaped key": (
-                f'{{"{escaped_secret}": false, "{escaped_secret}": false,' + valid[1:]
-            ),
-            "malformed escaped value": f'{{"value": "{escaped_secret}"',
-            "non-standard numeric constant": valid.replace('"schema_version": 1', '"schema_version": NaN'),
-        }
-        for label, raw_receipt in cases.items():
-            with self.subTest(label=label):
-                path = self.root / "receipt.json"
-                original_read_text = Path.read_text
-
-                def injected_read_text(candidate_path, *args, **kwargs):
-                    if candidate_path == path:
-                        return raw_receipt
-                    return original_read_text(candidate_path, *args, **kwargs)
-
-                with mock.patch.object(
-                    Path, "read_text", autospec=True, side_effect=injected_read_text
-                ):
-                    with mock.patch.object(
-                        self.checker, "sha256_file", wraps=self.checker.sha256_file
-                    ) as digest_calls:
-                        result = self.checker.validate_desktop_receipt(
-                            receipt_path=path,
-                            candidate_package=self.candidate,
-                            candidate_source_commit=self.commit,
-                            candidate_tree=self.tree,
-                            desktop_build=self.build,
-                            desktop_runtime_version=self.runtime,
-                            workflow_run_id=self.run_id,
-                            workflow_commit=self.workflow_commit,
-                            attestation=None,
-                        )
-                serialized = json.dumps(result, sort_keys=True)
-                self.assertEqual(result["verdict"], "FAIL", result)
-                self.assertIsNone(result["receipt_sha256"])
-                self.assertIsNone(result["candidate_sha256"])
-                self.assertEqual(
-                    result["errors"], ["desktop receipt is not valid strict JSON"]
-                )
-                self.assertEqual(
-                    set(result),
-                    {
-                        "attestation", "candidate_sha256", "desktop_shell_proven",
-                        "errors", "receipt_sha256", "surface", "validation_phase",
-                        "verdict",
-                    },
-                )
-                self.assertNotIn(decoded_secret, serialized)
-                self.assertFalse(digest_calls.called)
-
-    def test_legacy_pre_attestation_receipt_is_rejected(self):
-        result = self.validate(pre_attestation=True)
-        self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertIsNone(result["receipt_sha256"])
-        self.assertFalse(result["desktop_shell_proven"])
-        self.assertEqual(result["validation_phase"], "pre-attestation")
-
-    def test_identity_auth_secret_and_path_failures_are_rejected(self):
-        mutations = {
-            "persistent runner": lambda r: r["runner"].update(ephemeral=False),
-            "repository user profile": lambda r: r["runner"].update(repository_user_profile_mounted=True),
-            "missing user consent": lambda r: r["authentication"].update(user_consent_observed=False),
-            "API key": lambda r: r["authentication"].update(api_key_used=True),
-            "service account": lambda r: r["authentication"].update(service_account_used=True),
-            "copied session": lambda r: r["authentication"].update(copied_session_used=True),
-            "wrong auth mode": lambda r: r["authentication"].update(mode="api-key"),
-            "secret output": lambda r: r["evidence"].update(secret_output_detected=True),
-            "embedded api key": lambda r: r["authentication"].update(api_key="sk-secret-material"),
-            "search fallback": lambda r: r["resources"].update(search_glob_used=True),
-            "path escape": lambda r: r["resources"]["selected_paths"].append(r"C:\Users\outside\stolen.md"),
-            "relative mismatch": lambda r: r["resources"]["relative_reads"][0].update(reference="../../../../outside.md"),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                result = self.validate(mutate)
-                self.assertEqual(result["verdict"], "FAIL", result)
-
-    def test_attestation_subject_and_signer_bindings_are_enforced(self):
-        receipt = json.loads(json.dumps(self.receipt))
-        path = self.root / "receipt.json"
-        path.write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
-        base = {
-            "verified": True,
-            "repository": "arbiterForge/codeArbiter",
-            "signer_workflow": "arbiterForge/codeArbiter/.github/workflows/codex-desktop-candidate.yml",
-            "signer_digest": receipt["workflow"]["commit"],
-            "subject_sha256": self.checker.sha256_file(path),
-            "protected_environment": "codex-desktop-candidate",
-            "source_digest": receipt["workflow"]["commit"],
-            "run_id": receipt["workflow"]["run_id"],
-            "runner_environment": "github-hosted",
-        }
-        for field, value in (
-            ("repository", "attacker/fork"),
-            ("signer_workflow", "attacker/fork/.github/workflows/fake.yml"),
-            ("signer_digest", "9" * 40),
-            ("subject_sha256", "8" * 64),
-            ("protected_environment", "unprotected"),
-            ("source_digest", "7" * 40),
-            ("run_id", "999999999"),
-            ("runner_environment", "self-hosted"),
-        ):
-            with self.subTest(field=field):
-                provenance = dict(base)
-                provenance[field] = value
-                result = self.checker.validate_desktop_receipt(
-                    receipt_path=path,
-                    candidate_package=self.candidate,
-                    candidate_source_commit=self.commit,
-                    candidate_tree=self.tree,
-                    desktop_build=self.build,
-                    desktop_runtime_version=self.runtime,
-                    workflow_run_id=self.run_id,
-                    workflow_commit=self.workflow_commit,
-                    attestation=provenance,
-                )
-                self.assertEqual(result["verdict"], "FAIL", result)
-
-    def test_attestation_verifier_requires_certificate_environment_and_run(self):
-        path = self.root / "receipt.json"
-        path.write_text(json.dumps(self.receipt, sort_keys=True), encoding="utf-8")
-        certificate = {
-            "DeploymentEnvironment": "codex-desktop-candidate",
-            "SourceRepositoryDigest": self.workflow_commit,
-            "RunInvocationURI": (
-                f"https://github.com/arbiterForge/codeArbiter/actions/runs/"
-                f"{self.run_id}/attempts/1"
-            ),
-            "RunnerEnvironment": "github-hosted",
-        }
-        output = json.dumps([{
-            "verificationResult": {"signature": {"certificate": certificate}}
-        }])
-        completed = subprocess.CompletedProcess([], 0, stdout=output, stderr="")
-        with mock.patch.object(self.checker.subprocess, "run", return_value=completed):
-            result = self.checker.verify_github_attestation(
-                path, self.workflow_commit, self.run_id
-            )
-        self.assertTrue(result["verified"], result)
-        self.assertEqual(result["protected_environment"], "codex-desktop-candidate")
-        self.assertEqual(result["source_digest"], self.workflow_commit)
-        self.assertEqual(result["run_id"], self.run_id)
-        self.assertEqual(result["runner_environment"], "github-hosted")
-
-        for missing in certificate:
-            with self.subTest(missing=missing):
-                incomplete = dict(certificate)
-                incomplete.pop(missing)
-                output = json.dumps([{
-                    "verificationResult": {"signature": {"certificate": incomplete}}
-                }])
-                completed = subprocess.CompletedProcess([], 0, stdout=output, stderr="")
-                with mock.patch.object(self.checker.subprocess, "run", return_value=completed):
-                    result = self.checker.verify_github_attestation(
-                        path, self.workflow_commit, self.run_id
-                    )
-                self.assertFalse(result["verified"], result)
-
-    def test_attestation_verifier_binds_the_exact_detached_bundle(self):
-        path = self.root / "receipt.json"
-        bundle = self.root / "attestation.jsonl"
-        path.write_text(json.dumps(self.receipt, sort_keys=True), encoding="utf-8")
-        bundle.write_text("{}\n", encoding="utf-8")
-        completed = subprocess.CompletedProcess([], 1, stdout="", stderr="")
-        with mock.patch.object(
-            self.checker.subprocess, "run", return_value=completed
-        ) as run:
-            result = self.checker.verify_github_attestation(
-                path, self.workflow_commit, self.run_id, bundle_path=bundle
-            )
-
-        self.assertFalse(result["verified"], result)
-        command = run.call_args.args[0]
-        self.assertEqual(command[command.index("--bundle") + 1], str(bundle.resolve()))
-
-    def test_attestation_verifier_never_echoes_or_hashes_failure_output(self):
-        """Untrusted verifier stderr must not survive in the normalized result."""
-        secret = "api_" + "key=" + "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AaBbCcDd"
-        path = self.root / f"receipt-{secret}.json"
-        path.write_text(json.dumps(self.receipt, sort_keys=True), encoding="utf-8")
-        completed = subprocess.CompletedProcess(
-            [], 1, stdout="", stderr=f"verification failed: {secret}"
-        )
-        with mock.patch.object(self.checker.subprocess, "run", return_value=completed):
-            result = self.checker.verify_github_attestation(
-                path, self.workflow_commit, self.run_id
-            )
-
-        serialized = json.dumps(result, sort_keys=True)
-        self.assertFalse(result["verified"], result)
-        self.assertNotIn(secret, serialized)
-        self.assertNotIn(hashlib.sha256(secret.encode("utf-8")).hexdigest(), serialized)
-        self.assertEqual(result["diagnostic"], "attestation verification failed")
-
-
-class HardenedDesktopReceiptContractTest(CheckerPresentMixin, unittest.TestCase):
-    """The protected desktop proof is observable, teardown-finalized evidence."""
-
-    APPROVED_IMAGE_SHA256 = (
-        "a61adeab895ef5a4db436e0a7011c92a2ff17bb0357f58b13bbc4062e535e7b9"
-    )
-
-    def setUp(self):
-        super().setUp()
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
-        self.candidate = self.root / "ca-codex.zip"
-        with zipfile.ZipFile(self.candidate, "w", compression=zipfile.ZIP_STORED) as archive:
-            archive.writestr(
-                "plugins/ca-codex/.codex-plugin/plugin.json",
-                json.dumps({"name": "ca-codex", "version": "0.7.5"}),
-            )
-            archive.writestr(
-                "plugins/ca-codex/skills/ca-review/SKILL.md",
-                "# Review\n\n[Dispatch](../../routines/dispatching-parallel-agents/SKILL.md)\n\n[Coverage](../../agents/coverage-auditor.md)\n",
-            )
-            archive.writestr(
-                "plugins/ca-codex/routines/dispatching-parallel-agents/SKILL.md",
-                "# Dispatch\n\n[Coverage](../../agents/coverage-auditor.md)\n",
-            )
-            archive.writestr(
-                "plugins/ca-codex/agents/coverage-auditor.md",
-                "# Coverage auditor\n",
-            )
-        self.commit = "a" * 40
-        self.tree = "b" * 40
-        self.build = "26.803.10989.0"
-        self.runtime = "0.145.0"
-        self.run_id = "123456789"
-        self.workflow_commit = "1" * 40
-        self.profile = r"C:\Users\ca-desktop-disposable-1042"
-        self.plugin = (
-            self.profile
-            + r"\.codex\plugins\cache\codearbiter\ca-codex\0.7.5"
-        )
-        skill = self.plugin + r"\skills\ca-review\SKILL.md"
-        routine = self.plugin + r"\routines\dispatching-parallel-agents\SKILL.md"
-        agent = self.plugin + r"\agents\coverage-auditor.md"
-        boundary_result = self.checker.validate_desktop_boundary_contract()
-        self.assertEqual(boundary_result["verdict"], "PASS", boundary_result)
-        contract = boundary_result["contract"]
-        route_paths = contract["route_corpus"]["paths"]
-        route_refs = contract["route_corpus"]["references"]
-        route_kinds = contract["route_corpus"]["event_kinds"]
-        archive_bytes = {
-            name.removeprefix("plugins/ca-codex/"): data
-            for name, data in self.checker._candidate_package_files(self.candidate).items()
-        }
-        resolved_paths = [skill, routine, agent]
-        route_events = []
-        for index, relative in enumerate(route_paths):
-            content_sha = hashlib.sha256(archive_bytes[relative]).hexdigest()
-            canonical = (
-                "codearbiter.desktop-route.v2|"
-                f"{index + 1}|{route_kinds[index]}|{route_refs[index]}|"
-                f"{relative}|{content_sha}"
-            )
-            route_events.append({
-                "sequence": index + 1,
-                "kind": route_kinds[index],
-                "reference": route_refs[index],
-                "resolved_path": resolved_paths[index],
-                "content_sha256": content_sha,
-                "event_sha256": self.checker._sha256_text(canonical),
-            })
-        route_hash = self.checker._sha256_text(
-            "codearbiter.desktop-route-set.v2|"
-            + "|".join(event["event_sha256"] for event in route_events)
-        )
-        desktop_identity = "3" * 64
-        teardown_hash = self.checker._sha256_text(
-            "codearbiter.desktop-teardown.v3|"
-            f"{desktop_identity}|True|True|True|vm-destroyed|run-root-destroyed|"
-            "vm-switch-inventory-unchanged"
-        )
-        self.receipt = {
-            "schema_version": 3,
-            "surface": "desktop",
-            "verdict": "PASS",
-            "blockers": [],
-            "candidate": {
-                "archive_sha256": self.checker.sha256_file(self.candidate),
-                "source_commit": self.commit,
-                "source_tree": self.tree,
-                "package": "ca-codex",
-                "package_version": "0.7.5",
-                "resource_manifest_sha256": self.checker.candidate_resource_contract(
-                    self.candidate
-                )["sha256"],
-            },
-            "desktop": {
-                "distribution": "store-msix",
-                "package_identity": "OpenAI.Codex_26.803.10989.0_x64__2p2nqsd0c76g0",
-                "publisher": "CN=50BDFD77-8903-4850-9FFE-6E8522F64D5B",
-                "build": self.build,
-                "runtime_version": self.runtime,
-                "desktop_executable_sha256": "4" * 64,
-                "runtime_executable_sha256": "5" * 64,
-            },
-            "boundary": {
-                "contract_sha256": boundary_result["contract_sha256"],
-                "broker_sha256": boundary_result["broker_sha256"],
-                "driver_sha256": boundary_result["driver_sha256"],
-                "probe_sha256": boundary_result["probe_sha256"],
-                "image_id": "windows-11-enterprise-eval-25h2-x64-en-us",
-                "image_sha256": self.APPROVED_IMAGE_SHA256,
-                "provisioning_mode": "iso-apply-fresh-vhdx",
-                "receipt_finalizer": "outer-broker",
-                "receipt_phase": "post-teardown",
-            },
-            "identities": {
-                "broker": {
-                    "kind": "github-runner",
-                    "identity_sha256": "2" * 64,
-                },
-                "bootstrap": {
-                    "kind": "ephemeral-guest-bootstrap",
-                    "identity_sha256": "6" * 64,
-                },
-                "desktop": {
-                    "kind": "disposable-windows-account",
-                    "identity_sha256": desktop_identity,
-                    "account_name": "ca-desktop-disposable-1042",
-                    "profile_root": self.profile,
-                },
-            },
-            "lifecycle": {
-                "probe_teardown_requested": True,
-                "account_disabled": True,
-                "account_deleted": True,
-                "profile_destroyed": True,
-                "vm_destroyed": True,
-                "run_root_destroyed": True,
-                "finalized_after_teardown": True,
-            },
-            "isolation": {
-                "hypervisor": "hyper-v",
-                "fresh_iso_applied": True,
-                "enhanced_session_enabled": False,
-                "guest_service_interface_enabled": False,
-                "host_profile_mounted": False,
-                "host_shared_folders": False,
-                "network_policy_sha256": "7" * 64,
-                "enabled_allow_rules": 8,
-                "outside_allow_rules": 0,
-            },
-            "authentication": {
-                "mode": "chatgpt-device",
-                "prompt_ready_observed": True,
-                "consent_completion_observed": True,
-                "app_account_mode": "chatgpt",
-                "permission_profile_id": "desktop-proof",
-                "storage_backend": "file",
-                "keyring_target_count": 0,
-                "reusable_state_file_count": 1,
-                "denial_canary_observed": True,
-                "canary_content_observed": False,
-                "eligible_runtime_process_count": 1,
-                "autologon_material_cleared": True,
-                "api_key_auth_detected": False,
-                "copied_session_source_detected": False,
-            },
-            "policy": {
-                "requested_approval": "never",
-                "effective_approval": "never",
-                "requested_sandbox": "read-only",
-                "effective_sandbox": "read-only",
-                "permission_consumer": "codex-sandbox-permission-profile",
-                "restricted_filesystem": True,
-                "restricted_network": True,
-                "hooks_enabled": False,
-                "startup_warning_count": 0,
-                "windows_sandbox": "elevated",
-                "guest_acl_boundary": True,
-            },
-            "resources": {
-                "marketplace": "codearbiter",
-                "plugin": "ca-codex",
-                "version": "0.7.5",
-                "plugin_root": self.plugin,
-                "package_sha256": self.checker.sha256_file(self.candidate),
-                "selection_source": "audited-desktop-skill-read",
-                "route_corpus_id": contract["route_corpus"]["id"],
-                "request_sha256": "8" * 64,
-                "thread_id_sha256": "9" * 64,
-                "dispatch_agent": "coverage-auditor",
-                "route_events": route_events,
-                "cache_glob_used": False,
-                "path_escape_detected": False,
-                "unresolved_routes": [],
-            },
-            "channel": {
-                "transport": "powershell-direct-vmbus",
-                "authentication": "powershell-direct-explicit-credential",
-                "challenge": "hmac-sha256",
-                "challenge_nonce_sha256": "a" * 64,
-                "challenge_response_sha256": "b" * 64,
-                "max_queries": 32,
-                "observed_queries": 8,
-                "max_audit_records": 4096,
-                "max_messages": 16,
-                "max_message_bytes": 4096,
-                "observed_messages": 3,
-                "response_utf8_bytes": 2048,
-                "sequence_complete": True,
-                "timed_out": False,
-            },
-            "workflow": {
-                "repository": "arbiterForge/codeArbiter",
-                "path": ".github/workflows/codex-desktop-candidate.yml",
-                "commit": self.workflow_commit,
-                "run_id": self.run_id,
-                "protected_environment": "codex-desktop-candidate",
-            },
-            "events": {
-                "route_events_sha256": route_hash,
-                "security_records_sha256": "0" * 64,
-                "causal_window_sha256": "c" * 64,
-                "teardown_events_sha256": teardown_hash,
-            },
-            "evidence": {
-                "raw_content_persisted": False,
-                "auth_profile_destroyed": True,
-                "vm_destroyed": True,
-                "run_root_destroyed": True,
-                "durable_artifact_inventory": "receipt-only",
-            },
-        }
-
-    def validate(self, mutate=None, *, pre_attestation=True):
-        receipt = json.loads(json.dumps(self.receipt))
-        if mutate:
-            mutate(receipt)
-        path = self.root / "receipt.json"
-        path.write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
-        attestation = None
-        if not pre_attestation:
-            attestation = {
-                "verified": True,
-                "repository": "arbiterForge/codeArbiter",
-                "signer_workflow": (
-                    "arbiterForge/codeArbiter/.github/workflows/"
-                    "codex-desktop-candidate.yml"
-                ),
-                "signer_digest": self.workflow_commit,
-                "subject_sha256": self.checker.sha256_file(path),
-                "protected_environment": "codex-desktop-candidate",
-                "source_digest": self.workflow_commit,
-                "run_id": self.run_id,
-                "runner_environment": "github-hosted",
-            }
-        return self.checker.validate_desktop_receipt(
-            receipt_path=path,
-            candidate_package=self.candidate,
-            candidate_source_commit=self.commit,
-            candidate_tree=self.tree,
-            desktop_build=self.build,
-            desktop_runtime_version=self.runtime,
-            workflow_run_id=self.run_id,
-            workflow_commit=self.workflow_commit,
-            attestation=attestation,
-        )
-
-    def test_schema_two_receipt_is_reported_as_retired_schema_three_required(self):
-        result = self.validate(lambda receipt: receipt.update(schema_version=2))
-        self.assertEqual(result["verdict"], "FAIL", result)
-        self.assertEqual(
-            result["errors"],
-            ["desktop receipt schema is retired; schema_version 3 is required"],
-        )
-
-    def assert_hardened_receipt_passes(self):
-        result = self.validate()
-        self.assertEqual(result["verdict"], "PASS", result)
-        self.assertEqual(result["validation_phase"], "pre-attestation")
-        self.assertFalse(result["desktop_shell_proven"])
-
-    def test_hardened_receipt_binds_exact_boundary_image_and_post_teardown_finalizer(self):
-        """O-01/O-02/O-05/O-12/O-13: only the pinned post-teardown broker receipt passes."""
-        self.assert_hardened_receipt_passes()
-        mutations = {
-            "wrong broker": lambda r: r["boundary"].update(broker_sha256="0" * 64),
-            "wrong driver": lambda r: r["boundary"].update(driver_sha256="0" * 64),
-            "wrong probe": lambda r: r["boundary"].update(probe_sha256="0" * 64),
-            "wrong image": lambda r: r["boundary"].update(image_sha256="0" * 64),
-            "probe finalizer": lambda r: r["boundary"].update(receipt_finalizer="guest-probe"),
-            "pre teardown phase": lambda r: r["boundary"].update(receipt_phase="pre-teardown"),
-            "account remains": lambda r: r["lifecycle"].update(account_deleted=False),
-            "profile remains": lambda r: r["lifecycle"].update(profile_destroyed=False),
-            "guest remains": lambda r: r["lifecycle"].update(vm_destroyed=False),
-            "run root remains": lambda r: r["lifecycle"].update(run_root_destroyed=False),
-            "early finalization": lambda r: r["lifecycle"].update(finalized_after_teardown=False),
-            "unbound teardown hash": lambda r: r["events"].update(
-                teardown_events_sha256="2" * 64
-            ),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
-
-    def test_hardened_receipt_binds_unchanged_vm_switch_inventory_into_teardown(self):
-        desktop_identity = self.receipt["identities"]["desktop"]["identity_sha256"]
-        self.assert_hardened_receipt_passes()
-        without_switch_verdict = self.checker._sha256_text(
-            "codearbiter.desktop-teardown.v3|"
-            f"{desktop_identity}|True|True|True|vm-destroyed|run-root-destroyed"
-        )
-        self.assertEqual(
-            self.validate(
-                lambda receipt: receipt["events"].update(
-                    teardown_events_sha256=without_switch_verdict
-                )
-            )["verdict"],
-            "FAIL",
-        )
-
-    def test_hardened_receipt_separates_broker_desktop_and_vm_credentials(self):
-        """O-04/O-09/O-11: identities, VM isolation, and device auth fail closed."""
-        self.assert_hardened_receipt_passes()
-        broker_hash = self.receipt["identities"]["broker"]["identity_sha256"]
-        mutations = {
-            "same identity": lambda r: r["identities"]["desktop"].update(
-                identity_sha256=broker_hash
-            ),
-            "host profile mount": lambda r: r["isolation"].update(host_profile_mounted=True),
-            "host share": lambda r: r["isolation"].update(host_shared_folders=True),
-            "enhanced session": lambda r: r["isolation"].update(
-                enhanced_session_enabled=True
-            ),
-            "guest file sharing": lambda r: r["isolation"].update(
-                guest_service_interface_enabled=True
-            ),
-            "outside egress": lambda r: r["isolation"].update(outside_allow_rules=1),
-            "api key": lambda r: r["authentication"].update(
-                api_key_auth_detected=True
-            ),
-            "copied session": lambda r: r["authentication"].update(
-                copied_session_source_detected=True
-            ),
-            "no auth prompt": lambda r: r["authentication"].update(
-                prompt_ready_observed=False
-            ),
-            "wrong permission profile": lambda r: r["authentication"].update(
-                permission_profile_id=":read-only"
-            ),
-            "non-file auth store": lambda r: r["authentication"].update(
-                storage_backend="keyring"
-            ),
-            "post-auth credential target": lambda r: r["authentication"].update(
-                keyring_target_count=1
-            ),
-            "unexpected post-auth files": lambda r: r["authentication"].update(
-                reusable_state_file_count=2
-            ),
-            "canary readable": lambda r: r["authentication"].update(
-                denial_canary_observed=False
-            ),
-            "canary leaked": lambda r: r["authentication"].update(
-                canary_content_observed=True
-            ),
-            "multiple runtime owners": lambda r: r["authentication"].update(
-                eligible_runtime_process_count=2
-            ),
-            "autologon secret remains": lambda r: r["authentication"].update(
-                autologon_material_cleared=False
-            ),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
-
-    def test_hardened_receipt_binds_selected_versioned_marketplace_route_events(self):
-        """O-06/O-07: actual ordered desktop events, not a static manifest, prove routing."""
-        self.assert_hardened_receipt_passes()
-        legacy_root = self.profile + r"\AppData\Local\codeArbiter\plugins\ca-codex"
-        mutations = {
-            "legacy root": lambda r: r["resources"].update(plugin_root=legacy_root),
-            "wrong marketplace": lambda r: r["resources"].update(marketplace="other"),
-            "wrong version": lambda r: r["resources"].update(version="0.7.4"),
-            "glob selected": lambda r: r["resources"].update(cache_glob_used=True),
-            "manifest only": lambda r: r["resources"].update(route_events=[]),
-            "missing route": lambda r: r["resources"].update(
-                route_events=r["resources"]["route_events"][:2]
-            ),
-            "reordered route": lambda r: r["resources"].update(
-                route_events=list(reversed(r["resources"]["route_events"]))
-            ),
-            "unobserved selection": lambda r: r["resources"].update(
-                selection_source="candidate-manifest"
-            ),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
-
-    def test_hardened_receipt_enforces_authenticated_bounded_event_channel(self):
-        """O-08: the guest cannot spoof, flood, reorder, or stall route evidence."""
-        self.assert_hardened_receipt_passes()
-        mutations = {
-            "wrong challenge": lambda r: r["channel"].update(challenge="none"),
-            "query overflow": lambda r: r["channel"].update(observed_queries=33),
-            "query cap drift": lambda r: r["channel"].update(max_queries=64),
-            "message overflow": lambda r: r["channel"].update(observed_messages=17),
-            "audit overflow": lambda r: r["channel"].update(max_audit_records=65536),
-            "oversize allowance": lambda r: r["channel"].update(max_message_bytes=65536),
-            "oversize response": lambda r: r["channel"].update(
-                response_utf8_bytes=4097
-            ),
-            "sequence incomplete": lambda r: r["channel"].update(sequence_complete=False),
-            "timeout": lambda r: r["channel"].update(timed_out=True),
-            "causal window unbound": lambda r: r["events"].update(
-                causal_window_sha256="not-a-digest"
-            ),
-            "duplicate sequence": lambda r: r["resources"]["route_events"][1].update(
-                sequence=1
-            ),
-            "unknown event": lambda r: r["resources"]["route_events"][1].update(
-                kind="arbitrary-command"
-            ),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
-
-    def test_broker_receipt_policy_and_channel_pass_the_real_validator(self):
-        """The production receipt builder and trusted validator must share one schema."""
-        fixture = {
-            "schema_version": 1,
-            "policy": {
-                "requested_approval": "never",
-                "effective_approval": "never",
-                "requested_sandbox": "read-only",
-                "effective_sandbox": "read-only",
-                "permission_consumer": "codex-sandbox-permission-profile",
-                "restricted_filesystem": True,
-                "restricted_network": True,
-                "hooks_enabled": False,
-                "startup_warning_count": 0,
-                "windows_sandbox": "elevated",
-                "guest_acl_boundary": True,
-            },
-            "channel": {
-                "challenge_nonce": "desktop-proof-challenge-nonce",
-                "challenge_response_sha256": "b" * 64,
-                "observed_queries": 8,
-                "observed_messages": 3,
-                "response_utf8_bytes": 2048,
-                "sequence_complete": True,
-                "timed_out": False,
-            },
-        }
-        produced = run_broker_receipt_contract_fixture(fixture)
-        self.assertEqual(produced.returncode, 0, produced.stdout + produced.stderr)
-        fragments = json.loads(produced.stdout)
-        self.assertEqual(
-            set(fragments),
-            {"policy", "channel"},
-        )
-        self.assertEqual(fragments["channel"]["max_message_bytes"], 4096)
-        self.receipt["policy"] = fragments["policy"]
-        self.receipt["channel"] = fragments["channel"]
-        self.assert_hardened_receipt_passes()
-
-    def test_hardened_receipt_rejects_secret_bearing_durable_output(self):
-        """O-10: raw desktop/auth evidence can never become a durable receipt."""
-        self.assert_hardened_receipt_passes()
-        mutations = {
-            "raw content": lambda r: r["evidence"].update(raw_content_persisted=True),
-            "auth profile remains": lambda r: r["evidence"].update(
-                auth_profile_destroyed=False
-            ),
-            "guest remains": lambda r: r["evidence"].update(vm_destroyed=False),
-            "run root remains": lambda r: r["evidence"].update(run_root_destroyed=False),
-            "extra artifact": lambda r: r["evidence"].update(
-                durable_artifact_inventory="receipt-plus-logs"
-            ),
-        }
-        for label, mutate in mutations.items():
-            with self.subTest(label=label):
-                self.assertEqual(self.validate(mutate)["verdict"], "FAIL")
-
-
 class CommandInterfaceTest(FakeCodexMixin, CheckerPresentMixin, unittest.TestCase):
-    def test_trusted_desktop_boundary_contract_binds_tracked_script_bytes(self):
-        """O-01/O-02/O-08/O-12: the executable boundary validates as one unit."""
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(CHECKER),
-                "--desktop-boundary-contract-only",
-                "--json",
-            ],
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=30,
-        )
-        self.assertEqual(completed.returncode, 0, completed.stderr or completed.stdout)
-        result = json.loads(completed.stdout)
-        self.assertEqual(result["verdict"], "PASS", result)
-        self.assertEqual(result["image_sha256"], self.checker.APPROVED_DESKTOP_IMAGE_SHA256)
-        self.assertRegex(result["broker_sha256"], r"^[0-9a-f]{64}$")
-        self.assertRegex(result["driver_sha256"], r"^[0-9a-f]{64}$")
-        self.assertRegex(result["probe_sha256"], r"^[0-9a-f]{64}$")
-
-    """The approved checker switches are stable without becoming product commands."""
-
-    def test_parser_accepts_every_planned_interface(self):
-        """Dropping a planned switch would break later CI/desktop receipt integration."""
-        parser = self.checker.build_parser()
-        args = parser.parse_args([
-            "--live", "--surface", "desktop", "--codex-version", "0.145.0",
-            "--codex-binary", "codex.exe", "--desktop-build", "26.803.10989.0",
-            "--desktop-runtime-version", "0.145.0", "--workflow-run-id", "123456789",
-            "--workflow-commit", "1" * 40,
-            "--import-receipt", "receipt.json", "--candidate-package", "candidate.zip",
-            "--candidate-source-commit", "a" * 40, "--candidate-tree", "b" * 40,
-            "--pre-attestation", "--advisory", "--json",
-        ])
-        self.assertTrue(args.live)
-        self.assertEqual(args.surface, "desktop")
-        self.assertEqual(args.codex_version, "0.145.0")
-        self.assertEqual(args.desktop_build, "26.803.10989.0")
-        self.assertEqual(args.desktop_runtime_version, "0.145.0")
-        self.assertEqual(args.workflow_run_id, "123456789")
-        self.assertEqual(args.workflow_commit, "1" * 40)
-        self.assertEqual(args.candidate_source_commit, "a" * 40)
-        self.assertTrue(args.pre_attestation)
-
     def test_reference_definition_escape_branch_is_disjoint(self):
         """Escaped characters and ordinary target characters must not overlap."""
         self.assertIn(r"[^\s\\]", self.checker.REFERENCE_DEFINITION.pattern)
         self.assertNotIn(r"[^\s]", self.checker.REFERENCE_DEFINITION.pattern)
-
-    def test_desktop_main_emits_only_bounded_validation_status(self):
-        rejected_value = "".join(
-            chr(codepoint)
-            for codepoint in (
-                0x61, 0x70, 0x69, 0x5F, 0x6B, 0x65, 0x79, 0x3D,
-                0x6D, 0x75, 0x73, 0x74, 0x2D, 0x6E, 0x6F, 0x74, 0x2D,
-                0x72, 0x65, 0x61, 0x63, 0x68, 0x2D, 0x6F, 0x75, 0x74,
-                0x70, 0x75, 0x74,
-            )
-        )
-        self.assertIsNotNone(self.checker.SECRET_VALUE.search(rejected_value))
-        cases = (
-            ("PASS", [], 0, "desktop receipt PASS (0 errors)\n"),
-            ("FAIL", [rejected_value], 1, "desktop receipt FAIL (1 error)\n"),
-            ("FAIL", [rejected_value, "second internal error"], 2,
-             "desktop receipt FAIL (2 errors)\n"),
-            ("FAIL", rejected_value, 1, "desktop receipt FAIL (1 error)\n"),
-        )
-        with tempfile.TemporaryDirectory() as raw:
-            root = Path(raw)
-            receipt = root / "receipt.json"
-            candidate = root / "candidate"
-            receipt.write_text("{}", encoding="utf-8")
-            candidate.mkdir()
-            arguments = [
-                "--surface", "desktop",
-                "--import-receipt", str(receipt),
-                "--candidate-package", str(candidate),
-                "--candidate-source-commit", "a" * 40,
-                "--candidate-tree", "b" * 40,
-                "--desktop-build", "26.803.10989.0",
-                "--desktop-runtime-version", "0.145.0",
-                "--workflow-run-id", "123456789",
-                "--workflow-commit", "c" * 40,
-                "--pre-attestation",
-            ]
-            for verdict, errors, count, text_output in cases:
-                internal = {
-                    "verdict": verdict,
-                    "errors": errors,
-                    "receipt_sha256": self.checker._sha256_text(rejected_value),
-                    "attestation": {"diagnostic": rejected_value},
-                }
-                for extra in (["--json"], []):
-                    with self.subTest(verdict=verdict, errors=errors, json=bool(extra)):
-                        output = io.StringIO()
-                        with mock.patch.object(
-                            self.checker,
-                            "validate_desktop_receipt",
-                            return_value=internal,
-                        ), mock.patch("sys.stdout", output):
-                            code = self.checker.main(arguments + extra)
-                        rendered = output.getvalue()
-                        self.assertEqual(code, 0 if verdict == "PASS" else 1)
-                        self.assertNotIn(rejected_value, rendered)
-                        self.assertNotIn(
-                            self.checker._sha256_text(rejected_value), rendered
-                        )
-                        if extra:
-                            self.assertEqual(
-                                json.loads(rendered),
-                                {"error_count": count, "verdict": verdict},
-                            )
-                        else:
-                            self.assertEqual(rendered, text_output)
-
 
     def test_parser_accepts_authenticated_home_for_live_backend_only(self):
         """Removing the opt-in seam would force live-cache reuse or API-key authentication."""
@@ -3266,13 +1946,186 @@ class CommandInterfaceTest(FakeCodexMixin, CheckerPresentMixin, unittest.TestCas
         self.assertEqual(code, 0)
         self.assertEqual(receipt["verdict"], "PASS", receipt)
 
-    def test_desktop_live_mode_is_not_a_backend_substitute(self):
-        """A backend harness cannot claim to execute the actual desktop shell."""
-        with mock.patch("sys.stderr", io.StringIO()), self.assertRaises(SystemExit):
-            self.checker.main([
-                "--live", "--surface", "desktop", "--codex-version", "0.145.0",
-                "--desktop-build", "26.803.10989.0",
+class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase):
+    """The release contract rejects malformed shipped package shape, not just bad links."""
+
+    def setUp(self):
+        super().setUp()
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.package = Path(self.temporary.name) / "ca-codex"
+        shutil.copytree(REPO_ROOT / "plugins" / "ca-codex", self.package)
+
+    def run_contract(self):
+        output = io.StringIO()
+        with mock.patch("sys.stdout", output):
+            status = self.checker.main([
+                "--candidate-contract-only",
+                "--candidate-package", str(self.package),
+                "--json",
             ])
+        return status, json.loads(output.getvalue())
+
+    def assert_contract_rejects(self, expected_error):
+        status, result = self.run_contract()
+        self.assertEqual(status, 1, result)
+        self.assertEqual(result["verdict"], "FAIL", result)
+        self.assertTrue(
+            any(expected_error in error for error in result["errors"]),
+            result,
+        )
+
+    def test_rejects_missing_plugin_manifest(self):
+        (self.package / ".codex-plugin" / "plugin.json").unlink()
+        self.assert_contract_rejects("plugin manifest")
+
+    def test_rejects_wrong_manifest_name(self):
+        manifest_path = self.package / ".codex-plugin" / "plugin.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["name"] = "not-ca-codex"
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("manifest name")
+
+    def test_rejects_non_semver_manifest_version(self):
+        manifest_path = self.package / ".codex-plugin" / "plugin.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["version"] = "0_bad"
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("manifest version")
+
+    def test_rejects_duplicate_manifest_members(self):
+        manifest_path = self.package / ".codex-plugin" / "plugin.json"
+        manifest_path.write_text(
+            '{"name":"ca-codex","name":"other","version":"0.7.5"}\n',
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("duplicate")
+
+    def test_rejects_missing_skill_frontmatter(self):
+        skill = self.package / "skills" / "ca-add-dep" / "SKILL.md"
+        text = skill.read_text(encoding="utf-8")
+        skill.write_text(text.split("---\n", 2)[-1], encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("front matter")
+
+    def test_rejects_skill_name_that_disagrees_with_its_path(self):
+        skill = self.package / "skills" / "ca-add-dep" / "SKILL.md"
+        skill.write_text(
+            skill.read_text(encoding="utf-8").replace(
+                "name: ca-add-dep", "name: ca-not-the-path", 1
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("front matter name")
+
+    def test_rejects_duplicate_front_matter_fields(self):
+        skill = self.package / "skills" / "ca-add-dep" / "SKILL.md"
+        skill.write_text(
+            skill.read_text(encoding="utf-8").replace(
+                "name: ca-add-dep\n", "name: ca-add-dep\nname: ca-add-dep\n", 1
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("duplicate front matter")
+
+    def test_rejects_malformed_quoted_front_matter_scalar(self):
+        skill = self.package / "skills" / "ca-add-dep" / "SKILL.md"
+        skill.write_text(
+            skill.read_text(encoding="utf-8").replace(
+                "name: ca-add-dep", 'name: "ca-add-dep', 1
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("quoted front matter")
+
+    def test_rejects_agent_without_classification(self):
+        agent = self.package / "agents" / "dependency-reviewer.md"
+        agent.write_text(
+            agent.read_text(encoding="utf-8").replace(
+                "classification: reviewer\n", "", 1
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("classification")
+
+    def test_rejects_missing_hook_target(self):
+        (self.package / "hooks" / "session-start.py").unlink()
+        self.assert_contract_rejects("hook target")
+
+    def test_rejects_non_native_hook_root_vocabulary(self):
+        hooks = self.package / "hooks" / "hooks.json"
+        hooks.write_text(
+            hooks.read_text(encoding="utf-8").replace(
+                "${PLUGIN_ROOT}", "${CLAUDE_PLUGIN_ROOT}", 1
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("PLUGIN_ROOT")
+
+    def test_rejects_hook_command_with_appended_shell_payload(self):
+        hooks = self.package / "hooks" / "hooks.json"
+        hooks.write_text(
+            hooks.read_text(encoding="utf-8").replace(
+                'python3 \\"${PLUGIN_ROOT}/hooks/session-start.py\\"',
+                'python3 \\"${PLUGIN_ROOT}/hooks/session-start.py\\" && external-command',
+                1,
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("hook command grammar")
+
+    def test_rejects_hook_command_with_prefixed_external_executable(self):
+        hooks = self.package / "hooks" / "hooks.json"
+        hooks.write_text(
+            hooks.read_text(encoding="utf-8").replace(
+                'python3 \\"${PLUGIN_ROOT}/hooks/session-start.py\\"',
+                'external-command python3 \\"${PLUGIN_ROOT}/hooks/session-start.py\\"',
+                1,
+            ),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("hook command grammar")
+
+    def test_rejects_unknown_hook_schema_field(self):
+        hooks_path = self.package / "hooks" / "hooks.json"
+        hooks = json.loads(hooks_path.read_text(encoding="utf-8"))
+        hooks["unexpected"] = True
+        hooks_path.write_text(json.dumps(hooks), encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("hook manifest schema")
+
+    def test_rejects_duplicate_hook_manifest_members(self):
+        hooks_path = self.package / "hooks" / "hooks.json"
+        text = hooks_path.read_text(encoding="utf-8")
+        hooks_path.write_text(
+            text.replace('{\n  "hooks":', '{\n  "hooks": {},\n  "hooks":', 1),
+            encoding="utf-8", newline="\n",
+        )
+        self.assert_contract_rejects("duplicate")
+
+    def test_rejects_missing_security_hook_events(self):
+        hooks_path = self.package / "hooks" / "hooks.json"
+        for event in ("PreToolUse", "PostToolUse"):
+            with self.subTest(event=event):
+                hooks = json.loads(hooks_path.read_text(encoding="utf-8"))
+                del hooks["hooks"][event]
+                hooks_path.write_text(json.dumps(hooks), encoding="utf-8", newline="\n")
+                self.assert_contract_rejects("hook inventory")
+                shutil.copy2(REPO_ROOT / "plugins" / "ca-codex" / "hooks" / "hooks.json", hooks_path)
+
+    def test_rejects_changed_security_hook_matcher(self):
+        hooks_path = self.package / "hooks" / "hooks.json"
+        hooks = json.loads(hooks_path.read_text(encoding="utf-8"))
+        hooks["hooks"]["PreToolUse"][0]["matcher"] = "NeverMatches"
+        hooks_path.write_text(json.dumps(hooks), encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("hook inventory")
+
+    def test_rejects_security_hook_rerouted_to_another_shipped_target(self):
+        hooks_path = self.package / "hooks" / "hooks.json"
+        hooks = json.loads(hooks_path.read_text(encoding="utf-8"))
+        entry = hooks["hooks"]["PostToolUse"][0]["hooks"][0]
+        entry["command"] = 'python3 "${PLUGIN_ROOT}/hooks/session-start.py"'
+        entry["commandWindows"] = 'python "${PLUGIN_ROOT}/hooks/session-start.py"'
+        hooks_path.write_text(json.dumps(hooks), encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("hook inventory")
 
 
 class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase):
@@ -3350,6 +2203,48 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
         }.items():
             with self.subTest(label=label), self.assertRaises(ValueError):
                 self.checker._candidate_package_files(path)
+
+    def test_rejects_candidate_directory_resource_exhaustion_before_file_reads(self):
+        limits = {
+            "max_archive_bytes": 8,
+            "max_entries": 2,
+            "max_entry_uncompressed_bytes": 2,
+            "max_total_uncompressed_bytes": 3,
+            "max_compression_ratio": 100,
+        }
+        cases = {
+            "entry count": (b"a", b"b", b"c"),
+            "per entry": (b"abc",),
+            "total bytes": (b"ab", b"cd"),
+        }
+        for label, contents in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as temporary:
+                package = Path(temporary) / "ca-codex"
+                package.mkdir()
+                for index, content in enumerate(contents):
+                    (package / f"file-{index}.md").write_bytes(content)
+                with mock.patch.object(
+                    self.checker, "_candidate_archive_limits", return_value=limits
+                ), self.assertRaises(ValueError):
+                    self.checker._candidate_package_files(package)
+
+    def test_rejects_too_many_empty_candidate_directories_before_descent(self):
+        limits = {
+            "max_archive_bytes": 8,
+            "max_entries": 2,
+            "max_entry_uncompressed_bytes": 2,
+            "max_total_uncompressed_bytes": 3,
+            "max_compression_ratio": 100,
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            package.mkdir()
+            for index in range(3):
+                (package / f"empty-{index}").mkdir()
+            with mock.patch.object(
+                self.checker, "_candidate_archive_limits", return_value=limits
+            ), self.assertRaisesRegex(ValueError, "entry-count"):
+                self.checker._candidate_package_files(package)
 
     def test_rejects_windows_ambiguous_archive_paths(self):
         for label, additions in {

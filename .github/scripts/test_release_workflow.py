@@ -1258,9 +1258,9 @@ class AutoTagLaneTest(unittest.TestCase):
 
 
 class CodexCandidateProvenanceTest(unittest.TestCase):
-    """A ca-codex tag is authorized only for the attested candidate bytes."""
+    """A ca-codex tag is authorized only for trusted static candidate bytes."""
 
-    def test_manual_and_auto_codex_publishers_need_read_only_provenance(self):
+    def test_manual_and_auto_codex_publishers_need_hosted_static_provenance(self):
         jobs = _jobs()
         expected = {
             "release-codex": MANUAL_CODEX_PROVENANCE_JOB,
@@ -1271,16 +1271,16 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
                 self.assertIn(provenance, jobs)
                 self.assertIn(provenance, _job_needs(jobs[publisher]))
                 block = jobs[provenance]
-                self.assertIn("actions: read", block)
                 self.assertIn("contents: read", block)
                 self.assertNotIn("contents: write", block)
-                self.assertIn(
-                    "docs/reports/codex-desktop-candidate-resolution.json", block
-                )
-                self.assertIn("codex-desktop-candidate-transfer-$CANDIDATE_COMMIT", block)
-                self.assertIn("gh run download \"$RUN_ID\"", block)
-                self.assertIn("verify_codex_candidate_provenance.py --mode release", block)
-                self.assertIn("--candidate-archive", block)
+                self.assertNotIn("actions: read", block)
+                self.assertNotIn("gh run download", block)
+                self.assertNotIn("codex-desktop-candidate", block)
+                self.assertNotIn("candidate-resolution.json", block)
+                self.assertNotIn("--receipt", block)
+                self.assertNotIn("--candidate-archive", block)
+                self.assertIn("verify_codex_candidate_provenance.py", block)
+                self.assertIn("--final-ref", block)
 
     def test_manual_and_auto_provenance_pin_the_exact_final_main_commit(self):
         jobs = _jobs()
@@ -1291,7 +1291,7 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
         self.assertIn(
             "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}", automatic
         )
-        self.assertIn("--final-ref ${{ github.event.workflow_run.head_sha }}", automatic)
+        self.assertIn('--final-ref "$CANDIDATE_SHA"', automatic)
 
     def test_auto_provenance_executes_only_trusted_default_branch_code(self):
         automatic = _jobs()[AUTO_CODEX_PROVENANCE_JOB]
@@ -1301,9 +1301,7 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
         candidate_materialization = _named_step(
             automatic, "Materialize the exact completed-run candidate as inert data"
         )
-        verifier = _named_step(
-            automatic, "Download and verify the exact attested Codex candidate"
-        )
+        verifier = _named_step(automatic, "Verify the exact static Codex candidate")
 
         self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
         self.assertIn("path: trusted", trusted_checkout)
@@ -1336,14 +1334,13 @@ class CodexCandidateProvenanceTest(unittest.TestCase):
                 self.assertIn(control, candidate_materialization)
         self.assertNotIn("|| true", candidate_materialization)
         self.assertIn(
-            "RECEIPT=candidate/docs/reports/codex-desktop-candidate-resolution.json",
-            verifier,
-        )
-        self.assertIn(
             "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py",
             verifier,
         )
         self.assertIn("--repo candidate", verifier)
+        self.assertIn('--final-ref "$CANDIDATE_SHA"', verifier)
+        self.assertNotIn("--receipt", verifier)
+        self.assertNotIn("gh run download", verifier)
         self.assertNotIn(
             "python3 candidate/.github/scripts/verify_codex_candidate_provenance.py",
             automatic,

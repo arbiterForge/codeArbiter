@@ -257,7 +257,6 @@ jobs:
     needs: preflight
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
     permissions:
-      actions: read
       contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -267,19 +266,11 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Download and verify the exact attested Codex candidate
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Verify the exact static Codex candidate
         run: |
           set -euo pipefail
-          RECEIPT=docs/reports/codex-desktop-candidate-resolution.json
-          CANDIDATE_COMMIT=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["candidate"]["source_commit"])' "$RECEIPT")
-          RUN_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["workflow"]["run_id"])' "$RECEIPT")
-          DEST="$RUNNER_TEMP/codex-desktop-candidate"
-          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "codex-desktop-candidate-transfer-$CANDIDATE_COMMIT" --dir "$DEST"
-          python3 .github/scripts/verify_codex_candidate_provenance.py --mode release \
-            --receipt "$RECEIPT" --final-ref ${{ github.sha }} \
-            --candidate-archive "$DEST/ca-codex-candidate.zip" --json
+          python3 .github/scripts/verify_codex_candidate_provenance.py \
+            --repo . --final-ref ${{ github.sha }} --json
 
   release-codex:
     name: CA-Codex | [Release] - Publish
@@ -468,7 +459,6 @@ jobs:
     needs: auto-preflight
     if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-codex == 'true'
     permissions:
-      actions: read
       contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -495,20 +485,13 @@ jobs:
           git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
           git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
           git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
-      - name: Download and verify the exact attested Codex candidate
+      - name: Verify the exact static Codex candidate
         env:
-          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
-          RECEIPT=candidate/docs/reports/codex-desktop-candidate-resolution.json
-          CANDIDATE_COMMIT=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["candidate"]["source_commit"])' "$RECEIPT")
-          RUN_ID=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["workflow"]["run_id"])' "$RECEIPT")
-          DEST="$RUNNER_TEMP/codex-desktop-candidate"
-          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "codex-desktop-candidate-transfer-$CANDIDATE_COMMIT" --dir "$DEST"
-          python3 trusted/.github/scripts/verify_codex_candidate_provenance.py --mode release \
-            --repo candidate \
-            --receipt "$RECEIPT" --final-ref ${{ github.event.workflow_run.head_sha }} \
-            --candidate-archive "$DEST/ca-codex-candidate.zip" --json
+          python3 trusted/.github/scripts/verify_codex_candidate_provenance.py \
+            --repo candidate --final-ref "$CANDIDATE_SHA" --json
 
   auto-release-codex:
     name: CA-Codex | [Auto-tag]
