@@ -27,6 +27,11 @@ BROKER = SCRIPTS / "Invoke-CodeArbiterDesktopCandidate.ps1"
 PROBE = SCRIPTS / "Invoke-CodeArbiterDesktopRouteProbe.ps1"
 DRIVER = SCRIPTS / "Invoke-CodeArbiterDesktopUiDriver.ps1"
 CHECKER = SCRIPTS / "check_codex_skill_resources.py"
+TRUSTED_DESKTOP_SCRIPTS = (
+    ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
+    ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
+    ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
+)
 
 
 def sha256_text(value: str) -> str:
@@ -378,6 +383,81 @@ def run_broker_json_fixture(
 
 class DesktopBoundaryContractTest(unittest.TestCase):
     maxDiff = None
+
+    def test_fresh_autocrlf_checkout_preserves_trusted_boundary_bytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            temp_root = Path(temp)
+            source = temp_root / "source"
+            checkout = temp_root / "checkout"
+            source.mkdir()
+
+            tracked = subprocess.run(
+                ["git", "ls-files", "-z"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                check=True,
+            ).stdout.decode("utf-8").split("\0")
+            for relative in filter(None, tracked):
+                source_path = REPO_ROOT / relative
+                if source_path.is_dir():
+                    continue
+                destination = source / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source_path, destination)
+
+            for command in (
+                ["git", "init", "--quiet"],
+                ["git", "config", "user.name", "CodeArbiter Test"],
+                ["git", "config", "user.email", "codearbiter-test@example.invalid"],
+                ["git", "config", "core.autocrlf", "false"],
+                ["git", "add", "--all"],
+                ["git", "commit", "--quiet", "-m", "fixture"],
+            ):
+                subprocess.run(command, cwd=source, check=True, capture_output=True)
+
+            subprocess.run(
+                [
+                    "git", "-c", "core.autocrlf=true", "clone", "--quiet",
+                    "--no-local", str(source), str(checkout),
+                ],
+                check=True,
+                capture_output=True,
+            )
+
+            mismatches = []
+            for relative in TRUSTED_DESKTOP_SCRIPTS:
+                tracked_blob = subprocess.run(
+                    ["git", "rev-parse", f"HEAD:{relative}"],
+                    cwd=checkout,
+                    text=True,
+                    capture_output=True,
+                    check=True,
+                ).stdout.strip()
+                literal_blob = subprocess.run(
+                    ["git", "hash-object", "--no-filters", relative],
+                    cwd=checkout,
+                    text=True,
+                    capture_output=True,
+                    check=True,
+                ).stdout.strip()
+                if literal_blob != tracked_blob:
+                    mismatches.append(relative)
+            self.assertEqual(mismatches, [])
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(checkout / ".github" / "scripts" / "check_codex_skill_resources.py"),
+                    "--desktop-boundary-contract-only",
+                    "--json",
+                ],
+                cwd=checkout,
+                text=True,
+                capture_output=True,
+                timeout=60,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def setUp(self) -> None:
         self.contract = json.loads(CONTRACT.read_text(encoding="utf-8"))

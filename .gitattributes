@@ -35,6 +35,12 @@ docs/**/*.md    text eol=lf
 .github/workflows/*.yml text eol=lf
 .github/actions/**/*.yml text eol=lf
 
+# These scripts are a literal-byte trust boundary: the manifest hashes their
+# tracked Git blobs and the protected Windows runner validates checkout bytes.
+/.github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1 text eol=lf
+/.github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1 text eol=lf
+/.github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1 text eol=lf
+
 # TypeScript/JavaScript/JSON across the plugin and site trees. #515 showed this
 # is not cosmetic. An editor pass on Windows flipped farm.ts and
 # farm.unit.test.ts to CRLF, which made git read the ENTIRE file as added — and
