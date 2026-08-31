@@ -1555,3 +1555,53 @@ Recording-only synchronization. Reliable and Testable require the mutable plan, 
 PR 1 reviewers resolve the current plan record through DECISION-0050 and SHA-256 `f6fbcf403075c02015bcf0e784a072bce0e21db218dca7591ee6bfb4cb58e4e8`. Exact-candidate Windows desktop proof remains deferred to its governed release gate and can be satisfied only by explicit ChatGPT browser/device authorization within included access; no API-key or API-billed substitute is permitted.
 
 ---
+
+## DECISION-0051 - hosted-static-codex-release-evidence - Replace mandatory desktop proof with deterministic plugin evidence
+
+**Date:** 2026-08-31
+**Status:** proposed
+**Supersedes:** DECISION-0050
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user explicitly rejected desktop installation and personal-PC runner use, approved static package-shape CI plus local plugin loading, and granted continuing merge authority through parity release and local installation.
+**Decision category:** architecture / release evidence
+**Artifact-section-hash:** bb5980ac802d6e7db37b0d65ce3321b9dc06a75e7b7cde7481f0e4a0b0b46822
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0031 Decision 5 requires an exact-candidate installed Windows desktop cell using ChatGPT device authorization before `ca-codex` release.
+- **Scaffold position:** The active release path now contains a self-hosted runner, Hyper-V/ADK broker stack, desktop receipt, and attestation chain whose operational cost is disproportionate to validating a static plugin package.
+- **Status type:** divergent
+
+### Decision
+Supersede only ADR-0031 Decision 5's mandatory desktop-shell release evidence. Require trusted GitHub-hosted deterministic validation of the exact plugin manifest, front matter, resource and route graph, generated parity, hooks, contained paths, and release/archive identity; retire the active desktop workflow and executable infrastructure. Prove practical host loading by updating the supported local Codex marketplace plugin and running a fresh-task `$ca-doctor`, not by installing or automating the Windows desktop application.
+
+### SMARTS rationale
+Simple and Reliable remove an interactive personal-machine dependency from an otherwise static artifact release. Testable strengthens direct assertions on every byte and reference the plugin actually ships. Securable eliminates device authorization, reusable runner registration, Hyper-V, ADK, and receipt-attestation attack surface while preserving trusted-code/inert-data separation, bounded archive parsing, CodeQL, secret scanning, and fail-closed publication.
+
+### Implementation implication
+ADR-0032 records the forward-only partial supersession. Active CI and release workflows move to hosted static candidate validation; desktop workflow, broker, driver, probe, boundary manifest, receipt, and attestation code are removed. The pending governed `ca-codex` release proceeds only after the replacement gate is reviewed, green, merged, and its exact artifact identity is verified.
+
+---
+
+## DECISION-0052 - adr-0032-ratified - ADR-0032 accepted
+
+**Date:** 2026-08-31
+**Status:** accepted
+**Supersedes:** DECISION-0051
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user explicitly ratified ADR-0032 and instructed that its content remain unchanged.
+**Decision category:** architecture lifecycle acceptance
+**Artifact-section-hash:** bb5980ac802d6e7db37b0d65ce3321b9dc06a75e7b7cde7481f0e4a0b0b46822
+
+### Variance summary
+- **Artifact position:** ADR-0032 and DECISION-0051 recorded the hosted-static ca-codex release-evidence decision as proposed pending explicit ratification.
+- **Scaffold position:** The user has now explicitly accepted ADR-0032 with its decision content unchanged.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0032 without changing its architecture content. Supersede only ADR-0031 Decision 5's mandatory desktop-shell evidence with trusted hosted static package evidence and supported local marketplace load proof; every other ADR-0031 decision remains unchanged.
+
+### SMARTS rationale
+This is a lifecycle transition explicitly directed by the user, not a new architectural choice. Reliable and Securable preserve the independently reviewed trusted-verifier and inert-candidate boundary; Simple and Testable retain the proportionate static package contract and fresh-task `$ca-doctor` proof without personal-PC release infrastructure.
+
+### Implementation implication
+The conditional ADR blocker is cleared. Deliver the additive compatibility-preserving trusted static verifier prerequisite first, integrate its exact landed main revision into the hosted-static feature branch, then retire the desktop path and proceed through governed CI, CodeRabbit, merge, release, supported local installation, fresh-task verification, and campaign completion audit.
+
+---

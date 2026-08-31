@@ -733,13 +733,11 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
-    def test_codex_candidate_verifier_is_required_but_desktop_receipt_is_optional(self):
+    def test_codex_static_candidate_verifier_is_required_without_desktop_receipts(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         watched = {
             ".github/scripts/verify_codex_candidate_provenance.py",
             ".github/scripts/test_codex_candidate_provenance.py",
-            "docs/reports/codex-desktop-candidate-resolution.json",
-            "docs/reports/evidence/codex-desktop-candidate/**",
         }
         self.assertTrue(watched.issubset(set(paths_filter(ci, "ca-codex"))))
         self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
@@ -748,170 +746,53 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("github.event_name == 'pull_request'", job)
         self.assertIn("github.event_name == 'merge_group'", job)
         self.assertIn("needs.changes.outputs.ca-codex == 'true'", job)
-        self.assertIn("actions: read", job)
         self.assertIn("contents: read", job)
         self.assertIn("fetch-depth: 0", job)
-        self.assertIn("python .github/scripts/test_codex_candidate_provenance.py", job)
-        self.assertIn("verify_codex_candidate_provenance.py --mode pr", job)
-        self.assertIn("verify_codex_candidate_provenance.py --mode merge-group", job)
-        self.assertEqual(job.count("--allow-missing-receipt"), 2)
-        self.assertRegex(
-            job,
-            r"(?s)--mode pr \\\n.*?--allow-missing-receipt \\\n.*?--base",
+        self.assertIn("path: trusted", job)
+        self.assertIn(
+            "github.event.pull_request.base.sha || github.event.merge_group.base_sha", job
         )
-        self.assertRegex(
-            job,
-            r"(?s)--mode merge-group \\\n.*?--allow-missing-receipt \\\n.*?--head",
+        self.assertIn("git -C trusted worktree add --detach ../candidate", job)
+        self.assertIn(
+            "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py", job
         )
-        self.assertIn("--base \"$BASE_SHA\"", job)
-        self.assertIn("--head \"$HEAD_SHA\"", job)
-        self.assertIn("github.event.pull_request.base.sha || github.event.merge_group.base_sha", job)
+        self.assertIn("--repo candidate", job)
+        self.assertNotIn(
+            "python .github/scripts/test_codex_candidate_provenance.py", job
+        )
+        self.assertNotIn("actions: read", job)
+        self.assertNotIn("--receipt", job)
+        self.assertNotIn("--allow-missing-receipt", job)
+        self.assertNotIn("codex-desktop-candidate", job)
+        self.assertIn("--final-ref \"$HEAD_SHA\"", job)
         self.assertIn("github.event.pull_request.head.sha || github.event.merge_group.head_sha", job)
         self.assertIn("codex-candidate-provenance", aggregate_needs(ci))
         self.assertIn("codex-candidate-provenance", aggregate_required_results(ci))
 
-    def test_codex_desktop_candidate_workflow_is_trusted_narrow_and_pinned(self):
-        workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("workflow_dispatch:", workflow)
-        self.assertNotIn("pull_request:", workflow)
-        permissions = re.search(r"(?ms)^permissions:\n(?P<body>(?:  [^\n]+\n)+)", workflow)
-        self.assertIsNotNone(permissions)
-        self.assertEqual(
-            set(re.findall(r"(?m)^  ([a-z-]+): ([a-z]+)$", permissions.group("body"))),
-            {("contents", "read")},
-        )
-        jobs = workflow_jobs(workflow)
-        self.assertEqual(set(jobs), {"desktop-candidate", "desktop-attestation"})
-        candidate_job = jobs["desktop-candidate"]
-        attestation_job = jobs["desktop-attestation"]
-        self.assertIn("permissions:\n      contents: read", candidate_job)
-        self.assertNotIn("id-token: write", candidate_job)
-        self.assertNotIn("attestations: write", candidate_job)
-        self.assertIn("needs: desktop-candidate", attestation_job)
-        self.assertIn("runs-on: windows-2025", attestation_job)
-        self.assertIn("id-token: write", attestation_job)
-        self.assertIn("attestations: write", attestation_job)
-        self.assertNotIn("Invoke-CodeArbiterDesktopCandidate.ps1", attestation_job)
-        self.assertIn("environment: codex-desktop-candidate", candidate_job)
-        self.assertIn("environment: codex-desktop-candidate", attestation_job)
-        self.assertIn("runs-on: [self-hosted, windows, x64, codex-desktop-ephemeral]", workflow)
-        self.assertNotIn("secrets.", workflow)
-        self.assertNotIn("CODEX_DESKTOP_API_KEY_REF", workflow)
-        self.assertIn("authentication_mode = 'chatgpt-device'", workflow)
-        self.assertIn("user_consent_required = $true", workflow)
-        self.assertIn("persist_auth_artifacts = $false", workflow)
-        self.assertNotIn("desktop-proof-transient.log", workflow)
-        self.assertNotIn("$transientLog", workflow)
-        self.assertIn(
-            "& $installedBroker -RequestPath $request -ReceiptPath $receipt -ContractPath $boundaryPath *> $null",
-            workflow,
-        )
-        broker_launch = workflow.index("& $installedBroker")
-        receipt_check = workflow.index("desktop receipt was not produced", broker_launch)
-        self.assertNotIn("$LASTEXITCODE", workflow[broker_launch:receipt_check])
-        precheck = workflow.index("Pre-validate post-teardown receipt")
-        attest = workflow.index("Attest the exact non-secret receipt bytes")
-        verify = workflow.index("Verify receipt schema, candidate bindings, and signer provenance")
-        self.assertLess(precheck, attest)
-        self.assertLess(attest, verify)
-        self.assertIn("--pre-attestation", workflow)
-        self.assertEqual(workflow.count("--desktop-runtime-version $env:DESKTOP_RUNTIME_VERSION"), 3)
-        self.assertEqual(workflow.count("--workflow-run-id $env:TRUSTED_RUN_ID"), 3)
-        self.assertEqual(workflow.count("--workflow-commit $env:TRUSTED_WORKFLOW_COMMIT"), 3)
-        archive_check = workflow.index("--candidate-contract-only")
-        desktop_probe = workflow.index("Exercise actual Store/MSIX desktop")
-        self.assertLess(archive_check, desktop_probe)
-        self.assertIn("persist-credentials: false", workflow)
-        self.assertIn("git -C trusted archive --format=zip", workflow)
-        self.assertEqual(
-            workflow.count("EXPECTED_ARCHIVE_SHA256: ${{ inputs.candidate_archive_sha256 }}"),
-            3,
-        )
-        self.assertIn(
-            "candidate_archive_sha256 = $env:EXPECTED_ARCHIVE_SHA256",
-            workflow,
-        )
-        self.assertIn("refs/pull/$PullRequest/head", workflow)
-        self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
-        self.assertIn("actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6", workflow)
-        self.assertIn("actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c", workflow)
-        self.assertIn("actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", workflow)
-
-    def test_codex_desktop_candidate_executes_only_digest_bound_trusted_boundary_code(self):
-        """O-01/O-03: candidate bytes stay inert and installed tools match trusted main."""
-        workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
-        candidate_job = workflow_jobs(workflow)["desktop-candidate"]
-        self.assertIn("trusted/.github/desktop-proof-boundary.json", candidate_job)
-        self.assertIn(
-            "trusted/.github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
-            candidate_job,
-        )
-        self.assertIn(
-            "trusted/.github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
-            candidate_job,
-        )
-        self.assertIn(
-            "trusted/.github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
-            candidate_job,
-        )
-        self.assertIn(
-            r"C:\codearbiter-runner\Invoke-CodeArbiterDesktopCandidate.ps1",
-            candidate_job,
-        )
-        self.assertIn("Get-FileHash -Algorithm SHA256", candidate_job)
-        self.assertIn("broker_sha256", candidate_job)
-        self.assertIn("driver_sha256", candidate_job)
-        self.assertIn("probe_sha256", candidate_job)
-        self.assertIn("image_sha256", candidate_job)
-        launch = candidate_job.index("& $installedBroker")
-        self.assertLess(candidate_job.index("installed broker digest mismatch"), launch)
-        self.assertLess(candidate_job.index("installed desktop driver digest mismatch"), launch)
-        self.assertLess(candidate_job.index("installed probe digest mismatch"), launch)
-        self.assertNotRegex(candidate_job, r"(?i)&\s+[^\n]*(candidate|archive)")
-        python_targets = re.findall(r"(?im)^\s*python\s+(\S+)", candidate_job)
-        self.assertGreaterEqual(len(python_targets), 3)
-        self.assertEqual(
-            set(python_targets),
-            {"trusted/.github/scripts/check_codex_skill_resources.py"},
-        )
-
-    def test_codex_desktop_candidate_uploads_only_outer_broker_post_teardown_receipt(self):
-        """O-04/O-05/O-13: teardown and identity separation precede transfer."""
-        workflow = CODEX_DESKTOP_WORKFLOW.read_text(encoding="utf-8")
-        candidate_job = workflow_jobs(workflow)["desktop-candidate"]
-        self.assertIn("broker_identity_sha256", candidate_job)
-        self.assertIn("bootstrap_identity_sha256", candidate_job)
-        self.assertIn("desktop_identity_sha256", candidate_job)
-        identity_validation = candidate_job[
-            candidate_job.index("if ($broker_identity_sha256"):candidate_job.index(
-                "desktop receipt does not bind distinct", candidate_job.index("if ($broker_identity_sha256")
-            )
-        ]
-        self.assertEqual(identity_validation.count("-cnotmatch '^[0-9a-f]{64}$'"), 3)
-        self.assertIn("receipt_phase = 'post-teardown'", candidate_job)
-        self.assertIn("receipt_finalizer = 'outer-broker'", candidate_job)
-        validate = candidate_job.index("Pre-validate post-teardown receipt")
-        upload = candidate_job.index("Transfer only the finalized candidate and non-secret receipt")
-        self.assertLess(validate, upload)
+    def test_active_workflows_have_no_desktop_or_self_hosted_release_path(self):
+        self.assertFalse(CODEX_DESKTOP_WORKFLOW.exists())
+        for workflow_path in sorted((REPO_ROOT / ".github/workflows").glob("*.yml")):
+            workflow = workflow_path.read_text(encoding="utf-8")
+            with self.subTest(workflow=workflow_path.name):
+                self.assertNotRegex(workflow, r"(?m)^\s*runs-on:\s*\[self-hosted")
+                self.assertNotIn("codex-desktop-ephemeral", workflow)
+                self.assertNotIn("environment: codex-desktop-candidate", workflow)
 
     def test_codex_resource_changes_reach_an_exact_required_lane(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         watched = {
-            ".github/desktop-proof-boundary.json",
             ".github/fixtures/codex-skill-resources/**",
-            ".github/scripts/Invoke-CodeArbiterDesktopCandidate.ps1",
-            ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
-            ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
             ".github/scripts/check_codex_skill_resources.py",
             ".github/scripts/check_codex_static_package.py",
-            ".github/scripts/test_codex_desktop_boundary.py",
             ".github/scripts/test_codex_skill_resources.py",
             ".github/scripts/test_codex_static_package.py",
             ".github/scripts/test_codex_static_candidate.py",
             ".github/scripts/verify_codex_static_candidate.py",
+            ".github/scripts/verify_codex_candidate_provenance.py",
+            ".github/scripts/test_codex_candidate_provenance.py",
+            "plugins/ca-codex/**",
             "docs/reports/codex-skill-resource-resolution.md",
             "docs/reports/evidence/codex-skill-resource-resolution/**",
-            ".github/workflows/codex-desktop-candidate.yml",
             ".github/workflows/ci.yml",
         }
         self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
@@ -929,10 +810,12 @@ class WorkflowContractTest(unittest.TestCase):
             "python .github/scripts/check_codex_static_package.py --candidate-package ca-codex-static.zip",
             job,
         )
-        self.assertIn("run: python .github/scripts/test_codex_desktop_boundary.py", job)
+        self.assertIn("run: python .github/scripts/test_codex_candidate_provenance.py", job)
         self.assertIn(
             "run: python .github/scripts/check_codex_skill_resources.py --fixtures-only", job
         )
+        self.assertIn("--candidate-contract-only", job)
+        self.assertIn("--candidate-package plugins/ca-codex", job)
         self.assertIn("codex-resource-contract", aggregate_needs(ci))
         self.assertIn("codex-resource-contract", aggregate_required_results(ci))
 
@@ -950,15 +833,10 @@ class WorkflowContractTest(unittest.TestCase):
             workflow_jobs(ci)["codex-host-latest"],
         )
 
-    def test_actionlint_knows_the_protected_desktop_runner_label(self):
+    def test_actionlint_has_no_self_hosted_runner_exception(self):
         config = ACTIONLINT_CONFIG.read_text(encoding="utf-8")
-        self.assertRegex(config, r"(?m)^self-hosted-runner:\s*$")
-        labels = re.search(
-            r"(?ms)^self-hosted-runner:\s*\n\s+labels:\s*\n(?P<body>(?:\s+-\s+[^\n]+\n?)+)",
-            config,
-        )
-        self.assertIsNotNone(labels)
-        self.assertIn("codex-desktop-ephemeral", labels.group("body"))
+        self.assertNotRegex(config, r"(?m)^self-hosted-runner:\s*$")
+        self.assertNotIn("codex-desktop-ephemeral", config)
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn(".github/actionlint.yaml", push_trigger_paths(ci))
         self.assertIn(".github/actionlint.yaml", paths_filter(ci, "impact"))

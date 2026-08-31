@@ -23,7 +23,7 @@ this file is the stale one; fix it here.
   TypeScript host extension and supervised child-process boundary.
 - **Infrastructure sibling** (`plugins/ca-sandbox/`) — isolated exploration tools;
   it is not part of the governance kernel.
-- **Protected Codex desktop proof boundary** (`.github/scripts/Invoke-CodeArbiterDesktop*.ps1`) — PowerShell 7 plus inbox Windows/Hyper-V cmdlets only. The broker runs only on an elevated Windows self-hosted runner; contract-only mode and byte binding run in portable CI. Guest coordination uses authenticated PowerShell Direct over local VMBus, not guest networking or a custom socket service.
+- **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure.
 
 ## Pi adapter
 
@@ -40,10 +40,7 @@ runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.84.1.
 Run all of these; ALL must pass before any commit:
 
 ```sh
-# Trusted desktop broker/probe byte bindings, mutation checks, and contract-only entry points
-python .github/scripts/test_codex_desktop_boundary.py
-
-# Codex packaged-resource and desktop receipt schemas
+# Codex packaged-resource and static candidate schemas
 python .github/scripts/test_codex_skill_resources.py
 
 # Workflow trust separation and exact CI impact routing
@@ -194,9 +191,6 @@ scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 - Python hooks: no linter is configured. The floor is a syntax check —
   `python -m py_compile plugins/ca/hooks/<file>.py` for any touched hook.
-- Protected desktop PowerShell: parse all changed broker/driver/probe scripts with
-  `[System.Management.Automation.Language.Parser]::ParseFile(...)`; PSScriptAnalyzer
-  is not a repository dependency and is not silently installed by the gate.
 - TypeScript: `npm run typecheck` in `plugins/ca/tools` (only when tools changed).
 
 ## Coverage

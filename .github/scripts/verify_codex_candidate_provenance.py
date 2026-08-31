@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Verify the ca-codex candidate commit and attestation-only receipt commit."""
+"""Verify an inert ca-codex package from an exact Git commit.
+
+The repository named by ``--repo`` supplies candidate data only.  Executable
+verification code is loaded exclusively from this script's trusted checkout.
+"""
 
 from __future__ import annotations
 
@@ -7,7 +11,6 @@ import argparse
 import hashlib
 import importlib.util
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -16,426 +19,172 @@ import tempfile
 from typing import Any
 
 
-RECEIPT_PATH = "docs/reports/codex-desktop-candidate-resolution.json"
-ATTESTATION_BUNDLE_PATH = (
-    "docs/reports/evidence/codex-desktop-candidate/attestation.jsonl"
-)
-ATTESTATION_PATHS = frozenset((RECEIPT_PATH, ATTESTATION_BUNDLE_PATH))
-CANDIDATE_OWNED_PATHS = (
-    ".github/actions",
-    ".github/scripts",
-    ".github/workflows",
-    "CHANGELOG.md",
-    "README.md",
-    "core",
-    "package.json",
-    "plugins/ca",
-    "plugins/ca-codex",
-    "plugins/ca-pi",
-    "tools",
-)
-CHECKER_PATH = Path(__file__).with_name("check_codex_skill_resources.py")
-OBJECT_ID_RE = re.compile(r"[0-9a-f]{40}")
-SHA256_RE = re.compile(r"[0-9a-f]{64}")
+SCRIPT_ROOT = Path(__file__).resolve().parent
+TRUSTED_CHECKER_PATH = SCRIPT_ROOT / "check_codex_skill_resources.py"
+COMMIT_ID = re.compile(r"^[0-9a-f]{40}$")
+SHA256_ID = re.compile(r"^[0-9a-f]{64}$")
+MAX_ARCHIVE_BYTES = 8 * 1024 * 1024
 
 
-def _object_id(value: Any, label: str) -> str:
-    if not isinstance(value, str) or not OBJECT_ID_RE.fullmatch(value):
-        raise ValueError(f"{label} must be an exact lowercase 40-hex object ID")
-    return value
-
-
-def _sha256(value: Any, label: str) -> str:
-    if not isinstance(value, str) or not SHA256_RE.fullmatch(value):
-        raise ValueError(f"{label} must be an exact lowercase SHA-256 digest")
-    return value
-
-
-def _git(repo: Path, *args: str, text: bool = True) -> str | bytes:
-    completed = subprocess.run(
-        ["git", *args],
-        cwd=repo,
-        check=True,
-        capture_output=True,
-        text=text,
-        encoding="utf-8" if text else None,
+def _load_trusted_checker():
+    if not TRUSTED_CHECKER_PATH.is_file():
+        raise ValueError("trusted static candidate checker is missing")
+    spec = importlib.util.spec_from_file_location(
+        "codearbiter_trusted_codex_candidate_checker", TRUSTED_CHECKER_PATH
     )
-    return completed.stdout.strip() if text else completed.stdout
-
-
-def _load_candidate_reader():
-    spec = importlib.util.spec_from_file_location("codex_skill_resources", CHECKER_PATH)
     if spec is None or spec.loader is None:
-        raise RuntimeError("could not load the ca-codex candidate reader")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module._candidate_package_files
-
-
-def _load_checker():
-    spec = importlib.util.spec_from_file_location("codex_skill_resources", CHECKER_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError("could not load the ca-codex receipt verifier")
+        raise ValueError("trusted static candidate checker cannot be loaded")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
 
 
-def _archive(repo: Path, revision: str, destination: Path) -> None:
-    revision = _object_id(revision, "archive revision")
-    subprocess.run(
+def _git(repo: Path, *arguments: str) -> str:
+    completed = subprocess.run(
+        ["git", *arguments],
+        cwd=repo,
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip() or "git failed"
+        raise ValueError(detail)
+    return completed.stdout.strip()
+
+
+def _exact_commit(repo: Path, final_ref: str) -> tuple[str, str]:
+    if COMMIT_ID.fullmatch(final_ref) is None:
+        raise ValueError("--final-ref must be an exact lowercase 40-character commit ID")
+    try:
+        commit = _git(repo, "rev-parse", "--verify", f"{final_ref}^{{commit}}")
+    except ValueError as error:
+        raise ValueError("--final-ref does not resolve to a commit") from error
+    if commit != final_ref:
+        raise ValueError("--final-ref does not resolve to the exact requested commit")
+    tree = _git(repo, "rev-parse", "--verify", f"{commit}^{{tree}}")
+    if COMMIT_ID.fullmatch(tree) is None:
+        raise ValueError("candidate tree is not an exact Git object ID")
+    return commit, tree
+
+
+def _archive(repo: Path, commit: str, destination: Path) -> None:
+    if COMMIT_ID.fullmatch(commit) is None:
+        raise ValueError("candidate archive source must be a 40-character commit ID")
+    completed = subprocess.run(
         [
             "git",
             "archive",
             "--format=zip",
             f"--output={destination}",
-            revision,
+            commit,
             "--",
             "plugins/ca-codex",
         ],
         cwd=repo,
-        check=True,
-        capture_output=True,
-    )
-
-
-def _attestation_only_changes(repo: Path, candidate: str, head: str) -> list[str]:
-    raw = _git(repo, "diff", "--name-status", "-z", f"{candidate}..{head}", text=False)
-    fields = raw.split(b"\0")
-    if fields and fields[-1] == b"":
-        fields.pop()
-    if len(fields) % 2:
-        raise ValueError("could not parse commit-R changed paths")
-
-    paths: list[str] = []
-    for index in range(0, len(fields), 2):
-        status = fields[index].decode("ascii", errors="strict")
-        path = fields[index + 1].decode("utf-8", errors="strict")
-        if status != "A":
-            raise ValueError(f"commit R must only add attestation files; found {status} {path}")
-        if path not in ATTESTATION_PATHS:
-            raise ValueError(f"commit R added an unexpected attestation path: {path}")
-        paths.append(path)
-
-    if RECEIPT_PATH not in paths:
-        raise ValueError("commit R must add the candidate resolution receipt")
-    if ATTESTATION_BUNDLE_PATH not in paths:
-        raise ValueError("commit R must add the detached attestation bundle")
-    return paths
-
-
-def _candidate_owned_manifest(repo: Path, revision: str) -> dict[str, str]:
-    """Return exact tree entries for every source/input/output owned by C."""
-    revision = _object_id(revision, "candidate-owned tree revision")
-    raw = _git(
-        repo, "ls-tree", "-r", "-z", "--full-tree", revision, "--",
-        *CANDIDATE_OWNED_PATHS, text=False,
-    )
-    manifest: dict[str, str] = {}
-    for entry in raw.split(b"\0"):
-        if not entry:
-            continue
-        metadata, path_bytes = entry.split(b"\t", 1)
-        mode, kind, object_id = metadata.decode("ascii").split(" ")
-        path = path_bytes.decode("utf-8", errors="strict")
-        manifest[path] = f"{mode} {kind} {object_id}"
-    return manifest
-
-
-def _verify_candidate_owned_manifest(repo: Path, candidate: str, tree: str) -> int:
-    candidate_manifest = _candidate_owned_manifest(repo, candidate)
-    tree_manifest = _candidate_owned_manifest(repo, tree)
-    if candidate_manifest != tree_manifest:
-        changed = sorted(set(candidate_manifest) ^ set(tree_manifest))
-        changed.extend(
-            path for path in set(candidate_manifest) & set(tree_manifest)
-            if candidate_manifest[path] != tree_manifest[path]
-        )
-        sample = ", ".join(sorted(set(changed))[:5])
-        raise ValueError(
-            "the synthesized merge changes candidate-owned source or gates"
-            + (f": {sample}" if sample else "")
-        )
-    return len(candidate_manifest)
-
-
-def verify_pr_candidate_graph(
-    *, repo: Path, receipt: dict[str, Any], base: str, head: str
-) -> dict[str, Any]:
-    """Fail closed unless C→R and the synthesized merge preserve the payload."""
-    repo = repo.resolve()
-    candidate_data = receipt.get("candidate")
-    if not isinstance(candidate_data, dict):
-        raise ValueError("receipt candidate object is missing")
-    candidate = _object_id(candidate_data.get("source_commit"), "candidate commit")
-    expected_tree = _object_id(candidate_data.get("source_tree"), "candidate tree")
-    expected_archive_sha256 = _sha256(
-        candidate_data.get("archive_sha256"), "candidate archive digest"
-    )
-    base = _object_id(base, "base commit")
-    head = _object_id(head, "head commit")
-
-    actual_tree = _git(repo, "rev-parse", f"{candidate}^{{tree}}")
-    if actual_tree != expected_tree:
-        raise ValueError("candidate commit tree does not match the receipt")
-    ancestor = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", candidate, head],
-        cwd=repo,
         check=False,
         capture_output=True,
+        text=True,
+        encoding="utf-8",
     )
-    if ancestor.returncode != 0:
-        raise ValueError("candidate commit C is not an ancestor of head")
-
-    commit_r_count = int(_git(repo, "rev-list", "--count", f"{candidate}..{head}"))
-    if commit_r_count != 1:
-        raise ValueError("head must contain exactly one attestation-only commit after C")
-    _attestation_only_changes(repo, candidate, head)
-
-    merge_tree_output = str(_git(repo, "merge-tree", "--write-tree", base, head))
-    merge_tree = merge_tree_output.splitlines()[0]
-    candidate_owned_file_count = _verify_candidate_owned_manifest(
-        repo, candidate, merge_tree
-    )
-    candidate_reader = _load_candidate_reader()
-    with tempfile.TemporaryDirectory() as temporary:
-        directory = Path(temporary)
-        candidate_archive = directory / "candidate.zip"
-        merge_archive = directory / "merge.zip"
-        _archive(repo, candidate, candidate_archive)
-        archive_sha256 = hashlib.sha256(candidate_archive.read_bytes()).hexdigest()
-        if archive_sha256 != expected_archive_sha256:
-            raise ValueError("candidate archive digest does not match the receipt")
-        _archive(repo, merge_tree, merge_archive)
-        candidate_files = candidate_reader(candidate_archive)
-        merge_files = candidate_reader(merge_archive)
-    if candidate_files != merge_files:
-        raise ValueError("the synthesized merge changes the attested ca-codex payload")
-
-    return {
-        "candidate_commit": candidate,
-        "candidate_file_count": len(candidate_files),
-        "candidate_owned_file_count": candidate_owned_file_count,
-        "commit_r_count": commit_r_count,
-        "attestation_paths": _attestation_only_changes(repo, candidate, head),
-    }
+    if completed.returncode != 0 or not destination.is_file():
+        detail = completed.stderr.strip() or completed.stdout.strip() or "git archive failed"
+        raise ValueError(detail)
 
 
-def verify_release_candidate_payload(
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        while chunk := source.read(64 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _expected_digest(value: str | None, label: str) -> str | None:
+    if value is not None and SHA256_ID.fullmatch(value) is None:
+        raise ValueError(f"expected {label} must be an exact lowercase SHA-256 digest")
+    return value
+
+
+def verify_static_candidate(
     *,
     repo: Path,
-    receipt: dict[str, Any],
     final_ref: str,
-    candidate_archive: Path,
+    expected_archive_sha256: str | None = None,
+    expected_package_sha256: str | None = None,
+    expected_resource_sha256: str | None = None,
 ) -> dict[str, Any]:
-    """Compare final-main content with the downloaded, attested candidate bytes."""
+    if COMMIT_ID.fullmatch(final_ref) is None:
+        raise ValueError("--final-ref must be an exact lowercase 40-character commit ID")
     repo = repo.resolve()
-    candidate_data = receipt.get("candidate")
-    if not isinstance(candidate_data, dict):
-        raise ValueError("receipt candidate object is missing")
-    candidate = _object_id(candidate_data.get("source_commit"), "candidate commit")
-    expected_archive_sha256 = _sha256(
-        candidate_data.get("archive_sha256"), "candidate archive digest"
+    if not repo.is_dir():
+        raise ValueError("--repo must name an existing Git checkout")
+    commit, tree = _exact_commit(repo, final_ref)
+    checker = _load_trusted_checker()
+    with tempfile.TemporaryDirectory(prefix="ca-codex-candidate-") as temporary:
+        archive = Path(temporary) / "ca-codex.zip"
+        _archive(repo, commit, archive)
+        if archive.stat().st_size > MAX_ARCHIVE_BYTES:
+            raise ValueError("candidate archive exceeds the archive-byte limit")
+        archive_sha256 = _sha256_file(archive)
+        contract = checker.candidate_static_contract(archive)
+    expectations = (
+        (archive_sha256, expected_archive_sha256, "archive sha256"),
+        (contract["package_sha256"], expected_package_sha256, "package sha256"),
+        (contract["resource_sha256"], expected_resource_sha256, "resource sha256"),
     )
-    final_ref = _object_id(final_ref, "final commit")
-
-    actual_archive_sha256 = hashlib.sha256(candidate_archive.read_bytes()).hexdigest()
-    if actual_archive_sha256 != expected_archive_sha256:
-        raise ValueError("downloaded candidate archive digest does not match the receipt")
-
-    candidate_reader = _load_candidate_reader()
-    with tempfile.TemporaryDirectory() as temporary:
-        final_archive = Path(temporary) / "final-main.zip"
-        _archive(repo, final_ref, final_archive)
-        candidate_files = candidate_reader(candidate_archive)
-        final_files = candidate_reader(final_archive)
-    if candidate_files != final_files:
-        raise ValueError("final-main ca-codex payload differs from the attested candidate")
-
+    for actual, expected, label in expectations:
+        expected = _expected_digest(expected, label)
+        if expected is not None and actual != expected:
+            raise ValueError(f"{label} does not match the expected digest")
     return {
-        "candidate_commit": candidate,
-        "candidate_file_count": len(candidate_files),
-        "final_ref": final_ref,
+        "verdict": "PASS",
+        "source_commit": commit,
+        "source_tree": tree,
+        "archive_sha256": archive_sha256,
+        "package_sha256": contract["package_sha256"],
+        "resource_sha256": contract["resource_sha256"],
+        "plugin_version": contract["plugin_version"],
+        "resource_count": len(contract["selected_paths"]),
+        "relative_read_count": len(contract["relative_reads"]),
     }
 
 
-def verify_merge_group_candidate(
-    *, repo: Path, receipt: dict[str, Any], head: str
-) -> dict[str, Any]:
-    """Recheck trusted candidate bytes against a merge-queue synthesis."""
-    candidate_data = receipt.get("candidate")
-    candidate = _object_id(
-        candidate_data.get("source_commit") if isinstance(candidate_data, dict) else None,
-        "candidate commit",
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Verify the exact static ca-codex package at a Git commit."
     )
-    head = _object_id(head, "merge-group head")
-    ancestor = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", candidate, head],
-        cwd=repo,
-        check=False,
-        capture_output=True,
-    )
-    if ancestor.returncode != 0:
-        raise ValueError("candidate commit C is not an ancestor of the merge group")
-    with tempfile.TemporaryDirectory() as temporary:
-        archive = Path(temporary) / "candidate.zip"
-        _archive(repo, candidate, archive)
-        result = verify_release_candidate_payload(
-            repo=repo,
-            receipt=receipt,
-            final_ref=head,
-            candidate_archive=archive,
-        )
-    candidate_owned_file_count = _verify_candidate_owned_manifest(repo, candidate, head)
-    return {
-        **result,
-        "candidate_owned_file_count": candidate_owned_file_count,
-        "merge_group_head": head,
-    }
-
-
-def _mapping(receipt: dict[str, Any], name: str) -> dict[str, Any]:
-    value = receipt.get(name)
-    if not isinstance(value, dict):
-        raise ValueError(f"receipt {name} object is missing")
-    return value
-
-
-def verify_strict_receipt(
-    receipt_path: Path, candidate_archive: Path, *, bundle_path: Path
-) -> None:
-    """Reuse the protected desktop receipt and GitHub attestation verifier."""
-    try:
-        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise ValueError("candidate receipt is not valid UTF-8 JSON") from error
-    if not isinstance(receipt, dict):
-        raise ValueError("candidate receipt must be a JSON object")
-    candidate = _mapping(receipt, "candidate")
-    desktop = _mapping(receipt, "desktop")
-    workflow = _mapping(receipt, "workflow")
-    arguments = {
-        "receipt_path": receipt_path,
-        "candidate_package": candidate_archive,
-        "candidate_source_commit": candidate.get("source_commit"),
-        "candidate_tree": candidate.get("source_tree"),
-        "desktop_build": desktop.get("build"),
-        "desktop_runtime_version": desktop.get("runtime_version"),
-        "workflow_run_id": workflow.get("run_id"),
-        "workflow_commit": workflow.get("commit"),
-    }
-    checker = _load_checker()
-    preliminary = checker.validate_desktop_receipt(**arguments, attestation=None)
-    if preliminary.get("verdict") != "PASS":
-        raise ValueError("candidate receipt content or candidate binding is invalid")
-    attestation = checker.verify_github_attestation(
-        receipt_path,
-        str(workflow.get("commit", "")),
-        str(workflow.get("run_id", "")),
-        bundle_path=bundle_path,
-    )
-    verified = checker.validate_desktop_receipt(**arguments, attestation=attestation)
-    if verified.get("verdict") != "PASS":
-        raise ValueError("candidate receipt GitHub attestation is invalid")
-
-
-def _load_receipt(path: Path) -> dict[str, Any]:
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise ValueError("candidate receipt is not valid UTF-8 JSON") from error
-    if not isinstance(value, dict):
-        raise ValueError("candidate receipt must be a JSON object")
-    return value
+    parser.add_argument("--repo", type=Path, default=Path.cwd())
+    parser.add_argument("--final-ref", required=True)
+    parser.add_argument("--json", action="store_true")
+    parser.add_argument("--expected-archive-sha256")
+    parser.add_argument("--expected-package-sha256")
+    parser.add_argument("--expected-resource-sha256")
+    return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=("pr", "merge-group", "release"), required=True)
-    parser.add_argument("--repo", default=".")
-    parser.add_argument("--receipt", required=True)
-    parser.add_argument("--base")
-    parser.add_argument("--head")
-    parser.add_argument("--final-ref")
-    parser.add_argument("--candidate-archive")
-    parser.add_argument("--allow-missing-receipt", action="store_true")
-    parser.add_argument("--json", action="store_true")
-    args = parser.parse_args(argv)
-    repo = Path(args.repo).resolve()
-    receipt_path = Path(args.receipt).absolute()
-    bundle_path = (repo / ATTESTATION_BUNDLE_PATH).resolve()
-
-    if args.mode == "pr":
-        if not args.base or not args.head or args.final_ref or args.candidate_archive:
-            parser.error("PR mode requires --base and --head only")
-    elif args.mode == "merge-group":
-        if not args.head or args.base or args.final_ref or args.candidate_archive:
-            parser.error("merge-group mode requires --head only")
-    else:
-        if not args.final_ref or not args.candidate_archive or args.base or args.head:
-            parser.error("release mode requires --final-ref and --candidate-archive only")
-        if args.allow_missing_receipt:
-            parser.error("--allow-missing-receipt is not valid in release mode")
-
-    if args.allow_missing_receipt and not os.path.lexists(receipt_path):
-        result = {
-            "verdict": "NOT_APPLICABLE",
-            "reason": "desktop receipt not supplied",
-        }
-        if args.json:
-            print(json.dumps(result, indent=2, sort_keys=True))
-        else:
-            print("ca-codex candidate provenance NOT_APPLICABLE (desktop receipt not supplied)")
-        return 0
-
+    args = build_parser().parse_args(argv)
     try:
-        receipt = _load_receipt(receipt_path)
-    except ValueError as error:
-        print(f"ERROR: {error}", file=sys.stderr)
-        return 1
-    try:
-        candidate = _object_id(
-            _mapping(receipt, "candidate").get("source_commit"), "candidate commit"
+        result = verify_static_candidate(
+            repo=args.repo,
+            final_ref=args.final_ref,
+            expected_archive_sha256=args.expected_archive_sha256,
+            expected_package_sha256=args.expected_package_sha256,
+            expected_resource_sha256=args.expected_resource_sha256,
         )
-    except ValueError as error:
-        parser.error(str(error))
-
-    try:
-        if args.mode == "pr":
-            with tempfile.TemporaryDirectory() as temporary:
-                archive = Path(temporary) / "candidate.zip"
-                _archive(repo, candidate, archive)
-                verify_strict_receipt(receipt_path, archive, bundle_path=bundle_path)
-            result = verify_pr_candidate_graph(
-                repo=repo, receipt=receipt, base=args.base, head=args.head
-            )
-        elif args.mode == "merge-group":
-            with tempfile.TemporaryDirectory() as temporary:
-                archive = Path(temporary) / "candidate.zip"
-                _archive(repo, candidate, archive)
-                verify_strict_receipt(receipt_path, archive, bundle_path=bundle_path)
-            result = verify_merge_group_candidate(
-                repo=repo, receipt=receipt, head=args.head
-            )
-        else:
-            archive = Path(args.candidate_archive).resolve()
-            verify_strict_receipt(receipt_path, archive, bundle_path=bundle_path)
-            result = verify_release_candidate_payload(
-                repo=repo,
-                receipt=receipt,
-                final_ref=args.final_ref,
-                candidate_archive=archive,
-            )
-    except (OSError, subprocess.CalledProcessError, ValueError) as error:
+    except (OSError, ValueError, KeyError) as error:
+        if args.json:
+            print(json.dumps({"verdict": "FAIL", "errors": [str(error)]}, sort_keys=True))
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
-
     if args.json:
-        print(json.dumps({"verdict": "PASS", **result}, indent=2, sort_keys=True))
+        print(json.dumps(result, indent=2, sort_keys=True))
     else:
         print(
-            "ca-codex candidate provenance PASS "
-            f"({result['candidate_file_count']} package files)"
+            "static ca-codex candidate verified: "
+            f"{result['source_commit']} package={result['package_sha256']}"
         )
     return 0
 
