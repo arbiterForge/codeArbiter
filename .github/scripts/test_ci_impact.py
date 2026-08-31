@@ -754,6 +754,9 @@ class WorkflowContractTest(unittest.TestCase):
         )
         self.assertIn("git -C trusted worktree add --detach ../candidate", job)
         self.assertIn(
+            "python3 trusted/.github/scripts/verify_codex_static_candidate.py", job
+        )
+        self.assertNotIn(
             "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py", job
         )
         self.assertIn("--repo candidate", job)

@@ -436,7 +436,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
         run: |
           set -euo pipefail
-          python3 trusted/.github/scripts/verify_codex_candidate_provenance.py \
+          python3 trusted/.github/scripts/verify_codex_static_candidate.py \
             --repo candidate --final-ref "$HEAD_SHA" --json
 
   coverage-union:
