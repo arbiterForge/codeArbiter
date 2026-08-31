@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -221,6 +222,126 @@ class DirectoryBoundContractTest(unittest.TestCase):
 
     def test_rejects_empty_directories_over_entry_limit(self):
         self.assert_bounded(directories=3)
+
+    def test_stops_scanning_at_the_entry_limit_before_sorting(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            package.mkdir()
+            for index in range(4):
+                (package / f"file-{index}.md").write_bytes(b"a")
+
+            original_scandir = self.checker.os.scandir
+            observed = {"entries": 0}
+
+            class CountingScandir:
+                def __init__(inner_self, directory):
+                    inner_self._scan = original_scandir(directory)
+
+                def __enter__(inner_self):
+                    inner_self._scan.__enter__()
+                    return inner_self
+
+                def __exit__(inner_self, *arguments):
+                    return inner_self._scan.__exit__(*arguments)
+
+                def __iter__(inner_self):
+                    return inner_self
+
+                def __next__(inner_self):
+                    observed["entries"] += 1
+                    if observed["entries"] > self.limits["max_entries"] + 1:
+                        raise AssertionError("directory traversal read beyond the rejection bound")
+                    return next(inner_self._scan)
+
+            with mock.patch.object(
+                self.checker, "_candidate_archive_limits", return_value=self.limits
+            ), mock.patch.object(self.checker.os, "scandir", CountingScandir), self.assertRaisesRegex(
+                ValueError, "entry-count limit"
+            ):
+                self.checker._candidate_package_files(package)
+            self.assertEqual(observed["entries"], self.limits["max_entries"] + 1)
+
+    def test_rejects_file_growth_using_only_bounded_reads(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            package.mkdir()
+            candidate = package / "growing.md"
+            candidate.write_bytes(b"a")
+            original_open = Path.open
+            initial = candidate.stat()
+
+            class GrowingStream:
+                def __init__(inner_self):
+                    inner_self._chunks = iter((b"ab", b"c"))
+
+                def __enter__(inner_self):
+                    return inner_self
+
+                def __exit__(inner_self, *_arguments):
+                    return False
+
+                def fileno(inner_self):
+                    return 123
+
+                def read(inner_self, size=-1):
+                    if size < 0 or size > self.limits["max_entry_uncompressed_bytes"] + 1:
+                        raise AssertionError("candidate file was read without a hard byte bound")
+                    return next(inner_self._chunks, b"")
+
+            def controlled_open(path, *arguments, **keywords):
+                if path == candidate:
+                    return GrowingStream()
+                return original_open(path, *arguments, **keywords)
+
+            with mock.patch.object(
+                self.checker, "_candidate_archive_limits", return_value=self.limits
+            ), mock.patch.object(Path, "open", controlled_open), mock.patch.object(
+                self.checker.os, "fstat", return_value=initial
+            ), self.assertRaisesRegex(
+                ValueError, "changed while being read"
+            ):
+                self.checker._candidate_package_files(package)
+
+    def test_rechecks_the_per_entry_limit_on_the_opened_file(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            package.mkdir()
+            candidate = package / "growing.md"
+            candidate.write_bytes(b"a")
+            original_validate = self.checker._validate_candidate_paths
+
+            def grow_after_enumeration(paths):
+                result = original_validate(paths)
+                candidate.write_bytes(b"abc")
+                return result
+
+            with mock.patch.object(
+                self.checker, "_candidate_archive_limits", return_value=self.limits
+            ), mock.patch.object(
+                self.checker, "_validate_candidate_paths", grow_after_enumeration
+            ), self.assertRaisesRegex(ValueError, "entry exceeds the size limit"):
+                self.checker._candidate_package_files(package)
+
+    def test_rejects_an_opened_file_with_a_different_identity(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            package.mkdir()
+            candidate = package / "replaced.md"
+            candidate.write_bytes(b"a")
+            initial = candidate.stat()
+            replacement = SimpleNamespace(
+                st_mode=initial.st_mode,
+                st_dev=initial.st_dev,
+                st_ino=initial.st_ino + 1,
+                st_size=initial.st_size,
+            )
+
+            with mock.patch.object(
+                self.checker, "_candidate_archive_limits", return_value=self.limits
+            ), mock.patch.object(
+                self.checker.os, "fstat", return_value=replacement
+            ), self.assertRaisesRegex(ValueError, "changed while being read"):
+                self.checker._candidate_package_files(package)
 
 
 if __name__ == "__main__":
