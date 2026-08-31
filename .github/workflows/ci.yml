@@ -94,9 +94,13 @@ on:
       - ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1"
       - ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1"
       - ".github/scripts/check_codex_skill_resources.py"
+      - ".github/scripts/check_codex_static_package.py"
       - ".github/scripts/test_codex_desktop_boundary.py"
       - ".github/scripts/test_codex_skill_resources.py"
+      - ".github/scripts/test_codex_static_package.py"
+      - ".github/scripts/test_codex_static_candidate.py"
       - ".github/scripts/verify_codex_candidate_provenance.py"
+      - ".github/scripts/verify_codex_static_candidate.py"
       - ".github/scripts/test_codex_candidate_provenance.py"
       - "docs/reports/codex-skill-resource-resolution.md"
       - "docs/reports/evidence/codex-skill-resource-resolution/**"
@@ -158,6 +162,10 @@ jobs:
             ca-codex:
               - 'plugins/ca-codex/**'
               - 'core/**'
+              - '.github/scripts/check_codex_static_package.py'
+              - '.github/scripts/test_codex_static_package.py'
+              - '.github/scripts/test_codex_static_candidate.py'
+              - '.github/scripts/verify_codex_static_candidate.py'
               - '.github/scripts/verify_codex_candidate_provenance.py'
               - '.github/scripts/test_codex_candidate_provenance.py'
               - 'docs/reports/codex-desktop-candidate-resolution.json'
@@ -295,9 +303,13 @@ jobs:
               - '.github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1'
               - '.github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1'
               - '.github/scripts/check_codex_skill_resources.py'
+              - '.github/scripts/check_codex_static_package.py'
               - '.github/scripts/test_codex_desktop_boundary.py'
               - '.github/scripts/test_codex_skill_resources.py'
+              - '.github/scripts/test_codex_static_package.py'
+              - '.github/scripts/test_codex_static_candidate.py'
               - '.github/scripts/verify_codex_candidate_provenance.py'
+              - '.github/scripts/verify_codex_static_candidate.py'
               - '.github/scripts/test_codex_candidate_provenance.py'
               - 'docs/reports/codex-skill-resource-resolution.md'
               - 'docs/reports/evidence/codex-skill-resource-resolution/**'
@@ -385,6 +397,14 @@ jobs:
           python-version: "3.x"
       - name: Test Codex skill-resource and receipt contracts
         run: python .github/scripts/test_codex_skill_resources.py
+      - name: Test the trusted static Codex package contract
+        run: python .github/scripts/test_codex_static_package.py
+      - name: Test the trusted static candidate boundary
+        run: python .github/scripts/test_codex_static_candidate.py
+      - name: Build and validate the tracked Codex package without credentials
+        run: |
+          git archive --format=zip --output=ca-codex-static.zip HEAD -- plugins/ca-codex
+          python .github/scripts/check_codex_static_package.py --candidate-package ca-codex-static.zip
       - name: Test the trusted desktop boundary contracts
         run: python .github/scripts/test_codex_desktop_boundary.py
       - name: Validate the tracked fixture without network or credentials

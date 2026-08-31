@@ -835,7 +835,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", workflow)
         self.assertIn("actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6", workflow)
         self.assertIn("actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c", workflow)
-        self.assertIn("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", workflow)
+        self.assertIn("actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", workflow)
 
     def test_codex_desktop_candidate_executes_only_digest_bound_trusted_boundary_code(self):
         """O-01/O-03: candidate bytes stay inert and installed tools match trusted main."""
@@ -903,8 +903,12 @@ class WorkflowContractTest(unittest.TestCase):
             ".github/scripts/Invoke-CodeArbiterDesktopUiDriver.ps1",
             ".github/scripts/Invoke-CodeArbiterDesktopRouteProbe.ps1",
             ".github/scripts/check_codex_skill_resources.py",
+            ".github/scripts/check_codex_static_package.py",
             ".github/scripts/test_codex_desktop_boundary.py",
             ".github/scripts/test_codex_skill_resources.py",
+            ".github/scripts/test_codex_static_package.py",
+            ".github/scripts/test_codex_static_candidate.py",
+            ".github/scripts/verify_codex_static_candidate.py",
             "docs/reports/codex-skill-resource-resolution.md",
             "docs/reports/evidence/codex-skill-resource-resolution/**",
             ".github/workflows/codex-desktop-candidate.yml",
@@ -915,6 +919,16 @@ class WorkflowContractTest(unittest.TestCase):
         job = workflow_jobs(ci)["codex-resource-contract"]
         self.assertIn("needs.changes.outputs.codex-resources == 'true'", job)
         self.assertIn("run: python .github/scripts/test_codex_skill_resources.py", job)
+        self.assertIn("run: python .github/scripts/test_codex_static_package.py", job)
+        self.assertIn("run: python .github/scripts/test_codex_static_candidate.py", job)
+        self.assertIn(
+            "git archive --format=zip --output=ca-codex-static.zip HEAD -- plugins/ca-codex",
+            job,
+        )
+        self.assertIn(
+            "python .github/scripts/check_codex_static_package.py --candidate-package ca-codex-static.zip",
+            job,
+        )
         self.assertIn("run: python .github/scripts/test_codex_desktop_boundary.py", job)
         self.assertIn(
             "run: python .github/scripts/check_codex_skill_resources.py --fixtures-only", job
