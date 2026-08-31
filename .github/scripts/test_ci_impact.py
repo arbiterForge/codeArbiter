@@ -736,6 +736,7 @@ class WorkflowContractTest(unittest.TestCase):
     def test_codex_static_candidate_verifier_is_required_without_desktop_receipts(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         watched = {
+            ".github/scripts/verify_codex_static_candidate.py",
             ".github/scripts/verify_codex_candidate_provenance.py",
             ".github/scripts/test_codex_candidate_provenance.py",
         }
