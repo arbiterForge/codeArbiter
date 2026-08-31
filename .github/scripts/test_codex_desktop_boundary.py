@@ -81,6 +81,63 @@ def run_contract_payload(
         contract_path.unlink(missing_ok=True)
 
 
+def run_observed_vm_switch_inventory(
+    *,
+    physical_description: str | None = None,
+    physical_guid: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    command = r"""
+$tokens = $null
+$errors = $null
+$ast = [Management.Automation.Language.Parser]::ParseFile(
+    $env:CODEARBITER_BROKER_SOURCE, [ref]$tokens, [ref]$errors
+)
+if ($errors.Count -ne 0) { throw 'broker parse failed' }
+$function = $ast.Find({
+    param($node)
+    $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -ceq 'Get-ObservedVmSwitchInventory'
+}, $true)
+if ($null -eq $function) { throw 'observation function is missing' }
+Invoke-Expression $function.Extent.Text
+$physicalDescription = if ($env:CODEARBITER_PHYSICAL_DESCRIPTION) {
+    $env:CODEARBITER_PHYSICAL_DESCRIPTION
+} else { $null }
+$physicalGuid = if ($env:CODEARBITER_PHYSICAL_GUID) {
+    [guid]$env:CODEARBITER_PHYSICAL_GUID
+} else { $null }
+function Get-VMSwitch {
+    [pscustomobject]@{
+        Id = [guid]'11111111-1111-1111-1111-111111111111'
+        Name = 'Default Switch'
+        SwitchType = 'Internal'
+        NetAdapterInterfaceDescription = $physicalDescription
+        NetAdapterInterfaceDescriptions = $physicalDescription
+        NetAdapterInterfaceGuid = $physicalGuid
+    }
+}
+@(Get-ObservedVmSwitchInventory) | ConvertTo-Json -Depth 5 -Compress
+"""
+    environment = os.environ.copy()
+    environment["CODEARBITER_BROKER_SOURCE"] = str(BROKER)
+    if physical_description is not None:
+        environment["CODEARBITER_PHYSICAL_DESCRIPTION"] = physical_description
+    if physical_guid is not None:
+        environment["CODEARBITER_PHYSICAL_GUID"] = physical_guid
+    return subprocess.run(
+        [
+            powershell(), "-NoLogo", "-NoProfile", "-NonInteractive",
+            "-Command", command,
+        ],
+        cwd=REPO_ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+
+
 def vm_switch_observation(
     name: str = "Default Switch",
     switch_id: str = "11111111-1111-1111-1111-111111111111",
@@ -831,6 +888,27 @@ class DesktopBoundaryContractTest(unittest.TestCase):
             reordered_payload["before_inventory_sha256"],
             reordered_payload["after_inventory_sha256"],
         )
+
+    def test_live_null_vm_switch_bindings_normalize_to_empty_collections(self):
+        observed = run_observed_vm_switch_inventory()
+        self.assertEqual(observed.returncode, 0, observed.stdout + observed.stderr)
+        payload = json.loads(observed.stdout)
+        self.assertIsNone(payload["physical_adapter_interface_description"])
+        self.assertEqual(payload["physical_adapter_interface_descriptions"], [])
+        self.assertEqual(payload["physical_adapter_interface_guids"], [])
+
+    def test_live_non_null_vm_switch_bindings_survive_normalization(self):
+        description = "Intel(R) Wi-Fi 7 BE200"
+        guid = "66666666-6666-6666-6666-666666666666"
+        observed = run_observed_vm_switch_inventory(
+            physical_description=description,
+            physical_guid=guid,
+        )
+        self.assertEqual(observed.returncode, 0, observed.stdout + observed.stderr)
+        payload = json.loads(observed.stdout)
+        self.assertEqual(payload["physical_adapter_interface_description"], description)
+        self.assertEqual(payload["physical_adapter_interface_descriptions"], [description])
+        self.assertEqual(payload["physical_adapter_interface_guids"], [guid])
 
     def test_broker_has_no_hyper_v_switch_mutation_commands(self):
         environment = os.environ.copy()
