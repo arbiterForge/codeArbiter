@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 
@@ -100,10 +101,10 @@ $function = $ast.Find({
 }, $true)
 if ($null -eq $function) { throw 'observation function is missing' }
 Invoke-Expression $function.Extent.Text
-$physicalDescription = if ($env:CODEARBITER_PHYSICAL_DESCRIPTION) {
+$physicalDescription = if ($null -ne $env:CODEARBITER_PHYSICAL_DESCRIPTION) {
     $env:CODEARBITER_PHYSICAL_DESCRIPTION
 } else { $null }
-$physicalGuid = if ($env:CODEARBITER_PHYSICAL_GUID) {
+$physicalGuid = if ($null -ne $env:CODEARBITER_PHYSICAL_GUID) {
     [guid]$env:CODEARBITER_PHYSICAL_GUID
 } else { $null }
 function Get-VMSwitch {
@@ -120,6 +121,8 @@ function Get-VMSwitch {
 """
     environment = os.environ.copy()
     environment["CODEARBITER_BROKER_SOURCE"] = str(BROKER)
+    environment.pop("CODEARBITER_PHYSICAL_DESCRIPTION", None)
+    environment.pop("CODEARBITER_PHYSICAL_GUID", None)
     if physical_description is not None:
         environment["CODEARBITER_PHYSICAL_DESCRIPTION"] = physical_description
     if physical_guid is not None:
@@ -890,7 +893,12 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         )
 
     def test_live_null_vm_switch_bindings_normalize_to_empty_collections(self):
-        observed = run_observed_vm_switch_inventory()
+        inherited = {
+            "CODEARBITER_PHYSICAL_DESCRIPTION": "inherited adapter",
+            "CODEARBITER_PHYSICAL_GUID": "77777777-7777-7777-7777-777777777777",
+        }
+        with mock.patch.dict(os.environ, inherited):
+            observed = run_observed_vm_switch_inventory()
         self.assertEqual(observed.returncode, 0, observed.stdout + observed.stderr)
         payload = json.loads(observed.stdout)
         self.assertIsNone(payload["physical_adapter_interface_description"])
@@ -909,6 +917,13 @@ class DesktopBoundaryContractTest(unittest.TestCase):
         self.assertEqual(payload["physical_adapter_interface_description"], description)
         self.assertEqual(payload["physical_adapter_interface_descriptions"], [description])
         self.assertEqual(payload["physical_adapter_interface_guids"], [guid])
+
+    def test_live_empty_vm_switch_description_survives_normalization(self):
+        observed = run_observed_vm_switch_inventory(physical_description="")
+        self.assertEqual(observed.returncode, 0, observed.stdout + observed.stderr)
+        payload = json.loads(observed.stdout)
+        self.assertEqual(payload["physical_adapter_interface_description"], "")
+        self.assertEqual(payload["physical_adapter_interface_descriptions"], [""])
 
     def test_broker_has_no_hyper_v_switch_mutation_commands(self):
         environment = os.environ.copy()
