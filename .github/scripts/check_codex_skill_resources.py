@@ -2200,6 +2200,7 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                 files[relative] = output.getvalue()
         return files
     if path.is_dir():
+        limits = _candidate_archive_limits()
         package_root = path / "plugins" / "ca-codex"
         package_metadata = package_root.lstat() if package_root.exists() or package_root.is_symlink() else None
         if (
@@ -2213,9 +2214,13 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
         package_root = package_root.resolve()
         entries: list[tuple[str, Path]] = []
         pending = [package_root]
+        seen_entries = 0
         while pending:
             directory = pending.pop()
             for item in sorted(directory.iterdir(), key=lambda candidate: candidate.name):
+                seen_entries += 1
+                if seen_entries > limits["max_entries"]:
+                    raise ValueError("candidate directory exceeds the entry-count limit")
                 metadata = item.lstat()
                 if (
                     item.is_symlink()
@@ -2227,6 +2232,8 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     continue
                 if not stat.S_ISREG(metadata.st_mode):
                     raise ValueError("candidate package contains a non-regular file")
+                if metadata.st_size > limits["max_entry_uncompressed_bytes"]:
+                    raise ValueError("candidate directory entry exceeds the size limit")
                 resolved = item.resolve()
                 try:
                     relative = resolved.relative_to(package_root).as_posix()
@@ -2234,8 +2241,16 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     raise ValueError("candidate package file escapes package root") from error
                 entries.append((relative, item))
         _validate_candidate_paths(relative for relative, _ in entries)
+        total_bytes = 0
         for relative, item in entries:
-            files[relative] = item.read_bytes()
+            size = item.stat().st_size
+            if size > limits["max_total_uncompressed_bytes"] - total_bytes:
+                raise ValueError("candidate directory exceeds the total-size limit")
+            total_bytes += size
+            content = item.read_bytes()
+            if len(content) != size:
+                raise ValueError("candidate directory entry changed while being read")
+            files[relative] = content
         return files
     raise ValueError("candidate package must be a ca-codex directory or ZIP archive")
 
@@ -2775,7 +2790,11 @@ def _supported_template_resource(resolved: str) -> bool:
 
 def candidate_resource_contract(path: Path) -> dict[str, Any]:
     """Derive the exact packaged Markdown resource set and contained read graph."""
-    files = _candidate_package_files(path)
+    return _candidate_resource_contract_from_files(_candidate_package_files(path))
+
+
+def _candidate_resource_contract_from_files(files: dict[str, bytes]) -> dict[str, Any]:
+    """Derive the resource graph from one already bounded immutable snapshot."""
     resource_paths = sorted(
         relative
         for relative in files
