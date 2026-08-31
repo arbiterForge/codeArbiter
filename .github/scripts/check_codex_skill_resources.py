@@ -2212,15 +2212,20 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
         if not package_root.is_dir():
             package_root = path
         package_root = package_root.resolve()
-        entries: list[tuple[str, Path]] = []
+        entries: list[tuple[str, Path, os.stat_result]] = []
         pending = [package_root]
         seen_entries = 0
         while pending:
             directory = pending.pop()
-            for item in sorted(directory.iterdir(), key=lambda candidate: candidate.name):
-                seen_entries += 1
-                if seen_entries > limits["max_entries"]:
-                    raise ValueError("candidate directory exceeds the entry-count limit")
+            names: list[str] = []
+            with os.scandir(directory) as scan:
+                for scanned in scan:
+                    seen_entries += 1
+                    if seen_entries > limits["max_entries"]:
+                        raise ValueError("candidate directory exceeds the entry-count limit")
+                    names.append(scanned.name)
+            for name in sorted(names):
+                item = directory / name
                 metadata = item.lstat()
                 if (
                     item.is_symlink()
@@ -2239,17 +2244,35 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     relative = resolved.relative_to(package_root).as_posix()
                 except ValueError as error:
                     raise ValueError("candidate package file escapes package root") from error
-                entries.append((relative, item))
-        _validate_candidate_paths(relative for relative, _ in entries)
+                entries.append((relative, item, metadata))
+        _validate_candidate_paths(relative for relative, _, _ in entries)
         total_bytes = 0
-        for relative, item in entries:
-            size = item.stat().st_size
-            if size > limits["max_total_uncompressed_bytes"] - total_bytes:
-                raise ValueError("candidate directory exceeds the total-size limit")
-            total_bytes += size
-            content = item.read_bytes()
+        for relative, item, metadata in entries:
+            output = io.BytesIO()
+            with item.open("rb") as source:
+                opened = os.fstat(source.fileno())
+                if (
+                    not stat.S_ISREG(opened.st_mode)
+                    or (opened.st_dev, opened.st_ino) != (metadata.st_dev, metadata.st_ino)
+                ):
+                    raise ValueError("candidate directory entry changed while being read")
+                size = opened.st_size
+                if size > limits["max_entry_uncompressed_bytes"]:
+                    raise ValueError("candidate directory entry exceeds the size limit")
+                if size > limits["max_total_uncompressed_bytes"] - total_bytes:
+                    raise ValueError("candidate directory exceeds the total-size limit")
+                while True:
+                    remaining_expected = size - output.tell()
+                    chunk = source.read(min(64 * 1024, remaining_expected + 1))
+                    if not chunk:
+                        break
+                    output.write(chunk)
+                    if output.tell() > size:
+                        raise ValueError("candidate directory entry changed while being read")
+            content = output.getvalue()
             if len(content) != size:
                 raise ValueError("candidate directory entry changed while being read")
+            total_bytes += len(content)
             files[relative] = content
         return files
     raise ValueError("candidate package must be a ca-codex directory or ZIP archive")
