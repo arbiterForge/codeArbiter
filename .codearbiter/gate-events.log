@@ -3774,3 +3774,4 @@ io.open(sys.argv[2],'w',encoding='utf-8',newline='\n').write(open(sys.argv[1],en
 [2026-08-30T22:26:51Z] WARN host=claude hook=python.exe -m unittest | /mode has been active for over 30 min with no matching overrides.log entry since — confirm the expected audit line landed (CONFIRM-09).
 [2026-08-31T00:59:14Z] WARN host=claude hook=python.exe -m unittest | /mode has been active for over 30 min with no matching overrides.log entry since — confirm the expected audit line landed (CONFIRM-09).
 [2026-08-31T01:01:10Z] WARN host=claude hook=python.exe -m unittest | /mode has been active for over 30 min with no matching overrides.log entry since — confirm the expected audit line landed (CONFIRM-09).
+[2026-08-31T01:40:25Z] WARN host=claude hook=python.exe -m unittest | /mode has been active for over 30 min with no matching overrides.log entry since — confirm the expected audit line landed (CONFIRM-09).
