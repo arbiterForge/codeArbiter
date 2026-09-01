@@ -5,15 +5,17 @@
 # auto-update by default (only official Anthropic marketplaces get that). This
 # module backs a lightweight notifier so a stale install is surfaced instead of
 # running forever unnoticed: it reads the installed plugin.json version, reads
-# a small user-global cache of the latest published GitHub release, and — when
-# the cache says a newer version exists — hands back a single notice line. Both
+# a small user-global cache keyed by independently versioned release target,
+# and — when that target's cache says a newer version exists — hands back a
+# single host-native notice line. Both
 # SessionStart and the statusline render from that SAME cache; neither makes a
 # network call on its own hot path (issue #194's constraint).
 #
 # The only network call this module makes (fetch_latest_tag) is invoked from
 # the OFF-hot-path detached refresh (see hooks/update-refresh.py, spawned by
 # session-start.py). refresh_if_stale() gates that call to at most once per
-# day via the cached `checked_at`, and is fail-silent end to end: any network
+# day per target via the cached `checked_at`, and is fail-silent end to end:
+# any network
 # error, timeout, non-200, or unparseable body degrades to "keep the last-known
 # latest" — never a traceback, never a crash of the host hook.
 #
@@ -34,18 +36,24 @@
 #   parse_version(s) -> tuple|None           numeric-tuple parse; None if malformed/absent
 #   version_gt(a, b) -> bool                 True iff semver a > b (numeric-tuple compare)
 #   update_available(installed, latest) -> bool   True iff latest > installed
-#   notice_line(installed, latest) -> str|None    the SessionStart/statusline notice text
-#   read_state(path=None) -> dict            {latest, checked_at} cache, or {} on any failure
+#   update_descriptor(host=None) -> dict|None validated host update descriptor
+#   target_state(state, host=None) -> dict    one target's cache row, or {}
+#   notice_line(installed, latest, host=None) -> str|None host-native notice text
+#   read_state(path=None) -> dict            target-keyed cache, or {} on any failure
 #   write_state(state, path=None) -> None    atomic cache write; best-effort, never raises
 #   is_stale(checked_at, now, interval=ONE_DAY) -> bool   True iff a refresh is due
-#   fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0, opener=None) -> str|None   HTTPS GET, fail-silent
-#   refresh_if_stale(now=None, fetcher=None, path=None) -> dict   best-effort cache refresh
+#   select_latest_tag(releases, tag_prefix) -> str|None target-series selection
+#   fetch_latest_tag(tag_prefix=None, url=..., timeout=3.0,
+#                    opener=None, host=None) -> str|None
+#   refresh_if_stale(now=None, fetcher=None, path=None, host=None) -> dict
 
 import json
+import math
 import os
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 
 # Reuse the ONE atomic-write helper defined in _hooklib.py (same rationale as
@@ -54,16 +62,23 @@ import urllib.request
 _HOOKS_DIR = os.path.dirname(os.path.abspath(__file__))
 if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)
-from _hooklib import get_host, write_text_atomic  # noqa: E402 — sys.path mount above
+from _hooklib import (  # noqa: E402 — sys.path mount above
+    acquire_lock,
+    get_host,
+    release_lock,
+    write_text_atomic,
+)
 # hostapi is not imported directly here (#257): plugin_root()/installed_version()
 # resolve the Host via _hooklib.get_host() (the DI seam every entry script's
 # run(host) primes via set_host()), never a fresh hostapi.load_host().
 
 ONE_DAY = 24 * 60 * 60
 
-# The repo's own GitHub Releases API — unauthenticated GET, HTTPS only (ADR-0003).
-# The release tag equals plugin.json's version (an established repo invariant).
-UPDATE_API_URL = "https://api.github.com/repos/arbiterForge/codeArbiter/releases/latest"
+# The repo's GitHub Releases collection — unauthenticated GET, HTTPS only
+# (ADR-0003). A collection is required because each host publishes an
+# independent tag series; /releases/latest can represent only one of them.
+UPDATE_API_URL = "https://api.github.com/repos/arbiterForge/codeArbiter/releases?per_page=100"
+MAX_RELEASE_PAGES = 10
 
 _VERSION_STRIP_RE = re.compile(r"^[vV]")
 
@@ -147,15 +162,52 @@ def update_available(installed, latest):
     return version_gt(latest, installed)
 
 
-def notice_line(installed, latest):
+def update_descriptor(host=None):
+    """Validated update descriptor for `host` (or the active host), else None.
+    A partially defined or multi-line descriptor disables the notifier rather
+    than falling back to another host's release series or command."""
+    host = host or get_host()
+    target = getattr(host, "update_target", None)
+    prefix = getattr(host, "update_tag_prefix", None)
+    command = getattr(host, "update_command", None)
+    if not all(isinstance(value, str) and value.strip()
+               for value in (target, prefix, command)):
+        return None
+    if not re.fullmatch(r"[a-z][a-z0-9-]*", target.strip()):
+        return None
+    if "\n" in command or "\r" in command:
+        return None
+    return {
+        "target": target.strip(),
+        "tag_prefix": prefix.strip(),
+        "command": command.strip(),
+    }
+
+
+def target_state(state, host=None):
+    """The active host target's `{latest, checked_at}` row, or {}.
+    Legacy unkeyed cache data is deliberately not attributed to any host: its
+    `latest` may belong to an unrelated release series (the RA-02 defect)."""
+    descriptor = update_descriptor(host)
+    if descriptor is None or not isinstance(state, dict) or state.get("schema") != 1:
+        return {}
+    targets = state.get("targets")
+    if not isinstance(targets, dict):
+        return {}
+    row = targets.get(descriptor["target"])
+    return row if isinstance(row, dict) else {}
+
+
+def notice_line(installed, latest, host=None):
     """The single-line SessionStart/statusline notice, or None when no update is due
-    (AC-1/AC-2): `codeArbiter: update available X -> Y (run /plugin marketplace update
-    codearbiter)`. Never multi-line; never emitted for equal, lesser, missing, or
-    malformed `latest`."""
-    if not update_available(installed, latest):
+    (AC-1/AC-2): `codeArbiter: update available X -> Y (run <host command>)`.
+    Never multi-line; never emitted for equal, lesser, missing, or malformed
+    `latest`."""
+    descriptor = update_descriptor(host)
+    if descriptor is None or not update_available(installed, latest):
         return None
     return (f"codeArbiter: update available {installed} -> {latest} "
-            f"(run /plugin marketplace update codearbiter)")
+            f"(run {descriptor['command']})")
 
 
 def read_state(path=None):
@@ -190,7 +242,10 @@ def is_stale(checked_at, now, interval=ONE_DAY):
     if checked_at is None:
         return True
     try:
-        return (now - float(checked_at)) >= interval
+        checked_at = float(checked_at)
+        if not math.isfinite(checked_at):
+            return True
+        return (now - checked_at) >= interval
     except (TypeError, ValueError):
         return True
 
@@ -220,8 +275,34 @@ def _build_opener():
     return urllib.request.build_opener(_HTTPSOnlyRedirectHandler())
 
 
-def fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0, opener=None):
-    """GET the GitHub Releases API and return `tag_name`, or None on ANY problem
+def select_latest_tag(releases, tag_prefix):
+    """Highest stable numeric version in `releases` for exact `tag_prefix`.
+    Drafts, prereleases, malformed rows, and every sibling series are ignored."""
+    if not isinstance(releases, list) or not isinstance(tag_prefix, str) or not tag_prefix:
+        return None
+    selected = None
+    selected_tuple = None
+    for release in releases:
+        if not isinstance(release, dict) or release.get("draft") or release.get("prerelease"):
+            continue
+        tag = release.get("tag_name")
+        if not isinstance(tag, str) or not tag.startswith(tag_prefix):
+            continue
+        version = tag[len(tag_prefix):]
+        if not re.fullmatch(r"\d+(?:\.\d+)*", version):
+            continue
+        parsed = parse_version(version)
+        if parsed is not None and (selected_tuple is None or parsed > selected_tuple):
+            selected = version
+            selected_tuple = parsed
+    return selected
+
+
+def fetch_latest_tag(tag_prefix=None, url=UPDATE_API_URL, timeout=3.0,
+                     opener=None, host=None):
+    """GET bounded pages of the GitHub Releases API and return the active
+    series' highest stable numeric version, or
+    None on ANY problem
     (AC-5): non-https url, network error, timeout, non-200, an unparseable/absent
     body, or a redirect to a non-https target. HTTPS-only per ADR-0003 — a
     non-https INITIAL url is refused before any connection is attempted, and a
@@ -229,27 +310,54 @@ def fetch_latest_tag(url=UPDATE_API_URL, timeout=3.0, opener=None):
     since urllib's default opener would otherwise follow an https->http
     downgrade transparently). `opener` is injectable (tests); production builds
     the hardened opener via `_build_opener()`."""
-    if not isinstance(url, str) or not url.lower().startswith("https://"):
+    if tag_prefix is None:
+        descriptor = update_descriptor(host)
+        tag_prefix = descriptor.get("tag_prefix") if descriptor else None
+    if (not isinstance(tag_prefix, str) or not tag_prefix
+            or not isinstance(url, str) or not url.lower().startswith("https://")):
         return None
     try:
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "codeArbiter-update-check",
-            "Accept": "application/vnd.github+json",
-        })
         op = opener or _build_opener()
-        with op.open(req, timeout=timeout) as resp:
-            status = getattr(resp, "status", None) or getattr(resp, "code", None)
-            if status != 200:
+        parsed_url = urllib.parse.urlsplit(url)
+        query = dict(urllib.parse.parse_qsl(parsed_url.query, keep_blank_values=True))
+        try:
+            page_size = int(query.get("per_page", "100"))
+        except (TypeError, ValueError):
+            page_size = 100
+        if page_size < 1:
+            page_size = 100
+
+        releases = []
+        for page in range(1, MAX_RELEASE_PAGES + 1):
+            page_query = dict(query)
+            page_query["page"] = str(page)
+            page_url = urllib.parse.urlunsplit(parsed_url._replace(
+                query=urllib.parse.urlencode(page_query)))
+            req = urllib.request.Request(page_url, headers={
+                "User-Agent": "codeArbiter-update-check",
+                "Accept": "application/vnd.github+json",
+            })
+            with op.open(req, timeout=timeout) as resp:
+                status = getattr(resp, "status", None) or getattr(resp, "code", None)
+                if status != 200:
+                    return None
+                body = resp.read()
+            page_data = json.loads(body.decode("utf-8", "replace"))
+            if not isinstance(page_data, list):
                 return None
-            body = resp.read()
-        data = json.loads(body.decode("utf-8", "replace"))
-        tag = data.get("tag_name") if isinstance(data, dict) else None
-        return tag.strip() if isinstance(tag, str) and tag.strip() else None
+            releases.extend(page_data)
+            if len(page_data) < page_size:
+                break
+        else:
+            # Every bounded page was full, so more releases may exist. Do not
+            # cache a result whose series enumeration is known to be incomplete.
+            return None
+        return select_latest_tag(releases, tag_prefix)
     except Exception:  # noqa: BLE001 — AC-5: fail-silent on any network/parse error
         return None
 
 
-def refresh_if_stale(now=None, fetcher=None, path=None):
+def refresh_if_stale(now=None, fetcher=None, path=None, host=None):
     """Best-effort, once-daily, fail-silent cache refresh (AC-3/AC-4/AC-5).
 
     Reads the cache; if `checked_at` is still fresh (is_stale() False), returns it
@@ -262,17 +370,55 @@ def refresh_if_stale(now=None, fetcher=None, path=None):
     now = time.time() if now is None else now
     path = path or state_path()
     state = read_state(path)
-    checked_at = state.get("checked_at") if isinstance(state, dict) else None
+    descriptor = update_descriptor(host)
+    if descriptor is None:
+        return state
+    row = target_state(state, host=host)
+    checked_at = row.get("checked_at")
     if not is_stale(checked_at, now):
         return state
-    fetch = fetcher or fetch_latest_tag
+    fetch = fetcher or (lambda: fetch_latest_tag(
+        tag_prefix=descriptor["tag_prefix"], host=host))
     try:
         latest = fetch()
     except Exception:  # noqa: BLE001 — AC-3/AC-5: never propagate a fetch failure
         latest = None
-    new_state = {
-        "latest": latest if latest else state.get("latest"),
-        "checked_at": now,
-    }
-    write_state(new_state, path)
-    return new_state
+    lock = acquire_lock(path)
+    if lock is None:
+        return read_state(path)
+    try:
+        # Re-read under the write lock. Another independently versioned host
+        # may have refreshed while this process was waiting on GitHub; merging
+        # the pre-fetch snapshot would silently erase that target's row.
+        current = read_state(path)
+        current_row = target_state(current, host=host)
+        prior_targets = current.get("targets") if isinstance(current, dict) else None
+        targets = dict(prior_targets) if isinstance(prior_targets, dict) else {}
+
+        current_latest = current_row.get("latest")
+        if parse_version(latest) is None:
+            merged_latest = current_latest
+        elif (parse_version(current_latest) is not None
+              and version_gt(current_latest, latest)):
+            merged_latest = current_latest
+        else:
+            merged_latest = latest
+
+        current_checked_at = current_row.get("checked_at")
+        finite_checked_at = []
+        for value in (current_checked_at, now):
+            try:
+                value = float(value)
+            except (TypeError, ValueError):
+                continue
+            if math.isfinite(value):
+                finite_checked_at.append(value)
+        targets[descriptor["target"]] = {
+            "latest": merged_latest,
+            "checked_at": max(finite_checked_at) if finite_checked_at else None,
+        }
+        new_state = {"schema": 1, "targets": targets}
+        write_state(new_state, path)
+        return new_state
+    finally:
+        release_lock(lock)

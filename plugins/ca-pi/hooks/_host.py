@@ -11,7 +11,10 @@ import hostapi  # noqa: E402
 class PiHost(hostapi.Host):
     name = "pi"
     adapter_name = "@arbiterforge/ca-pi"
-    adapter_version = "0.8.5"
+    adapter_version = "0.8.6"
+    update_target = "ca-pi"
+    update_tag_prefix = "ca-pi-v"
+    update_command = "pi update npm:@arbiterforge/ca-pi"
     command_noun = "command"
     has_statusline = False
     has_read_tool = True

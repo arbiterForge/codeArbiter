@@ -431,7 +431,7 @@ def seg_update(plugin=None):
     try:
         plugin = plugin if plugin is not None else plugin_root_for_render()
         state = _updatelib.read_state(_updatelib.state_path())
-        latest = state.get("latest") if isinstance(state, dict) else None
+        latest = _updatelib.target_state(state).get("latest")
         installed = _updatelib.installed_version(plugin)
         if not _updatelib.update_available(installed, latest):
             return None

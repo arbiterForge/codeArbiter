@@ -1270,7 +1270,9 @@ class TestUpdateNoticeLine(unittest.TestCase):
 
     def _write_cache(self, latest, checked_at=1000.0):
         with open(self.state_path, "w") as f:
-            json.dump({"latest": latest, "checked_at": checked_at}, f)
+            json.dump({"schema": 1, "targets": {
+                "ca": {"latest": latest, "checked_at": checked_at},
+            }}, f)
 
     def test_ac1_newer_cached_latest_yields_notice(self):
         self._write_cache("2.10.0")

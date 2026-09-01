@@ -26,6 +26,13 @@ import _updatelib as U
 from _helpers import redirect_home, restore_home
 
 
+class _FakeUpdateHost:
+    def __init__(self, target="ca", prefix="v", command="update ca"):
+        self.update_target = target
+        self.update_tag_prefix = prefix
+        self.update_command = command
+
+
 # =========================================================================== version parsing / compare (AC-6)
 class TestParseVersion(unittest.TestCase):
 
@@ -116,6 +123,23 @@ class TestNoticeLine(unittest.TestCase):
     def test_malformed_latest_no_notice(self):
         self.assertIsNone(U.notice_line("2.9.0", "garbage"))
 
+    def test_notice_uses_the_active_hosts_native_update_command(self):
+        hosts = (
+            _FakeUpdateHost("ca", "v", "/plugin marketplace update codearbiter"),
+            _FakeUpdateHost("ca-codex", "ca-codex-v",
+                            "codex plugin add ca-codex@codearbiter"),
+            _FakeUpdateHost("ca-pi", "ca-pi-v",
+                            "pi update npm:@arbiterforge/ca-pi"),
+        )
+        for host in hosts:
+            with self.subTest(target=host.update_target):
+                line = U.notice_line("0.7.4", "0.7.5", host=host)
+                self.assertIn(f"(run {host.update_command})", line)
+
+    def test_unknown_host_descriptor_suppresses_notice(self):
+        self.assertIsNone(U.notice_line(
+            "1.0.0", "9.0.0", host=_FakeUpdateHost(target=None, prefix=None, command=None)))
+
 
 # =========================================================================== cache read/write + is_stale (AC-4)
 class TestStateCache(unittest.TestCase):
@@ -162,6 +186,16 @@ class TestStateCache(unittest.TestCase):
         except Exception as e:  # noqa: BLE001
             self.fail(f"write_state raised: {e}")
 
+    def test_legacy_unkeyed_cache_is_not_attributed_to_any_host(self):
+        legacy = {"latest": "2.15.6", "checked_at": 1000.0}
+        self.assertEqual(U.target_state(legacy, host=_FakeUpdateHost("ca", "v")), {})
+        self.assertEqual(
+            U.target_state(legacy, host=_FakeUpdateHost("ca-codex", "ca-codex-v")), {})
+
+    def test_malformed_target_rows_degrade_to_empty(self):
+        state = {"schema": 1, "targets": {"ca": "not-an-object"}}
+        self.assertEqual(U.target_state(state, host=_FakeUpdateHost("ca", "v")), {})
+
 
 class TestIsStale(unittest.TestCase):
 
@@ -183,6 +217,10 @@ class TestIsStale(unittest.TestCase):
 
     def test_malformed_checked_at_is_stale(self):
         self.assertTrue(U.is_stale("not-a-number", now=1_000_000))
+
+    def test_non_finite_checked_at_is_stale(self):
+        self.assertTrue(U.is_stale(float("nan"), now=1_000_000))
+        self.assertTrue(U.is_stale(float("inf"), now=1_000_000))
 
 
 # =========================================================================== fetch_latest_tag (AC-5)
@@ -220,6 +258,8 @@ class _FakeOpener:
         self.calls.append((req, timeout))
         if self.exc is not None:
             raise self.exc
+        if isinstance(self.resp, list):
+            return self.resp.pop(0)
         return self.resp
 
 
@@ -232,10 +272,95 @@ class TestFetchLatestTag(unittest.TestCase):
         self.assertIsNone(result)
         self.assertEqual(opener.calls, [], "a non-https url must never reach the opener")
 
-    def test_success_parses_tag_name(self):
-        body = json.dumps({"tag_name": "2.10.0"}).encode("utf-8")
+    def test_success_selects_only_the_active_release_series(self):
+        body = json.dumps([
+            {"tag_name": "ca-pi-v0.8.5"},
+            {"tag_name": "ca-codex-v0.7.5"},
+            {"tag_name": "v2.15.6"},
+            {"tag_name": "ca-sandbox-v1.4.0"},
+        ]).encode("utf-8")
         opener = _FakeOpener(resp=_FakeResp(status=200, body=body))
-        self.assertEqual(U.fetch_latest_tag(opener=opener), "2.10.0")
+        self.assertEqual(U.fetch_latest_tag(tag_prefix="ca-codex-v", opener=opener),
+                         "0.7.5")
+
+    def test_target_series_is_found_beyond_the_first_release_page(self):
+        first_page = json.dumps([
+            {"tag_name": f"v2.{minor}.0"} for minor in range(100)
+        ]).encode("utf-8")
+        second_page = json.dumps([
+            {"tag_name": "ca-codex-v0.7.5"},
+        ]).encode("utf-8")
+        opener = _FakeOpener(resp=[
+            _FakeResp(status=200, body=first_page),
+            _FakeResp(status=200, body=second_page),
+        ])
+
+        self.assertEqual(
+            U.fetch_latest_tag(tag_prefix="ca-codex-v", opener=opener),
+            "0.7.5",
+        )
+        self.assertEqual(len(opener.calls), 2)
+        self.assertIn("page=2", opener.calls[1][0].full_url)
+
+    def test_incomplete_later_page_does_not_cache_a_partial_series_result(self):
+        first_page = json.dumps(
+            [{"tag_name": "ca-codex-v0.7.5"}]
+            + [{"tag_name": f"v2.{minor}.0"} for minor in range(99)]
+        ).encode("utf-8")
+        invalid_second_pages = [
+            _FakeResp(status=500, body=b"[]"),
+            _FakeResp(status=200, body=b"{}"),
+        ]
+
+        for invalid_page in invalid_second_pages:
+            with self.subTest(status=invalid_page.status, body=invalid_page._body):
+                opener = _FakeOpener(resp=[
+                    _FakeResp(status=200, body=first_page),
+                    invalid_page,
+                ])
+                self.assertIsNone(U.fetch_latest_tag(
+                    tag_prefix="ca-codex-v", opener=opener))
+
+    def test_page_bound_does_not_cache_a_known_incomplete_enumeration(self):
+        full_page = json.dumps(
+            [{"tag_name": "ca-codex-v0.7.5"}]
+            + [{"tag_name": f"v2.{minor}.0"} for minor in range(99)]
+        ).encode("utf-8")
+        opener = _FakeOpener(resp=[
+            _FakeResp(status=200, body=full_page)
+            for _ in range(U.MAX_RELEASE_PAGES)
+        ])
+
+        self.assertIsNone(U.fetch_latest_tag(
+            tag_prefix="ca-codex-v", opener=opener))
+        self.assertEqual(len(opener.calls), U.MAX_RELEASE_PAGES)
+
+    def test_simultaneous_release_series_ignore_every_unrelated_tag(self):
+        releases = [
+            {"tag_name": "v2.15.6"},
+            {"tag_name": "ca-codex-v0.7.5"},
+            {"tag_name": "ca-pi-v0.8.5"},
+            {"tag_name": "ca-sandbox-v1.4.0"},
+            {"tag_name": "ca-codex-v0.7.4"},
+        ]
+        expected = {
+            "v": "2.15.6",
+            "ca-codex-v": "0.7.5",
+            "ca-pi-v": "0.8.5",
+            "ca-sandbox-v": "1.4.0",
+        }
+        for prefix, version in expected.items():
+            with self.subTest(prefix=prefix):
+                self.assertEqual(U.select_latest_tag(releases, prefix), version)
+
+    def test_drafts_prereleases_and_malformed_tags_are_not_selected(self):
+        releases = [
+            {"tag_name": "ca-codex-v9.0.0", "draft": True},
+            {"tag_name": "ca-codex-v8.0.0", "prerelease": True},
+            {"tag_name": "ca-codex-vnot-semver"},
+            {"tag_name": "ca-codex-v0.7.5"},
+        ]
+        self.assertEqual(U.select_latest_tag(releases, "ca-codex-v"), "0.7.5")
 
     def test_network_error_fails_silent(self):
         import urllib.error
@@ -256,7 +381,7 @@ class TestFetchLatestTag(unittest.TestCase):
         self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
     def test_missing_tag_name_fails_silent(self):
-        body = json.dumps({"no_tag": True}).encode("utf-8")
+        body = json.dumps([{"no_tag": True}]).encode("utf-8")
         opener = _FakeOpener(resp=_FakeResp(status=200, body=body))
         self.assertIsNone(U.fetch_latest_tag(opener=opener))
 
@@ -265,7 +390,7 @@ class TestFetchLatestTag(unittest.TestCase):
         # HTTPS-only-redirect-hardened factory — not a bare urllib.request.urlopen.
         with mock.patch.object(U, "_build_opener",
                                 return_value=_FakeOpener(resp=_FakeResp(
-                                    body=json.dumps({"tag_name": "2.9.0"}).encode()))) as m:
+                                    body=json.dumps([{"tag_name": "v2.9.0"}]).encode()))) as m:
             self.assertEqual(U.fetch_latest_tag(), "2.9.0")
             m.assert_called_once()
 
@@ -331,13 +456,16 @@ class TestRefreshIfStale(unittest.TestCase):
 
         state = U.refresh_if_stale(now=2_000_000, fetcher=fetcher, path=self.path)
         self.assertEqual(len(calls), 1)
-        self.assertEqual(state["latest"], "2.10.0")
-        self.assertEqual(state["checked_at"], 2_000_000)
+        target = U.target_state(state)
+        self.assertEqual(target["latest"], "2.10.0")
+        self.assertEqual(target["checked_at"], 2_000_000)
         self.assertEqual(U.read_state(self.path), state)
 
     def test_ac4_fresh_cache_same_day_makes_no_fetch_call(self):
         first_now = 2_000_000
-        U.write_state({"latest": "2.9.0", "checked_at": first_now}, self.path)
+        U.write_state({"schema": 1, "targets": {
+            "ca": {"latest": "2.9.0", "checked_at": first_now},
+        }}, self.path)
 
         calls = []
 
@@ -348,8 +476,9 @@ class TestRefreshIfStale(unittest.TestCase):
         second_now = first_now + 3600  # same day, well under ONE_DAY
         state = U.refresh_if_stale(now=second_now, fetcher=fetcher, path=self.path)
         self.assertEqual(calls, [], "a fresh cache must make NO network call")
-        self.assertEqual(state["latest"], "2.9.0")
-        self.assertEqual(state["checked_at"], first_now, "checked_at unchanged on no-op")
+        target = U.target_state(state)
+        self.assertEqual(target["latest"], "2.9.0")
+        self.assertEqual(target["checked_at"], first_now, "checked_at unchanged on no-op")
 
     def test_ac3_fetcher_raising_does_not_propagate(self):
         def bad_fetcher():
@@ -361,24 +490,93 @@ class TestRefreshIfStale(unittest.TestCase):
             self.fail(f"refresh_if_stale must fail-silent, raised: {e}")
         # Cache is still updated (checked_at) so we don't retry every session;
         # latest stays whatever it was before (nothing, here).
-        self.assertIsNone(state.get("latest"))
-        self.assertEqual(state["checked_at"], 3_000_000)
+        target = U.target_state(state)
+        self.assertIsNone(target.get("latest"))
+        self.assertEqual(target["checked_at"], 3_000_000)
 
     def test_fetcher_raising_preserves_prior_latest(self):
-        U.write_state({"latest": "2.9.0", "checked_at": 1_000}, self.path)
+        U.write_state({"schema": 1, "targets": {
+            "ca": {"latest": "2.9.0", "checked_at": 1_000},
+        }}, self.path)
 
         def bad_fetcher():
             raise OSError("network unreachable")
 
         now = 1_000 + U.ONE_DAY + 1
         state = U.refresh_if_stale(now=now, fetcher=bad_fetcher, path=self.path)
-        self.assertEqual(state["latest"], "2.9.0", "a failed refresh keeps the last-known latest")
+        self.assertEqual(U.target_state(state)["latest"], "2.9.0",
+                         "a failed refresh keeps the last-known latest")
 
     def test_fetcher_returning_none_preserves_prior_latest(self):
-        U.write_state({"latest": "2.9.0", "checked_at": 1_000}, self.path)
+        U.write_state({"schema": 1, "targets": {
+            "ca": {"latest": "2.9.0", "checked_at": 1_000},
+        }}, self.path)
         now = 1_000 + U.ONE_DAY + 1
         state = U.refresh_if_stale(now=now, fetcher=lambda: None, path=self.path)
-        self.assertEqual(state["latest"], "2.9.0")
+        self.assertEqual(U.target_state(state)["latest"], "2.9.0")
+
+    def test_each_target_has_an_independent_freshness_and_latest_value(self):
+        codex = _FakeUpdateHost("ca-codex", "ca-codex-v", "codex update")
+        pi = _FakeUpdateHost("ca-pi", "ca-pi-v", "pi update")
+        U.refresh_if_stale(now=1_000, fetcher=lambda: "0.7.5",
+                           path=self.path, host=codex)
+        calls = []
+        state = U.refresh_if_stale(
+            now=1_001, fetcher=lambda: calls.append(1) or "0.8.5",
+            path=self.path, host=pi)
+        self.assertEqual(calls, [1], "a fresh Codex row must not suppress Pi's refresh")
+        self.assertEqual(U.target_state(state, host=codex),
+                         {"latest": "0.7.5", "checked_at": 1_000})
+        self.assertEqual(U.target_state(state, host=pi),
+                         {"latest": "0.8.5", "checked_at": 1_001})
+
+    def test_legacy_cache_refresh_migrates_without_reusing_unrelated_latest(self):
+        U.write_state({"latest": "2.15.6", "checked_at": 999}, self.path)
+        codex = _FakeUpdateHost("ca-codex", "ca-codex-v", "codex update")
+        state = U.refresh_if_stale(now=1_000, fetcher=lambda: None,
+                                   path=self.path, host=codex)
+        self.assertIsNone(U.target_state(state, host=codex).get("latest"))
+        self.assertNotIn("latest", state)
+
+    def test_target_written_during_fetch_is_preserved_by_the_final_merge(self):
+        codex = _FakeUpdateHost("ca-codex", "ca-codex-v", "codex update")
+        claude = _FakeUpdateHost("ca", "v", "claude update")
+
+        def fetcher():
+            U.write_state({"schema": 1, "targets": {
+                "ca": {"latest": "2.15.7", "checked_at": 2_000},
+            }}, self.path)
+            return "0.7.6"
+
+        state = U.refresh_if_stale(now=2_001, fetcher=fetcher,
+                                   path=self.path, host=codex)
+        self.assertEqual(U.target_state(state, host=claude),
+                         {"latest": "2.15.7", "checked_at": 2_000})
+        self.assertEqual(U.target_state(state, host=codex),
+                         {"latest": "0.7.6", "checked_at": 2_001})
+        self.assertEqual(U.read_state(self.path), state)
+
+    def test_newer_same_target_refresh_is_not_overwritten_out_of_order(self):
+        codex = _FakeUpdateHost("ca-codex", "ca-codex-v", "codex update")
+
+        def slower_older_fetcher():
+            U.write_state({"schema": 1, "targets": {
+                "ca-codex": {"latest": "0.7.6", "checked_at": 1_001},
+            }}, self.path)
+            return "0.7.5"
+
+        state = U.refresh_if_stale(
+            now=1_000,
+            fetcher=slower_older_fetcher,
+            path=self.path,
+            host=codex,
+        )
+
+        self.assertEqual(U.target_state(state, host=codex), {
+            "latest": "0.7.6",
+            "checked_at": 1_001,
+        })
+        self.assertEqual(U.read_state(self.path), state)
 
 
 # =========================================================================== installed_version / plugin_root

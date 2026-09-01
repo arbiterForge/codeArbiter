@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.6] - 2026-09-01
+
+### Fixed
+
+- The update notifier now ignores unrelated release series, keeps `ca-pi-v*`
+  state independent from Claude and Codex, and emits Pi's native package
+  update command.
+
 ## [0.8.5] - 2026-08-26
 
 ### Changed

@@ -253,18 +253,23 @@ This supersedes the prior parse-time check that covered only `plan.meta.apiBaseU
 
 **Outbound surface — the update-available notifier.** The update-notifier
 (`plugins/ca/hooks/_updatelib.py`, run detached by `update-refresh.py`) makes one
-outbound call: an **unauthenticated HTTPS GET** to
-`https://api.github.com/repos/arbiterForge/codeArbiter/releases/latest`, at most
-once per day (cached in the user-global `~/.codearbiter/update-state.json`). It is
-the plugin's only routine outbound call outside the farm dispatcher. Posture per
-ADR-0003: `https://` is asserted on the initial URL *and* re-asserted on any 3xx
-via a custom redirect handler that refuses an `https://`→`http://` downgrade;
+outbound operation: bounded **unauthenticated HTTPS GETs** to the GitHub Releases
+collection (`/repos/arbiterForge/codeArbiter/releases?per_page=100`), at most once
+per day for each independently versioned release target. A refresh follows at
+most ten collection pages (up to 1,000 recent releases) so quiet host series can
+be found beyond the first page; exhausting that bound produces no new cached
+result rather than trusting a partial enumeration. Target-keyed results are cached in the user-global
+`~/.codearbiter/update-state.json`; unrelated tag prefixes are ignored. It is the
+plugin's only routine outbound operation outside the farm dispatcher. Posture
+per ADR-0003: `https://` is asserted on the initial URL *and* re-asserted on any
+3xx via a custom redirect handler that refuses an `https://`→`http://` downgrade;
 stdlib `urllib` only (ADR-0004), default verifying TLS, no `rejectUnauthorized`
 equivalent. It **sends no repo content, no PII, and no secret** (User-Agent +
 Accept headers only) and is **fail-silent** — any network/parse/cache error
-degrades to "no notice" and never raises into the SessionStart or statusline hook.
-It adds **no synchronous network call** to the SessionStart hot path (those hooks
-only read the cache; the fetch runs in the detached refresh child).
+degrades to the last known target-specific result or "no notice" and never
+raises into the SessionStart or statusline hook. It adds **no synchronous network
+call** to the SessionStart hot path (those hooks only read the cache; the fetch
+runs in the detached refresh child).
 
 ---
 
