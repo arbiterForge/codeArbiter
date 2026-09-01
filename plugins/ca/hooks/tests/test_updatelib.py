@@ -575,6 +575,30 @@ class TestRefreshIfStale(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(len(results), 2)
 
+    def test_lock_acquisition_failure_suppresses_fetch(self):
+        calls = []
+        with mock.patch.object(U, "acquire_lock", return_value=None):
+            state = U.refresh_if_stale(
+                now=2_000_000,
+                fetcher=lambda: calls.append(1) or "2.10.0",
+                path=self.path,
+            )
+
+        self.assertEqual(calls, [])
+        self.assertEqual(state, {})
+
+    def test_failed_reservation_persistence_suppresses_fetch(self):
+        calls = []
+        with mock.patch.object(U, "write_state", return_value=None):
+            state = U.refresh_if_stale(
+                now=2_000_000,
+                fetcher=lambda: calls.append(1) or "2.10.0",
+                path=self.path,
+            )
+
+        self.assertEqual(calls, [])
+        self.assertEqual(state, {})
+
     def test_legacy_cache_refresh_migrates_without_reusing_unrelated_latest(self):
         U.write_state({"latest": "2.15.6", "checked_at": 999}, self.path)
         codex = _FakeUpdateHost("ca-codex", "ca-codex-v", "codex update")
