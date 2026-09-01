@@ -14,6 +14,7 @@ import json
 import os
 import sys
 import tempfile
+import threading
 import unittest
 import urllib.request
 from unittest import mock
@@ -529,6 +530,50 @@ class TestRefreshIfStale(unittest.TestCase):
                          {"latest": "0.7.5", "checked_at": 1_000})
         self.assertEqual(U.target_state(state, host=pi),
                          {"latest": "0.8.5", "checked_at": 1_001})
+
+    def test_concurrent_same_target_refresh_runs_only_one_fetcher(self):
+        first_fetch_entered = threading.Event()
+        release_first_fetch = threading.Event()
+        second_refresh_done = threading.Event()
+        calls = []
+        results = []
+        errors = []
+
+        def fetcher():
+            calls.append(1)
+            if len(calls) == 1:
+                first_fetch_entered.set()
+                if not release_first_fetch.wait(timeout=5):
+                    raise TimeoutError("test did not release first fetch")
+            return "2.10.0"
+
+        def refresh(done=None):
+            try:
+                results.append(U.refresh_if_stale(
+                    now=2_000_000, fetcher=fetcher, path=self.path))
+            except Exception as exc:  # noqa: BLE001
+                errors.append(exc)
+            finally:
+                if done is not None:
+                    done.set()
+
+        first = threading.Thread(target=refresh)
+        first.start()
+        self.assertTrue(first_fetch_entered.wait(timeout=5))
+
+        second = threading.Thread(target=refresh, args=(second_refresh_done,))
+        second.start()
+        self.assertTrue(second_refresh_done.wait(timeout=5))
+        self.assertEqual(len(calls), 1,
+                         "a same-target refresh reservation must suppress a racing fetch")
+
+        release_first_fetch.set()
+        first.join(timeout=5)
+        second.join(timeout=5)
+        self.assertFalse(first.is_alive())
+        self.assertFalse(second.is_alive())
+        self.assertEqual(errors, [])
+        self.assertEqual(len(results), 2)
 
     def test_legacy_cache_refresh_migrates_without_reusing_unrelated_latest(self):
         U.write_state({"latest": "2.15.6", "checked_at": 999}, self.path)
