@@ -885,7 +885,7 @@ def update_notice_line(plugin):
     no network call itself."""
     try:
         state = _updatelib.read_state(_updatelib.state_path())
-        latest = state.get("latest") if isinstance(state, dict) else None
+        latest = _updatelib.target_state(state).get("latest")
         installed = _updatelib.installed_version(plugin)
         return _updatelib.notice_line(installed, latest) or ""
     except Exception:  # noqa: BLE001 — never crash session startup

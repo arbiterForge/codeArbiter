@@ -234,7 +234,16 @@ class Host:
 
     name = "claude"
     adapter_name = "ca"
-    adapter_version = "2.15.6"
+    adapter_version = "2.15.7"
+
+    # Update-notifier descriptor. Each independently versioned host overrides
+    # these three values in its per-plugin _host.py. Keeping the target,
+    # release prefix, and remediation command together on the active Host
+    # prevents the shared notifier from comparing or instructing for a sibling
+    # product line (RA-02).
+    update_target = "ca"
+    update_tag_prefix = "v"
+    update_command = "/plugin marketplace update codearbiter"
 
     # Capability flags — what surfaces this host actually has. A hook that
     # heals/queries a statusline gates on has_statusline; a hook registered
@@ -509,6 +518,9 @@ class FailClosedHost(Host):
     silent (observability-002)."""
 
     name = "unknown"
+    update_target = None
+    update_tag_prefix = None
+    update_command = None
     has_statusline = False
     has_read_tool = False
     has_prunable_transcript = False

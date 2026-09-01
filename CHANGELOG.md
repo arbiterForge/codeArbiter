@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.7] - 2026-09-01
+
+### Fixed
+
+- Update notices now select only the Claude `v*` release series, keep cache
+  freshness and latest-version state separate from Codex and Pi, and retain
+  the Claude marketplace update command.
+
 ## [2.15.6] - 2026-08-26
 
 ### Changed

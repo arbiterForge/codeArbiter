@@ -172,9 +172,13 @@ def parse_apply_patch(text):
 class CodexHost(hostapi.Host):
     """OpenAI Codex CLI (>= rust-v0.143.0) — the second host (ADR-0011)."""
 
+    update_target = "ca-codex"
+    update_tag_prefix = "ca-codex-v"
+    update_command = "codex plugin add ca-codex@codearbiter"
+
     name = "codex"
     adapter_name = "ca-codex"
-    adapter_version = "0.7.5"
+    adapter_version = "0.7.6"
     command_noun = "command"
     has_statusline = False   # no statusline surface exists on Codex
     has_read_tool = False    # no read tool; file reads happen via shell

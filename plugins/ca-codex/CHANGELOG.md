@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-09-01
+
+### Fixed
+
+- The update notifier now ignores Claude, Pi, and sandbox tags, caches the
+  `ca-codex-v*` series independently, and points users to Codex's native
+  plugin reinstall command.
+
 ## [0.7.5] - 2026-08-26
 
 ### Added

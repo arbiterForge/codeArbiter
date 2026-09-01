@@ -871,7 +871,9 @@ class TestSegUpdate(unittest.TestCase):
 
     def _write_cache(self, latest):
         with open(self.state_path, "w") as f:
-            json.dump({"latest": latest, "checked_at": 1000.0}, f)
+            json.dump({"schema": 1, "targets": {
+                "ca": {"latest": latest, "checked_at": 1000.0},
+            }}, f)
 
     def test_ac1_newer_cached_latest_renders_marker(self):
         self._write_cache("2.10.0")
