@@ -211,9 +211,9 @@ def notice_line(installed, latest, host=None):
 
 
 def read_state(path=None):
-    """The cached `{latest, checked_at}` state, or {} on ANY failure (missing file,
-    corrupt JSON, non-dict content) — a corrupt cache degrades to 'no notice', never
-    a crash of the host hook."""
+    """The target-keyed cache state, or {} on ANY failure (missing file, corrupt
+    JSON, non-dict content) — a corrupt cache degrades to 'no notice', never a
+    crash of the host hook."""
     path = path or state_path()
     try:
         with open(path, encoding="utf-8") as f:
@@ -360,23 +360,57 @@ def fetch_latest_tag(tag_prefix=None, url=UPDATE_API_URL, timeout=3.0,
 def refresh_if_stale(now=None, fetcher=None, path=None, host=None):
     """Best-effort, once-daily, fail-silent cache refresh (AC-3/AC-4/AC-5).
 
-    Reads the cache; if `checked_at` is still fresh (is_stale() False), returns it
-    UNCHANGED and calls the fetcher NOT AT ALL (AC-4 — at most one fetch per day).
-    Otherwise calls `fetcher()` (default fetch_latest_tag): on success the new
+    Reads the cache under the write lock; if `checked_at` is still fresh
+    (is_stale() False), returns it UNCHANGED and calls the fetcher NOT AT ALL.
+    Otherwise it reserves that target's daily refresh before releasing the lock,
+    so a concurrent same-target process observes a fresh row and also makes no
+    call (AC-4 — at most one fetch per day). It then calls `fetcher()` (default
+    fetch_latest_tag): on success the new
     `latest` is cached; on ANY exception or a None/falsy return, the PRIOR `latest`
     is preserved (fail-silent — a network hiccup never blanks a known-good notice)
     and `checked_at` still advances, so a persistently-unreachable network is not
     retried every single session that day. Never raises (AC-3)."""
     now = time.time() if now is None else now
     path = path or state_path()
-    state = read_state(path)
     descriptor = update_descriptor(host)
     if descriptor is None:
-        return state
-    row = target_state(state, host=host)
-    checked_at = row.get("checked_at")
-    if not is_stale(checked_at, now):
-        return state
+        return read_state(path)
+
+    # Reserve this target's refresh under the cache lock before any network
+    # work. Without the re-read and reservation here, concurrent detached
+    # SessionStart refreshes can all observe the same stale row and each issue
+    # a bounded release-page fetch before the later merge lock serializes them.
+    try:
+        reservation_at = float(now)
+    except (TypeError, ValueError):
+        return read_state(path)
+    if not math.isfinite(reservation_at):
+        return read_state(path)
+
+    lock = acquire_lock(path)
+    if lock is None:
+        return read_state(path)
+    try:
+        current = read_state(path)
+        current_row = target_state(current, host=host)
+        if not is_stale(current_row.get("checked_at"), reservation_at):
+            return current
+        prior_targets = current.get("targets") if isinstance(current, dict) else None
+        targets = dict(prior_targets) if isinstance(prior_targets, dict) else {}
+        targets[descriptor["target"]] = {
+            "latest": current_row.get("latest"),
+            "checked_at": reservation_at,
+        }
+        reserved_state = {"schema": 1, "targets": targets}
+        write_state(reserved_state, path)
+        confirmed_row = target_state(read_state(path), host=host)
+        if confirmed_row.get("checked_at") != reservation_at:
+            # A failed reservation cannot safely authorize network egress. The
+            # notifier remains fail-silent and will retry on a later session.
+            return read_state(path)
+    finally:
+        release_lock(lock)
+
     fetch = fetcher or (lambda: fetch_latest_tag(
         tag_prefix=descriptor["tag_prefix"], host=host))
     try:
