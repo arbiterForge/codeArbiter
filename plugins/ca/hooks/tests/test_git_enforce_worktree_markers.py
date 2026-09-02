@@ -60,7 +60,22 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
         subprocess.run(
             ["git", "-C", main_root, "worktree", "add", "-q", "-b", "test-linked",
              worktree_root], check=True, timeout=30)
-        return main_root.replace("\\", "/"), worktree_root
+        return os.path.realpath(main_root).replace("\\", "/"), worktree_root
+
+    def test_linked_root_fixture_canonicalizes_symlink_parent(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            real_parent = os.path.join(temporary, "real-parent")
+            alias_parent = os.path.join(temporary, "alias-parent")
+            os.makedirs(real_parent)
+            try:
+                os.symlink(real_parent, alias_parent, target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"directory symlink unavailable: {error}")
+
+            main_root, _worktree_root = self._linked_roots(alias_parent)
+
+            expected = os.path.realpath(os.path.join(real_parent, "main")).replace("\\", "/")
+            self.assertEqual(main_root, expected)
 
     def test_plain_repo_keeps_security_marker_under_operation_root(self):
         with tempfile.TemporaryDirectory() as plain_root:

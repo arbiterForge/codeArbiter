@@ -608,6 +608,35 @@ class TestCheckGitHookBackstop(unittest.TestCase):
                         for level, line in doctor.results),
                     f"doctor did not prove Git hook execution in {checkout}: {doctor.results}")
 
+    def test_live_backstop_treats_checkout_alias_and_linked_common_dir_as_one_identity(self):
+        doctor.subprocess.run(
+            ["git", "add", ".codearbiter/CONTEXT.md"], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        seed = doctor.subprocess.run(
+            ["git", "commit", "-q", "-m", "seed"], cwd=self.root,
+            capture_output=True, text=True)
+        self.assertEqual(seed.returncode, 0, seed.stderr + seed.stdout)
+
+        alias = os.path.join(self.tmp.name, "repo-alias")
+        try:
+            os.symlink(self.root, alias, target_is_directory=True)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"directory symlink unavailable: {error}")
+        self._install_live_backstop(alias)
+        linked = os.path.join(self.tmp.name, "linked-via-canonical-root")
+        doctor.subprocess.run(
+            ["git", "worktree", "add", "-q", "-b", "feat/linked-alias", linked],
+            cwd=self.root, check=True, capture_output=True, text=True)
+
+        _reset()
+        doctor.check_git_hook_freshness(linked)
+
+        self.assertFalse(
+            any(level == "FAIL" for level, _ in doctor.results), doctor.results)
+        self.assertTrue(
+            any(level == "OK" and "live-fire" in line
+                for level, line in doctor.results), doctor.results)
+
 
 class TestRunHostDISeam(unittest.TestCase):
     """#257 (architecture-001/performance-002): run(host) must WIRE the host it

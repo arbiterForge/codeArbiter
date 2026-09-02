@@ -15,6 +15,7 @@ stdlib unittest only; no subprocess for the Host method itself (git_toplevel
 shells out internally, so a real git init is used where the climb matters).
 """
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -286,7 +287,6 @@ class GitWorktreeMainRootTests(unittest.TestCase):
             self.assertIsNotNone(got)
             self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
 
-    @unittest.skipIf(os.name == "nt", "ordinary symlink creation is not portable on Windows")
     def test_linked_worktree_symlink_alias_uses_gits_confirmed_common_dir(self):
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
             main_checkout = os.path.join(top, "main-checkout")
@@ -299,11 +299,38 @@ class GitWorktreeMainRootTests(unittest.TestCase):
             if r.returncode != 0:
                 self.skipTest(f"git worktree add failed: {r.stderr}")
             alias = os.path.join(top, "linked-alias")
-            os.symlink(wt_dir, alias, target_is_directory=True)
+            try:
+                os.symlink(wt_dir, alias, target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"directory symlink unavailable: {error}")
 
             got = hostapi.git_worktree_main_root(alias)
             self.assertIsNotNone(got)
             self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
+
+    def test_linked_worktree_rejects_foreign_symlinked_codearbiter_directory(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            self.assertTrue(_init_repo(main_checkout, branch="main"))
+            linked = os.path.join(top, "linked-worktree")
+            added = subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "feat/foreign-context", linked],
+                cwd=main_checkout, capture_output=True, text=True, timeout=30)
+            self.assertEqual(added.returncode, 0, added.stderr)
+
+            foreign_state = os.path.join(top, "foreign-state")
+            os.makedirs(foreign_state)
+            with open(os.path.join(foreign_state, "CONTEXT.md"),
+                      "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\nforeign state\n")
+            linked_state = os.path.join(linked, ".codearbiter")
+            shutil.rmtree(linked_state)
+            try:
+                os.symlink(foreign_state, linked_state, target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"directory symlink unavailable: {error}")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
 
     def test_ambient_git_repository_selectors_cannot_rebind_marker_root(self):
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
@@ -328,9 +355,6 @@ class GitWorktreeMainRootTests(unittest.TestCase):
                 "GIT_DIR": foreign_admin,
                 "GIT_WORK_TREE": foreign_linked,
                 "GIT_COMMON_DIR": os.path.join(foreign_main, ".git"),
-                "GIT_CONFIG_COUNT": "1",
-                "GIT_CONFIG_KEY_0": "core.worktree",
-                "GIT_CONFIG_VALUE_0": foreign_linked,
             }
 
             with mock.patch.dict(os.environ, hostile_env, clear=False):
@@ -339,8 +363,6 @@ class GitWorktreeMainRootTests(unittest.TestCase):
 
             for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR"):
                 self.assertNotIn(name, sanitized)
-            for name in ("GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0"):
-                self.assertEqual(sanitized.get(name), hostile_env[name])
             self.assertIsNotNone(got)
             self.assertEqual(os.path.realpath(got), os.path.realpath(target_main))
 

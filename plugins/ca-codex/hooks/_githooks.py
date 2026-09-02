@@ -210,13 +210,15 @@ def _git_common_dir(root):
     repo must resolve to the SAME common dir here, or the #265 drop-in dir
     would fork per-worktree and defeat the entire cross-host purpose (a shim
     installed from worktree A would never see an entry written from
-    worktree B). The main-repo case (`.git` is a directory) needs no spawn at
-    all: it IS its own common dir. Returns None if nothing resolves — callers
-    must treat that as "can't place the drop-in dir right now" and never
-    invent a per-worktree fallback."""
+    worktree B). The returned path is canonical so equivalent symlink, macOS
+    `/var`, and Windows short-name spellings produce the same registry path in
+    every managed shim. The main-repo case (`.git` is a directory) needs no
+    spawn at all: it IS its own common dir. Returns None if nothing resolves —
+    callers must treat that as "can't place the drop-in dir right now" and
+    never invent a per-worktree fallback."""
     git_path = os.path.join(root, ".git")
     if os.path.isdir(git_path):
-        return os.path.abspath(git_path)
+        return os.path.realpath(git_path)
     if os.path.isfile(git_path):
         text = _read(git_path)
         if text:
@@ -231,12 +233,13 @@ def _git_common_dir(root):
                         cd = cd_text.strip()
                         common = (cd if os.path.isabs(cd)
                                   else os.path.normpath(os.path.join(wt_gitdir, cd)))
-                        return os.path.abspath(common)
+                        return os.path.realpath(common)
                     break
     r = _git(["rev-parse", "--git-common-dir"], root)
     if r is not None and r.returncode == 0 and r.stdout.strip():
         out = r.stdout.strip()
-        return os.path.abspath(out if os.path.isabs(out) else os.path.join(root, out))
+        return os.path.realpath(
+            out if os.path.isabs(out) else os.path.join(root, out))
     return None
 
 

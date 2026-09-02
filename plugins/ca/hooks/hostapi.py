@@ -173,15 +173,26 @@ def _root_bound_git_env():
 
 def _has_enabled_context(root):
     """Whether a real CONTEXT.md satisfies the canonical activation parser."""
-    context = os.path.join(root, ".codearbiter", "CONTEXT.md")
-    if os.path.islink(context) or not os.path.isfile(context):
+    canonical_root = os.path.realpath(root)
+    state_dir = os.path.join(canonical_root, ".codearbiter")
+    if os.path.islink(state_dir) or not os.path.isdir(state_dir):
+        return False
+    context = os.path.join(state_dir, "CONTEXT.md")
+    canonical_context = os.path.realpath(context)
+    try:
+        contained = os.path.normcase(os.path.commonpath(
+            [canonical_root, canonical_context])) == os.path.normcase(canonical_root)
+    except (TypeError, ValueError):
+        contained = False
+    if (not contained or os.path.islink(context)
+            or not os.path.isfile(canonical_context)):
         return False
     try:
         # Deferred to avoid hostapi <-> _activationlib's import-time cycle.
         # This must remain the single parser for the activation contract,
         # including its accepted UTF-8 BOM spelling.
         from _activationlib import frontmatter_enabled
-        enabled, malformed = frontmatter_enabled(context)
+        enabled, malformed = frontmatter_enabled(canonical_context)
         return enabled and not malformed
     except Exception:  # noqa: BLE001 - root selection must fail closed
         return False
