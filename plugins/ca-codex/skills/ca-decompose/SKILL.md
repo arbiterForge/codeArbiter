@@ -6,6 +6,12 @@ argument-hint: (none)
 
 # $ca-decompose — greenfield populate
 
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `$ca-init --greenfield` for new usage. This installed route remains
+> functional under the command-route compatibility policy at [includes/command-compatibility.md](../../includes/command-compatibility.md);
+> continue with the unchanged greenfield workflow below.
+<!-- catalog-compatibility-notice:end -->
+
 Stands up project state for a greenfield project — one with no meaningful source code yet. A senior-architect persona drives a six-layer interview eliciting purpose, scope, primary users, domain vocabulary, and architectural constraints, persisting each layer to disk so a context reset loses nothing, then writes the surviving `.codearbiter/` doc set and locks the project initialized. No arguments — the skill interviews the user (a handoff summary may be supplied freely during the interview).
 
 The only permitted path to populate `.codearbiter/` when no meaningful source exists. For an existing codebase, use `$ca-create-context`.

@@ -18,7 +18,7 @@ const outDir = join(here, "..", "src", "content", "docs", "reference");
 const sidebarPath = join(here, "..", "src", "generated", "sidebar.json");
 const curatedDir = join(here, "..", "src", "curated");
 
-const result = generate(srcDir, outDir, sidebarPath, curatedDir);
+const result = generate(srcDir, outDir, sidebarPath, curatedDir, true);
 const counts = result.pages.reduce<Record<string, number>>((acc, p) => {
   acc[p.type] = (acc[p.type] ?? 0) + 1;
   return acc;

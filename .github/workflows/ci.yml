@@ -150,6 +150,8 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.github/scripts/check-plugin-refs.py'
               - '.github/scripts/check_badge_consistency.py'
+              - '.github/scripts/check_command_catalog.py'
+              - '.github/scripts/test_command_catalog.py'
             ca-sandbox:
               - 'plugins/ca-sandbox/**'
               - '.github/workflows/ci.yml'
@@ -1839,10 +1841,9 @@ jobs:
 
   badge-consistency:
     name: "[CHECK] | [CA  ] | Documentation consistency"
-    # The mechanical backstop the 2.5.0 release proved was missing: the README
-    # version badge, the command/skill/agent count badges, their prose echoes,
-    # and the full-catalog table must all match the repo. A release that bumps
-    # the payload but forgets the README (the original bug) fails here.
+    # The README's version/core-lane/skill/agent badges and marked core chooser
+    # are source-derived. The complete generated catalog independently closes
+    # over every installed command file.
     needs: changes
     if: needs.changes.outputs.ca == 'true'
     runs-on: ubuntu-latest
@@ -1851,8 +1852,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Check README badge/count/catalog consistency (ca)
+      - name: Check README badge/core-lane/catalog consistency (ca)
         run: python3 .github/scripts/check_badge_consistency.py
+      - name: Run complete command-catalog guard tests (ca)
+        run: python3 .github/scripts/test_command_catalog.py
 
   prose-sandbox:
     name: "[CHECK] | [SBX ] | Reference graph"
@@ -1937,6 +1940,10 @@ jobs:
           python-version: "3.x"
       - name: Check rendered surfaces match core/surface/ templates (both hosts)
         run: python3 tools/build-surface.py --check
+      - name: Run command-route registry and compatibility contract
+        # RA-11: exact taxonomy, frozen route inventory, byte-preserved legacy
+        # workflows, additive canonical modes, and publication-based retention.
+        run: python3 .github/scripts/test_command_route_compatibility.py
       - name: Classify every active CLAUDE_PLUGIN_ROOT occurrence
         # The root token is Claude-native only in the Claude payload.  A Codex
         # compatibility fixture/input and immutable historical evidence are the

@@ -11,7 +11,7 @@ project context. You decide. codeArbiter enforces.
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
 <img alt="version 2.16.0" src="https://img.shields.io/badge/version-2.16.0-2b7489">
-<img alt="commands" src="https://img.shields.io/badge/commands-38-555">
+<img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-19-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
@@ -283,86 +283,29 @@ gate bypasses, merges, and unresolved questions remain true stops. See
 
 ## Core lanes
 
-| Intent | Claude Code | What the lane proves |
+Choose the workflow first. The canonical lanes keep daily work compact; advanced operations and
+compatibility routes remain available in the complete reference.
+
+<!-- core-lane-chooser:start -->
+| Workflow | Choose | Use it for |
 |---|---|---|
-| New behavior | `/ca:feature "desc"` | approved spec and plan, test-first implementation, review, commit, PR |
-| Autonomous delivery | `/ca:sprint "goal"` | one interactive design gate, persisted work, logged SMARTS decisions |
-| Confirmed defect | `/ca:fix "bug"` | failing regression test before the minimal fix |
-| Unknown cause | `/ca:debug "symptom"` | investigation and root-cause decision before any fix lane |
-| Structural change | `/ca:refactor "surface"` | behavioral parity through unchanged pre-existing tests |
-| Dependency | `/ca:add-dep "pkg"` | license, provenance, maintenance, CVE, and supply-chain review |
-| Architecture decision | `/ca:adr "title"` | numbered, dated, user-attributed decision record |
-| Commit | `/ca:commit` | the full commit gate and selective staging |
-| Pull request | `/ca:pr` | cleared BLOCK findings and a draft PR, never a direct default-branch write |
+| Evaluate | `/ca:preview` | Predict reviewers and run a read-only secret scan |
+| Initialize | `/ca:init` | Create or inspect the repository-owned state store |
+| Change | `/ca:feature`, `/ca:sprint`, `/ca:fix`, `/ca:refactor`, `/ca:chore`, `/ca:spike`, `/ca:add-dep` | Build, repair, restructure, explore, or change the supply chain through the owning gate |
+| Review | `/ca:review` | Run the reviewer fleet over a diff or bounded path |
+| Decide | `/ca:adr` | Record a numbered, user-attributed architecture decision |
+| Ship | `/ca:commit`, `/ca:pr`, `/ca:release` | Commit, stage a pull request, or prepare an authorized release |
+| Operate | `/ca:status`, `/ca:task`, `/ca:doctor`, `/ca:override` | Inspect state, manage the task board, verify enforcement, or log an allowed bypass |
+<!-- core-lane-chooser:end -->
 
-Claude Code's catalog is [`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md). Codex uses the
-generated [`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md), and Pi uses the generated
-[`plugins/ca-pi/COMMANDS.md`](./plugins/ca-pi/COMMANDS.md). Current generated counts are `ca: 38`,
-`ca-codex: 36`, and `ca-pi: 37`. Codex omits `statusline` and `prune`; Pi omits `statusline` and uses
-native compaction for pruning.
-
-<details>
-<summary><strong>All 38 Claude Code commands</strong></summary>
-
-### Implementation
-
-| Command | Purpose |
-|---|---|
-| `/ca:feature "desc"` | Spec-driven feature; the only entry to new implementation |
-| `/ca:sprint "goal"` | Autonomous spec-to-PR sprint with SMARTS-scored decisions |
-| `/ca:fix "bug"` | Regression-test-first defect fix |
-| `/ca:refactor "surface"` | Behavior-preserving restructure behind a parity gate |
-| `/ca:debug "symptom"` | Investigate, identify root cause, then choose the owning lane |
-| `/ca:chore <docs\|deps\|revert>` | Type-scaled non-behavioral lane |
-| `/ca:spike "question"` | Throwaway exploration that never merges |
-
-### Commit and ship
-
-| Command | Purpose |
-|---|---|
-| `/ca:commit` | The only path to a commit |
-| `/ca:pr` | Clear review findings and open or finish a pull request |
-| `/ca:watch <PR>` | Watch hosted CI, diagnose red, offer merge on green |
-| `/ca:review [path]` | Reviewer-fleet pass over the current diff |
-| `/ca:checkpoint` | Lean periodic whole-codebase reviewer sweep |
-| `/ca:tribunal [scope-path]` | Deep, resumable eleven-lens audit; never a routine gate |
-| `/ca:release [--dry-run]` | Target-aware SemVer, changelog, and annotated tag |
-| `/ca:add-dep "pkg"` | Vet license, provenance, maintenance, CVEs, and supply chain |
-
-### Decisions
-
-| Command | Purpose |
-|---|---|
-| `/ca:adr "title"` | Author a numbered, user-attributed ADR |
-| `/ca:adr-status [--adr N]` | Inspect ADR health and supersession chains |
-| `/ca:reconcile ["scope"]` | Reconcile architectural artifacts through SMARTS |
-| `/ca:conflict "description"` | Stop work and surface an unresolvable rule conflict |
-| `/ca:threat-model "scope"` | Optional lightweight STRIDE pass |
-
-### Project and meta
-
-| Command | Purpose |
-|---|---|
-| `/ca:decompose` | Greenfield interview that populates `.codearbiter/` |
-| `/ca:create-context` | Brownfield source scout and context backfill |
-| `/ca:init` | Scaffold the shared project-state store |
-| `/ca:status` | Show stage, branch, tasks, questions, and recent overrides |
-| `/ca:task` | The only sanctioned writer for `open-tasks.md` |
-| `/ca:statusline` | Install or remove the Claude Code statusline |
-| `/ca:doctor` | Prove interpreter, payload, hooks, cache, and live-fire behavior |
-| `/ca:preview` | Read-only prediction of reviewers plus a state-free secret scan |
-| `/ca:context-check` | Manual provenance-drift audit |
-| `/ca:standup` | Read repo hygiene, then confirm safe cleanup actions one by one |
-| `/ca:cleanup` | Finish an already-merged branch with ancestry proof |
-| `/ca:new-skill "gap"` | Author a new skill only after proving the gap |
-| `/ca:btw "question"` | Lightweight project Q&A with no state change |
-| `/ca:override "reason"` | Logged, attributed bypass for one immediate action when the gate permits it; never H-18 |
-| `/ca:audit [range]` | Assemble a dated governance packet |
-| `/ca:metrics [--window N]` | Read-only override, small-lane, and confidence trends |
-| `/ca:prune [status\|dry\|run\|audit\|on\|off]` | Inspect or trim transcript bulk |
-| `/ca:commands` | Show the public catalog |
-
-</details>
+[Complete command reference](https://arbiterforge.github.io/codeArbiter/reference/commands/) includes
+advanced operations, compatibility routes, internal protocols, deprecation guidance, and host
+availability. The generated host catalogs remain inspectable in
+[`plugins/ca/COMMANDS.md`](./plugins/ca/COMMANDS.md),
+[`plugins/ca-codex/COMMANDS.md`](./plugins/ca-codex/COMMANDS.md), and
+[`plugins/ca-pi/COMMANDS.md`](./plugins/ca-pi/COMMANDS.md). Claude Code includes `statusline` and
+`prune`; Codex intentionally omits both. Pi omits `statusline` and uses native compaction through
+its `prune` route.
 
 ## Trust and host boundaries
 

@@ -74,6 +74,13 @@ Run all of these; ALL must pass before any commit:
 # Codex packaged-resource and static candidate schemas
 python .github/scripts/test_codex_skill_resources.py
 
+# Canonical command registry, host projection, compatibility, and discovery guards
+python .github/scripts/test_build_surface.py
+python .github/scripts/test_host_descriptors.py
+python .github/scripts/test_command_route_compatibility.py
+python .github/scripts/test_badge_consistency.py
+python .github/scripts/test_command_catalog.py
+
 # Workflow trust separation and exact CI impact routing
 python .github/scripts/test_ci_impact.py
 

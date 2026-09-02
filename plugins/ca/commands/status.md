@@ -1,11 +1,21 @@
 ---
 description: Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only.
-argument-hint: (none)
+argument-hint: "(none) | drift"
 ---
 
 # /ca:status — state snapshot
 
 A read-only summary of `.codearbiter/` state. No skill is routed to; no file is modified.
+
+<!-- catalog-command-modes:start -->
+## Drift mode
+
+<!-- command-mode:drift legacy-route:context-check -->
+With the exact argument `drift`, load and follow
+`${CLAUDE_PLUGIN_ROOT}/commands/context-check.md`. The audit begins read-only; re-scout or re-baseline may
+write only after the user's explicit selection. With no argument, continue with the unchanged
+read-only snapshot below. Reject other arguments rather than treating them as drift mode.
+<!-- catalog-command-modes:end -->
 
 ## Flow
 
