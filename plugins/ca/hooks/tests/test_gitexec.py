@@ -19,6 +19,27 @@ ENV_NAME = "CODEARBITER_TEST_EXECUTABLE_PATH"
 
 
 class TrustedEnvironmentPathTests(unittest.TestCase):
+    def test_root_bound_git_env_preserves_command_scope_safe_directory_config(self):
+        command_scope_config = {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "safe.directory",
+            "GIT_CONFIG_VALUE_0": "C:/governed/repository",
+        }
+        hostile_selectors = {
+            "GIT_DIR": "C:/foreign/.git",
+            "GIT_WORK_TREE": "C:/foreign",
+            "GIT_COMMON_DIR": "C:/foreign/.git",
+        }
+
+        with mock.patch.dict(
+                os.environ, {**command_scope_config, **hostile_selectors}, clear=False):
+            sanitized = _gitexec.root_bound_git_env()
+
+        for name in hostile_selectors:
+            self.assertNotIn(name, sanitized)
+        for name, value in command_scope_config.items():
+            self.assertEqual(sanitized.get(name), value)
+
     def test_missing_variable_returns_none(self):
         with mock.patch.dict(os.environ, {}, clear=False):
             os.environ.pop(ENV_NAME, None)

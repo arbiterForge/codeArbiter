@@ -24,6 +24,7 @@ import importlib.util
 import io
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import time
@@ -179,25 +180,29 @@ class TestStalenessCheckFunction(_Fixture):
         and this repo runs worktree agents routinely.
         """
         worktree_root = os.path.join(self._tmp.name, "worktree")
-        os.makedirs(worktree_root)
-        # A linked worktree's `.git` is a FILE pointing at
-        # `<main>/.git/worktrees/<name>` — hostapi.git_worktree_main_root's
-        # exact recognized shape (pure text match, no real git plumbing
-        # needed for THAT half; see its docstring). The mode marker itself
-        # lives at `self.cad` (the MAIN checkout, matching marker_root's
-        # real escalation target).
-        main_git_worktrees = os.path.join(self.root, ".git", "worktrees", "wt")
-        os.makedirs(main_git_worktrees)
-        with open(os.path.join(worktree_root, ".git"), "w", encoding="utf-8") as f:
-            f.write(f"gitdir: {main_git_worktrees}\n")
+        subprocess.run(["git", "init", "-q", "-b", "main", self.root],
+                       check=True, timeout=30)
+        subprocess.run(["git", "-C", self.root, "config", "user.email", "test@example.com"],
+                       check=True, timeout=30)
+        subprocess.run(["git", "-C", self.root, "config", "user.name", "Test"],
+                       check=True, timeout=30)
+        subprocess.run(["git", "-C", self.root, "add", ".codearbiter/CONTEXT.md"],
+                       check=True, timeout=30)
+        subprocess.run(
+            ["git", "-C", self.root, "-c", "core.hooksPath=",
+             "-c", "commit.gpgSign=false", "commit", "-qm", "seed"],
+            check=True, timeout=30)
+        subprocess.run(
+            ["git", "-C", self.root, "worktree", "add", "-q", "-b", "test-linked",
+             worktree_root], check=True, timeout=30)
+        # The mode marker itself lives at `self.cad` (the MAIN checkout,
+        # matching marker_root's real escalation target).
         _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         payload = {"hook_event_name": "UserPromptSubmit", "cwd": worktree_root}
         buf = io.StringIO()
         # No CLAUDE_PROJECT_DIR: forces project_root(payload) through its
-        # payload-cwd leg (git_toplevel(worktree_root) fails — the fake
-        # worktree has no real git metadata under main_git_worktrees — so it
-        # falls back to worktree_root itself, the wrong root; see #264's
-        # `_hooklib.get_host().project_root` docstring for the exact chain).
+        # payload-cwd leg. Git names the linked checkout as project_root;
+        # marker_root must then escalate to the main checkout.
         with mock.patch.dict(os.environ, {}, clear=False):
             os.environ.pop("CLAUDE_PROJECT_DIR", None)
             with mock.patch.object(sys, "stderr", buf):

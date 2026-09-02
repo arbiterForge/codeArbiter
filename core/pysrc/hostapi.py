@@ -33,7 +33,7 @@ import re
 import subprocess
 import sys
 
-from _gitexec import git_executable
+from _gitexec import git_executable, root_bound_git_env
 
 
 class PluginRootError(RuntimeError):
@@ -155,7 +155,7 @@ def git_toplevel(cwd=None):
     try:
         out = subprocess.run(
             args, capture_output=True, text=True, encoding="utf-8",
-            errors="replace", timeout=5,
+            errors="replace", timeout=5, env=root_bound_git_env(),
         )
         if out.returncode == 0:
             top = out.stdout.strip()
@@ -164,6 +164,38 @@ def git_toplevel(cwd=None):
     except Exception:  # noqa: BLE001
         pass
     return None
+
+
+def _root_bound_git_env():
+    """Compatibility seam for callers of the former local helper."""
+    return root_bound_git_env()
+
+
+def _has_enabled_context(root):
+    """Whether a real CONTEXT.md satisfies the canonical activation parser."""
+    canonical_root = os.path.realpath(root)
+    state_dir = os.path.join(canonical_root, ".codearbiter")
+    if os.path.islink(state_dir) or not os.path.isdir(state_dir):
+        return False
+    context = os.path.join(state_dir, "CONTEXT.md")
+    canonical_context = os.path.realpath(context)
+    try:
+        contained = os.path.normcase(os.path.commonpath(
+            [canonical_root, canonical_context])) == os.path.normcase(canonical_root)
+    except (TypeError, ValueError):
+        contained = False
+    if (not contained or os.path.islink(context)
+            or not os.path.isfile(canonical_context)):
+        return False
+    try:
+        # Deferred to avoid hostapi <-> _activationlib's import-time cycle.
+        # This must remain the single parser for the activation contract,
+        # including its accepted UTF-8 BOM spelling.
+        from _activationlib import frontmatter_enabled
+        enabled, malformed = frontmatter_enabled(canonical_context)
+        return enabled and not malformed
+    except Exception:  # noqa: BLE001 - root selection must fail closed
+        return False
 
 
 def git_worktree_main_root(root):
@@ -203,24 +235,71 @@ def git_worktree_main_root(root):
     FILE, but only a worktree's `gitdir:` pointer names a path under
     `.git/worktrees/<name>`; a submodule's names `.git/modules/<name>`, which
     is not a "main root" to climb to and must fall through untouched (mirrors
-    `_durabilitylib._gitfile_points_at_worktree`'s same distinction)."""
+    `_durabilitylib._gitfile_points_at_worktree`'s same distinction).
+
+    The selected Git binary is the authority for accepting and resolving the
+    worktree metadata. That keeps native relative pointers aligned with Git,
+    rejects incomplete or foreign-dialect metadata Git itself cannot use, and
+    avoids translating a path grammar in Python. Only Git-confirmed linked
+    worktrees whose common directory is the main checkout's `.git` directory,
+    and whose linked and reported-main checkouts are both independently
+    arbiter-enabled, can escalate the marker root."""
     git_meta = os.path.join(root, ".git")
     if not os.path.isfile(git_meta):
         return None
     try:
-        with open(git_meta, encoding="utf-8", errors="replace") as f:
-            pointer = f.read().strip()
-    except OSError:
+        probe = subprocess.run(
+            [git_executable(), "-C", root, "rev-parse", "--path-format=absolute",
+             "--git-dir", "--git-common-dir"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5, env=_root_bound_git_env(),
+        )
+    except Exception:  # noqa: BLE001 - root selection must fail closed
         return None
-    if not pointer.startswith("gitdir: "):
+    lines = [line.strip() for line in probe.stdout.splitlines() if line.strip()]
+    if probe.returncode != 0 or len(lines) != 2:
         return None
-    gitdir = pointer[len("gitdir: "):].strip().replace("\\", "/")
-    marker = "/.git/worktrees/"
-    idx = gitdir.find(marker)
-    if idx == -1:
-        return None  # not a linked worktree (e.g. a submodule) — nothing to climb to
-    main_git_dir = gitdir[:idx + len("/.git")]
-    return os.path.dirname(main_git_dir) or None
+    git_dir = os.path.normpath(lines[0])
+    common_dir = os.path.normpath(lines[1])
+    if not os.path.isabs(git_dir) or not os.path.isabs(common_dir):
+        return None
+    real_git_dir = os.path.normcase(os.path.realpath(git_dir))
+    real_common_dir = os.path.normcase(os.path.realpath(common_dir))
+    if real_git_dir == real_common_dir:
+        return None  # ordinary checkout or submodule, not a linked worktree
+    expected_admin_parent = os.path.normcase(
+        os.path.realpath(os.path.join(common_dir, "worktrees")))
+    if os.path.normcase(os.path.realpath(os.path.dirname(git_dir))) != expected_admin_parent:
+        return None
+    if os.path.basename(common_dir) != ".git" or not os.path.isdir(common_dir):
+        return None
+    main_root = os.path.dirname(common_dir)
+    if not os.path.isdir(main_root):
+        return None
+    try:
+        main_probe = subprocess.run(
+            [git_executable(), "-C", main_root, "rev-parse", "--path-format=absolute",
+             "--show-toplevel", "--git-common-dir"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5, env=_root_bound_git_env(),
+        )
+    except Exception:  # noqa: BLE001 - root selection must fail closed
+        return None
+    main_lines = [line.strip() for line in main_probe.stdout.splitlines() if line.strip()]
+    if main_probe.returncode != 0 or len(main_lines) != 2:
+        return None
+    main_toplevel = os.path.normpath(main_lines[0])
+    confirmed_common = os.path.normpath(main_lines[1])
+    if not os.path.isabs(main_toplevel) or not os.path.isabs(confirmed_common):
+        return None
+    if os.path.normcase(os.path.realpath(main_toplevel)) != os.path.normcase(
+            os.path.realpath(main_root)):
+        return None
+    if os.path.normcase(os.path.realpath(confirmed_common)) != real_common_dir:
+        return None
+    if not _has_enabled_context(root) or not _has_enabled_context(main_root):
+        return None
+    return main_root.replace("\\", "/") if os.name == "nt" else main_root
 
 
 class Host:
@@ -234,7 +313,7 @@ class Host:
 
     name = "claude"
     adapter_name = "ca"
-    adapter_version = "2.15.9"
+    adapter_version = "2.15.10"
 
     # Update-notifier descriptor. Each independently versioned host overrides
     # these three values in its per-plugin _host.py. Keeping the target,

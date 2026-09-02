@@ -62,8 +62,8 @@
 #   * Idempotent: an up-to-date ours-hook is left untouched (no churn); a stale
 #     ours-hook is refreshed.
 #   * performance-002 (#194): re-resolving hooks_dir() every SessionStart costs
-#     up to two blocking `git` subprocess spawns (config --get core.hooksPath,
-#     rev-parse --git-path hooks) even on the common steady-state call where
+#     one blocking `git` subprocess spawn (`rev-parse --git-path hooks`) even
+#     on the common steady-state call where
 #     nothing changed. install() first checks a cheap on-disk cache (a single
 #     small file read, no git spawn) recording the hooks_dir a prior successful
 #     resolution used; if BOTH phase shims at that cached location already
@@ -114,7 +114,8 @@ import sys
 
 import _hooklib
 from _durabilitylib import is_ephemeral_path
-from _gitexec import git_executable, trusted_git_executable, trusted_python_executable
+from _gitexec import (git_executable, root_bound_git_env,
+                      trusted_git_executable, trusted_python_executable)
 
 SENTINEL = (
     "# codeArbiter-managed git hook (#161) — this SHIM is refreshed by any live "
@@ -140,6 +141,7 @@ def _git(args, cwd):
         return subprocess.run(
             [git_executable()] + args, cwd=cwd, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=5,
+            env=root_bound_git_env(),
         )
     except Exception:  # noqa: BLE001
         return None
@@ -148,20 +150,15 @@ def _git(args, cwd):
 def hooks_dir(root):
     """The directory git actually reads hooks from for `root`, or None.
 
-    Honors core.hooksPath (when set, git IGNORES .git/hooks entirely), and
-    resolves the real git dir via `rev-parse --git-path hooks` so linked
-    worktrees and submodules land in the right place. Falls back to
-    <root>/.git/hooks only if git can't answer."""
-    cfg = _git(["config", "--get", "core.hooksPath"], root)
-    if cfg is not None and cfg.returncode == 0 and cfg.stdout.strip():
-        hp = cfg.stdout.strip()
-        return hp if os.path.isabs(hp) else os.path.join(root, hp)
+    The selected Git binary owns core.hooksPath parsing, including its path
+    grammar (`~`, `%(prefix)`, absolute, and relative forms), and linked
+    worktree/submodule semantics. Python must not reinterpret the raw config
+    value differently from the binary that will execute the hooks."""
     gp = _git(["rev-parse", "--git-path", "hooks"], root)
     if gp is not None and gp.returncode == 0 and gp.stdout.strip():
         hp = gp.stdout.strip()
         return hp if os.path.isabs(hp) else os.path.join(root, hp)
-    default = os.path.join(root, ".git", "hooks")
-    return default if os.path.isdir(os.path.join(root, ".git")) else None
+    return None
 
 
 def _enforcer_path():
@@ -213,13 +210,15 @@ def _git_common_dir(root):
     repo must resolve to the SAME common dir here, or the #265 drop-in dir
     would fork per-worktree and defeat the entire cross-host purpose (a shim
     installed from worktree A would never see an entry written from
-    worktree B). The main-repo case (`.git` is a directory) needs no spawn at
-    all: it IS its own common dir. Returns None if nothing resolves — callers
-    must treat that as "can't place the drop-in dir right now" and never
-    invent a per-worktree fallback."""
+    worktree B). The returned path is canonical so equivalent symlink, macOS
+    `/var`, and Windows short-name spellings produce the same registry path in
+    every managed shim. The main-repo case (`.git` is a directory) needs no
+    spawn at all: it IS its own common dir. Returns None if nothing resolves —
+    callers must treat that as "can't place the drop-in dir right now" and
+    never invent a per-worktree fallback."""
     git_path = os.path.join(root, ".git")
     if os.path.isdir(git_path):
-        return os.path.abspath(git_path)
+        return os.path.realpath(git_path)
     if os.path.isfile(git_path):
         text = _read(git_path)
         if text:
@@ -234,12 +233,13 @@ def _git_common_dir(root):
                         cd = cd_text.strip()
                         common = (cd if os.path.isabs(cd)
                                   else os.path.normpath(os.path.join(wt_gitdir, cd)))
-                        return os.path.abspath(common)
+                        return os.path.realpath(common)
                     break
     r = _git(["rev-parse", "--git-common-dir"], root)
     if r is not None and r.returncode == 0 and r.stdout.strip():
         out = r.stdout.strip()
-        return os.path.abspath(out if os.path.isabs(out) else os.path.join(root, out))
+        return os.path.realpath(
+            out if os.path.isabs(out) else os.path.join(root, out))
     return None
 
 
@@ -370,8 +370,9 @@ def _touch_seen_marker(dropin_dir, plugin, enforcer):
 # SENTINEL) session bakes in. `/ca:doctor` runs the SAME text as a real
 # subprocess instead of a parallel port, so the two can never drift.
 #
-# Algorithm: a plugin's registered entry is "stale" — printed to stdout, one
-# per line — iff (a) at least one OTHER registered entry in the same
+# Algorithm: first discard entries whose registered enforcer is not a live
+# regular file. A remaining plugin's registered entry is "stale" — printed to
+# stdout, one per line — iff (a) at least one OTHER live registered entry in the same
 # drop-in dir has recorded a `.seen` heartbeat, AND (b) this plugin's own
 # heartbeat is either absent or strictly older than the freshest one seen.
 # When NOBODY has ever recorded a heartbeat (a repo that predates #556, or
@@ -401,7 +402,7 @@ _FRESHNESS_PY = (
     "    if legacy.fullmatch(plugin):\n"
     "        continue\n"
     "    path_val = _rd(os.path.join(d, n))\n"
-    "    if path_val is None:\n"
+    "    if not path_val or not os.path.isfile(path_val):\n"
     "        continue\n"
     "    seen_file = os.path.join(d, plugin + '.seen')\n"
     # `.seen` only counts as a confirmation of what's registered RIGHT NOW when
@@ -453,6 +454,32 @@ def stale_registered_plugins(dropin_dir):
     if r.returncode != 0:
         return []
     return [ln for ln in r.stdout.splitlines() if ln.strip()]
+
+
+def live_registered_plugins(dropin_dir):
+    """Stable plugin names whose current `.path` target is a regular file.
+
+    This deliberately uses the same liveness boundary as the generated shim
+    (`[ -f "$E" ]`) and the freshness probe above. It is diagnostic support
+    for doctor, not a second freshness implementation."""
+    if not dropin_dir or not os.path.isdir(dropin_dir):
+        return []
+    legacy = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
+    live = []
+    try:
+        names = sorted(os.listdir(dropin_dir))
+    except OSError:
+        return []
+    for name in names:
+        if not name.endswith(".path"):
+            continue
+        plugin = name[:-len(".path")]
+        if legacy.fullmatch(plugin):
+            continue
+        path_val = _read(os.path.join(dropin_dir, name))
+        if path_val and os.path.isfile(path_val.strip()):
+            live.append(plugin)
+    return live
 
 
 _TRUSTED_IDENTITY_FILE = "trusted-executables.identity"

@@ -42,3 +42,7 @@ remediation.
 Read-only. MUST NOT create markers, stage files, grant trust, weaken a block, or retry the
 wrapper self-test with different spelling. MUST preserve the degraded active-dispatch diagnosis until
 supported-version real-host promotion/CI evidence closes PI-AC-28.
+
+For an arbiter-enabled repository, the mechanical report treats the Git backstop as healthy only
+after exact managed-shim and live-enforcer validation, plus a harmless selected-Git
+`git hook run pre-push` probe with empty input. It never executes a foreign hook.

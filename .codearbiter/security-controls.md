@@ -405,7 +405,15 @@ skip-when-unsure** — the fast path can never leave the #161 git-enforce backst
 unwired. Accepted residual: a `$GIT_CONFIG_GLOBAL`/`$GIT_CONFIG_SYSTEM`
 env-repointed config or `/etc/gitconfig` `core.hooksPath` set AFTER a
 default-location install (the cold/first install always resolves those via the
-full probe).
+full probe). The full probe does not parse `core.hooksPath` itself. It uses the
+selected Git binary's `rev-parse --git-path hooks` answer, so Git's own `~`,
+`%(prefix)`, absolute, relative, primary-checkout, and linked-worktree semantics
+remain authoritative. Doctor resolves the same effective directory, requires
+both exact managed shims there, and requires at least one live registered
+enforcer. On POSIX it also requires executable shim modes. Only after exact
+managed-byte validation does it ask the selected Git binary to run the managed
+`pre-push` shim with empty input, exposing Git discovery, trusted-identity,
+interpreter, and enforcer failures before it reports the backstop healthy.
 
 Each host refreshes a stable, manifest-named `<plugin>.path` entry under the
 repo-owned `.git/codearbiter-hooksd/`; version-directory-shaped legacy entries
@@ -413,7 +421,29 @@ are not authorities. The shim runs every live registered enforcer in
 deterministic order, returns the first non-zero verdict, and blocks when none
 resolve. Pre-push input is captured once and replayed identically to every
 enforcer. Registry order therefore cannot let an older host plugin mask a
-stricter sibling.
+stricter sibling. Missing or non-regular enforcer targets do not participate in
+heartbeat freshness ordering, so a dead newest heartbeat cannot suppress an
+older live sibling.
+
+This path contract is same-runtime. Windows with Git for Windows and its bundled
+hook shell, native Linux, and native macOS are supported cells. WSL is not a
+separately verified named cell, and sharing one physical repository or `.git`
+between Windows Git and WSL Git is unsupported. Foreign linked-worktree pointer
+dialects are rejected rather than translated or treated as relative marker
+roots. The selected Git binary must accept the worktree and return absolute,
+distinct admin and common directories before marker-root escalation. Native
+absolute and native relative worktree-admin pointers in Git's default
+`<main>/.git/worktrees` layout resolve to the shared primary marker root;
+both the linked checkout and Git-reported primary must also own real
+`CONTEXT.md` files that independently satisfy the canonical `arbiter: enabled`
+frontmatter parser. A `--separate-git-dir` storage location without that governed
+identity retains the local fail-closed fallback. Git does not retain a
+backpointer to the user-supplied primary when the separate directory itself is
+named `.git`; a storage location deliberately populated with its own enabled
+context is therefore inside the local-filesystem trust boundary and may
+be treated as the marker owner. Separate-git-dir remains unsupported.
+On Windows, Git's own `safe.directory` decision remains authoritative for UNC
+paths; codeArbiter never overrides that trust policy.
 
 Pi's trusted Python path, Git path, and owning plugin are one atomically
 replaced three-record identity bundle. Identity-less legacy hosts preserve an

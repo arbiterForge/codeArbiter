@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.9] - 2026-09-02
+
+### Fixed
+
+- Hook registration and doctor now bind every Git probe to the requested
+  repository, resolve effective hook paths through Git, and fail closed when
+  linked-worktree ownership cannot be proven.
+
 ## [0.7.8] - 2026-09-02
 
 ### Fixed

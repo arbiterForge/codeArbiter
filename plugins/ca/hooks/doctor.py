@@ -19,7 +19,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _gitexec import git_executable  # noqa: E402
+from _gitexec import git_executable, root_bound_git_env  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011): plugin-root resolution
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 import _githooks  # noqa: E402 — #556: git-hook drop-in registry freshness
@@ -173,7 +173,9 @@ def check_payload(root, host=None):
 def check_repo():
     """Returns the resolved repo root (for check_git_hook_freshness below), or
     None when this process isn't inside a git repository at all."""
-    r = _run_cmd([git_executable(), "rev-parse", "--show-toplevel"])
+    r = _run_cmd(
+        [git_executable(), "rev-parse", "--show-toplevel"],
+        env=root_bound_git_env())
     if r.returncode != 0:
         warn("not inside a git repository — repo-level checks skipped")
         return None
@@ -199,7 +201,9 @@ def check_repo():
         else:
             warn(f"no <!--INITIALIZED--> marker — startup will route to "
                  f"{get_host().cmd_ref('decompose')} or {get_host().cmd_ref('create-context')}")
-        email = _run_cmd([git_executable(), "config", "user.email"]).stdout.strip()
+        email = _run_cmd(
+            [git_executable(), "config", "user.email"], cwd=root,
+            env=root_bound_git_env()).stdout.strip()
         if email:
             ok(f"git identity for audit attribution: {email}")
         else:
@@ -209,7 +213,9 @@ def check_repo():
 
 
 def check_git_hook_freshness(root):
-    """#556 (AC-3): the git-level hook backstop (#161) can be running from a
+    """Verify the effective Git backstop, then report registry freshness.
+
+    #556 (AC-3): the git-level hook backstop (#161) can be running from a
     host's plugin cache that nobody has refreshed in a long time — a cache
     that predates a fix THIS checkout already carries (the #279
     sensitive-scan exemption, in the issue that motivated this check) is
@@ -219,14 +225,56 @@ def check_git_hook_freshness(root):
     commit/push time (`_githooks.stale_registered_plugins`), so this can
     never disagree with what actually happens at commit time.
 
-    A no-op (nothing printed) when `root` is None (not inside a git repo —
-    already reported by check_repo) or the drop-in registry doesn't exist
-    yet (nothing installed, or a host that predates ADR-0014)."""
+    A no-op when `root` is None (already reported by check_repo) or the repo is
+    deliberately dormant. For an arbiter-enabled repo, missing effective
+    managed shims or a registry without a live enforcer is a broken backstop,
+    not a healthy empty registry."""
     if root is None:
         return
-    dropin_dir = _githooks._dropin_dir(root)
-    if dropin_dir is None or not os.path.isdir(dropin_dir):
+    ctx = os.path.join(root, ".codearbiter", "CONTEXT.md")
+    enabled, malformed = frontmatter_enabled(ctx)
+    if not enabled or malformed:
         return
+    hooks_dir = _githooks.hooks_dir(root)
+    if hooks_dir is None:
+        fail("git-hook backstop: the selected Git binary could not resolve its "
+             "effective hooks directory")
+        return
+    dropin_dir = _githooks._dropin_dir(root)
+    if dropin_dir is None:
+        fail("git-hook backstop: Git's shared registry directory could not be resolved")
+        return
+    if not _githooks._hooks_current(hooks_dir, dropin_dir):
+        fail(f"git-hook backstop: Git's effective hooks directory ({hooks_dir}) "
+             "does not contain the current managed pre-commit and pre-push shims")
+        return
+    if os.name != "nt":
+        inoperable = [phase for phase in _githooks.PHASES
+                      if not os.access(os.path.join(hooks_dir, phase), os.X_OK)]
+        if inoperable:
+            fail("git-hook backstop: Git's managed hook is not executable: "
+                 + ", ".join(inoperable))
+            return
+    live = _githooks.live_registered_plugins(dropin_dir)
+    if not live:
+        fail("git-hook backstop: the shared registry has no live enforcer; start "
+             "a session from a durable installed host or reinstall that host")
+        return
+    try:
+        probe = _run_cmd(
+            [git_executable(), "hook", "run", "pre-push"], cwd=root, input="",
+            env=root_bound_git_env())
+    except Exception as exc:  # noqa: BLE001 - diagnostic must fail unhealthy, never crash
+        fail(f"git-hook backstop live-fire could not run: {exc}")
+        return
+    if probe.returncode != 0:
+        detail = (probe.stderr or probe.stdout or "managed pre-push returned nonzero").strip()
+        fail(f"git-hook backstop live-fire failed: {detail[:240]}")
+        return
+    if "ignored because" in (probe.stderr or "").lower():
+        fail(f"git-hook backstop live-fire was ignored by Git: {probe.stderr.strip()[:240]}")
+        return
+    ok("git-hook backstop live-fire: selected Git executed the managed pre-push shim")
     stale = _githooks.stale_registered_plugins(dropin_dir)
     if stale:
         names = ", ".join(sorted(stale))
