@@ -29,7 +29,7 @@ def extract_operations(text: str) -> tuple[str, ...]:
 
     operations: list[str] = []
     for line in lines[matches[0] + 1 :]:
-        if not line and not operations:
+        if not line:
             continue
         if line.startswith("- "):
             operations.append(line[2:])

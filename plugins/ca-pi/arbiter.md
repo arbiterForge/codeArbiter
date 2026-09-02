@@ -120,7 +120,7 @@ exists for a genuinely incomplete reading, and for the destructive set below —
 **Clarity and risk are separate axes.** Tier 1 requires BOTH unambiguous intent AND a non-destructive
 command. Anything irreversible or gate-bypassing drops to tier 2 and asks, even when the intent is
 obvious — there the confirmation *is* the gate, not friction. The routing table owns the authoritative
-registry; this resident copy is byte-compared item-for-item in CI because classification precedes
+registry; this resident copy is compared item-for-item in CI because classification precedes
 that file load:
 
 ### Destructive operations (tier-2 regardless of cue)

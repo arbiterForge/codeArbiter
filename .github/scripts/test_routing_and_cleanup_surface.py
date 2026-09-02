@@ -90,6 +90,17 @@ class TestDestructiveOperationRegistry(unittest.TestCase):
         resident = checker.extract_operations(orchestrator_section_six(read("core/surface/arbiter.md")))
         self.assertEqual(registry, DESTRUCTIVE_OPERATIONS)
         self.assertEqual(resident, DESTRUCTIVE_OPERATIONS)
+        for rel, text in self._arbiter_surfaces():
+            with self.subTest(rel=rel):
+                section = orchestrator_section_six(text)
+                self.assertIn("compared item-for-item in CI", section)
+                self.assertNotIn("byte-compared", section)
+
+    def _arbiter_surfaces(self):
+        yield "core/surface/arbiter.md", read("core/surface/arbiter.md")
+        for plugin, _, _, _ in HOSTS:
+            rel = f"{plugin}/arbiter.md"
+            yield rel, read(rel)
 
     def test_seeded_resident_mismatch_is_rejected(self):
         checker = self.checker()
@@ -99,6 +110,21 @@ class TestDestructiveOperationRegistry(unittest.TestCase):
             heading_level=3,
         )
         errors = checker.compare_surfaces(registry, seeded_resident)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("item-for-item mismatch", errors[0])
+
+    def test_blank_line_cannot_hide_an_additional_destructive_operation(self):
+        checker = self.checker()
+        registry = checker.render_block(DESTRUCTIVE_OPERATIONS, heading_level=2)
+        with_extra = registry.replace(
+            "- Release and tag publication\n",
+            "- Release and tag publication\n\n- Publish a package\n",
+        )
+        self.assertEqual(
+            checker.extract_operations(with_extra),
+            DESTRUCTIVE_OPERATIONS + ("Publish a package",),
+        )
+        errors = checker.compare_surfaces(registry, with_extra)
         self.assertEqual(len(errors), 1)
         self.assertIn("item-for-item mismatch", errors[0])
 

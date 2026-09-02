@@ -284,8 +284,11 @@ def validate_events(events, adr_blobs, require_all_accepted=False):
     event_ids = {}
     implementations = {}
     for index, event in enumerate(events, 1):
-        if not isinstance(event, dict) or event.get("_error"):
-            errors.append("invalid lifecycle event at line %d" % index)
+        if not isinstance(event, dict):
+            errors.append("invalid lifecycle event at entry %d" % index)
+            continue
+        if event.get("_error"):
+            errors.append("invalid lifecycle event: %s" % event["_error"])
             continue
         if event.get("schema") != "adr-lifecycle/v1":
             errors.append("line %d: unsupported schema" % index)
@@ -430,6 +433,10 @@ def verified_export(events, adr_blobs, current_blobs, now):
     exported = []
     suppressed = set()
     for adr, binding in sorted(bindings.items()):
+        if parse_adr(adr_blobs[adr])["status"] != "accepted":
+            errors.append("%s: current ADR status is not accepted; no Verified export" % adr)
+            suppressed.add(adr)
+            continue
         if not binding.get("obligations_sealed"):
             errors.append("%s: obligation set is unsealed; no Verified export" % adr)
             suppressed.add(adr)

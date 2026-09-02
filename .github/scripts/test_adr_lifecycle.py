@@ -347,6 +347,14 @@ class LifecycleContractTest(unittest.TestCase):
         for field in ("producer", "command", "observed_at", "valid_until",
                       "claim_scope", "claim"):
             self.assertIn(field, exported[0])
+        for status in (b"superseded", b"rejected"):
+            current_adr = ADR.replace(b"status: accepted", b"status: " + status).replace(
+                b"## Status\nAccepted", b"## Status\n" + status.title())
+            suppressed, errors = al.verified_export(
+                events, {"0001-test": current_adr}, {"src/x.py": b"source-v1"},
+                now="2026-09-02T13:00:00Z")
+            self.assertEqual(suppressed, [])
+            self.assertTrue(any("not accepted" in error for error in errors), errors)
         stale, errors = al.verified_export(
             events, {"0001-test": ADR}, {"src/x.py": b"source-v2"},
             now="2026-09-02T13:00:00Z")
@@ -485,12 +493,19 @@ class LifecycleContractTest(unittest.TestCase):
             "adr": "0001-test", "obligation": "0001-test.o1",
             "source_commit": "b" * 40, "input_digests": {"src/x.py": _sha(b"x")},
             "proof_contract": "repo-ci/v1", "producer": "ci/run",
-            "command": "python test.py", "observed_at": "2026-09-03T12:00:00",
-            "valid_until": "2026-09-02T12:00:00Z", "claim_scope": "repository",
+            "command": "python test.py", "observed_at": "2026-09-02T12:00:00Z",
+            "valid_until": "2026-09-03T12:00:00Z", "claim_scope": "repository",
             "claim": "repository test contract passed",
         }
-        errors = al.validate_events([acceptance, implementation, proof], {"0001-test": ADR})
-        self.assertTrue(any("timezone" in e or "after valid_until" in e for e in errors), errors)
+        naive = dict(proof, observed_at="2026-09-02T12:00:00")
+        errors = al.validate_events([acceptance, implementation, naive], {"0001-test": ADR})
+        self.assertTrue(any("timezone" in error for error in errors), errors)
+        reversed_window = dict(
+            proof, observed_at="2026-09-03T12:00:00Z",
+            valid_until="2026-09-02T12:00:00Z")
+        errors = al.validate_events(
+            [acceptance, implementation, reversed_window], {"0001-test": ADR})
+        self.assertTrue(any("after valid_until" in error for error in errors), errors)
 
     def test_any_structural_ledger_error_suppresses_all_verified_claims(self):
         acceptance = self._acceptance()
@@ -772,6 +787,21 @@ class LifecycleContractTest(unittest.TestCase):
                                                 separators=(",", ":")) + "\n")
             self.assertEqual(stderr, "")
 
+            superseded = ADR.replace(b"status: accepted", b"status: superseded").replace(
+                b"## Status\nAccepted", b"## Status\nSuperseded")
+            with open(os.path.join(root, ".codearbiter", "decisions", "0001-test.md"),
+                      "wb") as handle:
+                handle.write(superseded)
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+            self._git(root, "commit", "-m", "supersede accepted ADR")
+            result, stdout, stderr = self._run_checker(
+                root, "--verified-json", "--current-ref", "HEAD",
+                "--now", "2026-09-02T13:00:00Z")
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(stdout, "[]\n")
+            self.assertIn("::warning::0001-test: current ADR status is not accepted", stderr)
+            self.assertNotIn("::error::", stderr)
+
         for name, digest, path in (
                 ("missing", _sha(b"source-v1"), "src/missing.py"),
                 ("tampered", "0" * 64, "src/x.py")):
@@ -1010,13 +1040,13 @@ class LifecycleContractTest(unittest.TestCase):
         )
         null_baseline.pop("source_commit")
         malformed_events = [
-            [{
+            ([{
                 "schema": "adr-lifecycle/v1", "event": "implemented",
                 "event_id": "impl-null", "adr": "0001-test",
                 "obligation": "0001-test.o1", "source_commit": "b" * 40,
                 "input_digests": None, "evidence": "x",
-            }],
-            [{
+            }], "evidence has no input digests"),
+            ([{
                 "schema": "adr-lifecycle/v1", "event": "verified",
                 "event_id": "verify-list", "adr": "0001-test",
                 "obligation": "0001-test.o1", "source_commit": "b" * 40,
@@ -1024,14 +1054,15 @@ class LifecycleContractTest(unittest.TestCase):
                 "producer": "ci/run", "command": "test", "claim_scope": "repository",
                 "claim": "x", "observed_at": "2026-09-02T12:00:00Z",
                 "valid_until": "2026-09-03T12:00:00Z",
-            }],
-            [dict(binding, obligations=None)],
-            [dict(binding, source_commit=None)],
-            [null_baseline],
+            }], "evidence has no input digests"),
+            ([dict(binding, obligations=None)], "obligations must be a list"),
+            ([dict(binding, source_commit=None)], "acceptance source_commit must"),
+            ([null_baseline], "baseline observed_commit must"),
         ]
-        for events in malformed_events:
-            with self.subTest(events=events):
+        for events, diagnostic in malformed_events:
+            with self.subTest(events=events, diagnostic=diagnostic):
                 with tempfile.TemporaryDirectory() as root:
+                    self._git(root, "init", "-b", "main")
                     directory = os.path.join(root, ".codearbiter", "decisions")
                     os.makedirs(directory)
                     with open(os.path.join(directory, "0001-test.md"), "wb") as handle:
@@ -1040,6 +1071,8 @@ class LifecycleContractTest(unittest.TestCase):
                               encoding="utf-8") as handle:
                         for event in events:
                             handle.write(json.dumps(event) + "\n")
+                    self._git(root, "add", ".codearbiter/decisions")
+                    self._git(root, "commit", "-m", "record malformed lifecycle events")
                     stdout = io.StringIO()
                     stderr = io.StringIO()
                     with redirect_stdout(stdout), redirect_stderr(stderr):
@@ -1050,6 +1083,8 @@ class LifecycleContractTest(unittest.TestCase):
                     self.assertEqual(result, 1)
                     self.assertEqual(stdout.getvalue(), "[]\n")
                     self.assertIn("::error::", stderr.getvalue())
+                    self.assertIn(diagnostic, stderr.getvalue())
+                    self.assertNotIn("current ref is not a resolvable commit", stderr.getvalue())
                     self.assertNotIn("Traceback", stderr.getvalue())
 
     def test_bound_superseded_adr_remains_available_for_lifecycle_validation(self):
@@ -1075,6 +1110,17 @@ class LifecycleContractTest(unittest.TestCase):
             accepted = al.read_accepted_adrs(root, errors=errors)
             self.assertEqual(accepted, {})
             self.assertTrue(any("duplicate frontmatter key" in error for error in errors), errors)
+
+    def test_malformed_jsonl_reports_the_physical_line_and_parse_detail(self):
+        with tempfile.TemporaryDirectory() as root:
+            ledger = os.path.join(root, "adr-lifecycle.jsonl")
+            with open(ledger, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("\n{not-json\n")
+            events = al.read_jsonl(ledger)
+            self.assertEqual(len(events), 1)
+            errors = al.validate_events(events, {"0001-test": ADR})
+            self.assertEqual(errors, ["invalid lifecycle event: " + events[0]["_error"]])
+            self.assertIn("line 2:", errors[0])
 
     def test_repository_ledger_and_all_accepted_adrs_validate(self):
         root = os.path.dirname(os.path.dirname(HERE))
@@ -1116,9 +1162,10 @@ class LifecycleContractTest(unittest.TestCase):
         path = os.path.join(root, ".codearbiter", "security-controls.md")
         with open(path, encoding="utf-8") as handle:
             controls = handle.read()
-        self.assertIn("H-05 enforces append-only write", controls)
-        self.assertIn("lifecycle checker separately validates JSONL syntax", controls)
-        self.assertIn("event\ncompleteness, schema, and committed-prefix integrity", controls)
+        flowed = " ".join(controls.split())
+        self.assertIn("H-05 enforces append-only write", flowed)
+        self.assertIn("lifecycle checker separately validates JSONL syntax", flowed)
+        self.assertIn("event completeness, schema, and committed-prefix integrity", flowed)
 
     def test_ci_runs_lifecycle_and_destructive_registry_contracts(self):
         root = os.path.dirname(os.path.dirname(HERE))
