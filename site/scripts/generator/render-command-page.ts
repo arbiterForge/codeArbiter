@@ -20,7 +20,7 @@ import { publicReferenceDescription, renderReferenceLead } from "./render-refere
  * the page renders neither a `Model tier` nor a `Tools` line.
  */
 export function renderCommandPage(input: PageInput): string {
-  const { name, description, forgeStatus, curated, relatedLinks } = input;
+  const { name, description, forgeStatus, curated, relatedLinks, commandCatalog } = input;
   const desc = publicReferenceDescription(description ?? "");
 
   let decoration = "";
@@ -57,6 +57,14 @@ export function renderCommandPage(input: PageInput): string {
   const related = renderRelatedLinks(relatedLinks);
   if (related) {
     sections.push(related);
+  }
+
+  if ((commandCatalog?.visibility === "alias" || commandCatalog?.visibility === "deprecated") &&
+      commandCatalog.replacement) {
+    const lifecycle = commandCatalog.visibility === "alias"
+      ? "This compatibility route remains available for existing workflows."
+      : "This route remains available while it is retired from new discovery.";
+    sections.push(`## Compatibility\n\n${lifecycle} Use \`${commandCatalog.replacement}\` for new work.`);
   }
 
   sections.push(

@@ -46,7 +46,7 @@
     "add-dep": {
       "name": "add-dep",
       "description": "Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs.",
-      "skillPath": "skills/ca-add-dep/SKILL.md",
+      "commandPath": "commands/add-dep.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "add-dep",
@@ -55,7 +55,7 @@
     "adr": {
       "name": "adr",
       "description": "Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/.",
-      "skillPath": "skills/ca-adr/SKILL.md",
+      "commandPath": "commands/adr.md",
       "visibility": "core",
       "workflow": "decide",
       "canonical": "adr",
@@ -64,7 +64,7 @@
     "adr-status": {
       "name": "adr-status",
       "description": "Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.",
-      "skillPath": "skills/ca-adr-status/SKILL.md",
+      "commandPath": "commands/adr-status.md",
       "visibility": "advanced",
       "workflow": "decide",
       "canonical": "adr-status",
@@ -73,7 +73,7 @@
     "audit": {
       "name": "audit",
       "description": "Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only.",
-      "skillPath": "skills/ca-audit/SKILL.md",
+      "commandPath": "commands/audit.md",
       "visibility": "advanced",
       "workflow": "operate",
       "canonical": "audit",
@@ -82,7 +82,7 @@
     "btw": {
       "name": "btw",
       "description": "Lightweight Q&A about the project — answer from context and return, no routing, no state change.",
-      "skillPath": "skills/ca-btw/SKILL.md",
+      "commandPath": "commands/btw.md",
       "visibility": "deprecated",
       "workflow": "help",
       "replacement": "ask the question directly"
@@ -90,7 +90,7 @@
     "checkpoint": {
       "name": "checkpoint",
       "description": "Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report.",
-      "skillPath": "skills/ca-checkpoint/SKILL.md",
+      "commandPath": "commands/checkpoint.md",
       "visibility": "advanced",
       "workflow": "review",
       "canonical": "checkpoint",
@@ -99,7 +99,7 @@
     "chore": {
       "name": "chore",
       "description": "Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose.",
-      "skillPath": "skills/ca-chore/SKILL.md",
+      "commandPath": "commands/chore.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "chore",
@@ -108,7 +108,7 @@
     "cleanup": {
       "name": "cleanup",
       "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed.",
-      "skillPath": "skills/ca-cleanup/SKILL.md",
+      "commandPath": "commands/cleanup.md",
       "visibility": "alias",
       "workflow": "ship",
       "canonical": "pr",
@@ -117,7 +117,7 @@
     "commands": {
       "name": "commands",
       "description": "Show the codeArbiter command catalog — the public command list and what each routes to.",
-      "skillPath": "skills/ca-commands/SKILL.md",
+      "commandPath": "commands/commands.md",
       "visibility": "advanced",
       "workflow": "help",
       "canonical": "commands",
@@ -126,7 +126,7 @@
     "commit": {
       "name": "commit",
       "description": "Run the full commit gate — the only sanctioned path to a git commit.",
-      "skillPath": "skills/ca-commit/SKILL.md",
+      "commandPath": "commands/commit.md",
       "visibility": "core",
       "workflow": "ship",
       "canonical": "commit",
@@ -135,7 +135,7 @@
     "conflict": {
       "name": "conflict",
       "description": "Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation.",
-      "skillPath": "skills/ca-conflict/SKILL.md",
+      "commandPath": "commands/conflict.md",
       "visibility": "internal",
       "workflow": "decide",
       "canonical": "conflict",
@@ -144,7 +144,7 @@
     "context-check": {
       "name": "context-check",
       "description": "Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.",
-      "skillPath": "skills/ca-context-check/SKILL.md",
+      "commandPath": "commands/context-check.md",
       "visibility": "alias",
       "workflow": "operate",
       "canonical": "status",
@@ -153,7 +153,7 @@
     "create-context": {
       "name": "create-context",
       "description": "Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized.",
-      "skillPath": "skills/ca-create-context/SKILL.md",
+      "commandPath": "commands/create-context.md",
       "visibility": "alias",
       "workflow": "initialize",
       "canonical": "init",
@@ -161,8 +161,8 @@
     },
     "debug": {
       "name": "debug",
-      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca-fix, /ca-adr, or a no-action close.",
-      "skillPath": "skills/ca-debug/SKILL.md",
+      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca:fix, /ca:adr, or a no-action close.",
+      "commandPath": "commands/debug.md",
       "visibility": "advanced",
       "workflow": "change",
       "canonical": "debug",
@@ -171,7 +171,7 @@
     "decompose": {
       "name": "decompose",
       "description": "Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized.",
-      "skillPath": "skills/ca-decompose/SKILL.md",
+      "commandPath": "commands/decompose.md",
       "visibility": "alias",
       "workflow": "initialize",
       "canonical": "init",
@@ -179,8 +179,8 @@
     },
     "doctor": {
       "name": "doctor",
-      "description": "Verify the active host install, package, command ownership, enforcement, wrapper self-test, and active-dispatch coverage gap. Read-only.",
-      "skillPath": "skills/ca-doctor/SKILL.md",
+      "description": "Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only.",
+      "commandPath": "commands/doctor.md",
       "visibility": "core",
       "workflow": "operate",
       "canonical": "doctor",
@@ -189,7 +189,7 @@
     "feature": {
       "name": "feature",
       "description": "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.",
-      "skillPath": "skills/ca-feature/SKILL.md",
+      "commandPath": "commands/feature.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "feature",
@@ -198,7 +198,7 @@
     "fix": {
       "name": "fix",
       "description": "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates.",
-      "skillPath": "skills/ca-fix/SKILL.md",
+      "commandPath": "commands/fix.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "fix",
@@ -207,7 +207,7 @@
     "init": {
       "name": "init",
       "description": "Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store.",
-      "skillPath": "skills/ca-init/SKILL.md",
+      "commandPath": "commands/init.md",
       "visibility": "core",
       "workflow": "initialize",
       "canonical": "init",
@@ -219,7 +219,7 @@
     "metrics": {
       "name": "metrics",
       "description": "Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window.",
-      "skillPath": "skills/ca-metrics/SKILL.md",
+      "commandPath": "commands/metrics.md",
       "visibility": "advanced",
       "workflow": "operate",
       "canonical": "metrics",
@@ -228,7 +228,7 @@
     "new-skill": {
       "name": "new-skill",
       "description": "Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it.",
-      "skillPath": "skills/ca-new-skill/SKILL.md",
+      "commandPath": "commands/new-skill.md",
       "visibility": "advanced",
       "workflow": "extend",
       "canonical": "new-skill",
@@ -237,7 +237,7 @@
     "override": {
       "name": "override",
       "description": "Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed.",
-      "skillPath": "skills/ca-override/SKILL.md",
+      "commandPath": "commands/override.md",
       "visibility": "core",
       "workflow": "operate",
       "canonical": "override",
@@ -246,7 +246,7 @@
     "pr": {
       "name": "pr",
       "description": "Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.",
-      "skillPath": "skills/ca-pr/SKILL.md",
+      "commandPath": "commands/pr.md",
       "visibility": "core",
       "workflow": "ship",
       "canonical": "pr",
@@ -258,7 +258,7 @@
     "preview": {
       "name": "preview",
       "description": "Zero-onboarding, read-only dry-run of the reviewer fleet against the current uncommitted diff. Predicts reviewers, runs the state-free secret scan, writes nothing.",
-      "skillPath": "skills/ca-preview/SKILL.md",
+      "commandPath": "commands/preview.md",
       "visibility": "core",
       "workflow": "evaluate",
       "canonical": "preview",
@@ -267,7 +267,7 @@
     "prune": {
       "name": "prune",
       "description": "Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.",
-      "skillPath": "skills/ca-prune/SKILL.md",
+      "commandPath": "commands/prune.md",
       "visibility": "advanced",
       "workflow": "operate",
       "canonical": "prune",
@@ -276,7 +276,7 @@
     "reconcile": {
       "name": "reconcile",
       "description": "SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.",
-      "skillPath": "skills/ca-reconcile/SKILL.md",
+      "commandPath": "commands/reconcile.md",
       "visibility": "advanced",
       "workflow": "decide",
       "canonical": "reconcile",
@@ -285,7 +285,7 @@
     "refactor": {
       "name": "refactor",
       "description": "Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change.",
-      "skillPath": "skills/ca-refactor/SKILL.md",
+      "commandPath": "commands/refactor.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "refactor",
@@ -294,7 +294,7 @@
     "release": {
       "name": "release",
       "description": "Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag.",
-      "skillPath": "skills/ca-release/SKILL.md",
+      "commandPath": "commands/release.md",
       "visibility": "core",
       "workflow": "ship",
       "canonical": "release",
@@ -303,7 +303,7 @@
     "review": {
       "name": "review",
       "description": "Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR.",
-      "skillPath": "skills/ca-review/SKILL.md",
+      "commandPath": "commands/review.md",
       "visibility": "core",
       "workflow": "review",
       "canonical": "review",
@@ -311,8 +311,8 @@
     },
     "spike": {
       "name": "spike",
-      "description": "Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature.",
-      "skillPath": "skills/ca-spike/SKILL.md",
+      "description": "Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca:feature.",
+      "commandPath": "commands/spike.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "spike",
@@ -321,7 +321,7 @@
     "sprint": {
       "name": "sprint",
       "description": "Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops.",
-      "skillPath": "skills/ca-sprint/SKILL.md",
+      "commandPath": "commands/sprint.md",
       "visibility": "core",
       "workflow": "change",
       "canonical": "sprint",
@@ -330,7 +330,7 @@
     "standup": {
       "name": "standup",
       "description": "Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.",
-      "skillPath": "skills/ca-standup/SKILL.md",
+      "commandPath": "commands/standup.md",
       "visibility": "advanced",
       "workflow": "operate",
       "canonical": "standup",
@@ -339,7 +339,7 @@
     "status": {
       "name": "status",
       "description": "Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only.",
-      "skillPath": "skills/ca-status/SKILL.md",
+      "commandPath": "commands/status.md",
       "visibility": "core",
       "workflow": "operate",
       "canonical": "status",
@@ -347,10 +347,19 @@
         "context-check"
       ]
     },
+    "statusline": {
+      "name": "statusline",
+      "description": "Wire codeArbiter's statusline into ~/.claude/settings.json, or remove it.",
+      "commandPath": "commands/statusline.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "statusline",
+      "legacyRoutes": []
+    },
     "task": {
       "name": "task",
       "description": "The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.",
-      "skillPath": "skills/ca-task/SKILL.md",
+      "commandPath": "commands/task.md",
       "visibility": "core",
       "workflow": "operate",
       "canonical": "task",
@@ -359,7 +368,7 @@
     "threat-model": {
       "name": "threat-model",
       "description": "Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought.",
-      "skillPath": "skills/ca-threat-model/SKILL.md",
+      "commandPath": "commands/threat-model.md",
       "visibility": "advanced",
       "workflow": "review",
       "canonical": "threat-model",
@@ -368,7 +377,7 @@
     "tribunal": {
       "name": "tribunal",
       "description": "Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.",
-      "skillPath": "skills/ca-tribunal/SKILL.md",
+      "commandPath": "commands/tribunal.md",
       "visibility": "advanced",
       "workflow": "review",
       "canonical": "tribunal",
@@ -377,7 +386,7 @@
     "watch": {
       "name": "watch",
       "description": "Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges.",
-      "skillPath": "skills/ca-watch/SKILL.md",
+      "commandPath": "commands/watch.md",
       "visibility": "alias",
       "workflow": "ship",
       "canonical": "pr",

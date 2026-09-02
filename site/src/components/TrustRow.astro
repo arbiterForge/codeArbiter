@@ -2,10 +2,10 @@
 /**
  * TrustRow.astro — the landing page's trust-signal row.
  *
- * Four numeric tiles (gate IDs, commands, agents, skills) computed at build
+ * Four numeric tiles (gate IDs, core lanes, agents, skills) computed at build
  * time from `plugins/ca/` via `computeLandingStats()`, plus one qualitative
  * tile. The numbers are never hand-typed here, so a payload change (a new
- * hook gate, a new command) shows up on the next build without an edit to
+ * hook gate, a new core lane) shows up on the next build without an edit to
  * this file.
  */
 import { computeLandingStats } from "../../scripts/generator/landing-stats";
@@ -22,8 +22,8 @@ const tiles = [
     href: `${base}/reference/hooks-gates/`,
   },
   {
-    value: String(stats.commandCount),
-    label: "slash commands",
+    value: String(stats.coreLaneCount),
+    label: "core lanes",
     href: `${base}/reference/`,
   },
   {

@@ -140,19 +140,22 @@ class ParityCatalogCounts(unittest.TestCase):
     silent-drift shape as hand-written site prose, where a removed entry lives
     on in published docs because no gate reads both sides.
 
-    Counted from the generated catalogs the table itself names as its evidence,
-    so the test cannot agree with a stale table by construction.
+    Counted from the generated machine-readable catalogs. The grouped Markdown
+    projection deliberately gives internal and deprecated routes a leading
+    status column, so counting only rows whose first cell is a command would
+    silently omit those installed entries.
     """
 
-    _ROW = re.compile(r"(?m)^\| *`")
     _CATALOGS = {
-        "ca": Path("plugins") / "ca" / "COMMANDS.md",
-        "ca-codex": Path("plugins") / "ca-codex" / "COMMANDS.md",
-        "ca-pi": Path("plugins") / "ca-pi" / "COMMANDS.md",
+        "ca": Path("plugins") / "ca" / "generated" / "command-catalog.json",
+        "ca-codex": Path("plugins") / "ca-codex" / "generated" / "command-catalog.json",
+        "ca-pi": Path("plugins") / "ca-pi" / "generated" / "command-catalog.json",
     }
 
     def _generated_count(self, relpath):
-        return len(self._ROW.findall((REPO / relpath).read_text(encoding="utf-8")))
+        document = json.loads((REPO / relpath).read_text(encoding="utf-8"))
+        self.assertEqual(document["schemaVersion"], 1)
+        return len(document["commands"])
 
     def test_the_derived_counts_line_matches_the_generated_catalogs(self):
         parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")

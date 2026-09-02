@@ -161,7 +161,7 @@
     },
     "debug": {
       "name": "debug",
-      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca-fix, /ca-adr, or a no-action close.",
+      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to $ca-fix, $ca-adr, or a no-action close.",
       "skillPath": "skills/ca-debug/SKILL.md",
       "visibility": "advanced",
       "workflow": "change",
@@ -179,7 +179,7 @@
     },
     "doctor": {
       "name": "doctor",
-      "description": "Verify the active host install, package, command ownership, enforcement, wrapper self-test, and active-dispatch coverage gap. Read-only.",
+      "description": "Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only.",
       "skillPath": "skills/ca-doctor/SKILL.md",
       "visibility": "core",
       "workflow": "operate",
@@ -264,15 +264,6 @@
       "canonical": "preview",
       "legacyRoutes": []
     },
-    "prune": {
-      "name": "prune",
-      "description": "Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.",
-      "skillPath": "skills/ca-prune/SKILL.md",
-      "visibility": "advanced",
-      "workflow": "operate",
-      "canonical": "prune",
-      "legacyRoutes": []
-    },
     "reconcile": {
       "name": "reconcile",
       "description": "SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.",
@@ -311,7 +302,7 @@
     },
     "spike": {
       "name": "spike",
-      "description": "Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca-feature.",
+      "description": "Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or $ca-feature.",
       "skillPath": "skills/ca-spike/SKILL.md",
       "visibility": "core",
       "workflow": "change",

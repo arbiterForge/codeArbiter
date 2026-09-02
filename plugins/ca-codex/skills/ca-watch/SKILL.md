@@ -6,6 +6,12 @@ argument-hint: "<PR number | url | branch>"
 
 # $ca-watch — PR CI babysitter
 
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `$ca-pr --watch` for new usage. This installed route remains
+> functional under the command-route compatibility policy at [includes/command-compatibility.md](../../includes/command-compatibility.md);
+> continue with the unchanged watcher workflow below.
+<!-- catalog-compatibility-notice:end -->
+
 Watch a pull request's checks to completion without babysitting them by hand. The
 wait happens server-side, so it costs nothing while CI runs; arbiter wakes once, on
 the verdict — diagnoses a red, or offers you the merge on a green. Arbiter never

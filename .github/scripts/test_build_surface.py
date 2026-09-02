@@ -36,6 +36,60 @@ def _write(root, rel, text):
     return p
 
 
+_VISIBILITY_ORDER = ["core", "advanced", "alias", "internal", "deprecated"]
+_WORKFLOW_ORDER = [
+    "evaluate", "initialize", "change", "review", "decide", "ship",
+    "operate", "extend", "help",
+]
+_COMPATIBILITY = {
+    "clockStarts": "published-release",
+    "removalRequires": "separately-approved-major",
+    "targets": {
+        "claude": {
+            "publishedWithoutMetadata": "2.16.0",
+            "firstContainingRelease": None,
+            "retainThrough": "2.x",
+            "earliestRemoval": "3.0.0",
+        },
+        "codex": {
+            "publishedWithoutMetadata": "0.8.0",
+            "firstContainingRelease": None,
+            "retainThrough": "0.x",
+            "earliestRemoval": "1.0.0",
+        },
+        "pi": {
+            "publishedWithoutMetadata": "0.9.0",
+            "firstContainingRelease": None,
+            "retainThrough": "0.x",
+            "earliestRemoval": "1.0.0",
+        },
+    },
+}
+
+
+def _write_registry(root, commands, **overrides):
+    document = {
+        "schemaVersion": 1,
+        "visibilityOrder": _VISIBILITY_ORDER,
+        "workflowOrder": _WORKFLOW_ORDER,
+        "compatibility": _COMPATIBILITY,
+        "commands": dict(sorted(commands.items())),
+    }
+    document.update(overrides)
+    return _write(
+        root,
+        "core/surface/command-routes.json",
+        json.dumps(document, ensure_ascii=False, indent=2) + "\n",
+    )
+
+
+def _frontmatter(text):
+    end = text.find("\n---\n", 4)
+    if not text.startswith("---\n") or end < 0:
+        raise AssertionError("rendered command has no complete frontmatter")
+    return text[:end + len("\n---\n")]
+
+
 class _RepoCase(unittest.TestCase):
     """Base: a synthetic repo with a minimal surface tree."""
 
@@ -47,6 +101,23 @@ class _RepoCase(unittest.TestCase):
             self.repo,
             "core/hosts.json",
             (REPO_ROOT / "core" / "hosts.json").read_text(encoding="utf-8"),
+        )
+        _write_registry(
+            self.repo,
+            {
+                "init": {
+                    "visibility": "core", "workflow": "initialize",
+                    "canonical": "init", "legacyRoutes": [],
+                },
+                "status": {
+                    "visibility": "core", "workflow": "operate",
+                    "canonical": "status", "legacyRoutes": [],
+                },
+                "statusline": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "statusline", "legacyRoutes": [],
+                },
+            },
         )
         # A minimal but representative surface.
         _write(self.repo, "core/surface/commands/init.md",
@@ -70,7 +141,8 @@ class _RepoCase(unittest.TestCase):
         _write(self.repo, "core/surface/includes/codex-host-notes.md",
                "Codex-only operational notes.\n")
         _write(self.repo, "core/surface/COMMANDS.md",
-               "# catalog\n\n| {{CMD:init}} | opt in |\n{{IF:claude}}\n| {{CMD:statusline}} | statusline |\n{{END}}\n")
+               "# catalog\n\n<!-- command-visibility-summary -->\n\n"
+               "| {{CMD:init}} | opt in |\n{{IF:claude}}\n| {{CMD:statusline}} | statusline |\n{{END}}\n")
         _write(self.repo, "core/surface/SPRINT.md", "Sprint doc. {{CMD:init}}.\n")
         _write(self.repo, "core/surface/arbiter.md",
                "Persona. Invoke {{CMD:init}}. Paths: {{PLUGIN_ROOT}}/skills/.\n")
@@ -489,6 +561,404 @@ class CodexMappingTest(_RepoCase):
             )
         )
         self.assertNotIn("agents", manifest)
+
+
+class CommandCatalogTest(_RepoCase):
+    def setUp(self):
+        super().setUp()
+        _write(
+            self.repo,
+            "core/surface/commands/init.md",
+            "---\ndescription: Initialize a project.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:init}}\n\n"
+            "<!-- command-mode:--brownfield legacy-route:create-context -->\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/status.md",
+            "---\ndescription: Show project state.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:status}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/audit.md",
+            "---\ndescription: Assemble an audit packet.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:audit}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/conflict.md",
+            "---\ndescription: Surface a rule conflict.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:conflict}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/create-context.md",
+            "---\ndescription: Populate brownfield context.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:create-context}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/btw.md",
+            "---\ndescription: Answer a quick question.\nargument-hint: <question>\n---\n\n"
+            "# {{CMD:btw}}\n",
+        )
+        _write_registry(
+            self.repo,
+            {
+                "audit": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "audit", "legacyRoutes": [],
+                },
+                "btw": {
+                    "visibility": "deprecated", "workflow": "help",
+                    "replacement": "ask the question directly",
+                },
+                "conflict": {
+                    "visibility": "internal", "workflow": "decide",
+                    "canonical": "conflict", "legacyRoutes": [],
+                },
+                "create-context": {
+                    "visibility": "alias", "workflow": "initialize",
+                    "canonical": "init", "replacement": "init --brownfield",
+                },
+                "init": {
+                    "visibility": "core", "workflow": "initialize",
+                    "canonical": "init", "legacyRoutes": ["create-context"],
+                    "modes": ["--brownfield"],
+                },
+                "status": {
+                    "visibility": "core", "workflow": "operate",
+                    "canonical": "status", "legacyRoutes": [],
+                },
+                "statusline": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "statusline", "legacyRoutes": [],
+                },
+            },
+        )
+
+    def test_executable_frontmatter_retains_only_loader_facing_fields(self):
+        claude = self.render("claude")["commands/init.md"].decode()
+        codex = self.render("codex")["skills/ca-init/SKILL.md"].decode()
+        pi = self.render("pi")["skills/ca-init/SKILL.md"].decode()
+        self.assertEqual(
+            _frontmatter(claude),
+            "---\ndescription: Initialize a project.\nargument-hint: (none)\n---\n",
+        )
+        expected_skill = (
+            "---\nname: ca-init\ndescription: Initialize a project.\n"
+            "argument-hint: (none)\n---\n"
+        )
+        self.assertEqual(_frontmatter(codex), expected_skill)
+        self.assertEqual(_frontmatter(pi), expected_skill)
+
+    def test_pi_catalog_groups_installed_entries_and_reports_visibility_counts(self):
+        catalog = self.render("pi")["SKILLS.md"].decode()
+        self.assertIn(
+            "| Core | 2 |\n"
+            "| Advanced | 1 |\n"
+            "| Canonical total | 3 |\n"
+            "| Compatibility aliases | 1 |\n"
+            "| Internal | 1 |\n"
+            "| Deprecated | 1 |\n"
+            "| **Total** | **6** |",
+            catalog,
+        )
+        self.assertIn(
+            "## Core\n\n### Initialize\n\n"
+            "| Skill | Purpose |\n|---|---|\n"
+            "| `/ca-init` | Initialize a project. |",
+            catalog,
+        )
+        self.assertIn(
+            "## Advanced\n\n### Operate\n\n"
+            "| Skill | Purpose |\n|---|---|\n"
+            "| `/ca-audit` | Assemble an audit packet. |",
+            catalog,
+        )
+        self.assertIn(
+            "## Compatibility aliases\n\n### Initialize\n\n"
+            "| Skill | Purpose | Replacement |\n|---|---|---|\n"
+            "| `/ca-create-context` | Populate brownfield context. | `/ca-init --brownfield` |",
+            catalog,
+        )
+
+    def test_every_human_command_catalog_reports_host_visibility_counts(self):
+        expected = {
+            "claude": (2, 2, 1, 1, 1, 7),
+            "codex": (2, 1, 1, 1, 1, 6),
+            "pi": (2, 1, 1, 1, 1, 6),
+        }
+        for host, counts in expected.items():
+            with self.subTest(host=host):
+                catalog = self.render(host)["COMMANDS.md"].decode()
+                core, advanced, aliases, internal, deprecated, total = counts
+                self.assertIn(
+                    "## Installed surface\n\n"
+                    "| Visibility | Count |\n"
+                    "|---|---:|\n"
+                    f"| Core | {core} |\n"
+                    f"| Advanced | {advanced} |\n"
+                    f"| Canonical total | {core + advanced} |\n"
+                    f"| Compatibility aliases | {aliases} |\n"
+                    f"| Internal | {internal} |\n"
+                    f"| Deprecated | {deprecated} |\n"
+                    f"| **Total** | **{total}** |",
+                    catalog,
+                )
+
+    def test_all_hosts_receive_literal_sidecars_for_their_installed_routes(self):
+        claude = json.loads(self.render("claude")["generated/command-catalog.json"])
+        codex = json.loads(self.render("codex")["generated/command-catalog.json"])
+        pi = json.loads(self.render("pi")["generated/command-catalog.json"])
+        expected_entries = [
+            {
+                "name": "audit", "description": "Assemble an audit packet.",
+                "skillPath": "skills/ca-audit/SKILL.md",
+                "visibility": "advanced", "workflow": "operate", "canonical": "audit",
+                "legacyRoutes": [],
+            },
+            {
+                "name": "btw", "description": "Answer a quick question.",
+                "skillPath": "skills/ca-btw/SKILL.md",
+                "visibility": "deprecated", "workflow": "help",
+                "replacement": "ask the question directly",
+            },
+            {
+                "name": "conflict", "description": "Surface a rule conflict.",
+                "skillPath": "skills/ca-conflict/SKILL.md",
+                "visibility": "internal", "workflow": "decide", "canonical": "conflict",
+                "legacyRoutes": [],
+            },
+            {
+                "name": "create-context", "description": "Populate brownfield context.",
+                "skillPath": "skills/ca-create-context/SKILL.md",
+                "visibility": "alias", "workflow": "initialize", "canonical": "init",
+                "replacement": "init --brownfield",
+            },
+            {
+                "name": "init", "description": "Initialize a project.",
+                "skillPath": "skills/ca-init/SKILL.md",
+                "visibility": "core", "workflow": "initialize", "canonical": "init",
+                "legacyRoutes": ["create-context"],
+            },
+            {
+                "name": "status", "description": "Show project state.",
+                "skillPath": "skills/ca-status/SKILL.md",
+                "visibility": "core", "workflow": "operate", "canonical": "status",
+                "legacyRoutes": [],
+            },
+        ]
+        expected_pi = {
+            "schemaVersion": 1,
+            "visibilityOrder": _VISIBILITY_ORDER,
+            "workflowOrder": _WORKFLOW_ORDER,
+            "compatibility": _COMPATIBILITY,
+            "commands": {item["name"]: item for item in expected_entries},
+        }
+        self.assertEqual(pi, expected_pi)
+        self.assertEqual(set(codex["commands"]), set(expected_pi["commands"]))
+        self.assertEqual(
+            set(claude["commands"]),
+            {"audit", "btw", "conflict", "create-context", "init", "status", "statusline"},
+        )
+        self.assertEqual(claude["commands"]["audit"]["commandPath"], "commands/audit.md")
+        self.assertEqual(codex["commands"]["audit"]["skillPath"], "skills/ca-audit/SKILL.md")
+
+    def test_invalid_registry_schema_and_alias_graphs_fail_specifically(self):
+        def valid_commands():
+            return {
+                "pr": {
+                    "visibility": "core", "workflow": "ship", "canonical": "pr",
+                    "legacyRoutes": ["cleanup"], "modes": ["--cleanup"],
+                },
+                "cleanup": {
+                    "visibility": "alias", "workflow": "ship", "canonical": "pr",
+                    "replacement": "pr --cleanup",
+                },
+                "audit": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "audit", "legacyRoutes": [],
+                },
+                "conflict": {
+                    "visibility": "internal", "workflow": "decide",
+                    "canonical": "conflict", "legacyRoutes": [],
+                },
+                "btw": {
+                    "visibility": "deprecated", "workflow": "help",
+                    "replacement": "ask the question directly",
+                },
+            }
+
+        cases = []
+
+        def case(label, message, mutate, command_names=None, body_markers=None):
+            commands = valid_commands()
+            mutate(commands)
+            cases.append((label, message, commands, command_names, body_markers))
+
+        case("missing visibility", "visibility", lambda items: items["cleanup"].pop("visibility"))
+        case("invalid visibility", "visibility", lambda items: items["cleanup"].update(visibility="public"))
+        case("missing workflow", "workflow", lambda items: items["cleanup"].pop("workflow"))
+        case("invalid workflow", "workflow", lambda items: items["cleanup"].update(workflow="triage"))
+        case("canonical missing", "canonical", lambda items: items["pr"].pop("canonical"))
+        case("canonical mismatch", "must equal its route slug", lambda items: items["pr"].update(canonical="review"))
+        case("legacy routes missing", "legacyRoutes", lambda items: items["pr"].pop("legacyRoutes"))
+        case("legacy routes not a list", "legacyRoutes", lambda items: items["pr"].update(legacyRoutes="cleanup"))
+        case("duplicate legacy routes", "legacyRoutes.*duplicate", lambda items: items["pr"].update(legacyRoutes=["cleanup", "cleanup"]))
+        case("alias replacement missing", "replacement", lambda items: items["cleanup"].pop("replacement"))
+        case("dangling target", "target.*missing", lambda items: items["cleanup"].update(canonical="missing"))
+        def drop_reverse_route(items):
+            items["pr"].update(legacyRoutes=["cleanup", "ghost"])
+        case("reverse legacy route missing", "legacy route closure", drop_reverse_route)
+        case("replacement canonical mismatch", "replacement.*canonical", lambda items: items["cleanup"].update(replacement="init --cleanup"))
+        case("replacement mode undeclared", "replacement mode", lambda items: items["cleanup"].update(replacement="pr --watch"))
+        case("modes missing", "modes", lambda items: items["pr"].pop("modes"))
+        case("deprecated guidance missing", "replacement", lambda items: items["btw"].pop("replacement"))
+
+        def alias_chain(items):
+            items["redirect"] = {
+                "visibility": "alias", "workflow": "ship", "canonical": "cleanup",
+                "replacement": "cleanup --again",
+            }
+        case("alias chain", "alias target", alias_chain)
+
+        def unsorted(items):
+            items["watch"] = {
+                "visibility": "alias", "workflow": "ship", "canonical": "pr",
+                "replacement": "pr --watch",
+            }
+            items["pr"].update(
+                legacyRoutes=["watch", "cleanup"], modes=["--watch", "--cleanup"]
+            )
+        case("unsorted legacy routes and modes", "sorted", unsorted)
+
+        def host_excluded(items):
+            items.clear()
+            items["statusline"] = {
+                "visibility": "advanced", "workflow": "operate",
+                "canonical": "statusline", "legacyRoutes": ["cleanup"],
+                "modes": ["--cleanup"],
+            }
+            items["cleanup"] = {
+                "visibility": "alias", "workflow": "operate",
+                "canonical": "statusline", "replacement": "statusline --cleanup",
+            }
+        case("host-excluded target", "not installed.*codex", host_excluded)
+
+        case(
+            "registry missing a command", "inventory.*missing",
+            lambda items: items.pop("cleanup"),
+            command_names=["pr", "cleanup", "audit", "conflict", "btw"],
+        )
+        case(
+            "registry has an extra command", "inventory.*extra",
+            lambda items: items.update(ghost={
+                "visibility": "advanced", "workflow": "help",
+                "canonical": "ghost", "legacyRoutes": [],
+            }),
+            command_names=["pr", "cleanup", "audit", "conflict", "btw"],
+        )
+        case(
+            "mode marker missing", "command-mode.*missing",
+            lambda items: None,
+            body_markers={"pr": ""},
+        )
+
+        for label, message, commands, command_names, body_markers in cases:
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as repo:
+                _write(repo, "core/hosts.json",
+                       (REPO_ROOT / "core/hosts.json").read_text(encoding="utf-8"))
+                names = command_names or list(commands)
+                markers = {"pr": "<!-- command-mode:--cleanup legacy-route:cleanup -->\n"}
+                markers.update(body_markers or {})
+                for name in names:
+                    _write(
+                        repo,
+                        f"core/surface/commands/{name}.md",
+                        "---\ndescription: test\nargument-hint: (none)\n---\n\n"
+                        f"# {{{{CMD:{name}}}}}\n\n{markers.get(name, '')}",
+                    )
+                _write_registry(repo, commands)
+                with self.assertRaisesRegex(B.SurfaceError, message):
+                    B.render_all(repo, "claude")
+
+    def test_registry_json_rejects_duplicate_keys_and_unknown_top_level_fields(self):
+        duplicate = (
+            '{"schemaVersion":1,"visibilityOrder":[],"workflowOrder":[],'
+            '"compatibility":{},"commands":{},"commands":{}}\n'
+        )
+        _write(self.repo, "core/surface/command-routes.json", duplicate)
+        with self.assertRaisesRegex(B.SurfaceError, "duplicate.*commands"):
+            self.render("claude")
+
+        _write_registry(self.repo, {}, surprise=True)
+        with self.assertRaisesRegex(B.SurfaceError, "unknown.*surprise"):
+            self.render("claude")
+
+    def test_first_containing_release_must_follow_the_published_baseline(self):
+        registry_path = Path(self.repo) / "core/surface/command-routes.json"
+        original = json.loads(registry_path.read_text(encoding="utf-8"))
+        for version, message in (
+            ("2.16.0", "must follow publishedWithoutMetadata"),
+            ("3.0.0", "outside retainThrough"),
+        ):
+            with self.subTest(version=version):
+                document = json.loads(json.dumps(original))
+                document["compatibility"]["targets"]["claude"][
+                    "firstContainingRelease"
+                ] = version
+                _write(
+                    self.repo,
+                    "core/surface/command-routes.json",
+                    json.dumps(document, indent=2) + "\n",
+                )
+                with self.assertRaisesRegex(B.SurfaceError, message):
+                    self.render("claude")
+        _write(
+            self.repo,
+            "core/surface/command-routes.json",
+            json.dumps(original, indent=2) + "\n",
+        )
+        self.render("claude")
+
+    def test_real_registry_taxonomy_and_host_gaps_are_frozen(self):
+        expected = {
+            "core": {
+                "add-dep", "adr", "chore", "commit", "doctor", "feature", "fix",
+                "init", "override", "pr", "preview", "refactor", "release", "review",
+                "spike", "sprint", "status", "task",
+            },
+            "advanced": {
+                "adr-status", "audit", "checkpoint", "commands", "debug", "metrics",
+                "new-skill", "prune", "reconcile", "standup", "statusline",
+                "threat-model", "tribunal",
+            },
+            "alias": {"cleanup", "context-check", "create-context", "decompose", "watch"},
+            "internal": {"conflict"},
+            "deprecated": {"btw"},
+        }
+        catalogs = {
+            host: json.loads(B.render_all(str(REPO_ROOT), host)["generated/command-catalog.json"])
+            for host in ("claude", "codex", "pi")
+        }
+        claude_by_visibility = {
+            visibility: {entry["name"] for entry in catalogs["claude"]["commands"].values()
+                         if entry["visibility"] == visibility}
+            for visibility in expected
+        }
+        self.assertEqual(claude_by_visibility, expected)
+        all_routes = set().union(*expected.values())
+        self.assertEqual(set(catalogs["claude"]["commands"]), all_routes)
+        self.assertEqual(
+            set(catalogs["codex"]["commands"]),
+            all_routes - {"prune", "statusline"},
+        )
+        self.assertEqual(
+            set(catalogs["pi"]["commands"]),
+            all_routes - {"statusline"},
+        )
 
 
 class PiMappingTest(_RepoCase):

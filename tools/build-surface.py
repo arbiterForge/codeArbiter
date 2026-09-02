@@ -68,6 +68,24 @@ _AGENT_FRONTMATTER_STRIPPERS = {
     "relative": _CODEX_ONLY_AGENT_FRONTMATTER,
 }
 _PI_ROLE_NAME = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
+_MODE_NAME = re.compile(r"^(?:--)?[a-z][a-z0-9-]*$")
+_SEMVER = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
+_RETAIN_THROUGH = re.compile(r"^(0|[1-9][0-9]*)\.x$")
+_COMMAND_MODE_MARKER = re.compile(
+    r"<!-- command-mode:(?P<mode>(?:--)?[a-z][a-z0-9-]*) "
+    r"legacy-route:(?P<route>[a-z][a-z0-9-]*) -->"
+)
+_VISIBILITY_ORDER = ("core", "advanced", "alias", "internal", "deprecated")
+_WORKFLOW_ORDER = (
+    "evaluate", "initialize", "change", "review", "decide", "ship",
+    "operate", "extend", "help",
+)
+_REGISTRY_KEYS = frozenset({
+    "schemaVersion", "visibilityOrder", "workflowOrder", "compatibility", "commands",
+})
+_COMMAND_METADATA_KEYS = frozenset({
+    "visibility", "workflow", "canonical", "legacyRoutes", "modes", "replacement",
+})
 _CODEX_POLICY_NAMES = {
     "author": frozenset({"backend-author", "frontend-author", "infra-author"}),
     "read-only reviewer/extractor": frozenset({
@@ -321,6 +339,16 @@ def _frontmatter_description(text, where):
     raise SurfaceError(f"{where}: frontmatter has no description")
 
 
+def _decoded_frontmatter_description(text, where):
+    description = _frontmatter_description(text, where)
+    if description.startswith('"'):
+        try:
+            description = json.loads(description)
+        except json.JSONDecodeError as error:
+            raise SurfaceError(f"{where}: invalid quoted description: {error}") from error
+    return description
+
+
 def _frontmatter_value(text, key, where):
     """Return one simple scalar from rendered agent frontmatter."""
     if not text.startswith("---\n"):
@@ -349,6 +377,308 @@ def _frontmatter_list(text, key, where):
     if len(set(items)) != len(items):
         raise SurfaceError(f"{where}: {key} contains a duplicate skill")
     return items
+
+
+def _reject_duplicate_json_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key {key!r}")
+        result[key] = value
+    return result
+
+
+def _registry_string_list(value, key, where, pattern=_PI_ROLE_NAME):
+    if not isinstance(value, list):
+        raise SurfaceError(f"{where}: {key} must be an array")
+    if any(not isinstance(item, str) or not pattern.fullmatch(item) for item in value):
+        raise SurfaceError(f"{where}: {key} contains an invalid value")
+    if len(set(value)) != len(value):
+        raise SurfaceError(f"{where}: {key} contains a duplicate value")
+    if value != sorted(value):
+        raise SurfaceError(f"{where}: {key} must be sorted")
+    return tuple(value)
+
+
+def _validate_compatibility_policy(value, descriptors, where):
+    if not isinstance(value, dict):
+        raise SurfaceError(f"{where}: compatibility must be an object")
+    expected_keys = {"clockStarts", "removalRequires", "targets"}
+    if set(value) != expected_keys:
+        raise SurfaceError(
+            f"{where}: compatibility requires exactly {sorted(expected_keys)!r}"
+        )
+    if value["clockStarts"] != "published-release":
+        raise SurfaceError(f"{where}: compatibility.clockStarts must be 'published-release'")
+    if value["removalRequires"] != "separately-approved-major":
+        raise SurfaceError(
+            f"{where}: compatibility.removalRequires must be 'separately-approved-major'"
+        )
+    targets = value["targets"]
+    host_names = {descriptor.name for descriptor in descriptors}
+    if not isinstance(targets, dict) or set(targets) != host_names:
+        raise SurfaceError(
+            f"{where}: compatibility.targets must match hosts {sorted(host_names)!r}"
+        )
+    target_keys = {
+        "publishedWithoutMetadata",
+        "firstContainingRelease",
+        "retainThrough",
+        "earliestRemoval",
+    }
+    for host in sorted(targets):
+        target = targets[host]
+        target_where = f"{where}: compatibility.targets.{host}"
+        if not isinstance(target, dict) or set(target) != target_keys:
+            raise SurfaceError(
+                f"{target_where} requires exactly {sorted(target_keys)!r}"
+            )
+        published_without_metadata = target["publishedWithoutMetadata"]
+        first_containing_release = target["firstContainingRelease"]
+        retention = target["retainThrough"]
+        removal = target["earliestRemoval"]
+        baseline_match = (
+            _SEMVER.fullmatch(published_without_metadata)
+            if isinstance(published_without_metadata, str)
+            else None
+        )
+        first_containing_match = (
+            _SEMVER.fullmatch(first_containing_release)
+            if isinstance(first_containing_release, str)
+            else None
+        )
+        retention_match = (
+            _RETAIN_THROUGH.fullmatch(retention) if isinstance(retention, str) else None
+        )
+        removal_match = _SEMVER.fullmatch(removal) if isinstance(removal, str) else None
+        if (
+            not baseline_match
+            or first_containing_release is not None and not first_containing_match
+            or not retention_match
+            or not removal_match
+        ):
+            raise SurfaceError(f"{target_where} has an invalid version boundary")
+        retained_major = int(retention_match.group(1))
+        if int(baseline_match.group(1)) != retained_major:
+            raise SurfaceError(
+                f"{target_where}: publishedWithoutMetadata is outside retainThrough"
+            )
+        if first_containing_match:
+            baseline_version = tuple(map(int, baseline_match.groups()))
+            first_containing_version = tuple(map(int, first_containing_match.groups()))
+            if int(first_containing_match.group(1)) != retained_major:
+                raise SurfaceError(
+                    f"{target_where}: firstContainingRelease is outside retainThrough"
+                )
+            if first_containing_version <= baseline_version:
+                raise SurfaceError(
+                    f"{target_where}: firstContainingRelease must follow "
+                    "publishedWithoutMetadata"
+                )
+        if tuple(map(int, removal_match.groups())) != (retained_major + 1, 0, 0):
+            raise SurfaceError(
+                f"{target_where}: earliestRemoval must be the next major boundary"
+            )
+
+
+def _load_command_registry(repo, command_names, descriptors):
+    rel = "command-routes.json"
+    where = "core/surface/command-routes.json"
+    path = os.path.join(repo, "core", "surface", rel)
+    try:
+        text = _read_template(path, where)
+    except OSError as error:
+        raise SurfaceError(f"{where}: missing canonical command registry") from error
+    try:
+        document = json.loads(text, object_pairs_hook=_reject_duplicate_json_keys)
+    except (json.JSONDecodeError, ValueError) as error:
+        raise SurfaceError(f"{where}: invalid JSON: {error}") from error
+    if not isinstance(document, dict):
+        raise SurfaceError(f"{where}: registry root must be an object")
+    unknown = sorted(set(document) - _REGISTRY_KEYS)
+    missing = sorted(_REGISTRY_KEYS - set(document))
+    if unknown:
+        raise SurfaceError(f"{where}: unknown top-level field(s) {unknown!r}")
+    if missing:
+        raise SurfaceError(f"{where}: missing top-level field(s) {missing!r}")
+    if type(document["schemaVersion"]) is not int or document["schemaVersion"] != 1:
+        raise SurfaceError(f"{where}: schemaVersion must be 1")
+    if document["visibilityOrder"] != list(_VISIBILITY_ORDER):
+        raise SurfaceError(f"{where}: visibilityOrder must be {list(_VISIBILITY_ORDER)!r}")
+    if document["workflowOrder"] != list(_WORKFLOW_ORDER):
+        raise SurfaceError(f"{where}: workflowOrder must be {list(_WORKFLOW_ORDER)!r}")
+    _validate_compatibility_policy(document["compatibility"], descriptors, where)
+
+    commands = document["commands"]
+    if not isinstance(commands, dict):
+        raise SurfaceError(f"{where}: commands must be an object")
+    if list(commands) != sorted(commands):
+        raise SurfaceError(f"{where}: command keys must be sorted")
+    registry_names = set(commands)
+    source_names = set(command_names)
+    if registry_names != source_names:
+        missing_routes = sorted(source_names - registry_names)
+        extra_routes = sorted(registry_names - source_names)
+        raise SurfaceError(
+            f"{where}: command inventory mismatch; missing={missing_routes!r}, "
+            f"extra={extra_routes!r}"
+        )
+
+    normalized = {}
+    canonical_visibilities = frozenset({"core", "advanced", "internal"})
+    for name, metadata in commands.items():
+        command_where = f"{where}: commands.{name}"
+        if not _PI_ROLE_NAME.fullmatch(name):
+            raise SurfaceError(f"{command_where}: invalid route slug")
+        if not isinstance(metadata, dict):
+            raise SurfaceError(f"{command_where}: metadata must be an object")
+        unknown_fields = sorted(set(metadata) - _COMMAND_METADATA_KEYS)
+        if unknown_fields:
+            raise SurfaceError(f"{command_where}: unknown field(s) {unknown_fields!r}")
+        visibility = metadata.get("visibility")
+        workflow = metadata.get("workflow")
+        if visibility not in _VISIBILITY_ORDER:
+            raise SurfaceError(f"{command_where}: visibility must be one of {_VISIBILITY_ORDER!r}")
+        if workflow not in _WORKFLOW_ORDER:
+            raise SurfaceError(f"{command_where}: workflow must be one of {_WORKFLOW_ORDER!r}")
+
+        item = {"visibility": visibility, "workflow": workflow}
+        if visibility in canonical_visibilities:
+            required = {"visibility", "workflow", "canonical", "legacyRoutes"}
+            if not required.issubset(metadata):
+                raise SurfaceError(
+                    f"{command_where}: canonical metadata requires canonical and legacyRoutes"
+                )
+            if metadata["canonical"] != name:
+                raise SurfaceError(
+                    f"{command_where}: canonical must equal its route slug {name!r}"
+                )
+            legacy_routes = _registry_string_list(
+                metadata["legacyRoutes"], "legacyRoutes", command_where
+            )
+            item.update(canonical=name, legacyRoutes=legacy_routes)
+            if legacy_routes:
+                if "modes" not in metadata:
+                    raise SurfaceError(
+                        f"{command_where}: modes is required when legacyRoutes is non-empty"
+                    )
+                item["modes"] = _registry_string_list(
+                    metadata["modes"], "modes", command_where, pattern=_MODE_NAME
+                )
+            elif "modes" in metadata:
+                raise SurfaceError(
+                    f"{command_where}: modes is only allowed with non-empty legacyRoutes"
+                )
+            if "replacement" in metadata:
+                raise SurfaceError(f"{command_where}: canonical routes cannot declare replacement")
+        elif visibility == "alias":
+            required = {"visibility", "workflow", "canonical", "replacement"}
+            if set(metadata) != required:
+                raise SurfaceError(
+                    f"{command_where}: alias metadata requires exactly {sorted(required)!r}"
+                )
+            canonical = metadata["canonical"]
+            replacement = metadata["replacement"]
+            if not isinstance(canonical, str) or not _PI_ROLE_NAME.fullmatch(canonical):
+                raise SurfaceError(f"{command_where}: canonical is not a valid route slug")
+            if not isinstance(replacement, str) or not replacement:
+                raise SurfaceError(f"{command_where}: replacement must be a non-empty string")
+            item.update(canonical=canonical, replacement=replacement)
+        else:
+            required = {"visibility", "workflow", "replacement"}
+            allowed = required | {"canonical"}
+            if not required.issubset(metadata) or not set(metadata).issubset(allowed):
+                raise SurfaceError(
+                    f"{command_where}: deprecated metadata requires replacement guidance"
+                )
+            replacement = metadata["replacement"]
+            if not isinstance(replacement, str) or not replacement:
+                raise SurfaceError(f"{command_where}: replacement must be a non-empty string")
+            item["replacement"] = replacement
+            if "canonical" in metadata:
+                canonical = metadata["canonical"]
+                if not isinstance(canonical, str) or not _PI_ROLE_NAME.fullmatch(canonical):
+                    raise SurfaceError(f"{command_where}: canonical is not a valid route slug")
+                item["canonical"] = canonical
+        normalized[name] = item
+
+    forward = {
+        name: metadata for name, metadata in normalized.items()
+        if metadata["visibility"] == "alias"
+    }
+    expected_reverse = {name: [] for name in normalized}
+    replacement_modes = {name: [] for name in normalized}
+    for alias, metadata in forward.items():
+        alias_where = f"{where}: commands.{alias}"
+        target_name = metadata["canonical"]
+        target = normalized.get(target_name)
+        if target is None:
+            raise SurfaceError(f"{alias_where}: alias target {target_name!r} is missing")
+        if target["visibility"] not in canonical_visibilities:
+            raise SurfaceError(
+                f"{alias_where}: alias target {target_name!r} is not a canonical route"
+            )
+        tokens = metadata["replacement"].split()
+        if len(tokens) != 2 or tokens[0] != target_name:
+            raise SurfaceError(
+                f"{alias_where}: replacement canonical must be exactly {target_name!r}"
+            )
+        mode = tokens[1]
+        if not _MODE_NAME.fullmatch(mode):
+            raise SurfaceError(f"{alias_where}: replacement mode is invalid")
+        if mode not in target.get("modes", ()):
+            raise SurfaceError(
+                f"{alias_where}: replacement mode {mode!r} is not declared by {target_name!r}"
+            )
+        expected_reverse[target_name].append(alias)
+        replacement_modes[target_name].append(mode)
+        for descriptor in descriptors:
+            alias_output, _ = _output_rel(f"commands/{alias}.md", descriptor)
+            target_output, _ = _output_rel(f"commands/{target_name}.md", descriptor)
+            if alias_output is not None and target_output is None:
+                raise SurfaceError(
+                    f"{alias_where}: target {target_name!r} is not installed on {descriptor.name}"
+                )
+
+    for name, metadata in normalized.items():
+        if metadata["visibility"] not in canonical_visibilities:
+            continue
+        actual_routes = tuple(sorted(expected_reverse[name]))
+        if metadata["legacyRoutes"] != actual_routes:
+            raise SurfaceError(
+                f"{where}: commands.{name}: legacy route closure mismatch; "
+                f"declared={list(metadata['legacyRoutes'])!r}, actual={list(actual_routes)!r}"
+            )
+        actual_modes = tuple(sorted(replacement_modes[name]))
+        if metadata.get("modes", ()) != actual_modes:
+            raise SurfaceError(
+                f"{where}: commands.{name}: modes must exactly close replacement modes; "
+                f"declared={list(metadata.get('modes', ()))!r}, actual={list(actual_modes)!r}"
+            )
+        command_path = os.path.join(
+            repo, "core", "surface", "commands", name + ".md"
+        )
+        command_where = f"core/surface/commands/{name}.md"
+        command_text = _read_template(command_path, command_where)
+        markers = [
+            (match.group("mode"), match.group("route"))
+            for match in _COMMAND_MODE_MARKER.finditer(command_text)
+        ]
+        expected_markers = sorted(
+            (forward[route]["replacement"].split()[1], route)
+            for route in metadata["legacyRoutes"]
+        )
+        if len(markers) != len(expected_markers) or set(markers) != set(expected_markers):
+            missing_markers = sorted(set(expected_markers) - set(markers))
+            extra_markers = sorted(set(markers) - set(expected_markers))
+            raise SurfaceError(
+                f"{command_where}: command-mode marker closure mismatch; "
+                f"missing={missing_markers!r}, extra={extra_markers!r}"
+            )
+
+    result = dict(document)
+    result["commands"] = normalized
+    return result
 
 
 def _pi_role_catalog(out):
@@ -504,6 +834,8 @@ def _surface_files(repo, descriptors=None):
         for name in sorted(filenames):
             rel = os.path.relpath(os.path.join(dirpath, name), surface)
             rel = rel.replace(os.sep, "/")
+            if rel == "command-routes.json":
+                continue
             if any(rel.startswith(rule.source_prefix)
                    for host in descriptors for rule in host.surface_rules):
                 rels.append(rel)
@@ -555,6 +887,7 @@ def render_all(repo, host, descriptors=None):
     surface = os.path.join(repo, "core", "surface")
     rels = _surface_files(repo, descriptors)
     cmd_names = _command_names(rels)
+    registry = _load_command_registry(repo, cmd_names, descriptors)
     resource_paths = set()
     for rel in rels:
         dst, _rule = _output_rel(rel, descriptor)
@@ -573,7 +906,7 @@ def render_all(repo, host, descriptors=None):
                 resource_paths.add(path)
     resource_paths = frozenset(resource_paths)
     out = {}
-    catalog = []  # (skill name, description) for an optional host catalog
+    catalog = []  # installed command records for host catalogs and JSON sidecars
     for rel in rels:
         dst, rule = _output_rel(rel, descriptor)
         if dst is None:
@@ -585,8 +918,13 @@ def render_all(repo, host, descriptors=None):
             descriptor=descriptor, host_names=host_names, output_path=dst,
             resource_paths=resource_paths,
         )
+        command_name = (
+            rel[len("commands/"):-len(".md")]
+            if rel.startswith("commands/") and rel.endswith(".md")
+            else None
+        )
         if rule.add_skill_frontmatter:
-            name = rel[len("commands/"):-len(".md")]
+            name = command_name
             rendered = _synth_skill_frontmatter(rendered, name, where)
             frontmatter_end = rendered.find("\n---\n", 4)
             body = rendered[frontmatter_end + len("\n---\n"):]
@@ -594,42 +932,64 @@ def render_all(repo, host, descriptors=None):
                 raise SurfaceError(
                     f"{where}: reserved </skill> terminator in generated skill body"
                 )
-            catalog.append((name,
-                            _frontmatter_description(rendered, where)))
+        if command_name is not None:
+            metadata = registry["commands"][command_name]
+            entry = {
+                "name": command_name,
+                "description": _decoded_frontmatter_description(rendered, where),
+                ("skillPath" if rule.add_skill_frontmatter else "commandPath"): dst,
+                "visibility": metadata["visibility"],
+                "workflow": metadata["workflow"],
+            }
+            for key in ("canonical", "replacement"):
+                if key in metadata:
+                    entry[key] = metadata[key]
+            if "legacyRoutes" in metadata:
+                entry["legacyRoutes"] = list(metadata["legacyRoutes"])
+            catalog.append(entry)
         if dst in out:
             raise SurfaceError(f"{where}: output collision at "
                                f"{descriptor.plugin_dir}/{dst}")
         out[dst] = rendered.encode("utf-8")
+    command_catalog = "COMMANDS.md"
+    if command_catalog in out:
+        rendered_catalog = out[command_catalog].decode("utf-8")
+        marker = "<!-- command-visibility-summary -->"
+        if rendered_catalog.count(marker) != 1:
+            raise SurfaceError(
+                "core/surface/COMMANDS.md: expected exactly one "
+                f"{marker} marker"
+            )
+        out[command_catalog] = rendered_catalog.replace(
+            marker, _visibility_count_table(catalog)
+        ).encode("utf-8")
     if descriptor.catalog is not None:
         dst = descriptor.catalog
         if dst in out:
             raise SurfaceError(f"{descriptor.plugin_dir}/{dst} collides with the "
                                "generated skill catalog")
-        out[dst] = _host_catalog(descriptor, sorted(catalog)).encode("utf-8")
+        out[dst] = _host_catalog(descriptor, catalog, registry).encode("utf-8")
     if descriptor.name == "codex" and "agents/INDEX.md" in out:
         dst = "agents/INDEX.md"
         out[dst] += _codex_dispatch_policy(out).encode("utf-8")
         out[dst] += _codex_agent_route_contract(out).encode("utf-8")
-    if descriptor.command_form == "/ca-{name}":
-        dst = "generated/command-catalog.json"
-        if dst in out:
-            raise SurfaceError(f"{descriptor.plugin_dir}/{dst} collides with the "
-                               "generated command catalog")
-        entries = []
-        for name, description in sorted(catalog):
-            if description.startswith('"'):
-                try:
-                    description = json.loads(description)
-                except json.JSONDecodeError as error:
-                    raise SurfaceError(
-                        f"core/surface/commands/{name}.md: invalid quoted description: {error}"
-                    ) from error
-            entries.append({
-                "name": name,
-                "description": description,
-                "skillPath": f"skills/ca-{name}/SKILL.md",
-            })
-        out[dst] = (json.dumps(entries, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    dst = "generated/command-catalog.json"
+    if dst in out:
+        raise SurfaceError(f"{descriptor.plugin_dir}/{dst} collides with the "
+                           "generated command catalog")
+    catalog_document = {
+        "schemaVersion": registry["schemaVersion"],
+        "visibilityOrder": registry["visibilityOrder"],
+        "workflowOrder": registry["workflowOrder"],
+        "compatibility": registry["compatibility"],
+        "commands": {
+            entry["name"]: entry
+            for entry in sorted(catalog, key=lambda item: item["name"])
+        },
+    }
+    out[dst] = (
+        json.dumps(catalog_document, ensure_ascii=False, indent=2) + "\n"
+    ).encode("utf-8")
     if descriptor.name == "pi":
         dst = "generated/roles.json"
         if dst in out:
@@ -638,7 +998,52 @@ def render_all(repo, host, descriptors=None):
     return out
 
 
-def _host_catalog(descriptor, entries):
+def _host_native_replacement(descriptor, entry):
+    replacement = entry.get("replacement")
+    if not replacement:
+        return ""
+    if entry["visibility"] != "alias":
+        return replacement
+    command, mode = replacement.split(" ", 1)
+    return descriptor.command_form.format(name=command) + " " + mode
+
+
+def _visibility_counts(entries):
+    return {
+        visibility: sum(entry["visibility"] == visibility for entry in entries)
+        for visibility in _VISIBILITY_ORDER
+    }
+
+
+def _visibility_count_table(entries):
+    counts = _visibility_counts(entries)
+    canonical_count = counts["core"] + counts["advanced"]
+    return "\n".join([
+        "## Installed surface",
+        "",
+        "| Visibility | Count |",
+        "|---|---:|",
+        f"| Core | {counts['core']} |",
+        f"| Advanced | {counts['advanced']} |",
+        f"| Canonical total | {canonical_count} |",
+        f"| Compatibility aliases | {counts['alias']} |",
+        f"| Internal | {counts['internal']} |",
+        f"| Deprecated | {counts['deprecated']} |",
+        f"| **Total** | **{len(entries)}** |",
+    ])
+
+
+def _host_catalog(descriptor, entries, registry):
+    labels = {
+        "core": "Core",
+        "advanced": "Advanced",
+        "alias": "Compatibility aliases",
+        "internal": "Internal",
+        "deprecated": "Deprecated",
+    }
+    workflow_labels = {name: name.capitalize() for name in _WORKFLOW_ORDER}
+    counts = _visibility_counts(entries)
+    canonical_count = counts["core"] + counts["advanced"]
     lines = [
         f"# ca-{descriptor.name} skills — catalog (surface scan)",
         "",
@@ -646,11 +1051,50 @@ def _host_catalog(descriptor, entries):
         "Each entry skill wraps one governance command; a body loads only when its",
         "skill is invoked — never bulk-read this directory.",
         "",
-        "| Skill | Purpose |",
-        "|---|---|",
+        "## Installed surface",
+        "",
+        "| Visibility | Count |",
+        "|---|---:|",
+        f"| Core | {counts['core']} |",
+        f"| Advanced | {counts['advanced']} |",
+        f"| Canonical total | {canonical_count} |",
+        f"| Compatibility aliases | {counts['alias']} |",
+        f"| Internal | {counts['internal']} |",
+        f"| Deprecated | {counts['deprecated']} |",
+        f"| **Total** | **{len(entries)}** |",
     ]
-    lines += [f"| `{descriptor.command_form.format(name=name)}` | {desc} |"
-              for name, desc in entries]
+    for visibility in registry["visibilityOrder"]:
+        visibility_entries = [
+            entry for entry in entries if entry["visibility"] == visibility
+        ]
+        if not visibility_entries:
+            continue
+        lines += ["", f"## {labels[visibility]}"]
+        for workflow in registry["workflowOrder"]:
+            group = sorted(
+                (entry for entry in visibility_entries if entry["workflow"] == workflow),
+                key=lambda entry: entry["name"],
+            )
+            if not group:
+                continue
+            with_replacement = visibility in ("alias", "deprecated")
+            lines += ["", f"### {workflow_labels[workflow]}", ""]
+            if with_replacement:
+                lines += ["| Skill | Purpose | Replacement |", "|---|---|---|"]
+            else:
+                lines += ["| Skill | Purpose |", "|---|---|"]
+            for entry in group:
+                route = descriptor.command_form.format(name=entry["name"])
+                if with_replacement:
+                    replacement = _host_native_replacement(descriptor, entry)
+                    replacement_cell = (
+                        f"`{replacement}`" if visibility == "alias" else replacement
+                    )
+                    lines.append(
+                        f"| `{route}` | {entry['description']} | {replacement_cell} |"
+                    )
+                else:
+                    lines.append(f"| `{route}` | {entry['description']} |")
     return "\n".join(lines) + "\n"
 
 
@@ -662,8 +1106,7 @@ def _disk_files(repo, descriptor):
     if (descriptor.catalog is not None
             and descriptor.catalog not in managed_subtrees):
         managed_subtrees = managed_subtrees + (descriptor.catalog,)
-    if descriptor.command_form == "/ca-{name}":
-        managed_subtrees = managed_subtrees + ("generated",)
+    managed_subtrees = managed_subtrees + ("generated",)
     for sub in managed_subtrees:
         base = os.path.join(plugin, sub)
         if os.path.isfile(base):

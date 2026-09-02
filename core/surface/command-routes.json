@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 1,
+  "visibilityOrder": [
+    "core",
+    "advanced",
+    "alias",
+    "internal",
+    "deprecated"
+  ],
+  "workflowOrder": [
+    "evaluate",
+    "initialize",
+    "change",
+    "review",
+    "decide",
+    "ship",
+    "operate",
+    "extend",
+    "help"
+  ],
+  "compatibility": {
+    "clockStarts": "published-release",
+    "removalRequires": "separately-approved-major",
+    "targets": {
+      "claude": {
+        "publishedWithoutMetadata": "2.16.0",
+        "firstContainingRelease": null,
+        "retainThrough": "2.x",
+        "earliestRemoval": "3.0.0"
+      },
+      "codex": {
+        "publishedWithoutMetadata": "0.8.0",
+        "firstContainingRelease": null,
+        "retainThrough": "0.x",
+        "earliestRemoval": "1.0.0"
+      },
+      "pi": {
+        "publishedWithoutMetadata": "0.9.0",
+        "firstContainingRelease": null,
+        "retainThrough": "0.x",
+        "earliestRemoval": "1.0.0"
+      }
+    }
+  },
+  "commands": {
+    "add-dep": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "add-dep",
+      "legacyRoutes": []
+    },
+    "adr": {
+      "visibility": "core",
+      "workflow": "decide",
+      "canonical": "adr",
+      "legacyRoutes": []
+    },
+    "adr-status": {
+      "visibility": "advanced",
+      "workflow": "decide",
+      "canonical": "adr-status",
+      "legacyRoutes": []
+    },
+    "audit": {
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "audit",
+      "legacyRoutes": []
+    },
+    "btw": {
+      "visibility": "deprecated",
+      "workflow": "help",
+      "replacement": "ask the question directly"
+    },
+    "checkpoint": {
+      "visibility": "advanced",
+      "workflow": "review",
+      "canonical": "checkpoint",
+      "legacyRoutes": []
+    },
+    "chore": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "chore",
+      "legacyRoutes": []
+    },
+    "cleanup": {
+      "visibility": "alias",
+      "workflow": "ship",
+      "canonical": "pr",
+      "replacement": "pr --cleanup"
+    },
+    "commands": {
+      "visibility": "advanced",
+      "workflow": "help",
+      "canonical": "commands",
+      "legacyRoutes": []
+    },
+    "commit": {
+      "visibility": "core",
+      "workflow": "ship",
+      "canonical": "commit",
+      "legacyRoutes": []
+    },
+    "conflict": {
+      "visibility": "internal",
+      "workflow": "decide",
+      "canonical": "conflict",
+      "legacyRoutes": []
+    },
+    "context-check": {
+      "visibility": "alias",
+      "workflow": "operate",
+      "canonical": "status",
+      "replacement": "status drift"
+    },
+    "create-context": {
+      "visibility": "alias",
+      "workflow": "initialize",
+      "canonical": "init",
+      "replacement": "init --brownfield"
+    },
+    "debug": {
+      "visibility": "advanced",
+      "workflow": "change",
+      "canonical": "debug",
+      "legacyRoutes": []
+    },
+    "decompose": {
+      "visibility": "alias",
+      "workflow": "initialize",
+      "canonical": "init",
+      "replacement": "init --greenfield"
+    },
+    "doctor": {
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "doctor",
+      "legacyRoutes": []
+    },
+    "feature": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "feature",
+      "legacyRoutes": []
+    },
+    "fix": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "fix",
+      "legacyRoutes": []
+    },
+    "init": {
+      "visibility": "core",
+      "workflow": "initialize",
+      "canonical": "init",
+      "legacyRoutes": [
+        "create-context",
+        "decompose"
+      ],
+      "modes": [
+        "--brownfield",
+        "--greenfield"
+      ]
+    },
+    "metrics": {
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "metrics",
+      "legacyRoutes": []
+    },
+    "new-skill": {
+      "visibility": "advanced",
+      "workflow": "extend",
+      "canonical": "new-skill",
+      "legacyRoutes": []
+    },
+    "override": {
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "override",
+      "legacyRoutes": []
+    },
+    "pr": {
+      "visibility": "core",
+      "workflow": "ship",
+      "canonical": "pr",
+      "legacyRoutes": [
+        "cleanup",
+        "watch"
+      ],
+      "modes": [
+        "--cleanup",
+        "--watch"
+      ]
+    },
+    "preview": {
+      "visibility": "core",
+      "workflow": "evaluate",
+      "canonical": "preview",
+      "legacyRoutes": []
+    },
+    "prune": {
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "prune",
+      "legacyRoutes": []
+    },
+    "reconcile": {
+      "visibility": "advanced",
+      "workflow": "decide",
+      "canonical": "reconcile",
+      "legacyRoutes": []
+    },
+    "refactor": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "refactor",
+      "legacyRoutes": []
+    },
+    "release": {
+      "visibility": "core",
+      "workflow": "ship",
+      "canonical": "release",
+      "legacyRoutes": []
+    },
+    "review": {
+      "visibility": "core",
+      "workflow": "review",
+      "canonical": "review",
+      "legacyRoutes": []
+    },
+    "spike": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "spike",
+      "legacyRoutes": []
+    },
+    "sprint": {
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "sprint",
+      "legacyRoutes": []
+    },
+    "standup": {
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "standup",
+      "legacyRoutes": []
+    },
+    "status": {
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "status",
+      "legacyRoutes": [
+        "context-check"
+      ],
+      "modes": [
+        "drift"
+      ]
+    },
+    "statusline": {
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "statusline",
+      "legacyRoutes": []
+    },
+    "task": {
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "task",
+      "legacyRoutes": []
+    },
+    "threat-model": {
+      "visibility": "advanced",
+      "workflow": "review",
+      "canonical": "threat-model",
+      "legacyRoutes": []
+    },
+    "tribunal": {
+      "visibility": "advanced",
+      "workflow": "review",
+      "canonical": "tribunal",
+      "legacyRoutes": []
+    },
+    "watch": {
+      "visibility": "alias",
+      "workflow": "ship",
+      "canonical": "pr",
+      "replacement": "pr --watch"
+    }
+  }
+}

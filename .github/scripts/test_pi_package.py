@@ -1395,7 +1395,9 @@ class PiPackageTests(unittest.TestCase):
                 self.assertTrue(decoded.endswith("\n"), f"{path}: missing final LF")
 
     def test_real_isolated_rpc_command_discovery_and_keyed_status(self):
-        catalog = read_json(PLUGIN / "generated" / "command-catalog.json")
+        catalog_document = read_json(PLUGIN / "generated" / "command-catalog.json")
+        self.assertEqual(catalog_document["schemaVersion"], 1)
+        catalog = list(catalog_document["commands"].values())
         expected_aliases = {f"ca-{entry['name']}" for entry in catalog}
         expected_fallbacks = {f"skill:ca-{entry['name']}" for entry in catalog}
         with tempfile.TemporaryDirectory(prefix="ca-pi-rpc-") as directory:

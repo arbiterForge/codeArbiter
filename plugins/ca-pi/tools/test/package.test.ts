@@ -10,7 +10,7 @@ import { pathToFileURL } from "node:url";
 import { describe, expect, test } from "vitest";
 
 import { compatibilityDirection } from "../src/compatibility.ts";
-import { createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
+import { commandCatalogEntries, createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
 import { exists, findPiPackageRoot } from "./live-pi-host.ts";
 
 const toolsRoot = resolve(import.meta.dirname, "..");
@@ -886,9 +886,9 @@ describe("ca-pi package", () => {
         }),
       ]);
       expect(result.count).toBe(1);
-      const commandCount = JSON.parse(
+      const commandCount = commandCatalogEntries(JSON.parse(
         await readFile(resolve(pluginRoot, "generated", "command-catalog.json"), "utf8"),
-      ).length as number;
+      ) as unknown).length;
       // Five parent lifecycle handlers, two tool-enforcement handlers,
       // Pi-native before/after compaction handlers, and the farm-preview tool
       // accompany the aliases.

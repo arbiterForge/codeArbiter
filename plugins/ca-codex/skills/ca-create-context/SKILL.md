@@ -6,6 +6,12 @@ argument-hint: (none)
 
 # $ca-create-context — brownfield populate
 
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `$ca-init --brownfield` for new usage. This installed route remains
+> functional under the command-route compatibility policy at [includes/command-compatibility.md](../../includes/command-compatibility.md);
+> continue with the unchanged brownfield workflow below.
+<!-- catalog-compatibility-notice:end -->
+
 Wraps an existing codebase in project state without guessing. Dispatches parallel scouts to read the repository, synthesizes their findings into the surviving `.codearbiter/` doc set, resolves gaps via a targeted interview, and locks the project initialized. No arguments — the skill reads the repo and asks only what it cannot determine.
 
 The only permitted path to populate `.codearbiter/` when meaningful source code already exists. For a greenfield project with no source, use `$ca-decompose`.
