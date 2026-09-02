@@ -313,6 +313,9 @@ _HEADING_RE = re.compile(
     r"^##[ \t]+(?:\[(Unreleased|" + _PLAIN_SEMVER_PATTERN + r")\]|"
     r"v(" + _PLAIN_SEMVER_PATTERN + r"))(?:[ \t]+[^\r\n]*)?[ \t]*$",
     re.MULTILINE)
+_LEGACY_DATE_H2_RE = re.compile(
+    r"^##[ \t]+\[[0-9]{4}-[0-9]{2}-[0-9]{2}\]"
+    r"(?:[ \t]+[^\r\n]*)?[ \t]*$")
 _CHANGELOG_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})[ \t]*$")
 _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
 _BARE_RELEASE_VERSION_RE = re.compile(r"^" + _PLAIN_SEMVER_PATTERN + r"$")
@@ -333,6 +336,11 @@ def _heading_version(line):
 
 def _looks_like_changelog_heading(line):
     """True when an H2 claims changelog-heading syntax but is malformed."""
+    # This repository's pre-SemVer history used exact bracketed ISO dates,
+    # sometimes more than once for one day. They remain ordinary structural
+    # H2 boundaries, not release versions and not malformed SemVer claims.
+    if _LEGACY_DATE_H2_RE.fullmatch(line) is not None:
+        return False
     body = line[2:].lstrip(" \t")
     return body.startswith("[") or body.startswith("v")
 

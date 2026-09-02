@@ -2264,6 +2264,18 @@ class CoreChangelogSectionTest(unittest.TestCase):
             core_releaselib.changelog_section(text, "1.2.3"),
             "## [1.2.3] - 2026-09-01\n\n- released\n")
 
+    def test_legacy_date_h2_is_a_boundary_not_a_malformed_release_heading(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## [2026-05-13] — legacy release notes\n\n- historical\n\n"
+            "## [2026-05-13] — more legacy notes\n\n- also historical\n")
+        section, status = core_releaselib._changelog_section_result(
+            text, "1.2.3")
+        self.assertEqual(status, core_releaselib._SECTION_OK)
+        self.assertEqual(
+            section,
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+
     def test_malformed_target_headings_are_never_prefix_matches(self):
         malformed = (
             "## [1.2.3-rc.1] - 2026-09-01\n",
@@ -2724,9 +2736,18 @@ class CoreCLITest(unittest.TestCase):
     # is explicitly discardable -- this is the mechanical way to read it
     # back out of the COMMITTED changelog instead.
     def _git(self, repo, *args, input_bytes=None):
+        environment = dict(
+            os.environ,
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CONFIG_SYSTEM=os.devnull,
+        )
         return subprocess.run(
-            [core_releaselib.git_executable(), *args], cwd=repo,
-            input=input_bytes, capture_output=True, timeout=30, check=True)
+            [core_releaselib.git_executable(),
+             "-c", "commit.gpgsign=false",
+             "-c", "tag.gpgSign=false",
+             "-c", "core.hooksPath=", *args],
+            cwd=repo, env=environment, input=input_bytes,
+            capture_output=True, timeout=30, check=True)
 
     def _init_changelog_repo(self, root, text=None,
                              changelog_path="docs/CHANGELOG.md"):
@@ -2756,6 +2777,23 @@ class CoreCLITest(unittest.TestCase):
         "## [2.11.0] — 2026-07-31\n\n### Fixed\n\n- middle thing\n"
     )
 
+    def test_changelog_fixture_ignores_global_signing_configuration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            global_config = os.path.join(tmp, "global.gitconfig")
+            with open(global_config, "w", encoding="utf-8") as fh:
+                fh.write("[commit]\n\tgpgsign = true\n[tag]\n\tgpgSign = true\n")
+            injected = {
+                "GIT_CONFIG_GLOBAL": global_config,
+                "GIT_CONFIG_SYSTEM": os.path.join(tmp, "missing-system-config"),
+            }
+            try:
+                with mock.patch.dict(os.environ, injected):
+                    self._init_changelog_repo(os.path.join(tmp, "repo"))
+            except subprocess.CalledProcessError as exc:
+                self.fail(
+                    "changelog fixture inherited signing configuration: "
+                    + exc.stderr.decode(errors="replace"))
+
     def test_changelog_section_exits_0_and_prints_the_section(self):
         with tempfile.TemporaryDirectory() as tmp:
             self._init_changelog_repo(tmp)
@@ -2766,6 +2804,21 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(
                 result.stdout,
                 "## [2.12.0] — 2026-08-07\n\n### Added\n\n- newest thing\n")
+
+    def test_changelog_section_accepts_committed_legacy_date_h2_boundaries(self):
+        text = (
+            "## [2.12.0] - 2026-09-01\n\n- released\n\n"
+            "## [2026-05-13] — legacy release notes\n\n- historical\n\n"
+            "## [2026-05-13] — more legacy notes\n\n- also historical\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp, text)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "## [2.12.0] - 2026-09-01\n\n- released\n")
 
     def test_changelog_section_middle_version_stops_at_next_heading(self):
         with tempfile.TemporaryDirectory() as tmp:
