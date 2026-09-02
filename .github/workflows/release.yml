@@ -596,11 +596,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the trusted default-branch release auditor
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.sha }}
+          path: trusted
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
+
+      - name: Materialize the exact completed-run release candidate as inert data
+        env:
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          case "$CANDIDATE_SHA" in
+            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
+          esac
+          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
+            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
+            exit 1
+          fi
+          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
+          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
+          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
 
       - name: Capture exact GitHub Release API evidence
         env:
@@ -609,8 +628,8 @@ jobs:
           set -u
           EVIDENCE_DIR="$RUNNER_TEMP/command-route-release-state"
           mkdir -p "$EVIDENCE_DIR"
-          python3 .github/scripts/check_command_route_release_state.py plan \
-            --repo . > "$EVIDENCE_DIR/plan.tsv"
+          python3 trusted/.github/scripts/check_command_route_release_state.py plan \
+            --repo candidate > "$EVIDENCE_DIR/plan.tsv"
           while IFS=$'\t' read -r TARGET TAG; do
             set +e
             gh api --include \
@@ -624,6 +643,6 @@ jobs:
 
       - name: Require every first-containing candidate to be published
         run: |
-          python3 .github/scripts/check_command_route_release_state.py observe \
-            --repo . \
+          python3 trusted/.github/scripts/check_command_route_release_state.py observe \
+            --repo candidate \
             --evidence-dir "$RUNNER_TEMP/command-route-release-state"

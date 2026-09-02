@@ -1355,6 +1355,64 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn("check_command_route_release_state.py observe", block)
         self.assertIn("--evidence-dir", block)
 
+    def test_final_command_route_audit_executes_only_trusted_default_branch_code(self):
+        audit = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        trusted_checkout = _named_step(
+            audit, "Check out the trusted default-branch release auditor"
+        )
+        candidate_materialization = _named_step(
+            audit, "Materialize the exact completed-run release candidate as inert data"
+        )
+        evidence = _named_step(audit, "Capture exact GitHub Release API evidence")
+        observer = _named_step(
+            audit, "Require every first-containing candidate to be published"
+        )
+
+        self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
+        self.assertIn("path: trusted", trusted_checkout)
+        self.assertIn("persist-credentials: false", trusted_checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", trusted_checkout)
+        self.assertEqual(
+            audit.count("uses: actions/checkout@"), 1,
+            "the privileged publication audit may check out only trusted "
+            "default-branch code",
+        )
+        self.assertNotIn(
+            "ref: ${{ github.event.workflow_run.head_sha }}", audit,
+            "event-selected content must never enter this privileged job via "
+            "actions/checkout",
+        )
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}",
+            candidate_materialization,
+        )
+        required_materialization_controls = (
+            'case "$CANDIDATE_SHA" in',
+            '""|*[!0-9a-f]*)',
+            '[ "${#CANDIDATE_SHA}" -ne 40 ]',
+            'git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"',
+            'git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" '
+            '"${{ github.sha }}"',
+            'git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"',
+        )
+        for control in required_materialization_controls:
+            with self.subTest(control=control):
+                self.assertIn(control, candidate_materialization)
+        self.assertNotIn("|| true", candidate_materialization)
+        for step in (evidence, observer):
+            self.assertIn(
+                "python3 trusted/.github/scripts/check_command_route_release_state.py",
+                step,
+            )
+            self.assertIn("--repo candidate", step)
+        self.assertNotIn(
+            "python3 candidate/.github/scripts/check_command_route_release_state.py",
+            audit,
+        )
+        self.assertNotIn(
+            "python3 .github/scripts/check_command_route_release_state.py", audit
+        )
+
 
 class CodexCandidateProvenanceTest(unittest.TestCase):
     """A ca-codex tag is authorized only for trusted static candidate bytes."""
