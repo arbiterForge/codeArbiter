@@ -14,8 +14,10 @@ A read-only summary of `.codearbiter/` state. No skill is routed to; no file is 
 <!-- command-mode:drift legacy-route:context-check -->
 With the exact argument `drift`, load and follow
 `<plugin-root>/skills/ca-context-check/SKILL.md`. The audit begins read-only; re-scout or re-baseline may
-write only after the user's explicit selection. With no argument, continue with the unchanged
-read-only snapshot below. Reject other arguments rather than treating them as drift mode.
+write only after the user's explicit selection. In drift mode the `context-check` contract governs;
+the opening summary and Hard gate below apply only to the no-argument snapshot. With no argument,
+continue with the unchanged read-only snapshot below. Reject other arguments rather than treating
+them as drift mode.
 <!-- catalog-command-modes:end -->
 
 ## Flow

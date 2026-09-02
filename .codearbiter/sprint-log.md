@@ -1506,7 +1506,7 @@ missing: a named way to stop that does not require the next run to be clean.
   the remaining operations canonical advanced routes.
 - **SMARTS:** Reliable, Securable, Maintainable, and Testable strongly favor (c). It preserves exact
   routes, follows the accepted ADR, avoids a dishonest alias graph, and keeps every replacement
-  executable. Available and Scalable are neutral-to-favorable because 27 advertised canonical
+  executable. Available and Scalable are neutral-to-favorable because 31 registry-canonical
   routes still approximates the audit's 24-route target without speculative product surface.
 - **Chosen:** (c). `add-dep` stays core; `audit`, `metrics`, `statusline`, `prune`, `new-skill`, and
   `commands` remain advanced. Strength: strong.
@@ -1526,6 +1526,9 @@ missing: a named way to stop that does not require the next run to be clean.
   compatibility review.
 
 ### RA11-SD-02 correction — independent compatibility review tightened the window · confidence: high
+
+**Superseded by RA11-SD-02/04 final correction below.** This intermediate ruling is retained as
+decision history and is not the active compatibility policy.
 
 - The first ruling treated three minor lines as the retention floor and a `1.0.0` transition as the
   only adapter removal window. The compatibility reviewer identified the repository's actual

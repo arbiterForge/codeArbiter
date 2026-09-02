@@ -63,7 +63,7 @@ export function renderCommandPage(input: PageInput): string {
       commandCatalog.replacement) {
     const lifecycle = commandCatalog.visibility === "alias"
       ? "This compatibility route remains available for existing workflows."
-      : "This route remains available while it is retired from new discovery.";
+      : "This route is deprecated but remains listed for compatibility.";
     sections.push(`## Compatibility\n\n${lifecycle} Use \`${commandCatalog.replacement}\` for new work.`);
   }
 

@@ -7,8 +7,6 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import subprocess
-import tempfile
 import unittest
 
 
@@ -59,6 +57,12 @@ MODES_RE = re.compile(
 )
 STRICT_SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 
+EXPECTED_FIRST_CONTAINING_RELEASES = {
+    "claude": ("2.17.0", REPO / "plugins" / "ca" / ".claude-plugin" / "plugin.json"),
+    "codex": ("0.9.0", REPO / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json"),
+    "pi": ("0.10.0", REPO / "plugins" / "ca-pi" / "package.json"),
+}
+
 
 def command_body(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
@@ -79,61 +83,11 @@ def digest(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def release_tag_exists(tag: str, repo: Path = REPO) -> bool:
-    return subprocess.run(
-        ["git", "show-ref", "--verify", "--quiet", f"refs/tags/{tag}"],
-        cwd=repo,
-        check=False,
-    ).returncode == 0
-
-
-def release_tag_contains_registry(tag: str, repo: Path = REPO) -> bool:
-    commit = subprocess.run(
-        ["git", "rev-parse", "--verify", f"refs/tags/{tag}^{{commit}}"],
-        cwd=repo,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    result = subprocess.run(
-        ["git", "ls-tree", "--name-only", commit, "--", "core/surface/command-routes.json"],
-        cwd=repo,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return result.stdout.splitlines() == ["core/surface/command-routes.json"]
-
-
 def strict_version(value: str) -> tuple[int, int, int]:
     match = STRICT_SEMVER_RE.fullmatch(value)
     if match is None:
         raise AssertionError(f"expected strict release version, got {value!r}")
     return tuple(int(part) for part in match.groups())
-
-
-def first_release_containing_registry(
-    prefix: str,
-    baseline: str,
-    repo: Path = REPO,
-) -> str | None:
-    baseline_version = strict_version(baseline)
-    result = subprocess.run(
-        ["git", "tag", "--list", f"{prefix}*"],
-        cwd=repo,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    candidates: list[tuple[tuple[int, int, int], str]] = []
-    for tag in result.stdout.splitlines():
-        version_text = tag.removeprefix(prefix)
-        if not STRICT_SEMVER_RE.fullmatch(version_text):
-            continue
-        version = strict_version(version_text)
-        if version > baseline_version and release_tag_contains_registry(tag, repo):
-            candidates.append((version, version_text))
-    return min(candidates)[1] if candidates else None
 
 
 class CommandRouteCompatibilityTest(unittest.TestCase):
@@ -188,6 +142,28 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 description = json.loads(manifest.read_text(encoding="utf-8"))["description"]
                 self.assertNotRegex(description, frozen_count)
 
+    def test_ra11_governance_and_operator_prose_remains_unambiguous(self):
+        plan = (
+            REPO / ".codearbiter" / "plans" / "reaudit-ra11-catalog-rationalization.md"
+        ).read_text(encoding="utf-8")
+        spec = (
+            REPO / ".codearbiter" / "specs" / "reaudit-ra11-catalog-rationalization.md"
+        ).read_text(encoding="utf-8")
+        sprint_log = (REPO / ".codearbiter" / "sprint-log.md").read_text(encoding="utf-8")
+        commands = (REPO / "core" / "surface" / "COMMANDS.md").read_text(encoding="utf-8")
+        status = command_body("status")
+
+        self.assertIn("**Document role:** approved pre-execution plan", plan)
+        self.assertIn("`python tools/build-surface.py --check`", spec)
+        self.assertRegex(sprint_log, r"31 registry-canonical\s+routes")
+        self.assertIn("Superseded by RA11-SD-02/04 final correction", sprint_log)
+        self.assertNotIn("§6 redirect", commands)
+        self.assertIn("Compatibility routes", commands)
+        self.assertIn(
+            "the opening summary and Hard gate below apply only to the no-argument snapshot",
+            status,
+        )
+
     def test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice(self):
         for slug, expected in EXPECTED_LEGACY_BODY_SHA256.items():
             with self.subTest(slug=slug):
@@ -218,116 +194,40 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
 
     def test_compatibility_clock_starts_only_on_independent_publication(self):
         policy = self.registry()["compatibility"]
-        self.assertEqual(policy["clockStarts"], "published-release")
+        self.assertEqual(policy["clockStarts"], "confirmed-non-draft-github-release")
         self.assertEqual(policy["removalRequires"], "separately-approved-major")
         self.assertEqual(
             policy["targets"],
             {
                 "claude": {
                     "publishedWithoutMetadata": "2.16.0",
-                    "firstContainingRelease": None,
+                    "firstContainingRelease": "2.17.0",
                     "retainThrough": "2.x",
                     "earliestRemoval": "3.0.0",
                 },
                 "codex": {
                     "publishedWithoutMetadata": "0.8.0",
-                    "firstContainingRelease": None,
+                    "firstContainingRelease": "0.9.0",
                     "retainThrough": "0.x",
                     "earliestRemoval": "1.0.0",
                 },
                 "pi": {
                     "publishedWithoutMetadata": "0.9.0",
-                    "firstContainingRelease": None,
+                    "firstContainingRelease": "0.10.0",
                     "retainThrough": "0.x",
                     "earliestRemoval": "1.0.0",
                 },
             },
         )
 
-    def test_compatibility_metadata_matches_release_tag_history(self):
+    def test_first_containing_declarations_are_stable_when_manifests_advance(self):
         policy = self.registry()["compatibility"]["targets"]
-        for target, prefix in {
-            "claude": "v",
-            "codex": "ca-codex-v",
-            "pi": "ca-pi-v",
-        }.items():
+        for target, (expected, manifest_path) in EXPECTED_FIRST_CONTAINING_RELEASES.items():
             with self.subTest(target=target):
                 metadata = policy[target]
-                baseline = metadata["publishedWithoutMetadata"]
-                baseline_tag = f"{prefix}{baseline}"
-                self.assertTrue(release_tag_exists(baseline_tag))
-                self.assertFalse(release_tag_contains_registry(baseline_tag))
-                self.assertEqual(
-                    first_release_containing_registry(prefix, baseline),
-                    metadata["firstContainingRelease"],
-                )
-
-    def test_release_history_detector_finds_first_later_tag_with_registry(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            repo = Path(temporary)
-            subprocess.run(["git", "init", "--quiet"], cwd=repo, check=True)
-            subprocess.run(["git", "config", "user.name", "test"], cwd=repo, check=True)
-            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=repo, check=True)
-            (repo / "README.md").write_text("baseline\n", encoding="utf-8")
-            subprocess.run(["git", "add", "README.md"], cwd=repo, check=True)
-            subprocess.run(["git", "commit", "--quiet", "-m", "baseline"], cwd=repo, check=True)
-            subprocess.run(["git", "tag", "v1.0.0"], cwd=repo, check=True)
-            (repo / "core" / "surface").mkdir(parents=True)
-            (repo / "core" / "surface" / "command-routes.json").write_text("{}\n", encoding="utf-8")
-            subprocess.run(["git", "add", "core/surface/command-routes.json"], cwd=repo, check=True)
-            subprocess.run(["git", "commit", "--quiet", "-m", "add registry"], cwd=repo, check=True)
-            subprocess.run(["git", "tag", "v1.1.0"], cwd=repo, check=True)
-
-            self.assertEqual(
-                first_release_containing_registry("v", "1.0.0", repo=repo),
-                "1.1.0",
-            )
-
-    def test_release_history_detector_rejects_non_commit_tag(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            repo = Path(temporary)
-            subprocess.run(["git", "init", "--quiet"], cwd=repo, check=True)
-            blob = subprocess.run(
-                ["git", "hash-object", "-w", "--stdin"],
-                cwd=repo,
-                check=True,
-                capture_output=True,
-                input="not a commit\n",
-                text=True,
-            ).stdout.strip()
-            subprocess.run(
-                ["git", "update-ref", "refs/tags/v1.1.0", blob],
-                cwd=repo,
-                check=True,
-            )
-
-            with self.assertRaises(subprocess.CalledProcessError):
-                release_tag_contains_registry("v1.1.0", repo)
-
-    def test_release_history_detector_qualifies_tag_when_branch_name_conflicts(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            repo = Path(temporary)
-            subprocess.run(["git", "init", "--quiet"], cwd=repo, check=True)
-            subprocess.run(["git", "config", "user.name", "test"], cwd=repo, check=True)
-            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=repo, check=True)
-            (repo / "README.md").write_text("baseline\n", encoding="utf-8")
-            subprocess.run(["git", "add", "README.md"], cwd=repo, check=True)
-            subprocess.run(["git", "commit", "--quiet", "-m", "baseline"], cwd=repo, check=True)
-            baseline_commit = subprocess.run(
-                ["git", "rev-parse", "HEAD"], cwd=repo, check=True, capture_output=True, text=True
-            ).stdout.strip()
-            subprocess.run(["git", "tag", "v1.0.0"], cwd=repo, check=True)
-            (repo / "core" / "surface").mkdir(parents=True)
-            (repo / "core" / "surface" / "command-routes.json").write_text("{}\n", encoding="utf-8")
-            subprocess.run(["git", "add", "core/surface/command-routes.json"], cwd=repo, check=True)
-            subprocess.run(["git", "commit", "--quiet", "-m", "add registry"], cwd=repo, check=True)
-            subprocess.run(["git", "tag", "v1.1.0"], cwd=repo, check=True)
-            subprocess.run(["git", "branch", "v1.1.0", baseline_commit], cwd=repo, check=True)
-
-            self.assertEqual(
-                first_release_containing_registry("v", "1.0.0", repo=repo),
-                "1.1.0",
-            )
+                manifest_version = json.loads(manifest_path.read_text(encoding="utf-8"))["version"]
+                self.assertEqual(metadata["firstContainingRelease"], expected)
+                self.assertGreaterEqual(strict_version(manifest_version), strict_version(expected))
 
 
 if __name__ == "__main__":

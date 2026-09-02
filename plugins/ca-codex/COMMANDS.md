@@ -1,7 +1,8 @@
 # codeArbiter commands
 
 Start with the job in front of you. A direct instruction outside a command channel routes to the
-closest supported lane (see the §6 redirect). Each route ships as a `ca-`-prefixed skill; invoke it as
+closest supported lane; installed legacy entry points remain listed under [Compatibility
+routes](#compatibility-routes). Each route ships as a `ca-`-prefixed skill; invoke it as
 `$ca-<name>`.
 
 A command body ([skills/ca-<name>/SKILL.md](skills/ca-<name>/SKILL.md))

@@ -127,8 +127,14 @@ auto-detection behavior. Default `status` remains a no-skill, read-only snapshot
 the user's explicit selection.
 
 Published releases ca `2.16.0`, ca-codex `0.8.0`, and ca-pi `0.9.0` point to the pre-registry
-baseline and do not contain this metadata. The clock begins only when each payload's first later
-containing release is actually published; current source does not start it. The stable ca payload
+baseline and do not contain this metadata. The shipped registry permanently declares ca `2.17.0`,
+ca-codex `0.9.0`, and ca-pi `0.10.0` as the first-containing candidates. That declaration is not an
+observation: each clock becomes effective only after the exact candidate tag is confirmed through
+GitHub's Release API as a non-draft Release whose commit contains the matching registry and payload
+version. Before any tag mutation, the publisher enumerates the complete authenticated Release list,
+including drafts, and blocks on an incomplete, unavailable, malformed, duplicate, or mismatched
+result. Tag-only, draft, API-unavailable, or mismatched evidence fails closed and starts no clock.
+The stable ca payload
 retains every legacy route for the rest of the `2.x` major line and cannot remove one before `3.0.0`.
 The pre-1.0 adapters
 retain the routes for every later pre-1.0 release after the first containing release. ca-codex
@@ -181,12 +187,17 @@ removal still requires an explicit product decision, migration evidence, and its
    host-availability badges.
 10. The landing page contains no hard-coded `38` or `40` command claim. Its trust signal derives the
     18 core-lane count from the canonical registry, and a malformed or duplicate taxonomy fails closed.
-11. A committed compatibility policy declares the per-host retention floors and removal windows
-    above, and states that only publication starts a window; no route is removed, release is cut, tag
-    is created, package is published, or deployment is performed in this leg.
-12. `build-surface --check`, core parity, host-package parity, command/reference checks, focused
+11. A committed compatibility policy declares the per-host retention floors, removal windows, and
+    immutable first-containing candidates above. This worktree performs no release operation. Under
+    the user's approved promotion/tag authority, merging is expected to let the existing workflow
+    attempt ca `2.17.0`, ca-codex `0.9.0`, and ca-pi `0.10.0`; a complete draft-visible lookup must
+    pass before tag mutation, and only exact non-draft read-back makes a candidate effective. No
+    route is removed and no push, merge, tag, release, package publication, or deployment is
+    performed by this leg itself.
+12. `python tools/build-surface.py --check`, core parity, host-package parity, command/reference checks, focused
     generator/site/Pi tests, and the repository's applicable whole-surface suites pass from the
-    isolated worktree. Generated outputs are idempotent and the final branch is clean.
+    isolated worktree. Generated outputs are idempotent, no uncommitted RA-11 change remains, and
+    any append-only gate-event emissions are explicitly excluded from the commit and reported.
 13. An independent architecture/compatibility review and an independent final diff review report no
     unresolved CRITICAL/HIGH findings; secrets, provenance, documentation, and anti-slop checks pass.
 
@@ -197,8 +208,10 @@ removal still requires an explicit product decision, migration evidence, and its
   overlap.
 - Unrelated RA findings, backlog items, release notes for a release not being cut, or tracker edits.
 - Removing any command file or host route.
-- Push, pull request creation, merge, release, tag, publication, installation, deployment, or live
-  production proof.
+- Performing a push, pull request creation, merge, release, tag, publication, installation,
+  deployment, or live production proof from this worktree. The already-authorized post-merge
+  auto-release effect and its read-only terminal verification are part of the declared boundary,
+  not an operation performed here.
 
 ## Negative-space check
 

@@ -1,5 +1,9 @@
 # RA-11 Catalog Rationalization Implementation Plan
 
+**Document role:** approved pre-execution plan. Its `PENDING` labels and unchecked task boxes are
+the frozen execution intent, not the live completion ledger; durable execution and validation
+evidence is recorded in the governing campaign checkpoint and PR.
+
 > **Execution:** use the codeArbiter subagent-driven-development routine task by task. Every behavior
 > task follows red, green, refactor; generated files are never hand-edited.
 
@@ -22,7 +26,7 @@ TypeScript, and Vitest site generator; Pi TypeScript/Vitest package. No dependen
 ## Global constraints
 
 - Work only in `C:\Users\brenn\projects\codeArbiter-worktrees\reaudit-ra11-catalog-rationalization`
-  on `codex/reaudit-ra11-catalog-rationalization`, based on exact `4561dc219818032369f0985c787f7fccd8030770`.
+  on `codex/reaudit-ra11-catalog-rationalization-v2`, based on exact `4561dc219818032369f0985c787f7fccd8030770`.
 - Never edit `campaign.html`, the imported ledger, the dirty controller checkout, or unrelated RA
   scope.
 - Edit canonical `core/surface/` inputs, run generators, and commit inputs plus projections together.
@@ -44,8 +48,8 @@ TypeScript, and Vitest site generator; Pi TypeScript/Vitest package. No dependen
 | AC-08 | README shows grouped core lanes, not the raw full table/count-first marketing. |
 | AC-09 | Site reference groups by visibility/workflow exactly once and preserves host availability. |
 | AC-10 | Landing has no stale hard-coded route count and derives 18 core lanes from the registry. |
-| AC-11 | Compatibility policy fixes retention floors/removal windows; no release operation occurs. |
-| AC-12 | Focused and whole-surface tests pass; projections are idempotent; branch ends clean. |
+| AC-11 | Compatibility policy fixes retention floors/removal windows and first candidates; this worktree performs no release operation, while the approved post-merge workflow verifies publication. |
+| AC-12 | Focused and whole-surface tests pass; projections are idempotent; no uncommitted RA-11 change remains, with append-only gate-event emissions explicitly excluded and reported. |
 | AC-13 | Architecture, compatibility, final diff, secrets, provenance, docs, and anti-slop reviews clear. |
 
 ## Tasks
@@ -118,7 +122,8 @@ cross-invokes a host command; `add-dep` is falsely redirected.
   notice to each of the five otherwise-intact compatibility bodies.
 - [ ] Keep `btw` functional and read-only while marking direct questions as its replacement.
 - [ ] Add the shared retention/removal policy include and reference it from every alias/deprecated
-  wrapper without duplicating version policy; publication, not source presence, starts each window.
+  wrapper without duplicating version policy; exact non-draft Release confirmation, not source or
+  tag presence, starts each window.
 - [ ] Prove the registry keeps `add-dep` at `visibility: core`, `canonical: add-dep`.
 
 **Verification:** `python .github/scripts/test_build_surface.py`; `python .github/scripts/check-plugin-refs.py`; `python .github/scripts/check_command_catalog.py`
@@ -210,24 +215,27 @@ accepted; the landing count returns to raw `.md` files.
 - [ ] Dispatch an independent architecture/compatibility review at gpt-5.6-sol/xhigh over the final
   diff and acceptance ledger; remediate every CRITICAL/HIGH finding.
 - [ ] Dispatch a separate final diff reviewer; re-run affected tests after remediation.
-- [ ] Verify no campaign/controller checkout mutation and no release/push/PR side effect.
+- [ ] Verify no campaign/controller checkout mutation and no release/push/PR side effect from this
+  worktree; structurally verify the approved post-merge publication audit and the complete,
+  draft-visible pre-push Release lookup.
 
 **Verification:** commands recorded in final evidence; `git diff --check`; `git status --short`; generated checks above
 **Maps to:** AC-12, AC-13
 **Depends on:** Tasks 1-6
 **Status:** PENDING
 
-### Task 8: Governed local commit and clean handoff
+### Task 8: Governed local commit and exact handoff
 
 **Files:** only the reviewed RA-11 diff
 
 - [ ] Run the complete `/ca:commit` gate, including explicit secret scan and entire applicable suite.
 - [ ] Stage every changed path explicitly; never use `git add .` or `git add -A`.
 - [ ] Commit with a conventional subject/body and required `CHANGELOG:` footer.
-- [ ] Re-run `git status --short --branch`, capture exact commit SHA, and prove clean state.
+- [ ] Re-run `git status --short --branch`, capture exact commit SHA, prove no uncommitted RA-11
+  change remains, and report any intentional append-only gate-event residual.
 - [ ] Stop without push, PR, merge, release, tag, publication, deployment, or live install.
 
-**Verification:** `/ca:commit` evidence plus exact `git rev-parse HEAD` and clean status
+**Verification:** `/ca:commit` evidence plus exact `git rev-parse HEAD` and classified status
 **Maps to:** AC-11, AC-12, AC-13
 **Depends on:** Task 7
 **Status:** PENDING

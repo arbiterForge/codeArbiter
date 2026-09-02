@@ -1,7 +1,8 @@
 # codeArbiter commands
 
 Start with the job in front of you. A direct instruction outside a command channel routes to the
-closest supported lane (see the §6 redirect). The plugin is named `ca`; invoke a route
+closest supported lane; installed legacy entry points remain listed under [Compatibility
+routes](#compatibility-routes). The plugin is named `ca`; invoke a route
 as `/ca:<name>`.
 
 A command body (`${CLAUDE_PLUGIN_ROOT}/commands/<name>.md`)

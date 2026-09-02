@@ -408,8 +408,11 @@ def _validate_compatibility_policy(value, descriptors, where):
         raise SurfaceError(
             f"{where}: compatibility requires exactly {sorted(expected_keys)!r}"
         )
-    if value["clockStarts"] != "published-release":
-        raise SurfaceError(f"{where}: compatibility.clockStarts must be 'published-release'")
+    if value["clockStarts"] != "confirmed-non-draft-github-release":
+        raise SurfaceError(
+            f"{where}: compatibility.clockStarts must be "
+            "'confirmed-non-draft-github-release'"
+        )
     if value["removalRequires"] != "separately-approved-major":
         raise SurfaceError(
             f"{where}: compatibility.removalRequires must be 'separately-approved-major'"
@@ -453,10 +456,14 @@ def _validate_compatibility_policy(value, descriptors, where):
         removal_match = _SEMVER.fullmatch(removal) if isinstance(removal, str) else None
         if (
             not baseline_match
-            or first_containing_release is not None and not first_containing_match
+            or not first_containing_match
             or not retention_match
             or not removal_match
         ):
+            if first_containing_release is None:
+                raise SurfaceError(
+                    f"{target_where} must declare firstContainingRelease"
+                )
             raise SurfaceError(f"{target_where} has an invalid version boundary")
         retained_major = int(retention_match.group(1))
         if int(baseline_match.group(1)) != retained_major:
@@ -1042,8 +1049,6 @@ def _host_catalog(descriptor, entries, registry):
         "deprecated": "Deprecated",
     }
     workflow_labels = {name: name.capitalize() for name in _WORKFLOW_ORDER}
-    counts = _visibility_counts(entries)
-    canonical_count = counts["core"] + counts["advanced"]
     lines = [
         f"# ca-{descriptor.name} skills — catalog (surface scan)",
         "",
@@ -1051,18 +1056,7 @@ def _host_catalog(descriptor, entries, registry):
         "Each entry skill wraps one governance command; a body loads only when its",
         "skill is invoked — never bulk-read this directory.",
         "",
-        "## Installed surface",
-        "",
-        "| Visibility | Count |",
-        "|---|---:|",
-        f"| Core | {counts['core']} |",
-        f"| Advanced | {counts['advanced']} |",
-        f"| Canonical total | {canonical_count} |",
-        f"| Compatibility aliases | {counts['alias']} |",
-        f"| Internal | {counts['internal']} |",
-        f"| Deprecated | {counts['deprecated']} |",
-        f"| **Total** | **{len(entries)}** |",
-    ]
+    ] + _visibility_count_table(entries).split("\n")
     for visibility in registry["visibilityOrder"]:
         visibility_entries = [
             entry for entry in entries if entry["visibility"] == visibility

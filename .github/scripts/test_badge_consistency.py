@@ -76,23 +76,28 @@ class DriftDetectionTest(unittest.TestCase):
         self.assertEqual(G.consistency_errors(**self._facts()), [])
 
     def test_version_badge_drift_fails(self):
-        f = self._facts(); f["readme_version"] = "2.4.6"
+        f = self._facts()
+        f["readme_version"] = "2.4.6"
         self.assertTrue(any("version" in e.lower() for e in G.consistency_errors(**f)))
 
     def test_count_badge_drift_fails(self):
-        f = self._facts(); f["badge_counts"]["core_lanes"] = 2
+        f = self._facts()
+        f["badge_counts"]["core_lanes"] = 2
         self.assertTrue(any("core lanes" in e.lower() for e in G.consistency_errors(**f)))
 
     def test_raw_command_count_marketing_fails(self):
-        f = self._facts(); f["raw_command_count_claims"] = ["38"]
+        f = self._facts()
+        f["raw_command_count_claims"] = ["38"]
         self.assertTrue(any("raw command-count" in e.lower() for e in G.consistency_errors(**f)))
 
     def test_missing_readme_core_lane_fails(self):
-        f = self._facts(); f["readme_core_slugs"] = set()
+        f = self._facts()
+        f["readme_core_slugs"] = set()
         self.assertTrue(any("feature" in e for e in G.consistency_errors(**f)))
 
     def test_catalog_file_mismatch_fails(self):
-        f = self._facts(); f["catalog_slugs"] = {"feature"}
+        f = self._facts()
+        f["catalog_slugs"] = {"feature"}
         self.assertTrue(G.consistency_errors(**f))
 
 

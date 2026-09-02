@@ -10,8 +10,9 @@ All notable changes to `ca-pi` are documented in this file.
 
 - Command discovery now groups the supported core lanes while retaining
   advanced operations and compatibility routes in the generated Pi catalog.
-- Pi rejects malformed alias graphs at runtime, and release-history plus
-  documentation-inventory drift now fail closed against canonical source.
+- Pi rejects malformed alias graphs at runtime, and release-state plus
+  documentation-inventory drift now fail closed against canonical source;
+  tag-only or unverified Releases are rejected.
 
 ## [0.9.0] - 2026-09-02
 

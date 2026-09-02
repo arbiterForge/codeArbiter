@@ -114,6 +114,7 @@ AUTO_PUBLISH_JOBS = tuple(AUTO_LANES)
 AUTO_PREFLIGHT_JOB = "auto-preflight"
 MANUAL_CODEX_PROVENANCE_JOB = "codex-provenance"
 AUTO_CODEX_PROVENANCE_JOB = "auto-codex-provenance"
+AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB = "auto-command-route-release-audit"
 
 # #654: two triggers share this one file, and every job belongs to exactly one
 # of them. The manual lane reads dispatch inputs that do not exist on the
@@ -126,6 +127,7 @@ JOB_TRIGGER = dict(
     + [(AUTO_PREFLIGHT_JOB, "workflow_run")]
     + [(job, "workflow_run") for job in AUTO_PUBLISH_JOBS]
     + [(AUTO_CODEX_PROVENANCE_JOB, "workflow_run")]
+    + [(AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB, "workflow_run")]
 )
 
 # A job-level `if:` that uses one of these status functions opts OUT of the
@@ -182,9 +184,9 @@ def _job_needs(block: str) -> tuple:
     return ()
 
 
-def _condition_triggers(condition: str) -> set:
+def _condition_triggers(condition: str, *, allow_status_escape: bool = False) -> set:
     """Return the workflow triggers permitted by one supported condition."""
-    if any(
+    if not allow_status_escape and any(
         re.search(rf"(?<![\w.]){escape}\s*\(", condition, re.IGNORECASE)
         for escape in _STATUS_ESCAPES
     ):
@@ -223,7 +225,10 @@ def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     if job not in jobs:
         raise AssertionError(f"`needs` names undeclared job {job!r}")
     condition = _job_if(jobs[job])
-    permitted = _condition_triggers(condition)
+    permitted = _condition_triggers(
+        condition,
+        allow_status_escape=job == AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
+    )
     parents = _job_needs(jobs[job])
     if not parents:
         return permitted
@@ -323,6 +328,41 @@ git() {
 gh() {
   echo "gh $*" >> "$STUB_LOG"
   if [ "$1" = "api" ]; then
+    case " $* " in
+      *"/releases?per_page=100"*)
+        case "$STUB_RELEASE" in
+          unavailable)
+            echo "simulated Release API failure" >&2
+            return 1
+            ;;
+          none)
+            printf '[[]]\n'
+            return 0
+            ;;
+          published) DRAFT=false ;;
+          *) DRAFT=true ;;
+        esac
+        printf '[[{"draft":%s,"tag_name":"%s"}]]\n' "$DRAFT" "$STUB_TAGNAME"
+        return 0
+        ;;
+      *"/releases/tags/"*)
+        case "$STUB_RELEASE" in
+          none|draft)
+            printf 'HTTP/2.0 404 Not Found\ncontent-type: application/json\n\n{}\n'
+            return 1
+            ;;
+          unavailable)
+            echo "simulated Release API failure" >&2
+            return 1
+            ;;
+          published) DRAFT=false ;;
+          *) DRAFT=true ;;
+        esac
+        printf 'HTTP/2.0 200 OK\ncontent-type: application/json\n\n'
+        printf '{"draft":%s,"tag_name":"%s"}\n' "$DRAFT" "$STUB_TAGNAME"
+        return 0
+        ;;
+    esac
     for arg in "$@"; do
       if [ "$arg" = ".check_runs" ]; then
         "$STUB_PYTHON" -c 'import json,os;print(json.dumps(json.load(open(os.environ["STUB_CHECKS"]))["check_runs"]))'
@@ -387,6 +427,9 @@ class _ShellHarness(unittest.TestCase):
         scripts = root / ".github" / "scripts"
         scripts.mkdir(parents=True)
         shutil.copy(HERE / "_releaselib.py", scripts / "_releaselib.py")
+        shutil.copy(
+            HERE / "check_command_route_release_state.py",
+            scripts / "check_command_route_release_state.py")
         # The shim (copied above) resolves `core/pysrc/_releaselib.py` at
         # import time via its own __file__ -> parents[2] -- i.e. TWO levels
         # above `.github/scripts/`, exactly like this synthetic tree's
@@ -617,6 +660,22 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("publish state: resume_publish", proc.stdout)
         self.assertNotIn("git tag -a", log)
         self.assertIn("gh release create v9.9.9", log)
+
+    def test_release_api_unavailability_aborts_before_any_tag_mutation(self):
+        proc, log, _ = self._publish("v9.9.9", release="unavailable")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("api-unavailable", proc.stdout + proc.stderr)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("git push origin refs/tags/v9.9.9", log)
+        self.assertNotIn("gh release create", log)
+
+    def test_existing_draft_aborts_before_any_tag_mutation(self):
+        proc, log, _ = self._publish("v9.9.9", release="draft")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("draft", proc.stdout + proc.stderr)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("git push origin refs/tags/v9.9.9", log)
+        self.assertNotIn("gh release create", log)
 
     # -- Explicit tag-only action behavior --------------------------------------
     def test_create_release_false_tags_and_pushes_but_never_calls_release_create(self):
@@ -978,6 +1037,21 @@ class ExistingTagIntegrityTest(unittest.TestCase):
                       "#380: the shared publish-state classifier must decide")
         self.assertIn('"$GITHUB_SHA"', action)
 
+    def test_the_publisher_distinguishes_release_absence_from_api_failure_before_tagging(self):
+        action = self._action()
+        lookup = action.index("check_command_route_release_state.py api-lookup")
+        mutation = action.index('git tag -a "$TAG"')
+        self.assertLess(lookup, mutation)
+        self.assertIn(
+            'gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100"',
+            action,
+        )
+        self.assertNotIn(
+            'gh api --include "repos/$GITHUB_REPOSITORY/releases/tags/$TAG"',
+            action,
+            "the tag endpoint hides drafts behind 404 and is unsafe before tag mutation",
+        )
+
     def test_the_bare_tag_exists_skip_is_gone(self):
         # The exact defect: any remote hit was treated as resumable and tag
         # creation was skipped without comparing the tag to GITHUB_SHA.
@@ -1255,6 +1329,31 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertEqual(proc.stdout.strip(), "true",
                          "a series with no tag yet is a first introduction")
+
+    def test_final_command_route_audit_waits_for_every_ra11_publisher(self):
+        block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        self.assertEqual(
+            set(_job_needs(block)),
+            {AUTO_PREFLIGHT_JOB, "auto-release", "auto-release-codex", "auto-release-pi"},
+        )
+        condition = _job_if(block)
+        self.assertIn("always()", condition)
+        self.assertIn("github.event_name == 'workflow_run'", condition)
+        self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
+        self.assertIn("needs.auto-preflight.result == 'success'", condition)
+
+    def test_final_command_route_audit_is_read_only_and_pins_the_candidate(self):
+        block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        self.assertIn("contents: read", block)
+        self.assertNotIn("contents: write", block)
+        self.assertIn("github.event.workflow_run.head_sha", block)
+        self.assertIn("fetch-tags: true", block)
+
+    def test_final_command_route_audit_collects_api_evidence_then_runs_hermetic_checker(self):
+        block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        self.assertIn("gh api --include", block)
+        self.assertIn("check_command_route_release_state.py observe", block)
+        self.assertIn("--evidence-dir", block)
 
 
 class CodexCandidateProvenanceTest(unittest.TestCase):

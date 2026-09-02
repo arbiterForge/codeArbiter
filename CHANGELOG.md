@@ -18,8 +18,8 @@ predate the plugin rewrite and are grouped by date.
 
 - Command discovery now groups the supported core lanes while retaining
   advanced operations and compatibility routes in generated host catalogs.
-- Release-history, route-graph, and documentation-inventory drift now fail
-  closed against canonical source instead of relying on hand-maintained prose.
+- Release-state, route-graph, and documentation-inventory drift now fail closed
+  against canonical source, with tag-only or unverified Releases rejected.
 
 ## [2.16.0] - 2026-09-02
 

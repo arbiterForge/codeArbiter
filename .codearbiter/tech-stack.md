@@ -77,6 +77,8 @@ python .github/scripts/test_codex_skill_resources.py
 # Canonical command registry, host projection, compatibility, and discovery guards
 python .github/scripts/test_build_surface.py
 python .github/scripts/test_host_descriptors.py
+python .github/scripts/check_command_route_release_state.py declarations
+python .github/scripts/test_command_route_release_state.py
 python .github/scripts/test_command_route_compatibility.py
 python .github/scripts/test_badge_consistency.py
 python .github/scripts/test_command_catalog.py

@@ -1,7 +1,8 @@
 # codeArbiter commands
 
 Start with the job in front of you. A direct instruction outside a command channel routes to the
-closest supported lane (see the §6 redirect). {{IF:claude}}The plugin is named `ca`; invoke a route
+closest supported lane; installed legacy entry points remain listed under [Compatibility
+routes](#compatibility-routes). {{IF:claude}}The plugin is named `ca`; invoke a route
 as `/ca:<name>`.{{ELSE}}Each route ships as a `ca-`-prefixed skill; invoke it as
 `$ca-<name>`.{{END}}
 

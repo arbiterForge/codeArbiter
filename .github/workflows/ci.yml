@@ -1945,8 +1945,13 @@ jobs:
         run: python3 tools/build-surface.py --check
       - name: Run command-route registry and compatibility contract
         # RA-11: exact taxonomy, frozen route inventory, byte-preserved legacy
-        # workflows, additive canonical modes, and publication-based retention.
-        run: python3 .github/scripts/test_command_route_compatibility.py
+        # workflows, additive canonical modes, stable first-containing Release
+        # declarations, and hermetic release-state classification. Live GitHub
+        # Release observation belongs to release.yml's post-publication audit.
+        run: |
+          python3 .github/scripts/check_command_route_release_state.py declarations
+          python3 .github/scripts/test_command_route_release_state.py
+          python3 .github/scripts/test_command_route_compatibility.py
       - name: Classify every active CLAUDE_PLUGIN_ROOT occurrence
         # The root token is Claude-native only in the Claude payload.  A Codex
         # compatibility fixture/input and immutable historical evidence are the

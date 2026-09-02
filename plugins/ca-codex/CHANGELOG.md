@@ -12,8 +12,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - Command discovery now groups the supported core lanes while retaining
   advanced operations and compatibility routes in the generated Codex catalog.
-- Route, release-history, and inventory drift now fail closed against canonical
-  source rather than relying on hand-maintained counts.
+- Route, release-state, and inventory drift now fail closed against canonical
+  source, with tag-only or unverified Releases rejected.
 
 ## [0.8.0] - 2026-09-02
 

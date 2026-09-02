@@ -42,24 +42,24 @@ _WORKFLOW_ORDER = [
     "operate", "extend", "help",
 ]
 _COMPATIBILITY = {
-    "clockStarts": "published-release",
+    "clockStarts": "confirmed-non-draft-github-release",
     "removalRequires": "separately-approved-major",
     "targets": {
         "claude": {
             "publishedWithoutMetadata": "2.16.0",
-            "firstContainingRelease": None,
+            "firstContainingRelease": "2.17.0",
             "retainThrough": "2.x",
             "earliestRemoval": "3.0.0",
         },
         "codex": {
             "publishedWithoutMetadata": "0.8.0",
-            "firstContainingRelease": None,
+            "firstContainingRelease": "0.9.0",
             "retainThrough": "0.x",
             "earliestRemoval": "1.0.0",
         },
         "pi": {
             "publishedWithoutMetadata": "0.9.0",
-            "firstContainingRelease": None,
+            "firstContainingRelease": "0.10.0",
             "retainThrough": "0.x",
             "earliestRemoval": "1.0.0",
         },
@@ -901,6 +901,7 @@ class CommandCatalogTest(_RepoCase):
         registry_path = Path(self.repo) / "core/surface/command-routes.json"
         original = json.loads(registry_path.read_text(encoding="utf-8"))
         for version, message in (
+            (None, "must declare firstContainingRelease"),
             ("2.16.0", "must follow publishedWithoutMetadata"),
             ("3.0.0", "outside retainThrough"),
         ):
