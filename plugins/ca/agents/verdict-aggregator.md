@@ -22,11 +22,11 @@ Confirm every dispatched unit appears in the triage report as a finding source o
 
 ### Step 2 — Compose one verdict
 
-Return exactly one status:
+Return exactly one status. INCOMPLETE takes precedence over BLOCKING_FINDINGS; blocking findings remain in the output even when incomplete input determines the status.
 
 - `PASS` — no `BLOCKS` finding and no incomplete unit.
-- `BLOCKING_FINDINGS` — one or more `BLOCKS` findings are present.
 - `INCOMPLETE` — any expected unit, evidence receipt, or terminal result is missing or errored.
+- `BLOCKING_FINDINGS` — one or more `BLOCKS` findings are present and the batch is otherwise complete.
 
 Preserve every triaged finding exactly once. Include source, severity, file and line when present, disposition, remediation, and the applicable control supplied by triage.
 
@@ -42,7 +42,7 @@ Preserve every triaged finding exactly once. Include source, severity, file and 
 | BLOCKS | N |
 | DEFERRABLE | N |
 | NON_BLOCKING | N |
-| INCOMPLETE units | N |
+| INCOMPLETE_RESULT findings | N |
 
 ### Findings
 
@@ -50,6 +50,8 @@ Preserve every triaged finding exactly once. Include source, severity, file and 
 |---|---|---|---|---|---|
 | <reviewer or unit> | <severity> | <file:line or n/a> | <disposition> | <finding> | <next action or control> |
 ```
+
+Each `ERRORED`, `DEFERRED`, or missing unit is represented with disposition `INCOMPLETE_RESULT`; the `INCOMPLETE_RESULT findings` count equals the number of those rows.
 
 ## Hard Rules
 

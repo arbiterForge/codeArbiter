@@ -104,6 +104,45 @@ class ReadOnlyReviewFunnelTest(unittest.TestCase):
         self.assertNotIn("Read the finding-triage report", writer)
         self.assertIn("MUST NOT overwrite", writer)
 
+    def test_checkpoint_writer_reports_the_selected_dated_filename(self):
+        writer = _read("core/surface/agents/checkpoint-aggregator.md")
+        self.assertIn("selected dated checkpoint filename", writer)
+        self.assertIn("including any numeric suffix", writer)
+        self.assertIn("Report the exact path written in Step 3", writer)
+
+    def test_triage_requires_the_complete_batch_contract(self):
+        triage = _read("core/surface/agents/finding-triage.md")
+        for required in (
+            "current batch",
+            "every unit's terminal state",
+            "ERRORED",
+            "DEFERRED",
+            "Remediation",
+            "Applicable control",
+        ):
+            self.assertIn(required, triage)
+
+    def test_verdict_has_unambiguous_incomplete_precedence_and_schema(self):
+        verdict = _read("core/surface/agents/verdict-aggregator.md")
+        self.assertIn("INCOMPLETE takes precedence over BLOCKING_FINDINGS", verdict)
+        self.assertIn("INCOMPLETE_RESULT", verdict)
+        self.assertIn("INCOMPLETE_RESULT findings | N", verdict)
+
+    def test_dispatch_contract_uses_canonical_routes_and_preserves_findings(self):
+        agent_index = _read("core/surface/agents/INDEX.md")
+        routing = _read("core/surface/includes/routing-table.md")
+        dispatch = _read("core/surface/skills/dispatching-parallel-agents/SKILL.md")
+        self.assertIn("dispatching-parallel-agents", agent_index)
+        self.assertIn("reviewer fleet → finding-triage → read-only verdict", routing)
+        self.assertNotIn("reviewer fleet → triage →", routing)
+        self.assertNotIn("discards noise", dispatch)
+        self.assertIn("Every reviewer finding", dispatch)
+
+    def test_curated_review_projection_uses_the_read_only_terminal(self):
+        curated_review = _read("site/src/curated/commands/review.md")
+        self.assertIn("verdict-aggregator", curated_review)
+        self.assertNotIn("checkpoint-aggregator", curated_review)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -245,8 +245,11 @@ describe("loadAcademySource", () => {
       ["evidence", (manifest) => { homeAction(manifest).evidence = false; }],
     ];
 
+    const fixtureRoot = createFixture();
+    const manifestPath = join(fixtureRoot, "academy-source", "academy", "actions", "home.json");
+    const validManifest = readFileSync(manifestPath, "utf8");
     const acceptedMalformedFields = malformedFields.flatMap(([field, mutate]) => {
-      const fixtureRoot = createFixture();
+      writeFileSync(manifestPath, validManifest);
       mutateHomeActionManifest(fixtureRoot, mutate);
       try {
         loadAcademySource(fixtureRoot);

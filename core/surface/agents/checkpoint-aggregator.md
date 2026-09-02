@@ -1,6 +1,6 @@
 ---
 name: checkpoint-aggregator
-description: Persists a complete verdict-aggregator output as a dated checkpoint document under .codearbiter/checkpoints/YYYY-MM-DD.md. Writer, not a blocker.
+description: Persists a complete verdict-aggregator output under the selected dated checkpoint filename in .codearbiter/checkpoints/. Writer, not a blocker.
 tools: Read, Glob, Bash, Write
 classification: reviewer
 pi-skills: []
@@ -25,15 +25,15 @@ Check `{{PROJECT_DIR}}/.codearbiter/checkpoints/`. Create it if missing. The che
 
 ### Step 2 — Determine the checkpoint date
 
-Use the current date (YYYY-MM-DD). If a document for today exists, append a suffix: `YYYY-MM-DD-2.md`, `YYYY-MM-DD-3.md`. Never overwrite.
+Use the current date (YYYY-MM-DD). If a document for today exists, append a suffix: `YYYY-MM-DD-2.md`, `YYYY-MM-DD-3.md`. Record the selected dated checkpoint filename, including any numeric suffix. Never overwrite.
 
 ### Step 3 — Write the checkpoint document
 
-Write `{{PROJECT_DIR}}/.codearbiter/checkpoints/YYYY-MM-DD.md` with the structure below.
+Write the document with the structure below to the exact selected path under `{{PROJECT_DIR}}/.codearbiter/checkpoints/`.
 
 ### Step 4 — Report the path
 
-Report: "Checkpoint document written to `{{PROJECT_DIR}}/.codearbiter/checkpoints/YYYY-MM-DD.md`."
+Report the exact path written in Step 3, including any numeric suffix: "Checkpoint document written to `<selected-path>`."
 
 ### Step 5 — Surface DEFERRABLE findings for harvest
 

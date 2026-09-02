@@ -10,6 +10,8 @@
 
 **Spec:** `.codearbiter/specs/reaudit-ra03-read-only-review-aggregation.md`
 
+**Implementation status:** COMPLETE — PR #729 is open; review-amendment exact-head CI is pending.
+
 ## Global Constraints
 
 - Edit canonical `core/surface` inputs only; regenerate host projections with `python tools/build-surface.py`.
@@ -28,7 +30,7 @@
 - Consumes: canonical review, dispatch, triage, verdict, and checkpoint Markdown.
 - Produces: `verify_review_route(repo, target_kind)` and byte-invariance assertions for `working-diff` and `inbound-pr`.
 
-- [ ] **Step 1: Write the failing route test**
+- [x] **Step 1: Write the failing route test**
 
 ```python
 for target in ("working-diff", "inbound-pr"):
@@ -38,7 +40,7 @@ for target in ("working-diff", "inbound-pr"):
     self.assertEqual(snapshot_tracked_bytes(REPO_ROOT), before)
 ```
 
-- [ ] **Step 2: Assert the writer separation**
+- [x] **Step 2: Assert the writer separation**
 
 ```python
 self.assertNotIn("checkpoint-aggregator", review_terminal_funnel)
@@ -47,7 +49,7 @@ self.assertIn("checkpoint-aggregator", checkpoint_command)
 self.assertIn("MUST NOT overwrite", checkpoint_charter)
 ```
 
-- [ ] **Step 3: Run the test and verify RED**
+- [x] **Step 3: Run the test and verify RED**
 
 Run: `python .github/scripts/test_review_funnel.py`
 Expected: FAIL because `verdict-aggregator.md` does not exist and current review routes name `checkpoint-aggregator`.
@@ -70,7 +72,7 @@ Expected: FAIL because `verdict-aggregator.md` does not exist and current review
 - Consumes: complete finding-triage report and unit terminal-state findings.
 - Produces: one in-memory verdict with status `PASS`, `BLOCKING_FINDINGS`, or `INCOMPLETE`, plus every finding and errored/deferred unit.
 
-- [ ] **Step 1: Add the minimal read-only charter**
+- [x] **Step 1: Add the minimal read-only charter**
 
 ```yaml
 name: verdict-aggregator
@@ -80,19 +82,19 @@ classification: reviewer
 
 The body must require complete input accounting, structured status/counts/findings, and `Modify no file`.
 
-- [ ] **Step 2: Replace review and generic funnel terminal routes**
+- [x] **Step 2: Replace review and generic funnel terminal routes**
 
 Use `finding-triage` → `verdict-aggregator` in `/review` and `dispatching-parallel-agents`; do not mention the checkpoint writer as their terminal aggregator.
 
-- [ ] **Step 3: Make checkpoint persistence explicit**
+- [x] **Step 3: Make checkpoint persistence explicit**
 
 `/checkpoint` receives the verdict, then separately dispatches `checkpoint-aggregator` to write the dated non-overwriting document.
 
-- [ ] **Step 4: Update inventory and dispatch policy**
+- [x] **Step 4: Update inventory and dispatch policy**
 
 Add `verdict-aggregator` to the agent index and the `read-only reviewer/extractor` policy set. Replace the hard-coded canonical count with the new exact count.
 
-- [ ] **Step 5: Run the focused test and verify GREEN**
+- [x] **Step 5: Run the focused test and verify GREEN**
 
 Run: `python .github/scripts/test_review_funnel.py`
 Expected: PASS for both target kinds with identical before/after tracked-byte snapshots.
@@ -109,21 +111,21 @@ Expected: PASS for both target kinds with identical before/after tracked-byte sn
 - Consumes: canonical surface templates and `core/hosts.json`.
 - Produces: byte-consistent Claude, Codex, and Pi projections with closed references.
 
-- [ ] **Step 1: Regenerate**
+- [x] **Step 1: Regenerate**
 
 Run: `python tools/build-surface.py`
 
-- [ ] **Step 2: Update exact inventory expectations from generated evidence**
+- [x] **Step 2: Update exact inventory expectations from generated evidence**
 
 Add `verdict-aggregator` to the expected role set and update only route receipt counts actually changed by the canonical routes.
 
-- [ ] **Step 3: Run focused verification**
+- [x] **Step 3: Run focused verification**
 
 Run: `python .github/scripts/test_build_surface.py`
 Run: `python .github/scripts/check-plugin-refs.py`
 Run: `python tools/build-surface.py --check`
 Expected: all exit 0.
 
-- [ ] **Step 4: Run governed whole-surface verification and review**
+- [x] **Step 4: Run governed whole-surface verification and review**
 
 Execute the repository-required `$ca-commit` and `$ca-pr` gates, record exact commands and results, then open a PR without merging or releasing unless separately authorized.

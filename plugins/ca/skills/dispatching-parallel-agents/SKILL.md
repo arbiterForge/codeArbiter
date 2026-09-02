@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: "The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then the read-only verdict-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors drops its unit without corrupting the batch."
+description: "The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then the read-only verdict-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors records its unit as incomplete without corrupting the batch."
 disable-model-invocation: true
 ---
 
@@ -59,7 +59,7 @@ Gate: the result set is deduped, contradictions surfaced, and completion claims 
 
 The batch is consumed only here, through the fixed funnel — never directly by the caller.
 
-1. Dispatch `finding-triage` (`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) over the deduped result set: it classifies severity, marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker, and discards noise.
+1. Dispatch `finding-triage` (`${CLAUDE_PLUGIN_ROOT}/agents/finding-triage.md`) over the deduped result set and batch completion contract: it classifies severity and marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker. Every reviewer finding reaches the verdict; only non-finding transport metadata may be omitted.
 2. Hand the triaged set to `verdict-aggregator` (`${CLAUDE_PLUGIN_ROOT}/agents/verdict-aggregator.md`): it composes the single read-only batch verdict the caller consumes — `PASS`, `BLOCKING_FINDINGS`, or `INCOMPLETE`.
 
 The errored and deferred units from Phase 3 ride through the funnel as findings — an `ERRORED` unit is a finding the caller must see, not a silent gap.
