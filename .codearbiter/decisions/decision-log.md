@@ -1605,3 +1605,28 @@ This is a lifecycle transition explicitly directed by the user, not a new archit
 The conditional ADR blocker is cleared. Deliver the additive compatibility-preserving trusted static verifier prerequisite first, integrate its exact landed main revision into the hosted-static feature branch, then retire the desktop path and proceed through governed CI, CodeRabbit, merge, release, supported local installation, fresh-task verification, and campaign completion audit.
 
 ---
+
+## DECISION-0053 — adr-0033-ratified — Accepted ADRs bind sealed obligations to current evidence
+
+**Date:** 2026-09-02
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** governance-integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Accepted ADRs record approved plans but do not prove implementation, verification, or immutable accepted content.
+- **Scaffold position:** A separate append-only lifecycle ledger content-binds acceptance, seals obligations, and derives only current input-bound delivery states.
+- **Status type:** open-decision-closure
+
+### Decision
+Preserve `status: accepted` as Accepted/Planned and record delivery evidence separately in an append-only `adr-lifecycle.jsonl`. Bind future acceptance once to exact content and a sealed obligation set; treat legacy records as incomplete baselines; expose only fresh, input-matching Verified obligations.
+
+### SMARTS rationale
+Safety and maintainability reject rewriting accepted bodies or fabricating historical completeness. Reversibility favors an append-only companion ledger whose derived states can invalidate on changed inputs without erasing evidence. Specificity and testability require stable obligation IDs, exact digests, explicit proof contracts, and narrow repository claims.
+
+### Implementation implication
+Add the lifecycle ledger schema, parser, checker, tests, CI integration, decision-lifecycle guidance, truthful legacy baselines, and verified-only export. Complete ADR-0026's current four-item destructive registry and parity checker under ADR-0030's narrowing.
+
+---
