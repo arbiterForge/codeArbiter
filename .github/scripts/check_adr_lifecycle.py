@@ -135,9 +135,14 @@ def main(argv=None):
             errors.append(str(exc))
 
     exported = None
+    diagnostics = []
     if args.verified_json:
         if not args.current_ref or not args.now:
             parser.error("--verified-json requires --current-ref and --now")
+        try:
+            al._parse_time(args.now)
+        except (TypeError, ValueError) as exc:
+            errors.append("export time/timezone is invalid: %s" % exc)
         paths = sorted({path for event in events if isinstance(event, dict)
                         and isinstance(event.get("input_digests"), dict)
                         for path in event["input_digests"] if isinstance(path, str)})
@@ -145,7 +150,7 @@ def main(argv=None):
         if not errors:
             exported, export_errors = al.verified_export(
                 events, blobs, current_blobs, args.now)
-            errors.extend(export_errors)
+            diagnostics.extend(export_errors)
         if errors:
             exported = []
     if errors:
@@ -156,6 +161,8 @@ def main(argv=None):
         return 1
     if args.verified_json:
         print(json.dumps(exported, sort_keys=True, separators=(",", ":")))
+        for diagnostic in diagnostics:
+            print("::warning::" + diagnostic, file=sys.stderr)
     else:
         print("ADR lifecycle bindings valid; accepted plans are distinct from Verified evidence")
     return 0

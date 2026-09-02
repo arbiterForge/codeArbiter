@@ -768,6 +768,68 @@ class LifecycleContractTest(unittest.TestCase):
                 self.assertIn("::error::", stderr)
                 self.assertNotIn("Traceback", stderr)
 
+    def test_verified_json_preserves_complete_adr_when_another_is_incomplete(self):
+        expected_digest = _sha(b"source-v1")
+        with tempfile.TemporaryDirectory() as root:
+            incomplete, _, _ = self._committed_evidence_repo(root)
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            second_adr = ADR.replace(b"ADR-0001", b"ADR-0002")
+            with open(os.path.join(decisions, "0002-test.md"), "wb") as handle:
+                handle.write(second_adr)
+            self._git(root, "add", ".codearbiter/decisions/0002-test.md")
+            self._git(root, "commit", "-m", "add second accepted ADR")
+            source_commit = self._git(root, "rev-parse", "HEAD")
+
+            complete = self._acceptance()
+            complete.update({
+                "adr": "0002-test",
+                "source_commit": source_commit,
+                "blob_sha256": _sha(second_adr),
+                "body_sha256": _sha(al.immutable_body(second_adr)),
+            })
+            complete["obligations"][0]["id"] = "0002-test.o1"
+            complete["obligations_sha256"] = al.obligation_set_digest(
+                complete["obligations"])
+            implementation = {
+                "schema": "adr-lifecycle/v1", "event": "implemented",
+                "event_id": "impl-2", "adr": "0002-test",
+                "obligation": "0002-test.o1", "source_commit": source_commit,
+                "input_digests": {"src/x.py": expected_digest},
+                "evidence": "repository implementation commit %s" % source_commit,
+            }
+            verification = {
+                "schema": "adr-lifecycle/v1", "event": "verified",
+                "event_id": "verify-2", "adr": "0002-test",
+                "obligation": "0002-test.o1", "source_commit": source_commit,
+                "input_digests": {"src/x.py": expected_digest},
+                "proof_contract": "repo-ci/v1", "producer": "github-actions/run-2",
+                "command": "python test.py", "observed_at": "2026-09-02T12:00:00Z",
+                "valid_until": "2026-09-03T12:00:00Z", "claim_scope": "repository",
+                "claim": "second repository test contract passed",
+            }
+            self._write_ledger(root, [incomplete, complete, implementation, verification])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "record mixed lifecycle evidence")
+
+            result, stdout, stderr = self._run_checker(
+                root, "--verified-json", "--current-ref", "HEAD",
+                "--now", "2026-09-02T13:00:00Z")
+            expected = [{
+                "adr": "0002-test", "obligation": "0002-test.o1",
+                "claim": "second repository test contract passed",
+                "claim_scope": "repository", "source_commit": source_commit,
+                "input_digests": {"src/x.py": expected_digest},
+                "proof_contract": "repo-ci/v1", "producer": "github-actions/run-2",
+                "command": "python test.py", "observed_at": "2026-09-02T12:00:00Z",
+                "valid_until": "2026-09-03T12:00:00Z",
+            }]
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(stdout, json.dumps(
+                expected, sort_keys=True, separators=(",", ":")) + "\n")
+            self.assertIn("0001-test.o1", stderr)
+            self.assertIn("::warning::", stderr)
+            self.assertNotIn("::error::", stderr)
+
     def test_checker_ignores_ambient_repository_selectors_for_explicit_root(self):
         with tempfile.TemporaryDirectory() as root, \
                 tempfile.TemporaryDirectory() as foreign:
