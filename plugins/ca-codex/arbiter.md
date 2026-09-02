@@ -119,9 +119,18 @@ exists for a genuinely incomplete reading, and for the destructive set below —
 
 **Clarity and risk are separate axes.** Tier 1 requires BOTH unambiguous intent AND a non-destructive
 command. Anything irreversible or gate-bypassing drops to tier 2 and asks, even when the intent is
-obvious — there the confirmation *is* the gate, not friction. That set (safety-core's §6): `$ca-override`,
-merge to the default branch, branch or worktree deletion, and release and tag publication. A
-deterministic mode-token flip (`mode --dangerous`, `mode --ops`) is friction, not a gate, so it is
+obvious — there the confirmation *is* the gate, not friction. The routing table owns the authoritative
+registry; this resident copy is byte-compared item-for-item in CI because classification precedes
+that file load:
+
+### Destructive operations (tier-2 regardless of cue)
+
+- Logged bypass (`/override`)
+- Merge to the default branch
+- Branch or worktree deletion
+- Release and tag publication
+
+A deterministic mode-token flip (`mode --dangerous`, `mode --ops`) is friction, not a gate, so it is
 not in this set — ADR-0030 supersedes ADR-0022's tier-2 confirmation clause for dangerous-mode entry
 alone; the other four members are unchanged.
 

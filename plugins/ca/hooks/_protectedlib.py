@@ -89,8 +89,16 @@ AUDIT_LOG_FLAT_BASENAMES = ("overrides.log", "triage.log", "gate-events.log", "s
 # from the H-11 set below leaves the append blocked, because classify_protected
 # reports every class a path hits and pre-write checks them independently.
 DECISION_LOG_BASENAME = "decision-log.md"
+ADR_LIFECYCLE_LOG_BASENAME = "adr-lifecycle.jsonl"
+DECISION_AUDIT_LOG_BASENAMES = (DECISION_LOG_BASENAME, ADR_LIFECYCLE_LOG_BASENAME)
+DECISION_AUDIT_LOG_NAMES = "(?:" + "|".join(
+    re.escape(n) for n in DECISION_AUDIT_LOG_BASENAMES) + ")"
 DECISION_LOG_RE = re.compile(
     r"\.codearbiter[\\/]+decisions[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"$"
+)
+ADR_LIFECYCLE_LOG_RE = re.compile(
+    r"\.codearbiter[\\/]+decisions[\\/]+" + re.escape(ADR_LIFECYCLE_LOG_BASENAME) + r"$",
+    re.I,
 )
 # AUDIT_LOG_BASENAMES stays the SINGLE AUTHORITATIVE BASENAME LIST, and the
 # arbitration log is in it. _bashguardlib's H-05 shell check pre-filters with
@@ -99,7 +107,7 @@ DECISION_LOG_RE = re.compile(
 # alternation below would sail past that pre-filter and leave the log deletable
 # from the shell. (Caught by test_hook_guards.py, which the comment on that
 # pre-filter predicted verbatim.)
-AUDIT_LOG_BASENAMES = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
+AUDIT_LOG_BASENAMES = AUDIT_LOG_FLAT_BASENAMES + DECISION_AUDIT_LOG_BASENAMES
 AUDIT_LOG_NAMES = "(?:" + "|".join(re.escape(n) for n in AUDIT_LOG_BASENAMES) + ")"
 # The path anchor stays scoped to the FLAT logs — those sit directly under
 # .codearbiter/, the arbitration log one level deeper — so is_audit_log() tests
@@ -148,9 +156,10 @@ GATE_MARKER_NAMES = r"(?:security-gate-passed|migration-gate-passed)"
 def is_audit_log(rel):
     """True iff `rel` is one of the append-only .codearbiter audit logs
     (overrides.log, triage.log, sprint-log.md, gate-events.log) or the SMARTS
-    arbitration log decisions/decision-log.md (#528) — the H-05 guard set."""
+    decision ledgers under decisions/ — the H-05 guard set."""
     n = norm_path(rel)
-    return bool(AUDIT_LOG_RE.search(n) or DECISION_LOG_RE.search(n))
+    return bool(AUDIT_LOG_RE.search(n) or DECISION_LOG_RE.search(n)
+                or ADR_LIFECYCLE_LOG_RE.search(n))
 
 
 def is_tail_append(current, old, new):
@@ -190,7 +199,7 @@ def is_decisions_path(rel):
     cannot launder itself out of the marker gate. (`decision-log.md.bak` is in
     NEITHER set: it does not end in `.md`, so it was never an H-11 path either.)"""
     n = norm_path(rel)
-    if DECISION_LOG_RE.search(n):
+    if DECISION_LOG_RE.search(n) or ADR_LIFECYCLE_LOG_RE.search(n):
         return False
     return bool(DECISIONS_PATH_RE.search(n))
 
