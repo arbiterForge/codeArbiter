@@ -112,8 +112,8 @@ class PublicCodexDocsTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(path, tech_stack)
         self.assertIn("canonical shared source", tech_stack)
-        self.assertIn("source candidate", tech_stack)
-        self.assertNotIn("Host dispatch loads those resources", tech_stack)
+        self.assertIn("Published releases from 0.7.5", tech_stack)
+        self.assertNotIn("source candidate", tech_stack)
 
     def test_contributor_and_security_guides_describe_the_multi_host_product(self):
         """Contributor, security, and install prose matches the host topology."""
@@ -234,7 +234,16 @@ class PublicCodexDocsTest(unittest.TestCase):
         )
         self.assertIn("plugins/ca-codex/agents/", parity)
         self.assertNotIn("plugins/ca-codex/resources/agents/", parity)
-        self.assertIn("source candidate", parity)
+        self.assertIn("published releases from 0.7.5", parity)
+        self.assertIn("exact-release receipt", parity)
+        self.assertNotIn("source candidate", parity)
+
+        overview = (
+            ROOT / "site" / "src" / "content" / "docs" / "overview.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Until exact-release thread dispatch is durably proven", overview)
+        self.assertIn("bounded inline fallback", overview)
+        self.assertNotIn("Adapters before 0.7.5 may use", overview)
 
         public_role_docs = (
             "site/src/content/docs/overview.md",
@@ -249,9 +258,13 @@ class PublicCodexDocsTest(unittest.TestCase):
         for path in public_role_docs:
             with self.subTest(candidate_path=path):
                 text = (ROOT / path).read_text(encoding="utf-8")
-                self.assertRegex(text, re.compile(r"(?is)source candidate.{0,160}packaged.{0,80}resource charter"))
-                self.assertNotIn("Current Codex releases load", text)
-                self.assertNotIn("On current Codex hosts", text)
+                self.assertRegex(
+                    text,
+                    re.compile(r"(?is)published releases from 0\.7\.5.{0,160}packaged.{0,80}resource charter"),
+                )
+                self.assertNotIn("source candidate", text)
+                self.assertNotIn("exact-candidate proof gates release", text)
+                self.assertIn("inline", text)
 
 
 if __name__ == "__main__":

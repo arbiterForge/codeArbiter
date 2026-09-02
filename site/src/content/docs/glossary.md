@@ -28,9 +28,11 @@ See [Enforcement & Security](/enforcement/#advisory-non-blocking-reminders).
 
 A focused author or reviewer role dispatched by a [skill](#skill). An agent is not a public
 command and not a second orchestrator; it receives only the tools and context its role needs.
-Claude Code dispatches packaged plugin agents. The Codex source candidate includes equivalent
-packaged resource charters for host-provided agent threads; exact-candidate proof gates release,
-and older adapters retain inline execution as a fallback. Pi uses hardened child dispatch. See the
+Claude Code dispatches packaged plugin agents. Published releases from 0.7.5 include equivalent
+packaged resource charters for Codex host-provided agent threads, with exact static-package and
+route-closure checks at release. Until exact-release thread dispatch is durably proven, workflows
+use the bounded inline fallback only where isolation is not mandatory. Pi uses hardened child
+dispatch. See the
 [Agents reference](/reference/#agents).
 
 ## Arbiter (enabled flag)

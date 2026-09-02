@@ -19,7 +19,7 @@ capabilities, and tool classes without copying governance policy.
 | Host | Adapter entry | Public command form | Runtime boundary |
 |---|---|---|---|
 | Claude Code (`ca`) | `hooks/hooks.json` | `/ca:<name>` | native hook events and Claude agents |
-| Codex CLI (`ca-codex`) | `.codex-plugin/plugin.json` + generated hooks | `$ca-<name>` | compatible hook events; the source candidate includes packaged resource charters (not native agent registrations) for host-provided threads, while runtime promotion remains exact-candidate gated and older releases retain a bounded inline fallback |
+| Codex CLI (`ca-codex`) | `.codex-plugin/plugin.json` + generated hooks | `$ca-<name>` | compatible hook events; published releases from 0.7.5 include packaged resource charters (not native agent registrations) for host-provided threads, with exact static-package and route-closure release gates |
 | Pi (`ca-pi`) | `extensions/codearbiter.js` | `/ca-<name>` with `/skill:ca-<name>` fallback | TypeScript lifecycle/tool wrappers call the bounded Python bridge; roles use hardened child Pi processes |
 
 Pi's parent extension stays dormant until the repository is enabled and Pi

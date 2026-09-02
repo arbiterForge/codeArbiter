@@ -15,10 +15,10 @@ this file is the stale one; fix it here.
   stdlib only; the dispatcher is TypeScript tested with Vitest and ships built
   `farm.js`.
 - **Codex adapter** (`plugins/ca-codex/`) — Codex manifest and hook shims plus
-  generated skills and packaged resource charters. The source candidate packages
-  those resources for host-provided thread dispatch; exact-candidate proof gates
-  release, and older adapters retain the bounded inline fallback. They are not
-  native Codex plugin-agent registrations.
+  generated skills and packaged resource charters. Published releases from 0.7.5
+  contain the complete charter set for host-provided thread dispatch. The hosted
+  static package gate verifies release bytes, resource closure, and dispatch routes.
+  These charters are not native Codex plugin-agent registrations.
 - **Pi adapter** (`plugins/ca-pi/`) — generated Python/policy payload plus its thin
   TypeScript host extension and supervised child-process boundary.
 - **Infrastructure sibling** (`plugins/ca-sandbox/`) — isolated exploration tools;

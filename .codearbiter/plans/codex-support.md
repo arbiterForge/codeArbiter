@@ -14,12 +14,14 @@ This is newly feasible: Codex v0.142.x (verified July 2026) has near-parity exte
 
 **Approval caveat (2026-07-08):** approved as **beta only** — the maintainer has no Codex subscription until ~2026-07-09, so live-fire spike items (stdout injection, trust review, exit-2 feedback) are deferred to a live-verification pass; source-level verification against `openai/codex` proceeds immediately. `ca-codex` carries a beta / Feature Forge preview label until live verification completes.
 
-## Campaign status (reconciled 2026-07-20)
+## Campaign status (reconciled 2026-09-02)
 
-The beta gate is complete, but the full M0-M5 campaign is not. Codex 0.144.1 loaded the trusted
-plugin, injected the SessionStart persona, and surfaced the live H-03 block. Stable release
-`ca-codex-v0.2.4` was tagged and published on 2026-07-12. Those receipts remove the beta label;
-they do not silently waive the remaining host-parity milestones.
+The beta gate is complete, but the full M0-M5 campaign remains open on two evidence obligations.
+Codex 0.144.1 established the initial trusted startup and live H-03 block. Published release
+`ca-codex-v0.7.5` closed the missing-charter package defect with the complete generated role set for
+that release plus hosted static-package and route-closure gates. ADR-0031 governs host-native roots
+and packaged charters. ADR-0032 replaces only its retired desktop-proof requirement with the
+hosted-static contract.
 
 | Milestone | Current status | Authoritative evidence or remaining obligation |
 |---|---|---|
@@ -27,17 +29,14 @@ they do not silently waive the remaining host-parity milestones.
 | M1 shared-core extraction | ACCEPTED | `core/pysrc/`, `tools/sync-core.py`, and the byte-identity CI contract shipped in PR #254. |
 | M2 Codex enforcement core | ACCEPTED | The trusted hooks, host adapter, doctor probe, shared-store contract, and live H-03 block shipped in PR #254. |
 | M3 command/skill surface | ACCEPTED | The generated standalone `$ca-*` surface and Codex-only initialization path shipped through PR #295 and PR #254. |
-| M4 agents + review chains | PENDING | `docs/parity.md` still records the 28 agents and review chains as M4 work. Roles run inline; generated `.codex/agents/*.toml`, `ca-init` scaffolding, staleness diagnosis, and review-chain validation remain. |
-| M5 distribution/release/docs | PARTIAL | Stable 0.2.4 release and public install documentation shipped through PRs #301 and #302. The Codex worker-backend package remains absent and degrades to the premium path. |
+| M4 agents + review chains | DEGRADED | ADR-0031 replaced the abandoned `.codex/agents/*.toml` scaffold with packaged Markdown resource charters and host-provided threads. Release 0.7.5 contains the then-complete 18-charter set plus `INDEX.md`; current source and 0.7.9 contain 19. Generated route and policy checks close every declared dispatch path, but no committed exact-release receipt proves actual host-thread dispatch. |
+| M5 distribution/release/docs | PARTIAL | The initial Stable release and public install documentation shipped through PRs #301 and #302. ADR-0032 and the 0.7.5 release add the hosted-static distribution contract. The optional Codex farm backend is a separately labeled preview limitation, not a Stable-host blocker. `.github/published-tags.json` still stops at `ca-codex-v0.5.1`, so the newer published tags lack the declared committed provenance witness. |
 
-`codex.feature.0001` remains in progress until M4 is accepted and the remaining M5 distribution
-decision is implemented or explicitly re-scoped through a user-attributed decision. Later 0.3.x
-version work is maintenance on the shipped host and is not evidence that these two obligations closed.
-
-`.codearbiter/CONTEXT.md` still carries the superseded beta wording. A 2026-07-20 attempt to correct
-that sentence was blocked by H-18 because `CONTEXT.md` is the activation switch. Correcting it needs
-the sanctioned protected-file path or an explicit `$ca-override`; this reconciliation does not bypass
-that gate.
+`codex.feature.0001` remains in progress until an exact published package has durable host-thread
+dispatch evidence and the declared published-tag witness is current or explicitly dispositioned.
+The task row's beta clause records the original gate; this section records the current residual.
+`.codearbiter/CONTEXT.md` now assigns the canonical kernel and all three host adapters without the
+superseded beta wording.
 
 ## Architecture
 
