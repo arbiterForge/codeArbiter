@@ -448,6 +448,7 @@ class CodexMappingTest(_RepoCase):
             "dependency-reviewer", "design-quality-reviewer", "finding-triage",
             "frontend-author", "grader", "infra-author", "map-deps", "map-structure",
             "migration-reviewer", "scout", "security-reviewer", "tribunal-lens-reviewer",
+            "verdict-aggregator",
         }
         actual = {
             path.removeprefix("agents/").removesuffix(".md")
@@ -463,6 +464,7 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("fresh isolated worktree/thread required", index)
         self.assertIn("no file mutation", index)
         self.assertIn("`scout`, map roles", index)
+        self.assertIn("`verdict-aggregator`", index)
         self.assertIn("`checkpoint-aggregator`, `tribunal-lens-reviewer`", index)
         self.assertIn("declared checkpoint/finding output path", index)
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
@@ -553,7 +555,7 @@ class PiMappingTest(_RepoCase):
             before_catalog,
         )
 
-    def test_real_pi_role_catalog_is_an_18_role_explicit_resource_bijection(self):
+    def test_real_pi_role_catalog_is_a_19_role_explicit_resource_bijection(self):
         out = B.render_all(str(REPO_ROOT), "pi")
         roles = json.loads(out["generated/roles.json"])
         agents = sorted(
@@ -562,9 +564,9 @@ class PiMappingTest(_RepoCase):
             if path.startswith("agents/") and path.endswith(".md")
             and path != "agents/INDEX.md"
         )
-        self.assertEqual(len(agents), 18)
+        self.assertEqual(len(agents), 19)
         self.assertEqual(sorted(role["name"] for role in roles), agents)
-        self.assertEqual(len({role["name"] for role in roles}), 18)
+        self.assertEqual(len({role["name"] for role in roles}), 19)
         # security-controls.md assumes these three reviewers exist; a count pin
         # alone would stay green if one were swapped for an unrelated role.
         self.assertLessEqual(

@@ -225,7 +225,7 @@ class PublicCodexDocsTest(unittest.TestCase):
             for path in (ROOT / "plugins" / "ca-codex" / "agents").glob("*.md")
             if path.name != "INDEX.md"
         )
-        self.assertEqual(18, len(charter_files))
+        self.assertEqual(19, len(charter_files))
 
         parity = (ROOT / "docs" / "parity.md").read_text(encoding="utf-8")
         self.assertRegex(

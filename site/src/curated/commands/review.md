@@ -16,7 +16,7 @@ authn/crypto/key handling, `dependency-reviewer` for manifest/lockfile changes,
 `architecture-drift-reviewer` for code that may diverge from an accepted ADR. Each matched
 reviewer runs as one read-only unit through `dispatching-parallel-agents`; the results are
 deduped, then funneled through `finding-triage` (severity plus an inline `[NEEDS-TRIAGE]` marker
-on anything out of scope) and `checkpoint-aggregator` down to a single verdict. No file is
+on anything out of scope) and the read-only `verdict-aggregator` down to a single verdict. No file is
 modified by a run. A finding that turns on a genuinely-unresolved unknown surfaces as a numbered
 [`CONFIRM-NN`](/glossary/#confirm-nn) rather than being resolved by guessing.
 

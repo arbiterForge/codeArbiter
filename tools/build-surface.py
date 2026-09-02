@@ -74,7 +74,7 @@ _CODEX_POLICY_NAMES = {
         "architecture-drift-reviewer", "auth-crypto-reviewer", "coverage-auditor",
         "decision-challenger", "dependency-reviewer", "design-quality-reviewer",
         "finding-triage", "grader", "map-deps", "map-structure",
-        "migration-reviewer", "scout", "security-reviewer",
+        "migration-reviewer", "scout", "security-reviewer", "verdict-aggregator",
     }),
     "bounded writer/aggregator": frozenset({
         "checkpoint-aggregator", "tribunal-lens-reviewer",
@@ -413,7 +413,7 @@ def _codex_dispatch_policy(out):
         missing = sorted(expected - set(entries))
         extra = sorted(set(entries) - expected)
         raise SurfaceError(
-            "plugins/ca-codex/agents: requires exactly the canonical 18 "
+            f"plugins/ca-codex/agents: requires exactly the canonical {len(expected)} "
             f"charters (missing={missing!r}, extra={extra!r})"
         )
     for name in _CODEX_POLICY_NAMES["author"]:

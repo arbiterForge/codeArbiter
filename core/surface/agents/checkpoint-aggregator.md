@@ -1,6 +1,6 @@
 ---
 name: checkpoint-aggregator
-description: Composes the finding-triage report and decision-challenger output into a dated checkpoint document under .codearbiter/checkpoints/YYYY-MM-DD.md. Aggregator, not a blocker.
+description: Persists a complete verdict-aggregator output under the selected dated checkpoint filename in .codearbiter/checkpoints/. Writer, not a blocker.
 tools: Read, Glob, Bash, Write
 classification: reviewer
 pi-skills: []
@@ -9,12 +9,12 @@ model: haiku
 
 # Checkpoint Aggregator Agent
 
-Final agent in the checkpoint pipeline. Read the finding-triage report, ensure the checkpoints directory exists, and write the dated checkpoint document. Composes; does not block. Runs after `finding-triage` completes.
+Explicit writer in the checkpoint pipeline. Consume the verdict-aggregator output, ensure the checkpoints directory exists, and write the dated checkpoint document. Persists; does not block. Runs only after `verdict-aggregator` returns.
 
 ## Required Reading
 
 1. `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — the `stage:` value.
-2. The finding-triage report from the current checkpoint run.
+2. The complete verdict-aggregator output from the current checkpoint run.
 3. `{{PROJECT_DIR}}/.codearbiter/checkpoints/` — existing checkpoint documents (to avoid a duplicate).
 
 ## Process
@@ -25,15 +25,15 @@ Check `{{PROJECT_DIR}}/.codearbiter/checkpoints/`. Create it if missing. The che
 
 ### Step 2 — Determine the checkpoint date
 
-Use the current date (YYYY-MM-DD). If a document for today exists, append a suffix: `YYYY-MM-DD-2.md`, `YYYY-MM-DD-3.md`. Never overwrite.
+Use the current date (YYYY-MM-DD). If a document for today exists, append a suffix: `YYYY-MM-DD-2.md`, `YYYY-MM-DD-3.md`. Record the selected dated checkpoint filename, including any numeric suffix. Never overwrite.
 
 ### Step 3 — Write the checkpoint document
 
-Write `{{PROJECT_DIR}}/.codearbiter/checkpoints/YYYY-MM-DD.md` with the structure below.
+Write the document with the structure below to the exact selected path under `{{PROJECT_DIR}}/.codearbiter/checkpoints/`.
 
 ### Step 4 — Report the path
 
-Report: "Checkpoint document written to `{{PROJECT_DIR}}/.codearbiter/checkpoints/YYYY-MM-DD.md`."
+Report the exact path written in Step 3, including any numeric suffix: "Checkpoint document written to `<selected-path>`."
 
 ### Step 5 — Surface DEFERRABLE findings for harvest
 
@@ -107,5 +107,6 @@ One `###` section per dispatched reviewer. Typical sections:
 ## Hard Rules
 
 - MUST NOT overwrite an existing checkpoint document.
-- Every finding from the triage report MUST appear in the checkpoint document. Omit nothing.
+- Every finding and incomplete-unit result from the verdict-aggregator output MUST appear in the checkpoint document. Omit nothing.
+- MUST NOT consume raw reviewer output or the finding-triage report directly.
 - The `{{PROJECT_DIR}}/.codearbiter/checkpoints/` directory MUST be created if missing. Do not fail silently.

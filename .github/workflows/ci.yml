@@ -1300,6 +1300,11 @@ jobs:
         # host conditionals, Codex path rewrites + frontmatter synthesis, and
         # --check drift detection in both directions against synthetic trees.
         run: python .github/scripts/test_build_surface.py
+      - name: Run read-only review funnel contract
+        # RA-03: working-diff and inbound-PR review both terminate at the
+        # read-only verdict aggregator, leave repository bytes unchanged, and
+        # keep checkpoint persistence as a separate non-overwriting writer.
+        run: python .github/scripts/test_review_funnel.py
       - name: Run §6 routing + post-merge-cleanup surface contract
         # Issue #308 / ADR-0022. Both halves of #308 are prose contracts
         # projected into three host surfaces, so what silently regresses is a
