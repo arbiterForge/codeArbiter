@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-02
+
+### Added
+
+- Accepted ADRs now have content-bound lifecycle records, sealed obligation
+  sets, and evidence-derived implementation and verification states.
+- Destructive-operation policy now uses one four-item registry with generated
+  host parity and item-for-item enforcement.
+
 ## [0.8.9] - 2026-09-02
 
 ### Fixed

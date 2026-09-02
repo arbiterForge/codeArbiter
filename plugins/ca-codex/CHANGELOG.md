@@ -6,6 +6,15 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-02
+
+### Added
+
+- Accepted ADRs now have content-bound lifecycle records, sealed obligation
+  sets, and evidence-derived implementation and verification states.
+- Destructive-operation policy now uses one four-item registry with generated
+  host parity and item-for-item enforcement.
+
 ## [0.7.9] - 2026-09-02
 
 ### Fixed

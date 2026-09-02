@@ -12,6 +12,15 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.16.0] - 2026-09-02
+
+### Added
+
+- Accepted ADRs now have content-bound lifecycle records, sealed obligation
+  sets, and evidence-derived implementation and verification states.
+- Destructive-operation policy now uses one four-item registry with generated
+  host parity and item-for-item enforcement.
+
 ## [2.15.10] - 2026-09-02
 
 ### Fixed
