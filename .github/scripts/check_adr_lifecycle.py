@@ -7,7 +7,11 @@ import os
 import subprocess
 import sys
 
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(REPO, "core", "pysrc"))
+
 import adr_lifecycle as al
+from _gitexec import root_bound_git_env
 
 
 LEDGER_REL = ".codearbiter/decisions/adr-lifecycle.jsonl"
@@ -28,7 +32,10 @@ def select_base_ref(event_name, event):
 
 
 def _git(root, *args):
-    return subprocess.run(["git", "-C", root, *args], capture_output=True, check=False)
+    return subprocess.run(
+        ["git", "-C", root, *args], capture_output=True, check=False,
+        env=root_bound_git_env(),
+    )
 
 
 def _git_blob(root, commit, path):
