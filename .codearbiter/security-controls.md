@@ -506,6 +506,21 @@ They may never be truncated, rewritten, or deleted. The `pre-bash.py` H-05 guard
 and the `pre-write.py` / `pre-edit.py` H-05 guards enforce this at every
 tool-call boundary.
 
+`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-
+lifecycle ledger. Its exact repository-relative path is authoritative; hook
+classification also compares the path case-folded so equivalent mixed-case
+spellings cannot evade protection on supported case-insensitive filesystems.
+Tail append is its only permitted write shape. H-05 enforces append-only write
+shape by blocking shell and Write/Edit rewrites, truncation, deletion, and
+non-tail edits. The lifecycle checker separately validates JSONL syntax, event
+completeness, schema, and committed-prefix integrity after bytes are written and
+again in CI; H-05 does not inspect or validate appended content.
+H-11 separately protects governed decision-document paths and does not replace
+the ledger-specific H-05 integrity rule. In CI, the lifecycle checker reads the
+base and current ledger as committed Git blobs and requires the base to be an
+exact byte prefix of the current blob. A missing, unresolvable, or all-zero base
+fails closed rather than weakening append-only validation.
+
 **Enforcement scope (accepted residual risk).** These guards are *integrity*
 controls, not *completeness* controls — they protect a log once written, they do
 not compel a write. The completeness half is resolved by `[CONFIRM-09]`

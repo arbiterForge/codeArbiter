@@ -364,6 +364,21 @@ def main():
                     "Add-Content .codearbiter/decisions/decision-log.md 'entry'"):
             expect_allow(fx, cmd, f"#528 sanctioned append still allowed: {cmd}")
 
+        # ADR-0033 adds one exact-path append-only lifecycle ledger.
+        for cmd in ("cat row.json >> .codearbiter/decisions/adr-lifecycle.jsonl",
+                    "Add-Content .codearbiter/decisions/adr-lifecycle.jsonl 'entry'"):
+            expect_allow(fx, cmd, f"ADR-0033 lifecycle append allowed: {cmd}")
+        for cmd in ("echo x > .codearbiter/decisions/adr-lifecycle.jsonl",
+                    "rm .codearbiter/decisions/adr-lifecycle.jsonl",
+                    "truncate -s 0 .codearbiter/decisions/adr-lifecycle.jsonl"):
+            expect_block(fx, cmd, "H-05", f"ADR-0033 lifecycle rewrite blocked: {cmd}")
+        expect_block(
+            fx,
+            "echo x > .CodeArbiter/Decisions/ADR-Lifecycle.JSONL",
+            "H-05",
+            "ADR-0033 mixed-case lifecycle rewrite blocked",
+        )
+
         # ---- H-19: interpreter one-liners forging a gate marker (#237) -------
         # The mv/cp/tee/sed/redirect flank (below, exercised via H-05-style
         # verbs elsewhere) misses an arbitrary interpreter invocation entirely —
