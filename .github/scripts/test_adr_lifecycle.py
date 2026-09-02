@@ -699,11 +699,14 @@ class LifecycleContractTest(unittest.TestCase):
 
     def test_verified_json_stdout_is_exactly_one_machine_payload(self):
         with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
             directory = os.path.join(root, ".codearbiter", "decisions")
             os.makedirs(directory)
             ledger = os.path.join(directory, "adr-lifecycle.jsonl")
             with open(ledger, "w", encoding="utf-8") as handle:
                 handle.write("")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "record empty lifecycle ledger")
             stdout = io.StringIO()
             stderr = io.StringIO()
             with redirect_stdout(stdout), redirect_stderr(stderr):
@@ -727,6 +730,24 @@ class LifecycleContractTest(unittest.TestCase):
             self.assertEqual(result, 1)
             self.assertEqual(stdout.getvalue(), "[]\n")
             self.assertIn("::error::", stderr.getvalue())
+
+    def test_verified_json_rejects_unresolvable_current_ref_without_evidence_paths(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            directory = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(directory)
+            self._write_ledger(root, [])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "record empty lifecycle ledger")
+
+            result, stdout, stderr = self._run_checker(
+                root, "--verified-json", "--current-ref", "missing-ref",
+                "--now", "2026-09-02T13:00:00Z")
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout, "[]\n")
+            self.assertIn("::error::", stderr)
+            self.assertIn("current ref", stderr)
+            self.assertNotIn("Traceback", stderr)
 
     def test_verified_json_recomputes_real_committed_inputs_and_fails_closed(self):
         expected = {
@@ -829,6 +850,15 @@ class LifecycleContractTest(unittest.TestCase):
             self.assertIn("0001-test.o1", stderr)
             self.assertIn("::warning::", stderr)
             self.assertNotIn("::error::", stderr)
+
+            result, stdout, stderr = self._run_checker(
+                root, "--verified-json", "--current-ref", "missing-ref",
+                "--now", "2026-09-02T13:00:00Z")
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout, "[]\n")
+            self.assertIn("::error::", stderr)
+            self.assertIn("current ref", stderr)
+            self.assertNotIn("::warning::", stderr)
 
     def test_checker_ignores_ambient_repository_selectors_for_explicit_root(self):
         with tempfile.TemporaryDirectory() as root, \

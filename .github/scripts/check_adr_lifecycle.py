@@ -143,6 +143,10 @@ def main(argv=None):
             al._parse_time(args.now)
         except (TypeError, ValueError) as exc:
             errors.append("export time/timezone is invalid: %s" % exc)
+        current_commit = _git(
+            args.root, "rev-parse", "--verify", "%s^{commit}" % args.current_ref)
+        if current_commit.returncode != 0:
+            errors.append("current ref is not a resolvable commit: %s" % args.current_ref)
         paths = sorted({path for event in events if isinstance(event, dict)
                         and isinstance(event.get("input_digests"), dict)
                         for path in event["input_digests"] if isinstance(path, str)})
