@@ -294,6 +294,24 @@ class LifecycleContractTest(unittest.TestCase):
         errors = al.validate_events([event], {"0001-test": ADR})
         self.assertTrue(any("section binding" in e for e in errors), errors)
 
+    def test_sealed_acceptance_requires_at_least_one_obligation(self):
+        event = self._acceptance()
+        event["obligations"] = []
+        event["obligations_sha256"] = al.obligation_set_digest([])
+        errors = al.validate_events([event], {"0001-test": ADR})
+        self.assertTrue(any("sealed acceptance obligation set is empty" in e
+                            for e in errors), errors)
+
+        self.assertEqual(al.validate_events([self._acceptance()], {"0001-test": ADR}), [])
+        baseline = self._acceptance()
+        baseline["event"] = "baseline"
+        baseline.pop("source_commit")
+        baseline["observed_commit"] = "a" * 40
+        baseline["obligations_sealed"] = False
+        baseline["obligations"] = []
+        baseline["obligations_sha256"] = al.obligation_set_digest([])
+        self.assertEqual(al.validate_events([baseline], {"0001-test": ADR}), [])
+
     def test_verified_export_requires_implementation_fresh_inputs_and_current_blob(self):
         acceptance = self._acceptance()
         input_digest = _sha(b"source-v1")
@@ -634,6 +652,34 @@ class LifecycleContractTest(unittest.TestCase):
         self.assertEqual(exported, [])
         self.assertTrue(any("unsealed" in e for e in errors), errors)
 
+    def test_incomplete_adr_does_not_hide_another_fully_verified_adr(self):
+        incomplete = self._acceptance()
+        complete = self._acceptance()
+        complete["adr"] = "0002-test"
+        complete["obligations"][0]["id"] = "0002-test.o1"
+        complete["obligations_sha256"] = al.obligation_set_digest(
+            complete["obligations"])
+        digest = _sha(b"source-v1")
+        implementation = {
+            "schema": "adr-lifecycle/v1", "event": "implemented", "event_id": "impl-2",
+            "adr": "0002-test", "obligation": "0002-test.o1", "source_commit": "b" * 40,
+            "input_digests": {"src/x.py": digest}, "evidence": "implementation commit",
+        }
+        proof = {
+            "schema": "adr-lifecycle/v1", "event": "verified", "event_id": "verify-2",
+            "adr": "0002-test", "obligation": "0002-test.o1", "source_commit": "b" * 40,
+            "input_digests": {"src/x.py": digest}, "proof_contract": "repo-ci/v1",
+            "producer": "ci/run", "command": "python test.py",
+            "observed_at": "2026-09-02T12:00:00Z", "valid_until": "2026-09-03T12:00:00Z",
+            "claim_scope": "repository", "claim": "repository test contract passed",
+        }
+        exported, errors = al.verified_export(
+            [incomplete, complete, implementation, proof],
+            {"0001-test": ADR, "0002-test": ADR}, {"src/x.py": b"source-v1"},
+            now="2026-09-02T13:00:00Z")
+        self.assertEqual([row["adr"] for row in exported], ["0002-test"])
+        self.assertTrue(any("0001-test.o1" in error for error in errors), errors)
+
     def test_append_only_requires_base_bytes_as_exact_prefix(self):
         self.assertEqual(al.append_only_error(b"one\n", b"one\ntwo\n"), None)
         self.assertIsNotNone(al.append_only_error(b"one\n", b"changed\ntwo\n"))
@@ -958,6 +1004,9 @@ class LifecycleContractTest(unittest.TestCase):
         with open(template_path, encoding="utf-8") as handle:
             template = handle.read()
         self.assertIn("Accepted/Planned", skill)
+        self.assertIn("changes both the frontmatter `status:` field and the `## Status` value",
+                      template)
+        self.assertIn("without changing any other body content", template)
         self.assertRegex(
             skill,
             r"(?s)commit the accepted ADR.*append.*acceptance binding.*subsequent commit",
@@ -969,6 +1018,15 @@ class LifecycleContractTest(unittest.TestCase):
         self.assertIn("Implemented", template)
         self.assertIn("Verified", template)
         self.assertRegex(template, r"(?s)accepted.*does not imply.*implementation")
+
+    def test_security_controls_separate_append_only_enforcement_from_jsonl_validation(self):
+        root = os.path.dirname(os.path.dirname(HERE))
+        path = os.path.join(root, ".codearbiter", "security-controls.md")
+        with open(path, encoding="utf-8") as handle:
+            controls = handle.read()
+        self.assertIn("H-05 enforces append-only write", controls)
+        self.assertIn("lifecycle checker separately validates JSONL syntax", controls)
+        self.assertIn("event\ncompleteness, schema, and committed-prefix integrity", controls)
 
     def test_ci_runs_lifecycle_and_destructive_registry_contracts(self):
         root = os.path.dirname(os.path.dirname(HERE))

@@ -55,7 +55,8 @@ governs: <optional, comma-separated path globs this decision constrains — e.g.
   mirrors it for human readers. Keep the two in agreement.
 - **Status lifecycle:** `proposed → accepted → superseded | rejected`. `decompose` authors Layer 4
   ADRs as **`status: draft`** during the interview and promotes each to `status: accepted` at its
-  Phase 5 (a frontmatter `status:` edit only — never a body rewrite). Status transitions otherwise
+  Phase 5 in one sanctioned status edit that changes both the frontmatter `status:` field and the `## Status` value,
+  without changing any other body content. Status transitions otherwise
   require explicit user instruction; never advance status on the skill's own judgment.
 - **`accepted` means Accepted/Planned.** It records an approved governance decision and does not imply
   implementation. Implemented and Verified are derived delivery states from the separate append-only

@@ -308,6 +308,9 @@ def validate_events(events, adr_blobs, require_all_accepted=False):
             if kind == "acceptance":
                 if not sealed:
                     errors.append("%s: acceptance obligation set is not sealed" % adr)
+                if sealed and not (isinstance(event.get("obligations"), list)
+                                   and event["obligations"]):
+                    errors.append("%s: sealed acceptance obligation set is empty" % adr)
                 if not HEX40.fullmatch(str(event.get("source_commit", ""))):
                     errors.append("%s: acceptance source_commit must be a 40-character Git id" % adr)
                 if "observed_commit" in event:
@@ -425,9 +428,11 @@ def verified_export(events, adr_blobs, current_blobs, now):
     invalidated = {event.get("target_event_id") for event in events
                    if event.get("event") == "invalidated"}
     exported = []
+    suppressed = set()
     for adr, binding in sorted(bindings.items()):
         if not binding.get("obligations_sealed"):
             errors.append("%s: obligation set is unsealed; no Verified export" % adr)
+            suppressed.add(adr)
             continue
         for obligation in binding.get("obligations", []):
             oid = obligation["id"]
@@ -446,6 +451,7 @@ def verified_export(events, adr_blobs, current_blobs, now):
                 None)
             if implementation is None:
                 errors.append("%s: no current implementation evidence; implementation input digest is missing or stale" % oid)
+                suppressed.add(adr)
                 continue
             if proof is None:
                 current_proofs = [event for event in proofs
@@ -460,9 +466,11 @@ def verified_export(events, adr_blobs, current_blobs, now):
                     errors.append("%s: verification evidence is not yet observable" % oid)
                 else:
                     errors.append("%s: no current verification evidence; verification input digest is missing or stale" % oid)
+                suppressed.add(adr)
                 continue
             if proof.get("input_digests") != implementation.get("input_digests"):
                 errors.append("%s: implementation/verification input boundary differs" % oid)
+                suppressed.add(adr)
                 continue
             exported.append({
                 "adr": adr, "obligation": oid, "claim": proof["claim"],
@@ -472,6 +480,6 @@ def verified_export(events, adr_blobs, current_blobs, now):
                 "command": proof["command"], "observed_at": proof["observed_at"],
                 "valid_until": proof["valid_until"],
             })
-    # A verified report is an aggregate claim over the complete sealed set.
-    # Never leak a valid subset when any obligation failed closed.
-    return ([] if errors else exported), errors
+    # A verified report is aggregate per ADR over that ADR's complete sealed set.
+    # Never leak a partial set for one ADR or let it hide another complete ADR.
+    return [row for row in exported if row["adr"] not in suppressed], errors

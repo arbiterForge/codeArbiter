@@ -510,8 +510,11 @@ tool-call boundary.
 lifecycle ledger. Its exact repository-relative path is authoritative; hook
 classification also compares the path case-folded so equivalent mixed-case
 spellings cannot evade protection on supported case-insensitive filesystems.
-Appending complete JSONL events is its only permitted write operation. H-05
-blocks shell and Write/Edit rewrites, truncation, deletion, and non-tail edits;
+Tail append is its only permitted write shape. H-05 enforces append-only write
+shape by blocking shell and Write/Edit rewrites, truncation, deletion, and
+non-tail edits. The lifecycle checker separately validates JSONL syntax, event
+completeness, schema, and committed-prefix integrity after bytes are written and
+again in CI; H-05 does not inspect or validate appended content.
 H-11 separately protects governed decision-document paths and does not replace
 the ledger-specific H-05 integrity rule. In CI, the lifecycle checker reads the
 base and current ledger as committed Git blobs and requires the base to be an
