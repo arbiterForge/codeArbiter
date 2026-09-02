@@ -60,6 +60,9 @@ on:
       - ".github/workflows/ci.yml"
       - ".github/actionlint.yaml"
       - ".github/scripts/**"
+      # ADR lifecycle integrity is enforced in the hooks job; a lifecycle-only
+      # push must start that job instead of silently skipping the contract.
+      - ".codearbiter/decisions/**"
       - "tools/host_descriptors.py"
       - "tools/build-surface.py"
       - "tools/sync-core.py"
@@ -1315,6 +1318,12 @@ jobs:
         # never-steer-to-override rule, and the cleanup owner's own acceptance
         # gates - on every generated projection.
         run: python .github/scripts/test_routing_and_cleanup_surface.py
+      - name: Enforce authoritative destructive-operation registry parity
+        # ADR-0026, narrowed by ADR-0030 and bound by ADR-0033: the routing
+        # table owns the current four-item set while arbiter §6 retains the
+        # pre-load resident copy. The suite above carries the seeded mismatch;
+        # this command checks all four live canonical/generated surface pairs.
+        run: python .github/scripts/check_destructive_registry.py
       - name: Run mode-plane core contract (ADR-0030)
         # #437. The mode plane's own library: whole-prompt token matching (a
         # substring match would let a pasted diff containing the token flip the
@@ -1600,6 +1609,16 @@ jobs:
         # this pins both hook-side indexers to that derivation and proves an
         # ambiguous bare number errors instead of resolving arbitrarily.
         run: python .github/scripts/test_adr_identity.py
+      - name: Run ADR acceptance/delivery lifecycle contract tests
+        # ADR-0033: accepted is Accepted/Planned; exact acceptance bindings,
+        # sealed obligations, evidence ordering, input freshness, and
+        # verified-only repository exports are separate machine contracts.
+        run: python .github/scripts/test_adr_lifecycle.py
+      - name: Enforce append-only ADR lifecycle bindings on the live record
+        # Resolve the exact base from the checked-in event payload and compare
+        # committed Git blobs on both sides. This avoids checkout line-ending
+        # conversion weakening the append-only prefix check.
+        run: python .github/scripts/check_adr_lifecycle.py --github-event --current-ref HEAD
       - name: Enforce the ADR identity contract on the live decision record
         # The contract applied to .codearbiter/decisions/ itself: stems unique,
         # no NEW file on an already-used number (the 0014 pair is grandfathered

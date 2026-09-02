@@ -25,6 +25,7 @@ Offline and dependency-free: reads the committed surfaces, nothing else.
 from __future__ import annotations
 
 import re
+import importlib.util
 import sys
 import unittest
 from pathlib import Path
@@ -51,6 +52,55 @@ def orchestrator_section_six(text: str) -> str:
     match = re.search(r"^## §6 .*?$(.*?)^## §7 ", text, re.MULTILINE | re.DOTALL)
     assert match, "arbiter.md has no §6 section"
     return match.group(1)
+
+
+def load_destructive_registry_checker():
+    path = REPO / ".github/scripts/check_destructive_registry.py"
+    if not path.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("check_destructive_registry", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+DESTRUCTIVE_OPERATIONS = (
+    "Logged bypass (`/override`)",
+    "Merge to the default branch",
+    "Branch or worktree deletion",
+    "Release and tag publication",
+)
+
+
+class TestDestructiveOperationRegistry(unittest.TestCase):
+    """ADR-0026/0030/0033: registry authority and resident-copy parity."""
+
+    def checker(self):
+        checker = load_destructive_registry_checker()
+        self.assertIsNotNone(
+            checker,
+            "missing .github/scripts/check_destructive_registry.py",
+        )
+        return checker
+
+    def test_current_registry_and_resident_copy_match_exactly_four_operations(self):
+        checker = self.checker()
+        registry = checker.extract_operations(read("core/surface/includes/routing-table.md"))
+        resident = checker.extract_operations(orchestrator_section_six(read("core/surface/arbiter.md")))
+        self.assertEqual(registry, DESTRUCTIVE_OPERATIONS)
+        self.assertEqual(resident, DESTRUCTIVE_OPERATIONS)
+
+    def test_seeded_resident_mismatch_is_rejected(self):
+        checker = self.checker()
+        registry = checker.render_block(DESTRUCTIVE_OPERATIONS, heading_level=2)
+        seeded_resident = checker.render_block(
+            DESTRUCTIVE_OPERATIONS[:-1] + ("Publish a package",),
+            heading_level=3,
+        )
+        errors = checker.compare_surfaces(registry, seeded_resident)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("item-for-item mismatch", errors[0])
 
 
 class TestSectionSixRoutesRatherThanRedirects(unittest.TestCase):

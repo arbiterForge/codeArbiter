@@ -77,6 +77,13 @@ python .github/scripts/test_codex_skill_resources.py
 # Workflow trust separation and exact CI impact routing
 python .github/scripts/test_ci_impact.py
 
+# ADR-0033 accepted/planned lifecycle, immutable bindings, and verified-only export
+python .github/scripts/test_adr_lifecycle.py
+python .github/scripts/check_adr_lifecycle.py
+
+# ADR-0026/0030 authoritative four-item destructive registry and resident-copy parity
+python .github/scripts/check_destructive_registry.py
+
 # Hook guard decisions — every blocked spelling blocks, every legit one allows
 python .github/scripts/test_hook_guards.py
 

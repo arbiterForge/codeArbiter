@@ -210,6 +210,33 @@ class TestH05AppendOnly(_PreEditFixture):
         )
         self.assertAllowed(res)
 
+    def test_rewrite_of_adr_lifecycle_ledger_is_blocked(self):
+        path = os.path.join(self.ddir, "adr-lifecycle.jsonl")
+        old = '{"event":"baseline"}\n'
+        self._write(path, old)
+        res = self.run_edit(path, old_string=old, new_string='{"event":"acceptance"}\n')
+        self.assertBlocked(res, "H-05")
+
+    def test_tail_anchored_append_to_adr_lifecycle_ledger_is_allowed(self):
+        path = os.path.join(self.ddir, "adr-lifecycle.jsonl")
+        old = '{"event":"baseline"}\n'
+        self._write(path, old)
+        res = self.run_edit(
+            path,
+            old_string=old,
+            new_string=old + '{"event":"implemented"}\n',
+        )
+        self.assertAllowed(res)
+
+    def test_mixed_case_rewrite_of_adr_lifecycle_ledger_is_blocked(self):
+        directory = os.path.join(self.root, ".CodeArbiter", "Decisions")
+        os.makedirs(directory, exist_ok=True)
+        path = os.path.join(directory, "ADR-Lifecycle.JSONL")
+        old = '{"event":"baseline"}\n'
+        self._write(path, old)
+        res = self.run_edit(path, old_string=old, new_string='{"event":"acceptance"}\n')
+        self.assertBlocked(res, "H-05")
+
     def test_empty_old_string_on_audit_log_is_blocked(self):
         # migration-003: `new.startswith("")` is ALWAYS True, so an Edit with an
         # empty old_string slipped the append-only check entirely — it could

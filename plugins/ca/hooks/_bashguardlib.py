@@ -81,7 +81,8 @@ import subprocess
 import sys
 
 from _hooklib import (
-    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
+    ADR_LIFECYCLE_LOG_BASENAME, AUDIT_LOG_BASENAMES, AUDIT_LOG_FLAT_BASENAMES,
+    AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_AUDIT_LOG_NAMES, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
     content_digest, is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
 )
@@ -317,7 +318,7 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # (the /sprint decision record). The bare-name alternation is centralized in
 # _hooklib.AUDIT_LOG_NAMES so the Write/Edit and shell flanks never drift.
 LOG_NAMES = AUDIT_LOG_NAMES
-LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES)
+LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES, re.I)
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
     # #528: `New-Item -Force` TRUNCATES an existing file (verified in PowerShell:
@@ -345,19 +346,19 @@ DECISIONS = DECISIONS_DIR_RE + r"\b"
 # #528: the one path under decisions/ that H-11 must NOT claim — see
 # _check_h11_decisions. Matched on the raw command, so both separators.
 #
-# DELIBERATELY CASE-SENSITIVE. H-05, which takes over for this file, is itself
-# case-sensitive on both flanks: _check_h05_audit_log pre-filters with a plain
-# `in` test over AUDIT_LOG_BASENAMES, and LOG_TRUNC_RE carries no re.I. An re.I
-# here therefore stripped `Decision-Log.md` out of H-11's view and handed it to a
-# guard that could not see it — and on Windows/NTFS and default macOS/APFS that
-# spelling resolves to the real file, so `rm …/Decision-Log.md` destroyed the
-# append-only log with nothing firing at all. The two flanks must agree on case.
-#
 # The right edge is anchored so this path cannot SHIELD a sibling token: without
 # it, `touch …/decision-log.md.evil.md` was stripped to a harmless remainder and
 # H-11 stopped seeing a decisions/ write at all.
 DECISION_LOG_SHELL_RE = re.compile(
     DECISIONS_DIR_RE + r"[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"""(?=$|[\s>|;&"'])""",
+)
+# The lifecycle ledger is new and explicitly enrolled case-insensitively on
+# supported case-folding filesystems. Keep this separate from decision-log.md:
+# historical mixed-case decision-log spellings remain H-11, as #528 requires.
+ADR_LIFECYCLE_LOG_SHELL_RE = re.compile(
+    DECISIONS_DIR_RE + r"[\\/]+" + re.escape(ADR_LIFECYCLE_LOG_BASENAME) +
+    r"""(?=$|[\s>|;&"'])""",
+    re.I,
 )
 # `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
 DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)
@@ -1341,7 +1342,11 @@ def _check_h05_audit_log(cmd):
     # (`python3 -c "open('.codearbiter/overrides.log','w')..."`) — the
     # verb-list and redirect legs above never look for an interpreter token
     # at all, so this shape walked past both.
-    if any(n in cmd for n in AUDIT_LOG_BASENAMES) and (
+    folded = cmd.casefold()
+    legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
+    enrolled_name = (any(n in cmd for n in legacy_names) or
+                     ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
+    if enrolled_name and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
             or LOG_GIT_RESTORE_RE.search(cmd) or LOG_INTERP_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
@@ -1368,6 +1373,7 @@ def _check_h11_decisions(cmd):
     # append to decisions/decision-log.md stays the #528 carve-out's to
     # police (via H-05's own LOG_INTERP_RE), not a false H-11 block.
     cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
+    cmd = ADR_LIFECYCLE_LOG_SHELL_RE.sub(" ", cmd)
     if (DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd)
             or DECISIONS_INTERP_RE.search(cmd)):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "

@@ -5,6 +5,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] Add .codearbiter/decisions/decision-log.md to security-controls.md's append-only audit inventory so the documented inventory matches H-05 enforcement.  (from security-reviewer:reaudit-ra07-adr-integrity)
 - [ ] Harden git-facts seams flagged by coverage-auditor: pin the timeout/close race and kill-throw paths, add cross-project gitFacts isolation test (start A then B), and an end-to-end control-char sanitization test from collectGitFacts through renderFooter  (from spec:pi-footer-parity-gaps)
 - [x] release.feat.0001 - Publish to npm under the arbiterforge org (NPMJS_TOKEN actions secret is in place): own spec + ADR required — recorded posture is pinned-Git-only / npm-is-future-work (tech-stack.md, coding-standards.md); decide package set, npm provenance, CI publish workflow, and release-skill integration  (from user:2026-08-09)  (done 2026-08-09)
 - [x] sidebar.feat.0001 - Sidebar panel feature for ca-pi (spec B of the agreed split): brainstorm its own spec AFTER pi-footer-parity-gaps ships; hard prerequisite: verify what Pi 0.80.5/0.80.10 expose (setWidget/overlay vs own compositor); build-inspired-by pi-sidebar-tui, never an npm dependency  (from spec:pi-footer-parity-gaps)  (done 2026-08-10)
