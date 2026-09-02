@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.15.10] - 2026-09-02
+
+### Fixed
+
+- Hook registration and doctor now bind every Git probe to the requested
+  repository, resolve effective hook paths through Git, and fail closed when
+  linked-worktree ownership cannot be proven.
+
 ## [2.15.9] - 2026-09-02
 
 ### Fixed

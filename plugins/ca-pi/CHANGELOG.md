@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.9] - 2026-09-02
+
+### Fixed
+
+- Hook registration and doctor now bind every Git probe to the requested
+  repository, resolve effective hook paths through Git, and fail closed when
+  linked-worktree ownership cannot be proven.
+
 ## [0.8.8] - 2026-09-02
 
 ### Fixed
