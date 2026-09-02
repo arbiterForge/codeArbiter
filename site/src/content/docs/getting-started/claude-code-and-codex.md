@@ -140,7 +140,7 @@ absence. That closes the public-installation gate with the same GitHub-slug comm
 | Statusline | Available | No Codex statusline surface; startup state carries governance status |
 | Transcript pruning | Claude transcript-pruning engine available | No transcript pruning; the host-neutral audit-staleness warning remains |
 | Governed-file Read hook | Available on Claude's Read tool | No Codex Read hook; reads happen through shell, while write-time notices remain |
-| Reviewer roles | Packaged plugin agents can be dispatched | Published releases from 0.7.5 include packaged resource charters for host-provided agent threads; exact static-package and route-closure checks gate release, while the bounded inline fallback remains for non-isolated work until exact-release thread dispatch is durably proven |
+| Reviewer roles | Packaged plugin agents can be dispatched | Published releases from 0.7.5 include packaged resource charters for host-provided agent threads; exact static-package and route-closure checks gate release. Until exact-release thread dispatch is durably proven, the bounded inline fallback remains only where the canonical workflow explicitly permits it and the work is non-isolated |
 
 These differences are host capabilities and packaging choices. They do not create a second project
 context, weaken the blocking shell/write gates, or split the audit trail.

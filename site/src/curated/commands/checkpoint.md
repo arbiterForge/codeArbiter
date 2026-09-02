@@ -19,8 +19,8 @@ promotion gate — it surfaces findings and enforces no sign-off.
 
 Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
 host-provided agent threads. Exact static-package and route-closure checks gate release. Until
-exact-release thread dispatch is durably proven, the bounded inline fallback applies only where
-isolation is not mandatory. See
+exact-release thread dispatch is durably proven, the bounded inline fallback applies only where the
+canonical workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 

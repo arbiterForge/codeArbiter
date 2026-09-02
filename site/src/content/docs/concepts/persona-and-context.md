@@ -64,10 +64,11 @@ may dispatch and the condition that activates it. Then open the generated agent 
 role's tools, model tier, constraints, and exact source.
 
 Claude Code can dispatch packaged agents through its native task tool. Published releases from 0.7.5
-include the same packaged resource charters for Codex reviewers and authors in host-provided agent
-threads, with exact static-package and route-closure checks at release. Until exact-release thread
-dispatch is durably proven, workflows use the bounded inline fallback only where isolation is not
-mandatory. Pi uses its supervised child path where supported. That host
+include the complete packaged resource charter set for that release for Codex reviewers and authors
+in host-provided agent threads, with exact static-package and route-closure checks at release. Until
+exact-release thread dispatch is durably proven, workflows use the bounded inline fallback only
+where the canonical workflow explicitly permits it and isolation is not mandatory. Pi uses its
+supervised child path where supported. That host
 difference changes isolation mechanics, not ownership or the gate that consumes the result. The
 [compatibility matrix](/getting-started/compatibility/#host-differences)
 records the current boundary.

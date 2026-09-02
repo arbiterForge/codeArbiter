@@ -238,13 +238,6 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIn("exact-release receipt", parity)
         self.assertNotIn("source candidate", parity)
 
-        overview = (
-            ROOT / "site" / "src" / "content" / "docs" / "overview.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("Until exact-release thread dispatch is durably proven", overview)
-        self.assertIn("bounded inline fallback", overview)
-        self.assertNotIn("Adapters before 0.7.5 may use", overview)
-
         public_role_docs = (
             "site/src/content/docs/overview.md",
             "site/src/content/docs/concepts/persona-and-context.md",
@@ -258,13 +251,32 @@ class PublicCodexDocsTest(unittest.TestCase):
         for path in public_role_docs:
             with self.subTest(candidate_path=path):
                 text = (ROOT / path).read_text(encoding="utf-8")
+                normalized = " ".join(text.split())
                 self.assertRegex(
                     text,
                     re.compile(r"(?is)published releases from 0\.7\.5.{0,160}packaged.{0,80}resource charter"),
                 )
                 self.assertNotIn("source candidate", text)
                 self.assertNotIn("exact-candidate proof gates release", text)
-                self.assertIn("inline", text)
+                self.assertRegex(
+                    normalized,
+                    re.compile(
+                        r"(?i)until exact-release thread dispatch is durably proven"
+                        r".{0,180}bounded inline fallback.{0,180}canonical workflow"
+                        r".{0,100}(?:isolation is not mandatory|non-isolated)"
+                    ),
+                )
+                self.assertNotIn("Adapters before 0.7.5 may use", text)
+
+        for path in (
+            "site/src/content/docs/overview.md",
+            "site/src/content/docs/concepts/persona-and-context.md",
+            "site/src/content/docs/glossary.md",
+        ):
+            with self.subTest(release_scoped_charters_path=path):
+                text = (ROOT / path).read_text(encoding="utf-8")
+                normalized = " ".join(text.split())
+                self.assertIn("complete packaged resource charter set for that release", normalized)
 
 
 if __name__ == "__main__":
