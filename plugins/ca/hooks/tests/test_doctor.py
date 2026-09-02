@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 # Ensure hooks/ is importable
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -314,6 +315,56 @@ class TestCheckRepoEnabled(unittest.TestCase):
         self.assertFalse(malformed)
 
 
+class TestCheckRepoRootBinding(unittest.TestCase):
+    """Root discovery and attribution must describe the process checkout."""
+
+    def setUp(self):
+        _reset()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.target = os.path.join(self.tmp.name, "target")
+        self.foreign = os.path.join(self.tmp.name, "foreign")
+        self.original_cwd = os.getcwd()
+        for root, email in ((self.target, "target@example.invalid"),
+                            (self.foreign, "foreign@example.invalid")):
+            os.makedirs(root)
+            initialized = doctor.subprocess.run(
+                ["git", "init", "-q", "-b", "main"], cwd=root,
+                capture_output=True, text=True)
+            self.assertEqual(initialized.returncode, 0, initialized.stderr)
+            configured = doctor.subprocess.run(
+                ["git", "config", "user.email", email], cwd=root,
+                capture_output=True, text=True)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+        context = os.path.join(self.target, ".codearbiter")
+        os.makedirs(context)
+        with open(os.path.join(context, "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+
+    def tearDown(self):
+        os.chdir(self.original_cwd)
+        _reset()
+        self.tmp.cleanup()
+
+    def test_ambient_repository_selectors_cannot_rebind_root_or_attribution(self):
+        hostile = {
+            "GIT_DIR": os.path.join(self.foreign, ".git"),
+            "GIT_WORK_TREE": self.foreign,
+            "GIT_COMMON_DIR": os.path.join(self.foreign, ".git"),
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "safe.directory",
+            "GIT_CONFIG_VALUE_0": "*",
+        }
+        os.chdir(self.target)
+
+        with mock.patch.dict(os.environ, hostile, clear=False):
+            root = doctor.check_repo()
+
+        self.assertEqual(os.path.realpath(root), os.path.realpath(self.target))
+        lines = "\n".join(line for _, line in doctor.results)
+        self.assertIn("target@example.invalid", lines)
+        self.assertNotIn("foreign@example.invalid", lines)
+
+
 class TestCheckRepoOutputFormat(unittest.TestCase):
     """Output format: every result line must contain FAIL, WARN, or OK."""
 
@@ -356,6 +407,206 @@ class TestCheckRepoOutputFormat(unittest.TestCase):
             self.assertIsInstance(lvl, str)
             self.assertIsInstance(line, str)
             self.assertGreater(len(line), 0)
+
+
+class TestCheckGitHookBackstop(unittest.TestCase):
+    """Doctor must inspect the hook directory selected by the real Git binary."""
+
+    def setUp(self):
+        _reset()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.home = os.path.join(self.tmp.name, "home")
+        self.xdg_home = os.path.join(self.home, "xdg")
+        os.makedirs(self.xdg_home)
+        self._env_patch = mock.patch.dict(
+            os.environ,
+            {"HOME": self.home, "USERPROFILE": self.home,
+             "XDG_CONFIG_HOME": self.xdg_home},
+            clear=False)
+        self._env_patch.start()
+        self.root = os.path.join(self.tmp.name, "repo")
+        os.makedirs(self.root)
+        subprocess = doctor.subprocess
+        subprocess.run(
+            ["git", "init", "-q", "-b", "main"], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["git", "config", "user.email", "doctor@example.com"], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["git", "config", "user.name", "Doctor Test"], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["git", "config", "commit.gpgSign", "false"], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        subprocess.run(
+            ["git", "config", "core.hooksPath",
+             os.path.join(self.root, ".git", "hooks")], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        ctx = os.path.join(self.root, ".codearbiter")
+        os.makedirs(ctx)
+        with open(os.path.join(ctx, "CONTEXT.md"), "w", encoding="utf-8") as f:
+            f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+
+    def tearDown(self):
+        _reset()
+        self._env_patch.stop()
+        self.tmp.cleanup()
+
+    def _install_live_backstop(self, root=None):
+        root = root or self.root
+        doctor._githooks.install(root)
+        dropin = doctor._githooks._dropin_dir(root)
+        os.makedirs(dropin, exist_ok=True)
+        enforcer = os.path.join(self.tmp.name, "durable", "git-enforce.py")
+        os.makedirs(os.path.dirname(enforcer), exist_ok=True)
+        with open(enforcer, "w", encoding="utf-8") as f:
+            f.write("import sys\nsys.exit(0)\n")
+        entry = doctor._githooks._path_entry_file(dropin, "ca")
+        with open(entry, "w", encoding="utf-8", newline="\n") as f:
+            f.write(doctor._githooks._shell_path(enforcer) + "\n")
+        return doctor._githooks.hooks_dir(root), dropin
+
+    def test_missing_managed_hooks_in_gits_effective_directory_is_a_failure(self):
+        with mock.patch.dict(
+                os.environ,
+                {"HOME": self.home, "USERPROFILE": self.home},
+                clear=False):
+            doctor.subprocess.run(
+                ["git", "config", "core.hooksPath", "~/.doctor-hooks"],
+                cwd=self.root, check=True, capture_output=True, text=True)
+            dropin = doctor._githooks._dropin_dir(self.root)
+            os.makedirs(dropin)
+            doctor.check_git_hook_freshness(self.root)
+
+        failures = [line for level, line in doctor.results if level == "FAIL"]
+        self.assertTrue(
+            any("git-hook backstop" in line and "effective" in line for line in failures),
+            f"doctor reported a healthy backstop without managed hooks: {doctor.results}")
+
+    def test_fixture_install_does_not_escape_through_ambient_global_hookspath(self):
+        external_hooks = os.path.join(self.tmp.name, "ambient-hooks")
+        with open(os.path.join(self.home, ".gitconfig"), "w", encoding="utf-8") as f:
+            f.write(f"[core]\n\thooksPath = {external_hooks.replace(os.sep, '/')}\n")
+
+        with mock.patch.dict(
+                os.environ,
+                {"HOME": self.home, "USERPROFILE": self.home},
+                clear=False):
+            hooks_dir, _ = self._install_live_backstop()
+
+        self.assertEqual(
+            os.path.normcase(os.path.abspath(hooks_dir)),
+            os.path.normcase(os.path.join(self.root, ".git", "hooks")))
+        self.assertFalse(os.path.exists(os.path.join(external_hooks, "pre-commit")))
+
+    def test_live_fire_cannot_be_rebound_by_ambient_repository_selectors(self):
+        self._install_live_backstop()
+        foreign = os.path.join(self.tmp.name, "foreign")
+        os.makedirs(foreign)
+        initialized = doctor.subprocess.run(
+            ["git", "init", "-q", "-b", "main"], cwd=foreign,
+            capture_output=True, text=True)
+        self.assertEqual(initialized.returncode, 0, initialized.stderr)
+        hostile = {
+            "GIT_DIR": os.path.join(foreign, ".git"),
+            "GIT_WORK_TREE": foreign,
+            "GIT_COMMON_DIR": os.path.join(foreign, ".git"),
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "safe.directory",
+            "GIT_CONFIG_VALUE_0": "*",
+        }
+
+        with mock.patch.dict(os.environ, hostile, clear=False):
+            _reset()
+            doctor.check_git_hook_freshness(self.root)
+
+        self.assertFalse(
+            any(level == "FAIL" for level, _ in doctor.results), doctor.results)
+        self.assertTrue(
+            any(level == "OK" and "live-fire" in line
+                for level, line in doctor.results), doctor.results)
+
+    def test_registry_with_only_a_missing_enforcer_is_a_failure(self):
+        doctor._githooks.install(self.root)
+        dropin = doctor._githooks._dropin_dir(self.root)
+        os.makedirs(dropin, exist_ok=True)
+        entry = doctor._githooks._path_entry_file(
+            dropin, doctor._githooks._plugin_name())
+        with open(entry, "w", encoding="utf-8") as f:
+            f.write(os.path.join(self.tmp.name, "removed", "git-enforce.py") + "\n")
+
+        doctor.check_git_hook_freshness(self.root)
+
+        failures = [line for level, line in doctor.results if level == "FAIL"]
+        self.assertTrue(
+            any("git-hook backstop" in line and "live enforcer" in line
+                for line in failures),
+            f"doctor treated a dead-only registry as healthy: {doctor.results}")
+
+    @unittest.skipIf(os.name == "nt", "Git for Windows does not use POSIX mode bits")
+    def test_non_executable_managed_shim_is_a_failure(self):
+        hooks_dir, _ = self._install_live_backstop()
+        pre_commit = os.path.join(hooks_dir, "pre-commit")
+        os.chmod(pre_commit, 0o644)
+
+        actual = doctor.subprocess.run(
+            ["git", "commit", "--allow-empty", "-m", "must not land"],
+            cwd=self.root, capture_output=True, text=True)
+        self.assertEqual(
+            actual.returncode, 0,
+            "the discriminator requires actual Git to ignore the inoperable shim")
+        doctor.check_git_hook_freshness(self.root)
+
+        failures = [line for level, line in doctor.results if level == "FAIL"]
+        self.assertTrue(
+            any("git-hook backstop" in line and "executable" in line
+                for line in failures),
+            f"doctor treated a Git-ignored shim as healthy: {doctor.results}")
+
+    def test_malformed_trusted_identity_fails_the_git_live_fire_probe(self):
+        _, dropin = self._install_live_backstop()
+        with open(doctor._githooks._identity_file(dropin), "w", encoding="utf-8") as f:
+            f.write("malformed-one-record-only\n")
+
+        actual = doctor.subprocess.run(
+            ["git", "hook", "run", "pre-push"], cwd=self.root,
+            capture_output=True, text=True)
+        self.assertNotEqual(
+            actual.returncode, 0,
+            "the discriminator requires the real managed shim to reject the identity")
+        doctor.check_git_hook_freshness(self.root)
+
+        failures = [line for level, line in doctor.results if level == "FAIL"]
+        self.assertTrue(
+            any("git-hook backstop" in line and "live-fire" in line
+                for line in failures),
+            f"doctor ignored an inoperable trusted identity: {doctor.results}")
+
+    def test_live_backstop_passes_actual_git_probe_in_primary_and_linked_worktrees(self):
+        doctor.subprocess.run(
+            ["git", "add", ".codearbiter/CONTEXT.md"], cwd=self.root,
+            check=True, capture_output=True, text=True)
+        seed = doctor.subprocess.run(
+            ["git", "commit", "-q", "-m", "seed"], cwd=self.root,
+            capture_output=True, text=True)
+        self.assertEqual(seed.returncode, 0, seed.stderr + seed.stdout)
+        self._install_live_backstop()
+        linked = os.path.join(self.tmp.name, "linked")
+        doctor.subprocess.run(
+            ["git", "worktree", "add", "-q", "-b", "feat/linked", linked],
+            cwd=self.root, check=True, capture_output=True, text=True)
+
+        for checkout in (self.root, linked):
+            with self.subTest(checkout=checkout):
+                _reset()
+                doctor.check_git_hook_freshness(checkout)
+                self.assertFalse(
+                    any(level == "FAIL" for level, _ in doctor.results), doctor.results)
+                self.assertTrue(
+                    any(level == "OK" and "live-fire" in line
+                        for level, line in doctor.results),
+                    f"doctor did not prove Git hook execution in {checkout}: {doctor.results}")
 
 
 class TestRunHostDISeam(unittest.TestCase):

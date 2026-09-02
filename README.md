@@ -99,7 +99,9 @@ stability, command syntax, trust, and platform differences.
 **Prerequisites:** Python 3 on `PATH` and `git config user.email` set. Pi also requires Node.js
 22.19+. If Python is missing, Pi installs its final wrappers but blocks mutating calls and points to
 `/ca-doctor`; Claude Code and Codex surface an interpreter breadcrumb instead of silently claiming
-governance is active.
+governance is active. The [compatibility matrix](https://arbiterforge.github.io/codeArbiter/getting-started/compatibility/)
+defines the supported native Git/runtime and linked-worktree boundary; mixed Windows Git and WSL Git
+over one shared repository are not supported.
 
 ### Claude Code
 

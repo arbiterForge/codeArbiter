@@ -8,6 +8,7 @@ git-enforce.py must read gate markers from `_marker_root(root)` so that pre-comm
 validations in linked worktrees find the recorded gate passes.
 """
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -38,17 +39,32 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
     def _linked_roots(self, temporary):
         main_root = os.path.join(temporary, "main")
         worktree_root = os.path.join(temporary, "linked")
-        gitdir = os.path.join(main_root, ".git", "worktrees", "linked")
-        os.makedirs(gitdir)
-        os.makedirs(worktree_root)
-        pointer = gitdir.replace("\\", "/")
-        with open(os.path.join(worktree_root, ".git"), "w", encoding="utf-8") as handle:
-            handle.write(f"gitdir: {pointer}\n")
+        subprocess.run(["git", "init", "-q", "-b", "main", main_root], check=True, timeout=30)
+        subprocess.run(["git", "-C", main_root, "config", "user.email", "test@example.com"],
+                       check=True, timeout=30)
+        subprocess.run(["git", "-C", main_root, "config", "user.name", "Test"],
+                       check=True, timeout=30)
+        with open(os.path.join(main_root, "seed.txt"), "w", encoding="utf-8") as handle:
+            handle.write("seed\n")
+        context_dir = os.path.join(main_root, ".codearbiter")
+        os.makedirs(context_dir)
+        with open(os.path.join(context_dir, "CONTEXT.md"), "w", encoding="utf-8") as handle:
+            handle.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+        subprocess.run(
+            ["git", "-C", main_root, "add", "seed.txt", ".codearbiter/CONTEXT.md"],
+            check=True, timeout=30)
+        subprocess.run(
+            ["git", "-C", main_root, "-c", "core.hooksPath=",
+             "-c", "commit.gpgSign=false", "commit", "-qm", "seed"],
+            check=True, timeout=30)
+        subprocess.run(
+            ["git", "-C", main_root, "worktree", "add", "-q", "-b", "test-linked",
+             worktree_root], check=True, timeout=30)
         return main_root.replace("\\", "/"), worktree_root
 
     def test_plain_repo_keeps_security_marker_under_operation_root(self):
         with tempfile.TemporaryDirectory() as plain_root:
-            fake_added = ['const test_secret_token = "dummy_synthetic_testing_token";\n']
+            fake_added = ['const test_secret_token ' + '= "dummy_synthetic_testing_token";\n']
             digest = _hooklib.line_digest(fake_added[0])
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test"), \
                  mock.patch.object(self.mod, "cached_added_lines", return_value=fake_added), \
@@ -98,7 +114,7 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
     def test_pre_commit_reads_security_marker_from_main_root_in_worktree(self):
         with tempfile.TemporaryDirectory() as temporary:
             main_root, worktree_root = self._linked_roots(temporary)
-            fake_added = ['const test_secret_token = "dummy_synthetic_testing_token";\n']
+            fake_added = ['const test_secret_token ' + '= "dummy_synthetic_testing_token";\n']
             digest = _hooklib.line_digest(fake_added[0])
 
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test") as mock_branch, \

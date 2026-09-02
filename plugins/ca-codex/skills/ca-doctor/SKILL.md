@@ -32,3 +32,7 @@ remediation.
 
 Read-only. MUST NOT create markers, stage files, grant trust, weaken a block, or retry the live-fire
 probe with different spelling. MUST surface a failed probe as CRITICAL, never as a footnote.
+
+For an arbiter-enabled repository, the mechanical report treats the Git backstop as healthy only
+after exact managed-shim and live-enforcer validation, plus a harmless selected-Git
+`git hook run pre-push` probe with empty input. It never executes a foreign hook.

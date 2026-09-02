@@ -25,6 +25,37 @@ this file is the stale one; fix it here.
   it is not part of the governance kernel.
 - **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure.
 
+## Runtime and Git support boundary
+
+- Hook and linked-worktree support is same-runtime: Windows with Git for Windows
+  and its bundled hook shell, native Linux, or native macOS. The checkout and its
+  linked worktrees must be created and used by that runtime's Git.
+- CI exercises the current runner Python 3 and Git on Windows, Ubuntu, and macOS.
+  Direct Windows hook evidence also covers CPython 3.10, 3.12, and 3.14, plus
+  primary and linked worktrees with Git for Windows 2.55.0. No broader numeric
+  Python-minor or Git-version floor is declared from that evidence.
+- The selected Git binary owns `core.hooksPath` parsing through
+  `rev-parse --git-path hooks`; codeArbiter does not reinterpret Git path grammar.
+  It must also provide `git hook run` for doctor's harmless managed `pre-push`
+  live-fire probe.
+- Same-runtime linked worktrees include Git's native absolute and relative
+  worktree-admin pointers under the default `<main>/.git/worktrees` layout.
+  The selected Git binary must confirm both the absolute admin directory and
+  common directory, and both linked and reported-main checkouts must own real
+  `CONTEXT.md` files that independently satisfy the canonical activation parser,
+  before codeArbiter resolves the shared primary marker root.
+  `git init --separate-git-dir` worktrees are
+  outside this marker-root contract; storage without that governed identity
+  falls back locally.
+- A live Git for Windows 2.55.0 probe resolved a default-layout primary and
+  linked worktree through a localhost UNC share after one-shot `safe.directory`
+  trust, while the untrusted form failed closed. This does not promote every
+  remote SMB server or ownership policy to a supported cell.
+- WSL is not a separately verified named cell. Alternating Windows Git and WSL
+  Git over one physical repository or shared `.git`, including consuming a
+  linked worktree created by the other runtime, is unsupported. Git Bash is the
+  Windows hook shell and is not equivalent to WSL.
+
 ## Pi adapter
 
 `plugins/ca-pi/tools/` is strict TypeScript on Node 22.19 or newer, tested with

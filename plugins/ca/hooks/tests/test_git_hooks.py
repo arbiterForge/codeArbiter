@@ -58,6 +58,12 @@ def _git(args, cwd, check=True):
     return r
 
 
+def _actual_hooks_dir(root):
+    """Absolute directory the selected real Git binary says it will use."""
+    value = _git(["rev-parse", "--git-path", "hooks"], root).stdout.strip()
+    return os.path.abspath(value if os.path.isabs(value) else os.path.join(root, value))
+
+
 class _GitFixture(unittest.TestCase):
     ARBITER = "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n"
 
@@ -68,6 +74,7 @@ class _GitFixture(unittest.TestCase):
         _git(["init", "-q", "-b", "main"], self.root)
         _git(["config", "user.email", "h@example.com"], self.root)
         _git(["config", "user.name", "harness"], self.root)
+        _git(["config", "commit.gpgSign", "false"], self.root)
         os.makedirs(os.path.join(self.root, ".codearbiter"))
         self._write(os.path.join(self.root, ".codearbiter", "CONTEXT.md"), self.ARBITER)
         # #604 test-fidelity: this suite may itself be running from inside a
@@ -117,6 +124,89 @@ class TestInstall(_GitFixture):
             with open(dest, encoding="utf-8") as f:
                 self.assertIn(_githooks.SENTINEL, f.read())
             self.assertTrue(os.access(dest, os.X_OK))
+
+    def test_ambient_repository_selectors_cannot_rebind_install(self):
+        foreign = os.path.join(self._tmp.name, "foreign")
+        os.makedirs(foreign)
+        _git(["init", "-q", "-b", "main"], foreign)
+        hostile = {
+            "GIT_DIR": os.path.join(foreign, ".git"),
+            "GIT_WORK_TREE": foreign,
+            "GIT_COMMON_DIR": os.path.join(foreign, ".git"),
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "safe.directory",
+            "GIT_CONFIG_VALUE_0": "*",
+        }
+
+        with mock.patch.dict(os.environ, hostile, clear=False):
+            observed = _githooks.hooks_dir(self.root)
+            _githooks.install(self.root)
+
+        self.assertEqual(
+            os.path.normcase(os.path.realpath(observed)),
+            os.path.normcase(os.path.realpath(self._hooks_dir())))
+        for phase in _githooks.PHASES:
+            self.assertTrue(os.path.isfile(os.path.join(self._hooks_dir(), phase)))
+            self.assertFalse(os.path.exists(os.path.join(foreign, ".git", "hooks", phase)))
+
+    def test_hooks_dir_matches_real_git_path_expansion_in_primary_and_linked_worktrees(self):
+        linked = os.path.join(self._tmp.name, "linked")
+        _git(["worktree", "add", "-q", "-b", "feat/linked", linked], self.root)
+        sandbox_home = os.path.join(self._tmp.name, "home")
+        os.makedirs(sandbox_home)
+
+        with mock.patch.dict(
+                os.environ,
+                {"HOME": sandbox_home, "USERPROFILE": sandbox_home},
+                clear=False):
+            for configured in ("~/.ra06-hooks", "%(prefix)/share/ra06-hooks"):
+                _git(["config", "core.hooksPath", configured], self.root)
+                for checkout in (self.root, linked):
+                    with self.subTest(configured=configured, checkout=checkout):
+                        expected = os.path.normcase(os.path.realpath(
+                            _actual_hooks_dir(checkout)))
+                        observed = os.path.normcase(os.path.realpath(
+                            _githooks.hooks_dir(checkout)))
+                        self.assertEqual(observed, expected)
+
+    def test_home_relative_hooks_path_is_executed_by_git_in_primary_and_linked_worktrees(self):
+        sandbox_home = os.path.join(self._tmp.name, "home")
+        os.makedirs(sandbox_home)
+        linked = os.path.join(self._tmp.name, "linked")
+
+        with mock.patch.dict(
+                os.environ,
+                {"HOME": sandbox_home, "USERPROFILE": sandbox_home},
+                clear=False):
+            _git(["config", "core.hooksPath", "~/.ra06-hooks"], self.root)
+            _githooks.install(self.root)
+            effective = _actual_hooks_dir(self.root)
+            managed = all(os.path.isfile(os.path.join(effective, phase))
+                          for phase in _githooks.PHASES)
+
+            self._write(os.path.join(self.root, "primary.txt"), "primary\n")
+            _git(["add", "primary.txt"], self.root)
+            primary = _git(["commit", "-m", "blocked on main"], self.root, check=False)
+
+            _git(["switch", "-q", "-c", "feat/primary"], self.root)
+            _git(["add", ".codearbiter/CONTEXT.md", "primary.txt"], self.root)
+            _git(["commit", "--allow-empty", "-q", "-m", "feature baseline"], self.root)
+            _git(["worktree", "add", "-q", "-b", "master", linked], self.root)
+            self._write(os.path.join(linked, "linked.txt"), "linked\n")
+            _git(["add", "linked.txt"], linked)
+            linked_commit = _git(["commit", "-m", "blocked on master"], linked, check=False)
+
+        outcome = (
+            managed,
+            primary.returncode != 0 and "H-01" in primary.stderr + primary.stdout,
+            linked_commit.returncode != 0 and
+            "H-01" in linked_commit.stderr + linked_commit.stdout,
+            os.path.exists(os.path.join(self.root, "~")),
+            os.path.exists(os.path.join(linked, "~")),
+        )
+        self.assertEqual(
+            outcome, (True, True, True, False, False),
+            "the managed hooks must live where real Git executes them in both checkouts")
 
     def test_pi_identity_channel_persists_across_later_identityless_host_session(self):
         trusted_git = os.path.realpath(shutil.which("git"))
@@ -746,6 +836,26 @@ class TestDropInMultiPluginFailClosed(_GitFixture):
         res = _sh(["sh", "-c", "git commit -m x"], self.root)
         self.assertNotEqual(res.returncode, 0, res.stderr)
         self.assertIn("H-01", res.stderr + res.stdout)
+
+    def test_dead_newest_heartbeat_cannot_suppress_an_older_live_sibling(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        live_seen = _githooks._seen_marker_file(dropin, "ca")
+        os.utime(live_seen, (100, 100))
+
+        dead = _githooks._shell_path(os.path.join(
+            self.root, "removed-codex", "git-enforce.py"))
+        self._write_entry(dropin, "ca-codex", dead)
+        self._write(os.path.join(dropin, "ca-codex.seen"), dead + "\n")
+        os.utime(os.path.join(dropin, "ca-codex.seen"), (200, 200))
+
+        stale = _githooks.stale_registered_plugins(dropin)
+        self._stage("f.txt", "x\n")
+        result = _sh(["sh", "-c", "git commit -m x"], self.root)
+        outcome = (stale, "H-01" in result.stderr + result.stdout)
+        self.assertEqual(
+            outcome, ([], True),
+            "a dead confirmed path must not outrank or suppress a live enforcer")
 
     def test_zero_resolvable_enforcers_fails_closed_not_open(self):
         # AC-7b: every registered entry points at a missing file (or the dir
