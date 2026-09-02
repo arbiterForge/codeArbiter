@@ -722,6 +722,33 @@ class LifecycleContractTest(unittest.TestCase):
                 self.assertIn("::error::", stderr)
                 self.assertNotIn("Traceback", stderr)
 
+    def test_checker_ignores_ambient_repository_selectors_for_explicit_root(self):
+        with tempfile.TemporaryDirectory() as root, \
+                tempfile.TemporaryDirectory() as foreign:
+            acceptance, implementation, verification = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance, implementation, verification])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "record lifecycle evidence")
+
+            self._git(foreign, "init", "-b", "foreign")
+            with open(os.path.join(foreign, "foreign.txt"), "w", encoding="utf-8") as handle:
+                handle.write("foreign repository\n")
+            self._git(foreign, "add", "foreign.txt")
+            self._git(foreign, "commit", "-m", "foreign repository")
+
+            result, stdout, stderr = self._run_checker(
+                root, "--verified-json", "--current-ref", "HEAD",
+                "--now", "2026-09-02T13:00:00Z",
+                env={
+                    "GIT_DIR": os.path.join(foreign, ".git"),
+                    "GIT_WORK_TREE": foreign,
+                    "GIT_OBJECT_DIRECTORY": os.path.join(foreign, ".git", "objects"),
+                },
+            )
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(len(json.loads(stdout)), 1)
+            self.assertEqual(stderr, "")
+
     def test_github_events_compare_real_committed_ledger_blobs(self):
         with tempfile.TemporaryDirectory() as root:
             acceptance, implementation, verification = self._committed_evidence_repo(root)
