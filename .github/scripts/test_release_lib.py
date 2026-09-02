@@ -1854,6 +1854,11 @@ class SeriesIsolationTest(unittest.TestCase):
                 with self.subTest(target=row["target"], other=other_prefix):
                     self.assertFalse(chosen.startswith(other_prefix))
 
+    def test_release_series_rejects_noncanonical_numeric_identifiers(self):
+        tags = ["v1.2.3", "v02.0.0", "v١٠.٠.٠"]
+        self.assertEqual(
+            core_releaselib.last_tag_select(tags, "v"), "v1.2.3")
+
 
 # --------------------------------------------------------------------------- #
 # Adversarial-review remediation (2026-07-31). See the module docstring for
@@ -2264,16 +2269,55 @@ class CoreChangelogSectionTest(unittest.TestCase):
             "## [1.2.3-rc.1] - 2026-09-01\n",
             "## [1.2.3+build] - 2026-09-01\n",
             "## [1.2.3.4] - 2026-09-01\n",
+            "## [01.2.3] - 2026-09-01\n",
+            "## [1.02.3] - 2026-09-01\n",
+            "## [1.2.03] - 2026-09-01\n",
+            "## [١.٢.٣] - 2026-09-01\n",
+            "## v01.2.3 - 2026-09-01\n",
+            "## v١.٢.٣ - 2026-09-01\n",
             "## [1.2.3 - 2026-09-01\n",
             "## [1.2.3]garbage\n",
-            "## 1.2.3 - 2026-09-01\n",
-            "##\n[1.2.3] - 2026-09-01\n",
         )
         for heading in malformed:
             with self.subTest(heading=heading):
-                self.assertIsNone(
-                    core_releaselib.changelog_section(
-                        heading + "\n- not a valid section\n", "1.2.3"))
+                text = (
+                    heading + "\n- not a valid section\n\n"
+                    "## [1.2.3] - 2026-09-01\n\n- canonical target\n")
+                section, status = core_releaselib._changelog_section_result(
+                    text, "1.2.3")
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
+        non_changelog_h2s = (
+            "## 1.2.3 - 2026-09-01\n",
+            "##\n[1.2.3] - 2026-09-01\n",
+        )
+        for heading in non_changelog_h2s:
+            with self.subTest(non_changelog_h2=heading):
+                self.assertIsNone(core_releaselib.changelog_section(
+                    heading + "\n- not a valid section\n", "1.2.3"))
+
+    def test_heading_versions_require_canonical_ascii_semver(self):
+        invalid_versions = (
+            "01.2.3", "1.02.3", "1.2.03", "١.٢.٣", "1.٢.3")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                text = f"## [{version}] - 2026-09-01\n\n- invalid version\n"
+                section, status = core_releaselib._changelog_section_result(
+                    text, "1.2.3")
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
+    def test_requested_versions_independently_require_canonical_ascii_semver(self):
+        canonical_text = "## [2.12.0] - 2026-09-01\n\n- released\n"
+        invalid_versions = (
+            "02.12.0", "2.012.0", "2.12.00", "٢.١٢.٠", "2.١٢.0")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                section, status = core_releaselib._changelog_section_result(
+                    canonical_text, version)
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
 
 
 class CoreReleaseDatesTest(unittest.TestCase):
@@ -2351,6 +2395,19 @@ class CoreSemverTest(unittest.TestCase):
         self.assertIsNone(core_releaselib.semver_key("not-a-version"))
         self.assertIsNone(core_releaselib.semver_key(None))
         self.assertIsNone(core_releaselib.semver_key(42))
+
+    def test_semver_key_rejects_noncanonical_numeric_identifiers(self):
+        invalid_versions = (
+            "01.2.3", "1.02.3", "1.2.03", "١.٢.٣", "1.٢.3",
+            "1.2.3-00", "1.2.3-01", "1.2.3-٠", "1.2.3-1٢")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                self.assertIsNone(core_releaselib.semver_key(version))
+
+    def test_semver_build_numeric_identifiers_may_have_leading_zeroes(self):
+        self.assertEqual(
+            core_releaselib.semver_key("1.2.3+01"),
+            core_releaselib.semver_key("1.2.3"))
 
     def test_semver_key_discards_build_metadata_for_equality(self):
         self.assertEqual(
@@ -2760,6 +2817,18 @@ class CoreCLITest(unittest.TestCase):
         cases = (
             ("## [2.12.0-rc.1] - 2026-09-01\n\n- malformed\n",
              "2.12.0"),
+            ("## [02.12.0] - 2026-09-01\n\n- leading zero\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## [٢.١٢.٠] - 2026-09-01\n\n- non-ASCII digits\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## v02.12.0 - 2026-09-01\n\n- v leading zero\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## v٢.١٢.٠ - 2026-09-01\n\n- v non-ASCII digits\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
             ("## [2.12.0] - 2026-09-01\n\n- first\n\n"
              "## [2.12.0] - 2026-09-01\n\n- duplicate\n", "2.12.0"),
             ("## [2.12.0] - 2026-09-01\n\n- released\n\n"
@@ -2777,6 +2846,20 @@ class CoreCLITest(unittest.TestCase):
                         "changelog-section", tmp, "release-v2.12.0",
                         "docs/CHANGELOG.md", version)
                 self.assertEqual(result.returncode, 4, result.stderr)
+                self.assertIn("refusing ambiguous release notes", result.stderr)
+
+    def test_changelog_section_noncanonical_requested_version_exits_4(self):
+        invalid_versions = (
+            "02.12.0", "2.012.0", "2.12.00", "٢.١٢.٠", "2.١٢.0")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                with tempfile.TemporaryDirectory() as tmp:
+                    self._init_changelog_repo(tmp)
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        "docs/CHANGELOG.md", version)
+                self.assertEqual(result.returncode, 4, result.stderr)
+                self.assertEqual(result.stdout, "")
                 self.assertIn("refusing ambiguous release notes", result.stderr)
 
     def test_changelog_section_reads_tag_commit_not_dirty_worktree(self):
@@ -2889,6 +2972,123 @@ class CoreCLITest(unittest.TestCase):
             self.assertIn("newest thing", result.stdout)
             self.assertNotIn("ambient counterfeit", result.stdout)
 
+    def test_changelog_section_ignores_ambient_common_git_directory(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- common-dir counterfeit\n")
+            with mock.patch.dict(
+                    os.environ,
+                    {"GIT_COMMON_DIR": os.path.join(counterfeit, ".git")}):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("common-dir counterfeit", result.stdout)
+
+    def test_changelog_section_ignores_ambient_object_directory(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- object-dir counterfeit\n")
+            with mock.patch.dict(
+                    os.environ,
+                    {"GIT_OBJECT_DIRECTORY": os.path.join(
+                        counterfeit, ".git", "objects")}):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("object-dir counterfeit", result.stdout)
+
+    def test_changelog_section_refuses_ambient_alternate_object_store(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+                tempfile.TemporaryDirectory() as alternate:
+            self._init_changelog_repo(tmp)
+            oid = self._git(
+                tmp, "rev-parse",
+                "release-v2.12.0:docs/CHANGELOG.md").stdout.decode().strip()
+            trusted_object = os.path.join(tmp, ".git", "objects", oid[:2], oid[2:])
+            alternate_object = os.path.join(alternate, oid[:2], oid[2:])
+            os.makedirs(os.path.dirname(alternate_object), exist_ok=True)
+            shutil.copy2(trusted_object, alternate_object)
+            os.chmod(trusted_object, 0o666)
+            os.remove(trusted_object)
+            with mock.patch.dict(
+                    os.environ,
+                    {"GIT_ALTERNATE_OBJECT_DIRECTORIES": alternate}):
+                result = self._run_core(
+                    "changelog-section", tmp, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3, result.stderr)
+            self.assertEqual(result.stdout, "")
+
+    def test_changelog_section_ignores_command_scoped_git_config_injection(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- config counterfeit\n")
+            injected = {
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "core.worktree",
+                "GIT_CONFIG_VALUE_0": counterfeit,
+            }
+            with mock.patch.dict(os.environ, injected):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("config counterfeit", result.stdout)
+
+    def test_git_environment_sanitizer_removes_all_config_injection_fields(self):
+        injected = {
+            "GIT_CONFIG_COUNT": "2",
+            "GIT_CONFIG_KEY_0": "core.worktree",
+            "GIT_CONFIG_VALUE_0": "counterfeit-worktree",
+            "GIT_CONFIG_KEY_1": "include.path",
+            "GIT_CONFIG_VALUE_1": "counterfeit-config",
+        }
+        with mock.patch.dict(os.environ, injected):
+            sanitized = core_releaselib._sanitized_git_environment()
+        self.assertEqual(set(injected).intersection(sanitized), set())
+
+    def test_git_environment_sanitizer_removes_every_declared_repository_field(self):
+        repository_fields = {
+            "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+            "GIT_CEILING_DIRECTORIES",
+            "GIT_COMMON_DIR",
+            "GIT_DIR",
+            "GIT_DISCOVERY_ACROSS_FILESYSTEM",
+            "GIT_GRAFT_FILE",
+            "GIT_INDEX_FILE",
+            "GIT_NAMESPACE",
+            "GIT_OBJECT_DIRECTORY",
+            "GIT_PREFIX",
+            "GIT_QUARANTINE_PATH",
+            "GIT_REPLACE_REF_BASE",
+            "GIT_SHALLOW_FILE",
+            "GIT_WORK_TREE",
+        }
+        self.assertEqual(core_releaselib._GIT_REPOSITORY_ENV, repository_fields)
+        injected = {
+            name: f"counterfeit-{index}"
+            for index, name in enumerate(sorted(repository_fields))
+        }
+        with mock.patch.dict(os.environ, injected):
+            sanitized = core_releaselib._sanitized_git_environment()
+        for name in sorted(repository_fields):
+            with self.subTest(name=name):
+                self.assertNotIn(name, sanitized)
+
     def test_changelog_section_ignores_git_replace_objects(self):
         with tempfile.TemporaryDirectory() as tmp:
             disk_path = self._init_changelog_repo(tmp)
@@ -2974,6 +3174,27 @@ class CoreCLITest(unittest.TestCase):
                 "changelog-section", tmp, "linked-v2.12.0",
                 "linked-changelog.md", "2.12.0")
             self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_rejects_a_committed_invalid_utf8_blob(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            blob = self._git(
+                tmp, "hash-object", "-w", "--stdin",
+                input_bytes=(
+                    b"## [2.12.0] - 2026-09-01\n\n- invalid byte: \xff\n"
+                )).stdout.decode().strip()
+            self._git(
+                tmp, "update-index", "--add", "--cacheinfo",
+                f"100644,{blob},docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: invalid utf8")
+            self._git(
+                tmp, "tag", "-a", "invalid-v2.12.0", "-m", "fixture invalid")
+            result = self._run_core(
+                "changelog-section", tmp, "invalid-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3, result.stderr)
+            self.assertEqual(result.stdout, "")
+            self.assertIn("committed changelog is not UTF-8", result.stderr)
 
     def test_changelog_section_normalizes_committed_crlf_to_utf8_lf(self):
         sample = self._SAMPLE_CHANGELOG.replace("\n", "\r\n")

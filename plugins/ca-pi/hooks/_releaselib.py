@@ -281,13 +281,23 @@ class MissingRequiredKeyError(ReleaseTargetsError):
 # bug-fix cluster does not take on. If the anchor is ever relaxed, a second
 # check will need to be RE-ADDED deliberately, not un-deleted from history.
 _RELEASE_RE_CACHE = {}
+_SEMVER_NUMERIC_IDENTIFIER = r"(?:0|[1-9][0-9]*)"
+_PLAIN_SEMVER_PATTERN = (
+    _SEMVER_NUMERIC_IDENTIFIER + r"\." +
+    _SEMVER_NUMERIC_IDENTIFIER + r"\." +
+    _SEMVER_NUMERIC_IDENTIFIER)
+_PLAIN_SEMVER_CAPTURE_PATTERN = (
+    r"(" + _SEMVER_NUMERIC_IDENTIFIER + r")\." +
+    r"(" + _SEMVER_NUMERIC_IDENTIFIER + r")\." +
+    r"(" + _SEMVER_NUMERIC_IDENTIFIER + r")")
 
 
 def _release_re(prefix):
     """The anchored `<prefix>MAJOR.MINOR.PATCH` matcher for one release series."""
     rx = _RELEASE_RE_CACHE.get(prefix)
     if rx is None:
-        rx = re.compile(r"^" + re.escape(prefix) + r"(\d+)\.(\d+)\.(\d+)$")
+        rx = re.compile(
+            r"^" + re.escape(prefix) + _PLAIN_SEMVER_CAPTURE_PATTERN + r"$")
         _RELEASE_RE_CACHE[prefix] = rx
     return rx
 
@@ -300,12 +310,12 @@ def _release_re(prefix):
 # with horizontal whitespace, so `[1.2.3]garbage` cannot prefix-match.
 _H2_RE = re.compile(r"^##(?:[ \t]+[^\r\n]*)?[ \t]*$", re.MULTILINE)
 _HEADING_RE = re.compile(
-    r"^##[ \t]+(?:\[(Unreleased|\d+\.\d+\.\d+)\]|"
-    r"v(\d+\.\d+\.\d+))(?:[ \t]+[^\r\n]*)?[ \t]*$",
+    r"^##[ \t]+(?:\[(Unreleased|" + _PLAIN_SEMVER_PATTERN + r")\]|"
+    r"v(" + _PLAIN_SEMVER_PATTERN + r"))(?:[ \t]+[^\r\n]*)?[ \t]*$",
     re.MULTILINE)
 _CHANGELOG_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})[ \t]*$")
 _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
-_BARE_RELEASE_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
+_BARE_RELEASE_VERSION_RE = re.compile(r"^" + _PLAIN_SEMVER_PATTERN + r"$")
 
 _SECTION_OK = "ok"
 _SECTION_ABSENT = "absent"
@@ -380,8 +390,8 @@ def _changelog_section_result(changelog_text, version):
 VALUE_MAX_CHARS = 1024
 
 SEMVER = re.compile(
-    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
-    r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
+    r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
+    r"(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?"
     r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
 )
 
@@ -447,7 +457,8 @@ def _bare_version(tag):
     if not isinstance(tag, str):
         return tag
     text = tag.strip().strip("[]")
-    match = re.search(r"(\d+\.\d+\.\d+.*)$", text)
+    match = re.search(
+        r"(?<![0-9])(" + _PLAIN_SEMVER_PATTERN + r".*)$", text)
     return match.group(1) if match else text.lstrip("v")
 
 
@@ -1228,7 +1239,8 @@ def peel_tag(ls_remote_text, tag):
     return peeled or direct
 
 
-_PLAIN_SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+_PLAIN_SEMVER_RE = re.compile(
+    r"^" + _PLAIN_SEMVER_CAPTURE_PATTERN + r"$")
 _BUMP_WORDS = ("major", "minor", "patch")
 
 
