@@ -178,7 +178,7 @@ class CodexHost(hostapi.Host):
 
     name = "codex"
     adapter_name = "ca-codex"
-    adapter_version = "0.7.7"
+    adapter_version = "0.7.8"
     command_noun = "command"
     has_statusline = False   # no statusline surface exists on Codex
     has_read_tool = False    # no read tool; file reads happen via shell

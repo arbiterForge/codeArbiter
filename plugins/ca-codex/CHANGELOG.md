@@ -6,6 +6,15 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.8] - 2026-09-02
+
+### Fixed
+
+- Release-note reconstruction now accepts only exact changelog headings,
+  rejects ambiguous `Unreleased` and duplicate sections, and reads the
+  regular-file blob from the exact tag and repository root without inherited
+  Git repository overrides or replacement objects.
+
 ## [0.7.7] - 2026-09-01
 
 ### Added

@@ -27,7 +27,7 @@ import hostapi  # noqa: E402
 class ClaudeHost(hostapi.Host):
     """Claude Code host adapter with a matching-only root corroboration."""
 
-    adapter_version = "2.15.8"
+    adapter_version = "2.15.9"
 
     def plugin_root(self):
         return hostapi.resolve_plugin_root(
