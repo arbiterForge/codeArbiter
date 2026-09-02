@@ -24,9 +24,10 @@ Findings are surfaced by severity (CRITICAL/HIGH/MEDIUM/LOW), file:line, remedia
 security findings — the specific control in `.codearbiter/security-controls.md` they map to. Raw
 per-reviewer output is never consumed directly; only the triaged, aggregated verdict is.
 
-The Codex source candidate includes each packaged reviewer resource charter for host-provided agent
-threads; exact-candidate proof gates release. An older adapter may run a review role inline rather
-than skip it — see
+Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
+host-provided agent threads. Exact static-package and route-closure checks gate release. Until
+exact-release thread dispatch is durably proven, the bounded inline fallback applies only where the
+canonical workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 

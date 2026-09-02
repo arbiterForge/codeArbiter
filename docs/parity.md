@@ -31,7 +31,7 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 |---|---|---|---|---|
 | Public entries | 38 `/ca:*` commands | 36 `$ca-*` entry skills | 37 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
 | Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
-| Role charters | 18 plugin agents | source candidate contains 18 packaged resource charters for host-provided threads; runtime release remains exact-candidate gated and older releases retain the inline fallback | 18 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
+| Role charters | 19 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.7.9 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
@@ -54,8 +54,8 @@ surface it describes, and an uncompared count drifts silently.
 | Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
 | Status | complete Claude statusline | startup state only | rich footer globally with a per-message burn sparkline and up to four activity rows (both wide-layout only); refresh-time git repository/dirty enrichment is trusted-only; governance row only when enabled and affirmatively trusted; rate windows omitted; optional probe-gated right sidebar (`/ca-sidebar`, auto-on at ≥120 columns) with session, subagents, workspace, and todos panels |
 | Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
-| Role dispatch | Claude subagents | source candidate supplies packaged resource charters for host-provided threads; exact-candidate proof gates release, and older releases retain a bounded inline fallback | fresh Pi RPC children: single, chain, parallel |
-| Process cleanup | host-managed subagents | host-managed agent threads (or current-thread lifecycle for an inline fallback) | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
+| Role dispatch | Claude subagents | published releases from 0.7.5 supply packaged resource charters for host-provided threads; static route closure is enforced, but exact-release live dispatch proof remains absent | fresh Pi RPC children: single, chain, parallel |
+| Process cleanup | host-managed subagents | bounded inline fallback where isolation is not mandatory; exact-release host-thread cleanup proof remains pending | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
 | Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper plus footer/sidebar/background health |
 
 ## Pi live surface classifications
@@ -106,7 +106,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex native Read event | HOST-IMPOSSIBLE | Codex exposes no equivalent read hook; governed notices still run after writes. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex transcript compaction | HOST-IMPOSSIBLE | Claude transcript JSONL is not a Codex session format. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
-| Codex packaged agents | DEGRADED | The source candidate contains 18 packaged resource charters for host-provided threads, but exact-candidate desktop proof gates release and older releases retain the bounded inline fallback. | `plugins/ca-codex/agents/`, `docs/codex-parity-testing.md` |
+| Codex packaged agents | DEGRADED | Published releases from 0.7.5 contain the complete generated charter set for their release; current source and 0.7.9 contain 19. Hosted static-package, resource-closure, and route-closure evidence replaced the retired desktop gate, but no committed exact-release receipt proves host-thread dispatch. | `plugins/ca-codex/agents/`, `.codearbiter/decisions/0032-hosted-static-codex-release-evidence.md`, `docs/codex-parity-testing.md` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
 | Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |

@@ -2,24 +2,26 @@
 
 ## Context
 
-codeArbiter today enforces its rigor only under Claude Code: the `ca` plugin's stdlib-Python hooks (SessionStart persona injection, exit-2 blocking PreToolUse gates), 44 commands, 23 skills, and 30 agents. The goal is to enforce the **same rigor under OpenAI Codex CLI**, sharing the **same `.codearbiter/` project context folder** — one governance store, two hosts.
+When this plan began, codeArbiter enforced its rigor only under Claude Code: the `ca` plugin's stdlib-Python hooks (SessionStart persona injection, exit-2 blocking PreToolUse gates), 44 commands, 23 skills, and 30 agents. The goal was to enforce the **same rigor under OpenAI Codex CLI**, sharing the **same `.codearbiter/` project context folder** as one governance store across two hosts.
 
-This is newly feasible: Codex v0.142.x (verified July 2026) has near-parity extension points — a plugin system (`.codex-plugin/plugin.json` + marketplace catalogs) bundling **hooks (Claude-Code-like `hooks.json`, blocking via exit 2 + stderr), skills (Anthropic's SKILL.md format), and MCP servers**; SessionStart/PreToolUse/PostToolUse/UserPromptSubmit events; project-scoped `.codex/config.toml`; repo-shippable subagents (`.codex/agents/*.toml`, `sandbox_mode` per role). Custom prompts are deprecated in favor of skills. No statusline analogue.
+The original July 2026 spike treated repo-shippable `.codex/agents/*.toml` files as a candidate mechanism. ADR-0031 later replaced that unshipped design with packaged Markdown resource charters and host-provided threads. The other extension points remain a plugin system (`.codex-plugin/plugin.json` + marketplace catalogs) bundling **hooks (Claude-Code-like `hooks.json`, blocking via exit 2 + stderr), skills (Anthropic's SKILL.md format), and MCP servers**; SessionStart/PreToolUse/PostToolUse/UserPromptSubmit events; and project-scoped `.codex/config.toml`. Custom prompts are deprecated in favor of skills. No statusline analogue.
 
-**User decisions (locked):** full parity as the end state · shared core + thin adapters packaging · prune-transcript ledgered out of parity (like statusline) · AGENTS.md fallback acceptable if SessionStart stdout injection fails on Codex · `ca-` prefix for all Codex skill names · independent SemVer for `ca-codex` starting 0.1.0 (ADR-0007 precedent). Agent-scaffolding via `ca-init` is the default if plugins can't ship subagents (user expressed no preference; spike-contingent).
+**User decisions (locked):** full parity as the end state · shared core + thin adapters packaging · prune-transcript ledgered out of parity (like statusline) · AGENTS.md fallback acceptable if SessionStart stdout injection fails on Codex · `ca-` prefix for all Codex skill names · independent SemVer for `ca-codex` starting 0.1.0 (ADR-0007 precedent). The spike-contingent `ca-init` agent-scaffolding proposal is historical and was superseded by ADR-0031's packaged-charter design.
 
-**Governance prerequisite:** `.codearbiter/CONTEXT.md` currently declares "Claude Code only" as a scope statement. An ADR must amend it before anything user-visible ships (M0). → Recorded as ADR-0011 (2026-07-08).
+**Governance prerequisite (satisfied):** `.codearbiter/CONTEXT.md` originally declared "Claude Code only" as a scope statement. ADR-0011 authorized the multi-host model, and the current file assigns the canonical kernel and all three host adapters.
 
 **Branch strategy (2026-07-08, user-directed):** all milestones stack on `feat/codex-support-m0` (PR #254) until ca-codex is functional; no merge before the user's live Codex test.
 
 **Approval caveat (2026-07-08):** approved as **beta only** — the maintainer has no Codex subscription until ~2026-07-09, so live-fire spike items (stdout injection, trust review, exit-2 feedback) are deferred to a live-verification pass; source-level verification against `openai/codex` proceeds immediately. `ca-codex` carries a beta / Feature Forge preview label until live verification completes.
 
-## Campaign status (reconciled 2026-07-20)
+## Campaign status (reconciled 2026-09-02)
 
-The beta gate is complete, but the full M0-M5 campaign is not. Codex 0.144.1 loaded the trusted
-plugin, injected the SessionStart persona, and surfaced the live H-03 block. Stable release
-`ca-codex-v0.2.4` was tagged and published on 2026-07-12. Those receipts remove the beta label;
-they do not silently waive the remaining host-parity milestones.
+The beta gate is complete, but the full M0-M5 campaign remains open on two evidence obligations.
+Codex 0.144.1 established the initial trusted startup and live H-03 block. Published release
+`ca-codex-v0.7.5` closed the missing-charter package defect with the complete generated role set for
+that release plus hosted static-package and route-closure gates. ADR-0031 governs host-native roots
+and packaged charters. ADR-0032 replaces only its retired desktop-proof requirement with the
+hosted-static contract.
 
 | Milestone | Current status | Authoritative evidence or remaining obligation |
 |---|---|---|
@@ -27,17 +29,14 @@ they do not silently waive the remaining host-parity milestones.
 | M1 shared-core extraction | ACCEPTED | `core/pysrc/`, `tools/sync-core.py`, and the byte-identity CI contract shipped in PR #254. |
 | M2 Codex enforcement core | ACCEPTED | The trusted hooks, host adapter, doctor probe, shared-store contract, and live H-03 block shipped in PR #254. |
 | M3 command/skill surface | ACCEPTED | The generated standalone `$ca-*` surface and Codex-only initialization path shipped through PR #295 and PR #254. |
-| M4 agents + review chains | PENDING | `docs/parity.md` still records the 28 agents and review chains as M4 work. Roles run inline; generated `.codex/agents/*.toml`, `ca-init` scaffolding, staleness diagnosis, and review-chain validation remain. |
-| M5 distribution/release/docs | PARTIAL | Stable 0.2.4 release and public install documentation shipped through PRs #301 and #302. The Codex worker-backend package remains absent and degrades to the premium path. |
+| M4 agents + review chains | DEGRADED | ADR-0031 replaced the abandoned `.codex/agents/*.toml` scaffold with packaged Markdown resource charters and host-provided threads. Release 0.7.5 contains the then-complete 18-charter set plus `INDEX.md`; current source and 0.7.9 contain 19. Generated route and policy checks close every declared dispatch path, but no committed exact-release receipt proves actual host-thread dispatch. |
+| M5 distribution/release/docs | PARTIAL | The initial Stable release and public install documentation shipped through PRs #301 and #302. ADR-0032 and the 0.7.5 release add the hosted-static distribution contract. The optional Codex farm backend is a separately labeled preview limitation, not a Stable-host blocker. `.github/published-tags.json` still stops at `ca-codex-v0.5.1`, so the newer published tags lack the declared committed provenance witness. |
 
-`codex.feature.0001` remains in progress until M4 is accepted and the remaining M5 distribution
-decision is implemented or explicitly re-scoped through a user-attributed decision. Later 0.3.x
-version work is maintenance on the shipped host and is not evidence that these two obligations closed.
-
-`.codearbiter/CONTEXT.md` still carries the superseded beta wording. A 2026-07-20 attempt to correct
-that sentence was blocked by H-18 because `CONTEXT.md` is the activation switch. Correcting it needs
-the sanctioned protected-file path or an explicit `$ca-override`; this reconciliation does not bypass
-that gate.
+`codex.feature.0001` remains in progress until an exact published package has durable host-thread
+dispatch evidence and the declared published-tag witness is current or explicitly dispositioned.
+The task row's beta clause records the original gate; this section records the current residual.
+`.codearbiter/CONTEXT.md` now assigns the canonical kernel and all three host adapters without the
+superseded beta wording.
 
 ## Architecture
 
@@ -80,9 +79,9 @@ Canonical templates in `core/surface/{commands,skills,agents,includes}/` with th
 | `_githooks.py` git backstop | Identical, host-agnostic; add idempotence test for dual-plugin installs |
 | 44 commands | 44 generated Codex skills `ca-commit`, `ca-feature`, … (skills are un-namespaced; prefix prevents collisions) |
 | 23 skills | Same SKILL.md format, `ca-` prefixed, near-verbatim after tokens |
-| 30 agents (`tools:` allowlist) | Generated `.codex/agents/*.toml`; reviewers `sandbox_mode="read-only"` (mechanically STRONGER than Claude's Bash-permitting allowlist), authors `workspace-write`. Shipped in-plugin if possible, else scaffolded by `ca-init` with doctor staleness check |
+| Current generated agents (`tools:` allowlist) | Packaged Markdown resource charters with generated dispatch policy; host-provided threads enforce available isolation and write containment, while required isolation blocks when unavailable |
 | Review chains (checkpoint/tribunal/SDD) | Codex subagents; batch dispatch under `max_threads 6` (tribunal has 11 lenses); `max_depth 1` may force the orchestrator to drive tdd phases instead of nesting |
-| doctor | Shared core + per-host probe list (trust state, hooks live-fire, `.codex/agents` staleness, config.toml wiring) |
+| doctor | Shared core + per-host probe list (trust state, hooks live-fire, packaged-resource integrity, config.toml wiring) |
 | marketplace | `.agents/plugins/marketplace.json` at repo root alongside the existing `.claude-plugin/marketplace.json` |
 | farm | Reused as-is (already host-orthogonal) |
 
@@ -100,7 +99,7 @@ Canonical templates in `core/surface/{commands,skills,agents,includes}/` with th
 
 **M3 — Command/skill surface.** Markdown → `core/surface/` templates; `build-surface.py`; regenerated `plugins/ca/{commands,skills,includes}` **byte-identical to today** (CI-diff proves zero Claude-side change), plus the Codex skill tree. Extend `check-plugin-refs.py` (already plugin-parameterized) to `ca-codex`; Codex COMMANDS.md analogue.
 
-**M4 — Agents + review chains.** Agent templates → Claude `agents/*.md` (unchanged) + Codex TOMLs; ship-in-plugin vs `ca-init` scaffold per M0 finding ⑥. Validate checkpoint/tribunal/subagent-driven-development under `max_threads 6`/`max_depth 1`; adapt dispatch batching in affected skills.
+**M4: Agents + review chains.** Agent templates render unchanged Claude `agents/*.md` files and Codex packaged Markdown resource charters governed by ADR-0031. Generated route and policy checks cover the declared dispatch surface; exact-release host-thread dispatch still requires a durable receipt.
 
 **M5 — Distribution/release/docs.** Parameterize `.github/workflows/release.yml` over plugin (currently hard-coded to `plugins/ca/`); `_releaselib.py` bump-guard path-scoped to `plugins/ca-codex/`; CI path filters — `core/**` triggers **both** plugin suites (new rule). Site/README/install docs; **`docs/parity.md` ledger** (statusline, prune-transcript, M0-discovered gaps).
 

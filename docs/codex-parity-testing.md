@@ -35,13 +35,13 @@ Verified baseline: **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows, 2026-07
 The installed hook set was approved through `/hooks`; SessionStart persona injection completed,
 and `$ca-doctor`'s staged-everything dry-run probe was blocked with `[H-03]`.
 
-> **STALE.** This baseline predates `ca-codex` 0.3.x. The continuously-verified half above has
+> **STALE.** This baseline predates `ca-codex` 0.3.x. The continuously verified half above has
 > not lapsed, but the live-firing half has not been re-confirmed since 0.2.4.
 
 Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.143.0** (the source-verified
 structured-deny baseline; plugin-bundled hooks came on by default earlier, at 0.134.0),
-this repo checked out on `feat/codex-support-m0`, and —
-for the side-by-side comparison — Claude Code with the `ca` plugin installed.
+this repo checked out on `main` or the exact candidate under review, and Claude Code with the
+`ca` plugin installed for the side-by-side comparison.
 
 Everything below runs against **throwaway fixture repos**, never this repo or a real project.
 
@@ -218,11 +218,10 @@ In order of likelihood:
    guards go dormant. Re-scaffold with a fresh fixture. (In the `--bare` fixture, dormant
    before `$ca-init` is the **expected** starting state, not a failure — O1/O2 run dormant.)
 
-## 8. What a PASS unblocks
+## 8. What a future PASS updates
 
 Seven-for-seven enforcement parity (§4), six-for-six onboarding parity (§5), plus persona
-injection (§3) is the live confirmation the campaign has been waiting on. It clears
-`feat/codex-support-m0` to merge to `main` (whose PR should list `Closes #255…#270`) and
-gives #287 its answer from observed behavior. Capture the LIVE-PENDING items from the spike
-as you go: the trust-review UX, the real exit-2 stderr surfaced to the model, and
-`commandWindows` on a Windows install.
+injection (§3) produces the next version-qualified live baseline. Record the exact Codex CLI and
+`ca-codex` versions, platform, trust-review behavior, surfaced block output, and Windows command
+registration. Do not use a static package or route-closure pass as a substitute for this live
+record.
