@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.8] - 2026-09-02
+
+### Fixed
+
+- Release-note reconstruction now accepts only exact changelog headings,
+  rejects ambiguous `Unreleased` and duplicate sections, and reads the
+  regular-file blob from the exact tag and repository root without inherited
+  Git repository overrides or replacement objects.
+
 ## [0.8.7] - 2026-09-01
 
 ### Added

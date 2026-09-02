@@ -39,6 +39,7 @@
 #   last_tag_select(tags, prefix) -> str
 #   notes_heading_matches(notes_text, tag) -> bool
 #   release_dates_consistent(changelog_section, tag_message) -> bool
+#   changelog_section(changelog_text, version) -> str | None
 #   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
 #                          manifest_version, release_is_nondraft) -> str
 #   select_release_target_by_name(pairs, targets) -> str   name-keyed
@@ -291,16 +292,82 @@ def _release_re(prefix):
     return rx
 
 
-# A changelog section heading, in either the `## vX.Y.Z - DATE` form or the
-# Keep-a-Changelog `## [X.Y.Z] - DATE` bracket form. The capture is the bare
-# `X.Y.Z`; the optional leading `v` and the surrounding brackets sit OUTSIDE
-# the group, so heading comparison is style-agnostic. Any separator is
-# allowed between version and date. Plus the annotated-tag `Released-at:`
-# footer.
-_HEADING_RE = re.compile(r"^##\s+\[?v?(\d+\.\d+\.\d+)\]?", re.MULTILINE)
-_CHANGELOG_DATE_RE = re.compile(
-    r"^##\s+\[?v?\d+\.\d+\.\d+\]?\D+(\d{4}-\d{2}-\d{2})", re.MULTILINE)
+# H2 is the structural section boundary. A release heading is the narrower,
+# exact grammar: either `## [X.Y.Z] ...`, `## vX.Y.Z ...`, or the one special
+# `## [Unreleased]` marker. Tabs/spaces are admitted within ONE line; `\s` is
+# deliberately absent because it also consumes newlines and used to turn
+# `##\n[1.2.3]` into a release heading. The suffix, when present, must begin
+# with horizontal whitespace, so `[1.2.3]garbage` cannot prefix-match.
+_H2_RE = re.compile(r"^##(?:[ \t]+[^\r\n]*)?[ \t]*$", re.MULTILINE)
+_HEADING_RE = re.compile(
+    r"^##[ \t]+(?:\[(Unreleased|\d+\.\d+\.\d+)\]|"
+    r"v(\d+\.\d+\.\d+))(?:[ \t]+[^\r\n]*)?[ \t]*$",
+    re.MULTILINE)
+_CHANGELOG_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})[ \t]*$")
 _RELEASED_AT_RE = re.compile(r"Released-at:\s*(\d{4}-\d{2}-\d{2})")
+_BARE_RELEASE_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
+
+_SECTION_OK = "ok"
+_SECTION_ABSENT = "absent"
+_SECTION_INVALID = "invalid"
+_SECTION_DUPLICATE = "duplicate"
+
+
+def _heading_version(line):
+    """Bare version / `Unreleased` for one exact heading line, else None."""
+    match = _HEADING_RE.fullmatch(line)
+    if match is None:
+        return None
+    return match.group(1) or match.group(2)
+
+
+def _looks_like_changelog_heading(line):
+    """True when an H2 claims changelog-heading syntax but is malformed."""
+    body = line[2:].lstrip(" \t")
+    return body.startswith("[") or body.startswith("v")
+
+
+def _changelog_section_result(changelog_text, version):
+    """Return `(section, status)` without raising on malformed changelogs."""
+    if (not isinstance(changelog_text, str)
+            or not isinstance(version, str)
+            or _BARE_RELEASE_VERSION_RE.fullmatch(version) is None):
+        return None, _SECTION_INVALID
+
+    boundaries = list(_H2_RE.finditer(changelog_text))
+    target_indexes = []
+    released_seen = False
+    unreleased_seen = False
+
+    for index, boundary in enumerate(boundaries):
+        line = boundary.group(0)
+        heading_version = _heading_version(line)
+        if heading_version is None:
+            if _looks_like_changelog_heading(line):
+                return None, _SECTION_INVALID
+            continue
+        if heading_version == "Unreleased":
+            # Repository-derived Keep-a-Changelog compatibility: exactly one
+            # Unreleased marker is valid only before every released section.
+            if unreleased_seen or released_seen:
+                return None, _SECTION_INVALID
+            unreleased_seen = True
+            continue
+        released_seen = True
+        if heading_version == version:
+            target_indexes.append(index)
+
+    if not target_indexes:
+        return None, _SECTION_ABSENT
+    if len(target_indexes) != 1:
+        return None, _SECTION_DUPLICATE
+
+    index = target_indexes[0]
+    start = boundaries[index].start()
+    end = (boundaries[index + 1].start()
+           if index + 1 < len(boundaries) else len(changelog_text))
+    section = changelog_text[start:end].rstrip("\r\n") + "\n"
+    return section, _SECTION_OK
 
 # Full SemVer, including the pre-release and build-metadata tails a release
 # tag never carries but a version MANIFEST can. The anchored `_release_re`
@@ -435,10 +502,15 @@ def notes_heading_matches(notes_text, tag):
     False."""
     if not isinstance(notes_text, str) or not isinstance(tag, str):
         return False
-    m = _HEADING_RE.search(notes_text)
-    if not m:
+    headings = list(_H2_RE.finditer(notes_text))
+    if not headings:
         return False
-    return m.group(1) == _bare_version(tag)
+    version = _bare_version(tag)
+    first_version = _heading_version(headings[0].group(0))
+    if first_version != version or first_version == "Unreleased":
+        return False
+    _section, status = _changelog_section_result(notes_text, version)
+    return status == _SECTION_OK
 
 
 def release_dates_consistent(changelog_section, tag_message):
@@ -448,7 +520,11 @@ def release_dates_consistent(changelog_section, tag_message):
     across surfaces. Either date absent, or non-string input -> False."""
     if not isinstance(changelog_section, str) or not isinstance(tag_message, str):
         return False
-    cm = _CHANGELOG_DATE_RE.search(changelog_section)
+    heading = _HEADING_RE.match(changelog_section)
+    if (heading is None or heading.start() != 0
+            or _heading_version(heading.group(0)) == "Unreleased"):
+        return False
+    cm = _CHANGELOG_DATE_RE.search(heading.group(0))
     tm = _RELEASED_AT_RE.search(tag_message)
     if not cm or not tm:
         return False
@@ -469,16 +545,142 @@ def changelog_section(changelog_text, version):
     COMMITTED `$CHANGELOG` -- which Phase 1 step 7 commits before any tag
     exists -- is reading the one permanent home of that text, not
     re-deriving or hand-writing new notes (blind exercise run 19, HIGH-2)."""
-    if not isinstance(changelog_text, str) or not isinstance(version, str):
+    section, status = _changelog_section_result(changelog_text, version)
+    return section if status == _SECTION_OK else None
+
+
+def _normalize_git_tree_path(path):
+    """Normalize portable separators; reject paths outside a Git tree."""
+    if not isinstance(path, str) or not path or "\0" in path:
         return None
-    matches = list(_HEADING_RE.finditer(changelog_text))
-    for i, m in enumerate(matches):
-        if m.group(1) != version:
-            continue
-        start = m.start()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(changelog_text)
-        return changelog_text[start:end].rstrip("\n") + "\n"
-    return None
+    normalized = path.replace("\\", "/")
+    if (normalized.startswith("/")
+            or re.match(r"^[A-Za-z]:", normalized)
+            or ":" in normalized):
+        return None
+    parts = normalized.split("/")
+    if any(part in ("", "..") for part in parts):
+        return None
+    parts = [part for part in parts if part != "."]
+    return "/".join(parts) if parts else None
+
+
+_GIT_REPOSITORY_ENV = {
+    "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+    "GIT_CEILING_DIRECTORIES",
+    "GIT_COMMON_DIR",
+    "GIT_DIR",
+    "GIT_DISCOVERY_ACROSS_FILESYSTEM",
+    "GIT_GRAFT_FILE",
+    "GIT_INDEX_FILE",
+    "GIT_NAMESPACE",
+    "GIT_OBJECT_DIRECTORY",
+    "GIT_PREFIX",
+    "GIT_QUARANTINE_PATH",
+    "GIT_REPLACE_REF_BASE",
+    "GIT_SHALLOW_FILE",
+    "GIT_WORK_TREE",
+}
+
+
+def _sanitized_git_environment():
+    """Return a Git environment that cannot redirect repository/object reads."""
+    environment = os.environ.copy()
+    for name in _GIT_REPOSITORY_ENV:
+        environment.pop(name, None)
+    # Command-scoped config injected through GIT_CONFIG_COUNT can redefine
+    # repository paths without using the better-known GIT_DIR variables.
+    environment.pop("GIT_CONFIG_COUNT", None)
+    for name in tuple(environment):
+        if re.fullmatch(r"GIT_CONFIG_(?:KEY|VALUE)_\d+", name):
+            environment.pop(name, None)
+    # Replacement refs rewrite the commit/tree/blob Git presents for a known
+    # object id. Release notes must reflect the tag's stored objects exactly.
+    environment["GIT_NO_REPLACE_OBJECTS"] = "1"
+    return environment
+
+
+def _committed_changelog_text(repo_root, revision, changelog_path):
+    """Return `(text, error)` from one exact regular-file blob at revision."""
+    if (not isinstance(repo_root, str) or not repo_root
+            or not isinstance(revision, str) or not revision
+            or revision.startswith("-") or "\0" in revision):
+        return None, "invalid repository root or revision"
+    tree_path = _normalize_git_tree_path(changelog_path)
+    if tree_path is None:
+        return None, "changelog path is not a repository-relative Git path"
+
+    try:
+        git = git_executable()
+        git_environment = _sanitized_git_environment()
+        root_probe = subprocess.run(
+            [git, "-C", repo_root, "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=30, env=git_environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        return None, f"cannot resolve repository root: {exc}"
+    if root_probe.returncode != 0:
+        return None, "cannot resolve repository root"
+    actual_root = root_probe.stdout.strip()
+    supplied_root = os.path.realpath(os.path.abspath(repo_root))
+    resolved_root = os.path.realpath(os.path.abspath(actual_root))
+    if os.path.normcase(supplied_root) != os.path.normcase(resolved_root):
+        return None, "supplied path is not the repository root"
+
+    tag_ref = f"refs/tags/{revision}"
+    try:
+        tag_probe = subprocess.run(
+            [git, "check-ref-format", tag_ref],
+            capture_output=True, timeout=30, env=git_environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        return None, f"cannot validate release tag: {exc}"
+    if tag_probe.returncode != 0:
+        return None, "release tag name is invalid"
+
+    try:
+        commit_probe = subprocess.run(
+            [git, "-C", actual_root, "rev-parse", "--verify",
+             f"{tag_ref}^{{commit}}"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=30, env=git_environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        return None, f"cannot resolve committed revision: {exc}"
+    if commit_probe.returncode != 0:
+        return None, "cannot resolve committed revision"
+    commit = commit_probe.stdout.strip()
+
+    try:
+        entry_probe = subprocess.run(
+            [git, "-C", actual_root, "ls-tree", "-z", commit, "--", tree_path],
+            capture_output=True, timeout=30, env=git_environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        return None, f"cannot resolve committed changelog: {exc}"
+    records = [record for record in entry_probe.stdout.split(b"\0") if record]
+    if entry_probe.returncode != 0 or len(records) != 1:
+        return None, "committed changelog path is absent or ambiguous"
+    try:
+        metadata, encoded_path = records[0].split(b"\t", 1)
+        mode, object_type, oid = metadata.split(b" ", 2)
+        found_path = encoded_path.decode("utf-8")
+    except (ValueError, UnicodeDecodeError):
+        return None, "committed changelog tree entry is malformed"
+    if (found_path != tree_path or object_type != b"blob"
+            or mode not in (b"100644", b"100755")):
+        return None, "committed changelog is not an exact regular-file path"
+
+    try:
+        blob = subprocess.run(
+            [git, "-C", actual_root, "cat-file", "blob", oid.decode("ascii")],
+            capture_output=True, timeout=30, env=git_environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError, UnicodeDecodeError) as exc:
+        return None, f"cannot read committed changelog: {exc}"
+    if blob.returncode != 0:
+        return None, "cannot read committed changelog"
+    try:
+        text = blob.stdout.decode("utf-8")
+    except UnicodeDecodeError:
+        return None, "committed changelog is not UTF-8"
+    return text.replace("\r\n", "\n").replace("\r", "\n"), None
 
 
 def classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
@@ -1752,15 +1954,17 @@ def main(argv):
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
-      changelog-section <changelog_file> <version>
+      changelog-section <repo_root> <revision> <changelog_path> <version>
                                   prints the `## [<version>] ...` section of
-                                  `<changelog_file>` verbatim, from its
-                                  heading up to the next `##` heading or EOF.
+                                  the exact regular-file blob at
+                                  `<revision>:<changelog_path>`, bound to the
+                                  supplied repository root, from its heading
+                                  up to the next H2 heading or EOF.
                                   exit 0 with the section on stdout - 1 no
-                                  heading names `<version>` - 3 the file
-                                  could not be read (distinct from 1: "could
-                                  not compare" is never "compared and
-                                  disagreed"). The sanctioned way for
+                                  heading names `<version>` - 3 source/root/
+                                  path/revision cannot be read safely - 4 the
+                                  changelog is malformed or ambiguous. The
+                                  sanctioned way for
                                   Phase 3's `resume_publish` path to
                                   reconstruct release notes when Phase 1's
                                   own scratch file did not survive to a
@@ -2091,29 +2295,35 @@ def main(argv):
             notes_text = ""
         return 0 if notes_heading_matches(notes_text, rest[0]) else 1
 
-    if cmd == "changelog-section" and len(rest) == 2:
+    if cmd == "changelog-section" and len(rest) == 4:
         # Mechanical reconstruction of Phase 1's composed section, for
         # `resume_publish` -- see `changelog_section`'s docstring. Exit 0
         # with the section on stdout - 1 the changelog has no heading for
         # `<version>` (drift between $CHANGELOG and the tag, not a
-        # bad-invocation) - 3 the changelog file could not be read. 3, not
-        # 2, so "unreadable" and "bad invocation" stay distinguishable
-        # (this module's own [never-fold-unreadable-into-absent] rule) --
-        # 2 is reserved for bad invocation across this whole CLI.
-        changelog_path, version = rest
-        try:
-            with open(changelog_path, encoding="utf-8") as fh:
-                changelog_text = fh.read()
-        except OSError as exc:
+        # bad-invocation) - 3 the repository/revision/path/blob cannot be
+        # read safely - 4 a malformed/duplicate/invalidly-ordered changelog.
+        # `revision` is resolved to a commit hash before the blob read, so a
+        # current HEAD move or dirty/deleted working file cannot change the
+        # notes selected for an already-composed tag.
+        repo_root, revision, changelog_path, version = rest
+        changelog_text, source_error = _committed_changelog_text(
+            repo_root, revision, changelog_path)
+        if source_error is not None:
             sys.stderr.write(
-                f"changelog-section: cannot read {changelog_path!r}: {exc}\n")
+                f"changelog-section: cannot read committed "
+                f"{changelog_path!r}: {source_error}\n")
             return 3
-        section = changelog_section(changelog_text, version)
-        if section is None:
+        section, status = _changelog_section_result(changelog_text, version)
+        if status == _SECTION_ABSENT:
             sys.stderr.write(
                 f"changelog-section: no '## [{version}]' heading in "
-                f"{changelog_path!r}\n")
+                f"committed {changelog_path!r}\n")
             return 1
+        if status != _SECTION_OK:
+            sys.stderr.write(
+                f"changelog-section: committed {changelog_path!r} is "
+                f"{status}; refusing ambiguous release notes\n")
+            return 4
         # `sys.stdout.write` is text-mode: on Windows with no
         # PYTHONIOENCODING/PYTHONUTF8 set it encodes using the ambient
         # console codepage (cp1252, not UTF-8) AND translates `\n` to

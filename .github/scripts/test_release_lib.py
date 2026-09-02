@@ -2108,6 +2108,35 @@ class CoreNotesHeadingTest(unittest.TestCase):
     def test_bare_version_never_raises_on_non_string(self):
         self.assertIsNone(core_releaselib._bare_version(None))
 
+    def test_heading_version_token_must_match_exactly(self):
+        malformed = (
+            "## [1.2.3-rc.1] - 2026-09-01\n",
+            "## [1.2.3+build.7] - 2026-09-01\n",
+            "## [1.2.3.4] - 2026-09-01\n",
+            "## [1.2.3 - 2026-09-01\n",
+            "## [1.2.3]garbage\n",
+            "## 1.2.3 - 2026-09-01\n",
+            "##\n[1.2.3] - 2026-09-01\n",
+        )
+        for notes in malformed:
+            with self.subTest(notes=notes):
+                self.assertFalse(
+                    core_releaselib.notes_heading_matches(notes, "v1.2.3"))
+
+    def test_first_h2_unreleased_is_rejected_not_skipped(self):
+        notes = (
+            "## [Unreleased]\n\n- pending\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+        self.assertFalse(
+            core_releaselib.notes_heading_matches(notes, "v1.2.3"))
+
+    def test_duplicate_matching_sections_are_rejected(self):
+        notes = (
+            "## [1.2.3] - 2026-09-01\n\n- first\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- second\n")
+        self.assertFalse(
+            core_releaselib.notes_heading_matches(notes, "v1.2.3"))
+
 
 class CoreChangelogSectionTest(unittest.TestCase):
     """Blind exercise run 19, HIGH-2: `changelog_section` mechanically
@@ -2181,6 +2210,71 @@ class CoreChangelogSectionTest(unittest.TestCase):
         self.assertIn("### Added", section)
         self.assertNotIn("0.9.0", section)
 
+    def test_conventional_unreleased_before_releases_is_allowed_and_excluded(self):
+        text = (
+            "# Changelog\n\n## [Unreleased]\n\n- pending\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## [1.2.2] - 2026-08-01\n\n- older\n")
+        self.assertEqual(
+            core_releaselib.changelog_section(text, "1.2.3"),
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+
+    def test_unreleased_cannot_be_requested_as_a_release_version(self):
+        text = "## [Unreleased]\n\n- pending\n"
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "Unreleased"))
+
+    def test_unreleased_after_a_released_section_is_rejected(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## [Unreleased]\n\n- pending\n")
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "1.2.3"))
+
+    def test_duplicate_unreleased_sections_before_releases_are_rejected(self):
+        text = (
+            "## [Unreleased]\n\n- first pending batch\n\n"
+            "## [Unreleased]\n\n- second pending batch\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "1.2.3"))
+
+    def test_duplicate_matching_sections_are_rejected_even_when_identical(self):
+        section = "## [1.2.3] - 2026-09-01\n\n- released\n"
+        self.assertIsNone(
+            core_releaselib.changelog_section(section + "\n" + section, "1.2.3"))
+
+    def test_duplicate_matching_sections_are_rejected_when_divergent(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- first\n\n"
+            "## v1.2.3 - 2026-09-01\n\n- second\n")
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "1.2.3"))
+
+    def test_any_h2_terminates_the_selected_section(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## Archive\n\n- not release notes\n")
+        self.assertEqual(
+            core_releaselib.changelog_section(text, "1.2.3"),
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+
+    def test_malformed_target_headings_are_never_prefix_matches(self):
+        malformed = (
+            "## [1.2.3-rc.1] - 2026-09-01\n",
+            "## [1.2.3+build] - 2026-09-01\n",
+            "## [1.2.3.4] - 2026-09-01\n",
+            "## [1.2.3 - 2026-09-01\n",
+            "## [1.2.3]garbage\n",
+            "## 1.2.3 - 2026-09-01\n",
+            "##\n[1.2.3] - 2026-09-01\n",
+        )
+        for heading in malformed:
+            with self.subTest(heading=heading):
+                self.assertIsNone(
+                    core_releaselib.changelog_section(
+                        heading + "\n- not a valid section\n", "1.2.3"))
+
 
 class CoreReleaseDatesTest(unittest.TestCase):
     """H3: release_dates_consistent exercised against the portable module."""
@@ -2202,6 +2296,18 @@ class CoreReleaseDatesTest(unittest.TestCase):
     def test_missing_tag_date_is_false(self):
         self.assertFalse(core_releaselib.release_dates_consistent(
             "## v2.6.0 — 2026-06-26\n", "no footer"))
+
+    def test_date_in_body_does_not_satisfy_a_dated_heading(self):
+        section = "## [1.2.3]\n\nReleased on 2026-09-01.\n"
+        tagmsg = "Released-at: 2026-09-01\n"
+        self.assertFalse(
+            core_releaselib.release_dates_consistent(section, tagmsg))
+
+    def test_malformed_heading_suffix_does_not_supply_a_release_date(self):
+        section = "## [1.2.3]garbage 2026-09-01\n\n- malformed\n"
+        tagmsg = "Released-at: 2026-09-01\n"
+        self.assertFalse(
+            core_releaselib.release_dates_consistent(section, tagmsg))
 
     def test_never_raises(self):
         self.assertFalse(core_releaselib.release_dates_consistent(None, None))
@@ -2560,11 +2666,32 @@ class CoreCLITest(unittest.TestCase):
     # needs the exact text Phase 1 composed, and Phase 1's own scratch copy
     # is explicitly discardable -- this is the mechanical way to read it
     # back out of the COMMITTED changelog instead.
-    def _write_changelog(self, tmp_dir, text):
-        path = os.path.join(tmp_dir, "CHANGELOG.md")
-        with open(path, "w", encoding="utf-8") as fh:
+    def _git(self, repo, *args, input_bytes=None):
+        return subprocess.run(
+            [core_releaselib.git_executable(), *args], cwd=repo,
+            input=input_bytes, capture_output=True, timeout=30, check=True)
+
+    def _init_changelog_repo(self, root, text=None,
+                             changelog_path="docs/CHANGELOG.md"):
+        os.makedirs(root, exist_ok=True)
+        self._git(root, "init", "--quiet")
+        hooks = os.path.join(root, "empty-hooks")
+        os.makedirs(hooks, exist_ok=True)
+        self._git(root, "config", "core.hooksPath", hooks)
+        self._git(root, "config", "core.autocrlf", "false")
+        self._git(root, "config", "user.name", "RA-05 fixture")
+        self._git(root, "config", "user.email", "ra05@example.invalid")
+        if text is None:
+            text = self._SAMPLE_CHANGELOG
+        disk_path = os.path.join(root, *changelog_path.split("/"))
+        os.makedirs(os.path.dirname(disk_path), exist_ok=True)
+        with open(disk_path, "w", encoding="utf-8", newline="") as fh:
             fh.write(text)
-        return path
+        self._git(root, "add", "--", changelog_path)
+        self._git(root, "commit", "--quiet", "-m", "fixture: release notes")
+        self._git(
+            root, "tag", "-a", "release-v2.12.0", "-m", "fixture release")
+        return disk_path
 
     _SAMPLE_CHANGELOG = (
         "# Changelog\n\n"
@@ -2574,8 +2701,10 @@ class CoreCLITest(unittest.TestCase):
 
     def test_changelog_section_exits_0_and_prints_the_section(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
-            result = self._run_core("changelog-section", path, "2.12.0")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
             self.assertEqual(result.returncode, 0)
             self.assertEqual(
                 result.stdout,
@@ -2583,8 +2712,10 @@ class CoreCLITest(unittest.TestCase):
 
     def test_changelog_section_middle_version_stops_at_next_heading(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
-            result = self._run_core("changelog-section", path, "2.11.0")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.11.0")
             self.assertEqual(result.returncode, 0)
             self.assertEqual(
                 result.stdout,
@@ -2594,8 +2725,10 @@ class CoreCLITest(unittest.TestCase):
         # exit 1 = "compared and found nothing", distinct from exit 3
         # ("could not compare at all") -- never folded together.
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
-            result = self._run_core("changelog-section", path, "9.9.9")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "9.9.9")
             self.assertEqual(result.returncode, 1)
             self.assertIn("9.9.9", result.stderr)
 
@@ -2603,13 +2736,254 @@ class CoreCLITest(unittest.TestCase):
         # An unreadable changelog is NOT the same answer as "no such
         # version" -- [never-fold-unreadable-into-absent].
         with tempfile.TemporaryDirectory() as tmp:
-            missing = os.path.join(tmp, "does-not-exist.md")
-            result = self._run_core("changelog-section", missing, "2.12.0")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "does-not-exist.md", "2.12.0")
             self.assertEqual(result.returncode, 3)
 
     def test_changelog_section_bad_invocation_exits_2(self):
-        result = self._run_core("changelog-section", "only-one-arg")
+        result = self._run_core(
+            "changelog-section", "root", "revision", "path-only")
         self.assertEqual(result.returncode, 2)
+
+    def test_release_skill_binds_section_to_project_root_tag_and_quoted_path(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            skill = fh.read()
+        self.assertIn(
+            'changelog-section "{{PROJECT_DIR}}" "${TAG_PREFIX}${VERSION}" '
+            '"$CHANGELOG" "$VERSION"', skill)
+
+    def test_changelog_section_malformed_or_ambiguous_exits_4(self):
+        cases = (
+            ("## [2.12.0-rc.1] - 2026-09-01\n\n- malformed\n",
+             "2.12.0"),
+            ("## [2.12.0] - 2026-09-01\n\n- first\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- duplicate\n", "2.12.0"),
+            ("## [2.12.0] - 2026-09-01\n\n- released\n\n"
+             "## [Unreleased]\n\n- misplaced\n", "2.12.0"),
+            ("## [Unreleased]\n\n- first pending batch\n\n"
+             "## [Unreleased]\n\n- second pending batch\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- released\n", "2.12.0"),
+            ("## [Unreleased]\n\n- pending\n", "Unreleased"),
+        )
+        for text, version in cases:
+            with self.subTest(version=version, text=text):
+                with tempfile.TemporaryDirectory() as tmp:
+                    self._init_changelog_repo(tmp, text)
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        "docs/CHANGELOG.md", version)
+                self.assertEqual(result.returncode, 4, result.stderr)
+                self.assertIn("refusing ambiguous release notes", result.stderr)
+
+    def test_changelog_section_reads_tag_commit_not_dirty_worktree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-01\n\n- counterfeit\n")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("counterfeit", result.stdout)
+
+    def test_changelog_section_reads_tag_commit_when_worktree_file_is_deleted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            os.remove(disk_path)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+
+    def test_changelog_section_reads_tag_commit_after_head_advances(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-02\n\n- later head\n")
+            self._git(tmp, "add", "--", "docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: advance head")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("later head", result.stdout)
+
+    def test_changelog_section_requires_an_exact_tag_not_a_same_named_branch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            self._git(tmp, "tag", "-d", "release-v2.12.0")
+            self._git(tmp, "branch", "release-v2.12.0")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_tag_branch_collision_selects_the_tag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-02\n\n- branch content\n")
+            self._git(tmp, "add", "--", "docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: branch content")
+            self._git(tmp, "branch", "release-v2.12.0")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("branch content", result.stdout)
+
+    def test_changelog_section_refuses_non_tag_revision_spellings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            sha = self._git(tmp, "rev-parse", "HEAD").stdout.decode().strip()
+            for revision in ("HEAD", sha, "release-v2.12.0~0"):
+                with self.subTest(revision=revision):
+                    result = self._run_core(
+                        "changelog-section", tmp, revision,
+                        "docs/CHANGELOG.md", "2.12.0")
+                    self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_is_bound_to_explicit_root_not_cwd(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- counterfeit cwd\n")
+            old_cwd = os.getcwd()
+            os.chdir(counterfeit)
+            try:
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            finally:
+                os.chdir(old_cwd)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("counterfeit cwd", result.stdout)
+
+    def test_changelog_section_ignores_ambient_repository_rebinding(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- ambient counterfeit\n")
+            rebound = {
+                "GIT_DIR": os.path.join(counterfeit, ".git"),
+                "GIT_WORK_TREE": intended,
+            }
+            with mock.patch.dict(os.environ, rebound):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("ambient counterfeit", result.stdout)
+
+    def test_changelog_section_ignores_git_replace_objects(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            tagged_commit = self._git(tmp, "rev-parse", "HEAD").stdout.strip()
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-02\n\n- replacement counterfeit\n")
+            self._git(tmp, "add", "--", "docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: replacement")
+            replacement_commit = self._git(tmp, "rev-parse", "HEAD").stdout.strip()
+            self._git(tmp, "replace", tagged_commit, replacement_commit)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("replacement counterfeit", result.stdout)
+
+    def test_changelog_section_rejects_a_nested_directory_as_repository_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            nested = os.path.join(tmp, "docs")
+            result = self._run_core(
+                "changelog-section", nested, "release-v2.12.0",
+                "CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+            self.assertIn("repository root", result.stderr)
+
+    def test_changelog_section_accepts_posix_and_windows_relative_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            for path in ("docs/CHANGELOG.md", "docs\\CHANGELOG.md"):
+                with self.subTest(path=path):
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        path, "2.12.0")
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("newest thing", result.stdout)
+
+    def test_changelog_section_rejects_paths_outside_the_git_tree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            unsafe = (
+                "../CHANGELOG.md", "/tmp/CHANGELOG.md",
+                "C:\\outside\\CHANGELOG.md", "//server/share/CHANGELOG.md",
+                "docs/../../CHANGELOG.md")
+            for path in unsafe:
+                with self.subTest(path=path):
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        path, "2.12.0")
+                    self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_wrong_case_path_is_rejected_on_every_host(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "DOCS/changelog.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_handles_spaces_and_unicode_in_root_and_path(self):
+        with tempfile.TemporaryDirectory(prefix="ra05 café space ") as tmp:
+            path = "release notes/CHANGELOG café.md"
+            self._init_changelog_repo(tmp, changelog_path=path)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0", path, "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+
+    def test_changelog_section_rejects_a_committed_symlink_blob(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            blob = self._git(
+                tmp, "hash-object", "-w", "--stdin",
+                input_bytes=b"docs/CHANGELOG.md").stdout.decode().strip()
+            self._git(
+                tmp, "update-index", "--add", "--cacheinfo",
+                f"120000,{blob},linked-changelog.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: symlink blob")
+            self._git(
+                tmp, "tag", "-a", "linked-v2.12.0", "-m", "fixture symlink")
+            result = self._run_core(
+                "changelog-section", tmp, "linked-v2.12.0",
+                "linked-changelog.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_normalizes_committed_crlf_to_utf8_lf(self):
+        sample = self._SAMPLE_CHANGELOG.replace("\n", "\r\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp, sample)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn("\r", result.stdout)
 
     def test_changelog_section_round_trips_through_a_real_subprocess_as_utf8(self):
         # Regression for a real bug found while writing this fix: `sys.
@@ -2624,10 +2998,11 @@ class CoreCLITest(unittest.TestCase):
         # transcoding at all, so the bug is invisible unless stdout is a
         # REAL process stream. This test shells out for exactly that reason.
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
+            self._init_changelog_repo(tmp)
             result = subprocess.run(
                 [sys.executable, _CORE_RELEASELIB_PATH,
-                 "changelog-section", path, "2.12.0"],
+                 "changelog-section", tmp, "release-v2.12.0",
+                 "docs/CHANGELOG.md", "2.12.0"],
                 capture_output=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stderr)
             expected = (
