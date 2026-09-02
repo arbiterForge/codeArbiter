@@ -268,19 +268,24 @@ class ResolverContractTests(unittest.TestCase):
 
     def test_every_shipped_adapter_binds_its_exact_manifest_version(self):
         cases = (
-            ("ca", "2.16.0", ".claude-plugin/plugin.json"),
-            ("ca-codex", "0.8.0", ".codex-plugin/plugin.json"),
-            ("@arbiterforge/ca-pi", "0.9.0", "package.json"),
+            ("ca", "plugins/ca/.claude-plugin/plugin.json"),
+            ("ca-codex", "plugins/ca-codex/.codex-plugin/plugin.json"),
+            ("@arbiterforge/ca-pi", "plugins/ca-pi/package.json"),
         )
-        for adapter, expected, manifest in cases:
+        for adapter, manifest_relative in cases:
             with self.subTest(adapter=adapter):
+                with open(
+                    os.path.join(REPO, *manifest_relative.split("/")), encoding="utf-8"
+                ) as handle:
+                    shipped_manifest = json.load(handle)
+                manifest = manifest_relative.split("/", 2)[-1]
                 with tempfile.TemporaryDirectory() as temporary:
                     root = _package(
                         temporary,
                         adapter=adapter.replace("/", "-"),
                         manifest=(manifest, {
                             "name": adapter,
-                            "version": "9.9.9",
+                            "version": "999.999.999",
                         }),
                     )
                     with self.assertRaisesRegex(
@@ -289,7 +294,7 @@ class ResolverContractTests(unittest.TestCase):
                         hostapi.resolve_plugin_root(
                             os.path.join(root, "hooks", "hostapi.py"),
                             adapter_name=adapter,
-                            adapter_version=expected,
+                            adapter_version=shipped_manifest["version"],
                             manifest_relpath=manifest,
                             anchor_relpath="hooks/hostapi.py",
                             environment={},

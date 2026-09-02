@@ -48,8 +48,11 @@ class StaticPackageContractTest(unittest.TestCase):
 
     def test_accepts_the_exact_shipped_package(self):
         result = self.checker.candidate_static_contract(self.package)
+        manifest = json.loads(
+            (self.package / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
         self.assertEqual(result["verdict"], "PASS")
-        self.assertEqual(result["plugin_version"], "0.8.0")
+        self.assertEqual(result["plugin_version"], manifest["version"])
 
     def test_rejects_missing_or_ambiguous_manifest_identity(self):
         manifest_path = self.package / ".codex-plugin" / "plugin.json"

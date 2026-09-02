@@ -175,6 +175,19 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
         self.assertEqual(commands["add-dep"]["visibility"], "core")
         self.assertEqual(commands["add-dep"]["canonical"], "add-dep")
 
+    def test_package_descriptions_do_not_freeze_inventory_counts(self):
+        frozen_count = re.compile(
+            r"\b\d+\s+(?:[a-z-]+\s+){0,3}(?:commands|skills|agents|routes|lanes)\b",
+            re.IGNORECASE,
+        )
+        for manifest in (
+            REPO / "plugins" / "ca" / ".claude-plugin" / "plugin.json",
+            REPO / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json",
+        ):
+            with self.subTest(manifest=manifest.relative_to(REPO).as_posix()):
+                description = json.loads(manifest.read_text(encoding="utf-8"))["description"]
+                self.assertNotRegex(description, frozen_count)
+
     def test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice(self):
         for slug, expected in EXPECTED_LEGACY_BODY_SHA256.items():
             with self.subTest(slug=slug):
