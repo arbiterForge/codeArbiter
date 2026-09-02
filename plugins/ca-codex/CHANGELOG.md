@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.7.7] - 2026-09-01
+
+### Added
+
+- Review and generic parallel batches now terminate at a read-only verdict
+  aggregator, while checkpoint persistence remains a separate non-overwriting
+  writer invoked only by the explicit checkpoint workflow.
+
 ## [0.7.6] - 2026-09-01
 
 ### Fixed

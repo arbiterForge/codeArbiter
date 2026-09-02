@@ -65,7 +65,7 @@ describe("computeLandingStats matches an independent filesystem count", () => {
 
 describe("computeLandingStats — floor guard (catches silent under-collection)", () => {
   // Snapshot as of this writing (2026-08-08): 20 distinct gate IDs, 40
-  // commands, 18 agents (19 files minus INDEX.md), 23 skills. Floors, not
+  // commands, 19 agents (20 files minus INDEX.md), 23 skills. Floors, not
   // exact pins, so a legitimate payload addition does not fail this test.
   it("finds at least 15 distinct gate IDs", () => {
     expect(stats.gateCount).toBeGreaterThanOrEqual(15);

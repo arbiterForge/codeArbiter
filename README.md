@@ -10,10 +10,10 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.15.7" src="https://img.shields.io/badge/version-2.15.7-2b7489">
+<img alt="version 2.15.8" src="https://img.shields.io/badge/version-2.15.8-2b7489">
 <img alt="commands" src="https://img.shields.io/badge/commands-38-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
-<img alt="agents" src="https://img.shields.io/badge/agents-18-555">
+<img alt="agents" src="https://img.shields.io/badge/agents-19-555">
 <img alt="license AGPL v3" src="https://img.shields.io/badge/license-AGPL_v3-3da639">
 
 [Start learning](https://arbiterforge.github.io/codeArbiter/learn/)
@@ -113,7 +113,7 @@ Approve the normal plugin trust prompt, open the target repository, and continue
 
 ### Codex CLI
 
-The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.7.6`;
+The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.7.7`;
 the dated end-to-end public-install record discovered `ca-codex 0.2.4` from release `v2.8.13`.
 Current packaging and shared-core parity are continuously verified, while that dated live-install
 record stays labeled rather than being silently promoted to evidence for a newer adapter:

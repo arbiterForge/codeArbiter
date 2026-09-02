@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.8.7] - 2026-09-01
+
+### Added
+
+- Review and generic parallel batches now terminate at a read-only verdict
+  aggregator, while checkpoint persistence remains a separate non-overwriting
+  writer invoked only by the explicit checkpoint workflow.
+
 ## [0.8.6] - 2026-09-01
 
 ### Fixed

@@ -23,8 +23,8 @@ Periodic sweep of the entire codebase with the reviewer fleet, funneled to a sin
    | `architecture-drift-reviewer` | `decisions/`; drift between code and accepted ADRs |
 
 2. Route to `dispatching-parallel-agents` (`<plugin-root>/routines/dispatching-parallel-agents/SKILL.md`) with that unit list (read-only batch). It dedupes, then
-   funnels through `finding-triage` → `checkpoint-aggregator`.
-3. `checkpoint-aggregator` writes the dated report to
+   funnels through `finding-triage` → `verdict-aggregator` and returns the single read-only verdict.
+3. After the verdict returns, separately dispatch `checkpoint-aggregator` with that verdict. It writes the dated report to
    `<project-root>/.codearbiter/checkpoints/YYYY-MM-DD.md`: findings by severity with
    file:line, and out-of-scope items marked inline `[NEEDS-TRIAGE]`.
 4. Write the current override **count** to `<project-root>/.codearbiter/last-checkpoint` — the
@@ -38,8 +38,9 @@ Periodic sweep of the entire codebase with the reviewer fleet, funneled to a sin
 ## Hard gate
 
 Read-only except writing the checkpoint doc and `last-checkpoint` — MUST NOT modify code. MUST NOT
-consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator` verdict. MUST NOT
-resolve a `[CONFIRM-NN]` surfaced during the sweep by guessing. The report surfaces findings; it does
+consume raw reviewer output — only the `finding-triage` → `verdict-aggregator` verdict. Checkpoint
+persistence MUST remain the separate `checkpoint-aggregator` step and MUST NOT run for `/ca-review`
+or another generic parallel batch. MUST NOT resolve a `[CONFIRM-NN]` surfaced during the sweep by guessing. The report surfaces findings; it does
 not block or sign off anything.
 
 ## When NOT to use

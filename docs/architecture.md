@@ -50,7 +50,7 @@ injected at `SessionStart` — `SessionStart` clears the session's mode marker a
 startup-state block only; the composed persona injects at the per-turn prompt seam instead, deduped
 per (session, mode, compaction generation), so a mid-session `mode --dangerous|--ops|--arbiter` flip
 changes what the next turn carries. Everything else — `routing-table.md`, `reference-map.md`, all 22
-skill bodies, all 18 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
+skill bodies, all 19 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
 only when its entry point is invoked, and only for the nodes that entry point actually reaches. A
 typical fix touches the persona + `tdd` + one author + maybe one reviewer, not the full
 payload. The read-only meta commands (`status`, `btw`, `commands`, `audit`) route

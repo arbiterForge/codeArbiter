@@ -268,9 +268,9 @@ class ResolverContractTests(unittest.TestCase):
 
     def test_every_shipped_adapter_binds_its_exact_manifest_version(self):
         cases = (
-            ("ca", "2.15.7", ".claude-plugin/plugin.json"),
-            ("ca-codex", "0.7.6", ".codex-plugin/plugin.json"),
-            ("@arbiterforge/ca-pi", "0.8.6", "package.json"),
+            ("ca", "2.15.8", ".claude-plugin/plugin.json"),
+            ("ca-codex", "0.7.7", ".codex-plugin/plugin.json"),
+            ("@arbiterforge/ca-pi", "0.8.7", "package.json"),
         )
         for adapter, expected, manifest in cases:
             with self.subTest(adapter=adapter):

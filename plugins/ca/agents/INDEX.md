@@ -14,8 +14,9 @@ An agent is a reviewer or author **dispatched** by a skill — never routed to, 
 | [migration-reviewer](migration-reviewer.md) | on a DB migration file add/modify | Reviews migration safety, data-classification tagging, immutability. | missing classification annotation, irreversible destructive op |
 | [coverage-auditor](coverage-auditor.md) | `tdd` (Phase 4) | Audits test coverage vs. TDD obligations; flags untested source and logical gaps. | untested source files, coverage below the maturity threshold |
 | [architecture-drift-reviewer](architecture-drift-reviewer.md) | `/checkpoint` sweep | Read-only; surfaces drift between the codebase and accepted ADRs in `.codearbiter/decisions/`. | — (informational, never blocks) |
-| [finding-triage](finding-triage.md) | `/checkpoint` sweep (sequential) | Consolidates reviewer reports; classifies each finding by severity and whether it blocks the current change. | — (post-processor) |
-| [checkpoint-aggregator](checkpoint-aggregator.md) | `/checkpoint` sweep (terminal) | Composes triage + challenger output into a dated `.codearbiter/checkpoints/` doc. | — (aggregator) |
+| [finding-triage](finding-triage.md) | review and checkpoint batches (sequential) | Consolidates reviewer reports; classifies each finding by severity and whether it blocks the current change. | — (post-processor) |
+| [verdict-aggregator](verdict-aggregator.md) | review and generic parallel batches (terminal) | Composes the complete triage report into one structured in-memory verdict. Read-only. | — (aggregator) |
+| [checkpoint-aggregator](checkpoint-aggregator.md) | `/checkpoint` after the read-only verdict | Persists the verdict as a dated, non-overwriting `.codearbiter/checkpoints/` doc. | — (aggregator) |
 | [decision-challenger](decision-challenger.md) | `decision-variance` (optional) | Adversarial red-team of ADRs; confidence 1–5; surfaces disproving evidence. Read-only. | — (surfaces, does not block) |
 | [scout](scout.md) | `decision-variance`, `context-creation` (INTERNAL) | Scans an assigned code scope, reports decision evidence — paths + line numbers only, no excerpts. Never dispatch directly. | — (internal) |
 | [grader](grader.md) | `decision-variance` (INTERNAL) | Produces a SMARTS analysis + strength-labeled recommendation for one variance. Never decides. Never dispatch directly. | — (internal) |

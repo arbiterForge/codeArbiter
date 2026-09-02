@@ -1,6 +1,6 @@
 ---
 name: checkpoint-aggregator
-description: Composes the finding-triage report and decision-challenger output into a dated checkpoint document under .codearbiter/checkpoints/YYYY-MM-DD.md. Aggregator, not a blocker.
+description: Persists a complete verdict-aggregator output as a dated checkpoint document under .codearbiter/checkpoints/YYYY-MM-DD.md. Writer, not a blocker.
 tools: Read, Glob, Bash, Write
 classification: reviewer
 pi-skills: []
@@ -9,12 +9,12 @@ model: haiku
 
 # Checkpoint Aggregator Agent
 
-Final agent in the checkpoint pipeline. Read the finding-triage report, ensure the checkpoints directory exists, and write the dated checkpoint document. Composes; does not block. Runs after `finding-triage` completes.
+Explicit writer in the checkpoint pipeline. Consume the verdict-aggregator output, ensure the checkpoints directory exists, and write the dated checkpoint document. Persists; does not block. Runs only after `verdict-aggregator` returns.
 
 ## Required Reading
 
 1. `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` value.
-2. The finding-triage report from the current checkpoint run.
+2. The complete verdict-aggregator output from the current checkpoint run.
 3. `<project-root>/.codearbiter/checkpoints/` — existing checkpoint documents (to avoid a duplicate).
 
 ## Process
@@ -107,5 +107,6 @@ One `###` section per dispatched reviewer. Typical sections:
 ## Hard Rules
 
 - MUST NOT overwrite an existing checkpoint document.
-- Every finding from the triage report MUST appear in the checkpoint document. Omit nothing.
+- Every finding and incomplete-unit result from the verdict-aggregator output MUST appear in the checkpoint document. Omit nothing.
+- MUST NOT consume raw reviewer output or the finding-triage report directly.
 - The `<project-root>/.codearbiter/checkpoints/` directory MUST be created if missing. Do not fail silently.

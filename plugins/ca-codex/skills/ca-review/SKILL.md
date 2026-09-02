@@ -6,7 +6,7 @@ argument-hint: "[path | #<pr> | <pr-url>] (defaults to the current diff)"
 
 # $ca-review — diff review
 
-Read-only review of a change. Routes to `dispatching-parallel-agents` ([routines/dispatching-parallel-agents/SKILL.md](../../routines/dispatching-parallel-agents/SKILL.md)): dispatches the reviewer fleet by path matrix, dedupes, then funnels through `finding-triage` → `checkpoint-aggregator` to a single verdict. No code is modified.
+Read-only review of a change. Routes to `dispatching-parallel-agents` ([routines/dispatching-parallel-agents/SKILL.md](../../routines/dispatching-parallel-agents/SKILL.md)): dispatches the reviewer fleet by path matrix, dedupes, then funnels through `finding-triage` → `verdict-aggregator` to a single in-memory verdict. No code is modified.
 
 **The change under review does not have to be yours.** `$ca-review #123` reviews an inbound pull request through the same fleet, the same matrix, and the same triage. That is the point of issue #80: a tool that only reviews the diff you just wrote is a linter for authors, not a gate for a team, and reviewing code you did NOT write is where a governance gate earns its keep.
 
@@ -38,7 +38,7 @@ It is an ARGUMENT, not a second command. The scope resolver already took one, th
 
 3. Route to `dispatching-parallel-agents` with that unit list (read-only batch — no collision check).
    It dedupes overlapping findings, then funnels through `finding-triage` (severity + inline
-   `[NEEDS-TRIAGE]` on out-of-scope items) → `checkpoint-aggregator` (single verdict).
+   `[NEEDS-TRIAGE]` on out-of-scope items) → `verdict-aggregator` (single read-only verdict).
 4. Surface the aggregated verdict: findings by severity, file:line, remediation, and the applicable
    control from `<project-root>/.codearbiter/security-controls.md` for security findings.
 5. **For a PR target, posting the verdict is a separate, confirmed step.** Report locally first; post only on explicit instruction, with `gh pr review <number> --comment --body-file <file>`. A review comment on someone else's PR is outward-facing and effectively public the moment it lands — it notifies subscribers and cannot be un-sent. Never `--request-changes` or `--approve` from here: those carry merge authority, and this command produces a finding list, not a maintainer's decision.
@@ -52,8 +52,7 @@ It is an ARGUMENT, not a second command. The scope resolver already took one, th
 
 ## Hard gate
 
-Read-only — MUST NOT modify a file, and MUST NOT check out, merge, or otherwise move the repository to the PR's branch: reviewing an inbound PR means reading its DIFF, not adopting its code, and a checkout would run its content through hooks that trust the working tree. BLOCK on any CRITICAL or HIGH finding on your OWN change: it must be resolved before `$ca-pr`. On an inbound PR there is nothing local to block — the verdict is the deliverable. MUST NOT consume raw reviewer output — only the `finding-triage` → `checkpoint-aggregator`
-verdict. MUST NOT resolve a `[CONFIRM-NN]` surfaced during review by guessing.
+Read-only — MUST NOT modify a file, and MUST NOT check out, merge, or otherwise move the repository to the PR's branch: reviewing an inbound PR means reading its DIFF, not adopting its code, and a checkout would run its content through hooks that trust the working tree. BLOCK on any CRITICAL or HIGH finding on your OWN change: it must be resolved before `$ca-pr`. On an inbound PR there is nothing local to block — the verdict is the deliverable. MUST NOT consume raw reviewer output — only the `finding-triage` → `verdict-aggregator` verdict. MUST NOT resolve a `[CONFIRM-NN]` surfaced during review by guessing.
 
 ## When NOT to use
 
