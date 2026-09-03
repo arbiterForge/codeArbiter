@@ -2126,7 +2126,10 @@ class NpmPublishContractTest(unittest.TestCase):
                 ("- name: Validate untrusted release inputs before use", "fd21e6f82c6dac0b24da721059d653135a44289b46c541cdd4f9eb999e1101c9"),
                 ("- name: Materialize the exact tagged package as inert data", "d2f4e3fe952dc4276ef6cd7169935f52fbd76e30dac74e5a24586e79782e2e1f"),
                 ("- uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0", "70e3f9ff0a4f115a8fed73d3bd8cce496729800f73ba17f3bf6b84dad5c93b74"),
-                ("- name: Fetch protected main without credentials", "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730"),
+                (
+                    "- name: Fetch protected main without credentials",
+                    "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730",
+                ),
                 ("- name: Capture exact published GitHub Release evidence", "73ed3a2d933eb9ca00bb0d794377d49c328df0813d4307f192932b30749605e8"),
                 ("- name: Validate identity, pack once, and classify exact registry state", "8703fd0c91ca4ad5e5b2ea9ab862f661d7fea6f85faea4a0f314a6d58483fa3d"),
                 ("- name: Publish with provenance", "71904d909dc577e3e536ec22e5a8e5feee91988d22f9cf640cc819e93c586592"),
