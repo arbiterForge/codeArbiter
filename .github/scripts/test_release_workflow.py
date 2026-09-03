@@ -115,6 +115,9 @@ AUTO_PREFLIGHT_JOB = "auto-preflight"
 MANUAL_CODEX_PROVENANCE_JOB = "codex-provenance"
 AUTO_CODEX_PROVENANCE_JOB = "auto-codex-provenance"
 AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB = "auto-command-route-release-audit"
+MANUAL_PI_NPM_JOB = "publish-pi-npm"
+AUTO_PI_NPM_JOB = "auto-publish-pi-npm"
+NPM_PUBLISH_WORKFLOW_REF = "./.github/workflows/npm-publish.yml"
 
 # #654: two triggers share this one file, and every job belongs to exactly one
 # of them. The manual lane reads dispatch inputs that do not exist on the
@@ -124,9 +127,11 @@ JOB_TRIGGER = dict(
     [(PREFLIGHT_JOB, "workflow_dispatch")]
     + [(job, "workflow_dispatch") for job in PUBLISH_JOBS]
     + [(MANUAL_CODEX_PROVENANCE_JOB, "workflow_dispatch")]
+    + [(MANUAL_PI_NPM_JOB, "workflow_dispatch")]
     + [(AUTO_PREFLIGHT_JOB, "workflow_run")]
     + [(job, "workflow_run") for job in AUTO_PUBLISH_JOBS]
     + [(AUTO_CODEX_PROVENANCE_JOB, "workflow_run")]
+    + [(AUTO_PI_NPM_JOB, "workflow_run")]
     + [(AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB, "workflow_run")]
 )
 
@@ -193,7 +198,11 @@ def _condition_triggers(condition: str, *, allow_status_escape: bool = False) ->
         raise AssertionError("a status function bypasses the implicit needs gate")
     if "github.event_name" not in condition:
         return set(TRIGGERS)
-    if "||" in condition:
+    supported_pi_result_guard = (
+        "(needs.auto-preflight.outputs.ca-pi != 'true' || "
+        "needs.auto-publish-pi-npm.result == 'success')"
+    )
+    if "||" in condition.replace(supported_pi_result_guard, "true"):
         raise AssertionError("unsupported boolean event guard")
     named = re.findall(r"github\.event_name == '([\w_]+)'", condition)
     if len(named) != 1 or named[0] not in TRIGGERS:
@@ -1203,6 +1212,31 @@ class LaneIsolationTest(unittest.TestCase):
         self.assertNotIn("merge-readiness", action)
         self.assertNotIn("select-target", action)
 
+    def test_manual_pi_release_synchronously_requires_the_exact_npm_publisher(self):
+        jobs = _jobs()
+        self.assertIn(
+            MANUAL_PI_NPM_JOB,
+            jobs,
+            "manual Pi release can succeed without starting npm publication",
+        )
+        block = jobs[MANUAL_PI_NPM_JOB]
+        self.assertEqual(set(_job_needs(block)), {PREFLIGHT_JOB, "release-pi"})
+        self.assertIn("needs.preflight.outputs.target == 'ca-pi'", _job_if(block))
+        self.assertIn(f"uses: {NPM_PUBLISH_WORKFLOW_REF}", block)
+        self.assertIn("tag: ca-pi-v${{ github.event.inputs.pi_confirm }}", block)
+        self.assertIn("expected_sha: ${{ github.sha }}", block)
+        self.assertIn("contents: read", block)
+        self.assertIn("id-token: write", block)
+        self.assertNotIn("contents: write", block)
+        self.assertNotIn("secrets: inherit", block)
+        self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
+
+    def test_event_guard_parser_rejects_unrelated_or_widening(self):
+        with self.assertRaisesRegex(AssertionError, "unsupported boolean event guard"):
+            _condition_triggers(
+                "github.event_name == 'workflow_run' || github.actor == github.actor"
+            )
+
 
 class AutoTagLaneTest(unittest.TestCase):
     """Every eligible manifest advance publishes its tag and GitHub Release
@@ -1334,13 +1368,43 @@ class AutoTagLaneTest(unittest.TestCase):
         block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
         self.assertEqual(
             set(_job_needs(block)),
-            {AUTO_PREFLIGHT_JOB, "auto-release", "auto-release-codex", "auto-release-pi"},
+            {
+                AUTO_PREFLIGHT_JOB,
+                "auto-release",
+                "auto-release-codex",
+                "auto-release-pi",
+                AUTO_PI_NPM_JOB,
+            },
         )
         condition = _job_if(block)
         self.assertIn("always()", condition)
         self.assertIn("github.event_name == 'workflow_run'", condition)
         self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
         self.assertIn("needs.auto-preflight.result == 'success'", condition)
+        self.assertIn("needs.auto-publish-pi-npm.result == 'success'", condition)
+
+    def test_auto_pi_release_synchronously_requires_the_exact_npm_publisher(self):
+        jobs = _jobs()
+        self.assertIn(
+            AUTO_PI_NPM_JOB,
+            jobs,
+            "auto Pi release can succeed without starting npm publication",
+        )
+        block = jobs[AUTO_PI_NPM_JOB]
+        self.assertEqual(set(_job_needs(block)), {AUTO_PREFLIGHT_JOB, "auto-release-pi"})
+        condition = _job_if(block)
+        self.assertIn("github.event_name == 'workflow_run'", condition)
+        self.assertIn("needs.auto-preflight.outputs.ca-pi == 'true'", condition)
+        self.assertIn(f"uses: {NPM_PUBLISH_WORKFLOW_REF}", block)
+        self.assertIn("tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}", block)
+        self.assertIn(
+            "expected_sha: ${{ github.event.workflow_run.head_sha }}", block
+        )
+        self.assertIn("contents: read", block)
+        self.assertIn("id-token: write", block)
+        self.assertNotIn("contents: write", block)
+        self.assertNotIn("secrets: inherit", block)
+        self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
 
     def test_final_command_route_audit_is_read_only_and_pins_the_candidate(self):
         block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]

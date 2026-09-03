@@ -2,6 +2,9 @@
 """Task 2 package, generation, and independent-release contract tests."""
 from __future__ import annotations
 
+import argparse
+import base64
+import copy
 import importlib.util
 import hashlib
 import io
@@ -2063,9 +2066,87 @@ class PiPackageTests(unittest.TestCase):
 
 class NpmPublishContractTest(unittest.TestCase):
     """ADR-0029 / spec npm-publish-ca-pi: the npm channel ships the same payload
-    the Git install serves, from a tag-triggered provenance workflow."""
+    the Git install serves, synchronously inside the release workflow."""
 
     WORKFLOW = REPO / ".github" / "workflows" / "npm-publish.yml"
+
+    def _assert_npm_workflow_security_contract(self, text):
+        workflow_call = text.split("  workflow_call:\n", 1)[1].split(
+            "  workflow_dispatch:\n", 1
+        )[0]
+        secret_declaration = workflow_call.split("    secrets:\n", 1)[1].strip()
+        self.assertEqual(
+            secret_declaration,
+            "NPMJS_TOKEN:\n        required: true",
+            "the reusable publisher must declare exactly one named secret",
+        )
+        checkout_blocks = text.split("uses: actions/checkout@")[1:]
+        self.assertEqual(len(checkout_blocks), 2)
+        for block in checkout_blocks:
+            step = block.split("\n      - ", 1)[0]
+            self.assertEqual(step.count("persist-credentials: false"), 1)
+            self.assertNotIn("persist-credentials: true", step)
+        self.assertNotRegex(
+            text,
+            r"(?m)^\s+(?:-\s+)?(?:uses|working-directory):\s+.*candidate",
+            "candidate content must not become an action or working directory",
+        )
+        run_blocks = re.findall(r"(?ms)^        run: .*?(?=^      - |\Z)", text)
+        candidate_consumers = [
+            line.strip()
+            for block in run_blocks
+            for line in block.splitlines()
+            if re.search(r"\bcandidate(?:[/\\]|\b)", line)
+        ]
+        self.assertEqual(
+            candidate_consumers,
+            [
+                "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main",
+                "--repo candidate \\",
+            ],
+            "candidate content reached a command outside the exact inert-data allowlist",
+        )
+        steps_text = text.split("    steps:\n", 1)[1]
+        step_blocks = [
+            block.rstrip() + "\n"
+            for block in re.split(r"(?m)(?=^      - )", steps_text)
+            if block.strip()
+        ]
+        step_contract = [
+            (
+                block.splitlines()[0].strip(),
+                hashlib.sha256(block.encode("utf-8")).hexdigest(),
+            )
+            for block in step_blocks
+        ]
+        self.assertEqual(
+            step_contract,
+            [
+                ("- name: Check out the trusted default-branch verifier", "e5f2364f9cd674ffb2154ccfa5731f2bafc85406538d0154d409c28dbe216f97"),
+                ("- name: Validate untrusted release inputs before use", "fd21e6f82c6dac0b24da721059d653135a44289b46c541cdd4f9eb999e1101c9"),
+                ("- name: Materialize the exact tagged package as inert data", "d2f4e3fe952dc4276ef6cd7169935f52fbd76e30dac74e5a24586e79782e2e1f"),
+                ("- uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0", "70e3f9ff0a4f115a8fed73d3bd8cce496729800f73ba17f3bf6b84dad5c93b74"),
+                ("- name: Fetch protected main without credentials", "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730"),
+                ("- name: Capture exact published GitHub Release evidence", "73ed3a2d933eb9ca00bb0d794377d49c328df0813d4307f192932b30749605e8"),
+                ("- name: Validate identity, pack once, and classify exact registry state", "8703fd0c91ca4ad5e5b2ea9ab862f661d7fea6f85faea4a0f314a6d58483fa3d"),
+                ("- name: Publish with provenance", "71904d909dc577e3e536ec22e5a8e5feee91988d22f9cf640cc819e93c586592"),
+                ("- name: Verify exact registry publication evidence", "c4d554f8f9f675cc3cc27084feaacafe35f85e93b38404f33bc4fd33830cf51e"),
+            ],
+            "the complete publisher step contract drifted",
+        )
+    HELPER = REPO / ".github" / "scripts" / "_npm_publishlib.py"
+
+    def _helper(self):
+        self.assertTrue(
+            self.HELPER.is_file(),
+            "the npm publisher has no executable fail-closed verifier",
+        )
+        spec = importlib.util.spec_from_file_location("_npm_publishlib", self.HELPER)
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
 
     def test_npm_pack_contents_match_pi_payload(self):
         # AC-2: the tarball is exactly the Pi-served payload — offline dry-run.
@@ -2106,23 +2187,54 @@ class NpmPublishContractTest(unittest.TestCase):
             self.assertEqual(leaked, [], f"tarball leaks {excluded_prefix}")
 
     def test_npm_publish_workflow_contract(self):
-        # AC-3: tag-scoped trigger, least-privilege permissions, provenance
-        # publish, a version guard, and no dependency install at all.
+        # AC-3: reusable exact-tag/SHA publication, least privilege, provenance,
+        # registry read-back, and no candidate build or dependency install.
         self.assertTrue(self.WORKFLOW.is_file(), "npm-publish.yml is missing")
         text = self.WORKFLOW.read_text(encoding="utf-8")
-        self.assertRegex(text, r"(?ms)^on:\n.*push:\n\s+tags:\n\s+- \"ca-pi-v\*\"")
-        self.assertIn("workflow_dispatch:", text)
+        self._assert_npm_workflow_security_contract(text)
+        self.assertNotRegex(text, r"(?m)^  push:")
+        self.assertIn(
+            "workflow_dispatch:",
+            text,
+            "an immutable historical tag needs the same exact-tag/SHA verifier as a recovery path",
+        )
+        dispatch = text.split("  workflow_dispatch:", 1)[1].split("\n\npermissions:", 1)[0]
+        for name in ("tag", "expected_sha"):
+            self.assertRegex(
+                dispatch,
+                rf"(?ms)^      {name}:\n        required: true\n        type: string$",
+            )
+        self.assertRegex(text, r"(?ms)^on:\n  workflow_call:\n    inputs:\n")
+        for name in ("tag", "expected_sha"):
+            self.assertRegex(
+                text,
+                rf"(?ms)^      {name}:\n        required: true\n        type: string$",
+            )
+        self.assertRegex(
+            text,
+            r"(?ms)^    secrets:\n      NPMJS_TOKEN:\n        required: true$",
+        )
         self.assertRegex(text, r"(?ms)^permissions:\n\s+contents: read\n\s+id-token: write\n")
+        self.assertIn("timeout-minutes: 10", text)
         self.assertNotIn("contents: write", text)
-        # A manual dispatch must resolve its input through refs/tags/ so a
-        # branch name can never be checked out and published as a release.
         self.assertIn("format('refs/tags/{0}', inputs.tag)", text)
         # Re-runs are serialized per tag and become no-ops once the exact
-        # version is on the registry (npm versions are immutable; a mismatch
-        # cannot be republished, only investigated).
-        self.assertRegex(text, r"(?ms)^concurrency:\n\s+group: ")
-        self.assertIn("npm view", text)
-        self.assertIn("npm publish --ignore-scripts --provenance --access public", text)
+        # artifact and provenance are proven on the registry.
+        self.assertIn("group: npm-publish-${{ inputs.tag }}", text)
+        self.assertIn("cancel-in-progress: false", text)
+        self.assertNotIn('--tag "${{ inputs.tag }}"', text)
+        self.assertNotIn('--expected-sha "${{ inputs.expected_sha }}"', text)
+        self.assertNotIn('tags/${{ inputs.tag }}', text)
+        self.assertIn("RELEASE_TAG: ${{ inputs.tag }}", text)
+        self.assertIn("EXPECTED_SHA: ${{ inputs.expected_sha }}", text)
+        self.assertIn("TRUSTED_SHA: ${{ github.sha }}", text)
+        self.assertIn('--expected-sha "$EXPECTED_SHA"', text)
+        self.assertIn('--trusted-sha "$TRUSTED_SHA"', text)
+        self.assertIn("--registry=https://registry.npmjs.org/", text)
+        self.assertIn("npm publish", text)
+        self.assertIn("--ignore-scripts", text)
+        self.assertIn("--provenance", text)
+        self.assertIn("Verify exact registry publication evidence", text)
         self.assertIn("NODE_AUTH_TOKEN", text)
         self.assertIn("secrets.NPMJS_TOKEN", text)
         self.assertNotIn("npm ci", text)
@@ -2130,6 +2242,646 @@ class NpmPublishContractTest(unittest.TestCase):
         for manifest in ("package.json", "plugins/ca-pi/package.json"):
             self.assertIn(manifest, text)
         self.assertRegex(text, r"(?is)tag.{0,240}version.{0,240}(mismatch|match|equal)")
+
+    def test_npm_workflow_security_contract_rejects_hostile_drift(self):
+        text = self.WORKFLOW.read_text(encoding="utf-8")
+        mutations = (
+            text.replace(
+                "      NPMJS_TOKEN:\n        required: true\n  workflow_dispatch:",
+                "      NPMJS_TOKEN:\n        required: true\n"
+                "      EXTRA_SECRET:\n        required: true\n  workflow_dispatch:",
+                1,
+            ),
+            text.replace("persist-credentials: false", "persist-credentials: true", 1),
+            text.replace(
+                "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main",
+                "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main\n"
+                "          python3 candidate/evil.py",
+                1,
+            ),
+            text.replace(
+                "      - uses: actions/setup-node@",
+                "      - uses: ./candidate/evil-action\n"
+                "      - uses: actions/setup-node@",
+                1,
+            ),
+            text.replace(
+                "      - name: Fetch protected main without credentials",
+                "      - name: Hidden candidate execution\n"
+                "        env:\n          EVIL: candidate/evil.py\n"
+                "        run: python3 \"$EVIL\"\n"
+                "      - name: Fetch protected main without credentials",
+                1,
+            ),
+        )
+        for mutation in mutations:
+            with self.subTest(mutation=mutation), self.assertRaises(AssertionError):
+                self._assert_npm_workflow_security_contract(mutation)
+
+    def test_publish_inputs_reject_ref_injection_and_noncanonical_sha(self):
+        helper = self._helper()
+        for tag in (
+            "ca-pi-v0.10.0;echo owned",
+            "refs/heads/main",
+            "ca-pi-v01.2.3",
+            "ca-pi-v1.2",
+            "ca-pi-v1.2.3-rc.1",
+        ):
+            with self.subTest(tag=tag), self.assertRaises(ValueError):
+                helper.validate_inputs(tag, "a" * 40)
+        for sha in ("A" * 40, "a" * 39, "../" + "a" * 40):
+            with self.subTest(sha=sha), self.assertRaises(ValueError):
+                helper.validate_inputs("ca-pi-v0.10.0", sha)
+        self.assertEqual(
+            helper.validate_inputs("ca-pi-v0.10.0", "a" * 40), "0.10.0"
+        )
+
+    def test_publisher_executes_only_trusted_verifier_against_tagged_candidate_data(self):
+        text = self.WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("if: github.ref == 'refs/heads/main'", text)
+        self.assertIn("ref: ${{ github.sha }}", text)
+        self.assertNotIn("ref: refs/heads/main", text)
+        self.assertIn("path: trusted", text)
+        self.assertIn("ref: ${{ format('refs/tags/{0}', inputs.tag) }}", text)
+        self.assertIn("path: candidate", text)
+        self.assertIn(
+            "python3 trusted/.github/scripts/_npm_publishlib.py prepare", text
+        )
+        self.assertIn("--repo candidate", text)
+        self.assertNotIn("python3 .github/scripts/_npm_publishlib.py", text)
+
+    def test_package_identity_requires_both_manifests_and_public_repository(self):
+        helper = self._helper()
+        root = {
+            "name": "@arbiterforge/ca-pi",
+            "version": "0.10.0",
+            "repository": {
+                "type": "git",
+                "url": "git+https://github.com/arbiterForge/codeArbiter.git",
+            },
+            "publishConfig": {"access": "public", "provenance": True},
+        }
+        nested = {"name": "@arbiterforge/ca-pi", "version": "0.10.0", "private": True}
+        helper.validate_package_identity(root, nested, "0.10.0")
+        mutations = (
+            ({**root, "name": "ca-pi"}, nested),
+            ({**root, "version": "0.9.9"}, nested),
+            (root, {**nested, "version": "0.9.9"}),
+            (root, {**nested, "name": "@attacker/other"}),
+            (root, {**nested, "private": False}),
+            ({**root, "repository": "https://example.invalid/repo"}, nested),
+            ({**root, "publishConfig": {"registry": "https://evil.invalid"}}, nested),
+        )
+        for changed_root, changed_nested in mutations:
+            with self.subTest(root=changed_root), self.assertRaises(ValueError):
+                helper.validate_package_identity(changed_root, changed_nested, "0.10.0")
+
+    def test_project_registry_configuration_cannot_redirect_publication(self):
+        helper = self._helper()
+        self.assertTrue(
+            hasattr(helper, "validate_project_registry"),
+            "the publisher has no testable project-registry guard",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            helper.validate_project_registry(repo)
+            (repo / ".npmrc").write_text("registry=https://evil.invalid/\n", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                helper.validate_project_registry(repo)
+
+    def test_registry_lookup_distinguishes_absence_from_failure_and_requires_proof(self):
+        helper = self._helper()
+        expected = "sha512-expected"
+        self.assertEqual(
+            helper.classify_registry_lookup(
+                1,
+                '{"error":{"code":"E404"}}',
+                "npm error code E404",
+                "0.10.0",
+                expected,
+            ),
+            "absent",
+        )
+        for stderr in (
+            "npm error code E401",
+            "npm error code E429",
+            "network timeout",
+            "npm error code E404\nnpm error code E401",
+            "npm error code E404",
+        ):
+            with self.subTest(stderr=stderr), self.assertRaises(ValueError):
+                helper.classify_registry_lookup(1, "", stderr, "0.10.0", expected)
+        with self.assertRaises(ValueError):
+            helper.classify_registry_lookup(
+                1,
+                '{"error":{"code":"E404"}}',
+                "npm error code E404\nnpm error code E401",
+                "0.10.0",
+                expected,
+            )
+        matching = json.dumps(
+            {
+                "version": "0.10.0",
+                "dist": {
+                    "integrity": expected,
+                    "attestations": {
+                        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@arbiterforge%2fca-pi@0.10.0",
+                        "provenance": {
+                            "predicateType": "https://slsa.dev/provenance/v1"
+                        }
+                    },
+                },
+            }
+        )
+        self.assertEqual(
+            helper.classify_registry_lookup(0, matching, "", "0.10.0", expected),
+            "present",
+        )
+        for mutation in (
+            {"version": "0.9.9", "dist": json.loads(matching)["dist"]},
+            {"version": "0.10.0", "dist": {"integrity": "sha512-other"}},
+            {"version": "0.10.0", "dist": {"integrity": expected}},
+            {
+                "version": "0.10.0",
+                "dist": {
+                    **json.loads(matching)["dist"],
+                    "attestations": {
+                        **json.loads(matching)["dist"]["attestations"],
+                        "url": "https://evil.invalid/attestation",
+                    },
+                },
+            },
+            {
+                "version": "0.10.0",
+                "dist": {
+                    **json.loads(matching)["dist"],
+                    "attestations": {
+                        **json.loads(matching)["dist"]["attestations"],
+                        "provenance": {"predicateType": "https://example.invalid/predicate"},
+                    },
+                },
+            },
+        ):
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                helper.classify_registry_lookup(
+                    0, json.dumps(mutation), "", "0.10.0", expected
+                )
+
+    def test_registry_lookup_and_readback_are_time_bounded(self):
+        helper = self._helper()
+        with mock.patch.object(
+            helper.subprocess,
+            "run",
+            side_effect=subprocess.TimeoutExpired(["npm", "view"], 30),
+        ):
+            with self.assertRaisesRegex(ValueError, "timed out"):
+                helper.registry_lookup("npm", "0.10.0")
+        absent = subprocess.CompletedProcess(
+            ["npm"],
+            1,
+            '{"error":{"code":"E404"}}',
+            "npm error code E404",
+        )
+        args = argparse.Namespace(
+            tag="ca-pi-v0.10.0",
+            expected_sha="a" * 40,
+            trusted_sha="a" * 40,
+            npm="npm",
+            integrity="sha512-expected",
+            attempts=2,
+            delay_seconds=0,
+        )
+        with mock.patch.object(helper, "registry_lookup", return_value=absent):
+            with self.assertRaisesRegex(ValueError, "evidence deadline"):
+                helper.verify(args)
+
+    def test_attestation_evidence_comes_only_from_the_npm_verifier(self):
+        helper = self._helper()
+        self.assertFalse(hasattr(helper, "attestation_lookup"))
+        source = Path(helper.__file__).read_text(encoding="utf-8")
+        self.assertNotIn("urllib", source)
+        self.assertNotIn("urlopen", source)
+
+    def test_pack_report_rejects_output_injection_and_malformed_integrity(self):
+        helper = self._helper()
+        good = [{"filename": "arbiterforge-ca-pi-0.10.0.tgz", "integrity": "sha512-YWJjZA=="}]
+        self.assertEqual(
+            helper.parse_pack_report(json.dumps(good)),
+            ("arbiterforge-ca-pi-0.10.0.tgz", "sha512-YWJjZA=="),
+        )
+        for report in (
+            [{"filename": "$(owned).tgz", "integrity": "sha512-YWJjZA=="}],
+            [{"filename": "safe.tgz", "integrity": 'sha512-good";echo owned'}],
+            {"filename": "safe.tgz", "integrity": "sha512-YWJjZA=="},
+        ):
+            with self.subTest(report=report), self.assertRaises(ValueError):
+                helper.parse_pack_report(json.dumps(report))
+
+    def test_attestation_bundle_binds_subject_and_github_source_identity(self):
+        helper = self._helper()
+        version = "0.10.0"
+        trusted_sha = "a" * 40
+        digest_hex = "ab" * 64
+        integrity = "sha512-" + base64.b64encode(bytes.fromhex(digest_hex)).decode("ascii")
+        statement = {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+                {
+                    "name": "pkg:npm/%40arbiterforge/ca-pi@0.10.0",
+                    "digest": {"sha512": digest_hex},
+                }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+                "buildDefinition": {
+                    "externalParameters": {
+                        "workflow": {
+                            "repository": "https://github.com/arbiterForge/codeArbiter",
+                            "ref": "refs/heads/main",
+                            "path": ".github/workflows/release.yml",
+                        }
+                    },
+                    "resolvedDependencies": [
+                        {
+                            "uri": "git+https://github.com/arbiterForge/codeArbiter@refs/heads/main",
+                            "digest": {"gitCommit": trusted_sha},
+                        }
+                    ],
+                },
+                "runDetails": {
+                    "builder": {
+                        "id": "https://github.com/actions/runner/github-hosted"
+                    }
+                },
+            },
+        }
+
+        def document(value):
+            payload = base64.b64encode(
+                json.dumps(value, separators=(",", ":")).encode("utf-8")
+            ).decode("ascii")
+            return {
+                "attestations": [
+                    {
+                        "predicateType": "https://slsa.dev/provenance/v1",
+                        "bundle": {"dsseEnvelope": {"payload": payload}},
+                    }
+                ]
+            }
+
+        self.assertEqual(
+            helper.validate_attestation_document(
+                document(statement), version, integrity, trusted_sha
+            ),
+            trusted_sha,
+        )
+        mutations = []
+        for path, replacement in (
+            (("subject", 0, "name"), "pkg:npm/%40attacker/other@0.10.0"),
+            (("subject", 0, "digest", "sha512"), "00" * 64),
+            (("predicate", "buildDefinition", "externalParameters", "workflow", "repository"), "https://github.com/attacker/repo"),
+            (("predicate", "buildDefinition", "externalParameters", "workflow", "ref"), "refs/heads/evil"),
+            (("predicate", "buildDefinition", "externalParameters", "workflow", "path"), ".github/workflows/evil.yml"),
+            (("predicate", "buildDefinition", "resolvedDependencies", 0, "digest", "gitCommit"), "b" * 40),
+            (("predicate", "runDetails", "builder", "id"), "https://attacker.invalid/runner"),
+        ):
+            changed = json.loads(json.dumps(statement))
+            cursor = changed
+            for segment in path[:-1]:
+                cursor = cursor[segment]
+            cursor[path[-1]] = replacement
+            mutations.append(changed)
+        for changed in mutations:
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                helper.validate_attestation_document(
+                    document(changed), version, integrity, trusted_sha
+                )
+
+    def test_registry_authenticity_rejects_unsigned_or_invalid_packages(self):
+        helper = self._helper()
+        installed = subprocess.CompletedProcess(["npm", "install"], 0, "", "")
+        for evidence in (
+            {"invalid": [{"name": "@arbiterforge/ca-pi"}], "missing": []},
+            {"invalid": [], "missing": ["@arbiterforge/ca-pi@0.10.0"]},
+        ):
+            audited = subprocess.CompletedProcess(
+                ["npm", "audit", "signatures"], 1, json.dumps(evidence), ""
+            )
+            with self.subTest(evidence=evidence), mock.patch.object(
+                helper.subprocess, "run", side_effect=[installed, audited]
+            ), self.assertRaisesRegex(ValueError, "signature"):
+                helper.verify_registry_authenticity("npm", "0.10.0")
+        provenance_bundle = {
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "bundle": {"dsseEnvelope": {"payload": "verified"}},
+        }
+        verified_evidence = {
+            "invalid": [],
+            "missing": [],
+            "verified": [
+                {
+                    "name": "@arbiterforge/ca-pi",
+                    "version": "0.10.0",
+                    "location": "node_modules/@arbiterforge/ca-pi",
+                    "registry": "https://registry.npmjs.org/",
+                    "attestationBundles": [
+                        {
+                            "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+                            "bundle": {"dsseEnvelope": {"payload": "publish"}},
+                        },
+                        provenance_bundle,
+                    ],
+                }
+            ],
+        }
+        audited = subprocess.CompletedProcess(
+            ["npm", "audit", "signatures"],
+            0,
+            json.dumps(verified_evidence),
+            "",
+        )
+        with mock.patch.object(
+            helper.subprocess, "run", side_effect=[installed, audited]
+        ) as run:
+            document = helper.verify_registry_authenticity("npm", "0.10.0")
+        self.assertEqual(document, {"attestations": [provenance_bundle]})
+        install_command = run.call_args_list[0].args[0]
+        audit_command = run.call_args_list[1].args[0]
+        self.assertEqual(install_command[:2], ["npm", "install"])
+        self.assertIn("--ignore-scripts", install_command)
+        self.assertIn("--save-exact", install_command)
+        self.assertIn("@arbiterforge/ca-pi@0.10.0", install_command)
+        self.assertEqual(audit_command[:3], ["npm", "audit", "signatures"])
+        self.assertIn("--json", audit_command)
+        self.assertIn("--include-attestations", audit_command)
+
+        hostile_evidence = []
+        for field, value in (
+            ("name", "@attacker/ca-pi"),
+            ("version", "0.9.9"),
+            ("location", "node_modules/attacker"),
+            ("registry", "https://attacker.invalid/"),
+        ):
+            evidence = copy.deepcopy(verified_evidence)
+            evidence["verified"][0][field] = value
+            hostile_evidence.append((field, evidence, "wrong package identity"))
+        evidence = copy.deepcopy(verified_evidence)
+        evidence["verified"].append(copy.deepcopy(evidence["verified"][0]))
+        hostile_evidence.append(("duplicate package", evidence, "one exact package"))
+        for label, bundles in (
+            ("missing provenance", []),
+            ("duplicate provenance", [provenance_bundle, provenance_bundle]),
+        ):
+            evidence = copy.deepcopy(verified_evidence)
+            evidence["verified"][0]["attestationBundles"] = bundles
+            hostile_evidence.append((label, evidence, "ambiguous provenance"))
+        for label, evidence, message in hostile_evidence:
+            audited = subprocess.CompletedProcess(
+                ["npm", "audit", "signatures"], 0, json.dumps(evidence), ""
+            )
+            with self.subTest(label=label), mock.patch.object(
+                helper.subprocess, "run", side_effect=[installed, audited]
+            ), self.assertRaisesRegex(ValueError, message):
+                helper.verify_registry_authenticity("npm", "0.10.0")
+
+    def test_present_publication_orchestration_binds_verified_bundle(self):
+        helper = self._helper()
+        integrity = "sha512-" + base64.b64encode(b"x" * 64).decode("ascii")
+        registry = subprocess.CompletedProcess(
+            ["npm"],
+            0,
+            json.dumps(
+                {
+                    "version": "0.10.0",
+                    "dist": {
+                        "integrity": integrity,
+                        "attestations": {
+                            "url": "https://registry.npmjs.org/-/npm/v1/attestations/@arbiterforge%2fca-pi@0.10.0",
+                            "provenance": {
+                                "predicateType": "https://slsa.dev/provenance/v1"
+                            },
+                        },
+                    },
+                }
+            ),
+            "",
+        )
+        verified_document = {"attestations": [{"verified": True}]}
+        source_sha = "b" * 40
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "plugins" / "ca-pi").mkdir(parents=True)
+            root_manifest = {
+                "name": "@arbiterforge/ca-pi",
+                "version": "0.10.0",
+                "repository": {
+                    "type": "git",
+                    "url": "git+https://github.com/arbiterForge/codeArbiter.git",
+                },
+                "publishConfig": {"access": "public", "provenance": True},
+            }
+            (repo / "package.json").write_text(json.dumps(root_manifest), encoding="utf-8")
+            (repo / "plugins" / "ca-pi" / "package.json").write_text(
+                json.dumps(
+                    {
+                        "name": "@arbiterforge/ca-pi",
+                        "version": "0.10.0",
+                        "private": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            release_json = repo / "release.json"
+            release_json.write_text(
+                json.dumps({"tag_name": "ca-pi-v0.10.0", "draft": False}),
+                encoding="utf-8",
+            )
+            output = repo / "output.txt"
+            args = argparse.Namespace(
+                repo=str(repo),
+                tag="ca-pi-v0.10.0",
+                expected_sha="a" * 40,
+                trusted_sha="c" * 40,
+                npm="npm",
+                root_manifest="package.json",
+                plugin_manifest="plugins/ca-pi/package.json",
+                release_json=str(release_json),
+                output=str(output),
+            )
+            packed = subprocess.CompletedProcess(
+                ["npm", "pack"],
+                0,
+                json.dumps(
+                    [
+                        {
+                            "filename": "arbiterforge-ca-pi-0.10.0.tgz",
+                            "integrity": integrity,
+                        }
+                    ]
+                ),
+                "",
+            )
+            with mock.patch.object(helper, "validate_git_identity"), mock.patch.object(
+                helper.subprocess, "run", return_value=packed
+            ), mock.patch.object(
+                helper, "registry_lookup", return_value=registry
+            ), mock.patch.object(
+                helper, "verify_registry_authenticity", return_value=verified_document
+            ) as authenticity, mock.patch.object(
+                helper, "validate_attestation_document", return_value=source_sha
+            ) as semantic, mock.patch.object(helper, "validate_main_commit") as ancestry:
+                self.assertEqual(helper.prepare(args), 0)
+            authenticity.assert_called_once_with("npm", "0.10.0")
+            semantic.assert_called_once_with(
+                verified_document, "0.10.0", integrity, None
+            )
+            ancestry.assert_called_once_with(repo.resolve(), source_sha, "c" * 40)
+            output_values = dict(
+                line.split("=", 1)
+                for line in output.read_text(encoding="utf-8").splitlines()
+            )
+            self.assertEqual(output_values["skip"], "true")
+            self.assertEqual(output_values["publication_mode"], "existing")
+
+        for mode, expected_trusted, expect_ancestry in (
+            ("new", "c" * 40, False),
+            ("existing", None, True),
+        ):
+            args = argparse.Namespace(
+                repo="trusted",
+                tag="ca-pi-v0.10.0",
+                expected_sha="a" * 40,
+                trusted_sha="c" * 40,
+                npm="npm",
+                integrity=integrity,
+                publication_mode=mode,
+                attempts=1,
+                delay_seconds=0,
+            )
+            with self.subTest(mode=mode), mock.patch.object(
+                helper, "registry_lookup", return_value=registry
+            ), mock.patch.object(
+                helper, "verify_registry_authenticity", return_value=verified_document
+            ) as authenticity, mock.patch.object(
+                helper, "validate_attestation_document", return_value=source_sha
+            ) as semantic, mock.patch.object(helper, "validate_main_commit") as ancestry:
+                self.assertEqual(helper.verify(args), 0)
+                authenticity.assert_called_once_with("npm", "0.10.0")
+                semantic.assert_called_once_with(
+                    verified_document, "0.10.0", integrity, expected_trusted
+                )
+                if expect_ancestry:
+                    ancestry.assert_called_once_with(
+                        Path("trusted"), source_sha, "c" * 40
+                    )
+                else:
+                    ancestry.assert_not_called()
+
+        args.publication_mode = "new"
+        with mock.patch.object(
+            helper, "registry_lookup", return_value=registry
+        ), mock.patch.object(
+            helper,
+            "verify_registry_authenticity",
+            side_effect=ValueError("signature failure"),
+        ), self.assertRaisesRegex(ValueError, "signature failure"):
+            helper.verify(args)
+
+    def test_historical_attestation_commit_must_remain_on_protected_main(self):
+        helper = self._helper()
+        repo = Path("trusted")
+        with mock.patch.object(
+            helper,
+            "_git",
+            return_value=subprocess.CompletedProcess(["git"], 0, "", ""),
+        ) as git:
+            helper.validate_main_commit(repo, "a" * 40)
+            self.assertEqual(
+                git.call_args.args[1:],
+                ("merge-base", "--is-ancestor", "a" * 40, "origin/main"),
+            )
+        with mock.patch.object(
+            helper,
+            "_git",
+            return_value=subprocess.CompletedProcess(["git"], 1, "", ""),
+        ), self.assertRaisesRegex(ValueError, "protected main"):
+            helper.validate_main_commit(repo, "b" * 40)
+
+    def test_security_policy_and_workflow_guard_the_npm_secret_boundary(self):
+        policy = (REPO / ".codearbiter" / "security-controls.md").read_text(
+            encoding="utf-8"
+        )
+        workflow = self.WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("### ca-pi npm publication boundary", policy)
+        for claim in (
+            "NPMJS_TOKEN",
+            "organization Actions secret",
+            "NODE_AUTH_TOKEN",
+            "@arbiterforge/ca-pi",
+            "OIDC provenance",
+            "npm audit signatures",
+            "rotation",
+        ):
+            self.assertIn(claim, policy)
+        self.assertNotIn("secrets: inherit", workflow)
+        self.assertEqual(workflow.count("NODE_AUTH_TOKEN:"), 1)
+        publish_step = workflow.split("      - name: Publish with provenance", 1)[1].split(
+            "      - name: Verify exact registry publication evidence", 1
+        )[0]
+        self.assertIn("NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}", publish_step)
+        self.assertIn('--ignore-scripts', publish_step)
+
+    def test_release_and_git_identity_require_published_annotated_exact_tag(self):
+        helper = self._helper()
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.name", "Test"], check=True)
+            subprocess.run(
+                ["git", "-C", str(repo), "config", "user.email", "test@example.invalid"],
+                check=True,
+            )
+            (repo / "payload").write_text("one\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "payload"], check=True)
+            subprocess.run(["git", "-C", str(repo), "commit", "-qm", "one"], check=True)
+            sha = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+            ).strip()
+            subprocess.run(
+                ["git", "-C", str(repo), "tag", "-a", "ca-pi-v0.10.0", "-m", "release"],
+                check=True,
+            )
+            helper.validate_git_identity(repo, "ca-pi-v0.10.0", sha, main_ref="HEAD")
+            with self.assertRaises(ValueError):
+                helper.validate_git_identity(repo, "ca-pi-v0.10.0", "b" * 40, main_ref="HEAD")
+            (repo / "payload").write_text("two\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "commit", "-qam", "two"], check=True)
+            with self.assertRaises(ValueError):
+                helper.validate_git_identity(repo, "ca-pi-v0.10.0", sha, main_ref="HEAD")
+            side_sha = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+            ).strip()
+            subprocess.run(
+                ["git", "-C", str(repo), "tag", "-a", "ca-pi-v0.10.2", "-m", "side"],
+                check=True,
+            )
+            with self.assertRaisesRegex(ValueError, "not contained in protected main"):
+                helper.validate_git_identity(
+                    repo, "ca-pi-v0.10.2", side_sha, main_ref=sha
+                )
+            subprocess.run(["git", "-C", str(repo), "tag", "ca-pi-v0.10.1"], check=True)
+            with self.assertRaises(ValueError):
+                helper.validate_git_identity(repo, "ca-pi-v0.10.1", sha, main_ref="HEAD")
+        helper.validate_release_document(
+            {"tag_name": "ca-pi-v0.10.0", "draft": False}, "ca-pi-v0.10.0"
+        )
+        for doc in (
+            {"tag_name": "ca-pi-v0.10.0", "draft": True},
+            {"tag_name": "ca-pi-v0.9.9", "draft": False},
+            {},
+        ):
+            with self.subTest(doc=doc), self.assertRaises(ValueError):
+                helper.validate_release_document(doc, "ca-pi-v0.10.0")
 
 
 if __name__ == "__main__":

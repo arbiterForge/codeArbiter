@@ -1,83 +1,121 @@
-# npm publish channel for ca-pi (ADR-0029). Every ca-pi-v* tag also publishes
-# the repo-root Pi package as npm:@arbiterforge/ca-pi with npm provenance; the
-# pinned Git tag remains the reproducible install and the evidence anchor.
+# Reusable npm publish channel for ca-pi (ADR-0029). release.yml invokes this
+# synchronously after creating the exact annotated tag and GitHub Release, so a
+# release run cannot turn green while its npm publication is absent or failed.
 #
-# No dependency install runs here on purpose: the package is dependency-free
-# and the extension bundles are committed, reviewed artifacts — there is
-# nothing to build at publish time, and nothing whose lifecycle scripts we
-# would have to trust. The guard step refuses to publish when the tag and the
-# two synchronized manifests disagree, so a mistagged ref cannot ship a
-# mismatched version.
+# No candidate build or dependency install runs here: the published package is
+# dependency-free and the extension bundles are committed, reviewed artifacts.
+# Post-publication proof does install the exact registry version in a disposable
+# directory with lifecycle scripts disabled so npm can verify its signatures and
+# provenance. The guard refuses a tag whose synchronized manifests disagree.
 name: "[SHIP ] | [PI  ] | npm publish"
 
 on:
-  push:
-    tags:
-      - "ca-pi-v*"
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      expected_sha:
+        required: true
+        type: string
+    secrets:
+      NPMJS_TOKEN:
+        required: true
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing ca-pi-v* tag to publish (e.g. ca-pi-v0.6.0)"
         required: true
+        type: string
+      expected_sha:
+        required: true
+        type: string
 
 permissions:
   contents: read
   id-token: write
 
 concurrency:
-  group: "npm-publish-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+  group: npm-publish-${{ inputs.tag }}
   cancel-in-progress: false
 
 jobs:
   publish:
     name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the trusted default-branch verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate untrusted release inputs before use
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          TRUSTED_SHA: ${{ github.sha }}
+        run: >-
+          python3 trusted/.github/scripts/_npm_publishlib.py validate
+          --tag "$RELEASE_TAG"
+          --expected-sha "$EXPECTED_SHA"
+          --trusted-sha "$TRUSTED_SHA"
+      - name: Materialize the exact tagged package as inert data
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ format('refs/tags/{0}', inputs.tag) }}
+          path: candidate
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
-      - name: Guard — tag and manifest versions must match
+      - name: Fetch protected main without credentials
+        run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main
+      - name: Capture exact published GitHub Release evidence
         env:
-          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
-        run: |
-          python3 - << 'EOF'
-          import json
-          import os
-          import sys
-
-          tag = os.environ["RELEASE_TAG"]
-          prefix = "ca-pi-v"
-          if not tag.startswith(prefix):
-              sys.exit(f"refusing to publish: {tag!r} is not a ca-pi release tag")
-          version = tag[len(prefix):]
-          root = json.load(open("package.json", encoding="utf-8"))
-          nested = json.load(open("plugins/ca-pi/package.json", encoding="utf-8"))
-          if not (version == root["version"] == nested["version"]):
-              sys.exit(
-                  "version mismatch: tag {0}, root {1}, nested {2}".format(
-                      version, root["version"], nested["version"],
-                  )
-              )
-          print(f"tag and manifests are equal: {version}")
-          EOF
-      - name: Preflight — an already-published exact version is success
-        id: preflight
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/ca-pi-release.json"
+      - name: Validate identity, pack once, and classify exact registry state
+        id: artifact
+        # The helper requires the tag and both manifest versions to match.
         env:
-          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          TRUSTED_SHA: ${{ github.sha }}
         run: |
-          version="${RELEASE_TAG#ca-pi-v}"
-          if npm view "@arbiterforge/ca-pi@${version}" version > /dev/null 2>&1; then
-            echo "@arbiterforge/ca-pi@${version} is already on the registry; npm versions are immutable, so this re-run is a no-op success"
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
+          python3 trusted/.github/scripts/_npm_publishlib.py prepare \
+            --repo candidate \
+            --tag "$RELEASE_TAG" \
+            --expected-sha "$EXPECTED_SHA" \
+            --trusted-sha "$TRUSTED_SHA" \
+            --root-manifest package.json \
+            --plugin-manifest plugins/ca-pi/package.json \
+            --release-json "$RUNNER_TEMP/ca-pi-release.json" \
+            --output "$GITHUB_OUTPUT"
       - name: Publish with provenance
-        if: steps.preflight.outputs.skip != 'true'
-        run: npm publish --ignore-scripts --provenance --access public
+        if: steps.artifact.outputs.skip != 'true'
+        run: npm publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+          TARBALL: ${{ steps.artifact.outputs.tarball }}
+      - name: Verify exact registry publication evidence
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          TRUSTED_SHA: ${{ github.sha }}
+          EXPECTED_INTEGRITY: ${{ steps.artifact.outputs.integrity }}
+          PUBLICATION_MODE: ${{ steps.artifact.outputs.publication_mode }}
+        run: |
+          python3 trusted/.github/scripts/_npm_publishlib.py verify \
+            --repo trusted \
+            --tag "$RELEASE_TAG" \
+            --expected-sha "$EXPECTED_SHA" \
+            --trusted-sha "$TRUSTED_SHA" \
+            --integrity "$EXPECTED_INTEGRITY" \
+            --publication-mode "$PUBLICATION_MODE"

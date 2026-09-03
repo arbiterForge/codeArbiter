@@ -39,6 +39,31 @@ project. This is an explicit exception to a general "no process.env for secrets"
 rule: the project has no vault, the key is short-lived per-session, and the
 deployment model is a single-developer CLI tool.
 
+### ca-pi npm publication boundary
+
+ADR-0029 authorizes one release credential, `NPMJS_TOKEN`, sourced only from the
+repository or organization Actions secret store. The reusable publisher forwards
+that named secret explicitly—never through `secrets: inherit`—to the single
+`npm publish` step as `NODE_AUTH_TOKEN`. Its authority is limited to publishing
+the public `@arbiterforge/ca-pi` package at the approved npm registry. Candidate
+tag content is inert data: its scripts are never executed, packing and publishing
+use `--ignore-scripts`, and trusted verifier code is pinned to the protected-main
+workflow commit.
+
+Registry success is not inferred from metadata alone. The verifier installs the
+exact registry version into a disposable directory with scripts disabled, runs
+npm's supported `npm audit signatures` Sigstore verification, and then separately
+binds the registry-served SLSA subject digest, repository, main ref, workflow,
+protected-main source commit, and GitHub-hosted builder to the expected release.
+
+The publish job also receives GitHub's short-lived OIDC identity solely for npm
+OIDC provenance. GitHub's ephemeral `github.token` has read-only repository
+permissions and is scoped to checkout and Release evidence lookup; credentials
+are not persisted by checkout. Neither token is logged, written to an output, or
+retained after the job. Credential rotation or revocation of `NPMJS_TOKEN` occurs in the
+organization Actions secret store; no repository change or fallback credential
+is permitted.
+
 A second secret exists in the `ca-sandbox` plugin (ADR-0007): the
 `CLAUDE_CODE_OAUTH_TOKEN` used by `--with-claude` to authenticate Claude Code
 *inside* a sandbox box.
