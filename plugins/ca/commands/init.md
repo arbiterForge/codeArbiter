@@ -1,6 +1,6 @@
 ---
 description: Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store.
-argument-hint: "(none) | --stage N | --check"
+argument-hint: "[--stage N] [--greenfield|--brownfield] | --check"
 ---
 
 # /ca:init — first-run scaffold
@@ -13,6 +13,23 @@ root. It writes the activation flag and the empty state files, then hands off to
 both the SessionStart persona injection and the arbiter statusline segments. The scaffolded
 `CONTEXT.md` is a **stub** (no initialization sentinel), so after scaffolding the project still needs
 populating before normal operation.
+
+<!-- catalog-command-modes:start -->
+## Explicit population strategies
+
+<!-- command-mode:--greenfield legacy-route:decompose -->
+`--greenfield` selects the exact `${CLAUDE_PLUGIN_ROOT}/commands/decompose.md` workflow.
+
+<!-- command-mode:--brownfield legacy-route:create-context -->
+`--brownfield` selects the exact `${CLAUDE_PLUGIN_ROOT}/commands/create-context.md` workflow.
+
+The two flags are mutually exclusive and neither may combine with `--check`. `--stage N` may
+accompany one only while `.codearbiter/CONTEXT.md` is absent: scaffold at that stage, then enter the
+selected workflow. When an uninitialized stub already exists, skip the refusing scaffolder and enter
+the selected workflow directly. An initialized marker or source-shape mismatch retains the selected
+legacy workflow's BLOCK. Without an explicit strategy, continue with the unchanged auto-detection
+procedure below.
+<!-- catalog-command-modes:end -->
 
 ## Procedure
 

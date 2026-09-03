@@ -733,6 +733,13 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_surface_job_fetches_complete_release_tag_history(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["surface"]
+        checkout = job.split("actions/checkout@", 1)[1].split("- uses:", 1)[0]
+        self.assertIn("fetch-depth: 0", checkout)
+        self.assertIn("fetch-tags: true", checkout)
+
     def test_codex_static_candidate_verifier_is_required_without_desktop_receipts(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         watched = {

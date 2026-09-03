@@ -1487,5 +1487,103 @@ missing: a named way to stop that does not require the next run to be clean.
 - User rulings locked in spec §User rulings: /ca:sprint lane, all three streams; intent source = approved record incl. decision-log.md; contradiction = hard gate with stale-record valve.
 - Lane 1 begins: ADR-0025/0026 authored as proposed; ratification = interactive STOP (never auto-decided).
 
+## SPRINT re-audit RA-11 catalog rationalization — 2026-09-02 — Phase 1 gate
+
+- The user's `checkpoint-009-ra11-catalog-rationalization` directive approves the bounded `/ca:sprint`
+  package: exact base `4561dc219818032369f0985c787f7fccd8030770`, isolated worktree, full RA-11
+  implementation and review, governed local commits, and a hard stop before push or PR.
+- Rebaseline proved 38 Claude / 36 Codex / 37 Pi routes, no visibility metadata, flat generated
+  discovery, and a live stale `40 commands` homepage claim. Baseline generation and parity suites
+  were green before mutation.
+
+### RA11-SD-01 — reject invented replacement umbrellas · confidence: high
+
+- **Point:** imported dispositions propose `dependency`, `evidence`, `config`, `extend`, and `help`
+  umbrellas, while current source freezes new top-level commands and ADR-0023 expressly keeps
+  dependency governance inside `add-dep`.
+- **Options:** (a) create the proposed umbrellas; (b) claim aliases to routes that do not exist; (c)
+  implement only replacements already supportable as modes of existing canonical commands and keep
+  the remaining operations canonical advanced routes.
+- **SMARTS:** Reliable, Securable, Maintainable, and Testable strongly favor (c). It preserves exact
+  routes, follows the accepted ADR, avoids a dishonest alias graph, and keeps every replacement
+  executable. Available and Scalable are neutral-to-favorable because 31 registry-canonical
+  routes still approximates the audit's 24-route target without speculative product surface.
+- **Chosen:** (c). `add-dep` stays core; `audit`, `metrics`, `statusline`, `prune`, `new-skill`, and
+  `commands` remain advanced. Strength: strong.
+
+### RA11-SD-02 — compatibility window anchored to declared manifests · confidence: moderate
+
+- **Point:** aliases need a declared two-minor retention floor and a major removal window, but this
+  leg is not authorized to release anything.
+- **Options:** (a) use dates; (b) use latest published tags; (c) anchor the policy to the first
+  containing releases already declared in current manifests, plus two subsequent minor lines, and
+  require a separate explicit major-window decision for removal.
+- **SMARTS:** Reliable and Testable favor (c): the floor is mechanically comparable and does not
+  pretend this branch published it. Securable and Maintainable favor a separate future removal gate.
+  Available is neutral because no route is removed now.
+- **Chosen:** (c): ca 2.16.x-2.18.x with no removal before 3.0.0; ca-codex 0.8.x-0.10.x and ca-pi
+  0.9.x-0.11.x, neither removable before 1.0.0. Strength: moderate pending independent
+  compatibility review.
+
+### RA11-SD-02 correction — independent compatibility review tightened the window · confidence: high
+
+**Superseded by RA11-SD-02/04 final correction below.** This intermediate ruling is retained as
+decision history and is not the active compatibility policy.
+
+- The first ruling treated three minor lines as the retention floor and a `1.0.0` transition as the
+  only adapter removal window. The compatibility reviewer identified the repository's actual
+  pre-1.0 SemVer posture and the more important trigger: an untagged manifest does not start a
+  deprecation clock.
+- **Corrected decision:** publication starts the clock. ca retains aliases for the rest of 2.x,
+  earliest removal 3.0.0. ca-codex retains 0.8.x and 0.9.x, earliest removal 0.10.0. ca-pi retains
+  0.9.x and 0.10.x, earliest removal 0.11.0. Reaching the floor is necessary, never sufficient; a
+  separate governed decision remains mandatory.
+
+### RA11-SD-03 — legacy bodies remain authoritative during migration · confidence: high
+
+- **Point:** metadata can name `watch -> pr watch`, but current hosts have no mechanical
+  cross-entry redirect primitive. Replacing the old body with a short redirect would change
+  arguments, gates, output, and possibly side effects.
+- **Options:** (a) replace legacy bodies with cross-command redirect prose; (b) keep each legacy body
+  intact, add one migration notice, and add the canonical mode independently over the same owning
+  workflow.
+- **SMARTS:** Reliable, Securable, and Available strongly favor (b); it is the only option that
+  preserves current behavior while making discovery canonical. Maintainable moderately favors (b)
+  until a future shared mechanical router is separately designed and tested.
+- **Chosen:** (b). The alias classification is a discovery/lifecycle relationship, not permission to
+  delete or hollow out the installed route. Strength: strong.
+
+### RA11-SD-04 — executable host frontmatter is not the discovery registry · confidence: high
+
+- **Point:** core templates are the right metadata owner, but every unknown key currently flows into
+  executable Claude command and Codex/Pi skill frontmatter. Current loader contracts do not prove
+  arbitrary discovery keys are accepted, and Pi's typed command entry has only name, description,
+  and skill path.
+- **Options:** (a) propagate new keys and assume host tolerance; (b) keep metadata on canonical core
+  templates, strip it from executable projections, and generate one sidecar per host.
+- **SMARTS:** Securable, Reliable, Available, and Testable strongly favor (b). It avoids changing
+  loader input schemas while giving every adapter an exact machine-readable discovery surface.
+- **Chosen:** (b). The site joins shipped command bodies to the Claude sidecar by slug. Strength:
+  strong.
+
+### RA11-SD-05 — unsafe positional remaps remain advanced routes · confidence: high
+
+- **Point:** `review` already accepts an arbitrary path/PR argument and `adr` accepts a title.
+  Treating first positional tokens `checkpoint`, `deep`, `threat`, or `status` as modes would steal
+  valid existing inputs. The old PR catalog also permits an optional title, so bare `watch` and
+  `cleanup` would collide there too.
+- **Chosen:** keep `checkpoint`, `tribunal`, `threat-model`, and `adr-status` as canonical advanced
+  routes. Use unambiguous `pr --watch` and `pr --cleanup` flags. Only those two plus `decompose`,
+  `create-context`, and `context-check` become aliases in this wave. Strength: strong.
+
+### RA11-SD-02/04 final correction — registry and major windows · confidence: high
+
+- The compatibility review's final report tightened both preliminary rulings. Discovery metadata is
+  owned by `core/surface/command-routes.json`, not command frontmatter, so executable host schemas
+  never depend on stripping unknown keys after the fact. The ca-codex and ca-pi routes remain for
+  every later pre-1.0 line, not merely two named minors; earliest removal is a separately approved
+  1.0.0. ca remains through every 2.x line, earliest removal 3.0.0. Publication of each independently
+  versioned payload starts only that payload's clock.
+
 ## SD-camp-01 — gate-events.log excluded from the feat commit · confidence: high · intent: silent
 Options: (a) commit the 1,723-line month-old accumulation with the feature; (b) unstage, leave for a dedicated hygiene commit. Verdict slot: Maintainable Strong for (b) — the pile predates the campaign, bloats PR review, and has a sanctioned owner (/ca:standup); Reliable Indifferent — append-only union survives either way. Chosen: (b). overrides.log stays staged: 11 lines, all audit-mandated, first-ever commit of the file.

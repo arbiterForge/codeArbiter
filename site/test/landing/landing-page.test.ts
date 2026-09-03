@@ -145,6 +145,13 @@ describe("first-class product splash", () => {
     expect(indexMdx).toContain("Pi preview");
   });
 
+  it("routes exact discovery without a hard-coded raw command count", () => {
+    expect(indexMdx).toContain("<code>Grouped reference</code>");
+    expect(indexMdx).toContain('href="./reference/"');
+    expect(indexMdx).not.toMatch(/<code>\d+ commands<\/code>/);
+    expect(indexMdx).not.toMatch(/\b(?:38|40) commands\b/);
+  });
+
   it("has one primary action above the fold", () => {
     const primaryMatches = indexMdx.match(/ca-button--primary/g) ?? [];
     expect(primaryMatches).toHaveLength(2);

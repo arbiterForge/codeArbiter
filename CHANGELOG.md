@@ -12,6 +12,15 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.0] - 2026-09-02
+
+### Added
+
+- Command discovery now groups the supported core lanes while retaining
+  advanced operations and compatibility routes in generated host catalogs.
+- Release-state, route-graph, and documentation-inventory drift now fail closed
+  against canonical source, with tag-only or unverified Releases rejected.
+
 ## [2.16.0] - 2026-09-02
 
 ### Added

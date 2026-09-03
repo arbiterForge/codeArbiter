@@ -6,6 +6,34 @@ import type { CommandHostAvailability } from "./host-command-catalog";
 /** The three kinds of plugin source documents the generator reads. */
 export type SourceType = "command" | "skill" | "agent";
 
+export const COMMAND_VISIBILITY_ORDER = [
+  "core", "advanced", "alias", "internal", "deprecated",
+] as const;
+export type CommandVisibility = (typeof COMMAND_VISIBILITY_ORDER)[number];
+
+export const COMMAND_WORKFLOW_ORDER = [
+  "evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help",
+] as const;
+export type CommandWorkflow = (typeof COMMAND_WORKFLOW_ORDER)[number];
+
+/** Catalog metadata projected by each host's generated command sidecar. */
+export interface CommandCatalogEntry {
+  description: string;
+  commandPath: string;
+  visibility: CommandVisibility;
+  workflow: CommandWorkflow;
+  canonical?: string;
+  replacement?: string;
+  legacyRoutes?: string[];
+}
+
+/** Validated envelope for a host's generated command sidecar. */
+export interface CommandCatalog {
+  visibilityOrder: CommandVisibility[];
+  workflowOrder: CommandWorkflow[];
+  commands: Record<string, CommandCatalogEntry>;
+}
+
 /** A frontmatter block split from a source file. `frontmatter` is null when absent. */
 export interface SplitResult {
   frontmatter: string | null;
@@ -70,6 +98,8 @@ export interface PageInput {
   relatedLinks?: RelatedLink[];
   /** Command availability derived from each shipped host adapter's catalog. */
   commandHosts?: CommandHostAvailability;
+  /** Visibility/workflow metadata from the generated host command catalog. */
+  commandCatalog?: CommandCatalogEntry;
   /** Verbatim raw contents of the plugin source file, for the source embed. */
   sourceRaw: string;
   /** Repo-relative path to the plugin source file, e.g. `plugins/ca/commands/sprint.md`. */
@@ -90,6 +120,8 @@ export interface RenderedPage {
   model?: string;
   /** Feature Forge preview status (commands only), for the index's preview marker. */
   forgeStatus?: ForgeStatus | null;
+  /** Generated command-catalog metadata, preserved for discovery grouping. */
+  commandCatalog?: CommandCatalogEntry;
 }
 
 /** One entry in a sidebar group. */
@@ -102,6 +134,10 @@ export interface SidebarEntry {
   tier?: string;
   /** Whether this entry carries a Feature Forge preview badge (commands only). */
   preview?: boolean;
+  /** Command visibility, present only for command entries. */
+  visibility?: CommandVisibility;
+  /** Command workflow, present only for command entries. */
+  workflow?: CommandWorkflow;
 }
 
 /**

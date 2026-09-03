@@ -1,30 +1,30 @@
 {
-  "created": "2026-08-24",
+  "created": "2026-09-02",
   "doc": "release-targets",
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "50f43cf46016b8cb20447917c490a1c69b478b2c",
+      "hash": "d0134526865dd258bfb27a37220a56df50e65705",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "f0aed8ab4931df4ce1823d2317542ba1f2e81658",
+      "hash": "26416e1e60797e3404e0bad6ec6acbd48fa1064c",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "a6b733096c3b3304ea9f0f2cef26cf1c876efa03",
+      "hash": "df2a8f90577725772911b51a710b576b9e2f0461",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "f0b50d353a0fed5295ad725b6c73b72b649a8316",
+      "hash": "507aa61addbdde445827e064463d2b773b8f1b04",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "5a7d83fdbb58889d7fe6e71587ca84698cc3e3be",
+      "hash": "150662b8c0fc39362abd26e572d53836a52578c3",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -34,12 +34,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "5ed150e1c7246a0d9e05c2a22546553df2851243",
+      "hash": "75fa047162adae71fc1b9c0aeb6cc819e642d515",
       "path": "plugins/ca-pi/extensions/codearbiter.js"
     },
     {
       "drift_trigger": true,
-      "hash": "84c9b0968ba531e63a565cd32b044d92c761ed37",
+      "hash": "cbff6e194ec0630facc5632eef885c562ede820b",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -64,7 +64,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "eda482dde0e83f1121d7734cd7248567388cda31",
+      "hash": "6e2599f0af68c83e6a81e76dda9ac14ac7cfc92e",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {

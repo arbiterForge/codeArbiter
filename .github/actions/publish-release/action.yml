@@ -181,11 +181,35 @@ runs:
         # TAG_SHA against GITHUB_SHA.
         TAG_VERSION="${TAG##*v}"
 
-        RELEASE_NONDRAFT=false
-        if gh release view "$TAG" --json isDraft >/dev/null 2>&1; then
-          if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft)" = "false" ]; then
-            RELEASE_NONDRAFT=true
-          fi
+        # GitHub's by-tag endpoint returns published Releases only, so its 404
+        # is not proof that a draft is absent. Enumerate every Release page with
+        # this write-capable repository token (which can see drafts), then let
+        # the hermetic classifier distinguish missing, draft, published,
+        # duplicate/malformed, and unavailable evidence before any tag can be
+        # created or pushed. Any incomplete/API-failed listing blocks.
+        RELEASE_RESPONSE="${RUNNER_TEMP:-.}/publish-release-list.json"
+        RELEASE_ERROR="${RUNNER_TEMP:-.}/publish-release-response.error"
+        set +e
+        gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+          > "$RELEASE_RESPONSE" 2> "$RELEASE_ERROR"
+        RELEASE_API_EXIT=$?
+        set -e
+        set +e
+        RELEASE_LOOKUP=$(python3 .github/scripts/check_command_route_release_state.py api-lookup \
+          --expected-tag "$TAG" \
+          --api-response "$RELEASE_RESPONSE" \
+          --api-exit "$RELEASE_API_EXIT")
+        RELEASE_LOOKUP_EXIT=$?
+        set -e
+        if [ "$RELEASE_LOOKUP_EXIT" -ne 0 ]; then
+          [ ! -s "$RELEASE_ERROR" ] || cat "$RELEASE_ERROR" >&2
+          echo "::error::refusing to publish $TAG: Release lookup classified as '$RELEASE_LOOKUP'"
+          exit 1
+        fi
+        if [ "$RELEASE_LOOKUP" = "published" ]; then
+          RELEASE_NONDRAFT=true
+        else
+          RELEASE_NONDRAFT=false
         fi
 
         # One classifier shared with the /ca:release skill: the hosted and the

@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "visibilityOrder": [
+    "core",
+    "advanced",
+    "alias",
+    "internal",
+    "deprecated"
+  ],
+  "workflowOrder": [
+    "evaluate",
+    "initialize",
+    "change",
+    "review",
+    "decide",
+    "ship",
+    "operate",
+    "extend",
+    "help"
+  ],
+  "compatibility": {
+    "clockStarts": "confirmed-non-draft-github-release",
+    "removalRequires": "separately-approved-major",
+    "targets": {
+      "claude": {
+        "publishedWithoutMetadata": "2.16.0",
+        "firstContainingRelease": "2.17.0",
+        "retainThrough": "2.x",
+        "earliestRemoval": "3.0.0"
+      },
+      "codex": {
+        "publishedWithoutMetadata": "0.8.0",
+        "firstContainingRelease": "0.9.0",
+        "retainThrough": "0.x",
+        "earliestRemoval": "1.0.0"
+      },
+      "pi": {
+        "publishedWithoutMetadata": "0.9.0",
+        "firstContainingRelease": "0.10.0",
+        "retainThrough": "0.x",
+        "earliestRemoval": "1.0.0"
+      }
+    }
+  },
+  "commands": {
+    "add-dep": {
+      "name": "add-dep",
+      "description": "Vet a new or changed third-party dependency for license, provenance, and supply-chain risk before any install runs.",
+      "commandPath": "commands/add-dep.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "add-dep",
+      "legacyRoutes": []
+    },
+    "adr": {
+      "name": "adr",
+      "description": "Author a numbered, dated, user-attributed Architecture Decision Record under .codearbiter/decisions/.",
+      "commandPath": "commands/adr.md",
+      "visibility": "core",
+      "workflow": "decide",
+      "canonical": "adr",
+      "legacyRoutes": []
+    },
+    "adr-status": {
+      "name": "adr-status",
+      "description": "Report the health of Architecture Decision Records — aged, unchallenged, supersession candidates, unresolved CONFIRM-NN. Read-only.",
+      "commandPath": "commands/adr-status.md",
+      "visibility": "advanced",
+      "workflow": "decide",
+      "canonical": "adr-status",
+      "legacyRoutes": []
+    },
+    "audit": {
+      "name": "audit",
+      "description": "Assemble the governance record for a range — commits, overrides, ADRs, sprint auto-decisions, open questions, checkpoint findings — into one dated audit packet. Read-only.",
+      "commandPath": "commands/audit.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "audit",
+      "legacyRoutes": []
+    },
+    "btw": {
+      "name": "btw",
+      "description": "Lightweight Q&A about the project — answer from context and return, no routing, no state change.",
+      "commandPath": "commands/btw.md",
+      "visibility": "deprecated",
+      "workflow": "help",
+      "replacement": "ask the question directly"
+    },
+    "checkpoint": {
+      "name": "checkpoint",
+      "description": "Periodic multi-reviewer sweep of the whole codebase — surfaces a triaged checkpoint report.",
+      "commandPath": "commands/checkpoint.md",
+      "visibility": "advanced",
+      "workflow": "review",
+      "canonical": "checkpoint",
+      "legacyRoutes": []
+    },
+    "chore": {
+      "name": "chore",
+      "description": "Sanctioned lane for non-behavioral work — docs-only edits, dependency bumps, reverts. Type-scaled gates; no TDD demanded of prose.",
+      "commandPath": "commands/chore.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "chore",
+      "legacyRoutes": []
+    },
+    "cleanup": {
+      "name": "cleanup",
+      "description": "Finish an already-merged branch — classify the leftover artifacts, return to a fast-forwarded default checkout, and delete the merged local branch. Every discard confirmed per item; containment proven, never assumed.",
+      "commandPath": "commands/cleanup.md",
+      "visibility": "alias",
+      "workflow": "ship",
+      "canonical": "pr",
+      "replacement": "pr --cleanup"
+    },
+    "commands": {
+      "name": "commands",
+      "description": "Show the codeArbiter command catalog — the public command list and what each routes to.",
+      "commandPath": "commands/commands.md",
+      "visibility": "advanced",
+      "workflow": "help",
+      "canonical": "commands",
+      "legacyRoutes": []
+    },
+    "commit": {
+      "name": "commit",
+      "description": "Run the full commit gate — the only sanctioned path to a git commit.",
+      "commandPath": "commands/commit.md",
+      "visibility": "core",
+      "workflow": "ship",
+      "canonical": "commit",
+      "legacyRoutes": []
+    },
+    "conflict": {
+      "name": "conflict",
+      "description": "Stop everything and surface a rule conflict — persona vs. docs vs. code. Present both sides and the conflict-hierarchy level; the user resolves. No silent reconciliation.",
+      "commandPath": "commands/conflict.md",
+      "visibility": "internal",
+      "workflow": "decide",
+      "canonical": "conflict",
+      "legacyRoutes": []
+    },
+    "context-check": {
+      "name": "context-check",
+      "description": "Optional manual drift audit — report stale provenance-tracked docs, then per stale doc offer re-scout, re-baseline, or defer. Not the daily loop; commit-gate auto-heal owns routine maintenance.",
+      "commandPath": "commands/context-check.md",
+      "visibility": "alias",
+      "workflow": "operate",
+      "canonical": "status",
+      "replacement": "status drift"
+    },
+    "create-context": {
+      "name": "create-context",
+      "description": "Brownfield back-fill — scout an existing codebase and populate .codearbiter/, then lock it initialized.",
+      "commandPath": "commands/create-context.md",
+      "visibility": "alias",
+      "workflow": "initialize",
+      "canonical": "init",
+      "replacement": "init --brownfield"
+    },
+    "debug": {
+      "name": "debug",
+      "description": "Investigate-then-decide root-cause analysis for a defect whose cause is unknown. No code changes — exits to /ca:fix, /ca:adr, or a no-action close.",
+      "commandPath": "commands/debug.md",
+      "visibility": "advanced",
+      "workflow": "change",
+      "canonical": "debug",
+      "legacyRoutes": []
+    },
+    "decompose": {
+      "name": "decompose",
+      "description": "Greenfield decomposition interview — a layered interview that populates .codearbiter/ and locks it initialized.",
+      "commandPath": "commands/decompose.md",
+      "visibility": "alias",
+      "workflow": "initialize",
+      "canonical": "init",
+      "replacement": "init --greenfield"
+    },
+    "doctor": {
+      "name": "doctor",
+      "description": "Verify the active host install, package, command ownership, enforcement, and harmless live-fire probe. Read-only.",
+      "commandPath": "commands/doctor.md",
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "doctor",
+      "legacyRoutes": []
+    },
+    "feature": {
+      "name": "feature",
+      "description": "Start a feature: brainstorm a spec, get it approved, then drive it test-first through the pipeline. The one entry to implementation.",
+      "commandPath": "commands/feature.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "feature",
+      "legacyRoutes": []
+    },
+    "fix": {
+      "name": "fix",
+      "description": "Fix a confirmed bug: a failing regression test first, then a minimal fix, then the rest of the tdd gates.",
+      "commandPath": "commands/fix.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "fix",
+      "legacyRoutes": []
+    },
+    "init": {
+      "name": "init",
+      "description": "Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store.",
+      "commandPath": "commands/init.md",
+      "visibility": "core",
+      "workflow": "initialize",
+      "canonical": "init",
+      "legacyRoutes": [
+        "create-context",
+        "decompose"
+      ]
+    },
+    "metrics": {
+      "name": "metrics",
+      "description": "Read-only 3-metric governance glance — override rate, small-lane rate, sprint low-confidence ratio — each with a trend arrow vs. the prior 20-commit window.",
+      "commandPath": "commands/metrics.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "metrics",
+      "legacyRoutes": []
+    },
+    "new-skill": {
+      "name": "new-skill",
+      "description": "Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it.",
+      "commandPath": "commands/new-skill.md",
+      "visibility": "advanced",
+      "workflow": "extend",
+      "canonical": "new-skill",
+      "legacyRoutes": []
+    },
+    "override": {
+      "name": "override",
+      "description": "Sanctioned, logged bypass of a gate or hard rule — one audit line, then proceed.",
+      "commandPath": "commands/override.md",
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "override",
+      "legacyRoutes": []
+    },
+    "pr": {
+      "name": "pr",
+      "description": "Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.",
+      "commandPath": "commands/pr.md",
+      "visibility": "core",
+      "workflow": "ship",
+      "canonical": "pr",
+      "legacyRoutes": [
+        "cleanup",
+        "watch"
+      ]
+    },
+    "preview": {
+      "name": "preview",
+      "description": "Zero-onboarding, read-only dry-run of the reviewer fleet against the current uncommitted diff. Predicts reviewers, runs the state-free secret scan, writes nothing.",
+      "commandPath": "commands/preview.md",
+      "visibility": "core",
+      "workflow": "evaluate",
+      "canonical": "preview",
+      "legacyRoutes": []
+    },
+    "prune": {
+      "name": "prune",
+      "description": "Trim transcript clutter to extend session lifetime — analyze, prune a copy, or toggle the after-each-turn service. Dry-run by default; gains land at resume/compaction, not the current turn.",
+      "commandPath": "commands/prune.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "prune",
+      "legacyRoutes": []
+    },
+    "reconcile": {
+      "name": "reconcile",
+      "description": "SMARTS arbitration — reconcile architectural artifacts against the scaffold and prior decisions; every variance resolved by an explicit, user-attributed choice.",
+      "commandPath": "commands/reconcile.md",
+      "visibility": "advanced",
+      "workflow": "decide",
+      "canonical": "reconcile",
+      "legacyRoutes": []
+    },
+    "refactor": {
+      "name": "refactor",
+      "description": "Restructure code with behavioral parity proven through unmodified pre-existing tests, then refactor. No behavior change.",
+      "commandPath": "commands/refactor.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "refactor",
+      "legacyRoutes": []
+    },
+    "release": {
+      "name": "release",
+      "description": "Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag.",
+      "commandPath": "commands/release.md",
+      "visibility": "core",
+      "workflow": "ship",
+      "canonical": "release",
+      "legacyRoutes": []
+    },
+    "review": {
+      "name": "review",
+      "description": "Review a diff with the reviewer fleet, funneled to one triaged verdict. Targets the current working diff, a path, or an inbound GitHub PR.",
+      "commandPath": "commands/review.md",
+      "visibility": "core",
+      "workflow": "review",
+      "canonical": "review",
+      "legacyRoutes": []
+    },
+    "spike": {
+      "name": "spike",
+      "description": "Exploratory spike on a throwaway branch — answer a named question with disposable code. Never merges; exits to a findings note or /ca:feature.",
+      "commandPath": "commands/spike.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "spike",
+      "legacyRoutes": []
+    },
+    "sprint": {
+      "name": "sprint",
+      "description": "Autonomous sprint — one interactive spec gate, then plan-to-PR execution with every auto-decision SMARTS-scored and logged. Hard gates remain true stops.",
+      "commandPath": "commands/sprint.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "sprint",
+      "legacyRoutes": []
+    },
+    "standup": {
+      "name": "standup",
+      "description": "Daily repo hygiene — review the day's repo state, then perform the cleanups under per-action confirmation. Fast-forward only, never destructive without a yes.",
+      "commandPath": "commands/standup.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "standup",
+      "legacyRoutes": []
+    },
+    "status": {
+      "name": "status",
+      "description": "Show the project's current state at a glance — stage, open tasks, open questions, overrides since the last checkpoint, current branch. Read-only.",
+      "commandPath": "commands/status.md",
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "status",
+      "legacyRoutes": [
+        "context-check"
+      ]
+    },
+    "statusline": {
+      "name": "statusline",
+      "description": "Wire codeArbiter's statusline into ~/.claude/settings.json, or remove it.",
+      "commandPath": "commands/statusline.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "statusline",
+      "legacyRoutes": []
+    },
+    "task": {
+      "name": "task",
+      "description": "The sanctioned task-board mutator — add a queued task, start one (flips to in-progress and stamps the date, minting a dotted ID on pick-up), or mark an in-progress task done. The only blessed write to open-tasks.md.",
+      "commandPath": "commands/task.md",
+      "visibility": "core",
+      "workflow": "operate",
+      "canonical": "task",
+      "legacyRoutes": []
+    },
+    "threat-model": {
+      "name": "threat-model",
+      "description": "Opt-in lightweight STRIDE pass for a sensitive feature before implementation. Not a routine gate — invoke it when a change warrants security thought.",
+      "commandPath": "commands/threat-model.md",
+      "visibility": "advanced",
+      "workflow": "review",
+      "canonical": "threat-model",
+      "legacyRoutes": []
+    },
+    "tribunal": {
+      "name": "tribunal",
+      "description": "Deep, rarely-convened whole-codebase audit — eleven specialist lenses, a resumable on-disk audit log, findings filed as GitHub issues on approval. Expensive; estimates cost and STOPs before running. Never a required gate.",
+      "commandPath": "commands/tribunal.md",
+      "visibility": "advanced",
+      "workflow": "review",
+      "canonical": "tribunal",
+      "legacyRoutes": []
+    },
+    "watch": {
+      "name": "watch",
+      "description": "Watch a PR's CI to completion — diagnose on red, notify and offer the merge on green. Never auto-merges.",
+      "commandPath": "commands/watch.md",
+      "visibility": "alias",
+      "workflow": "ship",
+      "canonical": "pr",
+      "replacement": "pr --watch"
+    }
+  }
+}

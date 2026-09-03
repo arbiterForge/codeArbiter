@@ -6,6 +6,12 @@ argument-hint: (none)
 
 # $ca-cleanup — post-merge branch transition
 
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `$ca-pr --cleanup` for new usage. This installed route remains
+> functional under the command-route compatibility policy at [includes/command-compatibility.md](../../includes/command-compatibility.md);
+> continue with the unchanged cleanup workflow below.
+<!-- catalog-compatibility-notice:end -->
+
 Your PR merged. You are still standing on the branch, with build output, worktree
 residue, and scratch files around you. This command owns the ordinary walk back:
 prove the branch actually landed, decide what the leftovers are, get to a clean

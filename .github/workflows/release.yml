@@ -580,3 +580,69 @@ jobs:
           mark-latest: "false"
           create-release: "true"
           github-token: ${{ github.token }}
+
+  auto-command-route-release-audit:
+    name: "[GATE ] | [RELEASE] | Command-route publication"
+    needs: [auto-preflight, auto-release, auto-release-codex, auto-release-pi]
+    # `always()` is required because an ineligible publisher is skipped. This
+    # read-only terminal audit still runs after every RA-11 publisher reaches a
+    # terminal state, but only for a successful main CI run whose preflight ran.
+    # It cannot authorize or mask a failed publisher: those job results remain
+    # independently red, and every declared first-containing Release must also
+    # read back as published below.
+    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the trusted default-branch release auditor
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Materialize the exact completed-run release candidate as inert data
+        env:
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          case "$CANDIDATE_SHA" in
+            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
+          esac
+          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
+            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
+            exit 1
+          fi
+          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
+          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
+          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
+
+      - name: Capture exact GitHub Release API evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          EVIDENCE_DIR="$RUNNER_TEMP/command-route-release-state"
+          mkdir -p "$EVIDENCE_DIR"
+          python3 trusted/.github/scripts/check_command_route_release_state.py plan \
+            --repo candidate > "$EVIDENCE_DIR/plan.tsv"
+          while IFS=$'\t' read -r TARGET TAG; do
+            set +e
+            gh api --include \
+              "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
+              > "$EVIDENCE_DIR/$TARGET.http" \
+              2> "$EVIDENCE_DIR/$TARGET.stderr"
+            STATUS=$?
+            set -e
+            printf '%s\n' "$STATUS" > "$EVIDENCE_DIR/$TARGET.exit"
+          done < "$EVIDENCE_DIR/plan.tsv"
+
+      - name: Require every first-containing candidate to be published
+        run: |
+          python3 trusted/.github/scripts/check_command_route_release_state.py observe \
+            --repo candidate \
+            --evidence-dir "$RUNNER_TEMP/command-route-release-state"

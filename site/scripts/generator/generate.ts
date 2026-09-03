@@ -14,6 +14,7 @@ import { buildIndex } from "./build-index";
 import { getCommandForgeStatus } from "./forge-status";
 import { loadCurated } from "./load-curated";
 import { publicReferenceDescription } from "./render-reference-lead";
+import { loadCommandCatalog } from "./landing-stats";
 import {
   commandHostAvailability,
   loadHostCommandCatalogs,
@@ -101,6 +102,7 @@ export function generate(
   outDir: string,
   sidebarPath?: string,
   curatedDir?: string,
+  requireCommandCatalog = false,
 ): GenerateResult {
   const resolvedSidebarPath = sidebarPath ?? join(outDir, "sidebar.json");
   // `INDEX.md` files are the plugin's internal catalog / surface-scan tables
@@ -162,6 +164,14 @@ export function generate(
       .filter(({ source }) => source.type === "command")
       .map(({ source }) => deriveName(source.path, {})),
   );
+  const commandNames = parsed
+    .filter(({ source }) => source.type === "command")
+    .map(({ source }) => deriveName(source.path, {}));
+  const commandCatalogPath = join(srcDir, "generated", "command-catalog.json");
+  const commandCatalog = commandNames.length > 0 &&
+    (requireCommandCatalog || existsSync(commandCatalogPath))
+    ? loadCommandCatalog(srcDir, commandNames)
+    : undefined;
 
   const pages: RenderedPage[] = parsed.map(({ source, doc }, i) => {
     const name = names[i];
@@ -194,6 +204,8 @@ export function generate(
       });
     }
 
+    const commandName = source.type === "command" ? deriveName(source.path, {}) : undefined;
+    const catalogEntry = commandName ? commandCatalog?.commands[commandName] : undefined;
     const input: PageInput = {
       name,
       description: doc.fields.description ?? "",
@@ -204,8 +216,9 @@ export function generate(
       relatedLinks,
       commandHosts:
         source.type === "command"
-          ? commandHostAvailability(slugs[i], hostCatalogs)
+          ? commandHostAvailability(commandName!, hostCatalogs)
           : undefined,
+      commandCatalog: catalogEntry,
       sourceRaw: source.raw,
       sourceRelPath: `plugins/ca/${source.path}`,
       pluginVersion,
@@ -218,6 +231,7 @@ export function generate(
       description: publicReferenceDescription(doc.fields.description ?? ""),
       model: doc.fields.model,
       forgeStatus,
+      commandCatalog: catalogEntry,
     };
   });
 
@@ -255,14 +269,7 @@ export function generate(
   // already carrying its truncated description, and — per collection — a
   // model tier or preview flag); we render a Starlight-valid index page
   // (frontmatter title + one table per collection) from it.
-  const { sidebar } = buildIndex(pages);
-  // Column headers per collection: agents carry a model-tier column the other
-  // two collections don't have.
-  const TABLE_HEADER: Record<SourceType, string> = {
-    command: "| Command | Description |\n|---|---|",
-    skill: "| Skill | Description |\n|---|---|",
-    agent: "| Agent | Model tier | Description |\n|---|---|---|",
-  };
+  const { sidebar, markdown: indexBody } = buildIndex(pages, commandCatalog);
   // The entities come from the Claude Code payload, while each command page
   // derives its host availability from all three shipped COMMANDS.md catalogs.
   // Agent identities remain a Claude-specific catalog boundary even though
@@ -283,21 +290,6 @@ export function generate(
   const entityGroups = sidebar.filter(
     (g): g is SidebarGroup & { type: SourceType } => g.type !== "tribunal-lens",
   );
-  const indexBody = entityGroups
-    .map((group) => {
-      const heading = `## ${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
-      const rows = group.items.map((it) => {
-        const nameCell =
-          `[${it.label}](./${TYPE_DIR[group.type]}/${it.slug}/)` +
-          (it.preview ? " (preview)" : "");
-        const description = it.description ?? "";
-        return group.type === "agent"
-          ? `| ${nameCell} | ${it.tier ?? "default"} | ${description} |`
-          : `| ${nameCell} | ${description} |`;
-      });
-      return `${heading}\n\n${TABLE_HEADER[group.type]}\n${rows.join("\n")}`;
-    })
-    .join("\n\n");
   // The tribunal-lens collection gets its own index table, after the three
   // entity catalogs (the group renders adjacent to Agents in the sidebar too).
   const lensSection =

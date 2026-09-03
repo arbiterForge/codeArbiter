@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Structural contract for the public Pi documentation surface.
 
-The checks stay stdlib-only and derive catalog counts from generated payloads so
+The checks stay stdlib-only and derive catalog facts from generated payloads so
 documentation cannot pass by repeating a stale literal in several files.
 """
 
@@ -18,11 +18,6 @@ REPO = Path(__file__).resolve().parents[2]
 
 def read(relative: str) -> str:
     return (REPO / relative).read_text(encoding="utf-8")
-
-
-def entry_skill_count(plugin: str) -> int:
-    skills = REPO / "plugins" / plugin / "skills"
-    return sum((child / "SKILL.md").is_file() for child in skills.iterdir())
 
 
 class PublicHostVocabularyTest(unittest.TestCase):
@@ -142,19 +137,26 @@ class PiCatalogAndParityTest(unittest.TestCase):
                 with self.subTest(path=path, contradiction=contradiction):
                     self.assertNotRegex(text, pattern)
 
-    def test_public_catalog_counts_match_generated_payloads(self):
+    def test_public_catalog_discovery_matches_generated_payloads(self):
         readme = read("README.md")
         runbook = read("docs/pi-parity-testing.md")
-        counts = {
-            "ca": len(list((REPO / "plugins/ca/commands").glob("*.md"))),
-            "ca-codex": entry_skill_count("ca-codex"),
-            "ca-pi": entry_skill_count("ca-pi"),
-        }
+        registry = json.loads(read("core/surface/command-routes.json"))
+        core_lane_count = sum(
+            entry["visibility"] == "core" for entry in registry["commands"].values()
+        )
+        counts = {}
+        for plugin in ("ca", "ca-codex", "ca-pi"):
+            catalog = json.loads(read(f"plugins/{plugin}/generated/command-catalog.json"))
+            self.assertEqual(catalog["schemaVersion"], 1)
+            counts[plugin] = len(catalog["commands"])
         for plugin, count in counts.items():
             with self.subTest(plugin=plugin):
                 marker = f"{plugin}: {count}"
-                self.assertIn(marker, readme)
                 self.assertIn(marker, runbook)
+                self.assertNotIn(marker, readme)
+        self.assertIn(f"core_lanes-{core_lane_count}-555", readme)
+        self.assertIn("<!-- core-lane-chooser:start -->", readme)
+        self.assertIn("<!-- core-lane-chooser:end -->", readme)
         for link in (
             "./plugins/ca/COMMANDS.md",
             "./plugins/ca-codex/COMMANDS.md",

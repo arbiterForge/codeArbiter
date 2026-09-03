@@ -332,11 +332,45 @@ def _add_skill_frontmatter_independently(text, command_name, where):
     return f"---\nname: ca-{command_name}\n" + "\n".join(lines) + text[end:]
 
 
+def _command_registry_independently(surface):
+    """Read the canonical registry without importing the production parser."""
+    path = surface / "command-routes.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if document.get("schemaVersion") != 1 or not isinstance(document.get("commands"), dict):
+        raise AssertionError(f"{path}: independent registry shape mismatch")
+    return document
+
+
+def _frontmatter_description_independently(text, where):
+    if not text.startswith("---\n"):
+        raise AssertionError(f"{where}: command lacks frontmatter")
+    end = text.find("\n---\n", 4)
+    if end < 0:
+        raise AssertionError(f"{where}: unterminated frontmatter")
+    value = next(
+        (
+            line.split(":", 1)[1].strip()
+            for line in text[4:end].split("\n")
+            if line.startswith("description:")
+        ),
+        None,
+    )
+    if value is None:
+        raise AssertionError(f"{where}: command lacks description")
+    if value.startswith('"'):
+        value = json.loads(value)
+    return value
+
+
 def _independent_expected_surfaces(descriptor, descriptors):
     """Map canonical sources to host output without importing the generator."""
     surface = REPO / "core" / "surface"
     host_names = frozenset(item.name for item in descriptors)
     command_names = frozenset(path.stem for path in (surface / "commands").glob("*.md"))
+    registry_document = _command_registry_independently(surface)
+    command_registry = registry_document["commands"]
+    if set(command_registry) != set(command_names):
+        raise AssertionError("independent command registry inventory mismatch")
     expected = {}
     command_catalog = []
     for source in sorted(path for path in surface.rglob("*") if path.is_file()):
@@ -387,27 +421,64 @@ def _independent_expected_surfaces(descriptor, descriptors):
             )
         if rule.add_skill_frontmatter:
             text = _add_skill_frontmatter_independently(text, source.stem, where)
-            frontmatter_end = text.find("\n---\n", 4)
-            description = next(
-                line.split(":", 1)[1].strip()
-                for line in text[4:frontmatter_end].split("\n")
-                if line.startswith("description:")
-            )
-            if description.startswith('"'):
-                description = json.loads(description)
-            command_catalog.append({
+        if rel.startswith("commands/") and rel.endswith(".md"):
+            metadata = command_registry[source.stem]
+            entry = {
                 "name": source.stem,
-                "description": description,
-                "skillPath": f"skills/ca-{source.stem}/SKILL.md",
-            })
+                "description": _frontmatter_description_independently(text, where),
+                ("skillPath" if rule.add_skill_frontmatter else "commandPath"): dst,
+                "visibility": metadata["visibility"],
+                "workflow": metadata["workflow"],
+            }
+            for key in ("canonical", "replacement"):
+                if key in metadata:
+                    entry[key] = metadata[key]
+            if "legacyRoutes" in metadata:
+                entry["legacyRoutes"] = metadata["legacyRoutes"]
+            command_catalog.append(entry)
         if dst in expected:
             raise AssertionError(f"{where}: independent output collision at {dst}")
         expected[dst] = text
-    if descriptor.command_form == "/ca-{name}":
-        expected["generated/command-catalog.json"] = (
-            json.dumps(sorted(command_catalog, key=lambda item: item["name"]),
-                       ensure_ascii=False, indent=2) + "\n"
-        )
+    if "COMMANDS.md" in expected:
+        marker = "<!-- command-visibility-summary -->"
+        if expected["COMMANDS.md"].count(marker) != 1:
+            raise AssertionError(
+                "core/surface/COMMANDS.md must contain one visibility-summary marker"
+            )
+        counts = {
+            visibility: sum(
+                entry["visibility"] == visibility for entry in command_catalog
+            )
+            for visibility in registry_document["visibilityOrder"]
+        }
+        canonical_count = counts["core"] + counts["advanced"]
+        summary = "\n".join([
+            "## Installed surface",
+            "",
+            "| Visibility | Count |",
+            "|---|---:|",
+            f"| Core | {counts['core']} |",
+            f"| Advanced | {counts['advanced']} |",
+            f"| Canonical total | {canonical_count} |",
+            f"| Compatibility aliases | {counts['alias']} |",
+            f"| Internal | {counts['internal']} |",
+            f"| Deprecated | {counts['deprecated']} |",
+            f"| **Total** | **{len(command_catalog)}** |",
+        ])
+        expected["COMMANDS.md"] = expected["COMMANDS.md"].replace(marker, summary)
+    catalog_document = {
+        "schemaVersion": registry_document["schemaVersion"],
+        "visibilityOrder": registry_document["visibilityOrder"],
+        "workflowOrder": registry_document["workflowOrder"],
+        "compatibility": registry_document["compatibility"],
+        "commands": {
+            item["name"]: item
+            for item in sorted(command_catalog, key=lambda entry: entry["name"])
+        },
+    }
+    expected["generated/command-catalog.json"] = (
+        json.dumps(catalog_document, ensure_ascii=False, indent=2) + "\n"
+    )
     return expected
 
 
@@ -704,6 +775,35 @@ class DescriptorContractTest(unittest.TestCase):
 
 
 class GenerationContractTest(unittest.TestCase):
+    def test_pi_command_catalog_oracle_preserves_loader_frontmatter_and_metadata(self):
+        module = _descriptors()
+        descriptors = module.load_host_descriptors(str(REPO))
+        pi_host = next(host for host in descriptors if host.name == "pi")
+        expected = _independent_expected_surfaces(pi_host, descriptors)
+        catalog = json.loads(expected["generated/command-catalog.json"])["commands"].values()
+        counts = {
+            visibility: sum(item["visibility"] == visibility for item in catalog)
+            for visibility in ("core", "advanced", "alias", "internal", "deprecated")
+        }
+        self.assertEqual(
+            counts,
+            {"core": 18, "advanced": 12, "alias": 5, "internal": 1, "deprecated": 1},
+        )
+        init_frontmatter = expected["skills/ca-init/SKILL.md"].split("\n---\n", 1)[0]
+        self.assertEqual(
+            [line.split(":", 1)[0] for line in init_frontmatter.splitlines()[1:]],
+            ["name", "description", "argument-hint"],
+        )
+
+        mutated = dict(expected)
+        mutated_catalog = json.loads(mutated["generated/command-catalog.json"])
+        mutated_catalog["commands"]["add-dep"]["visibility"] = "deprecated"
+        mutated["generated/command-catalog.json"] = (
+            json.dumps(mutated_catalog, ensure_ascii=False, indent=2) + "\n"
+        )
+        with self.assertRaisesRegex(AssertionError, "generated/command-catalog.json"):
+            _assert_pi_policy_matches_core(mutated, expected)
+
     def test_plugin_reference_checker_follows_custom_pi_catalog_descriptor_path(self):
         with tempfile.TemporaryDirectory() as repo:
             root = Path(repo)
