@@ -14,6 +14,7 @@ from contextlib import redirect_stdout
 
 
 HERE = Path(__file__).resolve().parent
+REPO = HERE.parent.parent
 MODULE_PATH = HERE / "check_command_route_release_state.py"
 SPEC = importlib.util.spec_from_file_location("command_route_release_state", MODULE_PATH)
 RELEASE_STATE = importlib.util.module_from_spec(SPEC)
@@ -126,6 +127,14 @@ class DeclarationTest(unittest.TestCase):
             RELEASE_STATE.validate_target_declaration(
                 "claude", self.metadata(), "2.16.1", "v"
             )
+
+    def test_public_compatibility_policy_names_both_payload_proofs(self):
+        policy = (
+            REPO / "core" / "surface" / "includes" / "command-compatibility.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(policy.split())
+        self.assertIn("matching registry declaration", normalized)
+        self.assertIn("matching payload version", normalized)
 
 
 class ApiResponseTest(unittest.TestCase):
