@@ -118,7 +118,10 @@ describe("plan-file bridge protocol", () => {
       slug: "demo", kind: "spec", action: "replace", expectedHash: null, content,
     })).resolves.toMatchObject({ status: "committed", observed: true, content });
     await expect(readFile(resolve(cwd, ".codearbiter", "specs", "demo.md"), "utf8")).resolves.toBe(content);
-  });
+    // Keep the harness deadline outside the bridge's unchanged 10s transport
+    // limit and 2s kill-settlement allowance. Coverage/cold startup must not
+    // abort the test before its real response and on-disk assertions run.
+  }, 15_000);
 });
 
 const roots: string[] = [];
