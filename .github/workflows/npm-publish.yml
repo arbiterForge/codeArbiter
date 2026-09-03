@@ -148,7 +148,7 @@ jobs:
             --output "$GITHUB_OUTPUT"
       - name: Publish with provenance
         if: steps.artifact.outputs.skip != 'true'
-        run: '"$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/'
+        run: '"$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
           NPM_CLI: ${{ steps.npm-cli.outputs.executable }}

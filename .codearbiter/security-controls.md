@@ -61,9 +61,13 @@ beneath that root after an exact version check. It does not change a manifest,
 lockfile, global npm state, `PATH`, cache, or release artifact. The exact CLI is
 passed explicitly to packing, publication, and post-publication verification.
 
-Registry success is not inferred from metadata alone. The verifier installs the
-exact registry version into a disposable directory with scripts disabled, runs
-npm's supported `npm audit signatures` Sigstore verification, and then separately
+Registry success is not inferred from metadata alone. Every npm network command
+pins both the general and `@arbiterforge` scoped registry on the CLI so ambient
+user configuration cannot redirect package traffic. The verifier installs the
+exact registry version into a disposable directory with scripts disabled and
+isolated empty user/global configuration, cache, and log paths; the entire root
+is removed afterward. It runs npm's supported `npm audit signatures` Sigstore
+verification, and then separately
 binds the registry-served SLSA subject digest, repository, main ref, workflow,
 protected-main source commit, and GitHub-hosted builder to the expected release.
 
@@ -893,7 +897,7 @@ immutable Releases are available.
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
 | Declared release-target commands | `.codearbiter/release-targets.md` rows carry `pre-tag`, `rebuild`, and `generate` shell commands that `/ca:release` executes before composing a tag, on a lane that later holds `contents: write` | Operator-authored executable input, on the `plan.json` `gate.commands` model above and length-capped identically (≤1024 chars, `VALUE_MAX_CHARS`, ADR-0002 precedent). Three controls bound it: commands are **check-only** and a clean-tree assertion runs after each (DECISION-0034), so a mutation blocks the release rather than reaching a tag; the runner (`_releaselib.py run-pre-tag`) enforces order, first-failure stop, and that assertion mechanically rather than by agent compliance; and the declaring file is itself protected under H-22 (ADR-0024), so planting a command requires a fresh authoring marker rather than any write. The residual is the cooperative-agent one ADR-0010 already accepts: a marker-holding session can still declare a command, and this is a governance boundary, not a sandbox |
 | Hosted ca-codex candidate data | A final-tree ZIP or directory is parsed by trusted release-tree code on GitHub-hosted runners | Candidate code is never executed; bounded archive limits, regular-file-only extraction semantics, contained paths, static manifest/front-matter/resource/hook validation, and exact deterministic digest binding fail closed before publication |
-| CI-only npm CLI acquisition | The ca-pi publisher downloads and executes exact `npm@11.19.1` from the approved npm registry without adding it to repository dependency state | Exact registry URL and SHA-512 SRI are drift-guarded; TLS verification stays enabled and redirects are not followed; acquisition is credential-free; archive path/link/device containment and the resolved executable root are checked before exact-version execution; only the absolute reviewed CLI path reaches pack, publish, and verification |
+| CI-only npm CLI acquisition | The ca-pi publisher downloads and executes exact `npm@11.19.1` from the approved npm registry without adding it to repository dependency state | Exact registry URL and SHA-512 SRI are drift-guarded; TLS verification stays enabled and redirects are not followed; acquisition is credential-free; archive path/link/device containment and the resolved executable root are checked before exact-version execution; only the absolute reviewed CLI path reaches pack, publish, and verification; all npm network commands pin the approved general and `@arbiterforge` scoped registry, while verifier config, cache, and logs live only in its cleaned disposable root |
 
 ### Closed exceptions
 

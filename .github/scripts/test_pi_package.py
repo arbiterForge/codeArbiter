@@ -2160,7 +2160,7 @@ class NpmPublishContractTest(unittest.TestCase):
                 ),
                 ("- name: Capture exact published GitHub Release evidence", "73ed3a2d933eb9ca00bb0d794377d49c328df0813d4307f192932b30749605e8"),
                 ("- name: Validate identity, pack once, and classify exact registry state", "be6463c41587b42a755828b2e2a253defcc347823a838d59b56651aab7aa20d2"),
-                ("- name: Publish with provenance", "3a35d6d85322d492306648e8c9df493377c215c5e5f07f5359024d5f643f71d5"),
+                ("- name: Publish with provenance", "40f63d300e3f49f6cc0398d2dfd7577a92fee1d2ebcafc2c1993a7f2cddab78c"),
                 ("- name: Verify exact registry publication evidence", "8240768220719d3eaf88be08d6bbca28d8bafef785bbdda448607b5493a38636"),
             ],
             "the complete publisher step contract drifted",
@@ -2265,6 +2265,7 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertIn('--expected-sha "$EXPECTED_SHA"', text)
         self.assertIn('--trusted-sha "$TRUSTED_SHA"', text)
         self.assertIn("--registry=https://registry.npmjs.org/", text)
+        self.assertIn("--@arbiterforge:registry=https://registry.npmjs.org/", text)
         self.assertIn("npm publish", text)
         self.assertIn("--ignore-scripts", text)
         self.assertIn("--provenance", text)
@@ -2475,6 +2476,8 @@ class NpmPublishContractTest(unittest.TestCase):
             "npm error code E502",
             "npm error code E503",
             "npm error code E504",
+            "npm error code EAI_FAIL",
+            "npm error code ERR_SOCKET_TIMEOUT",
             "npm error code ETIMEDOUT",
             "npm error code ECONNRESET",
             "HTTP 503 Service Unavailable",
@@ -2545,9 +2548,10 @@ class NpmPublishContractTest(unittest.TestCase):
             helper.subprocess,
             "run",
             side_effect=subprocess.TimeoutExpired(["npm", "view"], 30),
-        ):
+        ) as run:
             with self.assertRaisesRegex(helper.RegistryUnavailable, "timed out"):
                 helper.registry_lookup("npm", "0.10.0")
+        self.assertIn(helper.SCOPED_REGISTRY_OPTION, run.call_args.args[0])
         absent = subprocess.CompletedProcess(
             ["npm"],
             1,
@@ -2802,9 +2806,22 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertIn("--ignore-scripts", install_command)
         self.assertIn("--save-exact", install_command)
         self.assertIn("@arbiterforge/ca-pi@0.10.0", install_command)
+        self.assertIn(helper.SCOPED_REGISTRY_OPTION, install_command)
         self.assertEqual(audit_command[:3], ["npm", "audit", "signatures"])
         self.assertIn("--json", audit_command)
         self.assertIn("--include-attestations", audit_command)
+        self.assertIn(helper.SCOPED_REGISTRY_OPTION, audit_command)
+        for call in run.call_args_list:
+            root = Path(call.kwargs["cwd"])
+            npm_env = call.kwargs["env"]
+            for name, leaf in (
+                ("NPM_CONFIG_CACHE", "cache"),
+                ("NPM_CONFIG_LOGS_DIR", "logs"),
+                ("NPM_CONFIG_USERCONFIG", "user.npmrc"),
+                ("NPM_CONFIG_GLOBALCONFIG", "global.npmrc"),
+            ):
+                self.assertEqual(Path(npm_env[name]), root / leaf)
+            self.assertFalse(root.exists(), "the isolated npm state must be cleaned")
 
         hostile_evidence = []
         for field, value in (
@@ -2914,7 +2931,7 @@ class NpmPublishContractTest(unittest.TestCase):
             )
             with mock.patch.object(helper, "validate_git_identity"), mock.patch.object(
                 helper.subprocess, "run", return_value=packed
-            ), mock.patch.object(
+            ) as pack_run, mock.patch.object(
                 helper, "registry_lookup", return_value=registry
             ), mock.patch.object(
                 helper, "verify_registry_authenticity", return_value=verified_document
@@ -2927,6 +2944,7 @@ class NpmPublishContractTest(unittest.TestCase):
                 verified_document, "0.10.0", integrity, None
             )
             ancestry.assert_called_once_with(repo.resolve(), source_sha, "c" * 40)
+            self.assertIn(helper.SCOPED_REGISTRY_OPTION, pack_run.call_args.args[0])
             output_values = dict(
                 line.split("=", 1)
                 for line in output.read_text(encoding="utf-8").splitlines()

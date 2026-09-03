@@ -12,6 +12,7 @@ import argparse
 import base64
 import binascii
 import json
+import os
 import re
 import subprocess
 import sys
@@ -22,6 +23,7 @@ from pathlib import Path
 
 PACKAGE = "@arbiterforge/ca-pi"
 REGISTRY = "https://registry.npmjs.org/"
+SCOPED_REGISTRY_OPTION = f"--@arbiterforge:registry={REGISTRY}"
 REPOSITORY_URL = "git+https://github.com/arbiterForge/codeArbiter.git"
 TAG_RE = re.compile(r"ca-pi-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z")
 SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
@@ -160,10 +162,12 @@ def classify_registry_lookup(
             "E503",
             "E504",
             "EAI_AGAIN",
+            "EAI_FAIL",
             "ECONNRESET",
             "EHOSTUNREACH",
             "ENETUNREACH",
             "ENOTFOUND",
+            "ERR_SOCKET_TIMEOUT",
             "ETIMEDOUT",
         }
         status_text = f"{stdout}\n{stderr}"
@@ -283,6 +287,24 @@ def verify_registry_authenticity(npm: str, version: str) -> dict:
 
     with tempfile.TemporaryDirectory(prefix="codearbiter-npm-signatures-") as tmp:
         root = Path(tmp)
+        user_config = root / "user.npmrc"
+        global_config = root / "global.npmrc"
+        user_config.write_text("", encoding="utf-8")
+        global_config.write_text("", encoding="utf-8")
+        npm_env = {
+            key: value
+            for key, value in os.environ.items()
+            if not key.lower().startswith("npm_config_")
+            and key.upper() not in {"NODE_AUTH_TOKEN", "NPM_TOKEN"}
+        }
+        npm_env.update(
+            {
+                "NPM_CONFIG_CACHE": str(root / "cache"),
+                "NPM_CONFIG_LOGS_DIR": str(root / "logs"),
+                "NPM_CONFIG_USERCONFIG": str(user_config),
+                "NPM_CONFIG_GLOBALCONFIG": str(global_config),
+            }
+        )
         (root / "package.json").write_text(
             json.dumps(
                 {
@@ -306,8 +328,10 @@ def verify_registry_authenticity(npm: str, version: str) -> dict:
                     "--save-exact",
                     f"{PACKAGE}@{version}",
                     f"--registry={REGISTRY}",
+                    SCOPED_REGISTRY_OPTION,
                 ],
                 cwd=root,
+                env=npm_env,
                 text=True,
                 capture_output=True,
                 check=False,
@@ -323,8 +347,10 @@ def verify_registry_authenticity(npm: str, version: str) -> dict:
                     "--json",
                     "--include-attestations",
                     f"--registry={REGISTRY}",
+                    SCOPED_REGISTRY_OPTION,
                 ],
                 cwd=root,
+                env=npm_env,
                 text=True,
                 capture_output=True,
                 check=False,
@@ -405,6 +431,7 @@ def registry_lookup(npm: str, version: str) -> subprocess.CompletedProcess[str]:
                 "dist",
                 "--json",
                 f"--registry={REGISTRY}",
+                SCOPED_REGISTRY_OPTION,
             ],
             text=True,
             capture_output=True,
@@ -427,7 +454,14 @@ def prepare(args: argparse.Namespace) -> int:
     release = json.loads(Path(args.release_json).read_text(encoding="utf-8"))
     validate_release_document(release, args.tag)
     packed = subprocess.run(
-        [args.npm, "pack", "--ignore-scripts", "--json", f"--registry={REGISTRY}"],
+        [
+            args.npm,
+            "pack",
+            "--ignore-scripts",
+            "--json",
+            f"--registry={REGISTRY}",
+            SCOPED_REGISTRY_OPTION,
+        ],
         cwd=repo,
         text=True,
         capture_output=True,
