@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-09-03
+
+### Fixed
+
+- Prevent read-only filename searches from falsely triggering protected-state interpreter guards while preserving mutation enforcement.
+
 ## [0.10.0] - 2026-09-02
 
 ### Added
