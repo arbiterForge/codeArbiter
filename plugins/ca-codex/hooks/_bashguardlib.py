@@ -449,6 +449,14 @@ GATE_MARKER_WRITE_RE = re.compile(
 _INTERP_TOKENS = (r"python3?|python2|py|node|deno|bun|perl|ruby|php"
                   r"|sh|bash|zsh|pwsh|powershell")
 
+# A word boundary also matches the `py` in `catalog.py`: that is a filename,
+# not an interpreter. Share the corrected left edge across every interpreter
+# leg so read-only filename arguments cannot falsely imply a protected write.
+# Preserve slash/backslash and quote boundaries for executable paths, and the
+# existing right edge for versioned executables and Windows `.exe` spellings.
+# This remains conservative lexical detection, not command-position parsing.
+_INTERP_EXECUTABLE = r"(?<![\w.])(" + _INTERP_TOKENS + r")\b"
+
 # The inline-code switch that makes an interpreter EXECUTE A STRING rather
 # than run a file. `-c` (python/py/sh/bash/zsh/pwsh), `-e`/`-E` (perl,
 # ruby, node, bun), `-r` (php), `-p`/`--print`/`--eval` (node), and
@@ -476,7 +484,7 @@ _INTERP_INLINE_CODE = (
 # whereas handing a board filename to `taskwrite.py` is the sanctioned
 # call.
 GATE_MARKER_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + GATE_MARKER, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + GATE_MARKER, re.I,
 )
 
 # #574: H-05/H-11/H-18 carried NO interpreter leg at all — an inline-code
@@ -496,13 +504,13 @@ GATE_MARKER_INTERP_RE = re.compile(
 # target name may sit on different physical lines of the SAME multi-line
 # `-c`/`-e` payload.
 LOG_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + LOG_NAMES, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + LOG_NAMES, re.I,
 )
 DECISIONS_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + DECISIONS, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + DECISIONS, re.I,
 )
 CONTEXT_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + CONTEXT_MD, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + CONTEXT_MD, re.I,
 )
 
 # H-22's shell flank: the protected-state registry (B1/#564) — Write/Edit are
@@ -731,7 +739,7 @@ def _state_write_res(basename, rel_path=None):
         + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     interp_re = re.compile(
-        r"\b(" + _INTERP_TOKENS + r")\b[^\n]*?" + _INTERP_INLINE_CODE
+        _INTERP_EXECUTABLE + r"[^\n]*?" + _INTERP_INLINE_CODE
         + r"[\s\S]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     return redirect_re, write_re, git_restore_re, interp_re
