@@ -36,6 +36,10 @@ SOURCE_WORKFLOWS = {
 }
 
 
+class RegistryUnavailable(ValueError):
+    """The registry did not provide usable transport evidence yet."""
+
+
 def validate_inputs(tag: str, expected_sha: str) -> str:
     match = TAG_RE.fullmatch(tag)
     if match is None:
@@ -139,7 +143,7 @@ def classify_registry_lookup(
     if returncode != 0:
         codes = {
             code.upper()
-            for code in re.findall(r"\bE[0-9]{3}\b", f"{stdout}\n{stderr}")
+            for code in re.findall(r"\bE[A-Z0-9_]+\b", f"{stdout}\n{stderr}")
         }
         try:
             error_document = _registry_document(stdout)
@@ -149,6 +153,27 @@ def classify_registry_lookup(
         exact_404 = isinstance(error, dict) and error.get("code") == "E404"
         if codes == {"E404"} and exact_404:
             return "absent"
+        retryable_codes = {
+            "E429",
+            "E500",
+            "E502",
+            "E503",
+            "E504",
+            "EAI_AGAIN",
+            "ECONNRESET",
+            "EHOSTUNREACH",
+            "ENETUNREACH",
+            "ENOTFOUND",
+            "ETIMEDOUT",
+        }
+        status_text = f"{stdout}\n{stderr}"
+        retryable_http_status = re.search(
+            r"(?:^|\D)(?:429|5[0-9]{2})(?:\D|$)", status_text
+        )
+        if (codes and codes <= retryable_codes) or (
+            not codes and not exact_404 and retryable_http_status
+        ):
+            raise RegistryUnavailable("npm registry lookup is temporarily unavailable")
         raise ValueError("npm registry lookup failed without a confirmed 404")
     document = _registry_document(stdout)
     if document.get("version") != expected_version:
@@ -387,7 +412,7 @@ def registry_lookup(npm: str, version: str) -> subprocess.CompletedProcess[str]:
             timeout=REGISTRY_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired as exc:
-        raise ValueError("npm registry lookup timed out") from exc
+        raise RegistryUnavailable("npm registry lookup timed out") from exc
 
 
 def prepare(args: argparse.Namespace) -> int:
@@ -435,8 +460,8 @@ def verify(args: argparse.Namespace) -> int:
     version = validate_inputs(args.tag, args.expected_sha)
     validate_sha(args.trusted_sha, "trusted workflow SHA")
     for attempt in range(args.attempts):
-        lookup = registry_lookup(args.npm, version)
         try:
+            lookup = registry_lookup(args.npm, version)
             state = classify_registry_lookup(
                 lookup.returncode,
                 lookup.stdout,
@@ -444,25 +469,22 @@ def verify(args: argparse.Namespace) -> int:
                 version,
                 args.integrity,
             )
-        except ValueError:
-            raise
+        except RegistryUnavailable:
+            if attempt + 1 >= args.attempts:
+                raise
+            state = "unavailable"
         if state == "present":
-            try:
-                verified_document = verify_registry_authenticity(args.npm, version)
-                source_sha = validate_attestation_document(
-                    verified_document,
-                    version,
-                    args.integrity,
-                    args.trusted_sha if args.publication_mode == "new" else None,
-                )
-                if args.publication_mode == "existing":
-                    validate_main_commit(Path(args.repo), source_sha, args.trusted_sha)
-            except ValueError:
-                if attempt + 1 >= args.attempts:
-                    raise
-            else:
-                print(f"verified {PACKAGE}@{version} integrity and provenance")
-                return 0
+            verified_document = verify_registry_authenticity(args.npm, version)
+            source_sha = validate_attestation_document(
+                verified_document,
+                version,
+                args.integrity,
+                args.trusted_sha if args.publication_mode == "new" else None,
+            )
+            if args.publication_mode == "existing":
+                validate_main_commit(Path(args.repo), source_sha, args.trusted_sha)
+            print(f"verified {PACKAGE}@{version} integrity and provenance")
+            return 0
         if attempt + 1 < args.attempts:
             time.sleep(args.delay_seconds)
     raise ValueError("npm publication did not become observable before the evidence deadline")

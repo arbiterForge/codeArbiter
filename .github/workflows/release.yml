@@ -617,11 +617,10 @@ jobs:
     name: "[GATE ] | [RELEASE] | Command-route publication"
     needs: [auto-preflight, auto-release, auto-release-codex, auto-release-pi, auto-publish-pi-npm]
     # `always()` is required because an ineligible publisher is skipped. This
-    # read-only terminal audit still runs after every RA-11 publisher reaches a
-    # terminal state, but only for a successful main CI run whose preflight ran.
-    # It cannot authorize or mask a failed publisher: those job results remain
-    # independently red, and every declared first-containing Release must also
-    # read back as published below.
+    # read-only success receipt runs after every required RA-11 publisher has
+    # succeeded or been proven ineligible. An eligible npm failure suppresses
+    # this receipt while the npm publisher itself remains independently red.
+    # Every declared first-containing Release must also read back below.
     if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && (needs.auto-preflight.outputs.ca-pi != 'true' || needs.auto-publish-pi-npm.result == 'success')
     permissions:
       contents: read

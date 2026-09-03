@@ -2071,6 +2071,30 @@ class NpmPublishContractTest(unittest.TestCase):
     WORKFLOW = REPO / ".github" / "workflows" / "npm-publish.yml"
 
     def _assert_npm_workflow_security_contract(self, text):
+        workflow_prefix = text.split("    steps:\n", 1)[0] + "    steps:\n"
+        self.assertEqual(
+            hashlib.sha256(workflow_prefix.encode("utf-8")).hexdigest(),
+            "97ab8cfd4f9dceebeb78e8c68fcd34ebb1bf040a6f7be39666d2e141e9e6b6cd",
+            "the privileged workflow prelude drifted",
+        )
+        permissions = text.split("permissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
+        self.assertEqual(permissions, "  contents: read\n  id-token: write\n")
+        concurrency = text.split("concurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
+        self.assertEqual(
+            concurrency,
+            "  group: npm-publish-${{ inputs.tag }}\n"
+            "  cancel-in-progress: false\n",
+        )
+        job_header = text.split("jobs:\n  publish:\n", 1)[1].split(
+            "    steps:\n", 1
+        )[0]
+        self.assertEqual(
+            job_header,
+            '    name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"\n'
+            "    if: github.ref == 'refs/heads/main'\n"
+            "    runs-on: ubuntu-latest\n"
+            "    timeout-minutes: 10\n",
+        )
         workflow_call = text.split("  workflow_call:\n", 1)[1].split(
             "  workflow_dispatch:\n", 1
         )[0]
@@ -2125,15 +2149,19 @@ class NpmPublishContractTest(unittest.TestCase):
                 ("- name: Check out the trusted default-branch verifier", "e5f2364f9cd674ffb2154ccfa5731f2bafc85406538d0154d409c28dbe216f97"),
                 ("- name: Validate untrusted release inputs before use", "fd21e6f82c6dac0b24da721059d653135a44289b46c541cdd4f9eb999e1101c9"),
                 ("- name: Materialize the exact tagged package as inert data", "d2f4e3fe952dc4276ef6cd7169935f52fbd76e30dac74e5a24586e79782e2e1f"),
-                ("- uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0", "70e3f9ff0a4f115a8fed73d3bd8cce496729800f73ba17f3bf6b84dad5c93b74"),
+                ("- uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0", "72f4f712094c2099d186d3e7f571517102fc456dc598a5977dcf997794a5df7d"),
+                (
+                    "- name: Acquire reviewed npm@11.19.1 CLI",
+                    "8a51403701b27ee91c921f18488885e7f042d9901e02045f56b1546332fc3eba",
+                ),
                 (
                     "- name: Fetch protected main without credentials",
                     "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730",
                 ),
                 ("- name: Capture exact published GitHub Release evidence", "73ed3a2d933eb9ca00bb0d794377d49c328df0813d4307f192932b30749605e8"),
-                ("- name: Validate identity, pack once, and classify exact registry state", "8703fd0c91ca4ad5e5b2ea9ab862f661d7fea6f85faea4a0f314a6d58483fa3d"),
-                ("- name: Publish with provenance", "71904d909dc577e3e536ec22e5a8e5feee91988d22f9cf640cc819e93c586592"),
-                ("- name: Verify exact registry publication evidence", "c4d554f8f9f675cc3cc27084feaacafe35f85e93b38404f33bc4fd33830cf51e"),
+                ("- name: Validate identity, pack once, and classify exact registry state", "be6463c41587b42a755828b2e2a253defcc347823a838d59b56651aab7aa20d2"),
+                ("- name: Publish with provenance", "3a35d6d85322d492306648e8c9df493377c215c5e5f07f5359024d5f643f71d5"),
+                ("- name: Verify exact registry publication evidence", "8240768220719d3eaf88be08d6bbca28d8bafef785bbdda448607b5493a38636"),
             ],
             "the complete publisher step contract drifted",
         )
@@ -2208,9 +2236,12 @@ class NpmPublishContractTest(unittest.TestCase):
                 rf"(?ms)^      {name}:\n        required: true\n        type: string$",
             )
         self.assertRegex(text, r"(?ms)^on:\n  workflow_call:\n    inputs:\n")
+        workflow_call = text.split("  workflow_call:\n", 1)[1].split(
+            "  workflow_dispatch:\n", 1
+        )[0]
         for name in ("tag", "expected_sha"):
             self.assertRegex(
-                text,
+                workflow_call,
                 rf"(?ms)^      {name}:\n        required: true\n        type: string$",
             )
         self.assertRegex(
@@ -2241,7 +2272,44 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertIn("NODE_AUTH_TOKEN", text)
         self.assertIn("secrets.NPMJS_TOKEN", text)
         self.assertNotIn("npm ci", text)
+        self.assertIn(
+            "npm@11.19.1",
+            text,
+            "the publisher needs the reviewed zero-HIGH npm CLI before it can verify attestations",
+        )
+        self.assertIn(
+            "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==",
+            text,
+            "the reviewed npm CLI artifact must be integrity-pinned before execution",
+        )
+        self.assertIn('node-version: "22.23.2"', text)
+        cli_step = text.split(
+            "      - name: Acquire reviewed npm@11.19.1 CLI\n", 1
+        )[1].split("      - name: Fetch protected main without credentials\n", 1)[0]
+        for required in (
+            "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz",
+            "curl --disable --fail --show-error --silent --proto '=https' --tlsv1.2",
+            "--max-redirs 0",
+            "openssl dgst -sha512 -binary",
+            'test "$ACTUAL_INTEGRITY" = "$NPM_CLI_INTEGRITY"',
+            "path.is_absolute()",
+            '".." in path.parts',
+            "member.issym()",
+            "member.islnk()",
+            "tar --extract --gzip --no-same-owner --no-same-permissions",
+            'test -f "$npm_cli"',
+            'test ! -L "$npm_cli"',
+            'resolved_cli="$(realpath "$npm_cli")"',
+            '"$npm_cli_root"/*',
+            'test "$("$npm_cli" --version)" = "$NPM_CLI_VERSION"',
+            'echo "executable=$npm_cli" >> "$GITHUB_OUTPUT"',
+        ):
+            self.assertIn(required, cli_step)
+        self.assertNotIn("NODE_AUTH_TOKEN", cli_step)
+        self.assertNotIn("NPMJS_TOKEN", cli_step)
         self.assertNotIn("npm install", text)
+        self.assertEqual(text.count("steps.npm-cli.outputs.executable"), 3)
+        self.assertNotIn("npm ci", text)
         for manifest in ("package.json", "plugins/ca-pi/package.json"):
             self.assertIn(manifest, text)
         self.assertRegex(text, r"(?is)tag.{0,240}version.{0,240}(mismatch|match|equal)")
@@ -2274,6 +2342,31 @@ class NpmPublishContractTest(unittest.TestCase):
                 "        env:\n          EVIL: candidate/evil.py\n"
                 "        run: python3 \"$EVIL\"\n"
                 "      - name: Fetch protected main without credentials",
+                1,
+            ),
+            text.replace("runs-on: ubuntu-latest", "runs-on: self-hosted", 1),
+            text.replace("  id-token: write", "  id-token: write\n  actions: write", 1),
+            text.replace(
+                "if: github.ref == 'refs/heads/main'",
+                "if: github.ref == 'refs/heads/main' || github.actor == github.actor",
+                1,
+            ),
+            text.replace("curl --disable", "curl --location", 1),
+            text.replace("--max-redirs 0", "--max-redirs 1", 1),
+            text.replace(
+                "\npermissions:\n",
+                "\nenv:\n  PUBLISH_CREDENTIAL: ${{ secrets.NPMJS_TOKEN }}\n"
+                "permissions:\n",
+                1,
+            ),
+            text.replace(
+                "\npermissions:\n",
+                "\nenv:\n  PATH: candidate/bin\npermissions:\n",
+                1,
+            ),
+            text.replace(
+                "\npermissions:\n",
+                "\ndefaults:\n  run:\n    shell: candidate/evil-shell\npermissions:\n",
                 1,
             ),
         )
@@ -2367,12 +2460,28 @@ class NpmPublishContractTest(unittest.TestCase):
         )
         for stderr in (
             "npm error code E401",
-            "npm error code E429",
-            "network timeout",
+            "npm error code E401\nHTTP 503 Service Unavailable",
             "npm error code E404\nnpm error code E401",
             "npm error code E404",
+            "npm error code EUSAGE",
+            "permanent command failure",
         ):
-            with self.subTest(stderr=stderr), self.assertRaises(ValueError):
+            with self.subTest(stderr=stderr), self.assertRaises(ValueError) as caught:
+                helper.classify_registry_lookup(1, "", stderr, "0.10.0", expected)
+            self.assertIs(type(caught.exception), ValueError)
+        for stderr in (
+            "npm error code E429",
+            "npm error code E500",
+            "npm error code E502",
+            "npm error code E503",
+            "npm error code E504",
+            "npm error code ETIMEDOUT",
+            "npm error code ECONNRESET",
+            "HTTP 503 Service Unavailable",
+        ):
+            with self.subTest(stderr=stderr), self.assertRaises(
+                helper.RegistryUnavailable
+            ):
                 helper.classify_registry_lookup(1, "", stderr, "0.10.0", expected)
         with self.assertRaises(ValueError):
             helper.classify_registry_lookup(
@@ -2437,7 +2546,7 @@ class NpmPublishContractTest(unittest.TestCase):
             "run",
             side_effect=subprocess.TimeoutExpired(["npm", "view"], 30),
         ):
-            with self.assertRaisesRegex(ValueError, "timed out"):
+            with self.assertRaisesRegex(helper.RegistryUnavailable, "timed out"):
                 helper.registry_lookup("npm", "0.10.0")
         absent = subprocess.CompletedProcess(
             ["npm"],
@@ -2457,6 +2566,75 @@ class NpmPublishContractTest(unittest.TestCase):
         with mock.patch.object(helper, "registry_lookup", return_value=absent):
             with self.assertRaisesRegex(ValueError, "evidence deadline"):
                 helper.verify(args)
+
+    def test_registry_transport_failures_retry_but_evidence_mismatches_fail_fast(self):
+        helper = self._helper()
+        args = argparse.Namespace(
+            tag="ca-pi-v0.10.0",
+            expected_sha="a" * 40,
+            trusted_sha="a" * 40,
+            npm="npm",
+            integrity="sha512-expected",
+            publication_mode="new",
+            repo=".",
+            attempts=3,
+            delay_seconds=0,
+        )
+        unavailable = subprocess.CompletedProcess(
+            ["npm"], 1, "", "npm error code ETIMEDOUT"
+        )
+        with mock.patch.object(helper, "registry_lookup", return_value=unavailable) as lookup:
+            with self.assertRaisesRegex(helper.RegistryUnavailable, "unavailable"):
+                helper.verify(args)
+        self.assertEqual(lookup.call_count, 3)
+
+        permanent = subprocess.CompletedProcess(
+            ["npm"], 1, "", "npm error code EUSAGE"
+        )
+        with mock.patch.object(helper, "registry_lookup", return_value=permanent) as lookup:
+            with self.assertRaisesRegex(ValueError, "without a confirmed 404"):
+                helper.verify(args)
+        self.assertEqual(lookup.call_count, 1)
+
+        mismatch = subprocess.CompletedProcess(
+            ["npm"],
+            0,
+            json.dumps({"version": "0.9.9", "dist": {}}),
+            "",
+        )
+        with mock.patch.object(helper, "registry_lookup", return_value=mismatch) as lookup:
+            with self.assertRaisesRegex(ValueError, "version does not match"):
+                helper.verify(args)
+        self.assertEqual(lookup.call_count, 1)
+
+        present = subprocess.CompletedProcess(
+            ["npm"],
+            0,
+            json.dumps(
+                {
+                    "version": "0.10.0",
+                    "dist": {
+                        "integrity": "sha512-expected",
+                        "attestations": {
+                            "url": "https://registry.npmjs.org/-/npm/v1/attestations/@arbiterforge%2fca-pi@0.10.0",
+                            "provenance": {
+                                "predicateType": "https://slsa.dev/provenance/v1"
+                            },
+                        },
+                    },
+                }
+            ),
+            "",
+        )
+        with mock.patch.object(helper, "registry_lookup", return_value=present) as lookup, mock.patch.object(
+            helper,
+            "verify_registry_authenticity",
+            side_effect=ValueError("invalid cryptographic evidence"),
+        ) as authenticity:
+            with self.assertRaisesRegex(ValueError, "invalid cryptographic evidence"):
+                helper.verify(args)
+        self.assertEqual(lookup.call_count, 1)
+        self.assertEqual(authenticity.call_count, 1)
 
     def test_attestation_evidence_comes_only_from_the_npm_verifier(self):
         helper = self._helper()
@@ -2568,7 +2746,7 @@ class NpmPublishContractTest(unittest.TestCase):
             {"invalid": [], "missing": ["@arbiterforge/ca-pi@0.10.0"]},
         ):
             audited = subprocess.CompletedProcess(
-                ["npm", "audit", "signatures"], 1, json.dumps(evidence), ""
+                ["npm", "audit", "signatures"], 0, json.dumps(evidence), ""
             )
             with self.subTest(evidence=evidence), mock.patch.object(
                 helper.subprocess, "run", side_effect=[installed, audited]
@@ -2597,6 +2775,16 @@ class NpmPublishContractTest(unittest.TestCase):
                 }
             ],
         }
+        audited = subprocess.CompletedProcess(
+            ["npm", "audit", "signatures"],
+            1,
+            json.dumps(verified_evidence),
+            "",
+        )
+        with mock.patch.object(
+            helper.subprocess, "run", side_effect=[installed, audited]
+        ), self.assertRaisesRegex(ValueError, "signature"):
+            helper.verify_registry_authenticity("npm", "0.10.0")
         audited = subprocess.CompletedProcess(
             ["npm", "audit", "signatures"],
             0,
@@ -2824,6 +3012,11 @@ class NpmPublishContractTest(unittest.TestCase):
             "OIDC provenance",
             "npm audit signatures",
             "rotation",
+            "npm@11.19.1",
+            "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz",
+            "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==",
+            "path-containment",
+            "credential-free",
         ):
             self.assertIn(claim, policy)
         self.assertNotIn("secrets: inherit", workflow)
