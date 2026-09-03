@@ -332,6 +332,8 @@ _STUB_PRELUDE = """
 git() {
   echo "git $*" >> "$STUB_LOG"
   if [ "$1" = "ls-remote" ]; then cat "$STUB_LS_REMOTE"; fi
+  if [ "$1" = "tag" ] && [ "${2:-}" = "-l" ]; then printf '%s' "${STUB_TAGS:-}"; fi
+  if [ "$1" = "rev-parse" ] && [ "${2:-}" = "HEAD" ]; then printf '%s' "${STUB_HEAD:-$GITHUB_SHA}"; fi
   return 0
 }
 gh() {
@@ -513,6 +515,20 @@ class _ShellHarness(unittest.TestCase):
 @POSIX_ONLY
 class PreflightExecutionTest(_ShellHarness):
     """#378 + #385, executed: the preflight's own shell against fake inputs."""
+
+    def _sandbox(self):
+        root = super()._sandbox()
+        # These existing tests isolate target selection/readiness. Supply
+        # check-free rows with the real target identities; the declared-check
+        # suite below supplies executable checks, failures, and mutations.
+        declared = root / ".codearbiter/release-targets.md"
+        declared.write_text(re.sub(r"(?m)^pre-tag:.*\n", "",
+                                   declared.read_text(encoding="utf-8")),
+                            encoding="utf-8", newline="\n")
+        shutil.copy(REPO_ROOT / "core/pysrc/_gitexec.py", root / "core/pysrc/_gitexec.py")
+        subprocess.run(["git", "-C", str(root), "init"], check=True,
+                       capture_output=True, text=True)
+        return root
 
     @classmethod
     def setUpClass(cls):
@@ -1834,6 +1850,150 @@ class NameKeyedTargetSelectionTest(unittest.TestCase):
             with self.subTest(label=label):
                 self.assertIn(f"{label})", self.text)
         self.assertIn("*)", self.text)
+
+
+@POSIX_ONLY
+class DeclaredPreTagExecutionTest(_ShellHarness):
+    """AC-6.8/2.1-2.3: release authorization executes declared checks, not CI.
+
+    The real workflow shell and canonical runner operate on a disposable Git
+    fixture. Only publication/network commands are faked by _ShellHarness;
+    there are no commits, remotes, real credentials, or publication operations.
+    """
+
+    def _sandbox(self):
+        root = super()._sandbox()
+        shutil.copy(REPO_ROOT / "core/pysrc/_gitexec.py", root / "core/pysrc/_gitexec.py")
+        declared = root / ".codearbiter/release-targets.md"
+        text = re.sub(r"(?m)^pre-tag:.*\n", "", declared.read_text(encoding="utf-8"))
+        for target in ("ca", "ca-codex", "ca-sandbox", "ca-pi"):
+            commands = self.commands.get(target, [])
+            text = text.replace(f"[{target}]\n", f"[{target}]\n" + "".join(
+                f"pre-tag: {command}\n" for command in commands))
+        if getattr(self, "malformed", False):
+            text = text.replace("prefix: v\n", "prefix: v\nprefix: duplicate\n", 1)
+        declared.write_text(text, encoding="utf-8", newline="\n")
+        (root / "check.py").write_text(
+            "import os, pathlib, sys\n"
+            "assert not any(os.environ.get(key) for key in "
+            "('GH_TOKEN', 'GITHUB_TOKEN', 'NPMJS_TOKEN', 'GITHUB_OUTPUT', "
+            "'GITHUB_ENV', 'CLAUDE_PROJECT_DIR', 'GIT_CONFIG_COUNT'))\n"
+            "print('CHECKED:' + sys.argv[1], flush=True)\n"
+            "if len(sys.argv) > 2 and sys.argv[2] == 'mutate':\n"
+            "    pathlib.Path('check.py').write_text('changed by checker')\n"
+            "if len(sys.argv) > 2 and sys.argv[2] == 'fail':\n"
+            "    sys.exit(1)\n",
+            encoding="utf-8", newline="\n")
+        # Stage only this disposable fixture so status reports individual
+        # paths; no commit or repository-local enforcement is involved.
+        for args in (("init",), ("add", ".")):
+            subprocess.run(["git", "-C", str(root), *args], check=True,
+                           capture_output=True, text=True)
+        return root
+
+    def _authorize(self, lane, *, target="ca", tags="", overrides=None):
+        env = dict.fromkeys(PreflightExecutionTest.DISPATCH_INPUTS, "")
+        env[dict(zip(("ca", "ca-codex", "ca-sandbox", "ca-pi"),
+                     PreflightExecutionTest.DISPATCH_INPUTS))[target]] = "9.9.9"
+        env.update({"STUB_TAGS": tags, "GH_TOKEN": "DUMMY-read-token",
+                    "GITHUB_TOKEN": "DUMMY-read-token", "NPMJS_TOKEN": "DUMMY-token"})
+        env.update({"UPSTREAM_EVENT": "push", "UPSTREAM_CONCLUSION": "success",
+                    "UPSTREAM_BRANCH": "main", "UPSTREAM_REPOSITORY": "arbiterForge/codeArbiter",
+                    "GITHUB_REPOSITORY": "arbiterForge/codeArbiter", "UPSTREAM_SHA": self.HEAD})
+        env.update(overrides or {})
+        step = ("Resolve exactly one release target" if lane == "preflight"
+                else "Determine which targets have untagged work")
+        return self._run(_step_run(lane, step), env=env)
+
+    def test_manual_checks_are_ordered_target_scoped_and_credential_free(self):
+        self.commands = {target: [f'"$PY" check.py {target}-first',
+                                  f'"$PY" check.py {target}-second']
+                         for target in ("ca", "ca-codex", "ca-sandbox", "ca-pi")}
+        for target in self.commands:
+            with self.subTest(target=target):
+                proc, log, out = self._authorize("preflight", target=target)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertEqual(re.findall(r"^CHECKED:(.+)$", proc.stdout, re.M),
+                                 [f"{target}-first", f"{target}-second"])
+                self.assertEqual(out, f"target={target}\n")
+                self.assertNotIn("git push", log)
+
+    def test_failed_or_unavailable_check_never_authorizes_either_lane(self):
+        for command in ('"$PY" check.py first fail', 'missing-pretag-command'):
+            self.commands = {"ca-pi": [command, '"$PY" check.py forbidden-later']}
+            for lane in ("preflight", "auto-preflight"):
+                with self.subTest(lane=lane, command=command):
+                    proc, _, out = self._authorize(lane, target="ca-pi")
+                    self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                    self.assertEqual(out, "", "failure must not emit authorization")
+                    self.assertNotIn("CHECKED:forbidden-later", proc.stdout)
+
+    def test_mutating_check_never_authorizes_either_lane(self):
+        self.commands = {"ca-pi": ['"$PY" check.py mutation mutate']}
+        for lane in ("preflight", "auto-preflight"):
+            with self.subTest(lane=lane):
+                proc, _, out = self._authorize(lane, target="ca-pi")
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertIn("MUTATED", proc.stderr)
+                self.assertEqual(out, "")
+
+    def test_auto_only_checks_eligible_targets_and_accepts_no_check_targets(self):
+        self.commands = {"ca": ['"$PY" check.py forbidden-ineligible fail'],
+                         "ca-pi": ['"$PY" check.py eligible-pi']}
+        proc, _, out = self._authorize("auto-preflight", tags="v9.9.9\n")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(re.findall(r"^CHECKED:(.+)$", proc.stdout, re.M), ["eligible-pi"])
+        self.assertEqual(out, "ca=false\nca-codex=true\nca-sandbox=true\n"
+                             "ca-pi=true\nca-pi-version=9.9.9\n")
+
+    def test_auto_malformed_declaration_fails_closed_before_authorization(self):
+        self.commands = {}
+        self.malformed = True
+        proc, _, out = self._authorize("auto-preflight")
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertEqual(out, "")
+
+    def test_preflight_checkouts_do_not_persist_credentials(self):
+        for lane in ("preflight", "auto-preflight"):
+            with self.subTest(lane=lane):
+                block = _jobs()[lane]
+                checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
+                                     r"(?=^      - |\Z)", block).group(0)
+                self.assertIn("persist-credentials: false", checkout)
+                self.assertNotIn("contents: write", block)
+
+    def test_auto_rejects_untrusted_upstream_before_executing_checks(self):
+        self.commands = {"ca": ['"$PY" check.py forbidden-untrusted']}
+        for field, value in (("UPSTREAM_EVENT", "pull_request"),
+                             ("UPSTREAM_CONCLUSION", "failure"),
+                             ("UPSTREAM_BRANCH", "feature"),
+                             ("UPSTREAM_REPOSITORY", "fork/codeArbiter"),
+                             ("UPSTREAM_SHA", "b" * 40),
+                             ("STUB_HEAD", "c" * 40)):
+            with self.subTest(field=field):
+                proc, _, out = self._authorize("auto-preflight", overrides={field: value})
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertEqual(out, "")
+                self.assertNotIn("CHECKED:", proc.stdout)
+
+    def test_auto_checkout_is_pinned_to_trusted_workflow_revision(self):
+        block = _jobs()["auto-preflight"]
+        checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
+                             r"(?=^      - |\Z)", block).group(0)
+        self.assertIn("ref: ${{ github.sha }}", checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", checkout)
+
+    def test_auto_trust_inputs_are_bound_to_upstream_event_fields(self):
+        block = _jobs()["auto-preflight"].split("id: eligible", 1)[1].split("run: |", 1)[0]
+        for variable, field in (("UPSTREAM_EVENT", "event"),
+                                ("UPSTREAM_CONCLUSION", "conclusion"),
+                                ("UPSTREAM_BRANCH", "head_branch"),
+                                ("UPSTREAM_REPOSITORY", "head_repository.full_name"),
+                                ("UPSTREAM_SHA", "head_sha")):
+            with self.subTest(variable=variable):
+                self.assertRegex(block, rf"(?m)^          {variable}: "
+                                 + re.escape("${{ github.event.workflow_run." + field + " }}")
+                                 + r"$")
 
 
 if __name__ == "__main__":

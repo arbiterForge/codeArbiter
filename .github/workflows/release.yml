@@ -139,6 +139,8 @@ jobs:
       target: ${{ steps.target.outputs.target }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Refuse a dispatch off the default branch
         run: |
@@ -193,6 +195,13 @@ jobs:
               exit 1
               ;;
           esac
+          # Per-release evidence is not a per-PR CI gate (AC-6.8). Execute
+          # the selected declaration through the check-only runner before
+          # authorizing any publisher. No token or Actions output channel is
+          # inherited by declared commands; checkout credentials are absent.
+          PYTHON=$(python3 -c 'import sys; print(sys.executable)')
+          env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
+            "$PYTHON" core/pysrc/_releaselib.py run-pre-tag "$TARGET"
           echo "target=$TARGET" >> "$GITHUB_OUTPUT"
 
       - name: Require green merge readiness for this exact commit
@@ -411,20 +420,38 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
 
       - name: Determine which targets have untagged work
         id: eligible
+        env:
+          UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
+          UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          UPSTREAM_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
+          # Execute only the independently selected trusted workflow tree.
+          # An older or foreign event candidate remains inert, even when its
+          # branch is named main or it reports a successful CI conclusion.
+          if [ "$UPSTREAM_EVENT" != push ] || [ "$UPSTREAM_CONCLUSION" != success ] || \
+             [ "$UPSTREAM_BRANCH" != main ] || [ "$UPSTREAM_REPOSITORY" != "$GITHUB_REPOSITORY" ] || \
+             [ "$UPSTREAM_SHA" != "$GITHUB_SHA" ] || [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+            echo "::error::upstream is not a same-repository main push at the trusted workflow revision"
+            exit 1
+          fi
           # "Eligible" mirrors payload_version_gate.py's own question, asked
           # again here rather than trusted from the PR that merged: is the
           # manifest ACTUALLY ahead of what is already tagged, right now, at
           # this exact commit? A target whose manifest did not move in this
           # push is silently skipped — not an error, just nothing to do.
           TAGS=$(git tag -l)
+          PYTHON=$(python3 -c 'import sys; print(sys.executable)')
+          OUTPUTS=()
           for row in \
             "ca plugins/ca/.claude-plugin/plugin.json v" \
             "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
@@ -437,11 +464,19 @@ jobs:
             ELIGIBLE=$(printf '%s' "$TAGS" \
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
-            echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
+            if [ "$ELIGIBLE" = "true" ]; then
+              # Same canonical, check-only release guard as manual dispatch;
+              # ineligible siblings need no new per-release evidence.
+              env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
+                "$PYTHON" core/pysrc/_releaselib.py run-pre-tag "$TARGET"
+            fi
+            OUTPUTS+=("$TARGET=$ELIGIBLE")
             if [ "$TARGET" = "ca-pi" ]; then
-              echo "ca-pi-version=$VERSION" >> "$GITHUB_OUTPUT"
+              OUTPUTS+=("ca-pi-version=$VERSION")
             fi
           done
+          # A late target failure must not leave earlier authorizations behind.
+          printf '%s\n' "${OUTPUTS[@]}" >> "$GITHUB_OUTPUT"
 
   auto-release:
     name: CA | [Auto-tag]
