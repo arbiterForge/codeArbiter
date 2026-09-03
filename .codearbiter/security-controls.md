@@ -39,6 +39,46 @@ project. This is an explicit exception to a general "no process.env for secrets"
 rule: the project has no vault, the key is short-lived per-session, and the
 deployment model is a single-developer CLI tool.
 
+### ca-pi npm publication boundary
+
+ADR-0029 authorizes one release credential, `NPMJS_TOKEN`, sourced only from the
+repository or organization Actions secret store. The reusable publisher forwards
+that named secret explicitly—never through `secrets: inherit`—to the single
+`npm publish` step as `NODE_AUTH_TOKEN`. Its authority is limited to publishing
+the public `@arbiterforge/ca-pi` package at the approved npm registry. Candidate
+tag content is inert data: its scripts are never executed, packing and publishing
+use `--ignore-scripts`, and trusted verifier code is pinned to the protected-main
+workflow commit.
+
+The job acquires only exact `npm@11.19.1` from
+`https://registry.npmjs.org/npm/-/npm-11.19.1.tgz`, bound before extraction or
+execution to
+`sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.
+Acquisition is credential-free and refuses redirects. It uses a fresh runner
+temporary root, performs path-containment checks before extraction, rejects
+links and special files, and executes only the regular resolved `npm-cli.js`
+beneath that root after an exact version check. It does not change a manifest,
+lockfile, global npm state, `PATH`, cache, or release artifact. The exact CLI is
+passed explicitly to packing, publication, and post-publication verification.
+
+Registry success is not inferred from metadata alone. Every npm network command
+pins both the general and `@arbiterforge` scoped registry on the CLI so ambient
+user configuration cannot redirect package traffic. The verifier installs the
+exact registry version into a disposable directory with scripts disabled and
+isolated empty user/global configuration, cache, and log paths; the entire root
+is removed afterward. It runs npm's supported `npm audit signatures` Sigstore
+verification, and then separately
+binds the registry-served SLSA subject digest, repository, main ref, workflow,
+protected-main source commit, and GitHub-hosted builder to the expected release.
+
+The publish job also receives GitHub's short-lived OIDC identity solely for npm
+OIDC provenance. GitHub's ephemeral `github.token` has read-only repository
+permissions and is scoped to checkout and Release evidence lookup; credentials
+are not persisted by checkout. Neither token is logged, written to an output, or
+retained after the job. Credential rotation or revocation of `NPMJS_TOKEN` occurs in the
+organization Actions secret store; no repository change or fallback credential
+is permitted.
+
 A second secret exists in the `ca-sandbox` plugin (ADR-0007): the
 `CLAUDE_CODE_OAUTH_TOKEN` used by `--with-claude` to authenticate Claude Code
 *inside* a sandbox box.
@@ -313,6 +353,16 @@ npm dependencies; the docs site under `site/` is not part of that payload):
   no attribution requirement — more permissive than MIT. Approved for `tslib`
   pulled transitively under `site/` and development-only `plugins/*/tools` locks.
   It is not approved as a runtime plugin dependency or distributed artifact.
+- Artistic-2.0 (CI-only, exact npm CLI only): approved 2026-09-03 by
+  `SUaDtL@users.noreply.github.com` solely for `npm@11.19.1` as the integrity-pinned,
+  script-disabled ca-pi publication tool fetched from the approved npm registry.
+  It is not approved for another package or npm version, a manifest or lockfile,
+  a runtime dependency, or any shipped plugin artifact.
+- CC-BY-3.0 (CI-only, one bundled data package): approved 2026-09-03 by
+  `SUaDtL@users.noreply.github.com` solely for `spdx-exceptions@2.5.0` bundled
+  inside exact `npm@11.19.1` as that same ca-pi publication tool. It is not
+  approved generally, for another package or version, for a manifest or
+  lockfile, as a runtime dependency, or in any shipped plugin artifact.
 
 `BlueOak-1.0.0` and `CC0-1.0` were approved 2026-06-22 (user decision via SMARTS
 arbitration, checkpoint 2026-06-22) to cover transitive `site/` dependencies
@@ -847,6 +897,7 @@ immutable Releases are available.
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
 | Declared release-target commands | `.codearbiter/release-targets.md` rows carry `pre-tag`, `rebuild`, and `generate` shell commands that `/ca:release` executes before composing a tag, on a lane that later holds `contents: write` | Operator-authored executable input, on the `plan.json` `gate.commands` model above and length-capped identically (≤1024 chars, `VALUE_MAX_CHARS`, ADR-0002 precedent). Three controls bound it: commands are **check-only** and a clean-tree assertion runs after each (DECISION-0034), so a mutation blocks the release rather than reaching a tag; the runner (`_releaselib.py run-pre-tag`) enforces order, first-failure stop, and that assertion mechanically rather than by agent compliance; and the declaring file is itself protected under H-22 (ADR-0024), so planting a command requires a fresh authoring marker rather than any write. The residual is the cooperative-agent one ADR-0010 already accepts: a marker-holding session can still declare a command, and this is a governance boundary, not a sandbox |
 | Hosted ca-codex candidate data | A final-tree ZIP or directory is parsed by trusted release-tree code on GitHub-hosted runners | Candidate code is never executed; bounded archive limits, regular-file-only extraction semantics, contained paths, static manifest/front-matter/resource/hook validation, and exact deterministic digest binding fail closed before publication |
+| CI-only npm CLI acquisition | The ca-pi publisher downloads and executes exact `npm@11.19.1` from the approved npm registry without adding it to repository dependency state | Exact registry URL and SHA-512 SRI are drift-guarded; TLS verification stays enabled and redirects are not followed; acquisition is credential-free; archive path/link/device containment and the resolved executable root are checked before exact-version execution; only the absolute reviewed CLI path reaches pack, publish, and verification; all npm network commands pin the approved general and `@arbiterforge` scoped registry, while verifier config, cache, and logs live only in its cleaned disposable root |
 
 ### Closed exceptions
 

@@ -369,6 +369,20 @@ jobs:
           mark-latest: "false"
           github-token: ${{ github.token }}
 
+  publish-pi-npm:
+    name: CA-Pi | [Release] - Publish npm
+    needs: [preflight, release-pi]
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/npm-publish.yml
+    with:
+      tag: ca-pi-v${{ github.event.inputs.pi_confirm }}
+      expected_sha: ${{ github.sha }}
+    secrets:
+      NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+
   # ------------------------------------------------------------------------- #
   # Auto-publish-on-merge. Every push to main that advances a target's manifest
   # past its last published tag creates that tag and its GitHub Release after
@@ -393,6 +407,7 @@ jobs:
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
       ca-sandbox: ${{ steps.eligible.outputs.ca-sandbox }}
       ca-pi: ${{ steps.eligible.outputs.ca-pi }}
+      ca-pi-version: ${{ steps.eligible.outputs.ca-pi-version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -423,6 +438,9 @@ jobs:
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
+            if [ "$TARGET" = "ca-pi" ]; then
+              echo "ca-pi-version=$VERSION" >> "$GITHUB_OUTPUT"
+            fi
           done
 
   auto-release:
@@ -581,16 +599,29 @@ jobs:
           create-release: "true"
           github-token: ${{ github.token }}
 
+  auto-publish-pi-npm:
+    name: CA-Pi | [Auto-publish npm]
+    needs: [auto-preflight, auto-release-pi]
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-pi == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/npm-publish.yml
+    with:
+      tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}
+      expected_sha: ${{ github.event.workflow_run.head_sha }}
+    secrets:
+      NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+
   auto-command-route-release-audit:
     name: "[GATE ] | [RELEASE] | Command-route publication"
-    needs: [auto-preflight, auto-release, auto-release-codex, auto-release-pi]
+    needs: [auto-preflight, auto-release, auto-release-codex, auto-release-pi, auto-publish-pi-npm]
     # `always()` is required because an ineligible publisher is skipped. This
-    # read-only terminal audit still runs after every RA-11 publisher reaches a
-    # terminal state, but only for a successful main CI run whose preflight ran.
-    # It cannot authorize or mask a failed publisher: those job results remain
-    # independently red, and every declared first-containing Release must also
-    # read back as published below.
-    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success'
+    # read-only success receipt runs after every required RA-11 publisher has
+    # succeeded or been proven ineligible. An eligible npm failure suppresses
+    # this receipt while the npm publisher itself remains independently red.
+    # Every declared first-containing Release must also read back below.
+    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && (needs.auto-preflight.outputs.ca-pi != 'true' || needs.auto-publish-pi-npm.result == 'success')
     permissions:
       contents: read
     runs-on: ubuntu-latest
