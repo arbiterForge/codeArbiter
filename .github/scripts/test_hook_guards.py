@@ -278,6 +278,44 @@ def main():
                     "grep -r seed .codearbiter/decisions/"):
             expect_allow(fx, cmd, f"H-11 allow: {cmd}")
 
+        # A filename extension is not an interpreter executable. Exercise the
+        # actual hook entry, including the exact read-only campaign repro.
+        expect_allow(
+            fx,
+            "rg --files .github/scripts | rg 'catalog|surface|docs'; rg -n "
+            "'visibility|replacement|alias|compatibility|deprecat' "
+            "core/surface/commands/commands.md .github/scripts/_cataloglib.py "
+            ".codearbiter/decisions/ADR*",
+            "H-11 filename-extension exact read-only repro",
+        )
+        for suffix in ("py", "python", "python2", "python3", "node", "deno",
+                       "bun", "perl", "ruby", "php", "sh", "bash", "zsh",
+                       "pwsh", "powershell"):
+            for target in (".codearbiter/decisions/0001-seed.md",
+                           ".codearbiter/overrides.log",
+                           ".codearbiter/CONTEXT.md",
+                           ".codearbiter/.markers/security-gate-passed",
+                           ".codearbiter/open-tasks.md"):
+                command = f'rg -e pattern "scripts/source.{suffix}" -e value {target}'
+                expect_allow(fx, command, f"filename extension is data: {suffix} {target}")
+
+        # Non-weakening characterization: paths, wrappers, case and versions
+        # remain interpreter invocations. Script argv stays conservative for
+        # H-05/H-11/H-18/H-19; H-22 retains its existing inline-code condition.
+        for executable in ("py", "./py", "/usr/bin/python3.12",
+                           '"/opt/python bin/python3"',
+                           r'& "C:\Program Files\Python\PY.EXE"',
+                           r".\python.exe", "env python3", "sudo python",
+                           "call py.exe", "pwsh", "powershell.exe"):
+            for target, tag in ((".codearbiter/decisions/0001-seed.md", "H-11"),
+                                (".codearbiter/overrides.log", "H-05"),
+                                (".codearbiter/CONTEXT.md", "H-18"),
+                                (".codearbiter/.markers/security-gate-passed", "H-19")):
+                command = f'{executable} script.txt "{target}"'
+                expect_block(fx, command, tag, f"executable boundary preserved: {command}")
+            command = f'{executable} -c "open(\'open-tasks.md\', \'w\')"'
+            expect_block(fx, command, "H-22", f"inline executable boundary preserved: {command}")
+
         # ---- #574: H-11 had NO interpreter leg — the identical gap as H-05,
         # for the decisions/ directory rather than a single audit-log name.
         for cmd in (
