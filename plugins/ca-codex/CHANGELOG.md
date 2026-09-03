@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-09-03
+
+### Fixed
+
+- Prevent read-only filename searches from falsely triggering protected-state interpreter guards while preserving mutation enforcement.
+
 ## [0.9.0] - 2026-09-02
 
 ### Added
