@@ -86,6 +86,9 @@ python .github/scripts/test_command_catalog.py
 # Workflow trust separation and exact CI impact routing
 python .github/scripts/test_ci_impact.py
 
+# Cross-host coverage identity/provenance (requires the Pi tools test dependencies)
+python .github/scripts/test_coverage_union.py
+
 # ADR-0033 accepted/planned lifecycle, immutable bindings, and verified-only export
 python .github/scripts/test_adr_lifecycle.py
 python .github/scripts/check_adr_lifecycle.py
@@ -276,11 +279,20 @@ and the POSIX arm on the other.
 CI produces the union for both forked trees — `[CHECK] | [REPO] | Coverage union`
 for `plugins/ca/tools` and `[CHECK] | [PI  ] | Coverage union` for
 `plugins/ca-pi/tools` — one advisory matrix cell per host writing a vitest
-**blob** report, merged with `vitest --merge-reports`. Merging is a
-genuine union of executed code, not the last report winning: verified on two
-disjoint suites, 7 + 65 branches merging to 72 and 18 + 69 lines to 87. The job
-says so when only one host reported, so a partial figure is never mistaken for
-the union.
+**blob** report, merged with `vitest --merge-reports`. Before testing,
+`coverage_union.py prepare` binds each host's source, configuration, lockfile,
+and checkout identity; `prepare --check` rechecks those inputs afterward.
+`coverage_union.py verify` validates the host receipts and compatible coverage
+maps, then writes normalized copies into a fresh merge directory. Original
+reports remain unchanged. Missing-host output is explicitly partial; invalid
+evidence cannot be reported as a union.
+
+Vitest alone does not normalize Windows and Linux absolute source paths. The
+earlier same-host disjoint-suite demonstration did not prove cross-host union:
+PR #740 exposed 41 sources counted as 82 files. The behavioral regression now
+requires complementary host coverage to retain one identity per source, while
+preserving legitimately distinct files. Historical figures below are not
+accepted cross-host evidence until remeasured through the verified path.
 
 Each tree's blobs are namespaced `coverage-blob-<tree>-os-<host>`, so one
 tree's merge cannot collect another's. The naive names collided — a `ca-*` glob
@@ -299,25 +311,24 @@ clear it**; a report satisfying one and not the other does not pass. Putting the
 number in three `vitest.config.ts` files would fork that single source of truth
 and the copies would drift the first time the stage moves.
 
-Measured baseline at stage 2 (≥ 70%), refreshed 2026-07-29 from CI. The two
-platform-forked trees carry their **union** figure; the others are single-host
-because they have nothing to merge. Every row names how it was measured, which
-is the rule #521 exists to enforce:
+Historical baseline at stage 2 (≥ 70%), recorded 2026-07-29 from CI. The two
+platform-forked figures require remeasurement after the cross-host identity
+repair; the other rows are single-host measurements. Each row names its
+measurement scope:
 
 | tree | lines | branches | verdict | host |
 | --- | --- | --- | --- | --- |
-| `plugins/ca/tools` | 76.82% | 73.15% | clears | **union** (ubuntu + windows) |
-| `plugins/ca-pi/tools` | 82.51% | 77.10% | clears | **union** (ubuntu + windows) |
+| `plugins/ca/tools` | 76.82% | 73.15% | unverified historical identity merge | ubuntu + windows, before identity repair |
+| `plugins/ca-pi/tools` | 82.51% | 77.10% | unverified historical identity merge | ubuntu + windows, before identity repair |
 | `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears | windows |
 | `site` | 91.29% | 84.85% | clears | ubuntu-equivalent (no platform fork) |
 
-**The union changed the answer for `plugins/ca/tools`.** #511 drove that tree
+**Historical motivation for union measurement.** #511 drove `plugins/ca/tools`
 against 66.18% branches on Windows and 65.35% on Linux — both below the floor.
-Merged, it is 73.15%, and clears by three points. The shortfall was never missing
-tests: it was ~7 points of platform-forked `exec.ts` code that cannot execute off
-its own host, scored as uncovered on whichever host happened to run. That is the
-concrete case for the rule, and the reason a single-host figure is no longer
-quotable here.
+The previously reported merged 73.15% is not current proof that the union clears
+the floor: cross-host file identity must first be verified. Platform-forked
+`exec.ts` code still cannot execute off its own host, which is why a single-host
+figure is not a substitute for the required union.
 
 Two caveats when reading a local report:
 

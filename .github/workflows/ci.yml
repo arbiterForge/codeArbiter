@@ -144,6 +144,8 @@ jobs:
             all:
               - '**'
             ca:
+              - '.github/scripts/coverage_union.py'
+              - '.github/scripts/test_coverage_union.py'
               - 'plugins/ca/**'
               - 'core/**'
               - 'README.md'
@@ -167,6 +169,8 @@ jobs:
               - '.github/scripts/test_codex_candidate_provenance.py'
               - '.github/workflows/ci.yml'
             ca-pi:
+              - '.github/scripts/coverage_union.py'
+              - '.github/scripts/test_coverage_union.py'
               - 'plugins/ca-pi/**'
               - 'core/**'
               # The ca-pi extension bundles EMBED the shared farm redactor
@@ -498,17 +502,25 @@ jobs:
         # the `tools` job, which runs under the identical `ca` path filter - the
         # derived audited-graph rule in test_ci_impact.py checks exactly that.
         run: npm ci --ignore-scripts
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
+      - name: Bind coverage inputs
+        run: python ../../../.github/scripts/coverage_union.py prepare --repo ../../.. --tree plugins/ca/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
       - name: Coverage (blob)
         # A BLOB report is what `--merge-reports` recombines, and vitest
-        # recomputes coverage across blobs rather than letting the last one win.
-        # Verified on two disjoint suites - 7 + 65 branches merge to 72, 18 + 69
-        # lines to 87.
+        # recomputes coverage across blobs after the merge job verifies and
+        # normalizes host-specific source identities. Raw absolute paths alone
+        # would count Windows and Linux as two separate source trees.
         #
         # `default` is requested ALONGSIDE it because blob REPLACES the console
         # reporter: the first run of this job failed on Windows and the log
         # showed only "exit code 1" with no summary, no failing test name and no
         # assertion. A cell that cannot say what broke is not worth having.
-        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-blobs/${{ matrix.os }}.json
+        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-inputs/${{ matrix.os }}.json
+      - name: Recheck coverage inputs after execution
+        if: always()
+        run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
@@ -522,7 +534,7 @@ jobs:
         if: always()
         with:
           name: coverage-blob-ca-os-${{ matrix.os }}
-          path: plugins/ca/tools/coverage-blobs/
+          path: plugins/ca/tools/coverage-inputs/
           retention-days: 5
 
   coverage-union-merge:
@@ -545,21 +557,26 @@ jobs:
           cache-dependency-path: plugins/ca/tools/package-lock.json
       - name: Install (locked)
         run: npm ci --ignore-scripts
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.x"
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: coverage-blob-ca-os-*
           merge-multiple: true
-          path: plugins/ca/tools/coverage-blobs/
+          path: plugins/ca/tools/coverage-inputs/
       - name: Merge and report the union
+        shell: bash
         # A missing blob (a cancelled or flaked host cell) degrades to "report
         # what we have and name what is missing" rather than failing a lane
         # nothing gates on - the same thing maturity-coverage.md tells a human
         # reading a partial local report.
         run: |
           echo "### Coverage union - plugins/ca/tools" >> "$GITHUB_STEP_SUMMARY"
-          blobs=$(ls coverage-blobs/*.json 2>/dev/null | wc -l)
+          python ../../../.github/scripts/coverage_union.py verify --repo ../../.. --tree plugins/ca/tools --input coverage-inputs --output coverage-verified
+          blobs=$(ls coverage-verified/*.json 2>/dev/null | wc -l)
           echo "blobs merged: $blobs" | tee -a "$GITHUB_STEP_SUMMARY"
-          ls coverage-blobs/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
+          ls coverage-verified/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
           if [ "$blobs" -eq 0 ]; then
             echo "no host produced a blob - nothing to merge (advisory)" | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -568,7 +585,7 @@ jobs:
             echo "PARTIAL: only $blobs of 2 hosts reported - this is NOT the union figure"               | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          npx vitest --merge-reports coverage-blobs --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || true
+          npx vitest --merge-reports coverage-verified --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
   coverage-union-pi:
@@ -639,17 +656,22 @@ jobs:
         # the `ca-pi-checks` job, which runs under the identical `ca-pi` path filter - the
         # derived audited-graph rule in test_ci_impact.py checks exactly that.
         run: npm ci --ignore-scripts
+      - name: Bind coverage inputs
+        run: python ../../../.github/scripts/coverage_union.py prepare --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
       - name: Coverage (blob)
         # A BLOB report is what `--merge-reports` recombines, and vitest
-        # recomputes coverage across blobs rather than letting the last one win.
-        # Verified on two disjoint suites - 7 + 65 branches merge to 72, 18 + 69
-        # lines to 87.
+        # recomputes coverage across blobs after the merge job verifies and
+        # normalizes host-specific source identities. Raw absolute paths alone
+        # would count Windows and Linux as two separate source trees.
         #
         # `default` is requested ALONGSIDE it because blob REPLACES the console
         # reporter: the first run of this job failed on Windows and the log
         # showed only "exit code 1" with no summary, no failing test name and no
         # assertion. A cell that cannot say what broke is not worth having.
-        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-blobs/${{ matrix.os }}.json
+        run: npx vitest run --coverage --reporter=blob --reporter=default --outputFile.blob=coverage-inputs/${{ matrix.os }}.json
+      - name: Recheck coverage inputs after execution
+        if: always()
+        run: python ../../../.github/scripts/coverage_union.py prepare --check --repo ../../.. --tree plugins/ca-pi/tools --host ${{ matrix.os }} --output coverage-inputs/${{ matrix.os }}.provenance.json
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         # NOT vitest's default `.vitest-reports/`: upload-artifact defaults to
         # `include-hidden-files: false`, so a dot-directory uploads NOTHING and
@@ -663,7 +685,7 @@ jobs:
         if: always()
         with:
           name: coverage-blob-ca-pi-os-${{ matrix.os }}
-          path: plugins/ca-pi/tools/coverage-blobs/
+          path: plugins/ca-pi/tools/coverage-inputs/
           retention-days: 5
 
   coverage-union-pi-merge:
@@ -696,17 +718,19 @@ jobs:
         with:
           pattern: coverage-blob-ca-pi-os-*
           merge-multiple: true
-          path: plugins/ca-pi/tools/coverage-blobs/
+          path: plugins/ca-pi/tools/coverage-inputs/
       - name: Merge and report the union
+        shell: bash
         # A missing blob (a cancelled or flaked host cell) degrades to "report
         # what we have and name what is missing" rather than failing a lane
         # nothing gates on - the same thing maturity-coverage.md tells a human
         # reading a partial local report.
         run: |
           echo "### Coverage union - plugins/ca-pi/tools" >> "$GITHUB_STEP_SUMMARY"
-          blobs=$(ls coverage-blobs/*.json 2>/dev/null | wc -l)
+          python ../../../.github/scripts/coverage_union.py verify --repo ../../.. --tree plugins/ca-pi/tools --input coverage-inputs --output coverage-verified
+          blobs=$(ls coverage-verified/*.json 2>/dev/null | wc -l)
           echo "blobs merged: $blobs" | tee -a "$GITHUB_STEP_SUMMARY"
-          ls coverage-blobs/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
+          ls coverage-verified/ 2>/dev/null | sed 's/^/  - /' >> "$GITHUB_STEP_SUMMARY" || true
           if [ "$blobs" -eq 0 ]; then
             echo "no host produced a blob - nothing to merge (advisory)" | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -715,7 +739,7 @@ jobs:
             echo "PARTIAL: only $blobs of 2 hosts reported - this is NOT the union figure"               | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          npx vitest --merge-reports coverage-blobs --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || true
+          npx vitest --merge-reports coverage-verified --coverage --coverage.reporter=text-summary             2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
   tools:
@@ -1023,6 +1047,9 @@ jobs:
         run: npm run typecheck
       - name: Test the complete Pi adapter suite
         run: npm test
+      - name: Test cross-host coverage identity and provenance
+        working-directory: .
+        run: python .github/scripts/test_coverage_union.py
       - name: Test adversarial Pi security promotion contract
         working-directory: .
         run: python .github/scripts/test_pi_security.py
