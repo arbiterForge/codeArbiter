@@ -85,6 +85,8 @@ jobs:
         # gates in ci.yml; --omit=dev scopes it to what the built site actually
         # ships, keeping routine Astro/vitest dev advisories non-blocking.
         run: npm audit --omit=dev --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Typecheck
         run: npm run typecheck
       - name: Enforce site/VOICE.md punctuation (issue #338)
