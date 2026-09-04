@@ -150,6 +150,12 @@ jobs:
             exit 1
           fi
 
+      - name: Require complete prior tag provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
+
       - name: Resolve exactly one release target
         id: target
         env:
@@ -428,6 +434,7 @@ jobs:
       - name: Determine which targets have untagged work
         id: eligible
         env:
+          GH_TOKEN: ${{ github.token }}
           UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
           UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
@@ -452,6 +459,7 @@ jobs:
           TAGS=$(git tag -l)
           PYTHON=$(python3 -c 'import sys; print(sys.executable)')
           OUTPUTS=()
+          ANY_ELIGIBLE=false
           for row in \
             "ca plugins/ca/.claude-plugin/plugin.json v" \
             "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
@@ -465,6 +473,7 @@ jobs:
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             if [ "$ELIGIBLE" = "true" ]; then
+              ANY_ELIGIBLE=true
               # Same canonical, check-only release guard as manual dispatch;
               # ineligible siblings need no new per-release evidence.
               env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
@@ -475,6 +484,9 @@ jobs:
               OUTPUTS+=("ca-pi-version=$VERSION")
             fi
           done
+          if [ "$ANY_ELIGIBLE" = true ]; then
+            python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
+          fi
           # A late target failure must not leave earlier authorizations behind.
           printf '%s\n' "${OUTPUTS[@]}" >> "$GITHUB_OUTPUT"
 

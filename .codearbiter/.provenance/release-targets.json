@@ -4,27 +4,27 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "0a68be53eabb5e3959f8cd4c3983452ebc49c1ea",
+      "hash": "92badd2d5da20c8df75c0c86ff6e25ab62189ca7",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "f745b3e9f4dcadc1254a1f127b5c6a04fc552629",
+      "hash": "92c47bfc2e70b22f0896b7c0b6f42f1cf1e448bf",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "41539528862d39da0df0ac313be3a21f68db2084",
+      "hash": "f3b69f207d61457fdc1fa82786df4b926d2f12e1",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "8773d1247120be481f7fceb192e6115bbc5929c8",
+      "hash": "ff348451ca37735a2d0c0efb60f5d7a9f39c5296",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "a68d16c8f66ec31f0ef547c2523c6146c8e92b00",
+      "hash": "a94397fa5ab4d023f3a25d06a014a3b532b01221",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -39,17 +39,17 @@
     },
     {
       "drift_trigger": true,
-      "hash": "4abd158ac9cf28f3f1f90750017f0c16079d9049",
+      "hash": "3ef5a5ae7d0a8654058c27aa668288ca646cd2d6",
       "path": "plugins/ca-pi/package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "4778082d5ea1466d96a6bb0640eeee58bbb30f0e",
+      "hash": "2c1cc323bc3049f6e6abc5124c167d607667a8b4",
       "path": "plugins/ca-sandbox/.claude-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "d2a8c793bcaaceb3649a06076a27533f79eb7161",
+      "hash": "e214498b4883046287d7dcb15c63014a287dfb27",
       "path": "plugins/ca-sandbox/CHANGELOG.md"
     },
     {
@@ -59,12 +59,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "937c440af255c8b6aa97a4edcd4283ec7130c665",
+      "hash": "801cc127704b6da8afaff4c429b343f6bab10e48",
       "path": "plugins/ca-sandbox/tools/sandbox.js"
     },
     {
       "drift_trigger": true,
-      "hash": "ad192c049e8d23bc06816fb75f7b46182f824e8a",
+      "hash": "53cde6f1c76b1251da390757f6ae47a9359e0527",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {

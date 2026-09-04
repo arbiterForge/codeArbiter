@@ -255,6 +255,22 @@ export type BuildResult = {
   notes: string[];
 };
 
+/** Fixed, coarse progress markers; no command, path, output, or environment data. */
+type BuildStage = "image-inspect" | "nixpacks-probe" | "nixpacks-build" | "dockerfile-build";
+type BuildStageReporter = (stage: BuildStage) => unknown;
+
+function reportBuildStage(reporter: BuildStageReporter | undefined, stage: BuildStage): void {
+  // Observability is advisory: synchronous throws and asynchronous rejections
+  // cannot prevent an effect or alter its exit/error semantics.
+  try {
+    const pending = reporter?.(stage);
+    const thenable = pending as { then?: unknown } | null | undefined;
+    if (typeof thenable?.then === "function") {
+      void Promise.resolve(pending as PromiseLike<unknown>).catch(() => undefined);
+    }
+  } catch { /* observer failure is non-fatal */ }
+}
+
 // --------------------------------------------------------------------------
 // default real-docker effects
 // --------------------------------------------------------------------------
@@ -550,6 +566,7 @@ const defaultDeps = (): BuildDeps => ({
  * @param repoDir absolute path to the cloned repo (its basename names the tag).
  * @param dephash the dependency cache key from computeDepHash (dephash.ts).
  * @param deps injectable docker/build effects (defaults shell real docker/nixpacks).
+ * @param reportStage optional fixed-vocabulary in-flight build marker.
  * @returns the tag plus whether the image was reused or freshly built, the
  *   builder used, and any user-facing notes (e.g. the nixpacks-missing fallback).
  * @throws if a build was attempted and failed (non-zero exit).
@@ -558,11 +575,13 @@ export async function buildOrReuseImage(
   repoDir: string,
   dephash: string,
   deps: BuildDeps = defaultDeps(),
+  reportStage?: BuildStageReporter,
 ): Promise<BuildResult> {
   const tag = imageTag(repoDir, dephash);
   const notes: string[] = [];
 
   // CACHE CHECK (AC-04): an existing tag => reuse, NO build.
+  reportBuildStage(reportStage, "image-inspect");
   const inspectCode = await deps.imageInspect(tag);
   if (inspectCode === 0) {
     return { tag, reused: true, built: false, builder: null, notes };
@@ -570,6 +589,7 @@ export async function buildOrReuseImage(
 
   // CACHE MISS (AC-05): decide the builder. Prefer nixpacks; fall back to the
   // generated Dockerfile (and NOTE the dependency) when nixpacks is unavailable.
+  reportBuildStage(reportStage, "nixpacks-probe");
   const nixpacks = await deps.ensureNixpacks();
   let builder: Builder;
   if (nixpacks.available) {
@@ -583,6 +603,7 @@ export async function buildOrReuseImage(
   }
 
   const ctx: BuildContext = { repoDir, builder, nixpacks: nixpacks.via, notes };
+  reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);
   if (result.code !== 0) {
     throw new Error(

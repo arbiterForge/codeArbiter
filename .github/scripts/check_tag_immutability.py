@@ -33,6 +33,11 @@ read`, which GITHUB_TOKEN does grant, so it runs LIVE in ordinary CI rather than
 skipping by default.  The skip path exists for transport failures, rate limits,
 and local runs without a token - never as the normal case.
 
+RELEASE PREFLIGHT. --require-recorded is deliberately stricter: it refuses
+missing credentials, unreadable inventory, or any unrecorded governed tag.
+Ordinary observation policy is unchanged. A new tag is recorded afterward from
+its trusted run receipt through a reviewed PR, before another release is allowed.
+
 READ-ONLY.  Paginated GETs against `/git/refs/tags`.  Nothing is written, and a
 partial listing is discarded rather than audited, because tags missing from a
 truncated page would otherwise read as deletions.
@@ -68,7 +73,7 @@ MAX_PAGES = 50
 # A published tag is a namespace prefix followed by a SemVer core, optionally
 # with a pre-release or build suffix (`v2.1.0-beta.2` is a real published tag).
 # Requiring the version shape is what stops `v*` from swallowing `versioned-*`.
-_VERSION = r"\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?"
+_VERSION = r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?"
 _GOVERNED = re.compile(
     "^(?:%s)$" % "|".join(re.escape(ns[:-1]) + _VERSION for ns in NAMESPACES)
 )
@@ -133,9 +138,8 @@ def audit(recorded: dict[str, Provenance], live: dict[str, str] | None) -> list[
 def unrecorded(recorded: dict[str, Provenance], live: dict[str, str]) -> list[str]:
     """Governed tags on the remote that the manifest does not yet record.
 
-    This is the NORMAL state right after a release, so it is a notice and never
-    a finding - but an unrecorded tag is an unguarded tag, so it is said out
-    loud until the release adds it.
+    This is expected immediately after a release. Ordinary CI warns; strict
+    release preflight refuses to authorize another release until it is recorded.
     """
     return sorted(
         name for name in live if is_governed(name) and name not in recorded
@@ -167,10 +171,25 @@ def read_live_tags(repo: str, *, rest) -> dict[str, str] | None:
         if status != 200 or not isinstance(payload, list):
             return None
         for ref in payload:
-            name = str(ref.get("ref", "")).removeprefix("refs/tags/")
-            sha = (ref.get("object") or {}).get("sha")
-            if name and sha:
-                tags[name] = sha
+            if not isinstance(ref, dict):
+                return None
+            full_name = ref.get("ref")
+            obj = ref.get("object")
+            if not isinstance(full_name, str) or not full_name.startswith("refs/tags/"):
+                return None
+            if not isinstance(obj, dict):
+                return None
+            name = full_name.removeprefix("refs/tags/")
+            sha = obj.get("sha")
+            if (
+                not name or name in tags or not isinstance(sha, str)
+                or re.fullmatch(r"[0-9a-f]{40}", sha) is None
+                # Working tags may legally label blobs or trees. Their presence
+                # must not turn a definite release-tag drift into a skipped audit.
+                or obj.get("type") not in ("tag", "commit", "blob", "tree")
+            ):
+                return None
+            tags[name] = sha
         if len(payload) < PER_PAGE:
             return tags
     return None
@@ -222,14 +241,24 @@ def main(argv=None, *, token=None, rest=None, recorded=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", ""))
     parser.add_argument("--manifest", default=str(MANIFEST_PATH))
+    parser.add_argument(
+        "--require-recorded", action="store_true",
+        help="Refuse release when prior tag records are incomplete or cannot be verified.",
+    )
     arguments = parser.parse_args(argv)
 
     if token is None:
         token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
     if not arguments.repo:
+        if arguments.require_recorded:
+            print("::error title=Tag provenance::release requires a repository to verify")
+            return 1
         print("SKIP: no --repo and no GITHUB_REPOSITORY; nothing to audit.")
         return 0
     if not token and rest is None:
+        if arguments.require_recorded:
+            print("::error title=Tag provenance::release requires authenticated tag evidence")
+            return 1
         print(_SKIP_NOTE)
         print(f"::notice title=Tag immutability::skipped for {arguments.repo} - no GH_TOKEN")
         return 0
@@ -250,14 +279,21 @@ def main(argv=None, *, token=None, rest=None, recorded=None) -> int:
     if findings:
         return 1
     if live is None:
+        if arguments.require_recorded:
+            print("::error title=Tag provenance::release requires a complete live tag inventory")
+            return 1
         return 0
 
-    for name in unrecorded(provenance, live):
+    missing = unrecorded(provenance, live)
+    for name in missing:
+        level = "error" if arguments.require_recorded else "warning"
         print(
-            f"::warning title=Unrecorded published tag::{name} is published but "
+            f"::{level} title=Unrecorded published tag::{name} is published but "
             f"absent from {MANIFEST_PATH.name}, so its target is not being "
             "verified. Add it in the release that published it (issue #386)."
         )
+    if missing and arguments.require_recorded:
+        return 1
     print(
         f"OK: {len(provenance)} published tags in {arguments.repo} still resolve "
         "to the commits they were published at."

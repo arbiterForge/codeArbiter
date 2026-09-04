@@ -34,6 +34,7 @@ contract in this directory. The two execution classes need a POSIX shell and
 so are skipped on Windows — the structural classes above run everywhere, and
 the hooks job's ubuntu/macos cells run all of it.
 """
+import json
 import os
 import re
 import shutil
@@ -1853,6 +1854,73 @@ class NameKeyedTargetSelectionTest(unittest.TestCase):
 
 
 @POSIX_ONLY
+class TagReceiptExecutionTest(_ShellHarness):
+    """Run the shipped capture shell and helper with only Git transport faked.
+
+    GitHub's always-step scheduling/upload is structurally checked separately;
+    this fixture cannot prove the external artifact service retained anything.
+    """
+
+    def _sandbox(self):
+        root = super()._sandbox()
+        scripts = root / ".github/scripts"
+        shutil.copy(HERE / "tag_publication_receipt.py", scripts / "_fixture_tag_receipt.py")
+        shutil.copy(HERE / "check_tag_immutability.py", scripts / "check_tag_immutability.py")
+        (scripts / "tag_publication_receipt.py").write_text(
+            "import os, subprocess, sys\n"
+            "from _fixture_tag_receipt import main\n"
+            "def run(args, **kwargs):\n"
+            "    tag = os.environ['TAG']\n"
+            "    assert args == ['git', 'ls-remote', '--tags', 'origin', "
+            "'refs/tags/' + tag, 'refs/tags/' + tag + '^{}']\n"
+            "    commit = os.environ.get('STUB_RECEIPT_COMMIT', os.environ['GITHUB_SHA'])\n"
+            "    refs = 'a' * 40 + '\\trefs/tags/' + tag + '\\n'\n"
+            "    refs += commit + '\\trefs/tags/' + tag + '^{}\\n'\n"
+            "    return subprocess.CompletedProcess(args, 0, refs, '')\n"
+            "sys.exit(main(run=run))\n",
+            encoding="utf-8", newline="\n")
+        self.receipt_path = root / "receipt.json"
+        return root
+
+    def _capture(self, *, before="", overrides=None):
+        env = {"TAG": "v9.9.9", "RECEIPT_PATH": "receipt.json",
+               "GITHUB_RUN_ID": "12345", "GITHUB_RUN_ATTEMPT": "2",
+               "VER": "9.9.9", "SUMMARY": "", "TITLE_PREFIX": "codeArbiter",
+               "MARK_LATEST": "false"}
+        env.update(overrides or {})
+        return self._run(before + _action_step("Capture published tag identity receipt"), env=env)
+
+    def test_capture_binds_remote_identity_and_hosted_run(self):
+        proc, _, _ = self._capture()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        receipt = json.loads(self.receipt_path.read_text(encoding="utf-8"))
+        self.assertEqual(receipt["repo"], "arbiterForge/codeArbiter")
+        self.assertEqual(receipt["tag"], "v9.9.9")
+        self.assertEqual(receipt["identity"], {"object_sha": "a" * 40,
+                         "object_type": "tag", "commit_sha": self.HEAD})
+        self.assertEqual(receipt["source"], {"kind": "hosted-tag-observation",
+                         "run_id": 12345, "run_attempt": 2, "workflow_sha": self.HEAD})
+
+    def test_capture_runs_after_push_succeeds_but_release_creation_fails(self):
+        # Execute the real publish body with a failed Release API mutation.
+        # Then model the separately asserted always-step scheduling.
+        before = (
+            "gh() { if [ \"$1\" = api ]; then printf '[[]]\\n'; else return 1; fi; }\n"
+            "set +e\n(\n" + _action_step("Create the tag and GitHub Release") +
+            "\n)\nPUBLISH_EXIT=$?\n[ \"$PUBLISH_EXIT\" -ne 0 ] || exit 99\n")
+        proc, log, _ = self._capture(before=before)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("git push origin refs/tags/v9.9.9", log)
+        self.assertTrue(self.receipt_path.is_file())
+        self.assertEqual(json.loads(self.receipt_path.read_text())["identity"]["commit_sha"], self.HEAD)
+
+    def test_capture_refuses_wrong_commit_without_a_receipt(self):
+        proc, _, _ = self._capture(overrides={"STUB_RECEIPT_COMMIT": "b" * 40})
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertFalse(self.receipt_path.exists())
+
+
+@POSIX_ONLY
 class DeclaredPreTagExecutionTest(_ShellHarness):
     """AC-6.8/2.1-2.3: release authorization executes declared checks, not CI.
 
@@ -1863,6 +1931,20 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
 
     def _sandbox(self):
         root = super()._sandbox()
+        # Exercise the real checker and CLI; replace only its network input.
+        # The empty fixture inventory is not evidence about production tags.
+        scripts = root / ".github/scripts"
+        shutil.copy(HERE / "check_tag_immutability.py", scripts / "_fixture_tag_checker.py")
+        (scripts / "check_tag_immutability.py").write_text(
+            "import os, sys\n"
+            "from _fixture_tag_checker import main\n"
+            "def rest(path):\n"
+            "    print('PROVENANCE-CHECK', flush=True)\n"
+            "    if os.environ.get('STUB_PROVENANCE_UNAVAILABLE') == '1':\n"
+            "        return 503, {}\n"
+            "    return 200, []\n"
+            "sys.exit(main(rest=rest, recorded={}))\n",
+            encoding="utf-8", newline="\n")
         shutil.copy(REPO_ROOT / "core/pysrc/_gitexec.py", root / "core/pysrc/_gitexec.py")
         declared = root / ".codearbiter/release-targets.md"
         text = re.sub(r"(?m)^pre-tag:.*\n", "", declared.read_text(encoding="utf-8"))
@@ -1903,7 +1985,35 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         env.update(overrides or {})
         step = ("Resolve exactly one release target" if lane == "preflight"
                 else "Determine which targets have untagged work")
-        return self._run(_step_run(lane, step), env=env)
+        script = _step_run(lane, step)
+        if lane == "preflight":
+            # GitHub stops the job on a failed earlier step. Model that
+            # boundary explicitly when composing the two real shell bodies.
+            script = "set -e\n" + _step_run(lane, "Require complete prior tag provenance") + "\n" + script
+        return self._run(script, env=env)
+
+    def test_unavailable_provenance_never_emits_publication_authority(self):
+        self.commands = {}
+        for lane in ("preflight", "auto-preflight"):
+            with self.subTest(lane=lane):
+                proc, log, out = self._authorize(
+                    lane, overrides={"STUB_PROVENANCE_UNAVAILABLE": "1"})
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertIn("release requires a complete live tag inventory", proc.stdout)
+                self.assertEqual(out, "")
+                self.assertNotIn("git push", log)
+
+    def test_auto_noop_does_not_require_publication_provenance(self):
+        self.commands = {}
+        tags = "v9.9.9\nca-codex-v9.9.9\nca-sandbox-v9.9.9\nca-pi-v9.9.9\n"
+        proc, log, out = self._authorize(
+            "auto-preflight", tags=tags,
+            overrides={"STUB_PROVENANCE_UNAVAILABLE": "1"})
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertNotIn("PROVENANCE-CHECK", proc.stdout)
+        self.assertEqual(out, "ca=false\nca-codex=false\nca-sandbox=false\nca-pi=false\n"
+                             "ca-pi-version=9.9.9\n")
+        self.assertNotIn("git push", log)
 
     def test_manual_checks_are_ordered_target_scoped_and_credential_free(self):
         self.commands = {target: [f'"$PY" check.py {target}-first',

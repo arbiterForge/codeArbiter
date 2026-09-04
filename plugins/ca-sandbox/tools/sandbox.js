@@ -337,6 +337,16 @@ function sanitizeRepoName(repoDir) {
 function imageTag(repoDir, dephash) {
   return `${IMAGE_PREFIX}:${sanitizeRepoName(repoDir)}-${dephash}`;
 }
+function reportBuildStage(reporter, stage) {
+  try {
+    const pending = reporter?.(stage);
+    const thenable = pending;
+    if (typeof thenable?.then === "function") {
+      void Promise.resolve(pending).catch(() => void 0);
+    }
+  } catch {
+  }
+}
 async function defaultImageInspect(tag) {
   const r = await run("docker", ["image", "inspect", tag]);
   return r.code;
@@ -506,13 +516,15 @@ var defaultDeps = () => ({
   nixpacksVersion: defaultNixpacksVersion,
   ensureNixpacks: defaultEnsureNixpacks
 });
-async function buildOrReuseImage(repoDir, dephash, deps = defaultDeps()) {
+async function buildOrReuseImage(repoDir, dephash, deps = defaultDeps(), reportStage) {
   const tag = imageTag(repoDir, dephash);
   const notes = [];
+  reportBuildStage(reportStage, "image-inspect");
   const inspectCode = await deps.imageInspect(tag);
   if (inspectCode === 0) {
     return { tag, reused: true, built: false, builder: null, notes };
   }
+  reportBuildStage(reportStage, "nixpacks-probe");
   const nixpacks = await deps.ensureNixpacks();
   let builder;
   if (nixpacks.available) {
@@ -523,6 +535,7 @@ async function buildOrReuseImage(repoDir, dephash, deps = defaultDeps()) {
     if (nixpacks.note) notes.push(nixpacks.note);
   }
   const ctx = { repoDir, builder, nixpacks: nixpacks.via, notes };
+  reportBuildStage(reportStage, builder === "nixpacks" ? "nixpacks-build" : "dockerfile-build");
   const result = await deps.runBuild(tag, ctx);
   if (result.code !== 0) {
     throw new Error(

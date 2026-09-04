@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.3] - 2026-09-04
+
+### Changed
+
+- Synchronize the shared host kernel's adapter identity metadata with the Claude adapter version.
+
 ## [0.10.2] - 2026-09-03
 
 ### Fixed

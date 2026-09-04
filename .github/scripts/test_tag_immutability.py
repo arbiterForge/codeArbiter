@@ -18,6 +18,7 @@ import io
 import json
 import re
 import unittest
+from unittest.mock import patch
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -212,7 +213,7 @@ class ShippedManifest(unittest.TestCase):
     def setUp(self):
         self.manifest = json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
 
-    def test_the_manifest_records_every_currently_published_tag(self):
+    def test_the_manifest_retains_at_least_the_original_inventory(self):
         self.assertGreaterEqual(len(self.manifest["tags"]), 26)
 
     def test_every_recorded_tag_is_governed_and_fully_specified(self):
@@ -282,9 +283,162 @@ class CommandLine(unittest.TestCase):
         self.assertIn("::error", output)
         self.assertIn("v2.8.13", output)
 
+    def test_legal_working_tag_types_cannot_hide_a_moved_release(self):
+        page = [{"ref": f"refs/tags/{name}", "object": {"sha": _MOVED, "type": "tag"}}
+                for name in RECORDED]
+        for object_type in ("blob", "tree"):
+            with self.subTest(object_type=object_type):
+                inventory = page + [{"ref": "refs/tags/working-object", "object": {
+                    "sha": "d" * 40, "type": object_type}}]
+                code, output = self._run(token="t", rest=lambda path: (200, inventory), recorded=RECORDED)
+                self.assertEqual(code, 1)
+                self.assertIn("MOVED", output)
+                self.assertNotIn("SKIP", output)
+
+
+class StrictReleaseObservation(unittest.TestCase):
+    """LG01: unavailable or incomplete prior provenance cannot authorize release."""
+
+    def _run(self, **kwargs):
+        arguments = module.argparse.Namespace(
+            repo="owner/name", manifest=str(module.MANIFEST_PATH), require_recorded=True,
+        )
+        buffer = io.StringIO()
+        # Isolate the decision from CLI spelling so the baseline fails on its
+        # permissive result, not on argparse rejecting a not-yet-added option.
+        with patch.object(module.argparse.ArgumentParser, "parse_args", return_value=arguments):
+            with redirect_stdout(buffer):
+                result = module.main([], **kwargs)
+        return result, buffer.getvalue()
+
+    def test_missing_credentials_refuses_release(self):
+        code, output = self._run(token="")
+        self.assertEqual(1, code)
+        self.assertIn("::error", output)
+
+    def test_prerelease_with_build_metadata_requires_a_record(self):
+        tag = "ca-pi-v1.2.3-rc.1+build.4"
+        page = [{"ref": "refs/tags/" + tag, "object": {"sha": "a" * 40, "type": "tag"}}]
+        code, output = self._run(token="t", recorded={}, rest=lambda path: (200, page))
+        self.assertEqual(code, 1)
+        self.assertIn(tag, output)
+
+    def test_real_cli_checks_clean_missing_and_moved_inventory(self):
+        page = [{"ref": f"refs/tags/{name}", "object": {
+            "sha": entry["object_sha"], "type": entry["object_type"]}}
+            for name, entry in RECORDED.items()]
+        missing = page + [{"ref": "refs/tags/v99.0.0", "object": {
+            "sha": "a" * 40, "type": "tag"}}]
+        moved = [dict(row, object={"sha": "b" * 40, "type": "tag"}) for row in page]
+        for inventory, expected in ((page, 0), (missing, 1), (moved, 1)):
+            with self.subTest(expected=expected, inventory=inventory):
+                with redirect_stdout(io.StringIO()):
+                    result = module.main(["--repo", "owner/name", "--require-recorded"],
+                                         token="t", recorded=RECORDED,
+                                         rest=lambda path: (200, inventory))
+                self.assertEqual(result, expected)
+
+    def test_real_cli_refuses_absent_repository(self):
+        with redirect_stdout(io.StringIO()) as output:
+            result = module.main(["--repo", "", "--require-recorded"], token="")
+        self.assertEqual(result, 1)
+        self.assertIn("release requires a repository", output.getvalue())
+
+    def test_partial_later_page_never_authorizes_release(self):
+        page = [{"ref": f"refs/tags/v1.0.{index}", "object": {
+            "sha": "a" * 40, "type": "tag"}} for index in range(module.PER_PAGE)]
+        pages = [(200, page), (503, {})]
+        code, output = self._run(token="t", recorded={}, rest=lambda path: pages.pop(0))
+        self.assertEqual(code, 1)
+        self.assertEqual(pages, [])
+        self.assertIn("complete live tag inventory", output)
+
+    def test_malformed_inventory_shapes_fail_closed(self):
+        valid = {"ref": "refs/tags/v1.0.0", "object": {"sha": "a" * 40, "type": "tag"}}
+        invalid = [None, [], "ref", {"ref": 1, "object": valid["object"]},
+                   {"ref": "refs/heads/v1.0.0", "object": valid["object"]},
+                   {"ref": "refs/tags/", "object": valid["object"]},
+                   dict(valid, object=None), dict(valid, object={"sha": 4, "type": "tag"}),
+                   dict(valid, object={"sha": "A" * 40, "type": "tag"}),
+                   dict(valid, object={"sha": "a" * 39, "type": "tag"}),
+                   dict(valid, object={"sha": "a" * 40, "type": "unknown"})]
+        for row in invalid:
+            with self.subTest(row=row):
+                code, output = self._run(token="t", recorded={}, rest=lambda path: (200, [row]))
+                self.assertEqual(code, 1)
+                self.assertIn("complete live tag inventory", output)
+
+    def test_unavailable_inventory_refuses_release(self):
+        code, output = self._run(token="t", rest=lambda path: (503, {}), recorded=RECORDED)
+        self.assertEqual(1, code)
+        self.assertIn("::error", output)
+
+    def test_unrecorded_tag_refuses_release(self):
+        page = [
+            {"ref": f"refs/tags/{name}", "object": {"sha": entry["object_sha"], "type": entry["object_type"]}}
+            for name, entry in RECORDED.items()
+        ]
+        page.append({"ref": "refs/tags/v9.0.0", "object": {"sha": "a" * 40, "type": "tag"}})
+        code, output = self._run(token="t", rest=lambda path: (200, page), recorded=RECORDED)
+        self.assertEqual(1, code)
+        self.assertIn("::error", output)
+        self.assertIn("v9.0.0", output)
+
+    def test_malformed_or_duplicate_inventory_cannot_authorize_release(self):
+        page = [
+            {"ref": f"refs/tags/{name}", "object": {"sha": entry["object_sha"], "type": entry["object_type"]}}
+            for name, entry in RECORDED.items()
+        ]
+        for extra in ({}, page[0]):
+            with self.subTest(extra=extra):
+                code, output = self._run(
+                    token="t", rest=lambda path: (200, page + [extra]), recorded=RECORDED,
+                )
+                self.assertEqual(1, code)
+                self.assertIn("::error", output)
+
 
 class RepositoryWiring(unittest.TestCase):
     """The audit is only a control if something runs it and something says so."""
+
+    def test_release_preflights_require_prior_tag_records(self):
+        workflow = (REPO_ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+        for job in ("preflight", "auto-preflight"):
+            with self.subTest(job=job):
+                body = re.search(
+                    rf"(?ms)^  {re.escape(job)}:\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)",
+                    workflow,
+                )
+                self.assertIsNotNone(body, f"missing release preflight {job}")
+                self.assertIn("check_tag_immutability.py", body.group(1))
+                self.assertIn("--require-recorded", body.group(1))
+
+    def test_publisher_retains_tag_identity_receipt_after_partial_failure(self):
+        action = (REPO_ROOT / ".github/actions/publish-release/action.yml").read_text(encoding="utf-8")
+        self.assertIn("Capture published tag identity receipt", action)
+        receipt_steps = action.split("Capture published tag identity receipt", 1)[1]
+        self.assertIn("always()", receipt_steps)
+        self.assertIn("actions/upload-artifact@", receipt_steps)
+        self.assertIn("if-no-files-found: error", receipt_steps)
+
+    def test_receipt_capture_precedes_readback_and_survives_publish_failure(self):
+        action = (REPO_ROOT / ".github/actions/publish-release/action.yml").read_text(encoding="utf-8")
+        self.assertIn("id: publish", action)
+        capture = re.search(
+            r"(?ms)^    - name: Capture published tag identity receipt\n(.*?)(?=^    - |\Z)", action)
+        self.assertIsNotNone(capture, "publication identity must survive a later release failure")
+        body = capture.group(1)
+        self.assertIn("always()", body)
+        self.assertIn("steps.publish.outcome != 'skipped'", body)
+        self.assertNotIn("steps.publish.outcome == 'success'", body)
+        self.assertIn("tag_publication_receipt.py", body)
+        for flag in ("--repo", "--tag", "--expected-commit", "--run-id",
+                     "--run-attempt", "--workflow-sha", "--output"):
+            self.assertIn(flag, body)
+        self.assertLess(action.index("Capture published tag identity receipt"),
+                        action.index("Verify the published Release names"))
+        self.assertLess(action.index("actions/upload-artifact@"),
+                        action.index("Verify the published Release names"))
 
     def test_the_audit_runs_in_a_job_registered_in_the_merge_gate(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -300,6 +454,16 @@ class RepositoryWiring(unittest.TestCase):
         # The audit skips without a token, so its offline unit tests are the
         # part that is always binding.
         self.assertIn("test_tag_immutability.py", CI_WORKFLOW.read_text(encoding="utf-8"))
+
+    def test_receipt_logic_tests_are_registered_in_required_audit_job(self):
+        job = CI_WORKFLOW.read_text(encoding="utf-8").split("  tag-immutability:", 1)[1].split("  branch-protection:", 1)[0]
+        self.assertTrue("python .github/scripts/test_tag_publication_receipt.py" in job,
+                        "required tag audit must exercise receipt capture failures offline")
+
+    def test_reconciliation_tests_are_registered_in_required_audit_job(self):
+        job = CI_WORKFLOW.read_text(encoding="utf-8").split("  tag-immutability:", 1)[1].split("  branch-protection:", 1)[0]
+        self.assertTrue("python .github/scripts/test_reconcile_tag_receipt.py" in job,
+                        "required tag audit must exercise append-only reconciliation offline")
 
     def test_the_release_skill_documents_recovery_as_a_new_version(self):
         # AC-4.  The people who could move a tag are the people reading this
