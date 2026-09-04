@@ -1877,8 +1877,8 @@ function startWindowsJobGuard(pid, timing) {
   };
   const readOutputLine = (timeoutMs) => {
     if (outputLines.length > 0) {
-      const line = outputLines.shift();
-      queuedOutputBytes -= Buffer.byteLength(line, "utf8") + 1;
+      const { line, bytes } = outputLines.shift();
+      queuedOutputBytes -= bytes;
       return Promise.resolve(line);
     }
     if (outputEnded) return Promise.resolve(void 0);
@@ -1914,12 +1914,13 @@ function startWindowsJobGuard(pid, timing) {
     outputBuffer += chunk;
     let newline = outputBuffer.indexOf("\n");
     while (newline >= 0) {
+      const bytes = Buffer.byteLength(outputBuffer.slice(0, newline + 1), "utf8");
       const line = outputBuffer.slice(0, newline).replace(/\r$/u, "");
       outputBuffer = outputBuffer.slice(newline + 1);
       const waiter = outputWaiters.shift();
       if (waiter === void 0) {
-        outputLines.push(line);
-        queuedOutputBytes += Buffer.byteLength(line, "utf8") + 1;
+        outputLines.push({ line, bytes });
+        queuedOutputBytes += bytes;
       } else waiter(line);
       newline = outputBuffer.indexOf("\n");
     }
