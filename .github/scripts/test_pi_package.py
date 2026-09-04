@@ -2742,6 +2742,69 @@ class NpmPublishContractTest(unittest.TestCase):
                     document(changed), version, integrity, trusted_sha
                 )
 
+    def test_registry_authenticity_failure_has_safe_actionable_diagnostics(self):
+        helper = self._helper()
+        installed = subprocess.CompletedProcess(["npm", "install"], 0, "", "")
+        hostile = "PRIVATE-VALUE\n::warning::injected https://user:pass@invalid/"
+        cases = (
+            ({"invalid": [{"code": "EATTESTATIONVERIFY", "message": hostile}], "missing": []},
+             "invalid=EATTESTATIONVERIFY"),
+            ({"invalid": [{"code": "EINTEGRITYSIGNATURE", "name": hostile}], "missing": []},
+             "invalid=EINTEGRITYSIGNATURE"),
+            ({"invalid": [], "missing": [hostile]}, "missing=yes"),
+            ({"error": {"code": "E503", "summary": hostile}}, "error=E503"),
+            ({"error": {"code": hostile}}, "error=unknown"),
+        )
+        for evidence, expected in cases:
+            with self.subTest(expected=expected):
+                audited = subprocess.CompletedProcess(
+                    ["npm", "audit", "signatures"], 1, json.dumps(evidence), hostile
+                )
+                with mock.patch.object(helper.subprocess, "run", side_effect=[installed, audited]), \
+                        self.assertRaises(ValueError) as failure:
+                    helper.verify_registry_authenticity("npm", "0.10.0")
+                diagnostic = str(failure.exception)
+                self.assertIn(expected, diagnostic)
+                self.assertNotIn("PRIVATE-VALUE", diagnostic)
+                self.assertNotIn("::warning::", diagnostic)
+                self.assertNotIn("user:pass", diagnostic)
+                self.assertLessEqual(len(diagnostic), 256)
+
+    def test_signature_diagnostics_bound_and_classify_malformed_evidence(self):
+        helper = self._helper()
+        cases = (
+            (None, "schema=invalid"),
+            ([], "schema=invalid"),
+            ({"invalid": None}, "invalid=malformed"),
+            ({"invalid": [None, [], {"code": []}]}, "invalid=unknown"),
+            ({"missing": {}}, "missing=malformed"),
+            ({"error": []}, "error=unknown"),
+            ({"invalid": [{"code": "E503"}] * 8}, "invalid=E503"),
+            ({"invalid": [{"code": "E503"}] * 9}, "invalid=over-limit"),
+        )
+        for evidence, expected in cases:
+            with self.subTest(expected=expected, evidence=evidence):
+                self.assertIn(expected, helper._signature_failure_detail(evidence))
+
+        class UnreadableOverLimit(list):
+            def __iter__(self):
+                raise AssertionError("over-limit diagnostic entries were traversed")
+
+        self.assertIn("invalid=over-limit", helper._signature_failure_detail({
+            "invalid": UnreadableOverLimit([None] * 9),
+        }))
+        maximal = {
+            "invalid": [{"code": code} for code in (
+                "EINTEGRITYSIGNATURE", "EATTESTATIONVERIFY", "ETIMEDOUT",
+                "ECONNRESET", "EAI_AGAIN", "E503", "E502", "E504",
+            )],
+            "missing": None,
+            "error": {"code": "EINTEGRITYSIGNATURE"},
+        }
+        diagnostic = "npm signature or provenance verification failed: " + helper._signature_failure_detail(maximal)
+        self.assertLessEqual(len(diagnostic), 256)
+        self.assertIn("EATTESTATIONVERIFY", diagnostic)
+
     def test_registry_authenticity_rejects_unsigned_or_invalid_packages(self):
         helper = self._helper()
         installed = subprocess.CompletedProcess(["npm", "install"], 0, "", "")
