@@ -1546,10 +1546,14 @@ public static class CodeArbiterJob {
 '@
 try {
   Add-Type -TypeDefinition $source -Language CSharp | Out-Null
+  [Console]::Out.WriteLine('COMPILED')
+  [Console]::Out.Flush()
   $line = [Console]::In.ReadLine()
   if ($null -eq $line -or $line -notmatch '^([1-9][0-9]*) ([1-9][0-9]*)$') { exit 40 }
   [UInt32]$target = $Matches[1]
   [UInt32]$parent = $Matches[2]
+  [Console]::Out.WriteLine('PID_ACCEPTED')
+  [Console]::Out.Flush()
   $job = [CodeArbiterJob]::CreateAndAssign($target)
   if ($job -eq [IntPtr]::Zero) { exit 41 }
   try {
@@ -1642,12 +1646,31 @@ async function awaitProgressTokens(readLine, expected, options) {
   if (idleMs > ceilingMs) throw new Error("progress idleMs must be bounded by the progress ceiling");
   const now = options.now ?? Date.now;
   const deadline = now() + ceilingMs;
+  if (options.windowsJobStages && (expected.length !== 2 || expected[0] !== WINDOWS_JOB_STARTING || expected[1] !== WINDOWS_JOB_READY)) {
+    throw new Error("Windows startup diagnostics require the bounded admission sequence");
+  }
+  let lastStage = "WAITING";
   for (const token of expected) {
-    const remaining = deadline - now();
-    if (remaining <= 0) return Object.freeze({ state: "stalled", phase: token, waitedMs: 0 });
     const started = now();
-    const line = await readLine(Math.min(idleMs, remaining));
-    if (line !== token) return Object.freeze({ state: "stalled", phase: token, waitedMs: now() - started });
+    const phaseDeadline = Math.min(deadline, started + idleMs);
+    const stalled = () => Object.freeze({
+      state: "stalled",
+      phase: token,
+      waitedMs: now() - started,
+      ...options.windowsJobStages ? { lastStage } : {}
+    });
+    const diagnostics = options.windowsJobStages && token === WINDOWS_JOB_READY ? ["COMPILED", "PID_ACCEPTED"] : [];
+    for (const diagnostic of diagnostics) {
+      const remaining2 = phaseDeadline - now();
+      if (remaining2 <= 0) return stalled();
+      if (await readLine(remaining2) !== diagnostic) return stalled();
+      lastStage = diagnostic;
+    }
+    const remaining = phaseDeadline - now();
+    if (remaining <= 0) return stalled();
+    const line = await readLine(remaining);
+    if (line !== token) return stalled();
+    if (options.windowsJobStages && token === WINDOWS_JOB_STARTING) lastStage = "STARTING";
   }
   return Object.freeze({ state: "ready" });
 }
@@ -1831,7 +1854,9 @@ function startWindowsJobGuard(pid, timing) {
   let closePending;
   let armed = false;
   let outputEnded = false;
+  let protocolFailed = false;
   let outputBuffer = "";
+  let queuedOutputBytes = 0;
   const outputLines = [];
   const outputWaiters = [];
   let resolveExitCode;
@@ -1851,7 +1876,11 @@ function startWindowsJobGuard(pid, timing) {
     settleExitCode();
   };
   const readOutputLine = (timeoutMs) => {
-    if (outputLines.length > 0) return Promise.resolve(outputLines.shift());
+    if (outputLines.length > 0) {
+      const line = outputLines.shift();
+      queuedOutputBytes -= Buffer.byteLength(line, "utf8") + 1;
+      return Promise.resolve(line);
+    }
     if (outputEnded) return Promise.resolve(void 0);
     return new Promise((resolveLine) => {
       let timer;
@@ -1870,8 +1899,11 @@ function startWindowsJobGuard(pid, timing) {
   helper.stdout.setEncoding("utf8");
   helper.stdout.on("data", (chunk) => {
     if (outputEnded) return;
-    outputBuffer += chunk;
-    if (Buffer.byteLength(outputBuffer, "utf8") > MAX_JOB_PROTOCOL_BYTES) {
+    if (queuedOutputBytes + Buffer.byteLength(outputBuffer, "utf8") + Buffer.byteLength(chunk, "utf8") > MAX_JOB_PROTOCOL_BYTES) {
+      protocolFailed = true;
+      outputLines.length = 0;
+      queuedOutputBytes = 0;
+      outputBuffer = "";
       finishOutput();
       try {
         helper.stdin.end();
@@ -1879,13 +1911,16 @@ function startWindowsJobGuard(pid, timing) {
       }
       return;
     }
+    outputBuffer += chunk;
     let newline = outputBuffer.indexOf("\n");
     while (newline >= 0) {
       const line = outputBuffer.slice(0, newline).replace(/\r$/u, "");
       outputBuffer = outputBuffer.slice(newline + 1);
       const waiter = outputWaiters.shift();
-      if (waiter === void 0) outputLines.push(line);
-      else waiter(line);
+      if (waiter === void 0) {
+        outputLines.push(line);
+        queuedOutputBytes += Buffer.byteLength(line, "utf8") + 1;
+      } else waiter(line);
       newline = outputBuffer.indexOf("\n");
     }
   });
@@ -1912,8 +1947,9 @@ function startWindowsJobGuard(pid, timing) {
     const finish = (accepted) => {
       if (settled) return false;
       settled = true;
-      resolveReady(accepted);
-      if (!accepted) {
+      const admitted = accepted && !protocolFailed;
+      resolveReady(admitted);
+      if (!admitted) {
         try {
           helper.stdin.end();
         } catch {
@@ -1930,9 +1966,9 @@ function startWindowsJobGuard(pid, timing) {
       if (!intentional) finish(false);
     });
     helper.once("error", () => finish(false));
-    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
+    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs, windowsJobStages: true }).then((outcome) => {
       const refused = finish(outcome.state === "ready");
-      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
+      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms; last startup stage ${outcome.lastStage}`;
     }, () => finish(false));
     try {
       helper.stdin.write(`${pid} ${process.pid}
@@ -1950,7 +1986,7 @@ function startWindowsJobGuard(pid, timing) {
       return stallDiagnostic;
     },
     async arm(rootPid) {
-      if (armed || !positivePid(rootPid) || !await ready || closed) return false;
+      if (armed || !positivePid(rootPid) || !await ready || closed || protocolFailed) return false;
       armed = true;
       const watched = readOutputLine(idleMs);
       const written = await new Promise((resolveWrite) => {

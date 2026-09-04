@@ -1,9 +1,13 @@
 import { spawn, spawnSync } from "node:child_process";
-import { Writable } from "node:stream";
+import * as childProcess from "node:child_process";
+import { EventEmitter } from "node:events";
+import { PassThrough, Writable } from "node:stream";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { win32 } from "node:path";
 
 import { describe, expect, test, vi } from "vitest";
+
+vi.mock("node:child_process", { spy: true });
 
 import {
   PROCESS_TREE_CLEANUP_REASONS,
@@ -145,6 +149,162 @@ describe("Windows inert-supervisor refusal reason protocol", () => {
     expect(windowsRefusalReasonFromMessage("Windows contained Pi launch was refused")).toBeUndefined();
     expect(windowsRefusalReasonFromMessage("some other error: not-a-reason-code")).toBeUndefined();
   });
+});
+
+describe("Windows startup stage diagnostics", () => {
+  const options = { idleMs: 15_000, ceilingMs: 30_000, windowsJobStages: true };
+
+  // DG-01/02: diagnostic stages name the last completed operation but do not
+  // renew either admission deadline or replace ATTACHED as admission proof.
+  test.each([
+    [[], "STARTING", "WAITING", 15_000],
+    [["STARTING"], "ATTACHED", "STARTING", 15_010],
+    [["STARTING", "COMPILED"], "ATTACHED", "COMPILED", 15_010],
+    [["STARTING", "COMPILED", "PID_ACCEPTED"], "ATTACHED", "PID_ACCEPTED", 15_010],
+  ] as const)("names the last stage after %j without admitting a silent helper", async (lines, phase, lastStage, totalMs) => {
+    const handshake = scriptedHandshake(lines.map((line) => ({ afterMs: 10, line })));
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], {
+      ...options, now: handshake.now,
+    })).resolves.toEqual({ state: "stalled", phase, lastStage, waitedMs: 15_000 });
+    expect(handshake.clock.value).toBe(totalMs);
+  });
+
+  test("admits only the ordered complete diagnostic handshake", async () => {
+    const handshake = scriptedHandshake(["STARTING", "COMPILED", "PID_ACCEPTED", "ATTACHED"].map((line) => ({ afterMs: 100, line })));
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], {
+      ...options, now: handshake.now,
+    })).resolves.toEqual({ state: "ready" });
+    expect(handshake.clock.value).toBe(400);
+  });
+
+  test("rejects Windows diagnostics on a different admission sequence", async () => {
+    await expect(awaitProgressTokens(async () => "ATTACHED", ["ATTACHED"], options))
+      .rejects.toThrow("bounded admission sequence");
+  });
+
+  test.each([
+    ["COMPILED", "COMPILED"], ["PID_ACCEPTED", "STARTING"],
+    ["ATTACHED", "STARTING"], ["COMPILED\nPID_ACCEPTED", "STARTING"],
+    ["PRIVATE_INPUT_SENTINEL".repeat(100), "STARTING"],
+  ])("rejects malformed or out-of-order stage %s without echoing it", async (line, lastStage) => {
+    const lines = line === "COMPILED" ? ["STARTING", "COMPILED", line] : ["STARTING", line];
+    const handshake = scriptedHandshake(lines.map((value) => ({ afterMs: 10, line: value })));
+    const result = await awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], { ...options, now: handshake.now });
+    expect(result).toMatchObject({ state: "stalled", phase: "ATTACHED", lastStage });
+    expect(JSON.stringify(result)).not.toContain("PRIVATE_INPUT_SENTINEL");
+  });
+
+  test("does not extend the idle deadline with late diagnostic progress", async () => {
+    const handshake = scriptedHandshake([
+      { afterMs: 1_000, line: "STARTING" }, { afterMs: 10_000, line: "COMPILED" },
+      { afterMs: 4_000, line: "PID_ACCEPTED" }, { afterMs: 2_000, line: "ATTACHED" },
+    ]);
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], { ...options, now: handshake.now }))
+      .resolves.toEqual({ state: "stalled", phase: "ATTACHED", lastStage: "PID_ACCEPTED", waitedMs: 15_000 });
+    expect(handshake.clock.value).toBe(16_000);
+  });
+
+  test("does not extend the absolute ceiling with diagnostic progress", async () => {
+    const handshake = scriptedHandshake([
+      { afterMs: 12_000, line: "STARTING" }, { afterMs: 4_000, line: "COMPILED" },
+      { afterMs: 3_000, line: "PID_ACCEPTED" }, { afterMs: 2_000, line: "ATTACHED" },
+    ]);
+    await expect(awaitProgressTokens(handshake.readLine, ["STARTING", "ATTACHED"], { ...options, ceilingMs: 20_000, now: handshake.now }))
+      .resolves.toEqual({ state: "stalled", phase: "ATTACHED", lastStage: "PID_ACCEPTED", waitedMs: 8_000 });
+    expect(handshake.clock.value).toBe(20_000);
+  });
+
+  test("bounds a diagnostic flood without refreshing its budget", async () => {
+    let reads = 0;
+    const result = await awaitProgressTokens(async () => ++reads === 1 ? "STARTING" : "COMPILED", ["STARTING", "ATTACHED"], options);
+    expect(result).toMatchObject({ state: "stalled", phase: "ATTACHED", lastStage: "COMPILED" });
+    expect(reads).toBe(3);
+  });
+
+  test.skipIf(process.platform !== "win32")("bounds queued diagnostic bytes across individually small chunks before the reader resumes", async () => {
+    const helper = Object.assign(new EventEmitter(), {
+      stdout: new PassThrough(), stderr: new PassThrough(), stdin: new PassThrough(),
+      exitCode: null, signalCode: null, kill: vi.fn(),
+    });
+    const supervisor = Object.assign(new EventEmitter(), { pid: 4242, kill: vi.fn(), exitCode: null, signalCode: null });
+    const spawnMock = vi.spyOn(childProcess, "spawn")
+      .mockReturnValueOnce(supervisor as never).mockReturnValueOnce(helper as never);
+    const pending = spawnProcessTree(process.execPath, [], {
+      cwd: process.cwd(), env: {}, stdio: ["pipe", "pipe", "pipe", "pipe"],
+    }).catch((error: unknown) => error);
+    try {
+      await vi.waitFor(() => expect(spawnMock).toHaveBeenCalledTimes(2));
+      // No microtask yield between chunks: line consumption cannot hide unbounded
+      // queued data. This never starts an OS process or targets a real PID.
+      for (let index = 0; index < 100; index += 1) helper.stdout.emit("data", "COMPILED\n");
+      expect(helper.stdin.writableEnded).toBe(true);
+    } finally {
+      helper.stdout.emit("end");
+      await pending;
+      spawnMock.mockRestore();
+    }
+  });
+
+  test.skipIf(process.platform !== "win32").each(["single", "cumulative"])("never writes a launch after ATTACHED races a %s output overflow", async (mode) => {
+    const helper = Object.assign(new EventEmitter(), {
+      stdout: new PassThrough(), stderr: new PassThrough(), stdin: new PassThrough(),
+      exitCode: null, signalCode: null, kill: vi.fn(),
+    });
+    const pipes = Array.from({ length: 8 }, () => new PassThrough());
+    const supervisor = Object.assign(new EventEmitter(), {
+      pid: 4242, kill: vi.fn(), exitCode: null, signalCode: null, stdio: pipes,
+    });
+    const spawnMock = vi.spyOn(childProcess, "spawn")
+      .mockReturnValueOnce(supervisor as never).mockReturnValueOnce(helper as never);
+    let settled = false;
+    const pending = spawnProcessTree(process.execPath, [], {
+      cwd: process.cwd(), env: {}, stdio: ["pipe", "pipe", "pipe", "pipe"],
+    }).catch((error: unknown) => error).finally(() => { settled = true; });
+    try {
+      await vi.waitFor(() => expect(spawnMock).toHaveBeenCalledTimes(2));
+      helper.stdout.emit("data", "STARTING\nCOMPILED\nPID_ACCEPTED\n");
+      await new Promise<void>((resolveTurn) => setTimeout(resolveTurn, 0));
+      helper.stdout.emit("data", "ATTACHED\n");
+      // The waiter has its ATTACHED value, but no promise continuation has run.
+      if (mode === "single") helper.stdout.emit("data", "x".repeat(65));
+      else for (let index = 0; index < 10; index += 1) helper.stdout.emit("data", "COMPILED\n");
+      await vi.waitFor(() => expect(settled || pipes[4]!.readableLength > 0).toBe(true));
+      expect(pipes[4]!.readableLength).toBe(0);
+      expect(pipes[5]!.readableLength).toBe(0);
+      expect(await pending).toBeInstanceOf(Error);
+    } finally {
+      helper.emit("close");
+      pipes[6]!.end("REFUSED\n");
+      await pending;
+      spawnMock.mockRestore();
+    }
+  });
+
+  test.skipIf(process.platform !== "win32")("live helper exposes compilation and accepted PID stages without disclosing input", async () => {
+    const powershell = resolveWindowsPowerShellExecutable();
+    expect(powershell).toBeDefined();
+    const launch = windowsJobHelperArgv(powershell!);
+    const helper = spawn(launch.command, [...launch.args], { shell: false, windowsHide: true, stdio: "pipe" });
+    let output = "";
+    let helperClosed = false;
+    helper.stdout.setEncoding("utf8");
+    helper.stdout.on("data", (chunk: string) => { output += chunk; });
+    helper.stderr.resume();
+    helper.stdin.on("error", () => undefined);
+    const closed = new Promise<void>((resolveClosed, reject) => {
+      helper.once("close", () => { helperClosed = true; resolveClosed(); });
+      helper.once("error", reject);
+    });
+    // A valid UInt32 PID pair with a nonexistent target reaches native assignment
+    // but cannot attach. No real process is placed in a kill-on-close Job.
+    helper.stdin.end(`4294967295 ${process.pid}\n`);
+    try {
+      await closed;
+      expect(output.replace(/\r/g, "")).toBe("STARTING\nCOMPILED\nPID_ACCEPTED\n");
+    } finally {
+      if (!helperClosed && helper.exitCode === null && helper.signalCode === null) forceFixtureCleanup(helper.pid);
+    }
+  }, 30_000);
 });
 
 describe("process-tree cleanup", () => {
