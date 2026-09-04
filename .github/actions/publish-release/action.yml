@@ -138,6 +138,7 @@ runs:
         echo "---- notes.md ----"; head -1 notes.md
 
     - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
+      id: publish
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github-token }}
@@ -253,6 +254,33 @@ runs:
             exit 1
             ;;
         esac
+
+    # A push can succeed before Release creation fails. Preserve the observed
+    # identity in that case too; never infer a successful publication from it.
+    # Reconciliation requires this run's trusted artifact and a reviewed PR.
+    - name: Capture published tag identity receipt
+      id: receipt
+      if: ${{ always() && steps.publish.outcome != 'skipped' && steps.v.outputs.tag != '' }}
+      shell: bash
+      env:
+        TAG: ${{ steps.v.outputs.tag }}
+        RECEIPT_PATH: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json
+      run: |
+        set -euo pipefail
+        python3 .github/scripts/tag_publication_receipt.py capture \
+          --repo "$GITHUB_REPOSITORY" --tag "$TAG" \
+          --expected-commit "$GITHUB_SHA" --workflow-sha "$GITHUB_SHA" \
+          --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+          --output "$RECEIPT_PATH"
+
+    - name: Retain published tag identity receipt
+      if: ${{ always() && steps.receipt.outcome != 'skipped' }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: tag-publication-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/tag-publication-${{ github.job }}-${{ github.run_attempt }}.json
+        if-no-files-found: error
+        retention-days: 90
 
     - name: Verify the published Release names this tag at this commit
       shell: bash

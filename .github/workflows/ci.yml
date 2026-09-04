@@ -2269,6 +2269,10 @@ jobs:
         # tokenless, and they pin the drift and deletion verdicts against a
         # recorded copy of the live tag provenance.
         run: python .github/scripts/test_tag_immutability.py
+      - name: Test publication identity receipt capture
+        run: python .github/scripts/test_tag_publication_receipt.py
+      - name: Test append-only receipt reconciliation
+        run: python .github/scripts/test_reconcile_tag_receipt.py
 
   branch-protection:
     name: "[CHECK] | [REPO] | Branch protection"
