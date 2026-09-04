@@ -758,6 +758,8 @@ jobs:
         # One threshold applies to every audited graph (farm, sandbox, ca-pi,
         # docs site); test_ci_impact.py asserts that.
         run: npm audit --omit=dev --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Audit build toolchain (CVE gate - fail on HIGH, dev deps included)
         # Issue #434. The step above is `--omit=dev`, and all three tools graphs
         # declare no production dependencies - so on its own it audits an empty
@@ -778,6 +780,8 @@ jobs:
         # the repo; test_ci_impact.py asserts that no audit step in this
         # workflow uses a different one.
         run: npm audit --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Typecheck
         run: npm run typecheck
       - name: Rebuild farm.js
@@ -854,6 +858,8 @@ jobs:
         # dependencies either, so this audits an empty graph today and is a
         # durability setting rather than a live gate.
         run: npm audit --omit=dev --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Audit build toolchain (CVE gate - fail on HIGH, dev deps included)
         # Issue #434. The step above is `--omit=dev`, and all three tools graphs
         # declare no production dependencies - so on its own it audits an empty
@@ -874,6 +880,8 @@ jobs:
         # the repo; test_ci_impact.py asserts that no audit step in this
         # workflow uses a different one.
         run: npm audit --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Typecheck
         run: npm run typecheck
       - name: Docker preflight (REQUIRED prerequisite - fail, never skip)
@@ -984,6 +992,8 @@ jobs:
         # rather than in the six-cell ca-pi-tools matrix - the verdict does not
         # depend on OS or Pi version.
         run: npm audit --omit=dev --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Audit build toolchain (CVE gate - fail on HIGH, dev deps included)
         # Issue #434. The step above is `--omit=dev`, and all three tools graphs
         # declare no production dependencies - so on its own it audits an empty
@@ -1004,6 +1014,8 @@ jobs:
         # the repo; test_ci_impact.py asserts that no audit step in this
         # workflow uses a different one.
         run: npm audit --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
       - name: Check generated root package metadata
         working-directory: .
         run: python tools/build-host-packages.py --check

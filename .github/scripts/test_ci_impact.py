@@ -1519,6 +1519,25 @@ class WorkflowContractTest(unittest.TestCase):
                     "every audit gate in the repo must use the SAME threshold",
                 )
 
+    def test_every_npm_audit_step_exposes_http_diagnostics(self):
+        # Main CI 33822155490 hid the original bulk-request failure behind
+        # npm's retired quick-endpoint fallback. Keep status/timing visible
+        # without enabling verbose/silly request-body or config diagnostics.
+        audited_steps = 0
+        for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
+            steps = re.split(r"(?m)^      - ", workflow.read_text(encoding="utf-8"))
+            for step in steps:
+                if not npm_audit_invocations(step):
+                    continue
+                audited_steps += 1
+                with self.subTest(workflow=workflow.name, step=step.splitlines()[0]):
+                    self.assertRegex(
+                        step,
+                        r"(?m)^        env:\n          NPM_CONFIG_LOGLEVEL: http$",
+                        "audit HTTP status/timing must survive a fallback failure",
+                    )
+        self.assertEqual(audited_steps, 7)
+
     def test_each_plugin_tools_graph_is_audited_with_dev_dependencies_included(self):
         """Issue #434 AC-1: a HIGH advisory in a `plugins/*/tools` DEV dependency
         must fail CI.
