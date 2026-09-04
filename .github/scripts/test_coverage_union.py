@@ -272,6 +272,41 @@ class CoverageUnionCliTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(proof.read_text())["root"], self.tree.as_posix())
 
+    def test_pi_snapshot_matches_git_with_windows_checkout_conversion(self):
+        # CU-05: the real attribute policy must preserve every Pi snapshot input,
+        # including shared configuration outside the plugin tree.
+        files = {
+            ".gitattributes": (REPO / ".gitattributes").read_bytes(),
+            "core/hosts.json": (REPO / "core/hosts.json").read_bytes(),
+            "plugins/ca/hooks/secret-detection-corpus.json": b"{}\n",
+            "plugins/ca-pi/extensions/codearbiter-child.js": b"export {};\n",
+            "plugins/ca-pi/tools/src/a.ts": b"export const a = 1;\n",
+            "plugins/ca-pi/tools/package.json": b'{"private":true}\n',
+            "plugins/ca-pi/tools/package-lock.json": b'{"packages":{"node_modules/vitest":{"version":"4.1.9"}}}\n',
+            "plugins/ca-pi/tools/vitest.config.ts": b'export default {test:{coverage:{include: ["src/**/*.ts"]}}};\n',
+        }
+        for name, data in files.items():
+            target = self.repo / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        for args in (["add", "."], ["-c", "user.name=Coverage fixture", "-c",
+                     "user.email=fixture@example.invalid", "commit", "-qm", "Pi fixture"]):
+            subprocess.run(["git", "-C", str(self.repo), *args], check=True, capture_output=True, timeout=30)
+        for autocrlf in ("true", "false"):
+            with self.subTest(autocrlf=autocrlf):
+                checkout = Path(self.temp.name) / ("checkout-" + autocrlf)
+                subprocess.run(["git", "-c", "core.autocrlf=" + autocrlf, "clone", "--local",
+                                str(self.repo), str(checkout)], check=True, capture_output=True, timeout=30)
+                for name, expected in files.items():
+                    if name != ".gitattributes":
+                        self.assertEqual((checkout / name).read_bytes(), expected,
+                                         "checkout changed coverage input bytes: " + name)
+                output = checkout / "windows-latest.provenance.json"
+                result = subprocess.run([sys.executable, str(SCRIPT), "prepare", "--repo", str(checkout),
+                                         "--tree", "plugins/ca-pi/tools", "--host", "windows-latest",
+                                         "--output", str(output)], capture_output=True, text=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_posttest_source_mutation_prevents_seal(self):
         proof = self.prepared(seal=False)
         (self.tree / "a.ts").write_text("changed\n", encoding="utf-8")
