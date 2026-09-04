@@ -316,6 +316,29 @@ def main():
             command = f'{executable} -c "open(\'open-tasks.md\', \'w\')"'
             expect_block(fx, command, "H-22", f"inline executable boundary preserved: {command}")
 
+        # DOT-1/DOT-2: leading dots belong to an executable basename, not a
+        # filename extension. These are inert command strings sent to the hook;
+        # neither an executable nor a symlink is created or invoked.
+        for executable in ("./.python", ".python", "./..python",
+                           '"/opt/runtime bin/.python3.12"',
+                           r'& "C:\Program Files\Runtime\.PY.EXE"',
+                           r".\.python.exe", "env /tmp/.node", "./.pwsh"):
+            for target, tag in ((".codearbiter/decisions/0001-seed.md", "H-11"),
+                                (".codearbiter/overrides.log", "H-05"),
+                                (".codearbiter/CONTEXT.md", "H-18"),
+                                (".codearbiter/.markers/security-gate-passed", "H-19")):
+                for arguments in (f'script.txt "{target}"',
+                                  f'-c "open(\'{target}\', \'w\')"'):
+                    command = f"{executable} {arguments}"
+                    expect_block(fx, command, tag,
+                                 f"DOT-1 leading-dot executable blocks: {command}")
+            command = f'{executable} -c "open(\'open-tasks.md\', \'w\')"'
+            expect_block(fx, command, "H-22",
+                         f"DOT-2 leading-dot inline executable blocks: {command}")
+            # DOT-3: H-22 still distinguishes inline code from script argv.
+            command = f'{executable} taskwrite.py add -- "fix open-tasks.md schema"'
+            expect_allow(fx, command, f"DOT-3 helper argv remains data: {command}")
+
         # ---- #574: H-11 had NO interpreter leg — the identical gap as H-05,
         # for the decisions/ directory rather than a single audit-log name.
         for cmd in (

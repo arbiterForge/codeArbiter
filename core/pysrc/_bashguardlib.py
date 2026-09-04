@@ -454,8 +454,10 @@ _INTERP_TOKENS = (r"python3?|python2|py|node|deno|bun|perl|ruby|php"
 # leg so read-only filename arguments cannot falsely imply a protected write.
 # Preserve slash/backslash and quote boundaries for executable paths, and the
 # existing right edge for versioned executables and Windows `.exe` spellings.
+# Consume leading dots at that boundary: `./.python` is an executable basename,
+# unlike the interpreter-looking extension in `catalog.python`.
 # This remains conservative lexical detection, not command-position parsing.
-_INTERP_EXECUTABLE = r"(?<![\w.])(" + _INTERP_TOKENS + r")\b"
+_INTERP_EXECUTABLE = r"(?<![\w.])\.*(" + _INTERP_TOKENS + r")\b"
 
 # The inline-code switch that makes an interpreter EXECUTE A STRING rather
 # than run a file. `-c` (python/py/sh/bash/zsh/pwsh), `-e`/`-E` (perl,
