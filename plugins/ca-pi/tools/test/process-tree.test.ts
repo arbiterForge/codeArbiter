@@ -245,6 +245,68 @@ describe("Windows startup stage diagnostics", () => {
     }
   });
 
+  test.skipIf(process.platform !== "win32").each([false, true])("charges original CRLF queued bytes at the exact boundary (split=%s)", async (split) => {
+    const helper = Object.assign(new EventEmitter(), {
+      stdout: new PassThrough(), stderr: new PassThrough(), stdin: new PassThrough(),
+      exitCode: null, signalCode: null, kill: vi.fn(),
+    });
+    const supervisor = Object.assign(new EventEmitter(), { pid: 4242, kill: vi.fn(), exitCode: null, signalCode: null });
+    const spawnMock = vi.spyOn(childProcess, "spawn")
+      .mockReturnValueOnce(supervisor as never).mockReturnValueOnce(helper as never);
+    const pending = spawnProcessTree(process.execPath, [], {
+      cwd: process.cwd(), env: {}, stdio: ["pipe", "pipe", "pipe", "pipe"],
+    }).catch((error: unknown) => error);
+    try {
+      await vi.waitFor(() => expect(spawnMock).toHaveBeenCalledTimes(2));
+      helper.stdout.emit("data", "STARTING\r\n");
+      // STARTING goes directly to its waiter. Without yielding, queue exactly
+      // 64 original bytes; CR removal must not discount their accounting.
+      for (let index = 0; index < 32; index += 1) {
+        if (split) { helper.stdout.emit("data", "\r"); helper.stdout.emit("data", "\n"); }
+        else helper.stdout.emit("data", "\r\n");
+      }
+      expect(helper.stdin.writableEnded).toBe(false);
+      helper.stdout.emit("data", "x");
+      expect(helper.stdin.writableEnded).toBe(true);
+    } finally {
+      helper.stdout.emit("end");
+      await pending;
+      spawnMock.mockRestore();
+    }
+  });
+
+  test.skipIf(process.platform !== "win32")("accepts CRLF admission and releases original queued bytes when drained", async () => {
+    const helper = Object.assign(new EventEmitter(), {
+      stdout: new PassThrough(), stderr: new PassThrough(), stdin: new PassThrough(),
+      exitCode: null, signalCode: null, kill: vi.fn(),
+    });
+    const pipes = Array.from({ length: 8 }, () => new PassThrough());
+    const supervisor = Object.assign(new EventEmitter(), {
+      pid: 4242, kill: vi.fn(), exitCode: null, signalCode: null, stdio: pipes,
+      stdout: pipes[1], stderr: pipes[2], stdin: pipes[0],
+    });
+    const spawnMock = vi.spyOn(childProcess, "spawn")
+      .mockReturnValueOnce(supervisor as never).mockReturnValueOnce(helper as never);
+    helper.stdin.on("data", (chunk: Buffer) => {
+      if (chunk.toString() === "1234\n") helper.stdout.emit("data", `WATCHING\r\n${"x".repeat(54)}`);
+    });
+    const pending = spawnProcessTree(process.execPath, [], {
+      cwd: process.cwd(), env: {}, stdio: ["pipe", "pipe", "pipe", "pipe"],
+    });
+    try {
+      await vi.waitFor(() => expect(spawnMock).toHaveBeenCalledTimes(2));
+      pipes[6]!.write("STARTED 1234\n");
+      helper.stdout.emit("data", "STARTING\r\nCOMPILED\r\nPID_ACCEPTED\r\nATTACHED\r\n");
+      await expect(pending).resolves.toMatchObject({ pid: 1234 });
+      expect(helper.stdin.writableEnded).toBe(false);
+    } finally {
+      helper.emit("close");
+      for (const pipe of pipes) pipe.destroy();
+      await pending.catch(() => undefined);
+      spawnMock.mockRestore();
+    }
+  });
+
   test.skipIf(process.platform !== "win32").each(["single", "cumulative"])("never writes a launch after ATTACHED races a %s output overflow", async (mode) => {
     const helper = Object.assign(new EventEmitter(), {
       stdout: new PassThrough(), stderr: new PassThrough(), stdin: new PassThrough(),

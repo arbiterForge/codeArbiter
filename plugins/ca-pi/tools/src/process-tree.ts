@@ -577,7 +577,7 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
   let protocolFailed = false;
   let outputBuffer = "";
   let queuedOutputBytes = 0;
-  const outputLines: string[] = [];
+  const outputLines: Array<{ line: string; bytes: number }> = [];
   const outputWaiters: Array<(line?: string) => void> = [];
   let resolveExitCode!: (code?: number) => void;
   let exitCodeSettled = false;
@@ -595,8 +595,8 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
   };
   const readOutputLine = (timeoutMs?: number): Promise<string | undefined> => {
     if (outputLines.length > 0) {
-      const line = outputLines.shift()!;
-      queuedOutputBytes -= Buffer.byteLength(line, "utf8") + 1;
+      const { line, bytes } = outputLines.shift()!;
+      queuedOutputBytes -= bytes;
       return Promise.resolve(line);
     }
     if (outputEnded) return Promise.resolve(undefined);
@@ -631,12 +631,13 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
     outputBuffer += chunk;
     let newline = outputBuffer.indexOf("\n");
     while (newline >= 0) {
+      const bytes = Buffer.byteLength(outputBuffer.slice(0, newline + 1), "utf8");
       const line = outputBuffer.slice(0, newline).replace(/\r$/u, "");
       outputBuffer = outputBuffer.slice(newline + 1);
       const waiter = outputWaiters.shift();
       if (waiter === undefined) {
-        outputLines.push(line);
-        queuedOutputBytes += Buffer.byteLength(line, "utf8") + 1;
+        outputLines.push({ line, bytes });
+        queuedOutputBytes += bytes;
       }
       else waiter(line);
       newline = outputBuffer.indexOf("\n");
