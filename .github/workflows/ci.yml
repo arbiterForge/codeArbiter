@@ -2246,11 +2246,12 @@ jobs:
     # because it happens in refs, not in files.
     #
     # UNLIKE the branch-protection audit beside it, this one runs LIVE in
-    # ordinary CI: listing `/git/refs/tags` needs only contents:read, which the
-    # default GITHUB_TOKEN grants. It still skips loudly rather than failing on
-    # a transport failure or rate limit, because a merge gate must report a
-    # history regression, never a network problem. Read-only: paginated GETs,
-    # no mutations, and a partial listing is discarded rather than audited.
+    # ordinary CI: listing `/git/matching-refs/tags/` needs only contents:read,
+    # which the default GITHUB_TOKEN grants. It still skips loudly rather than
+    # failing on a transport failure or rate limit, because a merge gate must
+    # report a history regression, never a network problem. Read-only: one
+    # complete matching-refs response, no mutations, and invalid inventory is
+    # discarded rather than audited.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

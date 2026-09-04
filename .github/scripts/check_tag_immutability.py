@@ -38,9 +38,9 @@ missing credentials, unreadable inventory, or any unrecorded governed tag.
 Ordinary observation policy is unchanged. A new tag is recorded afterward from
 its trusted run receipt through a reviewed PR, before another release is allowed.
 
-READ-ONLY.  Paginated GETs against `/git/refs/tags`.  Nothing is written, and a
-partial listing is discarded rather than audited, because tags missing from a
-truncated page would otherwise read as deletions.
+READ-ONLY.  One GET against `/git/matching-refs/tags/`. Nothing is written, and
+an invalid response is discarded rather than audited, because an incomplete
+inventory would otherwise read as deletions.
 """
 import argparse
 import dataclasses
@@ -63,12 +63,6 @@ MANIFEST_PATH = REPO_ROOT / ".github" / "published-tags.json"
 _API = "https://api.github.com"
 _API_VERSION = "2022-11-28"
 _TIMEOUT_SECONDS = 30
-
-# `GET /git/refs/tags` caps at 100 per page. A reader that stopped at page one
-# would report every later tag as DELETED the moment this repo passes 100 tags.
-PER_PAGE = 100
-# A bound on the paging loop so a misbehaving API cannot spin it forever.
-MAX_PAGES = 50
 
 # A published tag is a namespace prefix followed by a SemVer core, optionally
 # with a pre-release or build suffix (`v2.1.0-beta.2` is a real published tag).
@@ -156,43 +150,36 @@ def unreadable(live: dict[str, str] | None) -> list[str]:
 def read_live_tags(repo: str, *, rest) -> dict[str, str] | None:
     """Every tag ref as name -> object sha, or None if it could not be read.
 
-    All-or-nothing on purpose: a partially-read listing handed to `audit()`
-    would turn the pages it never fetched into fabricated deletion findings.
+    GitHub's matching-refs endpoint returns the complete matching array in one
+    response. All-or-nothing validation prevents malformed or partial data from
+    becoming fabricated deletion findings.
     """
+    status, payload = rest(f"/repos/{repo}/git/matching-refs/tags/")
+    if status != 200 or not isinstance(payload, list):
+        return None
+
     tags: dict[str, str] = {}
-    for page in range(1, MAX_PAGES + 1):
-        status, payload = rest(
-            f"/repos/{repo}/git/refs/tags?per_page={PER_PAGE}&page={page}"
-        )
-        if status == 404 and page == 1:
-            # GitHub answers 404 for `git/refs/tags` on a repository with no
-            # tags at all. That is a definite empty, not a blind spot.
-            return {}
-        if status != 200 or not isinstance(payload, list):
+    for ref in payload:
+        if not isinstance(ref, dict):
             return None
-        for ref in payload:
-            if not isinstance(ref, dict):
-                return None
-            full_name = ref.get("ref")
-            obj = ref.get("object")
-            if not isinstance(full_name, str) or not full_name.startswith("refs/tags/"):
-                return None
-            if not isinstance(obj, dict):
-                return None
-            name = full_name.removeprefix("refs/tags/")
-            sha = obj.get("sha")
-            if (
-                not name or name in tags or not isinstance(sha, str)
-                or re.fullmatch(r"[0-9a-f]{40}", sha) is None
-                # Working tags may legally label blobs or trees. Their presence
-                # must not turn a definite release-tag drift into a skipped audit.
-                or obj.get("type") not in ("tag", "commit", "blob", "tree")
-            ):
-                return None
-            tags[name] = sha
-        if len(payload) < PER_PAGE:
-            return tags
-    return None
+        full_name = ref.get("ref")
+        obj = ref.get("object")
+        if not isinstance(full_name, str) or not full_name.startswith("refs/tags/"):
+            return None
+        if not isinstance(obj, dict):
+            return None
+        name = full_name.removeprefix("refs/tags/")
+        sha = obj.get("sha")
+        if (
+            not name or name in tags or not isinstance(sha, str)
+            or re.fullmatch(r"[0-9a-f]{40}", sha) is None
+            # Working tags may legally label blobs or trees. Their presence
+            # must not turn a definite release-tag drift into a skipped audit.
+            or obj.get("type") not in ("tag", "commit", "blob", "tree")
+        ):
+            return None
+        tags[name] = sha
+    return tags
 
 
 def _send(request: urllib.request.Request) -> tuple[int, object]:
@@ -224,7 +211,7 @@ def _rest_reader(token: str):
 
 _SKIP_NOTE = """SKIP: no token, so published-tag immutability was NOT audited.
 
-This check reads `/repos/{owner}/{repo}/git/refs/tags`, which needs only
+This check reads `/repos/{owner}/{repo}/git/matching-refs/tags/`, which needs only
 contents:read - a permission the default GITHUB_TOKEN DOES grant - so in ordinary
 CI it runs live and this skip should not appear. It exists for local runs and for
 transport failures, because a merge gate must report a settings or history
