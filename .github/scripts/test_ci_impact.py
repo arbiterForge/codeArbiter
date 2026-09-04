@@ -1405,6 +1405,49 @@ class WorkflowContractTest(unittest.TestCase):
                     f"{merge_job}'s pattern does not match its own artifact {own!r}",
                 )
 
+    def test_cross_host_coverage_identity_is_verified_before_union(self):
+        """Absolute runner paths must not turn a union into two disjoint trees."""
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        for producer, consumer in (
+            ("coverage-union", "coverage-union-merge"),
+            ("coverage-union-pi", "coverage-union-pi-merge"),
+        ):
+            with self.subTest(producer=producer):
+                self.assertRegex(jobs[producer], r"coverage_union\.py\s+prepare",
+                                 "host coverage lacks source-bound canonical identities")
+                self.assertRegex(jobs[consumer], r"coverage_union\.py\s+verify",
+                                 "merge accepts unverified cross-host coverage identities")
+                self.assertLess(jobs[consumer].index("coverage_union.py"),
+                                jobs[consumer].index("--merge-reports"))
+                self.assertIn("--check", jobs[producer],
+                              "pre-test provenance is not rechecked after execution")
+                merge_command = next(line for line in jobs[consumer].splitlines()
+                                     if "npx vitest --merge-reports" in line)
+                verified_output = re.search(r"coverage_union\.py verify[^\n]*--output\s+(\S+)",
+                                            jobs[consumer]).group(1)
+                self.assertEqual(re.search(r"--merge-reports\s+(\S+)", merge_command).group(1),
+                                 verified_output, "Vitest must consume the verified copies")
+                producer_body = jobs[producer]
+                prepare_index = producer_body.index("coverage_union.py prepare")
+                run_index = producer_body.index("npx vitest run")
+                check_index = producer_body.index("coverage_union.py prepare --check")
+                upload_index = producer_body.index("actions/upload-artifact@")
+                self.assertLess(prepare_index, run_index)
+                self.assertLess(run_index, check_index)
+                self.assertLess(check_index, upload_index)
+                self.assertNotIn("|| true", merge_command,
+                                 "invalid coverage must not look like a successful merge")
+                self.assertIn("shell: bash", jobs[consumer],
+                              "explicit bash enables pipefail for the report pipeline")
+        self.assertIn("test_coverage_union.py", jobs["ca-pi-checks"],
+                      "coverage identity regression needs a required test lane")
+        for lane in ("ca", "ca-pi"):
+            for path in (".github/scripts/coverage_union.py",
+                         ".github/scripts/test_coverage_union.py"):
+                self.assertTrue(any(fnmatch.fnmatch(path, pattern) for pattern in
+                                    paths_filter(CI_WORKFLOW.read_text(encoding="utf-8"), lane)),
+                                f"{path} alone skips {lane} coverage validation")
+
     def test_the_coverage_union_artifact_path_is_not_a_hidden_directory(self):
         """The union silently merged NOTHING for every run after it shipped.
 
