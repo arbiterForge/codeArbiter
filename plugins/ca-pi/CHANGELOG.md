@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-09-03
+
+### Fixed
+
+- Report precise Windows containment startup stages and reject output-overflow admission races.
+
 ## [0.10.1] - 2026-09-03
 
 ### Fixed

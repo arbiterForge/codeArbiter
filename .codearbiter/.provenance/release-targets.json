@@ -9,7 +9,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "28c4dd37b61d46011e7d7457ae1c4f779a444be5",
+      "hash": "f745b3e9f4dcadc1254a1f127b5c6a04fc552629",
       "path": "package.json"
     },
     {
@@ -24,7 +24,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "dbdbdb4c39843f0abba3aad7b4ed7c90beaf4c7a",
+      "hash": "a68d16c8f66ec31f0ef547c2523c6146c8e92b00",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -39,7 +39,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "d1fc438ac5f6401092a2f8d332cdbdd82c13b302",
+      "hash": "4abd158ac9cf28f3f1f90750017f0c16079d9049",
       "path": "plugins/ca-pi/package.json"
     },
     {
