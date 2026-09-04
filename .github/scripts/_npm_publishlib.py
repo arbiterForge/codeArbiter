@@ -282,6 +282,32 @@ def validate_attestation_document(
     return source_sha
 
 
+def _signature_failure_detail(evidence: object) -> str:
+    """Expose only fixed categories, never registry text or npm stderr."""
+    if not isinstance(evidence, dict):
+        return "schema=invalid"
+    allowed = (
+        "EINTEGRITYSIGNATURE", "EATTESTATIONVERIFY", "E503", "E502",
+        "E504", "E429", "ETIMEDOUT", "ECONNRESET", "EAI_AGAIN",
+    )
+
+    def code(item: object) -> str:
+        value = item.get("code") if isinstance(item, dict) else None
+        return value if isinstance(value, str) and value in allowed else "unknown"
+
+    invalid = evidence.get("invalid")
+    if not isinstance(invalid, list):
+        invalid_detail = "malformed"
+    elif len(invalid) > 8:
+        invalid_detail = "over-limit"
+    else:
+        invalid_detail = ",".join(sorted({code(item) for item in invalid})) or "none"
+    missing = evidence.get("missing")
+    missing_detail = ("yes" if missing else "no") if isinstance(missing, list) else "malformed"
+    error_detail = code(evidence.get("error")) if "error" in evidence else "none"
+    return f"invalid={invalid_detail}; missing={missing_detail}; error={error_detail}"
+
+
 def verify_registry_authenticity(npm: str, version: str) -> dict:
     """Use npm's supported Sigstore verifier; do not hand-roll bundle crypto."""
 
@@ -368,7 +394,10 @@ def verify_registry_authenticity(npm: str, version: str) -> dict:
             or evidence.get("invalid") != []
             or evidence.get("missing") != []
         ):
-            raise ValueError("npm signature or provenance verification failed")
+            raise ValueError(
+                "npm signature or provenance verification failed: "
+                + _signature_failure_detail(evidence)
+            )
         verified = evidence.get("verified")
         if not isinstance(verified, list) or len(verified) != 1:
             raise ValueError("npm signature verification did not identify one exact package")
