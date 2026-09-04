@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-09-04
+
+### Changed
+
+- Synchronize the shared host kernel's adapter identity metadata with the Claude adapter version.
+
 ## [0.9.1] - 2026-09-03
 
 ### Fixed

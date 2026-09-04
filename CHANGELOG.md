@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.2] - 2026-09-04
+
+### Fixed
+
+- Retain release tag identity receipts and refuse subsequent publication when prior tag provenance is incomplete.
+
+### Changed
+
+- Isolate rendering tests from ambient color settings and verify that they restore the caller's environment without modifying user state.
+
 ## [2.17.1] - 2026-09-03
 
 ### Fixed
