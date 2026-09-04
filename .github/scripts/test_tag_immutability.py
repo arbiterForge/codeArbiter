@@ -9,8 +9,8 @@ tag provenance plus one read-only listing of the live refs.  Like the
 branch-protection audit it sits beside, every observation is three-valued:
 True, False, or None for "this run could not see it".  A definite mismatch is a
 security finding; an unreadable run is a loud SKIP.  These tests pin both
-halves, the four governed namespaces, the pagination trap that would turn a
-truncated listing into a fake mass-deletion, and the shipped manifest's shape -
+halves, the four governed namespaces, complete matching-ref response handling,
+and the shipped manifest's shape -
 entirely offline, with no network and no token.
 """
 import importlib.util
@@ -146,7 +146,7 @@ class DriftAudit(unittest.TestCase):
 
 
 class LiveRefReader(unittest.TestCase):
-    """Reading the refs: paginated, read-only, and honest about failure."""
+    """Reading the complete matching-refs response honestly and read-only."""
 
     def test_a_single_page_of_refs_is_read_into_a_name_to_sha_map(self):
         page = [
@@ -164,47 +164,44 @@ class LiveRefReader(unittest.TestCase):
             module.read_live_tags("owner/name", rest=rest),
         )
 
-    def test_a_full_page_is_followed_by_the_next_page(self):
-        # THE PAGINATION TRAP.  `GET /git/refs/tags` caps at 100 per page.  A
-        # reader that stops after page 1 would, the moment this repo passes 100
-        # tags, report every tag on page 2 as DELETED - a fabricated mass
-        # security failure that no settings change caused.
-        first = [
+    def test_more_than_100_matching_refs_are_read_in_exactly_one_request(self):
+        # GitHub's matching-refs endpoint returns the complete array and does
+        # not advertise page/per_page parameters. Inventing pagination repeats
+        # the same response and makes a valid inventory look unreadable.
+        response = [
             {"ref": f"refs/tags/v9.0.{index}", "object": {"sha": f"{index:040d}", "type": "tag"}}
-            for index in range(module.PER_PAGE)
+            for index in range(101)
         ]
-        second = [{"ref": "refs/tags/v9.1.0", "object": {"sha": "c" * 40, "type": "tag"}}]
-        pages = [first, second, []]
+        calls = []
 
         def rest(path):
-            return 200, pages.pop(0)
+            calls.append(path)
+            return 200, response
 
         tags = module.read_live_tags("owner/name", rest=rest)
-        self.assertEqual(module.PER_PAGE + 1, len(tags))
-        self.assertIn("v9.1.0", tags)
+        self.assertEqual(101, len(tags))
+        self.assertEqual(
+            ["/repos/owner/name/git/matching-refs/tags/"],
+            calls,
+        )
 
-    def test_a_failed_page_makes_the_whole_read_unreadable(self):
-        # A partial listing must never be handed to the audit: the tags it is
-        # missing would read as deletions.  All-or-nothing is the only safe
-        # reduction.
-        pages = [
-            (200, [{"ref": f"refs/tags/v9.0.{i}", "object": {"sha": f"{i:040d}", "type": "tag"}}
-                   for i in range(module.PER_PAGE)]),
-            (403, {"message": "Forbidden"}),
-        ]
-
-        def rest(path):
-            return pages.pop(0)
-
-        self.assertIsNone(module.read_live_tags("owner/name", rest=rest))
+    def test_a_non_list_response_makes_the_whole_read_unreadable(self):
+        self.assertIsNone(
+            module.read_live_tags(
+                "owner/name", rest=lambda path: (200, {"message": "partial"})
+            )
+        )
 
     def test_a_transport_failure_is_unreadable_rather_than_empty(self):
         self.assertIsNone(module.read_live_tags("owner/name", rest=lambda path: (0, {})))
 
-    def test_an_empty_repository_reads_as_no_tags_not_as_unreadable(self):
-        # GitHub answers 404 for `git/refs/tags` when a repository has no tags
-        # at all.  That is a definite empty, not a blind spot.
-        self.assertEqual({}, module.read_live_tags("owner/name", rest=lambda p: (404, {})))
+    def test_an_empty_matching_response_reads_as_no_tags(self):
+        self.assertEqual({}, module.read_live_tags("owner/name", rest=lambda p: (200, [])))
+
+    def test_a_404_is_unreadable_not_an_empty_repository(self):
+        self.assertIsNone(
+            module.read_live_tags("owner/name", rest=lambda path: (404, {}))
+        )
 
 
 class ShippedManifest(unittest.TestCase):
@@ -256,6 +253,12 @@ class CommandLine(unittest.TestCase):
         code, output = self._run(token="t", rest=lambda path: (0, {}), recorded=RECORDED)
         self.assertEqual(0, code)
         self.assertIn("SKIP", output)
+
+    def test_a_404_listing_skips_loudly_in_ordinary_observation(self):
+        code, output = self._run(token="t", rest=lambda path: (404, {}), recorded=RECORDED)
+        self.assertEqual(0, code)
+        self.assertIn("SKIP", output)
+        self.assertNotIn("no longer exists", output)
 
     def test_a_clean_read_passes_and_names_what_it_verified(self):
         page = [
@@ -344,14 +347,15 @@ class StrictReleaseObservation(unittest.TestCase):
         self.assertEqual(result, 1)
         self.assertIn("release requires a repository", output.getvalue())
 
-    def test_partial_later_page_never_authorizes_release(self):
-        page = [{"ref": f"refs/tags/v1.0.{index}", "object": {
-            "sha": "a" * 40, "type": "tag"}} for index in range(module.PER_PAGE)]
-        pages = [(200, page), (503, {})]
-        code, output = self._run(token="t", recorded={}, rest=lambda path: pages.pop(0))
+    def test_large_complete_inventory_reports_real_unrecorded_tags(self):
+        response = [{"ref": f"refs/tags/v1.0.{index}", "object": {
+            "sha": f"{index:040d}", "type": "tag"}} for index in range(101)]
+        code, output = self._run(
+            token="t", recorded={}, rest=lambda path: (200, response)
+        )
         self.assertEqual(code, 1)
-        self.assertEqual(pages, [])
-        self.assertIn("complete live tag inventory", output)
+        self.assertIn("Unrecorded published tag", output)
+        self.assertNotIn("complete live tag inventory", output)
 
     def test_malformed_inventory_shapes_fail_closed(self):
         valid = {"ref": "refs/tags/v1.0.0", "object": {"sha": "a" * 40, "type": "tag"}}
@@ -372,6 +376,12 @@ class StrictReleaseObservation(unittest.TestCase):
         code, output = self._run(token="t", rest=lambda path: (503, {}), recorded=RECORDED)
         self.assertEqual(1, code)
         self.assertIn("::error", output)
+
+    def test_a_404_inventory_refuses_release_as_unreadable(self):
+        code, output = self._run(token="t", rest=lambda path: (404, {}), recorded=RECORDED)
+        self.assertEqual(1, code)
+        self.assertIn("complete live tag inventory", output)
+        self.assertNotIn("no longer exists", output)
 
     def test_unrecorded_tag_refuses_release(self):
         page = [
