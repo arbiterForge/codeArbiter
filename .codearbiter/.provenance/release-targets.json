@@ -44,12 +44,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "4778082d5ea1466d96a6bb0640eeee58bbb30f0e",
+      "hash": "2c1cc323bc3049f6e6abc5124c167d607667a8b4",
       "path": "plugins/ca-sandbox/.claude-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "d2a8c793bcaaceb3649a06076a27533f79eb7161",
+      "hash": "e214498b4883046287d7dcb15c63014a287dfb27",
       "path": "plugins/ca-sandbox/CHANGELOG.md"
     },
     {

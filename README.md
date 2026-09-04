@@ -115,7 +115,7 @@ Approve the normal plugin trust prompt, open the target repository, and continue
 
 ### Codex CLI
 
-The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.9.1`;
+The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.9.2`;
 the dated end-to-end public-install record discovered `ca-codex 0.2.4` from release `v2.8.13`.
 Current packaging and shared-core parity are continuously verified, while that dated live-install
 record stays labeled rather than being silently promoted to evidence for a newer adapter:

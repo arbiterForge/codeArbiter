@@ -4,6 +4,11 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 
 ---
 
+## [0.1.6] - 2026-09-04 - Image-build stage diagnostics
+
+### Fixed
+- **Hosted Docker failures identify the active build stage.** The real build/cache/rebuild contract now emits only fixed, coarse stage labels while an image operation is in flight, so an outer timeout no longer erases whether inspection, builder probing, or the selected build path stalled. Normal callers remain silent, existing deadlines and command data are unchanged, and both synchronous and asynchronous observer failures are contained.
+
 ## [0.1.5] — 2026-07-24 — Teardown failures are surfaced and fail
 
 ### Added
