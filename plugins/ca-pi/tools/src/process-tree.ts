@@ -22,7 +22,7 @@ const MAX_POLL_MS = 1_000;
 // hung helper - it refused containment twice in one day on windows-latest.
 //
 // The budget is therefore a NO-PROGRESS budget per observable phase, not a total.
-// Each protocol token the helper emits refreshes it, so a slow-but-advancing
+// Only STARTING and ATTACHED refresh it; diagnostic milestones do not. A slow-but-advancing
 // helper is admitted while a silent one still fails closed inside the absolute
 // ceiling with the stalled phase named. Measured phase cost on an idle Windows 11
 // dev box over 6 runs: host start 107-127ms, Add-Type compile 101-158ms; 15s per
@@ -151,10 +151,14 @@ public static class CodeArbiterJob {
 '@
 try {
   Add-Type -TypeDefinition $source -Language CSharp | Out-Null
+  [Console]::Out.WriteLine('COMPILED')
+  [Console]::Out.Flush()
   $line = [Console]::In.ReadLine()
   if ($null -eq $line -or $line -notmatch '^([1-9][0-9]*) ([1-9][0-9]*)$') { exit 40 }
   [UInt32]$target = $Matches[1]
   [UInt32]$parent = $Matches[2]
+  [Console]::Out.WriteLine('PID_ACCEPTED')
+  [Console]::Out.Flush()
   $job = [CodeArbiterJob]::CreateAndAssign($target)
   if ($job -eq [IntPtr]::Zero) { exit 41 }
   try {
@@ -290,15 +294,18 @@ export type ProcessTreeTerminationStep =
   | Readonly<{ kind: "close-job"; timeoutMs: number }>
   | Readonly<{ kind: "wait-until-exited" | "verify-exited"; timeoutMs: number }>;
 
+type WindowsJobStartupStage = "WAITING" | "STARTING" | "COMPILED" | "PID_ACCEPTED";
 export type ProgressWaitOutcome =
   | Readonly<{ state: "ready" }>
-  | Readonly<{ state: "stalled"; phase: string; waitedMs: number }>;
+  | Readonly<{ state: "stalled"; phase: string; waitedMs: number; lastStage?: WindowsJobStartupStage }>;
 export interface ProgressWaitOptions {
-  /** No-progress budget for a single token. Refreshed by every token that arrives. */
+  /** No-progress budget refreshed only by admission tokens, never diagnostic milestones. */
   readonly idleMs: number;
   /** Hard absolute bound on the whole sequence, however much progress arrives. */
   readonly ceilingMs: number;
   readonly now?: () => number;
+  /** Fixed Windows diagnostics are ordered but never refresh admission deadlines. */
+  readonly windowsJobStages?: boolean;
 }
 
 interface NormalizedTiming { graceMs: number; verifyMs: number; pollMs: number }
@@ -352,12 +359,32 @@ export async function awaitProgressTokens(
   if (idleMs > ceilingMs) throw new Error("progress idleMs must be bounded by the progress ceiling");
   const now = options.now ?? Date.now;
   const deadline = now() + ceilingMs;
+  if (options.windowsJobStages && (expected.length !== 2 || expected[0] !== WINDOWS_JOB_STARTING || expected[1] !== WINDOWS_JOB_READY)) {
+    throw new Error("Windows startup diagnostics require the bounded admission sequence");
+  }
+  let lastStage: WindowsJobStartupStage = "WAITING";
   for (const token of expected) {
-    const remaining = deadline - now();
-    if (remaining <= 0) return Object.freeze({ state: "stalled" as const, phase: token, waitedMs: 0 });
     const started = now();
-    const line = await readLine(Math.min(idleMs, remaining));
-    if (line !== token) return Object.freeze({ state: "stalled" as const, phase: token, waitedMs: now() - started });
+    const phaseDeadline = Math.min(deadline, started + idleMs);
+    const stalled = (): ProgressWaitOutcome => Object.freeze({
+      state: "stalled" as const, phase: token, waitedMs: now() - started,
+      ...(options.windowsJobStages ? { lastStage } : {}),
+    });
+    // The fixed two-element diagnostic list bounds reads even if a producer
+    // floods valid-looking tokens without advancing the clock.
+    const diagnostics = options.windowsJobStages && token === WINDOWS_JOB_READY
+      ? ["COMPILED", "PID_ACCEPTED"] as const : [];
+    for (const diagnostic of diagnostics) {
+      const remaining = phaseDeadline - now();
+      if (remaining <= 0) return stalled();
+      if (await readLine(remaining) !== diagnostic) return stalled();
+      lastStage = diagnostic;
+    }
+    const remaining = phaseDeadline - now();
+    if (remaining <= 0) return stalled();
+    const line = await readLine(remaining);
+    if (line !== token) return stalled();
+    if (options.windowsJobStages && token === WINDOWS_JOB_STARTING) lastStage = "STARTING";
   }
   return Object.freeze({ state: "ready" as const });
 }
@@ -547,7 +574,9 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
   let closePending: Promise<boolean> | undefined;
   let armed = false;
   let outputEnded = false;
+  let protocolFailed = false;
   let outputBuffer = "";
+  let queuedOutputBytes = 0;
   const outputLines: string[] = [];
   const outputWaiters: Array<(line?: string) => void> = [];
   let resolveExitCode!: (code?: number) => void;
@@ -565,7 +594,11 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
     settleExitCode();
   };
   const readOutputLine = (timeoutMs?: number): Promise<string | undefined> => {
-    if (outputLines.length > 0) return Promise.resolve(outputLines.shift());
+    if (outputLines.length > 0) {
+      const line = outputLines.shift()!;
+      queuedOutputBytes -= Buffer.byteLength(line, "utf8") + 1;
+      return Promise.resolve(line);
+    }
     if (outputEnded) return Promise.resolve(undefined);
     return new Promise((resolveLine) => {
       let timer: NodeJS.Timeout | undefined;
@@ -584,18 +617,27 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
   helper.stdout.setEncoding("utf8");
   helper.stdout.on("data", (chunk: string) => {
     if (outputEnded) return;
-    outputBuffer += chunk;
-    if (Buffer.byteLength(outputBuffer, "utf8") > MAX_JOB_PROTOCOL_BYTES) {
+    if (queuedOutputBytes + Buffer.byteLength(outputBuffer, "utf8") + Buffer.byteLength(chunk, "utf8") > MAX_JOB_PROTOCOL_BYTES) {
+      // A line waiter may already hold ATTACHED while its continuation has not
+      // run. Latch refusal synchronously so buffered success cannot admit launch.
+      protocolFailed = true;
+      outputLines.length = 0;
+      queuedOutputBytes = 0;
+      outputBuffer = "";
       finishOutput();
       try { helper.stdin.end(); } catch {}
       return;
     }
+    outputBuffer += chunk;
     let newline = outputBuffer.indexOf("\n");
     while (newline >= 0) {
       const line = outputBuffer.slice(0, newline).replace(/\r$/u, "");
       outputBuffer = outputBuffer.slice(newline + 1);
       const waiter = outputWaiters.shift();
-      if (waiter === undefined) outputLines.push(line);
+      if (waiter === undefined) {
+        outputLines.push(line);
+        queuedOutputBytes += Buffer.byteLength(line, "utf8") + 1;
+      }
       else waiter(line);
       newline = outputBuffer.indexOf("\n");
     }
@@ -616,19 +658,20 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
     const finish = (accepted: boolean): boolean => {
       if (settled) return false;
       settled = true;
-      resolveReady(accepted);
-      if (!accepted) { try { helper.stdin.end(); } catch {} terminateWindowsHelperTree(helper, closed); }
+      const admitted = accepted && !protocolFailed;
+      resolveReady(admitted);
+      if (!admitted) { try { helper.stdin.end(); } catch {} terminateWindowsHelperTree(helper, closed); }
       return true;
     };
     helper.stderr.on("data", (chunk: Buffer | string) => { stderrBytes += Buffer.byteLength(chunk); if (stderrBytes > MAX_JOB_PROTOCOL_BYTES) finish(false); });
     helper.once("close", () => { if (!intentional) finish(false); });
     helper.once("error", () => finish(false));
-    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
+    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs, windowsJobStages: true }).then((outcome) => {
       // Attribute the stall ONLY when the progress wait is what refused. A helper
       // that crashed or flooded stderr has already settled `ready`, and reporting
       // "stalled at ..." for it would be a lie.
       const refused = finish(outcome.state === "ready");
-      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
+      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms; last startup stage ${outcome.lastStage}`;
     }, () => finish(false));
     try { helper.stdin.write(`${pid} ${process.pid}\n`, "utf8", (error) => { if (error) finish(false); }); } catch { finish(false); }
   });
@@ -637,7 +680,7 @@ function startWindowsJobGuard(pid: number, timing: NormalizedTiming): WindowsJob
     exitCode,
     stall(): string | undefined { return stallDiagnostic; },
     async arm(rootPid: number): Promise<boolean> {
-      if (armed || !positivePid(rootPid) || !await ready || closed) return false;
+      if (armed || !positivePid(rootPid) || !await ready || closed || protocolFailed) return false;
       armed = true;
       const watched = readOutputLine(idleMs);
       const written = await new Promise<boolean>((resolveWrite) => {
