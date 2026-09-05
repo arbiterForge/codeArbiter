@@ -2,8 +2,11 @@
 """Validate ADR-0033 lifecycle bindings; optionally emit Verified claims."""
 
 import argparse
+import datetime as dt
+import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -11,10 +14,13 @@ REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, os.path.join(REPO, "core", "pysrc"))
 
 import adr_lifecycle as al
+import prepare_adr_acceptance as paa
 from _gitexec import root_bound_git_env
 
 
 LEDGER_REL = ".codearbiter/decisions/adr-lifecycle.jsonl"
+DECISION_LOG_REL = ".codearbiter/decisions/decision-log.md"
+LEGACY_BASELINE_OBSERVED_COMMIT = "10d9b012d91681498bdf911dd82ffa28e112407f"
 
 
 def select_base_ref(event_name, event):
@@ -33,7 +39,8 @@ def select_base_ref(event_name, event):
 
 def _git(root, *args):
     return subprocess.run(
-        ["git", "-C", root, *args], capture_output=True, check=False,
+        ["git", "--no-replace-objects", "-C", root, *args],
+        capture_output=True, check=False,
         env=root_bound_git_env(),
     )
 
@@ -58,6 +65,358 @@ def _ledger_at(root, commit):
     if blob is None:
         raise ValueError("could not read lifecycle ledger at %s" % commit)
     return blob
+
+
+def _index_blob(root, path):
+    result = _git(root, "show", ":%s" % path)
+    return result.stdout if result.returncode == 0 else None
+
+
+def _valid_decision_log_append(base, current, stem):
+    """Accept one canonical, sequential, accepted decision entry for the ADR."""
+    try:
+        base_text = base.decode("utf-8")
+        current_text = current.decode("utf-8")
+    except UnicodeDecodeError:
+        return False
+    if not current_text.startswith(base_text) or current_text == base_text:
+        return False
+    suffix = current_text[len(base_text):].strip("\n").splitlines()
+    if len(suffix) < 24 or suffix[-1] != "---":
+        return False
+    prior = re.findall(r"(?m)^## DECISION-(\d{4}) — ", base_text)
+    header = re.fullmatch(
+        r"## DECISION-(\d{4}) — adr-(\d{4})-ratified — .+", suffix[0])
+    if not prior or header is None:
+        return False
+    number = stem.split("-", 1)[0]
+    if int(header.group(1)) != int(prior[-1]) + 1 or header.group(2) != number:
+        return False
+    fixed = (
+        r"\*\*Date:\*\* \d{4}-\d{2}-\d{2}",
+        r"\*\*Status:\*\* accepted",
+        r"\*\*Supersedes:\*\* .+",
+        r"\*\*Decided by:\*\* .+",
+        r"\*\*Decision category:\*\* .+",
+        r"\*\*Artifact-section-hash:\*\* (?:n/a|[0-9a-f]{64})",
+    )
+    if len(suffix) < 9 or suffix[1] != "" or any(
+            re.fullmatch(pattern, suffix[index + 2]) is None
+            for index, pattern in enumerate(fixed)):
+        return False
+    required = (
+        "### Variance summary", "- **Artifact position:** ",
+        "- **Scaffold position:** ", "- **Status type:** ",
+        "### Decision", "### SMARTS rationale", "### Implementation implication",
+    )
+    positions = []
+    for required_line in required:
+        exact = required_line.startswith("### ")
+        matches = [index for index, line in enumerate(suffix)
+                   if line == required_line or
+                   (not exact and line.startswith(required_line))]
+        if len(matches) != 1:
+            return False
+        positions.append(matches[0])
+    if positions != sorted(positions) or any(
+            line.startswith("## DECISION-") for line in suffix[1:]):
+        return False
+    for heading in ("### Decision", "### SMARTS rationale", "### Implementation implication"):
+        start = suffix.index(heading) + 1
+        end = next((index for index in range(start, len(suffix))
+                    if suffix[index].startswith("### ") or suffix[index] == "---"), len(suffix))
+        if not any(line.strip() for line in suffix[start:end]):
+            return False
+    return True
+
+
+def _local_pending_acceptance(root, events, blobs):
+    """Return one exact staged first-leg ADR stem, or None.
+
+    This is deliberately index-bound and local-only. A clean checkout, mixed
+    staged set, unstaged decision edit, existing accepted HEAD, or incomplete
+    decision-log append receives no transition allowance and remains strict.
+    """
+    bindings = {event.get("adr") for event in events if isinstance(event, dict)
+                and event.get("event") in ("acceptance", "baseline")
+                and isinstance(event.get("adr"), str)}
+    accepted = {adr for adr, blob in blobs.items()
+                if al.parse_adr(blob)["status"] == "accepted"}
+    missing = sorted(accepted - bindings)
+    if len(missing) != 1:
+        return None
+    stem = missing[0]
+    adr_rel = ".codearbiter/decisions/%s.md" % stem
+    expected_paths = {adr_rel, DECISION_LOG_REL}
+
+    staged = _git(root, "diff", "--cached", "--name-only", "-z", "--no-renames")
+    if staged.returncode != 0:
+        return None
+    try:
+        staged_paths = {path.decode("utf-8").replace("\\", "/")
+                        for path in staged.stdout.split(b"\0") if path}
+    except UnicodeDecodeError:
+        return None
+    if staged_paths != expected_paths:
+        return None
+
+    status = _git(
+        root, "status", "--porcelain=v1", "-z", "--untracked-files=all",
+        "--", ".codearbiter/decisions")
+    if status.returncode != 0:
+        return None
+    seen = set()
+    for raw in status.stdout.split(b"\0"):
+        if not raw:
+            continue
+        try:
+            entry = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return None
+        if (len(entry) < 4 or entry[0] not in ("A", "M") or
+                entry[1] not in (" ", "M")):
+            return None
+        seen.add(entry[3:].replace("\\", "/"))
+    if seen != expected_paths:
+        return None
+
+    index_adr = _index_blob(root, adr_rel)
+    index_log = _index_blob(root, DECISION_LOG_REL)
+    try:
+        with open(os.path.join(root, *DECISION_LOG_REL.split("/")), "rb") as handle:
+            worktree_log = handle.read()
+    except OSError:
+        return None
+    if (index_adr is None or index_log is None or stem not in blobs or
+            al._normalized_text(blobs[stem]) != al._normalized_text(index_adr) or
+            al._normalized_text(worktree_log) != al._normalized_text(index_log)):
+        return None
+    try:
+        if al.parse_adr(index_adr)["status"] != "accepted":
+            return None
+    except (UnicodeError, ValueError):
+        return None
+
+    head_adr = _git_blob(root, "HEAD", adr_rel)
+    if head_adr is not None:
+        try:
+            if (al.parse_adr(head_adr)["status"] == "accepted" or
+                    paa.transition_body(head_adr) != paa.transition_body(index_adr)):
+                return None
+        except (UnicodeError, ValueError):
+            return None
+
+    head_log = _git_blob(root, "HEAD", DECISION_LOG_REL)
+    if head_log is None or not _valid_decision_log_append(
+            head_log, index_log, stem):
+        return None
+
+    packet = paa.read_packet(root)
+    if packet is None:
+        return None
+    expected_fields = {
+        "schema", "repository", "head", "index_tree", "adr",
+        "adr_blob_sha256", "transition_body_sha256",
+        "decision_log_base_sha256", "decision_log_index_sha256",
+        "obligations", "obligations_sha256", "reviewed_by",
+        "reviewed_at", "valid_until",
+    }
+    if set(packet) != expected_fields or packet.get("schema") != paa.SCHEMA:
+        return None
+    digest = lambda value: hashlib.sha256(value).hexdigest()
+    try:
+        now = dt.datetime.now(dt.timezone.utc)
+        reviewed_at = al._parse_time(packet.get("reviewed_at"))
+        valid_until = al._parse_time(packet.get("valid_until"))
+        index_tree = _git(root, "write-tree")
+        if index_tree.returncode != 0:
+            return None
+        obligations = packet.get("obligations")
+        synthetic = {
+            "schema": "adr-lifecycle/v1", "event": "acceptance", "adr": stem,
+            "recorded_at": packet["reviewed_at"], "source_commit": "0" * 40,
+            "blob_sha256": digest(index_adr),
+            "body_sha256": digest(al.immutable_body(index_adr)),
+            "obligations": obligations,
+            "obligations_sha256": al.obligation_set_digest(obligations),
+            "obligations_sealed": True,
+        }
+        if (packet["repository"] != paa.repository_identity(root) or
+                packet["head"] != _git(root, "rev-parse", "HEAD").stdout.decode().strip() or
+                packet["index_tree"] != index_tree.stdout.decode().strip() or
+                packet["adr"] != stem or
+                packet["adr_blob_sha256"] != digest(index_adr) or
+                packet["transition_body_sha256"] != digest(paa.transition_body(index_adr)) or
+                packet["decision_log_base_sha256"] != digest(head_log) or
+                packet["decision_log_index_sha256"] != digest(index_log) or
+                packet["obligations_sha256"] != synthetic["obligations_sha256"] or
+                not isinstance(packet["reviewed_by"], list) or
+                not packet["reviewed_by"] or
+                any(not isinstance(item, str) or not item.strip()
+                    for item in packet["reviewed_by"]) or
+                reviewed_at > now or now > valid_until or
+                valid_until - reviewed_at > paa.MAX_LIFETIME or
+                al.validate_events([synthetic], {stem: index_adr})):
+            return None
+    except (KeyError, TypeError, UnicodeError, ValueError):
+        return None
+    return stem
+
+
+def _local_binding_transition_error(root, events, blobs):
+    """Bind the staged second leg to the reviewed first-leg packet."""
+    staged = _git(root, "diff", "--cached", "--name-only", "-z", "--no-renames")
+    if staged.returncode != 0:
+        return "could not inspect staged ADR acceptance binding"
+    try:
+        paths = {path.decode("utf-8").replace("\\", "/")
+                 for path in staged.stdout.split(b"\0") if path}
+    except UnicodeDecodeError:
+        return "staged ADR acceptance binding paths are not UTF-8"
+    head_ledger = _ledger_at(root, "HEAD")
+    index_ledger = _index_blob(root, LEDGER_REL)
+    ledger_path = os.path.join(root, *LEDGER_REL.split("/"))
+    try:
+        with open(ledger_path, "rb") as handle:
+            worktree_ledger = handle.read()
+    except OSError:
+        return "staged ADR acceptance binding ledger is unreadable"
+    try:
+        head_events = [json.loads(line.decode("utf-8"))
+                       for line in (head_ledger or b"").splitlines() if line.strip()]
+        head_acceptances = [json.dumps(event, sort_keys=True, separators=(",", ":"))
+                            for event in head_events if isinstance(event, dict)
+                            and event.get("event") == "acceptance"]
+        work_acceptances = [json.dumps(event, sort_keys=True, separators=(",", ":"))
+                            for event in events if isinstance(event, dict)
+                            and event.get("event") == "acceptance"]
+        new_work_acceptance = any(
+            work_acceptances.count(item) > head_acceptances.count(item)
+            for item in set(work_acceptances))
+    except (TypeError, UnicodeError, ValueError):
+        new_work_acceptance = False
+    if LEDGER_REL not in paths:
+        return ("ADR acceptance binding is present only in unstaged working-tree bytes"
+                if new_work_acceptance else None)
+    if head_ledger is None or index_ledger is None or not index_ledger.startswith(head_ledger):
+        return "staged ADR lifecycle ledger is not an exact append"
+    appended = [line for line in index_ledger[len(head_ledger):].splitlines() if line.strip()]
+    try:
+        new_events = [json.loads(line.decode("utf-8")) for line in appended]
+    except (UnicodeError, ValueError):
+        return "staged ADR acceptance binding append is malformed"
+    acceptances = [event for event in new_events if isinstance(event, dict)
+                   and event.get("event") == "acceptance"]
+    if not acceptances:
+        return ("ADR acceptance binding is not fully staged"
+                if new_work_acceptance else None)
+    if (paths != {LEDGER_REL} or
+            al._normalized_text(worktree_ledger) != al._normalized_text(index_ledger)):
+        return "staged ADR acceptance binding is not the sole exact append"
+    if len(new_events) != 1 or len(acceptances) != 1:
+        return "staged ADR acceptance binding must append exactly one acceptance"
+
+    event = acceptances[0]
+    packet = paa.read_packet(root)
+    if packet is None:
+        return "staged ADR acceptance binding has no reviewed pending packet"
+    stem = event.get("adr")
+    if not isinstance(stem, str):
+        return "staged ADR acceptance binding has no ADR stem"
+    adr_blob = _git_blob(root, "HEAD", ".codearbiter/decisions/%s.md" % stem)
+    decision_log = _git_blob(root, "HEAD", DECISION_LOG_REL)
+    head = _git(root, "rev-parse", "HEAD")
+    parent = _git(root, "rev-parse", "HEAD^")
+    tree = _git(root, "rev-parse", "HEAD^{tree}")
+    if (adr_blob is None or decision_log is None or head.returncode != 0 or
+            parent.returncode != 0 or tree.returncode != 0):
+        return "could not resolve the pending ADR acceptance source commit"
+    head_text = head.stdout.decode().strip()
+    try:
+        expected_packet_fields = {
+            "schema", "repository", "head", "index_tree", "adr",
+            "adr_blob_sha256", "transition_body_sha256",
+            "decision_log_base_sha256", "decision_log_index_sha256",
+            "obligations", "obligations_sha256", "reviewed_by",
+            "reviewed_at", "valid_until",
+        }
+        reviewed_at = al._parse_time(packet.get("reviewed_at"))
+        valid_until = al._parse_time(packet.get("valid_until"))
+        recorded_at = al._parse_time(event.get("recorded_at"))
+        now = dt.datetime.now(dt.timezone.utc)
+        packet_head_ledger = _ledger_at(root, packet.get("head"))
+        packet_head_log = _git_blob(root, packet.get("head"), DECISION_LOG_REL)
+        expected_event_fields = {
+            "schema", "event", "adr", "recorded_at", "source_commit",
+            "blob_sha256", "body_sha256", "obligations",
+            "obligations_sha256", "obligations_sealed",
+        }
+        if (set(packet) != expected_packet_fields or
+                set(event) != expected_event_fields or
+                packet.get("schema") != paa.SCHEMA or
+                packet.get("repository") != paa.repository_identity(root) or
+                packet.get("adr") != stem or
+                packet.get("head") != parent.stdout.decode().strip() or
+                packet.get("index_tree") != tree.stdout.decode().strip() or
+                packet.get("adr_blob_sha256") != hashlib.sha256(adr_blob).hexdigest() or
+                packet.get("transition_body_sha256") != hashlib.sha256(
+                    paa.transition_body(adr_blob)).hexdigest() or
+                packet.get("decision_log_index_sha256") != hashlib.sha256(
+                    decision_log).hexdigest() or
+                packet_head_log is None or
+                packet.get("decision_log_base_sha256") != hashlib.sha256(
+                    packet_head_log).hexdigest() or
+                packet_head_ledger != head_ledger or
+                not isinstance(packet.get("reviewed_by"), list) or
+                not packet.get("reviewed_by") or
+                any(not isinstance(item, str) or not item.strip()
+                    for item in packet.get("reviewed_by")) or
+                packet.get("obligations_sha256") != al.obligation_set_digest(
+                    packet.get("obligations")) or
+                event.get("schema") != "adr-lifecycle/v1" or
+                event.get("source_commit") != head_text or
+                event.get("blob_sha256") != packet.get("adr_blob_sha256") or
+                event.get("body_sha256") != hashlib.sha256(
+                    al.immutable_body(adr_blob)).hexdigest() or
+                event.get("obligations") != packet.get("obligations") or
+                event.get("obligations_sha256") != packet.get("obligations_sha256") or
+                event.get("obligations_sealed") is not True or
+                reviewed_at > now or
+                valid_until - reviewed_at > paa.MAX_LIFETIME or
+                recorded_at < reviewed_at or recorded_at > now or
+                recorded_at > valid_until or now > valid_until):
+            return "staged ADR acceptance binding does not match its reviewed pending packet"
+    except (KeyError, TypeError, UnicodeError, ValueError):
+        return "staged ADR acceptance binding packet is malformed or stale"
+    return None
+
+
+def accepted_binding_errors(root, events, blobs, allow_local_pending=False):
+    """Validate accepted-ADR binding completeness for a repository state."""
+    bindings = {event.get("adr") for event in events if isinstance(event, dict)
+                and event.get("event") in ("acceptance", "baseline")
+                and isinstance(event.get("adr"), str)}
+    accepted = {adr for adr, blob in blobs.items()
+                if al.parse_adr(blob)["status"] == "accepted"}
+    pending = (_local_pending_acceptance(root, events, blobs)
+               if allow_local_pending else None)
+    errors = ["%s: accepted ADR has no lifecycle binding" % adr
+              for adr in sorted(accepted - bindings - ({pending} if pending else set()))]
+    for event in events:
+        if not isinstance(event, dict) or event.get("event") != "baseline":
+            continue
+        stem = event.get("adr")
+        observed = event.get("observed_commit")
+        if not isinstance(stem, str) or not isinstance(observed, str):
+            continue
+        if observed != LEGACY_BASELINE_OBSERVED_COMMIT:
+            errors.append(
+                "%s: legacy baseline lies outside the closed migration epoch" % stem)
+    if allow_local_pending:
+        transition_error = _local_binding_transition_error(root, events, blobs)
+        if transition_error:
+            errors.append(transition_error)
+    return errors, pending
 
 
 def main(argv=None):
@@ -86,14 +445,16 @@ def main(argv=None):
     events = al.read_jsonl(ledger)
     errors = [event_error] if event_error else []
     blobs = al.read_adrs(args.root, errors=errors)
-    accepted = {adr: blob for adr, blob in blobs.items()
-                if al.parse_adr(blob)["status"] == "accepted"}
     errors.extend(al.validate_events(events, blobs))
-    bindings = {event.get("adr") for event in events if isinstance(event, dict)
-                and event.get("event") in ("acceptance", "baseline")
-                and isinstance(event.get("adr"), str)}
-    for adr in sorted(set(accepted) - bindings):
-        errors.append("%s: accepted ADR has no lifecycle binding" % adr)
+    allow_pending = (args.base_ref is None and args.current_ref is None and
+                     not args.github_event and not args.verified_json)
+    try:
+        binding_errors, pending = accepted_binding_errors(
+            args.root, events, blobs, allow_local_pending=allow_pending)
+    except (OSError, UnicodeError, ValueError):
+        binding_errors, pending = accepted_binding_errors(
+            args.root, events, blobs, allow_local_pending=False)
+    errors.extend(binding_errors)
 
     source_blobs = {}
     source_inputs = {}
@@ -168,7 +529,11 @@ def main(argv=None):
         for diagnostic in diagnostics:
             print("::warning::" + diagnostic, file=sys.stderr)
     else:
-        print("ADR lifecycle bindings valid; accepted plans are distinct from Verified evidence")
+        if pending:
+            print("ADR lifecycle valid pending acceptance source commit for %s; "
+                  "binding is not yet recorded" % pending)
+        else:
+            print("ADR lifecycle bindings valid; accepted plans are distinct from Verified evidence")
     return 0
 
 

@@ -192,6 +192,21 @@ python .github/scripts/test_mode_surface.py
 python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 ```
 
+For the first commit of the two-commit ADR acceptance protocol, create the
+worktree-local, content-bound transition packet with
+`.github/scripts/prepare_adr_acceptance.py`. It binds the exact HEAD and staged
+index, accepted ADR bytes, decision-log append, sealed obligation set, expiry,
+and independent reviewer identity. The two lifecycle commands above recognize
+only that exact pending transition locally; explicit-revision, export,
+clean-tree, and GitHub-event validation remain strict. After the source commit,
+stage its acceptance binding immediately, run both mandatory lifecycle commands,
+and commit that sole ledger append through the commit gate. Only after the
+binding commit succeeds, clear the packet with
+`python .github/scripts/prepare_adr_acceptance.py --clear`.
+Legacy `baseline` bindings remain closed to the original migration snapshot
+`10d9b012d91681498bdf911dd82ffa28e112407f`; later commits cannot acquire
+legacy status instead of using this acceptance protocol.
+
 Only when `plugins/ca/tools/**` changed:
 
 ```sh
