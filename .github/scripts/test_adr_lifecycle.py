@@ -1650,6 +1650,13 @@ class LifecycleContractTest(unittest.TestCase):
         errors.extend(binding_errors)
         self.assertEqual(errors, [], "\n".join(errors))
 
+    def test_decision_log_append_rejects_extended_section_heading_without_raising(self):
+        base = b"# Decision log\n" + _decision_entry(1, 9999).encode()
+        extended = _decision_entry(2, 1).replace(
+            "### Decision\n", "### Decision extended\n")
+        self.assertFalse(cal._valid_decision_log_append(
+            base, base + extended.encode(), "0001-test"))
+
     def test_pending_packet_is_isolated_to_the_exact_worktree_git_directory(self):
         self.assertIsNotNone(paa, "pending-acceptance packet helper is missing")
         with tempfile.TemporaryDirectory() as container:

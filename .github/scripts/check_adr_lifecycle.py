@@ -110,9 +110,11 @@ def _valid_decision_log_append(base, current, stem):
         "### Decision", "### SMARTS rationale", "### Implementation implication",
     )
     positions = []
-    for token in required:
+    for required_line in required:
+        exact = required_line.startswith("### ")
         matches = [index for index, line in enumerate(suffix)
-                   if line == token or line.startswith(token)]
+                   if line == required_line or
+                   (not exact and line.startswith(required_line))]
         if len(matches) != 1:
             return False
         positions.append(matches[0])
