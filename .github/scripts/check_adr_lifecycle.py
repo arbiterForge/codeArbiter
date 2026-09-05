@@ -67,6 +67,55 @@ def _ledger_at(root, commit):
     return blob
 
 
+def source_ancestry(root, events, current_ref, base_ref=None):
+    """Require retained source identities; select a merge that preserves them."""
+    errors = []
+    refs = {}
+    for label, ref in (("current", current_ref), ("base", base_ref)):
+        if ref is None and label == "base":
+            continue
+        if not isinstance(ref, str) or not ref:
+            errors.append("%s ref is not a resolvable commit: %s" % (label, ref))
+            continue
+        resolved = _git(root, "rev-parse", "--verify", "--end-of-options",
+                        "%s^{commit}" % ref)
+        if resolved.returncode:
+            errors.append("%s ref is not a resolvable commit: %s" % (label, ref))
+        else:
+            refs[label] = resolved.stdout.decode("ascii").strip()
+    if errors:
+        return errors, None
+    method = "squash"
+    sources = set()
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        kind = event.get("event")
+        if kind in ("acceptance", "implemented", "verified"):
+            source = event.get("source_commit")
+        elif kind == "baseline":
+            source = event.get("observed_commit")
+        else:
+            continue
+        if not isinstance(source, str) or not al.HEX40.fullmatch(source):
+            errors.append("lifecycle source commit is malformed")
+            continue
+        sources.add(source)
+    for source in sorted(sources):
+        retained = _git(root, "merge-base", "--is-ancestor", source, refs["current"])
+        if retained.returncode == 1:
+            errors.append("%s: source commit is not an ancestor of current ref" % source)
+        elif retained.returncode:
+            errors.append("%s: could not verify source commit ancestry" % source)
+        if "base" in refs:
+            in_base = _git(root, "merge-base", "--is-ancestor", source, refs["base"])
+            if in_base.returncode == 1:
+                method = "merge"
+            elif in_base.returncode:
+                errors.append("%s: could not verify source commit base ancestry" % source)
+    return errors, None if errors else method
+
+
 def _index_blob(root, path):
     result = _git(root, "show", ":%s" % path)
     return result.stdout if result.returncode == 0 else None
@@ -427,8 +476,13 @@ def main(argv=None):
     parser.add_argument("--current-ref")
     parser.add_argument("--github-event", action="store_true")
     parser.add_argument("--verified-json", action="store_true")
+    parser.add_argument("--merge-method", action="store_true",
+                        help="emit squash or merge for exact committed base/head evidence")
     parser.add_argument("--now")
     args = parser.parse_args(argv)
+    if args.merge_method and (not args.base_ref or not args.current_ref or
+                              args.github_event or args.verified_json):
+        parser.error("--merge-method requires --base-ref and --current-ref only")
     event_error = None
     if args.github_event:
         event_path = os.environ.get("GITHUB_EVENT_PATH")
@@ -442,9 +496,50 @@ def main(argv=None):
             event_error = "could not select GitHub event base: %s" % exc
 
     ledger = os.path.join(args.root, *LEDGER_REL.split("/"))
-    events = al.read_jsonl(ledger)
     errors = [event_error] if event_error else []
-    blobs = al.read_adrs(args.root, errors=errors)
+    if args.current_ref is not None:
+        if not args.merge_method:
+            # Preserve the existing strict local-pending/export boundary too:
+            # dirty invalid evidence cannot be blessed by naming an older ref.
+            working_events = al.read_jsonl(ledger)
+            working_blobs = al.read_adrs(args.root, errors=errors)
+            errors.extend(al.validate_events(working_events, working_blobs))
+            working_errors, _pending = accepted_binding_errors(
+                args.root, working_events, working_blobs, allow_local_pending=False)
+            errors.extend(working_errors)
+        events, blobs = [], {}
+        # Explicit revision checks are derived from committed bytes, never a dirty
+        # working-tree ledger that can hide a new source binding.
+        try:
+            committed = _ledger_at(args.root, args.current_ref)
+            if committed is None:
+                raise ValueError("current ref has no lifecycle ledger")
+            events = [json.loads(line) for line in committed.decode("utf-8").splitlines()
+                      if line.strip()]
+            tree = _git(args.root, "ls-tree", "-r", "--name-only", "-z",
+                        args.current_ref, ".codearbiter/decisions/")
+            if tree.returncode:
+                raise ValueError("could not inspect current ADR tree")
+            blobs = {}
+            for path in tree.stdout.decode("utf-8").split("\0"):
+                prefix = ".codearbiter/decisions/"
+                if not path.startswith(prefix):
+                    continue
+                name = path[len(prefix):]
+                if "/" in name:
+                    continue
+                match = al.ADR_RE.fullmatch(name)
+                if match:
+                    blob = _git_blob(args.root, args.current_ref, path)
+                    if blob is None:
+                        raise ValueError("could not read current ADR blob: %s" % path)
+                    al.parse_adr(blob)
+                    blobs[match.group(1)] = blob
+        except (ValueError, UnicodeError) as exc:
+            errors.append("could not read committed current ref evidence: %s" % exc)
+    else:
+        events = al.read_jsonl(ledger)
+        blobs = al.read_adrs(args.root, errors=errors)
     errors.extend(al.validate_events(events, blobs))
     allow_pending = (args.base_ref is None and args.current_ref is None and
                      not args.github_event and not args.verified_json)
@@ -477,6 +572,12 @@ def main(argv=None):
                         source_inputs[(commit, path)] = _git_blob(args.root, commit, path)
     errors.extend(al.validate_source_blobs(events, source_blobs))
     errors.extend(al.validate_evidence_sources(events, source_inputs))
+    merge_method = None
+    if args.current_ref is not None:
+        ancestry_errors, merge_method = source_ancestry(
+            args.root, events, args.current_ref,
+            args.base_ref if args.merge_method else None)
+        errors.extend(ancestry_errors)
 
     if args.base_ref:
         try:
@@ -524,7 +625,9 @@ def main(argv=None):
         for error in errors:
             print("::error::" + error, file=sys.stderr)
         return 1
-    if args.verified_json:
+    if args.merge_method:
+        print(merge_method)
+    elif args.verified_json:
         print(json.dumps(exported, sort_keys=True, separators=(",", ":")))
         for diagnostic in diagnostics:
             print("::warning::" + diagnostic, file=sys.stderr)

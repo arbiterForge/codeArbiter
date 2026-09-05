@@ -52,6 +52,13 @@ The irreversible-action set draws a confirmation even when intent is obvious, be
 confirmation is the gate, not friction: merge to the default branch, branch or worktree
 deletion, release and tag publication, and the logged bypass itself (`{{CMD:override}}`).
 
+**Merge-to-default hard gate: ADR source ancestry.** Before composing any merge offer (including
+`{{CMD:watch}}`) or performing an authorized merge, load Phase 1 of
+`{{PLUGIN_ROOT}}/skills/finishing-a-development-branch/SKILL.md` and apply its `--merge-method`
+preflight to the exact fetched base and PR head. Preserve a required true merge and use
+`--match-head-commit`; green CI cannot substitute for source ancestry. Missing evidence blocks the
+offer. This check never authorizes the merge itself.
+
 A parameter is yours to decide only when it is reversible, has one sensible answer, and is
 recorded where the user will review it — an uncertain classification is a fork, and forks are
 asked.
