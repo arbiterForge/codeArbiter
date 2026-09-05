@@ -241,6 +241,31 @@ class ShippedManifest(unittest.TestCase):
             set(self.manifest["tags"]), set(module.load_recorded(self.manifest["tags"]))
         )
 
+    def test_original_receipt_baseline_rejects_deletion_but_allows_append(self):
+        appended = json.loads(json.dumps(self.manifest))
+        appended["tags"]["v99.0.0"] = {
+            "object_sha": "a" * 40,
+            "object_type": "tag",
+            "commit_sha": "b" * 40,
+        }
+        appended_records = module.load_original_manifest(appended)
+        module.validate_original_receipt_baseline(appended_records)
+        self.assertIn("v99.0.0", appended_records)
+
+        deleted = json.loads(json.dumps(self.manifest))
+        del deleted["tags"]["v2.17.3"]
+        with self.assertRaisesRegex(ValueError, "frozen receipt baseline changed"):
+            module.validate_original_receipt_baseline(module.load_original_manifest(deleted))
+
+        for field in ("object_sha", "commit_sha"):
+            with self.subTest(field=field):
+                mutated = json.loads(json.dumps(self.manifest))
+                mutated["tags"]["v2.17.3"][field] = "f" * 40
+                with self.assertRaisesRegex(ValueError, "frozen receipt baseline changed"):
+                    module.validate_original_receipt_baseline(
+                        module.load_original_manifest(mutated)
+                    )
+
 
 class LegacyEpochContract(unittest.TestCase):
     """ADR-0034's closed historical observation epoch, without provenance laundering."""
@@ -442,6 +467,7 @@ class LegacyEpochContract(unittest.TestCase):
         original = module.load_original_manifest(
             json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
         )
+        module.validate_original_receipt_baseline(original)
         return [
             {"ref": f"refs/tags/{tag}", "object": {
                 "sha": entry.object_sha, "type": entry.object_type,
@@ -470,7 +496,14 @@ class LegacyEpochContract(unittest.TestCase):
 
     def test_main_clean_union_summary_keeps_evidence_class_labels_and_counts(self):
         complete = self._complete_inventory()
-        expected = "OK: 120 original-publication receipts and 44 legacy baselines"
+        original = module.load_original_manifest(
+            json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
+        )
+        module.validate_original_receipt_baseline(original)
+        expected = (
+            f"OK: {len(original)} original-publication receipts and "
+            f"{len(self.records)} legacy baselines"
+        )
         for strict in (False, True):
             with self.subTest(strict=strict):
                 code, output = self._run_full_ledger_main(complete, strict=strict)

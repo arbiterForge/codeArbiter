@@ -635,6 +635,26 @@
       "object_sha": "f9027d5ba53ca0918e50b4df866f687262256c13",
       "object_type": "tag",
       "commit_sha": "d11c74568fe581850872d3ae01e3502dc65ef654"
+    },
+    "v2.17.3": {
+      "object_sha": "c43498f2547777011043273577b16a02fbbfa7f0",
+      "object_type": "tag",
+      "commit_sha": "a3d76cf117e52de9d3c60e095ffb6a340cc04826"
+    },
+    "ca-codex-v0.9.3": {
+      "object_type": "tag",
+      "object_sha": "bfb929001ce73e034584c1673ad3434272a6ed46",
+      "commit_sha": "a3d76cf117e52de9d3c60e095ffb6a340cc04826"
+    },
+    "ca-pi-v0.10.4": {
+      "object_type": "tag",
+      "commit_sha": "a3d76cf117e52de9d3c60e095ffb6a340cc04826",
+      "object_sha": "f8dc79c47d0d8b8ab6ead5a351cbac4c442b4a4d"
+    },
+    "ca-sandbox-v0.1.6": {
+      "object_sha": "25746afaf6b7f0c9b7baac34e9c1810eecede572",
+      "object_type": "tag",
+      "commit_sha": "a3d76cf117e52de9d3c60e095ffb6a340cc04826"
     }
   }
 }
