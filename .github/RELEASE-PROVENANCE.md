@@ -9,6 +9,29 @@ Ordinary CI remains an observation: it warns about unrecorded tags and reports
 an explicit skip on unavailable inventory. An automatic run with no eligible
 release does not require a new publication check.
 
+## Closed legacy provenance epoch
+
+ADR-0034 establishes `.github/legacy-published-tags.json` as a closed set of
+44 historical baselines observed at `2026-09-04T20:45:43Z`. These records are
+**not original-publication proof**. They preserve three evidence grades and
+prove only the identity from which each listed ref is enforced immutable going
+forward. A historical tag could have moved before that observation; available
+evidence neither proves nor disproves that residual risk.
+
+The guard strictly validates the ledger's observation, record count,
+evidence-grade counts, source-matrix digest, and canonical identity-and-grade digest.
+It rejects overlap with the original-publication ledger and compares both
+classes with the complete live inventory. A legacy mismatch means only that the
+ref moved after its recorded observation. It never proves where the ref was
+originally published.
+
+The legacy epoch cannot grow through release or reconciliation tooling. Adding
+or replacing a legacy identity, source, or evidence grade requires a new accepted, user-attributed ADR
+and architectural review. Every governed tag
+outside that closed set requires an original-publication receipt before a later
+release. Moving, retargeting, or deleting any recorded tag remains prohibited,
+with no break-glass path; corrections use a new version.
+
 ## Capture and retain
 
 The shared publisher captures the exact remote tag object and peeled commit,
@@ -61,8 +84,10 @@ do not fill them by copying fields out of the untrusted receipt.
 python .github/scripts/reconcile_tag_receipt.py \
   --receipt /path/to/authenticated-receipt.json \
   --manifest .github/published-tags.json \
+  --legacy-manifest .github/legacy-published-tags.json \
   --output /path/to/new-candidate.json \
   --expected-manifest-sha256 <current-ledger-sha256> \
+  --expected-legacy-sha256 <current-legacy-ledger-sha256> \
   --expected-repo arbiterForge/codeArbiter \
   --expected-tag <authorized-tag> \
   --expected-commit <authorized-commit> \
@@ -71,8 +96,9 @@ python .github/scripts/reconcile_tag_receipt.py \
   --expected-workflow-sha <verified-workflow-revision>
 ```
 
-The helper validates bounded JSON and exact bindings, rejects conflicting or
-malformed data, and produces an exclusive candidate containing one new identity.
+The helper validates both ledgers' bounded, exact schemas and digest bindings,
+rejects conflicting, malformed, or legacy-set data, and produces an exclusive
+candidate containing one new original-publication identity.
 It preserves existing entries and metadata. An already identical entry is a
 no-op with no output file; an existing output is never replaced. The manifest
 digest prevents accidentally reconciling against a stale source snapshot.

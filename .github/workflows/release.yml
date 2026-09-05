@@ -154,7 +154,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
+          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
+            --manifest .github/published-tags.json \
+            --legacy-manifest .github/legacy-published-tags.json
 
       - name: Resolve exactly one release target
         id: target
@@ -485,7 +487,9 @@ jobs:
             fi
           done
           if [ "$ANY_ELIGIBLE" = true ]; then
-            python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
+            python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
+              --manifest .github/published-tags.json \
+              --legacy-manifest .github/legacy-published-tags.json
           fi
           # A late target failure must not leave earlier authorizations behind.
           printf '%s\n' "${OUTPUTS[@]}" >> "$GITHUB_OUTPUT"

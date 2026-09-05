@@ -1,0 +1,406 @@
+{
+  "schema": "legacy-published-tags/v1",
+  "adr": "0034-establish-closed-legacy-published-tag-provenance-epoch",
+  "observed_at": "2026-09-04T20:45:43Z",
+  "record_count": 44,
+  "canonical_set_sha256": "26f2d1b06b494dbcc721367e09af52f32ca1a50a71dddb457557af2a48cd8c48",
+  "source_matrix_sha256": "cfb3f66e933edb6b1f075f3e089103115c95837b944d56e2c7338d0d3519e8a6",
+  "records": [
+    {
+      "tag": "ca-codex-v0.5.2",
+      "evidence_grade": "current-release-metadata-only",
+      "source_id": "367238037",
+      "object_sha": "7a76869ad2b04d7c3172a496d6e30d50bd30ebd4",
+      "object_type": "commit",
+      "commit_sha": "7a76869ad2b04d7c3172a496d6e30d50bd30ebd4",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.6.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31279445725",
+      "object_sha": "9a5c03a0d405091413f8bc75fbb3c016edc5a552",
+      "object_type": "tag",
+      "commit_sha": "a0d26040fca9981a3e6dd07cd3e7c4761d415dc1",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.6.1",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31315326551",
+      "object_sha": "c826d8bba752713eada487e6e5ca4e105b5aa994",
+      "object_type": "tag",
+      "commit_sha": "520d9c4aeab13c2165693282ac43e5dd217751f9",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.1",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31690932715",
+      "object_sha": "131f9508dee1c102d2276e75af96f4b266a8a570",
+      "object_type": "tag",
+      "commit_sha": "debb49da71aa1b97bca0988f72e46bb5875a23e3",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.2",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31755141793",
+      "object_sha": "26daf1f964b9d492253b7c720d9c6db78a3955ca",
+      "object_type": "tag",
+      "commit_sha": "810cf4fe05608370de9d20abd20f9d75d60c9a81",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.3",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32505017591",
+      "object_sha": "5e51624db4521633469590d0500f2a05831ae1dc",
+      "object_type": "tag",
+      "commit_sha": "4752f120b6b08e15c4b65f51c382f948bf436b18",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.4",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32916499894",
+      "object_sha": "ec8b65ca430505313786c095cd1f124be8e86f60",
+      "object_type": "tag",
+      "commit_sha": "002fbec009e1c46451a0977ef4c525d62d107df4",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.5",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "33403198848",
+      "object_sha": "81b16bbfdb9a281354a9df40b0d5953dfdd0d1bb",
+      "object_type": "tag",
+      "commit_sha": "60bd988faae481a26d51ee812d4659eb6baef7ce",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.7",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33587426553",
+      "object_sha": "b83daff7cae6f7d26c2b5b56229483a9db79ce63",
+      "object_type": "tag",
+      "commit_sha": "6e85bce8d645c6dde8cbe2606beb79859a81474a",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.8",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33597724584",
+      "object_sha": "a88375b85f6a46c3e873790e5175bd331acf82e4",
+      "object_type": "tag",
+      "commit_sha": "6039d394a8369fc8a300f83105fae3fa8285c939",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.7.9",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33619826797",
+      "object_sha": "49e6d72fd624b96bc17546500d16cc3b0444d4cc",
+      "object_type": "tag",
+      "commit_sha": "10d9b012d91681498bdf911dd82ffa28e112407f",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.8.0",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33670497397",
+      "object_sha": "c517618d57e25ed54643d012bfb4b63744b3860e",
+      "object_type": "tag",
+      "commit_sha": "3ce568191959ecc97ce2cf6591845ed31640f9b7",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-codex-v0.9.0",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33699399149",
+      "object_sha": "1dba7f5546a058872890170e24d53e1bec2e5cff",
+      "object_type": "tag",
+      "commit_sha": "bc9c2166fdde4816ae3b178f45923774bc798672",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.10.0",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33699399149",
+      "object_sha": "9d04e2c39ea3a48a6ccfd45aeb238b7662484f05",
+      "object_type": "tag",
+      "commit_sha": "bc9c2166fdde4816ae3b178f45923774bc798672",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.4.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31279445725",
+      "object_sha": "33f77dfee9ac3c202664472138beb3606c36dcf5",
+      "object_type": "tag",
+      "commit_sha": "a0d26040fca9981a3e6dd07cd3e7c4761d415dc1",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.5.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31315326551",
+      "object_sha": "bc45544de059e9576e86dcfb79c35eeddea332a3",
+      "object_type": "tag",
+      "commit_sha": "520d9c4aeab13c2165693282ac43e5dd217751f9",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.6.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31316752320",
+      "object_sha": "96d983783d33e535e61f8a5e1a98c08939707797",
+      "object_type": "tag",
+      "commit_sha": "60ea5f98b1cc0d11ead7517934e1a9bbd00ad09c",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.6.1",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31353121597",
+      "object_sha": "e4e756bd7fc5a86a60d0cc60fea0a649d52b23df",
+      "object_type": "tag",
+      "commit_sha": "cde4442b2c8d6e76516c1e869a56cb1e97f8163e",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.6.2",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31355625740",
+      "object_sha": "e441363a56733a340a0b7b8e3e29453f80c94174",
+      "object_type": "tag",
+      "commit_sha": "8b080b0dcfe0927f8c6e7a65dc1c877c25ef6758",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.6.3",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31359878982",
+      "object_sha": "357dc519b5b483d7ac7f72b197009705ff221edb",
+      "object_type": "tag",
+      "commit_sha": "7a4d5f0f238f158dbf21c91f191b07acb2d4554a",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.7.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31597681532",
+      "object_sha": "a2819b8789513d26df0330086aad4c7504ad8b5b",
+      "object_type": "tag",
+      "commit_sha": "ff82e5fc5fd1abde56b6ddd31129f87705a7c87b",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.1",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31690932715",
+      "object_sha": "2cb49fc13d25d258f2a6df25ce78245cea0b6e0f",
+      "object_type": "tag",
+      "commit_sha": "debb49da71aa1b97bca0988f72e46bb5875a23e3",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.2",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31755141793",
+      "object_sha": "38fdebf0ceba36bd4bf65ce0978fe12d715e2e67",
+      "object_type": "tag",
+      "commit_sha": "810cf4fe05608370de9d20abd20f9d75d60c9a81",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.3",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32505017591",
+      "object_sha": "5aad4c721496ee0cd414dcb43dc9ec71ea42e355",
+      "object_type": "tag",
+      "commit_sha": "4752f120b6b08e15c4b65f51c382f948bf436b18",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.4",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32916499894",
+      "object_sha": "221a0d53d7f5797fca5ef0480da3d8e3a0aa6a27",
+      "object_type": "tag",
+      "commit_sha": "002fbec009e1c46451a0977ef4c525d62d107df4",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.5",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "33329499822",
+      "object_sha": "2ab72363b0c49d7448289cca91e84260e4ea3424",
+      "object_type": "tag",
+      "commit_sha": "00ec49fe620b6d097b067f2cdb9b50213bc0c290",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.7",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33587426553",
+      "object_sha": "b6a18aafc147496db2e2a80aca1b9831315e7447",
+      "object_type": "tag",
+      "commit_sha": "6e85bce8d645c6dde8cbe2606beb79859a81474a",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.8",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33597724584",
+      "object_sha": "10089203782e5c335e94edf6c8a44d5cfe4a9388",
+      "object_type": "tag",
+      "commit_sha": "6039d394a8369fc8a300f83105fae3fa8285c939",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.8.9",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33619826797",
+      "object_sha": "25c3dc350bb4dec5d8795e52c936e450ff422d40",
+      "object_type": "tag",
+      "commit_sha": "10d9b012d91681498bdf911dd82ffa28e112407f",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "ca-pi-v0.9.0",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33670497397",
+      "object_sha": "95cd0a878e33a66bba5e49854a7c3db1213fff28",
+      "object_type": "tag",
+      "commit_sha": "3ce568191959ecc97ce2cf6591845ed31640f9b7",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.12.1",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31268219614",
+      "object_sha": "40966e2077f0c8047bf536838355718639961c63",
+      "object_type": "tag",
+      "commit_sha": "8460a4249dd2018c5c2149871f7eea9ef98fc979",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.13.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31279445725",
+      "object_sha": "637245753b5a86abd55af7131f5187e53a2c9fa3",
+      "object_type": "tag",
+      "commit_sha": "a0d26040fca9981a3e6dd07cd3e7c4761d415dc1",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.14.0",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31315326551",
+      "object_sha": "0eac53ef54571fbaa004770d5c7a008b4ba773d0",
+      "object_type": "tag",
+      "commit_sha": "520d9c4aeab13c2165693282ac43e5dd217751f9",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.1",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31690932715",
+      "object_sha": "192a20f429955db0144b3a1415157a2a809f3798",
+      "object_type": "tag",
+      "commit_sha": "debb49da71aa1b97bca0988f72e46bb5875a23e3",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.10",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33619826797",
+      "object_sha": "dd5d74fee7ffa75f2c3dbeaad7408372e8be18c0",
+      "object_type": "tag",
+      "commit_sha": "10d9b012d91681498bdf911dd82ffa28e112407f",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.2",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "31755141793",
+      "object_sha": "43f1afe0b1398db311fc8a3625aa8033f0d9fb44",
+      "object_type": "tag",
+      "commit_sha": "810cf4fe05608370de9d20abd20f9d75d60c9a81",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.3",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32505017591",
+      "object_sha": "a8cb6b99ae18fda0a1a230a1fb0754bd9c287181",
+      "object_type": "tag",
+      "commit_sha": "4752f120b6b08e15c4b65f51c382f948bf436b18",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.4",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32646648471",
+      "object_sha": "9faeac961263fa317ee01d230bf6359b1193e6b5",
+      "object_type": "tag",
+      "commit_sha": "8fbb326f1cdf3032b79f7a8c4d61e93d0ca946dc",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.5",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "32916499894",
+      "object_sha": "c35575ca6298def484ebfd0501129bfba3cbc4ac",
+      "object_type": "tag",
+      "commit_sha": "002fbec009e1c46451a0977ef4c525d62d107df4",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.6",
+      "evidence_grade": "associated-run-metadata-only",
+      "source_id": "33329499822",
+      "object_sha": "70091655d3651cb0e0caa665ce821316d7adc244",
+      "object_type": "tag",
+      "commit_sha": "00ec49fe620b6d097b067f2cdb9b50213bc0c290",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.8",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33587426553",
+      "object_sha": "c12f81102cd2fd72f0996a28332fa5306cde59d8",
+      "object_type": "tag",
+      "commit_sha": "6e85bce8d645c6dde8cbe2606beb79859a81474a",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.15.9",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33597724584",
+      "object_sha": "dff82a4deb034d4d5bc2849cd5aa9b30399dd85f",
+      "object_type": "tag",
+      "commit_sha": "6039d394a8369fc8a300f83105fae3fa8285c939",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.16.0",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33670497397",
+      "object_sha": "58e24bc44b14cbe3771bc5ea332f22ba159a6129",
+      "object_type": "tag",
+      "commit_sha": "3ce568191959ecc97ce2cf6591845ed31640f9b7",
+      "observed_at": "2026-09-04T20:45:43Z"
+    },
+    {
+      "tag": "v2.17.0",
+      "evidence_grade": "publisher-log-corroborated",
+      "source_id": "33699399149",
+      "object_sha": "1d2a2ba0f3a53bda7965cb3be013b3500eb142d1",
+      "object_type": "tag",
+      "commit_sha": "bc9c2166fdde4816ae3b178f45923774bc798672",
+      "observed_at": "2026-09-04T20:45:43Z"
+    }
+  ]
+}

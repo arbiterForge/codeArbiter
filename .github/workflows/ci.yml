@@ -2250,8 +2250,9 @@ jobs:
     # which the default GITHUB_TOKEN grants. It still skips loudly rather than
     # failing on a transport failure or rate limit, because a merge gate must
     # report a history regression, never a network problem. Read-only: one
-    # complete matching-refs response, no mutations, and invalid inventory is
-    # discarded rather than audited.
+    # complete matching-refs response and no mutations. Transport unavailability
+    # skips loudly; a successful but invalid inventory fails rather than being
+    # mistaken for complete evidence.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -2261,10 +2262,13 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Verify every published tag still resolves to its published commit
+      - name: Verify publication receipts and legacy baselines still match live refs
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
+        run: >-
+          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
+          --manifest .github/published-tags.json
+          --legacy-manifest .github/legacy-published-tags.json
       - name: Test the audit's own logic
         # The audit can skip; its unit tests cannot. They are offline and
         # tokenless, and they pin the drift and deletion verdicts against a
