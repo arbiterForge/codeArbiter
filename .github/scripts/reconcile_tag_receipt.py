@@ -80,7 +80,9 @@ def reconcile(manifest, receipt, expected, *, legacy_tags):
     _bindings(actual)
     if actual != expected:
         raise ValueError("receipt does not match independently supplied bindings")
-    load_original_manifest(manifest)
+    original = load_original_manifest(manifest)
+    if set(original) & set(legacy_tags):
+        raise ValueError("original and legacy tag ledgers overlap")
     tag = expected["tag"]
     if tag in legacy_tags:
         raise ValueError("closed legacy tag cannot be admitted as a publication receipt")

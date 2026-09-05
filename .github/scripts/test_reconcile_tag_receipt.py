@@ -80,6 +80,16 @@ class ReconcileTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             candidate.reconcile(MANIFEST, receipt, expected, legacy_tags={LEGACY_TAG})
 
+    def test_original_manifest_cannot_already_overlap_the_closed_legacy_set(self):
+        manifest = copy.deepcopy(MANIFEST)
+        manifest["tags"][LEGACY_TAG] = {
+            "object_sha": "e" * 40,
+            "object_type": "tag",
+            "commit_sha": "f" * 40,
+        }
+        with self.assertRaisesRegex(ValueError, "original and legacy tag ledgers overlap"):
+            candidate.reconcile(manifest, RECEIPT, EXPECTED, legacy_tags={LEGACY_TAG})
+
     def test_conflicting_existing_identity_refuses(self):
         for field, value in (("object_sha", "e" * 40), ("commit_sha", "e" * 40),
                              ("object_type", "commit")):

@@ -490,6 +490,8 @@ class LegacyEpochContract(unittest.TestCase):
             self.assertIn("not original-publication proof", text)
             self.assertIn("no break-glass", text)
         self.assertIn("new accepted, user-attributed ADR", provenance)
+        self.assertIn("canonical identity-and-grade digest", provenance)
+        self.assertNotIn("canonical identity-set digest", provenance)
 
 
 class CommandLine(unittest.TestCase):

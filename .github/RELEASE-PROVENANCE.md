@@ -19,7 +19,7 @@ forward. A historical tag could have moved before that observation; available
 evidence neither proves nor disproves that residual risk.
 
 The guard strictly validates the ledger's observation, record count,
-evidence-grade counts, source-matrix digest, and canonical identity-set digest.
+evidence-grade counts, source-matrix digest, and canonical identity-and-grade digest.
 It rejects overlap with the original-publication ledger and compares both
 classes with the complete live inventory. A legacy mismatch means only that the
 ref moved after its recorded observation. It never proves where the ref was
