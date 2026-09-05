@@ -96,7 +96,9 @@ stability, command syntax, trust, and platform differences.
 | Codex CLI | `ca-codex` | `$ca-feature` | Stable |
 | Pi | `ca-pi` | `/ca-feature` | Feature Forge `preview` |
 
-**Prerequisites:** Python 3 on `PATH` and `git config user.email` set. Pi also requires Node.js
+**Prerequisites:** Python 3 on `PATH` and `git config user.email` set. ADR lifecycle proof requires
+Git 2.45.0+ with `--no-lazy-fetch` on all three governance hosts; unavailable flag support blocks
+verification with an upgrade prerequisite, never an implicit fetch fallback. Pi also requires Node.js
 22.19+. If Python is missing, Pi installs its final wrappers but blocks mutating calls and points to
 `/ca-doctor`; Claude Code and Codex surface an interpreter breadcrumb instead of silently claiming
 governance is active. The [compatibility matrix](https://arbiterforge.github.io/codeArbiter/getting-started/compatibility/)

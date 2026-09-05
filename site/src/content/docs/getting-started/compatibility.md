@@ -23,7 +23,7 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 | **Pi** | 0.80.5 or 0.84.1 (this release line) | `ca-pi` is a Feature Forge `preview`, available and welcomed for real use while broader testing continues before stable status or a claim of 100% validation. Install it with `pi install npm:@arbiterforge/ca-pi`, or pin the reproducible Git tag: `pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>`. Also requires Node.js 22.19+. Requires an affirmative project-trust decision before repository-aware startup. Its human-readable generated catalog is `plugins/ca-pi/SKILLS.md`. See [Install for Pi](/getting-started/pi/). |
 | **Python** | Python 3, stdlib only, available under the interpreter name your adapter registers | No minimum Python 3 minor is currently declared. CI exercises the runner's current Python 3 on Windows, macOS, and Linux; focused Windows hook evidence also covers CPython 3.10, 3.12, and 3.14. Claude Code carries its documented `python3`/`python` fallback shape. Codex uses OS-specific `command` and `commandWindows` handlers and fails loud if its selected interpreter is absent. Pi installs final TypeScript wrappers first, then blocks mutating calls with an interpreter breadcrumb until the Python bridge is healthy. No adapter treats that state as active enforcement. No third-party Python packages are installed or imported (ADR-0004). |
 | **Operating system** | Native Windows, macOS, or Linux runtime with a checkout created and used by that runtime's Git | The `.git/hooks` backstop is a POSIX `sh` script. On Windows, Git for Windows runs it with its bundled `sh.exe`. Git Bash is part of that native Windows cell and is not WSL. Windows is also a promoted, tested platform for `ca-pi`; see [Windows notes](/getting-started/pi/#windows). Linked-worktree support uses Git's default `<main>/.git/worktrees` storage layout. See [Git runtime boundary](#git-runtime-boundary) for layout and mixed-runtime exclusions. |
-| **git** | A Git binary that provides `rev-parse --git-path hooks`, `rev-parse --path-format=absolute --git-dir --git-common-dir`, and `git hook run` | codeArbiter asks the selected Git binary for its effective hook and shared-worktree paths, then doctor uses that same binary for a harmless managed `pre-push` live-fire probe with empty input. That binary's accepted `core.hooksPath` grammar is authoritative, including its expansion of values such as `~`, `%(prefix)`, absolute paths, and relative paths. The project does not maintain a second parser or claim a numeric Git version floor that has not been tested. |
+| **git** | A Git binary that provides `rev-parse --git-path hooks`, `rev-parse --path-format=absolute --git-dir --git-common-dir`, and `git hook run`; ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch` | codeArbiter asks the selected Git binary for its effective hook and shared-worktree paths, then doctor uses that same binary for a harmless managed `pre-push` live-fire probe with empty input. That binary's accepted `core.hooksPath` grammar is authoritative, including its expansion of values such as `~`, `%(prefix)`, absolute paths, and relative paths. The lifecycle verifier additionally enforces the offline capability described below. |
 | **Node.js** | Not required for Claude Code or Codex | Node is required for `ca-pi` (22.19+) and is only otherwise needed to build or develop **this documentation site** (`site/`) and the optional pluggable-execution-farm TypeScript dispatcher (`plugins/ca/tools/`) if you use `/ca:sprint --farm`. Node is not a runtime dependency of the Claude Code/Codex enforcement hooks themselves. |
 | **Network access** | Not required for enforcement | See [Network Calls](#network-calls) below. The gate-enforcement hook chain makes zero network calls; two clearly-scoped, opt-in-by-default exceptions exist outside that chain. |
 
@@ -46,6 +46,21 @@ checkout and continues to use it with that runtime's Git, Python, and hook shell
 the effective directory reported by that binary, requires both current executable managed shims
 there, requires at least one live registered enforcer, and asks Git to run the managed `pre-push`
 shim with empty input before reporting the backstop healthy.
+
+### ADR lifecycle prerequisite
+
+On Claude Code, Codex, and Pi, ADR lifecycle verification and its merge-method preflight require
+Git 2.45.0+ with `--no-lazy-fetch`. [Git 2.45 introduced this option](https://github.com/git/git/blob/v2.45.0/Documentation/RelNotes/2.45.0.txt)
+to prevent implicit object retrieval from promisor remotes. This repository's CI lifecycle checker
+uses the same requirement. It does not change the unrelated hook-registration paths above.
+
+Every proof read retains the flag. If a read fails, the verifier checks the same selected
+executable with `git --no-lazy-fetch --version`, without reading a repository. An unavailable
+capability produces an upgrade prerequisite instead of a misleading invalid-ref error; a supported
+Git's ordinary ref or object failure remains a proof failure. Enforcement checks the actual flag
+capability, not a parsed version string, and never retries a proof read without the protection.
+Missing committed objects still block verification: the verifier neither fetches them nor
+substitutes current working-tree bytes.
 
 ## Host Differences
 
@@ -79,13 +94,15 @@ JSON, RPC, print, and hardened children.
 
 ## Prerequisites Checklist
 
-Confirm both before installing, per [Install](/getting-started/install/):
+Confirm these before installing, per [Install](/getting-started/install/):
 
 - **Python 3 on `PATH`.** Without it, Claude Code can be inactive, Codex's hook handler fails loud,
   and Pi blocks mutation. Run the host-native doctor command and require a healthy interpreter and
   live-fire row before treating the adapter as active.
 - **`git config user.email` set.** Overrides and ADRs are attributed to this identity; an unset email
   is asked for once, interactively, rather than silently defaulting.
+- **Git 2.45.0+ with `--no-lazy-fetch` for ADR lifecycle proof.** The selected binary must provide
+  the flag; a missing capability blocks the governed merge preflight and names the upgrade action.
 
 ## Network Calls
 

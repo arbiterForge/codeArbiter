@@ -14,12 +14,31 @@ from _gitexec import git_executable, root_bound_git_env
 LEDGER_REL = ".codearbiter/decisions/adr-lifecycle.jsonl"
 
 
+class GitPrerequisiteError(Exception):
+    """The selected Git cannot provide the required offline proof boundary."""
+
+
 def _git(root, *args):
-    return subprocess.run(
-        [git_executable(), "--no-replace-objects", "--no-lazy-fetch", "-C", root, *args],
-        capture_output=True, check=False,
-        env=root_bound_git_env(),
-    )
+    prerequisite = ("ADR lifecycle proof requires Git 2.45.0+ with --no-lazy-fetch; "
+                    "upgrade the selected Git executable. Proof is never retried without that flag.")
+    try:
+        executable = git_executable()
+        env = root_bound_git_env()
+        result = subprocess.run(
+            [executable, "--no-replace-objects", "--no-lazy-fetch", "-C", root, *args],
+            capture_output=True, check=False, env=env)
+        if result.returncode:
+            # Diagnose the actual safety capability, not localized error text or
+            # a version string. This probe reads no repository and never retries
+            # the failed proof command with its network protection removed.
+            capability = subprocess.run(
+                [executable, "--no-lazy-fetch", "--version"],
+                capture_output=True, check=False, env=env)
+            if capability.returncode:
+                raise GitPrerequisiteError(prerequisite)
+    except (OSError, RuntimeError) as exc:
+        raise GitPrerequisiteError(prerequisite) from exc
+    return result
 
 
 def _git_blob(root, commit, path):

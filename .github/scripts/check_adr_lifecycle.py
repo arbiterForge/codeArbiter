@@ -403,6 +403,16 @@ def main(argv=None):
                         help="emit squash or merge for exact committed base/head evidence")
     parser.add_argument("--now")
     args = parser.parse_args(argv)
+    try:
+        return _check(args, parser)
+    except lifecycle_git.GitPrerequisiteError as exc:
+        if args.verified_json:
+            print("[]")
+        print("::error::" + str(exc), file=sys.stderr)
+        return 1
+
+
+def _check(args, parser):
     if args.merge_method and (not args.base_ref or not args.current_ref or
                               args.github_event or args.verified_json):
         parser.error("--merge-method requires --base-ref and --current-ref only")

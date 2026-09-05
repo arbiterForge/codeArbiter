@@ -8,7 +8,7 @@ Success emits exactly merge or squash; every unavailable proof fails closed.
 import argparse
 import sys
 
-from _adrlifecyclegit import merge_method
+from _adrlifecyclegit import GitPrerequisiteError, merge_method
 
 
 def main(argv=None):
@@ -20,7 +20,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         errors, method = merge_method(args.root, args.base_ref, args.current_ref)
-    except (OSError, RuntimeError, ValueError) as exc:
+    except (GitPrerequisiteError, OSError, RuntimeError, ValueError) as exc:
         errors, method = ["could not verify lifecycle refs: %s" % exc], None
     if errors:
         for error in errors:

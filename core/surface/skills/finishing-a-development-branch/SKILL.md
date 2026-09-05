@@ -36,8 +36,9 @@ Assemble the facts the decision needs. Nothing is presented until all are in han
   status, and enforces the exact ledger prefix. It admits no baseline newly introduced after the base;
   an inherited baseline is not authorization for another migration. No repository-local verifier,
   dirty working-tree bytes, or network fallback can substitute for this proof.
-  Git must support `--no-lazy-fetch`; missing objects or an unsupported option block verification,
-  never trigger a retry that fetches proof implicitly.
+  ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch`. The verifier enforces that flag
+  capability and reports an upgrade prerequisite when unavailable. Missing objects block verification;
+  neither failure triggers a retry that fetches proof implicitly.
   An unavailable verifier, malformed record, missing object, or source outside head ancestry blocks
   the offer. Never infer retention from local object availability or remote branch/PR refs.
   A source absent from base requires a true merge commit; squash and rebase would lose its identity.

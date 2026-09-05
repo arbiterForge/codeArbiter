@@ -8,6 +8,7 @@ import io
 import json
 import os
 import re
+import runpy
 import shutil
 import subprocess
 import sys
@@ -142,6 +143,85 @@ class LifecycleContractTest(unittest.TestCase):
                          "consumer merge preflight executes a repository-only path")
         with open(path, encoding="utf-8") as handle:
             self.assertIn('{{PLUGIN_ROOT}}/hooks/adr-merge-method.py', handle.read())
+
+    def test_lifecycle_git_prerequisite_is_actionable_at_both_entry_points(self):
+        # GIT-1/2: simulate an older Git rejecting the global safety flag, not a bad ref.
+        import _adrlifecyclegit as lifecycle_git
+        repo = os.path.dirname(os.path.dirname(HERE))
+        shipped_main = runpy.run_path(os.path.join(
+            repo, "plugins", "ca", "hooks", "adr-merge-method.py"))["main"]
+        with tempfile.TemporaryDirectory() as root:
+            acceptance, _implementation, _verification = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "bind acceptance")
+            head = self._git(root, "rev-parse", "HEAD")
+
+            def old_git(argv, **kwargs):
+                return subprocess.CompletedProcess(argv, 129, b"", b"unknown option: --no-lazy-fetch")
+
+            for entry, extra in ((shipped_main, ["--merge-method"]),
+                                 (cal.main, ["--merge-method"]),
+                                 (cal.main, ["--verified-json", "--now", "2026-09-02T13:00:00Z"])):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with self.subTest(entry=entry.__module__, mode=extra[0]):
+                    with mock.patch.object(lifecycle_git.subprocess, "run", side_effect=old_git) as calls:
+                        with redirect_stdout(stdout), redirect_stderr(stderr):
+                            result = entry(["--root", root, "--base-ref", acceptance["source_commit"],
+                                            "--current-ref", head, *extra])
+                    self.assertEqual(result, 1)
+                    self.assertIn("requires Git 2.45.0+ with --no-lazy-fetch", stderr.getvalue())
+                    self.assertNotIn("ref is not a resolvable commit", stderr.getvalue())
+                    self.assertNotIn("Traceback", stderr.getvalue())
+                    self.assertEqual(stdout.getvalue(), "[]\n" if extra[0] == "--verified-json" else "")
+                    self.assertTrue(all("--no-lazy-fetch" in call.args[0]
+                                        for call in calls.call_args_list))
+
+            def supported_git_bad_ref(argv, **kwargs):
+                if argv[-1] == "--version":
+                    return subprocess.CompletedProcess(argv, 0, b"git version 2.45.0.vendor\n", b"")
+                return subprocess.CompletedProcess(argv, 128, b"", b"not a valid object name")
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with mock.patch.object(lifecycle_git, "git_executable", return_value="selected-git"):
+                with mock.patch.object(lifecycle_git.subprocess, "run",
+                                       side_effect=supported_git_bad_ref) as calls:
+                    with redirect_stdout(stdout), redirect_stderr(stderr):
+                        result = shipped_main(["--root", root, "--base-ref", "missing-ref",
+                                               "--current-ref", head, "--merge-method"])
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout.getvalue(), "")
+            self.assertIn("base ref is not a resolvable commit", stderr.getvalue())
+            self.assertNotIn("requires Git", stderr.getvalue())
+            self.assertEqual([call.args[0] for call in calls.call_args_list], [
+                ["selected-git", "--no-replace-objects", "--no-lazy-fetch", "-C", root,
+                 "rev-parse", "--verify", "--end-of-options", "missing-ref^{commit}"],
+                ["selected-git", "--no-lazy-fetch", "--version"],
+            ])
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with mock.patch.object(lifecycle_git.subprocess, "run", side_effect=OSError("unavailable")):
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    result = cal.main(["--root", root, "--base-ref", head,
+                                       "--current-ref", head, "--merge-method"])
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout.getvalue(), "")
+            self.assertIn("requires Git 2.45.0+ with --no-lazy-fetch", stderr.getvalue())
+
+    def test_public_and_shipped_docs_declare_lifecycle_git_prerequisite(self):
+        # GIT-3: public install guidance and every generated host route agree.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        paths = ["README.md", ".codearbiter/tech-stack.md",
+                 "site/src/content/docs/getting-started/compatibility.md",
+                 "core/surface/skills/finishing-a-development-branch/SKILL.md",
+                 "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
+                 "plugins/ca-codex/routines/finishing-a-development-branch/SKILL.md",
+                 "plugins/ca-pi/routines/finishing-a-development-branch/SKILL.md"]
+        for path in paths:
+            with self.subTest(path=path), open(os.path.join(repo, path), encoding="utf-8") as handle:
+                text = handle.read()
+                self.assertIn("Git 2.45.0+", text)
+                self.assertIn("--no-lazy-fetch", text)
 
     def test_installed_merge_verifier_preserves_committed_consumer_proof(self):
         # PORT-2/3/4: invoke only generated host artifacts, outside the source repo.
