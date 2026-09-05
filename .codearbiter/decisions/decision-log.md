@@ -1630,3 +1630,28 @@ Safety and maintainability reject rewriting accepted bodies or fabricating histo
 Add the lifecycle ledger schema, parser, checker, tests, CI integration, decision-lifecycle guidance, truthful legacy baselines, and verified-only export. Complete ADR-0026's current four-item destructive registry and parity checker under ADR-0030's narrowing.
 
 ---
+
+## DECISION-0054 — adr-0034-ratified — Establish a closed legacy published-tag provenance epoch
+
+**Date:** 2026-09-05
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** release-security-and-provenance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Published-tag policy treats every manifest identity as original-publication evidence and prohibits editing an entry merely to silence drift.
+- **Scaffold position:** Forty-four governed historical tags are absent, current identities are later observations, and no accessible inspected source proves their original tag-ref objects.
+- **Status type:** open-decision-closure
+
+### Decision
+Keep `.github/published-tags.json` exclusive to original-publication receipts and establish a separate closed legacy ledger for the exact 44 approved September 4 observations. Preserve the 15/28/1 evidence grades, enforce drift from the baseline forward, and require original-publication receipts for every tag outside that closed set. Accept the explicit risk that undetected pre-epoch drift can be frozen, without ever relabeling the baseline as original proof.
+
+### SMARTS rationale
+Scalable is Strong because one closed epoch supports unlimited future receipt-backed tags without another historical rewrite. Maintainable is Strong because separate ledgers preserve one proof meaning per file. Available is Strong because reviewed reconciliation can unblock releases without a silent exception. Reliable is Adequate because claims remain truthful, while pre-epoch drift stays unknowable. Testable is Strong because closed-set, disjointness, class, receipt, and live-drift rules are deterministic. Securable is Adequate because future enforcement stays strict while the accepted historical interval remains an explicit residual risk.
+
+### Implementation implication
+Add the closed 44-record legacy ledger, extend the tag-immutability guard and its tests to validate both proof classes without overlap, retain receipt-only writers, update CI/release documentation and security controls, and deliver through governed PR plus exact-head CI before any release resumes.
+
+---
