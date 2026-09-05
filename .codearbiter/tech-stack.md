@@ -86,6 +86,11 @@ python .github/scripts/test_command_catalog.py
 # Workflow trust separation and exact CI impact routing
 python .github/scripts/test_ci_impact.py
 
+# Published-tag original receipts, closed legacy epoch, and reconciliation boundary
+python .github/scripts/test_tag_immutability.py
+python .github/scripts/test_tag_publication_receipt.py
+python .github/scripts/test_reconcile_tag_receipt.py
+
 # Cross-host coverage identity/provenance (requires the Pi tools test dependencies)
 python .github/scripts/test_coverage_union.py
 

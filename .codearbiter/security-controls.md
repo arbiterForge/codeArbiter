@@ -844,12 +844,14 @@ availability: every pinned install breaks at once.
    review, and no red check anywhere.
 2. *Detection*: `.github/scripts/check_tag_immutability.py`, wired into the merge
    gate as `[CHECK] | [REPO] | Published tag immutability`. It compares every
-   live tag ref against `.github/published-tags.json`, a committed manifest
-   recording where each tag pointed when it was published, and fails the build on
-   any disagreement. Layer 2 is what notices if layer 1 is removed or was never
-   applied, and it is the only layer covering the 26 tags published before either
-   existed: a ruleset does not act retroactively, and GitHub's immutable-releases
-   feature protects only releases published after it is enabled.
+   live tag ref against the disjoint union of `.github/published-tags.json` and
+   `.github/legacy-published-tags.json`, and fails on any disagreement. The first
+   ledger contains original-publication receipts only. The second is ADR-0034's
+   closed 44-tag epoch observed at `2026-09-04T20:45:43Z`; it is not original-publication proof
+   and establishes forward detection only. Layer 2
+   notices if layer 1 is removed or was never applied; a ruleset does not act
+   retroactively, and GitHub's immutable-releases feature protects only releases
+   published after it is enabled.
 
 **Provenance manifest integrity.** The originally-published commit is not
 recoverable from the API after a move: a moved tag is indistinguishable from a
@@ -860,6 +862,18 @@ the GitHub API *and* an independent local clone. Its integrity rests on git
 history plus branch protection on main: amending a recorded sha requires a
 reviewed pull request, whereas moving a tag requires nothing. Editing an entry to
 silence a red drift run is a review-visible act and is never the correct fix.
+
+**Legacy epoch integrity.** ADR-0034 pins the legacy ledger's exact canonical
+identity-and-grade digest, source-matrix digest, observation time, 44-record
+count, and 15/28/1 evidence-grade distribution. It accepts the residual risk
+that a historical ref could have moved before observation, while expressly
+forbidding any claim that the baseline proves original publication. The closed
+set cannot be extended by a publisher or receipt reconciler: changing an
+identity, source, or grade requires a new accepted, user-attributed ADR and
+architectural review. Any later governed tag must enter the original-publication
+ledger from its trusted receipt before another release. Deletion, retargeting,
+and movement remain prohibited with no break-glass path; correction is a new
+version.
 
 **Accepted residual risk.** The detection layer is read-only and after-the-fact:
 it reports a moved tag, it cannot prevent one. Between the move and the next CI

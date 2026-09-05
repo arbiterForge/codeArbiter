@@ -14,6 +14,7 @@ and the shipped manifest's shape -
 entirely offline, with no network and no token.
 """
 import importlib.util
+import hashlib
 import io
 import json
 import re
@@ -29,6 +30,13 @@ CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 SECURITY_CONTROLS = REPO_ROOT / ".codearbiter" / "security-controls.md"
 RELEASE_SKILL = REPO_ROOT / "core" / "surface" / "skills" / "release" / "SKILL.md"
 RELEASE_TARGETS = REPO_ROOT / ".codearbiter" / "release-targets.md"
+LEGACY_MANIFEST = REPO_ROOT / ".github" / "legacy-published-tags.json"
+RELEASE_PROVENANCE = REPO_ROOT / ".github" / "RELEASE-PROVENANCE.md"
+PUBLISH_ACTION = REPO_ROOT / ".github" / "actions" / "publish-release" / "action.yml"
+RECONCILE_TOOL = REPO_ROOT / ".github" / "scripts" / "reconcile_tag_receipt.py"
+ADR = REPO_ROOT / ".codearbiter" / "decisions" / "0034-establish-closed-legacy-published-tag-provenance-epoch.md"
+ADR_LIFECYCLE = REPO_ROOT / ".codearbiter" / "decisions" / "adr-lifecycle.jsonl"
+TECH_STACK = REPO_ROOT / ".codearbiter" / "tech-stack.md"
 
 _spec = importlib.util.spec_from_file_location("check_tag_immutability", _TOOL)
 module = importlib.util.module_from_spec(_spec)
@@ -185,12 +193,11 @@ class LiveRefReader(unittest.TestCase):
             calls,
         )
 
-    def test_a_non_list_response_makes_the_whole_read_unreadable(self):
-        self.assertIsNone(
+    def test_a_non_list_success_response_is_invalid_inventory(self):
+        with self.assertRaises(module.InvalidInventory):
             module.read_live_tags(
                 "owner/name", rest=lambda path: (200, {"message": "partial"})
             )
-        )
 
     def test_a_transport_failure_is_unreadable_rather_than_empty(self):
         self.assertIsNone(module.read_live_tags("owner/name", rest=lambda path: (0, {})))
@@ -235,6 +242,151 @@ class ShippedManifest(unittest.TestCase):
         )
 
 
+class LegacyEpochContract(unittest.TestCase):
+    """ADR-0034's closed historical observation epoch, without provenance laundering."""
+
+    def setUp(self):
+        self.document = json.loads(LEGACY_MANIFEST.read_text(encoding="utf-8"))
+        self.records = module.load_legacy_manifest(self.document)
+
+    def test_legacy_ledger_is_exactly_the_approved_closed_epoch(self):
+        self.assertEqual("legacy-published-tags/v1", self.document["schema"])
+        self.assertEqual(
+            "0034-establish-closed-legacy-published-tag-provenance-epoch",
+            self.document["adr"],
+        )
+        self.assertEqual("2026-09-04T20:45:43Z", self.document["observed_at"])
+        self.assertEqual(44, self.document["record_count"])
+        self.assertEqual(44, len(self.document["records"]))
+        self.assertEqual(
+            "26f2d1b06b494dbcc721367e09af52f32ca1a50a71dddb457557af2a48cd8c48",
+            self.document["canonical_set_sha256"],
+        )
+        self.assertEqual(
+            "cfb3f66e933edb6b1f075f3e089103115c95837b944d56e2c7338d0d3519e8a6",
+            self.document["source_matrix_sha256"],
+        )
+        canonical = [
+            {key: row[key] for key in (
+                "tag", "evidence_grade", "source_id", "object_sha", "object_type", "commit_sha"
+            )}
+            for row in self.document["records"]
+        ]
+        payload = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(self.document["canonical_set_sha256"], hashlib.sha256(payload).hexdigest())
+
+    def test_legacy_records_preserve_fields_order_and_evidence_grades(self):
+        rows = self.document["records"]
+        self.assertEqual(sorted(row["tag"] for row in rows), [row["tag"] for row in rows])
+        self.assertTrue(all(row["observed_at"] == self.document["observed_at"] for row in rows))
+        counts = {}
+        for row in rows:
+            self.assertEqual(
+                {"tag", "object_sha", "object_type", "commit_sha", "observed_at", "source_id", "evidence_grade"},
+                set(row),
+            )
+            counts[row["evidence_grade"]] = counts.get(row["evidence_grade"], 0) + 1
+        self.assertEqual(
+            {"publisher-log-corroborated": 15, "associated-run-metadata-only": 28,
+             "current-release-metadata-only": 1},
+            counts,
+        )
+
+    def test_schema_rejects_every_closed_set_and_metadata_mutation(self):
+        mutations = []
+        for key, value in (
+            ("adr", "0035-other"), ("observed_at", "2026-09-05T00:00:00Z"),
+            ("record_count", 45), ("canonical_set_sha256", "0" * 64),
+            ("source_matrix_sha256", "0" * 64),
+        ):
+            changed = json.loads(json.dumps(self.document))
+            changed[key] = value
+            mutations.append(changed)
+        for field, value in (("evidence_grade", "original-publication"),
+                             ("object_sha", "0" * 40), ("source_id", "not-a-run")):
+            changed = json.loads(json.dumps(self.document))
+            changed["records"][0][field] = value
+            mutations.append(changed)
+        changed = json.loads(json.dumps(self.document))
+        changed["records"].append(dict(changed["records"][0], tag="v99.0.0"))
+        mutations.append(changed)
+        for changed in mutations:
+            with self.subTest(changed=changed):
+                with self.assertRaises(ValueError):
+                    module.load_legacy_manifest(changed)
+
+    def test_original_and_legacy_ledgers_must_be_strict_and_disjoint(self):
+        original = module.load_original_manifest(json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8")))
+        module.validate_disjoint(original, self.records)
+        overlap = dict(self.records)
+        overlap[next(iter(original))] = next(iter(self.records.values()))
+        with self.assertRaises(ValueError):
+            module.validate_disjoint(original, overlap)
+        malformed = json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
+        malformed["tags"][next(iter(malformed["tags"]))]["extra"] = True
+        with self.assertRaises(ValueError):
+            module.load_original_manifest(malformed)
+
+    def test_closed_set_is_bound_to_an_accepted_user_attributed_adr(self):
+        adr = ADR.read_text(encoding="utf-8")
+        frontmatter = adr.split("---", 2)[1]
+        self.assertIn("status: accepted", frontmatter)
+        self.assertIn("decided-by: SUaDtL@users.noreply.github.com", frontmatter)
+        self.assertIn(".github/legacy-published-tags.json", frontmatter)
+        self.assertIn(self.document["canonical_set_sha256"], adr)
+        rows = [json.loads(line) for line in ADR_LIFECYCLE.read_text(encoding="utf-8").splitlines()]
+        binding = [row for row in rows if row.get("event") == "acceptance"
+                   and row.get("adr") == self.document["adr"]]
+        self.assertEqual(1, len(binding))
+        self.assertTrue(binding[0]["obligations_sealed"])
+        self.assertEqual(
+            "ae0933c619ce0d86f7b405ea35da7763314a966e050e72ae7b84c96df7d1fd18",
+            binding[0]["obligations_sha256"],
+        )
+
+    def test_legacy_drift_diagnostic_claims_only_post_observation_movement(self):
+        name, baseline = next(iter(self.records.items()))
+        findings = module.audit_legacy({name: baseline}, {name: "0" * 40})
+        self.assertEqual(1, len(findings))
+        self.assertIn("legacy baseline", findings[0])
+        self.assertIn("after its 2026-09-04T20:45:43Z observation", findings[0])
+        self.assertNotIn("originally published", findings[0])
+        self.assertNotIn("was published as", findings[0])
+
+    def test_strict_preflight_uses_union_but_requires_receipts_for_future_tags(self):
+        original = recorded()
+        name, baseline = next(iter(self.records.items()))
+        legacy = {name: baseline}
+        page = [
+            {"ref": f"refs/tags/{tag}", "object": {"sha": entry.object_sha, "type": entry.object_type}}
+            for tag, entry in {**original, **legacy}.items()
+        ]
+        with redirect_stdout(io.StringIO()) as clean:
+            code = module.main(["--repo", "owner/name", "--require-recorded"], token="t",
+                               recorded=RECORDED, legacy=legacy, rest=lambda path: (200, page))
+        self.assertEqual(0, code, clean.getvalue())
+        page.append({"ref": "refs/tags/v99.0.0", "object": {"sha": "a" * 40, "type": "tag"}})
+        with redirect_stdout(io.StringIO()) as future:
+            code = module.main(["--repo", "owner/name", "--require-recorded"], token="t",
+                               recorded=RECORDED, legacy=legacy, rest=lambda path: (200, page))
+        self.assertEqual(1, code)
+        self.assertIn("original-publication receipt", future.getvalue())
+
+    def test_receipt_writers_have_no_legacy_ledger_mutation_surface(self):
+        for path in (PUBLISH_ACTION, RECONCILE_TOOL):
+            self.assertNotIn("legacy-published-tags.json", path.read_text(encoding="utf-8"), path)
+
+    def test_public_policy_names_epoch_risk_review_and_no_break_glass(self):
+        provenance = RELEASE_PROVENANCE.read_text(encoding="utf-8")
+        controls = SECURITY_CONTROLS.read_text(encoding="utf-8")
+        for text in (provenance, controls):
+            self.assertIn("2026-09-04T20:45:43Z", text)
+            self.assertIn("legacy-published-tags.json", text)
+            self.assertIn("not original-publication proof", text)
+            self.assertIn("no break-glass", text)
+        self.assertIn("new accepted, user-attributed ADR", provenance)
+
+
 class CommandLine(unittest.TestCase):
     """The CLI's three exits: skip, clean, and a security failure."""
 
@@ -248,6 +400,12 @@ class CommandLine(unittest.TestCase):
         code, output = self._run(token="")
         self.assertEqual(0, code)
         self.assertIn("SKIP", output)
+
+    def test_no_token_cannot_bypass_ledger_schema_validation(self):
+        with patch.object(module, "_read_json", side_effect=ValueError("invalid")):
+            code, output = self._run(token="")
+        self.assertEqual(1, code)
+        self.assertIn("invalid publication or legacy provenance ledger", output)
 
     def test_an_unreadable_listing_skips_loudly_and_passes(self):
         code, output = self._run(token="t", rest=lambda path: (0, {}), recorded=RECORDED)
@@ -298,13 +456,23 @@ class CommandLine(unittest.TestCase):
                 self.assertIn("MOVED", output)
                 self.assertNotIn("SKIP", output)
 
+    def test_malformed_inventory_fails_ordinary_ci_instead_of_skipping(self):
+        code, output = self._run(
+            token="t", rest=lambda path: (200, [{"ref": "refs/tags/v1.0.0"}]),
+            recorded=RECORDED,
+        )
+        self.assertEqual(1, code)
+        self.assertIn("invalid live tag inventory", output)
+        self.assertNotIn("SKIP", output)
+
 
 class StrictReleaseObservation(unittest.TestCase):
     """LG01: unavailable or incomplete prior provenance cannot authorize release."""
 
     def _run(self, **kwargs):
         arguments = module.argparse.Namespace(
-            repo="owner/name", manifest=str(module.MANIFEST_PATH), require_recorded=True,
+            repo="owner/name", manifest=str(module.MANIFEST_PATH),
+            legacy_manifest=str(module.LEGACY_MANIFEST_PATH), require_recorded=True,
         )
         buffer = io.StringIO()
         # Isolate the decision from CLI spelling so the baseline fails on its
@@ -408,6 +576,44 @@ class StrictReleaseObservation(unittest.TestCase):
                 self.assertIn("::error", output)
 
 
+class RawHttpInventoryBoundary(unittest.TestCase):
+    """A successful HTTP response must not become an unreadable-network skip."""
+
+    class _Response:
+        status = 200
+
+        def __init__(self, body):
+            self._body = body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *unused):
+            return False
+
+        def read(self):
+            return self._body
+
+    def _send(self, body):
+        response = self._Response(body)
+        request = module.urllib.request.Request("https://example.invalid")
+        with patch.object(module.urllib.request, "urlopen", return_value=response):
+            return module._send(request)
+
+    def test_duplicate_nested_key_in_http_200_is_invalid_inventory(self):
+        body = (b'[{"ref":"refs/tags/v1.0.0","object":'
+                b'{"sha":"0000000000000000000000000000000000000000",'
+                b'"sha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",'
+                b'"type":"tag"}}]')
+        with self.assertRaises(module.InvalidInventory):
+            self._send(body)
+
+    def test_malformed_http_200_body_is_invalid_inventory(self):
+        for body in (b'[{', b'\xff'):
+            with self.subTest(body=body), self.assertRaises(module.InvalidInventory):
+                self._send(body)
+
+
 class RepositoryWiring(unittest.TestCase):
     """The audit is only a control if something runs it and something says so."""
 
@@ -422,6 +628,19 @@ class RepositoryWiring(unittest.TestCase):
                 self.assertIsNotNone(body, f"missing release preflight {job}")
                 self.assertIn("check_tag_immutability.py", body.group(1))
                 self.assertIn("--require-recorded", body.group(1))
+                self.assertIn("--legacy-manifest .github/legacy-published-tags.json", body.group(1))
+
+    def test_required_ci_audit_names_both_ledgers_explicitly(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = ci.split("  tag-immutability:", 1)[1].split("  branch-protection:", 1)[0]
+        self.assertIn("--manifest .github/published-tags.json", job)
+        self.assertIn("--legacy-manifest .github/legacy-published-tags.json", job)
+
+    def test_local_governance_matrix_names_all_provenance_suites(self):
+        commands = TECH_STACK.read_text(encoding="utf-8")
+        for script in ("test_tag_immutability.py", "test_tag_publication_receipt.py",
+                       "test_reconcile_tag_receipt.py"):
+            self.assertIn(f"python .github/scripts/{script}", commands)
 
     def test_publisher_retains_tag_identity_receipt_after_partial_failure(self):
         action = (REPO_ROOT / ".github/actions/publish-release/action.yml").read_text(encoding="utf-8")

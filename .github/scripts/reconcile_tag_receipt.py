@@ -6,7 +6,7 @@
 # then supply those expected values from that trusted evidence. JSON claims are
 # not authority. A hosted observation does not establish original tag history.
 #
-# reconcile(manifest, receipt, expected) -> dict | None: pure append or no-op.
+# reconcile(manifest, receipt, expected, legacy_tags=...) -> dict | None: pure append or no-op.
 # main(argv=None) -> int: bounded input verification and exclusive candidate write.
 
 import copy
@@ -21,6 +21,7 @@ import sys
 import tempfile
 
 from tag_publication_receipt import REPO_RE, _Parser, _output_path, _positive_integer, _sha, _tag
+from check_tag_immutability import load_legacy_manifest, load_original_manifest, validate_disjoint
 
 
 RECEIPT_LIMIT = 16 * 1024
@@ -62,7 +63,7 @@ def _bindings(value):
             raise ValueError("invalid hosted run identity")
 
 
-def reconcile(manifest, receipt, expected):
+def reconcile(manifest, receipt, expected, *, legacy_tags):
     """Validate all history, then produce one append without mutating inputs."""
     _bindings(expected)
     _keys(receipt, {"schema_version", "repo", "tag", "identity", "source"})
@@ -79,12 +80,10 @@ def reconcile(manifest, receipt, expected):
     _bindings(actual)
     if actual != expected:
         raise ValueError("receipt does not match independently supplied bindings")
-    if not isinstance(manifest, dict) or not isinstance(manifest.get("tags"), dict):
-        raise ValueError("invalid manifest")
-    for tag, entry in manifest["tags"].items():
-        _tag(tag)
-        _identity(entry)
+    load_original_manifest(manifest)
     tag = expected["tag"]
+    if tag in legacy_tags:
+        raise ValueError("closed legacy tag cannot be admitted as a publication receipt")
     if tag in manifest["tags"]:
         if _identity(manifest["tags"][tag]) != identity:
             raise ValueError("existing tag identity conflicts; history cannot be replaced")
@@ -164,13 +163,14 @@ def _write_candidate(output, payload, verify_current):
 def _arguments(argv):
     parser = _Parser(description="Prepare an offline candidate from independently authenticated evidence",
                      allow_abbrev=False)
-    flags = ("receipt", "manifest", "output", "expected-manifest-sha256", "expected-repo",
+    flags = ("receipt", "manifest", "legacy-manifest", "output", "expected-manifest-sha256",
+             "expected-legacy-sha256", "expected-repo",
              "expected-tag", "expected-commit", "expected-run-id", "expected-run-attempt",
              "expected-workflow-sha")
     for flag in flags:
         parser.add_argument("--" + flag, required=True)
     values = list(sys.argv[1:] if argv is None else argv)
-    if len(values) > 20 or any(len(value) > 4096 for value in values):
+    if len(values) > 24 or any(len(value) > 4096 for value in values):
         raise ValueError("invalid candidate arguments")
     for flag in flags:
         if sum(value == "--" + flag or value.startswith("--" + flag + "=")
@@ -187,7 +187,8 @@ def main(argv=None):
         print("tag candidate: invalid arguments", file=sys.stderr)
         return 2
     try:
-        if not re.fullmatch(r"[0-9a-f]{64}", args.expected_manifest_sha256):
+        if (not re.fullmatch(r"[0-9a-f]{64}", args.expected_manifest_sha256)
+                or not re.fullmatch(r"[0-9a-f]{64}", args.expected_legacy_sha256)):
             raise ValueError("invalid expected manifest digest")
         expected = {"repo": args.expected_repo, "tag": args.expected_tag,
                     "commit": args.expected_commit,
@@ -199,12 +200,20 @@ def main(argv=None):
         manifest_bytes = _read_bytes(args.manifest, MANIFEST_LIMIT)
         if hashlib.sha256(manifest_bytes).hexdigest() != args.expected_manifest_sha256:
             raise ValueError("stale manifest digest")
+        legacy_bytes = _read_bytes(args.legacy_manifest, MANIFEST_LIMIT)
+        if hashlib.sha256(legacy_bytes).hexdigest() != args.expected_legacy_sha256:
+            raise ValueError("stale legacy ledger digest")
         receipt = _decode(_read_bytes(args.receipt, RECEIPT_LIMIT))
-        result = reconcile(_decode(manifest_bytes), receipt, expected)
+        manifest = _decode(manifest_bytes)
+        legacy = load_legacy_manifest(_decode(legacy_bytes))
+        validate_disjoint(load_original_manifest(manifest), legacy)
+        result = reconcile(manifest, receipt, expected, legacy_tags=set(legacy))
 
         def verify_current():
             if _read_bytes(args.manifest, MANIFEST_LIMIT) != manifest_bytes:
                 raise ValueError("manifest changed during reconciliation")
+            if _read_bytes(args.legacy_manifest, MANIFEST_LIMIT) != legacy_bytes:
+                raise ValueError("legacy ledger changed during reconciliation")
 
         if result is None:
             verify_current()
