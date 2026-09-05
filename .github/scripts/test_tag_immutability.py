@@ -470,7 +470,13 @@ class LegacyEpochContract(unittest.TestCase):
 
     def test_main_clean_union_summary_keeps_evidence_class_labels_and_counts(self):
         complete = self._complete_inventory()
-        expected = "OK: 120 original-publication receipts and 44 legacy baselines"
+        original = module.load_original_manifest(
+            json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
+        )
+        expected = (
+            f"OK: {len(original)} original-publication receipts and "
+            f"{len(self.records)} legacy baselines"
+        )
         for strict in (False, True):
             with self.subTest(strict=strict):
                 code, output = self._run_full_ledger_main(complete, strict=strict)
