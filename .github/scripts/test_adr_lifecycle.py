@@ -190,6 +190,155 @@ class LifecycleContractTest(unittest.TestCase):
                 result = cal.main(["--root", root, *args])
         return result, stdout.getvalue(), stderr.getvalue()
 
+    def test_squash_orphans_source_even_when_local_objects_mask_the_loss(self):
+        # REACH-1: explicit revision checks reject orphaned sources before cleanup.
+        with tempfile.TemporaryDirectory() as container:
+            origin = os.path.join(container, "origin")
+            clone = os.path.join(container, "clone")
+            os.makedirs(origin)
+            self._git(origin, "init", "-b", "main")
+            with open(os.path.join(origin, "seed"), "w") as handle:
+                handle.write("base")
+            self._git(origin, "add", "seed")
+            self._git(origin, "commit", "-m", "base")
+            base = self._git(origin, "rev-parse", "HEAD")
+            self._git(origin, "checkout", "-b", "acceptance")
+            adr_rel = ".codearbiter/decisions/0001-test.md"
+            os.makedirs(os.path.join(origin, ".codearbiter", "decisions"))
+            with open(os.path.join(origin, *adr_rel.split("/")), "wb") as handle:
+                handle.write(ADR)
+            self._git(origin, "add", adr_rel)
+            self._git(origin, "commit", "-m", "accept ADR")
+            source = self._git(origin, "rev-parse", "HEAD")
+            acceptance = dict(self._acceptance(), source_commit=source)
+            self._write_ledger(origin, [acceptance])
+            self._git(origin, "add", ".")
+            self._git(origin, "commit", "-m", "bind source")
+            branch_head = self._git(origin, "rev-parse", "HEAD")
+            self._git(origin, "checkout", "main")
+            self._git(origin, "merge", "--squash", "acceptance")
+            self._git(origin, "commit", "-m", "squash acceptance")
+            # Exact source bytes still exist locally; content validity alone masks
+            # the fact a standard clone cannot fetch this source from main.
+            self.assertEqual(cal._git_blob(origin, source, adr_rel), ADR)
+            result, _stdout, stderr = self._run_checker(
+                origin, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("source commit is not an ancestor of current ref", stderr)
+            self._write_ledger(origin, [])
+            os.unlink(os.path.join(origin, *adr_rel.split("/")))
+            result, _stdout, stderr = self._run_checker(
+                origin, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("source commit is not an ancestor of current ref", stderr)
+            self._write_ledger(origin, [acceptance])
+            with open(os.path.join(origin, *adr_rel.split("/")), "wb") as handle:
+                handle.write(ADR)
+            orphan_clone = os.path.join(container, "orphan-clone")
+            self._git(container, "clone", "--no-local", "--single-branch",
+                      "--branch", "main", origin, orphan_clone)
+            self._git(orphan_clone, "remote", "remove", "origin")
+            self.assertIsNone(cal._git_blob(orphan_clone, source, adr_rel))
+            result, _stdout, stderr = self._run_checker(
+                orphan_clone, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("source-commit ADR blob is unavailable", stderr)
+            # Restore ancestry without changing the accepted record or ledger.
+            ledger_before = cal._git_blob(origin, "HEAD", cal.LEDGER_REL)
+            self._git(origin, "merge", "--no-ff", branch_head, "-m", "retain source ancestry")
+            self.assertEqual(cal._git_blob(origin, "HEAD", cal.LEDGER_REL), ledger_before)
+            # REACH-2: the merge offer must preserve new source identities.
+            result, stdout, stderr = self._run_checker(
+                origin, "--base-ref", base, "--current-ref", "HEAD", "--merge-method")
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(stdout.strip(), "merge")
+            self._git(origin, "branch", "-D", "acceptance")
+            self._git(container, "clone", "--no-local", "--single-branch",
+                      "--branch", "main", origin, clone)
+            self._git(clone, "remote", "remove", "origin")
+            self.assertEqual(cal._git_blob(clone, source, adr_rel), ADR)
+            result, _stdout, stderr = self._run_checker(
+                clone, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 0, stderr)
+            # REACH-3: ordinary later changes can retain the project convention.
+            result, stdout, stderr = self._run_checker(
+                clone, "--base-ref", "HEAD", "--current-ref", "HEAD", "--merge-method")
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(stdout.strip(), "squash")
+
+    def test_merge_method_fails_closed_on_bad_refs_sources_and_cli_modes(self):
+        with tempfile.TemporaryDirectory() as root:
+            acceptance, implemented, verified = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance, implemented, verified])
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-m", "bind evidence")
+            result, _stdout, stderr = self._run_checker(root, "--current-ref", "")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("current ref", stderr)
+            for base, current in (("missing", "HEAD"), ("HEAD", "missing"),
+                                  ("0" * 40, "HEAD"), ("HEAD", "--help")):
+                with self.subTest(base=base, current=current):
+                    errors, method = cal.source_ancestry(root, [acceptance], current, base)
+                    self.assertTrue(errors)
+                    self.assertIsNone(method)
+            for kind, field in (("acceptance", "source_commit"),
+                                ("implemented", "source_commit"),
+                                ("verified", "source_commit"),
+                                ("baseline", "observed_commit")):
+                for source in (None, "--help", "f" * 40):
+                    with self.subTest(kind=kind, source=source):
+                        errors, method = cal.source_ancestry(
+                            root, [{"event": kind, field: source}], "HEAD", "HEAD")
+                        self.assertTrue(errors)
+                        self.assertIsNone(method)
+            for arguments in (("--merge-method",),
+                              ("--merge-method", "--base-ref", "HEAD"),
+                              ("--merge-method", "--base-ref", "HEAD", "--current-ref",
+                               "HEAD", "--verified-json")):
+                with self.subTest(arguments=arguments), self.assertRaises(SystemExit) as raised:
+                    self._run_checker(root, *arguments)
+                self.assertEqual(raised.exception.code, 2)
+
+    def test_sanctioned_pr_paths_require_source_preserving_merge_preflight(self):
+        root = os.path.dirname(os.path.dirname(HERE))
+        for relative in (
+                "core/surface/includes/safety-core.md",
+                "core/surface/skills/finishing-a-development-branch/SKILL.md",
+                "core/surface/skills/decision-lifecycle/SKILL.md"):
+            with self.subTest(path=relative):
+                with open(os.path.join(root, *relative.split("/")), encoding="utf-8") as handle:
+                    text = handle.read()
+                self.assertIn("ADR source ancestry", text)
+                self.assertIn("--merge-method", text)
+                self.assertIn("--match-head-commit", text)
+        # Compatibility wrappers keep their frozen bodies and existing routes;
+        # the routine and resident merge gate own the ancestry requirement.
+        with open(os.path.join(root, "core", "surface", "commands", "pr.md"),
+                  encoding="utf-8") as handle:
+            self.assertIn("finishing-a-development-branch", handle.read())
+        with open(os.path.join(root, "core", "surface", "commands", "watch.md"),
+                  encoding="utf-8") as handle:
+            self.assertIn("the merge routes through the merge-to-default hard gate",
+                          " ".join(handle.read().split()))
+
+    def test_committed_reader_cannot_shadow_canonical_adr_with_nested_copy(self):
+        with tempfile.TemporaryDirectory() as root:
+            acceptance, _implemented, _verified = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance])
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            with open(os.path.join(decisions, "0001-test.md"), "wb") as handle:
+                handle.write(ADR.replace(b"## Decision\nD", b"## Decision\nTampered"))
+            os.makedirs(os.path.join(decisions, "z"))
+            with open(os.path.join(decisions, "z", "0001-test.md"), "wb") as handle:
+                handle.write(ADR)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-m", "nested file must not replace canonical ADR")
+            with open(os.path.join(decisions, "0001-test.md"), "wb") as handle:
+                handle.write(ADR)
+            result, _stdout, stderr = self._run_checker(root, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("immutable-body digest", stderr)
+
     def test_body_digest_excludes_mutable_status_but_binds_decision_body(self):
         changed_status = ADR.replace(b"status: accepted", b"status: superseded").replace(
             b"## Status\nAccepted", b"## Status\nSuperseded")

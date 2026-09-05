@@ -26,6 +26,21 @@ Assemble the facts the decision needs. Nothing is presented until all are in han
 - **Diff summary** — files changed, insertions/deletions, and the commit list since the base. Read it, do not paraphrase from memory.
 - **Gate results** — `commit-gate` outcome and the `last-checkpoint` record. Surface any open `[NEEDS-TRIAGE]` markers left in the diff as out-of-scope findings.
 - **Plan delta** — when a plan exists, state which plan items the branch satisfied and which remain open. Open items are surfaced, not hidden.
+- **ADR source ancestry** — when `.codearbiter/decisions/adr-lifecycle.jsonl` exists, select
+  the merge method from the exact fetched target commit and PR head commit. In this repository run
+  `python .github/scripts/check_adr_lifecycle.py --base-ref <base-sha> --current-ref <head-sha> --merge-method`.
+  It validates committed lifecycle evidence and prints `merge` if any bound source is absent from
+  the base ancestry, otherwise `squash`. Other repositories must perform the same read-only Git
+  checks with their lifecycle verifier: every acceptance/evidence `source_commit` and baseline
+  `observed_commit` must resolve and be an ancestor of the head; test each against the base too.
+  An unavailable verifier, malformed record, missing object, or source outside head ancestry blocks
+  the offer. Never infer retention from local object availability or remote branch/PR refs.
+  A source absent from base requires a true merge commit; squash and rebase would lose its identity.
+  Record the exact base, head, and selected method in the PR body. If merge commits are unavailable,
+  STOP and surface the conflict; do not change repository settings or rewrite the ledger.
+  Revalidate immediately before a merge offer or authorized merge, and use
+  `gh pr merge <PR> --merge --match-head-commit <head-sha>` when `merge` is required.
+  If all sources are already in base ancestry, retain the project's usual merge convention.
 
 Gate: branch confirmed non-default, diff summary read, gate results and plan delta in hand.
 
@@ -49,7 +64,7 @@ Gate: a single terminal option is chosen — by the user under `/feature`, or au
 Carry out the chosen option, and only that one:
 
 - **Open a PR** — push the branch and open the PR against the default branch. The reviewer path-matrix, the anti-slop PR-body composition (description citing the plan items satisfied, the gate results, the §2 conflict level of any non-obvious tradeoff), and the babysitter attach are the steps documented in the `/ca:pr` command flow (`${CLAUDE_PLUGIN_ROOT}/commands/pr.md`) — **execute those steps here; do not re-invoke `/ca:pr`** (under `/sprint` this skill is reached via `commit-gate`, without the `/pr` command ever running, so a route back would loop). Leave the PR open; the merge is not yours to take.
-- **Merge via PR** — open the PR as above, confirm its checks are green, then merge it through the PR (squash or merge per project convention) so the work lands. Never push to the default branch directly, never force-push.
+- **Merge via PR** — open the PR as above, confirm its checks are green, revalidate Phase 1's ADR source ancestry and exact base/head, then merge it through the PR with the selected method and `--match-head-commit`. Never push to the default branch directly, never force-push.
 - **Discard** — requires explicit user confirmation naming the branch. Before discarding, verify the branch is fully pushed; if any commit is un-pushed, STOP and report exactly what would be lost — never delete un-pushed work silently. Discard proceeds only after the user confirms with that loss in view.
 
 Gate: the chosen option completed — for open-PR a PR exists against the default branch; for merge the work landed through that PR; for discard the user confirmed against a stated loss summary.

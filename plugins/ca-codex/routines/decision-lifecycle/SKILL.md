@@ -81,6 +81,11 @@ that any obligation is Implemented or Verified. When the user explicitly authori
    `recorded_at`, `source_commit`, `blob_sha256`, `body_sha256`, `obligations`,
    `obligations_sha256`, and `obligations_sealed: true`. A second acceptance or baseline binding for
    the same stem is invalid.
+4. Preserve **ADR source ancestry** through delivery. Before opening the PR and again before
+   its merge offer, follow the finishing skill's `--merge-method` preflight on the exact base/head.
+   A source not already in base ancestry requires a true merge commit with `--match-head-commit`;
+   squash or rebase would orphan its identity. Missing source ancestry blocks delivery. Never
+   rewrite the acceptance binding or rely on deleted branch objects remaining remotely fetchable.
 
 The lifecycle ledger is append-only. A legacy accepted ADR receives a `baseline` with no fabricated
 acceptance commit, an `observed_commit` whose Git blob is rechecked as the migration snapshot, an
