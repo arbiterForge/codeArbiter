@@ -27,12 +27,17 @@ Assemble the facts the decision needs. Nothing is presented until all are in han
 - **Gate results** — `commit-gate` outcome and the `last-checkpoint` record. Surface any open `[NEEDS-TRIAGE]` markers left in the diff as out-of-scope findings.
 - **Plan delta** — when a plan exists, state which plan items the branch satisfied and which remain open. Open items are surfaced, not hidden.
 - **ADR source ancestry** — when `.codearbiter/decisions/adr-lifecycle.jsonl` exists, select
-  the merge method from the exact fetched target commit and PR head commit. In this repository run
-  `python .github/scripts/check_adr_lifecycle.py --base-ref <base-sha> --current-ref <head-sha> --merge-method`.
+  the merge method from the exact fetched target commit and PR head commit. Run the installed verifier:
+  `python "${PLUGIN_ROOT}/hooks/adr-merge-method.py" --root "<project-root>" --base-ref <base-sha> --current-ref <head-sha> --merge-method`.
   It validates committed lifecycle evidence and prints `merge` if any bound source is absent from
-  the base ancestry, otherwise `squash`. Other repositories must perform the same read-only Git
-  checks with their lifecycle verifier: every acceptance/evidence `source_commit` and baseline
-  `observed_commit` must resolve and be an ancestor of the head; test each against the base too.
+  the base ancestry, otherwise `squash`. Every acceptance/evidence `source_commit` and baseline
+  `observed_commit` must resolve and be an ancestor of the head; each is checked against the base too.
+  The self-contained verifier reads committed ADR paths and source bytes, checks their digests and
+  status, and enforces the exact ledger prefix. It admits no baseline newly introduced after the base;
+  an inherited baseline is not authorization for another migration. No repository-local verifier,
+  dirty working-tree bytes, or network fallback can substitute for this proof.
+  Git must support `--no-lazy-fetch`; missing objects or an unsupported option block verification,
+  never trigger a retry that fetches proof implicitly.
   An unavailable verifier, malformed record, missing object, or source outside head ancestry blocks
   the offer. Never infer retention from local object availability or remote branch/PR refs.
   A source absent from base requires a true merge commit; squash and rebase would lose its identity.
