@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """ADR-0033 lifecycle integrity contract."""
 
+import concurrent.futures
+import datetime as dt
 import hashlib
 import io
 import json
@@ -22,6 +24,11 @@ try:
 except ImportError:
     al = None
     cal = None
+
+try:
+    import prepare_adr_acceptance as paa
+except ImportError:
+    paa = None
 
 
 def _sha(data):
@@ -65,6 +72,35 @@ def _ci_checker_commands(text):
         if "check_adr_lifecycle.py" in value:
             commands.append(value)
     return commands
+
+
+def _decision_entry(sequence, adr_number):
+    return """
+## DECISION-%04d — adr-%04d-ratified — Accept test ADR
+
+**Date:** 2026-09-02
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** user@example.com
+**Decision category:** governance-integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Proposed.
+- **Scaffold position:** Accepted.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept the test ADR.
+
+### SMARTS rationale
+The bounded test decision is specific and testable.
+
+### Implementation implication
+Bind the accepted ADR in a subsequent commit.
+
+---
+""" % (sequence, adr_number)
 
 
 class LifecycleContractTest(unittest.TestCase):
@@ -1122,13 +1158,537 @@ class LifecycleContractTest(unittest.TestCase):
             self.assertEqual(errors, ["invalid lifecycle event: " + events[0]["_error"]])
             self.assertIn("line 2:", errors[0])
 
+    def test_local_checker_requires_a_bound_packet_for_the_first_acceptance_leg(self):
+        self.assertIsNotNone(paa, "pending-acceptance packet helper is missing")
+        proposed = ADR.replace(b"status: accepted", b"status: proposed").replace(
+            b"## Status\nAccepted", b"## Status\nProposed")
+        self.assertEqual(paa.transition_body(proposed), paa.transition_body(ADR))
+        self.assertNotEqual(
+            paa.transition_body(proposed),
+            paa.transition_body(ADR.replace(
+                b"## Status\nAccepted", b"## Status\nAccepted by somebody else")),
+        )
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            adr_path = os.path.join(decisions, "0001-test.md")
+            with open(adr_path, "wb") as handle:
+                handle.write(proposed)
+            with open(os.path.join(decisions, "adr-lifecycle.jsonl"), "wb") as handle:
+                handle.write(b"")
+            log_path = os.path.join(decisions, "decision-log.md")
+            with open(log_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("# Decision log\n" + _decision_entry(1, 9999))
+            self._git(root, "add", ".codearbiter/decisions")
+            self._git(root, "commit", "-m", "seed proposed ADR")
+
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR)
+            with open(log_path, "a", encoding="utf-8", newline="\n") as handle:
+                handle.write(_decision_entry(2, 1))
+            with open(log_path, "rb") as handle:
+                first_leg_log = handle.read()
+            self._git(
+                root, "add", ".codearbiter/decisions/0001-test.md",
+                ".codearbiter/decisions/decision-log.md")
+
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+
+            reviewed_at = dt.datetime.now(dt.timezone.utc) - dt.timedelta(minutes=1)
+            valid_until = reviewed_at + dt.timedelta(hours=1)
+            packet_path = paa.write_packet(
+                root=root,
+                adr="0001-test",
+                obligations=self._acceptance()["obligations"],
+                reviewed_by=["independent-reviewer:test"],
+                reviewed_at=reviewed_at.isoformat(),
+                valid_until=valid_until.isoformat(),
+            )
+            self.assertTrue(os.path.isfile(packet_path))
+            with self.assertRaises(FileExistsError):
+                paa.write_packet(
+                    root=root,
+                    adr="0001-test",
+                    obligations=self._acceptance()["obligations"],
+                    reviewed_by=["independent-reviewer:test"],
+                    reviewed_at=reviewed_at.isoformat(),
+                    valid_until=valid_until.isoformat(),
+                )
+            result, stdout, stderr = self._run_checker(root)
+            self.assertEqual((result, stderr), (0, ""))
+            self.assertIn("pending acceptance", stdout)
+            for selector in ("--current-ref", "--base-ref"):
+                with self.subTest(empty_explicit_selector=selector):
+                    result, _stdout, stderr = self._run_checker(root, selector, "")
+                    self.assertEqual(result, 1)
+                    self.assertIn("accepted ADR has no lifecycle binding", stderr)
+
+            self._git(root, "config", "core.autocrlf", "true")
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR.replace(b"\n", b"\r\n"))
+            result, stdout, stderr = self._run_checker(root)
+            self.assertEqual((result, stderr), (0, ""))
+            self.assertIn("pending acceptance", stdout)
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR)
+            with open(packet_path, "rb") as handle:
+                valid_packet_bytes = handle.read()
+            valid_packet = json.loads(valid_packet_bytes)
+            self.assertEqual(valid_packet["repository"], paa.repository_identity(root))
+            with tempfile.TemporaryDirectory() as foreign:
+                with mock.patch.dict(os.environ, {
+                        "GIT_DIR": os.path.join(foreign, ".git"),
+                        "GIT_WORK_TREE": foreign,
+                        "GIT_OBJECT_DIRECTORY": os.path.join(foreign, "objects")}, clear=False):
+                    self.assertEqual(
+                        valid_packet["repository"], paa.repository_identity(root))
+                    self.assertEqual(paa.read_packet(root), valid_packet)
+
+            mutants = (
+                ("head", "f" * 40),
+                ("index_tree", "f" * 40),
+                ("adr", "9999-other"),
+                ("adr_blob_sha256", "f" * 64),
+                ("transition_body_sha256", "f" * 64),
+                ("decision_log_base_sha256", "f" * 64),
+                ("decision_log_index_sha256", "f" * 64),
+                ("obligations_sha256", "f" * 64),
+                ("reviewed_by", []),
+                ("reviewed_at", (reviewed_at + dt.timedelta(hours=2)).isoformat()),
+                ("valid_until", (reviewed_at + dt.timedelta(hours=5)).isoformat()),
+            )
+            for field, value in mutants:
+                with self.subTest(packet_field=field):
+                    mutant = dict(valid_packet)
+                    mutant[field] = value
+                    with open(packet_path, "w", encoding="utf-8", newline="\n") as handle:
+                        json.dump(mutant, handle, sort_keys=True, separators=(",", ":"))
+                        handle.write("\n")
+                    result, _stdout, stderr = self._run_checker(root)
+                    self.assertEqual(result, 1)
+                    self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            with open(packet_path, "wb") as handle:
+                handle.write(valid_packet_bytes)
+
+            obligations_mutant = dict(valid_packet)
+            obligations_mutant["obligations"] = [dict(
+                valid_packet["obligations"][0], text="Different")]
+            with open(packet_path, "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(obligations_mutant, handle, sort_keys=True, separators=(",", ":"))
+                handle.write("\n")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            with open(packet_path, "wb") as handle:
+                handle.write(valid_packet_bytes)
+
+            self.assertTrue(cal._valid_decision_log_append(
+                b"# Decision log\n" + _decision_entry(1, 9999).encode(),
+                (b"# Decision log\n" + _decision_entry(1, 9999).encode() +
+                 _decision_entry(2, 1).encode()),
+                "0001-test"))
+            for invalid_entry in (
+                _decision_entry(2, 1).replace("**Status:** accepted", "**Status:** Accepted"),
+                _decision_entry(3, 1),
+                _decision_entry(2, 2),
+                _decision_entry(2, 1) + _decision_entry(3, 1),
+            ):
+                with self.subTest(invalid_log_entry=invalid_entry[:80]):
+                    base_log = b"# Decision log\n" + _decision_entry(1, 9999).encode()
+                    self.assertFalse(cal._valid_decision_log_append(
+                        base_log, base_log + invalid_entry.encode(), "0001-test"))
+
+            event_path = os.path.join(root, "event.json")
+            with open(event_path, "w", encoding="utf-8") as handle:
+                json.dump({"pull_request": {"base": {"sha": self._git(
+                    root, "rev-parse", "HEAD")}}}, handle)
+            result, _stdout, stderr = self._run_checker(
+                root, "--github-event", "--current-ref", "HEAD",
+                env={"GITHUB_EVENT_NAME": "pull_request", "GITHUB_EVENT_PATH": event_path})
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            result, stdout, stderr = self._run_checker(
+                root, "--verified-json", "--current-ref", "HEAD",
+                "--now", dt.datetime.now(dt.timezone.utc).isoformat())
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout, "[]\n")
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+
+            with open(packet_path, encoding="utf-8") as handle:
+                stale_packet = json.load(handle)
+            stale_packet["valid_until"] = (
+                reviewed_at + dt.timedelta(seconds=30)).isoformat()
+            with open(packet_path, "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(stale_packet, handle, sort_keys=True, separators=(",", ":"))
+                handle.write("\n")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            self.assertTrue(paa.clear_packet(root))
+
+            foreign_target = os.path.join(root, "foreign-packet-target.json")
+            with open(foreign_target, "w", encoding="utf-8") as handle:
+                handle.write("do not remove")
+            try:
+                os.symlink(foreign_target, packet_path)
+            except OSError:
+                pass
+            else:
+                with self.assertRaises(ValueError):
+                    paa.clear_packet(root)
+                self.assertTrue(os.path.isfile(foreign_target))
+                os.unlink(packet_path)
+
+            packet_args = dict(
+                root=root,
+                adr="0001-test",
+                obligations=self._acceptance()["obligations"],
+                reviewed_by=["independent-reviewer:test"],
+                reviewed_at=reviewed_at.isoformat(),
+                valid_until=valid_until.isoformat(),
+            )
+
+            def competing_writer():
+                try:
+                    paa._install_packet(packet_path, valid_packet)
+                    return "created"
+                except FileExistsError:
+                    return "collision"
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                outcomes = sorted(executor.map(lambda _index: competing_writer(), range(2)))
+            self.assertEqual(outcomes, ["collision", "created"])
+            self.assertTrue(paa.clear_packet(root))
+            paa.write_packet(
+                **packet_args,
+            )
+
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR.replace(b"## Decision\nD", b"## Decision\nDrift"))
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR)
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+
+            extra_path = os.path.join(decisions, "extra.txt")
+            with open(extra_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("mixed staged change\n")
+            self._git(root, "add", ".codearbiter/decisions/extra.txt")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            self._git(root, "rm", "--cached", ".codearbiter/decisions/extra.txt")
+            os.remove(extra_path)
+
+            outside_path = os.path.join(root, "outside.txt")
+            with open(outside_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("unrelated staged change\n")
+            self._git(root, "add", "outside.txt")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            self._git(root, "rm", "--cached", "outside.txt")
+            os.remove(outside_path)
+
+            self._git(root, "restore", "--staged", ".codearbiter/decisions/decision-log.md")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+            self._git(root, "add", ".codearbiter/decisions/decision-log.md")
+
+            result, _stdout, stderr = self._run_checker(root, "--current-ref", "HEAD")
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+
+            second_path = os.path.join(decisions, "0002-test.md")
+            with open(second_path, "wb") as handle:
+                handle.write(ADR.replace(b"# ADR-0001", b"# ADR-0002"))
+            with open(log_path, "a", encoding="utf-8", newline="\n") as handle:
+                handle.write(_decision_entry(3, 2))
+            self._git(
+                root, "add", ".codearbiter/decisions/0002-test.md",
+                ".codearbiter/decisions/decision-log.md")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+
+            self._git(root, "rm", "--cached", ".codearbiter/decisions/0002-test.md")
+            os.remove(second_path)
+            with open(log_path, "wb") as handle:
+                handle.write(first_leg_log)
+            self._git(root, "add", ".codearbiter/decisions/decision-log.md")
+            self._git(root, "commit", "-m", "accept ADR")
+
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("accepted ADR has no lifecycle binding", stderr)
+
+            acceptance = self._acceptance()
+            acceptance["source_commit"] = self._git(root, "rev-parse", "HEAD")
+            acceptance["recorded_at"] = reviewed_at.isoformat()
+
+            self._write_ledger(root, [acceptance])
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("only in unstaged working-tree bytes", stderr)
+            self._git(root, "restore", ".codearbiter/decisions/adr-lifecycle.jsonl")
+
+            with open(packet_path, "rb") as handle:
+                source_packet_bytes = handle.read()
+            self.assertTrue(paa.clear_packet(root))
+            baseline = json.loads(json.dumps(acceptance))
+            baseline["event"] = "baseline"
+            baseline["observed_commit"] = baseline.pop("source_commit")
+            baseline["obligations"] = []
+            baseline["obligations_sha256"] = al.obligation_set_digest([])
+            baseline["obligations_sealed"] = False
+            self._write_ledger(root, [baseline])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("outside the closed migration epoch", stderr)
+            paa._install_packet(packet_path, json.loads(source_packet_bytes))
+
+            substituted = json.loads(json.dumps(acceptance))
+            substituted["obligations"][0]["text"] = "Different reviewed obligation"
+            substituted["obligations"][0]["text_sha256"] = _sha(
+                b"Different reviewed obligation")
+            substituted["obligations_sha256"] = al.obligation_set_digest(
+                substituted["obligations"])
+            self._write_ledger(root, [substituted])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("does not match its reviewed pending packet", stderr)
+
+            future_acceptance = json.loads(json.dumps(acceptance))
+            future_acceptance["recorded_at"] = (
+                dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=15)).isoformat()
+            self._write_ledger(root, [future_acceptance])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("does not match its reviewed pending packet", stderr)
+
+            self._write_ledger(root, [acceptance])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+
+            with open(packet_path, "rb") as handle:
+                second_leg_packet_bytes = handle.read()
+            second_leg_packet = json.loads(second_leg_packet_bytes)
+            second_leg_packet["unexpected"] = "field"
+            with open(packet_path, "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(second_leg_packet, handle, sort_keys=True, separators=(",", ":"))
+                handle.write("\n")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("does not match its reviewed pending packet", stderr)
+            with open(packet_path, "wb") as handle:
+                handle.write(second_leg_packet_bytes)
+
+            self.assertTrue(paa.clear_packet(root))
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("has no reviewed pending packet", stderr)
+            paa._install_packet(packet_path, json.loads(second_leg_packet_bytes))
+
+            outside_path = os.path.join(root, "outside-second-leg.txt")
+            with open(outside_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("unrelated staged change\n")
+            self._git(root, "add", "outside-second-leg.txt")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("not the sole exact append", stderr)
+            self._git(root, "rm", "--cached", "outside-second-leg.txt")
+            os.remove(outside_path)
+
+            with open(os.path.join(decisions, "adr-lifecycle.jsonl"), "rb") as handle:
+                second_leg_ledger = handle.read()
+            with open(os.path.join(decisions, "adr-lifecycle.jsonl"), "wb") as handle:
+                handle.write(second_leg_ledger.replace(b"\n", b"\r\n"))
+            result, stdout, stderr = self._run_checker(root)
+            self.assertEqual((result, stderr), (0, ""))
+            self.assertIn("bindings valid", stdout)
+            with open(os.path.join(decisions, "adr-lifecycle.jsonl"), "wb") as handle:
+                handle.write(second_leg_ledger)
+            self._git(root, "commit", "-m", "bind ADR acceptance")
+            result, stdout, stderr = self._run_checker(root, "--current-ref", "HEAD")
+            self.assertEqual((result, stderr), (0, ""))
+            self.assertIn("bindings valid", stdout)
+            self.assertTrue(paa.clear_packet(root))
+            self.assertFalse(os.path.exists(packet_path))
+
+    def test_git_replacement_refs_cannot_substitute_lifecycle_evidence(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            adr_path = os.path.join(decisions, "0001-test.md")
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR)
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+            self._git(root, "commit", "-m", "accepted evidence")
+            accepted_commit = self._git(root, "rev-parse", "HEAD")
+
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR.replace(b"status: accepted", b"status: proposed").replace(
+                    b"## Status\nAccepted", b"## Status\nProposed"))
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+            self._git(root, "commit", "-m", "replacement evidence")
+            replacement_commit = self._git(root, "rev-parse", "HEAD")
+            self._git(root, "reset", "--hard", accepted_commit)
+            self._git(root, "replace", accepted_commit, replacement_commit)
+
+            replaced = subprocess.run(
+                ["git", "-C", root, "show", "HEAD:.codearbiter/decisions/0001-test.md"],
+                capture_output=True, check=False).stdout
+            self.assertIn(b"status: proposed", replaced)
+            self.assertEqual(
+                cal._git_blob(root, "HEAD", ".codearbiter/decisions/0001-test.md"), ADR)
+            self.assertEqual(
+                paa._head_blob(root, ".codearbiter/decisions/0001-test.md"), ADR)
+
+    def test_non_acceptance_ledger_append_does_not_claim_acceptance_packet_scope(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            ledger_path = os.path.join(decisions, "adr-lifecycle.jsonl")
+            with open(ledger_path, "wb") as handle:
+                handle.write(b"")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "seed ledger")
+            with open(ledger_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(json.dumps({"event": "verified"}) + "\n")
+            outside_path = os.path.join(root, "ordinary-evidence.txt")
+            with open(outside_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("ordinary evidence\n")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl",
+                      "ordinary-evidence.txt")
+            self.assertIsNone(cal._local_binding_transition_error(root, [], {}))
+
+    def test_local_acceptance_cannot_replace_the_committed_ledger_without_a_packet(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            adr_path = os.path.join(decisions, "0001-test.md")
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR)
+            ledger_path = os.path.join(decisions, "adr-lifecycle.jsonl")
+            with open(ledger_path, "wb") as handle:
+                handle.write(b"\n")
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md",
+                      ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "accepted source")
+
+            acceptance = self._acceptance()
+            acceptance["source_commit"] = self._git(root, "rev-parse", "HEAD")
+            self._write_ledger(root, [acceptance])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            result, _stdout, stderr = self._run_checker(root)
+            self.assertEqual(result, 1)
+            self.assertIn("lifecycle ledger is not an exact append", stderr)
+
+    def test_strict_ref_rejects_baseline_for_a_freshly_accepted_adr(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            adr_path = os.path.join(decisions, "0001-test.md")
+            proposed = ADR.replace(b"status: accepted", b"status: proposed").replace(
+                b"## Status\nAccepted", b"## Status\nProposed")
+            with open(adr_path, "wb") as handle:
+                handle.write(proposed)
+            ledger_path = os.path.join(decisions, "adr-lifecycle.jsonl")
+            with open(ledger_path, "wb") as handle:
+                handle.write(b"")
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md",
+                      ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "proposed ADR")
+            proposed_commit = self._git(root, "rev-parse", "HEAD")
+            with open(adr_path, "wb") as handle:
+                handle.write(ADR)
+            self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+            self._git(root, "commit", "-m", "accepted source")
+            unrelated_path = os.path.join(root, "unrelated.txt")
+            with open(unrelated_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("intervening commit\n")
+            self._git(root, "add", "unrelated.txt")
+            self._git(root, "commit", "-m", "intervening change")
+            observed_commit = self._git(root, "rev-parse", "HEAD")
+
+            baseline = self._acceptance()
+            baseline["event"] = "baseline"
+            baseline["observed_commit"] = observed_commit
+            baseline.pop("source_commit")
+            baseline["obligations"] = []
+            baseline["obligations_sha256"] = al.obligation_set_digest([])
+            baseline["obligations_sealed"] = False
+            self._write_ledger(root, [baseline])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "invalid fresh baseline")
+            result, _stdout, stderr = self._run_checker(
+                root, "--base-ref", proposed_commit, "--current-ref", "HEAD")
+            self.assertEqual(result, 1)
+            self.assertIn("outside the closed migration epoch", stderr)
+
     def test_repository_ledger_and_all_accepted_adrs_validate(self):
         root = os.path.dirname(os.path.dirname(HERE))
         events = al.read_jsonl(os.path.join(
             root, ".codearbiter", "decisions", "adr-lifecycle.jsonl"))
-        blobs = al.read_accepted_adrs(root)
-        errors = al.validate_events(events, blobs, require_all_accepted=True)
+        blobs = al.read_adrs(root)
+        errors = al.validate_events(events, blobs)
+        binding_errors, _pending = cal.accepted_binding_errors(
+            root, events, blobs, allow_local_pending=True)
+        errors.extend(binding_errors)
         self.assertEqual(errors, [], "\n".join(errors))
+
+    def test_pending_packet_is_isolated_to_the_exact_worktree_git_directory(self):
+        self.assertIsNotNone(paa, "pending-acceptance packet helper is missing")
+        with tempfile.TemporaryDirectory() as container:
+            root = os.path.join(container, "root")
+            linked = os.path.join(container, "linked")
+            os.makedirs(root)
+            self._git(root, "init", "-b", "main")
+            with open(os.path.join(root, "seed.txt"), "w", encoding="utf-8") as handle:
+                handle.write("seed\n")
+            self._git(root, "add", "seed.txt")
+            self._git(root, "commit", "-m", "seed")
+            self._git(root, "worktree", "add", "-b", "linked", linked, "HEAD")
+
+            root_identity = paa.repository_identity(root)
+            linked_identity = paa.repository_identity(linked)
+            self.assertEqual(root_identity["common_dir"], linked_identity["common_dir"])
+            self.assertNotEqual(root_identity["git_dir"], linked_identity["git_dir"])
+            self.assertNotEqual(paa.packet_path(root), paa.packet_path(linked))
+
+            with mock.patch.dict(os.environ, {
+                    "GIT_DIR": root_identity["git_dir"],
+                    "GIT_WORK_TREE": root}, clear=False):
+                self.assertEqual(paa.repository_identity(linked), linked_identity)
+
+            admin_dir = os.path.dirname(paa.packet_path(linked))
+            foreign = os.path.join(container, "foreign")
+            os.makedirs(foreign)
+            try:
+                os.symlink(foreign, admin_dir, target_is_directory=True)
+            except OSError:
+                pass
+            else:
+                with self.assertRaises(ValueError):
+                    paa.packet_path(linked)
+                try:
+                    os.unlink(admin_dir)
+                except IsADirectoryError:
+                    os.rmdir(admin_dir)
+            self._git(root, "worktree", "remove", "--force", linked)
 
     def test_canonical_adr_skill_distinguishes_acceptance_from_delivery(self):
         root = os.path.dirname(os.path.dirname(HERE))
@@ -1181,6 +1741,8 @@ class LifecycleContractTest(unittest.TestCase):
         with open(os.path.join(root, ".codearbiter", "tech-stack.md"), encoding="utf-8") as handle:
             tech_stack = handle.read()
         self.assertIn("python .github/scripts/test_adr_lifecycle.py", tech_stack)
+        self.assertIn(".github/scripts/prepare_adr_acceptance.py", tech_stack)
+        self.assertIn("GitHub-event validation remain strict", tech_stack)
         local_command = "python .github/scripts/check_adr_lifecycle.py"
         self.assertEqual(_tech_checker_commands(tech_stack), [local_command])
         self.assertIn("python .github/scripts/check_destructive_registry.py", tech_stack)
