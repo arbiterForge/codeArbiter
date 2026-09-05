@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Unit tests for the read-only branch-protection audit (issue #383 AC-3).
+"""Read-only merge-readiness and ADR source-preserving settings audit tests.
 
 Run: python .github/scripts/test_branch_protection.py
 
-The audit answers one question - is main's merge-readiness enforcement still
-switched on? - and it has to answer it WITHOUT a privileged token in ordinary
+The audit checks current-base enforcement and settings compatible with exact ADR
+source-preserving merges. It must handle the absence of a privileged token in ordinary
 CI, because `GET /repos/{owner}/{repo}/branches/{branch}/protection` requires
 Administration:read and the workflow `permissions:` block has no key that
 grants it.  Every field the audit reads is therefore three-valued: True, False,
-or None for "this run could not see it".  A definite False is a violation; a
-None is a SKIP that says so out loud.  These tests pin both halves, plus the
+or None for "this run could not see it". A definitely incompatible value is a
+violation; None is a SKIP that says so out loud. These tests pin both halves, plus the
 CLI's no-token exit, entirely offline - no network, no token, no fixtures on
 disk.
 """
@@ -44,6 +44,16 @@ LIVE_PROTECTION = {
     "required_linear_history": {"enabled": True},
     "required_conversation_resolution": {"enabled": True},
 }
+
+# Isolate #383's freshness rule from the separately guarded ADR ancestry policy.
+FRESHNESS_PROTECTION = dict(LIVE_PROTECTION, required_linear_history={"enabled": False})
+
+
+def settings_reader(protection=FRESHNESS_PROTECTION, repository=None):
+    """Route the two REST resources; never substitute one document for another."""
+    if repository is None:
+        repository = {"allow_merge_commit": True}
+    return lambda path: (200, protection if path.endswith("/protection") else repository)
 
 
 def enforcement(**overrides):
@@ -129,8 +139,8 @@ class AuditTest(unittest.TestCase):
 
 
 class ProtectionParsingTest(unittest.TestCase):
-    def test_enforcement_is_read_out_of_the_live_protection_document(self):
-        read = module.enforcement_from_protection(LIVE_PROTECTION, merge_queue=False)
+    def test_enforcement_is_read_out_of_the_freshness_protection_document(self):
+        read = module.enforcement_from_protection(FRESHNESS_PROTECTION, merge_queue=False)
         self.assertIs(read.protected, True)
         self.assertIs(read.strict, False)
         self.assertIs(read.merge_queue, False)
@@ -141,14 +151,14 @@ class ProtectionParsingTest(unittest.TestCase):
     def test_contexts_fall_back_to_the_checks_array(self):
         # `contexts` is deprecated in favour of `checks`; a response that only
         # carries the newer array must not read as "the context was dropped".
-        document = json.loads(json.dumps(LIVE_PROTECTION))
+        document = json.loads(json.dumps(FRESHNESS_PROTECTION))
         del document["required_status_checks"]["contexts"]
         read = module.enforcement_from_protection(document, merge_queue=True)
         self.assertEqual(read.contexts, (module.MERGE_READINESS_CONTEXT,))
         self.assertEqual(module.audit(read), [])
 
     def test_a_protection_document_with_no_required_status_checks_reports(self):
-        document = {"required_linear_history": {"enabled": True}}
+        document = {"required_linear_history": {"enabled": False}}
         read = module.enforcement_from_protection(document, merge_queue=False)
         self.assertIs(read.strict, False)
         self.assertEqual(read.contexts, ())
@@ -185,8 +195,7 @@ class ReadEnforcementTest(unittest.TestCase):
         self.assertEqual(len(module.audit(read)), 1)
 
     def test_an_enabled_queue_is_read_out_of_the_graphql_response(self):
-        def rest(path):
-            return 200, LIVE_PROTECTION
+        rest = settings_reader()
 
         def graphql(query, variables):
             return 200, {"data": {"repository": {"mergeQueue": {"id": "MQ_kwDO"}}}}
@@ -199,8 +208,7 @@ class ReadEnforcementTest(unittest.TestCase):
         # Reporting "no merge queue" because a query errored would fail the
         # audit for a transport problem, which is how a read-only check turns
         # into a merge jam.
-        def rest(path):
-            return 200, LIVE_PROTECTION
+        rest = settings_reader()
 
         def graphql(query, variables):
             return 200, {"errors": [{"message": "Something went wrong"}]}
@@ -230,7 +238,7 @@ class CommandTest(unittest.TestCase):
             code = module.main(
                 ["--repo", "arbiterForge/codeArbiter", "--branch", "main"],
                 token="x",
-                rest=lambda path: (200, LIVE_PROTECTION),
+                rest=settings_reader(),
                 graphql=lambda query, variables: (
                     200,
                     {"data": {"repository": {"mergeQueue": None}}},
@@ -245,7 +253,7 @@ class CommandTest(unittest.TestCase):
             code = module.main(
                 ["--repo", "arbiterForge/codeArbiter", "--branch", "main"],
                 token="x",
-                rest=lambda path: (200, LIVE_PROTECTION),
+                rest=settings_reader(),
                 graphql=lambda query, variables: (
                     200,
                     {"data": {"repository": {"mergeQueue": {"id": "MQ_kwDO"}}}},
@@ -255,7 +263,173 @@ class CommandTest(unittest.TestCase):
         self.assertIn("OK", buffer.getvalue())
 
 
+class SourcePreservingMergePolicyTest(unittest.TestCase):
+    """PR #748 / Option A: settings must permit selector-required true merges."""
+
+    def run_audit(self, *, protection=None, repository=None, protection_status=200,
+                  repository_status=200):
+        if protection is None:
+            protection = dict(FRESHNESS_PROTECTION, required_status_checks={
+                "strict": True, "contexts": [module.MERGE_READINESS_CONTEXT],
+            })
+        if repository is None:
+            repository = {"allow_merge_commit": True}
+        calls = []
+
+        def rest(path):
+            calls.append(path)
+            if path == "/repos/o/n":
+                return repository_status, repository
+            self.assertEqual(path, "/repos/o/n/branches/main/protection")
+            return protection_status, protection
+
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            code = module.main(
+                ["--repo", "o/n", "--branch", "main"], token="private-token-sentinel",
+                rest=rest, graphql=lambda *_args: (
+                    200, {"data": {"repository": {"mergeQueue": None}}}),
+            )
+        self.assertNotIn("private-token-sentinel", buffer.getvalue())
+        return code, buffer.getvalue(), calls
+
+    def test_each_incompatible_setting_fails_even_with_current_base_proof(self):
+        # BP-1: the two settings are independent requirements, not alternatives.
+        for linear, allow in ((True, True), (False, False), (True, False)):
+            with self.subTest(linear=linear, allow=allow):
+                protection = dict(LIVE_PROTECTION, required_linear_history={"enabled": linear},
+                                  required_status_checks={"strict": True,
+                                                          "contexts": [module.MERGE_READINESS_CONTEXT]})
+                code, output, _calls = self.run_audit(
+                    protection=protection, repository={"allow_merge_commit": allow})
+                self.assertEqual(code, 1, output)
+                if linear:
+                    self.assertIn("required_linear_history", output)
+                if not allow:
+                    self.assertIn("allow_merge_commit", output)
+                self.assertIn("ADR", output)
+
+    def test_lifecycle_findings_combine_with_existing_freshness_and_context_failures(self):
+        # BP-1/4: a lifecycle conflict must not hide either #383 check.
+        protection = dict(LIVE_PROTECTION, required_status_checks={"strict": False, "contexts": []})
+        code, output, _calls = self.run_audit(protection=protection,
+                                            repository={"allow_merge_commit": False})
+        self.assertEqual(code, 1)
+        for finding in ("required_linear_history", "allow_merge_commit", "strict",
+                        module.MERGE_READINESS_CONTEXT):
+            self.assertIn(finding, output)
+
+    def test_missing_or_malformed_policy_booleans_are_unreadable_not_ok(self):
+        # BP-2/3: no truthiness coercion or absent-field success.
+        for field in ("required_linear_history", "allow_merge_commit"):
+            for value in (None, 0, 1, "true", "false", [], {}):
+                with self.subTest(field=field, value=value):
+                    protection = dict(FRESHNESS_PROTECTION, required_status_checks={
+                        "strict": True, "contexts": [module.MERGE_READINESS_CONTEXT]})
+                    repository = {"allow_merge_commit": True}
+                    if field == "required_linear_history":
+                        protection[field] = {"enabled": value}
+                    else:
+                        repository[field] = value
+                    code, output, _calls = self.run_audit(protection=protection, repository=repository)
+                    self.assertEqual(code, 0, output)
+                    self.assertIn("SKIP (partial)", output)
+                    self.assertIn(field, output)
+                    self.assertNotIn("OK:", output)
+        for protection, repository, field in (({}, {"allow_merge_commit": True}, "required_linear_history"),
+                                               (FRESHNESS_PROTECTION, {}, "allow_merge_commit")):
+            _code, output, _calls = self.run_audit(protection=protection, repository=repository)
+            self.assertIn(field, output)
+            self.assertNotIn("OK:", output)
+
+    def test_independent_setting_read_survives_other_endpoint_failure(self):
+        # BP-2: inaccessible protection does not hide disabled repository merges.
+        for status in (0, 401, 403, 404, 500):
+            with self.subTest(endpoint="protection", status=status):
+                code, output, _calls = self.run_audit(protection_status=status,
+                                                    repository={"allow_merge_commit": False})
+                self.assertEqual(code, 1, output)
+                self.assertIn("allow_merge_commit", output)
+            with self.subTest(endpoint="repository", status=status):
+                code, output, _calls = self.run_audit(protection=LIVE_PROTECTION,
+                                                    repository_status=status)
+                self.assertEqual(code, 1, output)
+                self.assertIn("required_linear_history", output)
+                self.assertIn("SKIP (partial)", output)
+
+    def test_complete_proof_reads_both_exact_rest_resources_and_reports_policy(self):
+        # BP-3: the all-readable success is stronger than a partial audit.
+        code, output, calls = self.run_audit()
+        self.assertEqual(code, 0, output)
+        self.assertIn("OK:", output)
+        self.assertNotIn("SKIP", output)
+        self.assertIn("source-preserving", output)
+        self.assertCountEqual(calls, ["/repos/o/n", "/repos/o/n/branches/main/protection"])
+
+    def test_malformed_resource_documents_remain_unreadable_without_crashing(self):
+        # BP-2/3: a successful HTTP response is not itself a settings document.
+        for value in (None, False, 1, "bad", []):
+            for endpoint, field in (("/repos/o/n", "allow_merge_commit"),
+                                    ("/repos/o/n/branches/main/protection", "required_linear_history")):
+                with self.subTest(endpoint=endpoint, value=value):
+                    buffer = io.StringIO()
+                    valid = settings_reader(dict(FRESHNESS_PROTECTION, required_status_checks={
+                        "strict": True, "contexts": [module.MERGE_READINESS_CONTEXT]}))
+                    with redirect_stdout(buffer):
+                        try:
+                            code = module.main(["--repo", "o/n"], token="x",
+                                               rest=lambda path: (200, value) if path == endpoint else valid(path),
+                                               graphql=lambda *_args: (200, {"data": {"repository": {
+                                                   "mergeQueue": None}}}))
+                        except (AttributeError, TypeError) as error:
+                            self.fail(f"malformed settings crashed instead of remaining unreadable: {error}")
+                    self.assertEqual(code, 0, buffer.getvalue())
+                    self.assertIn(field, buffer.getvalue())
+                    self.assertIn("SKIP (partial)", buffer.getvalue())
+                    self.assertNotIn("OK:", buffer.getvalue())
+        for value in (None, False, 1, "bad", []):
+            protection = dict(FRESHNESS_PROTECTION, required_linear_history=value,
+                              required_status_checks={"strict": True,
+                                                      "contexts": [module.MERGE_READINESS_CONTEXT]})
+            code, output, _calls = self.run_audit(protection=protection)
+            self.assertEqual(code, 0, output)
+            self.assertIn("required_linear_history", output)
+            self.assertNotIn("OK:", output)
+
+    def test_malformed_graphql_queue_evidence_never_satisfies_freshness(self):
+        # BP-6: only a null queue or the queried queue object is evidence.
+        payloads = [None, False, [], "bad", {}, {"data": []}, {"data": {"repository": []}},
+                    {"data": {"repository": {}}}]
+        payloads.extend({"data": {"repository": {"mergeQueue": value}}}
+                        for value in (False, True, 0, 1, "MQ_id", [], {}, {"id": None}, {"id": 1},
+                                      {"id": ""}, {"id": "   "}))
+        payloads.extend({"data": {"repository": {"mergeQueue": {"id": "MQ_id"}}}, "errors": errors}
+                        for errors in ([], None, [{"message": "private-response-sentinel"}]))
+        for payload in payloads:
+            with self.subTest(payload=payload):
+                buffer = io.StringIO()
+                with redirect_stdout(buffer):
+                    try:
+                        code = module.main(["--repo", "o/n"], token="x", rest=settings_reader(),
+                                           graphql=lambda *_args: (200, payload))
+                    except (AttributeError, TypeError) as error:
+                        self.fail(f"malformed queue evidence crashed instead of staying unknown: {error}")
+                self.assertEqual(code, 0, buffer.getvalue())
+                self.assertIn("SKIP (partial)", buffer.getvalue())
+                self.assertIn("merge queue", buffer.getvalue())
+                self.assertNotIn("OK:", buffer.getvalue())
+                self.assertNotIn("private-response-sentinel", buffer.getvalue())
+
+
 class WorkflowWiringTest(unittest.TestCase):
+    def test_ordinary_ci_audits_public_merge_capability_without_an_admin_secret(self):
+        # BP-5: optional Administration:read must not disable public policy reads.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = ci.split("  branch-protection:\n", 1)[1].split("\n  ci-passed:", 1)[0]
+        self.assertIn("GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_AUDIT_TOKEN }}", job)
+        self.assertIn("GITHUB_TOKEN: ${{ github.token }}", job)
+        self.assertIn("contents: read", job)
+
     def test_the_audit_runs_in_a_job_the_merge_gate_actually_waits_for(self):
         # An audit nothing dispatches is a file, not a control.  The job is
         # registered in BOTH of ci-passed's registrations, the same way every

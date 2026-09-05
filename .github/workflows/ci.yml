@@ -2281,22 +2281,23 @@ jobs:
 
   branch-protection:
     name: "[CHECK] | [REPO] | Branch protection"
-    # Issue #383 AC-3. Everything else in this workflow guards the CODE; this
-    # guards the setting that makes the workflow binding. Merge-readiness
+    # Issue #383 AC-3 and PR #748's source-preserving merge policy. This guards
+    # strict-or-queue freshness plus required_linear_history=false and
+    # allow_merge_commit=true: accepted ADR sources may require a true merge.
+    # The exact base/head lifecycle selector still owns each PR's merge method.
+    # Everything else guards the CODE; this guards the settings. Merge-readiness
     # enforcement lives in repository settings, so it can be switched off with
     # no diff, no review, and no red check anywhere - which is exactly how the
     # `strict: false` this issue reports went unnoticed. Repo-wide and
     # always-on, like license-consistency and surface: there is no diff to
     # path-scope against, because the regression this detects has no diff.
     #
-    # IT SKIPS WITHOUT A TOKEN, BY DESIGN AND OUT LOUD. Reading a branch's
-    # protection document requires Administration:read, and GITHUB_TOKEN has no
-    # permission key that grants it - so in ordinary CI this cannot see the
-    # document and says so rather than failing. A merge gate must never depend
-    # on a permission that cannot be granted. Set the optional
-    # BRANCH_PROTECTION_AUDIT_TOKEN repository secret to an admin-scoped token
-    # to turn the audit live; the script's skip note explains the same thing to
-    # whoever reads the log. Read-only either way: two queries, no mutations.
+    # PUBLIC SETTINGS STAY LIVE WITHOUT AN ADMIN SECRET. GITHUB_TOKEN reads
+    # repository merge capability; unreadable protection fields produce a loud
+    # partial SKIP, never a full OK. Administration:read is not a GITHUB_TOKEN
+    # permission, so the optional BRANCH_PROTECTION_AUDIT_TOKEN takes precedence
+    # when provisioned. No credential provisioning or settings mutation occurs
+    # here. Read-only either way: three queries, no mutations.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -2306,9 +2307,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Audit main's merge-readiness enforcement (read-only; skips without admin rights)
+      - name: Audit main's merge policy (read-only; partial without admin rights)
         env:
           GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_AUDIT_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/check_branch_protection.py --repo "$GITHUB_REPOSITORY" --branch main
       - name: Test the audit's own logic
         # The audit itself skips when it cannot see the setting, so its unit
