@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.3] - 2026-09-05
+
+### Fixed
+
+- Preserve ADR source commits through PR merges so lifecycle validation remains reproducible after branch deletion and a fresh clone.
+
 ## [2.17.2] - 2026-09-04
 
 ### Fixed

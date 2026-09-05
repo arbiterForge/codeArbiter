@@ -10,7 +10,7 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.17.2" src="https://img.shields.io/badge/version-2.17.2-2b7489">
+<img alt="version 2.17.3" src="https://img.shields.io/badge/version-2.17.3-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-19-555">
@@ -96,7 +96,9 @@ stability, command syntax, trust, and platform differences.
 | Codex CLI | `ca-codex` | `$ca-feature` | Stable |
 | Pi | `ca-pi` | `/ca-feature` | Feature Forge `preview` |
 
-**Prerequisites:** Python 3 on `PATH` and `git config user.email` set. Pi also requires Node.js
+**Prerequisites:** Python 3 on `PATH` and `git config user.email` set. ADR lifecycle proof requires
+Git 2.45.0+ with `--no-lazy-fetch` on all three governance hosts; unavailable flag support blocks
+verification with an upgrade prerequisite, never an implicit fetch fallback. Pi also requires Node.js
 22.19+. If Python is missing, Pi installs its final wrappers but blocks mutating calls and points to
 `/ca-doctor`; Claude Code and Codex surface an interpreter breadcrumb instead of silently claiming
 governance is active. The [compatibility matrix](https://arbiterforge.github.io/codeArbiter/getting-started/compatibility/)
@@ -115,7 +117,7 @@ Approve the normal plugin trust prompt, open the target repository, and continue
 
 ### Codex CLI
 
-The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.9.2`;
+The public GitHub-slug flow is **available now**. The repository currently ships `ca-codex 0.9.3`;
 the dated end-to-end public-install record discovered `ca-codex 0.2.4` from release `v2.8.13`.
 Current packaging and shared-core parity are continuously verified, while that dated live-install
 record stays labeled rather than being silently promoted to evidence for a newer adapter:

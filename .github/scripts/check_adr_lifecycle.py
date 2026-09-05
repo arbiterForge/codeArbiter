@@ -7,7 +7,6 @@ import hashlib
 import json
 import os
 import re
-import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,7 +14,8 @@ sys.path.insert(0, os.path.join(REPO, "core", "pysrc"))
 
 import adr_lifecycle as al
 import prepare_adr_acceptance as paa
-from _gitexec import root_bound_git_env
+import _adrlifecyclegit as lifecycle_git
+from _adrlifecyclegit import _git, _git_blob, _ledger_at, source_ancestry
 
 
 LEDGER_REL = ".codearbiter/decisions/adr-lifecycle.jsonl"
@@ -37,34 +37,6 @@ def select_base_ref(event_name, event):
     return value
 
 
-def _git(root, *args):
-    return subprocess.run(
-        ["git", "--no-replace-objects", "-C", root, *args],
-        capture_output=True, check=False,
-        env=root_bound_git_env(),
-    )
-
-
-def _git_blob(root, commit, path):
-    if not isinstance(commit, str):
-        return None
-    resolved = _git(root, "rev-parse", "--verify", "%s^{commit}" % commit)
-    if resolved.returncode != 0:
-        return None
-    result = _git(root, "show", "%s:%s" % (commit, path))
-    return result.stdout if result.returncode == 0 else None
-
-
-def _ledger_at(root, commit):
-    entry = _git(root, "ls-tree", "--name-only", commit, LEDGER_REL)
-    if entry.returncode != 0:
-        raise ValueError("could not inspect lifecycle ledger at %s" % commit)
-    if not entry.stdout.strip():
-        return None
-    blob = _git_blob(root, commit, LEDGER_REL)
-    if blob is None:
-        raise ValueError("could not read lifecycle ledger at %s" % commit)
-    return blob
 
 
 def _index_blob(root, path):
@@ -427,8 +399,23 @@ def main(argv=None):
     parser.add_argument("--current-ref")
     parser.add_argument("--github-event", action="store_true")
     parser.add_argument("--verified-json", action="store_true")
+    parser.add_argument("--merge-method", action="store_true",
+                        help="emit squash or merge for exact committed base/head evidence")
     parser.add_argument("--now")
     args = parser.parse_args(argv)
+    try:
+        return _check(args, parser)
+    except lifecycle_git.GitPrerequisiteError as exc:
+        if args.verified_json:
+            print("[]")
+        print("::error::" + str(exc), file=sys.stderr)
+        return 1
+
+
+def _check(args, parser):
+    if args.merge_method and (not args.base_ref or not args.current_ref or
+                              args.github_event or args.verified_json):
+        parser.error("--merge-method requires --base-ref and --current-ref only")
     event_error = None
     if args.github_event:
         event_path = os.environ.get("GITHUB_EVENT_PATH")
@@ -442,9 +429,28 @@ def main(argv=None):
             event_error = "could not select GitHub event base: %s" % exc
 
     ledger = os.path.join(args.root, *LEDGER_REL.split("/"))
-    events = al.read_jsonl(ledger)
     errors = [event_error] if event_error else []
-    blobs = al.read_adrs(args.root, errors=errors)
+    if args.current_ref is not None:
+        if not args.merge_method:
+            # Preserve the existing strict local-pending/export boundary too:
+            # dirty invalid evidence cannot be blessed by naming an older ref.
+            working_events = al.read_jsonl(ledger)
+            working_blobs = al.read_adrs(args.root, errors=errors)
+            errors.extend(al.validate_events(working_events, working_blobs))
+            working_errors, _pending = accepted_binding_errors(
+                args.root, working_events, working_blobs, allow_local_pending=False)
+            errors.extend(working_errors)
+        events, blobs = [], {}
+        # Explicit revision checks are derived from committed bytes, never a dirty
+        # working-tree ledger that can hide a new source binding.
+        try:
+            events, blobs, _committed = lifecycle_git.read_committed_evidence(
+                args.root, args.current_ref)
+        except (ValueError, UnicodeError) as exc:
+            errors.append("could not read committed current ref evidence: %s" % exc)
+    else:
+        events = al.read_jsonl(ledger)
+        blobs = al.read_adrs(args.root, errors=errors)
     errors.extend(al.validate_events(events, blobs))
     allow_pending = (args.base_ref is None and args.current_ref is None and
                      not args.github_event and not args.verified_json)
@@ -456,27 +462,16 @@ def main(argv=None):
             args.root, events, blobs, allow_local_pending=False)
     errors.extend(binding_errors)
 
-    source_blobs = {}
-    source_inputs = {}
-    for event in events:
-        if not isinstance(event, dict):
-            continue
-        kind = event.get("event")
-        if kind in ("acceptance", "baseline"):
-            commit = event.get("source_commit" if kind == "acceptance" else "observed_commit")
-            adr = event.get("adr")
-            if isinstance(commit, str) and isinstance(adr, str):
-                source_blobs[(commit, adr)] = _git_blob(
-                    args.root, commit, ".codearbiter/decisions/%s.md" % adr)
-        elif kind in ("implemented", "verified"):
-            commit = event.get("source_commit")
-            digests = event.get("input_digests")
-            if isinstance(digests, dict) and isinstance(commit, str):
-                for path in digests:
-                    if isinstance(path, str):
-                        source_inputs[(commit, path)] = _git_blob(args.root, commit, path)
-    errors.extend(al.validate_source_blobs(events, source_blobs))
-    errors.extend(al.validate_evidence_sources(events, source_inputs))
+    errors.extend(lifecycle_git.validate_committed_sources(args.root, events))
+    merge_method = None
+    if args.current_ref is not None:
+        if args.merge_method:
+            ancestry_errors, merge_method = lifecycle_git.merge_method(
+                args.root, args.base_ref, args.current_ref)
+        else:
+            ancestry_errors, merge_method = source_ancestry(
+                args.root, events, args.current_ref)
+        errors.extend(ancestry_errors)
 
     if args.base_ref:
         try:
@@ -524,7 +519,9 @@ def main(argv=None):
         for error in errors:
             print("::error::" + error, file=sys.stderr)
         return 1
-    if args.verified_json:
+    if args.merge_method:
+        print(merge_method)
+    elif args.verified_json:
         print(json.dumps(exported, sort_keys=True, separators=(",", ":")))
         for diagnostic in diagnostics:
             print("::warning::" + diagnostic, file=sys.stderr)

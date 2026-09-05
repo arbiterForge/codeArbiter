@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-09-05
+
+### Fixed
+
+- Select a history-preserving PR merge when ADR lifecycle evidence binds source commits outside the base branch.
+
 ## [0.9.2] - 2026-09-04
 
 ### Changed

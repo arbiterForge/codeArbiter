@@ -32,8 +32,13 @@ this file is the stale one; fix it here.
   linked worktrees must be created and used by that runtime's Git.
 - CI exercises the current runner Python 3 and Git on Windows, Ubuntu, and macOS.
   Direct Windows hook evidence also covers CPython 3.10, 3.12, and 3.14, plus
-  primary and linked worktrees with Git for Windows 2.55.0. No broader numeric
-  Python-minor or Git-version floor is declared from that evidence.
+  primary and linked worktrees with Git for Windows 2.55.0. This is measured host
+  evidence, not a claim that every Python minor or Git build has been tested.
+- ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch` on all three
+  governance hosts and in this repository's lifecycle checker. Every proof read
+  retains that flag; failed reads probe the same executable's flag capability
+  without reading a repository. Unsupported capability produces an actionable
+  upgrade prerequisite, never an unprotected retry or implicit object fetch.
 - The selected Git binary owns `core.hooksPath` parsing through
   `rev-parse --git-path hooks`; codeArbiter does not reinterpret Git path grammar.
   It must also provide `git hook run` for doctor's harmless managed `pre-push`

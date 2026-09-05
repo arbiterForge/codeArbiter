@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.4] - 2026-09-05
+
+### Fixed
+
+- Select a history-preserving PR merge when ADR lifecycle evidence binds source commits outside the base branch.
+
 ## [0.10.3] - 2026-09-04
 
 ### Changed

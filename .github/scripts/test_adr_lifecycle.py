@@ -8,10 +8,13 @@ import io
 import json
 import os
 import re
+import runpy
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from contextlib import redirect_stderr, redirect_stdout
 from unittest import mock
 
@@ -130,6 +133,249 @@ class LifecycleContractTest(unittest.TestCase):
             "obligations_sealed": True,
         }
 
+    def test_merge_instruction_is_portable_to_consumer_installs(self):
+        # PORT-1: the actual sanctioned instruction, not a synthetic safe example.
+        import check_skill_portability as portability
+        root = os.path.dirname(os.path.dirname(HERE))
+        path = os.path.join(root, "core", "surface", "skills",
+                            "finishing-a-development-branch", "SKILL.md")
+        self.assertEqual(portability.scan_file(path), [],
+                         "consumer merge preflight executes a repository-only path")
+        with open(path, encoding="utf-8") as handle:
+            self.assertIn('{{PLUGIN_ROOT}}/hooks/adr-merge-method.py', handle.read())
+
+    def test_lifecycle_git_prerequisite_is_actionable_at_both_entry_points(self):
+        # GIT-1/2: simulate an older Git rejecting the global safety flag, not a bad ref.
+        import _adrlifecyclegit as lifecycle_git
+        repo = os.path.dirname(os.path.dirname(HERE))
+        shipped_main = runpy.run_path(os.path.join(
+            repo, "plugins", "ca", "hooks", "adr-merge-method.py"))["main"]
+        with tempfile.TemporaryDirectory() as root:
+            acceptance, _implementation, _verification = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "bind acceptance")
+            head = self._git(root, "rev-parse", "HEAD")
+
+            def old_git(argv, **kwargs):
+                return subprocess.CompletedProcess(argv, 129, b"", b"unknown option: --no-lazy-fetch")
+
+            for entry, extra in ((shipped_main, ["--merge-method"]),
+                                 (cal.main, ["--merge-method"]),
+                                 (cal.main, ["--verified-json", "--now", "2026-09-02T13:00:00Z"])):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with self.subTest(entry=entry.__module__, mode=extra[0]):
+                    with mock.patch.object(lifecycle_git.subprocess, "run", side_effect=old_git) as calls:
+                        with redirect_stdout(stdout), redirect_stderr(stderr):
+                            result = entry(["--root", root, "--base-ref", acceptance["source_commit"],
+                                            "--current-ref", head, *extra])
+                    self.assertEqual(result, 1)
+                    self.assertIn("requires Git 2.45.0+ with --no-lazy-fetch", stderr.getvalue())
+                    self.assertNotIn("ref is not a resolvable commit", stderr.getvalue())
+                    self.assertNotIn("Traceback", stderr.getvalue())
+                    self.assertEqual(stdout.getvalue(), "[]\n" if extra[0] == "--verified-json" else "")
+                    self.assertTrue(all("--no-lazy-fetch" in call.args[0]
+                                        for call in calls.call_args_list))
+
+            def supported_git_bad_ref(argv, **kwargs):
+                if argv[-1] == "--version":
+                    return subprocess.CompletedProcess(argv, 0, b"git version 2.45.0.vendor\n", b"")
+                return subprocess.CompletedProcess(argv, 128, b"", b"not a valid object name")
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with mock.patch.object(lifecycle_git, "git_executable", return_value="selected-git"):
+                with mock.patch.object(lifecycle_git.subprocess, "run",
+                                       side_effect=supported_git_bad_ref) as calls:
+                    with redirect_stdout(stdout), redirect_stderr(stderr):
+                        result = shipped_main(["--root", root, "--base-ref", "missing-ref",
+                                               "--current-ref", head, "--merge-method"])
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout.getvalue(), "")
+            self.assertIn("base ref is not a resolvable commit", stderr.getvalue())
+            self.assertNotIn("requires Git", stderr.getvalue())
+            self.assertEqual([call.args[0] for call in calls.call_args_list], [
+                ["selected-git", "--no-replace-objects", "--no-lazy-fetch", "-C", root,
+                 "rev-parse", "--verify", "--end-of-options", "missing-ref^{commit}"],
+                ["selected-git", "--no-lazy-fetch", "--version"],
+            ])
+
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with mock.patch.object(lifecycle_git.subprocess, "run", side_effect=OSError("unavailable")):
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    result = cal.main(["--root", root, "--base-ref", head,
+                                       "--current-ref", head, "--merge-method"])
+            self.assertEqual(result, 1)
+            self.assertEqual(stdout.getvalue(), "")
+            self.assertIn("requires Git 2.45.0+ with --no-lazy-fetch", stderr.getvalue())
+
+    def test_public_and_shipped_docs_declare_lifecycle_git_prerequisite(self):
+        # GIT-3: public install guidance and every generated host route agree.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        paths = ["README.md", ".codearbiter/tech-stack.md",
+                 "site/src/content/docs/getting-started/compatibility.md",
+                 "core/surface/skills/finishing-a-development-branch/SKILL.md",
+                 "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
+                 "plugins/ca-codex/routines/finishing-a-development-branch/SKILL.md",
+                 "plugins/ca-pi/routines/finishing-a-development-branch/SKILL.md"]
+        for path in paths:
+            with self.subTest(path=path), open(os.path.join(repo, path), encoding="utf-8") as handle:
+                text = handle.read()
+                self.assertIn("Git 2.45.0+", text)
+                self.assertIn("--no-lazy-fetch", text)
+
+    def test_installed_merge_verifier_preserves_committed_consumer_proof(self):
+        # PORT-2/3/4: invoke only generated host artifacts, outside the source repo.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        for host in ("ca", "ca-codex", "ca-pi"):
+            with self.subTest(host=host), tempfile.TemporaryDirectory() as tmp:
+                installed = os.path.join(tmp, "installed plugin", "hooks")
+                shutil.copytree(os.path.join(repo, "plugins", host, "hooks"), installed,
+                                ignore=shutil.ignore_patterns("__pycache__", "tests"))
+                verifier = os.path.join(installed, "adr-merge-method.py")
+                self.assertTrue(os.path.isfile(verifier),
+                                "generated %s install has no portable merge verifier" % host)
+                root = os.path.join(tmp, "consumer repo")
+                os.mkdir(root)
+                acceptance, implementation, verification = self._committed_evidence_repo(root)
+                source = acceptance["source_commit"]
+                events = [acceptance, implementation, verification]
+                self._write_ledger(root, events)
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "bind lifecycle")
+                head = self._git(root, "rev-parse", "HEAD")
+
+                def run(base, current, expected=None, diagnostic=None):
+                    env = dict(os.environ, PYTHONPATH="", GIT_DIR=installed,
+                               GIT_WORK_TREE=installed, GIT_OBJECT_DIRECTORY=installed)
+                    result = subprocess.run(
+                        [sys.executable, "-E", verifier, "--root", root,
+                         "--base-ref", base, "--current-ref", current, "--merge-method"],
+                        cwd=tmp, env=env, capture_output=True, text=True, check=False)
+                    if expected is not None:
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        self.assertEqual(result.stdout, expected + "\n")
+                    else:
+                        self.assertNotEqual(result.returncode, 0, result.stdout)
+                        self.assertEqual(result.stdout, "")
+                        self.assertIn(diagnostic, result.stderr)
+
+                self.assertFalse(os.path.exists(os.path.join(root, ".github")))
+                self.assertFalse(os.path.exists(os.path.join(tmp, "core")))
+                run(source, head, expected="squash")
+                self._git(root, "checkout", "--orphan", "unrelated-base")
+                self._git(root, "commit", "--allow-empty", "-m", "unrelated base")
+                base = self._git(root, "rev-parse", "HEAD")
+                run(base, head, expected="merge")
+                for bad in ("", "missing-ref", "0" * 40, "--all"):
+                    run(base, bad, diagnostic="ref")
+                self._git(root, "checkout", "-b", "mutations", head)
+                adr = os.path.join(root, ".codearbiter", "decisions", "0001-test.md")
+                with open(adr, "wb") as handle:
+                    handle.write(ADR.replace(b"\nD\n", b"\nchanged\n"))
+                self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+                self._git(root, "commit", "-m", "tamper canonical ADR")
+                tampered = self._git(root, "rev-parse", "HEAD")
+                with open(adr, "wb") as handle:
+                    handle.write(ADR)  # dirty good bytes cannot hide committed tampering
+                run(source, tampered, diagnostic="immutable-body digest")
+                self._git(root, "add", ".codearbiter/decisions/0001-test.md")
+                self._git(root, "commit", "-m", "restore ADR")
+                for field, value, diagnostic in (
+                        ("blob_sha256", "0" * 64, "source-commit blob digest"),
+                        ("source_commit", "f" * 40, "source-commit ADR blob is unavailable"),
+                        ("source_commit", base, "not an ancestor")):
+                    self._write_ledger(root, [dict(acceptance, **{field: value})])
+                    self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                    self._git(root, "commit", "-m", "invalid source binding")
+                    run(source, self._git(root, "rev-parse", "HEAD"), diagnostic=diagnostic)
+                self._write_ledger(root, [acceptance, dict(implementation,
+                                                         input_digests={"missing.py": "0" * 64})])
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "wrong evidence path")
+                run(source, self._git(root, "rev-parse", "HEAD"), diagnostic="Git input missing.py")
+                self._write_ledger(root, [])
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "remove acceptance")
+                run(head, self._git(root, "rev-parse", "HEAD"), diagnostic="rewrites or truncates")
+                run(source, self._git(root, "rev-parse", "HEAD"),
+                    diagnostic="accepted ADR has no lifecycle binding")
+                with open(os.path.join(root, ".codearbiter", "decisions",
+                                       "adr-lifecycle.jsonl"), "wb") as handle:
+                    handle.write(b"{not-json}\n")
+                self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+                self._git(root, "commit", "-m", "malformed lifecycle ledger")
+                run(source, self._git(root, "rev-parse", "HEAD"),
+                    diagnostic="could not validate committed lifecycle evidence")
+
+    def test_installed_merge_verifier_does_not_admit_new_baselines(self):
+        # PORT-5: a consumer's existing baseline is not a migration authorization.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        with tempfile.TemporaryDirectory() as tmp:
+            installed = os.path.join(tmp, "installed", "hooks")
+            shutil.copytree(os.path.join(repo, "plugins", "ca", "hooks"), installed,
+                            ignore=shutil.ignore_patterns("__pycache__", "tests"))
+            verifier = os.path.join(installed, "adr-merge-method.py")
+            self.assertTrue(os.path.isfile(verifier), "install has no portable merge verifier")
+            root = os.path.join(tmp, "consumer")
+            os.mkdir(root)
+            acceptance, _implementation, _verification = self._committed_evidence_repo(root)
+            source = acceptance.pop("source_commit")
+            baseline = dict(acceptance, event="baseline", observed_commit=source,
+                            obligations_sealed=False)
+            self._write_ledger(root, [baseline])
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "introduce baseline")
+            head = self._git(root, "rev-parse", "HEAD")
+            for base, succeeds in ((source, False), (head, True)):
+                result = subprocess.run(
+                    [sys.executable, "-E", verifier, "--root", root, "--base-ref", base,
+                     "--current-ref", head, "--merge-method"], cwd=tmp,
+                    capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0 if succeeds else 1, result.stderr)
+                self.assertEqual(result.stdout, "squash\n" if succeeds else "")
+                if not succeeds:
+                    self.assertIn("new legacy baseline", result.stderr)
+
+    def test_installed_merge_verifier_does_not_lazy_fetch_promised_blobs(self):
+        # PORT-6: a locally available promisor must not become an implicit fetch fallback.
+        repo = os.path.dirname(os.path.dirname(HERE))
+        with tempfile.TemporaryDirectory() as tmp:
+            installed = os.path.join(tmp, "installed", "hooks")
+            shutil.copytree(os.path.join(repo, "plugins", "ca", "hooks"), installed,
+                            ignore=shutil.ignore_patterns("__pycache__", "tests"))
+            origin = os.path.join(tmp, "origin")
+            os.mkdir(origin)
+            acceptance, _implementation, _verification = self._committed_evidence_repo(origin)
+            source = acceptance["source_commit"]
+            self._write_ledger(origin, [acceptance])
+            self._git(origin, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(origin, "commit", "-m", "bind acceptance")
+            head = self._git(origin, "rev-parse", "HEAD")
+            self._git(origin, "config", "uploadpack.allowFilter", "true")
+            consumer = os.path.join(tmp, "consumer")
+            self._git(tmp, "clone", "--filter=blob:none", "--no-checkout",
+                      Path(origin).as_uri(), consumer)
+            ledger_object = self._git(origin, "rev-parse", head + ":" + cal.LEDGER_REL)
+
+            def assert_missing():
+                probe = subprocess.run(
+                    ["git", "--no-lazy-fetch", "-C", consumer, "cat-file", "-e", ledger_object],
+                    capture_output=True, check=False)
+                self.assertNotEqual(probe.returncode, 0,
+                                    "promised ledger blob unexpectedly exists in the consumer")
+
+            assert_missing()
+            result = subprocess.run(
+                [sys.executable, "-E", os.path.join(installed, "adr-merge-method.py"),
+                 "--root", consumer, "--base-ref", source, "--current-ref", head,
+                 "--merge-method"], cwd=tmp, env=dict(os.environ, GIT_NO_LAZY_FETCH="0"),
+                capture_output=True, text=True, check=False)
+            self.assertNotEqual(result.returncode, 0,
+                                "merge proof silently fetched missing blobs from the promisor")
+            self.assertEqual(result.stdout, "")
+            self.assertIn("could not read lifecycle ledger", result.stderr)
+            assert_missing()
+
     def _git(self, root, *args):
         result = subprocess.run(
             ["git", "-C", root, *args], capture_output=True, check=False,
@@ -189,6 +435,155 @@ class LifecycleContractTest(unittest.TestCase):
             with redirect_stdout(stdout), redirect_stderr(stderr):
                 result = cal.main(["--root", root, *args])
         return result, stdout.getvalue(), stderr.getvalue()
+
+    def test_squash_orphans_source_even_when_local_objects_mask_the_loss(self):
+        # REACH-1: explicit revision checks reject orphaned sources before cleanup.
+        with tempfile.TemporaryDirectory() as container:
+            origin = os.path.join(container, "origin")
+            clone = os.path.join(container, "clone")
+            os.makedirs(origin)
+            self._git(origin, "init", "-b", "main")
+            with open(os.path.join(origin, "seed"), "w") as handle:
+                handle.write("base")
+            self._git(origin, "add", "seed")
+            self._git(origin, "commit", "-m", "base")
+            base = self._git(origin, "rev-parse", "HEAD")
+            self._git(origin, "checkout", "-b", "acceptance")
+            adr_rel = ".codearbiter/decisions/0001-test.md"
+            os.makedirs(os.path.join(origin, ".codearbiter", "decisions"))
+            with open(os.path.join(origin, *adr_rel.split("/")), "wb") as handle:
+                handle.write(ADR)
+            self._git(origin, "add", adr_rel)
+            self._git(origin, "commit", "-m", "accept ADR")
+            source = self._git(origin, "rev-parse", "HEAD")
+            acceptance = dict(self._acceptance(), source_commit=source)
+            self._write_ledger(origin, [acceptance])
+            self._git(origin, "add", ".")
+            self._git(origin, "commit", "-m", "bind source")
+            branch_head = self._git(origin, "rev-parse", "HEAD")
+            self._git(origin, "checkout", "main")
+            self._git(origin, "merge", "--squash", "acceptance")
+            self._git(origin, "commit", "-m", "squash acceptance")
+            # Exact source bytes still exist locally; content validity alone masks
+            # the fact a standard clone cannot fetch this source from main.
+            self.assertEqual(cal._git_blob(origin, source, adr_rel), ADR)
+            result, _stdout, stderr = self._run_checker(
+                origin, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("source commit is not an ancestor of current ref", stderr)
+            self._write_ledger(origin, [])
+            os.unlink(os.path.join(origin, *adr_rel.split("/")))
+            result, _stdout, stderr = self._run_checker(
+                origin, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("source commit is not an ancestor of current ref", stderr)
+            self._write_ledger(origin, [acceptance])
+            with open(os.path.join(origin, *adr_rel.split("/")), "wb") as handle:
+                handle.write(ADR)
+            orphan_clone = os.path.join(container, "orphan-clone")
+            self._git(container, "clone", "--no-local", "--single-branch",
+                      "--branch", "main", origin, orphan_clone)
+            self._git(orphan_clone, "remote", "remove", "origin")
+            self.assertIsNone(cal._git_blob(orphan_clone, source, adr_rel))
+            result, _stdout, stderr = self._run_checker(
+                orphan_clone, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("source-commit ADR blob is unavailable", stderr)
+            # Restore ancestry without changing the accepted record or ledger.
+            ledger_before = cal._git_blob(origin, "HEAD", cal.LEDGER_REL)
+            self._git(origin, "merge", "--no-ff", branch_head, "-m", "retain source ancestry")
+            self.assertEqual(cal._git_blob(origin, "HEAD", cal.LEDGER_REL), ledger_before)
+            # REACH-2: the merge offer must preserve new source identities.
+            result, stdout, stderr = self._run_checker(
+                origin, "--base-ref", base, "--current-ref", "HEAD", "--merge-method")
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(stdout.strip(), "merge")
+            self._git(origin, "branch", "-D", "acceptance")
+            self._git(container, "clone", "--no-local", "--single-branch",
+                      "--branch", "main", origin, clone)
+            self._git(clone, "remote", "remove", "origin")
+            self.assertEqual(cal._git_blob(clone, source, adr_rel), ADR)
+            result, _stdout, stderr = self._run_checker(
+                clone, "--base-ref", base, "--current-ref", "HEAD")
+            self.assertEqual(result, 0, stderr)
+            # REACH-3: ordinary later changes can retain the project convention.
+            result, stdout, stderr = self._run_checker(
+                clone, "--base-ref", "HEAD", "--current-ref", "HEAD", "--merge-method")
+            self.assertEqual(result, 0, stderr)
+            self.assertEqual(stdout.strip(), "squash")
+
+    def test_merge_method_fails_closed_on_bad_refs_sources_and_cli_modes(self):
+        with tempfile.TemporaryDirectory() as root:
+            acceptance, implemented, verified = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance, implemented, verified])
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-m", "bind evidence")
+            result, _stdout, stderr = self._run_checker(root, "--current-ref", "")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("current ref", stderr)
+            for base, current in (("missing", "HEAD"), ("HEAD", "missing"),
+                                  ("0" * 40, "HEAD"), ("HEAD", "--help")):
+                with self.subTest(base=base, current=current):
+                    errors, method = cal.source_ancestry(root, [acceptance], current, base)
+                    self.assertTrue(errors)
+                    self.assertIsNone(method)
+            for kind, field in (("acceptance", "source_commit"),
+                                ("implemented", "source_commit"),
+                                ("verified", "source_commit"),
+                                ("baseline", "observed_commit")):
+                for source in (None, "--help", "f" * 40):
+                    with self.subTest(kind=kind, source=source):
+                        errors, method = cal.source_ancestry(
+                            root, [{"event": kind, field: source}], "HEAD", "HEAD")
+                        self.assertTrue(errors)
+                        self.assertIsNone(method)
+            for arguments in (("--merge-method",),
+                              ("--merge-method", "--base-ref", "HEAD"),
+                              ("--merge-method", "--base-ref", "HEAD", "--current-ref",
+                               "HEAD", "--verified-json")):
+                with self.subTest(arguments=arguments), self.assertRaises(SystemExit) as raised:
+                    self._run_checker(root, *arguments)
+                self.assertEqual(raised.exception.code, 2)
+
+    def test_sanctioned_pr_paths_require_source_preserving_merge_preflight(self):
+        root = os.path.dirname(os.path.dirname(HERE))
+        for relative in (
+                "core/surface/includes/safety-core.md",
+                "core/surface/skills/finishing-a-development-branch/SKILL.md",
+                "core/surface/skills/decision-lifecycle/SKILL.md"):
+            with self.subTest(path=relative):
+                with open(os.path.join(root, *relative.split("/")), encoding="utf-8") as handle:
+                    text = handle.read()
+                self.assertIn("ADR source ancestry", text)
+                self.assertIn("--merge-method", text)
+                self.assertIn("--match-head-commit", text)
+        # Compatibility wrappers keep their frozen bodies and existing routes;
+        # the routine and resident merge gate own the ancestry requirement.
+        with open(os.path.join(root, "core", "surface", "commands", "pr.md"),
+                  encoding="utf-8") as handle:
+            self.assertIn("finishing-a-development-branch", handle.read())
+        with open(os.path.join(root, "core", "surface", "commands", "watch.md"),
+                  encoding="utf-8") as handle:
+            self.assertIn("the merge routes through the merge-to-default hard gate",
+                          " ".join(handle.read().split()))
+
+    def test_committed_reader_cannot_shadow_canonical_adr_with_nested_copy(self):
+        with tempfile.TemporaryDirectory() as root:
+            acceptance, _implemented, _verified = self._committed_evidence_repo(root)
+            self._write_ledger(root, [acceptance])
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            with open(os.path.join(decisions, "0001-test.md"), "wb") as handle:
+                handle.write(ADR.replace(b"## Decision\nD", b"## Decision\nTampered"))
+            os.makedirs(os.path.join(decisions, "z"))
+            with open(os.path.join(decisions, "z", "0001-test.md"), "wb") as handle:
+                handle.write(ADR)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-m", "nested file must not replace canonical ADR")
+            with open(os.path.join(decisions, "0001-test.md"), "wb") as handle:
+                handle.write(ADR)
+            result, _stdout, stderr = self._run_checker(root, "--current-ref", "HEAD")
+            self.assertEqual(result, 1, stderr)
+            self.assertIn("immutable-body digest", stderr)
 
     def test_body_digest_excludes_mutable_status_but_binds_decision_body(self):
         changed_status = ADR.replace(b"status: accepted", b"status: superseded").replace(
