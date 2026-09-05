@@ -420,6 +420,33 @@ class SourcePreservingMergePolicyTest(unittest.TestCase):
                 self.assertNotIn("OK:", buffer.getvalue())
                 self.assertNotIn("private-response-sentinel", buffer.getvalue())
 
+    def test_malformed_required_status_check_evidence_is_partial_not_ok(self):
+        # BP-7: nested freshness evidence has the same exact-schema boundary as
+        # the Option A settings. Truthy strings and malformed collections must
+        # never be coerced into current-base or required-context proof.
+        malformed = [
+            {"strict": value, "contexts": [module.MERGE_READINESS_CONTEXT]}
+            for value in (None, 0, 1, "true", "false", [], {})
+        ]
+        malformed.extend((False, 1, "bad", [], {}))
+        malformed.extend((
+            {"strict": True, "contexts": module.MERGE_READINESS_CONTEXT},
+            {"strict": True, "contexts": [module.MERGE_READINESS_CONTEXT, 1]},
+            {"strict": True, "checks": "bad"},
+            {"strict": True, "checks": [{"context": module.MERGE_READINESS_CONTEXT},
+                                          {"context": 1}]},
+        ))
+        for checks in malformed:
+            with self.subTest(checks=checks):
+                protection = dict(FRESHNESS_PROTECTION, required_status_checks=checks)
+                try:
+                    code, output, _calls = self.run_audit(protection=protection)
+                except (AttributeError, TypeError) as error:
+                    self.fail(f"malformed required-status-check evidence crashed: {error}")
+                self.assertEqual(code, 0, output)
+                self.assertIn("SKIP (partial)", output)
+                self.assertNotIn("OK:", output)
+
 
 class WorkflowWiringTest(unittest.TestCase):
     def test_ordinary_ci_audits_public_merge_capability_without_an_admin_secret(self):

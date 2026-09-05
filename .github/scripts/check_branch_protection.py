@@ -159,25 +159,47 @@ def _boolean_field(document: object, name: str) -> bool | None:
     return value if type(value) is bool else None
 
 
+def _status_check_fields(document: dict) -> tuple[bool | None, tuple[str, ...] | None]:
+    """Read exact freshness evidence without treating malformed JSON as policy."""
+    if "required_status_checks" not in document or document["required_status_checks"] is None:
+        return False, ()
+    checks = document["required_status_checks"]
+    if not isinstance(checks, dict) or not checks:
+        return None, None
+
+    strict = _boolean_field(checks, "strict")
+    contexts = checks.get("contexts")
+    if contexts is not None:
+        if not isinstance(contexts, list) or any(type(value) is not str for value in contexts):
+            return strict, None
+        return strict, tuple(contexts)
+
+    # `contexts` is deprecated in favour of `checks`; a response carrying only
+    # the newer array must not read as "the context was dropped".
+    entries = checks.get("checks")
+    if not isinstance(entries, list):
+        return strict, None
+    parsed: list[str] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return strict, None
+        context = entry.get("context")
+        if type(context) is not str or not context:
+            return strict, None
+        parsed.append(context)
+    return strict, tuple(parsed)
+
+
 def enforcement_from_protection(
     document: dict, merge_queue: bool | None = None, allow_merge_commit: bool | None = None
 ) -> Enforcement:
     """Read a branch-protection response into an `Enforcement`."""
-    checks = document.get("required_status_checks") or {}
-    contexts = checks.get("contexts")
-    if contexts is None:
-        # `contexts` is deprecated in favour of `checks`; a response carrying
-        # only the newer array must not read as "the context was dropped".
-        contexts = [
-            entry.get("context")
-            for entry in (checks.get("checks") or [])
-            if isinstance(entry, dict) and entry.get("context")
-        ]
+    strict, contexts = _status_check_fields(document)
     return Enforcement(
         protected=True,
-        strict=bool(checks.get("strict", False)),
+        strict=strict,
         merge_queue=merge_queue,
-        contexts=tuple(contexts),
+        contexts=contexts,
         required_linear_history=_boolean_field(document.get("required_linear_history"), "enabled"),
         allow_merge_commit=allow_merge_commit,
     )
