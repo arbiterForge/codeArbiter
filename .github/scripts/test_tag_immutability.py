@@ -315,6 +315,60 @@ class LegacyEpochContract(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     module.load_legacy_manifest(changed)
 
+    @staticmethod
+    def _canonical_digest(document):
+        canonical = [
+            {key: row[key] for key in (
+                "tag", "evidence_grade", "source_id", "object_sha", "object_type", "commit_sha"
+            )}
+            for row in document["records"]
+        ]
+        payload = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode()
+        return hashlib.sha256(payload).hexdigest()
+
+    def test_schema_valid_closed_set_mutations_reach_the_pinned_digest(self):
+        mutations = {}
+
+        changed = json.loads(json.dumps(self.document))
+        annotated = next(row for row in changed["records"] if row["object_type"] == "tag")
+        annotated["object_sha"] = "f" * 40 if annotated["object_sha"] != "f" * 40 else "e" * 40
+        mutations["valid nonzero object identity"] = changed
+
+        changed = json.loads(json.dumps(self.document))
+        changed["records"][0]["source_id"] = "9999999999999999999"
+        mutations["valid nonzero source replacement"] = changed
+
+        changed = json.loads(json.dumps(self.document))
+        first = next(index for index, row in enumerate(changed["records"])
+                     if row["evidence_grade"] == "publisher-log-corroborated")
+        second = next(index for index, row in enumerate(changed["records"])
+                      if row["evidence_grade"] == "associated-run-metadata-only")
+        changed["records"][first]["evidence_grade"], changed["records"][second]["evidence_grade"] = (
+            changed["records"][second]["evidence_grade"],
+            changed["records"][first]["evidence_grade"],
+        )
+        mutations["grade swap preserving counts"] = changed
+
+        changed = json.loads(json.dumps(self.document))
+        changed["records"][0]["tag"] = "ca-codex-v99.99.99"
+        changed["records"].sort(key=lambda row: row["tag"])
+        mutations["sorted 44-row tag replacement"] = changed
+
+        for label, mutation in mutations.items():
+            with self.subTest(label=label):
+                self.assertEqual(44, len(mutation["records"]))
+                self.assertNotEqual(module.LEGACY_SET_SHA256, self._canonical_digest(mutation))
+                with self.assertRaisesRegex(ValueError, "approved identity set changed"):
+                    module.load_legacy_manifest(mutation)
+
+    def test_attacker_recomputed_document_digest_cannot_replace_the_accepted_digest(self):
+        changed = json.loads(json.dumps(self.document))
+        changed["records"][0]["source_id"] = "9999999999999999999"
+        changed["canonical_set_sha256"] = self._canonical_digest(changed)
+        self.assertNotEqual(module.LEGACY_SET_SHA256, changed["canonical_set_sha256"])
+        with self.assertRaisesRegex(ValueError, "does not match accepted ADR-0034 metadata"):
+            module.load_legacy_manifest(changed)
+
     def test_original_and_legacy_ledgers_must_be_strict_and_disjoint(self):
         original = module.load_original_manifest(json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8")))
         module.validate_disjoint(original, self.records)
@@ -371,6 +425,57 @@ class LegacyEpochContract(unittest.TestCase):
                                recorded=RECORDED, legacy=legacy, rest=lambda path: (200, page))
         self.assertEqual(1, code)
         self.assertIn("original-publication receipt", future.getvalue())
+
+    def _run_full_ledger_main(self, page, *, strict):
+        arguments = [
+            "--repo", "owner/name",
+            "--manifest", str(module.MANIFEST_PATH),
+            "--legacy-manifest", str(module.LEGACY_MANIFEST_PATH),
+        ]
+        if strict:
+            arguments.append("--require-recorded")
+        with redirect_stdout(io.StringIO()) as output:
+            code = module.main(arguments, token="t", rest=lambda path: (200, page))
+        return code, output.getvalue()
+
+    def _complete_inventory(self):
+        original = module.load_original_manifest(
+            json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
+        )
+        return [
+            {"ref": f"refs/tags/{tag}", "object": {
+                "sha": entry.object_sha, "type": entry.object_type,
+            }}
+            for tag, entry in {**original, **self.records}.items()
+        ]
+
+    def test_main_rejects_moved_and_deleted_legacy_refs_in_ordinary_and_strict_modes(self):
+        name, baseline = next(iter(self.records.items()))
+        complete = self._complete_inventory()
+        deleted = [row for row in complete if row["ref"] != f"refs/tags/{name}"]
+        moved = json.loads(json.dumps(complete))
+        moved_row = next(row for row in moved if row["ref"] == f"refs/tags/{name}")
+        moved_row["object"]["sha"] = "f" * 40 if baseline.object_sha != "f" * 40 else "e" * 40
+
+        for strict in (False, True):
+            for condition, page in (("moved", moved), ("deleted", deleted)):
+                with self.subTest(strict=strict, condition=condition):
+                    code, output = self._run_full_ledger_main(page, strict=strict)
+                    self.assertEqual(1, code, output)
+                    self.assertIn(f"legacy baseline {name} ({baseline.evidence_grade})", output)
+                    self.assertIn(f"after its {baseline.observed_at} observation", output)
+                    self.assertIn("not original-publication evidence", output)
+                    self.assertNotIn("was published as", output)
+                    self.assertNotIn("was published at commit", output)
+
+    def test_main_clean_union_summary_keeps_evidence_class_labels_and_counts(self):
+        complete = self._complete_inventory()
+        expected = "OK: 120 original-publication receipts and 44 legacy baselines"
+        for strict in (False, True):
+            with self.subTest(strict=strict):
+                code, output = self._run_full_ledger_main(complete, strict=strict)
+                self.assertEqual(0, code, output)
+                self.assertIn(expected, output)
 
     def test_receipt_writers_have_no_legacy_ledger_mutation_surface(self):
         for path in (PUBLISH_ACTION, RECONCILE_TOOL):
