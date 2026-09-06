@@ -10,10 +10,13 @@ current interpreter, cwd'd into a throwaway repo, and read the marker it writes.
 Stdlib only.
 """
 import os
+import importlib.util
+import stat
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
@@ -66,6 +69,43 @@ class _Fixture(unittest.TestCase):
 
 
 class TestSecurityPassBranches(_Fixture):
+    def test_untracked_symlink_refuses_without_replacing_approval(self):
+        # CR758-03: reject the link itself; its target is not repository prose.
+        self._ca()
+        self._write("regular.js", CRYPTO_LINE)
+        self.assertEqual(self.run_pass().returncode, 0)
+        prior = self.marker()
+        target = os.path.join(self._tmp.name, "outside.txt")
+        with open(target, "w", encoding="utf-8") as stream:
+            stream.write("finite ordinary target\n")
+        link = os.path.join(self.root, "untracked-link")
+        for destination in (target, os.path.abspath(os.devnull)):
+            with self.subTest(destination=destination):
+                os.symlink(destination, link)
+                try:
+                    self.assertTrue(stat.S_ISLNK(os.lstat(link).st_mode))
+                    result = self.run_pass()
+                    self.assertEqual(result.returncode, 1, result.stderr)
+                    self.assertEqual(self.marker(), prior)
+                finally:
+                    os.unlink(link)
+
+    def test_nonregular_file_scan_refuses_before_open(self):
+        # All unsupported kinds are refused before the read can block or grow.
+        sys.path.insert(0, HOOKS)
+        self.addCleanup(sys.path.remove, HOOKS)
+        spec = importlib.util.spec_from_file_location("review_security_pass", SECURITY_PASS)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for kind in (stat.S_IFLNK, stat.S_IFCHR, stat.S_IFBLK, stat.S_IFIFO, stat.S_IFSOCK):
+            with self.subTest(kind=kind):
+                metadata = os.stat_result((kind | 0o600, 0, 0, 1, 0, 0, 0, 0, 0, 0))
+                with mock.patch.object(module.os, "lstat", return_value=metadata), \
+                        mock.patch.object(module.os.path, "getsize", return_value=0), \
+                        mock.patch("builtins.open", mock.mock_open(read_data="ordinary\n")) as opened:
+                    self.assertIsNone(module.file_scan(self.root, "candidate"))
+                    opened.assert_not_called()
+
     def test_no_codearbiter_exits_1(self):
         # No .codearbiter/ dir -> refuse, exit 1, record nothing.
         res = self.run_pass()

@@ -17,6 +17,7 @@
 #   "$PY" "<plugin>/hooks/security-pass.py"
 
 import os
+import stat
 import subprocess
 
 from _gitexec import git_executable
@@ -44,7 +45,10 @@ def run_git(args, cwd):
 def file_scan(root, rel):
     p = os.path.join(root, rel)
     try:
-        if os.path.getsize(p) > MAX_UNTRACKED_BYTES:
+        metadata = os.lstat(p)
+        if not stat.S_ISREG(metadata.st_mode):
+            return None
+        if metadata.st_size > MAX_UNTRACKED_BYTES:
             return SecurityScan(False, set())
         with open(p, encoding="utf-8", errors="replace") as f:
             source = f.read()

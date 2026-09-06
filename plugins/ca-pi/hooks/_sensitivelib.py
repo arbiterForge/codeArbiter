@@ -30,6 +30,7 @@ import io
 import json
 import re
 import tokenize
+from bisect import bisect_right
 from collections import namedtuple
 
 from _pathnorm import norm_path
@@ -279,7 +280,7 @@ def sensitive_scan_added_lines(diff_text):
 # bindings use a separate marker namespace; a user-authored source string or
 # an old line-only approval cannot impersonate one of these records.
 # SecurityScan(crypto, digests): classification and exact approval identities.
-# security_scan_lines(lines) -> SecurityScan: existing context-free contract.
+# security_scan_lines(lines) -> SecurityScan|None: line-bound scan or refusal.
 # security_scan_source(path, source, added_rows) -> SecurityScan|None.
 # security_scan_diff(text) -> SecurityScan|None: None means untrusted context.
 SecurityScan = namedtuple("SecurityScan", "crypto digests")
@@ -302,12 +303,36 @@ def _is_context_item_line(line):
     return bool(_IMPORT_ITEM_LINE_RE.fullmatch(candidate))
 
 
-def security_scan_lines(lines):
-    """Preserve the legacy line-digest and crypto/secret classification rules."""
-    return SecurityScan(bool(CRYPTO_RE.search("\n".join(lines))), {
+def _cross_line_crypto_spans(lines):
+    """Locate joined matches by zero-based row/column, without quadratic slicing."""
+    starts = [0]
+    for line in lines:
+        starts.append(starts[-1] + len(line) + 1)
+    spans = set()
+    for match in CRYPTO_RE.finditer("\n".join(lines)):
+        if "\n" not in match.group():
+            continue
+        first = bisect_right(starts, match.start()) - 1
+        last = bisect_right(starts, match.end()) - 1
+        spans.add((first, match.start() - starts[first],
+                   last, match.end() - starts[last]))
+    return spans
+
+
+def _scan_bound_lines(lines, contextual_bindings):
+    """Each cross-line match needs its own recognized contextual identity."""
+    spans = _cross_line_crypto_spans(lines)
+    if not spans <= contextual_bindings.keys():
+        return None
+    return SecurityScan(bool(spans) or any(CRYPTO_RE.search(line) for line in lines), {
         line_digest(line) for line in lines
         if CRYPTO_RE.search(line) or SECRET_RE.search(line)
-    })
+    } | set(contextual_bindings.values()))
+
+
+def security_scan_lines(lines):
+    """Preserve same-line bindings; refuse crypto spanning unbound lines."""
+    return _scan_bound_lines(lines, {})
 
 
 def security_scan_source(path, source, added_rows):
@@ -343,6 +368,7 @@ def security_scan_source(path, source, added_rows):
            for token in tokens):
         return None
     matched = set()
+    import_spans = []
     start = [(tokenize.NAME, "from"), (tokenize.NAME, "Crypto"),
              (tokenize.OP, "."), (tokenize.NAME, "Cipher"),
              (tokenize.NAME, "import"), (tokenize.OP, "(")]
@@ -362,6 +388,7 @@ def security_scan_source(path, source, added_rows):
                 cursor += 1
             if item.start[0] in candidates and _SHORT_CRYPTO_TOKEN_RE.fullmatch(item.string):
                 matched.add(item.start[0])
+                import_spans.append((tokens[index + 4].start, item.end))
             if cursor >= len(tokens) or tokens[cursor].string not in (",", ")"):
                 return None
             if tokens[cursor].string == ",":
@@ -370,10 +397,17 @@ def security_scan_source(path, source, added_rows):
             return None
     # Preserve lexical whitespace; only transport CRLF decoding is normalized.
     destination = hashlib.sha256(source.encode("utf-8", "replace")).hexdigest()
-    contexts = {"ctx-v1:" + hashlib.sha256(json.dumps(
+    contexts = {row: "ctx-v1:" + hashlib.sha256(json.dumps(
         [path, destination, row, lines[row - 1]], separators=(",", ":")
     ).encode("utf-8")).hexdigest() for row in matched}
-    return SecurityScan(result.crypto or bool(contexts), result.digests | contexts)
+    positions = {row: index for index, row in enumerate(added_rows)}
+    bindings = {(positions[first[0]], first[1], positions[last[0]], last[1]): contexts[last[0]]
+                for first, last in import_spans
+                if first[0] in positions and last[0] in positions}
+    result = _scan_bound_lines(added, bindings)
+    if result is None:
+        return None
+    return SecurityScan(result.crypto or bool(contexts), result.digests | set(contexts.values()))
 
 
 def _full_destination(section):
@@ -429,7 +463,11 @@ def security_scan_diff(diff_text):
     section with an ambiguous bare added item pays the full-context/token cost.
     Missing attribution, incomplete hunks and unsupported context fail closed.
     """
-    result = security_scan_lines(sensitive_scan_added_lines(diff_text))
+    # A flattened match may not borrow approval from a different file section.
+    cross_spans = _cross_line_crypto_spans(sensitive_scan_added_lines(diff_text))
+    covered_spans = set()
+    added_offset = 0
+    result = SecurityScan(False, set())
     sections = []
     for line in diff_text.splitlines():
         if line.startswith("diff ") or not sections:
@@ -440,25 +478,32 @@ def security_scan_diff(diff_text):
         if attributed and all(path and is_sensitive_scan_exempt(path)
                               for path, _ in attributed):
             continue
+        added = sensitive_scan_added_lines("\n".join(section))
         # A damaged hunk header must not make an apparent added item disappear
         # in the legacy permissive walker before context validation even runs.
         if not any(line.startswith("+") and _is_context_item_line(line[1:])
                    for line in section):
-            continue
-        if not section[0].startswith("diff --git "):
-            return None
-        context = _full_destination(section)
-        if context is None:
-            return None
-        path, source, rows = context
-        source_lines = source.splitlines()
-        if attributed != [(path, source_lines[row - 1]) for row in rows]:
-            return None
-        contextual = security_scan_source(path, source, rows)
+            contextual = security_scan_lines(added)
+        else:
+            if not section[0].startswith("diff --git "):
+                return None
+            context = _full_destination(section)
+            if context is None:
+                return None
+            path, source, rows = context
+            source_lines = source.splitlines()
+            if attributed != [(path, source_lines[row - 1]) for row in rows]:
+                return None
+            contextual = security_scan_source(path, source, rows)
         if contextual is None:
             return None
+        covered_spans.update((first + added_offset, col, last + added_offset, end)
+                             for first, col, last, end in _cross_line_crypto_spans(added))
+        added_offset += len(added)
         result = SecurityScan(result.crypto or contextual.crypto,
                               result.digests | contextual.digests)
+    if not cross_spans <= covered_spans:
+        return None
     return result
 
 

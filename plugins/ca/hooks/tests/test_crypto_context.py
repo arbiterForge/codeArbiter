@@ -322,6 +322,108 @@ class CryptoContextHookTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotIn("H-09b", result.stderr)
 
+    def test_cross_line_crypto_calls_fail_closed_in_both_gates(self):
+        # CR758-01: joined matching must not produce an unbound crypto verdict.
+        for extra in ("", "const prior = md5;\n"):
+            with self.subTest(other_sensitive_line=bool(extra)):
+                source = "const selected = rc2\n(key);\n" + extra
+                self._stage(source, "sample.js")
+                diff = self._git("diff", "--cached", "--unified=0", "--", "sample.js").stdout
+                added = [line[1:] for line in diff.splitlines()
+                         if line.startswith("+") and not line.startswith("+++")]
+                self.assertEqual(added, source.splitlines())
+                self._assert_admission(True)
+
+    def test_cross_line_crypto_cannot_borrow_another_line_approval(self):
+        # An already approved same-line hazard cannot cover an unbound call.
+        self._stage("const prior = md5;\n", "sample.js")
+        marker = self._record_context_pass()
+        self._assert_admission(False)
+        self._write("sample.js", "const selected = rc2\n(key);\nconst prior = md5;\n")
+        self._git("add", "sample.js")
+        self._assert_admission(True)
+        result = self._run([sys.executable, os.path.join(HOOKS, "security-pass.py")])
+        self.assertEqual(result.returncode, 1, result.stderr)
+        with open(os.path.join(self.root, ".codearbiter", ".markers", "security-gate-passed"),
+                  encoding="utf-8") as stream:
+            self.assertEqual(stream.read(), marker)
+
+    def _assert_new_import_approval(self, mode):
+        # CR758-02 / R11-S1: full-source producers must retain Option A proof.
+        for index, item in enumerate(("DES,", "AES, DES,",
+                                      "AES as regular, DES as chosen,")):
+            with self.subTest(mode=mode, item=item):
+                rel = f"new_{index}.py"
+                source = "from Crypto.Cipher import (\n    " + item + "\n)\n"
+                self._write(rel, source)
+                if mode == "unborn":
+                    self._git("symbolic-ref", "HEAD", f"refs/heads/feat/unborn-{index}")
+                    self.assertEqual(self._run(["git", "rev-parse", "--verify", "HEAD"]).returncode, 128)
+                if mode != "untracked":
+                    self._git("add", rel)
+                    self._assert_admission(True)
+                marker = self._record_context_pass()
+                self.assertTrue(any(line.startswith("ctx-v1:") for line in marker.splitlines()), marker)
+                self._git("add", rel)
+                self._assert_admission(False)
+                self._write(rel, source.replace("import (", "import ( # changed context"))
+                self._git("add", rel)
+                self._assert_admission(True)
+                self._write(rel, source)
+                self._git("add", rel)
+                self._assert_admission(False)
+                self._write(f"other_{index}.py", source)
+                self._git("add", f"other_{index}.py")
+                self._assert_admission(True)
+                self._record_context_pass()
+
+    def test_wholly_new_staged_import_retains_context_approval(self):
+        self._assert_new_import_approval("staged")
+
+    def test_untracked_import_retains_context_approval(self):
+        self._assert_new_import_approval("untracked")
+
+    def test_unborn_import_retains_context_approval(self):
+        self._assert_new_import_approval("unborn")
+
+    def _assert_producer_refuses_existing_approval(self, marker):
+        result = self._run([sys.executable, os.path.join(HOOKS, "security-pass.py")])
+        self.assertEqual(result.returncode, 1, result.stderr)
+        with open(os.path.join(self.root, ".codearbiter", ".markers", "security-gate-passed"),
+                  encoding="utf-8") as stream:
+            self.assertEqual(stream.read(), marker)
+
+    def test_cross_line_crypto_cannot_borrow_context_approval(self):
+        # CR758-01 / R12-C1: only the recognized import span owns this proof.
+        valid = "from Crypto.Cipher import (\n    DES,\n)\n"
+        unsupported = "const selected = rc2\n(key);\n"
+        self._stage(valid)
+        marker = self._record_context_pass()
+        self.assertTrue(any(line.startswith("ctx-v1:") for line in marker.splitlines()), marker)
+        self._assert_admission(False)
+        for source in (unsupported + valid, valid + unsupported):
+            with self.subTest(source=source):
+                self._write("sample.py", source)
+                self._git("add", "sample.py")
+                self._assert_admission(True)
+                self._assert_producer_refuses_existing_approval(marker)
+
+    def test_cross_file_crypto_join_cannot_borrow_context_approval(self):
+        # A flattened match cannot use the next file's valid context identity.
+        self._stage("from Crypto.Cipher import (\n    DES,\n)\n")
+        marker = self._record_context_pass()
+        self.assertTrue(any(line.startswith("ctx-v1:") for line in marker.splitlines()), marker)
+        self._assert_admission(False)
+        self._write("a.js", "const selected = rc2\n")
+        self._write("b.js", "(key);\n")
+        self._git("add", "a.js", "b.js")
+        diff = self._git("diff", "--cached", "--unified=0").stdout
+        added = [line[1:] for line in diff.splitlines()
+                 if line.startswith("+") and not line.startswith("+++")]
+        self.assertEqual(added[:2], ["const selected = rc2", "(key);"])
+        self._assert_admission(True)
+        self._assert_producer_refuses_existing_approval(marker)
+
     def test_final_import_item_tails_use_context_not_bare_names(self):
         # R7-S1: final items in the same import need no trailing comma.
         for tail in ("", " # chosen", ")", ",) # chosen"):
