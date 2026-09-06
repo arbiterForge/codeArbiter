@@ -344,6 +344,20 @@ class TestInstall(_GitFixture):
             body = f.read()
         self.assertEqual(body, foreign)
 
+    def test_foreign_hook_with_managed_marker_under_other_shebang_is_preserved(self):
+        dest = os.path.join(self._hooks_dir(), "pre-commit")
+        os.makedirs(self._hooks_dir(), exist_ok=True)
+        foreign = (
+            "#!/usr/bin/env bash\n"
+            f"{_githooks.SENTINEL}\n"
+            "echo foreign\n"
+        )
+        self._write(dest, foreign)
+        _githooks.install(self.root)
+        with open(dest, encoding="utf-8") as f:
+            body = f.read()
+        self.assertEqual(body, foreign)
+
     def test_previous_managed_shims_are_atomically_upgraded(self):
         previous_sentinels = (
             (

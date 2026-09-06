@@ -863,7 +863,7 @@ def install(root):
         if os.path.exists(dest):
             existing = _read(dest)
             lines = existing.splitlines() if existing is not None else []
-            managed = len(lines) >= 2 and (
+            managed = len(lines) >= 2 and lines[0] == "#!/bin/sh" and (
                 lines[1] == SENTINEL or lines[1].startswith(f"{SENTINEL} — ")
             )
             if existing is not None and not managed:
