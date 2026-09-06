@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from typing import ClassVar
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -151,7 +152,7 @@ class ParityCatalogCounts(unittest.TestCase):
         "ca-codex": Path("plugins") / "ca-codex" / "generated" / "command-catalog.json",
         "ca-pi": Path("plugins") / "ca-pi" / "generated" / "command-catalog.json",
     }
-    _ROUTINES = {
+    _ROUTINES: ClassVar[dict[str, Path]] = {
         "ca": Path("plugins") / "ca" / "skills",
         "ca-codex": Path("plugins") / "ca-codex" / "routines",
         "ca-pi": Path("plugins") / "ca-pi" / "routines",
@@ -183,6 +184,7 @@ class ParityCatalogCounts(unittest.TestCase):
                 self.assertIn(str(self._generated_count(relpath)), row)
 
     def test_the_orchestrator_routines_row_matches_each_generated_host(self):
+        """Keep documented routine counts bound to each generated host surface."""
         parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
         row = next((line for line in parity.splitlines()
                     if line.startswith("| Orchestrator routines ")), None)

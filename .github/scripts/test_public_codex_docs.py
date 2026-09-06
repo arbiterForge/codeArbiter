@@ -14,6 +14,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 class PublicCodexDocsTest(unittest.TestCase):
     def _assert_valid_dispatch_receipt(self, receipt):
+        """Require the receipt to bind the published package and named charter."""
         self.assertEqual(1, receipt["schema_version"])
         self.assertEqual("ca-codex", receipt["package"]["name"])
         self.assertEqual("0.9.4", receipt["package"]["version"])
@@ -29,7 +30,12 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertEqual(published["object_sha"], receipt["package"]["tag_object_sha"])
         self.assertEqual(published["commit_sha"], receipt["package"]["release_commit_sha"])
 
-        charter_path = ROOT / "plugins" / "ca-codex" / receipt["charter"]["path_within_package"]
+        charter_relative_path = "agents/architecture-drift-reviewer.md"
+        self.assertEqual(
+            charter_relative_path,
+            receipt["charter"]["path_within_package"],
+        )
+        charter_path = ROOT / "plugins" / "ca-codex" / charter_relative_path
         charter_sha256 = hashlib.sha256(charter_path.read_bytes()).hexdigest()
         self.assertEqual(charter_sha256, receipt["charter"]["sha256_before"])
         self.assertEqual(charter_sha256, receipt["charter"]["sha256_after"])
@@ -325,6 +331,7 @@ class PublicCodexDocsTest(unittest.TestCase):
                 self.assertIn(charter.removesuffix(".md"), roster)
 
     def test_codex_dispatch_receipt_rejects_identity_corruption(self):
+        """Reject mutations to any published-package or charter identity field."""
         receipt_path = (
             ROOT
             / "docs"
@@ -337,6 +344,7 @@ class PublicCodexDocsTest(unittest.TestCase):
         corruptions = (
             (("package", "tag_object_sha"), "0" * 40),
             (("package", "release_commit_sha"), "1" * 40),
+            (("charter", "path_within_package"), "agents/security-reviewer.md"),
             (("charter", "sha256_before"), "2" * 64),
             (("charter", "sha256_after"), "3" * 64),
         )
