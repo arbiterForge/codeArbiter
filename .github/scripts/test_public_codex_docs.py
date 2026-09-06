@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Public documentation contract for the supported governance hosts."""
 
+import copy
+import hashlib
 import json
 import pathlib
 import re
@@ -11,6 +13,31 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 class PublicCodexDocsTest(unittest.TestCase):
+    def _assert_valid_dispatch_receipt(self, receipt):
+        self.assertEqual(1, receipt["schema_version"])
+        self.assertEqual("ca-codex", receipt["package"]["name"])
+        self.assertEqual("0.9.4", receipt["package"]["version"])
+        self.assertEqual(
+            f"ca-codex-v{receipt['package']['version']}",
+            receipt["package"]["tag"],
+        )
+
+        published = json.loads(
+            (ROOT / ".github" / "published-tags.json").read_text(encoding="utf-8")
+        )["tags"][receipt["package"]["tag"]]
+        self.assertEqual("tag", published["object_type"])
+        self.assertEqual(published["object_sha"], receipt["package"]["tag_object_sha"])
+        self.assertEqual(published["commit_sha"], receipt["package"]["release_commit_sha"])
+
+        charter_path = ROOT / "plugins" / "ca-codex" / receipt["charter"]["path_within_package"]
+        charter_sha256 = hashlib.sha256(charter_path.read_bytes()).hexdigest()
+        self.assertEqual(charter_sha256, receipt["charter"]["sha256_before"])
+        self.assertEqual(charter_sha256, receipt["charter"]["sha256_after"])
+        self.assertTrue(receipt["charter"]["matched_exact_main_source"])
+        self.assertTrue(receipt["controller_verification"]["installed_manifest_version_matched"])
+        self.assertTrue(receipt["controller_verification"]["installed_and_source_charter_hashes_matched"])
+        self.assertTrue(receipt["controller_verification"]["remote_tag_and_committed_publication_receipt_matched"])
+
     @classmethod
     def setUpClass(cls):
         """Load the repository README once for the public documentation checks."""
@@ -245,9 +272,8 @@ class PublicCodexDocsTest(unittest.TestCase):
             / "ca-codex-0.9.4-architecture-drift-reviewer.json"
         )
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-        self.assertEqual("0.9.4", receipt["package"]["version"])
+        self._assert_valid_dispatch_receipt(receipt)
         self.assertEqual("confirmed", receipt["review"]["verdict"])
-        self.assertTrue(receipt["charter"]["matched_exact_main_source"])
         self.assertIn(receipt_path.relative_to(ROOT).as_posix(), parity)
         self.assertNotIn("source candidate", parity)
 
@@ -297,6 +323,29 @@ class PublicCodexDocsTest(unittest.TestCase):
         for charter in charter_files:
             with self.subTest(roster_charter=charter):
                 self.assertIn(charter.removesuffix(".md"), roster)
+
+    def test_codex_dispatch_receipt_rejects_identity_corruption(self):
+        receipt_path = (
+            ROOT
+            / "docs"
+            / "reports"
+            / "evidence"
+            / "codex-agent-dispatch"
+            / "ca-codex-0.9.4-architecture-drift-reviewer.json"
+        )
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        corruptions = (
+            (("package", "tag_object_sha"), "0" * 40),
+            (("package", "release_commit_sha"), "1" * 40),
+            (("charter", "sha256_before"), "2" * 64),
+            (("charter", "sha256_after"), "3" * 64),
+        )
+        for path, value in corruptions:
+            with self.subTest(path=".".join(path)):
+                corrupted = copy.deepcopy(receipt)
+                corrupted[path[0]][path[1]] = value
+                with self.assertRaises(AssertionError):
+                    self._assert_valid_dispatch_receipt(corrupted)
 
 
 if __name__ == "__main__":
