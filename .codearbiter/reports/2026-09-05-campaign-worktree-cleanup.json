@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-06T02:28:04Z",
+  "origin_main": "d4b120be828a671508588509f6c09b7b02be9bc6",
+  "registered_worktrees": 62,
+  "policy": "Uncertainty is unique. No worktree, branch, stash, tracked change, untracked file, campaign state, or recovery file is removed without its required exact proof and per-item confirmation.",
+  "deletion_candidates_retained": [
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/ca-codex-0.7.4-marketplace",
+      "branch": null,
+      "head": "60bd988faae481a26d51ee812d4659eb6baef7ce",
+      "status_entries": 0,
+      "ahead_of_origin_main": 0,
+      "behind_origin_main": 40,
+      "containment": "HEAD is an ancestor of fetched origin/main.",
+      "disposition": "retained pending explicit confirmation naming this worktree removal"
+    },
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/ca-codex-release",
+      "branch": "codex/ca-codex-release",
+      "head": "60bd988faae481a26d51ee812d4659eb6baef7ce",
+      "status_entries": 0,
+      "ahead_of_origin_main": 0,
+      "behind_origin_main": 40,
+      "containment": "HEAD is an ancestor of fetched origin/main.",
+      "disposition": "retained pending separate explicit confirmations naming the worktree and local branch"
+    }
+  ],
+  "unique_or_unclassifiable_examples_retained": [
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/h14-linked-marker-root",
+      "reason": "Five modified source or test files."
+    },
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/hook686-host-neutral",
+      "reason": "Ten modified source or test files."
+    },
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/hosted-static-codex-release",
+      "reason": "Twenty-four modified, deleted, or untracked entries."
+    },
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/cross-host-pr3-identity",
+      "reason": "Five modified files and one commit not contained by origin/main."
+    },
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/cross-host-stage1-characterization",
+      "reason": "Modified governance evidence, an untracked PowerShell cache, and seven commits not contained by origin/main."
+    },
+    {
+      "path": "C:/Users/brenn/projects/codeArbiter-worktrees/ra11-legacy-provenance-epoch",
+      "reason": "A staged ADR lifecycle change and one commit not contained by origin/main."
+    }
+  ],
+  "protected_retentions": [
+    "The user-owned dirty controller checkout remains untouched.",
+    "The active campaign closeout worktree remains until its governed delivery completes.",
+    "Repository-root campaign.html remains the canonical single-writer campaign ledger.",
+    ".git/campaign-state/last-good.html and .git/campaign-state/legacy-20260822T034120Z.html remain recovery evidence.",
+    "Every other registered worktree defaults to unique or unclassifiable and remains untouched because complete discard safety was not proven."
+  ],
+  "removed": []
+}

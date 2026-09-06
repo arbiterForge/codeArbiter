@@ -45,8 +45,8 @@ and [`map-deps`](/reference/agents/map-deps/)) build the codebase inventory ahea
 that mapping work stays off the orchestrator's own context.
 
 Published releases from 0.7.5 include each packaged lens resource charter for Codex host-provided
-agent threads. Exact static-package and route-closure checks gate release. Until exact-release
-thread dispatch is durably proven, the bounded inline fallback applies only where the canonical
+agent threads. Exact static-package and route-closure checks gate release. A bounded 0.9.4 receipt
+proves one exact installed-charter review. The inline fallback applies only where the canonical
 workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).

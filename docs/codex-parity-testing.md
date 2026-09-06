@@ -31,12 +31,16 @@ that touches `hooks/`. A stale baseline is a claim about a past afternoon, which
 thing #408 was filed about.
 
 <!-- CODEX-LIVE-BASELINE -->
-Verified baseline: **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows, 2026-07-11.
-The installed hook set was approved through `/hooks`; SessionStart persona injection completed,
-and `$ca-doctor`'s staged-everything dry-run probe was blocked with `[H-03]`.
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.9.4**, Windows, 2026-09-05.
+A fresh process advertised and selected the exact installed 0.9.4 package. With its plugin root
+resolved, `$ca-doctor` reported 10 OK, 2 WARN, and 0 FAIL; the single prescribed staging dry-run was
+denied with `[H-03]` and did not execute. This refreshes package selection, doctor health, and the
+live H-03 boundary. It does not claim that the full scenario matrices below were rerun.
 
-> **STALE.** This baseline predates `ca-codex` 0.3.x. The continuously verified half above has
-> not lapsed, but the live-firing half has not been re-confirmed since 0.2.4.
+The initial live baseline remains **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows,
+2026-07-11. That run covered trusted startup and SessionStart persona injection in addition to H-03.
+A separate [0.9.4 dispatch receipt](./reports/evidence/codex-agent-dispatch/ca-codex-0.9.4-architecture-drift-reviewer.json)
+records one exact installed-charter host-thread review and its explicit limits.
 
 Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.143.0** (the source-verified
 structured-deny baseline; plugin-bundled hooks came on by default earlier, at 0.134.0),

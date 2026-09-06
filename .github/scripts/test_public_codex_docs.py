@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Public documentation contract for the supported governance hosts."""
 
+import json
 import pathlib
 import re
 import unittest
@@ -230,12 +231,24 @@ class PublicCodexDocsTest(unittest.TestCase):
         parity = (ROOT / "docs" / "parity.md").read_text(encoding="utf-8")
         self.assertRegex(
             parity,
-            re.compile(r"(?m)^\| Codex packaged agents \| DEGRADED \|"),
+            re.compile(r"(?m)^\| Codex packaged agents \| SUPPORTED \|"),
         )
         self.assertIn("plugins/ca-codex/agents/", parity)
         self.assertNotIn("plugins/ca-codex/resources/agents/", parity)
         self.assertIn("published releases from 0.7.5", parity)
-        self.assertIn("exact-release receipt", parity)
+        receipt_path = (
+            ROOT
+            / "docs"
+            / "reports"
+            / "evidence"
+            / "codex-agent-dispatch"
+            / "ca-codex-0.9.4-architecture-drift-reviewer.json"
+        )
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        self.assertEqual("0.9.4", receipt["package"]["version"])
+        self.assertEqual("confirmed", receipt["review"]["verdict"])
+        self.assertTrue(receipt["charter"]["matched_exact_main_source"])
+        self.assertIn(receipt_path.relative_to(ROOT).as_posix(), parity)
         self.assertNotIn("source candidate", parity)
 
         public_role_docs = (
@@ -258,11 +271,11 @@ class PublicCodexDocsTest(unittest.TestCase):
                 )
                 self.assertNotIn("source candidate", text)
                 self.assertNotIn("exact-candidate proof gates release", text)
+                self.assertRegex(normalized, re.compile(r"(?i)bounded 0\.9\.4 receipt"))
                 self.assertRegex(
                     normalized,
                     re.compile(
-                        r"(?i)until exact-release thread dispatch is durably proven"
-                        r".{0,180}bounded inline fallback.{0,180}canonical workflow"
+                        r"(?i)(?:bounded )?inline fallback.{0,180}canonical workflow"
                         r".{0,100}(?:isolation is not mandatory|non-isolated)"
                     ),
                 )
@@ -277,6 +290,13 @@ class PublicCodexDocsTest(unittest.TestCase):
                 text = (ROOT / path).read_text(encoding="utf-8")
                 normalized = " ".join(text.split())
                 self.assertIn("complete packaged resource charter set for that release", normalized)
+
+        roster = (
+            ROOT / "site" / "src" / "content" / "docs" / "concepts" / "persona-and-context.md"
+        ).read_text(encoding="utf-8")
+        for charter in charter_files:
+            with self.subTest(roster_charter=charter):
+                self.assertIn(charter.removesuffix(".md"), roster)
 
 
 if __name__ == "__main__":
