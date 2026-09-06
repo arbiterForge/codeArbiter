@@ -965,6 +965,33 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
             result = _modelib.flip("s1", "dangerous", root=self.root)
         self.assertEqual(result, _modelib.FLIP_FAILED)
 
+    def test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop(self):
+        with self._refuse_appends():
+            first = _modelib.flip("s1", "dangerous", root=self.root)
+        self.assertEqual(first, _modelib.FLIP_FAILED)
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
+        )
+
+        repeated = _modelib.flip("s1", "dangerous", root=self.root)
+
+        self.assertEqual(repeated, _modelib.FLIP_FLIPPED)
+        self.assertTrue(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
+        )
+        self.assertEqual(self._trail_text().count("MODE: dangerous enter"), 1)
+
+    def test_repeat_request_stays_failed_while_the_enter_row_cannot_settle(self):
+        with self._refuse_appends():
+            first = _modelib.flip("s1", "dangerous", root=self.root)
+            repeated = _modelib.flip("s1", "dangerous", root=self.root)
+
+        self.assertEqual(first, _modelib.FLIP_FAILED)
+        self.assertEqual(repeated, _modelib.FLIP_FAILED)
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
+        )
+
     def test_the_owed_row_replays_on_the_next_settle(self):
         with self._refuse_appends():
             _modelib.flip("s1", "dangerous", root=self.root)

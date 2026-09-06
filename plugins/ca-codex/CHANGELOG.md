@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.6] - 2026-09-06
+
+### Fixed
+
+- Recover an unsettled mode-enter audit row on a repeated request instead of reporting an ineffective posture as a no-op.
+
 ## [0.9.5] - 2026-09-06
 
 ### Changed

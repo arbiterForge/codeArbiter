@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.6] - 2026-09-06
+
+### Fixed
+
+- Recover an unsettled mode-enter audit row on a repeated request instead of reporting an ineffective posture as a no-op.
+
 ## [2.17.5] - 2026-09-06
 
 ### Changed
