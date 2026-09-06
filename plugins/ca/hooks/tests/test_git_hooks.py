@@ -333,12 +333,70 @@ class TestInstall(_GitFixture):
     def test_foreign_hook_is_preserved(self):
         dest = os.path.join(self._hooks_dir(), "pre-commit")
         os.makedirs(self._hooks_dir(), exist_ok=True)
-        self._write(dest, "#!/bin/sh\necho husky\n")
+        foreign = (
+            "#!/bin/sh\n"
+            "echo '# codeArbiter-managed git hook (#161)'\n"
+            "echo husky\n"
+        )
+        self._write(dest, foreign)
         _githooks.install(self.root)
         with open(dest, encoding="utf-8") as f:
             body = f.read()
-        self.assertIn("husky", body)
-        self.assertNotIn(_githooks.SENTINEL, body)
+        self.assertEqual(body, foreign)
+
+    def test_previous_managed_shims_are_atomically_upgraded(self):
+        previous_sentinels = (
+            (
+                "# codeArbiter-managed git hook (#161) — refreshed each session; "
+                "edits are overwritten."
+            ),
+            (
+                "# codeArbiter-managed git hook (#161) — this SHIM is refreshed "
+                "by any live host's session (it is host-neutral, ADR-0014); the "
+                "plugin-specific enforcer entries it dispatches to "
+                "(.git/codearbiter-hooksd/*.path) each self-heal only on THAT "
+                "plugin's own next session (#556) — edits here are overwritten."
+            ),
+        )
+        os.makedirs(self._hooks_dir(), exist_ok=True)
+        for previous_sentinel in previous_sentinels:
+            with self.subTest(previous_sentinel=previous_sentinel):
+                destinations = []
+                for phase in _githooks.PHASES:
+                    dest = os.path.join(self._hooks_dir(), phase)
+                    destinations.append(dest)
+                    self._write(
+                        dest,
+                        f"#!/bin/sh\n{previous_sentinel}\necho stale\n",
+                    )
+
+                writes = []
+                original_write = _githooks._hooklib.write_text_atomic
+
+                def write_spy(path, text, **kwargs):
+                    writes.append((path, text, kwargs))
+                    return original_write(path, text, **kwargs)
+
+                with mock.patch.object(
+                        _githooks._hooklib,
+                        "write_text_atomic",
+                        side_effect=write_spy):
+                    actions = _githooks.install(self.root)
+
+                for phase, dest in zip(_githooks.PHASES, destinations):
+                    with self.subTest(phase=phase):
+                        with open(dest, encoding="utf-8") as f:
+                            self.assertEqual(
+                                f.read(),
+                                _githooks._shim(
+                                    _githooks._dropin_dir(self.root), phase),
+                            )
+                        self.assertIn(f"{phase}: installed", actions)
+                        expected = os.path.normcase(os.path.abspath(dest))
+                        self.assertTrue(any(
+                            os.path.normcase(os.path.abspath(path)) == expected
+                            for path, _, _ in writes
+                        ))
 
     def test_uninstall_removes_only_own_dropin_entry(self):
         # ADR-0014: uninstall() removes ONLY this plugin's own drop-in
