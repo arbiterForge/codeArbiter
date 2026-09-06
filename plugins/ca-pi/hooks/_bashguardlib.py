@@ -38,7 +38,7 @@
 #                                         (case-insensitive)
 #   head_on_protected_tip(cwd) -> bool|None  True iff detached HEAD sits on a
 #                                         protected branch's tip
-#   added_lines(cwd, ref, paths=None) -> str|None  added ('+') diff lines,
+#   added_lines(cwd, ref, paths=None) -> SecurityScan|None  classified added lines,
 #                                         narrowed to the H-09b/H-10b candidate
 #                                         set, or None on a git-read failure
 #   staged_paths(cwd) -> set|None        index paths (`git diff --cached
@@ -84,7 +84,7 @@ from _hooklib import (
     ADR_LIFECYCLE_LOG_BASENAME, AUDIT_LOG_BASENAMES, AUDIT_LOG_FLAT_BASENAMES,
     AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_AUDIT_LOG_NAMES, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
-    content_digest, is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
+    content_digest, is_migration_path, line_digest, marker_fresh, security_scan_diff,
 )
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
@@ -1042,7 +1042,7 @@ def head_on_protected_tip(cwd):
 
 
 def added_lines(cwd, ref, paths=None):
-    """The added (`+`) lines of a diff — what a commit would introduce — or None
+    """The shared classification/bindings for a diff, or None
     when git could not produce the diff (nonzero exit / timeout / error). The
     None return (not "") lets the H-09b/H-10b security scan fail CLOSED on a read
     error rather than silently passing — an empty diff and an unreadable diff are
@@ -1073,7 +1073,10 @@ def added_lines(cwd, ref, paths=None):
     except Exception as e:  # noqa: BLE001
         _note_read_err(argv, repr(e))
         return None
-    return "\n".join(sensitive_scan_added_lines(out.stdout))
+    result = security_scan_diff(out.stdout)
+    if result is None:
+        _note_read_err(argv, "malformed or incomplete crypto context")
+    return result
 
 
 def _names(cwd, args):
@@ -1531,11 +1534,9 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
                        "read (git unavailable or timed out) — failing closed "
                        "(ORCHESTRATOR §2). Retry, or run the crypto-compliance / "
                        "secret-handling gate, then commit." + _read_err_hint())
-    added = "\n".join(parts)
-    sensitive = [ln for ln in added.splitlines()
-                 if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
+    sensitive = set().union(*(part.digests for part in parts))
     if sensitive:
-        touches_crypto = bool(CRYPTO_RE.search(added))
+        touches_crypto = any(part.crypto for part in parts)
         kind = "crypto/TLS" if touches_crypto else "secret"
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
@@ -1551,7 +1552,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
                 approved = set(f.read().split())
         except Exception:  # noqa: BLE001
             approved = set()
-        uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
+        uncovered = sensitive - approved
         if uncovered:
             block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered "
                        f"by the recorded security-gate pass — the pass is bound to the "

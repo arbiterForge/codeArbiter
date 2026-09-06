@@ -82,7 +82,7 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
             fake_added = ['const test_secret_token ' + '= "dummy_synthetic_testing_token";\n']
             digest = _hooklib.line_digest(fake_added[0])
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test"), \
-                 mock.patch.object(self.mod, "cached_added_lines", return_value=fake_added), \
+                 mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines(fake_added)), \
                  mock.patch.object(self.mod, "cached_names", return_value=set()), \
                  mock.patch.object(self.mod, "marker_fresh", return_value=True) as mock_fresh, \
                  mock.patch.object(self.mod, "_marker_set", return_value={digest}) as mock_set:
@@ -98,7 +98,7 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
             file_content = "CREATE TABLE users (id INT PRIMARY KEY);\n"
             digest = _hooklib.content_digest(file_content)
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test") as mock_branch, \
-                 mock.patch.object(self.mod, "cached_added_lines", return_value=[]) as mock_added, \
+                 mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines([])) as mock_added, \
                  mock.patch.object(self.mod, "cached_names", return_value={migration_file}) as mock_names, \
                  mock.patch.object(self.mod, "is_migration_path", return_value=True) as mock_is_mig, \
                  mock.patch.object(self.mod, "read_worktree", return_value=file_content) as mock_read, \
@@ -117,7 +117,7 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
             _main_root, worktree_root = self._linked_roots(temporary)
             with mock.patch.object(self.mod, "current_branch", return_value="") as mock_branch, \
                  mock.patch.object(self.mod, "head_on_protected_tip", return_value=False) as mock_tip, \
-                 mock.patch.object(self.mod, "cached_added_lines", return_value=[]) as mock_added, \
+                 mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines([])) as mock_added, \
                  mock.patch.object(self.mod, "cached_names", return_value=set()) as mock_names:
                 self.mod.pre_commit(worktree_root)
 
@@ -133,7 +133,7 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
             digest = _hooklib.line_digest(fake_added[0])
 
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test") as mock_branch, \
-                 mock.patch.object(self.mod, "cached_added_lines", return_value=fake_added) as mock_added, \
+                 mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines(fake_added)) as mock_added, \
                  mock.patch.object(self.mod, "cached_names", return_value=set()) as mock_names, \
                  mock.patch.object(self.mod, "marker_fresh", return_value=True) as mock_fresh, \
                  mock.patch.object(self.mod, "_marker_set", return_value={digest}) as mock_set:
@@ -154,7 +154,7 @@ class GitEnforceWorktreeMarkerTest(unittest.TestCase):
             mig_digest = _hooklib.content_digest(file_content)
 
             with mock.patch.object(self.mod, "current_branch", return_value="feature/test") as mock_branch, \
-                 mock.patch.object(self.mod, "cached_added_lines", return_value=[]) as mock_added, \
+                 mock.patch.object(self.mod, "cached_added_lines", return_value=_hooklib.security_scan_lines([])) as mock_added, \
                  mock.patch.object(self.mod, "cached_names", return_value={migration_file}) as mock_names, \
                  mock.patch.object(self.mod, "is_migration_path", return_value=True) as mock_is_mig, \
                  mock.patch.object(self.mod, "read_worktree", return_value=file_content) as mock_read, \

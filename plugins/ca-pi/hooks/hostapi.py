@@ -218,7 +218,7 @@ def git_worktree_main_root(root):
     of the command's effective exec root).
 
     Deliberately NOT wired into `Host.project_root()` itself: `project_root()`
-    also backs `security-pass.py`'s DIFF SCAN (`candidate_lines()`), which
+    also backs `security-pass.py`'s DIFF SCAN (`candidate_scan()`), which
     must stay worktree-local — escalating the general project root to "main"
     would bind digests to the wrong (unrelated, possibly dirty) tree and
     silently drop coverage for the diff actually being committed, the exact
@@ -313,7 +313,7 @@ class Host:
 
     name = "claude"
     adapter_name = "ca"
-    adapter_version = "2.17.6"
+    adapter_version = "2.17.7"
 
     # Update-notifier descriptor. Each independently versioned host overrides
     # these three values in its per-plugin _host.py. Keeping the target,

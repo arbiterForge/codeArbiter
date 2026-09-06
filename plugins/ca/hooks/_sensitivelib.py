@@ -26,7 +26,11 @@
 from __future__ import annotations
 
 import hashlib
+import io
+import json
 import re
+import tokenize
+from collections import namedtuple
 
 from _pathnorm import norm_path
 
@@ -38,10 +42,30 @@ from _pathnorm import norm_path
 # catch-all is narrowed to the members that actually sign, encrypt, derive
 # keys, or produce security-relevant randomness. bcrypt stays: approved or
 # not, a password-hashing change is exactly what crypto-compliance reviews.
+# Short names also occur as return-code variables and ordinary prose (#678).
+# Require configuration, known mode/padding suffixes, a crypto call/member, or
+# an import/crypto namespace. A standalone quoted value also matches when its
+# config key is outside the diff; unrelated quoted labels and prose do not.
+# Line-shape arms also work in joined content (the H-09b verdict/reminder read).
+_SHORT_CRYPTO_NAME = r"(?:rc2|rc4|des|rsa)"
+_CRYPTO_LINE_END = r"(?:[ \t]*[,;\])}])*[ \t]*(?:(?:\#|//)[^\r\n]*)?\r?$"
 CRYPTO_RE = re.compile(
-    r"(createHash|createCipher|createHmac|\bmd5\b|\bsha1\b|\brc4\b|\bdes\b|3des"
-    r"|\brc2\b|\bblowfish\b"
-    r"|\bRSA\b|x509|bcrypt"
+    r"(createHash|createCipher|createHmac|\bmd5\b|\bsha1\b|3des"
+    r"|\bblowfish\b|x509|bcrypt"
+    rf"""|(?m:^[ \t]*(?:-[ \t]*)?["']{_SHORT_CRYPTO_NAME}["']{_CRYPTO_LINE_END})"""
+    rf"|\b{_SHORT_CRYPTO_NAME}[-/](?:cbc|ecb|cfb|ofb|ctr|ede3?|oaep|pss|pkcs1)\b"
+    rf"|\b{_SHORT_CRYPTO_NAME}\s*\("
+    rf"|\b{_SHORT_CRYPTO_NAME}\s*\.\s*"
+    r"(?:new|create|generate|construct|import_?key|encrypt|decrypt|sign|verify"
+    r"|(?:rsa)?(?:public|private)(?:key|numbers)|rsakey|mode_)\w*\b"
+    rf"""|\b(?:cipher|algorithm)["']?\s*[:=]\s*["']?{_SHORT_CRYPTO_NAME}\b"""
+    rf"""|\b(?:Cipher|KeyFactory)\s*\.\s*getInstance\s*\(\s*["']{_SHORT_CRYPTO_NAME}\b"""
+    rf"|\b(?:Cipher|PublicKey|algorithms|asymmetric|Cryptography)\s*\.\s*{_SHORT_CRYPTO_NAME}\b"
+    rf"|\bcrypto/{_SHORT_CRYPTO_NAME}\b"
+    rf"|\b(?:from|import)(?:\s+(?:\(\s*)?|\(\s*)"
+    rf"(?:\w+(?:\.\w+)*(?:\s+as\s+\w+)?\s*,\s*)*"
+    rf"(?:\w+\.)*{_SHORT_CRYPTO_NAME}\b"
+    rf"|(?m:^[ \t]*{_SHORT_CRYPTO_NAME}[ \t]+as[ \t]+\w+{_CRYPTO_LINE_END})"
     r"|crypto\.(subtle|sign|verify|createSign|createVerify|generateKey"
     r"|publicEncrypt|privateDecrypt|pbkdf2|scrypt|randomBytes|createDiffieHellman)"
     r"|InsecureSkipVerify|verify=False"
@@ -118,7 +142,8 @@ def is_sensitive_scan_exempt(rel):
 # forget to pin it (that was exactly how this hole would keep reopening).
 SECURITY_DIFF_GIT_ARGS = (
     "-c", "diff.mnemonicPrefix=false", "-c", "diff.noprefix=false",
-    "diff", "--no-ext-diff", "--src-prefix=a/", "--dst-prefix=b/",
+    "diff", "--no-ext-diff", "--no-textconv", "--no-color",
+    "--src-prefix=a/", "--dst-prefix=b/", "--unified=2147483647",
 )
 
 # The fixed-width destination-path prefix `diff_added_lines` strips off a
@@ -247,6 +272,194 @@ def sensitive_scan_added_lines(diff_text):
     diff, so the exemption is applied uniformly."""
     return [ln for path, ln in diff_added_lines(diff_text)
             if not (path and is_sensitive_scan_exempt(path))]
+
+
+# H-09b contextual additions (#678): raw line bindings stay compatible. Only
+# bare short-name import items require lexical destination context. Context
+# bindings use a separate marker namespace; a user-authored source string or
+# an old line-only approval cannot impersonate one of these records.
+# SecurityScan(crypto, digests): classification and exact approval identities.
+# security_scan_lines(lines) -> SecurityScan: existing context-free contract.
+# security_scan_source(path, source, added_rows) -> SecurityScan|None.
+# security_scan_diff(text) -> SecurityScan|None: None means untrusted context.
+SecurityScan = namedtuple("SecurityScan", "crypto digests")
+_SHORT_CRYPTO_TOKEN_RE = re.compile(rf"\b{_SHORT_CRYPTO_NAME}\b", re.I)
+_IMPORT_ITEM = r"[^\W\d]\w*(?:[ \t]+as[ \t]+[^\W\d]\w*)?"
+_IMPORT_ITEM_LINE_RE = re.compile(
+    rf"[ \t]*{_IMPORT_ITEM}(?:[ \t]*,[ \t]*{_IMPORT_ITEM})*[ \t]*,?[ \t]*"
+    r"(?:\\|\)[ \t]*(?:;[^\r\n]*)?)?[ \t]*(?:\#[^\r\n]*)?", re.I)
+_FULL_HUNK_RE = re.compile(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(?: .*)?")
+_MAX_CRYPTO_CONTEXT_BYTES = 1_000_000
+
+
+def _is_context_item_line(line):
+    """Route bounded import-list syntax to context, never classify it alone."""
+    if not _SHORT_CRYPTO_TOKEN_RE.search(line):
+        return False
+    # Collapse only the temporary routing text, avoiding overlapping whitespace
+    # partitions. Tokenization and approval binding still use the original source.
+    candidate = re.sub(r"[ \t]+", " ", line)
+    return bool(_IMPORT_ITEM_LINE_RE.fullmatch(candidate))
+
+
+def security_scan_lines(lines):
+    """Preserve the legacy line-digest and crypto/secret classification rules."""
+    return SecurityScan(bool(CRYPTO_RE.search("\n".join(lines))), {
+        line_digest(line) for line in lines
+        if CRYPTO_RE.search(line) or SECRET_RE.search(line)
+    })
+
+
+def security_scan_source(path, source, added_rows):
+    """Classify original added lines plus narrowly recognized Python imports.
+
+    `source` is ONE destination snapshot; rows are one-based positions in it.
+    Tokenization only separates import NAME/OP tokens from strings/comments;
+    this is not an expression, type, or general-language parser. Invalid or
+    unavailable required context returns None, never an ordinary exemption.
+    """
+    lines = source.splitlines()
+    if any(row < 1 or row > len(lines) for row in added_rows):
+        return None
+    added = [lines[row - 1] for row in added_rows]
+    result = security_scan_lines(added)
+    candidates = {row for row in added_rows
+                  if _is_context_item_line(lines[row - 1])}
+    if not candidates:
+        return result
+    if not path or len(source.encode("utf-8", "replace")) > _MAX_CRYPTO_CONTEXT_BYTES:
+        return None
+    # Replacement decoding can collapse distinct original bytes. Even a
+    # literal replacement character is ambiguous here: refuse contextual proof.
+    if "\ufffd" in source:
+        return None
+    try:
+        tokens = [token for token in tokenize.generate_tokens(io.StringIO(source).readline)
+                  if token.type not in (tokenize.COMMENT, tokenize.NL,
+                                        tokenize.INDENT, tokenize.DEDENT)]
+    except (tokenize.TokenError, SyntaxError):
+        return None
+    if any(token.type == tokenize.ERRORTOKEN and not token.string.isspace()
+           for token in tokens):
+        return None
+    matched = set()
+    start = [(tokenize.NAME, "from"), (tokenize.NAME, "Crypto"),
+             (tokenize.OP, "."), (tokenize.NAME, "Cipher"),
+             (tokenize.NAME, "import"), (tokenize.OP, "(")]
+    for index in range(len(tokens) - len(start)):
+        if [(token.type, token.string) for token in tokens[index:index + len(start)]] != start:
+            continue
+        cursor = index + len(start)
+        while cursor < len(tokens) and tokens[cursor].string != ")":
+            item = tokens[cursor]
+            if item.type != tokenize.NAME:
+                return None
+            cursor += 1
+            if cursor < len(tokens) and tokens[cursor].string == "as":
+                cursor += 1
+                if cursor >= len(tokens) or tokens[cursor].type != tokenize.NAME:
+                    return None
+                cursor += 1
+            if item.start[0] in candidates and _SHORT_CRYPTO_TOKEN_RE.fullmatch(item.string):
+                matched.add(item.start[0])
+            if cursor >= len(tokens) or tokens[cursor].string not in (",", ")"):
+                return None
+            if tokens[cursor].string == ",":
+                cursor += 1
+        if cursor >= len(tokens):
+            return None
+    # Preserve lexical whitespace; only transport CRLF decoding is normalized.
+    destination = hashlib.sha256(source.encode("utf-8", "replace")).hexdigest()
+    contexts = {"ctx-v1:" + hashlib.sha256(json.dumps(
+        [path, destination, row, lines[row - 1]], separators=(",", ":")
+    ).encode("utf-8")).hexdigest() for row in matched}
+    return SecurityScan(result.crypto or bool(contexts), result.digests | contexts)
+
+
+def _full_destination(section):
+    """Validate one whole-file Git hunk before using its destination context."""
+    path = None
+    hunk = None
+    for index, line in enumerate(section):
+        if line.startswith(_PLUS_B_PREFIX):
+            path = line[len(_PLUS_B_PREFIX):]
+        if line.startswith("@@"):
+            hunk = index
+            break
+    if not path or hunk is None:
+        return None
+    header = _FULL_HUNK_RE.fullmatch(section[hunk])
+    if header is None:
+        return None
+    old_start, old_count, new_start, new_count = header.groups()
+    old_start, new_start = int(old_start), int(new_start)
+    old_count, new_count = int(old_count or 1), int(new_count or 1)
+    if old_start != (1 if old_count else 0) or new_start != 1:
+        return None
+    destination, rows = [], []
+    old_seen = new_seen = 0
+    previous = None
+    for line in section[hunk + 1:]:
+        if line.startswith("\\"):
+            if line != "\\ No newline at end of file" or previous not in ("+", "-", " "):
+                return None
+            if previous != "-":
+                destination[-1] = destination[-1].removesuffix("\n")
+            previous = None
+            continue
+        if not line or line[0] not in ("+", "-", " "):
+            return None
+        previous = line[0]
+        if previous in ("-", " "):
+            old_seen += 1
+        if previous in ("+", " "):
+            new_seen += 1
+            destination.append(line[1:] + "\n")
+            if previous == "+":
+                rows.append(new_seen)
+    if (old_seen, new_seen) != (old_count, new_count):
+        return None
+    return path, "".join(destination), rows
+
+
+def security_scan_diff(diff_text):
+    """Shared producer/consumer scan; context comes from this one pinned diff.
+
+    Legacy classification and audit-path handling remain unchanged. Only a
+    section with an ambiguous bare added item pays the full-context/token cost.
+    Missing attribution, incomplete hunks and unsupported context fail closed.
+    """
+    result = security_scan_lines(sensitive_scan_added_lines(diff_text))
+    sections = []
+    for line in diff_text.splitlines():
+        if line.startswith("diff ") or not sections:
+            sections.append([])
+        sections[-1].append(line)
+    for section in sections:
+        attributed = diff_added_lines("\n".join(section))
+        if attributed and all(path and is_sensitive_scan_exempt(path)
+                              for path, _ in attributed):
+            continue
+        # A damaged hunk header must not make an apparent added item disappear
+        # in the legacy permissive walker before context validation even runs.
+        if not any(line.startswith("+") and _is_context_item_line(line[1:])
+                   for line in section):
+            continue
+        if not section[0].startswith("diff --git "):
+            return None
+        context = _full_destination(section)
+        if context is None:
+            return None
+        path, source, rows = context
+        source_lines = source.splitlines()
+        if attributed != [(path, source_lines[row - 1]) for row in rows]:
+            return None
+        contextual = security_scan_source(path, source, rows)
+        if contextual is None:
+            return None
+        result = SecurityScan(result.crypto or contextual.crypto,
+                              result.digests | contextual.digests)
+    return result
 
 
 def line_digest(line):

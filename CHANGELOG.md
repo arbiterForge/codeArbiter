@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.7] - 2026-09-06
+
+### Fixed
+
+- Distinguish ordinary return-code identifiers such as `rc2` from cipher configuration in the crypto/TLS commit gate.
+
 ## [2.17.6] - 2026-09-06
 
 ### Fixed

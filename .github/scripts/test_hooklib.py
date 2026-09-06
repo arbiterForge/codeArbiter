@@ -12,6 +12,7 @@ Stdlib only. Exit 0 = all tests pass; non-zero = failure.
 
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -45,6 +46,187 @@ class CryptoReTest(unittest.TestCase):
 
     def _matches(self, s):
         return bool(_hooklib.CRYPTO_RE.search(s))
+
+    def test_return_code_identifiers_are_not_crypto(self):
+        # #678 / O678-01: these were blocked solely by the bare rc2 token.
+        for line in (
+            "rc2 = 2",
+            'rc2, _out2, _err2 = self.invoke(_ups("mode --dangerous"))',
+            "self.assertEqual(rc2, 2)",
+            "return rc2",
+            "result = rc2.returncode",
+        ):
+            with self.subTest(line=line):
+                self.assertFalse(self._matches(line), line)
+
+    def test_deep_ordinary_import_classification_is_bounded(self):
+        # R4-S1: dots must not be partitioned exponentially by the import arm.
+        # A subprocess timeout both proves the bound and reaps a stalled regex.
+        lines = ("import " + "a." * 32 + "helpers",
+                 "from sample import " + ", ".join(f"helper{i}" for i in range(32)),
+                 "from sample import (" + ", ".join(
+                     f"helper{i} as local{i}" for i in range(32)) + ")")
+        for line in lines:
+            with self.subTest(line=line):
+                try:
+                    result = subprocess.run(
+                        [sys.executable, "-c",
+                         "import re,sys; print(int(bool(re.search(sys.argv[1], sys.argv[3], int(sys.argv[2])))))",
+                         _hooklib.CRYPTO_RE.pattern, str(_hooklib.CRYPTO_RE.flags), line],
+                        capture_output=True, text=True, timeout=3, check=True)
+                except subprocess.TimeoutExpired:
+                    self.fail("Ordinary import classification exceeded the 3-second bound")
+                self.assertEqual(result.stdout.strip(), "0")
+
+    def test_grouped_and_prior_aliased_crypto_imports(self):
+        # R5-S1: import syntax supplies context even with grouped/prior aliases.
+        for line in (
+            'from Crypto.Cipher import (DES as chosen,)',
+            'from Crypto.Cipher import (AES, DES as chosen)',
+            'from Crypto.Cipher import AES as regular, DES as chosen',
+            'from Crypto.Cipher import (AES as regular, DES as chosen)',
+            'from Crypto.Cipher import(DES as chosen,)',
+            'from Crypto.Cipher import (AES as regular, DES as chosen,) # legacy',
+            'import os as system, rsa as chosen',
+            'from Crypto.PublicKey import (RSA as chosen,)',
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
+
+    def test_short_algorithm_identifiers_and_prose_are_not_crypto(self):
+        # #678 / O678-02: the sibling alternatives had the same ambiguity.
+        for line in (
+            "des = destinations[0]",
+            "rc4, out4 = invoke_again()",
+            "rsa = response_status_average",
+            "self.assertEqual(des, expected)",
+            "return rc4",
+            "metrics.append(rsa)",
+            "name = RSA",
+            '# rc2 and rc4 hold return codes',
+            'message = "la fin des travaux"',
+            "# RSA is the regional service area in this report",
+        ):
+            with self.subTest(line=line):
+                self.assertFalse(self._matches(line), line)
+
+    def test_short_algorithm_context_preservation(self):
+        # O678-03: positive controls pass the original classifier too. Quoted
+        # value-only lines matter when their config key is unchanged in a diff.
+        for line in (
+            'cipher = "rc2"',
+            "cipher = 'Rc2'",
+            'configure(algorithm="RC4")',
+            '{"name": "RSA-OAEP"}',
+            'algorithm: DES',
+            'cipher = rc2',
+            '    "rc2",',
+            "    'RC4',",
+            '    "DES",',
+            '    "rsa",',
+            '    "RC2-CBC",',
+            '    "DES-EDE3-CBC",',
+            '    "RSA/ECB/PKCS1Padding",',
+            'new RC2(key)',
+            'cipher = RC4(key)',
+            'DES.new(key, DES.MODE_CBC)',
+            'RSA.generate(2048)',
+            'rsa.generate_private_key(public_exponent=65537, key_size=2048)',
+            'RSA.import_key(encoded)',
+            'System.Security.Cryptography.DES.Create()',
+            'algorithm = algorithms.RC4(key)',
+            'from Crypto.Cipher import DES',
+            'from Crypto.Cipher import AES, DES',
+            'from Crypto.PublicKey import RSA',
+            'from cryptography.hazmat.primitives.asymmetric import rsa',
+            'import Crypto.Cipher.DES',
+            'import rsa',
+            'from rsa import encrypt',
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
+
+    def test_unambiguous_primitive_preservation(self):
+        # O678-04: isolate bare hazards independently of createHash/createCipher.
+        for line in ("md5", "MD5", "sha1", "SHA1", "3des", "blowfish"):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
+
+    def test_short_algorithm_additional_context_preservation(self):
+        # O678-03 review: each matches the exact base but failed the first
+        # narrowed classifier. Constants and import-block lines stand alone.
+        for line in (
+            'mode = DES.MODE_CBC',
+            '- RC2-CBC',
+            '- DES-EDE3-CBC',
+            '- RSA-OAEP',
+            'key = RSA.importKey(encoded)',
+            'key = RSA.construct(components)',
+            'key = rsa.GenerateKey(random, 2048)',
+            'stream = rc4.NewCipher(key)',
+            'encrypted = rsa.EncryptOAEP(hash, random, pub, msg, label)',
+            'var pub rsa.PublicKey',
+            '    "crypto/rsa"',
+            '    "crypto/rc4"',
+            '    "crypto/des"',
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
+
+    def test_ordinary_quoted_short_names_are_not_crypto(self):
+        # #678 review: a short string in an unrelated field/comment is prose.
+        for line in (
+            'label = "rsa"',
+            'message = "des"',
+            '# "rc2"',
+            '// the label is "RC4"',
+            'label = "rc2-status"',
+            '    "rc2-status",',
+            'name = "rsa"',
+            'message = "name: rsa"',
+            'name = "rc2-status"',
+        ):
+            with self.subTest(line=line):
+                self.assertFalse(self._matches(line), line)
+
+    def test_reviewed_crypto_api_preservation(self):
+        # S1/S2: each added line had crypto context visible to the old scanner.
+        for line in (
+            '    DES as chosen,',
+            'pub = rsa.RSAPublicNumbers(65537, modulus).public_key()',
+            'key = rsa.RSAPrivateNumbers(p,q,d,dmp1,dmq1,iqmp,pub).private_key()',
+            'isinstance(key, RSA.RsaKey)',
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
+
+    def test_reviewed_trailing_crypto_syntax_preservation(self):
+        # R2-S1: these value/import lines retain crypto context with ordinary
+        # trailing syntax, including when the config key is outside the diff.
+        for line in (
+            '    "rc2" # chosen algorithm',
+            '    "rc2"}',
+            '    DES as chosen, # legacy cipher',
+            '    "DES");',
+            '    "RSA");',
+            '    "DES"); // legacy cipher',
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
+
+    def test_crypto_namespace_without_another_crypto_context(self):
+        # C2: no call, config key, import, or quoted literal masks this arm.
+        self.assertTrue(self._matches('selected = System.Security.Cryptography.DES'))
+
+    def test_named_crypto_factory_configuration_preservation(self):
+        # Positive controls for narrowing quoted values: the factory call
+        # supplies crypto context even when the target is not named cipher.
+        for line in (
+            'selected = Cipher.getInstance("DES")',
+            'selected = KeyFactory.getInstance("RSA")',
+        ):
+            with self.subTest(line=line):
+                self.assertTrue(self._matches(line), line)
 
     # --- the checkpoint HIGH: Node/TS TLS-disable forms ---
     def test_matches_node_reject_unauthorized_object_form(self):

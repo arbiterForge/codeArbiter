@@ -209,6 +209,10 @@ from _sensitivelib import (  # noqa: F401
     is_sensitive_scan_exempt,
     line_digest,
     sensitive_scan_added_lines,
+    SecurityScan,
+    security_scan_diff,
+    security_scan_lines,
+    security_scan_source,
 )
 
 
