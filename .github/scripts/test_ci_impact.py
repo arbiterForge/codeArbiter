@@ -11,6 +11,7 @@ import importlib.util
 import json
 import fnmatch
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -733,6 +734,28 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_required_tag_immutability_job_requires_recorded_publications(self):
+        # A missing receipt must block the required merge gate, not first surface
+        # after merge when the next automatic release reaches strict preflight.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("tag-immutability", aggregate_needs(ci))
+        self.assertIn("tag-immutability", aggregate_required_results(ci))
+        job = workflow_jobs(ci)["tag-immutability"]
+        invocation = re.search(
+            r"(?m)^        run: >-\n(?P<command>(?:          [^\n]+\n)+)", job
+        )
+        self.assertIsNotNone(invocation, "the required live tag audit has no run command")
+        argv = shlex.split(
+            " ".join(line.strip() for line in invocation.group("command").splitlines()),
+            comments=True,
+        )
+        self.assertEqual(argv[:2], ["python", ".github/scripts/check_tag_immutability.py"])
+        self.assertIn(
+            "--require-recorded", argv,
+            "required CI only warns about missing publication receipts; "
+            "the same missing receipt then blocks automatic release after merge",
+        )
+
     def test_surface_job_fetches_complete_release_tag_history(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         job = workflow_jobs(ci)["surface"]

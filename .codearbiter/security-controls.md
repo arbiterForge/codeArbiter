@@ -879,10 +879,17 @@ version.
 it reports a moved tag, it cannot prevent one. Between the move and the next CI
 run, a consumer can install the substituted payload. Closing that window is what
 layer 1 is for, which is why the ruleset is a maintainer action tracked on #386
-and not satisfied by the check alone. The audit also skips loudly rather than
-failing when it cannot read the refs (transport failure or rate limit); it needs
-only `contents:read`, which `GITHUB_TOKEN` grants, so it runs live in ordinary CI
-and a skip is an exception rather than the normal case.
+and not satisfied by the check alone. Required CI and release preflight both use
+`--require-recorded` and fail closed on missing receipts, credentials, unreadable
+refs, or invalid inventory. This deliberately makes transport failures and rate
+limits merge/release availability blockers. The check remains read-only with
+`contents:read`; it adds no writer or bypass authority. New receipts enter only
+through the independently authenticated, reviewed-PR reconciliation path. A
+receipt-only PR can validate its candidate ledger, but publication and PR merge
+are not transactional: a tag may appear after a PR's green check without changing
+the checked commit. The independent strict release preflight remains necessary
+for that timing race; retry unavailable evidence, never substitute current refs
+for original publication proof.
 
 **GitHub immutable Releases (AC-2).** Measured 2026-07-25: every Release on this
 repository reports `immutable: false`, and the owning organisation is on the

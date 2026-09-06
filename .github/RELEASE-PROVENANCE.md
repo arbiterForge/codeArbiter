@@ -3,11 +3,22 @@
 Published tags never move or disappear. A bad release is corrected by a new
 version, not by changing a recorded identity or retargeting a tag.
 
-The release preflight uses `check_tag_immutability.py --require-recorded` before
-authorizing publication. Missing records or unreadable evidence refuse release.
-Ordinary CI remains an observation: it warns about unrecorded tags and reports
-an explicit skip on unavailable inventory. An automatic run with no eligible
-release does not require a new publication check.
+Required CI and release preflight both use
+`check_tag_immutability.py --require-recorded`. Missing records, credentials,
+or complete readable inventory block merge and release. This deliberately makes
+transport failures and rate limits availability blockers; retry after evidence
+is available, never bypass the check or replace historical identities.
+An automatic run with no eligible release needs no new publication preflight;
+its upstream required CI is still strict.
+
+This gate does not ingest receipts or make publication and PR merge transactional.
+After publication, reconcile the authenticated original receipt through a reviewed
+PR before another merge or release. A receipt-only PR can pass because required
+CI reads its candidate ledger. A tag can nevertheless be published after a PR's
+green check without changing its checked commit, so an already-green PR can race
+publication. The independent strict release preflight remains authoritative.
+Do not call a green check, retained artifact, or candidate file a completed ledger
+handoff: only the reviewed ledger addition merged to main completes ingestion.
 
 ## Closed legacy provenance epoch
 

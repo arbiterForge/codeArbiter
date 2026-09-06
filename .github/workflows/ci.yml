@@ -2247,12 +2247,11 @@ jobs:
     #
     # UNLIKE the branch-protection audit beside it, this one runs LIVE in
     # ordinary CI: listing `/git/matching-refs/tags/` needs only contents:read,
-    # which the default GITHUB_TOKEN grants. It still skips loudly rather than
-    # failing on a transport failure or rate limit, because a merge gate must
-    # report a history regression, never a network problem. Read-only: one
-    # complete matching-refs response and no mutations. Transport unavailability
-    # skips loudly; a successful but invalid inventory fails rather than being
-    # mistaken for complete evidence.
+    # which the default GITHUB_TOKEN grants. Required CI uses --require-recorded:
+    # missing receipts, credentials, transport availability, or trustworthy
+    # inventory block merge. This read-only gate adds no receipt writer or
+    # permission to bypass reviewed-PR ingestion. Tag publication after this
+    # check can still race a merge; release preflight remains independently strict.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -2266,13 +2265,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
-          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY"
+          python .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded
           --manifest .github/published-tags.json
           --legacy-manifest .github/legacy-published-tags.json
       - name: Test the audit's own logic
-        # The audit can skip; its unit tests cannot. They are offline and
-        # tokenless, and they pin the drift and deletion verdicts against a
-        # recorded copy of the live tag provenance.
+        # The unit tests are offline and tokenless; they pin the strict,
+        # drift, and deletion verdicts without depending on live availability.
         run: python .github/scripts/test_tag_immutability.py
       - name: Test publication identity receipt capture
         run: python .github/scripts/test_tag_publication_receipt.py
