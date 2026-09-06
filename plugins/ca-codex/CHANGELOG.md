@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-09-05
+
+### Fixed
+
+- Upgrade earlier codeArbiter-managed Git hook shims after ownership-banner wording changes while preserving foreign hooks.
+
 ## [0.9.3] - 2026-09-05
 
 ### Fixed

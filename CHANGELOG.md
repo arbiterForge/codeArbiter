@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.4] - 2026-09-05
+
+### Fixed
+
+- Upgrade earlier codeArbiter-managed Git hook shims after ownership-banner wording changes while preserving foreign hooks.
+
 ## [2.17.3] - 2026-09-05
 
 ### Fixed

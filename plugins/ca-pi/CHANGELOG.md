@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.5] - 2026-09-05
+
+### Fixed
+
+- Upgrade earlier codeArbiter-managed Git hook shims after ownership-banner wording changes while preserving foreign hooks.
+
 ## [0.10.4] - 2026-09-05
 
 ### Fixed

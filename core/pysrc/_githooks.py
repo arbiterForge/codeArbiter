@@ -117,8 +117,9 @@ from _durabilitylib import is_ephemeral_path
 from _gitexec import (git_executable, root_bound_git_env,
                       trusted_git_executable, trusted_python_executable)
 
-SENTINEL = (
-    "# codeArbiter-managed git hook (#161) — this SHIM is refreshed by any live "
+SENTINEL = "# codeArbiter-managed git hook (#161)"
+SHIM_NOTICE = (
+    "# This SHIM is refreshed by any live "
     "host's session (it is host-neutral, ADR-0014); the plugin-specific enforcer "
     "entries it dispatches to (.git/codearbiter-hooksd/*.path) each self-heal "
     "only on THAT plugin's own next session (#556) — edits here are overwritten."
@@ -581,6 +582,7 @@ def _shim(dropin_dir, phase):
     return (
         "#!/bin/sh\n"
         f"{SENTINEL}\n"
+        f"{SHIM_NOTICE}\n"
         f"D={quote(_shell_path(dropin_dir))}\n"
         f'if [ -e "$D/{_TRUSTED_IDENTITY_FILE}" ] || [ -L "$D/{_TRUSTED_IDENTITY_FILE}" ]; then\n'
         f'  [ -f "$D/{_TRUSTED_IDENTITY_FILE}" ] || exit 1\n'
@@ -860,7 +862,11 @@ def install(root):
         desired = _shim(dropin_dir, phase)
         if os.path.exists(dest):
             existing = _read(dest)
-            if existing is not None and SENTINEL not in existing:
+            lines = existing.splitlines() if existing is not None else []
+            managed = len(lines) >= 2 and lines[0] == "#!/bin/sh" and (
+                lines[1] == SENTINEL or lines[1].startswith(f"{SENTINEL} — ")
+            )
+            if existing is not None and not managed:
                 _warn(f"an existing {phase} hook is not codeArbiter-managed — leaving it "
                       f"untouched. For git-level enforcement, call "
                       f"'{os.path.basename(enforcer)} {phase}' from it (see includes docs).")
