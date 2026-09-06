@@ -992,6 +992,31 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
             _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
         )
 
+    def test_repeat_request_stays_failed_when_only_an_older_session_settles(self):
+        with self._refuse_appends():
+            _modelib.flip("older", "dangerous", root=self.root)
+            _modelib.flip("requested", "dangerous", root=self.root)
+
+        real_append = _modelib._append_override_line
+
+        def append_only_the_older_row(root, line):
+            if "| SESSION: older |" in line:
+                return real_append(root, line)
+            return False
+
+        with mock.patch.object(
+                _modelib, "_append_override_line",
+                side_effect=append_only_the_older_row):
+            repeated = _modelib.flip("requested", "dangerous", root=self.root)
+
+        self.assertEqual(repeated, _modelib.FLIP_FAILED)
+        self.assertTrue(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="older")
+        )
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="requested")
+        )
+
     def test_the_owed_row_replays_on_the_next_settle(self):
         with self._refuse_appends():
             _modelib.flip("s1", "dangerous", root=self.root)
