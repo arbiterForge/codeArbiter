@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.7] - 2026-09-06
+
+### Fixed
+
+- Recover an unsettled mode-enter audit row on a repeated request instead of reporting an ineffective posture as a no-op.
+
 ## [0.10.6] - 2026-09-06
 
 ### Changed

@@ -353,13 +353,14 @@ def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
     """Attempt to set `session_id`'s mode to `mode`. Returns one of
     FLIP_FLIPPED / FLIP_NOOP / FLIP_FAILED. Never raises.
 
-    AC-6: a flip TO THE ALREADY-ACTIVE mode is a no-op — no write is even
-    attempted and no audit row is appended, so `overrides.log` is left
-    byte-identical. This is also the mechanism behind T-14's fail-direction
-    asymmetry: once a failed flip has left the session's resolved mode
-    unchanged, any LATER flip back to that same resolved mode is a no-op
-    under ANY filesystem state — including a markers directory that cannot
-    be written to at all — because a no-op never touches disk.
+    AC-6: a flip TO AN ALREADY-ACTIVE, LEDGER-BACKED mode is a no-op — no
+    write is attempted and no audit row is appended, so `overrides.log` is
+    left byte-identical. The default arbiter posture needs no authorizing row.
+    If a prior non-arbiter write landed but its staged enter row did not, a
+    repeat request retries settlement: success reports the effective flip,
+    while another failure stays explicit instead of claiming the posture is
+    already active. This preserves T-14's fail direction because an unbacked
+    non-arbiter marker still cannot authorize persona composition.
 
     On a genuine transition the order is deliberate: write first, audit row
     ONLY on a confirmed write. AC-11's `ledger_backs` exists to catch exactly
@@ -369,7 +370,12 @@ def flip(session_id, mode, root=None, payload=None, host_name=None, now=None):
     root = root if root is not None else marker_root(payload)
     current, _diag = current_mode(session_id, root=root, payload=payload)
     if current == mode:
-        return FLIP_NOOP
+        if mode == MODES[0] or ledger_backs(root, mode, session_id=session_id):
+            return FLIP_NOOP
+        _settle_dev_close(root, host_name=host_name)
+        return (FLIP_FLIPPED
+                if ledger_backs(root, mode, session_id=session_id)
+                else FLIP_FAILED)
     if not write_mode(session_id, mode, root=root, payload=payload):
         return FLIP_FAILED
     # ADR-0030 position 4: EVERY transition row is staged through the #396
