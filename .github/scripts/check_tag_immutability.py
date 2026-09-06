@@ -206,7 +206,7 @@ def load_original_manifest(document: object) -> dict[str, Provenance]:
 
 
 def validate_original_receipt_baseline(records: dict[str, Provenance]) -> None:
-    """Require every receipt frozen at the 2026-09-05 reconciliation identity."""
+    """Require every receipt frozen at the 2026-09-06 reconciliation identity."""
     if len(ORIGINAL_RECEIPT_BASELINE_TAGS) != ORIGINAL_RECEIPT_BASELINE_COUNT:
         raise RuntimeError("invalid frozen receipt baseline metadata")
     if not ORIGINAL_RECEIPT_BASELINE_TAGS.issubset(records):
