@@ -26,25 +26,23 @@ disagreement.  Comparing the REF OBJECT sha (not just the commit) is the
 stronger test: an annotated tag object is content-addressed over its target,
 message, and tagger, so re-annotating the same commit still changes it.
 
-WHY IT SKIPS RATHER THAN FAILS.  Every observation is three-valued - present,
-definitely different, or None for "this run could not see it".  A definite
-mismatch is a security finding; an unreadable run prints a loud SKIP and passes.
-Unlike the branch-protection audit beside it, this one needs only `contents:
-read`, which GITHUB_TOKEN does grant, so it runs LIVE in ordinary CI rather than
-skipping by default.  The skip path exists for transport failures, rate limits,
-and local runs without a token - never as the normal case.
-
-RELEASE PREFLIGHT. --require-recorded is deliberately stricter: it refuses
+REQUIRED CI AND RELEASE PREFLIGHT. Both invoke --require-recorded, which refuses
 missing credentials, unreadable inventory, or any governed tag absent from the
-disjoint union. A new, non-legacy tag must be recorded afterward from its
-trusted run receipt through a reviewed PR before another release is allowed.
-The receipt writer has no legacy-ledger mutation path and there is no
-break-glass path.
+disjoint union. Availability failures therefore block merge as well as release.
+A new, non-legacy tag must be recorded afterward from its trusted run receipt
+through a reviewed PR. This is read-only verification, not automatic receipt
+ingestion or a transaction with publication: a tag published after a green CI
+check can still race a merge, so release preflight remains independently strict.
+The receipt writer has no legacy-ledger mutation path and there is no break-glass.
+
+OPTIONAL OBSERVATION MODE. Without --require-recorded, missing credentials or
+unavailable inventory produce a loud SKIP, and unrecorded tags produce warnings.
+A definite mismatch or invalid inventory still fails. Required CI never opts
+into this non-strict local-audit behavior.
 
 READ-ONLY.  One GET against `/git/matching-refs/tags/`. Nothing is written.
-Transport unavailability remains a loud ordinary-CI skip; a successful but
-malformed or incomplete response fails because it cannot be trusted as the
-complete inventory.
+Missing, unavailable, malformed, or incomplete evidence cannot authorize the
+strict required checks.
 """
 import argparse
 import dataclasses
@@ -73,10 +71,10 @@ ca-codex-v0.4.11 ca-codex-v0.4.12 ca-codex-v0.4.13 ca-codex-v0.4.14
 ca-codex-v0.4.15 ca-codex-v0.4.16 ca-codex-v0.4.2 ca-codex-v0.4.3
 ca-codex-v0.4.4 ca-codex-v0.4.5 ca-codex-v0.4.6 ca-codex-v0.4.7
 ca-codex-v0.4.8 ca-codex-v0.4.9 ca-codex-v0.5.0 ca-codex-v0.5.1
-ca-codex-v0.9.1 ca-codex-v0.9.3 ca-codex-v0.9.4 ca-pi-v0.1.32 ca-pi-v0.1.33
+ca-codex-v0.9.1 ca-codex-v0.9.3 ca-codex-v0.9.4 ca-codex-v0.9.5 ca-pi-v0.1.32 ca-pi-v0.1.33
 ca-pi-v0.1.34 ca-pi-v0.1.35 ca-pi-v0.1.36 ca-pi-v0.1.38
 ca-pi-v0.1.39 ca-pi-v0.1.40 ca-pi-v0.1.41 ca-pi-v0.1.42
-ca-pi-v0.1.43 ca-pi-v0.10.2 ca-pi-v0.10.4 ca-pi-v0.10.5 ca-pi-v0.2.0
+ca-pi-v0.1.43 ca-pi-v0.10.2 ca-pi-v0.10.4 ca-pi-v0.10.5 ca-pi-v0.10.6 ca-pi-v0.2.0
 ca-pi-v0.2.1 ca-pi-v0.2.11 ca-pi-v0.2.12 ca-pi-v0.2.13
 ca-pi-v0.2.14 ca-pi-v0.2.15 ca-pi-v0.2.16 ca-pi-v0.2.17
 ca-pi-v0.2.18 ca-pi-v0.2.19 ca-pi-v0.2.2 ca-pi-v0.2.3
@@ -88,13 +86,13 @@ v2.1.0-beta.4 v2.1.0-beta.5 v2.1.0-beta.6 v2.10.0 v2.10.1 v2.10.2
 v2.10.3 v2.10.4 v2.10.5 v2.10.6 v2.10.7 v2.10.8 v2.11.0 v2.11.1
 v2.11.10 v2.11.11 v2.11.12 v2.11.13 v2.11.14 v2.11.15 v2.11.16
 v2.11.17 v2.11.2 v2.11.3 v2.11.4 v2.11.5 v2.11.6 v2.11.7 v2.11.8
-v2.11.9 v2.12.0 v2.17.1 v2.17.3 v2.17.4 v2.2.0 v2.3.0 v2.3.1 v2.4.0
+v2.11.9 v2.12.0 v2.17.1 v2.17.3 v2.17.4 v2.17.5 v2.2.0 v2.3.0 v2.3.1 v2.4.0
 v2.4.1 v2.4.2 v2.4.6 v2.5.0 v2.5.1 v2.5.2 v2.6.0 v2.6.1 v2.8.0
 v2.8.11 v2.8.13 v2.9.0 v2.9.1
 """.split())
-ORIGINAL_RECEIPT_BASELINE_COUNT = 127
+ORIGINAL_RECEIPT_BASELINE_COUNT = 130
 ORIGINAL_RECEIPT_BASELINE_SHA256 = (
-    "27ff1368b51a69be3de05fba921127e2cb22ad45790180d736f1ecf5011e3ab9"
+    "89a788d7dc037d6faf7f1165f1282cd700060f474fb4a742d0e2576e463b76c1"
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -353,8 +351,8 @@ def audit_legacy(recorded: dict[str, LegacyProvenance],
 def unrecorded(recorded: dict[str, Provenance], live: dict[str, str]) -> list[str]:
     """Governed tags on the remote that the manifest does not yet record.
 
-    This is expected immediately after a release. Ordinary CI warns; strict
-    release preflight refuses to authorize another release until it is recorded.
+    This is expected immediately after a release. Required CI and release
+    preflight refuse until it is recorded; optional observation mode only warns.
     """
     return sorted(
         name for name in live if is_governed(name) and name not in recorded
@@ -443,10 +441,9 @@ def _rest_reader(token: str):
 _SKIP_NOTE = """SKIP: no token, so published-tag immutability was NOT audited.
 
 This check reads `/repos/{owner}/{repo}/git/matching-refs/tags/`, which needs only
-contents:read - a permission the default GITHUB_TOKEN DOES grant - so in ordinary
-CI it runs live and this skip should not appear. It exists for local runs and for
-transport failures, because a merge gate must report a settings or history
-regression, never a network problem.
+contents:read - a permission the default GITHUB_TOKEN DOES grant. This skip is
+only for optional observation mode. Required CI and release preflight use
+--require-recorded and fail closed on missing credentials or unavailable evidence.
 
 To run the audit by hand:
 

@@ -214,6 +214,24 @@ class LiveRefReader(unittest.TestCase):
 class ShippedManifest(unittest.TestCase):
     """The committed provenance record itself."""
 
+    RUN_34017483772_RECEIPTS = {
+        "v2.17.5": {
+            "object_sha": "da48b6c9ef647abee471ca04113989e18ad3519b",
+            "object_type": "tag",
+            "commit_sha": "1b7063dd5612992719047db477c645c3e673cd70",
+        },
+        "ca-codex-v0.9.5": {
+            "object_sha": "41fcce144b615878aa80a7358d7ba5acdabcfc92",
+            "object_type": "tag",
+            "commit_sha": "1b7063dd5612992719047db477c645c3e673cd70",
+        },
+        "ca-pi-v0.10.6": {
+            "object_sha": "199676d442293cc6940f9fb9c65efbc9305293a3",
+            "object_type": "tag",
+            "commit_sha": "1b7063dd5612992719047db477c645c3e673cd70",
+        },
+    }
+
     def setUp(self):
         self.manifest = json.loads(module.MANIFEST_PATH.read_text(encoding="utf-8"))
 
@@ -263,6 +281,29 @@ class ShippedManifest(unittest.TestCase):
         self.assertEqual(
             set(self.manifest["tags"]), set(module.load_recorded(self.manifest["tags"]))
         )
+
+    def test_run_34017483772_receipts_are_recorded_and_frozen(self):
+        for name, receipt in self.RUN_34017483772_RECEIPTS.items():
+            with self.subTest(name=name):
+                self.assertEqual(receipt, self.manifest["tags"].get(name))
+                self.assertIn(name, module.ORIGINAL_RECEIPT_BASELINE_TAGS)
+
+    def test_run_34017483772_receipts_cannot_disappear_or_change(self):
+        candidate = json.loads(json.dumps(self.manifest))
+        candidate["tags"].update(self.RUN_34017483772_RECEIPTS)
+        module.validate_original_receipt_baseline(module.load_original_manifest(candidate))
+        for name in self.RUN_34017483772_RECEIPTS:
+            for change in ("delete", "object_sha", "commit_sha"):
+                with self.subTest(name=name, change=change):
+                    changed = json.loads(json.dumps(candidate))
+                    if change == "delete":
+                        del changed["tags"][name]
+                    else:
+                        changed["tags"][name][change] = "f" * 40
+                    with self.assertRaisesRegex(ValueError, "frozen receipt baseline changed"):
+                        module.validate_original_receipt_baseline(
+                            module.load_original_manifest(changed)
+                        )
 
     def test_original_receipt_baseline_rejects_deletion_but_allows_append(self):
         appended = json.loads(json.dumps(self.manifest))
