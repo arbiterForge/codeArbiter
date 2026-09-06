@@ -236,6 +236,29 @@ class ShippedManifest(unittest.TestCase):
         for name, entry in RECORDED.items():
             self.assertEqual(entry, self.manifest["tags"][name], name)
 
+    def test_2026_09_06_publication_receipts_are_frozen(self):
+        expected = {
+            "v2.17.4": {
+                "object_sha": "b036de47cd6d33bc037c7fd5166a22fc70358717",
+                "object_type": "tag",
+                "commit_sha": "07f8f475203876561561fa107d110e82d85c2c26",
+            },
+            "ca-codex-v0.9.4": {
+                "object_sha": "9b8ef86a60143588febeaaeacdf90435f204b020",
+                "object_type": "tag",
+                "commit_sha": "07f8f475203876561561fa107d110e82d85c2c26",
+            },
+            "ca-pi-v0.10.5": {
+                "object_sha": "038760c8b101c61c9a6f9835c78c2d98b5cb8139",
+                "object_type": "tag",
+                "commit_sha": "07f8f475203876561561fa107d110e82d85c2c26",
+            },
+        }
+        for name, receipt in expected.items():
+            with self.subTest(name=name):
+                self.assertEqual(receipt, self.manifest["tags"][name])
+                self.assertIn(name, module.ORIGINAL_RECEIPT_BASELINE_TAGS)
+
     def test_the_manifest_loads_through_the_tool_it_feeds(self):
         self.assertEqual(
             set(self.manifest["tags"]), set(module.load_recorded(self.manifest["tags"]))

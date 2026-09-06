@@ -62,7 +62,7 @@ from pathlib import Path
 # anything else in refs/tags is a working tag this audit has no opinion about.
 NAMESPACES = ("v*", "ca-sandbox-v*", "ca-codex-v*", "ca-pi-v*")
 
-# Closed floor for the original-publication ledger as reconciled on 2026-09-05.
+# Closed floor for the original-publication ledger as reconciled on 2026-09-06.
 # New trusted publication receipts may be appended, but none of these reviewed
 # identities may disappear or change without tripping this offline guard.
 ORIGINAL_RECEIPT_BASELINE_TAGS = frozenset("""
@@ -73,10 +73,10 @@ ca-codex-v0.4.11 ca-codex-v0.4.12 ca-codex-v0.4.13 ca-codex-v0.4.14
 ca-codex-v0.4.15 ca-codex-v0.4.16 ca-codex-v0.4.2 ca-codex-v0.4.3
 ca-codex-v0.4.4 ca-codex-v0.4.5 ca-codex-v0.4.6 ca-codex-v0.4.7
 ca-codex-v0.4.8 ca-codex-v0.4.9 ca-codex-v0.5.0 ca-codex-v0.5.1
-ca-codex-v0.9.1 ca-codex-v0.9.3 ca-pi-v0.1.32 ca-pi-v0.1.33
+ca-codex-v0.9.1 ca-codex-v0.9.3 ca-codex-v0.9.4 ca-pi-v0.1.32 ca-pi-v0.1.33
 ca-pi-v0.1.34 ca-pi-v0.1.35 ca-pi-v0.1.36 ca-pi-v0.1.38
 ca-pi-v0.1.39 ca-pi-v0.1.40 ca-pi-v0.1.41 ca-pi-v0.1.42
-ca-pi-v0.1.43 ca-pi-v0.10.2 ca-pi-v0.10.4 ca-pi-v0.2.0
+ca-pi-v0.1.43 ca-pi-v0.10.2 ca-pi-v0.10.4 ca-pi-v0.10.5 ca-pi-v0.2.0
 ca-pi-v0.2.1 ca-pi-v0.2.11 ca-pi-v0.2.12 ca-pi-v0.2.13
 ca-pi-v0.2.14 ca-pi-v0.2.15 ca-pi-v0.2.16 ca-pi-v0.2.17
 ca-pi-v0.2.18 ca-pi-v0.2.19 ca-pi-v0.2.2 ca-pi-v0.2.3
@@ -88,13 +88,13 @@ v2.1.0-beta.4 v2.1.0-beta.5 v2.1.0-beta.6 v2.10.0 v2.10.1 v2.10.2
 v2.10.3 v2.10.4 v2.10.5 v2.10.6 v2.10.7 v2.10.8 v2.11.0 v2.11.1
 v2.11.10 v2.11.11 v2.11.12 v2.11.13 v2.11.14 v2.11.15 v2.11.16
 v2.11.17 v2.11.2 v2.11.3 v2.11.4 v2.11.5 v2.11.6 v2.11.7 v2.11.8
-v2.11.9 v2.12.0 v2.17.1 v2.17.3 v2.2.0 v2.3.0 v2.3.1 v2.4.0
+v2.11.9 v2.12.0 v2.17.1 v2.17.3 v2.17.4 v2.2.0 v2.3.0 v2.3.1 v2.4.0
 v2.4.1 v2.4.2 v2.4.6 v2.5.0 v2.5.1 v2.5.2 v2.6.0 v2.6.1 v2.8.0
 v2.8.11 v2.8.13 v2.9.0 v2.9.1
 """.split())
-ORIGINAL_RECEIPT_BASELINE_COUNT = 124
+ORIGINAL_RECEIPT_BASELINE_COUNT = 127
 ORIGINAL_RECEIPT_BASELINE_SHA256 = (
-    "88b7d3f58a1304fabf1835d0442ccc224827e3458816e1f9bc3ff9d2a9bd5509"
+    "27ff1368b51a69be3de05fba921127e2cb22ad45790180d736f1ecf5011e3ab9"
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -206,7 +206,7 @@ def load_original_manifest(document: object) -> dict[str, Provenance]:
 
 
 def validate_original_receipt_baseline(records: dict[str, Provenance]) -> None:
-    """Require every receipt frozen at the 2026-09-05 reconciliation identity."""
+    """Require every receipt frozen at the 2026-09-06 reconciliation identity."""
     if len(ORIGINAL_RECEIPT_BASELINE_TAGS) != ORIGINAL_RECEIPT_BASELINE_COUNT:
         raise RuntimeError("invalid frozen receipt baseline metadata")
     if not ORIGINAL_RECEIPT_BASELINE_TAGS.issubset(records):
