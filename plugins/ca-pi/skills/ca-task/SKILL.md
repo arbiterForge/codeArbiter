@@ -46,7 +46,13 @@ an ID (`/ca-task start --as <group>.<type> -- "<title>"`) to disambiguate.
 - Promoting workflow follow-ups in bulk → that is the harvest
   (`<plugin-root>/includes/harvest.md`), which calls this writer for you.
 - Reading the board / counts → `/ca-status` (read-only).
-- Archiving long-settled done items → deferred (D-2); done items stay in-place for now.
+- Archiving long-settled done items → `/ca-standup` owns the sweep (D-2,
+  resolved 2026-07-31). It proposes dated done items strictly more than 14 calendar
+  days old and requires a separate yes for each item before invoking
+  `<plugin-root>/hooks/taskwrite.py` with `archive <id>`. This is the helper's
+  archive verb, not a new public `/ca-task archive` mode. Undated done items are never
+  proposed automatically; standup's explicit-request and `--allow-undated` rules
+  apply. Declined items stay on the board.
 - Filing a separate `chore(board)` PR just to flip a task state → task-board transitions
   (`[x]` done-flip, `[~]` start-flip, new `[ ]` add) ride the **work commit** via
   commit-gate, co-located atomically with the code that completes, starts, or spawns the

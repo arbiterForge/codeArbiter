@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.5] - 2026-09-06
+
+### Changed
+
+- Correct privacy disclosures and align task archival documentation with the established standup-owned policy.
+
 ## [2.17.4] - 2026-09-05
 
 ### Fixed

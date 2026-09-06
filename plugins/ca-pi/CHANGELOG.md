@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.6] - 2026-09-06
+
+### Changed
+
+- Correct privacy disclosures and align task archival documentation with the established standup-owned policy.
+
 ## [0.10.5] - 2026-09-05
 
 ### Fixed

@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-09-06
+
+### Changed
+
+- Correct privacy disclosures and align task archival documentation with the established standup-owned policy.
+
 ## [0.9.4] - 2026-09-05
 
 ### Fixed
