@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from typing import ClassVar
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -151,6 +152,11 @@ class ParityCatalogCounts(unittest.TestCase):
         "ca-codex": Path("plugins") / "ca-codex" / "generated" / "command-catalog.json",
         "ca-pi": Path("plugins") / "ca-pi" / "generated" / "command-catalog.json",
     }
+    _ROUTINES: ClassVar[dict[str, Path]] = {
+        "ca": Path("plugins") / "ca" / "skills",
+        "ca-codex": Path("plugins") / "ca-codex" / "routines",
+        "ca-pi": Path("plugins") / "ca-pi" / "routines",
+    }
 
     def _generated_count(self, relpath):
         document = json.loads((REPO / relpath).read_text(encoding="utf-8"))
@@ -176,6 +182,21 @@ class ParityCatalogCounts(unittest.TestCase):
         for plugin, relpath in self._CATALOGS.items():
             with self.subTest(plugin=plugin):
                 self.assertIn(str(self._generated_count(relpath)), row)
+
+    def test_the_orchestrator_routines_row_matches_each_generated_host(self):
+        """Keep documented routine counts bound to each generated host surface."""
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        row = next((line for line in parity.splitlines()
+                    if line.startswith("| Orchestrator routines ")), None)
+        self.assertIsNotNone(row, "the Orchestrator routines row is gone")
+        cells = [cell.strip() for cell in row.strip("|").split("|")]
+        self.assertEqual(5, len(cells))
+        for index, (plugin, relpath) in enumerate(self._ROUTINES.items(), start=1):
+            with self.subTest(plugin=plugin):
+                expected = len(list((REPO / relpath).glob("*/SKILL.md")))
+                match = re.match(r"(\d+) generated (?:skills|routines)$", cells[index])
+                self.assertIsNotNone(match, f"malformed routine count cell for {plugin}")
+                self.assertEqual(expected, int(match.group(1)))
 
 
 class PiParityFixtures(unittest.TestCase):

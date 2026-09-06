@@ -14,14 +14,15 @@ The original July 2026 spike treated repo-shippable `.codex/agents/*.toml` files
 
 **Approval caveat (2026-07-08):** approved as **beta only** — the maintainer has no Codex subscription until ~2026-07-09, so live-fire spike items (stdout injection, trust review, exit-2 feedback) are deferred to a live-verification pass; source-level verification against `openai/codex` proceeds immediately. `ca-codex` carries a beta / Feature Forge preview label until live verification completes.
 
-## Campaign status (reconciled 2026-09-02)
+## Campaign status (reconciled 2026-09-05)
 
-The beta gate is complete, but the full M0-M5 campaign remains open on two evidence obligations.
-Codex 0.144.1 established the initial trusted startup and live H-03 block. Published release
-`ca-codex-v0.7.5` closed the missing-charter package defect with the complete generated role set for
-that release plus hosted static-package and route-closure gates. ADR-0031 governs host-native roots
-and packaged charters. ADR-0032 replaces only its retired desktop-proof requirement with the
-hosted-static contract.
+The full M0-M5 campaign is complete. Codex 0.144.1 established the initial trusted startup and live
+H-03 block. A fresh Codex CLI 0.145.0 process later selected the published `ca-codex` 0.9.4 package,
+completed `ca-doctor` with 10 OK, 2 WARN, and 0 FAIL, and received the expected H-03 denial on its
+single staging probe. A separate exact-package dispatch receipt records one host-provided agent
+loading the installed 0.9.4 architecture charter and completing its bounded review. ADR-0031 governs
+host-native roots and packaged charters. ADR-0032 replaces only its retired desktop-proof
+requirement with the hosted-static contract.
 
 | Milestone | Current status | Authoritative evidence or remaining obligation |
 |---|---|---|
@@ -29,14 +30,13 @@ hosted-static contract.
 | M1 shared-core extraction | ACCEPTED | `core/pysrc/`, `tools/sync-core.py`, and the byte-identity CI contract shipped in PR #254. |
 | M2 Codex enforcement core | ACCEPTED | The trusted hooks, host adapter, doctor probe, shared-store contract, and live H-03 block shipped in PR #254. |
 | M3 command/skill surface | ACCEPTED | The generated standalone `$ca-*` surface and Codex-only initialization path shipped through PR #295 and PR #254. |
-| M4 agents + review chains | DEGRADED | ADR-0031 replaced the abandoned `.codex/agents/*.toml` scaffold with packaged Markdown resource charters and host-provided threads. Release 0.7.5 contains the then-complete 18-charter set plus `INDEX.md`; current source and 0.7.9 contain 19. Generated route and policy checks close every declared dispatch path, but no committed exact-release receipt proves actual host-thread dispatch. |
-| M5 distribution/release/docs | PARTIAL | The initial Stable release and public install documentation shipped through PRs #301 and #302. ADR-0032 and the 0.7.5 release add the hosted-static distribution contract. The optional Codex farm backend is a separately labeled preview limitation, not a Stable-host blocker. `.github/published-tags.json` still stops at `ca-codex-v0.5.1`, so the newer published tags lack the declared committed provenance witness. |
+| M4 agents + review chains | ACCEPTED | ADR-0031 replaced the abandoned `.codex/agents/*.toml` scaffold with packaged Markdown resource charters and host-provided threads. Release 0.9.4 and current source contain all 19 charters plus `INDEX.md`; static checks validate every generated route and policy definition, but do not exercise every dispatch route at runtime. The committed [0.9.4 receipt](../../docs/reports/evidence/codex-agent-dispatch/ca-codex-0.9.4-architecture-drift-reviewer.json) records one real architecture-review dispatch and explicitly excludes full route exercise. |
+| M5 distribution/release/docs | ACCEPTED | The initial Stable release and public install documentation shipped through PRs #301 and #302. ADR-0032 and releases from 0.7.5 onward apply the hosted-static distribution contract. The optional Codex farm backend remains a separately labeled preview limitation, not a Stable-host blocker. PR #751 reconciled all current 0.9.4 publication identities into `.github/published-tags.json`; exact-main CI and CodeQL passed on merge commit `d4b120be828a671508588509f6c09b7b02be9bc6`. |
 
-`codex.feature.0001` remains in progress until an exact published package has durable host-thread
-dispatch evidence and the declared published-tag witness is current or explicitly dispositioned.
-The task row's beta clause records the original gate; this section records the current residual.
-`.codearbiter/CONTEXT.md` now assigns the canonical kernel and all three host adapters without the
-superseded beta wording.
+`codex.feature.0001` is complete. The task row's beta clause records the original gate; the current
+0.9.4 release, publication ledger, fresh-host proof, and bounded dispatch receipt close its remaining
+obligations. `.codearbiter/CONTEXT.md` assigns the canonical kernel and all three host adapters
+without the superseded beta wording.
 
 ## Architecture
 
@@ -99,7 +99,7 @@ Canonical templates in `core/surface/{commands,skills,agents,includes}/` with th
 
 **M3 — Command/skill surface.** Markdown → `core/surface/` templates; `build-surface.py`; regenerated `plugins/ca/{commands,skills,includes}` **byte-identical to today** (CI-diff proves zero Claude-side change), plus the Codex skill tree. Extend `check-plugin-refs.py` (already plugin-parameterized) to `ca-codex`; Codex COMMANDS.md analogue.
 
-**M4: Agents + review chains.** Agent templates render unchanged Claude `agents/*.md` files and Codex packaged Markdown resource charters governed by ADR-0031. Generated route and policy checks cover the declared dispatch surface; exact-release host-thread dispatch still requires a durable receipt.
+**M4: Agents + review chains.** Agent templates render unchanged Claude `agents/*.md` files and Codex packaged Markdown resource charters governed by ADR-0031. Generated route and policy checks cover the declared dispatch surface. The 0.9.4 architecture-review receipt proves one exact installed-charter host-thread dispatch without claiming universal isolation, every route, or process cleanup.
 
 **M5 — Distribution/release/docs.** Parameterize `.github/workflows/release.yml` over plugin (currently hard-coded to `plugins/ca/`); `_releaselib.py` bump-guard path-scoped to `plugins/ca-codex/`; CI path filters — `core/**` triggers **both** plugin suites (new rule). Site/README/install docs; **`docs/parity.md` ledger** (statusline, prune-transcript, M0-discovered gaps).
 

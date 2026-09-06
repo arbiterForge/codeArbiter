@@ -40,9 +40,9 @@ your behalf.
 3. **Execute the roles.** The owning skill selects the author and reviewer roles the change actually
    demands. Claude Code dispatches plugin agents. Published releases from 0.7.5 include the complete
    packaged resource charter set for that release for Codex host-provided agent threads, with exact
-   static-package and route-closure checks at release. Until exact-release thread dispatch is
-   durably proven, adapters may use the bounded inline fallback only where the canonical workflow
-   explicitly permits it and isolation is not mandatory.
+   static-package and route-closure checks at release. A bounded 0.9.4 receipt proves one exact
+   installed-charter review. Adapters may use the bounded inline fallback only where the canonical
+   workflow explicitly permits it and isolation is not mandatory.
    Pi launches hardened child processes through its trusted parent. The policy stays shared even
    though each host's mechanism differs.
 4. **Gate.** Nothing advances until its gates are green. A failing test, a CRITICAL

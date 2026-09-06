@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Public documentation contract for the supported governance hosts."""
 
+import copy
+import hashlib
+import json
 import pathlib
 import re
 import unittest
@@ -10,6 +13,37 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 class PublicCodexDocsTest(unittest.TestCase):
+    def _assert_valid_dispatch_receipt(self, receipt):
+        """Require the receipt to bind the published package and named charter."""
+        self.assertEqual(1, receipt["schema_version"])
+        self.assertEqual("ca-codex", receipt["package"]["name"])
+        self.assertEqual("0.9.4", receipt["package"]["version"])
+        self.assertEqual(
+            f"ca-codex-v{receipt['package']['version']}",
+            receipt["package"]["tag"],
+        )
+
+        published = json.loads(
+            (ROOT / ".github" / "published-tags.json").read_text(encoding="utf-8")
+        )["tags"][receipt["package"]["tag"]]
+        self.assertEqual("tag", published["object_type"])
+        self.assertEqual(published["object_sha"], receipt["package"]["tag_object_sha"])
+        self.assertEqual(published["commit_sha"], receipt["package"]["release_commit_sha"])
+
+        charter_relative_path = "agents/architecture-drift-reviewer.md"
+        self.assertEqual(
+            charter_relative_path,
+            receipt["charter"]["path_within_package"],
+        )
+        charter_path = ROOT / "plugins" / "ca-codex" / charter_relative_path
+        charter_sha256 = hashlib.sha256(charter_path.read_bytes()).hexdigest()
+        self.assertEqual(charter_sha256, receipt["charter"]["sha256_before"])
+        self.assertEqual(charter_sha256, receipt["charter"]["sha256_after"])
+        self.assertTrue(receipt["charter"]["matched_exact_main_source"])
+        self.assertTrue(receipt["controller_verification"]["installed_manifest_version_matched"])
+        self.assertTrue(receipt["controller_verification"]["installed_and_source_charter_hashes_matched"])
+        self.assertTrue(receipt["controller_verification"]["remote_tag_and_committed_publication_receipt_matched"])
+
     @classmethod
     def setUpClass(cls):
         """Load the repository README once for the public documentation checks."""
@@ -230,12 +264,23 @@ class PublicCodexDocsTest(unittest.TestCase):
         parity = (ROOT / "docs" / "parity.md").read_text(encoding="utf-8")
         self.assertRegex(
             parity,
-            re.compile(r"(?m)^\| Codex packaged agents \| DEGRADED \|"),
+            re.compile(r"(?m)^\| Codex packaged agents \| SUPPORTED \|"),
         )
         self.assertIn("plugins/ca-codex/agents/", parity)
         self.assertNotIn("plugins/ca-codex/resources/agents/", parity)
         self.assertIn("published releases from 0.7.5", parity)
-        self.assertIn("exact-release receipt", parity)
+        receipt_path = (
+            ROOT
+            / "docs"
+            / "reports"
+            / "evidence"
+            / "codex-agent-dispatch"
+            / "ca-codex-0.9.4-architecture-drift-reviewer.json"
+        )
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        self._assert_valid_dispatch_receipt(receipt)
+        self.assertEqual("confirmed", receipt["review"]["verdict"])
+        self.assertIn(receipt_path.relative_to(ROOT).as_posix(), parity)
         self.assertNotIn("source candidate", parity)
 
         public_role_docs = (
@@ -258,11 +303,11 @@ class PublicCodexDocsTest(unittest.TestCase):
                 )
                 self.assertNotIn("source candidate", text)
                 self.assertNotIn("exact-candidate proof gates release", text)
+                self.assertRegex(normalized, re.compile(r"(?i)bounded 0\.9\.4 receipt"))
                 self.assertRegex(
                     normalized,
                     re.compile(
-                        r"(?i)until exact-release thread dispatch is durably proven"
-                        r".{0,180}bounded inline fallback.{0,180}canonical workflow"
+                        r"(?i)(?:bounded )?inline fallback.{0,180}canonical workflow"
                         r".{0,100}(?:isolation is not mandatory|non-isolated)"
                     ),
                 )
@@ -277,6 +322,38 @@ class PublicCodexDocsTest(unittest.TestCase):
                 text = (ROOT / path).read_text(encoding="utf-8")
                 normalized = " ".join(text.split())
                 self.assertIn("complete packaged resource charter set for that release", normalized)
+
+        roster = (
+            ROOT / "site" / "src" / "content" / "docs" / "concepts" / "persona-and-context.md"
+        ).read_text(encoding="utf-8")
+        for charter in charter_files:
+            with self.subTest(roster_charter=charter):
+                self.assertIn(charter.removesuffix(".md"), roster)
+
+    def test_codex_dispatch_receipt_rejects_identity_corruption(self):
+        """Reject mutations to any published-package or charter identity field."""
+        receipt_path = (
+            ROOT
+            / "docs"
+            / "reports"
+            / "evidence"
+            / "codex-agent-dispatch"
+            / "ca-codex-0.9.4-architecture-drift-reviewer.json"
+        )
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        corruptions = (
+            (("package", "tag_object_sha"), "0" * 40),
+            (("package", "release_commit_sha"), "1" * 40),
+            (("charter", "path_within_package"), "agents/security-reviewer.md"),
+            (("charter", "sha256_before"), "2" * 64),
+            (("charter", "sha256_after"), "3" * 64),
+        )
+        for path, value in corruptions:
+            with self.subTest(path=".".join(path)):
+                corrupted = copy.deepcopy(receipt)
+                corrupted[path[0]][path[1]] = value
+                with self.assertRaises(AssertionError):
+                    self._assert_valid_dispatch_receipt(corrupted)
 
 
 if __name__ == "__main__":
