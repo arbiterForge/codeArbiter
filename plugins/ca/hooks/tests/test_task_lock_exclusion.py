@@ -128,6 +128,103 @@ exclude = Path(sys.argv[sys.argv.index('--root') + 1]) / '.git/info/exclude'
                                    "--untracked-files=all").stdout, b"",
                          "the successful lifecycle leaves an untracked lock")
 
+    def _assert_root_spelling_lifecycle(self, spelling):
+        exclude = Path(os.fsdecode(self._git("rev-parse", "--path-format=absolute",
+                                            "--git-path", "info/exclude").stdout).strip())
+        before = exclude.read_bytes()
+        argv = [sys.executable, "-B", str(self.hooks / SCRIPT.name), "--root", str(spelling)]
+        self._run(argv)
+        self.assertEqual(exclude.read_bytes(), before + RULE + b"\n")
+        self._writer("add", "aliased root lifecycle", "--id", "alias.task")
+        self._writer("start", "alias.task.0001", "--date", "2026-09-06")
+        self._writer("done", "alias.task.0001", "--date", "2026-09-06")
+        self._git("add", "--", ".codearbiter")
+        self._git("commit", "-m", "fixture aliased root lifecycle")
+        self.assertEqual((self.root / LOCK).read_bytes(), b"\0")
+        self.assertEqual(self._git("status", "--porcelain=v1").stdout, b"")
+        # Exercise existing-repository repair through the same caller spelling.
+        exclude.write_bytes(before)
+        self._run([*argv, "--repair-lock-exclusion"])
+        self.assertEqual(exclude.read_bytes(), before + RULE + b"\n")
+        self.assertEqual(self._git("status", "--porcelain=v1").stdout, b"")
+        identity = exclude.stat().st_ino
+        self._run([*argv, "--repair-lock-exclusion"])
+        self.assertEqual(exclude.stat().st_ino, identity)
+
+    def test_repository_root_under_parent_alias_keeps_lifecycle_git_clean(self):
+        alias = Path(self.temp.name) / "parent-alias"
+        try:
+            alias.symlink_to(self.root.parent, target_is_directory=True)
+        except OSError as exc:
+            self.skipTest(f"symlink creation unavailable: {exc}")
+        spelling = alias / self.root.name
+        self.assertTrue(os.path.samefile(spelling, self.root))
+        self._assert_root_spelling_lifecycle(spelling)
+
+    @unittest.skipUnless(os.name == "nt", "Windows native short-path contract")
+    def test_native_short_repository_root_keeps_lifecycle_git_clean(self):
+        import ctypes
+        buffer = ctypes.create_unicode_buffer(32768)
+        count = ctypes.windll.kernel32.GetShortPathNameW(str(self.root), buffer, len(buffer))
+        self.assertGreater(count, 0, "GetShortPathNameW failed")
+        self.assertLess(count, len(buffer))
+        spelling = buffer.value
+        if os.path.normcase(spelling) == os.path.normcase(str(self.root)):
+            self.skipTest("fixture volume has no native short-path alias")
+        self.assertTrue(os.path.samefile(spelling, self.root))
+        self._assert_root_spelling_lifecycle(spelling)
+
+    def test_linked_worktree_under_parent_alias_keeps_lifecycle_git_clean(self):
+        self._git("commit", "--allow-empty", "-m", "fixture primary")
+        linked = self.root.parent / "linked"
+        self._git("worktree", "add", "-b", "codex/linked", str(linked))
+        alias = self.root.parent / "linked-parent-alias"
+        try:
+            alias.symlink_to(linked.parent, target_is_directory=True)
+        except OSError as exc:
+            self.skipTest(f"symlink creation unavailable: {exc}")
+        self.root = linked
+        self.env["CLAUDE_PROJECT_DIR"] = str(linked)
+        self._assert_root_spelling_lifecycle(alias / linked.name)
+
+    def test_retargeted_caller_alias_cannot_publish_to_the_original_repository(self):
+        exclude = self.root / ".git/info/exclude"
+        before = exclude.read_bytes()
+        other = self.root.parent / "other"
+        other.mkdir()
+        self._git("-C", str(other), "init")
+        other_exclude = other / ".git/info/exclude"
+        other_before = other_exclude.read_bytes()
+        alias = self.root.parent / "caller-alias"
+        try:
+            alias.symlink_to(self.root, target_is_directory=True)
+        except OSError as exc:
+            self.skipTest(f"symlink creation unavailable: {exc}")
+        code = """
+import os, runpy, sys
+from pathlib import Path
+from unittest.mock import patch
+script, alias, other = sys.argv[1:]
+sys.path.insert(0, os.path.dirname(script))
+import _taskexcludelib as helper
+original = helper._read_exclude
+def read(path):
+    answer = original(path)
+    if Path(alias).resolve() != Path(other):
+        Path(alias).unlink()
+        Path(alias).symlink_to(other, target_is_directory=True)
+    return answer
+patch.object(helper, '_read_exclude', side_effect=read).start()
+sys.argv = [script, '--root', alias]
+runpy.run_path(script, run_name='__main__')
+"""
+        result = self._run([sys.executable, "-B", "-c", code,
+                            str(self.hooks / SCRIPT.name), str(alias), str(other)], ok=False)
+        self._assert_failed_before_scaffold(result, exclude, before)
+        self.assertIn(b"binding changed before publication", result.stderr)
+        self.assertEqual(other_exclude.read_bytes(), other_before)
+        self.assertFalse((other / ".codearbiter").exists())
+
     def test_existing_repair_preserves_bytes_modes_and_is_idempotent(self):
         exclude = self._existing()
         self._git("add", "--", ".codearbiter")

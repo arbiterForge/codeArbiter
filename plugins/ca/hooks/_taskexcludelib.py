@@ -5,7 +5,7 @@
 # another process acquire a different lock. Only Git's common info/exclude is
 # changed, through its own exclusive create/replace lockfile protocol. Existing
 # bytes and modes survive; no tracked file or Git index is written.
-# Static link/reparse aliases and observed concurrent edits fail closed. This
+# Static Git-metadata link/reparse aliases and observed concurrent edits fail closed. This
 # cooperates with writers honoring exclude.lock; it is not a sandbox against a
 # hostile same-user process swapping paths between filesystem operations.
 #
@@ -81,7 +81,11 @@ def _binding(root, required):
         if not required and not has_marker:
             return None
         raise TaskExclusionError("cannot resolve repository root for task lock exclusion") from None
-    if not _same_path(top, root):
+    # Git reports physical roots: /var aliases and Windows 8.3 names can differ
+    # from the caller. Resolve only this identity, never metadata paths whose
+    # unresolved link/reparse attributes the checks below must inspect.
+    root = Path(os.path.realpath(root))
+    if not _same_path(os.path.realpath(top), root):
         raise TaskExclusionError("task lock exclusion requires the exact repository root")
     _directories(root)
     marker = root / ".git"
@@ -141,6 +145,7 @@ def _check_conflicts(root):
 
 
 def _ensure(root, required):
+    # Retain the caller spelling so publication-time binding detects retargeting.
     root = Path(os.path.abspath(root))
     exclude = _binding(root, required)
     if exclude is None:
