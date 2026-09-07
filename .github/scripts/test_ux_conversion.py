@@ -167,12 +167,14 @@ def test_standup_sweep():
     then remove from open-tasks) is what makes an interrupted sweep
     recoverable; a batch loop answered once would throw that away.
     """
+    checked = 0
     for relative in ("core/surface/commands/standup.md",
                      "plugins/ca/commands/standup.md"):
         path = ROOT / relative
         if not path.exists():
             continue
         text = read(path)
+        checked += 1
         check("taskwrite.py" in text and "archive" in text,
               f"{relative}: the sweep does not name the archive helper")
         # BOTH, not either. A first draft used
@@ -197,6 +199,8 @@ def test_standup_sweep():
               f"{relative}: the never-without-a-yes contract is not stated")
         check("Declining is always available" in text,
               f"{relative}: declining is not offered as a first-class outcome")
+    check(checked > 0,
+          "standup: all candidate surfaces are missing; sweep checked no files")
 
 
 TESTS = [
