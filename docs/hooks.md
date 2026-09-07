@@ -289,13 +289,38 @@ here for completeness.
 | `statusline.py` | the statusline command in `settings.json` | Renders the token-aware statusline (folder, git, rate limits, usage, cost, context, and, in enabled repos, the arbiter governance row). Read-only |
 | `wire-statusline.py` | `/ca:statusline`, and the SessionStart self-heal | Installs/refreshes/removes the ca-owned statusline entry in `~/.claude/settings.json`, backing up and restoring any prior statusline |
 | `doctor.py` | `/ca:doctor` | Verifies the install is actually enforcing: interpreter, payload, cache staleness, a live-fire hook probe. Read-only |
-| `init-codearbiter.py` | `/ca:init` | Scaffolds the repo's `.codearbiter/` state store |
+| `init-codearbiter.py` | `/ca:init`, or its explicit repair flag | Scaffolds the repo's `.codearbiter/` state store and locally excludes the retained task-board OS lock |
 | `prune-transcript.py` | `/ca:prune` (CLI mode) | The same engine as the hook, driven manually with `status`/`dry`/`run`/`audit` subcommands |
 
 Shared, dependency-free library modules (`_hooklib.py`, `_standuplib.py`,
 `_prunelib.py`, `_babysitlib.py`) hold the pure logic the scripts above import; they
 have no side effects of their own. Everything under `plugins/ca/hooks/tests/` is the
 unit-test suite for these scripts. Run it with `pytest` from `plugins/ca/hooks/`.
+
+### Retained task-board lock and local exclusion
+
+`taskwrite` retains `.codearbiter/open-tasks.md.lock` as a one-byte OS-lock sidecar.
+Do not delete it to clean Git status: deleting a locked file can let another process
+acquire a different lock. Fresh Git-backed initialization adds the exact root-anchored
+rule `/.codearbiter/open-tasks.md.lock` to Git's local `info/exclude`, shared by linked
+worktrees. It does not edit a tracked `.gitignore` or hide other lock files.
+
+For an existing scaffold, invoke the installed host package's helper directly:
+
+```sh
+python /path/to/installed/plugin/hooks/init-codearbiter.py --repair-lock-exclusion --root /path/to/repository
+```
+
+Use the actual installed `ca`, `ca-codex`, or `ca-pi` package path. Omitting `--root`
+resolves the current checkout's Git toplevel; an explicit root must name that toplevel.
+This is a helper option, not a new `ca` command. It preserves existing exclusion bytes
+and is idempotent. It never reinitializes project state or changes tracked files, and
+cannot combine with `--check` or `--stage`.
+
+A tracked sidecar, higher-precedence `.gitignore` negation, unsafe file path, or existing
+`exclude.lock` is a reported failure. Resolve that condition before retrying; the helper
+does not untrack files, rewrite conflicting rules, or remove another writer's lock.
+Non-Git scaffolding remains supported; run this repair after creating the Git repository.
 
 ## Verifying for yourself
 

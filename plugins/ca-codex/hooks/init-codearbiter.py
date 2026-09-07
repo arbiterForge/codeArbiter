@@ -12,6 +12,7 @@
 # Usage:
 #   python init-codearbiter.py [--root PATH] [--stage N]
 #   python init-codearbiter.py --check        # report state, create nothing
+#   python init-codearbiter.py --repair-lock-exclusion [--root PATH]
 
 import argparse
 import subprocess
@@ -19,7 +20,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _gitexec import git_executable  # noqa: E402
+from _gitexec import git_executable, root_bound_git_env  # noqa: E402
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _hooklib  # noqa: E402 — set_host DI seam (#257)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
@@ -126,7 +127,7 @@ def project_root(opt):
     # prefer git toplevel; fall back to cwd
     try:
         out = subprocess.run([git_executable(), "rev-parse", "--show-toplevel"],
-                             capture_output=True, text=True, timeout=2)
+                             env=root_bound_git_env(), capture_output=True, text=True, timeout=2)
         top = out.stdout.strip()
         if out.returncode == 0 and top:
             return os.path.abspath(top)
@@ -138,9 +139,16 @@ def project_root(opt):
 def main(argv=None):
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("--root")
-    ap.add_argument("--stage", type=int, default=1)
+    ap.add_argument("--stage", type=int)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--repair-lock-exclusion", action="store_true", help=(
+        "repair only Git-local info/exclude for an existing scaffold; retain the "
+        "task-board OS lock, never rewrite project state (cannot combine with --check/--stage)"))
     args = ap.parse_args(argv)
+    if args.repair_lock_exclusion and (args.check or args.stage is not None):
+        ap.error("--repair-lock-exclusion cannot combine with --check or --stage")
+    if args.stage is None:
+        args.stage = 1
 
     root = project_root(args.root)
     cad = os.path.join(root, ".codearbiter")
@@ -168,10 +176,28 @@ def main(argv=None):
             print(f"NOT SCAFFOLDED: {cad} would be created. Run without --check to scaffold.")
         return
 
+    from _taskexcludelib import ensure_task_lock_excluded, TaskExclusionError
+    if args.repair_lock_exclusion:
+        if not os.path.isfile(ctx) or os.path.islink(ctx):
+            raise SystemExit("REFUSING: task lock exclusion repair requires an existing scaffold.")
+        try:
+            result = ensure_task_lock_excluded(root, required=True)
+        except TaskExclusionError as exc:
+            raise SystemExit(f"REFUSING: {exc}") from None
+        print(f"task lock exclusion: {result}")
+        return
+
     if os.path.exists(ctx):
         raise SystemExit(
             f"REFUSING: {ctx} already exists. .codearbiter/ is already scaffolded here. "
             f"To populate it, run {_cc} or {_dc}; to repair, edit by hand.")
+
+    try:
+        result = ensure_task_lock_excluded(root)
+    except TaskExclusionError as exc:
+        raise SystemExit(f"REFUSING: {exc}") from None
+    if result:
+        print(f"task lock exclusion: {result}")
 
     os.makedirs(cad, exist_ok=True)
     created = []
