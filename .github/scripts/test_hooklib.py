@@ -59,6 +59,17 @@ class CryptoReTest(unittest.TestCase):
             with self.subTest(line=line):
                 self.assertFalse(self._matches(line), line)
 
+    def test_rsa_key_type_requires_configuration_context(self):
+        # RSA-01/03: the review example has a key-type binding, not a bare name.
+        self.assertTrue(self._matches("key_type = RSA"))
+        for line in (
+            "name = RSA", "rsa = response_status_average", "return RSA",
+            "other_key_type = RSA", "key_type_suffix = RSA", "key_type = rsa_status",
+            "key_type = RC2", "key_type = DES", "key_type = RC4",
+        ):
+            with self.subTest(line=line):
+                self.assertFalse(self._matches(line), line)
+
     def test_deep_ordinary_import_classification_is_bounded(self):
         # R4-S1: dots must not be partitioned exponentially by the import arm.
         # A subprocess timeout both proves the bound and reaps a stalled regex.

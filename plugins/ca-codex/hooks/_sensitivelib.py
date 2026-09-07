@@ -60,6 +60,7 @@ CRYPTO_RE = re.compile(
     r"(?:new|create|generate|construct|import_?key|encrypt|decrypt|sign|verify"
     r"|(?:rsa)?(?:public|private)(?:key|numbers)|rsakey|mode_)\w*\b"
     rf"""|\b(?:cipher|algorithm)["']?\s*[:=]\s*["']?{_SHORT_CRYPTO_NAME}\b"""
+    r"""|\bkey_type["']?\s*[:=]\s*["']?rsa\b"""
     rf"""|\b(?:Cipher|KeyFactory)\s*\.\s*getInstance\s*\(\s*["']{_SHORT_CRYPTO_NAME}\b"""
     rf"|\b(?:Cipher|PublicKey|algorithms|asymmetric|Cryptography)\s*\.\s*{_SHORT_CRYPTO_NAME}\b"
     rf"|\bcrypto/{_SHORT_CRYPTO_NAME}\b"

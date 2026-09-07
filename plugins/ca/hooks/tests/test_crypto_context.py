@@ -83,6 +83,24 @@ class CryptoContextHookTest(unittest.TestCase):
                   encoding="utf-8") as stream:
             return stream.read()
 
+    def test_rsa_key_type_requires_approval_in_both_gates(self):
+        # RSA-01: real staged bytes, with neither consumer nor Git mocked.
+        self._stage("key_type = RSA\n")
+        self._assert_admission(True)
+
+    def test_rsa_key_type_pass_binds_exact_line(self):
+        # RSA-02/03: genuine producer identity, stale refusal, ordinary controls.
+        self._stage("key_type = RSA\n")
+        marker = self._record_context_pass()
+        self.assertIn(hashlib.sha256(b"key_type = RSA").hexdigest(), marker.splitlines())
+        self._assert_admission(False)
+        self._write("sample.py", "key_type = RSA  # changed configuration\n")
+        self._git("add", "sample.py")
+        self._assert_admission(True)
+        self._write("sample.py", "name = RSA\nrsa = response_status_average\nrc2 = 2\n")
+        self._git("add", "sample.py")
+        self._assert_admission(False)
+
     def _with_diff_response(self, entry, diff, exit_code=0):
         # Fault injection at the Git transport only; real gate decisions run.
         response = ("raise subprocess.TimeoutExpired(args,0.01)" if exit_code == "timeout" else
