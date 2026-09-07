@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.8] - 2026-09-06
+
+### Fixed
+
+- Keep task-board lifecycles Git-clean by locally excluding the retained OS-lock sidecar during initialization, with an explicit repair option for existing repositories.
+
 ## [2.17.7] - 2026-09-06
 
 ### Fixed

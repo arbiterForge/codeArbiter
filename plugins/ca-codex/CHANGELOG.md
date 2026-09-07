@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.8] - 2026-09-06
+
+### Fixed
+
+- Keep task-board lifecycles Git-clean by locally excluding the retained OS-lock sidecar during initialization, with an explicit repair option for existing repositories.
+
 ## [0.9.7] - 2026-09-06
 
 ### Fixed
