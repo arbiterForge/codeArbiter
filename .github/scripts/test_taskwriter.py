@@ -1129,14 +1129,34 @@ class AddRationaleTest(unittest.TestCase):
                 self.assertIsNotNone(tb.add_error(desc="d", rationale=bad))
 
     def test_add_rationale_is_exposed_by_the_taskwrite_cli(self):
-        # A helper extension nobody can invoke is the defect class this
-        # campaign already hit once (a mechanism with no CLI entry point
-        # while prose aimed at it), so assert the flag is actually wired.
-        source = os.path.join(HOOKS, "taskwrite.py")
-        with open(source, encoding="utf-8") as handle:
-            text = handle.read()
-        self.assertIn('"--desc"', text)
-        self.assertIn("rationale=args.rationale", text)
+        import subprocess
+        import tempfile
+
+        title = "parser drops the final row"
+        rationale = "no action: upstream fixes it in 4.2"
+        with tempfile.TemporaryDirectory() as root:
+            state = os.path.join(root, ".codearbiter")
+            os.mkdir(state)
+            board = os.path.join(state, "open-tasks.md")
+            with open(board, "w", encoding="utf-8") as handle:
+                handle.write(self.BOARD)
+            env = os.environ.copy()
+            env["CLAUDE_PROJECT_DIR"] = root
+            result = subprocess.run(
+                [sys.executable, os.path.join(HOOKS, "taskwrite.py"),
+                 "add", title, "--desc", rationale],
+                cwd=root, env=env, capture_output=True, text=True,
+                encoding="utf-8", timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            with open(board, encoding="utf-8") as handle:
+                persisted = handle.read()
+            self.assertIn(f"- [ ] {title}\n  - Desc: {rationale}\n", persisted)
+            tasks = tb.parse_board(persisted)
+            self.assertEqual(len(tasks), 1)
+            self.assertEqual(tasks[0].title, title)
+            self.assertEqual(tasks[0].desc, rationale)
+            self.assertEqual(tasks[0].state, "queued")
 
 
 if __name__ == "__main__":
