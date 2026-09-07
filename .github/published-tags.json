@@ -700,6 +700,21 @@
       "commit_sha": "f614620858ac06c4867120987c3bf91b5fa0db10",
       "object_type": "tag",
       "object_sha": "d5a13d272182a26301cec0e9194a2f8cdeb8a5eb"
+    },
+    "v2.17.7": {
+      "commit_sha": "cf86fe128728c47714ac0632fafeabdc492ed1c7",
+      "object_sha": "2acc24e9fd3c9db9b8efef7c24c113347cb2fe17",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.9.7": {
+      "object_type": "tag",
+      "commit_sha": "cf86fe128728c47714ac0632fafeabdc492ed1c7",
+      "object_sha": "50ad3ab70b78aad689323161fb98d4f04cd0db68"
+    },
+    "ca-pi-v0.10.8": {
+      "object_type": "tag",
+      "commit_sha": "cf86fe128728c47714ac0632fafeabdc492ed1c7",
+      "object_sha": "d86db1c06d0da3b707f4ff8840b4db17d8d98b4c"
     }
   }
 }
