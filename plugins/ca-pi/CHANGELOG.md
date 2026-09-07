@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.8] - 2026-09-06
+
+### Fixed
+
+- Distinguish ordinary return-code identifiers such as `rc2` from cipher configuration in the crypto/TLS commit gate.
+
 ## [0.10.7] - 2026-09-06
 
 ### Fixed

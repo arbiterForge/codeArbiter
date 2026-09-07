@@ -1080,7 +1080,7 @@ class TestPreCommitFailClosedBranches(_GitFixture):
 
     def test_staged_names_read_failure_fails_closed_h14(self):
         ge = _load_git_enforce()
-        ge.cached_added_lines = lambda cwd: []  # no sensitive content -> pass H-09b/H-10b
+        ge.cached_added_lines = lambda cwd: ge.security_scan_diff("")  # empty shared scan
         ge.cached_names = lambda cwd: None
         buf = io.StringIO()
         with contextlib.redirect_stderr(buf):

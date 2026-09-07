@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.7] - 2026-09-06
+
+### Fixed
+
+- Distinguish ordinary return-code identifiers such as `rc2` from cipher configuration in the crypto/TLS commit gate.
+
 ## [0.9.6] - 2026-09-06
 
 ### Fixed

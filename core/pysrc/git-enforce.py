@@ -32,7 +32,7 @@ from _gitexec import git_executable  # noqa: E402
 from _hooklib import (  # noqa: E402
     CRYPTO_RE, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS,
     arbiter_active, content_digest, is_migration_path, line_digest,
-    marker_fresh, sensitive_scan_added_lines, set_host, utf8_stdio,
+    marker_fresh, security_scan_diff, set_host, utf8_stdio,
 )
 
 
@@ -164,7 +164,7 @@ def cached_added_lines(cwd):
     r = _git([*SECURITY_DIFF_GIT_ARGS, "--cached"], cwd)
     if r is None or r.returncode != 0:
         return None
-    return sensitive_scan_added_lines(r.stdout)
+    return security_scan_diff(r.stdout)
 
 
 def cached_names(cwd):
@@ -229,10 +229,9 @@ def pre_commit(root):
     if added is None:
         block("H-09b", "the staged diff for the crypto/secret scan could not be read — "
                        "failing closed (ORCHESTRATOR §2).")
-    sensitive = [ln for ln in added if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
+    sensitive = added.digests
     if sensitive:
-        joined = "\n".join(added)
-        touches_crypto = bool(CRYPTO_RE.search(joined))
+        touches_crypto = added.crypto
         kind = "crypto/TLS" if touches_crypto else "secret"
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
@@ -242,7 +241,7 @@ def pre_commit(root):
             block(tag, f"This commit introduces {kind} changes, but no security-gate pass is "
                        f"recorded (#161 git backstop). Run the {skill} gate, then commit.")
         approved = _marker_set(marker_root, "security-gate-passed")
-        uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
+        uncovered = sensitive - approved
         if uncovered:
             block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered by the "
                        f"recorded security-gate pass (#161 git backstop) — re-run the {skill} "
