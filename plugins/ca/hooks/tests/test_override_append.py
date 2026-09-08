@@ -135,7 +135,9 @@ class LockedOverrideAppendTests(unittest.TestCase):
 
     def test_zero_progress_write_and_close_failure_release_the_lock(self):
         handle = object()
-        with mock.patch.object(appender, "acquire_lock", return_value=handle), \
+        with mock.patch.object(appender, "_root", return_value=self.root), \
+             mock.patch.object(appender, "_identity", return_value="test@example.com"), \
+             mock.patch.object(appender, "acquire_lock", return_value=handle), \
              mock.patch.object(appender, "release_lock") as release, \
              mock.patch.object(appender.os, "open", return_value=123), \
              mock.patch.object(appender.os, "write", return_value=0), \
@@ -144,7 +146,9 @@ class LockedOverrideAppendTests(unittest.TestCase):
                 appender.append_override(gate="H-05", reason="specific", cwd=self.root)
         release.assert_called_once_with(handle)
 
-        with mock.patch.object(appender, "acquire_lock", return_value=handle), \
+        with mock.patch.object(appender, "_root", return_value=self.root), \
+             mock.patch.object(appender, "_identity", return_value="test@example.com"), \
+             mock.patch.object(appender, "acquire_lock", return_value=handle), \
              mock.patch.object(appender, "release_lock") as release, \
              mock.patch.object(appender.os, "open", return_value=123), \
              mock.patch.object(appender.os, "write", side_effect=lambda _fd, raw: len(raw)), \
