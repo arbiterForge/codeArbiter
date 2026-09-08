@@ -307,10 +307,27 @@ class TestFailOpenAC2(_GateEventsFixture):
 
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": _NoopMsvcrt()}), \
-             mock.patch.object(_hooklib, "_GATE_EVENTS_WINDOWS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
              mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
              mock.patch.object(_hooklib, "release_lock"):
             _hooklib.warn("serialize same-process writers before sidecar acquisition")
+
+        self.assertEqual(observed_process_lock_state, [True])
+        self.assertFalse(process_lock.locked())
+
+    def test_posix_process_lock_precedes_sidecar_acquisition(self):
+        process_lock = threading.Lock()
+        observed_process_lock_state = []
+
+        def acquire_sidecar(_path):
+            observed_process_lock_state.append(process_lock.locked())
+            return object()
+
+        with mock.patch.object(os, "name", "posix"), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
+             mock.patch.object(_hooklib, "release_lock"):
+            _hooklib.warn("serialize POSIX same-process writers before sidecar acquisition")
 
         self.assertEqual(observed_process_lock_state, [True])
         self.assertFalse(process_lock.locked())

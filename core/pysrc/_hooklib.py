@@ -218,8 +218,10 @@ from _sensitivelib import (  # noqa: F401
 )
 
 
-# Serialize same-process Windows writers before taking the cross-process lock.
-_GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
+# Serialize same-process writers before taking the bounded cross-process lock.
+# POSIX flock and Windows byte-range locks are process-scoped, so sibling
+# threads can otherwise burn the shared wait budget contending with each other.
+_GATE_EVENTS_PROCESS_LOCK = threading.Lock()
 _WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
 _WINDOWS_LOCK_RETRY_SECONDS = 0.01
 _WINDOWS_CRT_EDEADLK = 36
@@ -534,17 +536,16 @@ def _log_gate_event(kind, tag, msg):
             flags |= os.O_BINARY
         process_lock_acquired = False
         try:
-            if os.name == "nt":
-                _GATE_EVENTS_WINDOWS_LOCK.acquire()
-                process_lock_acquired = True
+            _GATE_EVENTS_PROCESS_LOCK.acquire()
+            process_lock_acquired = True
             audit_lock = acquire_lock(audit_lock_key(root, log_path))
         except Exception:
             if process_lock_acquired:
-                _GATE_EVENTS_WINDOWS_LOCK.release()
+                _GATE_EVENTS_PROCESS_LOCK.release()
             raise
         if audit_lock is None:
             if process_lock_acquired:
-                _GATE_EVENTS_WINDOWS_LOCK.release()
+                _GATE_EVENTS_PROCESS_LOCK.release()
             return
         fd = None
         os_lock_acquired = False
@@ -582,7 +583,7 @@ def _log_gate_event(kind, tag, msg):
                     release_lock(audit_lock)
                 finally:
                     if process_lock_acquired:
-                        _GATE_EVENTS_WINDOWS_LOCK.release()
+                        _GATE_EVENTS_PROCESS_LOCK.release()
     except Exception:  # noqa: BLE001 — fail-open: the sink must never affect the gate
         pass
 
