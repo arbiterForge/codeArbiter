@@ -289,7 +289,9 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
         target = self.root / TARGET
         self.write(TARGET, b"# append-only overrides\n")
         real_realpath = os.path.realpath
-        alias_destination = str(self.root / ".codearbiter" / "real-overrides.log")
+        alias_destination = str(
+            Path(real_realpath(self.root)) / ".codearbiter" / "real-overrides.log"
+        )
 
         def linked_realpath(path, *args, **kwargs):
             if os.fspath(path) == os.fspath(target):
