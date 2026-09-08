@@ -72,6 +72,7 @@ class _Fixture(unittest.TestCase):
     def setUp(self):
         self._td = tempfile.TemporaryDirectory()
         self.root = self._td.name
+        os.makedirs(os.path.join(self.root, ".git"))
         ca_dir = os.path.join(self.root, ".codearbiter")
         os.makedirs(ca_dir)
         with open(os.path.join(ca_dir, "CONTEXT.md"), "w", encoding="utf-8") as f:

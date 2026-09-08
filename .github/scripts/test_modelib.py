@@ -43,6 +43,7 @@ class TestSettleDevCloseLedgerReplay(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.ca = os.path.join(self.root, ".codearbiter")
         self.markers = os.path.join(self.ca, ".markers")
         os.makedirs(self.markers)
@@ -150,6 +151,7 @@ class TestCurrentModeResolution(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         os.makedirs(self.markers)
         self.mode_path = os.path.join(self.markers, "mode")
@@ -228,6 +230,7 @@ class TestWriteMode(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         self.mode_path = os.path.join(self.markers, "mode")
         self.entry_dir = os.path.join(self.markers, "mode.d")
@@ -306,6 +309,7 @@ class TestSessionKeying(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -402,6 +406,7 @@ class TestFlip(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.log_path = _modelib._overrides_log_path(self.root)
 
     def tearDown(self):
@@ -495,6 +500,7 @@ class TestLedgerBacks(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter"))
         self.log = os.path.join(self.root, ".codearbiter", "overrides.log")
 
@@ -581,6 +587,7 @@ class TestFlipFailsSafeUnderAnUnwritableMarkersDir(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -661,6 +668,7 @@ class TestSettleGenericModeExitRow(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter", ".markers"))
         self.log = os.path.join(self.root, ".codearbiter", "overrides.log")
         with open(self.log, "w", encoding="utf-8") as f:
@@ -761,6 +769,7 @@ class TestWriteModeIsVerified(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -937,6 +946,7 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()

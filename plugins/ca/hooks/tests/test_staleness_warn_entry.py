@@ -64,6 +64,7 @@ class _Fixture(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self._home = redirect_home(self._tmp.name)
         self.root = os.path.join(self._tmp.name, "repo")
+        os.makedirs(os.path.join(self.root, ".git"))
         self.cad = os.path.join(self.root, ".codearbiter")
         os.makedirs(self.cad)
         with open(os.path.join(self.cad, "CONTEXT.md"), "w", encoding="utf-8") as f:
