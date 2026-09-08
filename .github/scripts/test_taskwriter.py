@@ -619,6 +619,13 @@ class ArchiveTransformTest(unittest.TestCase):
         _open, new_done = tb.archive_transform(self.OPEN, "", self._task("a.b.0001"))
         self.assertTrue(new_done.startswith(tb.DONE_TASKS_HEADING))
 
+    def test_done_template_describes_the_complete_archived_task_block(self):
+        self.assertIn(
+            "Each archived task preserves its original lifecycle line and "
+            "indented task block verbatim",
+            tb.DONE_TASKS,
+        )
+
     def test_archive_rerun_does_not_duplicate_by_dotted_id(self):
         # B-21. Dedup is on the ID, not the text.
         #
