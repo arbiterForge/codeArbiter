@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.9] - 2026-09-07
+
+### Fixed
+
+- Use the same documented done-tasks template for initialization and first-use archiving, with byte-identical UTF-8 headers on Windows and POSIX.
+
 ## [0.9.8] - 2026-09-06
 
 ### Fixed

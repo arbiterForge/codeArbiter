@@ -21,6 +21,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _gitexec import git_executable, root_bound_git_env  # noqa: E402
+from _taskboardlib import DONE_TASKS  # noqa: E402 — shared archive template (#625)
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _hooklib  # noqa: E402 — set_host DI seam (#257)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
@@ -91,21 +92,6 @@ OVERRIDES = """\
 # Format: [ISO-8601] | BY: <name> <<email>> | GATE: <gate bypassed> | REASON: <reason>
 # Written only by /override. The statusline counts non-comment lines after the
 # last-checkpoint marker as "overrides since last checkpoint."
-"""
-
-DONE_TASKS = """\
-# Done tasks
-
-Completed work swept off the board by `taskwrite archive`, newest last.
-APPEND-ONLY: entries are added here and never edited or removed, so a
-finished task has exactly one permanent record.
-
-Each line is the task's original lifecycle line, moved verbatim from
-`open-tasks.md` with its `(done YYYY-MM-DD)` stamp intact — the stamp is
-what makes an entry ageable, and what `archive` refuses to invent.
-
-Written only by `taskwrite archive`. `/ca:standup` proposes the sweep with
-per-item confirmation; nothing sweeps automatically.
 """
 
 FILES = {
@@ -209,7 +195,10 @@ def main(argv=None):
     for fname, content in FILES.items():
         fp = os.path.join(cad, fname)
         if not os.path.exists(fp):
-            with open(fp, "w", encoding="utf-8") as f:
+            # Match taskwrite's LF output for this shared append-only template
+            # on Windows too; other scaffold files retain their existing EOLs.
+            newline = "\n" if fname == "done-tasks.md" else None
+            with open(fp, "w", encoding="utf-8", newline=newline) as f:
                 f.write(content)
             created.append(fname)
 

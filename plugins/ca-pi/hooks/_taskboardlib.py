@@ -704,6 +704,22 @@ ARCHIVE_CUTOFF_DAYS = 14
 
 DONE_TASKS_HEADING = "# Done tasks"
 
+# The canonical documented archive template, shared by init and first use.
+DONE_TASKS = """\
+# Done tasks
+
+Completed work swept off the board by `taskwrite archive`, newest last.
+APPEND-ONLY: entries are added here and never edited or removed, so a
+finished task has exactly one permanent record.
+
+Each line is the task's original lifecycle line, moved verbatim from
+`open-tasks.md` with its `(done YYYY-MM-DD)` stamp intact — the stamp is
+what makes an entry ageable, and what `archive` refuses to invent.
+
+Written only by `taskwrite archive`. `/ca:standup` proposes the sweep with
+per-item confirmation; nothing sweeps automatically.
+"""
+
 
 def archive_candidates(text, *, today, cutoff_days=ARCHIVE_CUTOFF_DAYS):
     """`(aged, undated)` — done tasks eligible for the archival sweep.
@@ -862,7 +878,7 @@ def archive_transform(open_text, done_text, task):
     if already_archived(done_text, task):
         new_done = done_text
     else:
-        body = done_text if done_text.strip() else DONE_TASKS_HEADING + "\n"
+        body = done_text if done_text.strip() else DONE_TASKS
         if not body.endswith("\n"):
             body += "\n"
         new_done = body + "\n".join(block) + "\n"
