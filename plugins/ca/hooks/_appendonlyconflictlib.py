@@ -84,9 +84,13 @@ def _relative_target(root, target):
         raise ResolutionError("target must be a contained supported append-only path")
     path = root / normalized
     try:
-        path.resolve(strict=False).relative_to(root)
+        resolved_root = os.path.realpath(root)
+        resolved_path = os.path.realpath(path)
+        common = os.path.commonpath((resolved_root, resolved_path))
     except ValueError as error:
         raise ResolutionError("target escapes the repository root") from error
+    if os.path.normcase(common) != os.path.normcase(resolved_root):
+        raise ResolutionError("target escapes the repository root")
     relative = normalized.as_posix()
     if relative not in SUPPORTED_AUDIT_PATHS or "audit" not in classify_protected(
         str(path), str(root)

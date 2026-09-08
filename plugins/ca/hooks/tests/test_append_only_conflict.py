@@ -249,6 +249,58 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
                     resolver._relative_target(self.root, relative)
                 self.assertEqual((self.root / relative).read_bytes(), before)
 
+    def test_relative_target_realpaths_divergent_root_spelling_before_containment(self):
+        """Equivalent 8.3/symlink spellings must reach the allowlist decision."""
+        relative = ".codearbiter/triage.log"
+        target = self.root / relative
+        self.write(relative, b"# append-only audit\n")
+        real_realpath = os.path.realpath
+        canonical_root = str(self.root.parent / "canonical-repository-root")
+        canonical_target = str(Path(canonical_root) / relative)
+
+        def divergent_realpath(path, *args, **kwargs):
+            spelling = os.fspath(path)
+            if spelling == os.fspath(self.root):
+                return canonical_root
+            if spelling == os.fspath(target):
+                return canonical_target
+            return real_realpath(path, *args, **kwargs)
+
+        with mock.patch.object(resolver.os.path, "realpath", side_effect=divergent_realpath):
+            with self.assertRaisesRegex(resolver.ResolutionError, "not a supported"):
+                resolver._relative_target(self.root, relative)
+
+    def test_relative_target_rejects_supported_path_resolving_outside_root(self):
+        target = self.root / TARGET
+        self.write(TARGET, b"# append-only overrides\n")
+        real_realpath = os.path.realpath
+        outside = str(self.root.parent / "outside-repository" / "overrides.log")
+
+        def escaping_realpath(path, *args, **kwargs):
+            if os.fspath(path) == os.fspath(target):
+                return outside
+            return real_realpath(path, *args, **kwargs)
+
+        with mock.patch.object(resolver.os.path, "realpath", side_effect=escaping_realpath):
+            with self.assertRaisesRegex(resolver.ResolutionError, "target escapes"):
+                resolver._relative_target(self.root, TARGET)
+
+    def test_relative_target_rejects_supported_final_link_resolving_inside_root(self):
+        target = self.root / TARGET
+        self.write(TARGET, b"# append-only overrides\n")
+        real_realpath = os.path.realpath
+        alias_destination = str(self.root / ".codearbiter" / "real-overrides.log")
+
+        def linked_realpath(path, *args, **kwargs):
+            if os.fspath(path) == os.fspath(target):
+                return alias_destination
+            return real_realpath(path, *args, **kwargs)
+
+        with mock.patch.object(resolver.os.path, "realpath", side_effect=linked_realpath):
+            with mock.patch.object(Path, "is_symlink", return_value=True):
+                with self.assertRaisesRegex(resolver.ResolutionError, "regular non-link"):
+                    resolver._relative_target(self.root, TARGET)
+
     def test_rejects_empty_reason_before_mutation(self):
         self.conflict()
         before = (self.root / TARGET).read_bytes()
@@ -369,7 +421,7 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
 
         def append_before_replace(path, raw, *args, **kwargs):
             nonlocal injected
-            if not injected and Path(path) == self.root / TARGET:
+            if not injected and os.path.samefile(path, self.root / TARGET):
                 injected = True
                 with Path(path).open("ab") as handle:
                     handle.write(b"concurrent append during resolution\n")
