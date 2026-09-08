@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.10] - 2026-09-07
+
+### Fixed
+
+- Use the same documented done-tasks template for initialization and first-use archiving, with byte-identical UTF-8 headers on Windows and POSIX.
+
 ## [0.10.9] - 2026-09-06
 
 ### Fixed

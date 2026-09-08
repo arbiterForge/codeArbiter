@@ -619,6 +619,13 @@ class ArchiveTransformTest(unittest.TestCase):
         _open, new_done = tb.archive_transform(self.OPEN, "", self._task("a.b.0001"))
         self.assertTrue(new_done.startswith(tb.DONE_TASKS_HEADING))
 
+    def test_done_template_describes_the_complete_archived_task_block(self):
+        self.assertIn(
+            "Each archived task preserves its original lifecycle line and "
+            "indented task block verbatim",
+            tb.DONE_TASKS,
+        )
+
     def test_archive_rerun_does_not_duplicate_by_dotted_id(self):
         # B-21. Dedup is on the ID, not the text.
         #
@@ -719,6 +726,60 @@ class DoneTasksShapeTest(unittest.TestCase):
         self.assertTrue(
             init.FILES["done-tasks.md"].startswith(tb.DONE_TASKS_HEADING),
             "the scaffold heading and DONE_TASKS_HEADING must agree")
+
+    def test_first_archive_uses_the_complete_init_template(self):
+        # #625: equal headings hid a missing append-only/stamp/writer contract.
+        scaffold = self._init_module().FILES["done-tasks.md"]
+        block = "- [x] a.b.0001 - finished (done 2026-07-01)\n  - Desc: kept\n"
+        task = tb.parse_board(block)[0]
+        for empty in ("", " \t\r\n"):
+            with self.subTest(empty=repr(empty)):
+                new_open, done = tb.archive_transform(block, empty, task)
+                self.assertEqual(done.encode("utf-8"), (scaffold + block).encode("utf-8"))
+                self.assertEqual(new_open, "\n")
+
+    def test_real_cli_first_archive_matches_init_bytes_on_every_host(self):
+        # #625: read bytes, not universal-newline text; Windows must prove the
+        # same persisted header as POSIX. Each CLI loads its own generated host.
+        import subprocess
+        import tempfile
+        from pathlib import Path
+
+        block = b"- [x] a.b.0001 - finished (done 2026-07-01)\n  - Desc: kept\n"
+        env = os.environ.copy()
+        for key in list(env):
+            if key.startswith("GIT_") or key == "CLAUDE_PROJECT_DIR":
+                env.pop(key)
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
+                   PYTHONDONTWRITEBYTECODE="1")
+        for host in ("ca", "ca-codex", "ca-pi"):
+            with self.subTest(host=host), tempfile.TemporaryDirectory() as temp:
+                hooks = Path(REPO) / "plugins" / host / "hooks"
+                fresh, legacy = Path(temp).resolve() / "fresh", Path(temp).resolve() / "legacy"
+                for root in (fresh, legacy):
+                    root.mkdir()
+                    result = subprocess.run(["git", "init", "-q"], cwd=root,
+                                            env=env, capture_output=True, timeout=30)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                initialized = subprocess.run(
+                    [sys.executable, "-B", str(hooks / "init-codearbiter.py"),
+                     "--root", str(fresh)], cwd=fresh, env=env,
+                    capture_output=True, timeout=30)
+                self.assertEqual(initialized.returncode, 0, initialized.stderr)
+                scaffold = (fresh / ".codearbiter/done-tasks.md").read_bytes()
+                state = legacy / ".codearbiter"
+                state.mkdir()
+                (state / "open-tasks.md").write_bytes(block)
+                self.assertFalse((state / "done-tasks.md").exists())
+                archived = subprocess.run(
+                    [sys.executable, "-B", str(hooks / "taskwrite.py"),
+                     "archive", "a.b.0001"], cwd=legacy,
+                    env=dict(env, CLAUDE_PROJECT_DIR=str(legacy)),
+                    capture_output=True, timeout=30)
+                self.assertEqual(archived.returncode, 0, archived.stderr)
+                self.assertEqual((state / "done-tasks.md").read_bytes(), scaffold + block)
+                self.assertEqual(scaffold, self._init_module().FILES["done-tasks.md"].encode("utf-8"))
+                self.assertEqual((state / "open-tasks.md").read_bytes(), b"\n")
 
     def test_done_tasks_shape_scaffold_is_a_valid_archive_target(self):
         # The scaffolded text must accept an appended entry without the
