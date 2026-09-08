@@ -674,6 +674,7 @@ class TestDevExitAudit(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.ca = os.path.join(self.root, ".codearbiter")
         self.markers = os.path.join(self.ca, ".markers")
         os.makedirs(self.markers)
@@ -888,6 +889,7 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.ca = os.path.join(self.root, ".codearbiter")
         self.markers = os.path.join(self.ca, ".markers")
         os.makedirs(self.markers)
@@ -940,6 +942,45 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
             rec = json.load(f)
         self.assertTrue(any("DEV: exit" in ln for ln in rec.get("lines", [])),
                         "the pending record must carry the owed DEV: exit line")
+
+    def test_override_append_uses_shared_sidecar_lock_and_fails_soft_on_contention(self):
+        with mock.patch.object(_mod._modelib, "acquire_lock", return_value=None) as acquire:
+            self.assertFalse(_mod._modelib._append_override_line(self.root, "owed\n"))
+
+        acquire.assert_called_once_with(_mod._modelib.audit_lock_key(self.root, self.log))
+        self.assertEqual(self._read_log(),
+                         "[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n")
+
+    def test_override_append_holds_lock_through_fsync_then_releases(self):
+        handle = object()
+        order = []
+        real_fsync = os.fsync
+
+        def fsync(fd):
+            order.append("fsync")
+            return real_fsync(fd)
+
+        def release(observed):
+            self.assertIs(observed, handle)
+            order.append("release")
+
+        with mock.patch.object(_mod._modelib, "acquire_lock", return_value=handle), \
+             mock.patch.object(_mod._modelib, "release_lock", side_effect=release), \
+             mock.patch.object(_mod._modelib.os, "fsync", side_effect=fsync):
+            self.assertTrue(_mod._modelib._append_override_line(self.root, "locked row\n"))
+
+        self.assertEqual(order, ["fsync", "release"])
+        self.assertTrue(self._read_log().endswith("locked row\n"))
+
+    def test_override_fsync_failure_returns_false_and_releases_lock(self):
+        handle = object()
+        with mock.patch.object(_mod._modelib, "acquire_lock", return_value=handle), \
+             mock.patch.object(_mod._modelib, "release_lock") as release, \
+             mock.patch.object(_mod._modelib.os, "fsync", side_effect=OSError("fsync failed")):
+            self.assertFalse(_mod._modelib._append_override_line(self.root, "uncertain row\n"))
+        release.assert_called_once_with(handle)
+        self.assertTrue(self._read_log().endswith("uncertain row\n"),
+                        "a post-write durability failure is surfaced without rewriting audit bytes")
 
     def test_later_session_appends_the_missing_exit_exactly_once(self):
         # AC-2: the next SessionStart flushes the owed close and clears the

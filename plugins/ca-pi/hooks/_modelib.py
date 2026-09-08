@@ -25,7 +25,7 @@ import os
 import re
 
 from _activationlib import marker_root
-from _hooklib import write_text_atomic
+from _hooklib import acquire_lock, audit_lock_key, release_lock, write_text_atomic
 
 
 # ---------------------------------------------------------------------------
@@ -645,12 +645,21 @@ def _overrides_has_line(root, line):
 
 def _append_override_line(root, line):
     """Append one audit line to overrides.log. True on a confirmed write."""
+    lock = None
     try:
-        with open(_overrides_log_path(root), "a", encoding="utf-8") as f:
+        path = _overrides_log_path(root)
+        lock = acquire_lock(audit_lock_key(root, path))
+        if lock is None:
+            return False
+        with open(path, "a", encoding="utf-8") as f:
             f.write(line)
+            f.flush()
+            os.fsync(f.fileno())
         return True
-    except OSError:
+    except Exception:  # noqa: BLE001 — mode audit settlement remains fail-soft
         return False
+    finally:
+        release_lock(lock)
 
 
 def _dev_dropped_close_note(count, host_name=None):

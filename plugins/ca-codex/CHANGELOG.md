@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.10] - 2026-09-08
+
+### Fixed
+
+- Resolve genuine append-only audit-log conflicts through a fail-closed helper that preserves both branch histories and records the immediate H-05 authorization, with shared audit-path locks and a locked mandatory-override writer preventing concurrent row loss.
+
 ## [0.9.9] - 2026-09-07
 
 ### Fixed

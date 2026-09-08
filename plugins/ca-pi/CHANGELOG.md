@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.11] - 2026-09-08
+
+### Fixed
+
+- Resolve genuine append-only audit-log conflicts through a fail-closed helper that preserves both branch histories and records the immediate H-05 authorization, with shared audit-path locks and a locked mandatory-override writer preventing concurrent row loss.
+
 ## [0.10.10] - 2026-09-07
 
 ### Fixed

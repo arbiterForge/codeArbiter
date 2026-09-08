@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.17.10] - 2026-09-08
+
+### Fixed
+
+- Resolve genuine append-only audit-log conflicts through a fail-closed helper that preserves both branch histories and records the immediate H-05 authorization, with shared audit-path locks and a locked mandatory-override writer preventing concurrent row loss.
+
 ## [2.17.9] - 2026-09-07
 
 ### Fixed

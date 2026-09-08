@@ -96,6 +96,7 @@
 #                                         non-blocking + bounded LOCK_WAIT retry spin,
 #                                         fail-soft None on contention/timeout/OSError
 #   release_lock(handle) -> None          release + close; None handle is a no-op
+#   audit_lock_key(root, path) -> str     trusted Git-owned key for an audit path
 #   block(tag, msg) -> None              BLOCK tool call: print to stderr and exit 2
 #   remind(tag, msg) -> None             non-blocking nudge to stderr
 #   warn(msg) -> None                    loud degradation breadcrumb to stderr
@@ -105,6 +106,7 @@
 
 import datetime
 import errno
+import hashlib
 import json
 import os
 import re
@@ -216,8 +218,10 @@ from _sensitivelib import (  # noqa: F401
 )
 
 
-# Serialize same-process Windows writers before taking the cross-process lock.
-_GATE_EVENTS_WINDOWS_LOCK = threading.Lock()
+# Serialize same-process writers before taking the bounded cross-process lock.
+# POSIX flock and Windows byte-range locks are process-scoped, so sibling
+# threads can otherwise burn the shared wait budget contending with each other.
+_GATE_EVENTS_PROCESS_LOCK = threading.Lock()
 _WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
 _WINDOWS_LOCK_RETRY_SECONDS = 0.01
 _WINDOWS_CRT_EDEADLK = 36
@@ -409,6 +413,63 @@ def release_lock(handle):
             pass
 
 
+def audit_lock_key(root, path):
+    """Return a deterministic audit lock key beneath Git-owned metadata.
+
+    Audit paths and their siblings are repository-controlled, so an adjacent
+    lock can be a checked-out symlink that redirects acquire_lock's seed byte
+    outside the checkout. Linked worktrees resolve to their common Git
+    directory and therefore share one trusted key per repository-relative path.
+    """
+    root = os.path.abspath(os.fspath(root))
+    path = os.path.abspath(os.fspath(path))
+    try:
+        if os.path.normcase(os.path.commonpath((root, path))) != os.path.normcase(root):
+            raise ValueError
+    except (OSError, ValueError) as error:
+        raise OSError("audit lock target is outside the repository root") from error
+
+    dotgit = os.path.join(root, ".git")
+    if os.path.isdir(dotgit):
+        common = dotgit
+    elif os.path.isfile(dotgit):
+        try:
+            with open(dotgit, encoding="utf-8") as handle:
+                pointer = handle.read(4097)
+        except OSError as error:
+            raise OSError("cannot read linked-worktree Git metadata") from error
+        if len(pointer) > 4096 or not pointer.startswith("gitdir:"):
+            raise OSError("linked-worktree Git metadata is malformed")
+        gitdir = pointer[7:].strip()
+        if not gitdir:
+            raise OSError("linked-worktree Git directory is empty")
+        if not os.path.isabs(gitdir):
+            gitdir = os.path.join(root, gitdir)
+        commondir_file = os.path.join(gitdir, "commondir")
+        if os.path.isfile(commondir_file):
+            try:
+                with open(commondir_file, encoding="utf-8") as handle:
+                    relative_common = handle.read(4097).strip()
+            except OSError as error:
+                raise OSError("cannot read Git common-directory metadata") from error
+            if not relative_common or len(relative_common) > 4096:
+                raise OSError("Git common-directory metadata is malformed")
+            common = relative_common if os.path.isabs(relative_common) else os.path.join(
+                gitdir, relative_common
+            )
+        else:
+            common = gitdir
+    else:
+        raise OSError("repository Git metadata is unavailable for audit locking")
+
+    common = os.path.realpath(common)
+    if not os.path.isdir(common):
+        raise OSError("Git common directory is unavailable for audit locking")
+    relative = os.path.relpath(path, root).replace("\\", "/")
+    digest = hashlib.sha256(relative.encode("utf-8")).hexdigest()
+    return os.path.join(common, "codearbiter-audit-locks", digest)
+
+
 # The H-11 authoring-marker freshness window (issue #567) — the single
 # declaration every `marker_fresh(marker, minutes)` call site resolves by
 # import. Previously five independent `30` literals (pre-write.py,
@@ -469,17 +530,27 @@ def _log_gate_event(kind, tag, msg):
             host = "unknown"
         tag_part = f"[{tag}] " if tag else ""
         line = f"[{ts}] {kind} {tag_part}host={host} hook={hook} | {msg}\n"
+        log_path = os.path.join(cad, "gate-events.log")
         flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY
         if hasattr(os, "O_BINARY"):
             flags |= os.O_BINARY
         process_lock_acquired = False
-        if os.name == "nt":
-            _GATE_EVENTS_WINDOWS_LOCK.acquire()
+        try:
+            _GATE_EVENTS_PROCESS_LOCK.acquire()
             process_lock_acquired = True
+            audit_lock = acquire_lock(audit_lock_key(root, log_path))
+        except Exception:
+            if process_lock_acquired:
+                _GATE_EVENTS_PROCESS_LOCK.release()
+            raise
+        if audit_lock is None:
+            if process_lock_acquired:
+                _GATE_EVENTS_PROCESS_LOCK.release()
+            return
         fd = None
         os_lock_acquired = False
         try:
-            fd = os.open(os.path.join(cad, "gate-events.log"), flags, 0o600)
+            fd = os.open(log_path, flags, 0o600)
             if os.name == "nt":
                 import msvcrt
                 os.lseek(fd, 0, os.SEEK_SET)
@@ -504,10 +575,15 @@ def _log_gate_event(kind, tag, msg):
                     msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
                 except Exception:  # noqa: BLE001 — outer sink remains fail-open
                     pass
-            if process_lock_acquired:
-                _GATE_EVENTS_WINDOWS_LOCK.release()
-            if fd is not None:
-                os.close(fd)
+            try:
+                if fd is not None:
+                    os.close(fd)
+            finally:
+                try:
+                    release_lock(audit_lock)
+                finally:
+                    if process_lock_acquired:
+                        _GATE_EVENTS_PROCESS_LOCK.release()
     except Exception:  # noqa: BLE001 — fail-open: the sink must never affect the gate
         pass
 

@@ -85,6 +85,7 @@ def _repo(tmp, initialized=True, mode=None, session_id=None):
     """A minimal `.codearbiter` repo under `tmp`. `mode`/`session_id`, when
     given, seed the mode marker directly (bypassing flip()/prompt-submit.py,
     which is Lane B's surface)."""
+    os.makedirs(os.path.join(tmp, ".git"), exist_ok=True)
     cad = os.path.join(tmp, ".codearbiter")
     os.makedirs(cad, exist_ok=True)
     body = "<!--INITIALIZED-->\nstage: 2\n" if initialized else "_stub_\n"
@@ -162,6 +163,7 @@ class TestClearModeMarker(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter"))
 
     def tearDown(self):
@@ -230,6 +232,7 @@ class TestNoDeletedCommandNameStampedIntoOverridesLog(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter"))
 
     def tearDown(self):
@@ -518,6 +521,7 @@ class TestMigrateDevActiveMarker(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         os.makedirs(self.markers)
         self.legacy = os.path.join(self.markers, "dev-active")
@@ -641,6 +645,8 @@ class TestRootResolutionSplitFixed(unittest.TestCase):
         # the main checkout (`main_root`, what marker_root() escalates to).
         self.worktree_root = os.path.join(self._tmp.name, "worktree")
         self.main_root = os.path.join(self._tmp.name, "main-checkout")
+        os.makedirs(os.path.join(self.worktree_root, ".git"))
+        os.makedirs(os.path.join(self.main_root, ".git"))
         os.makedirs(os.path.join(self.worktree_root, ".codearbiter"))
         os.makedirs(os.path.join(self.main_root, ".codearbiter"))
 
