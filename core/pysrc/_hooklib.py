@@ -529,19 +529,26 @@ def _log_gate_event(kind, tag, msg):
         tag_part = f"[{tag}] " if tag else ""
         line = f"[{ts}] {kind} {tag_part}host={host} hook={hook} | {msg}\n"
         log_path = os.path.join(cad, "gate-events.log")
-        audit_lock = acquire_lock(audit_lock_key(root, log_path))
-        if audit_lock is None:
-            return
         flags = os.O_APPEND | os.O_CREAT | os.O_WRONLY
         if hasattr(os, "O_BINARY"):
             flags |= os.O_BINARY
         process_lock_acquired = False
-        fd = None
-        os_lock_acquired = False
         try:
             if os.name == "nt":
                 _GATE_EVENTS_WINDOWS_LOCK.acquire()
                 process_lock_acquired = True
+            audit_lock = acquire_lock(audit_lock_key(root, log_path))
+        except Exception:
+            if process_lock_acquired:
+                _GATE_EVENTS_WINDOWS_LOCK.release()
+            raise
+        if audit_lock is None:
+            if process_lock_acquired:
+                _GATE_EVENTS_WINDOWS_LOCK.release()
+            return
+        fd = None
+        os_lock_acquired = False
+        try:
             fd = os.open(log_path, flags, 0o600)
             if os.name == "nt":
                 import msvcrt
@@ -567,13 +574,15 @@ def _log_gate_event(kind, tag, msg):
                     msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
                 except Exception:  # noqa: BLE001 — outer sink remains fail-open
                     pass
-            if process_lock_acquired:
-                _GATE_EVENTS_WINDOWS_LOCK.release()
             try:
                 if fd is not None:
                     os.close(fd)
             finally:
-                release_lock(audit_lock)
+                try:
+                    release_lock(audit_lock)
+                finally:
+                    if process_lock_acquired:
+                        _GATE_EVENTS_WINDOWS_LOCK.release()
     except Exception:  # noqa: BLE001 — fail-open: the sink must never affect the gate
         pass
 

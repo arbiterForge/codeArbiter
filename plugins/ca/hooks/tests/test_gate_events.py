@@ -289,6 +289,32 @@ class TestFailOpenAC2(_GateEventsFixture):
 
         self.assertEqual(_read_log(self.cad), "")
 
+    def test_windows_process_lock_precedes_sidecar_acquisition(self):
+        class _NoopMsvcrt:
+            LK_NBLCK = 1
+            LK_UNLCK = 2
+
+            @staticmethod
+            def locking(_fd, _mode, _nbytes):
+                return None
+
+        process_lock = threading.Lock()
+        observed_process_lock_state = []
+
+        def acquire_sidecar(_path):
+            observed_process_lock_state.append(process_lock.locked())
+            return object()
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _NoopMsvcrt()}), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_WINDOWS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
+             mock.patch.object(_hooklib, "release_lock"):
+            _hooklib.warn("serialize same-process writers before sidecar acquisition")
+
+        self.assertEqual(observed_process_lock_state, [True])
+        self.assertFalse(process_lock.locked())
+
     def test_repository_controlled_adjacent_lock_symlink_cannot_cross_boundary(self):
         log_path = os.path.join(self.cad, "gate-events.log")
         outside = os.path.join(self._tmp.name, "outside-empty")
