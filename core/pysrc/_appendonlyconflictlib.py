@@ -265,6 +265,20 @@ def _build_union(root, records):
     return merged
 
 
+def _sync_parent(path):
+    if os.name == "nt":
+        return False
+    flags = os.O_RDONLY
+    if hasattr(os, "O_DIRECTORY"):
+        flags |= os.O_DIRECTORY
+    parent_fd = os.open(path.parent, flags)
+    try:
+        os.fsync(parent_fd)
+    finally:
+        os.close(parent_fd)
+    return True
+
+
 def _write_bytes_atomic(path, raw, *, expected=None):
     original_mode = stat.S_IMODE(path.stat().st_mode)
     fd, temporary = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
@@ -287,6 +301,7 @@ def _write_bytes_atomic(path, raw, *, expected=None):
                 raise ConcurrentAppendError(path, restored=True, observed=observed)
         os.replace(temporary, path)
         temporary = None
+        _sync_parent(path)
         if witness is not None:
             displaced = Path(witness).read_bytes()
             if displaced != expected:
@@ -294,6 +309,7 @@ def _write_bytes_atomic(path, raw, *, expected=None):
                 try:
                     os.replace(witness, path)
                     witness = None
+                    _sync_parent(path)
                     restored = True
                 finally:
                     raise ConcurrentAppendError(path, restored=restored, observed=displaced)

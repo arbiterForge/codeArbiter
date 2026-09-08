@@ -67,13 +67,17 @@ def _identity(root):
     return value
 
 
-def _validate_existing(path, raw):
+def _validate_file_type(path):
     try:
         mode = path.lstat().st_mode
     except OSError as error:
         raise OverrideAppendError(f"cannot inspect overrides.log: {error}") from error
     if not stat.S_ISREG(mode) or path.is_symlink():
         raise OverrideAppendError("overrides.log is not a regular non-link file")
+
+
+def _validate_existing(path, raw):
+    _validate_file_type(path)
     if raw.startswith(b"\xef\xbb\xbf") or b"\x00" in raw or b"\r" in raw:
         raise OverrideAppendError("overrides.log is not canonical UTF-8 LF text")
     try:
@@ -87,6 +91,7 @@ def _validate_existing(path, raw):
 def append_override(*, gate=None, security_finding=None, reason, cwd=None):
     root = _root(cwd or os.getcwd())
     path = root / ".codearbiter" / "overrides.log"
+    _validate_file_type(path)
     before = path.read_bytes()
     _validate_existing(path, before)
     identity = _identity(root)

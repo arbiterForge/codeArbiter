@@ -69,45 +69,45 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
         output = self.git("ls-files", "-u", "--", TARGET).stdout
         return [line for line in output.splitlines() if line]
 
-    def sprint_conflict(self):
-        sprint = ".codearbiter/gate-events.log"
+    def gate_events_conflict(self):
+        gate_events = ".codearbiter/gate-events.log"
         overrides = b"# append-only overrides\n"
-        base = b"# append-only sprint decisions\nbaseline\n"
+        base = b"# append-only gate events\nbaseline\n"
         self.write(TARGET, overrides)
-        self.write(sprint, base)
-        self.git("add", "--", TARGET, sprint)
+        self.write(gate_events, base)
+        self.git("add", "--", TARGET, gate_events)
         self.git("commit", "-m", "base")
         self.git("switch", "-c", "left-history")
-        self.write(sprint, base + b"left append\n")
-        self.git("add", "--", sprint)
+        self.write(gate_events, base + b"left append\n")
+        self.git("add", "--", gate_events)
         self.git("commit", "-m", "left")
         self.git("switch", "main")
-        self.write(sprint, base + b"right append\n")
-        self.git("add", "--", sprint)
+        self.write(gate_events, base + b"right append\n")
+        self.git("add", "--", gate_events)
         self.git("commit", "-m", "right")
         self.assertNotEqual(self.git("merge", "left-history", check=False).returncode, 0)
-        return sprint, overrides, base
+        return gate_events, overrides, base
 
     def dual_audit_conflict(self):
-        sprint = ".codearbiter/gate-events.log"
+        gate_events = ".codearbiter/gate-events.log"
         overrides = b"# append-only overrides\n"
-        decisions = b"# append-only sprint decisions\n"
+        events = b"# append-only gate events\n"
         self.write(TARGET, overrides)
-        self.write(sprint, decisions)
-        self.git("add", "--", TARGET, sprint)
+        self.write(gate_events, events)
+        self.git("add", "--", TARGET, gate_events)
         self.git("commit", "-m", "base")
         self.git("switch", "-c", "left-history")
         self.write(TARGET, overrides + b"left override\n")
-        self.write(sprint, decisions + b"left decision\n")
-        self.git("add", "--", TARGET, sprint)
+        self.write(gate_events, events + b"left event\n")
+        self.git("add", "--", TARGET, gate_events)
         self.git("commit", "-m", "left")
         self.git("switch", "main")
         self.write(TARGET, overrides + b"right override\n")
-        self.write(sprint, decisions + b"right decision\n")
-        self.git("add", "--", TARGET, sprint)
+        self.write(gate_events, events + b"right event\n")
+        self.git("add", "--", TARGET, gate_events)
         self.git("commit", "-m", "right")
         self.assertNotEqual(self.git("merge", "left-history", check=False).returncode, 0)
-        return sprint
+        return gate_events
 
     def audit_state(self, *paths):
         return {
@@ -382,6 +382,50 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
         self.assertIn(b"concurrent append during resolution\n", (self.root / TARGET).read_bytes())
         self.assertEqual(self.git("ls-files", "-u", "--", TARGET).stdout, index_before)
 
+    def test_atomic_publish_and_concurrent_rollback_sync_the_parent_directory(self):
+        path = self.root / "atomic-audit.log"
+        before = b"before\n"
+        path.write_bytes(before)
+
+        with mock.patch.object(resolver, "_sync_parent") as sync_parent:
+            resolver._write_bytes_atomic(path, b"after\n")
+        sync_parent.assert_called_once_with(path)
+
+        path.write_bytes(before)
+        with mock.patch.object(
+            resolver.Path,
+            "read_bytes",
+            side_effect=(before, b"concurrent append\n"),
+        ), mock.patch.object(resolver, "_sync_parent") as sync_parent:
+            with self.assertRaises(resolver.ConcurrentAppendError):
+                resolver._write_bytes_atomic(path, b"after\n", expected=before)
+        self.assertEqual(path.read_bytes(), before)
+        self.assertEqual(sync_parent.call_args_list, [mock.call(path), mock.call(path)])
+
+    def test_parent_directory_sync_is_platform_aware_and_closes_its_descriptor(self):
+        path = self.root / "atomic-audit.log"
+        with mock.patch.object(resolver.os, "name", "nt"), \
+             mock.patch.object(resolver.os, "open") as open_parent:
+            self.assertFalse(resolver._sync_parent(path))
+        open_parent.assert_not_called()
+
+        with mock.patch.object(resolver.os, "name", "posix"), \
+             mock.patch.object(resolver.os, "open", return_value=123) as open_parent, \
+             mock.patch.object(resolver.os, "fsync") as fsync_parent, \
+             mock.patch.object(resolver.os, "close") as close_parent:
+            self.assertTrue(resolver._sync_parent(path))
+        self.assertEqual(open_parent.call_args.args[0], path.parent)
+        fsync_parent.assert_called_once_with(123)
+        close_parent.assert_called_once_with(123)
+
+        with mock.patch.object(resolver.os, "name", "posix"), \
+             mock.patch.object(resolver.os, "open", return_value=456), \
+             mock.patch.object(resolver.os, "fsync", side_effect=OSError("sync failed")), \
+             mock.patch.object(resolver.os, "close") as close_parent:
+            with self.assertRaisesRegex(OSError, "sync failed"):
+                resolver._sync_parent(path)
+        close_parent.assert_called_once_with(456)
+
     def test_rejects_malformed_index_and_authorization_boundaries(self):
         malformed = mock.Mock(stdout=b"not-an-index-record\0")
         with mock.patch.object(resolver, "_git", return_value=malformed):
@@ -449,7 +493,7 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
         self.assertEqual(self.git("ls-files", "-u", "--", TARGET).stdout, index_before)
 
     def test_every_changed_audit_path_is_locked_through_staging(self):
-        sprint, _overrides, _base = self.sprint_conflict()
+        gate_events, _overrides, _base = self.gate_events_conflict()
         handles = [object(), object(), object()]
         acquired = []
         released = []
@@ -460,20 +504,20 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
 
         with mock.patch.object(resolver, "acquire_lock", side_effect=acquire), \
              mock.patch.object(resolver, "release_lock", side_effect=released.append):
-            resolver.resolve(sprint, "preserve both histories", cwd=self.root)
+            resolver.resolve(gate_events, "preserve both histories", cwd=self.root)
 
         self.assertEqual(
             acquired[1:],
             [
                 Path(resolver.audit_lock_key(self.root, self.root / relative))
-                for relative in sorted((TARGET, sprint))
+                for relative in sorted((TARGET, gate_events))
             ],
         )
         self.assertEqual(released, list(reversed(handles)))
 
     def test_changed_audit_path_lock_contention_refuses_before_mutation(self):
-        sprint, _overrides, _base = self.sprint_conflict()
-        before = self.audit_state(TARGET, sprint)
+        gate_events, _overrides, _base = self.gate_events_conflict()
+        before = self.audit_state(TARGET, gate_events)
         repository_handle = object()
         first_path_handle = object()
 
@@ -483,9 +527,9 @@ class AppendOnlyConflictJourneyTests(unittest.TestCase):
             side_effect=(repository_handle, first_path_handle, None),
         ), mock.patch.object(resolver, "release_lock") as release:
             with self.assertRaisesRegex(resolver.ResolutionError, "audit path lock"):
-                resolver.resolve(sprint, "preserve both histories", cwd=self.root)
+                resolver.resolve(gate_events, "preserve both histories", cwd=self.root)
 
-        self.assertEqual(self.audit_state(TARGET, sprint), before)
+        self.assertEqual(self.audit_state(TARGET, gate_events), before)
         self.assertEqual(release.call_args_list, [mock.call(first_path_handle), mock.call(repository_handle)])
 
     def test_real_preopened_official_writer_lock_refuses_without_losing_row(self):
@@ -539,43 +583,43 @@ release_lock(lock)
         self.assertEqual(self.git("ls-files", "-u", "--", TARGET).stdout, before[TARGET][1])
 
     def test_dirty_override_sink_refuses_other_audit_resolution_before_mutation(self):
-        sprint, _overrides, _base = self.sprint_conflict()
+        gate_events, _overrides, _base = self.gate_events_conflict()
         self.write(TARGET, b"# append-only overrides\nuncommitted append\n")
-        sprint_before = (self.root / sprint).read_bytes()
-        index_before = self.git("ls-files", "-u", "--", sprint).stdout
+        gate_events_before = (self.root / gate_events).read_bytes()
+        index_before = self.git("ls-files", "-u", "--", gate_events).stdout
 
         with self.assertRaisesRegex(resolver.ResolutionError, "audit sink must be clean"):
-            resolver.resolve(sprint, "preserve both histories", cwd=self.root)
+            resolver.resolve(gate_events, "preserve both histories", cwd=self.root)
 
-        self.assertEqual((self.root / sprint).read_bytes(), sprint_before)
-        self.assertEqual(self.git("ls-files", "-u", "--", sprint).stdout, index_before)
+        self.assertEqual((self.root / gate_events).read_bytes(), gate_events_before)
+        self.assertEqual(self.git("ls-files", "-u", "--", gate_events).stdout, index_before)
 
     def test_unmerged_override_sink_refuses_other_audit_resolution_before_mutation(self):
-        sprint = self.dual_audit_conflict()
-        before = self.audit_state(TARGET, sprint)
+        gate_events = self.dual_audit_conflict()
+        before = self.audit_state(TARGET, gate_events)
         with self.assertRaisesRegex(resolver.ResolutionError, "audit sink is itself unmerged"):
-            resolver.resolve(sprint, "preserve both histories", cwd=self.root)
-        self.assertEqual(self.audit_state(TARGET, sprint), before)
+            resolver.resolve(gate_events, "preserve both histories", cwd=self.root)
+        self.assertEqual(self.audit_state(TARGET, gate_events), before)
 
     def test_two_file_post_stage_failure_restores_both_files_and_indexes(self):
-        sprint, overrides, _base = self.sprint_conflict()
-        sprint_before = (self.root / sprint).read_bytes()
-        sprint_index_before = self.git("ls-files", "-u", "--", sprint).stdout
+        gate_events, overrides, _base = self.gate_events_conflict()
+        gate_events_before = (self.root / gate_events).read_bytes()
+        gate_events_index_before = self.git("ls-files", "-u", "--", gate_events).stdout
         override_index_before = self.git("ls-files", "--stage", "--", TARGET).stdout
         real_git = resolver._git
 
-        def fail_sprint_verification(cwd, *args, **kwargs):
-            if args == ("show", f":0:{sprint}"):
-                raise resolver.ResolutionError("injected sprint staged-blob failure")
+        def fail_gate_events_verification(cwd, *args, **kwargs):
+            if args == ("show", f":0:{gate_events}"):
+                raise resolver.ResolutionError("injected gate-events staged-blob failure")
             return real_git(cwd, *args, **kwargs)
 
-        with mock.patch.object(resolver, "_git", side_effect=fail_sprint_verification):
-            with self.assertRaisesRegex(resolver.ResolutionError, "injected sprint"):
-                resolver.resolve(sprint, "preserve both histories", cwd=self.root)
+        with mock.patch.object(resolver, "_git", side_effect=fail_gate_events_verification):
+            with self.assertRaisesRegex(resolver.ResolutionError, "injected gate-events"):
+                resolver.resolve(gate_events, "preserve both histories", cwd=self.root)
 
-        self.assertEqual((self.root / sprint).read_bytes(), sprint_before)
+        self.assertEqual((self.root / gate_events).read_bytes(), gate_events_before)
         self.assertEqual((self.root / TARGET).read_bytes(), overrides)
-        self.assertEqual(self.git("ls-files", "-u", "--", sprint).stdout, sprint_index_before)
+        self.assertEqual(self.git("ls-files", "-u", "--", gate_events).stdout, gate_events_index_before)
         self.assertEqual(self.git("ls-files", "--stage", "--", TARGET).stdout, override_index_before)
 
     def test_partial_write_and_git_add_failures_restore_both_files_and_indexes(self):
@@ -589,8 +633,8 @@ release_lock(lock)
                     nested.git("init", "--initial-branch=main")
                     nested.git("config", "user.name", "Conflict Fixture")
                     nested.git("config", "user.email", "fixture@example.test")
-                    sprint, _overrides, _base = nested.sprint_conflict()
-                    before = nested.audit_state(TARGET, sprint)
+                    gate_events, _overrides, _base = nested.gate_events_conflict()
+                    before = nested.audit_state(TARGET, gate_events)
                     if injection == "second-write":
                         real_write = resolver._write_bytes_atomic
                         write_count = 0
@@ -616,12 +660,12 @@ release_lock(lock)
                         expected = resolver.ResolutionError
                     with patcher:
                         with self.assertRaises(expected):
-                            resolver.resolve(sprint, "preserve both histories", cwd=nested.root)
-                    self.assertEqual(nested.audit_state(TARGET, sprint), before)
+                            resolver.resolve(gate_events, "preserve both histories", cwd=nested.root)
+                    self.assertEqual(nested.audit_state(TARGET, gate_events), before)
 
     def test_staged_blob_mismatch_restores_both_files_and_indexes(self):
-        sprint, _overrides, _base = self.sprint_conflict()
-        before = self.audit_state(TARGET, sprint)
+        gate_events, _overrides, _base = self.gate_events_conflict()
+        before = self.audit_state(TARGET, gate_events)
         real_git = resolver._git
 
         def mismatch_override(cwd, *args, **kwargs):
@@ -631,8 +675,8 @@ release_lock(lock)
 
         with mock.patch.object(resolver, "_git", side_effect=mismatch_override):
             with self.assertRaisesRegex(resolver.ResolutionError, "staged blob does not match"):
-                resolver.resolve(sprint, "preserve both histories", cwd=self.root)
-        self.assertEqual(self.audit_state(TARGET, sprint), before)
+                resolver.resolve(gate_events, "preserve both histories", cwd=self.root)
+        self.assertEqual(self.audit_state(TARGET, gate_events), before)
 
     def test_rollback_index_failure_is_surfaced_after_worktree_restoration(self):
         self.conflict()
@@ -677,11 +721,11 @@ release_lock(lock)
             with self.assertRaisesRegex(resolver.ResolutionError, "at most 500"):
                 resolver._authorization(self.root, "carriage\rreturn")
 
-    def test_sprint_log_conflict_records_authorization_in_overrides_log(self):
-        sprint, overrides, base = self.sprint_conflict()
+    def test_gate_events_conflict_records_authorization_in_overrides_log(self):
+        gate_events, overrides, base = self.gate_events_conflict()
 
         result = subprocess.run(
-            [sys.executable, str(HELPER), sprint, "--reason", "preserve both histories"],
+            [sys.executable, str(HELPER), gate_events, "--reason", "preserve both histories"],
             cwd=self.root,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -689,7 +733,7 @@ release_lock(lock)
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(
-            (self.root / sprint).read_bytes(),
+            (self.root / gate_events).read_bytes(),
             base + b"right append\nleft append\n",
         )
         override_result = (self.root / TARGET).read_bytes()
@@ -697,7 +741,7 @@ release_lock(lock)
         self.assertIn(b"BY: fixture@example.test | GATE: H-05", override_result)
         self.assertEqual(
             self.git("diff", "--cached", "--name-only").stdout.splitlines(),
-            sorted([TARGET, sprint]),
+            sorted([TARGET, gate_events]),
         )
 
 

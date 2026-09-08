@@ -110,6 +110,17 @@ class LockedOverrideAppendTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(outside.read_bytes(), b"outside\n")
 
+    def test_special_file_type_is_rejected_before_any_content_read(self):
+        fifo_mode = mock.Mock(st_mode=appender.stat.S_IFIFO)
+        with mock.patch.object(appender.Path, "lstat", return_value=fifo_mode), \
+             mock.patch.object(
+                 appender.Path,
+                 "read_bytes",
+                 side_effect=AssertionError("special file content must not be read"),
+             ):
+            with self.assertRaisesRegex(appender.OverrideAppendError, "regular non-link file"):
+                appender.append_override(gate="H-05", reason="specific", cwd=self.root)
+
     def test_changed_after_validation_refuses_and_releases_lock(self):
         before = self.log.read_bytes()
         changed = before + b"concurrent official row\n"
