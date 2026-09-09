@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import tarfile
 import tempfile
 import unittest
@@ -37,6 +38,26 @@ def load_helper():
 
 
 class PiHostLocksTest(unittest.TestCase):
+    def test_reviewed_fixture_bytes_are_forced_to_lf_on_every_checkout(self):
+        fixtures = (
+            ".github/fixtures/pi-hosts/0.84.1/package-lock.json",
+            ".github/fixtures/pi-hosts/0.84.1/.npmrc",
+        )
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture):
+                completed = subprocess.run(
+                    ["git", "check-attr", "text", "eol", "--", fixture],
+                    cwd=REPO,
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                )
+                self.assertEqual(
+                    completed.stdout.splitlines(),
+                    [f"{fixture}: text: set", f"{fixture}: eol: lf"],
+                )
+
     def test_only_current_supported_pi_has_a_committed_exact_lock(self):
         manifest_path = LOCK_ROOT / SUPPORTED_VERSION / "package.json"
         lock_path = LOCK_ROOT / SUPPORTED_VERSION / "package-lock.json"
@@ -80,6 +101,19 @@ class PiHostLocksTest(unittest.TestCase):
                 lock_path.write_text(json.dumps(lock), encoding="utf-8")
                 with self.assertRaisesRegex(ValueError, "digest|integrity|registry|version|reviewed"):
                     helper.validate_host_lock(root, SUPPORTED_VERSION)
+
+    def test_validator_rejects_npmrc_mutation(self):
+        helper = load_helper()
+        with tempfile.TemporaryDirectory(prefix="ca-pi-config-") as raw:
+            root = Path(raw)
+            target = root / ".github" / "fixtures" / "pi-hosts" / SUPPORTED_VERSION
+            shutil.copytree(LOCK_ROOT / SUPPORTED_VERSION, target)
+            (target / ".npmrc").write_text(
+                "registry=https://registry.npmjs.org/\nignore-scripts=false\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "config|npmrc|digest|reviewed"):
+                helper.validate_host_lock(root, SUPPORTED_VERSION)
 
     def test_validator_rejects_every_non_registry_package_shape(self):
         helper = load_helper()
@@ -241,7 +275,7 @@ class PiHostLocksTest(unittest.TestCase):
         helper = load_helper()
         review_source = LOCK_ROOT / SUPPORTED_VERSION / "review.json"
         required = {
-            "schema", "package", "version", "registry", "root_integrity", "lock_sha256",
+            "schema", "package", "version", "registry", "root_integrity", "lock_sha256", "config_sha256",
             "source_repository", "source_tag", "source_commit", "reviewed_at", "reviewer",
             "licenses", "audits", "lifecycle_scripts", "signatures", "provenance", "result",
         }
@@ -378,67 +412,6 @@ class PiHostLocksTest(unittest.TestCase):
             ],
         )
         self.assertEqual(len(metadata_calls), 2)
-
-    def test_cache_seed_uses_every_preflighted_tarball_and_enforces_bounds(self):
-        helper = load_helper()
-        packages = [
-            (helper.PACKAGE, SUPPORTED_VERSION, "https://registry.npmjs.org/root.tgz", "sha512-root"),
-            ("transitive", "1.2.3", "https://registry.npmjs.org/transitive.tgz", "sha512-child"),
-        ]
-        with tempfile.TemporaryDirectory(prefix="ca-pi-cache-seed-") as raw:
-            cache = Path(raw) / "cache"
-            calls = []
-            downloads = []
-
-            def download(package_name, version, tarball, integrity, destination, **kwargs):
-                downloads.append((package_name, version, tarball, integrity))
-                destination.write_bytes(b"verified fixture tarball")
-
-            def pass_run(command, **kwargs):
-                calls.append(command)
-                self.assertGreater(kwargs["timeout"], 0)
-                self.assertLessEqual(kwargs["timeout"], helper.MAX_CACHE_ADD_SECONDS)
-                cache.mkdir(parents=True, exist_ok=True)
-                return SimpleNamespace(stdout="")
-
-            with mock.patch.object(helper.subprocess, "run", side_effect=pass_run), mock.patch.object(
-                helper, "_download_registry_tarball", side_effect=download,
-            ):
-                helper._seed_registry_cache("npm", packages, cache, {}, float("inf"))
-            self.assertEqual(
-                downloads,
-                packages,
-            )
-            self.assertTrue(all(command[command.index("add") + 1].endswith(".tgz") for command in calls))
-            self.assertTrue(all("--ignore-scripts" in command for command in calls))
-
-            failure = helper.subprocess.CalledProcessError(1, ["npm", "cache", "add"])
-            transient_run = mock.Mock(side_effect=[failure, SimpleNamespace(stdout="")])
-            with mock.patch.object(helper.subprocess, "run", transient_run), mock.patch.object(
-                helper.time, "sleep",
-            ), mock.patch.object(helper, "_download_registry_tarball", side_effect=download):
-                helper._seed_registry_cache("npm", packages[:1], cache, {}, float("inf"))
-            self.assertEqual(transient_run.call_count, 2)
-
-            permanent_run = mock.Mock(side_effect=failure)
-            with mock.patch.object(helper.subprocess, "run", permanent_run), mock.patch.object(
-                helper.time, "sleep",
-            ), mock.patch.object(helper, "_download_registry_tarball", side_effect=download):
-                with self.assertRaises(helper.subprocess.CalledProcessError):
-                    helper._seed_registry_cache("npm", packages[:1], cache, {}, float("inf"))
-            self.assertEqual(permanent_run.call_count, 3)
-
-            with mock.patch.object(helper.subprocess, "run") as run:
-                with self.assertRaisesRegex(ValueError, "aggregate time budget"):
-                    helper._seed_registry_cache("npm", packages[:1], cache, {}, 0)
-                run.assert_not_called()
-
-            (cache / "oversized").write_bytes(b"xx")
-            with mock.patch.object(helper.subprocess, "run", return_value=SimpleNamespace(stdout="")), mock.patch.object(
-                helper, "MAX_METADATA_CACHE_BYTES", 1,
-            ), mock.patch.object(helper, "_download_registry_tarball", side_effect=download):
-                with self.assertRaisesRegex(ValueError, "byte limit"):
-                    helper._seed_registry_cache("npm", packages[:1], cache, {}, float("inf"))
 
     def test_root_archive_failure_aborts_before_candidate_lock_generation(self):
         helper = load_helper()
@@ -1086,33 +1059,6 @@ class PiHostLocksTest(unittest.TestCase):
                 helper._fetch_registry_packument(helper.PACKAGE, float("inf"))
         self.assertEqual(hosts, ["registry.npmjs.org"])
 
-    def test_registry_metadata_preflight_fails_closed_on_unavailable_optional_packages(self):
-        helper = load_helper()
-        attempts = 0
-
-        def metadata(npm, package_name, specification, environment, deadline):
-            nonlocal attempts
-            attempts += 1
-            if attempts == 1:
-                return {
-                    "version": SUPPORTED_VERSION,
-                    "dist.integrity": "sha512-root",
-                    "dist.tarball": "https://registry.npmjs.org/root.tgz",
-                    "dependencies": {},
-                    "optionalDependencies": {"missing-optional": "1.0.0"},
-                    "peerDependencies": {},
-                }
-            raise OSError("not found")
-
-        with tempfile.TemporaryDirectory(prefix="ca-pi-optional-") as raw, mock.patch.object(
-            helper, "_run_registry_metadata", side_effect=metadata,
-        ):
-            with self.assertRaises(OSError):
-                helper._preflight_registry_graph(
-                    "npm", SUPPORTED_VERSION, Path(raw) / "cache", {},
-                )
-        self.assertEqual(attempts, 2)
-
     def test_required_metadata_failure_aborts_before_lock_generation(self):
         helper = load_helper()
         calls = []
@@ -1160,51 +1106,33 @@ class PiHostLocksTest(unittest.TestCase):
         self.assertEqual(len(metadata_calls), 2)
         self.assertFalse(any("install" in command for command in calls))
 
-    def test_metadata_walk_enforces_resource_bounds(self):
+    def test_registry_metadata_output_enforces_resource_bound(self):
         helper = load_helper()
-        root_metadata = {
-                "version": SUPPORTED_VERSION,
-                "dist.integrity": "sha512-root",
-                "dist.tarball": "https://registry.npmjs.org/root.tgz",
-                "dependencies": {"child": "1.0.0"},
-                "optionalDependencies": {},
-                "peerDependencies": {},
-        }
-        with tempfile.TemporaryDirectory(prefix="ca-pi-bounds-") as raw:
-            cache = Path(raw) / "cache"
-            with self.subTest(bound="package-count"), mock.patch.object(
-                helper, "MAX_METADATA_PACKAGES", 1,
-            ), mock.patch.object(helper, "_run_registry_metadata", return_value=root_metadata):
-                with self.assertRaisesRegex(ValueError, "package count"):
-                    helper._preflight_registry_graph("npm", SUPPORTED_VERSION, cache, {})
-            with self.subTest(bound="depth"), mock.patch.object(
-                helper, "MAX_METADATA_DEPTH", 0,
-            ), mock.patch.object(helper, "_run_registry_metadata", return_value=root_metadata):
-                with self.assertRaisesRegex(ValueError, "depth"):
-                    helper._preflight_registry_graph("npm", SUPPORTED_VERSION, cache, {})
-            with self.subTest(bound="aggregate-time"), mock.patch.object(
-                helper, "MAX_METADATA_WALK_SECONDS", 0,
-            ):
-                with self.assertRaisesRegex(ValueError, "time budget"):
-                    helper._preflight_registry_graph("npm", SUPPORTED_VERSION, cache, {})
-            class OversizedResponse:
-                status = 200
-                def getheader(self, name):
-                    return "101" if name == "Content-Length" else None
-            class Connection:
-                def __init__(self, host, timeout):
-                    pass
-                def request(self, method, path, headers):
-                    pass
-                def getresponse(self):
-                    return OversizedResponse()
-                def close(self):
-                    pass
-            with self.subTest(bound="output-size"), mock.patch.object(
-                helper.http.client, "HTTPSConnection", Connection,
-            ), mock.patch.object(helper, "MAX_METADATA_OUTPUT_BYTES", 100):
-                with self.assertRaisesRegex(ValueError, "output limit"):
-                    helper._fetch_registry_packument(helper.PACKAGE, float("inf"))
+
+        class OversizedResponse:
+            status = 200
+
+            def getheader(self, name):
+                return "101" if name == "Content-Length" else None
+
+        class Connection:
+            def __init__(self, host, timeout):
+                pass
+
+            def request(self, method, path, headers):
+                pass
+
+            def getresponse(self):
+                return OversizedResponse()
+
+            def close(self):
+                pass
+
+        with mock.patch.object(
+            helper.http.client, "HTTPSConnection", Connection,
+        ), mock.patch.object(helper, "MAX_METADATA_OUTPUT_BYTES", 100):
+            with self.assertRaisesRegex(ValueError, "output limit"):
+                helper._fetch_registry_packument(helper.PACKAGE, float("inf"))
 
     def test_metadata_query_has_a_per_process_timeout(self):
         helper = load_helper()

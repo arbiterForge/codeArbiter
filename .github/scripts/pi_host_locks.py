@@ -31,12 +31,12 @@ VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 SOURCE_REPOSITORY = "https://github.com/earendil-works/pi"
 ZERO_AUDIT = {"info": 0, "low": 0, "moderate": 0, "high": 0, "critical": 0, "total": 0}
 REVIEW_FIELDS = {
-    "schema", "package", "version", "registry", "root_integrity", "lock_sha256",
+    "schema", "package", "version", "registry", "root_integrity", "lock_sha256", "config_sha256",
     "source_repository", "source_tag", "source_commit", "reviewed_at", "reviewer",
     "licenses", "audits", "lifecycle_scripts", "signatures", "provenance", "result",
 }
 CANDIDATE_FIELDS = {
-    "schema", "package", "version", "registry", "root_integrity", "lock_sha256",
+    "schema", "package", "version", "registry", "root_integrity", "lock_sha256", "config_sha256",
     "source_repository", "source_commit", "result",
 }
 NPM_ENV_ALLOWLIST = {
@@ -306,124 +306,6 @@ def _npm_command_prefix(npm: str) -> list[str]:
         raise ValueError(f"npm CLI entry point is unavailable beside the Windows wrapper: {cli}")
     node = shutil.which("node") or str(npm_path.parent / "node.exe")
     return [node, str(cli)]
-
-
-def _preflight_registry_graph(
-    npm: str, version: str, cache: Path, environment: dict[str, str], *, deadline: float | None = None,
-    resolved: list[tuple[str, str, str, str]] | None = None,
-) -> dict[str, Any]:
-    deadline = time.monotonic() + MAX_METADATA_WALK_SECONDS if deadline is None else deadline
-    pending = [(PACKAGE, version, 0)]
-    visited: set[tuple[str, str]] = set()
-    root: dict[str, Any] | None = None
-    while pending:
-        if time.monotonic() >= deadline:
-            raise ValueError("candidate registry metadata exceeded the aggregate time budget")
-        package_name, specification, depth = pending.pop()
-        if depth > MAX_METADATA_DEPTH:
-            raise ValueError("candidate registry metadata exceeded the depth limit")
-        alias_name, safe_specification = _registry_dependency(specification)
-        resolved_name = alias_name or package_name
-        if PACKAGE_NAME.fullmatch(resolved_name) is None:
-            raise ValueError(f"candidate registry metadata has an invalid package name: {resolved_name}")
-        identity = (resolved_name, safe_specification)
-        if identity in visited:
-            continue
-        if len(visited) >= MAX_METADATA_PACKAGES:
-            raise ValueError("candidate registry metadata exceeded the package count limit")
-        metadata = _metadata_record(_run_registry_metadata(
-            npm, resolved_name, safe_specification, environment, deadline,
-        ))
-        exact_version = metadata.get("version")
-        if not isinstance(exact_version, str) or VERSION.fullmatch(exact_version) is None:
-            raise ValueError("candidate registry metadata did not resolve an exact stable version")
-        if resolved is not None:
-            resolved.append((
-                resolved_name,
-                exact_version,
-                metadata["dist.tarball"],
-                metadata["dist.integrity"],
-            ))
-        visited.add(identity)
-        if root is None:
-            root = metadata
-        optional_dependencies = metadata.get("optionalDependencies", {}) or {}
-        peer_metadata = metadata.get("peerDependenciesMeta", {}) or {}
-        if not isinstance(optional_dependencies, dict) or not isinstance(peer_metadata, dict):
-            raise ValueError("candidate registry metadata optional dependency controls are not objects")
-        for field in ("dependencies", "optionalDependencies", "peerDependencies"):
-            dependencies = metadata.get(field, {})
-            if dependencies is None:
-                continue
-            if not isinstance(dependencies, dict):
-                raise ValueError(f"candidate registry metadata {field} is not an object")
-            for child_name, child_specification in dependencies.items():
-                if not isinstance(child_name, str) or PACKAGE_NAME.fullmatch(child_name) is None:
-                    raise ValueError(f"candidate registry metadata {field} has an invalid package name")
-                pending.append((child_name, child_specification, depth + 1))
-    if root is None:
-        raise ValueError("candidate registry metadata preflight returned no root package")
-    return root
-
-
-def _seed_registry_cache(
-    npm: str, packages: list[tuple[str, str, str, str]], cache: Path,
-    environment: dict[str, str], deadline: float,
-) -> None:
-    cache.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="ca-pi-tarballs-", dir=cache.parent) as raw_downloads:
-        download_root = Path(raw_downloads)
-        for index, (package_name, version, tarball, integrity) in enumerate(packages):
-            if (
-                PACKAGE_NAME.fullmatch(package_name) is None
-                or VERSION.fullmatch(version) is None
-                or not _approved_registry_url(tarball)
-                or not integrity.startswith("sha512-")
-            ):
-                raise ValueError("candidate registry cache seed is not bound to validated metadata")
-            archive = download_root / f"{index}.tgz"
-            command = [
-                *_npm_command_prefix(npm), "cache", "add", str(archive), "--ignore-scripts",
-                *REGISTRY_ARGS, "--cache", str(cache),
-            ]
-            last_error: OSError | http.client.HTTPException | subprocess.CalledProcessError | subprocess.TimeoutExpired | None = None
-            for attempt in range(3):
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
-                    raise ValueError("candidate registry cache seed exceeded the aggregate time budget")
-                cache_bytes = sum(path.stat().st_size for path in cache.rglob("*") if path.is_file())
-                byte_budget = MAX_METADATA_CACHE_BYTES - cache_bytes
-                if byte_budget <= 0:
-                    raise ValueError("candidate registry cache exceeded the byte limit")
-                try:
-                    try:
-                        _download_registry_tarball(
-                            package_name, version, tarball, integrity, archive,
-                            deadline=deadline, byte_budget=byte_budget,
-                        )
-                    except ValueError as error:
-                        raise ValueError(
-                            f"candidate registry cache seed rejected {package_name}@{version}: {error}"
-                        ) from error
-                    subprocess.run(
-                        command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                        timeout=min(MAX_CACHE_ADD_SECONDS, remaining), env=environment,
-                    )
-                    last_error = None
-                    break
-                except (OSError, http.client.HTTPException, subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
-                    last_error = error
-                    if attempt < 2:
-                        delay = 0.25 * (attempt + 1)
-                        if time.monotonic() + delay >= deadline:
-                            raise ValueError("candidate registry cache seed exceeded the aggregate time budget") from error
-                        time.sleep(delay)
-            if last_error is not None:
-                raise last_error
-            archive.unlink(missing_ok=True)
-            cache_bytes = sum(path.stat().st_size for path in cache.rglob("*") if path.is_file())
-            if cache_bytes > MAX_METADATA_CACHE_BYTES:
-                raise ValueError("candidate registry cache exceeded the byte limit")
 
 
 class _DeadlineReader:
@@ -748,6 +630,7 @@ def _validate_locked_dependency_edges(packages: dict[str, Any]) -> None:
 def _validate_directory(directory: Path, version: str, *, require_reviewed: bool) -> dict[str, str]:
     manifest_path = directory / "package.json"
     lock_path = directory / "package-lock.json"
+    config_path = directory / ".npmrc"
     review_path = directory / "review.json"
     manifest = _read_json(manifest_path)
     lock = _read_json(lock_path)
@@ -782,6 +665,9 @@ def _validate_directory(directory: Path, version: str, *, require_reviewed: bool
     digest = hashlib.sha256(lock_path.read_bytes()).hexdigest()
     if review.get("lock_sha256") != digest:
         raise ValueError("reviewed lock digest does not match reviewed bytes")
+    config_digest = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    if review.get("config_sha256") != config_digest:
+        raise ValueError("reviewed npmrc config digest does not match reviewed bytes")
     if review.get("package") != PACKAGE or review.get("version") != version:
         raise ValueError("reviewed lock identity mismatch")
     if review.get("registry") != REGISTRY or review.get("root_integrity") != agent.get("integrity"):
@@ -970,6 +856,7 @@ def capture_candidate(version: str, output: Path) -> dict[str, str]:
         "registry": REGISTRY,
         "root_integrity": agent["integrity"],
         "lock_sha256": hashlib.sha256(lock_path.read_bytes()).hexdigest(),
+        "config_sha256": hashlib.sha256((destination / ".npmrc").read_bytes()).hexdigest(),
         "source_repository": root_metadata.get("repository.url"),
         "source_commit": root_metadata.get("gitHead"),
         "result": "PENDING_REVIEW",

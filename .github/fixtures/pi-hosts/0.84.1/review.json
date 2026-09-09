@@ -5,6 +5,7 @@
   "registry": "https://registry.npmjs.org",
   "root_integrity": "sha512-ncAqFrG+iybuPGOhMiZoEHkEzTpJgz3guYD32pD+M7ucc0WeHmauP6wa7qwP8V/KWvsZDVNa5XGsdZ7fkC7w7A==",
   "lock_sha256": "c3f26db24e71b51b5bd881c52e46d410b3097c1bfd96dffca87f84fd0286d293",
+  "config_sha256": "33b6086536ead6650ea727f8287587b06abb9525eacaf8f6cb227efb78eda850",
   "source_repository": "https://github.com/earendil-works/pi",
   "source_tag": "v0.84.1",
   "source_commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112",

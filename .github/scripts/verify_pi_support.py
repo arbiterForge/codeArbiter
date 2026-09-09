@@ -179,7 +179,7 @@ def strict_promotion(document: Any, mode: str) -> tuple[bool, str]:
             return False, "preclosure CodeQL pending"
         if commit is not None:
             return False, "preclosure uncommitted"
-        return True, "local green; hosted six-cell and CodeQL explicitly pending"
+        return True, "local green; hosted three-platform matrix and CodeQL explicitly pending"
 
     if document["mode"] != "final" or not isinstance(commit, str):
         return False, "hosted final evidence"
@@ -201,7 +201,7 @@ def strict_promotion(document: Any, mode: str) -> tuple[bool, str]:
 def render_promotion_markdown(document: dict[str, Any]) -> str:
     """Render the public evidence surface only from the strict JSON envelope."""
     if document["mode"] == "preclosure":
-        status = "provisional preclosure; hosted six-cell matrix and CodeQL explicitly pending"
+        status = "provisional preclosure; hosted three-platform matrix and CodeQL explicitly pending"
     else:
         status = f"final hosted evidence bound to commit `{document['commit']}`"
     lines = [

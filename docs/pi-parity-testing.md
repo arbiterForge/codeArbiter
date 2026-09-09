@@ -14,8 +14,8 @@ codeArbiter claims 100% validation or stable status. Please report any mismatch
 between this runbook and your live experience.
 
 Task 12 documents the repeatable procedure. A local green run is not the final
-promotion record: the committed Windows, macOS, and Linux cells for both
-supported Pi versions are bound to the commit in the later promotion report.
+promotion record: the committed Windows, macOS, and Linux cells for the sole
+supported Pi version are bound to the commit in the later promotion report.
 
 ## Install from a pinned Git tag
 

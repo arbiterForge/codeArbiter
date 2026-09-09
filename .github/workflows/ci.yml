@@ -953,7 +953,8 @@ jobs:
   ca-pi-checks:
     name: "[CHECK] | [PI  ] | Host-independent adapter contract"
     # Issue #390: everything in this job consumes NEITHER matrix.os NOR
-    # matrix.pi-version, so the six-cell ca-pi-tools matrix below was producing
+    # matrix.pi-version, so the former two-version-by-three-platform ca-pi-tools
+    # matrix below was producing
     # six identical verdicts for it (1,423 runner-seconds on run 29870271440).
     # It now runs exactly once per workflow run: package metadata, typecheck,
     # the COMPLETE Vitest suite, the static security/parity scripts, the bundle
@@ -1018,7 +1019,7 @@ jobs:
         # ships or publishes" was false. Like the first two it declares no
         # production dependencies today, so this audits an empty graph; it
         # exists so the gate is already in place when that changes. Hosted here
-        # rather than in the six-cell ca-pi-tools matrix - the verdict does not
+        # rather than in the three-platform ca-pi-tools matrix - the verdict does not
         # depend on OS or Pi version.
         run: npm audit --omit=dev --audit-level=high
         env:
