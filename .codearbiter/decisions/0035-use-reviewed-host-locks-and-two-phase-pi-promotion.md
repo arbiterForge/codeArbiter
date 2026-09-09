@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-09-08
 title: Use reviewed host locks and two-phase Pi promotion
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,7 @@ governs: .github/fixtures/pi-hosts/**, .github/scripts/pi_host_locks.py, .github
 # ADR-0035 — Use reviewed host locks and two-phase Pi promotion
 
 ## Status
-Proposed — ratified by SUaDtL@users.noreply.github.com on 2026-09-08.
+Accepted — ratified by SUaDtL@users.noreply.github.com on 2026-09-08.
 
 ## Context
 
