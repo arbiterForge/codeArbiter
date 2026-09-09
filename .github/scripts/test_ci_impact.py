@@ -1199,7 +1199,7 @@ class WorkflowContractTest(unittest.TestCase):
 
     def test_host_independent_pi_checks_run_once_outside_the_platform_matrix(self):
         # Issue #390: every one of these consumes neither matrix.os nor
-        # matrix.pi-version, so six cells produced six identical verdicts.
+        # matrix.pi-version, so platform cells must not repeat these verdicts.
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
         self.assertIn("ca-pi-checks", sorted(jobs))
@@ -1218,10 +1218,11 @@ class WorkflowContractTest(unittest.TestCase):
                 self.assertIn(token, canonical, f"ca-pi-checks must own `{token}`")
                 self.assertNotIn(token, matrix, f"ca-pi-tools still repeats `{token}` per cell")
         # Everything whose verdict genuinely depends on the installed Pi
-        # version or the host OS stays in the six-cell matrix.
+        # version or the host OS stays in the supported-host matrix.
         for token in (
             "os: [ubuntu-latest, windows-latest, macos-latest]",
-            "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }}",
+            "pi-version: [\"0.84.1\"]",
+            "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "run: npm test -- test/package.test.ts",
             "run: python .github/scripts/test_pi_package.py --rpc-commands",
             "--pi-version ${{ matrix.pi-version }}",

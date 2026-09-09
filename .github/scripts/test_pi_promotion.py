@@ -7,6 +7,7 @@ import importlib.util
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -89,6 +90,22 @@ class PromotionPolicyTests(unittest.TestCase):
         self.assertEqual(policy.last_verified, "0.80.6")
         self.assertEqual(policy.node_floor, (22, 19, 0))
 
+    def test_policy_collapses_an_exact_singleton_support_set(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self.fixture_repo(root)
+            source = root / "plugins" / "ca-pi" / "tools" / "src" / "compatibility.ts"
+            source.write_text(
+                'const SUPPORTED_PI_VERSIONS = new Set(["0.84.1"]);\n'
+                "const MINIMUM_NODE = [22, 19, 0] as const;\n",
+                encoding="utf-8",
+            )
+            policy = module.read_policy(root, module.load_targets(self.targets(root)))
+        self.assertEqual(policy.minimum, "0.84.1")
+        self.assertEqual(policy.last_verified, "0.84.1")
+        self.assertEqual(policy.supported_versions, ("0.84.1",))
+
     def test_candidate_requires_new_stable_exact_semver(self):
         module = load_module()
         policy = module.SupportPolicy("0.80.5", "0.80.6", (22, 19, 0))
@@ -108,6 +125,22 @@ class PromotionPolicyTests(unittest.TestCase):
         self.assertIn("pull-requests: write", workflow)
         self.assertIn("inputs.create_pr == true", workflow)
         self.assertIn("--ignore-scripts", workflow)
+
+    def test_pending_candidate_validation_is_static_and_pr_stages_every_new_target(self):
+        workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+        validate = validation_job(workflow)
+        open_pr = workflow.split("\n  open-pr:\n", 1)[1]
+        self.assertIn("test_pi_platform_contract.py --fixtures-only", validate)
+        self.assertNotIn("test_pi_platform_contract.py --pi-version", validate)
+        stage_line = next(line.strip() for line in open_pr.splitlines() if line.strip().startswith("git add --"))
+        stage_entries = [entry.replace("\\", "/").rstrip("/") for entry in shlex.split(stage_line)[3:]]
+        targets = json.loads((REPO / ".github" / "pi-promotion-targets.json").read_text(encoding="utf-8"))
+        for target in targets["targets"]:
+            path = target["path"].replace("\\", "/")
+            self.assertTrue(
+                any(path == entry or path.startswith(entry + "/") for entry in stage_entries),
+                f"promotion PR does not stage declared target {path}",
+            )
 
     def test_checked_in_recipe_cannot_name_an_unapproved_runtime_write_path(self):
         module = load_module()

@@ -2,8 +2,8 @@
 
 This runbook covers the `ca-pi` distribution — the pinned Git tag plus the
 CI-published npm package (ADR-0029) — and the evidence needed
-to promote a commit. Pi 0.80.5 is the minimum supported host and Pi 0.84.1 is
-the latest verified host in this release line. Node 22.19 or newer and Python 3
+to promote a commit. Exact Pi 0.84.1 is the sole supported and latest verified
+host in this release line. Node 22.19 or newer and Python 3
 on `PATH` are required.
 
 `ca-pi` currently ships as a **Feature Forge `preview`**. You are welcome to
@@ -80,7 +80,6 @@ For a supported-version run, install the exact external Pi version with install
 scripts disabled in the isolated environment, then run one of:
 
 ```sh
-python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.5
 python .github/scripts/test_pi_platform_contract.py --pi-version 0.84.1
 ```
 

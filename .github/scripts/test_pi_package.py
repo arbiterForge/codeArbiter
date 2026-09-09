@@ -794,8 +794,8 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["0.80.5", "0.84.1"]',
-        "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
+        'pi-version: ["0.84.1"]',
+        "pi_host_locks.py install --version ${{ matrix.pi-version }}",
         "npm ci --ignore-scripts",
     ):
         if token not in matrix:
@@ -1186,8 +1186,8 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["0.80.5", "0.84.1"]',
-            "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
+            'pi-version: ["0.84.1"]',
+            "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
             "Test the complete Pi adapter suite",
@@ -1202,7 +1202,8 @@ class PiPackageTests(unittest.TestCase):
         for text in required:
             self.assertIn(text, ci)
         matrix_job = ci.split("  ca-pi-tools:", 1)[1].split("\n  ca-pi-latest:", 1)[0]
-        self.assertEqual(matrix_job.count("--ignore-scripts"), 2)
+        self.assertEqual(matrix_job.count("--ignore-scripts"), 1)
+        self.assertIn("pi_host_locks.py install", matrix_job)
         latest_job = ci.split("  ca-pi-latest:", 1)[1].split("\n  hooks:", 1)[0]
         self.assertIn("Report latest version and test installed runtime admission", latest_job)
         self.assertEqual(pi_ci_contract_violations(ci), [])
@@ -1563,7 +1564,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 0.80.5/0.84.1 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 0.84.1 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

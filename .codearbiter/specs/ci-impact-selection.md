@@ -79,7 +79,7 @@ are optional and typed, in a fixed order.
 Examples:
 
 ```text
-[CHECK] | [PI  ] | Adapter contract  <os: Windows · runtime: Pi 0.80.5>
+[CHECK] | [PI  ] | Adapter contract  <os: Windows · runtime: Pi 0.84.1>
 [CHECK] | [CORE] | Hook contract  <os: macOS>
 [CHECK] | [CDX ] | Reference graph
 [WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>
@@ -97,7 +97,7 @@ records its identity, reason, required or advisory status, variant, and a
 reproduction command when one is available.
 
 ```text
-[CHECK] | [PI  ] | Adapter contract  <os: Windows · runtime: Pi 0.80.5>
+[CHECK] | [PI  ] | Adapter contract  <os: Windows · runtime: Pi 0.84.1>
 Reason: plugins/ca-pi/tools/src/extension.ts -> Pi runtime payload
 Reproduce: npm --prefix plugins/ca-pi/tools test -- <targeted suite>
 ```

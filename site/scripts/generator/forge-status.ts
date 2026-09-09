@@ -63,7 +63,7 @@ export const FORGE_FEATURES: ForgeFeature[] = [
       "Brings the shared codeArbiter governance core to Pi with a rich footer, permission and plan modes, bounded background work, native compaction, and hardened child dispatch. Its promotion matrix is green; the preview label remains while broader real-world host and workflow coverage accumulates.",
     optIn:
       "pi install git:github.com/arbiterForge/codeArbiter@ca-pi-v<version>",
-    requires: "Pi 0.80.5 or 0.80.10, Node.js 22.19+, and Python 3",
+    requires: "Pi 0.84.1, Node.js 22.19+, and Python 3",
     helpGraduate:
       "use it in real repositories and report any host or workflow mismatch.",
     href:

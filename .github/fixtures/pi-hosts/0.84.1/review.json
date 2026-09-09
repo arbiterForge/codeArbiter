@@ -1,0 +1,29 @@
+{
+  "schema": "codearbiter-pi-host-lock-review-v2",
+  "package": "@earendil-works/pi-coding-agent",
+  "version": "0.84.1",
+  "registry": "https://registry.npmjs.org",
+  "root_integrity": "sha512-ncAqFrG+iybuPGOhMiZoEHkEzTpJgz3guYD32pD+M7ucc0WeHmauP6wa7qwP8V/KWvsZDVNa5XGsdZ7fkC7w7A==",
+  "lock_sha256": "c3f26db24e71b51b5bd881c52e46d410b3097c1bfd96dffca87f84fd0286d293",
+  "source_repository": "https://github.com/earendil-works/pi",
+  "source_tag": "v0.84.1",
+  "source_commit": "53fa77ccd8a279eb87e92294ef3687b03ff80112",
+  "reviewed_at": "2026-09-08",
+  "reviewer": "ca-add-dep:C019-DEPENDENCY",
+  "licenses": {
+    "result": "PASS",
+    "observed": ["0BSD", "Apache-2.0", "BSD-3-Clause", "BlueOak-1.0.0", "ISC", "MIT"]
+  },
+  "audits": {
+    "production": {"info": 0, "low": 0, "moderate": 0, "high": 0, "critical": 0, "total": 0},
+    "all": {"info": 0, "low": 0, "moderate": 0, "high": 0, "critical": 0, "total": 0}
+  },
+  "lifecycle_scripts": {
+    "result": "PASS",
+    "policy": "ignore-scripts",
+    "transitive_hooks_present": true
+  },
+  "signatures": {"result": "PASS", "verified": 144},
+  "provenance": {"result": "PASS", "attestations_verified": 32},
+  "result": "PASS"
+}

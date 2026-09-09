@@ -15,15 +15,15 @@
       "id": "compatibility-policy",
       "path": "plugins/ca-pi/tools/src/compatibility.ts",
       "class": "policy",
-      "before": "new Set([\"{minimum}\", \"{last_verified}\"])",
-      "after": "new Set([\"{minimum}\", \"{candidate}\"])"
+      "before": "new Set([\"{last_verified}\"])",
+      "after": "new Set([\"{candidate}\"])"
     },
     {
       "id": "compatibility-guidance",
       "path": "plugins/ca-pi/tools/src/compatibility.ts",
       "class": "policy",
-      "before": "requires Pi {minimum} or {last_verified}; install a supported Pi version",
-      "after": "requires Pi {minimum} or {candidate}; install a supported Pi version"
+      "before": "requires Pi {last_verified}; install a supported Pi version",
+      "after": "requires Pi {candidate}; install a supported Pi version"
     },
     {
       "id": "host-fingerprint-window",
@@ -36,22 +36,29 @@
       "id": "bundle-fingerprint-window",
       "path": "plugins/ca-pi/tools/build.mjs",
       "class": "generated",
-      "before": "JSON.stringify([\"{minimum}\", \"{last_verified}\"].sort())",
-      "after": "JSON.stringify([\"{minimum}\", \"{candidate}\"].sort())"
+      "before": "JSON.stringify([\"{last_verified}\"].sort())",
+      "after": "JSON.stringify([\"{candidate}\"].sort())"
     },
     {
       "id": "adapter-matrix",
       "path": ".github/workflows/ci.yml",
       "class": "ci",
-      "before": "pi-version: [\"{minimum}\", \"{last_verified}\"]",
-      "after": "pi-version: [\"{minimum}\", \"{candidate}\"]"
+      "before": "pi-version: [\"{last_verified}\"]",
+      "after": "pi-version: [\"{candidate}\"]"
     },
     {
       "id": "platform-contract-window",
       "path": ".github/scripts/test_pi_platform_contract.py",
       "class": "ci",
-      "before": "SUPPORTED = (\"{minimum}\", \"{last_verified}\")",
-      "after": "SUPPORTED = (\"{minimum}\", \"{candidate}\")"
+      "before": "SUPPORTED = (\"{last_verified}\",)",
+      "after": "SUPPORTED = (\"{candidate}\",)"
+    },
+    {
+      "id": "reviewed-host-lock-window",
+      "path": ".github/scripts/pi_host_locks.py",
+      "class": "ci",
+      "before": "SUPPORTED = (\"{last_verified}\",)",
+      "after": "SUPPORTED = (\"{candidate}\",)"
     },
     {
       "id": "package-contract-expectations",
@@ -65,8 +72,8 @@
       "id": "host-descriptor-expectations",
       "path": ".github/scripts/test_host_descriptors.py",
       "class": "ci",
-      "before": "{{\"{minimum}\", \"{last_verified}\"}}",
-      "after": "{{\"{minimum}\", \"{candidate}\"}}"
+      "before": "{{\"{last_verified}\"}}",
+      "after": "{{\"{candidate}\"}}"
     },
     {
       "id": "platform-contract-expectations",
@@ -104,36 +111,36 @@
       "id": "readme-supported-hosts",
       "path": "README.md",
       "class": "current-doc",
-      "before": "Pi {minimum} and Pi {last_verified} are the supported hosts",
-      "after": "Pi {minimum} and Pi {candidate} are the supported hosts"
+      "before": "Pi {last_verified} is the supported host",
+      "after": "Pi {candidate} is the supported host"
     },
     {
       "id": "parity-supported-hosts",
       "path": "docs/parity.md",
       "class": "current-doc",
-      "before": "contracts target Pi {minimum} and Pi {last_verified}.",
-      "after": "contracts target Pi {minimum} and Pi {candidate}."
+      "before": "contracts target exact Pi {last_verified}.",
+      "after": "contracts target exact Pi {candidate}."
     },
     {
       "id": "parity-testing-supported-hosts",
       "path": "docs/pi-parity-testing.md",
       "class": "current-doc",
-      "before": "Pi {minimum} is the minimum supported host and Pi {last_verified} is",
-      "after": "Pi {minimum} is the minimum supported host and Pi {candidate} is"
+      "before": "Exact Pi {last_verified} is the sole supported and latest verified",
+      "after": "Exact Pi {candidate} is the sole supported and latest verified"
     },
     {
       "id": "core-host-notes",
       "path": "core/surface/includes/pi-host-notes.md",
       "class": "generated",
-      "before": "Supported promotion targets are Pi {minimum} and Pi {last_verified}.",
-      "after": "Supported promotion targets are Pi {minimum} and Pi {candidate}."
+      "before": "The supported promotion target is exact Pi {last_verified}.",
+      "after": "The supported promotion target is exact Pi {candidate}."
     },
     {
       "id": "core-doctor-guidance",
       "path": "core/surface/commands/doctor.md",
       "class": "generated",
-      "before": "supported Pi {minimum}/{last_verified} public extension",
-      "after": "supported Pi {minimum}/{candidate} public extension"
+      "before": "supported Pi {last_verified} public extension",
+      "after": "supported Pi {candidate} public extension"
     },
     {
       "id": "pi-support-live-verification",
@@ -143,11 +150,19 @@
       "after": "- Last live-verified Pi: `{candidate}`."
     },
     {
+      "id": "ci-impact-check-name-examples",
+      "path": ".codearbiter/specs/ci-impact-selection.md",
+      "class": "current-doc",
+      "before": "runtime: Pi {last_verified}",
+      "after": "runtime: Pi {candidate}",
+      "occurrences": "all"
+    },
+    {
       "id": "technical-stack-supported-hosts",
       "path": ".codearbiter/tech-stack.md",
       "class": "current-doc",
-      "before": "Supported promotion versions are Pi {minimum} and Pi {last_verified}.",
-      "after": "Supported promotion versions are Pi {minimum} and Pi {candidate}."
+      "before": "The supported promotion version is exact Pi {last_verified}.",
+      "after": "The supported promotion version is exact Pi {candidate}."
     },
     {
       "id": "runner-isolation-package-fixture",
@@ -197,8 +212,8 @@
       "id": "child-live-supported-set",
       "path": ".github/scripts/test_pi_child_live.py",
       "class": "ci",
-      "before": "{{\"{minimum}\", \"{last_verified}\"}}",
-      "after": "{{\"{minimum}\", \"{candidate}\"}}"
+      "before": "version != \"{last_verified}\"",
+      "after": "version != \"{candidate}\""
     },
     {
       "id": "public-docs-supported-versions",
@@ -218,108 +233,115 @@
       "id": "site-pi-install-supported",
       "path": "site/src/content/docs/getting-started/pi.md",
       "class": "current-doc",
-      "before": "Pi {minimum} or Pi {last_verified} for this release line.",
-      "after": "Pi {minimum} or Pi {candidate} for this release line."
+      "before": "exact Pi {last_verified} for this release line.",
+      "after": "exact Pi {candidate} for this release line."
+    },
+    {
+      "id": "site-forge-status-pi-requirement",
+      "path": "site/scripts/generator/forge-status.ts",
+      "class": "current-doc",
+      "before": "requires: \"Pi {last_verified}, Node.js 22.19+, and Python 3\"",
+      "after": "requires: \"Pi {candidate}, Node.js 22.19+, and Python 3\""
     },
     {
       "id": "site-compatibility-supported",
       "path": "site/src/content/docs/getting-started/compatibility.md",
       "class": "current-doc",
-      "before": "{minimum} or {last_verified} (this release line)",
-      "after": "{minimum} or {candidate} (this release line)"
+      "before": "{last_verified} (this release line)",
+      "after": "{candidate} (this release line)"
     },
     {
       "id": "site-troubleshooting-cause",
       "path": "site/src/content/docs/guides/troubleshooting.md",
       "class": "current-doc",
-      "before": "Pi CLI is not {minimum} or {last_verified}",
-      "after": "Pi CLI is not {minimum} or {candidate}"
+      "before": "Pi CLI is not {last_verified}",
+      "after": "Pi CLI is not {candidate}"
     },
     {
       "id": "site-troubleshooting-fix",
       "path": "site/src/content/docs/guides/troubleshooting.md",
       "class": "current-doc",
-      "before": "Upgrade to Pi {minimum} or Pi {last_verified}, the only supported versions in this release line",
-      "after": "Upgrade to Pi {minimum} or Pi {candidate}, the only supported versions in this release line"
+      "before": "Upgrade to exact Pi {last_verified}, the only supported version in this release line",
+      "after": "Upgrade to exact Pi {candidate}, the only supported version in this release line"
     },
     {
       "id": "parity-doctor-exception",
       "path": "docs/parity.md",
       "class": "current-doc",
-      "before": "Public {minimum}/{last_verified} APIs cannot submit the deterministic wrapper probe",
-      "after": "Public {minimum}/{candidate} APIs cannot submit the deterministic wrapper probe"
+      "before": "Public {last_verified} APIs cannot submit the deterministic wrapper probe",
+      "after": "Public {candidate} APIs cannot submit the deterministic wrapper probe"
     },
     {
       "id": "parity-promotion-matrix",
       "path": "docs/parity.md",
       "class": "current-doc",
-      "before": "the committed Windows/macOS/Linux by Pi {minimum}/{last_verified} matrix",
-      "after": "the committed Windows/macOS/Linux by Pi {minimum}/{candidate} matrix"
+      "before": "the committed Windows/macOS/Linux by Pi {last_verified} matrix",
+      "after": "the committed Windows/macOS/Linux by Pi {candidate} matrix"
     },
     {
       "id": "tech-stack-supported-run",
       "path": ".codearbiter/tech-stack.md",
       "class": "current-doc",
-      "before": "`--pi-version {minimum}` or\n`--pi-version {last_verified}`",
-      "after": "`--pi-version {minimum}` or\n`--pi-version {candidate}`"
+      "before": "`--pi-version {last_verified}`",
+      "after": "`--pi-version {candidate}`"
     },
     {
       "id": "spec-ac7-version-contract",
       "path": ".codearbiter/specs/pi-support.md",
       "class": "current-doc",
-      "before": "Pi `{minimum}` and `{last_verified}` pass",
-      "after": "Pi `{minimum}` and `{candidate}` pass"
+      "before": "exact Pi `{last_verified}` passes",
+      "after": "exact Pi `{candidate}` passes"
     },
     {
       "id": "pi-api-header-window",
       "path": "plugins/ca-pi/tools/src/pi-api.d.ts",
       "class": "generated",
-      "before": "the Pi {minimum}/{last_verified} external runtime.",
-      "after": "the Pi {minimum}/{candidate} external runtime."
+      "before": "the Pi {last_verified} external runtime.",
+      "after": "the Pi {candidate} external runtime."
     },
     {
       "id": "verify-support-window",
       "path": ".github/scripts/verify_pi_support.py",
       "class": "ci",
-      "before": "SUPPORTED = (\"{minimum}\", \"{last_verified}\")",
-      "after": "SUPPORTED = (\"{minimum}\", \"{candidate}\")"
+      "before": "SUPPORTED = (\"{last_verified}\",)",
+      "after": "SUPPORTED = (\"{candidate}\",)"
     },
     {
       "id": "verify-support-fixture-local",
       "path": ".github/scripts/test_verify_pi_support.py",
       "class": "ci",
-      "before": "for version in (\"{minimum}\", \"{last_verified}\"):",
-      "after": "for version in (\"{minimum}\", \"{candidate}\"):"
+      "before": "for version in (\"{last_verified}\",):",
+      "after": "for version in (\"{candidate}\",):"
     },
     {
       "id": "verify-support-fixture-hosted",
       "path": ".github/scripts/test_verify_pi_support.py",
       "class": "ci",
       "occurrences": "all",
-      "before": "if row[\"version\"] in {{\"{minimum}\", \"{last_verified}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:",
-      "after": "if row[\"version\"] in {{\"{minimum}\", \"{candidate}\"}} and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:"
+      "before": "if row[\"version\"] == \"{last_verified}\" and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:",
+      "after": "if row[\"version\"] == \"{candidate}\" and row[\"platform\"] in {{\"windows\", \"linux\", \"macos\"}}:"
     },
     {
       "id": "site-pi-journey-prerequisite",
       "path": "site/src/content/docs/getting-started/pi.md",
       "class": "current-doc",
-      "before": "- \"Pi {minimum} or Pi {last_verified}\"",
-      "after": "- \"Pi {minimum} or Pi {candidate}\""
+      "before": "- \"Pi {last_verified}\"",
+      "after": "- \"Pi {candidate}\""
     },
     {
       "id": "ci-single-version-live-installs",
       "path": ".github/workflows/ci.yml",
       "class": "ci",
-      "before": "pi-coding-agent@{last_verified} --ignore-scripts",
-      "after": "pi-coding-agent@{candidate} --ignore-scripts",
+      "before": "pi_host_locks.py install --version {last_verified}",
+      "after": "pi_host_locks.py install --version {candidate}",
       "occurrences": "all"
     },
     {
       "id": "site-presentation-pi-window-literal",
       "path": "site/test/content/documentation-presentation.test.ts",
       "class": "generated",
-      "before": "toContain(\"Pi {minimum} or Pi {last_verified}\")",
-      "after": "toContain(\"Pi {minimum} or Pi {candidate}\")"
+      "before": "toContain(\"Pi {last_verified}\")",
+      "after": "toContain(\"Pi {candidate}\")"
     },
     {
       "id": "site-presentation-pi-window-negative",

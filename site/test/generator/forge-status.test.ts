@@ -86,6 +86,8 @@ describe("FORGE_FEATURES (the catalog source)", () => {
     expect(pi?.kind).toBe("preview-plugin");
     expect(pi?.command).toBeUndefined();
     expect(pi?.optIn).toContain("ca-pi-v<version>");
+    expect(pi?.requires).toContain("Pi 0.84.1");
+    expect(pi?.requires).not.toMatch(/0\.80\.(5|10)/);
     expect(pi?.helpGraduate).toMatch(/real repositories/i);
   });
 

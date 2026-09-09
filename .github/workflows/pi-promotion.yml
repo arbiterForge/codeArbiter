@@ -26,7 +26,7 @@ jobs:
   resolve:
     name: "[WATCH] | [PI  ] | Resolve exact candidate"
     runs-on: ubuntu-latest
-    # Issue #399. One `npm view` against the public registry plus two Python
+    # Issue #399. One direct, bounded public-registry lookup plus two Python
     # calls - seconds in practice. 15 minutes bounds a hung registry lookup
     # without ever truncating a healthy resolve.
     timeout-minutes: 15
@@ -35,6 +35,8 @@ jobs:
       baseline: ${{ steps.candidate.outputs.baseline }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22.19.0
@@ -49,7 +51,7 @@ jobs:
         run: |
           candidate="$REQUESTED_CANDIDATE"
           if [ -z "$candidate" ]; then
-            candidate="$(npm view @earendil-works/pi-coding-agent@latest version --registry=https://registry.npmjs.org)"
+            candidate="$(python3 .github/scripts/pi_host_locks.py resolve --spec latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')"
           fi
           policy="$(python3 .github/scripts/pi_promotion.py policy)"
           baseline="$(python3 -c 'import json,sys; print(json.loads(sys.argv[1])["last_verified"])' "$policy")"
@@ -65,16 +67,16 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
   validate:
-    name: "[WATCH] | [PI  ] | Promotion validation  <os: ${{ matrix.os }} · runtime: Pi ${{ needs.resolve.outputs.candidate }}>"
+    name: "[WATCH] | [PI  ] | Prospective promotion validation  <os: ${{ matrix.os }} · candidate data: Pi ${{ needs.resolve.outputs.candidate }}>"
     needs: resolve
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-    # Issue #399. This is the heaviest Pi lane: TWO external Pi installs
-    # (baseline + candidate), a bundle rebuild, the complete adapter suite, and
-    # the full platform contract. The comparable ci.yml Windows cell peaked at
+    # Issue #399. This is the heaviest Pi lane: one reviewed baseline install,
+    # a bundle rebuild, the complete adapter suite, and the fixture-only
+    # platform contract. Reviewed-PR CI owns candidate execution. The comparable ci.yml Windows cell peaked at
     # 452s while doing roughly half of this, so budget ~15 minutes expected and
     # bound at 45 - three orders below the hosted 6-hour ceiling, and low enough
     # that a wedged install cannot stall the weekly promotion for hours.
@@ -92,6 +94,8 @@ jobs:
         shell: bash
         run: echo "CA_PI_RECEIPT_STATE=$RUNNER_TEMP/pi-promotion-failures.json" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22.19.0
@@ -103,24 +107,14 @@ jobs:
       - name: Capture accepted public help surface
         shell: bash
         run: |
-          npm install --global @earendil-works/pi-coding-agent@${{ needs.resolve.outputs.baseline }} --ignore-scripts --registry=https://registry.npmjs.org
+          python .github/scripts/pi_host_locks.py install --version ${{ needs.resolve.outputs.baseline }} --prefix "$RUNNER_TEMP/pi-host-baseline"
+          export PATH="$RUNNER_TEMP/pi-host-baseline/node_modules/.bin:$PATH"
           python .github/scripts/pi_promotion.py help > "$RUNNER_TEMP/baseline-help.json"
-      - name: Install and compare the exact candidate help surface
+      - name: Capture the exact candidate graph without executing it
         shell: bash
         run: |
-          npm install --global @earendil-works/pi-coding-agent@${{ needs.resolve.outputs.candidate }} --ignore-scripts --registry=https://registry.npmjs.org
-          python .github/scripts/pi_promotion.py help > "$RUNNER_TEMP/candidate-help.json"
-          PYTHONPATH=.github/scripts python - "$RUNNER_TEMP/baseline-help.json" "$RUNNER_TEMP/candidate-help.json" "$CA_PI_RECEIPT_STATE" <<'PY'
-          import json, sys
-          from pathlib import Path
-          from pi_promotion import compare_help, record_failure
-          baseline = tuple(json.load(open(sys.argv[1], encoding="utf-8"))["help"])
-          candidate = tuple(json.load(open(sys.argv[2], encoding="utf-8"))["help"])
-          delta = compare_help(baseline, candidate)
-          if delta.incompatible:
-              record_failure(Path(sys.argv[3]), "help-delta", delta)
-              raise SystemExit("required public Pi help entries disappeared")
-          PY
+          python .github/scripts/pi_host_locks.py capture --version ${{ needs.resolve.outputs.candidate }} --output "$RUNNER_TEMP/pi-candidate-lock"
+          # The PENDING_REVIEW graph is data only. Dependency review is required before candidate code executes.
       - name: Apply the declared prospective promotion in this disposable checkout
         run: python .github/scripts/pi_promotion.py contract --id promotion-apply --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/pi_promotion.py apply --candidate "$CA_PI_CANDIDATE"
         shell: bash
@@ -140,7 +134,7 @@ jobs:
           python .github/scripts/pi_promotion.py contract --id security-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_security.py
           python .github/scripts/pi_promotion.py contract --id parity-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_parity.py
           python .github/scripts/pi_promotion.py contract --id package-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_package.py
-          python .github/scripts/pi_promotion.py contract --id platform-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_platform_contract.py --pi-version "$CA_PI_CANDIDATE"
+          python .github/scripts/pi_promotion.py contract --id platform-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/test_pi_platform_contract.py --fixtures-only
           python .github/scripts/pi_promotion.py contract --id docs-contract --state "$CA_PI_RECEIPT_STATE" -- python .github/scripts/check_docs_contract.py
       - name: Render the compact promotion receipt
         if: failure()
@@ -173,28 +167,42 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22.19.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
+      - name: Capture candidate graph without write credentials
+        shell: bash
+        run: |
+          python .github/scripts/pi_host_locks.py capture --version ${{ needs.resolve.outputs.candidate }} --output .github/fixtures/pi-hosts/${{ needs.resolve.outputs.candidate }}
+          # The PENDING_REVIEW graph is inert data; no repository credential is present during resolution.
       - name: Create the deterministic promotion branch contents
         shell: bash
         run: |
           branch="automation/pi-${{ needs.resolve.outputs.candidate }}"
+          git switch --create "$branch"
+          python .github/scripts/pi_promotion.py apply --candidate ${{ needs.resolve.outputs.candidate }}
+          python tools/build-surface.py
+          npm --prefix plugins/ca-pi/tools ci --ignore-scripts
+          npm --prefix plugins/ca-pi/tools run build
+          python .github/scripts/check_docs_contract.py
+          git add -- plugins/ca-pi core .github/fixtures/pi-hosts .github/scripts/pi_host_locks.py .github/scripts/test_host_descriptors.py .github/scripts/test_pi_child_live.py .github/scripts/test_pi_package.py .github/scripts/test_pi_platform_contract.py .github/scripts/test_public_pi_docs.py .github/scripts/test_verify_pi_support.py .github/scripts/verify_pi_support.py .github/workflows/ci.yml README.md docs site package.json .codearbiter/specs/pi-support.md .codearbiter/specs/ci-impact-selection.md .codearbiter/tech-stack.md
+          git diff --quiet
+          test -z "$(git ls-files --others --exclude-standard)"
+          git diff --cached --check
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(pi): promote ${{ needs.resolve.outputs.candidate }}"
+      - name: Push the promotion branch and open the draft PR
+        shell: bash
+        run: |
+          branch="automation/pi-${{ needs.resolve.outputs.candidate }}"
           if gh pr list --head "$branch" --state open --json number --jq 'length' | grep -qx '0'; then
-            git switch --create "$branch"
-            python .github/scripts/pi_promotion.py apply --candidate ${{ needs.resolve.outputs.candidate }}
-            python tools/build-surface.py
-            npm --prefix plugins/ca-pi/tools ci --ignore-scripts
-            npm --prefix plugins/ca-pi/tools run build
-            python .github/scripts/check_docs_contract.py
-            git add -- plugins/ca-pi core .github/workflows/ci.yml README.md docs .codearbiter/specs/pi-support.md .codearbiter/tech-stack.md
-            git diff --cached --check
-            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(pi): promote ${{ needs.resolve.outputs.candidate }}"
+            gh auth setup-git
             git push origin "$branch"
-            gh pr create --base main --head "$branch" --title "chore(pi): promote ${{ needs.resolve.outputs.candidate }}" --body "Automated exact Pi promotion candidate. Validation completed on Linux, macOS, and Windows; this PR does not release, tag, or publish."
+            gh pr create --draft --base main --head "$branch" --title "chore(pi): promote ${{ needs.resolve.outputs.candidate }}" --body "Automated exact Pi promotion candidate. Static prospective validation completed on Linux, macOS, and Windows. The committed graph remains PENDING_REVIEW and dependency review is required before candidate code executes. This PR does not release, tag, or publish."
           else
             echo "A promotion PR for $branch is already open."
           fi

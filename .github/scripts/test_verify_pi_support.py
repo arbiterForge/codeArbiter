@@ -36,13 +36,13 @@ def digest_tree(root: Path) -> str:
 
 def evidence(mode: str = "preclosure") -> dict:
     rows = []
-    for version in ("0.80.5", "0.84.1"):
+    for version in ("0.84.1",):
         rows.append({"version": version, "platform": "windows-local", "architecture": "x64", "resultCode": "PI-LOCAL-SUPPORTED", "passed": True, "timingMs": 10, "diagnosticCode": "NONE"})
         for platform in ("windows", "linux", "macos"):
             rows.append({"version": version, "platform": platform, "architecture": "pending", "resultCode": "PI-HOSTED-PENDING", "passed": False, "timingMs": 0, "diagnosticCode": "HOSTED_PENDING"})
     rows.extend([
         {"version": "codeql", "platform": "github", "architecture": "pending", "resultCode": "PI-CODEQL-PENDING", "passed": False, "timingMs": 0, "diagnosticCode": "HOSTED_PENDING"},
-        {"version": "0.80.9", "platform": "windows-local", "architecture": "x64", "resultCode": "PI-LATEST-CANARY", "passed": False, "timingMs": 5, "diagnosticCode": "NONBLOCKING_CANARY"},
+        {"version": "0.84.2", "platform": "windows-local", "architecture": "x64", "resultCode": "PI-LATEST-CANARY", "passed": False, "timingMs": 5, "diagnosticCode": "NONBLOCKING_CANARY"},
     ])
     return {"schema": "codearbiter-pi-promotion-v1", "mode": mode, "commit": None, "rows": rows}
 
@@ -136,7 +136,7 @@ class VerifyPiSupportTest(unittest.TestCase):
         final = evidence("final")
         final["commit"] = "a" * 40
         for row in final["rows"]:
-            if row["version"] in {"0.80.5", "0.84.1"} and row["platform"] in {"windows", "linux", "macos"}:
+            if row["version"] == "0.84.1" and row["platform"] in {"windows", "linux", "macos"}:
                 row.update(resultCode="PI-HOSTED-SUPPORTED", passed=True, timingMs=10, diagnosticCode="NONE")
             elif row["version"] == "codeql":
                 row.update(resultCode="PI-CODEQL-HIGH", passed=True, timingMs=10, diagnosticCode="NONE")
@@ -324,7 +324,7 @@ class VerifyPiSupportTest(unittest.TestCase):
             document = evidence("final")
             document["commit"] = "a" * 40
             for row in document["rows"]:
-                if row["version"] in {"0.80.5", "0.84.1"} and row["platform"] in {"windows", "linux", "macos"}:
+                if row["version"] == "0.84.1" and row["platform"] in {"windows", "linux", "macos"}:
                     row.update(architecture="x64", resultCode="PI-HOSTED-SUPPORTED", passed=True, timingMs=10, diagnosticCode="NONE")
                 elif row["version"] == "codeql":
                     row.update(architecture="x64", resultCode="PI-CODEQL-HIGH", passed=True, timingMs=10, diagnosticCode="NONE")
