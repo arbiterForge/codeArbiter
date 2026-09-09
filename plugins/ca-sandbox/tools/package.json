@@ -15,10 +15,10 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
-    "@vitest/coverage-v8": "4.1.9",
+    "@vitest/coverage-v8": "4.1.11",
     "esbuild": "^0.28.1",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   }
 }
