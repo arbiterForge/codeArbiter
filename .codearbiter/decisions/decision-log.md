@@ -1780,3 +1780,28 @@ Maintainable and Scalable permit routine upstream advancement without a new arch
 Bind the accepted ADR to a newly derived and independently reviewed obligation set, preserve source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
 
 ---
+
+## DECISION-0060 — adr-0035-accepted-transition — Store reviewed Pi architecture as Accepted/Planned
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0059
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 now contains the approved ratification attribution while remaining proposed for lifecycle-safe source preparation.
+- **Scaffold position:** The user explicitly directed acceptance of the revised decision without permanently pinning Pi 0.84.1 or making singleton support an architectural invariant.
+- **Status type:** open-decision-closure
+
+### Decision
+Store ADR-0035 as Accepted/Planned. Pi 0.84.1 is the current checkpoint baseline; subsequent supported Pi versions advance through the reviewed promotion process as upstream Pi advances.
+
+### SMARTS rationale
+Maintainable and Scalable preserve routine version advancement without reopening the architecture for each Pi release. Reliable, Securable, and Testable keep exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof as the durable promotion boundary.
+
+### Implementation implication
+Change only ADR-0035's recognized status tokens, seal every normative clause against the exact accepted bytes, commit the accepted source, then append its content-bound lifecycle event in a separate commit while preserving source ancestry.
+
+---
