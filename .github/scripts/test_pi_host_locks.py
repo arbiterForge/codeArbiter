@@ -284,6 +284,7 @@ class PiHostLocksTest(unittest.TestCase):
         self.assertEqual(review["result"], "PASS")
 
         for label, mutate in {
+            "wrong-config-digest": lambda value: value.__setitem__("config_sha256", "0" * 64),
             "pass-prefix": lambda value: value.__setitem__("result", "PASS without evidence"),
             "missing-reviewer": lambda value: value.pop("reviewer"),
             "unknown-field": lambda value: value.__setitem__("unreviewed_note", "trust me"),
