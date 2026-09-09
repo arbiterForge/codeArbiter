@@ -23,7 +23,7 @@ Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
 H-03 structured block. A fresh Codex CLI 0.145.0 process later selected `ca-codex` 0.9.4,
 completed `ca-doctor` with 10 OK, 2 WARN, and 0 FAIL, and received the expected H-03 denial on
 its single staging probe. Pi's implementation and local supported-version
-contracts target Pi 0.80.5 and Pi 0.84.1. The completed hosted
+contracts target exact Pi 0.84.1. The completed hosted
 Windows/macOS/Linux promotion report records x64 Windows/Linux and arm64 macOS evidence without
 presenting the deliberately nonblocking unsupported-latest canary as supported.
 
@@ -110,7 +110,7 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex packaged agents | SUPPORTED | Published releases from 0.7.5 contain the complete generated charter set for their release; current source and 0.9.4 contain 19. Hosted static-package, resource-closure, and route-closure evidence is paired with one bounded exact-0.9.4 host-thread dispatch receipt. That sample does not claim enforced read-only isolation, every route, or process cleanup. | `plugins/ca-codex/agents/`, `.codearbiter/decisions/0032-hosted-static-codex-release-evidence.md`, `docs/reports/evidence/codex-agent-dispatch/ca-codex-0.9.4-architecture-drift-reviewer.json` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
-| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
+| Pi active-dispatch doctor self-test | DEGRADED | Public 0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
 | Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/npm-publish.yml` |
 <!-- PI-EXCEPTIONS:END -->
@@ -119,5 +119,5 @@ Every exception has a status and a source-visible evidence pointer.
 
 The deterministic and trusted-live procedure is
 [`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
-added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.84.1 matrix
+added only after the committed Windows/macOS/Linux by Pi 0.84.1 matrix
 and the separately reported nonblocking latest canary complete.

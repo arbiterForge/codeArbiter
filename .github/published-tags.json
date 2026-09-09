@@ -730,6 +730,21 @@
       "object_sha": "5719008d4155b42aa9fe81cd4a2a35efbc9024ce",
       "commit_sha": "08e6ea13da08d4619a87c22f1dc10865212e7eba",
       "object_type": "tag"
+    },
+    "v2.17.10": {
+      "commit_sha": "8a9f3721c65c4958e186bb432f7eb10aa59dd1fe",
+      "object_type": "tag",
+      "object_sha": "5b3cbea26231a28cd3a1f2095d6beb74007a849d"
+    },
+    "ca-codex-v0.9.10": {
+      "commit_sha": "8a9f3721c65c4958e186bb432f7eb10aa59dd1fe",
+      "object_type": "tag",
+      "object_sha": "7c5b254ee00051d868b6e5b409cc86b94ef5427b"
+    },
+    "ca-pi-v0.10.11": {
+      "object_sha": "08306ecf5bcc344f5e05bfbd3eec951e2e443e12",
+      "commit_sha": "8a9f3721c65c4958e186bb432f7eb10aa59dd1fe",
+      "object_type": "tag"
     }
   }
 }

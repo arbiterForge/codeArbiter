@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.12] - 2026-09-09
+
+### Fixed
+
+- Bind the reviewed Pi 0.84.1 npm configuration and lock bytes across Windows and POSIX checkouts, require CI to execute the integrity-checked install step, and reject the retired Pi 0.80.5 host explicitly.
+- Correct singleton Pi support wording and reconcile authenticated publication receipts for the already-published 0.10.11 release line.
+
 ## [0.10.11] - 2026-09-08
 
 ### Fixed

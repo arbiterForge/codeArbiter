@@ -794,12 +794,19 @@ def pi_ci_contract_violations(ci: str) -> list[str]:
     matrix = job("ca-pi-tools")
     for token in (
         "os: [ubuntu-latest, windows-latest, macos-latest]",
-        'pi-version: ["0.80.5", "0.84.1"]',
-        "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
+        'pi-version: ["0.84.1"]',
+        "pi_host_locks.py install --version ${{ matrix.pi-version }}",
         "npm ci --ignore-scripts",
     ):
         if token not in matrix:
             violations.append(f"ca-pi-tools missing {token}")
+    host_lock_command = (
+        '        run: python .github/scripts/pi_host_locks.py install '
+        '--version ${{ matrix.pi-version }} '
+        '--prefix "$RUNNER_TEMP/pi-host-${{ matrix.pi-version }}"'
+    )
+    if host_lock_command not in matrix.splitlines():
+        violations.append("ca-pi-tools does not execute the reviewed host-lock install")
     if re.search(r"(?m)^\s{8}run: npm test -- test/package\.test\.ts\s*$", matrix) is None:
         violations.append("ca-pi-tools does not execute the native package test")
     if re.search(
@@ -1186,8 +1193,8 @@ class PiPackageTests(unittest.TestCase):
             "ca-pi-tools:",
             "version-bump-pi:",
             'os: [ubuntu-latest, windows-latest, macos-latest]',
-            'pi-version: ["0.80.5", "0.84.1"]',
-            "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts",
+            'pi-version: ["0.84.1"]',
+            "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "npm ci --ignore-scripts",
             "Test package, module identity, compatibility, and native binding",
             "Test the complete Pi adapter suite",
@@ -1202,7 +1209,8 @@ class PiPackageTests(unittest.TestCase):
         for text in required:
             self.assertIn(text, ci)
         matrix_job = ci.split("  ca-pi-tools:", 1)[1].split("\n  ca-pi-latest:", 1)[0]
-        self.assertEqual(matrix_job.count("--ignore-scripts"), 2)
+        self.assertEqual(matrix_job.count("--ignore-scripts"), 1)
+        self.assertIn("pi_host_locks.py install", matrix_job)
         latest_job = ci.split("  ca-pi-latest:", 1)[1].split("\n  hooks:", 1)[0]
         self.assertIn("Report latest version and test installed runtime admission", latest_job)
         self.assertEqual(pi_ci_contract_violations(ci), [])
@@ -1239,6 +1247,35 @@ class PiPackageTests(unittest.TestCase):
             pi_ci_contract_violations(native_nooped),
             "the matrix must execute the native-binding test command, not merely contain its text",
         )
+
+        host_lock_nooped = ci.replace(
+            "        run: python .github/scripts/pi_host_locks.py install --version ${{ matrix.pi-version }}",
+            "        run: echo python .github/scripts/pi_host_locks.py install --version ${{ matrix.pi-version }}",
+            1,
+        )
+        self.assertNotEqual(host_lock_nooped, ci, "the reviewed host-lock install step vanished")
+        self.assertTrue(
+            pi_ci_contract_violations(host_lock_nooped),
+            "the matrix must execute the reviewed host-lock install, not merely contain its text",
+        )
+
+        host_lock_command = (
+            '        run: python .github/scripts/pi_host_locks.py install '
+            '--version ${{ matrix.pi-version }} '
+            '--prefix "$RUNNER_TEMP/pi-host-${{ matrix.pi-version }}"'
+        )
+        for suffix in (" || true", "; exit 0"):
+            with self.subTest(suffix=suffix):
+                host_lock_suppressed = ci.replace(
+                    host_lock_command,
+                    f"{host_lock_command}{suffix}",
+                    1,
+                )
+                self.assertNotEqual(host_lock_suppressed, ci, "the reviewed host-lock install step vanished")
+                self.assertTrue(
+                    pi_ci_contract_violations(host_lock_suppressed),
+                    "the matrix must reject failure-suppression after the reviewed host-lock install",
+                )
 
         full_suite_nooped = ci.replace(
             "      - name: Test the complete Pi adapter suite\n        run: npm test\n",
@@ -1563,7 +1600,7 @@ class PiPackageTests(unittest.TestCase):
             doctor_report,
         )
         self.assertIn(
-            "DEGRADED  active-dispatch: Supported Pi 0.80.5/0.84.1 public extension APIs cannot "
+            "DEGRADED  active-dispatch: Supported Pi 0.84.1 public extension APIs cannot "
             "submit this deterministic self-test through the active dispatcher; the wrapper "
             "self-test does not exercise active dispatch.",
             doctor_report,

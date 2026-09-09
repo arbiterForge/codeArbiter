@@ -20,6 +20,7 @@ VERSION_LITERAL = re.compile(r'"(?P<version>[^"\r\n]+)"')
 REPOSITORY = Path(__file__).resolve().parents[2]
 OFFICIAL_PROMOTION_PATHS = frozenset({
     ".codearbiter/specs/pi-support.md",
+    ".codearbiter/specs/ci-impact-selection.md",
     "package.json",
     ".codearbiter/tech-stack.md",
     ".github/scripts/test_host_descriptors.py",
@@ -27,6 +28,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     ".github/scripts/test_public_pi_docs.py",
     ".github/scripts/test_pi_package.py",
     ".github/scripts/test_pi_platform_contract.py",
+    ".github/scripts/pi_host_locks.py",
     ".github/scripts/test_verify_pi_support.py",
     ".github/scripts/verify_pi_support.py",
     ".github/workflows/ci.yml",
@@ -39,6 +41,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "plugins/ca-pi/tools/src/pi-api.d.ts",
     "site/src/content/docs/getting-started/compatibility.md",
     "site/src/content/docs/getting-started/pi.md",
+    "site/scripts/generator/forge-status.ts",
     "site/test/content/documentation-presentation.test.ts",
     "site/src/content/docs/guides/troubleshooting.md",
     "plugins/ca-pi/CHANGELOG.md",
@@ -122,8 +125,8 @@ class SupportPolicy:
     node_floor: tuple[int, int, int]
 
     @property
-    def supported_versions(self) -> tuple[str, str]:
-        return (self.minimum, self.last_verified)
+    def supported_versions(self) -> tuple[str, ...]:
+        return (self.last_verified,) if self.minimum == self.last_verified else (self.minimum, self.last_verified)
 
 
 @dataclass(frozen=True)
@@ -251,15 +254,15 @@ def read_policy(repo: Path, targets: Targets) -> SupportPolicy:
     if versions_match is None or floor_match is None:
         raise PromotionError("compatibility source does not match declared policy patterns")
     versions = tuple(match.group("version") for match in VERSION_LITERAL.finditer(versions_match.group("versions")))
-    if len(versions) != 2 or len(set(versions)) != 2:
-        raise PromotionError("compatibility source must declare exactly two supported Pi versions")
+    if len(versions) not in {1, 2} or len(set(versions)) != len(versions):
+        raise PromotionError("compatibility source must declare one or two distinct supported Pi versions")
     if any(SEMVER.fullmatch(version) is None for version in versions):
         raise PromotionError("compatibility source contains a non-stable Pi version")
-    if _semver_key(versions[0]) >= _semver_key(versions[1]):
+    if len(versions) == 2 and _semver_key(versions[0]) >= _semver_key(versions[1]):
         raise PromotionError("supported Pi versions must be ordered minimum then last verified")
     return SupportPolicy(
         minimum=versions[0],
-        last_verified=versions[1],
+        last_verified=versions[-1],
         node_floor=tuple(int(floor_match.group(name)) for name in ("major", "minor", "patch")),
     )
 

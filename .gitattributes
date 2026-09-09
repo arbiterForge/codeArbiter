@@ -10,6 +10,11 @@ hooks/* text eol=lf
 # Coverage provenance compares this shared Pi input to its exact Git bytes.
 /core/hosts.json text eol=lf
 
+# Reviewed Pi host graphs are hash-bound byte-for-byte and must survive a
+# Windows checkout without newline conversion.
+.github/fixtures/pi-hosts/**/*.json text eol=lf
+.github/fixtures/pi-hosts/**/.npmrc  text eol=lf
+
 # Pi release metadata and TypeScript/JavaScript artifacts are also checked as
 # exact UTF-8/LF bytes after checkout and regeneration on every hosted OS.
 plugins/ca-pi/**/*.json text eol=lf

@@ -16,7 +16,7 @@ from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SUPPORTED = ("0.80.5", "0.84.1")
+SUPPORTED = ("0.84.1",)
 PLATFORM_COMMAND_TIMEOUT_SECONDS = 180
 PI_TOOLS_VITEST_LAUNCHER = (
     ROOT / "plugins" / "ca-pi" / "tools" / "node_modules" / ".bin" /
@@ -30,7 +30,7 @@ def version_policy(version):
         return {"version": version, "blocking": True}
     if version == "latest":
         return {"version": version, "blocking": False}
-    raise ValueError("Pi version must be 0.80.5, 0.84.1, or latest")
+    raise ValueError("Pi version must be 0.84.1 or latest")
 
 
 def fixture_commands(fixtures_only):
@@ -132,11 +132,26 @@ class PlatformContractFixtures(unittest.TestCase):
         )
 
     def test_supported_versions_block_and_only_latest_is_nonblocking(self):
-        self.assertEqual(version_policy("0.80.5"), {"version": "0.80.5", "blocking": True})
         self.assertEqual(version_policy("0.84.1"), {"version": "0.84.1", "blocking": True})
+        with self.assertRaisesRegex(ValueError, "0.84.1 or latest"):
+            version_policy("0.80.5")
         self.assertEqual(version_policy("latest"), {"version": "latest", "blocking": False})
-        with self.assertRaisesRegex(ValueError, "0.80.5, 0.84.1, or latest"):
+        with self.assertRaisesRegex(ValueError, "0.84.1 or latest"):
             version_policy("0.81.0")
+
+    def test_singleton_support_wording_has_no_retired_matrix_counts(self):
+        surfaces = {
+            ".github/scripts/verify_pi_support.py": ROOT / ".github" / "scripts" / "verify_pi_support.py",
+            ".github/workflows/ci.yml": ROOT / ".github" / "workflows" / "ci.yml",
+            ".codearbiter/specs/ci-impact-selection.md": ROOT / ".codearbiter" / "specs" / "ci-impact-selection.md",
+            "docs/pi-parity-testing.md": ROOT / "docs" / "pi-parity-testing.md",
+        }
+        for label, path in surfaces.items():
+            with self.subTest(path=label):
+                text = path.read_text(encoding="utf-8")
+                self.assertNotIn("six-cell", text)
+                self.assertNotRegex(text, r"two\s+supported Pi versions?")
+                self.assertNotRegex(text, r"both\s+supported Pi versions?")
 
     def test_utf8_jsonl_accepts_lf_and_crlf_in_a_unicode_space_path(self):
         rows = [{"pathClass": "space-unicode", "value": "pi-π"}, {"cancelled": True}]

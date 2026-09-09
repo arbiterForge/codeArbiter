@@ -1,5 +1,5 @@
 {
-  "created": "2026-09-08",
+  "created": "2026-09-09",
   "doc": "release-targets",
   "entries": [
     {
@@ -29,12 +29,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "5e47abf8997e6d707cc4682f98d70ade5bdee18f",
+      "hash": "168c4ce53e2dd0252f451163c1f2b602397119b7",
       "path": "plugins/ca-pi/extensions/codearbiter-child.js"
     },
     {
       "drift_trigger": true,
-      "hash": "c4c66422477a77c2eabcd545c36485218089550f",
+      "hash": "58658eab6a619e7fdbcab851a770404c6d0999e1",
       "path": "plugins/ca-pi/extensions/codearbiter.js"
     },
     {

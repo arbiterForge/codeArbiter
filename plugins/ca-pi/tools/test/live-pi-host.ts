@@ -8,7 +8,7 @@
  */
 import { constants } from "node:fs";
 import { access, readFile, realpath } from "node:fs/promises";
-import { delimiter, dirname, parse, resolve } from "node:path";
+import { basename, delimiter, dirname, parse, resolve } from "node:path";
 
 export async function exists(path: string): Promise<boolean> {
   try {
@@ -46,11 +46,21 @@ export async function findPiPackageRoot(): Promise<string> {
       if (parent === cursor || cursor === parse(cursor).root) break;
       cursor = parent;
     }
-    const adjacent = resolve(entry, "node_modules", "@earendil-works", "pi-coding-agent");
-    const manifestPath = resolve(adjacent, "package.json");
-    if (!await exists(resolve(adjacent, "dist", "index.js")) || !await exists(manifestPath)) continue;
-    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as { name?: string };
-    if (manifest.name === "@earendil-works/pi-coding-agent") return await realpath(adjacent);
+    const adjacentRoots = [
+      resolve(entry, "node_modules", "@earendil-works", "pi-coding-agent"),
+    ];
+    if (
+      basename(entry).toLowerCase() === ".bin"
+      && basename(dirname(entry)).toLowerCase() === "node_modules"
+    ) {
+      adjacentRoots.unshift(resolve(dirname(entry), "@earendil-works", "pi-coding-agent"));
+    }
+    for (const adjacent of adjacentRoots) {
+      const manifestPath = resolve(adjacent, "package.json");
+      if (!await exists(resolve(adjacent, "dist", "index.js")) || !await exists(manifestPath)) continue;
+      const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as { name?: string };
+      if (manifest.name === "@earendil-works/pi-coding-agent") return await realpath(adjacent);
+    }
   }
   throw new Error("live Pi package root was not discoverable from PATH without npm/user config");
 }

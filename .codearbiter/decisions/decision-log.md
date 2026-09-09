@@ -1655,3 +1655,178 @@ Scalable is Strong because one closed epoch supports unlimited future receipt-ba
 Add the closed 44-record legacy ledger, extend the tag-immutability guard and its tests to validate both proof classes without overlap, retain receipt-only writers, update CI/release documentation and security controls, and deliver through governed PR plus exact-head CI before any release resumes.
 
 ---
+
+## DECISION-0055 — adr-0035-ratified — Use reviewed host locks and two-phase Pi promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** dependency-supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Supported Pi paths installed network-resolved host packages directly, and promotion executed a candidate before it had a durable dependency-review record.
+- **Scaffold position:** Exact Pi 0.84.1 is the sole authorized support floor; its graph must be repository-owned and reviewed, while pending promotion candidates remain inert until a committed review permits live CI.
+- **Status type:** open-decision-closure
+
+### Decision
+Use an exact committed and strictly reviewed Pi host lock for supported execution, with isolated `npm ci`, disabled scripts, sanitized npm configuration, pinned registries, and post-install audit and identity checks. Split promotion into inert candidate capture plus draft creation before review, followed by reviewed-PR installation and live cross-platform proof only after the receipt is `PASS`.
+
+### SMARTS rationale
+Securable and Reliable reject global resolution, ambient npm authority, free-form review states, and pre-review candidate execution. Testable requires a digest-bound receipt, deterministic graph, exact installed identity, and distinct static and live gates. Maintainable and Scalable favor one repository-owned helper and promotion plan over duplicated workflow shell logic. Available remains Adequate because automation can still create the review artifact without granting it execution authority.
+
+### Implementation implication
+Commit the exact Pi 0.84.1 host graph and structured review receipt, route supported CI through the isolated installer, keep candidate capture data-only, open draft promotion PRs, require reviewed-PR live host evidence, and update all current support projections atomically while retaining historical 0.80.5 evidence.
+
+---
+
+## DECISION-0056 — adr-0035-authoring-status-correction — Preserve Option A without pre-ratifying the ADR
+
+**Date:** 2026-09-08
+**Status:** proposed
+**Supersedes:** DECISION-0055
+**Decided by:** SUaDtL@users.noreply.github.com — the explicit 2026-09-08 Option A support-floor choice controls; this entry narrows its durable representation without changing that decision.
+**Decision category:** record correction / dependency-supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
++- **Artifact position:** DECISION-0055 correctly recorded the authorized Option A implementation but incorrectly labeled the newly authored ADR-0035 text as ratified.
++- **Scaffold position:** The support-floor and checkpoint implementation remain authorized; ADR-0035 must stay proposed until the user explicitly ratifies its complete authored text.
++- **Status type:** divergent
++
++### Decision
++Keep exact Pi 0.84.1 as the sole authorized support version and keep the reviewed-lock and inert-candidate implementation unchanged. Correct ADR-0035 to proposed and require explicit user ratification before any acceptance binding; DECISION-0056 supersedes DECISION-0055 only as the current ADR-lifecycle status record.
++
++### SMARTS rationale
++This is a recording correction, not a reopened architecture choice. Reliable and Securable preserve the user's actual authorization while refusing to infer approval of newly authored clauses. Testable requires the ADR status, decision log, and lifecycle ledger to agree before delivery.
++
++### Implementation implication
++Review and validate ADR-0035 as proposed. Do not prepare or append an acceptance lifecycle event until the user explicitly ratifies the complete ADR text; the implemented checkpoint may proceed only as far as governance permits without that acceptance.
++
++---
+
+## DECISION-0057 — adr-0035-authoring-correction — Keep ADR-0035 proposed pending ratification
+
+**Date:** 2026-09-08
+**Status:** proposed
+**Supersedes:** DECISION-0056
+**Decided by:** SUaDtL@users.noreply.github.com — the explicit 2026-09-08 Option A support-floor choice controls; this forward correction preserves its exact authority boundary.
+**Decision category:** record correction / dependency-supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0055 overclaimed ADR ratification, and the append-only DECISION-0056 correction was recorded with literal patch-prefix characters in its body.
+- **Scaffold position:** The support-floor and checkpoint implementation remain authorized; ADR-0035 remains proposed until the user explicitly ratifies its complete authored text.
+- **Status type:** divergent
+
+### Decision
+Keep exact Pi 0.84.1 as the sole authorized support version and keep the reviewed-lock and inert-candidate implementation unchanged. Treat ADR-0035 as proposed and require explicit user ratification before any acceptance binding. DECISION-0057 supersedes DECISION-0056 as the current lifecycle-status record; the earlier append-only entries remain visible history rather than being rewritten.
+
+### SMARTS rationale
+This is a recording correction, not a reopened architecture choice. Reliable and Securable preserve the user's actual authorization, expose the malformed prior append, and refuse to infer approval of newly authored clauses. Testable requires the ADR status, decision log, and lifecycle ledger to agree before delivery.
+
+### Implementation implication
+Review and validate ADR-0035 as proposed. Do not prepare or append an acceptance lifecycle event until the user explicitly ratifies the complete ADR text.
+
+---
+
+## DECISION-0058 — adr-0035-version-policy-correction — Keep Pi support advancing with upstream releases
+
+**Date:** 2026-09-08
+**Status:** proposed
+**Supersedes:** DECISION-0057
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly directed that the ADR must not lock Pi to a single version and that supported Pi advances as Pi updates.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The proposed ADR named exact Pi 0.84.1 as the sole current version without explicitly separating checkpoint state from enduring architecture, allowing it to be read as a permanent single-version constraint.
+- **Scaffold position:** Reviewed host locks and two-phase promotion are the durable architecture; exact supported versions and the size of the support set are evolving operational policy.
+- **Status type:** divergent
+
+### Decision
+Do not lock the Pi architecture to version 0.84.1 or to exactly one supported version. Treat 0.84.1 as the current checkpoint baseline after retiring 0.80.5, and advance supported Pi through the reviewed promotion process as upstream Pi releases advance. A routine version advance does not require a new ADR when the reviewed-lock, inert-candidate, and live-proof boundaries remain unchanged.
+
+### SMARTS rationale
+Maintainable and Scalable require routine upstream adoption without reopening architecture for every version string. Reliable and Securable retain exact, reviewed graphs and fail-closed execution boundaries for every version that becomes supported. Testable keeps each concrete support claim bound to exact repository bytes and live host evidence while separating that changing evidence from the durable decision.
+
+### Implementation implication
+Revise proposed ADR-0035 to describe 0.84.1 as current operational state, explicitly reject a permanent version or singleton architecture lock, and preserve the existing promotion machinery as the path for subsequent Pi updates. Keep the ADR proposed until the user ratifies the revised complete text.
+
+---
+
+## DECISION-0059 — adr-0035-ratified — Accept reviewed Pi host locks and two-phase promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0058
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Revised ADR-0035 separates evolving Pi version policy from the durable reviewed-lock and two-phase promotion architecture and remains proposed pending ratification.
+- **Scaffold position:** The user explicitly approved the revised decision and exact non-contradictory accepted Status wording.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0035 as revised. Pi 0.84.1 remains the current checkpoint baseline rather than a permanent pin or singleton architecture constraint; supported Pi advances through reviewed promotion as upstream releases advance.
+
+### SMARTS rationale
+Maintainable and Scalable permit routine upstream advancement without a new architecture decision for each version. Reliable, Securable, and Testable retain exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof before a version becomes supported.
+
+### Implementation implication
+Bind the accepted ADR to a newly derived and independently reviewed obligation set, preserve source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
+
+---
+
+## DECISION-0060 — adr-0035-accepted-transition — Store reviewed Pi architecture as Accepted/Planned
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0059
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 now contains the approved ratification attribution while remaining proposed for lifecycle-safe source preparation.
+- **Scaffold position:** The user explicitly directed acceptance of the revised decision without permanently pinning Pi 0.84.1 or making singleton support an architectural invariant.
+- **Status type:** open-decision-closure
+
+### Decision
+Store ADR-0035 as Accepted/Planned. Pi 0.84.1 is the current checkpoint baseline; subsequent supported Pi versions advance through the reviewed promotion process as upstream Pi advances.
+
+### SMARTS rationale
+Maintainable and Scalable preserve routine version advancement without reopening the architecture for each Pi release. Reliable, Securable, and Testable keep exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof as the durable promotion boundary.
+
+### Implementation implication
+Change only ADR-0035's recognized status tokens, seal every normative clause against the exact accepted bytes, commit the accepted source, then append its content-bound lifecycle event in a separate commit while preserving source ancestry.
+
+---
+
+## DECISION-0061 — adr-0035-ratified — Accept reviewed Pi host locks and two-phase promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0060
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 contains the approved ratification attribution and remains proposed after lifecycle-safe source preparation.
+- **Scaffold position:** The user explicitly approved storing the revised decision as Accepted/Planned without permanently pinning Pi 0.84.1 or making singleton support an architectural invariant.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0035 as revised. Pi 0.84.1 remains the current checkpoint baseline rather than a permanent pin or singleton architecture constraint; supported Pi advances through reviewed promotion as upstream releases advance.
+
+### SMARTS rationale
+Maintainable and Scalable permit routine upstream advancement without a new architecture decision for each version. Reliable, Securable, and Testable retain exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof before a version becomes supported.
+
+### Implementation implication
+Bind the accepted ADR to the newly derived and independently reviewed 65-obligation set, preserve its source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
+
+---

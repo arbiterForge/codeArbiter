@@ -53,27 +53,27 @@
     },
     {
       "path": ".codearbiter/tech-stack.md",
-      "template": "Supported promotion versions are Pi {minimum} and Pi {last_verified}."
+      "template": "The supported promotion version is exact Pi {last_verified}."
     },
     {
       "path": "README.md",
-      "template": "Pi {minimum} and Pi {last_verified} are the supported hosts for this release line."
+      "template": "Pi {last_verified} is the supported host for this release line."
     },
     {
       "path": "core/surface/commands/doctor.md",
-      "template": "supported Pi {minimum}/{last_verified} public extension"
+      "template": "supported Pi {last_verified} public extension"
     },
     {
       "path": "core/surface/includes/pi-host-notes.md",
-      "template": "Supported promotion targets are Pi {minimum} and Pi {last_verified}."
+      "template": "The supported promotion target is exact Pi {last_verified}."
     },
     {
       "path": "docs/parity.md",
-      "template": "contracts target Pi {minimum} and Pi {last_verified}."
+      "template": "contracts target exact Pi {last_verified}."
     },
     {
       "path": "docs/pi-parity-testing.md",
-      "template": "Pi {minimum} is the minimum supported host and Pi {last_verified} is"
+      "template": "Exact Pi {last_verified} is the sole supported and latest verified"
     }
   ],
   "generator_checks": [

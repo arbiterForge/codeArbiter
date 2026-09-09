@@ -17,7 +17,7 @@ from typing import Any
 
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[2]
-SUPPORTED = ("0.80.5", "0.84.1")
+SUPPORTED = ("0.84.1",)
 PLATFORMS = ("windows", "linux", "macos")
 ARCHITECTURES = {"x64", "arm64", "pending"}
 ROW_KEYS = {"version", "platform", "architecture", "resultCode", "passed", "timingMs", "diagnosticCode"}
@@ -135,7 +135,7 @@ def strict_promotion(document: Any, mode: str) -> tuple[bool, str]:
             return False, f"local supported {version}"
     hosted = {(version, platform): matching(version, platform) for version in SUPPORTED for platform in PLATFORMS}
     if any(len(cells) != 1 for cells in hosted.values()):
-        return False, "hosted six-cell matrix"
+        return False, "hosted supported-version matrix"
     codeql = matching("codeql", "github")
     if len(codeql) != 1:
         return False, "hosted CodeQL"
@@ -159,7 +159,7 @@ def strict_promotion(document: Any, mode: str) -> tuple[bool, str]:
         | {(version, platform) for version in SUPPORTED for platform in PLATFORMS}
         | {("codeql", "github"), (canary[0]["version"], "windows-local")}
     )
-    if len(rows) != 10 or {(row["version"], row["platform"]) for row in rows} != expected_cells:
+    if len(rows) != len(expected_cells) or {(row["version"], row["platform"]) for row in rows} != expected_cells:
         return False, "promotion exact row inventory"
 
     if mode == "preclosure" and document["mode"] == "preclosure":
@@ -179,7 +179,7 @@ def strict_promotion(document: Any, mode: str) -> tuple[bool, str]:
             return False, "preclosure CodeQL pending"
         if commit is not None:
             return False, "preclosure uncommitted"
-        return True, "local green; hosted six-cell and CodeQL explicitly pending"
+        return True, "local green; hosted three-platform matrix and CodeQL explicitly pending"
 
     if document["mode"] != "final" or not isinstance(commit, str):
         return False, "hosted final evidence"
@@ -201,7 +201,7 @@ def strict_promotion(document: Any, mode: str) -> tuple[bool, str]:
 def render_promotion_markdown(document: dict[str, Any]) -> str:
     """Render the public evidence surface only from the strict JSON envelope."""
     if document["mode"] == "preclosure":
-        status = "provisional preclosure; hosted six-cell matrix and CodeQL explicitly pending"
+        status = "provisional preclosure; hosted three-platform matrix and CodeQL explicitly pending"
     else:
         status = f"final hosted evidence bound to commit `{document['commit']}`"
     lines = [

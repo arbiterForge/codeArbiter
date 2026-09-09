@@ -185,6 +185,10 @@ jobs:
               - 'package.json'
               - 'tools/build-host-packages.py'
               - '.github/scripts/test_pi_package.py'
+              - '.github/scripts/pi_host_locks.py'
+              - '.github/scripts/test_pi_host_locks.py'
+              - '.github/fixtures/pi-hosts/**'
+              - '.github/pi-promotion-targets.json'
               - '.github/scripts/test_pi_parity.py'
               - '.github/scripts/pi_benchmark.py'
               - '.github/scripts/test_pi_benchmark.py'
@@ -637,7 +641,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Install external Pi host (scripts disabled)
+      - name: Install reviewed Pi host graph (isolated, scripts disabled)
         # ca-pi's suite is NOT runnable without a real Pi runtime: the first run
         # of this cell failed 20 tests in runner-isolation.test.ts because the
         # runner had none. `npm run coverage` - the command tech-stack.md names
@@ -649,7 +653,7 @@ jobs:
         # any way a second cell would reveal. Pinned to the upper bound of the
         # supported window.
         working-directory: .
-        run: npm install --global @earendil-works/pi-coding-agent@0.84.1 --ignore-scripts
+        run: python .github/scripts/pi_host_locks.py install --version 0.84.1 --prefix "$RUNNER_TEMP/pi-host-0.84.1"
       - name: Install (locked)
         # --ignore-scripts for the same reason every sibling job uses it: this
         # graph's output is a committed artifact. The graph itself is audited by
@@ -949,7 +953,8 @@ jobs:
   ca-pi-checks:
     name: "[CHECK] | [PI  ] | Host-independent adapter contract"
     # Issue #390: everything in this job consumes NEITHER matrix.os NOR
-    # matrix.pi-version, so the six-cell ca-pi-tools matrix below was producing
+    # matrix.pi-version, so the former two-version-by-three-platform ca-pi-tools
+    # matrix below was producing
     # six identical verdicts for it (1,423 runner-seconds on run 29870271440).
     # It now runs exactly once per workflow run: package metadata, typecheck,
     # the COMPLETE Vitest suite, the static security/parity scripts, the bundle
@@ -1002,8 +1007,9 @@ jobs:
           version="$(python -c 'import json,sys; print(json.loads(sys.argv[1])["last_verified"])' "$policy")"
           echo "resolved pinned Pi version: $version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
-      - name: Install external Pi host (scripts disabled)
-        run: npm install --global @earendil-works/pi-coding-agent@${{ steps.pinned.outputs.version }} --ignore-scripts
+      - name: Install reviewed Pi host graph (isolated, scripts disabled)
+        working-directory: .
+        run: python .github/scripts/pi_host_locks.py install --version ${{ steps.pinned.outputs.version }} --prefix "$RUNNER_TEMP/pi-host-${{ steps.pinned.outputs.version }}"
       - name: Install reviewed toolchain (scripts disabled)
         run: npm ci --ignore-scripts
       - name: Audit (CVE gate - fail on HIGH)
@@ -1013,7 +1019,7 @@ jobs:
         # ships or publishes" was false. Like the first two it declares no
         # production dependencies today, so this audits an empty graph; it
         # exists so the gate is already in place when that changes. Hosted here
-        # rather than in the six-cell ca-pi-tools matrix - the verdict does not
+        # rather than in the three-platform ca-pi-tools matrix - the verdict does not
         # depend on OS or Pi version.
         run: npm audit --omit=dev --audit-level=high
         env:
@@ -1070,6 +1076,9 @@ jobs:
       - name: Test release package contract
         working-directory: .
         run: python .github/scripts/test_pi_package.py
+      - name: Verify reviewed Pi host dependency graph
+        working-directory: .
+        run: python .github/scripts/test_pi_host_locks.py
       - name: Measure the three-host relative adapter benchmark
         working-directory: .
         run: python .github/scripts/pi_benchmark.py --samples 100
@@ -1104,7 +1113,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        pi-version: ["0.80.5", "0.84.1"]
+        pi-version: ["0.84.1"]
     runs-on: ${{ matrix.os }}
     # Issue #399. Worst observed cell before this split was 452s (windows-latest,
     # run 30123976665); the Windows cold `npm install --global` dominates and is
@@ -1128,8 +1137,9 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
-      - name: Install external Pi host (scripts disabled)
-        run: npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }} --ignore-scripts
+      - name: Install reviewed Pi host graph (isolated, scripts disabled)
+        working-directory: .
+        run: python .github/scripts/pi_host_locks.py install --version ${{ matrix.pi-version }} --prefix "$RUNNER_TEMP/pi-host-${{ matrix.pi-version }}"
       - name: Install reviewed toolchain (scripts disabled)
         run: npm ci --ignore-scripts
       - name: Test package, module identity, compatibility, and native binding
