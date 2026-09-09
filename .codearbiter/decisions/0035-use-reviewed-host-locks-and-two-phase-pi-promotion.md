@@ -10,9 +10,7 @@ governs: .github/fixtures/pi-hosts/**, .github/scripts/pi_host_locks.py, .github
 # ADR-0035 — Use reviewed host locks and two-phase Pi promotion
 
 ## Status
-Proposed — SUaDtL@users.noreply.github.com explicitly rejected an architectural lock to one Pi
-version and directed supported Pi to advance as Pi releases advance. The revised complete ADR text
-remains pending explicit ratification.
+Proposed — ratified by SUaDtL@users.noreply.github.com on 2026-09-08.
 
 ## Context
 

@@ -1755,3 +1755,28 @@ Maintainable and Scalable require routine upstream adoption without reopening ar
 Revise proposed ADR-0035 to describe 0.84.1 as current operational state, explicitly reject a permanent version or singleton architecture lock, and preserve the existing promotion machinery as the path for subsequent Pi updates. Keep the ADR proposed until the user ratifies the revised complete text.
 
 ---
+
+## DECISION-0059 — adr-0035-ratified — Accept reviewed Pi host locks and two-phase promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0058
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Revised ADR-0035 separates evolving Pi version policy from the durable reviewed-lock and two-phase promotion architecture and remains proposed pending ratification.
+- **Scaffold position:** The user explicitly approved the revised decision and exact non-contradictory accepted Status wording.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0035 as revised. Pi 0.84.1 remains the current checkpoint baseline rather than a permanent pin or singleton architecture constraint; supported Pi advances through reviewed promotion as upstream releases advance.
+
+### SMARTS rationale
+Maintainable and Scalable permit routine upstream advancement without a new architecture decision for each version. Reliable, Securable, and Testable retain exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof before a version becomes supported.
+
+### Implementation implication
+Bind the accepted ADR to a newly derived and independently reviewed obligation set, preserve source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
+
+---
