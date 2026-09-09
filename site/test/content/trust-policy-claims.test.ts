@@ -45,6 +45,7 @@ describe("public trust-policy claims", () => {
     const compatibility = normalizeWhitespace(
       readRepo("site/src/content/docs/getting-started/compatibility.md"),
     );
+    const hooks = normalizeWhitespace(readRepo("docs/hooks.md"));
 
     expect(compatibility).not.toContain("opt-in-by-default exceptions");
     expect(compatibility).not.toContain("easy to make fully offline");
@@ -55,10 +56,13 @@ describe("public trust-policy claims", () => {
     expect(compatibility).toContain("at most once per day");
     expect(compatibility).toContain("The pluggable execution farm");
     expect(compatibility).toContain("separate, explicitly opt-in feature");
+    expect(hooks).toContain("launches `update-refresh.py` as a detached process");
+    expect(hooks).toContain("only when the cache is stale");
+    expect(hooks).toContain("checks GitHub's public Releases API");
   });
 
   it("keeps the public policy aligned with the tribunal's canonical contract", () => {
-    const privacy = readRepo("PRIVACY.md");
+    const privacy = normalizeWhitespace(readRepo("PRIVACY.md"));
     const telemetry = readRepo(
       "core/surface/skills/tribunal/references/telemetry.md",
     );
@@ -72,6 +76,15 @@ describe("public trust-policy claims", () => {
       "telemetry-sent",
     ]) {
       expect(telemetry).toContain(boundary);
+    }
+    for (const boundary of [
+      "This feedback is off by default",
+      "Only explicit approval for that run",
+      "public GitHub issue in the codeArbiter repository",
+      "repository identity. A contributor can add an optional free-form `--tag`",
+      "records a local `telemetry-sent` audit event",
+    ]) {
+      expect(privacy).toContain(boundary);
     }
     expect(privacy).toContain("tribunal telemetry contract");
     expect(normalizeWhitespace(faq)).toContain(
