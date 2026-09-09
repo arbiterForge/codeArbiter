@@ -745,6 +745,11 @@
       "object_sha": "08306ecf5bcc344f5e05bfbd3eec951e2e443e12",
       "commit_sha": "8a9f3721c65c4958e186bb432f7eb10aa59dd1fe",
       "object_type": "tag"
+    },
+    "ca-pi-v0.10.12": {
+      "object_sha": "5c055aa3b438ea757f20b56ef3e0db5e288e1e61",
+      "object_type": "tag",
+      "commit_sha": "9957bbfdfbd38190715b0fe2944b785ec6e000ff"
     }
   }
 }

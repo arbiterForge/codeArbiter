@@ -25,7 +25,7 @@ and the [Pi install page](/getting-started/pi/) for the `ca-pi` install flow.
 | **Operating system** | Native Windows, macOS, or Linux runtime with a checkout created and used by that runtime's Git | The `.git/hooks` backstop is a POSIX `sh` script. On Windows, Git for Windows runs it with its bundled `sh.exe`. Git Bash is part of that native Windows cell and is not WSL. Windows is also a promoted, tested platform for `ca-pi`; see [Windows notes](/getting-started/pi/#windows). Linked-worktree support uses Git's default `<main>/.git/worktrees` storage layout. See [Git runtime boundary](#git-runtime-boundary) for layout and mixed-runtime exclusions. |
 | **git** | A Git binary that provides `rev-parse --git-path hooks`, `rev-parse --path-format=absolute --git-dir --git-common-dir`, and `git hook run`; ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch` | codeArbiter asks the selected Git binary for its effective hook and shared-worktree paths, then doctor uses that same binary for a harmless managed `pre-push` live-fire probe with empty input. That binary's accepted `core.hooksPath` grammar is authoritative, including its expansion of values such as `~`, `%(prefix)`, absolute paths, and relative paths. The lifecycle verifier additionally enforces the offline capability described below. |
 | **Node.js** | Not required for Claude Code or Codex | Node is required for `ca-pi` (22.19+) and is only otherwise needed to build or develop **this documentation site** (`site/`) and the optional pluggable-execution-farm TypeScript dispatcher (`plugins/ca/tools/`) if you use `/ca:sprint --farm`. Node is not a runtime dependency of the Claude Code/Codex enforcement hooks themselves. |
-| **Network access** | Not required for enforcement | See [Network Calls](#network-calls) below. The gate-enforcement hook chain makes zero network calls; two clearly-scoped, opt-in-by-default exceptions exist outside that chain. |
+| **Network access** | Not required for enforcement | See [Network Calls](#network-calls) below. The gate-enforcement hook chain makes zero network calls. Active arbiter startup has separate background Git-fetch and update-check behavior; the execution farm remains opt-in. |
 
 ## Git Runtime Boundary
 
@@ -115,21 +115,23 @@ records. It imports nothing network-capable.)
   `post-write-edit.py`, and `session-start.py`'s activation/briefing logic) make **zero** network
   calls. Every check is a local file read, a local `git` subprocess call against your own repo, or an
   in-process regex/parse. This is the enforcement chain compatibility and security actually depend on.
+- **The repository-status fetch** is launched by default for an active arbiter session. It runs
+  `git fetch --quiet --no-tags` against the repository's configured remote as a detached,
+  fail-silent process. It can update local remote-tracking refs and Git objects, but it never writes
+  to the remote and never delays the startup briefing.
 - **The update-available notifier** (`_updatelib.py`) is a separate, non-blocking mechanism: a
   best-effort, once-a-day, fail-silent, unauthenticated HTTPS `GET` against GitHub's public Releases
   API (`api.github.com`), run as a **detached background process** off the `SessionStart` hot path so
   a slow or unreachable network never delays a session. It only ever displays a one-line notice; it
-  never applies an update. This ships on by default but is easy to make fully offline: see
-  [Staying up to date](https://github.com/arbiterForge/codeArbiter#staying-up-to-date) in the project
-  README for the opt-out.
+  never applies an update. The background check runs automatically when its cache is stale, at most
+  once per day. There is no user-facing opt-out in the current release line.
 - **The pluggable execution farm** (`/ca:sprint --farm`, opt-in, requires `FARM_API_KEY`) sends
   byte-capped, secret-redacted task context to an OpenAI-compatible HTTP provider you configure. This
   is a separate, explicitly opt-in feature, not part of the gate chain, and inert unless you pass
   `--farm`.
 
-No hook writes anything off your machine as a side effect of enforcement. `docs/hooks.md` documents the
-same invariant per-hook, plus the one local, read-only `git fetch` `session-start.py` runs in the
-background against your own configured remote (the repo-hygiene briefing).
+No hook writes anything off your machine as a side effect of enforcement. `docs/hooks.md` documents
+the same invariant per hook and the two default background startup activities described above.
 
 ## Third-Party Dependencies
 
