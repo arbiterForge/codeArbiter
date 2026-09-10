@@ -5184,9 +5184,9 @@ class ThisRepoRowsTest(unittest.TestCase):
             for command in row["pre_tag"]
         ]
         self.assertEqual(
-            len(all_pre_tag), 4,
-            "expected exactly 4 declared pre-tag commands across all rows "
-            "(3 on [ca], 1 on [ca-pi]) -- update this count deliberately if "
+            len(all_pre_tag), 5,
+            "expected exactly 5 declared pre-tag commands across all rows "
+            "(3 on [ca], 1 on [ca-codex], 1 on [ca-pi]) -- update this count deliberately if "
             "a row's pre-tag list ever changes shape")
         for command in all_pre_tag:
             with self.subTest(command=command):

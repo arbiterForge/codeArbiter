@@ -25,17 +25,22 @@ check on fork pull requests. So this half is manual by decision — and the mani
 exactly that, instead of implying continuous coverage.
 
 **The failure mode of "manual per release" is that it quietly becomes "manual once."** It
-already did: the baseline below recorded `ca-codex` 0.2.4 and went unrefreshed across four
-minor versions. Re-run this runbook and update the baseline as part of any ca-codex release
-that touches `hooks/`. A stale baseline is a claim about a past afternoon, which is the exact
-thing #408 was filed about.
+already did: the initial baseline recorded `ca-codex` 0.2.4 and went unrefreshed across four
+minor versions. Re-run this procedure for every `ca-codex` release. Its declared pre-tag check
+parses the machine-readable marker below and compares `adapter_version` with the canonical plugin
+manifest. A mismatch blocks the release; the check never rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.9.4**, Windows, 2026-09-05.
-A fresh process advertised and selected the exact installed 0.9.4 package. With its plugin root
-resolved, `$ca-doctor` reported 10 OK, 2 WARN, and 0 FAIL; the single prescribed staging dry-run was
-denied with `[H-03]` and did not execute. This refreshes package selection, doctor health, and the
-live H-03 boundary. It does not claim that the full scenario matrices below were rerun.
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":1,"adapter":"ca-codex","adapter_version":"0.9.10","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-09","proof":"fresh package selection, ca-doctor health, and live H-03 denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.9.10**, Windows, 2026-09-09.
+A fresh task advertised and selected the exact installed 0.9.10 package. With its plugin root
+resolved, `$ca-doctor` reported 10 OK, 2 WARN, and 0 FAIL; the prescribed staging dry-run was denied
+with `[H-03]` before execution. This refreshes package selection, doctor health, and the live H-03
+boundary. It does not claim that the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.9.4**, Windows,
+2026-09-05. A fresh process selected that installed package, and the same scoped doctor and H-03
+checks passed. The linked dispatch receipt below belongs to this dated checkpoint.
 
 The initial live baseline remains **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows,
 2026-07-11. That run covered trusted startup and SessionStart persona injection in addition to H-03.

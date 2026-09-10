@@ -67,7 +67,10 @@ describe("professional repository README", () => {
   });
 
   it("separates the current Codex adapter from the dated live-install evidence", () => {
-    expect(readme).toContain(`currently ships \`ca-codex ${codexManifest.version}\``);
+    expect(readme).toContain(
+      "current adapter version is read from `plugins/ca-codex/.codex-plugin/plugin.json`",
+    );
+    expect(readme).not.toContain(`currently ships \`ca-codex ${codexManifest.version}\``);
     expect(readme).toContain("dated end-to-end public-install record");
     expect(readme).toContain("`ca-codex 0.2.4` from release `v2.8.13`");
   });
