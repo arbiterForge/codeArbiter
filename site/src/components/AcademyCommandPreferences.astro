@@ -38,7 +38,7 @@ const shouldRender = shouldRenderCommandPreferences(variants);
     <ca-academy-preferences class="academy-command-preferences" hidden>
       <div class="academy-command-preferences__intro">
         <strong>Use your setup</strong>
-        <p>Choose an operating system or CodeArbiter host to focus every command example in this lesson. Your choices stay on this device.</p>
+        <p>Choose an operating system or codeArbiter host to focus every command example in this lesson. Your choices stay on this device.</p>
       </div>
       {
         availableOperatingSystems.length > 0 && (
@@ -55,7 +55,7 @@ const shouldRender = shouldRenderCommandPreferences(variants);
       {
         availableHosts.length > 0 && (
           <fieldset class="academy-command-preferences__group">
-            <legend>CodeArbiter host</legend>
+            <legend>codeArbiter host</legend>
             <div>
               {availableHosts.map((host) => (
                 <button type="button" data-academy-host={host} aria-pressed="false">{labels[host]}</button>
