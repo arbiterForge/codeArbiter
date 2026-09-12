@@ -124,7 +124,7 @@ function renderIndex(source: AcademySource): string {
   return [
     "---",
     'title: "Arbiter Academy"',
-    'description: "Guided, evidence-based practice for the CodeArbiter workflow."',
+    'description: "Guided, evidence-based practice for the codeArbiter workflow."',
     "journey:",
     '  level: "Academy"',
     '  time: "Self-paced"',

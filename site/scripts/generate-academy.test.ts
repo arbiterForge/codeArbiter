@@ -352,6 +352,7 @@ describe("generateAcademy", () => {
     ]);
     const indexPage = readFileSync(join(docsRoot, "academy", "index.mdx"), "utf8");
     expect(existsSync(academyOverviewComponent)).toBe(true);
+    expect(indexPage).toContain('description: "Guided, evidence-based practice for the codeArbiter workflow."');
     expect(indexPage).toContain('import AcademyOverview from "../../../components/AcademyOverview.astro";');
     expect(indexPage).toContain("<AcademyOverview />");
     expect(indexPage).not.toMatch(/<h1\b/i);

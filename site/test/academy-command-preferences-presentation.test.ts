@@ -19,7 +19,7 @@ describe("Academy command preference presentation", () => {
 
   it("keeps the setup explanation and choice groups in the original stacked hierarchy", () => {
     expect(component).toContain("Use your setup");
-    expect(component).toContain("Choose an operating system or CodeArbiter host to focus every command example in this lesson. Your choices stay on this device.");
+    expect(component).toContain("Choose an operating system or codeArbiter host to focus every command example in this lesson. Your choices stay on this device.");
     expect(preferenceRule).toContain("display: grid;");
     expect(preferenceRule).toContain("background: var(--ca-bg-raised);");
   });
@@ -27,7 +27,7 @@ describe("Academy command preference presentation", () => {
   it("uses native legends above each choice row", () => {
     expect(component).toContain('<fieldset class="academy-command-preferences__group">');
     expect(component).toContain("<legend>Operating system</legend>");
-    expect(component).toContain("<legend>CodeArbiter host</legend>");
+    expect(component).toContain("<legend>codeArbiter host</legend>");
   });
 
   it("gives every operating-system and host choice the same stable control size", () => {
