@@ -36,7 +36,7 @@ try {
   // sidebar.json not generated yet — reference groups stay empty.
 }
 
-/** @type {Array<{label: string, slug: string}>} */
+/** @type {Array<{label: string, collapsed: true, items: Array<{label: string, slug: string}>}>} */
 let academySidebarItems = [];
 try {
   academySidebarItems = JSON.parse(
