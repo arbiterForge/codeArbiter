@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -240,8 +240,9 @@ afterEach(() => {
 
 describe("generateAcademy", () => {
   let integrationAcademyHtml = "";
+  const integrationLessonHtml = new Map<string, string>();
 
-  it("builds one accessible Academy overview from the canonical public inventory", () => {
+  beforeAll(() => {
     const npmCli = process.env.npm_execpath;
     if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
 
@@ -250,8 +251,17 @@ describe("generateAcademy", () => {
       stdio: "pipe",
     });
 
-    const academyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
-    integrationAcademyHtml = academyHtml;
+    integrationAcademyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
+    for (const lessonSlug of ["p01-feature-through-plan", "u01-autonomous-sprint"]) {
+      integrationLessonHtml.set(
+        lessonSlug,
+        readFileSync(join(siteRoot, "dist", "academy", lessonSlug, "index.html"), "utf8"),
+      );
+    }
+  }, 30_000);
+
+  it("builds one accessible Academy overview from the canonical public inventory", () => {
+    const academyHtml = integrationAcademyHtml;
     const generatedContent = readFileSync(
       join(siteRoot, "src", "generated", "academy-content.ts"),
       "utf8",
@@ -297,7 +307,8 @@ describe("generateAcademy", () => {
       ["u01-autonomous-sprint", "Power user", "p08-repository-hygiene", "u02-override-audit-metrics"],
     ] as const;
     for (const [lessonSlug, trackLabel, previousSlug, nextSlug] of trackBoundaryPages) {
-      const lessonHtml = readFileSync(join(siteRoot, "dist", "academy", lessonSlug, "index.html"), "utf8");
+      const lessonHtml = integrationLessonHtml.get(lessonSlug) ?? "";
+      expect(lessonHtml).not.toBe("");
       const lessonNavigation = lessonHtml.match(/<nav[^>]*aria-label="Main"[\s\S]*?<\/nav>/)?.[0];
       expect(lessonNavigation).toBeDefined();
       const currentLinks = [...(lessonNavigation?.matchAll(/<a\b[^>]*\baria-current="page"[^>]*>/g) ?? [])];
