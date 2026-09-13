@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.9.11] - 2026-09-13
+
+### Fixed
+
+- Continue active authorized work across startup, resume, and compact hook boundaries while retaining the idle-session command prompt.
+
 ## [0.9.10] - 2026-09-08
 
 ### Fixed

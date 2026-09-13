@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.13] - 2026-09-13
+
+### Fixed
+
+- Continue active authorized work across startup, resume, and compact hook boundaries while retaining the idle-session command prompt.
+
 ## [0.10.12] - 2026-09-09
 
 ### Fixed
