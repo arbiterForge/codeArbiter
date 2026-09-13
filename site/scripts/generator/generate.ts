@@ -307,12 +307,16 @@ export function generate(
       : "";
   const catalogCards = entityGroups.map((group) => {
     const plural = `${group.type.charAt(0).toUpperCase()}${group.type.slice(1)}s`;
+    const itemCount = group.items.reduce(
+      (count, item) => count + ("items" in item ? item.items.length : 1),
+      0,
+    );
     const purpose = group.type === "command"
       ? "Public entry points you invoke for an outcome."
       : group.type === "skill"
         ? "Gated workflows the orchestrator routes into."
         : "Focused author and reviewer roles a skill may dispatch.";
-    return `<a href="#${group.type}s"><span>${group.items.length}</span><strong>${plural}</strong><small>${purpose}</small></a>`;
+    return `<a href="#${group.type}s"><span>${itemCount}</span><strong>${plural}</strong><small>${purpose}</small></a>`;
   }).join("\n");
   const indexContent = `---\ntitle: Reference\ndescription: Source-backed command, skill, and agent catalogs with host syntax, operating context, gates, relationships, and exact shipped source.\n---\n\nEntity identities, frontmatter, host availability, and exact source embeds regenerate from the shipped payload on every build. Curated operating guidance is hand-reviewed and contract-tested, but it can still lag a source change; when the two disagree, the exact source embed is authoritative. See how the three catalogs cooperate in [How a Request Flows](/overview/#how-a-request-flows): a command routes to an owning skill, which may dispatch specialist agents.\n\n<div class="ca-reference-map">\n${catalogCards}\n</div>\n\n<div class="ca-reference-guide">\n<strong>Use the catalog from left to right.</strong>\n<ol>\n<li>Choose the public <strong>command</strong> that matches the outcome you need.</li>\n<li>Follow its owning <strong>skill</strong> to understand phases, stops, and durable artifacts.</li>\n<li>Open an <strong>agent</strong> only to inspect a dispatched role's tools and constraints; agents are not a second command surface.</li>\n</ol>\n<p>Every entity page begins with host-native syntax or dispatch context, then curated operating guidance, gates, related routes, and the exact source used to generate it.</p>\n</div>\n\n${hostNote}\n\n${indexBody}${lensSection}\n`;
 

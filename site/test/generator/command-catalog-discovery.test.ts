@@ -79,6 +79,23 @@ describe("generated command catalog discovery", () => {
     for (const name of ["commit", "audit", "cleanup", "conflict", "btw"]) {
       expect(index.match(new RegExp(`\\[${name}\\]\\(\\./commands/${name}/\\)`, "g"))).toHaveLength(1);
     }
+    const sidebar = JSON.parse(readFileSync(join(outDir, "sidebar.json"), "utf8"));
+    const commands = sidebar.find((group: { type: string }) => group.type === "command");
+    expect(commands.label).toBe("Commands");
+    expect(commands.items.map((group: { visibility: string; label: string }) => [group.visibility, group.label])).toEqual([
+      ["core", "Core"],
+      ["advanced", "Advanced"],
+      ["alias", "Compatibility aliases"],
+      ["internal", "Internal"],
+      ["deprecated", "Deprecated"],
+    ]);
+    expect(commands.items.map((group: { items: Array<{ slug: string }> }) => group.items.map((item) => item.slug))).toEqual([
+      ["commit"],
+      ["audit"],
+      ["cleanup"],
+      ["conflict"],
+      ["btw"],
+    ]);
     const cleanup = readFileSync(join(outDir, "commands", "cleanup.md"), "utf8");
     expect(cleanup).toContain("## Compatibility");
     expect(cleanup).toContain("`commit --cleanup`");

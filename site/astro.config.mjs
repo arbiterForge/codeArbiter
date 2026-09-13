@@ -5,6 +5,7 @@ import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
 import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
+import { buildReferenceSidebar } from "./scripts/reference-sidebar.ts";
 
 // Served from https://codearbiter.dev/ — shared by the `base` option below and
 // the rehype plugin that base-prefixes markdown links.
@@ -18,34 +19,20 @@ import { BASE } from "./base.mjs";
 
 // Build the reference sidebar groups from the generator's output. `predev` and
 // `prebuild` run `npm run gen` first, so sidebar.json exists before this loads.
-// The try/catch keeps `astro check`/tooling from hard-failing on a fresh clone
-// where the generator has not run yet.
-/** @type {Array<{label: string, items: Array<{label: string, slug: string}>}>} */
+// A fresh clone may legitimately lack the generated file. Malformed or
+// producer-incompatible data must still fail configuration loading.
+/** @type {import("./scripts/reference-sidebar.ts").ReferenceSidebarGroup[]} */
 let referenceGroups = [];
 try {
-  /** @type {Array<{type: string, label: string, items: Array<{label: string, slug: string}>}>} */
+  /** @type {import("./scripts/generator/types.ts").SidebarGroup[]} */
   const sidebarData = JSON.parse(
     readFileSync(new URL("./src/generated/sidebar.json", import.meta.url), "utf8"),
   );
-  referenceGroups = sidebarData.map((g) => {
-    // The tribunal-lens group is not a plugin source type: its label and URL
-    // segment ("tribunal-lenses") don't follow the `<type>s` pluralization the
-    // command/skill/agent groups use.
-    const isLens = g.type === "tribunal-lens";
-    return {
-      label: isLens
-        ? "Tribunal lenses"
-        : `${g.type.charAt(0).toUpperCase()}${g.type.slice(1)}s`,
-      collapsed: true,
-      items: g.items.map((it) => ({
-        label: it.label,
-        slug: isLens
-          ? `reference/tribunal-lenses/${it.slug}`
-          : `reference/${g.type}s/${it.slug}`,
-      })),
-    };
-  });
-} catch {
+  referenceGroups = buildReferenceSidebar(sidebarData);
+} catch (error) {
+  if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) {
+    throw error;
+  }
   // sidebar.json not generated yet — reference groups stay empty.
 }
 
