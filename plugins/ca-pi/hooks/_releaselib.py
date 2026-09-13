@@ -37,9 +37,18 @@
 #   semver_greater(current, base) -> bool
 #   apply_bump(base, word) -> str | None
 #   last_tag_select(tags, prefix) -> str
-#   notes_heading_matches(notes_text, tag) -> bool
-#   release_dates_consistent(changelog_section, tag_message) -> bool
-#   changelog_section(changelog_text, version) -> str | None
+#   numeric_sequence_key(value, initial_version) -> tuple | None
+#   version_greater(current, base, policy, initial_version) -> bool
+#   derive_version(base, word, policy, initial_version) -> str | None
+#   last_tag_select_for_policy(tags, prefix, policy, initial_version) -> str
+#   notes_heading_matches(notes_text, tag, policy, initial_version) -> bool
+#   release_dates_consistent(changelog_section, tag_message, policy,
+#                            initial_version) -> bool
+#   changelog_section(changelog_text, version, policy, initial_version)
+#                           -> str | None
+#   render_release_assets(templates, version, tag) -> list[str] | None
+#   verify_release_asset_inventory(directory, asset_names)
+#                           -> list[str] | None
 #   classify_publish_state(tag_exists, tag_sha, head_sha, tag_version,
 #                          manifest_version, release_is_nondraft) -> str
 #   select_release_target_by_name(pairs, targets) -> str   name-keyed
@@ -291,6 +300,76 @@ _PLAIN_SEMVER_CAPTURE_PATTERN = (
     r"(" + _SEMVER_NUMERIC_IDENTIFIER + r")\." +
     r"(" + _SEMVER_NUMERIC_IDENTIFIER + r")")
 
+_RELEASE_ASSET_TEMPLATE_RE = re.compile(
+    r"^(?:[A-Za-z0-9._+-]|\{version\}|\{tag\})+$")
+_RELEASE_ASSET_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]*$")
+
+
+def _safe_release_asset_name(value):
+    """True only for one flat, shell-inert release filename."""
+    return (isinstance(value, str)
+            and _RELEASE_ASSET_NAME_RE.fullmatch(value) is not None)
+
+
+def render_release_assets(templates, version, tag):
+    """Render a declared asset-template sequence, or refuse with ``None``.
+
+    The grammar is intentionally smaller than ``str.format``: only the two
+    exact placeholders are recognized, all literal characters are from the
+    flat filename allowlist, and the rendered names must remain unique.
+    """
+    if (not isinstance(templates, (list, tuple)) or not templates
+            or not isinstance(version, str) or not isinstance(tag, str)):
+        return None
+    rendered = []
+    seen = set()
+    for template in templates:
+        if (not isinstance(template, str)
+                or _RELEASE_ASSET_TEMPLATE_RE.fullmatch(template) is None):
+            return None
+        name = template.replace("{version}", version).replace("{tag}", tag)
+        if not _safe_release_asset_name(name) or name in seen:
+            return None
+        seen.add(name)
+        rendered.append(name)
+    return rendered
+
+
+def verify_release_asset_inventory(directory, asset_names):
+    """Return declared-order absolute paths iff ``directory`` is exact.
+
+    The directory itself may not be a symlink. Every entry must be one of the
+    declared safe names and a non-symlink, non-empty regular file; missing or
+    additional entries fail closed with ``None``.
+    """
+    if (not isinstance(directory, (str, os.PathLike))
+            or not isinstance(asset_names, (list, tuple)) or not asset_names):
+        return None
+    names = list(asset_names)
+    if (any(not _safe_release_asset_name(name) for name in names)
+            or len(set(names)) != len(names)):
+        return None
+    root = os.path.abspath(os.fspath(directory))
+    try:
+        if os.path.islink(root) or not os.path.isdir(root):
+            return None
+        entries = list(os.scandir(root))
+    except OSError:
+        return None
+    if {entry.name for entry in entries} != set(names):
+        return None
+    by_name = {entry.name: entry for entry in entries}
+    try:
+        for name in names:
+            entry = by_name[name]
+            if (entry.is_symlink()
+                    or not entry.is_file(follow_symlinks=False)
+                    or entry.stat(follow_symlinks=False).st_size <= 0):
+                return None
+    except OSError:
+        return None
+    return [os.path.join(root, name) for name in names]
+
 
 def _release_re(prefix):
     """The anchored `<prefix>MAJOR.MINOR.PATCH` matcher for one release series."""
@@ -313,6 +392,10 @@ _HEADING_RE = re.compile(
     r"^##[ \t]+(?:\[(Unreleased|" + _PLAIN_SEMVER_PATTERN + r")\]|"
     r"v(" + _PLAIN_SEMVER_PATTERN + r"))(?:[ \t]+[^\r\n]*)?[ \t]*$",
     re.MULTILINE)
+_DECLARED_HEADING_RE = re.compile(
+    r"^##[ \t]+(?:\[(Unreleased|([^\]\r\n]+))\]|v([^ \t\r\n]+))"
+    r"(?:[ \t]+[^\r\n]*)?[ \t]*$",
+    re.MULTILINE)
 _LEGACY_DATE_H2_RE = re.compile(
     r"^##[ \t]+\[[0-9]{4}-[0-9]{2}-[0-9]{2}\]"
     r"(?:[ \t]+[^\r\n]*)?[ \t]*$")
@@ -326,12 +409,41 @@ _SECTION_INVALID = "invalid"
 _SECTION_DUPLICATE = "duplicate"
 
 
-def _heading_version(line):
+def _version_matches_policy(value, policy="semver", initial_version=None):
+    """True when `value` has the exact shape declared by `policy`."""
+    if policy == "semver" and initial_version is None:
+        return (isinstance(value, str)
+                and _BARE_RELEASE_VERSION_RE.fullmatch(value) is not None)
+    if policy == "numeric-sequence":
+        return numeric_sequence_key(value, initial_version) is not None
+    return False
+
+
+def _policy_declaration_valid(policy="semver", initial_version=None):
+    """True for one complete, supported version-policy declaration."""
+    if policy == "semver":
+        return initial_version is None
+    return (policy == "numeric-sequence"
+            and numeric_sequence_key(
+                initial_version, initial_version) is not None)
+
+
+def _heading_version(line, policy="semver", initial_version=None):
     """Bare version / `Unreleased` for one exact heading line, else None."""
-    match = _HEADING_RE.fullmatch(line)
+    if policy == "semver" and initial_version is None:
+        match = _HEADING_RE.fullmatch(line)
+        if match is None:
+            return None
+        return match.group(1) or match.group(2)
+
+    match = _DECLARED_HEADING_RE.fullmatch(line)
     if match is None:
         return None
-    return match.group(1) or match.group(2)
+    if match.group(1) == "Unreleased":
+        return "Unreleased"
+    version = match.group(2) or match.group(3)
+    return version if _version_matches_policy(
+        version, policy, initial_version) else None
 
 
 def _looks_like_changelog_heading(line):
@@ -345,11 +457,12 @@ def _looks_like_changelog_heading(line):
     return body.startswith("[") or body.startswith("v")
 
 
-def _changelog_section_result(changelog_text, version):
+def _changelog_section_result(changelog_text, version, policy="semver",
+                              initial_version=None):
     """Return `(section, status)` without raising on malformed changelogs."""
     if (not isinstance(changelog_text, str)
             or not isinstance(version, str)
-            or _BARE_RELEASE_VERSION_RE.fullmatch(version) is None):
+            or not _version_matches_policy(version, policy, initial_version)):
         return None, _SECTION_INVALID
 
     boundaries = list(_H2_RE.finditer(changelog_text))
@@ -359,7 +472,7 @@ def _changelog_section_result(changelog_text, version):
 
     for index, boundary in enumerate(boundaries):
         line = boundary.group(0)
-        heading_version = _heading_version(line)
+        heading_version = _heading_version(line, policy, initial_version)
         if heading_version is None:
             if _looks_like_changelog_heading(line):
                 return None, _SECTION_INVALID
@@ -450,7 +563,7 @@ def semver_greater(current, base):
     return current_pre > base_pre
 
 
-def _bare_version(tag):
+def _bare_version(tag, policy="semver", initial_version=None):
     """`v2.6.0` / `[2.6.0]` / `2.6.0` / `myapp-v0.1.31` -> the bare SemVer.
 
     Lets the heading match compare a tag against a bracket-style changelog
@@ -465,6 +578,19 @@ def _bare_version(tag):
     if not isinstance(tag, str):
         return tag
     text = tag.strip().strip("[]")
+    if policy != "semver" or initial_version is not None:
+        initial = _numeric_sequence_components(initial_version)
+        if policy != "numeric-sequence" or initial is None:
+            return None
+        component = r"(?:0|[1-9][0-9]*)"
+        pattern = r"(?<![0-9.])(" + r"\.".join(
+            [component] * len(initial)) + r")$"
+        match = re.search(pattern, text)
+        if match is None:
+            return None
+        candidate = match.group(1)
+        return candidate if numeric_sequence_key(
+            candidate, initial_version) is not None else None
     match = re.search(
         r"(?<![0-9])(" + _PLAIN_SEMVER_PATTERN + r".*)$", text)
     return match.group(1) if match else text.lstrip("v")
@@ -512,36 +638,109 @@ def last_tag_select(tags, prefix):
 NONE_SENTINEL = "<none>"
 
 
-def notes_heading_matches(notes_text, tag):
-    """True iff the FIRST changelog heading in `notes_text` (either `## vX.Y.Z`
-    or the Keep-a-Changelog `## [X.Y.Z]` form) names the same version as
-    `tag`. A stale notes-file (whose first section is an older version)
-    returns False, so a release lane cannot publish the wrong changelog
-    section under the right tag. Missing heading or non-string input ->
-    False."""
+_NUMERIC_SEQUENCE_COMPONENT_RE = re.compile(r"^(?:0|[1-9][0-9]*)$")
+
+
+def _numeric_sequence_components(value):
+    """Canonical dotted numeric components, or None for malformed input."""
+    if not isinstance(value, str):
+        return None
+    parts = value.split(".")
+    if len(parts) < 2 or any(
+            _NUMERIC_SEQUENCE_COMPONENT_RE.fullmatch(part) is None
+            for part in parts):
+        return None
+    try:
+        return tuple(int(part) for part in parts)
+    except (ValueError, TypeError):
+        return None
+
+
+def numeric_sequence_key(value, initial_version):
+    """Sortable fixed-shape numeric identity, or None when incompatible.
+
+    `initial_version` declares the component count for the series. Both the
+    initial identity and candidate use canonical decimal spelling: no signs,
+    empty components, leading zeroes, or non-ASCII digits.
+    """
+    initial = _numeric_sequence_components(initial_version)
+    candidate = _numeric_sequence_components(value)
+    if initial is None or candidate is None or len(candidate) != len(initial):
+        return None
+    return candidate
+
+
+def version_greater(current, base, policy="semver", initial_version=None):
+    """True iff `current` strictly advances `base` under `policy`."""
+    if policy == "semver" and initial_version is None:
+        return semver_greater(current, base)
+    if policy != "numeric-sequence":
+        return False
+    current_key = numeric_sequence_key(current, initial_version)
+    base_key = numeric_sequence_key(base, initial_version)
+    initial_key = numeric_sequence_key(initial_version, initial_version)
+    if current_key is None or base_key is None or initial_key is None:
+        return False
+    return current_key >= initial_key and current_key > base_key
+
+
+def last_tag_select_for_policy(tags, prefix, policy="semver", initial_version=None):
+    """Highest tag in one series under a declared version policy."""
+    if policy == "semver" and initial_version is None:
+        return last_tag_select(tags, prefix)
+    if (policy != "numeric-sequence" or not isinstance(tags, (list, tuple))
+            or not isinstance(prefix, str) or not prefix
+            or numeric_sequence_key(initial_version, initial_version) is None):
+        return NONE_SENTINEL
+
+    best = None
+    for tag in tags:
+        if not isinstance(tag, str) or not tag.startswith(prefix):
+            continue
+        key = numeric_sequence_key(tag[len(prefix):], initial_version)
+        if key is None:
+            continue
+        if best is None or key > best[0]:
+            best = (key, tag)
+    return best[1] if best else NONE_SENTINEL
+
+
+def notes_heading_matches(notes_text, tag, policy="semver", initial_version=None):
+    """True iff the FIRST changelog heading names `tag` under `policy`.
+
+    Both `## vVERSION` and Keep-a-Changelog `## [VERSION]` spellings are
+    accepted. A stale notes-file returns False, so a release lane cannot
+    publish the wrong changelog section under the right tag. Missing heading,
+    malformed policy input, or non-string input -> False.
+    """
     if not isinstance(notes_text, str) or not isinstance(tag, str):
         return False
     headings = list(_H2_RE.finditer(notes_text))
     if not headings:
         return False
-    version = _bare_version(tag)
-    first_version = _heading_version(headings[0].group(0))
+    version = _bare_version(tag, policy, initial_version)
+    first_version = _heading_version(
+        headings[0].group(0), policy, initial_version)
     if first_version != version or first_version == "Unreleased":
         return False
-    _section, status = _changelog_section_result(notes_text, version)
+    _section, status = _changelog_section_result(
+        notes_text, version, policy, initial_version)
     return status == _SECTION_OK
 
 
-def release_dates_consistent(changelog_section, tag_message):
-    """True iff the date in `changelog_section`'s heading (`## vX.Y.Z - DATE`
-    or `## [X.Y.Z] - DATE`) equals the `Released-at: DATE` date in
-    `tag_message`. Guards against the date being hand-typed inconsistently
-    across surfaces. Either date absent, or non-string input -> False."""
+def release_dates_consistent(changelog_section, tag_message, policy="semver",
+                             initial_version=None):
+    """True iff the changelog and `Released-at` dates agree under `policy`.
+
+    Guards against the date being hand-typed inconsistently across surfaces.
+    Either date absent, malformed policy input, or non-string input -> False.
+    """
     if not isinstance(changelog_section, str) or not isinstance(tag_message, str):
         return False
-    heading = _HEADING_RE.match(changelog_section)
+    heading = _H2_RE.match(changelog_section)
     if (heading is None or heading.start() != 0
-            or _heading_version(heading.group(0)) == "Unreleased"):
+            or _heading_version(
+                heading.group(0), policy, initial_version) in (None, "Unreleased")):
         return False
     cm = _CHANGELOG_DATE_RE.search(heading.group(0))
     tm = _RELEASED_AT_RE.search(tag_message)
@@ -550,12 +749,14 @@ def release_dates_consistent(changelog_section, tag_message):
     return cm.group(1) == tm.group(1)
 
 
-def changelog_section(changelog_text, version):
-    """Extract the `## [VERSION] ...` (or `## vVERSION ...`) section from
-    `changelog_text` VERBATIM -- from its own heading line up to (but not
-    including) the next `##` heading, or end of text. Returns the section
-    text with exactly one trailing newline, or `None` when no heading in
-    `changelog_text` names `version` exactly. Non-string input -> `None`.
+def changelog_section(changelog_text, version, policy="semver",
+                      initial_version=None):
+    """Extract the declared-policy `VERSION` section verbatim.
+
+    The section starts at `## [VERSION] ...` (or `## vVERSION ...`) and ends
+    before the next `##` heading, or at end of text. Returns it with exactly
+    one trailing newline, or `None` when no valid heading names `version`
+    exactly. Non-string or malformed policy input -> `None`.
 
     This is the mechanical replacement for hand-copying a changelog section:
     Phase 3's `resume_publish` path needs the SAME text Phase 1 composed,
@@ -564,7 +765,8 @@ def changelog_section(changelog_text, version):
     COMMITTED `$CHANGELOG` -- which Phase 1 step 7 commits before any tag
     exists -- is reading the one permanent home of that text, not
     re-deriving or hand-writing new notes (blind exercise run 19, HIGH-2)."""
-    section, status = _changelog_section_result(changelog_text, version)
+    section, status = _changelog_section_result(
+        changelog_text, version, policy, initial_version)
     return section if status == _SECTION_OK else None
 
 
@@ -1287,6 +1489,30 @@ def apply_bump(base, word):
     return f"{major}.{minor}.{patch + 1}"
 
 
+def derive_version(base, word, policy="semver", initial_version=None):
+    """Derive one release identity under `policy`, or None on invalid input.
+
+    Existing SemVer arithmetic delegates unchanged to `apply_bump`. A numeric
+    sequence emits its declared initial identity for an empty series and then
+    increments only the final fixed-shape component for every bumping
+    Conventional Commit classification. `none` is refused for both policies.
+    """
+    if policy == "semver" and initial_version is None:
+        return apply_bump(base, word)
+    if policy != "numeric-sequence" or word not in _BUMP_WORDS:
+        return None
+    initial_key = numeric_sequence_key(initial_version, initial_version)
+    if initial_key is None:
+        return None
+    if base == NONE_SENTINEL:
+        return initial_version
+    base_key = numeric_sequence_key(base, initial_version)
+    if base_key is None or base_key < initial_key:
+        return None
+    next_key = base_key[:-1] + (base_key[-1] + 1,)
+    return ".".join(str(part) for part in next_key)
+
+
 # Exit codes a POSIX shell uses to report that a command's INTERPRETER OR
 # PROGRAM ITSELF could not be located or executed, as distinct from the
 # program running and reporting a failure: 127 is POSIX "command not
@@ -1399,6 +1625,7 @@ _HEADER_RE = re.compile(r"^\[([A-Za-z0-9._-]+)\]$")
 # List keys repeat by design and preserve declaration order.
 _LIST_KEYS = frozenset({
     "manifest", "artifacts", "pre-tag", "payload-exclude", "generated-manifest",
+    "release-asset",
 })
 _BOOLEAN_KEYS = frozenset({"latest-eligible"})
 _REQUIRED_KEYS = ("prefix", "changelog", "payload")
@@ -1460,6 +1687,10 @@ _KEY_FIELD = {
     # (`codeArbiter`). Optional; the skill falls back to `$TARGET` itself
     # when a row declares none.
     "display-name": "display_name",
+    "version-policy": "version_policy",
+    "initial-version": "initial_version",
+    "release-build": "release_build",
+    "release-asset": "release_assets",
 }
 
 
@@ -1479,6 +1710,10 @@ def _new_row(name):
         "generated_manifest": [],
         "generate": None,
         "display_name": None,
+        "version_policy": "semver",
+        "initial_version": None,
+        "release_build": None,
+        "release_assets": [],
     }
 
 
@@ -1496,6 +1731,40 @@ def _finish_row(row):
             f"target {row['target']!r} is missing required key(s): "
             + ", ".join(missing)
         )
+    policy = row["version_policy"]
+    initial_version = row["initial_version"]
+    if policy not in ("semver", "numeric-sequence"):
+        raise MalformedBlockError(
+            f"target {row['target']!r} declares unknown version-policy "
+            f"{policy!r}")
+    if policy == "semver" and initial_version is not None:
+        raise MalformedBlockError(
+            f"target {row['target']!r} declares initial-version for the "
+            "semver policy")
+    if (policy == "numeric-sequence"
+            and numeric_sequence_key(initial_version, initial_version) is None):
+        raise MalformedBlockError(
+            f"target {row['target']!r} numeric-sequence policy requires an "
+            "initial-version of two or more canonical dotted numeric components")
+    build_declared = row["release_build"] is not None
+    assets_declared = bool(row["release_assets"])
+    if build_declared != assets_declared:
+        raise MalformedBlockError(
+            f"target {row['target']!r} must declare release-build and one "
+            "or more release-asset values together")
+    if build_declared:
+        if not row["release_build"].strip():
+            raise MalformedBlockError(
+                f"target {row['target']!r} declares a blank release-build")
+        representative_version = (
+            initial_version if policy == "numeric-sequence" else "1.2.3")
+        representative_tag = row["prefix"] + representative_version
+        if render_release_assets(
+                row["release_assets"], representative_version,
+                representative_tag) is None:
+            raise MalformedBlockError(
+                f"target {row['target']!r} declares an unsafe, malformed, "
+                "or duplicate release-asset template")
 
 
 def parse_release_targets(text):
@@ -1504,7 +1773,8 @@ def parse_release_targets(text):
     carrying: target, prefix, manifest (list), changelog, payload,
     payload_exclude (list), rebuild, artifacts (list), provenance_manifest,
     pre_tag (list), latest_eligible (bool), generated_manifest (list),
-    generate, display_name.
+    generate, display_name, version_policy, initial_version, release_build,
+    release_assets.
 
     Pure — no file I/O — so it is testable with synthetic input; `load_targets`
     is the one function that touches the filesystem.
@@ -2129,8 +2399,10 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
-            "payload-pathspec|last-tag|notes-match|changelog-section|"
-            "dates-match|semver-greater|apply-bump|classify|peel-tag|"
+            "payload-pathspec|last-tag|last-tag-for-policy|notes-match|"
+            "changelog-section|dates-match|semver-greater|version-greater|"
+            "apply-bump|derive-version|render-release-assets|"
+            "verify-release-assets|classify|peel-tag|"
             "run-pre-tag|adoption-commit|classify-window|check-manifests|"
             "backfill-detect} ...\n")
         return 2
@@ -2251,6 +2523,12 @@ def main(argv):
                   ("PROVENANCE_MANIFEST", "provenance_manifest"),
                   ("LATEST_ELIGIBLE", "latest_eligible"),
                   ("DISPLAY_NAME", "display_name")]
+        query_fields = fields + [
+            ("VERSION_POLICY", "version_policy"),
+            ("INITIAL_VERSION", "initial_version"),
+            ("RELEASE_BUILD", "release_build"),
+            ("RELEASE_ASSETS", "release_assets"),
+        ]
 
         def _flatten(value):
             if isinstance(value, (list, tuple)):
@@ -2261,7 +2539,7 @@ def main(argv):
 
         if field is not None:
             wanted = field.strip().lower().replace("-", "_")
-            by_key = {key: name for name, key in fields}
+            by_key = {key: name for name, key in query_fields}
             if wanted not in by_key:
                 sys.stderr.write(
                     f"unknown field {field!r}; declared fields are: "
@@ -2307,15 +2585,35 @@ def main(argv):
         print(last_tag_select(sys.stdin.read().split(), rest[0]))
         return 0
 
-    if cmd == "notes-match" and len(rest) == 2:
+    if cmd == "last-tag-for-policy" and len(rest) == 3:
+        prefix, policy, initial_version = rest
+        initial = initial_version or None
+        if (policy not in ("semver", "numeric-sequence")
+                or (policy == "semver" and initial is not None)
+                or (policy == "numeric-sequence"
+                    and numeric_sequence_key(initial, initial) is None)):
+            sys.stderr.write("last-tag-for-policy: invalid policy declaration\n")
+            return 2
+        print(last_tag_select_for_policy(
+            sys.stdin.read().split(), prefix, policy, initial))
+        return 0
+
+    if cmd == "notes-match" and len(rest) in (2, 4):
+        tag, notes_path = rest[:2]
+        policy, initial = (rest[2], rest[3] or None) if len(rest) == 4 else (
+            "semver", None)
+        if not _policy_declaration_valid(policy, initial):
+            sys.stderr.write("notes-match: invalid policy declaration\n")
+            return 2
         try:
-            with open(rest[1], encoding="utf-8") as fh:
+            with open(notes_path, encoding="utf-8") as fh:
                 notes_text = fh.read()
         except OSError:
             notes_text = ""
-        return 0 if notes_heading_matches(notes_text, rest[0]) else 1
+        return 0 if notes_heading_matches(
+            notes_text, tag, policy, initial) else 1
 
-    if cmd == "changelog-section" and len(rest) == 4:
+    if cmd == "changelog-section" and len(rest) in (4, 6):
         # Mechanical reconstruction of Phase 1's composed section, for
         # `resume_publish` -- see `changelog_section`'s docstring. Exit 0
         # with the section on stdout - 1 the changelog has no heading for
@@ -2325,7 +2623,13 @@ def main(argv):
         # `revision` is resolved to a commit hash before the blob read, so a
         # current HEAD move or dirty/deleted working file cannot change the
         # notes selected for an already-composed tag.
-        repo_root, revision, changelog_path, version = rest
+        repo_root, revision, changelog_path, version = rest[:4]
+        policy, initial = (rest[4], rest[5] or None) if len(rest) == 6 else (
+            "semver", None)
+        if not _policy_declaration_valid(policy, initial):
+            sys.stderr.write(
+                "changelog-section: invalid policy declaration\n")
+            return 2
         changelog_text, source_error = _committed_changelog_text(
             repo_root, revision, changelog_path)
         if source_error is not None:
@@ -2333,7 +2637,8 @@ def main(argv):
                 f"changelog-section: cannot read committed "
                 f"{changelog_path!r}: {source_error}\n")
             return 3
-        section, status = _changelog_section_result(changelog_text, version)
+        section, status = _changelog_section_result(
+            changelog_text, version, policy, initial)
         if status == _SECTION_ABSENT:
             sys.stderr.write(
                 f"changelog-section: no '## [{version}]' heading in "
@@ -2799,6 +3104,27 @@ def main(argv):
                 return 2
         return 0 if semver_greater(rest[0], rest[1]) else 1
 
+    if cmd == "version-greater" and len(rest) == 4:
+        candidate, floor, policy, initial_version = rest
+        initial = initial_version or None
+        if policy == "semver" and initial is None:
+            if semver_key(candidate) is None or semver_key(floor) is None:
+                sys.stderr.write("version-greater: invalid semver comparison\n")
+                return 2
+        elif policy == "numeric-sequence":
+            candidate_key = numeric_sequence_key(candidate, initial)
+            floor_key = numeric_sequence_key(floor, initial)
+            initial_key = numeric_sequence_key(initial, initial)
+            if (candidate_key is None or floor_key is None
+                    or initial_key is None or candidate_key < initial_key):
+                sys.stderr.write(
+                    "version-greater: invalid numeric-sequence comparison\n")
+                return 2
+        else:
+            sys.stderr.write("version-greater: invalid policy declaration\n")
+            return 2
+        return 0 if version_greater(candidate, floor, policy, initial) else 1
+
     if cmd == "apply-bump" and len(rest) == 2:
         # #585 MEDIUM-3: the one number that mattered was the only step
         # left to the eye. Step 4 had the operator "apply the step-2 bump
@@ -2826,7 +3152,46 @@ def main(argv):
         print(result)
         return 0
 
-    if cmd == "dates-match" and len(rest) == 2:
+    if cmd == "derive-version" and len(rest) == 4:
+        base, word, policy, initial_version = rest
+        result = derive_version(base, word, policy, initial_version or None)
+        if result is None:
+            sys.stderr.write(
+                f"derive-version: cannot derive from {base!r} under policy "
+                f"{policy!r} with initial-version {initial_version!r}\n")
+            return 2
+        print(result)
+        return 0
+
+    if cmd == "render-release-assets" and len(rest) >= 3:
+        version, tag = rest[:2]
+        rendered = render_release_assets(rest[2:], version, tag)
+        if rendered is None:
+            sys.stderr.write(
+                "render-release-assets: invalid or duplicate asset template\n")
+            return 2
+        for name in rendered:
+            print(name)
+        return 0
+
+    if cmd == "verify-release-assets" and len(rest) >= 2:
+        directory, names = rest[0], rest[1:]
+        if (any(not _safe_release_asset_name(name) for name in names)
+                or len(set(names)) != len(names)):
+            sys.stderr.write(
+                "verify-release-assets: invalid or duplicate asset name\n")
+            return 2
+        verified = verify_release_asset_inventory(directory, names)
+        if verified is None:
+            sys.stderr.write(
+                "verify-release-assets: local inventory does not exactly "
+                "match the declared non-empty regular files\n")
+            return 1
+        for path in verified:
+            print(path)
+        return 0
+
+    if cmd == "dates-match" and len(rest) in (2, 4):
         # MEDIUM (adversarial review 2026-07-31, run 4): Phase 1 step 5 and
         # Phase 2 step 1 both name `release_dates_consistent`, and Phase 2
         # says it "must pass" -- but this CLI exposed no way to run it, so
@@ -2837,14 +3202,21 @@ def main(argv):
         # unreadable-file-is-empty-text behaviour (an unreadable file has
         # no date, so the comparison is False, so the exit code is 1 --
         # never a traceback).
+        paths = rest[:2]
+        policy, initial = (rest[2], rest[3] or None) if len(rest) == 4 else (
+            "semver", None)
+        if not _policy_declaration_valid(policy, initial):
+            sys.stderr.write("dates-match: invalid policy declaration\n")
+            return 2
         texts = []
-        for path in rest:
+        for path in paths:
             try:
                 with open(path, encoding="utf-8") as fh:
                     texts.append(fh.read())
             except OSError:
                 texts.append("")
-        return 0 if release_dates_consistent(texts[0], texts[1]) else 1
+        return 0 if release_dates_consistent(
+            texts[0], texts[1], policy, initial) else 1
 
     if cmd == "classify" and len(rest) == 6:
         as_bool = lambda s: str(s).lower() == "true"
