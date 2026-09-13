@@ -6,6 +6,7 @@ import {
   type IndexResult,
   type SidebarGroup,
   type SidebarEntry,
+  type CommandSidebarGroup,
   type SourceType,
 } from "./types";
 import { modelTier } from "./model-tier";
@@ -60,6 +61,11 @@ export function buildIndex(pages: RenderedPage[], catalog?: CommandCatalog): Ind
     }
   }
 
+  const commandPages = grouped.get("command") ?? [];
+  if (commandPages.length > 0 && catalog === undefined) {
+    throw new Error("Command pages require generated catalog metadata");
+  }
+
   // 2. Build sidebar in fixed order, skipping empty groups
   const sidebar: SidebarGroup[] = [];
   for (const type of FIXED_ORDER) {
@@ -78,14 +84,27 @@ export function buildIndex(pages: RenderedPage[], catalog?: CommandCatalog): Ind
         visibility: type === "command" ? p.commandCatalog?.visibility : undefined,
         workflow: type === "command" ? p.commandCatalog?.workflow : undefined,
       }));
-      sidebar.push({ type, label: type, items });
+      if (type === "command") {
+        if (items.some((item) => item.visibility === undefined)) {
+          throw new Error("Every command page needs generated catalog metadata");
+        }
+        const visibilityGroups: CommandSidebarGroup[] = catalog!.visibilityOrder.map(
+          (visibility) => ({
+            visibility,
+            label: VISIBILITY_LABEL[visibility],
+            items: items.filter((item) => item.visibility === visibility),
+          }),
+        );
+        sidebar.push({ type, label: "Commands", items: visibilityGroups });
+      } else {
+        sidebar.push({ type, label: type, items });
+      }
     }
   }
 
   // 3. Build the discovery index. Commands use metadata-driven visibility then
   // workflow groups; skills and agents retain their existing collection groups.
   const sections: string[] = [];
-  const commandPages = grouped.get("command") ?? [];
   if (commandPages.length > 0) {
     if (catalog) {
       if (commandPages.some((page) => page.commandCatalog === undefined)) {
@@ -108,7 +127,7 @@ export function buildIndex(pages: RenderedPage[], catalog?: CommandCatalog): Ind
     }
   }
   for (const type of ["skill", "agent"] as const) {
-    const items = sidebar.find((group) => group.type === type)?.items;
+    const items = sidebar.find((group) => group.type === type)?.items as SidebarEntry[] | undefined;
     if (items && items.length > 0) sections.push(standardRows(type, items));
   }
   const markdown = sections.join("\n\n");

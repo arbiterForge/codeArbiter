@@ -38,6 +38,22 @@ function makeSrcDir(base: string): string {
     `---\ndescription: Run the full commit gate.\n---\n\n# /ca:commit\n\nBody.\n`,
   );
 
+  const generatedDir = join(base, "generated");
+  mkdirSync(generatedDir, { recursive: true });
+  writeFileSync(join(generatedDir, "command-catalog.json"), JSON.stringify({
+    schemaVersion: 1,
+    visibilityOrder: ["core", "advanced", "alias", "internal", "deprecated"],
+    workflowOrder: ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+    compatibility: {},
+    commands: Object.fromEntries(["prune", "sprint", "commit"].map((command) => [command, {
+      description: `${command} command.`,
+      commandPath: `commands/${command}.md`,
+      visibility: command === "commit" ? "core" : "advanced",
+      workflow: command === "commit" ? "ship" : "operate",
+      canonical: command,
+    }])),
+  }));
+
   return base;
 }
 

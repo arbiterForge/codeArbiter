@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "visibilityOrder": ["core", "advanced", "alias", "internal", "deprecated"],
+  "workflowOrder": ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+  "compatibility": {},
+  "commands": {
+    "another": {
+      "description": "Another command.",
+      "commandPath": "commands/another.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "another"
+    },
+    "sample": {
+      "description": "A sample command.",
+      "commandPath": "commands/sample.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "sample"
+    }
+  }
+}
