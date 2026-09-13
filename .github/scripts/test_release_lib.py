@@ -3910,6 +3910,21 @@ class CoreCLITest(unittest.TestCase):
             [sys.executable, _CORE_RELEASELIB_PATH, "clean-tree-status", "app"],
             cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
 
+    def test_clean_tree_status_ignores_ambient_repository_rebinding(self):
+        with tempfile.TemporaryDirectory() as intended_tmp, \
+                tempfile.TemporaryDirectory() as counterfeit_tmp:
+            intended = self._pretag_repo(intended_tmp, [], dirty=True)
+            counterfeit = self._pretag_repo(counterfeit_tmp, [], dirty=False)
+            rebound = {
+                "GIT_DIR": os.path.join(counterfeit, ".git"),
+                "GIT_WORK_TREE": counterfeit,
+            }
+            with mock.patch.dict(os.environ, rebound):
+                proc = self._run_clean_tree_status(intended)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("package.json", proc.stdout)
+            self.assertIn("CHANGELOG.md", proc.stdout)
+
     def test_run_pre_tag_tolerates_the_release_edits_that_precede_it(self):
         # HIGH, run 9: the assertion used to be "the tree is pristine",
         # which BLOCKED EVERY RELEASE -- Phase 1 rolls the changelog and

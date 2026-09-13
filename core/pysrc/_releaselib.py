@@ -1887,7 +1887,8 @@ def release_tree_status(row, project_root):
     return subprocess.run(
         [git_executable(), "status", "--porcelain", "--", ":/",
          *scratch_pathspecs],
-        capture_output=True, text=True, cwd=project_root)
+        capture_output=True, text=True, cwd=project_root,
+        env=_sanitized_git_environment())
 
 
 def parse_release_targets(text):
