@@ -31,9 +31,17 @@ parses the machine-readable marker below and compares `adapter_version` with the
 manifest. A mismatch blocks the release; the check never rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":1,"adapter":"ca-codex","adapter_version":"0.9.11","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-13","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.9.11**, Windows, 2026-09-13.
-Fresh Codex CLI tasks selected the exact installed 0.9.11 candidate from commit `603c6f42`. Their
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":1,"adapter":"ca-codex","adapter_version":"0.10.0","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-13","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.10.0**, Windows, 2026-09-13.
+A fresh Codex CLI task selected the exact installed 0.10.0 candidate from commit `b479e8f1` and
+received the repository startup state through SessionStart context. With the installed plugin root
+resolved, `$ca-doctor` reported 10 OK, 2 WARN, and 0 FAIL; the prescribed staging dry-run was denied
+exactly once with `[H-03]` before execution. This refreshes candidate selection, SessionStart
+delivery, doctor health, and the live H-03 boundary. It does not claim that the full scenario
+matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.9.11**, Windows,
+2026-09-13. Fresh Codex CLI tasks selected the exact installed candidate from commit `603c6f42`. Their
 retained transcripts show the startup banner and corrected continuation instruction delivered as
 SessionStart developer context, with the obsolete unconditional wait instruction absent. With the
 installed plugin root resolved, `$ca-doctor` reported 12 OK, 0 WARN, and 0 FAIL; the prescribed
