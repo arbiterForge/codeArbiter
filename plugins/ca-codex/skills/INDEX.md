@@ -60,7 +60,7 @@ skill is invoked — never bulk-read this directory.
 |---|---|
 | `$ca-commit` | Run the full commit gate — the only sanctioned path to a git commit. |
 | `$ca-pr` | Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch. |
-| `$ca-release` | Cut a release the only sanctioned way — SemVer bump from the commit log, a CHANGELOG section, an annotated tag. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag. |
+| `$ca-release` | Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag. |
 
 ### Operate
 

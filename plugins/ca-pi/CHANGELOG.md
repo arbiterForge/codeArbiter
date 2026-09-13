@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-13
+
+### Added
+
+- Support declared numeric release policies and exact verified asset inventories while preserving SemVer defaults and explicit publication authorization.
+
 ## [0.10.13] - 2026-09-13
 
 ### Fixed

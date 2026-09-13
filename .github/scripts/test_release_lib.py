@@ -46,6 +46,7 @@ proof still lived only against the old, unmodified shim:
   CoreEscapeHatchWrappingTest     M5 — non-string input / unreadable path stay in-hierarchy
 """
 
+import contextlib
 import importlib.util
 import inspect
 import io
@@ -1860,6 +1861,487 @@ class SeriesIsolationTest(unittest.TestCase):
             core_releaselib.last_tag_select(tags, "v"), "v1.2.3")
 
 
+class NumericSequenceParserTest(unittest.TestCase):
+    """AC-01/03: policy declarations are explicit and fail closed."""
+
+    _BASE = ("<!-- release-targets -->\n[app]\n"
+             "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n")
+
+    def _parse(self, extra=""):
+        return core_releaselib.parse_release_targets(
+            self._BASE + extra + "<!-- /release-targets -->\n")[0]
+
+    def test_omitted_policy_preserves_the_semver_default(self):
+        row = self._parse()
+        self.assertEqual(row["version_policy"], "semver")
+        self.assertIsNone(row["initial_version"])
+
+    def test_numeric_sequence_requires_a_valid_fixed_shape_initial_version(self):
+        row = self._parse(
+            "version-policy: numeric-sequence\ninitial-version: 0.1\n")
+        self.assertEqual(row["version_policy"], "numeric-sequence")
+        self.assertEqual(row["initial_version"], "0.1")
+
+        for initial in ("", "0", "01.2", "1.02", "1.2.3-beta", "1.two"):
+            with self.subTest(initial=initial):
+                declaration = "version-policy: numeric-sequence\n"
+                if initial != "":
+                    declaration += f"initial-version: {initial}\n"
+                with self.assertRaises(core_releaselib.MalformedBlockError):
+                    self._parse(declaration)
+
+    def test_unknown_policy_and_policy_incompatible_initial_version_are_rejected(self):
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            self._parse("version-policy: calendar\n")
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            self._parse("version-policy: semver\ninitial-version: 1.2.3\n")
+
+    def test_scratch_exclusions_cover_every_declared_surface_field(self):
+        scalar_fields = ("changelog", "provenance_manifest")
+        list_fields = ("manifest", "generated_manifest", "artifacts",
+                       "release_assets")
+        scratches = (
+            ".codearbiter/gate-events.log",
+            ".codearbiter/.markers",
+        )
+        for scratch in scratches:
+            for field in scalar_fields + list_fields:
+                with self.subTest(scratch=scratch, field=field):
+                    row = core_releaselib._new_row("app")
+                    row["payload"] = "src/"
+                    value = scratch + ("/receipt" if scratch.endswith(".markers") else "")
+                    row[field] = value if field in scalar_fields else [value]
+                    self.assertNotIn(
+                        scratch,
+                        core_releaselib.governance_scratch_exclusions(row))
+
+    def test_scratch_overlap_is_casefolded_and_globs_fail_closed(self):
+        for payload in (
+                ".CODEARBITER", ".codearbiter/*", ":(top).codearbiter",
+                ".codearbiter/gate-events.log src/"):
+            with self.subTest(payload=payload):
+                row = core_releaselib._new_row("app")
+                row["payload"] = payload
+                self.assertEqual(
+                    core_releaselib.governance_scratch_exclusions(row), [])
+
+        row = core_releaselib._new_row("app")
+        row["payload"] = "src/"
+        row["manifest"] = [".codearbiter./gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row), [])
+
+        row["manifest"] = [".codearbiter/GATE-E~1.LOG"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row), [])
+
+    def test_payload_exclude_subtracts_payload_but_direct_surfaces_win(self):
+        row = core_releaselib._new_row("app")
+        row["payload"] = "."
+        row["payload_exclude"] = [".CODEARBITER/"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/gate-events.log", ".codearbiter/.markers"])
+
+        row["payload_exclude"] = [".codearbiter/gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/gate-events.log"])
+
+        for exclusion in (
+                ".codearbiter/*", ":(top).codearbiter",
+                ".codearbiter/gate-events.log src/", ".codearbiter./",
+                ".codearbiter/gate-events.log.bak"):
+            with self.subTest(exclusion=exclusion):
+                row["payload_exclude"] = [exclusion]
+                self.assertEqual(
+                    core_releaselib.governance_scratch_exclusions(row), [])
+
+        row["payload_exclude"] = [".codearbiter/"]
+        row["manifest"] = [".CODEARBITER/gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/.markers"])
+
+
+class NumericSequenceVersionPolicyTest(unittest.TestCase):
+    """AC-01/02/04/10: generic fixed-shape sequencing and SemVer parity."""
+
+    def test_numeric_key_accepts_only_canonical_fixed_shape_values(self):
+        self.assertEqual(
+            core_releaselib.numeric_sequence_key("0.31", "0.1"), (0, 31))
+        for candidate in ("0.31.0", "00.31", "0.031", "0.-1", "0.x", "0"):
+            with self.subTest(candidate=candidate):
+                self.assertIsNone(
+                    core_releaselib.numeric_sequence_key(candidate, "0.1"))
+
+    def test_selects_highest_same_shape_tag_and_ignores_malformed_candidates(self):
+        tags = [
+            "preview-0.9", "preview-0.30", "preview-0.31",
+            "preview-0.032", "preview-0.31.1", "preview-1", "v9.9.9",
+        ]
+        self.assertEqual(
+            core_releaselib.last_tag_select_for_policy(
+                tags, "preview-", "numeric-sequence", "0.1"),
+            "preview-0.31")
+
+    def test_first_release_uses_initial_then_each_later_release_advances_once(self):
+        self.assertEqual(
+            core_releaselib.derive_version(
+                core_releaselib.NONE_SENTINEL, "minor",
+                "numeric-sequence", "0.30"),
+            "0.30")
+        self.assertEqual(
+            core_releaselib.derive_version(
+                "0.30", "patch", "numeric-sequence", "0.1"),
+            "0.31")
+        self.assertEqual(
+            core_releaselib.derive_version(
+                "0.31", "major", "numeric-sequence", "0.1"),
+            "0.32")
+
+    def test_one_unchanged_parsed_declaration_drives_consecutive_releases(self):
+        text = (
+            "<!-- release-targets -->\n[preview]\n"
+            "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n"
+            "version-policy: numeric-sequence\ninitial-version: 0.30\n"
+            "<!-- /release-targets -->\n")
+        row = core_releaselib.parse_release_targets(text)[0]
+        selected = core_releaselib.last_tag_select_for_policy(
+            ["preview-0.29", "preview-0.30"], row["prefix"],
+            row["version_policy"], row["initial_version"])
+        first_base = selected[len(row["prefix"]):]
+        first_next = core_releaselib.derive_version(
+            first_base, "patch", row["version_policy"], row["initial_version"])
+        second_next = core_releaselib.derive_version(
+            first_next, "minor", row["version_policy"], row["initial_version"])
+        self.assertEqual((selected, first_next, second_next),
+                         ("preview-0.30", "0.31", "0.32"))
+
+    def test_every_bumping_word_advances_numeric_sequence_but_none_refuses(self):
+        for word in ("patch", "minor", "major"):
+            with self.subTest(word=word):
+                self.assertEqual(
+                    core_releaselib.derive_version(
+                        "2.9", word, "numeric-sequence", "0.1"),
+                    "2.10")
+        self.assertIsNone(
+            core_releaselib.derive_version(
+                "2.9", "none", "numeric-sequence", "0.1"))
+
+    def test_regressing_or_shape_changing_floor_is_refused(self):
+        self.assertFalse(
+            core_releaselib.version_greater(
+                "0.30", "0.31", "numeric-sequence", "0.1"))
+        self.assertFalse(
+            core_releaselib.version_greater(
+                "0.32.0", "0.31", "numeric-sequence", "0.1"))
+        self.assertTrue(
+            core_releaselib.version_greater(
+                "0.32", "0.31", "numeric-sequence", "0.1"))
+
+    def test_initial_version_constrains_candidate_not_a_lower_historical_floor(self):
+        self.assertTrue(
+            core_releaselib.version_greater(
+                "0.30", "0.29", "numeric-sequence", "0.30"))
+        self.assertFalse(
+            core_releaselib.version_greater(
+                "0.29", "0.28", "numeric-sequence", "0.30"))
+
+    def test_three_component_numeric_sequence_preserves_shape(self):
+        tags = ["train-1.0.9", "train-1.0.10", "train-1.00.11", "train-1.1"]
+        self.assertEqual(
+            core_releaselib.last_tag_select_for_policy(
+                tags, "train-", "numeric-sequence", "1.0.0"),
+            "train-1.0.10")
+        self.assertEqual(
+            core_releaselib.derive_version(
+                "1.0.10", "major", "numeric-sequence", "1.0.0"),
+            "1.0.11")
+
+    def test_default_policy_delegates_to_existing_semver_behavior(self):
+        tags = ["v1.9.9", "v2.0.0", "v2.0.1-rc.1"]
+        self.assertEqual(
+            core_releaselib.last_tag_select_for_policy(tags, "v"),
+            core_releaselib.last_tag_select(tags, "v"))
+        self.assertEqual(
+            core_releaselib.derive_version("2.3.4", "minor"),
+            core_releaselib.apply_bump("2.3.4", "minor"))
+        self.assertEqual(
+            core_releaselib.version_greater("2.4.0", "2.3.4"),
+            core_releaselib.semver_greater("2.4.0", "2.3.4"))
+
+
+class NumericSequenceCLITest(unittest.TestCase):
+    """AC-01/02/04/10: scheme-aware helpers are available to release prose."""
+
+    def _run(self, *args, stdin=""):
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, *args], input=stdin,
+            capture_output=True, text=True, cwd=REPO_ROOT)
+
+    def test_scheme_aware_cli_selects_compares_and_derives_numeric_versions(self):
+        selected = self._run(
+            "last-tag-for-policy", "preview-", "numeric-sequence", "0.1",
+            stdin="preview-0.30\npreview-0.31\npreview-0.032\n")
+        self.assertEqual(selected.returncode, 0, selected.stderr)
+        self.assertEqual(selected.stdout, "preview-0.31\n")
+
+        compared = self._run(
+            "version-greater", "0.32", "0.31", "numeric-sequence", "0.1")
+        self.assertEqual(compared.returncode, 0, compared.stderr)
+
+        derived = self._run(
+            "derive-version", "0.31", "minor", "numeric-sequence", "0.1")
+        self.assertEqual(derived.returncode, 0, derived.stderr)
+        self.assertEqual(derived.stdout, "0.32\n")
+
+    def test_scheme_aware_cli_refuses_bad_policy_state(self):
+        cases = (
+            ("version-greater", "0.32.0", "0.31", "numeric-sequence", "0.1"),
+            ("derive-version", "0.31", "none", "numeric-sequence", "0.1"),
+            ("derive-version", "0.31", "patch", "calendar", "0.1"),
+        )
+        for args in cases:
+            with self.subTest(args=args):
+                proc = self._run(*args)
+                self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+                self.assertEqual(proc.stdout, "")
+
+    def test_version_greater_cli_distinguishes_comparison_from_invalid_policy_state(self):
+        for candidate, floor in (("0.31", "0.31"), ("0.30", "0.31")):
+            with self.subTest(candidate=candidate, floor=floor):
+                proc = self._run(
+                    "version-greater", candidate, floor,
+                    "numeric-sequence", "0.30")
+                self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        for candidate, floor in (("0.29", "0.28"), ("0.31.0", "0.30")):
+            with self.subTest(candidate=candidate, floor=floor):
+                proc = self._run(
+                    "version-greater", candidate, floor,
+                    "numeric-sequence", "0.30")
+                self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+
+    def test_scheme_aware_cli_default_semver_matches_existing_commands(self):
+        tags = "v1.9.9\nv2.0.0\nv2.0.1-rc.1\n"
+        selected = self._run(
+            "last-tag-for-policy", "v", "semver", "", stdin=tags)
+        self.assertEqual(selected.returncode, 0, selected.stderr)
+        self.assertEqual(selected.stdout, "v2.0.0\n")
+        compared = self._run(
+            "version-greater", "2.4.0", "2.3.4", "semver", "")
+        self.assertEqual(compared.returncode, 0, compared.stderr)
+        derived = self._run(
+            "derive-version", "2.3.4", "minor", "semver", "")
+        self.assertEqual(derived.returncode, 0, derived.stderr)
+        self.assertEqual(derived.stdout, "2.4.0\n")
+
+    def test_show_row_reads_new_policy_fields_without_changing_legacy_output(self):
+        declaration = (
+            "<!-- release-targets -->\n[preview]\n"
+            "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n"
+            "version-policy: numeric-sequence\ninitial-version: 0.30\n"
+            "<!-- /release-targets -->\n")
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                      "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(declaration)
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=root)
+            policy = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "show-row", "preview",
+                 "--field", "version-policy"],
+                capture_output=True, text=True, env=env)
+            initial = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "show-row", "preview",
+                 "--field", "initial-version"],
+                capture_output=True, text=True, env=env)
+            legacy = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "show-row", "preview"],
+                capture_output=True, text=True, env=env)
+        self.assertEqual(policy.returncode, 0, policy.stderr)
+        self.assertEqual(policy.stdout, "numeric-sequence\n")
+        self.assertEqual(initial.returncode, 0, initial.stderr)
+        self.assertEqual(initial.stdout, "0.30\n")
+        self.assertEqual(legacy.returncode, 0, legacy.stderr)
+        self.assertNotIn("VERSION_POLICY", legacy.stdout)
+        self.assertNotIn("INITIAL_VERSION", legacy.stdout)
+
+
+class DeclaredVersionChangelogTest(unittest.TestCase):
+    """AC-12: changelog and notes helpers honor the declared version shape."""
+
+    _CHANGELOG = (
+        "# Changelog\n\n"
+        "## [Unreleased]\n\n- pending\n\n"
+        "## [0.31] - 2026-09-13\n\n### Added\n\n- preview feature\n\n"
+        "## [0.30] - 2026-09-01\n\n### Fixed\n\n- older fix\n")
+
+    def test_numeric_sequence_extracts_and_validates_matching_notes(self):
+        section = core_releaselib.changelog_section(
+            self._CHANGELOG, "0.31", "numeric-sequence", "0.1")
+        self.assertEqual(
+            section,
+            "## [0.31] - 2026-09-13\n\n### Added\n\n- preview feature\n")
+        self.assertTrue(core_releaselib.notes_heading_matches(
+            section, "preview-0.31", "numeric-sequence", "0.1"))
+        self.assertFalse(core_releaselib.notes_heading_matches(
+            section, "preview-0.30", "numeric-sequence", "0.1"))
+
+    def test_numeric_sequence_rejects_wrong_shape_and_noncanonical_headings(self):
+        malformed = (
+            "## [0.031] - 2026-09-13\n\n- leading zero\n",
+            "## [0.31.0] - 2026-09-13\n\n- wrong shape\n",
+            "## [٠.٣١] - 2026-09-13\n\n- non-ASCII digits\n",
+        )
+        for text in malformed:
+            with self.subTest(text=text):
+                section, status = core_releaselib._changelog_section_result(
+                    text, "0.31", "numeric-sequence", "0.1")
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
+    def test_default_semver_contract_remains_strict(self):
+        numeric = "## [0.31] - 2026-09-13\n\n- preview feature\n"
+        self.assertIsNone(core_releaselib.changelog_section(numeric, "0.31"))
+        self.assertFalse(
+            core_releaselib.notes_heading_matches(numeric, "preview-0.31"))
+        semver = "## [1.2.3] - 2026-09-13\n\n- stable feature\n"
+        self.assertEqual(
+            core_releaselib.changelog_section(
+                semver, "1.2.3", "semver", None),
+            semver)
+        self.assertTrue(core_releaselib.notes_heading_matches(
+            semver, "v1.2.3", "semver", None))
+
+    def test_scheme_aware_cli_accepts_numeric_sequence_policy(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            notes_path = os.path.join(tmp, "notes.md")
+            with open(notes_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(
+                    "## [0.31] - 2026-09-13\n\n- preview feature\n")
+            self.assertEqual(core_releaselib.main([
+                "notes-match", "preview-0.31", notes_path,
+                "numeric-sequence", "0.1",
+            ]), 0)
+
+        out = io.StringIO()
+        with mock.patch.object(
+                core_releaselib, "_committed_changelog_text",
+                return_value=(self._CHANGELOG, None)), \
+                mock.patch("sys.stdout", out):
+            rc = core_releaselib.main([
+                "changelog-section", "repo", "preview-0.31", "CHANGELOG.md",
+                "0.31", "numeric-sequence", "0.1",
+            ])
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            out.getvalue(),
+            "## [0.31] - 2026-09-13\n\n### Added\n\n- preview feature\n")
+
+    def test_numeric_notes_reject_a_suffix_of_a_wrong_shape_dotted_tag(self):
+        cases = (
+            ("## [31.0] - 2026-09-13\n\n- wrong shape\n",
+             "preview-0.31.0"),
+            ("## [0.31] - 2026-09-13\n\n- wrong shape\n",
+             "preview-9.0.31"),
+        )
+        for notes, tag in cases:
+            with self.subTest(tag=tag):
+                self.assertFalse(core_releaselib.notes_heading_matches(
+                    notes, tag, "numeric-sequence", "0.1"))
+
+    def test_numeric_release_dates_round_trip_through_function_and_cli(self):
+        section = "## [0.31] - 2026-09-13\n\n- preview feature\n"
+        matching = "Preview 0.31\n\nReleased-at: 2026-09-13\n"
+        stale = "Preview 0.31\n\nReleased-at: 2026-09-12\n"
+        self.assertTrue(core_releaselib.release_dates_consistent(
+            section, matching, "numeric-sequence", "0.1"))
+        self.assertFalse(core_releaselib.release_dates_consistent(
+            section, stale, "numeric-sequence", "0.1"))
+        self.assertFalse(core_releaselib.release_dates_consistent(
+            section, matching))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            section_path = os.path.join(tmp, "section.md")
+            message_path = os.path.join(tmp, "message.txt")
+            with open(section_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(section)
+            with open(message_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(matching)
+            self.assertEqual(core_releaselib.main([
+                "dates-match", section_path, message_path,
+                "numeric-sequence", "0.1",
+            ]), 0)
+
+    def test_numeric_changelog_cli_distinguishes_absent_invalid_and_duplicate(self):
+        invalid_err = io.StringIO()
+        with contextlib.redirect_stderr(invalid_err):
+            invalid_rc = core_releaselib.main([
+                "changelog-section", "repo", "preview-0.31", "CHANGELOG.md",
+                "0.31", "calendar", "0.1",
+            ])
+        self.assertEqual(invalid_rc, 2)
+        self.assertEqual(
+            invalid_err.getvalue(),
+            "changelog-section: invalid policy declaration\n")
+
+        cases = (
+            ("## [0.30] - 2026-09-01\n\n- older\n", 1),
+            ("## [0.31] - 2026-09-13\n\n- target\n\n"
+             "## [0.031] - 2026-09-01\n\n- malformed later\n", 4),
+            ("## [0.31] - 2026-09-13\n\n- first\n\n"
+             "## v0.31 - 2026-09-13\n\n- duplicate\n", 4),
+        )
+        for changelog, expected in cases:
+            with self.subTest(expected=expected, changelog=changelog):
+                out, err = io.StringIO(), io.StringIO()
+                with mock.patch.object(
+                        core_releaselib, "_committed_changelog_text",
+                        return_value=(changelog, None)), \
+                        contextlib.redirect_stdout(out), \
+                        contextlib.redirect_stderr(err):
+                    rc = core_releaselib.main([
+                        "changelog-section", "repo", "preview-0.31",
+                        "CHANGELOG.md", "0.31", "numeric-sequence", "0.1",
+                    ])
+                self.assertEqual(rc, expected, out.getvalue() + err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+
+    def test_legacy_and_explicit_semver_arities_are_equivalent(self):
+        section = "## [1.2.3] - 2026-09-13\n\n- stable feature\n"
+        message = "Stable 1.2.3\n\nReleased-at: 2026-09-13\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            notes_path = os.path.join(tmp, "notes.md")
+            message_path = os.path.join(tmp, "message.txt")
+            with open(notes_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(section)
+            with open(message_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(message)
+            self.assertEqual(
+                core_releaselib.main(["notes-match", "v1.2.3", notes_path]),
+                core_releaselib.main([
+                    "notes-match", "v1.2.3", notes_path, "semver", ""]))
+            self.assertEqual(
+                core_releaselib.main(["dates-match", notes_path, message_path]),
+                core_releaselib.main([
+                    "dates-match", notes_path, message_path, "semver", ""]))
+
+        def run_changelog(extra):
+            out = io.StringIO()
+            with mock.patch.object(
+                    core_releaselib, "_committed_changelog_text",
+                    return_value=(section, None)), \
+                    contextlib.redirect_stdout(out):
+                rc = core_releaselib.main([
+                    "changelog-section", "repo", "v1.2.3", "CHANGELOG.md",
+                    "1.2.3", *extra,
+                ])
+            return rc, out.getvalue()
+
+        self.assertEqual(run_changelog([]), run_changelog(["semver", ""]))
+
+
 # --------------------------------------------------------------------------- #
 # Adversarial-review remediation (2026-07-31). See the module docstring for
 # the finding each class closes. Every class here loads `core_releaselib`
@@ -2592,6 +3074,7 @@ class CoreCLITest(unittest.TestCase):
                     ["tag-prefix", "app", "--targets-file", path])
             self.assertEqual(rc, 0)
             self.assertEqual(out.getvalue().strip(), "v")
+
 
     def test_tag_prefix_unknown_target_exits_2(self):
         import io, contextlib
@@ -3421,6 +3904,27 @@ class CoreCLITest(unittest.TestCase):
             [sys.executable, _CORE_RELEASELIB_PATH, "run-pre-tag", "app"],
             cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
 
+    def _run_clean_tree_status(self, root):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root, PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "clean-tree-status", "app"],
+            cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+
+    def test_clean_tree_status_ignores_ambient_repository_rebinding(self):
+        with tempfile.TemporaryDirectory() as intended_tmp, \
+                tempfile.TemporaryDirectory() as counterfeit_tmp:
+            intended = self._pretag_repo(intended_tmp, [], dirty=True)
+            counterfeit = self._pretag_repo(counterfeit_tmp, [], dirty=False)
+            rebound = {
+                "GIT_DIR": os.path.join(counterfeit, ".git"),
+                "GIT_WORK_TREE": counterfeit,
+            }
+            with mock.patch.dict(os.environ, rebound):
+                proc = self._run_clean_tree_status(intended)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("package.json", proc.stdout)
+            self.assertIn("CHANGELOG.md", proc.stdout)
+
     def test_run_pre_tag_tolerates_the_release_edits_that_precede_it(self):
         # HIGH, run 9: the assertion used to be "the tree is pristine",
         # which BLOCKED EVERY RELEASE -- Phase 1 rolls the changelog and
@@ -3802,6 +4306,44 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(
                 rh.confirmation_state(root, "app", ["python3 a.py"]), rh.NEVER)
 
+    def test_release_build_changes_invalidate_the_same_confirmation_marker(self):
+        rh = self._releasehash()
+        pre_tag = ["python3 checks/a.py"]
+        with tempfile.TemporaryDirectory() as root:
+            original = rh.pre_tag_digest(pre_tag, "python3 build.py --mode a")
+            changed = rh.pre_tag_digest(pre_tag, "python3 build.py --mode b")
+            self.assertNotEqual(original, changed)
+            rh.record_confirmation(root, "app", original)
+            self.assertEqual(
+                rh.confirmation_state(
+                    root, "app", pre_tag, "python3 build.py --mode a"),
+                rh.CONFIRMED)
+            self.assertEqual(
+                rh.confirmation_state(
+                    root, "app", pre_tag, "python3 build.py --mode b"),
+                rh.CHANGED)
+
+    def test_rows_without_release_build_keep_the_existing_digest_identity(self):
+        rh = self._releasehash()
+        self.assertEqual(
+            rh.pre_tag_digest(["check_a.py", "check_b.py"]),
+            "9e41b57a8b69eca55dec9fb6d86e446120686eb8a6b7cc6b163785bde2e24a02")
+        self.assertEqual(
+            rh.pre_tag_digest(["check_a.py", "check_b.py"], None),
+            rh.pre_tag_digest(["check_a.py", "check_b.py"], ""))
+
+    def test_release_build_alone_requires_confirmation(self):
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            self.assertEqual(
+                rh.confirmation_state(root, "app", [], "python3 build.py"),
+                rh.NEVER)
+            rh.record_confirmation(
+                root, "app", rh.pre_tag_digest([], "python3 build.py"))
+            self.assertEqual(
+                rh.confirmation_state(root, "app", [], "python3 build.py"),
+                rh.CONFIRMED)
+
     def test_show_row_prints_every_declared_field(self):
         # Blind exercise run 14, HIGH. The lane forbids reading the declared
         # file by eye, but only `prefix` and the target names had readers —
@@ -3899,6 +4441,10 @@ class CoreCLITest(unittest.TestCase):
         out = self._run_core("show-row", "ca", "--field", "nope")
         self.assertEqual(out.returncode, 2)
         self.assertIn("unknown field", out.stderr)
+        for field in ("version_policy", "initial_version",
+                      "release_build", "release_assets"):
+            with self.subTest(field=field):
+                self.assertIn(field, out.stderr)
 
     def test_show_row_rejects_an_unknown_target(self):
         out = self._run_core("show-row", "not-a-target")
@@ -4296,7 +4842,7 @@ class CoreCLITest(unittest.TestCase):
             self.assertIn("1.1.0", proc.stdout)
 
     # ---- #584 MEDIUM-1: the tree-state probe exempts the audit scratch ----
-    def _pretag_repo_with_gate_log(self, tmp, commands):
+    def _pretag_repo_with_gate_log(self, tmp, commands, payload="src/"):
         """Like `_pretag_repo`, but with `.codearbiter/gate-events.log`
         created and COMMITTED up front, so a declared command that appends
         to it mid-window is appending to a TRACKED file -- the shape the
@@ -4311,7 +4857,7 @@ class CoreCLITest(unittest.TestCase):
             fh.write("existing-line\n")
         with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
             fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
-                     "changelog: CHANGELOG.md\npayload: .\n"
+                     f"changelog: CHANGELOG.md\npayload: {payload}\n"
                      + "".join(f"pre-tag: {c}\n" for c in commands)
                      + "<!-- /release-targets -->\n")
         env = dict(os.environ,
@@ -4348,6 +4894,57 @@ class CoreCLITest(unittest.TestCase):
             root = self._pretag_repo_with_gate_log(tmp, [appender])
             proc = self._run_pre_tag(root)
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_run_pre_tag_does_not_exempt_a_declared_payload_surface(self):
+        appender = (f'"{sys.executable}" -c '
+                    '"open(\'.codearbiter/gate-events.log\',\'a\')'
+                    '.write(chr(10))"')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo_with_gate_log(
+                tmp, [appender], payload=".")
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 6, proc.stdout + proc.stderr)
+            self.assertIn(".codearbiter/gate-events.log", proc.stderr)
+
+    def test_clean_tree_status_applies_the_same_target_aware_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            unrelated = self._pretag_repo_with_gate_log(tmp, [], payload="src/")
+            with open(os.path.join(unrelated, ".codearbiter", "gate-events.log"),
+                      "a") as fh:
+                fh.write("scratch\n")
+            excluded = self._run_clean_tree_status(unrelated)
+            self.assertEqual(excluded.returncode, 0, excluded.stderr)
+            self.assertEqual(excluded.stdout, "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._pretag_repo_with_gate_log(tmp, [], payload=".")
+            with open(os.path.join(declared, ".codearbiter", "gate-events.log"),
+                      "a") as fh:
+                fh.write("release-surface\n")
+            visible = self._run_clean_tree_status(declared)
+            self.assertEqual(visible.returncode, 0, visible.stderr)
+            self.assertIn(".codearbiter/gate-events.log", visible.stdout)
+
+    def test_clean_tree_status_applies_target_aware_marker_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            unrelated = self._pretag_repo_with_gate_log(tmp, [], payload="src/")
+            markers = os.path.join(unrelated, ".codearbiter", ".markers")
+            os.makedirs(markers)
+            with open(os.path.join(markers, "proof"), "w") as fh:
+                fh.write("scratch\n")
+            excluded = self._run_clean_tree_status(unrelated)
+            self.assertEqual(excluded.returncode, 0, excluded.stderr)
+            self.assertEqual(excluded.stdout, "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._pretag_repo_with_gate_log(tmp, [], payload=".")
+            markers = os.path.join(declared, ".codearbiter", ".markers")
+            os.makedirs(markers)
+            with open(os.path.join(markers, "proof"), "w") as fh:
+                fh.write("release-surface\n")
+            visible = self._run_clean_tree_status(declared)
+            self.assertEqual(visible.returncode, 0, visible.stderr)
+            self.assertIn(".codearbiter/.markers/", visible.stdout)
 
     # ---- #583 MEDIUM-2 / #584 MEDIUM-3: PY exported to declared commands ----
     def test_run_pre_tag_exports_PY_to_declared_commands(self):
@@ -6168,6 +6765,437 @@ class DecisionZeroZeroThreeSixTest(unittest.TestCase):
         window = self.text[max(0, idx - 200): idx + 200]
         self.assertNotIn("`ca`", window)
         self.assertNotIn("defaults to", window.lower())
+
+
+class ReleaseAssetContractTest(unittest.TestCase):
+    """AC-05/06/07/10: declared assets render and verify exactly."""
+
+    _BASE = ("<!-- release-targets -->\n[preview]\n"
+             "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n"
+             "version-policy: numeric-sequence\ninitial-version: 0.30\n")
+    _ASSETS = (
+        "arbiter-preview-{version}.zip",
+        "arbiter-preview-{version}.zip.sha256",
+        "install-{tag}.ps1",
+        "install-{tag}.ps1.sha256",
+        "install-{version}.sh",
+        "install-{version}.sh.sha256",
+    )
+
+    def _declaration(self, build="python scripts/build.py", assets=None):
+        lines = [self._BASE]
+        if build is not None:
+            lines.append(f"release-build: {build}\n")
+        for asset in self._ASSETS if assets is None else assets:
+            lines.append(f"release-asset: {asset}\n")
+        lines.append("<!-- /release-targets -->\n")
+        return "".join(lines)
+
+    def test_parses_paired_build_and_repeated_asset_declarations(self):
+        row = core_releaselib.parse_release_targets(self._declaration())[0]
+        self.assertEqual(row["release_build"], "python scripts/build.py")
+        self.assertEqual(row["release_assets"], list(self._ASSETS))
+
+        legacy = core_releaselib.parse_release_targets(
+            self._BASE + "<!-- /release-targets -->\n")[0]
+        self.assertIsNone(legacy["release_build"])
+        self.assertEqual(legacy["release_assets"], [])
+
+    def test_partial_or_blank_asset_contract_is_rejected(self):
+        cases = (
+            self._declaration(assets=()),
+            self._declaration(build=None),
+            self._declaration(build=""),
+            self._declaration(assets=("",)),
+        )
+        for declaration in cases:
+            with self.subTest(declaration=declaration):
+                with self.assertRaises(core_releaselib.MalformedBlockError):
+                    core_releaselib.parse_release_targets(declaration)
+
+    def test_templates_render_six_names_across_consecutive_versions(self):
+        row = core_releaselib.parse_release_targets(self._declaration())[0]
+        first = core_releaselib.render_release_assets(
+            row["release_assets"], "0.31", "preview-0.31")
+        second = core_releaselib.render_release_assets(
+            row["release_assets"], "0.32", "preview-0.32")
+        self.assertEqual(first, [
+            "arbiter-preview-0.31.zip",
+            "arbiter-preview-0.31.zip.sha256",
+            "install-preview-0.31.ps1",
+            "install-preview-0.31.ps1.sha256",
+            "install-0.31.sh",
+            "install-0.31.sh.sha256",
+        ])
+        self.assertEqual(second, [name.replace("0.31", "0.32")
+                                  for name in first])
+
+    def test_unsafe_unknown_or_duplicate_rendered_names_are_rejected(self):
+        unsafe_sets = (
+            ["../escape-{version}.zip"],
+            ["nested/file-{version}.zip"],
+            [r"nested\file-{version}.zip"],
+            ["/absolute-{version}.zip"],
+            ["C:{version}.zip"],
+            ["asset {version}.zip"],
+            ["asset;touch-{version}"],
+            ["asset-$HOME-{version}"],
+            ["asset-{unknown}.zip"],
+            ["asset-{version!r}.zip"],
+            [""],
+            ["same-{version}.zip", "same-0.31.zip"],
+            ["asset-{version}.zip", "ASSET-{version}.ZIP"],
+            ["asset-{version}."],
+            ["CON.zip"],
+            ["AUX.txt"],
+            ["Lpt9.txt"],
+        )
+        for templates in unsafe_sets:
+            with self.subTest(templates=templates):
+                self.assertIsNone(core_releaselib.render_release_assets(
+                    templates, "0.31", "preview-0.31"))
+
+    def test_parser_rejects_unsafe_and_duplicate_templates_before_build(self):
+        for assets in (("../escape-{version}.zip",),
+                       ("asset-{unknown}.zip",),
+                       ("same-{version}.zip", "same-{version}.zip")):
+            with self.subTest(assets=assets):
+                with self.assertRaises(core_releaselib.MalformedBlockError):
+                    core_releaselib.parse_release_targets(
+                        self._declaration(assets=assets))
+
+    def test_parser_rejects_templates_that_collide_under_the_declared_prefix(self):
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            core_releaselib.parse_release_targets(self._declaration(assets=(
+                "preview-{version}.zip", "{tag}.zip",
+            )))
+
+    def test_parser_rejects_a_declared_prefix_that_makes_tag_assets_unsafe(self):
+        declaration = self._declaration(
+            assets=("{tag}.zip",)).replace(
+                "prefix: preview-\n", "prefix: preview/\n")
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            core_releaselib.parse_release_targets(declaration)
+
+    def test_exact_inventory_accepts_only_declared_nonempty_regular_files(self):
+        names = ["one-0.31.zip", "one-0.31.zip.sha256"]
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name in names:
+                with open(os.path.join(output_dir, name), "wb") as handle:
+                    handle.write(b"content")
+            expected = [os.path.join(os.path.abspath(output_dir), name)
+                        for name in names]
+            self.assertEqual(
+                core_releaselib.verify_release_asset_inventory(
+                    output_dir, names), expected)
+
+    def test_inventory_rejects_windows_equivalent_declared_names(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            invalid_declarations = (
+                ["asset.zip", "ASSET.ZIP"],
+                ["asset."],
+                ["CON.zip"],
+                ["aux"],
+                ["com1.txt"],
+                ["LPT9"],
+            )
+            with mock.patch.object(core_releaselib.os, "scandir") as scandir:
+                for names in invalid_declarations:
+                    with self.subTest(names=names):
+                        self.assertIsNone(
+                            core_releaselib.verify_release_asset_inventory(
+                                output_dir, names))
+                scandir.assert_not_called()
+
+            with open(os.path.join(output_dir, "ASSET.ZIP"), "wb") as handle:
+                handle.write(b"asset")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(
+                    output_dir, ["asset.zip"]))
+
+    def test_windows_reserved_name_neighbours_remain_valid(self):
+        names = ("COM0.txt", "COM10.txt", "LPT0", "LPT10", "console.zip")
+        for name in names:
+            with self.subTest(name=name):
+                self.assertEqual(
+                    core_releaselib.render_release_assets(
+                        [name], "0.31", "preview-0.31"),
+                    [name],
+                )
+
+    def test_exact_inventory_rejects_missing_extra_empty_directory_and_symlink(self):
+        names = ["one.zip", "two.zip"]
+        with tempfile.TemporaryDirectory() as root:
+            output_dir = os.path.join(root, "assets")
+            os.mkdir(output_dir)
+            with open(os.path.join(output_dir, "one.zip"), "wb") as handle:
+                handle.write(b"one")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+            with open(os.path.join(output_dir, "two.zip"), "wb") as handle:
+                handle.write(b"two")
+            with open(os.path.join(output_dir, "extra.zip"), "wb") as handle:
+                handle.write(b"extra")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+            os.remove(os.path.join(output_dir, "extra.zip"))
+
+            with open(os.path.join(output_dir, "two.zip"), "wb"):
+                pass
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+            os.remove(os.path.join(output_dir, "two.zip"))
+            os.mkdir(os.path.join(output_dir, "two.zip"))
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+            os.rmdir(os.path.join(output_dir, "two.zip"))
+            try:
+                os.symlink(os.path.join(output_dir, "one.zip"),
+                           os.path.join(output_dir, "two.zip"))
+            except (OSError, NotImplementedError):
+                self.skipTest("symlink creation unavailable on this host")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+    def test_inventory_rejects_a_symlinked_output_directory(self):
+        with tempfile.TemporaryDirectory() as root:
+            real_dir = os.path.join(root, "real")
+            link_dir = os.path.join(root, "link")
+            os.mkdir(real_dir)
+            with open(os.path.join(real_dir, "asset.zip"), "wb") as handle:
+                handle.write(b"asset")
+            try:
+                os.symlink(real_dir, link_dir, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("directory symlink creation unavailable on this host")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(
+                    link_dir, ["asset.zip"]))
+
+    def test_cli_renders_and_prints_only_a_verified_inventory(self):
+        rendered = io.StringIO()
+        with contextlib.redirect_stdout(rendered):
+            rc = core_releaselib.main([
+                "render-release-assets", "0.31", "preview-0.31",
+                *self._ASSETS,
+            ])
+        self.assertEqual(rc, 0)
+        names = rendered.getvalue().splitlines()
+        self.assertEqual(len(names), 6)
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name in names:
+                with open(os.path.join(output_dir, name), "wb") as handle:
+                    handle.write(b"asset")
+            verified = io.StringIO()
+            with contextlib.redirect_stdout(verified):
+                rc = core_releaselib.main([
+                    "verify-release-assets", output_dir, *names,
+                ])
+            self.assertEqual(rc, 0)
+            self.assertEqual(
+                verified.getvalue().splitlines(),
+                [os.path.join(os.path.abspath(output_dir), name)
+                 for name in names])
+
+            with open(os.path.join(output_dir, "undeclared.txt"), "wb") as handle:
+                handle.write(b"extra")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(core_releaselib.main([
+                    "verify-release-assets", output_dir, *names,
+                ]), 1)
+
+    def test_cli_invalid_or_duplicate_templates_exit_2_without_stdout(self):
+        cases = (
+            ["render-release-assets", "0.31", "preview-0.31",
+             "asset-{unknown}.zip"],
+            ["render-release-assets", "0.31", "preview-0.31",
+             "same-{version}.zip", "same-0.31.zip"],
+        )
+        for argv in cases:
+            with self.subTest(argv=argv):
+                out, err = io.StringIO(), io.StringIO()
+                with contextlib.redirect_stdout(out), \
+                        contextlib.redirect_stderr(err):
+                    rc = core_releaselib.main(argv)
+                self.assertEqual(rc, 2, err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+
+    def test_cli_invalid_or_duplicate_asset_names_exit_2_without_stdout(self):
+        cases = (
+            ["../escape.zip"],
+            ["same.zip", "same.zip"],
+        )
+        with tempfile.TemporaryDirectory() as output_dir:
+            for names in cases:
+                with self.subTest(names=names):
+                    out, err = io.StringIO(), io.StringIO()
+                    with contextlib.redirect_stdout(out), \
+                            contextlib.redirect_stderr(err):
+                        rc = core_releaselib.main([
+                            "verify-release-assets", output_dir, *names,
+                        ])
+                    self.assertEqual(rc, 2, err.getvalue())
+                    self.assertEqual(out.getvalue(), "")
+
+    def test_show_row_exposes_asset_fields_only_through_explicit_queries(self):
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            path = os.path.join(root, ".codearbiter", "release-targets.md")
+            with open(path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(self._declaration())
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}):
+                build = io.StringIO()
+                assets = io.StringIO()
+                legacy = io.StringIO()
+                with contextlib.redirect_stdout(build):
+                    self.assertEqual(core_releaselib.main([
+                        "show-row", "preview", "--field", "release-build",
+                    ]), 0)
+                with contextlib.redirect_stdout(assets):
+                    self.assertEqual(core_releaselib.main([
+                        "show-row", "preview", "--field", "release-assets",
+                    ]), 0)
+                with contextlib.redirect_stdout(legacy):
+                    self.assertEqual(core_releaselib.main([
+                        "show-row", "preview",
+                    ]), 0)
+        self.assertEqual(build.getvalue(), "python scripts/build.py\n")
+        self.assertEqual(assets.getvalue().strip().split(","), list(self._ASSETS))
+        self.assertNotIn("RELEASE_BUILD", legacy.getvalue())
+        self.assertNotIn("RELEASE_ASSETS", legacy.getvalue())
+
+
+class ReleaseSurfaceTest(unittest.TestCase):
+    """AC-08 + security boundary: the release surface uses the new policy."""
+
+    @classmethod
+    def setUpClass(cls):
+        def read(*parts):
+            with open(os.path.join(REPO_ROOT, *parts), encoding="utf-8") as fh:
+                return fh.read()
+
+        cls.skill = read("core", "surface", "skills", "release", "SKILL.md")
+        cls.command = read("core", "surface", "commands", "release.md")
+        cls.index = read("core", "surface", "skills", "INDEX.md")
+        cls.security = read(".codearbiter", "security-controls.md")
+        cls.plan = read(".codearbiter", "plans", "preview-release-contract.md")
+
+    def test_skill_reads_every_new_field_mechanically(self):
+        for variable, field in (
+                ("VERSION_POLICY", "version-policy"),
+                ("INITIAL_VERSION", "initial-version"),
+                ("RELEASE_BUILD", "release-build"),
+                ("RELEASE_ASSETS", "release-assets")):
+            self.assertIn(
+                f'{variable}=$("$PY" "{{{{PLUGIN_ROOT}}}}/hooks/_releaselib.py" '
+                f'show-row $TARGET --field {field})',
+                self.skill)
+        self.assertIn('VERSION_POLICY=${VERSION_POLICY:-semver}', self.skill)
+
+    def test_version_and_changelog_routes_are_policy_aware(self):
+        for command in (
+                "last-tag-for-policy", "derive-version", "version-greater",
+                "notes-match", "changelog-section"):
+            self.assertIn(command, self.skill)
+        self.assertIn('"$VERSION_POLICY" "$INITIAL_VERSION"', self.skill)
+        self.assertNotIn(
+            'VERSION=$("$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
+            'apply-bump', self.skill)
+
+    def test_preflight_clean_tree_probe_is_target_aware(self):
+        self.assertIn(
+            '"$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
+            'clean-tree-status "$TARGET"', self.skill)
+        self.assertIn("only when that path is disjoint", self.skill)
+        self.assertNotIn(
+            "git status --porcelain -- :/ "
+            "':(exclude,top).codearbiter/gate-events.log'",
+            self.skill)
+        self.assertGreaterEqual(self.skill.count("clean-tree-status"), 6)
+
+    def test_asset_build_runs_after_release_checks_with_clean_tree_guards(self):
+        checks = self.skill.index("run-pre-tag $TARGET")
+        build = self.skill.index('eval "$RELEASE_BUILD"')
+        tag = self.skill.index("git tag -a ${TAG_PREFIX}${VERSION}")
+        self.assertLess(checks, build)
+        self.assertLess(build, tag)
+        self.assertIn("RELEASE_ASSET_DIR=$(mktemp -d)", self.skill)
+        self.assertIn("export VERSION RELEASE_TAG RELEASE_ASSET_DIR", self.skill)
+        self.assertIn("render-release-assets", self.skill)
+        self.assertIn("verify-release-assets", self.skill)
+        build_section = self.skill[build - 2500:build + 2500]
+        self.assertGreaterEqual(build_section.count(
+            'clean-tree-status "$TARGET"'), 2)
+        self.assertIn("tracked tree", build_section)
+
+    def test_publication_uploads_verified_paths_and_checks_remote_names(self):
+        phase3 = self.skill[self.skill.index("## Phase 3") :]
+        self.assertIn("RELEASE_ASSET_PATHS_FILE", phase3)
+        self.assertIn('while IFS= read -r asset', phase3)
+        self.assertIn('set -- "$@" "$asset"', phase3)
+        self.assertIn('"$@"', phase3)
+        self.assertIn("--json url,isDraft,tagName,assets", phase3)
+        self.assertIn(".assets[].name", phase3)
+        self.assertIn("cmp -s", phase3)
+        self.assertIn("exactly the declared asset names", phase3)
+
+    def test_dry_run_never_executes_the_release_build(self):
+        dry_run = self.skill[
+            self.skill.index("## Dry run") : self.skill.index("## Phase 2")]
+        self.assertIn("$RELEASE_BUILD", dry_run)
+        self.assertIn("listed", dry_run)
+        self.assertIn("never executed", dry_run)
+
+    def test_command_index_and_security_boundary_describe_the_capability(self):
+        self.assertIn("declared version policy", self.command)
+        self.assertIn("exact release-asset inventory", self.command)
+        self.assertIn("version-policy", self.index)
+        self.assertIn("release-build", self.index)
+        self.assertIn("`release-build`", self.security)
+        self.assertIn("clean tracked tree before and after", self.security)
+        t04 = next(line for line in self.plan.splitlines()
+                   if line.startswith("| T-04 |"))
+        self.assertIn("`core/pysrc/releasehash.py`", t04)
+
+    def test_lost_asset_scratch_has_a_same_tag_resume_lane(self):
+        start = self.skill.index("### Asset recovery for `resume_publish`")
+        end = self.skill.index("## Recovering from a bad release")
+        recovery = self.skill[start:end]
+        for token in (
+                "resume_publish", "git rev-parse HEAD", "^{commit}",
+                "check-manifests", "changelog-section", "releasehash.py\" check",
+                "run-pre-tag", 'eval "$RELEASE_BUILD"',
+                "fresh publication authorization"):
+            self.assertIn(token, recovery)
+        self.assertNotIn("derive-version", recovery)
+        self.assertNotIn("git tag -a", recovery)
+        self.assertLess(recovery.index("git rev-parse HEAD"),
+                        recovery.index('eval "$RELEASE_BUILD"'))
+        first_clean = recovery.index('clean-tree-status "$TARGET"')
+        confirmation = recovery.index("releasehash.py\" check")
+        pre_tag = recovery.index("run-pre-tag")
+        second_clean = recovery.index("clean-tree-status", pre_tag)
+        build = recovery.index('eval "$RELEASE_BUILD"')
+        third_clean = recovery.index("clean-tree-status", build)
+        self.assertLess(first_clean, confirmation)
+        self.assertLess(confirmation, pre_tag)
+        self.assertLess(pre_tag, second_clean)
+        self.assertLess(second_clean, build)
+        self.assertLess(build, third_clean)
+        self.assertNotIn("Re-enter Phase 1", self.skill)
+
+    def test_asset_cleanup_occurs_only_after_successful_remote_readback(self):
+        phase3 = self.skill[self.skill.index("## Phase 3") :]
+        readback = phase3.index("--json url,isDraft,tagName,assets")
+        cleanup = phase3.index('rm -rf -- "$RELEASE_ASSET_DIR"')
+        self.assertLess(readback, cleanup)
+        self.assertIn("only after both metadata and inventory read-back pass",
+                      phase3)
+        self.assertIn("preserve the directory and scratch files", phase3)
 
 
 if __name__ == "__main__":

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-# codeArbiter — pre-tag content-hash confirmation (A-2.10).
+# codeArbiter — executable release-command confirmation (A-2.10).
 #
-# A row's `pre-tag` commands are operator-authored shell that `/ca:release`
-# EXECUTES before composing a tag. `.codearbiter/release-targets.md` is
+# A row's `pre-tag` commands and optional `release-build` are operator-authored
+# shell that `/ca:release` EXECUTES before composing a tag.
+# `.codearbiter/release-targets.md` is
 # marker-gated under H-22, so changing those commands already costs a fresh
 # authoring marker — but that gate is about WRITING the file. Nothing made the
 # release lane notice that the commands it is about to run are not the ones
 # anybody last looked at.
 #
-# This closes that: the lane records a hash of a row's pre-tag content when an
-# operator confirms it, and refuses to run silently once that hash changes. A
+# This closes that: the lane records a hash of a row's executable release
+# commands when an operator confirms them, and refuses to run silently once
+# that hash changes. A
 # changed hash is not a block — it is a re-confirmation prompt. Per ADR-0010
 # this is COOPERATIVE-grade: an agent that skips the check is not stopped by
 # the operating system, only by the lane's own discipline. Stated plainly here
@@ -29,15 +31,15 @@
 # file.
 #
 # Public API:
-#   pre_tag_digest(commands) -> str
+#   pre_tag_digest(commands, release_build=None) -> str
 #   confirmation_path(root, target) -> str
 #   read_confirmation(root, target) -> str | None
 #   record_confirmation(root, target, digest) -> str
-#   confirmation_state(root, target, commands) -> str
+#   confirmation_state(root, target, commands, release_build=None) -> str
 #   main(argv) -> int
 #
 # CLI:
-#   releasehash.py digest <target>    print the current pre-tag digest
+#   releasehash.py digest <target>    print the executable-command digest
 #   releasehash.py check <target>     exit 0 confirmed, 1 changed, 2 never
 #                                     confirmed, 3/4 declared-file states
 #   releasehash.py record <target>    mint the confirmation (the sanctioned
@@ -63,8 +65,8 @@ NEVER = "never-confirmed"
 NO_COMMANDS = "no-commands"
 
 
-def pre_tag_digest(commands):
-    """A stable digest of a row's `pre-tag` command list.
+def pre_tag_digest(commands, release_build=None):
+    """A stable digest of a row's executable release command inputs.
 
     ORDER-SENSITIVE on purpose. The commands run in declared order and a
     reordering can change what a release checks — a check that ran after a
@@ -76,9 +78,13 @@ def pre_tag_digest(commands):
     change to this construction cannot be mistaken for a content change
     by an old recorded value.
 
-    Pure and non-raising: a non-list, or a list with non-string members,
-    degrades to the digest of an empty list rather than raising inside a
-    release lane.
+    Rows without `release-build` deliberately retain the exact v1 digest and
+    marker identity, so existing confirmations do not churn. A present build
+    command is appended with a typed, length-prefixed record, so changing only
+    that command invalidates the same per-target confirmation marker.
+
+    Pure and non-raising: malformed values degrade conservatively to their
+    absent forms rather than raising inside a release lane.
     """
     if not isinstance(commands, (list, tuple)):
         commands = []
@@ -87,6 +93,8 @@ def pre_tag_digest(commands):
         if not isinstance(command, str):
             continue
         parts.append(f"{len(command)}:{command}")
+    if isinstance(release_build, str) and release_build:
+        parts.append(f"release-build:{len(release_build)}:{release_build}")
     joined = "\n".join(parts)
     return hashlib.sha256(joined.encode("utf-8")).hexdigest()
 
@@ -141,30 +149,32 @@ def record_confirmation(root, target, digest):
     return path
 
 
-def confirmation_state(root, target, commands):
+def confirmation_state(root, target, commands, release_build=None):
     """One of `confirmed` / `changed` / `never-confirmed` / `no-commands`.
 
     `no-commands` is deliberately distinct from `confirmed`: a row that
-    declares no pre-tag commands has nothing to confirm, and reporting it
-    as confirmed would claim an operator approved something that does not
-    exist. The lane treats both as "proceed", but only one of them is a
-    statement about human review.
+    declares neither pre-tag commands nor release-build has nothing to
+    confirm, and reporting it as confirmed would claim an operator approved
+    something that does not exist. A release-build-only row still requires
+    confirmation. The lane treats `no-commands` and `confirmed` as
+    "proceed", but only one of them is a statement about human review.
     """
-    if not commands:
+    if not commands and not release_build:
         return NO_COMMANDS
     recorded = read_confirmation(root, target)
     if recorded is None:
         return NEVER
-    return CONFIRMED if recorded == pre_tag_digest(commands) else CHANGED
+    return (CONFIRMED if recorded == pre_tag_digest(commands, release_build)
+            else CHANGED)
 
 
-def _row_commands(target, targets_path=None):
+def _row_executable_inputs(target, targets_path=None):
     path = targets_path or _releaselib.default_targets_path()
     rows = _releaselib.load_targets(path)
     row = next((r for r in rows if r["target"] == target), None)
     if row is None:
         return None
-    return row.get("pre_tag") or []
+    return row.get("pre_tag") or [], row.get("release_build")
 
 
 def main(argv=None):
@@ -177,38 +187,42 @@ def main(argv=None):
     root = os.path.dirname(os.path.dirname(_releaselib.default_targets_path()))
 
     try:
-        commands = _row_commands(target)
+        executable_inputs = _row_executable_inputs(target)
     except _releaselib.ReleaseTargetsError as error:
         sys.stderr.write(f"{type(error).__name__}: {error}\n")
         return _releaselib._targets_error_exit_code(error)
-    if commands is None:
+    if executable_inputs is None:
         sys.stderr.write(f"unknown release target: {target}\n")
         return 2
+    commands, release_build = executable_inputs
 
     if command == "digest":
-        print(pre_tag_digest(commands))
+        print(pre_tag_digest(commands, release_build))
         return 0
 
     if command == "record":
-        path = record_confirmation(root, target, pre_tag_digest(commands))
-        print(f"recorded pre-tag confirmation for {target}: {path}")
+        path = record_confirmation(
+            root, target, pre_tag_digest(commands, release_build))
+        print(f"recorded executable-command confirmation for {target}: {path}")
         return 0
 
-    state = confirmation_state(root, target, commands)
+    state = confirmation_state(root, target, commands, release_build)
     print(state)
     if state in (CONFIRMED, NO_COMMANDS):
         return 0
     if state == CHANGED:
         sys.stderr.write(
-            f"releasehash: {target}'s pre-tag commands have CHANGED since they "
-            "were last confirmed. Read them, and re-confirm with "
+            f"releasehash: {target}'s executable release commands have CHANGED "
+            "since they were last confirmed. Read every pre-tag and release-build "
+            "command, and re-confirm with "
             f"`releasehash.py record {target}` before releasing. These commands "
             "are executed by the release lane, so a change nobody has read is "
             "the case this check exists for.\n")
         return 1
     sys.stderr.write(
-        f"releasehash: {target}'s pre-tag commands have never been confirmed. "
-        f"Read them, then run `releasehash.py record {target}`.\n")
+        f"releasehash: {target}'s executable release commands have never been "
+        f"confirmed. Read every pre-tag and release-build command, then run "
+        f"`releasehash.py record {target}`.\n")
     return 2
 
 

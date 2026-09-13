@@ -742,13 +742,12 @@ _GLOB_DIR_REF_RE = re.compile(
 # each and never shrink, so pick a floor inside BOTH bounds against the
 # post-migration total, not just the pre-migration one.
 #
-# Lowered by T-41a-d (issue #563): the Targets table -> loader rewrite
-# removed the bulk of the previously-extracted literals (measured live total
-# post-rewrite: 14, across all five payloads — 4 for `ca`, 1 each for the
-# two stubs, 4 each for the `ca-codex`/`ca-pi` routines copies). 12 sits
-# inside both bounds (14 >= 12, and 12 >= 14 // 2 = 7) with a small margin
-# rather than pinning the floor to the exact live count.
-_EXTRACTION_FLOOR = 12
+# The declarative version-policy and release-asset extension added portable
+# path references to each full payload. Keep the floor above half the current
+# post-pathspec-exclusion total so a future extractor regression cannot hide
+# behind the old post-T-41 value while still leaving room for legitimate
+# reference removal.
+_EXTRACTION_FLOOR = 14
 _STABLE_ANCHOR_REF = "${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"
 
 # T-73b payload list — one entry per shipped copy of the release skill.
@@ -812,6 +811,7 @@ def _load_host_tokens():
 
 _FENCED_CODE_BLOCK_RE = re.compile(r'```.*?```', re.DOTALL)
 _MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+_GIT_PATHSPEC_RE = re.compile(r"':\([^)]*\)[^']*'")
 
 
 def _extract_refs(skill_text):
@@ -848,6 +848,11 @@ def _extract_refs(skill_text):
         # Only the destination is a path; the human-readable label may look
         # like a repo-relative path but is never resolved by the host.
         span = _MARKDOWN_LINK_RE.sub(lambda match: match.group(1), span)
+        # Git pathspec magic is a consumer-repository selection expression,
+        # not a path that the skill reads or executes.  Without removing the
+        # quoted expression first, the general matcher starts after the `)`
+        # and misclassifies its `.codearbiter/...` tail as a bare file ref.
+        span = _GIT_PATHSPEC_RE.sub("", span)
         refs.update(_PATH_REF_RE.findall(span))
         refs.update(_GLOB_DIR_REF_RE.findall(span))
     return refs
@@ -1097,6 +1102,25 @@ class ResolverUnitTest(unittest.TestCase):
         self.assertEqual(
             _extract_refs('`"$PY" "[hooks/releasehash.py](../../hooks/releasehash.py)"`'),
             {"../../hooks/releasehash.py"},
+        )
+
+    def test_git_pathspec_magic_is_not_a_file_reference(self):
+        self.assertEqual(
+            _extract_refs(
+                "`git status --porcelain -- :/ "
+                "':(exclude,top).codearbiter/gate-events.log'`"
+            ),
+            set(),
+        )
+
+    def test_git_pathspec_magic_preserves_adjacent_real_reference(self):
+        self.assertEqual(
+            _extract_refs(
+                "`git status --porcelain -- "
+                "':(exclude,top).codearbiter/gate-events.log'; "
+                f"read {_STABLE_ANCHOR_REF}`"
+            ),
+            {_STABLE_ANCHOR_REF},
         )
 
     def test_relative_markdown_resource_link_resolves_inside_its_package(self):
@@ -1430,7 +1454,7 @@ _INVOCATION_SHAPE_RE = re.compile(
 # driver to itself.
 _LANE_INVOCATION_ANCHORS = (
     ("target_resolution_tag_prefix", "never typed from memory:", "run"),
-    ("window_last_tag", "never a hand-rolled grep:", "run"),
+    ("window_last_tag", "Resolve it through the tested helper:", "run"),
     ("window_scope_bare", "the commit set is", "run"),
     ("window_scope_full_log", "Read every commit in the", "run"),
     # Re-anchored from the former "Tag with": Phase 2 step 1 was reordered
@@ -1820,7 +1844,8 @@ class _LaneFixture:
 
 def _execute_lane_sequence(skill_text, core_lane, consumer_root,
                             target="app", payload=".",
-                            manifests=("package.json",)):
+                            manifests=("package.json",),
+                            version_policy="semver", initial_version=""):
     """Extract, classify, and execute the lane driver's six anchored
     invocations against `consumer_root`, returning a dict of every
     intermediate and derived value both T-74 and T-75 assert against.
@@ -1864,7 +1889,10 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
 
     _, last_tag, proc = _run_command_substitution(
         result["invocations"]["window_last_tag"], consumer_root,
-        {**root_mapping, "$TAG_PREFIX": tag_prefix})
+        {**root_mapping,
+         "$TAG_PREFIX": tag_prefix,
+         "$VERSION_POLICY": version_policy,
+         "$INITIAL_VERSION": initial_version})
     result["processes"]["window_last_tag"] = proc
     result["last_tag_lib"] = last_tag
     result["last_tag_oracle"] = _independent_last_tag(tags, tag_prefix)
@@ -1901,9 +1929,14 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     # "0.0.0" — it strips a prefix, it does not interpret the no-tag case.
     # Mapping it to the 0.0.0 baseline is this caller's job, and doing it
     # explicitly keeps a `None` semver_key out of the max() below.
-    tag_floor = core_lane._bare_version(last_tag)
-    if core_lane.semver_key(tag_floor) is None:
-        tag_floor = "0.0.0"
+    tag_floor = core_lane._bare_version(
+        last_tag, version_policy, initial_version or None)
+    version_key = (
+        core_lane.semver_key
+        if version_policy == "semver"
+        else lambda value: core_lane.numeric_sequence_key(value, initial_version))
+    if version_key(tag_floor) is None:
+        tag_floor = initial_version if version_policy == "numeric-sequence" else "0.0.0"
     floors = [tag_floor]
     for manifest_rel in manifests:
         manifest_abs = os.path.join(consumer_root, *manifest_rel.split("/"))
@@ -1912,7 +1945,7 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
                 declared = json.load(fh).get("version")
         except (OSError, ValueError):
             declared = None
-        if isinstance(declared, str) and core_lane.semver_key(declared):
+        if isinstance(declared, str) and version_key(declared):
             floors.append(declared)
     # ONE base — the max of the tag baseline and every declared manifest
     # (HIGH, runs 6 and 7). Run 6 established the manifest half; run 7
@@ -1921,10 +1954,11 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     # floor. The prose now computes `$BASE_VERSION` once and compares
     # against it exactly once; the driver mirrors that rather than keeping
     # a second, separate floor.
-    base = max(floors, key=core_lane.semver_key)
+    base = max(floors, key=version_key)
     result["version_floors"] = floors
     result["version_base"] = base
-    result["next_version"] = _bump_version(base, result["bump"])
+    result["next_version"] = core_lane.derive_version(
+        base, result["bump"], version_policy, initial_version or None)
 
     with open(os.path.join(consumer_root, "CHANGELOG.md"), encoding="utf-8") as fh:
         existing_changelog = fh.read()
@@ -2328,6 +2362,82 @@ class ConsumerEndToEndTest(unittest.TestCase):
             "would strip, so the assertions above cannot distinguish "
             "`--cleanup=verbatim` from the default -- the fixture stopped "
             "covering #569 and needs a message with Markdown headings")
+
+
+class NumericSequenceConsumerEndToEndTest(unittest.TestCase):
+    """The shipped lane driver must derive a numeric-sequence release without
+    consulting SemVer arithmetic anywhere in the version flow."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.scratch = tempfile.mkdtemp(prefix="ca-lane-driver-numeric-")
+        try:
+            cls.consumer_root = os.path.join(cls.scratch, "consumer")
+            build_consumer_repo(cls.consumer_root)
+            targets_path = os.path.join(
+                cls.consumer_root, ".codearbiter", "release-targets.md")
+            _write_text(
+                targets_path,
+                "<!-- release-targets -->\n[preview]\n"
+                "prefix: preview-\nmanifest: package.json\n"
+                "changelog: CHANGELOG.md\npayload: .\n"
+                "version-policy: numeric-sequence\ninitial-version: 0.30\n"
+                "<!-- /release-targets -->\n")
+            manifest = os.path.join(cls.consumer_root, "package.json")
+            with open(manifest, encoding="utf-8") as fh:
+                document = json.load(fh)
+            document["version"] = "0.30"
+            _write_text(manifest, json.dumps(document, indent=2) + "\n")
+            for tag in _git(["tag", "-l"], cls.consumer_root).stdout.split():
+                _git(["tag", "-d", tag], cls.consumer_root)
+            _git(["add", "-A"], cls.consumer_root)
+            _git(["commit", "-q", "-m", "chore: declare preview series"],
+                 cls.consumer_root)
+            _git(["tag", "preview-0.30"], cls.consumer_root)
+            _write_text(
+                os.path.join(cls.consumer_root, "numeric-feature.txt"),
+                "released next\n")
+            _git(["add", "numeric-feature.txt"], cls.consumer_root)
+            _git(["commit", "-q", "-m", "feat: advance preview sequence\n\n"
+                  "CHANGELOG: Added numeric release proof."], cls.consumer_root)
+
+            skill_path = os.path.join(
+                _FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.core_lane = _load_mechanism(
+                os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+                "_lane_driver_core_numeric")
+            cls.result = _execute_lane_sequence(
+                cls.skill_text, cls.core_lane, cls.consumer_root,
+                target="preview", version_policy="numeric-sequence",
+                initial_version="0.30")
+        except Exception:
+            _force_rmtree(cls.scratch)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    @staticmethod
+    def _independent_successor(value):
+        parts = value.split(".")
+        if len(parts) < 2 or any(not part.isascii() or not part.isdigit()
+                                 for part in parts):
+            raise AssertionError(f"non-canonical numeric sequence: {value!r}")
+        return ".".join(parts[:-1] + [str(int(parts[-1]) + 1)])
+
+    def test_numeric_policy_selects_its_tag_and_manifest_floor(self):
+        self.assertEqual(self.result["last_tag_lib"], "preview-0.30")
+        self.assertEqual(self.result["version_base"], "0.30")
+        self.assertEqual(self.result["version_floors"], ["0.30", "0.30"])
+
+    def test_numeric_policy_uses_an_independent_successor_oracle(self):
+        expected = self._independent_successor("0.30")
+        self.assertEqual(expected, "0.31")
+        self.assertEqual(self.result["next_version"], expected)
+        self.assertEqual(self.result["tag_name"], "preview-0.31")
 
 
 class NeverTaggedManifestFloorTest(unittest.TestCase):
