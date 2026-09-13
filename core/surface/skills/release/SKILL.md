@@ -138,8 +138,8 @@ Read these, or STOP and surface the gap — never guess:
 
   **This governance layer's own scratch state is exempt, and only that** (HIGH, blind exercise runs 15 and 17). Two paths under `{{PROJECT_DIR}}/.codearbiter/` are written by the layer itself during the very run being checked, and neither is ever part of a release:
 
-  - `gate-events.log` — the hooks append to it on essentially every command, including the commands this lane runs, so a repo-wide check can never pass during an active session and a compliant traversal STOPs on a file the act of checking just wrote.
-  - `.markers/` — step 6c's own stated remedy (`releasehash.py record`) writes a per-machine confirmation marker here. Exempting the log alone made that remedy dirty the tree in a way the Phase 1 gate then refused, blocking a release where nothing was wrong, at the last gate, after the changelog and every manifest had already been written. It is masked in a repo that happens to gitignore the directory and NOT masked in a project that reached this lane through Back-fill — which is precisely the project this lane exists for.
+  - `{{PROJECT_DIR}}/.codearbiter/gate-events.log` — the hooks append to it on essentially every command, including the commands this lane runs, so a repo-wide check can never pass during an active session and a compliant traversal STOPs on a file the act of checking just wrote.
+  - `{{PROJECT_DIR}}/.codearbiter/.markers/` — step 6c's own stated remedy (`releasehash.py record`) writes a per-machine confirmation marker here. Exempting the log alone made that remedy dirty the tree in a way the Phase 1 gate then refused, blocking a release where nothing was wrong, at the last gate, after the changelog and every manifest had already been written. It is masked in a repo that happens to gitignore the directory and NOT masked in a project that reached this lane through Back-fill — which is precisely the project this lane exists for.
 
   ```sh
   git status --porcelain -- :/ ':(exclude,top).codearbiter/gate-events.log' ':(exclude,top).codearbiter/.markers/'

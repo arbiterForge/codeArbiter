@@ -742,13 +742,12 @@ _GLOB_DIR_REF_RE = re.compile(
 # each and never shrink, so pick a floor inside BOTH bounds against the
 # post-migration total, not just the pre-migration one.
 #
-# Lowered by T-41a-d (issue #563): the Targets table -> loader rewrite
-# removed the bulk of the previously-extracted literals (measured live total
-# post-rewrite: 14, across all five payloads — 4 for `ca`, 1 each for the
-# two stubs, 4 each for the `ca-codex`/`ca-pi` routines copies). 12 sits
-# inside both bounds (14 >= 12, and 12 >= 14 // 2 = 7) with a small margin
-# rather than pinning the floor to the exact live count.
-_EXTRACTION_FLOOR = 12
+# The declarative version-policy and release-asset extension added portable
+# path references to each full payload. Keep the floor above half the current
+# post-pathspec-exclusion total so a future extractor regression cannot hide
+# behind the old post-T-41 value while still leaving room for legitimate
+# reference removal.
+_EXTRACTION_FLOOR = 14
 _STABLE_ANCHOR_REF = "${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"
 
 # T-73b payload list — one entry per shipped copy of the release skill.
@@ -812,6 +811,7 @@ def _load_host_tokens():
 
 _FENCED_CODE_BLOCK_RE = re.compile(r'```.*?```', re.DOTALL)
 _MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+_GIT_PATHSPEC_RE = re.compile(r"':\([^)]*\)[^']*'")
 
 
 def _extract_refs(skill_text):
@@ -848,6 +848,11 @@ def _extract_refs(skill_text):
         # Only the destination is a path; the human-readable label may look
         # like a repo-relative path but is never resolved by the host.
         span = _MARKDOWN_LINK_RE.sub(lambda match: match.group(1), span)
+        # Git pathspec magic is a consumer-repository selection expression,
+        # not a path that the skill reads or executes.  Without removing the
+        # quoted expression first, the general matcher starts after the `)`
+        # and misclassifies its `.codearbiter/...` tail as a bare file ref.
+        span = _GIT_PATHSPEC_RE.sub("", span)
         refs.update(_PATH_REF_RE.findall(span))
         refs.update(_GLOB_DIR_REF_RE.findall(span))
     return refs
@@ -1097,6 +1102,25 @@ class ResolverUnitTest(unittest.TestCase):
         self.assertEqual(
             _extract_refs('`"$PY" "[hooks/releasehash.py](../../hooks/releasehash.py)"`'),
             {"../../hooks/releasehash.py"},
+        )
+
+    def test_git_pathspec_magic_is_not_a_file_reference(self):
+        self.assertEqual(
+            _extract_refs(
+                "`git status --porcelain -- :/ "
+                "':(exclude,top).codearbiter/gate-events.log'`"
+            ),
+            set(),
+        )
+
+    def test_git_pathspec_magic_preserves_adjacent_real_reference(self):
+        self.assertEqual(
+            _extract_refs(
+                "`git status --porcelain -- "
+                "':(exclude,top).codearbiter/gate-events.log'; "
+                f"read {_STABLE_ANCHOR_REF}`"
+            ),
+            {_STABLE_ANCHOR_REF},
         )
 
     def test_relative_markdown_resource_link_resolves_inside_its_package(self):
@@ -1430,7 +1454,7 @@ _INVOCATION_SHAPE_RE = re.compile(
 # driver to itself.
 _LANE_INVOCATION_ANCHORS = (
     ("target_resolution_tag_prefix", "never typed from memory:", "run"),
-    ("window_last_tag", "never a hand-rolled grep:", "run"),
+    ("window_last_tag", "Resolve it through the tested helper:", "run"),
     ("window_scope_bare", "the commit set is", "run"),
     ("window_scope_full_log", "Read every commit in the", "run"),
     # Re-anchored from the former "Tag with": Phase 2 step 1 was reordered
@@ -1820,7 +1844,8 @@ class _LaneFixture:
 
 def _execute_lane_sequence(skill_text, core_lane, consumer_root,
                             target="app", payload=".",
-                            manifests=("package.json",)):
+                            manifests=("package.json",),
+                            version_policy="semver", initial_version=""):
     """Extract, classify, and execute the lane driver's six anchored
     invocations against `consumer_root`, returning a dict of every
     intermediate and derived value both T-74 and T-75 assert against.
@@ -1864,7 +1889,10 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
 
     _, last_tag, proc = _run_command_substitution(
         result["invocations"]["window_last_tag"], consumer_root,
-        {**root_mapping, "$TAG_PREFIX": tag_prefix})
+        {**root_mapping,
+         "$TAG_PREFIX": tag_prefix,
+         "$VERSION_POLICY": version_policy,
+         "$INITIAL_VERSION": initial_version})
     result["processes"]["window_last_tag"] = proc
     result["last_tag_lib"] = last_tag
     result["last_tag_oracle"] = _independent_last_tag(tags, tag_prefix)
