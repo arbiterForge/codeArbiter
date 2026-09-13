@@ -303,12 +303,20 @@ _PLAIN_SEMVER_CAPTURE_PATTERN = (
 _RELEASE_ASSET_TEMPLATE_RE = re.compile(
     r"^(?:[A-Za-z0-9._+-]|\{version\}|\{tag\})+$")
 _RELEASE_ASSET_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]*$")
+_WINDOWS_RESERVED_ASSET_BASENAMES = frozenset(
+    {"con", "prn", "aux", "nul"}
+    | {f"com{index}" for index in range(1, 10)}
+    | {f"lpt{index}" for index in range(1, 10)})
 
 
 def _safe_release_asset_name(value):
     """True only for one flat, shell-inert release filename."""
-    return (isinstance(value, str)
-            and _RELEASE_ASSET_NAME_RE.fullmatch(value) is not None)
+    if (not isinstance(value, str)
+            or _RELEASE_ASSET_NAME_RE.fullmatch(value) is None
+            or value.endswith(".")):
+        return False
+    basename = value.split(".", 1)[0].casefold()
+    return basename not in _WINDOWS_RESERVED_ASSET_BASENAMES
 
 
 def render_release_assets(templates, version, tag):
@@ -328,9 +336,10 @@ def render_release_assets(templates, version, tag):
                 or _RELEASE_ASSET_TEMPLATE_RE.fullmatch(template) is None):
             return None
         name = template.replace("{version}", version).replace("{tag}", tag)
-        if not _safe_release_asset_name(name) or name in seen:
+        identity = name.casefold()
+        if not _safe_release_asset_name(name) or identity in seen:
             return None
-        seen.add(name)
+        seen.add(identity)
         rendered.append(name)
     return rendered
 
@@ -346,8 +355,11 @@ def verify_release_asset_inventory(directory, asset_names):
             or not isinstance(asset_names, (list, tuple)) or not asset_names):
         return None
     names = list(asset_names)
+    identities = [name.casefold() for name in names
+                  if isinstance(name, str)]
     if (any(not _safe_release_asset_name(name) for name in names)
-            or len(set(names)) != len(names)):
+            or len(identities) != len(names)
+            or len(set(identities)) != len(identities)):
         return None
     root = os.path.abspath(os.fspath(directory))
     try:
@@ -356,7 +368,11 @@ def verify_release_asset_inventory(directory, asset_names):
         entries = list(os.scandir(root))
     except OSError:
         return None
-    if {entry.name for entry in entries} != set(names):
+    entry_names = [entry.name for entry in entries]
+    entry_identities = [name.casefold() for name in entry_names]
+    if (len(set(entry_identities)) != len(entry_identities)
+            or set(entry_identities) != set(identities)
+            or set(entry_names) != set(names)):
         return None
     by_name = {entry.name: entry for entry in entries}
     try:
@@ -2543,7 +2559,7 @@ def main(argv):
             if wanted not in by_key:
                 sys.stderr.write(
                     f"unknown field {field!r}; declared fields are: "
-                    + ", ".join(key for _n, key in fields) + "\n")
+                    + ", ".join(key for _n, key in query_fields) + "\n")
                 return 2
             print(_flatten(row.get(wanted)))
             return 0

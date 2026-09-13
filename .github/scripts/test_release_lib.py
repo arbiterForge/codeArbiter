@@ -4353,6 +4353,10 @@ class CoreCLITest(unittest.TestCase):
         out = self._run_core("show-row", "ca", "--field", "nope")
         self.assertEqual(out.returncode, 2)
         self.assertIn("unknown field", out.stderr)
+        for field in ("version_policy", "initial_version",
+                      "release_build", "release_assets"):
+            with self.subTest(field=field):
+                self.assertIn(field, out.stderr)
 
     def test_show_row_rejects_an_unknown_target(self):
         out = self._run_core("show-row", "not-a-target")
@@ -6701,6 +6705,11 @@ class ReleaseAssetContractTest(unittest.TestCase):
             ["asset-{version!r}.zip"],
             [""],
             ["same-{version}.zip", "same-0.31.zip"],
+            ["asset-{version}.zip", "ASSET-{version}.ZIP"],
+            ["asset-{version}."],
+            ["CON.zip"],
+            ["AUX.txt"],
+            ["Lpt9.txt"],
         )
         for templates in unsafe_sets:
             with self.subTest(templates=templates):
@@ -6740,6 +6749,40 @@ class ReleaseAssetContractTest(unittest.TestCase):
             self.assertEqual(
                 core_releaselib.verify_release_asset_inventory(
                     output_dir, names), expected)
+
+    def test_inventory_rejects_windows_equivalent_declared_names(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            invalid_declarations = (
+                ["asset.zip", "ASSET.ZIP"],
+                ["asset."],
+                ["CON.zip"],
+                ["aux"],
+                ["com1.txt"],
+                ["LPT9"],
+            )
+            with mock.patch.object(core_releaselib.os, "scandir") as scandir:
+                for names in invalid_declarations:
+                    with self.subTest(names=names):
+                        self.assertIsNone(
+                            core_releaselib.verify_release_asset_inventory(
+                                output_dir, names))
+                scandir.assert_not_called()
+
+            with open(os.path.join(output_dir, "ASSET.ZIP"), "wb") as handle:
+                handle.write(b"asset")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(
+                    output_dir, ["asset.zip"]))
+
+    def test_windows_reserved_name_neighbours_remain_valid(self):
+        names = ("COM0.txt", "COM10.txt", "LPT0", "LPT10", "console.zip")
+        for name in names:
+            with self.subTest(name=name):
+                self.assertEqual(
+                    core_releaselib.render_release_assets(
+                        [name], "0.31", "preview-0.31"),
+                    [name],
+                )
 
     def test_exact_inventory_rejects_missing_extra_empty_directory_and_symlink(self):
         names = ["one.zip", "two.zip"]
