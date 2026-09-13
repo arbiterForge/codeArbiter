@@ -1896,6 +1896,73 @@ class NumericSequenceParserTest(unittest.TestCase):
         with self.assertRaises(core_releaselib.MalformedBlockError):
             self._parse("version-policy: semver\ninitial-version: 1.2.3\n")
 
+    def test_scratch_exclusions_cover_every_declared_surface_field(self):
+        scalar_fields = ("changelog", "provenance_manifest")
+        list_fields = ("manifest", "generated_manifest", "artifacts",
+                       "release_assets")
+        scratches = (
+            ".codearbiter/gate-events.log",
+            ".codearbiter/.markers",
+        )
+        for scratch in scratches:
+            for field in scalar_fields + list_fields:
+                with self.subTest(scratch=scratch, field=field):
+                    row = core_releaselib._new_row("app")
+                    row["payload"] = "src/"
+                    value = scratch + ("/receipt" if scratch.endswith(".markers") else "")
+                    row[field] = value if field in scalar_fields else [value]
+                    self.assertNotIn(
+                        scratch,
+                        core_releaselib.governance_scratch_exclusions(row))
+
+    def test_scratch_overlap_is_casefolded_and_globs_fail_closed(self):
+        for payload in (
+                ".CODEARBITER", ".codearbiter/*", ":(top).codearbiter",
+                ".codearbiter/gate-events.log src/"):
+            with self.subTest(payload=payload):
+                row = core_releaselib._new_row("app")
+                row["payload"] = payload
+                self.assertEqual(
+                    core_releaselib.governance_scratch_exclusions(row), [])
+
+        row = core_releaselib._new_row("app")
+        row["payload"] = "src/"
+        row["manifest"] = [".codearbiter./gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row), [])
+
+        row["manifest"] = [".codearbiter/GATE-E~1.LOG"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row), [])
+
+    def test_payload_exclude_subtracts_payload_but_direct_surfaces_win(self):
+        row = core_releaselib._new_row("app")
+        row["payload"] = "."
+        row["payload_exclude"] = [".CODEARBITER/"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/gate-events.log", ".codearbiter/.markers"])
+
+        row["payload_exclude"] = [".codearbiter/gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/gate-events.log"])
+
+        for exclusion in (
+                ".codearbiter/*", ":(top).codearbiter",
+                ".codearbiter/gate-events.log src/", ".codearbiter./",
+                ".codearbiter/gate-events.log.bak"):
+            with self.subTest(exclusion=exclusion):
+                row["payload_exclude"] = [exclusion]
+                self.assertEqual(
+                    core_releaselib.governance_scratch_exclusions(row), [])
+
+        row["payload_exclude"] = [".codearbiter/"]
+        row["manifest"] = [".CODEARBITER/gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/.markers"])
+
 
 class NumericSequenceVersionPolicyTest(unittest.TestCase):
     """AC-01/02/04/10: generic fixed-shape sequencing and SemVer parity."""
@@ -3837,6 +3904,12 @@ class CoreCLITest(unittest.TestCase):
             [sys.executable, _CORE_RELEASELIB_PATH, "run-pre-tag", "app"],
             cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
 
+    def _run_clean_tree_status(self, root):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root, PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "clean-tree-status", "app"],
+            cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+
     def test_run_pre_tag_tolerates_the_release_edits_that_precede_it(self):
         # HIGH, run 9: the assertion used to be "the tree is pristine",
         # which BLOCKED EVERY RELEASE -- Phase 1 rolls the changelog and
@@ -4754,7 +4827,7 @@ class CoreCLITest(unittest.TestCase):
             self.assertIn("1.1.0", proc.stdout)
 
     # ---- #584 MEDIUM-1: the tree-state probe exempts the audit scratch ----
-    def _pretag_repo_with_gate_log(self, tmp, commands):
+    def _pretag_repo_with_gate_log(self, tmp, commands, payload="src/"):
         """Like `_pretag_repo`, but with `.codearbiter/gate-events.log`
         created and COMMITTED up front, so a declared command that appends
         to it mid-window is appending to a TRACKED file -- the shape the
@@ -4769,7 +4842,7 @@ class CoreCLITest(unittest.TestCase):
             fh.write("existing-line\n")
         with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
             fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
-                     "changelog: CHANGELOG.md\npayload: .\n"
+                     f"changelog: CHANGELOG.md\npayload: {payload}\n"
                      + "".join(f"pre-tag: {c}\n" for c in commands)
                      + "<!-- /release-targets -->\n")
         env = dict(os.environ,
@@ -4806,6 +4879,57 @@ class CoreCLITest(unittest.TestCase):
             root = self._pretag_repo_with_gate_log(tmp, [appender])
             proc = self._run_pre_tag(root)
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_run_pre_tag_does_not_exempt_a_declared_payload_surface(self):
+        appender = (f'"{sys.executable}" -c '
+                    '"open(\'.codearbiter/gate-events.log\',\'a\')'
+                    '.write(chr(10))"')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo_with_gate_log(
+                tmp, [appender], payload=".")
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 6, proc.stdout + proc.stderr)
+            self.assertIn(".codearbiter/gate-events.log", proc.stderr)
+
+    def test_clean_tree_status_applies_the_same_target_aware_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            unrelated = self._pretag_repo_with_gate_log(tmp, [], payload="src/")
+            with open(os.path.join(unrelated, ".codearbiter", "gate-events.log"),
+                      "a") as fh:
+                fh.write("scratch\n")
+            excluded = self._run_clean_tree_status(unrelated)
+            self.assertEqual(excluded.returncode, 0, excluded.stderr)
+            self.assertEqual(excluded.stdout, "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._pretag_repo_with_gate_log(tmp, [], payload=".")
+            with open(os.path.join(declared, ".codearbiter", "gate-events.log"),
+                      "a") as fh:
+                fh.write("release-surface\n")
+            visible = self._run_clean_tree_status(declared)
+            self.assertEqual(visible.returncode, 0, visible.stderr)
+            self.assertIn(".codearbiter/gate-events.log", visible.stdout)
+
+    def test_clean_tree_status_applies_target_aware_marker_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            unrelated = self._pretag_repo_with_gate_log(tmp, [], payload="src/")
+            markers = os.path.join(unrelated, ".codearbiter", ".markers")
+            os.makedirs(markers)
+            with open(os.path.join(markers, "proof"), "w") as fh:
+                fh.write("scratch\n")
+            excluded = self._run_clean_tree_status(unrelated)
+            self.assertEqual(excluded.returncode, 0, excluded.stderr)
+            self.assertEqual(excluded.stdout, "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._pretag_repo_with_gate_log(tmp, [], payload=".")
+            markers = os.path.join(declared, ".codearbiter", ".markers")
+            os.makedirs(markers)
+            with open(os.path.join(markers, "proof"), "w") as fh:
+                fh.write("release-surface\n")
+            visible = self._run_clean_tree_status(declared)
+            self.assertEqual(visible.returncode, 0, visible.stderr)
+            self.assertIn(".codearbiter/.markers/", visible.stdout)
 
     # ---- #583 MEDIUM-2 / #584 MEDIUM-3: PY exported to declared commands ----
     def test_run_pre_tag_exports_PY_to_declared_commands(self):
@@ -6967,6 +7091,17 @@ class ReleaseSurfaceTest(unittest.TestCase):
             'VERSION=$("$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
             'apply-bump', self.skill)
 
+    def test_preflight_clean_tree_probe_is_target_aware(self):
+        self.assertIn(
+            '"$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
+            'clean-tree-status "$TARGET"', self.skill)
+        self.assertIn("only when that path is disjoint", self.skill)
+        self.assertNotIn(
+            "git status --porcelain -- :/ "
+            "':(exclude,top).codearbiter/gate-events.log'",
+            self.skill)
+        self.assertGreaterEqual(self.skill.count("clean-tree-status"), 6)
+
     def test_asset_build_runs_after_release_checks_with_clean_tree_guards(self):
         checks = self.skill.index("run-pre-tag $TARGET")
         build = self.skill.index('eval "$RELEASE_BUILD"')
@@ -6978,7 +7113,8 @@ class ReleaseSurfaceTest(unittest.TestCase):
         self.assertIn("render-release-assets", self.skill)
         self.assertIn("verify-release-assets", self.skill)
         build_section = self.skill[build - 2500:build + 2500]
-        self.assertGreaterEqual(build_section.count("git status --porcelain"), 2)
+        self.assertGreaterEqual(build_section.count(
+            'clean-tree-status "$TARGET"'), 2)
         self.assertIn("tracked tree", build_section)
 
     def test_publication_uploads_verified_paths_and_checks_remote_names(self):
@@ -7024,12 +7160,12 @@ class ReleaseSurfaceTest(unittest.TestCase):
         self.assertNotIn("git tag -a", recovery)
         self.assertLess(recovery.index("git rev-parse HEAD"),
                         recovery.index('eval "$RELEASE_BUILD"'))
-        first_clean = recovery.index("git status --porcelain")
+        first_clean = recovery.index('clean-tree-status "$TARGET"')
         confirmation = recovery.index("releasehash.py\" check")
         pre_tag = recovery.index("run-pre-tag")
-        second_clean = recovery.index("git status --porcelain", pre_tag)
+        second_clean = recovery.index("clean-tree-status", pre_tag)
         build = recovery.index('eval "$RELEASE_BUILD"')
-        third_clean = recovery.index("git status --porcelain", build)
+        third_clean = recovery.index("clean-tree-status", build)
         self.assertLess(first_clean, confirmation)
         self.assertLess(confirmation, pre_tag)
         self.assertLess(pre_tag, second_clean)

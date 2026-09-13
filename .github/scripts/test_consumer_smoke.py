@@ -1929,9 +1929,14 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     # "0.0.0" — it strips a prefix, it does not interpret the no-tag case.
     # Mapping it to the 0.0.0 baseline is this caller's job, and doing it
     # explicitly keeps a `None` semver_key out of the max() below.
-    tag_floor = core_lane._bare_version(last_tag)
-    if core_lane.semver_key(tag_floor) is None:
-        tag_floor = "0.0.0"
+    tag_floor = core_lane._bare_version(
+        last_tag, version_policy, initial_version or None)
+    version_key = (
+        core_lane.semver_key
+        if version_policy == "semver"
+        else lambda value: core_lane.numeric_sequence_key(value, initial_version))
+    if version_key(tag_floor) is None:
+        tag_floor = initial_version if version_policy == "numeric-sequence" else "0.0.0"
     floors = [tag_floor]
     for manifest_rel in manifests:
         manifest_abs = os.path.join(consumer_root, *manifest_rel.split("/"))
@@ -1940,7 +1945,7 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
                 declared = json.load(fh).get("version")
         except (OSError, ValueError):
             declared = None
-        if isinstance(declared, str) and core_lane.semver_key(declared):
+        if isinstance(declared, str) and version_key(declared):
             floors.append(declared)
     # ONE base — the max of the tag baseline and every declared manifest
     # (HIGH, runs 6 and 7). Run 6 established the manifest half; run 7
@@ -1949,10 +1954,11 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     # floor. The prose now computes `$BASE_VERSION` once and compares
     # against it exactly once; the driver mirrors that rather than keeping
     # a second, separate floor.
-    base = max(floors, key=core_lane.semver_key)
+    base = max(floors, key=version_key)
     result["version_floors"] = floors
     result["version_base"] = base
-    result["next_version"] = _bump_version(base, result["bump"])
+    result["next_version"] = core_lane.derive_version(
+        base, result["bump"], version_policy, initial_version or None)
 
     with open(os.path.join(consumer_root, "CHANGELOG.md"), encoding="utf-8") as fh:
         existing_changelog = fh.read()
@@ -2356,6 +2362,82 @@ class ConsumerEndToEndTest(unittest.TestCase):
             "would strip, so the assertions above cannot distinguish "
             "`--cleanup=verbatim` from the default -- the fixture stopped "
             "covering #569 and needs a message with Markdown headings")
+
+
+class NumericSequenceConsumerEndToEndTest(unittest.TestCase):
+    """The shipped lane driver must derive a numeric-sequence release without
+    consulting SemVer arithmetic anywhere in the version flow."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.scratch = tempfile.mkdtemp(prefix="ca-lane-driver-numeric-")
+        try:
+            cls.consumer_root = os.path.join(cls.scratch, "consumer")
+            build_consumer_repo(cls.consumer_root)
+            targets_path = os.path.join(
+                cls.consumer_root, ".codearbiter", "release-targets.md")
+            _write_text(
+                targets_path,
+                "<!-- release-targets -->\n[preview]\n"
+                "prefix: preview-\nmanifest: package.json\n"
+                "changelog: CHANGELOG.md\npayload: .\n"
+                "version-policy: numeric-sequence\ninitial-version: 0.30\n"
+                "<!-- /release-targets -->\n")
+            manifest = os.path.join(cls.consumer_root, "package.json")
+            with open(manifest, encoding="utf-8") as fh:
+                document = json.load(fh)
+            document["version"] = "0.30"
+            _write_text(manifest, json.dumps(document, indent=2) + "\n")
+            for tag in _git(["tag", "-l"], cls.consumer_root).stdout.split():
+                _git(["tag", "-d", tag], cls.consumer_root)
+            _git(["add", "-A"], cls.consumer_root)
+            _git(["commit", "-q", "-m", "chore: declare preview series"],
+                 cls.consumer_root)
+            _git(["tag", "preview-0.30"], cls.consumer_root)
+            _write_text(
+                os.path.join(cls.consumer_root, "numeric-feature.txt"),
+                "released next\n")
+            _git(["add", "numeric-feature.txt"], cls.consumer_root)
+            _git(["commit", "-q", "-m", "feat: advance preview sequence\n\n"
+                  "CHANGELOG: Added numeric release proof."], cls.consumer_root)
+
+            skill_path = os.path.join(
+                _FIXTURE.plugin_root, "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.core_lane = _load_mechanism(
+                os.path.join(_FIXTURE.plugin_root, "hooks", "_releaselib.py"),
+                "_lane_driver_core_numeric")
+            cls.result = _execute_lane_sequence(
+                cls.skill_text, cls.core_lane, cls.consumer_root,
+                target="preview", version_policy="numeric-sequence",
+                initial_version="0.30")
+        except Exception:
+            _force_rmtree(cls.scratch)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    @staticmethod
+    def _independent_successor(value):
+        parts = value.split(".")
+        if len(parts) < 2 or any(not part.isascii() or not part.isdigit()
+                                 for part in parts):
+            raise AssertionError(f"non-canonical numeric sequence: {value!r}")
+        return ".".join(parts[:-1] + [str(int(parts[-1]) + 1)])
+
+    def test_numeric_policy_selects_its_tag_and_manifest_floor(self):
+        self.assertEqual(self.result["last_tag_lib"], "preview-0.30")
+        self.assertEqual(self.result["version_base"], "0.30")
+        self.assertEqual(self.result["version_floors"], ["0.30", "0.30"])
+
+    def test_numeric_policy_uses_an_independent_successor_oracle(self):
+        expected = self._independent_successor("0.30")
+        self.assertEqual(expected, "0.31")
+        self.assertEqual(self.result["next_version"], expected)
+        self.assertEqual(self.result["tag_name"], "preview-0.31")
 
 
 class NeverTaggedManifestFloorTest(unittest.TestCase):

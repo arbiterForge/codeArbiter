@@ -134,6 +134,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import posixpath
 import re
 import shlex
 import shutil
@@ -1783,6 +1784,112 @@ def _finish_row(row):
                 "or duplicate release-asset template")
 
 
+_GOVERNANCE_SCRATCH_PATHS = (
+    ".codearbiter/gate-events.log",
+    ".codearbiter/.markers",
+)
+
+
+def _normalised_release_path(value):
+    """Return a conservative repository-relative path, or None on ambiguity.
+
+    A path that cannot be compared safely must prevent a scratch exclusion;
+    uncertainty may make a clean-tree gate noisier, never blind it.
+    """
+    if not isinstance(value, str):
+        return None
+    if value != value.strip() or any(char.isspace() for char in value):
+        return None
+    raw = value.replace("\\", "/")
+    if (not raw or raw.startswith(('/', ':'))
+            or any(char in raw for char in "*?[]")
+            or re.match(r"^[A-Za-z]:", raw)):
+        return None
+    components = raw.split("/")
+    if (raw != "."
+            and any(component.endswith((".", " "))
+                    or re.search(r"~\d", component)
+                    for component in components)):
+        return None
+    normalised = posixpath.normpath(raw)
+    if normalised == ".." or normalised.startswith("../"):
+        return None
+    while normalised.startswith("./"):
+        normalised = normalised[2:]
+    return (normalised or ".").casefold()
+
+
+def _release_paths_overlap(left, right):
+    if left is None or right is None:
+        return True
+    if left == "." or right == ".":
+        return True
+    return (left == right
+            or left.startswith(right.rstrip("/") + "/")
+            or right.startswith(left.rstrip("/") + "/"))
+
+
+def _release_path_contains(container, path):
+    if container is None or path is None:
+        return False
+    return container == "." or path == container or path.startswith(
+        container.rstrip("/") + "/")
+
+
+def governance_scratch_exclusions(row):
+    """Return scratch paths safe to exclude for this declared target.
+
+    Governance-owned scratch is normally outside a target, but an operator
+    may deliberately declare it (or the whole repository) as a payload,
+    manifest, changelog, generated manifest, provenance manifest, artifact,
+    or release asset. Such a declaration wins: the path remains visible to
+    clean-tree and pre-tag mutation gates.
+    """
+    surfaces = [row.get("changelog"), row.get("provenance_manifest")]
+    for field in ("manifest", "generated_manifest", "artifacts",
+                  "release_assets"):
+        surfaces.extend(row.get(field) or [])
+
+    normalised_surfaces = [
+        _normalised_release_path(value)
+        for value in surfaces
+        if value is not None and (not isinstance(value, str) or value.strip())
+    ]
+
+    payload = _normalised_release_path(row.get("payload"))
+    payload_excludes = [
+        _normalised_release_path(value)
+        for value in (row.get("payload_exclude") or [])
+    ]
+
+    def overlaps(scratch):
+        scratch_path = _normalised_release_path(scratch)
+        for surface in normalised_surfaces:
+            if _release_paths_overlap(surface, scratch_path):
+                return True
+        if payload is None:
+            return True
+        if _release_paths_overlap(payload, scratch_path):
+            if not any(_release_path_contains(exclusion, scratch_path)
+                       for exclusion in payload_excludes):
+                return True
+        return False
+
+    return [path for path in _GOVERNANCE_SCRATCH_PATHS if not overlaps(path)]
+
+
+def release_tree_status(row, project_root):
+    """Run the target-aware repository-wide clean-tree probe."""
+    scratch_pathspecs = [
+        f":(exclude,top){path}"
+        for path in governance_scratch_exclusions(row)
+    ]
+    return subprocess.run(
+        [git_executable(), "status", "--porcelain", "--", ":/",
+         *scratch_pathspecs],
+        capture_output=True, text=True, cwd=project_root)
+
+
 def parse_release_targets(text):
     """Parse the declared-target-file GRAMMAR from `text` (already-read file
     content) into a list of row dicts, one per `[target]` block, each
@@ -2400,14 +2507,24 @@ def main(argv):
                                   window subtraction plain `git log --
                                   <path>` cannot express. Same declared-file
                                   resolution as `show-row`.
+      clean-tree-status <target> runs repository-wide `git status
+                                  --porcelain` while excluding governance
+                                  scratch only when it does not overlap any
+                                  surface declared by the target. Prints the
+                                  porcelain result; exit 0 on a successful
+                                  probe even when dirty, 2 for bad invocation
+                                  or unknown target, 3/4 for declared-file
+                                  states, and git's non-zero status on probe
+                                  failure.
 
     `--targets-file PATH` overrides `default_targets_path()` for `tag-prefix`
-    and `list-targets` only; `show-row` and `payload-pathspec` always resolve
-    the declared file through `default_targets_path()` with no override, and
-    every remaining subcommand needs no declared file at all. `tag-prefix`,
-    `list-targets`, `show-row`, and `payload-pathspec` all exit 3 when the
-    declared file is genuinely absent and 4 for every other declared-file
-    error (HIGH-1, `_targets_error_exit_code`); every other subcommand
+    and `list-targets` only; `show-row`, `payload-pathspec`, and
+    `clean-tree-status` always resolve the declared file through
+    `default_targets_path()` with no override, and every remaining subcommand
+    needs no declared file at all. `tag-prefix`, `list-targets`, `show-row`,
+    `payload-pathspec`, and `clean-tree-status` all exit 3 when the declared
+    file is genuinely absent and 4 for every other declared-file error
+    (HIGH-1, `_targets_error_exit_code`); every other subcommand
     prints a value/label and exits 0, or writes a short cause to stderr and
     exits non-zero — never a bare traceback, so a caller shelling out to
     this file gets a diagnosable failure either way. Returns a process exit
@@ -2415,7 +2532,7 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
-            "payload-pathspec|last-tag|last-tag-for-policy|notes-match|"
+            "payload-pathspec|clean-tree-status|last-tag|last-tag-for-policy|notes-match|"
             "changelog-section|dates-match|semver-greater|version-greater|"
             "apply-bump|derive-version|render-release-assets|"
             "verify-release-assets|classify|peel-tag|"
@@ -2775,6 +2892,24 @@ def main(argv):
             print(baseline)
         return 0
 
+    if cmd == "clean-tree-status" and len(rest) == 1:
+        target = rest[0]
+        try:
+            rows = load_targets(default_targets_path())
+        except ReleaseTargetsError as exc:
+            sys.stderr.write(f"{type(exc).__name__}: {exc}\n")
+            return _targets_error_exit_code(exc)
+        row = next((item for item in rows if item["target"] == target), None)
+        if row is None:
+            sys.stderr.write(f"unknown release target: {target}\n")
+            return 2
+        project_root = os.path.dirname(
+            os.path.dirname(default_targets_path())) or "."
+        probe = release_tree_status(row, project_root)
+        sys.stdout.write(probe.stdout)
+        sys.stderr.write(probe.stderr)
+        return probe.returncode
+
     if cmd == "run-pre-tag" and len(rest) == 1:
         # A-2.1/2.2/2.3 (DECISION-0034). Runs the row's declared `pre-tag`
         # commands IN DECLARED ORDER, stops at the first non-zero exit, and
@@ -2908,11 +3043,7 @@ def main(argv):
             # delete a release gate for it. `.markers/` is exempted for the
             # same reason the skill exempts it: a per-machine confirmation
             # marker minted by this same run is not a release surface.
-            probe = subprocess.run(
-                [git_executable(), "status", "--porcelain", "--", ":/",
-                 ":(exclude,top).codearbiter/gate-events.log",
-                 ":(exclude,top).codearbiter/.markers/"],
-                capture_output=True, text=True, cwd=project_root)
+            probe = release_tree_status(row, project_root)
             if probe.returncode != 0:
                 return None, (probe.stderr.strip() or "git status failed")
             state = {}
