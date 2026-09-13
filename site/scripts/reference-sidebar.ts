@@ -29,7 +29,9 @@ function isNestedGroup(item: SidebarItem): item is CommandSidebarGroup {
 }
 
 function isSidebarEntry(item: SidebarItem): item is SidebarEntry {
-  return !isNestedGroup(item);
+  return !isNestedGroup(item)
+    && typeof item.label === "string"
+    && typeof item.slug === "string";
 }
 
 function projectLink(item: SidebarEntry, path: string): ReferenceSidebarLink {
@@ -66,6 +68,9 @@ export function buildReferenceSidebar(groups: SidebarGroup[]): ReferenceSidebarG
 
       const commandSlugs = new Set<string>();
       for (const visibilityGroup of group.items) {
+        if (!visibilityGroup.items.every(isSidebarEntry)) {
+          throw new Error("Command sidebar entries must have string label and slug fields");
+        }
         for (const item of visibilityGroup.items) {
           if (item.visibility !== visibilityGroup.visibility) {
             throw new Error(`Command visibility must agree with its ${visibilityGroup.label} group`);
@@ -88,7 +93,7 @@ export function buildReferenceSidebar(groups: SidebarGroup[]): ReferenceSidebarG
     }
 
     if (!group.items.every(isSidebarEntry)) {
-      throw new Error(`${group.type} sidebar entries must be direct links`);
+      throw new Error(`${group.type} sidebar entries must be direct links with string label and slug fields`);
     }
     const path = isLens ? "tribunal-lenses" : `${group.type}s`;
     return {

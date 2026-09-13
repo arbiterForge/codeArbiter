@@ -152,6 +152,17 @@ describe("reference sidebar projection", () => {
     expect(() => project!(groups)).toThrow(/duplicate command/i);
   });
 
+  it.each([
+    ["command", (groups: GeneratedGroupsFixture) => groups[0].items[0].items[0]],
+    ["direct", (groups: GeneratedGroupsFixture) => groups[1].items[0]],
+  ])("rejects a malformed %s leaf before projecting its route", async (_case, selectLeaf) => {
+    const project = await loadProjector();
+    const groups = commandGroups();
+    const leaf = selectLeaf(groups) as Partial<{ label: string; slug: string }>;
+    delete leaf.slug;
+    expect(() => project!(groups)).toThrow(/label and slug/i);
+  });
+
   it.each(["skill", "agent", "tribunal-lens"])(
     "fails closed when a %s collection contains a nested group",
     async (type) => {
