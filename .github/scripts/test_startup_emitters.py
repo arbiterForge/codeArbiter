@@ -443,10 +443,16 @@ class TestNonArbiterOmitsTrailerCatalogAndStandup(unittest.TestCase):
         with open(os.path.join(FIXTURES_DIR, "startup-arbiter.json"), encoding="utf-8") as f:
             self.base = json.load(f)
 
-    def test_arbiter_emits_trailer_catalog_and_standup_reference(self):
+    def test_arbiter_trailer_continues_active_work_before_idle_wait(self):
         lines = _driver(self.base, _FakeHost())
         joined = "\n".join(lines)
-        self.assertIn("Present this state, then await a", joined, "trailer")
+        self.assertIn(
+            "Continue any active authorized work or accompanying user request; "
+            "otherwise await a fake-command.",
+            joined,
+            "trailer must not turn a resume or compact boundary into a pause",
+        )
+        self.assertNotIn("Present this state, then await a", joined)
         self.assertIn("$$fake-commands", joined, "catalog reference")
         self.assertIn("host: claude", joined)
         self.assertIn("stage: 3", joined)

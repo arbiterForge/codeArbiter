@@ -634,10 +634,15 @@ class TestStartupInstructionsHostAware(unittest.TestCase):
             os.chdir(cwd)
         return buf.getvalue()
 
-    def test_initialized_repo_presents_state_then_awaits_a_command(self):
+    def test_initialized_repo_continues_active_work_before_idle_wait(self):
         self._write_context(initialized=True)
         out = self._run_main(self._FakeHost())
-        self.assertIn("Present this state, then await a fake-command.", out)
+        self.assertIn(
+            "Continue any active authorized work or accompanying user request; "
+            "otherwise await a fake-command.",
+            out,
+        )
+        self.assertNotIn("Present this state, then await a fake-command.", out)
         self.assertIn("Type $$fake-commands for the catalog.", out)
 
     def test_uninitialized_repo_with_source_routes_to_create_context(self):
