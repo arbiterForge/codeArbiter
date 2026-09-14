@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.0] - 2026-09-13
+
+### Added
+
+- Support declared numeric release policies and exact verified asset inventories while preserving SemVer defaults and explicit publication authorization.
+
+## [2.17.11] - 2026-09-13
+
+### Fixed
+
+- Continue active authorized work across startup, resume, and compact hook boundaries while retaining the idle-session command prompt.
+
 ## [2.17.10] - 2026-09-08
 
 ### Fixed

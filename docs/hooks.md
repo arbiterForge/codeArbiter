@@ -112,21 +112,30 @@ session start it:
    injects. Composed injection happens instead at the per-turn seam, see
    [UserPromptSubmit / PreCompact: `prompt-submit.py`](#userpromptsubmit-precompact-prompt-submitpy)
    below.
-5. **Emits the daily standup briefing** (first session of the local day only): a
+5. **Emits the cached update notice** when a newer release is known. In arbiter
+   mode it also launches `update-refresh.py` as a detached process. That process
+   reads and updates the target-keyed `~/.codearbiter/update-state.json` cache and,
+   only when the cache is stale, checks GitHub's public Releases API. The network
+   check runs at most once per day and never delays the startup hook.
+6. **Emits the daily standup briefing** (first session of the local day only): a
    **read-only** summary of repo hygiene covering working-tree state, ahead/behind
    vs. upstream, merge-able branches, stale worktrees, stashes, and a display-only
    governance line. Later sessions the same day collapse to at most a single offer
    line, or nothing.
 
 **Reads:** `.codearbiter/CONTEXT.md`, `open-questions.md`, `open-tasks.md` (in-flight
-count excluding done, plus a stale-in-progress nudge, via `_taskboardlib`);
+count excluding done, plus a stale-in-progress nudge, via `_taskboardlib`), the
+installed plugin version, and `~/.codearbiter/update-state.json`;
 read-only `git` queries (`status`, `rev-list`, `branch -vv`, `worktree list`,
 `stash list`, `rev-parse`). **Writes:** the first-of-day marker
 `.codearbiter/.markers/standup-<date>`, and possibly the statusline pin in
-`~/.claude/settings.json`. **Network:** it spawns a **detached, read-only
+`~/.claude/settings.json`; the detached update process can update
+`~/.codearbiter/update-state.json`. **Network:** it spawns a **detached, read-only
 `git fetch --quiet --no-tags`** against your own remote to refresh ahead/behind for
 *next* time. That fetch is never awaited, so an offline or slow network never stalls
-startup. There is no other process and there are no sockets.
+startup. It also spawns the detached, fail-silent update process described above;
+when its cache is stale, that process makes bounded unauthenticated HTTPS requests
+to GitHub's public Releases API and otherwise performs no network request.
 
 > This is the *only* hook that ever runs in a non-enabled repo, and there it does
 > nothing but clear the dev marker and heal the (already-installed) statusline pin.

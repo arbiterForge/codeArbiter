@@ -68,6 +68,28 @@ describe("canonical Claude Code and Codex support evidence", () => {
     expect(install).toContain("$ca-doctor");
   });
 
+  it("separates current Codex availability from dated historical proof", () => {
+    const install = read("src/content/docs/getting-started/install.md");
+    expect(install).toContain("current `ca-codex` release");
+    expect(install).toContain("historical evidence");
+    expect(install).toContain("2026-07-11");
+    expect(install).toContain("v2.8.13");
+    expect(install).toContain("ca-codex 0.2.4");
+    expect(install).not.toContain("available now** and were verified against");
+  });
+
+  it("presents both Pi distribution channels wherever hosts are compared", () => {
+    for (const rel of [
+      "src/content/docs/index.mdx",
+      "src/content/docs/getting-started/choose-your-host.md",
+    ]) {
+      const content = read(rel);
+      expect(content, rel).toContain("npm convenience");
+      expect(content, rel).toContain("pinned Git");
+      expect(content, rel).toContain("reproducib");
+    }
+  });
+
   it("keeps operational guidance host-correct", () => {
     const enforcement = read("src/content/docs/enforcement.md");
     const hooks = read("src/content/docs/hooks.md");

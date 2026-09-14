@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "visibilityOrder": ["core", "advanced", "alias", "internal", "deprecated"],
+  "workflowOrder": ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+  "compatibility": {},
+  "commands": {
+    "debug": {
+      "description": "Debug a problem.",
+      "commandPath": "commands/debug.md",
+      "visibility": "core",
+      "workflow": "change",
+      "canonical": "debug"
+    },
+    "prune": {
+      "description": "Prune context.",
+      "commandPath": "commands/prune.md",
+      "visibility": "advanced",
+      "workflow": "operate",
+      "canonical": "prune"
+    }
+  }
+}

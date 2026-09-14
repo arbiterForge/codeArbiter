@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -239,7 +239,10 @@ afterEach(() => {
 });
 
 describe("generateAcademy", () => {
-  it("builds one accessible Academy overview from the canonical public inventory", () => {
+  let integrationAcademyHtml = "";
+  const integrationLessonHtml = new Map<string, string>();
+
+  beforeAll(() => {
     const npmCli = process.env.npm_execpath;
     if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
 
@@ -248,11 +251,24 @@ describe("generateAcademy", () => {
       stdio: "pipe",
     });
 
-    const academyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
+    integrationAcademyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
+    for (const lessonSlug of ["p01-feature-through-plan", "u01-autonomous-sprint"]) {
+      integrationLessonHtml.set(
+        lessonSlug,
+        readFileSync(join(siteRoot, "dist", "academy", lessonSlug, "index.html"), "utf8"),
+      );
+    }
+  }, 30_000);
+
+  it("builds one accessible Academy overview from the canonical public inventory", () => {
+    const academyHtml = integrationAcademyHtml;
     const generatedContent = readFileSync(
       join(siteRoot, "src", "generated", "academy-content.ts"),
       "utf8",
     );
+    const generatedSidebar = JSON.parse(
+      readFileSync(join(siteRoot, "src", "generated", "academy-sidebar.json"), "utf8"),
+    ) as Array<{ label: string; items: Array<{ slug: string }> }>;
     const publicLessonIds = [...generatedContent.matchAll(/\n    \{\n      id: "([^"]+)",\n      track:/g)]
       .map((match) => match[1]);
 
@@ -269,18 +285,55 @@ describe("generateAcademy", () => {
     }
     expect(academyHtml).toContain('data-academy-show-all aria-controls="track-foundations-more track-practitioner-more track-power-user-more"');
     expect(academyHtml.match(/<details[^>]+id="track-(?:foundations|practitioner|power-user)-more"/g)).toHaveLength(3);
+    const mainNavigation = academyHtml.match(/<nav[^>]*aria-label="Main"[\s\S]*?<\/nav>/)?.[0];
+    expect(mainNavigation).toBeDefined();
+    expect(
+      [...(mainNavigation?.matchAll(/<span class="large[^"]*">(Foundation|Practitioner|Power user)<\/span>/g) ?? [])]
+        .map((match) => match[1]),
+    ).toEqual(["Foundation", "Practitioner", "Power user"]);
+    expect(generatedSidebar.map((group) => [group.label, group.items.length])).toEqual([
+      ["Foundation", 4],
+      ["Practitioner", 8],
+      ["Power user", 7],
+    ]);
+    expect(generatedSidebar.flatMap((group) => group.items.map((item) => item.slug))).toEqual(
+      publicLessonIds.map((lessonId) => `academy/${lessonId.toLowerCase()}`),
+    );
+    for (const lessonId of publicLessonIds) {
+      expect(mainNavigation?.match(new RegExp(`href="/academy/${lessonId.toLowerCase()}/"`, "g")) ?? []).toHaveLength(1);
+    }
+    const trackBoundaryPages = [
+      ["p01-feature-through-plan", "Practitioner", "f04-fix-with-evidence", "p02-commit-review-pr"],
+      ["u01-autonomous-sprint", "Power user", "p08-repository-hygiene", "u02-override-audit-metrics"],
+    ] as const;
+    for (const [lessonSlug, trackLabel, previousSlug, nextSlug] of trackBoundaryPages) {
+      const lessonHtml = integrationLessonHtml.get(lessonSlug) ?? "";
+      expect(lessonHtml).not.toBe("");
+      const lessonNavigation = lessonHtml.match(/<nav[^>]*aria-label="Main"[\s\S]*?<\/nav>/)?.[0];
+      expect(lessonNavigation).toBeDefined();
+      const currentLinks = [...(lessonNavigation?.matchAll(/<a\b[^>]*\baria-current="page"[^>]*>/g) ?? [])];
+      expect(currentLinks).toHaveLength(1);
+      expect(parseAttributes(currentLinks[0][0]).get("href")).toBe(`/academy/${lessonSlug}/`);
+      const currentLinkIndex = currentLinks[0].index ?? -1;
+      const disclosureStack: Array<{ label?: string; open: boolean }> = [];
+      const disclosureTokens = /<details\b([^>]*)>|<\/details>|<summary[^>]*>[\s\S]*?<span class="large[^"]*">([^<]+)<\/span>[\s\S]*?<\/summary>/g;
+      for (const token of lessonNavigation?.slice(0, currentLinkIndex).matchAll(disclosureTokens) ?? []) {
+        if (token[0].startsWith("<details")) disclosureStack.push({ open: /\bopen\b/.test(token[1]) });
+        else if (token[0] === "</details>") disclosureStack.pop();
+        else if (disclosureStack.length > 0) disclosureStack.at(-1)!.label = token[2];
+      }
+      expect(disclosureStack).toEqual([
+        { label: "Arbiter Academy", open: true },
+        { label: trackLabel, open: true },
+      ]);
+      expect(lessonHtml).toContain(`href="/academy/${previousSlug}/" rel="prev"`);
+      expect(lessonHtml).toContain(`href="/academy/${nextSlug}/" rel="next"`);
+    }
   }, 30_000);
 
   it("executes the emitted View all lessons script and keeps its disclosure state synchronized", () => {
-    const npmCli = process.env.npm_execpath;
-    if (!npmCli) throw new Error("npm_execpath is required to run the Academy integration build");
-
-    execFileSync(process.execPath, [npmCli, "run", "build"], {
-      cwd: siteRoot,
-      stdio: "pipe",
-    });
-
-    const academyHtml = readFileSync(join(siteRoot, "dist", "academy", "index.html"), "utf8");
+    expect(integrationAcademyHtml).not.toBe("");
+    const academyHtml = integrationAcademyHtml;
     const disclosureTags = [...academyHtml.matchAll(
       /<details\b(?=[^>]*class="[^"]*\bacademy-overview__more\b[^"]*")[^>]*>/g,
     )].map((match) => match[0]);
@@ -352,6 +405,7 @@ describe("generateAcademy", () => {
     ]);
     const indexPage = readFileSync(join(docsRoot, "academy", "index.mdx"), "utf8");
     expect(existsSync(academyOverviewComponent)).toBe(true);
+    expect(indexPage).toContain('description: "Guided, evidence-based practice for the codeArbiter workflow."');
     expect(indexPage).toContain('import AcademyOverview from "../../../components/AcademyOverview.astro";');
     expect(indexPage).toContain("<AcademyOverview />");
     expect(indexPage).not.toMatch(/<h1\b/i);
@@ -421,6 +475,30 @@ describe("generateAcademy", () => {
       { label: "Orient to repository state", slug: "academy/f02-orient-to-state" },
       { label: "Practice governed delivery", slug: "academy/p01-practice" },
       { label: "Operate advanced delivery", slug: "academy/u01-operate" },
+    ]);
+    expect(JSON.parse(readFileSync(join(generatedRoot, "academy-sidebar.json"), "utf8"))).toEqual([
+      {
+        label: "Foundation",
+        collapsed: true,
+        items: [
+          { label: "Fork, clone, and doctor safety", slug: "academy/f01-fork-clone-doctor" },
+          { label: "Orient to repository state", slug: "academy/f02-orient-to-state" },
+        ],
+      },
+      {
+        label: "Practitioner",
+        collapsed: true,
+        items: [
+          { label: "Practice governed delivery", slug: "academy/p01-practice" },
+        ],
+      },
+      {
+        label: "Power user",
+        collapsed: true,
+        items: [
+          { label: "Operate advanced delivery", slug: "academy/u01-operate" },
+        ],
+      },
     ]);
     const generatedContent = readFileSync(join(generatedRoot, "academy-content.ts"), "utf8");
     expect(generatedContent).toContain('home: {\n    title: "Start here",\n    anchor: "complete-these-five-setup-steps-before-f01",\n    steps: []\n  }');

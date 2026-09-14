@@ -745,6 +745,26 @@
       "object_sha": "08306ecf5bcc344f5e05bfbd3eec951e2e443e12",
       "commit_sha": "8a9f3721c65c4958e186bb432f7eb10aa59dd1fe",
       "object_type": "tag"
+    },
+    "ca-pi-v0.10.12": {
+      "object_sha": "5c055aa3b438ea757f20b56ef3e0db5e288e1e61",
+      "object_type": "tag",
+      "commit_sha": "9957bbfdfbd38190715b0fe2944b785ec6e000ff"
+    },
+    "v2.17.11": {
+      "object_sha": "2bbf9fe2cda7dc9920a02bc1e320eccb39899d1a",
+      "object_type": "tag",
+      "commit_sha": "d6900d96f0b61f66d420b6a424fddfd89ac0f71e"
+    },
+    "ca-codex-v0.9.11": {
+      "object_sha": "cc0d321701c0d0cc1339cef523d271679a909c52",
+      "object_type": "tag",
+      "commit_sha": "d6900d96f0b61f66d420b6a424fddfd89ac0f71e"
+    },
+    "ca-pi-v0.10.13": {
+      "object_sha": "81f13743c2843634a48f31e2a7050057489e4297",
+      "object_type": "tag",
+      "commit_sha": "d6900d96f0b61f66d420b6a424fddfd89ac0f71e"
     }
   }
 }

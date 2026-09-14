@@ -140,6 +140,16 @@ export interface SidebarEntry {
   workflow?: CommandWorkflow;
 }
 
+/** One registry-backed visibility section nested beneath the Commands group. */
+export interface CommandSidebarGroup {
+  visibility: CommandVisibility;
+  label: string;
+  items: SidebarEntry[];
+}
+
+/** A direct collection link or a nested command-visibility section. */
+export type SidebarItem = SidebarEntry | CommandSidebarGroup;
+
 /**
  * The collection key of a sidebar group: one of the three plugin source types,
  * or the tribunal-lens documentation collection (lens cards are skill reference
@@ -151,7 +161,7 @@ export type SidebarGroupType = SourceType | "tribunal-lens";
 export interface SidebarGroup {
   type: SidebarGroupType;
   label: string;
-  items: SidebarEntry[];
+  items: SidebarItem[];
 }
 
 /** The output of the index/sidebar builder. */

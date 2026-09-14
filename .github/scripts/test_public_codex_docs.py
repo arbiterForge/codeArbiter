@@ -91,6 +91,37 @@ class PublicCodexDocsTest(unittest.TestCase):
             baseline[:400], r"ca-codex[^0-9]{0,12}\d+\.\d+\.\d+",
             "the recorded baseline names no ca-codex version, so staleness cannot be judged")
 
+        marker_match = re.search(
+            r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
+            runbook,
+        )
+        self.assertIsNotNone(
+            marker_match,
+            "the current Codex live baseline has no machine-readable metadata",
+        )
+        marker = json.loads(marker_match.group("meta"))
+        self.assertEqual(1, marker["schema_version"])
+        self.assertEqual("ca-codex", marker["adapter"])
+        self.assertEqual(
+            manifest["version"],
+            marker["adapter_version"],
+            "the current Codex live baseline is stale for the package manifest",
+        )
+        self.assertRegex(marker["verified_on"], r"^\d{4}-\d{2}-\d{2}$")
+        self.assertTrue(marker["host"])
+        self.assertTrue(marker["proof"])
+
+    def test_ca_codex_release_preflight_enforces_live_baseline_freshness(self):
+        """The ca-codex release row runs the public proof contract check-only."""
+        targets = (ROOT / ".codearbiter" / "release-targets.md").read_text(
+            encoding="utf-8"
+        )
+        codex_row = targets.split("[ca-codex]", 1)[1].split("\n[ca-sandbox]", 1)[0]
+        self.assertIn(
+            'pre-tag: "$PY" .github/scripts/test_public_codex_docs.py',
+            codex_row,
+        )
+
     def test_readme_announces_all_hosts_and_shared_parity(self):
         """The README presents one product and all supported host adapters."""
         self.assertIn(
@@ -117,6 +148,15 @@ class PublicCodexDocsTest(unittest.TestCase):
         ):
             self.assertIn(text, self.readme)
         self.assertNotIn("available after the Codex-support release", self.readme)
+        self.assertIn(
+            "current adapter version is read from "
+            "`plugins/ca-codex/.codex-plugin/plugin.json`",
+            self.readme,
+        )
+        self.assertNotRegex(
+            self.readme,
+            r"repository currently ships `ca-codex \d+\.\d+\.\d+`",
+        )
 
     def test_readme_links_catalog_and_evidence(self):
         """The README links the command catalog and pinned support evidence."""

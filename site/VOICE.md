@@ -52,9 +52,9 @@ synonym:
   proceed until fixed.
 - **override** — the sanctioned, logged bypass (`/override`). Never "workaround" or
   "skip."
-- **Feature Forge** — the two-axis preview-features system. In navigation and
-  reader-facing copy it is labeled "Preview Features"; "Feature Forge" is the internal
-  name and may appear in explanatory prose once introduced.
+- **Feature Forge** — the two-axis feature-maturity system. In navigation and
+  reader-facing copy it is labeled "Feature Forge"; "preview" and "stable" are maturity
+  labels within the Forge, not alternative names for the system.
 - **tribunal** — the deep, rarely-convened whole-codebase audit (`/ca:tribunal`). Not a
   synonym for the routine `/ca:checkpoint` sweep.
 

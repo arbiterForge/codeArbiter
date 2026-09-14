@@ -59,7 +59,10 @@ describe("generate", () => {
     expect(existsSync(result.sidebarPath)).toBe(true);
     const sidebar = JSON.parse(readFileSync(result.sidebarPath, "utf8"));
     const total = sidebar.reduce(
-      (n: number, g: { items: unknown[] }) => n + g.items.length,
+      (n: number, g: { type: string; items: Array<{ items?: unknown[] }> }) =>
+        n + (g.type === "command"
+          ? g.items.reduce((count, group) => count + (group.items?.length ?? 0), 0)
+          : g.items.length),
       0,
     );
     expect(total).toBe(5);

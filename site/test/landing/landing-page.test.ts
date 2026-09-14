@@ -182,6 +182,11 @@ describe("first-class product splash", () => {
     }
   });
 
+  it("uses an outcome CTA instead of an unsupported setup-time promise", () => {
+    expect(indexMdx).toContain("Put one repository under governed change.");
+    expect(indexMdx).not.toContain("Protect a repository in five minutes.");
+  });
+
   it("links lifecycle and trust claims to their owning docs", () => {
     expect(indexMdx).toContain("./enforcement/");
     expect(indexMdx).toContain("./codearbiter-directory/");

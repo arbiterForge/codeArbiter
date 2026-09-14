@@ -66,6 +66,7 @@ changelog: plugins/ca-codex/CHANGELOG.md
 payload: plugins/ca-codex/
 provenance-manifest: .github/published-tags.json
 latest-eligible: false
+pre-tag: "$PY" .github/scripts/test_public_codex_docs.py
 
 [ca-sandbox]
 prefix: ca-sandbox-v

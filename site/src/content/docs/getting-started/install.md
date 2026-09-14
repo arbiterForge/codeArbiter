@@ -77,8 +77,9 @@ appears as installed from the `codearbiter` marketplace; then verify enforcement
 
 ### Codex
 
-The public commands are **available now** and were verified against release `v2.8.13` with
-`ca-codex 0.2.4`:
+The public commands below install the current `ca-codex` release from the codeArbiter marketplace.
+The first end-to-end public-install record remains as dated historical evidence: on 2026-07-11 it
+verified release `v2.8.13` with `ca-codex 0.2.4`.
 
 ```text
 codex plugin marketplace add arbiterForge/codeArbiter

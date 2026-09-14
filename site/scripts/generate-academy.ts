@@ -26,6 +26,12 @@ export type AcademySidebarItem = {
   slug: string;
 };
 
+export type AcademySidebarGroup = {
+  label: "Foundation" | "Practitioner" | "Power user";
+  collapsed: true;
+  items: AcademySidebarItem[];
+};
+
 export type AcademyGenerationResult = {
   sidebarItems: AcademySidebarItem[];
 };
@@ -124,7 +130,7 @@ function renderIndex(source: AcademySource): string {
   return [
     "---",
     'title: "Arbiter Academy"',
-    'description: "Guided, evidence-based practice for the CodeArbiter workflow."',
+    'description: "Guided, evidence-based practice for the codeArbiter workflow."',
     "journey:",
     '  level: "Academy"',
     '  time: "Self-paced"',
@@ -222,7 +228,7 @@ export function generateAcademy(
     }
     return guide;
   });
-  const requiredTracks: Array<[AcademyTrack, string]> = [
+  const requiredTracks: Array<[AcademyTrack, AcademySidebarGroup["label"]]> = [
     ["foundations", "Foundation"],
     ["practitioner", "Practitioner"],
     ["power-user", "Power user"],
@@ -247,8 +253,18 @@ export function generateAcademy(
     // Starlight's docs loader normalizes generated path IDs to lowercase.
     slug: `academy/${guide.id.toLowerCase()}`,
   }));
+  const sidebarGroups = requiredTracks.map(([track, label]) => ({
+    label,
+    collapsed: true as const,
+    items: guides
+      .filter((guide) => guide.track === track)
+      .map((guide) => ({
+        label: guide.title,
+        slug: `academy/${guide.id.toLowerCase()}`,
+      })),
+  })) satisfies AcademySidebarGroup[];
   writeFileSync(join(generatedRoot, "academy-content.ts"), renderTypedContent(source, guides));
-  writeFileSync(join(generatedRoot, "academy-sidebar.json"), `${JSON.stringify(sidebarItems, null, 2)}\n`);
+  writeFileSync(join(generatedRoot, "academy-sidebar.json"), `${JSON.stringify(sidebarGroups, null, 2)}\n`);
 
   return { sidebarItems };
 }

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective date:** 2026-09-06
+**Effective date:** 2026-09-09
 
 codeArbiter provides governance adapters for Claude Code, Codex, and Pi. The
 adapters run on your machine and use your coding host's session and tools.
@@ -73,6 +73,23 @@ broker and scrubs/removes the temporary configuration; a cleanup failure is
 reported as degraded. This is cooperative process isolation, not an OS sandbox.
 A same-user process that obtains the ephemeral token can use the broker while
 that child is alive.
+
+## Optional tribunal KPI feedback
+
+A tribunal run can prepare a local `telemetry.json` receipt with aggregate run
+and lens metrics. This feedback is off by default. The default path shows the
+complete payload and prints a `gh issue create` command without sending it. Only
+explicit approval for that run posts the payload as a public GitHub issue in the
+codeArbiter repository.
+
+The payload excludes code, file paths, finding text, commit hashes, remote URLs,
+and repository identity. A contributor can add an optional free-form `--tag`,
+which then becomes identifying submission data. The local `telemetry.json`
+receipt remains in the tribunal run directory. After an approved submission,
+the run also records a local `telemetry-sent` audit event. GitHub handles the
+public issue under its own retention and privacy terms. See
+[the tribunal telemetry contract](./core/surface/skills/tribunal/references/telemetry.md)
+for the complete field and submission contract.
 
 ## Optional farm and pruning features
 
