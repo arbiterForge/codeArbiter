@@ -1037,10 +1037,10 @@ class PiPackageTests(unittest.TestCase):
                 "@types/node": "25.9.4",
                 # Peer-pinned to vitest EXACTLY by upstream; the two must move
                 # together or `npm ci` ERESOLVEs.
-                "@vitest/coverage-v8": "4.1.9",
+                "@vitest/coverage-v8": "4.1.11",
                 "esbuild": "0.28.1",
                 "typescript": "5.9.3",
-                "vitest": "4.1.9",
+                "vitest": "4.1.11",
             },
         )
         self.assertNotIn("dependencies", data)
