@@ -6,13 +6,81 @@ import hashlib
 import json
 import pathlib
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
+import zipfile
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 class PublicCodexDocsTest(unittest.TestCase):
+    def _tracked_candidate_package_sha256(self):
+        """Hash the exact tracked ca-codex bytes through the canonical checker."""
+        listed = subprocess.run(
+            ["git", "ls-files", "-z", "--", "plugins/ca-codex"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        ).stdout.split(b"\0")
+        with tempfile.TemporaryDirectory() as temporary:
+            candidate = pathlib.Path(temporary) / "ca-codex.zip"
+            with zipfile.ZipFile(candidate, "w", zipfile.ZIP_STORED) as archive:
+                for raw_path in listed:
+                    if not raw_path:
+                        continue
+                    relative = raw_path.decode("utf-8")
+                    source = ROOT / relative
+                    self.assertTrue(source.is_file(), f"tracked candidate file is missing: {relative}")
+                    self.assertFalse(source.is_symlink(), f"tracked candidate file is a symlink: {relative}")
+                    archive.writestr(relative.replace("\\", "/"), source.read_bytes())
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / ".github" / "scripts" / "check_codex_skill_resources.py"),
+                    "--candidate-contract-only",
+                    "--candidate-package",
+                    str(candidate),
+                    "--json",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        contract = json.loads(result.stdout)
+        self.assertEqual("PASS", contract["verdict"])
+        return contract["package_sha256"]
+
+    def _assert_live_baseline_marker(self, runbook, manifest):
+        """Require the live proof marker to bind the exact tracked candidate bytes."""
+        marker_match = re.search(
+            r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
+            runbook,
+        )
+        self.assertIsNotNone(
+            marker_match,
+            "the current Codex live baseline has no machine-readable metadata",
+        )
+        marker = json.loads(marker_match.group("meta"))
+        self.assertEqual(1, marker["schema_version"])
+        self.assertEqual("ca-codex", marker["adapter"])
+        self.assertEqual(
+            manifest["version"],
+            marker["adapter_version"],
+            "the current Codex live baseline is stale for the package manifest",
+        )
+        self.assertEqual(
+            self._tracked_candidate_package_sha256(),
+            marker.get("candidate_package_sha256"),
+            "the current Codex live baseline is stale for the exact tracked candidate package",
+        )
+        self.assertRegex(marker["verified_on"], r"^\d{4}-\d{2}-\d{2}$")
+        self.assertTrue(marker["host"])
+        self.assertTrue(marker["proof"])
+
     def _assert_valid_dispatch_receipt(self, receipt):
         """Require the receipt to bind the published package and named charter."""
         self.assertEqual(1, receipt["schema_version"])
@@ -85,31 +153,36 @@ class PublicCodexDocsTest(unittest.TestCase):
             "release' has nothing to point at")
         baseline = runbook.split("<!-- CODEX-LIVE-BASELINE -->", 1)[1]
         self.assertRegex(
-            baseline[:400], r"Codex CLI \d+\.\d+\.\d+",
+            baseline[:700], r"Codex CLI \d+\.\d+\.\d+",
             "the recorded baseline names no Codex version")
         self.assertRegex(
-            baseline[:400], r"ca-codex[^0-9]{0,12}\d+\.\d+\.\d+",
+            baseline[:700], r"ca-codex[^0-9]{0,12}\d+\.\d+\.\d+",
             "the recorded baseline names no ca-codex version, so staleness cannot be judged")
 
+        self._assert_live_baseline_marker(runbook, manifest)
+
+    def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
+        """A same-version package-byte change invalidates the retained live proof."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        manifest = json.loads(
+            (ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json")
+            .read_text(encoding="utf-8")
+        )
         marker_match = re.search(
             r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
             runbook,
         )
-        self.assertIsNotNone(
-            marker_match,
-            "the current Codex live baseline has no machine-readable metadata",
-        )
+        self.assertIsNotNone(marker_match)
         marker = json.loads(marker_match.group("meta"))
-        self.assertEqual(1, marker["schema_version"])
-        self.assertEqual("ca-codex", marker["adapter"])
-        self.assertEqual(
-            manifest["version"],
-            marker["adapter_version"],
-            "the current Codex live baseline is stale for the package manifest",
+        corrupted = dict(marker)
+        corrupted["candidate_package_sha256"] = "0" * 64
+        corrupted_runbook = runbook.replace(
+            marker_match.group("meta"),
+            json.dumps(corrupted, separators=(",", ":")),
+            1,
         )
-        self.assertRegex(marker["verified_on"], r"^\d{4}-\d{2}-\d{2}$")
-        self.assertTrue(marker["host"])
-        self.assertTrue(marker["proof"])
+        with self.assertRaisesRegex(AssertionError, "exact tracked candidate package"):
+            self._assert_live_baseline_marker(corrupted_runbook, manifest)
 
     def test_ca_codex_release_preflight_enforces_live_baseline_freshness(self):
         """The ca-codex release row runs the public proof contract check-only."""

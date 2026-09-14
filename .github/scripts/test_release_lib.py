@@ -4687,6 +4687,479 @@ class CoreCLITest(unittest.TestCase):
         missing = core_releaselib.classify_window(commits)["missing_footer"]
         self.assertEqual([m["sha"][0] for m in missing], ["1", "4"])
 
+    def test_published_reconciliation_clears_only_its_exact_missing_footer(self):
+        sha = "a" * 40
+        commits = [
+            {"sha": sha, "subject": "fix: published squash", "body": ""},
+            {"sha": "b" * 40, "subject": "fix: still malformed", "body": ""},
+        ]
+        try:
+            window = core_releaselib.classify_window(
+                commits,
+                reconciliations={sha: "Recover the exact published release note."},
+                published_shas={sha},
+            )
+        except TypeError as exc:
+            self.fail(f"classify_window has no explicit reconciliation seam: {exc}")
+        self.assertEqual([row["sha"] for row in window["missing_footer"]], ["b" * 40])
+        self.assertEqual(
+            window["commits"][0]["changelog"],
+            "Recover the exact published release note.")
+        self.assertTrue(window["commits"][0]["footer_reconciled"])
+
+    def test_unpublished_or_short_sha_reconciliation_cannot_clear_the_gate(self):
+        sha = "c" * 40
+        commits = [{"sha": sha, "subject": "feat: candidate", "body": ""}]
+        for reconciliations, published in (
+                ({sha: "Candidate note."}, set()),
+                ({sha[:7]: "Short identity."}, {sha})):
+            with self.subTest(reconciliations=reconciliations, published=published):
+                try:
+                    window = core_releaselib.classify_window(
+                        commits,
+                        reconciliations=reconciliations,
+                        published_shas=published,
+                    )
+                except TypeError as exc:
+                    self.fail(f"classify_window has no explicit reconciliation seam: {exc}")
+                self.assertEqual(
+                    [row["sha"] for row in window["missing_footer"]], [sha])
+
+    def test_reconciliation_ledger_is_strict_and_duplicate_sha_fails_closed(self):
+        parser = getattr(core_releaselib, "parse_changelog_reconciliations", None)
+        self.assertIsNotNone(parser, "the release helper lacks a strict ledger parser")
+        valid = """{
+          "schema_version": 1,
+          "entries": [{
+            "target": "academy-preview",
+            "commit_sha": "dddddddddddddddddddddddddddddddddddddddd",
+            "changelog": "Restore the exact published release note.",
+            "reason": "The published squash body stored escaped newlines.",
+            "authorization": "Maintainer-approved evidence reconciliation."
+          }]
+        }"""
+        parsed = parser(valid, "academy-preview")
+        self.assertEqual(
+            parsed,
+            {"d" * 40: "Restore the exact published release note."})
+        duplicate = valid.replace(
+            "]\n        }",
+            ", {\"target\": \"academy-preview\", "
+            "\"commit_sha\": \"dddddddddddddddddddddddddddddddddddddddd\", "
+            "\"changelog\": \"Second note.\", \"reason\": \"Duplicate.\", "
+            "\"authorization\": \"No.\"}]\n        }")
+        with self.assertRaises(core_releaselib.ReleaseTargetsError):
+            parser(duplicate, "academy-preview")
+
+    def test_reconciliation_ledger_rejects_every_malformed_schema_arm(self):
+        valid_entry = {
+            "target": "app",
+            "commit_sha": "a" * 40,
+            "changelog": "Exact note.",
+            "reason": "Published footer was malformed.",
+            "authorization": "Maintainer approved.",
+        }
+        cases = {
+            "invalid json": "{",
+            "top level list": json.dumps([]),
+            "extra top key": json.dumps({
+                "schema_version": 1, "entries": [], "extra": True}),
+            "boolean schema": json.dumps({
+                "schema_version": True, "entries": []}),
+            "wrong schema": json.dumps({
+                "schema_version": 2, "entries": []}),
+            "entries not list": json.dumps({
+                "schema_version": 1, "entries": {}}),
+            "entry not object": json.dumps({
+                "schema_version": 1, "entries": [None]}),
+            "missing entry key": json.dumps({
+                "schema_version": 1,
+                "entries": [{k: v for k, v in valid_entry.items()
+                             if k != "reason"}]}),
+            "extra entry key": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, extra="no")]}),
+            "invalid target": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, target="bad target")]}),
+            "uppercase sha": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, commit_sha="A" * 40)]}),
+            "short sha": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, commit_sha="a" * 39)]}),
+            "leading whitespace": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, changelog=" Exact note.")]}),
+            "embedded newline": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, reason="line one\nline two")]}),
+            "overlong value": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, authorization="x" * 4097)]}),
+            "too many entries": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, commit_sha=f"{i:040x}")
+                            for i in range(1025)]}),
+        }
+        for label, text in cases.items():
+            with self.subTest(label=label), \
+                    self.assertRaises(core_releaselib.ChangelogReconciliationError):
+                core_releaselib.parse_changelog_reconciliations(text, "app")
+
+        boundary_entry = dict(valid_entry, authorization="x" * 4096)
+        boundary_entries = [dict(boundary_entry, target="other",
+                                 commit_sha=f"{i:040x}") for i in range(1024)]
+        parsed = core_releaselib.parse_changelog_reconciliations(
+            json.dumps({"schema_version": 1, "entries": boundary_entries}), "app")
+        self.assertEqual(parsed, {})
+
+    def test_malformed_unrelated_target_entry_still_fails_whole_ledger(self):
+        ledger = {
+            "schema_version": 1,
+            "entries": [{
+                "target": "other target",
+                "commit_sha": "a" * 40,
+                "changelog": "Other note.",
+                "reason": "Malformed unrelated row.",
+                "authorization": "None.",
+            }],
+        }
+        with self.assertRaises(core_releaselib.ChangelogReconciliationError):
+            core_releaselib.parse_changelog_reconciliations(
+                json.dumps(ledger), "app")
+
+    def test_reconciliation_ledger_rejects_duplicate_json_members(self):
+        cases = (
+            '{"schema_version":1,"schema_version":1,"entries":[]}',
+            '{"schema_version":1,"entries":[{'
+            '"target":"app","commit_sha":"' + "a" * 40 + '",'
+            '"commit_sha":"' + "b" * 40 + '","changelog":"One.",'
+            '"reason":"Why.","authorization":"Who."}]}',
+            '{"schema_version":1,"entries":[{'
+            '"target":"app","commit_sha":"' + "a" * 40 + '",'
+            '"changelog":"One.","changelog":"Two.",'
+            '"reason":"Why.","authorization":"Who."}]}',
+            '{"schema_version":1,"entries":[{'
+            '"target":"app","commit_sha":"' + "a" * 40 + '",'
+            '"changelog":"One.","reason":"Why.",'
+            '"authorization":"Who.","authorization":"Other."}]}',
+        )
+        for text in cases:
+            with self.subTest(text=text), \
+                    self.assertRaises(core_releaselib.ChangelogReconciliationError):
+                core_releaselib.parse_changelog_reconciliations(text, "app")
+
+    def test_release_target_can_declare_one_reconciliation_ledger(self):
+        text = """<!-- release-targets -->
+[academy-preview]
+prefix: preview-
+changelog: CHANGELOG.md
+payload: .
+changelog-reconciliations: .codearbiter/release-changelog-reconciliations.json
+<!-- /release-targets -->
+"""
+        try:
+            row = core_releaselib.parse_release_targets(text)[0]
+        except core_releaselib.ReleaseTargetsError as exc:
+            self.fail(f"the declared reconciliation path is not supported: {exc}")
+        self.assertEqual(
+            row["changelog_reconciliations"],
+            ".codearbiter/release-changelog-reconciliations.json")
+
+    def _reconciliation_repo(self, tmp):
+        root = os.path.join(tmp, "consumer")
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        self._git(root, "init", "--quiet", "--initial-branch=main")
+        self._git(root, "config", "user.name", "release fixture")
+        self._git(root, "config", "user.email", "release@example.invalid")
+        targets = """<!-- release-targets -->
+[app]
+prefix: v
+changelog: CHANGELOG.md
+payload: .
+changelog-reconciliations: .codearbiter/reconciliations.json
+<!-- /release-targets -->
+"""
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(targets)
+        with open(os.path.join(root, "CHANGELOG.md"), "w", encoding="utf-8",
+                  newline="\n") as handle:
+            handle.write("# Changelog\n")
+        with open(os.path.join(root, "payload.txt"), "w", encoding="utf-8",
+                  newline="\n") as handle:
+            handle.write("published\n")
+        with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write('{"schema_version":1,"entries":[]}\n')
+        self._git(root, "add", ".")
+        self._git(root, "commit", "--quiet", "-m", "feat: published squash")
+        sha = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+        self._git(root, "update-ref", "refs/remotes/origin/main", sha)
+        return root, sha
+
+    def _write_reconciliation(self, root, sha):
+        ledger = {
+            "schema_version": 1,
+            "entries": [{
+                "target": "app",
+                "commit_sha": sha,
+                "changelog": "Recover the exact published release note.",
+                "reason": "The published squash body stored escaped newlines.",
+                "authorization": "Maintainer-approved evidence reconciliation.",
+            }],
+        }
+        with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(ledger, handle)
+            handle.write("\n")
+
+    def _publish_ledger_commit(self, root, message="chore: publish reconciliation"):
+        self._git(root, "add", ".codearbiter/reconciliations.json")
+        self._git(root, "commit", "--quiet", "-m", message)
+        head = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+        self._git(root, "update-ref", "refs/remotes/origin/main", head)
+        return head
+
+    def test_classify_window_cli_accepts_only_exact_published_reconciliation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            self._write_reconciliation(root, sha)
+            self._publish_ledger_commit(root)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(
+            "[RECONCILED] " + sha[:7] + " feat: published squash :: "
+            "Recover the exact published release note.", result.stdout)
+        self.assertNotIn("[NEEDS-TRIAGE]", result.stdout)
+
+    def test_classify_window_cli_rejects_reconciliation_not_on_published_ref(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, published_sha = self._reconciliation_repo(tmp)
+            self._git(root, "switch", "--quiet", "-c", "candidate")
+            with open(os.path.join(root, "payload.txt"), "a", encoding="utf-8") as handle:
+                handle.write("candidate\n")
+            self._git(root, "add", "payload.txt")
+            self._git(root, "commit", "--quiet", "-m", "fix: unpublished candidate")
+            candidate_sha = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "tag", "main", candidate_sha)
+            self._git(root, "switch", "--quiet", "main")
+            self._write_reconciliation(root, candidate_sha)
+            self._publish_ledger_commit(root)
+            log = f"{candidate_sha}\nfix: unpublished candidate\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("[NEEDS-TRIAGE] " + candidate_sha[:7], result.stdout)
+        self.assertNotEqual(candidate_sha, published_sha)
+        self.assertNotIn("[RECONCILED]", result.stdout)
+
+    def test_classify_window_cli_rejects_candidate_sha_as_default_branch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            self._write_reconciliation(root, sha)
+            self._publish_ledger_commit(root)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", sha)
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("refs/remotes/origin/" + sha, result.stderr)
+
+    def test_classify_window_cli_fails_closed_on_missing_declared_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            os.unlink(os.path.join(root, ".codearbiter", "reconciliations.json"))
+            self._git(root, "add", ".codearbiter/reconciliations.json")
+            self._git(root, "commit", "--quiet", "-m", "chore: remove ledger")
+            removed = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", removed)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("must be one regular file committed", result.stderr)
+
+    def test_ignored_live_only_ledger_cannot_clear_the_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            os.unlink(os.path.join(root, ".codearbiter", "reconciliations.json"))
+            with open(os.path.join(root, ".gitignore"), "w", encoding="utf-8") as handle:
+                handle.write("/.codearbiter/reconciliations.json\n")
+            self._git(root, "add", ".gitignore", ".codearbiter/reconciliations.json")
+            self._git(root, "commit", "--quiet", "-m", "chore: ignore live ledger")
+            published = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", published)
+            self._write_reconciliation(root, sha)
+            self.assertEqual(
+                self._git(root, "status", "--porcelain").stdout.decode(), "")
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("must be one regular file committed", result.stderr)
+
+    def test_intermediate_symlink_ledger_path_cannot_clear_the_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            outside = os.path.join(tmp, "outside")
+            os.makedirs(outside)
+            outside_ledger = os.path.join(outside, "ledger.json")
+            with open(outside_ledger, "w", encoding="utf-8") as handle:
+                handle.write('{"schema_version":1,"entries":[]}\n')
+            linked = os.path.join(root, ".codearbiter", "linked")
+            try:
+                os.symlink(outside, linked, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("directory symlink creation unavailable on this host")
+            self._git(root, "config", "core.symlinks", "true")
+            targets_path = os.path.join(root, ".codearbiter", "release-targets.md")
+            with open(targets_path, encoding="utf-8") as handle:
+                targets = handle.read()
+            with open(targets_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(targets.replace(
+                    ".codearbiter/reconciliations.json",
+                    ".codearbiter/linked/ledger.json"))
+            self._git(root, "add", ".codearbiter/release-targets.md",
+                      ".codearbiter/linked")
+            self._git(root, "commit", "--quiet", "-m", "chore: publish linked ledger")
+            published = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", published)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("must be one regular file committed", result.stderr)
+
+    def test_classify_window_cli_fails_closed_on_non_utf8_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                      "wb") as handle:
+                handle.write(b"\xff\xfe")
+            self._publish_ledger_commit(root, "chore: publish invalid ledger")
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("committed ledger is not UTF-8", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_classify_window_cli_fails_closed_on_symlinked_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            ledger_path = os.path.join(root, ".codearbiter", "reconciliations.json")
+            outside = os.path.join(tmp, "outside.json")
+            os.unlink(ledger_path)
+            with open(outside, "w", encoding="utf-8") as handle:
+                handle.write('{"schema_version":1,"entries":[]}\n')
+            try:
+                os.symlink(outside, ledger_path)
+            except (OSError, NotImplementedError):
+                self.skipTest("file symlink creation unavailable on this host")
+            self._git(root, "config", "core.symlinks", "true")
+            self._git(root, "add", ".codearbiter/reconciliations.json")
+            self._git(root, "commit", "--quiet", "-m", "chore: publish symlink")
+            symlink_head = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", symlink_head)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("committed regular blob", result.stderr)
+
+    def test_classify_window_cli_fails_when_published_ref_cannot_be_verified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            self._write_reconciliation(root, sha)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core(
+                    "classify-window", "app", "missing")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("could not resolve exact published ref", result.stderr)
+        self.assertIn("refs/remotes/origin/missing", result.stderr)
+
+    def test_wrong_target_and_out_of_window_entries_remain_inert(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, historical_sha = self._reconciliation_repo(tmp)
+            self._git(root, "switch", "--quiet", "-c", "candidate")
+            with open(os.path.join(root, "payload.txt"), "a", encoding="utf-8") as handle:
+                handle.write("candidate\n")
+            self._git(root, "add", "payload.txt")
+            self._git(root, "commit", "--quiet", "-m", "fix: current candidate")
+            candidate_sha = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "switch", "--quiet", "main")
+            ledger = {
+                "schema_version": 1,
+                "entries": [
+                    {"target": "app", "commit_sha": historical_sha,
+                     "changelog": "Historical note.", "reason": "Prior defect.",
+                     "authorization": "Maintainer approved."},
+                    {"target": "other", "commit_sha": candidate_sha,
+                     "changelog": "Wrong target note.", "reason": "Other series.",
+                     "authorization": "Other maintainer."},
+                ],
+            }
+            with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                      "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(ledger, handle)
+                handle.write("\n")
+            self._publish_ledger_commit(root)
+            log = f"{candidate_sha}\nfix: current candidate\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.stdout.splitlines()[0], "patch")
+        self.assertIn("[NEEDS-TRIAGE] " + candidate_sha[:7], result.stdout)
+        self.assertNotIn("[RECONCILED]", result.stdout)
+
+    def test_existing_footer_takes_precedence_over_reconciliation_text(self):
+        sha = "e" * 40
+        window = core_releaselib.classify_window(
+            [{"sha": sha, "subject": "fix: complete",
+              "body": "CHANGELOG: Authored footer."}],
+            reconciliations={sha: "Ledger text must remain inert."},
+            published_shas={sha})
+        self.assertTrue(window["commits"][0]["has_changelog_footer"])
+        self.assertFalse(window["commits"][0]["footer_reconciled"])
+        self.assertEqual(window["commits"][0]["changelog"], "")
+
+    def test_reconciliation_path_is_a_provenance_trigger(self):
+        rows = core_releaselib.parse_release_targets("""<!-- release-targets -->
+[app]
+prefix: v
+changelog: CHANGELOG.md
+payload: .
+changelog-reconciliations: .codearbiter/reconciliations.json
+<!-- /release-targets -->
+""")
+        self.assertIn(
+            ".codearbiter/reconciliations.json",
+            core_releaselib.provenance_trigger_paths(rows))
+
+    def test_reconciliation_path_must_be_one_repository_relative_file(self):
+        for value in ("../escape.json", "/absolute.json", ".", "a/../../escape"):
+            with self.subTest(value=value), \
+                    self.assertRaises(core_releaselib.ReleaseTargetsError):
+                core_releaselib.parse_release_targets(
+                    "<!-- release-targets -->\n[app]\nprefix: v\n"
+                    "changelog: CHANGELOG.md\npayload: .\n"
+                    f"changelog-reconciliations: {value}\n"
+                    "<!-- /release-targets -->\n")
+
     def test_parse_window_log_round_trips_the_prescribed_format(self):
         text = ("aaaaaaa\nfeat: one\nCHANGELOG: first\n----\n"
                 "bbbbbbb\nfix: two\n\n----\n")
@@ -7089,12 +7562,22 @@ class ReleaseSurfaceTest(unittest.TestCase):
                 ("VERSION_POLICY", "version-policy"),
                 ("INITIAL_VERSION", "initial-version"),
                 ("RELEASE_BUILD", "release-build"),
-                ("RELEASE_ASSETS", "release-assets")):
+                ("RELEASE_ASSETS", "release-assets"),
+                ("CHANGELOG_RECONCILIATIONS", "changelog-reconciliations")):
             self.assertIn(
                 f'{variable}=$("$PY" "{{{{PLUGIN_ROOT}}}}/hooks/_releaselib.py" '
                 f'show-row $TARGET --field {field})',
                 self.skill)
         self.assertIn('VERSION_POLICY=${VERSION_POLICY:-semver}', self.skill)
+
+    def test_reconciliation_route_binds_target_and_fresh_published_ref(self):
+        self.assertIn(
+            'classify-window "$TARGET" "$DEFAULT_BRANCH"', self.skill)
+        self.assertIn('git fetch origin "$DEFAULT_BRANCH"', self.skill)
+        self.assertIn("A failed fetch STOPs", self.skill)
+        self.assertIn("exact lowercase 40-character commit SHA", self.skill)
+        self.assertIn("MUST NOT be added to the ledger", self.skill)
+        self.assertIn("may supply changelog text only", self.skill)
 
     def test_version_and_changelog_routes_are_policy_aware(self):
         for command in (
