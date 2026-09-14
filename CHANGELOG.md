@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.1] - 2026-09-14
+
+### Fixed
+
+- Permit explicit changelog reconciliation only for exact published commits through a reviewed, default-branch-bound ledger while retaining strict failure for ordinary missing footers.
+
 ## [2.18.0] - 2026-09-13
 
 ### Added

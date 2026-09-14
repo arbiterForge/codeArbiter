@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-09-14
+
+### Fixed
+
+- Permit explicit changelog reconciliation only for exact published commits through a reviewed, default-branch-bound ledger while retaining strict failure for ordinary missing footers.
+
 ## [0.10.0] - 2026-09-13
 
 ### Added

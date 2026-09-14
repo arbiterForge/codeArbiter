@@ -61,11 +61,13 @@
 #                           -> list[str]   paths filtered to payload, minus
 #                           any payload-exclude entry (A-3.4)
 #   provenance_trigger_paths(rows) -> list[str]   every manifest/changelog/
-#                           generated_manifest/artifacts path a declared row
-#                           references, sorted and de-duplicated (A-5.6)
+#                           generated_manifest/artifacts/reconciliation path a
+#                           declared row references, sorted and de-duplicated
+#                           (A-5.6)
 #   _manifest_version(path) -> str | None
 #   classify_commit(subject, body) -> dict
-#   classify_window(commits) -> dict
+#   classify_window(commits, reconciliations=None, published_shas=None) -> dict
+#   parse_changelog_reconciliations(text, target) -> dict[str, str]
 #   parse_window_log(text) -> list[dict]
 #   first_release_baseline(adoption_log_text) -> str
 #   peel_tag(ls_remote_text, tag) -> str
@@ -101,6 +103,8 @@
 #   MultipleBlocksError     — more than one delimiter block in the file
 #   ValueTooLongError       — a declared value exceeds VALUE_MAX_CHARS
 #                             (A-2.4); a sibling declared-file error, exits 4
+#   ChangelogReconciliationError — a declared reconciliation ledger is
+#                             missing, unreadable, unsafe, or malformed
 #   DelimiterInValueError   — a value contains the literal closing delimiter,
 #                             which would otherwise truncate the block under a
 #                             naive non-greedy match
@@ -133,6 +137,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import posixpath
 import re
@@ -259,6 +264,15 @@ class ValueTooLongError(ReleaseTargetsError):
     precedent). A sibling of every other declared-file error, so it exits 4
     and never 3 -- an over-long value is a malformed declaration, never the
     genuinely-absent state that triggers the Back-fill lane."""
+
+
+class ChangelogReconciliationError(ReleaseTargetsError):
+    """A declared changelog-reconciliation ledger is malformed.
+
+    Reconciliations are release policy, not best-effort input.  A malformed
+    record must therefore fail closed like the release-target declaration
+    that points at it.
+    """
 
 
 class DelimiterInValueError(ReleaseTargetsError):
@@ -1260,7 +1274,8 @@ def provenance_trigger_paths(rows):
     for row in rows:
         if not isinstance(row, dict):
             continue
-        for key in ("manifest", "changelog", "artifacts", "generated_manifest"):
+        for key in ("manifest", "changelog", "artifacts", "generated_manifest",
+                    "changelog_reconciliations"):
             value = row.get(key)
             for item in (value if isinstance(value, list) else [value]):
                 if isinstance(item, str) and item.strip():
@@ -1342,7 +1357,7 @@ def classify_commit(subject, body=""):
     }
 
 
-def classify_window(commits):
+def classify_window(commits, reconciliations=None, published_shas=None):
     """`[{sha, subject, body}, ...]` -> the whole window's verdict:
     `{bump, commits: [...], missing_footer: [...]}`.
 
@@ -1355,9 +1370,13 @@ def classify_window(commits):
     A breaking commit bumps major regardless of type, so a `chore!:` is
     reported as bumping and IS subject to the footer rule -- a hand-rolled
     type-list check misses that, because `chore` is not in the bumping
-    list.
+    list.  ``reconciliations`` may supply exact-SHA changelog text only for
+    SHAs independently present in ``published_shas``.  It never changes the
+    commit classification or bump.
     """
     rows = []
+    reconciliations = reconciliations if isinstance(reconciliations, dict) else {}
+    published_shas = published_shas if isinstance(published_shas, (set, frozenset)) else set()
     if not isinstance(commits, (list, tuple)):
         commits = []
     for entry in commits:
@@ -1366,14 +1385,95 @@ def classify_window(commits):
         verdict = classify_commit(entry.get("subject", ""), entry.get("body", ""))
         verdict["sha"] = str(entry.get("sha", ""))
         verdict["subject"] = str(entry.get("subject", ""))
+        sha = verdict["sha"]
+        reconciled = (
+            re.fullmatch(r"[0-9a-f]{40}", sha) is not None
+            and not verdict["has_changelog_footer"]
+            and sha in published_shas
+            and isinstance(reconciliations.get(sha), str)
+            and bool(reconciliations[sha].strip())
+            and "\n" not in reconciliations[sha]
+            and "\r" not in reconciliations[sha]
+        )
+        verdict["footer_reconciled"] = reconciled
+        verdict["changelog"] = reconciliations[sha].strip() if reconciled else ""
         rows.append(verdict)
     bump = "none"
     for row in rows:
         if _BUMP_RANK[row["bump"]] > _BUMP_RANK[bump]:
             bump = row["bump"]
     missing = [r for r in rows
-               if r["bump"] != "none" and not r["has_changelog_footer"]]
+               if (r["bump"] != "none"
+                   and not r["has_changelog_footer"]
+                   and not r["footer_reconciled"])]
     return {"bump": bump, "commits": rows, "missing_footer": missing}
+
+
+def parse_changelog_reconciliations(text, target):
+    """Parse a strict SHA-bound changelog-reconciliation ledger.
+
+    Returns only the entries for ``target`` as ``{full_sha: changelog}``, but
+    validates every entry first so an unrelated malformed row cannot be
+    hidden by target filtering.  The ledger is deliberately narrow: it can
+    supply one single-line changelog entry for an exact published commit; it
+    cannot change commit classification, version policy, or release scope.
+    """
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ChangelogReconciliationError(
+                    f"duplicate JSON member {key!r}")
+            result[key] = value
+        return result
+
+    try:
+        data = json.loads(text, object_pairs_hook=unique_object)
+    except (TypeError, ValueError) as exc:
+        raise ChangelogReconciliationError(
+            f"invalid JSON: {exc}") from None
+    if not isinstance(data, dict) or set(data) != {"schema_version", "entries"}:
+        raise ChangelogReconciliationError(
+            "top level must contain exactly schema_version and entries")
+    if type(data["schema_version"]) is not int or data["schema_version"] != 1:
+        raise ChangelogReconciliationError("schema_version must be integer 1")
+    if not isinstance(data["entries"], list):
+        raise ChangelogReconciliationError("entries must be a list")
+    if len(data["entries"]) > 1024:
+        raise ChangelogReconciliationError("entries exceeds the 1024-record limit")
+
+    required = {"target", "commit_sha", "changelog", "reason", "authorization"}
+    seen = set()
+    selected = {}
+    for index, entry in enumerate(data["entries"]):
+        if not isinstance(entry, dict) or set(entry) != required:
+            raise ChangelogReconciliationError(
+                f"entry {index} must contain exactly {', '.join(sorted(required))}")
+        values = {}
+        for key in required:
+            value = entry[key]
+            if (not isinstance(value, str) or value != value.strip()
+                    or not value or len(value) > 4096
+                    or "\r" in value or "\n" in value):
+                raise ChangelogReconciliationError(
+                    f"entry {index} field {key!r} must be a non-empty "
+                    "single-line string of at most 4096 characters")
+            values[key] = value
+        if re.fullmatch(r"[A-Za-z0-9._-]+", values["target"]) is None:
+            raise ChangelogReconciliationError(
+                f"entry {index} target is not a valid release target name")
+        if re.fullmatch(r"[0-9a-f]{40}", values["commit_sha"]) is None:
+            raise ChangelogReconciliationError(
+                f"entry {index} commit_sha must be a full lowercase Git SHA")
+        identity = (values["target"], values["commit_sha"])
+        if identity in seen:
+            raise ChangelogReconciliationError(
+                f"duplicate reconciliation for {values['target']} "
+                f"{values['commit_sha']}")
+        seen.add(identity)
+        if values["target"] == target:
+            selected[values["commit_sha"]] = values["changelog"]
+    return selected
 
 
 def parse_window_log(text):
@@ -1708,6 +1808,7 @@ _KEY_FIELD = {
     "initial-version": "initial_version",
     "release-build": "release_build",
     "release-asset": "release_assets",
+    "changelog-reconciliations": "changelog_reconciliations",
 }
 
 
@@ -1731,6 +1832,7 @@ def _new_row(name):
         "initial_version": None,
         "release_build": None,
         "release_assets": [],
+        "changelog_reconciliations": None,
     }
 
 
@@ -1782,6 +1884,12 @@ def _finish_row(row):
             raise MalformedBlockError(
                 f"target {row['target']!r} declares an unsafe, malformed, "
                 "or duplicate release-asset template")
+    reconciliations = row["changelog_reconciliations"]
+    if (reconciliations is not None
+            and _normalised_release_path(reconciliations) in (None, ".")):
+        raise MalformedBlockError(
+            f"target {row['target']!r} changelog-reconciliations must name "
+            "one repository-relative file")
 
 
 _GOVERNANCE_SCRATCH_PATHS = (
@@ -1845,7 +1953,8 @@ def governance_scratch_exclusions(row):
     or release asset. Such a declaration wins: the path remains visible to
     clean-tree and pre-tag mutation gates.
     """
-    surfaces = [row.get("changelog"), row.get("provenance_manifest")]
+    surfaces = [row.get("changelog"), row.get("provenance_manifest"),
+                row.get("changelog_reconciliations")]
     for field in ("manifest", "generated_manifest", "artifacts",
                   "release_assets"):
         surfaces.extend(row.get(field) or [])
@@ -2314,6 +2423,87 @@ def default_backfill_root():
     return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
 
 
+def _load_declared_changelog_reconciliations(
+        row, target, project_root, published_commit):
+    """Load one target's ledger from the fetched default-branch commit."""
+    declared = row.get("changelog_reconciliations")
+    if declared is None:
+        return {}
+    tree_path = _normalize_git_tree_path(declared)
+    if tree_path is None or _normalised_release_path(declared) == ".":
+        raise ChangelogReconciliationError(
+            "changelog-reconciliations must name one repository-relative file")
+    root = os.path.realpath(os.path.abspath(project_root))
+    try:
+        git = git_executable()
+        environment = _sanitized_git_environment()
+        root_probe = subprocess.run(
+            [git, "rev-parse", "--show-toplevel"], cwd=root,
+            capture_output=True, text=True, timeout=30, env=environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        raise ChangelogReconciliationError(
+            f"could not verify repository root: {exc}") from None
+    if (root_probe.returncode != 0
+            or os.path.normcase(os.path.realpath(os.path.abspath(
+                root_probe.stdout.strip()))) != os.path.normcase(root)):
+        raise ChangelogReconciliationError(
+            "could not bind changelog-reconciliations to the repository root")
+
+    try:
+        entry_probe = subprocess.run(
+            [git, "ls-tree", "-z", published_commit, "--", tree_path], cwd=root,
+            capture_output=True, timeout=30, env=environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        raise ChangelogReconciliationError(
+            f"could not inspect committed ledger: {exc}") from None
+    entries = [entry for entry in entry_probe.stdout.split(b"\0") if entry]
+    if entry_probe.returncode != 0 or len(entries) != 1:
+        raise ChangelogReconciliationError(
+            "changelog-reconciliations must be one regular file committed on "
+            "the fetched default branch")
+    match = re.fullmatch(
+        rb"(100644|100755) blob ([0-9a-f]{40})\t(.+)", entries[0])
+    if match is None:
+        raise ChangelogReconciliationError(
+            "changelog-reconciliations must be a committed regular blob")
+    try:
+        found_path = match.group(3).decode("utf-8")
+    except UnicodeError as exc:
+        raise ChangelogReconciliationError(
+            f"committed ledger path is not UTF-8: {exc}") from None
+    if found_path != tree_path:
+        raise ChangelogReconciliationError(
+            "committed ledger path does not match the declaration exactly")
+    object_sha = match.group(2).decode("ascii")
+    try:
+        size_probe = subprocess.run(
+            [git, "cat-file", "-s", object_sha], cwd=root,
+            capture_output=True, text=True, timeout=30, env=environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        raise ChangelogReconciliationError(
+            f"could not inspect committed ledger size: {exc}") from None
+    if size_probe.returncode != 0 or not size_probe.stdout.strip().isdigit():
+        raise ChangelogReconciliationError(
+            "could not verify committed ledger size")
+    if int(size_probe.stdout.strip()) > 1024 * 1024:
+        raise ChangelogReconciliationError("ledger exceeds the 1 MiB limit")
+    try:
+        blob_probe = subprocess.run(
+            [git, "cat-file", "blob", object_sha], cwd=root,
+            capture_output=True, timeout=30, env=environment)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        raise ChangelogReconciliationError(
+            f"could not read committed ledger: {exc}") from None
+    if blob_probe.returncode != 0:
+        raise ChangelogReconciliationError("could not read committed ledger")
+    try:
+        text = blob_probe.stdout.decode("utf-8")
+    except UnicodeError as exc:
+        raise ChangelogReconciliationError(
+            f"committed ledger is not UTF-8: {exc}") from None
+    return parse_changelog_reconciliations(text, target)
+
+
 def _resolve_target_row(target, targets_file):
     """The declared row named `target` in `targets_file`, or `None` if no
     row of that name is declared. Raises `ReleaseTargetsError` (any
@@ -2393,13 +2583,19 @@ def main(argv):
                                   equality guard: `classify` short-circuits on
                                   a fresh publish and never reaches its own
                                   version comparison (run 12).
-      classify-window            stdin = `git log $WINDOW --pretty=format:
+      classify-window [<target> <default-branch>]
+                                  stdin = `git log $WINDOW --pretty=format:
                                   %H%n%s%n%b%n---- -- $PAYLOAD` -> prints the
-                                  derived bump, then one
+                                  derived bump, then accepted `[RECONCILED]`
+                                  rows and one
                                   `[NEEDS-TRIAGE] <sha> <subject>` line per
                                   BUMPING commit missing a CHANGELOG: footer.
                                   exit 0 clean - 1 a footer is missing (the
                                   step-3 BLOCK) - 2 the window is non-bumping
+                                  - 4 a declared reconciliation ledger or
+                                  exact default-branch proof failed closed.
+                                  The no-argument form remains the strict
+                                  legacy classifier and accepts no ledger.
                                   (the step-2 STOP). Classifies and reports;
                                   the skill keeps the decision.
       adoption-commit            stdin = `git log --diff-filter=A --format=%H
@@ -2656,6 +2852,7 @@ def main(argv):
                   ("PRE_TAG", "pre_tag"),
                   ("PROVENANCE_MANIFEST", "provenance_manifest"),
                   ("LATEST_ELIGIBLE", "latest_eligible"),
+                  ("CHANGELOG_RECONCILIATIONS", "changelog_reconciliations"),
                   ("DISPLAY_NAME", "display_name")]
         query_fields = fields + [
             ("VERSION_POLICY", "version_policy"),
@@ -2855,7 +3052,7 @@ def main(argv):
             return 2
         return 1 if mismatched else 0
 
-    if cmd == "classify-window" and not rest:
+    if cmd == "classify-window" and len(rest) in (0, 2):
         # stdin = `git log $WINDOW --pretty=format:%H%n%s%n%b%n---- --
         # $PAYLOAD`. Prints the derived bump on the first line, then one
         # `[NEEDS-TRIAGE] <short-sha> <subject>` line per BUMPING commit
@@ -2870,8 +3067,105 @@ def main(argv):
         # skill keeps the BLOCK. A helper returning proceed/stop would put
         # a governance decision inside a library, which is the wrong side
         # of ADR-0010's cooperative-agent line.
-        window = classify_window(parse_window_log(sys.stdin.read()))
+        commits = parse_window_log(sys.stdin.read())
+        reconciliations = {}
+        published_shas = set()
+        if rest:
+            target, default_branch = rest
+            targets_file = default_targets_path()
+            project_root = os.path.dirname(os.path.dirname(targets_file))
+            try:
+                row = _resolve_target_row(target, targets_file)
+                if row is None:
+                    sys.stderr.write(f"unknown release target: {target}\n")
+                    return 2
+            except ReleaseTargetsError as exc:
+                sys.stderr.write(
+                    f"{type(exc).__name__}: could not load changelog "
+                    f"reconciliations: {exc}\n")
+                return _targets_error_exit_code(exc)
+
+            if row.get("changelog_reconciliations") is not None:
+                try:
+                    branch_probe = subprocess.run(
+                        [git_executable(), "check-ref-format", "--branch",
+                         default_branch], cwd=project_root, capture_output=True,
+                        text=True, timeout=30,
+                        env=_sanitized_git_environment())
+                except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+                    sys.stderr.write(
+                        f"classify-window: could not validate default branch: "
+                        f"{exc}\n")
+                    return 4
+                if branch_probe.returncode != 0:
+                    sys.stderr.write(
+                        f"classify-window: invalid default branch "
+                        f"{default_branch!r}\n")
+                    return 4
+                published_ref = f"refs/remotes/origin/{default_branch}"
+                try:
+                    published_probe = subprocess.run(
+                        [git_executable(), "rev-parse", "--verify",
+                         f"{published_ref}^{{commit}}"], cwd=project_root,
+                        capture_output=True, text=True, timeout=30,
+                        env=_sanitized_git_environment())
+                except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+                    sys.stderr.write(
+                        f"classify-window: could not resolve published default "
+                        f"branch: {exc}\n")
+                    return 4
+                published_commit = published_probe.stdout.strip()
+                if (published_probe.returncode != 0
+                        or re.fullmatch(
+                            r"[0-9a-f]{40}", published_commit) is None):
+                    sys.stderr.write(
+                        f"classify-window: could not resolve exact published "
+                        f"ref {published_ref!r}\n")
+                    return 4
+                try:
+                    reconciliations = _load_declared_changelog_reconciliations(
+                        row, target, project_root, published_commit)
+                except ReleaseTargetsError as exc:
+                    sys.stderr.write(
+                        f"{type(exc).__name__}: could not load changelog "
+                        f"reconciliations: {exc}\n")
+                    return _targets_error_exit_code(exc)
+
+                window_shas = {
+                    entry.get("sha") for entry in commits
+                    if isinstance(entry, dict)
+                }
+                for sha in sorted(set(reconciliations).intersection(window_shas)):
+                    try:
+                        ancestor = subprocess.run(
+                            [git_executable(), "merge-base", "--is-ancestor",
+                             sha, published_commit],
+                            cwd=project_root, capture_output=True, text=True,
+                            timeout=30, env=_sanitized_git_environment())
+                    except (OSError, subprocess.TimeoutExpired) as exc:
+                        sys.stderr.write(
+                            f"classify-window: could not verify published "
+                            f"commit {sha}: {exc}\n")
+                        return 4
+                    if ancestor.returncode == 0:
+                        published_shas.add(sha)
+                    elif ancestor.returncode != 1:
+                        sys.stderr.write(
+                            f"classify-window: could not verify {sha} against "
+                            f"published ref {published_ref!r}: "
+                            f"{ancestor.stderr.strip()}\n")
+                        return 4
+
+        window = classify_window(
+            commits,
+            reconciliations=reconciliations,
+            published_shas=published_shas)
         print(window["bump"])
+        for row in window["commits"]:
+            if row["footer_reconciled"]:
+                print(
+                    f"[RECONCILED] {row['sha'][:7]} {row['subject']} :: "
+                    f"{row['changelog']}")
         for row in window["missing_footer"]:
             print(f"[NEEDS-TRIAGE] {row['sha'][:7]} {row['subject']}")
         if window["missing_footer"]:
