@@ -3085,70 +3085,76 @@ def main(argv):
                     f"reconciliations: {exc}\n")
                 return _targets_error_exit_code(exc)
 
-            try:
-                branch_probe = subprocess.run(
-                    [git_executable(), "check-ref-format", "--branch",
-                     default_branch], cwd=project_root, capture_output=True,
-                    text=True, timeout=30, env=_sanitized_git_environment())
-            except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
-                sys.stderr.write(
-                    f"classify-window: could not validate default branch: {exc}\n")
-                return 4
-            if branch_probe.returncode != 0:
-                sys.stderr.write(
-                    f"classify-window: invalid default branch {default_branch!r}\n")
-                return 4
-            published_ref = f"refs/remotes/origin/{default_branch}"
-            try:
-                published_probe = subprocess.run(
-                    [git_executable(), "rev-parse", "--verify",
-                     f"{published_ref}^{{commit}}"], cwd=project_root,
-                    capture_output=True, text=True, timeout=30,
-                    env=_sanitized_git_environment())
-            except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
-                sys.stderr.write(
-                    f"classify-window: could not resolve published default "
-                    f"branch: {exc}\n")
-                return 4
-            published_commit = published_probe.stdout.strip()
-            if (published_probe.returncode != 0
-                    or re.fullmatch(r"[0-9a-f]{40}", published_commit) is None):
-                sys.stderr.write(
-                    f"classify-window: could not resolve exact published ref "
-                    f"{published_ref!r}\n")
-                return 4
-            try:
-                reconciliations = _load_declared_changelog_reconciliations(
-                    row, target, project_root, published_commit)
-            except ReleaseTargetsError as exc:
-                sys.stderr.write(
-                    f"{type(exc).__name__}: could not load changelog "
-                    f"reconciliations: {exc}\n")
-                return _targets_error_exit_code(exc)
-
-            window_shas = {
-                entry.get("sha") for entry in commits if isinstance(entry, dict)
-            }
-            for sha in sorted(set(reconciliations).intersection(window_shas)):
+            if row.get("changelog_reconciliations") is not None:
                 try:
-                    ancestor = subprocess.run(
-                        [git_executable(), "merge-base", "--is-ancestor", sha,
-                         published_commit],
-                        cwd=project_root, capture_output=True, text=True,
-                        timeout=30, env=_sanitized_git_environment())
-                except (OSError, subprocess.TimeoutExpired) as exc:
+                    branch_probe = subprocess.run(
+                        [git_executable(), "check-ref-format", "--branch",
+                         default_branch], cwd=project_root, capture_output=True,
+                        text=True, timeout=30,
+                        env=_sanitized_git_environment())
+                except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
                     sys.stderr.write(
-                        f"classify-window: could not verify published commit "
-                        f"{sha}: {exc}\n")
+                        f"classify-window: could not validate default branch: "
+                        f"{exc}\n")
                     return 4
-                if ancestor.returncode == 0:
-                    published_shas.add(sha)
-                elif ancestor.returncode != 1:
+                if branch_probe.returncode != 0:
                     sys.stderr.write(
-                        f"classify-window: could not verify {sha} against "
-                        f"published ref {published_ref!r}: "
-                        f"{ancestor.stderr.strip()}\n")
+                        f"classify-window: invalid default branch "
+                        f"{default_branch!r}\n")
                     return 4
+                published_ref = f"refs/remotes/origin/{default_branch}"
+                try:
+                    published_probe = subprocess.run(
+                        [git_executable(), "rev-parse", "--verify",
+                         f"{published_ref}^{{commit}}"], cwd=project_root,
+                        capture_output=True, text=True, timeout=30,
+                        env=_sanitized_git_environment())
+                except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+                    sys.stderr.write(
+                        f"classify-window: could not resolve published default "
+                        f"branch: {exc}\n")
+                    return 4
+                published_commit = published_probe.stdout.strip()
+                if (published_probe.returncode != 0
+                        or re.fullmatch(
+                            r"[0-9a-f]{40}", published_commit) is None):
+                    sys.stderr.write(
+                        f"classify-window: could not resolve exact published "
+                        f"ref {published_ref!r}\n")
+                    return 4
+                try:
+                    reconciliations = _load_declared_changelog_reconciliations(
+                        row, target, project_root, published_commit)
+                except ReleaseTargetsError as exc:
+                    sys.stderr.write(
+                        f"{type(exc).__name__}: could not load changelog "
+                        f"reconciliations: {exc}\n")
+                    return _targets_error_exit_code(exc)
+
+                window_shas = {
+                    entry.get("sha") for entry in commits
+                    if isinstance(entry, dict)
+                }
+                for sha in sorted(set(reconciliations).intersection(window_shas)):
+                    try:
+                        ancestor = subprocess.run(
+                            [git_executable(), "merge-base", "--is-ancestor",
+                             sha, published_commit],
+                            cwd=project_root, capture_output=True, text=True,
+                            timeout=30, env=_sanitized_git_environment())
+                    except (OSError, subprocess.TimeoutExpired) as exc:
+                        sys.stderr.write(
+                            f"classify-window: could not verify published "
+                            f"commit {sha}: {exc}\n")
+                        return 4
+                    if ancestor.returncode == 0:
+                        published_shas.add(sha)
+                    elif ancestor.returncode != 1:
+                        sys.stderr.write(
+                            f"classify-window: could not verify {sha} against "
+                            f"published ref {published_ref!r}: "
+                            f"{ancestor.stderr.strip()}\n")
+                        return 4
 
         window = classify_window(
             commits,

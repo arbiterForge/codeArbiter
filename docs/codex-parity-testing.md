@@ -31,10 +31,10 @@ parses the machine-readable marker below and compares `adapter_version` with the
 manifest. A mismatch blocks the release; the check never rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":1,"adapter":"ca-codex","adapter_version":"0.10.1","candidate_package_sha256":"c1e050f777686c21173f14fa347d80ed8f204a5d80b8f2e300d2f21f5be3f60b","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-14","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":1,"adapter":"ca-codex","adapter_version":"0.10.1","candidate_package_sha256":"05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-14","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.10.1**, Windows, 2026-09-14.
 A fresh ephemeral Codex CLI task using the supported `gpt-5.5` model selected the exact installed
-0.10.1 tracked candidate package (`sha256:c1e050f777686c21173f14fa347d80ed8f204a5d80b8f2e300d2f21f5be3f60b`)
+0.10.1 tracked candidate package (`sha256:05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90`)
 and received the repository startup state through SessionStart context. With `PLUGIN_ROOT` resolved
 from the advertised 0.10.1 `$ca-doctor` skill path, the doctor reported 10 OK, 2 WARN, and 0 FAIL;
 the prescribed staging dry-run was denied exactly once with `[H-03]` before execution. This

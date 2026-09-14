@@ -5091,6 +5091,32 @@ changelog-reconciliations: .codearbiter/reconciliations.json
         self.assertIn("could not resolve exact published ref", result.stderr)
         self.assertIn("refs/remotes/origin/missing", result.stderr)
 
+    def test_classify_window_cli_does_not_require_published_ref_without_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = os.path.join(tmp, "consumer")
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            self._git(root, "init", "--quiet", "--initial-branch=main")
+            self._git(root, "config", "user.name", "release fixture")
+            self._git(root, "config", "user.email", "release@example.invalid")
+            targets = """<!-- release-targets -->
+[app]
+prefix: v
+changelog: CHANGELOG.md
+payload: .
+<!-- /release-targets -->
+"""
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                      "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(targets)
+            log = "a" * 40 + "\nfeat: ordinary change\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.stdout.splitlines()[0], "minor")
+        self.assertIn("[NEEDS-TRIAGE] " + "a" * 7, result.stdout)
+        self.assertEqual(result.stderr, "")
+
     def test_wrong_target_and_out_of_window_entries_remain_inert(self):
         with tempfile.TemporaryDirectory() as tmp:
             root, historical_sha = self._reconciliation_repo(tmp)
