@@ -1,0 +1,428 @@
+{
+  "created": "2026-09-15",
+  "doc": "code-map",
+  "entries": [
+    {
+      "claims": [
+        {
+          "claim": "SessionStart hook; detects arbiter-enabled repo, injects persona and live state",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "bfa10de333ef0b5fdf1873941fced5deea01ce35",
+      "path": "core/pysrc/session-start.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Hook dispatch kernel; host seam, gate evaluation, marker/project-root resolution",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "ff26a6aefbd9efa7a9e98f1beaf67d789398f994",
+      "path": "core/pysrc/_hooklib.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Single source of truth for the three hosts: plugin dirs, surface rules, tool classes, permission policies",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "ab4ed6852b736b882229451e434f7aa9666f0aab",
+      "path": "core/hosts.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Strict loader/validator for core/hosts.json; immutable per-host descriptor objects",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "6d0d178b20a13168acdeb37674c39f3bb7eed3b4",
+      "path": "tools/host_descriptors.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Descriptor-driven generator; renders core/surface/ templates into each plugin's surface tree",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "937ce92fdf177e2f73ef007c18d8cd21dd4261f5",
+      "path": "tools/build-surface.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Generates the ca-pi npm package.json (scoped name, provenance, files whitelist)",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "1acf66a2db46269f1cc8f9f26ab9279dc5448344",
+      "path": "tools/build-host-packages.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Byte-identical vendoring of core/pysrc into each plugin's hooks/",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "4f43d2b00765136c5b0610987ccde257e741099b",
+      "path": "tools/sync-core.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Skills directory index; catalogs the full workflow set",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "98e0f8f84eee3aa33148a845c04caa306983bbd3",
+      "path": "core/surface/skills/INDEX.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "/ca:feature command; spec-driven feature entry",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "4bb57bf82106308ab297240bd2589722ecaa505d",
+      "path": "core/surface/commands/feature.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Dispatched-subagent persona directory",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "afb7e5a7343f5e4f102e5fa9bd235a9cdfa5a5b4",
+      "path": "core/surface/agents/INDEX.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Read-only evidence-gatherer role; structured findings, no raw excerpts",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "14fea16d0c4c479adc6bcc03a727af1a5ae96514",
+      "path": "core/surface/agents/scout.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Claude Code plugin manifest for ca (v2.18.2)",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "b82a2060d38dacfbf879812b5e3d35be9199c92e",
+      "path": "plugins/ca/.claude-plugin/plugin.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.10.2), generated kernel",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "4c1dfc77bcbeebff3c78222fa5db386fb3560d6b",
+      "path": "plugins/ca-codex/.codex-plugin/plugin.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "npm package manifest for ca-pi (v0.11.2, @arbiterforge/ca-pi), generated kernel",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": true,
+      "hash": "3b023522af378caeee29c57772f55088942cc667",
+      "path": "plugins/ca-pi/package.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Claude Code plugin manifest for the sandbox/testing plugin (v0.1.6)",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "2c1cc323bc3049f6e6abc5124c167d607667a8b4",
+      "path": "plugins/ca-sandbox/.claude-plugin/plugin.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Build-generated command catalog consumed by ca's runtime",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "7a193adad5f9412a59fc96f36d6b837b18b2ae37",
+      "path": "plugins/ca/generated/command-catalog.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Build-generated command catalog consumed by Codex's skill dispatch",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "d0e297b7a62a5ee613aa2b0c07f4898a6074d2f4",
+      "path": "plugins/ca-codex/generated/command-catalog.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Build-generated command catalog consumed by Pi's skill dispatch",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "46b6539a349106a2e4842c0da1ee4ce9460c02d8",
+      "path": "plugins/ca-pi/generated/command-catalog.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Build-generated Pi skill role metadata",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "9aeae96c773a84e0540b381577e611357e59beaa",
+      "path": "plugins/ca-pi/generated/roles.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Pins academy-source to arbiterForge/arbiter-academy; checkout currently unpopulated",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "984e7051db098986d992f311371064c9351f0a5f",
+      "path": ".gitmodules"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Prose contract: tag immutability rules, receipt capture, legacy-epoch governance",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "9ce94b3b8a003cdc29180a2ae91f92bb4ab7dd05",
+      "path": ".github/RELEASE-PROVENANCE.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Append-only ledger of original-publication tag receipts",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "f8d9b2018f61f0d32aa4748d552071a21d4e7b93",
+      "path": ".github/published-tags.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "ADR-0034's closed, immutable 44-tag legacy epoch",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "afe9e4d379b3cbdc46c641a71d0c72cfb0601934",
+      "path": ".github/legacy-published-tags.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Merge-gate check comparing live tag refs against the two publication ledgers",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "cc782544ef1ceb8b2353fcea86baa29b569796f5",
+      "path": ".github/scripts/check_tag_immutability.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Astro build configuration for the docs site",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "493927dff4e69d38fc158934b05290813a85d417",
+      "path": "site/astro.config.mjs"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Single source of truth for the site's base path",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "8b0e29d037d75a98486e60aca1de636725668a9d",
+      "path": "site/base.mjs"
+    },
+    {
+      "claims": [
+        {
+          "claim": "npm manifest for the docs site; vitest content-structure suite + link-audit",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": true,
+      "hash": "474680308eac8f058b44634467931ce2ec396aff",
+      "path": "site/package.json"
+    },
+    {
+      "claims": [
+        {
+          "claim": "New release-applicability tooling; hashes content with approved createHash(sha256)",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "a3b007d5ab2ae94a0fbc84ca0e784f0bd11d7895",
+      "path": "site/scripts/release-applicability.ts"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Project identity/scope/stage; arbiter: enabled gates session startup",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "906e69bf0d578391546291edfde608799043bcc5",
+      "path": ".codearbiter/CONTEXT.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Approved/forbidden crypto primitives, secret-handling policy, declared boundary exceptions",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "91f084254166d190b857585bc4918894052b0e32",
+      "path": ".codearbiter/security-controls.md"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Append-only ADR lifecycle ledger (proposal to accepted, obligations bound/verified)",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "0fac7dda7809416762375cce7dc7ce58cbff5ab6",
+      "path": ".codearbiter/decisions/adr-lifecycle.jsonl"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Protocol-level test suite exercising hook entry points and gate evaluation",
+          "confidence": "moderate",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "e48f6d957ca49a54250984ad43f41ad3eabccb77",
+      "path": "tests/test_p05_fixture.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "Detector-fixture test file for CRYPTO_RE; crypto-pattern strings are non-operational test data",
+          "confidence": "strong",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": false,
+      "hash": "7b5536c0a3eb9f61d57dfb122af44c3539ff74ec",
+      "path": "plugins/ca/hooks/tests/test_crypto_context.py"
+    },
+    {
+      "claims": [
+        {
+          "claim": "CI workflow gating test/lint",
+          "confidence": "moderate",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": true,
+      "hash": "c26864a87303fb0de659a91e9e202d0d66ceece2",
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "claims": [
+        {
+          "claim": "CI workflow driving release publishing",
+          "confidence": "moderate",
+          "lines": "1-end"
+        }
+      ],
+      "drift_trigger": true,
+      "hash": "f083ea2387b6a37fd9f2e987d47713f190b56334",
+      "path": ".github/workflows/release.yml"
+    }
+  ],
+  "interview_derived": false,
+  "schema": 1
+}
