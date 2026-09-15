@@ -61,6 +61,45 @@ test("AC-02: keyboard search restores its opener and global navigation reaches h
   await expect(page.getByRole("heading", { level: 1, name: "Hard gates for agentic coding.", exact: true })).toBeVisible();
 });
 
+test("AC-02: dismissing during debounce cannot reopen stale search results", async ({ page }) => {
+  await page.goto(quickstartPath);
+  const home = page.getByRole("banner").getByRole("link", { name: /^codeArbiter/ });
+  const search = page.getByRole("combobox", { name: "Search the docs", exact: true });
+  const results = page.getByRole("listbox", { name: "Search results", exact: true });
+  await home.focus();
+  await page.keyboard.press("ControlOrMeta+k");
+  await search.fill(quickstartTitle);
+  await search.press("Escape");
+  await expect(home).toBeFocused();
+  await page.waitForTimeout(500);
+  await expect(results).toBeHidden();
+  await expect(search).toHaveAttribute("aria-expanded", "false");
+});
+
+test("AC-02: outside dismissal invalidates in-flight Pagefind work", async ({ page }) => {
+  let releasePagefind!: () => void;
+  const pagefindReleased = new Promise<void>((resolve) => {
+    releasePagefind = resolve;
+  });
+  await page.route("**/pagefind/pagefind.js", async (route) => {
+    await pagefindReleased;
+    await route.continue();
+  });
+  await page.goto(quickstartPath);
+  const heading = page.getByRole("heading", { level: 1, name: quickstartTitle, exact: true });
+  const search = page.getByRole("combobox", { name: "Search the docs", exact: true });
+  const results = page.getByRole("listbox", { name: "Search results", exact: true });
+  await page.keyboard.press("ControlOrMeta+k");
+  await search.fill(quickstartTitle);
+  await page.waitForTimeout(200);
+  await heading.click();
+  await expect(results).toBeHidden();
+  releasePagefind();
+  await page.waitForTimeout(500);
+  await expect(results).toBeHidden();
+  await expect(search).toHaveAttribute("aria-expanded", "false");
+});
+
 test("AC-03: Pagefind keyboard results survive client navigation and reset cleanly", async ({ page }) => {
   await page.goto("/academy/");
   // A listener attached to this document survives a client transition but not a
