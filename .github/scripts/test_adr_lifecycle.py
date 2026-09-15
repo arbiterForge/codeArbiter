@@ -212,7 +212,7 @@ class LifecycleContractTest(unittest.TestCase):
         # GIT-3: public install guidance and every generated host route agree.
         repo = os.path.dirname(os.path.dirname(HERE))
         paths = ["README.md", ".codearbiter/tech-stack.md",
-                 "site/src/content/docs/getting-started/compatibility.md",
+                 "site/src/content/docs/getting-started/compatibility.mdx",
                  "core/surface/skills/finishing-a-development-branch/SKILL.md",
                  "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
                  "plugins/ca-codex/routines/finishing-a-development-branch/SKILL.md",

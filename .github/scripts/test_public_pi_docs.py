@@ -114,7 +114,7 @@ class PiCatalogAndParityTest(unittest.TestCase):
             "README.md": {**shared, **catalog_and_cold},
             "docs/pi-parity-testing.md": {**shared, **catalog_and_cold},
             "docs/parity.md": {**shared, **catalog_and_cold},
-            "site/src/content/docs/getting-started/compatibility.md": {
+            "site/src/content/docs/getting-started/compatibility.mdx": {
                 **shared,
                 **catalog_and_cold,
             },
@@ -194,7 +194,7 @@ class ReleaseShapeTest(unittest.TestCase):
             "plugins/ca-pi/CHANGELOG.md",
             "site/src/content/docs/getting-started/install.md",
             "site/src/content/docs/getting-started/pi.md",
-            "site/src/content/docs/getting-started/compatibility.md",
+            "site/src/content/docs/getting-started/compatibility.mdx",
             "site/src/content/docs/getting-started/claude-code-and-codex.md",
             "site/src/content/docs/guides/troubleshooting.md",
             "site/src/content/docs/guides/uninstalling.md",
