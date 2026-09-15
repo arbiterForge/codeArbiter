@@ -252,13 +252,14 @@ describe("historical release applicability", () => {
       { missing },
     );
 
+    const escapedMissing = missing.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     expect(() =>
       deriveVerifiedGovernanceReleases(
         targets(),
         ledger("v2.17.11", "ca-codex-v0.9.11", "ca-pi-v0.10.13"),
         git,
       ),
-    ).toThrow(new RegExp(`ca-codex-v0\\.9\\.11.*${missing.replace(/[/.]/g, "\\$&")}`));
+    ).toThrow(new RegExp(`ca-codex-v0\\.9\\.11.*${escapedMissing}`));
   });
 
   it("rejects a secondary historical manifest version mismatch (O-04)", () => {
