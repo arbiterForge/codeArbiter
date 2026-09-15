@@ -41,7 +41,7 @@ Parity coverage: each has a direct test; PaymentClient's covers only the success
 a failure-path test before continuing.
 [backfill test added, suite green]
 Applying the extraction... no new branches, no new error paths.
-Running affected parity tests unmodified: 37 passed, 0 failed, zero test files touched.
+Running affected parity tests unmodified: 37 passed, 0 failed; no pre-existing parity test files modified.
 Exhaustive exact-head GitHub Actions checks remain required before merge.
 Coverage on the named surface: unchanged. Parity proven.
 ```

@@ -1338,6 +1338,10 @@ class VerificationBoundaryContractTest(unittest.TestCase):
                 self.assertIn("exact-head", text)
                 self.assertIn("hosted CI", text)
 
+        refactor = self.read("site/src/curated/commands/refactor.md")
+        self.assertIn("no pre-existing parity test files modified", refactor)
+        self.assertNotIn("zero test files touched", refactor)
+
     def test_every_host_projection_carries_the_same_boundary(self):
         rendered = {
             "claude": B.render_all(REPO_ROOT, "claude"),
