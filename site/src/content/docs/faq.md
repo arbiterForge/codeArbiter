@@ -9,7 +9,9 @@ journey:
   proof: "The answer leads to a command, guide, or source-backed reference rather than a guess."
 ---
 
-## Why would I let a plugin block my commits?
+## Adoption
+
+### Why would I let a plugin block my commits?
 
 Because the class of mistake it blocks is exactly the kind that's easy to miss under normal
 review pressure: a banned crypto primitive, a hardcoded secret, a direct push to `main`. The
@@ -19,7 +21,26 @@ have to trust the framework's judgment in the abstract; the
 [first protected repository](/getting-started/quickstart/) runs doctor's harmless live-fire probe
 and requires the host to honor a real H-03 block.
 
-## Can a determined session bypass a hook?
+### Does this slow me down?
+
+Yes, at commit time, by design: that's when the blocking gates run. A test-first change, a
+review chain, a commit gate: none of that is free. The honest trade is that the cost lands
+predictably (at the gate, with a specific finding) instead of unpredictably (in production, or in
+a review three weeks later). For low-risk work (docs, dependency bumps, reverts), the small
+`/ca:chore` lane exists precisely because prose edits don't need the same TDD ceremony as feature
+code. See [The Gated-Lane Model](/concepts/gated-lanes/) for how gates scale to the work.
+
+### Does codeArbiter write code for me, or just gate it?
+
+Both, depending on the lane. `/ca:fix`, `/ca:feature`, and `/ca:sprint` route to author agents
+that write code test-first; `/ca:refactor` restructures with proof of behavioral parity. But
+codeArbiter never freelances past a slash command; see
+[What Is codeArbiter](/overview/) for the request-to-ship flow, and
+[The Gated-Lane Model](/concepts/gated-lanes/) for how each lane's gates scale to its risk.
+
+## Trust and Data
+
+### Can a determined session bypass a hook?
 
 Yes. Hooks cover supported host tool calls, and the installed Git backstop covers matching commit
 and push operations, but the repository owner ultimately controls the machine. They can uninstall
@@ -32,26 +53,7 @@ magically observable, and codeArbiter does not claim otherwise. Uninstalling lea
 files on disk, but the uninstall itself is not recorded unless the user records it. See the
 [Hooks reference](/hooks/) for the boundaries each hook actually covers.
 
-## What happens if I uninstall mid-feature?
-
-`.codearbiter/` is a root-level directory, not inside `.claude/`, specifically so it survives an
-uninstall: your specs, plans, decisions, and audit trail stay on disk. What you lose is
-enforcement: no orchestrator persona, no gates, no statusline. Reinstalling and re-enabling
-(`arbiter: enabled` still needs to be in `CONTEXT.md`'s frontmatter) picks back up against
-whatever state is still there. See
-[The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd) for exactly what that
-file controls.
-
-## Does this slow me down?
-
-Yes, at commit time, by design: that's when the blocking gates run. A test-first change, a
-review chain, a commit gate: none of that is free. The honest trade is that the cost lands
-predictably (at the gate, with a specific finding) instead of unpredictably (in production, or in
-a review three weeks later). For low-risk work (docs, dependency bumps, reverts), the small
-`/ca:chore` lane exists precisely because prose edits don't need the same TDD ceremony as feature
-code. See [The Gated-Lane Model](/concepts/gated-lanes/) for how gates scale to the work.
-
-## What data leaves my machine?
+### What data leaves my machine?
 
 The blocking enforcement core sends nothing. Its Python guards are stdlib-only and make no network
 calls while evaluating shell, write, crypto, secret, or migration gates.
@@ -71,7 +73,9 @@ Your `.codearbiter/` state is repository data; codeArbiter has no hosted account
 service that receives it. See [Compatibility: Network Calls](/getting-started/compatibility/#network-calls)
 for the source-level inventory.
 
-## Can I use it on a team?
+## Teams
+
+### Can I use it on a team?
 
 Yes. `.codearbiter/` is meant to be committed. The board, the decision log, the audit trail, and
 the specs are shared project state, not personal configuration, so everyone working in the repo
@@ -79,7 +83,7 @@ sees the same gates and the same history. The persona and hooks activate per-ses
 has the plugin installed and the repo opted in. Core enforcement has no server component or
 per-seat account; the optional farm uses the provider endpoint you configure.
 
-## Can two users mix Claude Code and Codex in one repository?
+### Can two users mix Claude Code and Codex in one repository?
 
 Yes. This mixed-host workflow is why project state lives in `.codearbiter/` instead of a host-owned
 settings directory. One user can run Claude Code while another runs Codex, or one user can alternate
@@ -88,7 +92,19 @@ and trust the appropriate plugin on each machine; do not initialize a second sto
 [verified parity boundary](/getting-started/claude-code-and-codex/) lists the intentional host
 differences.
 
-## What if the gates are wrong for my project?
+## Gates and Lifecycle
+
+### What happens if I uninstall mid-feature?
+
+`.codearbiter/` is a root-level directory, not inside `.claude/`, specifically so it survives an
+uninstall: your specs, plans, decisions, and audit trail stay on disk. What you lose is
+enforcement: no orchestrator persona, no gates, no statusline. Reinstalling and re-enabling
+(`arbiter: enabled` still needs to be in `CONTEXT.md`'s frontmatter) picks back up against
+whatever state is still there. See
+[The `.codearbiter/` Directory Reference](/codearbiter-directory/#contextmd) for exactly what that
+file controls.
+
+### What if the gates are wrong for my project?
 
 Start with the project contracts: `security-controls.md`, `tech-stack.md`, and
 `coding-standards.md` are hand-editable living documents that reviewers read before judging a
@@ -100,7 +116,7 @@ does not weaken or strengthen a gate. For a one-off exception,
 [`/ca:override`](/guides/overriding-a-gate/) is the sanctioned, logged path: it's for individual
 bypasses, not a substitute for fixing a gate that's structurally wrong for the project.
 
-## What's the difference between an advisory and a blocking gate?
+### What's the difference between an advisory and a blocking gate?
 
 An [advisory](/glossary/#advisory) surfaces right after a write and never stops anything: it's a
 nudge so a later blocking gate isn't a surprise. A [blocking gate](/glossary/#blocking-gate) stops
@@ -109,15 +125,7 @@ ships (a committed secret, a banned crypto primitive); things that only do damag
 deployed (a bad CI workflow, an IaC manifest change) are advisory, with the real enforcement point
 at PR review. See [Enforcement & Security](/enforcement/) for the full breakdown.
 
-## Does codeArbiter write code for me, or just gate it?
-
-Both, depending on the lane. `/ca:fix`, `/ca:feature`, and `/ca:sprint` route to author agents
-that write code test-first; `/ca:refactor` restructures with proof of behavioral parity. But
-codeArbiter never freelances past a slash command; see
-[What Is codeArbiter](/overview/) for the request-to-ship flow, and
-[The Gated-Lane Model](/concepts/gated-lanes/) for how each lane's gates scale to its risk.
-
-## Where do I go if a rule from the docs conflicts with what a reviewer agent says?
+### Where do I go if a rule from the docs conflicts with what a reviewer agent says?
 
 `/ca:conflict`. codeArbiter never silently reconciles a conflict between persona, docs, and code.
 It stops, presents both sides and the level at which they clash (security and audit-trail

@@ -264,6 +264,57 @@ describe("documentation presentation regressions", () => {
     expect(overview.slice(hostMechanics)).toContain("Feature Forge `preview`");
   });
 
+  it("OBL-CONTENT-12 groups every FAQ question once by reader intent", () => {
+    const faq = readFileSync(join(docsRoot, "faq.md"), "utf8");
+    const questionsByGroup = [
+      [
+        "Adoption",
+        [
+          "Why would I let a plugin block my commits?",
+          "Does this slow me down?",
+          "Does codeArbiter write code for me, or just gate it?",
+        ],
+      ],
+      [
+        "Trust and Data",
+        ["Can a determined session bypass a hook?", "What data leaves my machine?"],
+      ],
+      [
+        "Teams",
+        [
+          "Can I use it on a team?",
+          "Can two users mix Claude Code and Codex in one repository?",
+        ],
+      ],
+      [
+        "Gates and Lifecycle",
+        [
+          "What happens if I uninstall mid-feature?",
+          "What if the gates are wrong for my project?",
+          "What's the difference between an advisory and a blocking gate?",
+          "Where do I go if a rule from the docs conflicts with what a reviewer agent says?",
+        ],
+      ],
+    ] as const;
+    const questions = questionsByGroup.flatMap(([, groupQuestions]) => groupQuestions);
+
+    const groupPositions = questionsByGroup.map(([group]) => faq.indexOf(`## ${group}`));
+    for (const position of groupPositions) expect(position).toBeGreaterThan(-1);
+    for (let index = 1; index < questionsByGroup.length; index += 1) {
+      expect(groupPositions[index]).toBeGreaterThan(groupPositions[index - 1]);
+    }
+    for (const [index, [, groupQuestions]] of questionsByGroup.entries()) {
+      const section = faq.slice(groupPositions[index], groupPositions[index + 1] ?? faq.length);
+      for (const question of groupQuestions) {
+        expect(section.split(`### ${question}`).length - 1).toBe(1);
+      }
+    }
+    expect(faq.match(/^### /gm)).toHaveLength(questions.length);
+    for (const question of questions) {
+      expect(faq.split(`### ${question}`).length - 1).toBe(1);
+    }
+  });
+
   it("OBL-REF-01 suppresses inferred journey cards on generated entity pages", () => {
     const pageTitle = readFileSync(join(siteRoot, "src", "components", "PageTitle.astro"), "utf8");
 
