@@ -37,8 +37,8 @@ function extractEmittedScripts(html: string): string[] {
 }
 
 const publicSource: AcademySource = {
-  release: "preview-0.30",
-  commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7",
+  release: "preview-0.32",
+  commit: "dcdc1b0ab023cd8f346e89d41a1bcb6f8a027acf",
   home: {
     title: "Start here",
     anchor: "complete-these-five-setup-steps-before-f01",
@@ -416,8 +416,8 @@ describe("generateAcademy", () => {
     );
     expect(lessonPage).toContain('title: "Fork, clone, and doctor safety"');
     expect(lessonPage).toContain('description: "Prove the repository has safe fetch and push boundaries."');
-    expect(lessonPage).toContain('release: "preview-0.30"');
-    expect(lessonPage).toContain('commit: "f3a645f8022d58fce524886e5a8a6869d04a47d7"');
+    expect(lessonPage).toContain('release: "preview-0.32"');
+    expect(lessonPage).toContain('commit: "dcdc1b0ab023cd8f346e89d41a1bcb6f8a027acf"');
     expect(lessonPage).not.toContain("# F01 - Fork, clone, and Doctor safety");
     expect(lessonPage).toContain('import AcademyCommandPreferences from "../../../components/AcademyCommandPreferences.astro";');
     expect(lessonPage).toContain('<AcademyCommandPreferences labId="F01-fork-clone-doctor" />');

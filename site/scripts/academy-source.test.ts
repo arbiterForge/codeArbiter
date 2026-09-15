@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { loadAcademySource } from "./academy-source";
 
 const fixtureRoots: string[] = [];
@@ -31,9 +31,9 @@ function createFixture(
   mkdirSync(join(academyRoot, "actions"), { recursive: true });
 
   writeFileSync(
-    join(academyRoot, "publication", "preview-0.30.json"),
+    join(academyRoot, "publication", "preview-0.32.json"),
     JSON.stringify({
-      release: "preview-0.30",
+      release: "preview-0.32",
       available_labs: manifestLessons,
       runnable_labs: manifestLessons,
       guided_labs: manifestLessons,
@@ -158,6 +158,13 @@ afterEach(() => {
 });
 
 describe("loadAcademySource", () => {
+  it("loads the current immutable Preview 0.32 consumer pin", () => {
+    const source = loadAcademySource(resolve(import.meta.dirname, "../.."));
+
+    expect(source.release).toBe("preview-0.32");
+    expect(source.commit).toBe("dcdc1b0ab023cd8f346e89d41a1bcb6f8a027acf");
+  });
+
   it("loads only the pinned manifest public inventory in its declared order", () => {
     const fixtureRoot = createFixture();
 
@@ -303,12 +310,12 @@ describe("loadAcademySource", () => {
       "academy-source",
       "academy",
       "publication",
-      "preview-0.30.json",
+      "preview-0.32.json",
     );
     writeFileSync(
       manifestPath,
       JSON.stringify({
-        release: "preview-0.30",
+        release: "preview-0.32",
         available_labs: ["F01-fork-clone-doctor"],
         runnable_labs: [],
         guided_labs: ["F01-fork-clone-doctor"],
