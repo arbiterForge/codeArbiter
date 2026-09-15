@@ -185,6 +185,7 @@ export default defineConfig({
             { label: "Claude Code + Codex", slug: "getting-started/claude-code-and-codex" },
             { label: "Pi", slug: "getting-started/pi" },
             { label: "Compatibility", slug: "getting-started/compatibility" },
+            { label: "Trust & Lifecycle", slug: "trust" },
             { label: "FAQ", slug: "faq" },
           ],
         },
