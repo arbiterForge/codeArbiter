@@ -249,6 +249,21 @@ describe("documentation presentation regressions", () => {
     expect(smarts).toContain("confidence flag");
   });
 
+  it("OBL-CONTENT-11 teaches ownership and request flow before host mechanics", () => {
+    const overview = readFileSync(join(docsRoot, "overview.md"), "utf8");
+    const ownership = overview.indexOf("## codeArbiter Holds the Gates; You Hold the Decisions");
+    const requestFlow = overview.indexOf("## How a Request Flows");
+    const hostMechanics = overview.indexOf("## One Core, Three Host Adapters");
+
+    expect(ownership).toBeGreaterThan(-1);
+    expect(requestFlow).toBeGreaterThan(ownership);
+    expect(hostMechanics).toBeGreaterThan(requestFlow);
+    expect(overview.slice(hostMechanics)).toContain("`ca` for Claude Code");
+    expect(overview.slice(hostMechanics)).toContain("`ca-codex`");
+    expect(overview.slice(hostMechanics)).toContain("`ca-pi`");
+    expect(overview.slice(hostMechanics)).toContain("Feature Forge `preview`");
+  });
+
   it("OBL-REF-01 suppresses inferred journey cards on generated entity pages", () => {
     const pageTitle = readFileSync(join(siteRoot, "src", "components", "PageTitle.astro"), "utf8");
 
