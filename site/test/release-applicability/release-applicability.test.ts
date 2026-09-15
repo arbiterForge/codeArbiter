@@ -154,6 +154,15 @@ describe("selectCurrentGovernanceReleases", () => {
       ),
     ).toThrow(/stable.*ca-codex/i);
   });
+
+  it("rejects a governed target with no publication receipts (O-02)", () => {
+    expect(() =>
+      selectCurrentGovernanceReleases(
+        targets(),
+        ledger("v1.0.0", "ca-codex-v1.0.0"),
+      ),
+    ).toThrow(/No receipts exist.*ca-pi/i);
+  });
 });
 
 describe("historical release applicability", () => {
@@ -401,6 +410,11 @@ describe("documentation build identity", () => {
       commit: sha,
       dirty: true,
     });
+  });
+
+  it("rejects a moving or malformed local HEAD identity (O-06)", () => {
+    const git = historicalGit({}, { head: "main", dirty: true });
+    expect(() => resolveDocumentationBuildIdentity(git, {})).toThrow(/HEAD.*40-hex/i);
   });
 });
 

@@ -64,6 +64,20 @@ describe("release applicability generation", () => {
     expect(() => loadDirectHookReplayEvidence(writeProof(overrides))).toThrow(/direct-hook|schema|discovery/i);
   });
 
+  it.each(["missing", "invalid JSON"])(
+    "rejects %s proof evidence before generation (O-10)",
+    (evidenceCase) => {
+      const directory = mkdtempSync(join(tmpdir(), "release-applicability-proof-"));
+      temporaryDirectories.push(directory);
+      const path = evidenceCase === "missing"
+        ? join(directory, "does-not-exist.json")
+        : join(directory, "hook-proof.json");
+      if (evidenceCase === "invalid JSON") writeFileSync(path, "{not-json", "utf8");
+
+    expect(() => loadDirectHookReplayEvidence(path)).toThrow(/missing or invalid JSON/i);
+    },
+  );
+
   it.each([
     "../outside.py",
     "plugins/ca/hooks/../pre-bash.py",

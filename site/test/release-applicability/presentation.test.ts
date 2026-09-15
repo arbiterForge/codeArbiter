@@ -36,6 +36,17 @@ describe("release applicability presentation", () => {
     expect(publishedMismatch.message).not.toBe(currentMismatch.message);
   });
 
+  it("presents the exact successful applicability claim (O-13)", () => {
+    expect(presentProofApplicability({
+      applicable: true,
+      publishedSource: { matchesReplay: true },
+      currentSource: { matchesReplay: true },
+    })).toEqual({
+      isMismatch: false,
+      message: "Replay source applies to the exact latest published ca artifact",
+    });
+  });
+
   it("rejects an internally inconsistent applicability claim (O-13)", () => {
     expect(() =>
       presentProofApplicability({

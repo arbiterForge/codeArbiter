@@ -89,8 +89,12 @@ if (!publishedCa) {
   throw new Error("Generated release applicability is missing the ca host row");
 }
 const proofPresentation = presentProofApplicability(generated.proof);
+const expectedApplicableMessage = "Replay source applies to the exact latest published ca artifact";
+if (proofPresentation.message !== expectedApplicableMessage) {
+  throw new Error(`Unexpected proof applicability message: ${proofPresentation.message}`);
+}
 for (const [value, description] of [
-  [proofPresentation.message, "the exact HookProof applicability message"],
+  [expectedApplicableMessage, "the exact HookProof applicability message"],
   [`href="https://github.com/arbiterForge/codeArbiter/releases/tag/${encodeURIComponent(publishedCa.tag)}"`, "the exact published ca release link"],
   [`>${publishedCa.tag}</code>`, "the exact visible published ca tag"],
   [`href="https://github.com/arbiterForge/codeArbiter/commit/${publishedCa.publicationCommit}"`, "the full ca publication-commit link"],
