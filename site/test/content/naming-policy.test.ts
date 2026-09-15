@@ -22,10 +22,16 @@ describe("approved naming policy", () => {
   it("defines Feature Forge as the public navigation label without changing preview maturity", () => {
     const voice = readSiteFile("VOICE.md");
     const astroConfig = readSiteFile("astro.config.mjs");
+    const glossary = readSiteFile("src/content/docs/glossary.md");
 
     expect(voice).toMatch(/In navigation and\s+reader-facing copy it is labeled "Feature Forge"/);
     expect(voice).toMatch(/"preview" and "stable" are maturity\s+labels/);
     expect(voice).not.toContain('reader-facing copy it is labeled "Preview Features"');
     expect(astroConfig).toContain('label: "Feature Forge"');
+    expect(glossary).toMatch(/^## Feature Forge$/m);
+    expect(glossary).toContain('Reader-facing copy calls the system "Feature Forge"');
+    expect(glossary).toMatch(/"preview" and "stable" are\s+maturity labels within it/);
+    expect(glossary).not.toContain('reader-facing copy this is labeled "Preview Features"');
+    expect(glossary).not.toContain('"Feature Forge" is the internal name');
   });
 });

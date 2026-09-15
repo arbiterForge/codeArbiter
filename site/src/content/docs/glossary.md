@@ -79,11 +79,11 @@ at. See [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-q
 entry per recorded decision, never edited after the fact. A superseding decision appends a new
 entry rather than rewriting the old one. See [ADRs and the Decision Log](/concepts/adrs/).
 
-## Feature Forge / Preview Features
+## Feature Forge
 
-The two-axis system that separates a payload's SemVer maturity from whether an individual
-feature is still a preview. In reader-facing copy this is labeled "Preview Features"; "Feature
-Forge" is the internal name. See [What Is the Feature Forge](/feature-forge/overview/).
+The two-axis system that separates a payload's SemVer version from an individual feature's
+maturity. Reader-facing copy calls the system "Feature Forge"; "preview" and "stable" are
+maturity labels within it. See [What Is the Feature Forge](/feature-forge/overview/).
 
 ## Gate
 
