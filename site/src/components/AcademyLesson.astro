@@ -41,7 +41,10 @@ const variantLabel = (variant: AcademyCommandVariant) => {
   const host = variant.host === "none"
     ? ""
     : ` ${String.fromCharCode(183)} ${variant.host === "claude-code" ? "Claude Code" : variant.host[0].toUpperCase() + variant.host.slice(1)}`;
-  return `${platform}${host}`;
+  const purpose = variant.host === "pi" && variant.id === "pi-fallback"
+    ? ` ${String.fromCharCode(183)} Fallback`
+    : "";
+  return `${platform}${host}${purpose}`;
 };
 ---
 
