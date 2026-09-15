@@ -69,6 +69,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 <script>
   class CaSiteSearch extends HTMLElement {
+    private onOutsideClick: (event: MouseEvent) => void;
+    private onShortcut: (event: KeyboardEvent) => void;
+    private onDisconnect: () => void;
+
     constructor() {
       super();
       const base = this.dataset.base || "";
@@ -101,6 +105,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       // --- Combobox state: the option elements and the active (highlighted) one.
       let options: HTMLAnchorElement[] = [];
       let active = -1;
+      let opener: HTMLElement | null = null;
 
       const setActive = (i: number) => {
         if (options.length === 0) {
@@ -216,12 +221,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       });
 
       // Combobox keyboard contract: arrows move the virtual highlight, Enter
-      // activates it, Escape closes. Focus never leaves the input.
+      // activates it, Escape closes and restores the element that opened search.
       input.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
+          e.preventDefault();
           input.value = "";
           close();
-          input.blur();
+          if (opener?.isConnected) opener.focus();
+          opener = null;
           return;
         }
         if (panel.hidden || options.length === 0) return;
@@ -240,19 +247,41 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         }
       });
 
-      // Warm the index on first focus so the first keystroke is instant.
-      input.addEventListener("focus", () => void loadPagefind(), { once: true });
-
-      // Click outside closes; Ctrl/Cmd+K focuses.
-      document.addEventListener("click", (e) => {
-        if (!this.contains(e.target as Node)) close();
+      // Capture each opener, including after a client transition. Repeated
+      // shortcuts while already focused leave the original opener intact.
+      input.addEventListener("focus", (e) => {
+        opener = e.relatedTarget instanceof HTMLElement && e.relatedTarget !== document.body
+          ? e.relatedTarget : null;
+        void loadPagefind();
       });
-      window.addEventListener("keydown", (e) => {
+
+      // Global listeners belong only to the connected search surface.
+      this.onOutsideClick = (e) => {
+        if (!this.contains(e.target as Node)) close();
+      };
+      this.onShortcut = (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
           e.preventDefault();
           input.focus();
         }
-      });
+      };
+      this.onDisconnect = () => {
+        window.clearTimeout(debounceId);
+        latest += 1;
+        close();
+        opener = null;
+      };
+    }
+
+    connectedCallback() {
+      document.addEventListener("click", this.onOutsideClick);
+      window.addEventListener("keydown", this.onShortcut);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener("click", this.onOutsideClick);
+      window.removeEventListener("keydown", this.onShortcut);
+      this.onDisconnect();
     }
   }
   customElements.define("ca-site-search", CaSiteSearch);
