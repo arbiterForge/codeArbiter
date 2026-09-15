@@ -226,6 +226,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         if (e.key === "Escape") {
           e.preventDefault();
           input.value = "";
+          window.clearTimeout(debounceId);
+          latest += 1;
           close();
           if (opener?.isConnected) opener.focus();
           opener = null;
@@ -257,7 +259,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
       // Global listeners belong only to the connected search surface.
       this.onOutsideClick = (e) => {
-        if (!this.contains(e.target as Node)) close();
+        if (!this.contains(e.target as Node)) {
+          window.clearTimeout(debounceId);
+          latest += 1;
+          close();
+        }
       };
       this.onShortcut = (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
