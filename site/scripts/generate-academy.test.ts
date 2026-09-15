@@ -278,6 +278,10 @@ describe("generateAcademy", () => {
     expect(academyHtml).toContain("Open the Academy fork page, choose your GitHub account as the owner");
     expect(academyHtml).toContain('href="https://github.com/arbiterForge/arbiter-academy/fork"');
     expect(academyHtml).toContain("git clone https://github.com/&lt;your-account&gt;/arbiter-academy.git");
+    expect(academyHtml).toContain('href="/learn/"');
+    expect(academyHtml).toContain("Academy provides verifier-backed practice");
+    expect(academyHtml).toMatch(/The Learning Path provides\s+guided documentation/);
+    expect(academyHtml).toContain("does not create an account, import progress, or store completion state");
     expect(academyHtml).not.toContain("ca-page-context");
     expect(publicLessonIds.length).toBeGreaterThan(0);
     for (const lessonId of publicLessonIds) {

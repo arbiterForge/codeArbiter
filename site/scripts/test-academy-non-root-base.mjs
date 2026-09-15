@@ -39,6 +39,7 @@ try {
   );
 
   const academyHtml = readFileSync(join(outputRoot, "academy", "index.html"), "utf8");
+  const learningHtml = readFileSync(join(outputRoot, "learn", "index.html"), "utf8");
   const inventoryLinks = [...academyHtml.matchAll(
     /data-academy-lesson="([^"]+)"[\s\S]*?<h4><a href="([^"]+)"/g,
   )].map((match) => [match[1], match[2]]);
@@ -58,8 +59,14 @@ try {
       `found ${startHref ?? "none"}`,
     );
   }
+  if (!academyHtml.includes('href="/docs/learn/"')) {
+    throw new Error("expected the Academy chooser to link to /docs/learn/");
+  }
+  if (!learningHtml.includes('href="/docs/academy/"')) {
+    throw new Error("expected the Learning Path chooser to link to /docs/academy/");
+  }
 
-  process.stdout.write("Academy non-root base build: 19 lesson links remain beneath /docs/academy/.\n");
+  process.stdout.write("Academy non-root base build: 19 lesson links and both learning routes remain beneath /docs/.\n");
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }
