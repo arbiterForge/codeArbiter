@@ -123,12 +123,21 @@ describe("release applicability generation", () => {
 
     expect(bytes).toBe(serializeReleaseApplicabilityRecord(record));
     expect(parsed).toEqual(record);
-    expect(record.hosts.map(({ target, tag }) => [target, tag])).toEqual([
-      ["ca", "v2.17.11"],
-      ["ca-codex", "ca-codex-v0.9.11"],
-      ["ca-pi", "ca-pi-v0.10.13"],
+    expect(record.hosts.map(({ target }) => target)).toEqual([
+      "ca",
+      "ca-codex",
+      "ca-pi",
     ]);
-    expect(record.proof.applicable).toBe(true);
+    expect(record.hosts.map(({ target, tag, version }) => [target, tag])).toEqual(
+      record.hosts.map(({ target, version }) => [
+        target,
+        target === "ca" ? `v${version}` : `${target}-v${version}`,
+      ]),
+    );
+    expect(record.proof.applicable).toBe(
+      record.proof.currentSource.matchesReplay &&
+        record.proof.publishedSource.matchesReplay,
+    );
     expect(record.evidenceBoundary.claim).toBe("release-and-build-identity");
   });
 

@@ -21,7 +21,10 @@ function eventPaths(workflow: string, event: "push" | "pull_request"): string[] 
 
 function jobBody(workflow: string, job: "site-check" | "build"): string {
   const match = workflow.match(
-    new RegExp(`^  ${job}:\\n(?<body>[\\s\\S]*?)(?=^  [a-z][a-z-]*:|\\Z)`, "m"),
+    new RegExp(
+      `^  ${job}:\\n(?<body>[\\s\\S]*?)(?=^  [a-z][a-z-]*:|(?![\\s\\S]))`,
+      "m",
+    ),
   );
   if (!match?.groups?.body) throw new Error(`missing ${job} job`);
   return match.groups.body;
@@ -55,6 +58,11 @@ function runStepIndex(job: string, command: string): number {
 
 describe("documentation release-applicability workflow contract", () => {
   const workflow = readFileSync(workflowPath, "utf8").replaceAll("\r\n", "\n");
+
+  test("job parsing retains a final workflow job", () => {
+    expect(jobBody("jobs:\n  build:\n    steps:\n      - run: npm test\n", "build"))
+      .toContain("run: npm test");
+  });
 
   test.each(["site-check", "build"] as const)(
     "%s checks out complete release history",
