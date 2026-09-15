@@ -335,6 +335,19 @@ describe("generateAcademy", () => {
     }
   }, 30_000);
 
+  it("distinguishes the Pi skill fallback from the ordinary Pi command", () => {
+    const lessonHtml = integrationLessonHtml.get("p01-feature-through-plan") ?? "";
+    const commandCards = [...lessonHtml.matchAll(
+      /<section class="academy-command" data-academy-command-variant[\s\S]*?<\/section>/g,
+    )].map((match) => match[0]);
+    const direct = commandCards.find((card) => card.includes("/ca-feature"));
+    const fallback = commandCards.find((card) => card.includes("/skill:ca-feature"));
+
+    expect(direct).toContain('<p class="academy-command__label" id="academy-command-P01-draft-spec-pi-direct-label">Any OS · Pi</p>');
+    expect(fallback).toContain('<p class="academy-command__label" id="academy-command-P01-draft-spec-pi-fallback-label">Any OS · Pi · Fallback</p>');
+    expect(fallback).toContain('aria-label="Copy Any OS · Pi · Fallback command"');
+  });
+
   it("executes the emitted View all lessons script and keeps its disclosure state synchronized", () => {
     expect(integrationAcademyHtml).not.toBe("");
     const academyHtml = integrationAcademyHtml;
