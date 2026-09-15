@@ -388,6 +388,20 @@ class TestMarkerNameFor(unittest.TestCase):
     def test_marker_name_for_degenerate_input_never_collides_with_a_real_path(self):
         self.assertNotEqual(marker_name_for(""), marker_name_for("release-targets.md"))
 
+    def test_marker_name_for_is_case_insensitive(self):
+        # #624: marker_name_for must agree with _canon/lookup_policy's case-
+        # insensitivity, or a differently-cased Write/Edit target computes a
+        # marker name that was never minted, wrongly blocking an authoring
+        # write despite a fresh, correctly-minted marker.
+        self.assertEqual(
+            marker_name_for(".codearbiter/release-targets.md"),
+            marker_name_for(".codearbiter/Release-Targets.md"),
+        )
+        self.assertEqual(
+            marker_name_for(".codearbiter/release-targets.md"),
+            marker_name_for(".codearbiter/RELEASE-TARGETS.MD"),
+        )
+
 
 class TestNoLegacyOverlap(unittest.TestCase):
     """B-01/T-05b: a registered protected-state path must not ALSO classify

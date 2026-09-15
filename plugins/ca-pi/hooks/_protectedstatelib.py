@@ -388,7 +388,7 @@ def marker_name_for(rel_path):
     small, curated, human-authored set (spec B1/B2), not attacker-chosen
     directory names, so this is judged out of proportion to close fully
     here."""
-    parts = [p for p in norm_path(rel_path).split("/") if p not in ("", ".", "..")]
+    parts = [p for p in norm_path(rel_path).lower().split("/") if p not in ("", ".", "..")]
     if not parts:
         return "-authoring"
     if parts[0] == ".codearbiter" and len(parts) > 1:
