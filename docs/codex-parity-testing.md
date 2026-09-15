@@ -26,12 +26,14 @@ exactly that, instead of implying continuous coverage.
 
 **The failure mode of "manual per release" is that it quietly becomes "manual once."** It
 already did: the initial baseline recorded `ca-codex` 0.2.4 and went unrefreshed across four
-minor versions. Re-run this procedure for every `ca-codex` release. Its declared pre-tag check
-parses the machine-readable marker below and compares `adapter_version` with the canonical plugin
-manifest. A mismatch blocks the release; the check never rewrites evidence.
+minor versions. Re-run this procedure for every `ca-codex` release. Ordinary pull-request CI
+validates the last verified marker against its immutable candidate commit, so development can move
+forward without rewriting historical evidence. The declared pre-tag check additionally requires
+that marker's version and digest to match the exact current candidate; a mismatch blocks release,
+and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":1,"adapter":"ca-codex","adapter_version":"0.10.1","candidate_package_sha256":"05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-14","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.10.1","candidate_commit":"388da0b393f6a5bd62fb0830905d3096f683bb7a","candidate_package_sha256":"05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-14","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.10.1**, Windows, 2026-09-14.
 A fresh ephemeral Codex CLI task using the supported `gpt-5.5` model selected the exact installed
 0.10.1 tracked candidate package (`sha256:05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90`)
