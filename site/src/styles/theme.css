@@ -540,6 +540,33 @@ ca-site-search {
   padding: 0;
 }
 
+.ca-search__action {
+  display: block;
+  width: calc(100% - 0.8rem);
+  margin: 0.5rem 0.4rem 0.15rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--ca-slate-border);
+  border-radius: 0.4rem;
+  background: var(--ca-slate);
+  color: var(--sl-color-white);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  text-align: center;
+}
+
+.ca-search__action:hover,
+.ca-search__action:focus-visible {
+  border-color: var(--ca-gold);
+  outline: 2px solid var(--ca-gold);
+  outline-offset: 2px;
+}
+
+.ca-search__action[hidden] {
+  display: none;
+}
+
 .ca-search__result-link {
   display: block;
   padding: 0.55rem 0.6rem;
