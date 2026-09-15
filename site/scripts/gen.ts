@@ -10,6 +10,7 @@ import { renderChangelog } from "./generator/render-changelog";
 import { renderConfigurationReference } from "./generator/configuration-reference";
 import { loadAcademySource } from "./academy-source";
 import { generateAcademy } from "./generate-academy";
+import { generateReleaseApplicability } from "./release-applicability";
 
 const here = dirname(fileURLToPath(import.meta.url)); // site/scripts
 const repoRoot = resolve(here, "..", ".."); // -> repo root
@@ -17,6 +18,13 @@ const srcDir = join(repoRoot, "plugins", "ca");
 const outDir = join(here, "..", "src", "content", "docs", "reference");
 const sidebarPath = join(here, "..", "src", "generated", "sidebar.json");
 const curatedDir = join(here, "..", "src", "curated");
+const releaseApplicabilityPath = join(
+  here,
+  "..",
+  "src",
+  "generated",
+  "release-applicability.json",
+);
 
 const result = generate(srcDir, outDir, sidebarPath, curatedDir, true);
 const counts = result.pages.reduce<Record<string, number>>((acc, p) => {
@@ -91,4 +99,14 @@ const academyResult = generateAcademy(academySource, academyDocsRoot, academyGen
 console.log(
   `Generated Academy overview and ${academyResult.sidebarItems.length} public lesson routes ` +
     `from ${academySource.release} (${academySource.commit})`,
+);
+
+const releaseApplicability = generateReleaseApplicability(
+  repoRoot,
+  releaseApplicabilityPath,
+  process.env,
+);
+console.log(
+  `Generated release applicability for ${releaseApplicability.hosts.length} governance hosts ` +
+    `at ${releaseApplicability.build.commit} -> ${releaseApplicabilityPath}`,
 );

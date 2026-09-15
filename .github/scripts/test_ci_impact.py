@@ -115,6 +115,52 @@ def workflow_jobs(text: str) -> dict[str, str]:
     return jobs
 
 
+def checkout_fetch_depth(job: str) -> str | None:
+    """Return the checkout step's structured ``with.fetch-depth`` value.
+
+    A comment mentioning ``fetch-depth: 0`` is not workflow configuration and
+    must not satisfy the full-history contract.
+    """
+    lines = job.splitlines()
+    try:
+        checkout = next(
+            index
+            for index, line in enumerate(lines)
+            if re.match(r"^      - uses: actions/checkout@", line)
+        )
+    except StopIteration:
+        return None
+
+    end = next(
+        (index for index in range(checkout + 1, len(lines)) if lines[index].startswith("      - ")),
+        len(lines),
+    )
+    step = lines[checkout:end]
+    try:
+        with_index = next(
+            index for index, line in enumerate(step) if re.match(r"^        with:\s*$", line)
+        )
+    except StopIteration:
+        return None
+    for line in step[with_index + 1:]:
+        match = re.match(r"^          fetch-depth:\s*([^\s#]+)", line)
+        if match is not None:
+            return match.group(1)
+    return None
+
+
+def run_step_index(job: str, command: str) -> int:
+    """Return the line index of an executable one-line run step."""
+    return next(
+        (
+            index
+            for index, line in enumerate(job.splitlines())
+            if line.strip() == f"run: {command}"
+        ),
+        -1,
+    )
+
+
 def push_trigger_paths(workflow: str) -> list[str]:
     """Quoted globs under the workflow's `on.push.paths:` block.
 
@@ -1723,6 +1769,36 @@ class WorkflowContractTest(unittest.TestCase):
                     paths,
                     f"a {event} touching only docs.yml never runs docs.yml",
                 )
+
+    def test_docs_release_applicability_inputs_trigger_full_history_builds(self):
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        required_inputs = {
+            ".github/published-tags.json",
+            ".codearbiter/release-targets.md",
+        }
+        for event in ("push", "pull_request"):
+            with self.subTest(event=event):
+                self.assertTrue(
+                    required_inputs.issubset(set(event_trigger_paths(docs, event))),
+                    f"{event} can leave published release applicability stale",
+                )
+
+        jobs = workflow_jobs(docs)
+        for job_name in ("site-check", "build"):
+            with self.subTest(job=job_name):
+                self.assertEqual(
+                    checkout_fetch_depth(jobs[job_name]),
+                    "0",
+                    f"{job_name} cannot inspect historical release manifests",
+                )
+
+        site_check = jobs["site-check"]
+        generate = run_step_index(site_check, "npm run gen")
+        typecheck = run_step_index(site_check, "npm run typecheck")
+        tests = run_step_index(site_check, "npm test")
+        self.assertGreaterEqual(generate, 0, "site-check never generates applicability")
+        self.assertGreater(typecheck, generate, "site-check typechecks before generation")
+        self.assertGreater(tests, generate, "site-check tests before generation")
 
     def test_ci_runs_a_pinned_read_only_secret_scan_wired_into_the_merge_gate(self):
         # Issue #404: the repository had NO independent secret scanner - only a

@@ -1,0 +1,96 @@
+---
+import applicability from "../generated/release-applicability.json";
+
+const repositoryUrl = "https://github.com/arbiterForge/codeArbiter";
+const shortCommit = (commit: string) => commit.slice(0, 12);
+---
+
+<section class="ca-release-applicability" aria-labelledby="release-applicability-heading">
+  <h2 id="release-applicability-heading">Published release applicability</h2>
+  <p>
+    This documentation build identifies each independently published governance host from the
+    repository's original-publication receipts.
+  </p>
+
+  <div class="ca-release-applicability__table-shell" tabindex="0" aria-label="Published governance host releases">
+    <table>
+      <caption>Published governance host releases described by this documentation</caption>
+      <thead>
+        <tr>
+          <th scope="col">Target</th>
+          <th scope="col">Published version</th>
+          <th scope="col">Tag</th>
+          <th scope="col">Publication commit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {applicability.hosts.map((host) => (
+          <tr>
+            <th scope="row"><code>{host.target}</code></th>
+            <td>{host.version}</td>
+            <td>
+              <a href={`${repositoryUrl}/releases/tag/${encodeURIComponent(host.tag)}`}>
+                <code>{host.tag}</code>
+              </a>
+            </td>
+            <td>
+              <a
+                href={`${repositoryUrl}/commit/${host.publicationCommit}`}
+                aria-label={`${host.target} ${host.version} tag ${host.tag} publication commit ${host.publicationCommit}`}
+              >
+                <code>{shortCommit(host.publicationCommit)}</code>
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="ca-release-applicability__build">
+    <strong>Documentation build:</strong>{" "}
+    <a
+      href={`${repositoryUrl}/commit/${applicability.build.commit}`}
+      aria-label={`View full documentation build commit ${applicability.build.commit}`}
+    >
+      <code>{shortCommit(applicability.build.commit)}</code>
+    </a>
+    {applicability.build.mode === "local" && applicability.build.dirty ? " (local dirty tree)" : ""}
+  </p>
+
+  <p class="ca-release-applicability__boundary">
+    <strong>Evidence boundary:</strong> <code>release-and-build-identity</code>. This record does not
+    certify runtime compatibility, installation success, or universal host support. Read the{" "}
+    <a href="/release-applicability.json">complete machine-readable applicability record</a> for the
+    exact identities and evidence sources.
+  </p>
+</section>
+
+<style>
+  .ca-release-applicability {
+    margin-block: 2rem;
+  }
+
+  .ca-release-applicability__table-shell {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 42rem;
+  }
+
+  caption {
+    text-align: start;
+  }
+
+  .ca-release-applicability__build,
+  .ca-release-applicability__boundary {
+    color: var(--ca-ink-muted);
+  }
+
+  .ca-release-applicability__build strong,
+  .ca-release-applicability__boundary strong {
+    color: var(--ca-ink);
+  }
+</style>

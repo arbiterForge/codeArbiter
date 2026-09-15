@@ -225,7 +225,7 @@ describe("documentation presentation regressions", () => {
 
   it("OBL-CONTENT-09 labels platform-aggregate setup as maintainer-only verification", () => {
     const compatibility = readFileSync(
-      join(docsRoot, "getting-started", "compatibility.md"),
+      join(docsRoot, "getting-started", "compatibility.mdx"),
       "utf8",
     );
 
