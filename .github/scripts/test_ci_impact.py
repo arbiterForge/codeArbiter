@@ -2865,5 +2865,165 @@ class GateCommandTest(unittest.TestCase):
             "hide the next one that matches the name: " + ", ".join(stale))
 
 
+class SiteBrowserDependencyContractTest(unittest.TestCase):
+    """AC-01/05/06: reviewed browser tooling, local compute and proof boundaries."""
+
+    def test_browser_source_states_runner_chrome_evidence_boundary(self):
+        source = (REPO_ROOT / "site/test/browser/publication.spec.ts").read_text(encoding="utf-8")
+        self.assertNotRegex(source, r"(?i)pinned\s+Chromium(?:\s+runtime)?")
+        for boundary in ("Chrome-only", "already-built site on loopback",
+                         "GitHub runner image", "No exact hosted Chrome version"):
+            self.assertIn(boundary, source)
+        self.assertRegex(source, r"(?i)runner-(?:provided|maintained) Chrome")
+
+    def test_browser_dependency_graph_is_exact_and_registry_bound(self):
+        manifest = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["devDependencies"].get("@playwright/test"), "1.63.0")
+        lock = json.loads((REPO_ROOT / "site/package-lock.json").read_text(encoding="utf-8"))
+        self.assertEqual(lock["packages"][""]["devDependencies"]["@playwright/test"], "1.63.0")
+        for name, dependency in (("@playwright/test", "playwright"),
+                                 ("playwright", "playwright-core"),
+                                 ("playwright-core", None)):
+            with self.subTest(package=name):
+                package = lock["packages"].get(f"node_modules/{name}")
+                self.assertIsNotNone(package, f"missing reviewed package: {name}")
+                self.assertEqual(package["version"], "1.63.0")
+                self.assertEqual(package["license"], "Apache-2.0")
+                self.assertTrue(package["dev"])
+                self.assertTrue(package["resolved"].startswith("https://registry.npmjs.org/"))
+                self.assertRegex(package["integrity"], r"^sha512-[A-Za-z0-9+/]+={0,2}$")
+                self.assertFalse(package.get("hasInstallScript", False))
+                self.assertEqual(package.get("dependencies", {}),
+                                 {dependency: "1.63.0"} if dependency else {})
+
+    def test_browser_configuration_uses_owned_production_loopback_and_installed_chrome(self):
+        path = REPO_ROOT / "site/playwright.config.ts"
+        self.assertTrue(path.is_file(), "missing production-browser configuration")
+        config = path.read_text(encoding="utf-8")
+        self.assertIn('testDir: "./test/browser"', config)
+        self.assertIn('baseURL: "http://127.0.0.1:4322"', config)
+        self.assertIn('command: "npm run preview -- --host 127.0.0.1 --port 4322"', config)
+        self.assertIn('url: "http://127.0.0.1:4322"', config)
+        self.assertIn("reuseExistingServer: false", config)
+        self.assertEqual(re.findall(r'browserName:\s*"([^"]+)"', config), ["chromium"])
+        self.assertIn('process.env.GITHUB_ACTIONS === "true"', config)
+        self.assertRegex(config, r'(?m)^      channel: "chrome",$')
+        self.assertIn('trace: hostedCI ? "retain-on-failure" : "off"', config)
+        self.assertNotRegex(config, r"(?:exec|spawn|install)\s*\(")
+        for boundary in ("already-built production output", "Chrome-only",
+                         "GitHub runner image", "npm lockfile does not authenticate browser bytes",
+                         "No browser download", "installed Chrome", "No exact hosted Chrome version"):
+            self.assertIn(boundary, config)
+
+
+class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
+    """AC-05/06: the browser verdict blocks publication without local setup or PR writes."""
+
+    def test_browser_gate_blocks_artifact_upload_and_keeps_pr_execution_read_only(self):
+        workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(workflow)
+        # Strip comments before checking executed commands and control-flow keys.
+        build = re.sub(r"(?m)\s+#.*$", "", jobs["build"])
+        commands = re.findall(r"(?m)^        run: (.+)$", build)
+        version = "google-chrome --version"
+        self.assertIn(version, commands, "hosted build must record runner-provided Chrome")
+        self.assertIn("npm run test:browser", commands)
+        self.assertLess(commands.index("npm run build"), commands.index(version))
+        self.assertLess(commands.index("npm run build"), commands.index("npm run test:browser"))
+        self.assertLess(commands.index(version), commands.index("npm run test:browser"))
+        self.assertLess(build.index("run: npm run test:browser"),
+                        build.index("uses: actions/upload-pages-artifact@"))
+        self.assertRegex(build, r"(?m)^    runs-on: ubuntu-latest$")
+        self.assertNotRegex(build, r"(?m)^\s+(?:if|continue-on-error):")
+        for boundary in ("GitHub runner image", "No exact hosted Chrome version",
+                         "npm lockfile does not authenticate browser bytes"):
+            self.assertIn(boundary, jobs["build"])
+        global_config = workflow.split("jobs:", 1)[0]
+        self.assertRegex(global_config, r"(?m)^permissions:\n  contents: read\n")
+        self.assertNotRegex(global_config, r"(?m)^\s+(?:pages|id-token): write")
+        self.assertNotIn("pull_request_target:", workflow)
+        for job_id, job in jobs.items():
+            if job_id != "deploy":
+                self.assertNotRegex(job, r"(?m)^    permissions:")
+                self.assertNotIn("secrets.", job)
+        deploy = re.sub(r"(?m)\s+#.*$", "", jobs["deploy"])
+        self.assertRegex(deploy, r"(?m)^    needs: \[build, site-check\]$")
+        self.assertRegex(deploy, r"(?m)^    if: github.event_name != 'pull_request'$")
+        self.assertRegex(deploy, r"(?m)^    permissions:\n      contents: read\n"
+                                r"      pages: write\n      id-token: write\n")
+        self.assertNotIn("continue-on-error:", deploy)
+        scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
+        for name, command in scripts.items():
+            if name != "test:browser":
+                self.assertNotRegex(command, r"playwright|test:browser", name)
+        for path in (REPO_ROOT / ".codearbiter/tech-stack.md",
+                     REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md"):
+            self.assertNotRegex(path.read_text(encoding="utf-8"), r"playwright install|run test:browser")
+
+    def test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition(self):
+        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
+            DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
+        self.assertNotRegex(build, r"(?i)playwright\s+install|\bffmpeg\b|\bapt(?:-get)?\b")
+        self.assertNotRegex(build, r"(?i)\b(?:curl|wget)\b|install-(?:browser|deps)")
+        self.assertEqual(re.findall(r"(?m)^        run: (.+)$", build), [
+            "npm ci", "npm run build", "npm run link-audit",
+            "google-chrome --version", "npm run test:browser",
+        ], "browser validation must consume the runner image without executable downloads")
+
+    def test_playwright_configuration_is_inside_the_typecheck_scope(self):
+        config = json.loads((REPO_ROOT / "site/tsconfig.json").read_text(encoding="utf-8"))
+        self.assertIn("playwright.config.ts", config["include"])
+
+    def test_browser_results_stay_in_ignored_non_publication_output(self):
+        config = (REPO_ROOT / "site/playwright.config.ts").read_text(encoding="utf-8")
+        self.assertIn('outputDir: "./.astro/playwright"', config)
+        ignored = subprocess.run(
+            ["git", "check-ignore", "site/.astro/playwright/test/trace.zip"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(ignored.returncode, 0, ignored.stderr)
+
+
+class SiteBrowserBehaviorContractTest(unittest.TestCase):
+    """AC-01/02/03: retain production-browser obligations in the hosted suite."""
+
+    def test_preview_stays_owned_in_agent_environments(self):
+        config = (REPO_ROOT / "site/playwright.config.ts").read_text(encoding="utf-8")
+        self.assertIn('env: { ASTRO_PREVIEW_BACKGROUND: "1" }', config)
+
+    def test_browser_command_runs_the_publication_contract(self):
+        manifest = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["scripts"].get("test:browser"), "playwright test")
+
+    def test_browser_scenarios_cover_heading_keyboard_and_pagefind_lifecycle(self):
+        path = REPO_ROOT / "site/test/browser/publication.spec.ts"
+        self.assertTrue(path.is_file(), "missing production-browser behavior contract")
+        source = path.read_text(encoding="utf-8")
+        for obligation in ("AC-01", "AC-02", "AC-03"):
+            self.assertRegex(source, rf'test\("{obligation}:')
+        for assertion in ('getByRole("heading"', 'getByRole("combobox"',
+                          'getByRole("listbox"', 'getByRole("option"',
+                          '"ControlOrMeta+k"', '"Escape"', '"ArrowDown"', '"Enter"',
+                          "toBeFocused()", "toHaveURL(", '"aria-activedescendant"',
+                          '"aria-expanded", "false"', 'fill("")',
+                          "toBeHidden()", "toHaveCount(1)", "astro:page-load"):
+            self.assertIn(assertion, source)
+
+    def test_browser_contract_checks_academy_and_search_geometry_at_both_viewports(self):
+        source = (REPO_ROOT / "site/test/browser/publication.spec.ts").read_text(encoding="utf-8")
+        for width, height in ((1440, 900), (390, 844)):
+            self.assertRegex(source, rf"\{{\s*width: {width},\s*height: {height}\s*\}}")
+        self.assertIn('test(`AC-04:', source)
+        responsive = source.split('test(`AC-04:', 1)[1]
+        for obligation in ("page.setViewportSize(viewport)", 'page.goto("/academy/")',
+                           'getByRole("combobox"', 'getByRole("listbox"',
+                           "search.fill(quickstartTitle)", "toBeVisible()",
+                           "document.documentElement.scrollWidth",
+                           "document.documentElement.clientWidth", "toBeLessThanOrEqual(0)"):
+            self.assertIn(obligation, responsive)
+        self.assertGreaterEqual(responsive.count("await expectNoHorizontalOverflow()"), 2,
+                                "check geometry both before and during visible search results")
+
+
 if __name__ == "__main__":
     unittest.main()
