@@ -3,6 +3,7 @@ import { extname, join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const docsRoot = join(process.cwd(), "src", "content", "docs");
+const academyOverview = join(process.cwd(), "src", "components", "AcademyOverview.astro");
 
 function contentFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -96,5 +97,20 @@ describe("hand-authored learning contract", () => {
       ];
     });
     expect(failures).toEqual([]);
+  });
+
+  it("keeps the Learning Path and Academy reciprocal without inventing progress state", () => {
+    const learningPath = readFileSync(join(docsRoot, "learn", "index.mdx"), "utf8");
+    const academy = readFileSync(academyOverview, "utf8");
+
+    expect(learningPath).toContain('href={`${base}academy/`}');
+    expect(learningPath).toContain("guided documentation");
+    expect(learningPath).toContain("verifier-backed practice");
+    expect(academy).toContain('href={`${basePath}/learn/`}');
+    expect(academy).toContain("guided documentation");
+    expect(academy).toContain("verifier-backed practice");
+    for (const source of [learningPath, academy]) {
+      expect(source).toContain("does not create an account, import progress, or store completion state");
+    }
   });
 });
