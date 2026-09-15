@@ -23,7 +23,7 @@ Read in full before writing any code:
 
 ## TDD Workflow (Non-Negotiable)
 
-Follow the six-step fixed order in `{{PLUGIN_ROOT}}/includes/author-tdd-workflow.md` for every task — failing tests first, minimum implementation, full suite, lint/type-check, only then stage.
+Follow the six-step fixed order in `{{PLUGIN_ROOT}}/includes/author-tdd-workflow.md` for every task — failing tests first, minimum implementation, impact-bounded local verification, lint/type-check, only then stage. The shared `verification-boundary` reserves exhaustive cross-platform proof for exact-head hosted CI.
 
 ## Required Test Coverage per Feature
 

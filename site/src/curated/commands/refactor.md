@@ -10,7 +10,7 @@ gates:
     effect: pre-existing tests must already cover the named surface, with at least one direct test per public method — an under-covered surface halts and backfills first
   - gate: parity verification
     when: after the restructure
-    effect: the full pre-existing suite passes with zero edits to any pre-existing test file
+    effect: impact-bounded pre-existing parity tests pass locally without edits; exhaustive exact-head proof runs in hosted CI before merge
 ---
 
 ## What it does
@@ -41,7 +41,8 @@ Parity coverage: each has a direct test; PaymentClient's covers only the success
 a failure-path test before continuing.
 [backfill test added, suite green]
 Applying the extraction... no new branches, no new error paths.
-Running full suite unmodified: 187 passed, 0 failed, zero test files touched.
+Running affected parity tests unmodified: 37 passed, 0 failed; no pre-existing parity test files modified.
+Exhaustive exact-head GitHub Actions checks remain required before merge.
 Coverage on the named surface: unchanged. Parity proven.
 ```
 

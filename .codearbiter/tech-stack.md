@@ -73,7 +73,13 @@ runtime dependency. The supported promotion version is exact Pi 0.84.1.
 
 ## Test
 
-Run all of these; ALL must pass before any commit:
+The contributor loop follows the shared
+[`verification-boundary`](../plugins/ca/includes/verification-boundary.md): run
+the commands below that cover the changed paths and obligations before commit.
+GitHub Actions runs the exhaustive impact-selected, cross-platform matrix for
+the pull request, and the exact-head merge-readiness aggregate must pass before
+merge. A local failure still blocks; this section is a command catalog, not a
+requirement to replay the entire hosted matrix on a contributor's machine.
 
 ```sh
 # Codex packaged-resource and static candidate schemas

@@ -10,7 +10,7 @@ gates:
     effect: every public method in the named surface needs at least one direct pre-existing test, backfilled via the test-first gate if missing
   - gate: parity verification
     when: after implementation
-    effect: the full suite must pass with zero modifications to any pre-existing test — a changed test is treated as evidence the behavior itself changed
+    effect: impact-bounded pre-existing parity tests pass locally with zero modifications; exhaustive exact-head proof runs in hosted CI before merge
 ---
 
 ## What it does
@@ -28,7 +28,7 @@ as a feature or fix instead of proceeding as a refactor.
    backfilling through the test-first gate if they don't.
 3. Where the refactor exposes a genuinely new seam, pin its contract with a failing test first.
 4. Apply the restructure, confined strictly to the named surface, with no added behavior.
-5. Run the full suite and confirm zero pre-existing tests were modified to make it pass.
+5. Run the impact-bounded pre-existing parity tests locally and confirm none were modified to make them pass; require exhaustive exact-head hosted CI before merge.
 6. Run lint, type-checking, and coverage, confirming no regression on the touched surface.
 
 ## Exits

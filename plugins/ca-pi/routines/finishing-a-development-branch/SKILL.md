@@ -15,6 +15,7 @@ Read these, or STOP and surface the gap — never guess the branch name or the d
 - `<project-root>/.codearbiter/CONTEXT.md` — the default-branch name and project context.
 - `<project-root>/.codearbiter/plans/<slug>.md` — the plan this branch executed, when `/feature` or `/sprint` produced one. The yardstick for "is the work complete."
 - `<project-root>/.codearbiter/last-checkpoint` — the most recent gate results; confirms `commit-gate` cleared on this branch.
+- `<plugin-root>/includes/verification-boundary.md` — the exact-head hosted-CI evidence required before merge.
 
 `commit-gate` MUST have cleared on the current HEAD. If it has not, this skill does not run — return to it.
 
@@ -55,7 +56,7 @@ Gate: branch confirmed non-default, diff summary read, gate results and plan del
 Present exactly three terminal options with the Phase 1 state attached, then STOP for the choice:
 
 1. **Open a PR** — push the branch and open a pull request against the default branch, then stop. The PR stays open; the merge happens later, by the user or reviewers.
-2. **Merge via PR** — push the branch, open the PR, and once its checks are green, merge it **through the PR** so the work lands on the default branch now. Distinct from option 1: this one completes the merge. Still PR-only — no direct push to the default branch, no force-push.
+2. **Merge via PR** — push the branch, open the PR, and once its current exact-head merge-readiness aggregate is green, merge it **through the PR** so the work lands on the default branch now. Missing, stale, cancelled, mismatched, or red hosted evidence blocks this option. Distinct from option 1: this one completes the merge. Still PR-only — no direct push to the default branch, no force-push.
 3. **Discard** — abandon the branch.
 
 Under `/feature`: STOP and let the user pick.
@@ -70,7 +71,7 @@ Gate: a single terminal option is chosen — by the user under `/feature`, or au
 Carry out the chosen option, and only that one:
 
 - **Open a PR** — push the branch and open the PR against the default branch. The reviewer path-matrix, the anti-slop PR-body composition (description citing the plan items satisfied, the gate results, the §2 conflict level of any non-obvious tradeoff), and the babysitter attach are the steps documented in the `/ca-pr` command flow (`<plugin-root>/skills/ca-pr/SKILL.md`) — **execute those steps here; do not re-invoke `/ca-pr`** (under `/sprint` this skill is reached via `commit-gate`, without the `/pr` command ever running, so a route back would loop). Leave the PR open; the merge is not yours to take.
-- **Merge via PR** — open the PR as above, confirm its checks are green, revalidate Phase 1's ADR source ancestry and exact base/head, then merge it through the PR with the selected method and `--match-head-commit`. Never push to the default branch directly, never force-push.
+- **Merge via PR** — open the PR as above, bind its current head SHA, and require the repository merge-readiness aggregate for that exact head under `verification-boundary.md`. Missing, stale, cancelled, mismatched, pending, or red evidence blocks. Revalidate Phase 1's ADR source ancestry and exact base/head, then merge it through the PR with the selected method and `--match-head-commit`. Never push to the default branch directly, never force-push.
 - **Discard** — requires explicit user confirmation naming the branch. Before discarding, verify the branch is fully pushed; if any commit is un-pushed, STOP and report exactly what would be lost — never delete un-pushed work silently. Discard proceeds only after the user confirms with that loss in view.
 
 Gate: the chosen option completed — for open-PR a PR exists against the default branch; for merge the work landed through that PR; for discard the user confirmed against a stated loss summary.
@@ -107,6 +108,7 @@ warm sentence.
 - MUST NOT discard a branch without explicit user confirmation that names the branch.
 - MUST NOT delete un-pushed commits silently — STOP and report the loss before any discard.
 - MUST NOT run before `commit-gate` has cleared on the current HEAD.
+- MUST NOT merge without the repository merge-readiness aggregate passing for the PR's current exact head; missing, stale, cancelled, mismatched, pending, or red hosted evidence blocks.
 - MUST NOT guess the branch or default-branch name — read `CONTEXT.md` or STOP.
 - MUST draw the Receipt only from Phase 1 state + `last-checkpoint` — never a fresh audit-trail crawl — and never build a rolling cross-branch "saves" tally.
 - MUST keep the close to at most one warm sentence; never on a no-op close.
