@@ -26,12 +26,15 @@ the gates that fit it — and nothing it doesn't need. Everything still exits th
 **deps** — bump an existing dependency's version (manifest + lockfile together, never one without
 the other).
 - Gates: dispatch `dependency-reviewer` (same vetting as `$ca-add-dep` — license, provenance,
-  supply chain, changelog of the bump); full test suite green after the bump; `commit-gate`.
+  supply chain, changelog of the bump); affected local tests green under
+  [includes/verification-boundary.md](../../includes/verification-boundary.md); exhaustive exact-head hosted CI before merge;
+  `commit-gate`.
 - A bump that requires code changes to adopt is not a chore — route the code change through
   `$ca-feature` or `$ca-fix`.
 
 **revert** — back out a named commit.
-- Gates: `git revert <SHA>` (never hand-edited backout); full suite green after the revert; the
+- Gates: `git revert <SHA>` (never hand-edited backout); affected local tests green under the shared
+  `verification-boundary`, exhaustive exact-head hosted CI before merge; the
   commit message references the reverted SHA and the reason; `commit-gate`.
 - No new regression test demanded — the revert restores already-tested behavior. If the revert is
   fixing a defect the suite missed, open `$ca-fix` afterward to pin it.
@@ -48,7 +51,8 @@ the other).
 
 MUST reject a change containing behavioral code (beyond the revert itself) — that is `$ca-feature`
 or `$ca-fix` territory. MUST keep manifest and lockfile changes in the same commit for `deps`.
-MUST run the full suite for `deps` and `revert`. MUST run the anti-slop copy pass on any user-facing
+MUST run impact-bounded local verification for `deps` and `revert` and require exhaustive exact-head
+hosted CI before merge. MUST run the anti-slop copy pass on any user-facing
 doc a `docs` change authors or edits. Never skips `commit-gate`.
 
 ## When NOT to use

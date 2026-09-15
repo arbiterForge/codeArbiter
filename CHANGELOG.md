@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.2] - 2026-09-15
+
+### Fixed
+
+- Keep exhaustive repository and cross-platform verification on exact-head hosted CI instead of requiring contributors to replay the full matrix locally before committing or opening a pull request.
+
 ## [2.18.1] - 2026-09-14
 
 ### Fixed

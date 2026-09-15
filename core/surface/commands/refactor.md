@@ -18,8 +18,10 @@ Routes to the `refactor` skill — six phases:
    Phase 1 to write failing tests pinning the seam's contract first.
 4. **Implementation** — apply the restructure mechanically within the surface table; no new behavior,
    branches, error paths, or side effects.
-5. **Parity verification** — the full pre-existing suite passes with zero edits to any pre-existing
-   test file.
+5. **Parity verification** — every impact-bounded local parity test identified for the surface passes
+   with zero edits to any pre-existing test file; the shared
+   `{{PLUGIN_ROOT}}/includes/verification-boundary.md` reserves the exhaustive suite for exact-head
+   hosted CI before merge.
 6. **Lint / coverage gate** — lint, type-check, and coverage clear; surface coverage MUST NOT regress.
 
 ## Routes to

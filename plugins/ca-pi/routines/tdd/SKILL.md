@@ -14,6 +14,7 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 
 - `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `<project-root>/.codearbiter/tech-stack.md` — test, coverage, and lint invocations; file layout; mock patterns.
+- `<plugin-root>/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - `<project-root>/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 3.
 - `<project-root>/.codearbiter/specs/<slug>.md` — the approved spec, when `/feature` produced one. It is the primary obligation source.
 - `<project-root>/.codearbiter/security-controls.md` — only when the change touches a security boundary (auth, crypto, secrets, a trust boundary). Optional; absent on most changes.
@@ -66,10 +67,12 @@ obligation `MAPPED` to a failing test. No implementation code is written until t
 ## Phase 3 — Green · gate: BLOCK
 
 Write the **minimum** implementation that satisfies the Phase 2 tests — no speculative logic, no
-gold-plating — to the conventions in `coding-standards.md`. Run the full suite. A broken pre-existing
-test is a regression: fix it.
+gold-plating — to the conventions in `coding-standards.md`. Run the impact-bounded local tests from
+`verification-boundary.md`: the new regression plus affected pre-existing contracts. A broken
+pre-existing test is a regression: fix it. Exhaustive and cross-platform suites run on exact-head
+hosted CI before merge.
 
-Gate: full suite green, reached by satisfying the Phase 2 tests — not by weakening them. A test's
+Gate: the applicable local suite is green, reached by satisfying the Phase 2 tests — not by weakening them. A test's
 assertions MUST be unchanged between red and green; only fixtures and setup may move. A relaxed
 assertion is a gate violation.
 

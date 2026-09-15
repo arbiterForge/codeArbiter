@@ -12,6 +12,7 @@ The only permitted path to a commit. Bypassing it is a hard-rule violation. Rout
 Read these, or STOP and surface the gap — never guess a command:
 
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess.
+- `{{PLUGIN_ROOT}}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
 - The `tdd` skill must have cleared all six phases for any new or modified feature code in the staged set. If `tdd` is incomplete, STOP and surface the gap.
 
@@ -49,9 +50,10 @@ Gate: the staged set is type-homogeneous with a single type and scope.
 
 ## Phase 4 — Verification · gate: BLOCK
 
-Read the test, lint, and secrets-scan commands from `tech-stack.md`. Then:
+Read the test, lint, and secrets-scan commands from `tech-stack.md`, then apply
+`{{PLUGIN_ROOT}}/includes/verification-boundary.md`:
 
-- Run the test command. ALL tests green. Any failure blocks.
+- Run the impact-bounded local tests that directly cover the staged paths and obligations. Any failure blocks. Repository-wide and cross-platform suites belong to exact-head hosted CI before merge, not this commit gate.
 - Run lint, and the type-check if the project is statically typed. Zero errors.
 - Run the secrets scan on ALL staged files, regardless of commit type. Any finding blocks.
 - **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` (`{{PLUGIN_ROOT}}/skills/crypto-compliance/SKILL.md`) and/or `secret-handling` (`{{PLUGIN_ROOT}}/skills/secret-handling/SKILL.md`) — they scan against `security-controls.md` and, on pass, record the diff-bound marker `.codearbiter/.markers/security-gate-passed` (via `hooks/security-pass.py`). This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded AND covers every sensitive line being committed.
@@ -60,7 +62,7 @@ Read the test, lint, and secrets-scan commands from `tech-stack.md`. Then:
 
 Record each result (PASS / BLOCK) for the report.
 
-Gate: test, lint, secrets scan, and (when crypto/secret is touched) the security gate all PASS. Any failure halts the commit until fixed and re-run.
+Gate: the applicable focused tests, lint/type-check, secrets scan, and specialized gates all PASS. Any failure halts the commit until fixed and re-run. This gate does not claim that exhaustive hosted CI has run; `finishing-a-development-branch` proves that separately before merge.
 
 ## Phase 5 — Behavioral proof · gate: BLOCK
 
@@ -142,6 +144,7 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit to `main`, `master`, or any protected branch.
 - MUST NOT run `git add -A`, `git add .`, or any wildcard staging.
 - MUST NOT commit while any test is failing, any lint error stands, or any secret is present.
+- MUST NOT turn exhaustive repository-wide or cross-platform CI into a local prerequisite when the shared `verification-boundary` assigns it to exact-head hosted CI.
 - MUST NOT accept a self-reported "it works" — prove the behavior against the spec with a fresh command run (Phase 5) before committing.
 - MUST NOT skip, disable, or work around any automated gate.
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.

@@ -26,13 +26,14 @@ conforming to `tools/plan.schema.json`:
   a potentially stale selection.
 - Per task: `id` ← T-NN (normalized to kebab-case), `description` ← task description,
   `filesInScope` ← path(s) from the task table, `test.path` ← the failing test written above,
-  `gate.commands` ← verification command from task table plus full-suite and lint/typecheck from
-  `tech-stack.md`, `deps` ← dependency ids (empty array if none), `context` ← a minimal slice of
+  `gate.commands` ← verification command from task table plus impact-bounded affected tests and
+  lint/typecheck from `tech-stack.md`, following
+  [includes/verification-boundary.md](../../../includes/verification-boundary.md); `deps` ← dependency ids (empty array if none), `context` ← a minimal slice of
   relevant types/interfaces (omit if the test file plus task description is self-contained),
   `maxRetries` ← omit to use the farm default.
 - **`gate.commands[0]` MUST be the task's narrow behavioral test** (the command that runs just
-  `test.path`), with the full suite and lint/typecheck following. The farm's mutation guard re-runs
-  `gate.commands[0]` per mutant; if the first command were the full suite, mutation testing would be
+  `test.path`), with affected contract tests and lint/typecheck following. The farm's mutation guard re-runs
+  `gate.commands[0]` per mutant; if the first command were an exhaustive suite, mutation testing would be
   prohibitively slow.
 
 Validate the JSON against the schema before writing (load the schema from

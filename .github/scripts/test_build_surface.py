@@ -1246,5 +1246,124 @@ class WriteAndCheckTest(_RepoCase):
         self.assertEqual(B.main(["--bogus"], repo=self.repo), 2)
 
 
+class VerificationBoundaryContractTest(unittest.TestCase):
+    """The contributor loop stays bounded while hosted CI owns exhaustive proof."""
+
+    def read(self, relative_path):
+        return (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+
+    def test_canonical_policy_assigns_exhaustive_proof_to_exact_head_ci(self):
+        policy = self.read("core/surface/includes/verification-boundary.md")
+        for required in (
+            "impact-bounded local verification",
+            "exact-head",
+            "hosted CI",
+            "missing, stale, cancelled, or mismatched",
+            "MUST NOT merge",
+            "coverage",
+            "generated-artifact parity",
+            "staged secret scanning",
+            "lint",
+            "type-check",
+            "security",
+            "dependency",
+            "migration",
+            "release",
+            "ADR",
+            "deployment",
+            "live device",
+            "private",
+            "environment",
+        ):
+            self.assertIn(required.lower(), policy.lower())
+
+    def test_local_lanes_defer_exhaustive_suites_to_hosted_ci(self):
+        paths = (
+            "core/surface/skills/commit-gate/SKILL.md",
+            "core/surface/skills/tdd/SKILL.md",
+            "core/surface/skills/refactor/SKILL.md",
+            "core/surface/includes/author-tdd-workflow.md",
+            "core/surface/commands/feature.md",
+            "core/surface/commands/commit.md",
+            "core/surface/commands/chore.md",
+            "core/surface/commands/refactor.md",
+            "core/surface/agents/backend-author.md",
+            "core/surface/agents/frontend-author.md",
+            "core/surface/skills/writing-plans/references/farm-plan.md",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            ".codearbiter/tech-stack.md",
+            "CONTRIBUTING.md",
+        )
+        obsolete = (
+            "Run all of these; ALL must pass before any commit",
+            "Run the full suite. A broken pre-existing",
+            "Run full suite — every test green",
+            "full suite must be green before",
+            "MUST NOT commit if the project test suite is not green",
+            "Run it before opening a PR",
+        )
+        for path in paths:
+            text = self.read(path)
+            with self.subTest(path=path):
+                for phrase in obsolete:
+                    self.assertNotIn(phrase, text)
+                self.assertIn("verification-boundary", text)
+
+        plan_schema = self.read("plugins/ca/tools/plan.schema.json")
+        self.assertNotIn("Typically: run this test, run full suite", plan_schema)
+        self.assertIn("exhaustive exact-head proof runs in hosted CI", plan_schema)
+
+    def test_tracked_curated_docs_do_not_restore_the_obsolete_local_rule(self):
+        paths = (
+            "site/src/curated/commands/chore.md",
+            "site/src/curated/commands/commit.md",
+            "site/src/curated/commands/feature.md",
+            "site/src/curated/commands/refactor.md",
+            "site/src/curated/skills/commit-gate.md",
+            "site/src/curated/skills/refactor.md",
+            "site/src/curated/skills/tdd.md",
+        )
+        obsolete = (
+            "full suite must pass",
+            "Run the full suite",
+            "Running full suite",
+            "before opening a PR",
+        )
+        for path in paths:
+            text = self.read(path)
+            with self.subTest(path=path):
+                for phrase in obsolete:
+                    self.assertNotIn(phrase, text)
+                self.assertIn("impact-bounded", text)
+                self.assertIn("exact-head", text)
+                self.assertIn("hosted CI", text)
+
+    def test_every_host_projection_carries_the_same_boundary(self):
+        rendered = {
+            "claude": B.render_all(REPO_ROOT, "claude"),
+            "codex": B.render_all(REPO_ROOT, "codex"),
+            "pi": B.render_all(REPO_ROOT, "pi"),
+        }
+        for host, surface in rendered.items():
+            with self.subTest(host=host):
+                policy = surface["includes/verification-boundary.md"].decode()
+                routine_prefix = "skills" if host == "claude" else "routines"
+                self.assertIn("impact-bounded local verification", policy)
+                self.assertIn("hosted CI", policy)
+                self.assertIn("exact-head", policy)
+                self.assertIn("verification-boundary", surface[
+                    f"{routine_prefix}/commit-gate/SKILL.md"
+                ].decode())
+                self.assertIn("verification-boundary", surface[
+                    f"{routine_prefix}/tdd/SKILL.md"
+                ].decode())
+                finishing = surface[
+                    f"{routine_prefix}/finishing-a-development-branch/SKILL.md"
+                ].decode()
+                self.assertIn("verification-boundary", finishing)
+                self.assertIn("merge-readiness aggregate", finishing)
+                self.assertIn("current exact-head", finishing)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

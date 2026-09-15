@@ -23,5 +23,6 @@ is canonical for its phases, gates, and output format.
 
 ## Hard gate
 
-MUST NOT commit without `commit-gate` clearing. MUST NOT commit if the project test suite is not
-green.
+MUST NOT commit without `commit-gate` clearing. The applicable impact-bounded local tests from
+[includes/verification-boundary.md](../../includes/verification-boundary.md) must be green; exhaustive repository and
+cross-platform suites are exact-head hosted-CI merge gates, not local commit prerequisites.

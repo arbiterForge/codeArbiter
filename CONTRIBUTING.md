@@ -53,11 +53,14 @@ This repo is itself an arbiter-enabled repo (`.codearbiter/CONTEXT.md` carries
 
 ## Running the tests
 
-The hook suite is the heart of the project. Run it before opening a PR:
+Follow the shared
+[`verification-boundary`](./core/surface/includes/verification-boundary.md): run
+the smallest fresh local test set that proves the changed behavior and affected
+contracts. For a hook change, that normally means the directly affected test
+module or case, for example:
 
 ```sh
-cd plugins/ca/hooks
-python -m pytest          # the full hook + statusline + standup + prune suite
+python -m unittest plugins.ca.hooks.tests.test_<affected_module>
 ```
 
 If you touched the farm dispatcher:
@@ -68,8 +71,11 @@ npm install
 npm test                  # Vitest
 ```
 
-CI (`.github/workflows/ci.yml`) runs these on every PR, plus a plugin-reference
-check and cold-install hook guards. A red suite blocks merge.
+CI (`.github/workflows/ci.yml`) runs the exhaustive impact-selected suite on
+GitHub's hosted Windows, macOS, and Linux runners, plus plugin-reference and
+cold-install guards. The exact-head merge-readiness aggregate must be green; a
+missing, stale, cancelled, or red run blocks merge. Contributors do not need to
+replay that full matrix locally before opening the PR.
 
 ## How development works here
 

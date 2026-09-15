@@ -13,6 +13,7 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 
 - `{{PROJECT_DIR}}/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — the test, coverage, lint, and type-check invocations; file layout.
+- `{{PLUGIN_ROOT}}/includes/verification-boundary.md` — the required split between focused local parity proof and exhaustive exact-head hosted CI.
 - `{{PROJECT_DIR}}/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 4.
 
 The working tree MUST be clean over the named surface before Phase 1. A dirty surface conflates the refactor diff with unrelated edits and breaks parity verification — STOP and surface it.
@@ -67,9 +68,9 @@ Gate: the refactor confined to the surface table, with any Phase 3 seam tests no
 
 ## Phase 5 — Parity verification · gate: BLOCK
 
-Run the full project test suite from `tech-stack.md`. Every pre-existing test from Phase 2 MUST pass with NO modification to its source — inspect the diff and confirm zero edits to any pre-existing test file. A modified pre-existing test is, by definition, evidence the surface's observable behavior changed: revert it. If it cannot pass after revert, the refactor introduced a behavior change and is routed to `tdd` as a feature or fix. Phase 3 seam tests (if any) MUST pass. Record the pass/fail tally and any modified-test detection.
+Run every impact-bounded local parity test identified in Phase 2, following `verification-boundary.md`. Each MUST pass with NO modification to its source — inspect the diff and confirm zero edits to any pre-existing test file. A modified pre-existing test is, by definition, evidence the surface's observable behavior changed: revert it. If it cannot pass after revert, the refactor introduced a behavior change and is routed to `tdd` as a feature or fix. Phase 3 seam tests (if any) MUST pass. Record the pass/fail tally and any modified-test detection. The exhaustive pre-existing suite remains a required exact-head hosted-CI merge gate.
 
-Gate: full suite green with zero pre-existing tests modified. BLOCK if any pre-existing test was modified to pass, or if any test fails.
+Gate: scoped parity tests green with zero pre-existing tests modified. BLOCK if any pre-existing test was modified to pass, or if any applicable test fails; the branch still MUST NOT merge until exhaustive exact-head hosted CI passes.
 
 ## Phase 6 — Lint and coverage · gate: BLOCK
 

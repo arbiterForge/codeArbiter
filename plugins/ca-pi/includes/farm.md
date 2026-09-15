@@ -38,7 +38,7 @@ capable of the slice).
    `FARM_MUTATION_TEST_CMD` set and must print a trailing JSON line with a numeric `score`.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
-the mutation guard runs `gate.commands[0]` as the per-mutant test (running the full suite per mutant
+the mutation guard runs `gate.commands[0]` as the per-mutant test (running an exhaustive suite per mutant
 would be too slow).
 
 ### Best-of-N sampling and iterative retries

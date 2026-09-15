@@ -84,8 +84,9 @@ not `/feature`.
 
 Scope determines which author agent `subagent-driven-development` dispatches per task:
 `backend-author`, `frontend-author`, or `infra-author` — per the mapping in `tech-stack.md`. A
-multi-area feature runs the appropriate agent per task; the full suite must be green before
-transitioning between scope areas.
+multi-area feature runs the appropriate agent per task. Each transition requires the affected local
+tests from `<plugin-root>/includes/verification-boundary.md` to be green; exhaustive cross-area and
+cross-platform proof runs in exact-head hosted CI before merge.
 
 ## When NOT to use
 

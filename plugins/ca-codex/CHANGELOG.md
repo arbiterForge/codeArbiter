@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-09-15
+
+### Fixed
+
+- Keep exhaustive repository and cross-platform verification on exact-head hosted CI instead of requiring contributors to replay the full matrix locally before committing or opening a pull request.
+
 ## [0.10.1] - 2026-09-14
 
 ### Fixed
