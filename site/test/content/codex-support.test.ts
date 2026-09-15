@@ -55,7 +55,7 @@ describe("canonical Claude Code and Codex support evidence", () => {
       "src/content/docs/overview.md",
       "src/content/docs/getting-started/install.md",
       "src/content/docs/getting-started/quickstart.md",
-      "src/content/docs/getting-started/compatibility.md",
+      "src/content/docs/getting-started/compatibility.mdx",
     ]) {
       const content = read(rel);
       expect(content, rel).toContain("Claude Code");

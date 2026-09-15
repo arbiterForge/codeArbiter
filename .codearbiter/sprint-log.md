@@ -1587,3 +1587,17 @@ decision history and is not the active compatibility policy.
 
 ## SD-camp-01 — gate-events.log excluded from the feat commit · confidence: high · intent: silent
 Options: (a) commit the 1,723-line month-old accumulation with the feature; (b) unstage, leave for a dedicated hygiene commit. Verdict slot: Maintainable Strong for (b) — the pile predates the campaign, bloats PR review, and has a sanctioned owner (/ca:standup); Reliable Indifferent — append-only union survives either way. Chosen: (b). overrides.log stays staged: 11 lines, all audit-mandated, first-ever commit of the file.
+
+## C044-SD-01 — build-time repository evidence owns release applicability · confidence: high · intent: per user rolling-enforcement direction, ADR-0025, and ADR-0035
+
+- **Point:** The deployed site needs independently advancing host release identities and an exact documentation-build identity without a frozen portfolio version.
+- **Options:** (a) maintain a hand-authored compatibility table; (b) query the GitHub API in the browser or during every build; (c) derive a strict record at build time from release-target declarations, original-publication receipts, historical manifest bytes, Git `HEAD`, and the hook-proof digest.
+- **SMARTS:** Maintainable, Reliable, Testable, and Securable strongly favor (c): releases already append the provenance ledger, historical manifest equality is deterministic, no client network or credential is added, and malformed or missing evidence can fail closed. Available is adequate because GitHub-hosted Pages supplies full history; Simple moderately favors (a), but its drift risk directly contradicts the owner requirement.
+- **Chosen:** (c). The record names its `release-and-build-identity` boundary and never claims runtime certification. Strength: strong.
+
+## C044-SD-02 — one generated record drives human and machine surfaces · confidence: high · intent: per checkpoint-044 approved acceptance
+
+- **Point:** A rendered table, proof label, and JSON endpoint could drift if separately authored.
+- **Options:** (a) duplicate values in each surface; (b) generate one ignored JSON record before Astro builds and import it into the component, proof caption, and static endpoint.
+- **SMARTS:** Maintainable, Reliable, and Testable strongly favor (b); a single strict producer makes equality mechanically testable and preserves the existing generated-output discipline. Securable is neutral because all inputs are repository-owned inert data.
+- **Chosen:** (b). Strength: strong.

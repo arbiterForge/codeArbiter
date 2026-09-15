@@ -39,7 +39,7 @@ OFFICIAL_PROMOTION_PATHS = frozenset({
     "docs/parity.md",
     "docs/pi-parity-testing.md",
     "plugins/ca-pi/tools/src/pi-api.d.ts",
-    "site/src/content/docs/getting-started/compatibility.md",
+    "site/src/content/docs/getting-started/compatibility.mdx",
     "site/src/content/docs/getting-started/pi.md",
     "site/scripts/generator/forge-status.ts",
     "site/test/content/documentation-presentation.test.ts",

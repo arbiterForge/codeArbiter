@@ -242,6 +242,18 @@ describe("captured gate proof", () => {
     expect(proof.fixture.gateEvent).toContain("BLOCK [H-03]");
   });
 
+  it("binds the replay caption to the exact latest published ca artifact without widening the proof", () => {
+    expect(proofCmp).toContain('import applicability from "../generated/release-applicability.json"');
+    expect(proofCmp).toContain('applicability.hosts.find((host) => host.target === "ca")');
+    expect(proofCmp).toContain('import { presentProofApplicability } from "../release-applicability-presentation.ts"');
+    expect(proofCmp).toContain("presentProofApplicability(applicability.proof)");
+    expect(proofCmp).toContain("publishedCa.tag");
+    expect(proofCmp).toContain("publishedCa.publicationCommit");
+    expect(proofCmp).toContain('href="/release-applicability.json"');
+    expect(proofCmp).toContain("It does not prove a host discovered or registered that hook.");
+    expect(proofCmp).not.toMatch(/\b(?:2\.17\.11|0\.9\.11|0\.10\.13)\b/);
+  });
+
   it("keeps both efficient video formats and a poster in the repository", () => {
     for (const asset of ["hook-proof.mp4", "hook-proof.webm", "hook-proof-poster.webp"]) {
       expect(statSync(path.join(siteRoot, "src/assets/proof", asset)).size).toBeGreaterThan(10_000);

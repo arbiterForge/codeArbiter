@@ -245,7 +245,7 @@
     },
     {
       "id": "site-compatibility-supported",
-      "path": "site/src/content/docs/getting-started/compatibility.md",
+      "path": "site/src/content/docs/getting-started/compatibility.mdx",
       "class": "current-doc",
       "before": "{last_verified} (this release line)",
       "after": "{candidate} (this release line)"

@@ -43,7 +43,7 @@ describe("public trust-policy claims", () => {
 
   it("states each network activity's actual default", () => {
     const compatibility = normalizeWhitespace(
-      readRepo("site/src/content/docs/getting-started/compatibility.md"),
+      readRepo("site/src/content/docs/getting-started/compatibility.mdx"),
     );
     const hooks = normalizeWhitespace(readRepo("docs/hooks.md"));
 
