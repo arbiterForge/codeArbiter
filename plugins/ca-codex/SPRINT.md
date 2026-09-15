@@ -18,7 +18,7 @@ selects the pluggable execution backend: Claude still authors the spec, the fail
 but a worker (not a premium subagent) implements each task behind the same hard gates. Thread the flag
 into Phase 1 (`writing-plans --farm`) and Phase 2 (the farm dispatch path in
 `subagent-driven-development`); if `--farm` is set, pre-flight `FARM_API_KEY` and BLOCK if absent,
-citing `${CLAUDE_PLUGIN_ROOT}/includes/farm.md`, before brainstorming begins. Everything else about
+citing [includes/farm.md](includes/farm.md), before brainstorming begins. Everything else about
 `/sprint` (the one interactive gate, deciding-as-the-user, hard gates, logging) is identical between
 backends. The worker-seam design (the cheap/premium/agentic policies the seam admits) lives in
 `farm.md`; do not restate it here.
@@ -31,9 +31,9 @@ with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan 
 tasks → straight to Phase 2, executing only the remaining tasks; the plan's `status` column is the
 ledger). An interrupted sprint is re-entered, never restarted.
 
-Route to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/routines/brainstorming/SKILL.md`), scoped to a **sprint** — a coherent chunk of work (several features or one
+Route to `brainstorming` ([routines/brainstorming/SKILL.md](routines/brainstorming/SKILL.md)), scoped to a **sprint** — a coherent chunk of work (several features or one
 goal), not a single feature. Drive it to a concrete sprint spec at
-`<project-root>/.codearbiter/specs/<sprint-slug>.md`, then to `writing-plans` (`${CLAUDE_PLUGIN_ROOT}/routines/writing-plans/SKILL.md`) for the task
+`<project-root>/.codearbiter/specs/<sprint-slug>.md`, then to `writing-plans` ([routines/writing-plans/SKILL.md](routines/writing-plans/SKILL.md)) for the task
 breakdown at `<project-root>/.codearbiter/plans/<sprint-slug>.md`.
 
 This is the ONE interactive gate, and it is load-bearing: the thoroughness of the spec is what makes
@@ -61,7 +61,7 @@ sprint spec and the first slice's plan at this gate; subsequent slices proceed u
 
 ## Phase 2 — Autonomous execution · gate: BLOCK
 
-Hand the approved plan to `subagent-driven-development` (`${CLAUDE_PLUGIN_ROOT}/routines/subagent-driven-development/SKILL.md`) and run it to completion WITHOUT per-batch
+Hand the approved plan to `subagent-driven-development` ([routines/subagent-driven-development/SKILL.md](routines/subagent-driven-development/SKILL.md)) and run it to completion WITHOUT per-batch
 human checkpoints — that is the difference from `/feature`'s `executing-plans`. Each task is
 test-first via `tdd`, two-pass reviewed, and proven on a fresh run.
 
@@ -80,7 +80,7 @@ At every point the framework would normally surface for the user's decision — 
 ambiguity, a trade-off, a non-obvious option — DECIDE rather than stop:
 
 - Run the SMARTS 6-lens evaluation (the scoring in
-  `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md`), beginning with its Step 0 recorded-intent check
+  [includes/smarts/core.md](includes/smarts/core.md)), beginning with its Step 0 recorded-intent check
   (ADR-0025 — in scope here by name), plus a project-correctness read against `CONTEXT.md` and the
   sprint spec. Reuse SMARTS *scoring* only — NOT `decision-variance`'s
   Rule 1 ("never decide alone"), which `/sprint` explicitly overrides.
@@ -139,4 +139,4 @@ never on a no-op run.
 - MUST NOT merge to the default branch or discard autonomously — auto-select open-PR only.
 - MUST NOT inherit `decision-variance`'s Rule 1 — `/sprint` decides as the user, reusing only the SMARTS scoring.
 - MUST surface a repeated hard-gate-trip pattern as a planning/confidence signal, not grind past it.
-- MUST, at sprint close, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) in autonomous mode — auto-promote `confidence: low` `sprint-log.md` decisions and any open `[NEEDS-TRIAGE]` to `open-tasks.md` (work) / `open-questions.md` (decisions), each promotion SMARTS-scored and logged. A blocking decision is never auto-promoted — it escalates.
+- MUST, at sprint close, run the follow-up harvest ([includes/harvest.md](includes/harvest.md)) in autonomous mode — auto-promote `confidence: low` `sprint-log.md` decisions and any open `[NEEDS-TRIAGE]` to `open-tasks.md` (work) / `open-questions.md` (decisions), each promotion SMARTS-scored and logged. A blocking decision is never auto-promoted — it escalates.

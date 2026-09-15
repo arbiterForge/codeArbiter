@@ -1,13 +1,21 @@
 # Routing table
 
 Loaded on a scope-touch or `/command`, not every turn. This table is the authoritative trigger→route
-surface: it answers *what to invoke or route given a trigger*; for *what doc to read before touching a
-scope*, use `reference-map.md`. Follow the primary route; the gate is a hard stop, not a suggestion. A
-command is **invoked**; the orchestrator **routes** to a skill; a skill **dispatches** an agent.
-Routing to a skill means loading its body from `${CLAUDE_PLUGIN_ROOT}/routines/<name>/SKILL.md` — a route
+surface and destructive-operation registry: it answers *what to invoke or route given a trigger* and
+*which operations always require tier-2 confirmation*; for *what doc to read before touching a scope*,
+use `reference-map.md`. Follow the primary route; the gate is a hard stop, not a suggestion. A command
+is **invoked**; the orchestrator **routes** to a skill; a skill **dispatches** an agent.
+Routing to a skill means loading its body from [routines/<name>/SKILL.md](../routines/<name>/SKILL.md) — a route
 cell names the skill; this path convention locates it. That resolution never depends on the host's
 skill registry: a chain-internal skill hidden from the registry (`disable-model-invocation`) is
 reached the same way.
+
+## Destructive operations (tier-2 regardless of cue)
+
+- Logged bypass (`/override`)
+- Merge to the default branch
+- Branch or worktree deletion
+- Release and tag publication
 
 | Invocation cue | Primary route | Also dispatch | Hard gate |
 |---|---|---|---|
@@ -21,8 +29,8 @@ reached the same way.
 | Commit | `/commit` → `commit-gate` | — | No commit without all nine gates green |
 | Open a PR / finish a branch | `/pr` → `finishing-a-development-branch` | reviewer fleet per path; PR-body prose applies `anti-slop-design` (`core` + `medium-documents` §7.A.1) | PR only; no direct-to-default, no force-push |
 | Watch a PR's CI / babysit checks | `/watch` → detached `gh pr checks --watch` | on-red diagnose (propose\|branch) | Never auto-merges; green → notify + offer; merge-to-default routes through the hard gate; no poll loop |
-| Code review of the diff | `/review` → `dispatching-parallel-agents` | reviewer fleet → `finding-triage` → `checkpoint-aggregator` | BLOCK on any CRITICAL/HIGH |
-| Periodic sweep | `/checkpoint` → `dispatching-parallel-agents` | reviewer fleet → triage → aggregator | Surfaces a triaged report; not a promotion gate |
+| Code review of the diff | `/review` → `dispatching-parallel-agents` | reviewer fleet → `finding-triage` → `verdict-aggregator` | BLOCK on any CRITICAL/HIGH |
+| Periodic sweep | `/checkpoint` → `dispatching-parallel-agents` | reviewer fleet → finding-triage → read-only verdict; then explicit `checkpoint-aggregator` persistence | Surfaces and persists a triaged report; not a promotion gate |
 | Governance record for a window | `/audit` | — | Read-only; never overwrites a packet; audit lines quoted verbatim |
 | Release / version tag | `/release` → `release` skill | `commit-gate` (release commit); CHANGELOG prose applies `anti-slop-design` (`core` §3.A/§3.B) | No tag on a red suite; tag not pushed unbidden |
 | Code uses crypto / hashing / signing / TLS / random | `crypto-compliance` skill | `auth-crypto-reviewer` | BLOCK on any banned primitive |

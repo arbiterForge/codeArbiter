@@ -351,7 +351,11 @@ class SurfaceWiringTests(unittest.TestCase):
             "plugins", "ca-codex", "routines", "tribunal", "references",
             "schemas.md")
 
-        self.assertIn("tribunal-usage.py observe --thread-id", routine)
+        self.assertIn(
+            '"$PY" "${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe '
+            "--thread-id",
+            routine,
+        )
         self.assertIn("copy `source` as `tokens_source`", routine)
         self.assertIn('"agent_thread_id"', schema)
         self.assertIn('"tokens_status":"observed|unavailable"', schema)

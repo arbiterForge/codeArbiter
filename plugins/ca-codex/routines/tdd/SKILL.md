@@ -14,6 +14,7 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 
 - `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `<project-root>/.codearbiter/tech-stack.md` — test, coverage, and lint invocations; file layout; mock patterns.
+- [includes/verification-boundary.md](../../includes/verification-boundary.md) — the required split between focused local proof and exhaustive exact-head hosted CI.
 - `<project-root>/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 3.
 - `<project-root>/.codearbiter/specs/<slug>.md` — the approved spec, when `/feature` produced one. It is the primary obligation source.
 - `<project-root>/.codearbiter/security-controls.md` — only when the change touches a security boundary (auth, crypto, secrets, a trust boundary). Optional; absent on most changes.
@@ -66,10 +67,12 @@ obligation `MAPPED` to a failing test. No implementation code is written until t
 ## Phase 3 — Green · gate: BLOCK
 
 Write the **minimum** implementation that satisfies the Phase 2 tests — no speculative logic, no
-gold-plating — to the conventions in `coding-standards.md`. Run the full suite. A broken pre-existing
-test is a regression: fix it.
+gold-plating — to the conventions in `coding-standards.md`. Run the impact-bounded local tests from
+`verification-boundary.md`: the new regression plus affected pre-existing contracts. A broken
+pre-existing test is a regression: fix it. Exhaustive and cross-platform suites run on exact-head
+hosted CI before merge.
 
-Gate: full suite green, reached by satisfying the Phase 2 tests — not by weakening them. A test's
+Gate: the applicable local suite is green, reached by satisfying the Phase 2 tests — not by weakening them. A test's
 assertions MUST be unchanged between red and green; only fixtures and setup may move. A relaxed
 assertion is a gate violation.
 
@@ -78,7 +81,7 @@ assertion is a gate violation.
 Walk the Phase 1 list item by item. Each `MAPPED` obligation moves to `COVERED` (a real passing test
 that exercises the claim) or `MISSING` (no test truly covers it). For security-relevant or
 contract-critical logic, dispatch the `coverage-auditor` agent
-(`${CLAUDE_PLUGIN_ROOT}/agents/coverage-auditor.md`) to confirm the tests exercise the claim.
+([agents/coverage-auditor.md](../../agents/coverage-auditor.md)) to confirm the tests exercise the claim.
 
 A `MISSING` obligation returns the workflow to Phase 2 — author a correct failing test, then re-run
 Phase 3 — and loops until it is `COVERED`.
@@ -92,7 +95,7 @@ Gate: every obligation `COVERED`, each backed by a passing test. Any `MISSING` b
 ## Phase 5 — Coverage · gate: BLOCK
 
 Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — a rigor knob, not a promotion
-gate. The threshold table is the shared `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md` (the
+gate. The threshold table is the shared [includes/maturity-coverage.md](../../includes/maturity-coverage.md) (the
 single source of truth, also used by `refactor` Phase 2).
 
 Run the coverage command from `tech-stack.md`. **Lines and branches must both clear the threshold**
@@ -101,12 +104,12 @@ tests until both are met.
 
 **Name the host you measured on**, and for a tree `tech-stack.md` marks as platform-forked, the
 figure is the UNION across its supported hosts — a single-host report scores the other platform's
-arm as permanently uncovered (issue #521, conditions in `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`).
+arm as permanently uncovered (issue #521, conditions in [includes/maturity-coverage.md](../../includes/maturity-coverage.md)).
 Where only one host is available, say so and name what is missing rather than quoting it as the
 whole.
 
 Where the surface has no coverage tooling at all, take the no-tooling exemption in
-`${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md` — which requires QUOTING the `tech-stack.md`
+[includes/maturity-coverage.md](../../includes/maturity-coverage.md) — which requires QUOTING the `tech-stack.md`
 Coverage section that omits a command for this surface — and pass the phase on the Phase 4
 obligation verify alone. Without that citation the phase STOPs: "I could not find the command" and
 "this surface has none" look identical from here and demand opposite responses. Do NOT invent a
@@ -136,4 +139,4 @@ Gate: clean lint and type-check, zero errors — this is what clears the path to
 - MUST NOT lower a coverage threshold without a decision recorded in `CONTEXT.md`.
 - MUST NOT inline-suppress a lint rule without a written reason, and never to bypass a security-relevant rule.
 - MUST NOT guess the test, coverage, or lint command — read `tech-stack.md` or STOP.
-- MUST, at exit, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any `[NEEDS-TRIAGE]` raised this run — batch-confirm promoting work to `open-tasks.md` and decisions to `open-questions.md` so nothing languishes; nothing auto-promotes interactively.
+- MUST, at exit, run the follow-up harvest ([includes/harvest.md](../../includes/harvest.md)) over any `[NEEDS-TRIAGE]` raised this run — batch-confirm promoting work to `open-tasks.md` and decisions to `open-questions.md` so nothing languishes; nothing auto-promotes interactively.

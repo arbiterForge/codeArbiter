@@ -12,7 +12,7 @@ on a single ADR; with no argument it scans every ADR under
 
 ## Routes to
 
-The `decision-lifecycle` skill (`${CLAUDE_PLUGIN_ROOT}/routines/decision-lifecycle/SKILL.md`) in its
+The `decision-lifecycle` skill ([routines/decision-lifecycle/SKILL.md](../../routines/decision-lifecycle/SKILL.md)) in its
 health-scan mode. For each ADR it flags: aged decisions, `proposed` ADRs never challenged,
 supersession candidates (a newer ADR or code pattern contradicts the decision), and unresolved
 `[CONFIRM-NN]` placeholders. Findings aggregate into a structured report; nothing is changed.

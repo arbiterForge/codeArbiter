@@ -22,6 +22,11 @@ on:
     paths:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
+      - "academy-source" # a submodule pin updates the gitlink itself
+      - "academy-source/**" # Academy lessons are generated from the pinned source checkout
+      - ".gitmodules"
+      - ".github/published-tags.json" # release applicability is derived from publication receipts
+      - ".codearbiter/release-targets.md" # release applicability is derived from target declarations
       - ".github/workflows/docs.yml" # this workflow gates the site graph; it must see its own edits
       # Issue #338: the site-voice gate and the detector it calls. Without these
       # a PR that only loosened the rule would skip the job that enforces it -
@@ -33,6 +38,11 @@ on:
     paths:
       - "site/**"
       - "plugins/ca/**"
+      - "academy-source"
+      - "academy-source/**"
+      - ".gitmodules"
+      - ".github/published-tags.json"
+      - ".codearbiter/release-targets.md"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -62,6 +72,9 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          fetch-depth: 0 # release applicability validates historical manifests and proof bytes
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0
@@ -77,6 +90,10 @@ jobs:
         # gates in ci.yml; --omit=dev scopes it to what the built site actually
         # ships, keeping routine Astro/vitest dev advisories non-blocking.
         run: npm audit --omit=dev --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
+      - name: Generate release applicability
+        run: npm run gen
       - name: Typecheck
         run: npm run typecheck
       - name: Enforce site/VOICE.md punctuation (issue #338)
@@ -107,6 +124,9 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          fetch-depth: 0 # release applicability validates historical manifests and proof bytes
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22 # Astro 6 requires Node >=22.12.0; the action defaults to 20
@@ -118,6 +138,13 @@ jobs:
         run: npm run build # prebuild regenerates the reference from plugins/ca/**
       - name: Link audit
         run: npm run link-audit # post-build dangling-link gate (AC-2/AC-4)
+      - name: Record runner Chrome version
+        # Chrome is maintained by the GitHub runner image; no browser download here.
+        # The npm lockfile does not authenticate browser bytes.
+        # No exact hosted Chrome version is claimed; this log records the observed one.
+        run: google-chrome --version
+      - name: Browser publication gate
+        run: npm run test:browser
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
@@ -139,4 +166,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

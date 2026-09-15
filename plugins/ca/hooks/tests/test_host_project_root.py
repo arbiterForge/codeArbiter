@@ -15,10 +15,12 @@ stdlib unittest only; no subprocess for the Host method itself (git_toplevel
 shells out internally, so a real git init is used where the climb matters).
 """
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _HOOKS_DIR not in sys.path:
@@ -86,6 +88,31 @@ class GitToplevelTests(unittest.TestCase):
         finally:
             os.chdir(cwd)
 
+    def test_ambient_repository_selectors_cannot_rebind_toplevel(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            target = os.path.join(top, "target")
+            foreign = os.path.join(top, "foreign")
+            os.makedirs(target)
+            os.makedirs(foreign)
+            for root in (target, foreign):
+                initialized = subprocess.run(
+                    ["git", "init", "-q", "-b", "main"], cwd=root,
+                    capture_output=True, text=True, timeout=30)
+                self.assertEqual(initialized.returncode, 0, initialized.stderr)
+            hostile = {
+                "GIT_DIR": os.path.join(foreign, ".git"),
+                "GIT_WORK_TREE": foreign,
+                "GIT_COMMON_DIR": os.path.join(foreign, ".git"),
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "safe.directory",
+                "GIT_CONFIG_VALUE_0": "*",
+            }
+
+            with mock.patch.dict(os.environ, hostile, clear=False):
+                got = hostapi.git_toplevel(target)
+
+            self.assertEqual(os.path.realpath(got), os.path.realpath(target))
+
 
 class BaseHostProjectRootTests(unittest.TestCase):
     """hostapi.Host.project_root — CLAUDE_PROJECT_DIR-first, then the
@@ -147,19 +174,35 @@ class BaseHostProjectRootTests(unittest.TestCase):
 def _init_repo(root, branch="main"):
     os.makedirs(root)
     r = subprocess.run(["git", "init", "-q", "-b", branch], cwd=root,
-                       capture_output=True, timeout=30)
+                       capture_output=True, text=True, timeout=30)
     if r.returncode != 0:
         return False
-    subprocess.run(["git", "config", "user.email", "h@example.com"], cwd=root,
-                   capture_output=True, timeout=30)
-    subprocess.run(["git", "config", "user.name", "h"], cwd=root,
-                   capture_output=True, timeout=30)
+    for args in (["config", "user.email", "h@example.com"],
+                 ["config", "user.name", "h"]):
+        configured = subprocess.run(
+            ["git"] + args, cwd=root, capture_output=True, text=True, timeout=30)
+        if configured.returncode != 0:
+            raise RuntimeError(
+                f"git {' '.join(args)} failed: {configured.stderr or configured.stdout}")
     with open(os.path.join(root, "seed.txt"), "w", encoding="utf-8") as f:
         f.write("seed\n")
-    subprocess.run(["git", "add", "seed.txt"], cwd=root, capture_output=True, timeout=30)
-    r = subprocess.run(["git", "commit", "-q", "-m", "seed"], cwd=root,
-                       capture_output=True, timeout=30)
-    return r.returncode == 0
+    context_dir = os.path.join(root, ".codearbiter")
+    os.makedirs(context_dir)
+    with open(os.path.join(context_dir, "CONTEXT.md"), "w", encoding="utf-8") as f:
+        f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+    staged = subprocess.run(
+        ["git", "add", "seed.txt", ".codearbiter/CONTEXT.md"], cwd=root,
+        capture_output=True, text=True, timeout=30)
+    if staged.returncode != 0:
+        raise RuntimeError(f"git add failed: {staged.stderr or staged.stdout}")
+    committed = subprocess.run(
+        ["git", "-c", "core.hooksPath=", "-c", "commit.gpgSign=false",
+         "commit", "-q", "-m", "seed"], cwd=root,
+        capture_output=True, text=True, timeout=30)
+    if committed.returncode != 0:
+        raise RuntimeError(
+            f"hermetic git seed commit failed: {committed.stderr or committed.stdout}")
+    return True
 
 
 class GitWorktreeMainRootTests(unittest.TestCase):
@@ -187,6 +230,262 @@ class GitWorktreeMainRootTests(unittest.TestCase):
             self.assertIsNotNone(got)
             self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
 
+    def test_relative_linked_worktree_pointer_resolves_to_main_checkout(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            if not _init_repo(main_checkout, branch="main"):
+                self.skipTest("git init/commit failed")
+            wt_dir = os.path.join(top, "linked-worktree")
+            r = subprocess.run(
+                ["git", "worktree", "add", "--relative-paths", "-b", "feat/relative", wt_dir],
+                cwd=main_checkout, capture_output=True, text=True, timeout=30)
+            if r.returncode != 0:
+                self.skipTest(f"git worktree relative paths unavailable: {r.stderr}")
+
+            with open(os.path.join(wt_dir, ".git"), encoding="utf-8") as f:
+                self.assertFalse(os.path.isabs(f.read().split(":", 1)[1].strip()))
+            got = hostapi.git_worktree_main_root(wt_dir)
+            self.assertIsNotNone(got)
+            self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": wt_dir}):
+                marker_root = hostapi.Host().marker_root()
+            self.assertEqual(os.path.realpath(marker_root), os.path.realpath(main_checkout))
+
+    def test_enabled_context_may_differ_between_main_and_linked_branches(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            self.assertTrue(_init_repo(main_checkout, branch="main"))
+            linked = os.path.join(top, "linked-worktree")
+            added = subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "feat/context", linked],
+                cwd=main_checkout, capture_output=True, text=True, timeout=30)
+            self.assertEqual(added.returncode, 0, added.stderr)
+            with open(os.path.join(linked, ".codearbiter", "CONTEXT.md"),
+                      "w", encoding="utf-8") as f:
+                f.write("---\nstage: 3\narbiter: enabled\n---\nlinked branch body\n")
+
+            got = hostapi.git_worktree_main_root(linked)
+            self.assertIsNotNone(got)
+            self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
+
+    def test_utf8_bom_enabled_context_keeps_default_layout_escalation(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            self.assertTrue(_init_repo(main_checkout, branch="main"))
+            linked = os.path.join(top, "linked-worktree")
+            added = subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "feat/bom", linked],
+                cwd=main_checkout, capture_output=True, text=True, timeout=30)
+            self.assertEqual(added.returncode, 0, added.stderr)
+            bom_context = "---\narbiter: enabled\nstage: 2\n---\nBOM context\n"
+            for checkout in (main_checkout, linked):
+                with open(os.path.join(checkout, ".codearbiter", "CONTEXT.md"),
+                          "w", encoding="utf-8-sig") as f:
+                    f.write(bom_context)
+
+            got = hostapi.git_worktree_main_root(linked)
+            self.assertIsNotNone(got)
+            self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
+
+    def test_linked_worktree_symlink_alias_uses_gits_confirmed_common_dir(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            if not _init_repo(main_checkout, branch="main"):
+                self.skipTest("git init/commit failed")
+            wt_dir = os.path.join(top, "linked-worktree")
+            r = subprocess.run(
+                ["git", "worktree", "add", "-b", "feat/alias", wt_dir],
+                cwd=main_checkout, capture_output=True, text=True, timeout=30)
+            if r.returncode != 0:
+                self.skipTest(f"git worktree add failed: {r.stderr}")
+            alias = os.path.join(top, "linked-alias")
+            try:
+                os.symlink(wt_dir, alias, target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"directory symlink unavailable: {error}")
+
+            got = hostapi.git_worktree_main_root(alias)
+            self.assertIsNotNone(got)
+            self.assertEqual(os.path.realpath(got), os.path.realpath(main_checkout))
+
+    def test_linked_worktree_rejects_foreign_symlinked_codearbiter_directory(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            self.assertTrue(_init_repo(main_checkout, branch="main"))
+            linked = os.path.join(top, "linked-worktree")
+            added = subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "feat/foreign-context", linked],
+                cwd=main_checkout, capture_output=True, text=True, timeout=30)
+            self.assertEqual(added.returncode, 0, added.stderr)
+
+            foreign_state = os.path.join(top, "foreign-state")
+            os.makedirs(foreign_state)
+            with open(os.path.join(foreign_state, "CONTEXT.md"),
+                      "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\nforeign state\n")
+            linked_state = os.path.join(linked, ".codearbiter")
+            shutil.rmtree(linked_state)
+            try:
+                os.symlink(foreign_state, linked_state, target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"directory symlink unavailable: {error}")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    def test_ambient_git_repository_selectors_cannot_rebind_marker_root(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            target_main = os.path.join(top, "target-main")
+            foreign_main = os.path.join(top, "foreign-main")
+            self.assertTrue(_init_repo(target_main, branch="main"))
+            self.assertTrue(_init_repo(foreign_main, branch="main"))
+            target_linked = os.path.join(top, "target-linked")
+            foreign_linked = os.path.join(top, "foreign-linked")
+            for main, linked, branch in (
+                    (target_main, target_linked, "feat/target"),
+                    (foreign_main, foreign_linked, "feat/foreign")):
+                r = subprocess.run(
+                    ["git", "worktree", "add", "-q", "-b", branch, linked],
+                    cwd=main, capture_output=True, text=True, timeout=30)
+                self.assertEqual(r.returncode, 0, r.stderr or r.stdout)
+            foreign_admin = subprocess.run(
+                ["git", "-C", foreign_linked, "rev-parse", "--path-format=absolute",
+                 "--git-dir"], capture_output=True, text=True, timeout=30, check=True,
+            ).stdout.strip()
+            hostile_env = {
+                "GIT_DIR": foreign_admin,
+                "GIT_WORK_TREE": foreign_linked,
+                "GIT_COMMON_DIR": os.path.join(foreign_main, ".git"),
+            }
+
+            with mock.patch.dict(os.environ, hostile_env, clear=False):
+                sanitized = hostapi._root_bound_git_env()
+                got = hostapi.git_worktree_main_root(target_linked)
+
+            for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR"):
+                self.assertNotIn(name, sanitized)
+            self.assertIsNotNone(got)
+            self.assertEqual(os.path.realpath(got), os.path.realpath(target_main))
+
+    def test_separate_git_dir_named_dot_git_does_not_impersonate_default_layout(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            primary = os.path.join(top, "primary")
+            separate_git_dir = os.path.join(top, "storage", ".git")
+            linked = os.path.join(top, "linked")
+            os.makedirs(os.path.dirname(separate_git_dir))
+            initialized = subprocess.run(
+                ["git", "init", "-q", "-b", "main", "--separate-git-dir",
+                 separate_git_dir, primary],
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(initialized.returncode, 0, initialized.stderr)
+            for args in (["config", "user.email", "h@example.com"],
+                         ["config", "user.name", "h"]):
+                configured = subprocess.run(
+                    ["git", "-C", primary] + args,
+                    capture_output=True, text=True, timeout=30)
+                self.assertEqual(configured.returncode, 0, configured.stderr)
+            context_dir = os.path.join(primary, ".codearbiter")
+            os.makedirs(context_dir)
+            with open(os.path.join(context_dir, "CONTEXT.md"), "w", encoding="utf-8") as f:
+                f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+            staged = subprocess.run(
+                ["git", "-C", primary, "add", ".codearbiter/CONTEXT.md"],
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(staged.returncode, 0, staged.stderr)
+            seeded = subprocess.run(
+                ["git", "-C", primary, "-c", "core.hooksPath=", "-c",
+                 "commit.gpgSign=false", "commit", "--allow-empty", "-q", "-m", "seed"],
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(seeded.returncode, 0, seeded.stderr)
+            added = subprocess.run(
+                ["git", "-C", primary, "worktree", "add", "-q", "-b",
+                 "feat/separate", linked],
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(added.returncode, 0, added.stderr)
+            actual = subprocess.run(
+                ["git", "-C", linked, "rev-parse", "--show-toplevel"],
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(actual.returncode, 0, actual.stderr)
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+            storage_context = os.path.join(os.path.dirname(separate_git_dir), ".codearbiter")
+            os.makedirs(storage_context)
+            with open(os.path.join(storage_context, "CONTEXT.md"), "w", encoding="utf-8") as f:
+                f.write("---\narbiter: disabled\n---\n")
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    def test_relative_pointer_requires_the_referenced_worktree_admin_dir(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            linked = os.path.join(top, "linked-worktree")
+            os.makedirs(os.path.join(main_checkout, ".git"))
+            os.makedirs(linked)
+            with open(os.path.join(linked, ".git"), "w", encoding="utf-8") as f:
+                f.write("gitdir: ../main-checkout/.git/worktrees/invented\n")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    def test_relative_pointer_requires_admin_backpointer_to_this_checkout(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "main-checkout")
+            linked = os.path.join(top, "linked-worktree")
+            other = os.path.join(top, "other-worktree")
+            admin = os.path.join(main_checkout, ".git", "worktrees", "linked")
+            os.makedirs(admin)
+            os.makedirs(linked)
+            os.makedirs(other)
+            with open(os.path.join(linked, ".git"), "w", encoding="utf-8") as f:
+                f.write("gitdir: ../main-checkout/.git/worktrees/linked\n")
+            with open(os.path.join(admin, "gitdir"), "w", encoding="utf-8") as f:
+                f.write(os.path.join(other, ".git") + "\n")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    def test_shaped_decoy_admin_is_rejected_when_git_rejects_the_worktree(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            main_checkout = os.path.join(top, "decoy-main")
+            linked = os.path.join(top, "linked-worktree")
+            admin = os.path.join(main_checkout, ".git", "worktrees", "slot")
+            os.makedirs(admin)
+            os.makedirs(linked)
+            worktree_meta = os.path.join(linked, ".git")
+            with open(worktree_meta, "w", encoding="utf-8") as f:
+                f.write("gitdir: ../decoy-main/.git/worktrees/slot\n")
+            with open(os.path.join(admin, "gitdir"), "w", encoding="utf-8") as f:
+                f.write(worktree_meta + "\n")
+
+            actual_git = subprocess.run(
+                ["git", "-C", linked, "rev-parse", "--show-toplevel"],
+                capture_output=True, text=True, timeout=30)
+            self.assertNotEqual(actual_git.returncode, 0)
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    def test_drive_relative_pointer_is_not_treated_as_checkout_relative(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            linked = os.path.join(top, "linked-worktree")
+            os.makedirs(linked)
+            raw_gitdir = "C:relative/.git/worktrees/invented"
+            resolved = os.path.abspath(os.path.join(linked, raw_gitdir))
+            marker = os.path.normpath(os.path.join(".git", "worktrees"))
+            marker_at = os.path.normcase(resolved).find(os.path.normcase(marker))
+            if marker_at != -1:
+                os.makedirs(resolved[:marker_at + len(".git")], exist_ok=True)
+            with open(os.path.join(linked, ".git"), "w", encoding="utf-8") as f:
+                f.write(f"gitdir: {raw_gitdir}\n")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    @unittest.skipIf(os.name == "nt", "backslash is a native separator on Windows")
+    def test_foreign_relative_backslashes_are_not_translated_on_posix(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
+            decoy = os.path.join(top, "decoy")
+            linked = os.path.join(top, "linked-worktree")
+            os.makedirs(os.path.join(decoy, ".git"))
+            os.makedirs(linked)
+            with open(os.path.join(linked, ".git"), "w", encoding="utf-8") as f:
+                f.write("gitdir: ..\\decoy\\.git\\worktrees\\invented\n")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
     def test_ordinary_repo_returns_none(self):
         # An ordinary checkout's `.git` is a DIRECTORY -- nothing to escalate.
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as top:
@@ -209,6 +508,27 @@ class GitWorktreeMainRootTests(unittest.TestCase):
             with open(os.path.join(fake_submodule, ".git"), "w", encoding="utf-8") as f:
                 f.write(f"gitdir: {top}/.git/modules/sub\n")
             self.assertIsNone(hostapi.git_worktree_main_root(fake_submodule))
+
+    @unittest.skipIf(os.name == "nt", "foreign Windows paths are native on Windows")
+    def test_foreign_windows_gitdir_is_not_a_usable_posix_main_root(self):
+        with tempfile.TemporaryDirectory() as top:
+            linked = os.path.join(top, "linked")
+            os.makedirs(linked)
+            with open(os.path.join(linked, ".git"), "w", encoding="utf-8") as f:
+                f.write(
+                    "gitdir: C:/Users/operator/repo/.git/worktrees/linked\n")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
+
+    @unittest.skipUnless(os.name == "nt", "foreign POSIX paths are native on POSIX")
+    def test_foreign_posix_gitdir_is_not_a_usable_windows_main_root(self):
+        with tempfile.TemporaryDirectory() as top:
+            linked = os.path.join(top, "linked")
+            os.makedirs(linked)
+            with open(os.path.join(linked, ".git"), "w", encoding="utf-8") as f:
+                f.write("gitdir: /home/operator/repo/.git/worktrees/linked\n")
+
+            self.assertIsNone(hostapi.git_worktree_main_root(linked))
 
 
 class MarkerRootTests(unittest.TestCase):

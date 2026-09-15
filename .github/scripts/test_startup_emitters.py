@@ -76,11 +76,16 @@ class _FakeHost(M.hostapi.Host):
     def cmd_ref(self, name):
         return "$$fake-" + name
 
+    def plugin_root(self):
+        """The installed Claude adapter fixture, not core/pysrc itself."""
+        return os.path.join(REPO_ROOT, "plugins", "ca")
+
 
 def _repo(tmp, initialized=True, mode=None, session_id=None):
     """A minimal `.codearbiter` repo under `tmp`. `mode`/`session_id`, when
     given, seed the mode marker directly (bypassing flip()/prompt-submit.py,
     which is Lane B's surface)."""
+    os.makedirs(os.path.join(tmp, ".git"), exist_ok=True)
     cad = os.path.join(tmp, ".codearbiter")
     os.makedirs(cad, exist_ok=True)
     body = "<!--INITIALIZED-->\nstage: 2\n" if initialized else "_stub_\n"
@@ -158,6 +163,7 @@ class TestClearModeMarker(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter"))
 
     def tearDown(self):
@@ -226,6 +232,7 @@ class TestNoDeletedCommandNameStampedIntoOverridesLog(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter"))
 
     def tearDown(self):
@@ -436,10 +443,16 @@ class TestNonArbiterOmitsTrailerCatalogAndStandup(unittest.TestCase):
         with open(os.path.join(FIXTURES_DIR, "startup-arbiter.json"), encoding="utf-8") as f:
             self.base = json.load(f)
 
-    def test_arbiter_emits_trailer_catalog_and_standup_reference(self):
+    def test_arbiter_trailer_continues_active_work_before_idle_wait(self):
         lines = _driver(self.base, _FakeHost())
         joined = "\n".join(lines)
-        self.assertIn("Present this state, then await a", joined, "trailer")
+        self.assertIn(
+            "Continue any active authorized work or accompanying user request; "
+            "otherwise await a fake-command.",
+            joined,
+            "trailer must not turn a resume or compact boundary into a pause",
+        )
+        self.assertNotIn("Present this state, then await a", joined)
         self.assertIn("$$fake-commands", joined, "catalog reference")
         self.assertIn("host: claude", joined)
         self.assertIn("stage: 3", joined)
@@ -514,6 +527,7 @@ class TestMigrateDevActiveMarker(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         os.makedirs(self.markers)
         self.legacy = os.path.join(self.markers, "dev-active")
@@ -637,6 +651,8 @@ class TestRootResolutionSplitFixed(unittest.TestCase):
         # the main checkout (`main_root`, what marker_root() escalates to).
         self.worktree_root = os.path.join(self._tmp.name, "worktree")
         self.main_root = os.path.join(self._tmp.name, "main-checkout")
+        os.makedirs(os.path.join(self.worktree_root, ".git"))
+        os.makedirs(os.path.join(self.main_root, ".git"))
         os.makedirs(os.path.join(self.worktree_root, ".codearbiter"))
         os.makedirs(os.path.join(self.main_root, ".codearbiter"))
 

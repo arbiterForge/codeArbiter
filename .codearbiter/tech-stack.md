@@ -6,14 +6,60 @@ this file is the stale one; fix it here.
 
 ## Stack
 
-- **Hooks** (`plugins/ca/hooks/*.py`) — Python 3, stdlib only. No dependencies,
-  ever: hooks must run on a stock Windows/macOS/Linux Python with nothing
-  installed. The cold-install matrix exists to prove exactly that.
-- **Farm dispatcher** (`plugins/ca/tools/`) — TypeScript on Node 20, tested with
-  vitest. The plugin ships the built `farm.js`, not `farm.ts` — a stale build is
-  a release blocker.
-- **Everything else** — prose (skills, commands, agents, ORCHESTRATOR.md),
-  governed by the plugin's own authoring gates, not by CI.
+- **Canonical shared source** (`core/pysrc/`, `core/surface/`) — these directories
+  are the canonical shared source for stdlib-only Python enforcement logic and
+  markdown templates. Generators materialize this internal kernel into host packages;
+  `core/` is not published as a separate runtime package.
+- **Claude Code adapter** (`plugins/ca/`) — native hooks, commands, skills, agents,
+  and the Node 20 farm dispatcher under `plugins/ca/tools/`. Hooks are Python 3,
+  stdlib only; the dispatcher is TypeScript tested with Vitest and ships built
+  `farm.js`.
+- **Codex adapter** (`plugins/ca-codex/`) — Codex manifest and hook shims plus
+  generated skills and packaged resource charters. Published releases from 0.7.5
+  contain the complete charter set for host-provided thread dispatch. The hosted
+  static package gate verifies release bytes, resource closure, and dispatch routes.
+  These charters are not native Codex plugin-agent registrations.
+- **Pi adapter** (`plugins/ca-pi/`) — generated Python/policy payload plus its thin
+  TypeScript host extension and supervised child-process boundary.
+- **Infrastructure sibling** (`plugins/ca-sandbox/`) — isolated exploration tools;
+  it is not part of the governance kernel.
+- **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure.
+
+## Runtime and Git support boundary
+
+- Hook and linked-worktree support is same-runtime: Windows with Git for Windows
+  and its bundled hook shell, native Linux, or native macOS. The checkout and its
+  linked worktrees must be created and used by that runtime's Git.
+- CI exercises the current runner Python 3 and Git on Windows, Ubuntu, and macOS.
+  Direct Windows hook evidence also covers CPython 3.10, 3.12, and 3.14, plus
+  primary and linked worktrees with Git for Windows 2.55.0. This is measured host
+  evidence, not a claim that every Python minor or Git build has been tested.
+- ADR lifecycle proof requires Git 2.45.0+ with `--no-lazy-fetch` on all three
+  governance hosts and in this repository's lifecycle checker. Every proof read
+  retains that flag; failed reads probe the same executable's flag capability
+  without reading a repository. Unsupported capability produces an actionable
+  upgrade prerequisite, never an unprotected retry or implicit object fetch.
+- The selected Git binary owns `core.hooksPath` parsing through
+  `rev-parse --git-path hooks`; codeArbiter does not reinterpret Git path grammar.
+  It must also provide `git hook run` for doctor's harmless managed `pre-push`
+  live-fire probe.
+- Same-runtime linked worktrees include Git's native absolute and relative
+  worktree-admin pointers under the default `<main>/.git/worktrees` layout.
+  The selected Git binary must confirm both the absolute admin directory and
+  common directory, and both linked and reported-main checkouts must own real
+  `CONTEXT.md` files that independently satisfy the canonical activation parser,
+  before codeArbiter resolves the shared primary marker root.
+  `git init --separate-git-dir` worktrees are
+  outside this marker-root contract; storage without that governed identity
+  falls back locally.
+- A live Git for Windows 2.55.0 probe resolved a default-layout primary and
+  linked worktree through a localhost UNC share after one-shot `safe.directory`
+  trust, while the untrusted form failed closed. This does not promote every
+  remote SMB server or ownership policy to a supported cell.
+- WSL is not a separately verified named cell. Alternating Windows Git and WSL
+  Git over one physical repository or shared `.git`, including consuming a
+  linked worktree created by the other runtime, is unsupported. Git Bash is the
+  Windows hook shell and is not equivalent to WSL.
 
 ## Pi adapter
 
@@ -23,13 +69,49 @@ extension, an enforcement-only child extension, and a Windows supervisor.
 Python 3 remains required for the shared core.
 
 The external Pi runtime is a test and install input, never a checked-in or
-runtime dependency. Supported promotion versions are Pi 0.80.5 and Pi 0.84.1.
+runtime dependency. The supported promotion version is exact Pi 0.84.1.
 
 ## Test
 
-Run all of these; ALL must pass before any commit:
+The contributor loop follows the shared
+[`verification-boundary`](../plugins/ca/includes/verification-boundary.md): run
+the commands below that cover the changed paths and obligations before commit.
+GitHub Actions runs the exhaustive impact-selected, cross-platform matrix for
+the pull request, and the exact-head merge-readiness aggregate must pass before
+merge. A local failure still blocks; this section is a command catalog, not a
+requirement to replay the entire hosted matrix on a contributor's machine.
 
 ```sh
+# Codex packaged-resource and static candidate schemas
+python .github/scripts/test_codex_skill_resources.py
+
+# Canonical command registry, host projection, compatibility, and discovery guards
+python .github/scripts/test_build_surface.py
+python .github/scripts/test_host_descriptors.py
+python .github/scripts/check_command_route_release_state.py declarations
+python .github/scripts/test_command_route_release_state.py
+python .github/scripts/test_command_route_compatibility.py
+python .github/scripts/test_badge_consistency.py
+python .github/scripts/test_command_catalog.py
+
+# Workflow trust separation and exact CI impact routing
+python .github/scripts/test_ci_impact.py
+
+# Published-tag original receipts, closed legacy epoch, and reconciliation boundary
+python .github/scripts/test_tag_immutability.py
+python .github/scripts/test_tag_publication_receipt.py
+python .github/scripts/test_reconcile_tag_receipt.py
+
+# Cross-host coverage identity/provenance (requires the Pi tools test dependencies)
+python .github/scripts/test_coverage_union.py
+
+# ADR-0033 accepted/planned lifecycle, immutable bindings, and verified-only export
+python .github/scripts/test_adr_lifecycle.py
+python .github/scripts/check_adr_lifecycle.py
+
+# ADR-0026/0030 authoritative four-item destructive registry and resident-copy parity
+python .github/scripts/check_destructive_registry.py
+
 # Hook guard decisions — every blocked spelling blocks, every legit one allows
 python .github/scripts/test_hook_guards.py
 
@@ -126,6 +208,21 @@ python .github/scripts/test_mode_surface.py
 python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
 ```
 
+For the first commit of the two-commit ADR acceptance protocol, create the
+worktree-local, content-bound transition packet with
+`.github/scripts/prepare_adr_acceptance.py`. It binds the exact HEAD and staged
+index, accepted ADR bytes, decision-log append, sealed obligation set, expiry,
+and independent reviewer identity. The two lifecycle commands above recognize
+only that exact pending transition locally; explicit-revision, export,
+clean-tree, and GitHub-event validation remain strict. After the source commit,
+stage its acceptance binding immediately, run both mandatory lifecycle commands,
+and commit that sole ledger append through the commit gate. Only after the
+binding commit succeeds, clear the packet with
+`python .github/scripts/prepare_adr_acceptance.py --clear`.
+Legacy `baseline` bindings remain closed to the original migration snapshot
+`10d9b012d91681498bdf911dd82ffa28e112407f`; later commits cannot acquire
+legacy status instead of using this acceptance protocol.
+
 Only when `plugins/ca/tools/**` changed:
 
 ```sh
@@ -167,8 +264,8 @@ python .github/scripts/test_public_pi_docs.py
 ```
 
 The platform aggregate is `python .github/scripts/test_pi_platform_contract.py
---fixtures-only`. A supported-version run adds `--pi-version 0.80.5` or
-`--pi-version 0.84.1` after installing that exact external Pi version with
+--fixtures-only`. A supported-version run adds `--pi-version 0.84.1` after
+installing that exact external Pi version from its reviewed host lock with
 scripts disabled. CI owns the Windows/macOS/Linux matrix.
 
 ## Lint / typecheck
@@ -213,11 +310,20 @@ and the POSIX arm on the other.
 CI produces the union for both forked trees — `[CHECK] | [REPO] | Coverage union`
 for `plugins/ca/tools` and `[CHECK] | [PI  ] | Coverage union` for
 `plugins/ca-pi/tools` — one advisory matrix cell per host writing a vitest
-**blob** report, merged with `vitest --merge-reports`. Merging is a
-genuine union of executed code, not the last report winning: verified on two
-disjoint suites, 7 + 65 branches merging to 72 and 18 + 69 lines to 87. The job
-says so when only one host reported, so a partial figure is never mistaken for
-the union.
+**blob** report, merged with `vitest --merge-reports`. Before testing,
+`coverage_union.py prepare` binds each host's source, configuration, lockfile,
+and checkout identity; `prepare --check` rechecks those inputs afterward.
+`coverage_union.py verify` validates the host receipts and compatible coverage
+maps, then writes normalized copies into a fresh merge directory. Original
+reports remain unchanged. Missing-host output is explicitly partial; invalid
+evidence cannot be reported as a union.
+
+Vitest alone does not normalize Windows and Linux absolute source paths. The
+earlier same-host disjoint-suite demonstration did not prove cross-host union:
+PR #740 exposed 41 sources counted as 82 files. The behavioral regression now
+requires complementary host coverage to retain one identity per source, while
+preserving legitimately distinct files. Historical figures below are not
+accepted cross-host evidence until remeasured through the verified path.
 
 Each tree's blobs are namespaced `coverage-blob-<tree>-os-<host>`, so one
 tree's merge cannot collect another's. The naive names collided — a `ca-*` glob
@@ -236,25 +342,24 @@ clear it**; a report satisfying one and not the other does not pass. Putting the
 number in three `vitest.config.ts` files would fork that single source of truth
 and the copies would drift the first time the stage moves.
 
-Measured baseline at stage 2 (≥ 70%), refreshed 2026-07-29 from CI. The two
-platform-forked trees carry their **union** figure; the others are single-host
-because they have nothing to merge. Every row names how it was measured, which
-is the rule #521 exists to enforce:
+Historical baseline at stage 2 (≥ 70%), recorded 2026-07-29 from CI. The two
+platform-forked figures require remeasurement after the cross-host identity
+repair; the other rows are single-host measurements. Each row names its
+measurement scope:
 
 | tree | lines | branches | verdict | host |
 | --- | --- | --- | --- | --- |
-| `plugins/ca/tools` | 76.82% | 73.15% | clears | **union** (ubuntu + windows) |
-| `plugins/ca-pi/tools` | 82.51% | 77.10% | clears | **union** (ubuntu + windows) |
+| `plugins/ca/tools` | 76.82% | 73.15% | unverified historical identity merge | ubuntu + windows, before identity repair |
+| `plugins/ca-pi/tools` | 82.51% | 77.10% | unverified historical identity merge | ubuntu + windows, before identity repair |
 | `plugins/ca-sandbox/tools` | 86.13% | 79.96% | clears | windows |
 | `site` | 91.29% | 84.85% | clears | ubuntu-equivalent (no platform fork) |
 
-**The union changed the answer for `plugins/ca/tools`.** #511 drove that tree
+**Historical motivation for union measurement.** #511 drove `plugins/ca/tools`
 against 66.18% branches on Windows and 65.35% on Linux — both below the floor.
-Merged, it is 73.15%, and clears by three points. The shortfall was never missing
-tests: it was ~7 points of platform-forked `exec.ts` code that cannot execute off
-its own host, scored as uncovered on whichever host happened to run. That is the
-concrete case for the rule, and the reason a single-host figure is no longer
-quotable here.
+The previously reported merged 73.15% is not current proof that the union clears
+the floor: cross-host file identity must first be verified. Platform-forked
+`exec.ts` code still cannot execute off its own host, which is why a single-host
+figure is not a substitute for the required union.
 
 Two caveats when reading a local report:
 

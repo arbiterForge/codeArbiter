@@ -9,7 +9,7 @@ satisfies (H-09b for crypto/TLS, H-10b for secrets).
 code instead of the first's (#577) — then run:
 
 ```bash
-"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/security-pass.py"
+"$PY" "${PLUGIN_ROOT}/hooks/security-pass.py"
 ```
 
 It writes `<project-root>/.codearbiter/.markers/security-gate-passed` containing a digest of

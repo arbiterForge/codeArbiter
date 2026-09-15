@@ -80,7 +80,7 @@ Run the six layers in strict sequence. Never skip a layer. Never advance until t
 
 (All under `<project-root>/.codearbiter/`.) Each file holds every question asked, the user's verbatim answer (or a faithful paraphrase), every challenge made under the three lenses, every `[CONFIRM-NN]` raised, and every DRAFT-ADR title generated. These files are the authoritative record — Phases 4 and 5 read from them, not from conversation context. The next layer does not begin until the prior layer's file exists on disk and is non-empty; if a write fails, surface the error and do not advance.
 
-**Layer 4 immediate ADR drafts:** each forced architectural choice in Layer 4 is written at the moment it is made as `<project-root>/.codearbiter/decisions/NNNN-<slug>.md`, numbered sequentially across the existing `decisions/` directory. Do not batch the writes. Author each using the canonical ADR template — `${CLAUDE_PLUGIN_ROOT}/routines/decision-lifecycle/references/adr-template.md` (the single source of truth, shared with `decision-lifecycle`) — with frontmatter `status: draft` and `decided-by:` set to the user (or "user" if anonymous). Fill `## Context`, `## Decision`, and `## Consequences` from the forced choice; leave `## Alternatives considered` and `## Risks` populated where the interview surfaced them, or as `<none recorded>`. Phase 5 promotes each to `status: accepted`.
+**Layer 4 immediate ADR drafts:** each forced architectural choice in Layer 4 is written at the moment it is made as `<project-root>/.codearbiter/decisions/NNNN-<slug>.md`, numbered sequentially across the existing `decisions/` directory. Do not batch the writes. Author each using the canonical ADR template — [routines/decision-lifecycle/references/adr-template.md](../decision-lifecycle/references/adr-template.md) (the single source of truth, shared with `decision-lifecycle`) — with frontmatter `status: draft` and `decided-by:` set to the user (or "user" if anonymous). Fill `## Context`, `## Decision`, and `## Consequences` from the forced choice; leave `## Alternatives considered` and `## Risks` populated where the interview surfaced them, or as `<none recorded>`. Phase 5 promotes each to `status: accepted`.
 
 **Layer 1 — Vision & Problem.** Unlock: the specific problem and the evidence it is real (not assumed); the primary user and any conflicting user types (name and resolve the conflict, or flag it); the demo-to-a-skeptic definition of "working"; what this project explicitly is NOT building. Advance when: problem concrete, primary user named, "working" demonstrable, NOT-building list explicit.
 
@@ -157,7 +157,7 @@ Gate: `<!--INITIALIZED-->` present on its own line in `CONTEXT.md`; all required
 ## Hard rules
 
 - MUST NOT write any project-state file before all six layers are solid and on disk.
-- MUST NOT scaffold any cut doc — see `${CLAUDE_PLUGIN_ROOT}/includes/cut-docs.md` for the canonical never-scaffold list. Maturity is the single `stage:` value in `CONTEXT.md` frontmatter.
+- MUST NOT scaffold any cut doc — see [includes/cut-docs.md](../../includes/cut-docs.md) for the canonical never-scaffold list. Maturity is the single `stage:` value in `CONTEXT.md` frontmatter.
 - MUST NOT advance a layer until its draft file exists on disk and is non-empty.
 - MUST NOT advance past a layer holding an unresolved "later" item unless it is recorded as `[CONFIRM-NN]`.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface the question and record it in `open-questions.md`.

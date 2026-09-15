@@ -8,6 +8,9 @@ import { extractHookGates } from "./generator/extract-hook-gates";
 import { renderHooksReference, buildEventMap, type HooksJson } from "./generator/render-hooks-reference";
 import { renderChangelog } from "./generator/render-changelog";
 import { renderConfigurationReference } from "./generator/configuration-reference";
+import { loadAcademySource } from "./academy-source";
+import { generateAcademy } from "./generate-academy";
+import { generateReleaseApplicability } from "./release-applicability";
 
 const here = dirname(fileURLToPath(import.meta.url)); // site/scripts
 const repoRoot = resolve(here, "..", ".."); // -> repo root
@@ -15,8 +18,15 @@ const srcDir = join(repoRoot, "plugins", "ca");
 const outDir = join(here, "..", "src", "content", "docs", "reference");
 const sidebarPath = join(here, "..", "src", "generated", "sidebar.json");
 const curatedDir = join(here, "..", "src", "curated");
+const releaseApplicabilityPath = join(
+  here,
+  "..",
+  "src",
+  "generated",
+  "release-applicability.json",
+);
 
-const result = generate(srcDir, outDir, sidebarPath, curatedDir);
+const result = generate(srcDir, outDir, sidebarPath, curatedDir, true);
 const counts = result.pages.reduce<Record<string, number>>((acc, p) => {
   acc[p.type] = (acc[p.type] ?? 0) + 1;
   return acc;
@@ -78,3 +88,25 @@ if (existsSync(changelogSourcePath)) {
 } else {
   console.log(`Skipped changelog generation: ${changelogSourcePath} not found`);
 }
+
+// Academy routes are generated from the pinned submodule's publication
+// manifest. Removing the prior generated route directory prevents a lesson
+// dropped from the public inventory from remaining reachable as a stale page.
+const academySource = loadAcademySource(repoRoot);
+const academyDocsRoot = join(here, "..", "src", "content", "docs");
+const academyGeneratedRoot = join(here, "..", "src", "generated");
+const academyResult = generateAcademy(academySource, academyDocsRoot, academyGeneratedRoot);
+console.log(
+  `Generated Academy overview and ${academyResult.sidebarItems.length} public lesson routes ` +
+    `from ${academySource.release} (${academySource.commit})`,
+);
+
+const releaseApplicability = generateReleaseApplicability(
+  repoRoot,
+  releaseApplicabilityPath,
+  process.env,
+);
+console.log(
+  `Generated release applicability for ${releaseApplicability.hosts.length} governance hosts ` +
+    `at ${releaseApplicability.build.commit} -> ${releaseApplicabilityPath}`,
+);

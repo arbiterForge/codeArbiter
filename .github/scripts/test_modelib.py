@@ -43,6 +43,7 @@ class TestSettleDevCloseLedgerReplay(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.ca = os.path.join(self.root, ".codearbiter")
         self.markers = os.path.join(self.ca, ".markers")
         os.makedirs(self.markers)
@@ -150,6 +151,7 @@ class TestCurrentModeResolution(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         os.makedirs(self.markers)
         self.mode_path = os.path.join(self.markers, "mode")
@@ -228,6 +230,7 @@ class TestWriteMode(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.markers = os.path.join(self.root, ".codearbiter", ".markers")
         self.mode_path = os.path.join(self.markers, "mode")
         self.entry_dir = os.path.join(self.markers, "mode.d")
@@ -306,6 +309,7 @@ class TestSessionKeying(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -402,6 +406,7 @@ class TestFlip(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.log_path = _modelib._overrides_log_path(self.root)
 
     def tearDown(self):
@@ -495,6 +500,7 @@ class TestLedgerBacks(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter"))
         self.log = os.path.join(self.root, ".codearbiter", "overrides.log")
 
@@ -581,6 +587,7 @@ class TestFlipFailsSafeUnderAnUnwritableMarkersDir(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -661,6 +668,7 @@ class TestSettleGenericModeExitRow(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         os.makedirs(os.path.join(self.root, ".codearbiter", ".markers"))
         self.log = os.path.join(self.root, ".codearbiter", "overrides.log")
         with open(self.log, "w", encoding="utf-8") as f:
@@ -761,6 +769,7 @@ class TestWriteModeIsVerified(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -937,6 +946,7 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -964,6 +974,58 @@ class TestEnterRowIsLedgerBacked(unittest.TestCase):
         with self._refuse_appends():
             result = _modelib.flip("s1", "dangerous", root=self.root)
         self.assertEqual(result, _modelib.FLIP_FAILED)
+
+    def test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop(self):
+        with self._refuse_appends():
+            first = _modelib.flip("s1", "dangerous", root=self.root)
+        self.assertEqual(first, _modelib.FLIP_FAILED)
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
+        )
+
+        repeated = _modelib.flip("s1", "dangerous", root=self.root)
+
+        self.assertEqual(repeated, _modelib.FLIP_FLIPPED)
+        self.assertTrue(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
+        )
+        self.assertEqual(self._trail_text().count("MODE: dangerous enter"), 1)
+
+    def test_repeat_request_stays_failed_while_the_enter_row_cannot_settle(self):
+        with self._refuse_appends():
+            first = _modelib.flip("s1", "dangerous", root=self.root)
+            repeated = _modelib.flip("s1", "dangerous", root=self.root)
+
+        self.assertEqual(first, _modelib.FLIP_FAILED)
+        self.assertEqual(repeated, _modelib.FLIP_FAILED)
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="s1")
+        )
+
+    def test_repeat_request_stays_failed_when_only_an_older_session_settles(self):
+        with self._refuse_appends():
+            _modelib.flip("older", "dangerous", root=self.root)
+            _modelib.flip("requested", "dangerous", root=self.root)
+
+        real_append = _modelib._append_override_line
+
+        def append_only_the_older_row(root, line):
+            if "| SESSION: older |" in line:
+                return real_append(root, line)
+            return False
+
+        with mock.patch.object(
+                _modelib, "_append_override_line",
+                side_effect=append_only_the_older_row):
+            repeated = _modelib.flip("requested", "dangerous", root=self.root)
+
+        self.assertEqual(repeated, _modelib.FLIP_FAILED)
+        self.assertTrue(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="older")
+        )
+        self.assertFalse(
+            _modelib.ledger_backs(self.root, "dangerous", session_id="requested")
+        )
 
     def test_the_owed_row_replays_on_the_next_settle(self):
         with self._refuse_appends():

@@ -10,12 +10,12 @@ Reconciles the project's architectural artifacts against the scaffold and prior 
 
 ## Routes to
 
-The `decision-variance` skill (`${CLAUDE_PLUGIN_ROOT}/routines/decision-variance/SKILL.md`). It locates
+The `decision-variance` skill ([routines/decision-variance/SKILL.md](../../routines/decision-variance/SKILL.md)). It locates
 the three architectural artifacts by exact filename — `01-architecture-breakdown.md`,
 `02-phased-build-plan.md`, `03-task-backlog.md` (under `<project-root>/.codearbiter/plans/`) —
 and indexes the append-only decision log at
 `<project-root>/.codearbiter/decisions/decision-log.md`. It MAY dispatch the
-`decision-challenger` agent (`${CLAUDE_PLUGIN_ROOT}/agents/decision-challenger.md`) to stress-test an
+`decision-challenger` agent ([agents/decision-challenger.md](../../agents/decision-challenger.md)) to stress-test an
 in-scope ADR — optional, not forced. Each variance ends in one of three user-chosen outcomes:
 
 1. **Ratify** — the existing decision stands; the SMARTS analysis and re-affirmation are logged.

@@ -22,7 +22,7 @@
  *      new tag, and proves baked deps resolve from /deps at runtime. It namespaces
  *      and cleans up every docker object it creates.
  */
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { dockerGate } from "./docker-gate.ts";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, rmSync, mkdirSync, readFileSync } from "node:fs";
@@ -256,8 +256,9 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
     ];
     // Namespace the dephash with the task id so other tasks' images never collide.
     const hash1 = "t05" + computeDepHash(manifests, "fallback").slice(0, 9);
+    const reportStage = (stage: string) => process.stderr.write(`ca-sandbox build stage: ${stage}\n`);
 
-    const r1: BuildResult = await buildOrReuseImage(repoDir, hash1);
+    const r1: BuildResult = await buildOrReuseImage(repoDir, hash1, undefined, reportStage);
     created.push(r1.tag);
     expect(r1.tag).toBe(imageTag(repoDir, hash1));
     expect(r1.built).toBe(true);
@@ -283,7 +284,7 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
     expect(envCheck.stdout).toMatch(/\/deps\/node_modules/);
 
     // Unchanged rerun: SAME tag, NO build.
-    const r2 = await buildOrReuseImage(repoDir, hash1);
+    const r2 = await buildOrReuseImage(repoDir, hash1, undefined, reportStage);
     expect(r2.tag).toBe(r1.tag);
     expect(r2.reused).toBe(true);
     expect(r2.built).toBe(false);
@@ -294,7 +295,7 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
       "fallback",
     ).slice(0, 9);
     expect(hash2).not.toBe(hash1);
-    const r3 = await buildOrReuseImage(repoDir, hash2);
+    const r3 = await buildOrReuseImage(repoDir, hash2, undefined, reportStage);
     created.push(r3.tag);
     expect(r3.tag).not.toBe(r1.tag);
     expect(r3.built).toBe(true);
@@ -317,6 +318,115 @@ d("buildOrReuseImage [docker] — real build, cache, rebuild (AC-04/AC-05)", () 
 // also the two most likely to hang - and the only ones with no escape.
 // ---------------------------------------------------------------------------
 describe("#394 - build.ts's spawn is bounded too", () => {
+  it("remains silent when no diagnostic sink is supplied", async () => {
+    const stdout = vi.spyOn(process.stdout, "write");
+    const stderr = vi.spyOn(process.stderr, "write");
+    const deps: BuildDeps = {
+      imageInspect: async () => 0,
+      runBuild: async () => ({ code: 0, out: "" }),
+      nixpacksVersion: async () => "1.40.0",
+      ensureNixpacks: async () => ({ available: true }),
+    };
+    try {
+      await buildOrReuseImage("/tmp/no-diagnostic", "deadbeef0000", deps);
+      expect(stdout).not.toHaveBeenCalled();
+      expect(stderr).not.toHaveBeenCalled();
+    } finally {
+      stdout.mockRestore();
+      stderr.mockRestore();
+    }
+  });
+
+  it("reports a fixed image-inspect stage before the injected effect settles", async () => {
+    const sentinel = "opaque-user-input-must-never-escape";
+    const stages: string[] = [];
+    let inspectStarted = false;
+    let releaseInspect!: () => void;
+    const deps: BuildDeps = {
+      imageInspect: () => new Promise<number>((resolve) => {
+        inspectStarted = true;
+        releaseInspect = () => resolve(0);
+      }),
+      runBuild: async () => ({ code: 0, out: "" }),
+      nixpacksVersion: async () => "1.40.0",
+      ensureNixpacks: async () => ({ available: true }),
+    };
+    const pending = buildOrReuseImage(
+      `/tmp/${sentinel}`,
+      "deadbeef0000",
+      deps,
+      (stage) => {
+        // Entry must be observed before the effect begins, not only on exit.
+        expect(inspectStarted).toBe(false);
+        stages.push(stage);
+      },
+    );
+
+    try {
+      expect(stages).toEqual(["image-inspect"]);
+      expect(JSON.stringify(stages)).not.toContain(sentinel);
+    } finally {
+      releaseInspect();
+      await pending;
+    }
+  });
+
+  it("orders cache-miss stages for both builder branches", async () => {
+    const stages: string[] = [];
+    const observe = (stage: string) => stages.push(stage);
+    const available: BuildDeps = {
+      imageInspect: async () => 1,
+      runBuild: async () => ({ code: 0, out: "" }),
+      nixpacksVersion: async () => "1.40.0",
+      ensureNixpacks: async () => ({ available: true }),
+    };
+    const fallback: BuildDeps = { ...available, ensureNixpacks: async () => ({ available: false }) };
+
+    const nixpacks = await buildOrReuseImage("/tmp/nixpacks", "deadbeef0001", available, observe);
+    expect(nixpacks.builder).toBe("nixpacks");
+    expect(stages).toEqual(["image-inspect", "nixpacks-probe", "nixpacks-build"]);
+
+    stages.length = 0;
+    const dockerfile = await buildOrReuseImage("/tmp/dockerfile", "deadbeef0002", fallback, observe);
+    expect(dockerfile.builder).toBe("dockerfile-fallback");
+    expect(stages).toEqual(["image-inspect", "nixpacks-probe", "dockerfile-build"]);
+  });
+
+  it("ignores a throwing diagnostic observer and preserves a cache hit", async () => {
+    let inspectCalls = 0;
+    const deps: BuildDeps = {
+      imageInspect: async () => { inspectCalls++; return 0; },
+      runBuild: async () => ({ code: 0, out: "" }),
+      nixpacksVersion: async () => "1.40.0",
+      ensureNixpacks: async () => ({ available: true }),
+    };
+
+    const result = await buildOrReuseImage("/tmp/observer-throws", "deadbeef0003", deps, () => {
+      throw new Error("observer failure");
+    });
+    expect(result.reused).toBe(true);
+    expect(inspectCalls).toBe(1);
+  });
+
+  it("absorbs an asynchronously rejected diagnostic observer", async () => {
+    let rejectObserver!: (error: Error) => void;
+    const observer = () => new Promise<void>((_resolve, reject) => {
+      rejectObserver = reject;
+    });
+    const deps: BuildDeps = {
+      imageInspect: async () => 0,
+      runBuild: async () => ({ code: 0, out: "" }),
+      nixpacksVersion: async () => "1.40.0",
+      ensureNixpacks: async () => ({ available: true }),
+    };
+
+    const result = await buildOrReuseImage("/tmp/observer-rejects", "deadbeef0004", deps, observer);
+    rejectObserver(new Error("async observer failure"));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(result.reused).toBe(true);
+  });
+
   it("reuses the shared per-operation deadlines rather than inventing a second policy", async () => {
     // One timeout policy for the whole driver. A second map here would drift
     // from docker.ts's the first time either moved.

@@ -13,6 +13,7 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 
 - `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `<project-root>/.codearbiter/tech-stack.md` — the test, coverage, lint, and type-check invocations; file layout.
+- [includes/verification-boundary.md](../../includes/verification-boundary.md) — the required split between focused local parity proof and exhaustive exact-head hosted CI.
 - `<project-root>/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 4.
 
 The working tree MUST be clean over the named surface before Phase 1. A dirty surface conflates the refactor diff with unrelated edits and breaks parity verification — STOP and surface it.
@@ -35,17 +36,17 @@ Gate: a precise, complete surface table, user-signed-off. A vague or category-le
 Prove pre-existing tests already exercise the named surface well enough to detect a behavior change, before any production code is touched. Locate every test that exercises a symbol in the surface table. Run the coverage command from `tech-stack.md` scoped to the surface files; record line, branch, and per-symbol coverage.
 
 Coverage scales with the maturity value (`stage:` in `CONTEXT.md`) — the same knob as `tdd` Phase 5,
-using the shared threshold table `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`.
+using the shared threshold table [includes/maturity-coverage.md](../../includes/maturity-coverage.md).
 
 Every public method in the surface table MUST have at least one direct test — transitive coverage through a higher-level integration test does not count. A public method with zero direct tests is uncovered for this gate.
 
 **Lines and branches must both clear the threshold** (issue #507); a surface satisfying one and not
 the other is not proven. Where the surface has no coverage tooling, take the no-tooling exemption in
-`${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md` — it requires QUOTING the `tech-stack.md` Coverage
+[includes/maturity-coverage.md](../../includes/maturity-coverage.md) — it requires QUOTING the `tech-stack.md` Coverage
 section that omits a command for this surface — and the per-symbol direct-test proof stands alone.
 Without that citation the phase STOPs rather than passing on an unverifiable claim.
 
-If surface coverage is below the maturity threshold on either metric, OR any public method has zero direct tests, halt and route to the `tdd` skill (`${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md`) Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
+If surface coverage is below the maturity threshold on either metric, OR any public method has zero direct tests, halt and route to the `tdd` skill ([routines/tdd/SKILL.md](../tdd/SKILL.md)) Phase 1 to backfill obligations and red tests for the uncovered surface. Resume Phase 2 only after the backfill is green.
 
 Gate: surface coverage at or above the maturity threshold on BOTH lines and branches AND every public method backed by a direct test. Otherwise backfill via `tdd` Phase 1 before retrying.
 
@@ -67,15 +68,15 @@ Gate: the refactor confined to the surface table, with any Phase 3 seam tests no
 
 ## Phase 5 — Parity verification · gate: BLOCK
 
-Run the full project test suite from `tech-stack.md`. Every pre-existing test from Phase 2 MUST pass with NO modification to its source — inspect the diff and confirm zero edits to any pre-existing test file. A modified pre-existing test is, by definition, evidence the surface's observable behavior changed: revert it. If it cannot pass after revert, the refactor introduced a behavior change and is routed to `tdd` as a feature or fix. Phase 3 seam tests (if any) MUST pass. Record the pass/fail tally and any modified-test detection.
+Run every impact-bounded local parity test identified in Phase 2, following `verification-boundary.md`. Each MUST pass with NO modification to its source — inspect the diff and confirm zero edits to any pre-existing test file. A modified pre-existing test is, by definition, evidence the surface's observable behavior changed: revert it. If it cannot pass after revert, the refactor introduced a behavior change and is routed to `tdd` as a feature or fix. Phase 3 seam tests (if any) MUST pass. Record the pass/fail tally and any modified-test detection. The exhaustive pre-existing suite remains a required exact-head hosted-CI merge gate.
 
-Gate: full suite green with zero pre-existing tests modified. BLOCK if any pre-existing test was modified to pass, or if any test fails.
+Gate: scoped parity tests green with zero pre-existing tests modified. BLOCK if any pre-existing test was modified to pass, or if any applicable test fails; the branch still MUST NOT merge until exhaustive exact-head hosted CI passes.
 
 ## Phase 6 — Lint and coverage · gate: BLOCK
 
 Run lint, the type-check if the project is statically typed, and coverage, all from `tech-stack.md`. Resolve every lint and type error. Confirm surface coverage remains at or above the maturity threshold on both lines and branches — a refactor MUST NOT reduce coverage of the surface it touched on either metric.
 
-Where the surface has no coverage tooling, the same clause as Phase 2 applies — the no-tooling exemption in `${CLAUDE_PLUGIN_ROOT}/includes/maturity-coverage.md`, citation included — and parity is verified through Phase 5's unmodified pre-existing tests alone. Phase 2 and Phase 6 MUST NOT give different answers about the same surface, which is why both defer to the one shared clause rather than restating its conditions.
+Where the surface has no coverage tooling, the same clause as Phase 2 applies — the no-tooling exemption in [includes/maturity-coverage.md](../../includes/maturity-coverage.md), citation included — and parity is verified through Phase 5's unmodified pre-existing tests alone. Phase 2 and Phase 6 MUST NOT give different answers about the same surface, which is why both defer to the one shared clause rather than restating its conditions.
 
 Gate: clean lint and type-check, zero errors, and no coverage regression on the named surface. "Mostly passes" is not passing — this is what clears the path to `commit-gate`.
 

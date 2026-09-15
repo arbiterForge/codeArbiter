@@ -148,7 +148,7 @@ describe("documentation presentation regressions", () => {
   it("OBL-CONTENT-02 gives Pi exact supported hosts and a mechanical tag lookup", () => {
     const pi = readFileSync(join(docsRoot, "getting-started", "pi.md"), "utf8");
 
-    expect(pi).toContain("Pi 0.80.5 or Pi 0.84.1");
+    expect(pi).toContain("Pi 0.84.1");
     expect(pi).not.toContain("Pi 0.84.1 or newer");
     expect(pi).toContain("git ls-remote --tags --refs");
     expect(pi).toContain('"ca-pi-v*"');
@@ -225,7 +225,7 @@ describe("documentation presentation regressions", () => {
 
   it("OBL-CONTENT-09 labels platform-aggregate setup as maintainer-only verification", () => {
     const compatibility = readFileSync(
-      join(docsRoot, "getting-started", "compatibility.md"),
+      join(docsRoot, "getting-started", "compatibility.mdx"),
       "utf8",
     );
 
@@ -247,6 +247,72 @@ describe("documentation presentation regressions", () => {
     expect(smarts).toContain("## Audit a Verdict");
     expect(smarts).toContain("non-SMARTS considerations");
     expect(smarts).toContain("confidence flag");
+  });
+
+  it("OBL-CONTENT-11 teaches ownership and request flow before host mechanics", () => {
+    const overview = readFileSync(join(docsRoot, "overview.md"), "utf8");
+    const ownership = overview.indexOf("## codeArbiter Holds the Gates; You Hold the Decisions");
+    const requestFlow = overview.indexOf("## How a Request Flows");
+    const hostMechanics = overview.indexOf("## One Core, Three Host Adapters");
+
+    expect(ownership).toBeGreaterThan(-1);
+    expect(requestFlow).toBeGreaterThan(ownership);
+    expect(hostMechanics).toBeGreaterThan(requestFlow);
+    expect(overview.slice(hostMechanics)).toContain("`ca` for Claude Code");
+    expect(overview.slice(hostMechanics)).toContain("`ca-codex`");
+    expect(overview.slice(hostMechanics)).toContain("`ca-pi`");
+    expect(overview.slice(hostMechanics)).toContain("Feature Forge `preview`");
+  });
+
+  it("OBL-CONTENT-12 groups every FAQ question once by reader intent", () => {
+    const faq = readFileSync(join(docsRoot, "faq.md"), "utf8");
+    const questionsByGroup = [
+      [
+        "Adoption",
+        [
+          "Why would I let a plugin block my commits?",
+          "Does this slow me down?",
+          "Does codeArbiter write code for me, or just gate it?",
+        ],
+      ],
+      [
+        "Trust and Data",
+        ["Can a determined session bypass a hook?", "What data leaves my machine?"],
+      ],
+      [
+        "Teams",
+        [
+          "Can I use it on a team?",
+          "Can two users mix Claude Code and Codex in one repository?",
+        ],
+      ],
+      [
+        "Gates and Lifecycle",
+        [
+          "What happens if I uninstall mid-feature?",
+          "What if the gates are wrong for my project?",
+          "What's the difference between an advisory and a blocking gate?",
+          "Where do I go if a rule from the docs conflicts with what a reviewer agent says?",
+        ],
+      ],
+    ] as const;
+    const questions = questionsByGroup.flatMap(([, groupQuestions]) => groupQuestions);
+
+    const groupPositions = questionsByGroup.map(([group]) => faq.indexOf(`## ${group}`));
+    for (const position of groupPositions) expect(position).toBeGreaterThan(-1);
+    for (let index = 1; index < questionsByGroup.length; index += 1) {
+      expect(groupPositions[index]).toBeGreaterThan(groupPositions[index - 1]);
+    }
+    for (const [index, [, groupQuestions]] of questionsByGroup.entries()) {
+      const section = faq.slice(groupPositions[index], groupPositions[index + 1] ?? faq.length);
+      for (const question of groupQuestions) {
+        expect(section.split(`### ${question}`).length - 1).toBe(1);
+      }
+    }
+    expect(faq.match(/^### /gm)).toHaveLength(questions.length);
+    for (const question of questions) {
+      expect(faq.split(`### ${question}`).length - 1).toBe(1);
+    }
   });
 
   it("OBL-REF-01 suppresses inferred journey cards on generated entity pages", () => {

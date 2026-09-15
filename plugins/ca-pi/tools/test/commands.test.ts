@@ -14,6 +14,7 @@ import {
   createNativePlanController,
   registerAliases,
 } from "../src/commands.ts";
+import { commandCatalogEntries } from "../src/extension.ts";
 import type { CommandCatalogEntry, ExtensionContextPort, ParentPiPort, SlashCommand } from "../src/contracts.ts";
 import type { BackgroundJobRuntime, BackgroundJobSnapshot, BackgroundJobStopReason } from "../src/background-jobs.ts";
 
@@ -618,16 +619,92 @@ describe("generated Pi command aliases", () => {
   });
   test("catalog is generated one-to-one from shipped ca skills", async () => {
     expect(existsSync(catalogPath)).toBe(true);
-    const catalog = existsSync(catalogPath)
-      ? JSON.parse(await readFile(catalogPath, "utf8")) as CommandCatalogEntry[]
-      : [];
+    const document = existsSync(catalogPath)
+      ? JSON.parse(await readFile(catalogPath, "utf8")) as unknown
+      : null;
+    expect(document).toMatchObject({
+      schemaVersion: 1,
+      visibilityOrder: ["core", "advanced", "alias", "internal", "deprecated"],
+      workflowOrder: ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+      compatibility: expect.any(Object),
+      commands: expect.any(Object),
+    });
+    const catalog = commandCatalogEntries(document);
     expect(catalog.length).toBeGreaterThan(0);
     expect(catalog).toEqual([...catalog].sort((left, right) => left.name.localeCompare(right.name)));
     for (const entry of catalog) {
-      expect(Object.keys(entry).sort()).toEqual(["description", "name", "skillPath"]);
       expect(entry.skillPath).toBe(`skills/ca-${entry.name}/SKILL.md`);
       expect(existsSync(resolve(pluginRoot, ...entry.skillPath.split("/")))).toBe(true);
     }
+    expect(catalog.find((entry) => entry.name === "add-dep")).toMatchObject({
+      visibility: "core", workflow: "change", canonical: "add-dep", legacyRoutes: [],
+    });
+    expect(catalog.find((entry) => entry.name === "cleanup")).toMatchObject({
+      visibility: "alias", workflow: "ship", canonical: "pr", replacement: "pr --cleanup",
+    });
+    expect(catalog.find((entry) => entry.name === "btw")).toMatchObject({
+      visibility: "deprecated", workflow: "help", replacement: "ask the question directly",
+    });
+  });
+
+  test("catalog parser rejects the retired array shape and malformed keyed entries", () => {
+    expect(() => commandCatalogEntries([])).toThrow(/catalog envelope/u);
+    expect(() => commandCatalogEntries({
+      schemaVersion: 1,
+      visibilityOrder: ["core", "advanced", "alias", "internal", "deprecated"],
+      workflowOrder: ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+      compatibility: {},
+      commands: {
+        feature: {
+          name: "wrong-name", description: "Build.", skillPath: "skills/ca-feature/SKILL.md",
+          visibility: "core", workflow: "change", canonical: "feature",
+        },
+      },
+    })).toThrow(/catalog entry feature/u);
+  });
+
+  test("catalog parser rejects dangling, chained, deprecated, and unclosed alias targets", () => {
+    const envelope = (commands: Record<string, unknown>) => ({
+      schemaVersion: 1,
+      visibilityOrder: ["core", "advanced", "alias", "internal", "deprecated"],
+      workflowOrder: ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+      compatibility: {},
+      commands,
+    });
+    const canonical = (name: string, legacyRoutes: string[]) => ({
+      name, description: "Canonical.", skillPath: `skills/ca-${name}/SKILL.md`,
+      visibility: "core", workflow: "ship", canonical: name, legacyRoutes,
+    });
+    const alias = (name: string, target: string) => ({
+      name, description: "Alias.", skillPath: `skills/ca-${name}/SKILL.md`,
+      visibility: "alias", workflow: "ship", canonical: target,
+      replacement: `${target} --mode`,
+    });
+    const deprecated = (name: string) => ({
+      name, description: "Deprecated.", skillPath: `skills/ca-${name}/SKILL.md`,
+      visibility: "deprecated", workflow: "help", replacement: "ask directly",
+    });
+
+    expect(() => commandCatalogEntries(envelope({
+      cleanup: alias("cleanup", "ghost"),
+      feature: canonical("feature", []),
+    }))).toThrow(/alias target/u);
+    expect(() => commandCatalogEntries(envelope({
+      cleanup: alias("cleanup", "watch"),
+      feature: canonical("feature", ["watch"]),
+      watch: alias("watch", "feature"),
+    }))).toThrow(/alias target/u);
+    expect(() => commandCatalogEntries(envelope({
+      btw: deprecated("btw"),
+      cleanup: alias("cleanup", "btw"),
+    }))).toThrow(/alias target/u);
+    expect(() => commandCatalogEntries(envelope({
+      cleanup: alias("cleanup", "pr"),
+      pr: canonical("pr", []),
+    }))).toThrow(/legacy-route closure/u);
+    expect(() => commandCatalogEntries(envelope({
+      pr: canonical("pr", ["cleanup"]),
+    }))).toThrow(/legacy-route closure/u);
   });
 
   test("expands only the generated in-package skill through the public API and preserves args", async () => {

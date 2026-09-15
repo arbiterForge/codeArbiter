@@ -2,7 +2,7 @@
 import ArbiterIcon, { type ArbiterIconName } from "./ArbiterIcon.astro";
 
 interface Props {
-  level: "Foundation" | "Practitioner" | "Power user" | "Reference" | "Labs";
+  level: "Foundation" | "Practitioner" | "Power user" | "Reference" | "Labs" | "Academy";
   time: string;
   outcome: string;
   prerequisites?: string[];
@@ -21,6 +21,7 @@ const iconByLevel: Record<Props["level"], ArbiterIconName> = {
   "Power user": "understand",
   Reference: "reference",
   Labs: "forge",
+  Academy: "forge",
 };
 ---
 

@@ -38,7 +38,7 @@
 #                                         (case-insensitive)
 #   head_on_protected_tip(cwd) -> bool|None  True iff detached HEAD sits on a
 #                                         protected branch's tip
-#   added_lines(cwd, ref, paths=None) -> str|None  added ('+') diff lines,
+#   added_lines(cwd, ref, paths=None) -> SecurityScan|None  classified added lines,
 #                                         narrowed to the H-09b/H-10b candidate
 #                                         set, or None on a git-read failure
 #   staged_paths(cwd) -> set|None        index paths (`git diff --cached
@@ -81,9 +81,10 @@ import subprocess
 import sys
 
 from _hooklib import (
-    AUDIT_LOG_BASENAMES, AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
+    ADR_LIFECYCLE_LOG_BASENAME, AUDIT_LOG_BASENAMES, AUDIT_LOG_FLAT_BASENAMES,
+    AUDIT_LOG_NAMES, CRYPTO_RE, DECISION_AUDIT_LOG_NAMES, DECISION_LOG_BASENAME, DECISIONS_DIR_RE,
     GATE_MARKER_NAMES, MARKER_FRESHNESS_MINUTES, SECRET_RE, SECURITY_DIFF_GIT_ARGS, block,
-    content_digest, is_migration_path, line_digest, marker_fresh, sensitive_scan_added_lines,
+    content_digest, is_migration_path, line_digest, marker_fresh, security_scan_diff,
 )
 from _gitexec import git_executable
 import _gitlib  # reused for its spawn-free, worktree-aware (.git-as-a-FILE /
@@ -317,7 +318,7 @@ PROTECTED_DEST_RE = re.compile(r"(?:\S+:|:)?(?:refs/heads/)?(?:main|master)")
 # (the /sprint decision record). The bare-name alternation is centralized in
 # _hooklib.AUDIT_LOG_NAMES so the Write/Edit and shell flanks never drift.
 LOG_NAMES = AUDIT_LOG_NAMES
-LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES)
+LOG_TRUNC_RE = re.compile(r"(?<!>)>(?!>)\|?\s*\S*" + LOG_NAMES, re.I)
 LOG_DESTROY_RE = re.compile(
     r"\b(rm|del|mv|cp|copy|dd|tee|sed|truncate|sponge"
     # #528: `New-Item -Force` TRUNCATES an existing file (verified in PowerShell:
@@ -345,19 +346,19 @@ DECISIONS = DECISIONS_DIR_RE + r"\b"
 # #528: the one path under decisions/ that H-11 must NOT claim — see
 # _check_h11_decisions. Matched on the raw command, so both separators.
 #
-# DELIBERATELY CASE-SENSITIVE. H-05, which takes over for this file, is itself
-# case-sensitive on both flanks: _check_h05_audit_log pre-filters with a plain
-# `in` test over AUDIT_LOG_BASENAMES, and LOG_TRUNC_RE carries no re.I. An re.I
-# here therefore stripped `Decision-Log.md` out of H-11's view and handed it to a
-# guard that could not see it — and on Windows/NTFS and default macOS/APFS that
-# spelling resolves to the real file, so `rm …/Decision-Log.md` destroyed the
-# append-only log with nothing firing at all. The two flanks must agree on case.
-#
 # The right edge is anchored so this path cannot SHIELD a sibling token: without
 # it, `touch …/decision-log.md.evil.md` was stripped to a harmless remainder and
 # H-11 stopped seeing a decisions/ write at all.
 DECISION_LOG_SHELL_RE = re.compile(
     DECISIONS_DIR_RE + r"[\\/]+" + re.escape(DECISION_LOG_BASENAME) + r"""(?=$|[\s>|;&"'])""",
+)
+# The lifecycle ledger is new and explicitly enrolled case-insensitively on
+# supported case-folding filesystems. Keep this separate from decision-log.md:
+# historical mixed-case decision-log spellings remain H-11, as #528 requires.
+ADR_LIFECYCLE_LOG_SHELL_RE = re.compile(
+    DECISIONS_DIR_RE + r"[\\/]+" + re.escape(ADR_LIFECYCLE_LOG_BASENAME) +
+    r"""(?=$|[\s>|;&"'])""",
+    re.I,
 )
 # `>>?\|?` covers `>`, `>>`, and the `>|` force-clobber form into decisions/.
 DECISIONS_REDIRECT_RE = re.compile(r">>?\|?\s*\S*" + DECISIONS, re.I)
@@ -448,6 +449,16 @@ GATE_MARKER_WRITE_RE = re.compile(
 _INTERP_TOKENS = (r"python3?|python2|py|node|deno|bun|perl|ruby|php"
                   r"|sh|bash|zsh|pwsh|powershell")
 
+# A word boundary also matches the `py` in `catalog.py`: that is a filename,
+# not an interpreter. Share the corrected left edge across every interpreter
+# leg so read-only filename arguments cannot falsely imply a protected write.
+# Preserve slash/backslash and quote boundaries for executable paths, and the
+# existing right edge for versioned executables and Windows `.exe` spellings.
+# Consume leading dots at that boundary: `./.python` is an executable basename,
+# unlike the interpreter-looking extension in `catalog.python`.
+# This remains conservative lexical detection, not command-position parsing.
+_INTERP_EXECUTABLE = r"(?<![\w.])\.*(" + _INTERP_TOKENS + r")\b"
+
 # The inline-code switch that makes an interpreter EXECUTE A STRING rather
 # than run a file. `-c` (python/py/sh/bash/zsh/pwsh), `-e`/`-E` (perl,
 # ruby, node, bun), `-r` (php), `-p`/`--print`/`--eval` (node), and
@@ -475,7 +486,7 @@ _INTERP_INLINE_CODE = (
 # whereas handing a board filename to `taskwrite.py` is the sanctioned
 # call.
 GATE_MARKER_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + GATE_MARKER, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + GATE_MARKER, re.I,
 )
 
 # #574: H-05/H-11/H-18 carried NO interpreter leg at all — an inline-code
@@ -495,13 +506,13 @@ GATE_MARKER_INTERP_RE = re.compile(
 # target name may sit on different physical lines of the SAME multi-line
 # `-c`/`-e` payload.
 LOG_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + LOG_NAMES, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + LOG_NAMES, re.I,
 )
 DECISIONS_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + DECISIONS, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + DECISIONS, re.I,
 )
 CONTEXT_INTERP_RE = re.compile(
-    r"\b(" + _INTERP_TOKENS + r")\b[\s\S]*" + CONTEXT_MD, re.I,
+    _INTERP_EXECUTABLE + r"[\s\S]*" + CONTEXT_MD, re.I,
 )
 
 # H-22's shell flank: the protected-state registry (B1/#564) — Write/Edit are
@@ -730,7 +741,7 @@ def _state_write_res(basename, rel_path=None):
         + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     interp_re = re.compile(
-        r"\b(" + _INTERP_TOKENS + r")\b[^\n]*?" + _INTERP_INLINE_CODE
+        _INTERP_EXECUTABLE + r"[^\n]*?" + _INTERP_INLINE_CODE
         + r"[\s\S]*" + name + _STATE_NAME_RIGHT_EDGE, re.I,
     )
     return redirect_re, write_re, git_restore_re, interp_re
@@ -806,6 +817,7 @@ def git_cwd(cmd, root):
 
 _CODEX_EXPLICIT_WORKDIR_TOOLS = frozenset({
     "shell_command", "exec_command", "unified_exec",
+    "functions.exec",
 })
 
 
@@ -1030,7 +1042,7 @@ def head_on_protected_tip(cwd):
 
 
 def added_lines(cwd, ref, paths=None):
-    """The added (`+`) lines of a diff — what a commit would introduce — or None
+    """The shared classification/bindings for a diff, or None
     when git could not produce the diff (nonzero exit / timeout / error). The
     None return (not "") lets the H-09b/H-10b security scan fail CLOSED on a read
     error rather than silently passing — an empty diff and an unreadable diff are
@@ -1061,7 +1073,10 @@ def added_lines(cwd, ref, paths=None):
     except Exception as e:  # noqa: BLE001
         _note_read_err(argv, repr(e))
         return None
-    return "\n".join(sensitive_scan_added_lines(out.stdout))
+    result = security_scan_diff(out.stdout)
+    if result is None:
+        _note_read_err(argv, "malformed or incomplete crypto context")
+    return result
 
 
 def _names(cwd, args):
@@ -1340,7 +1355,11 @@ def _check_h05_audit_log(cmd):
     # (`python3 -c "open('.codearbiter/overrides.log','w')..."`) — the
     # verb-list and redirect legs above never look for an interpreter token
     # at all, so this shape walked past both.
-    if any(n in cmd for n in AUDIT_LOG_BASENAMES) and (
+    folded = cmd.casefold()
+    legacy_names = AUDIT_LOG_FLAT_BASENAMES + (DECISION_LOG_BASENAME,)
+    enrolled_name = (any(n in cmd for n in legacy_names) or
+                     ADR_LIFECYCLE_LOG_BASENAME.casefold() in folded)
+    if enrolled_name and (
             LOG_TRUNC_RE.search(cmd) or LOG_DESTROY_RE.search(cmd)
             or LOG_GIT_RESTORE_RE.search(cmd) or LOG_INTERP_RE.search(cmd)):
         block("H-05", "The .codearbiter audit logs (overrides.log, triage.log, sprint-log.md, "
@@ -1367,6 +1386,7 @@ def _check_h11_decisions(cmd):
     # append to decisions/decision-log.md stays the #528 carve-out's to
     # police (via H-05's own LOG_INTERP_RE), not a false H-11 block.
     cmd = DECISION_LOG_SHELL_RE.sub(" ", cmd)
+    cmd = ADR_LIFECYCLE_LOG_SHELL_RE.sub(" ", cmd)
     if (DECISIONS_REDIRECT_RE.search(cmd) or DECISIONS_WRITE_RE.search(cmd)
             or DECISIONS_INTERP_RE.search(cmd)):
         block("H-11", "ADR files under .codearbiter/decisions/ are authored only via "
@@ -1514,11 +1534,9 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
                        "read (git unavailable or timed out) — failing closed "
                        "(ORCHESTRATOR §2). Retry, or run the crypto-compliance / "
                        "secret-handling gate, then commit." + _read_err_hint())
-    added = "\n".join(parts)
-    sensitive = [ln for ln in added.splitlines()
-                 if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
+    sensitive = set().union(*(part.digests for part in parts))
     if sensitive:
-        touches_crypto = bool(CRYPTO_RE.search(added))
+        touches_crypto = any(part.crypto for part in parts)
         kind = "crypto/TLS" if touches_crypto else "secret"
         tag = "H-09b" if touches_crypto else "H-10b"
         skill = "crypto-compliance" if touches_crypto else "secret-handling"
@@ -1534,7 +1552,7 @@ def _check_h09b_h10b_crypto_secret(commit, add, cwd, root):
                 approved = set(f.read().split())
         except Exception:  # noqa: BLE001
             approved = set()
-        uncovered = [ln for ln in sensitive if line_digest(ln) not in approved]
+        uncovered = sensitive - approved
         if uncovered:
             block(tag, f"{len(uncovered)} {kind} line(s) in this commit are not covered "
                        f"by the recorded security-gate pass — the pass is bound to the "

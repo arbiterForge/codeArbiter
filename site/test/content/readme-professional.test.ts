@@ -50,8 +50,12 @@ describe("professional repository README", () => {
     expect(readme).toContain("feature-forge/whats-in-the-forge/");
   });
 
-  it("keeps detailed catalogs collapsible so the README remains an adoption surface", () => {
-    expect(readme).toContain("<summary><strong>All 38 Claude Code commands</strong></summary>");
+  it("keeps the README focused on canonical core lanes and routes detail to the reference", () => {
+    expect(readme).toContain("<!-- core-lane-chooser:start -->");
+    expect(readme).toContain("<!-- core-lane-chooser:end -->");
+    expect(readme).toContain("Complete command reference");
+    expect(readme).not.toMatch(/All \d+ Claude Code commands/);
+    expect(readme).not.toMatch(/badge\/commands-\d+-/);
     expect(readme).toContain("The docs are the operating manual");
   });
 
@@ -63,7 +67,10 @@ describe("professional repository README", () => {
   });
 
   it("separates the current Codex adapter from the dated live-install evidence", () => {
-    expect(readme).toContain(`currently ships \`ca-codex ${codexManifest.version}\``);
+    expect(readme).toContain(
+      "current adapter version is read from `plugins/ca-codex/.codex-plugin/plugin.json`",
+    );
+    expect(readme).not.toContain(`currently ships \`ca-codex ${codexManifest.version}\``);
     expect(readme).toContain("dated end-to-end public-install record");
     expect(readme).toContain("`ca-codex 0.2.4` from release `v2.8.13`");
   });

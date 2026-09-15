@@ -32,6 +32,8 @@ from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRE_BASH = os.path.join(HOOKS, "pre-bash.py")
+CODEX_PRE_BASH = os.path.join(os.path.dirname(os.path.dirname(HOOKS)),
+                              "ca-codex", "hooks", "pre-bash.py")
 ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 SECURITY_PASS = os.path.join(HOOKS, "security-pass.py")
 
@@ -276,6 +278,41 @@ class TestGitCwdEndToEnd(unittest.TestCase):
                                     "tool_input": {"command": "git commit -m x"}}),
                   env={**os.environ, "CLAUDE_PROJECT_DIR": main_checkout})
         self.assertNotIn("H-01", res.stderr)
+
+
+class TestCodexWrappedExecWorkdir(unittest.TestCase):
+    """Codex desktop may wrap an execution request while retaining its explicit
+    workdir. H-01 must judge the nested command against that worktree, not the
+    session checkout that owns the wrapper."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.main_checkout = os.path.join(self._tmp.name, "main-checkout")
+        _init_repo(self.main_checkout, branch="main")
+        _commit(self.main_checkout)
+        self.feature_worktree = os.path.join(self._tmp.name, "feature-worktree")
+        _git(["worktree", "add", "-b", "feat/wrapped-exec", self.feature_worktree],
+             self.main_checkout)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _run_codex(self, workdir):
+        payload = json.dumps({
+            "tool_name": "functions.exec",
+            "tool_input": {"command": "git commit -m x", "workdir": workdir},
+        })
+        return _sh([sys.executable, CODEX_PRE_BASH], self.main_checkout, input=payload,
+                   env={k: v for k, v in os.environ.items() if k != "CLAUDE_PROJECT_DIR"})
+
+    def test_wrapped_exec_commit_on_feature_worktree_is_not_blocked_as_main(self):
+        result = self._run_codex(self.feature_worktree)
+        self.assertNotIn("H-01", result.stderr)
+
+    def test_wrapped_exec_commit_on_main_still_blocks(self):
+        result = self._run_codex(self.main_checkout)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("H-01", result.stderr)
 
 
 # ---------------------------------------------------------------------------

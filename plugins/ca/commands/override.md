@@ -14,14 +14,40 @@ logged, always visible, never silent. Single identity, single confirm.
    vague reason ("just skip it") and ask for a specific one.
 2. Detect the operator identity from `git config user.email` only. If it is unset, ask the user once
    to state their identity for the log. (No platform ladder, no second confirmation.)
-3. Append one line to `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`:
+3. For an ordinary override, use the private locked audit helper from the repository root:
+
+   ```sh
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/append-override.py" --gate "<gate bypassed>" --reason "<specific reason>"
+   ```
+
+   It appends one line to `${CLAUDE_PROJECT_DIR}/.codearbiter/overrides.log`:
 
    ```
    [ISO-8601 timestamp] | BY: <email> | GATE: <gate bypassed> | REASON: <reason>
    ```
 
-   The log is append-only — never edited or deleted, committed as a permanent audit artifact.
-4. Proceed with the overridden action. Note in the response that the override is logged.
+   The log is append-only — never edited or deleted, committed as a permanent audit artifact. The
+   helper fails closed if another official writer or conflict resolver owns the audit-path lock; the
+   overridden action must not proceed unless the row lands. A guard-permitted raw append remains a
+   cooperative operator escape hatch, but it must not run concurrently with conflict resolution.
+4. A genuine three-stage Git conflict on an H-05 append-only path uses the dedicated helper instead
+   of the ordinary step 3 append. Run it once from the conflicted repository, with the specific
+   repo-relative path and the same reason:
+
+   ```sh
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/resolve-append-only-conflict.py" ".codearbiter/overrides.log" --reason "<specific reason>"
+   ```
+
+   The helper derives the same `git config user.email` identity, validates the merge-base and both
+   append suffixes, writes the attributed H-05 record, and explicitly stages only the validated
+   deterministic union. It refuses a missing or malformed three-stage conflict, any edit to prior
+   bytes, unsupported paths, invalid encoding, dirty audit sink, or replay after resolution. This is
+   scoped to the immediate action only; it creates no marker, standing exception, or general H-05
+   bypass. It takes canonical per-audit-path locks and supports only `overrides.log` and the
+   repository-owned `gate-events.log` sink; official writers share those locks. Conflict resolution
+   is an exclusive cooperative operation: do not start a raw append before or during it. Never
+   hand-resolve the protected log with Write, patch, checkout, or restore.
+5. Proceed with the overridden action. Note in the response that the override is logged.
 
 ## Security ceiling — heavier path for security-critical stops
 
@@ -39,8 +65,14 @@ Heavier path (all required, in order):
 2. **Explicit per-finding acknowledgement** — the user must acknowledge *that specific finding* in
    their own words (a bare "yes"/"go ahead"/"I trust you" is declined — this mirrors `decision-variance`).
    Detect identity from `git config user.email`; if unset, ask once.
-3. **Heavier log entry** — append a line tagged `SECURITY-OVERRIDE` that records the specific finding,
-   not just the gate name:
+3. **Heavier log entry** — use the same locked helper so the mandatory row cannot race conflict
+   resolution:
+
+   ```sh
+   python3 "${CLAUDE_PLUGIN_ROOT}/hooks/append-override.py" --security-finding "<specific finding>" --reason "<reason>"
+   ```
+
+   It appends a line tagged `SECURITY-OVERRIDE` that records the specific finding, not just the gate name:
 
    ```
    [ISO-8601] | BY: <email> | SECURITY-OVERRIDE | FINDING: <specific finding> | REASON: <reason>
@@ -61,7 +93,9 @@ Under `/ca:sprint`, a security-critical override is a hard-gate STOP: it surface
 MUST write the log line before proceeding — it is not optional. MUST capture an operator identity —
 "codeArbiter" or "automated" are not valid. MUST include a justification. The override is scoped to
 the immediate action only; it creates no standing exception. MUST NOT edit or delete an existing
-`overrides.log` entry. MUST route a security-critical / crypto-secret / irreversible stop through the
+`overrides.log` entry. For an H-05 three-stage conflict, the dedicated helper's validated union and
+audit write are the single immediate action; do not pre-edit the conflicted file. MUST route a
+security-critical / crypto-secret / irreversible stop through the
 **Security ceiling** path — never the single-confirm flow — and MUST NOT auto-decide such an override
 under `/ca:sprint`.
 

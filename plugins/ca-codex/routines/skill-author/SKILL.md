@@ -12,8 +12,8 @@ Author a new skill, the right way. Routed to when the user invokes `/new-skill "
 Read these, or STOP and surface the gap — never author on assumption:
 
 - The `<gap>` argument. Absent → STOP and ask: "Describe the gap this skill would fill. What situation does no existing skill cover today?"
-- `${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md` — the surface scan of every existing skill. This is the gap-overlap check in Phase 1 and the integration target in Phase 5. Never bulk-read the skill bodies.
-- `${CLAUDE_PLUGIN_ROOT}/routines/commit-gate/SKILL.md` and `${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md` — the canonical v2 format the authored skill must mirror. Read them before Phase 3.
+- [routines/INDEX.md](../INDEX.md) — the surface scan of every existing skill. This is the gap-overlap check in Phase 1 and the integration target in Phase 5. Never bulk-read the skill bodies.
+- [routines/commit-gate/SKILL.md](../commit-gate/SKILL.md) and [routines/tdd/SKILL.md](../tdd/SKILL.md) — the canonical v2 format the authored skill must mirror. Read them before Phase 3.
 - `<project-root>/.codearbiter/CONTEXT.md` — project context, only if the gap is project-specific. A generic skill needs no project state.
 
 ## Phase 1 — Gap evidence · gate: BLOCK
@@ -35,21 +35,21 @@ Gate: the gap is restated, proven uncovered against `INDEX.md`, and backed by Op
 
 Settle scope with the user before any prose is written. Ask, and wait for an explicit answer:
 
-- **Routed or dispatched?** A *skill* is routed to (gated phases, lives at `${CLAUDE_PLUGIN_ROOT}/routines/<name>/SKILL.md`). An *agent* is dispatched by a skill (a reviewer/author, lives at `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`). If the gap is really a reviewer, this is the wrong skill — redirect to agent authoring.
+- **Routed or dispatched?** A *skill* is routed to (gated phases, lives at [routines/<name>/SKILL.md](../<name>/SKILL.md)). An *agent* is dispatched by a skill (a reviewer/author, lives at [agents/<name>.md](../../agents/<name>.md)). If the gap is really a reviewer, this is the wrong skill — redirect to agent authoring.
 - **Command-invoked or internal?** Does a user type `/<name>` to reach it, or does another skill route to it mid-workflow? A command needs a routing-table entry; an internal skill needs a named parent that routes to it.
 - **Single responsibility.** State the one thing the skill owns in a sentence. If it needs "and" to describe its job, it is two skills — split it or pick one.
 
-Confirm back: "I will write a [command-invoked / internal] skill at `${CLAUDE_PLUGIN_ROOT}/routines/<name>/SKILL.md`, owning <one responsibility>. [A `/<name>` command will be added to the routing table. / The `<parent>` skill will route to it.]"
+Confirm back: "I will write a [command-invoked / internal] skill at [routines/<name>/SKILL.md](../<name>/SKILL.md), owning <one responsibility>. [A `/<name>` command will be added to the routing table. / The `<parent>` skill will route to it.]"
 
 Gate: explicit user agreement on routed-vs-dispatched, command-vs-internal, and a one-sentence single responsibility. Assumed answers do not pass.
 
 ## Phase 3 — Authoring · gate: BLOCK
 
-Write `SKILL.md` to the v2 house style — mirror `commit-gate` and `tdd` exactly. Start from `${CLAUDE_PLUGIN_ROOT}/routines/skill-author/references/skill-template.md`. Required shape:
+Write `SKILL.md` to the v2 house style — mirror `commit-gate` and `tdd` exactly. Start from [routines/skill-author/references/skill-template.md](references/skill-template.md). Required shape:
 
 - **Frontmatter** — `name:` and `description:` only. Description is terse: what routes to it, the phase count, the gate. No cut doc refs, no trigger disclaimer.
 - **`# <name>`** H1, then a one-line intro naming what routes to it (`/<command>` or the parent skill).
-- **`## Pre-flight`** — the docs to read or STOP on. Project state cites `<project-root>/.codearbiter/<doc>`; other skills cite `${CLAUDE_PLUGIN_ROOT}/routines/<name>`; agents cite `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`. Never guess a command — read it or STOP.
+- **`## Pre-flight`** — the docs to read or STOP on. Project state cites `<project-root>/.codearbiter/<doc>`; other skills cite [routines/<name>](../<name>); agents cite [agents/<name>.md](../../agents/<name>.md). Never guess a command — read it or STOP.
 - **`## Phase N — <title> · gate: BLOCK|STOP`** — sequential, each ending in a one-line `Gate:`. A phase with output that could be wrong has a gate; only a purely declarative phase may omit one.
 - **`## Hard rules`** — `MUST NOT` lines, one per rule, no duplication.
 
@@ -68,7 +68,7 @@ Re-read the authored skill against the v2 quality bar. Each line below is a chec
 - **Concrete gates** — every non-declarative phase ends in a `Gate:` line stating a checkable condition. "Looks good" / "seems right" is not a gate; rewrite it.
 - **House-style prose** — terse, imperative, matches `commit-gate`/`tdd`. Strip hedging and filler.
 - **No duplicated rules** — a rule stated in a phase is not restated in Hard rules, and Hard rules carry no duplicates. State each rule once.
-- **Format conformance** — frontmatter is `name`+`description`, plus `disable-model-invocation: true` ONLY on a chain-internal skill (never user-typed, reached solely via routing-table path loads — see ADR-0028); H1 matches `name`; phases are numbered with `· gate:`; paths use `${CLAUDE_PLUGIN_ROOT}` / `<project-root>` correctly; no cut docs/skills, no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
+- **Format conformance** — frontmatter is `name`+`description`, plus `disable-model-invocation: true` ONLY on a chain-internal skill (never user-typed, reached solely via routing-table path loads — see ADR-0028); H1 matches `name`; phases are numbered with `· gate:`; paths use `the validated selected-skill root` / `<project-root>` correctly; no cut docs/skills, no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
 - **Frontmatter scalar quoting** — any frontmatter scalar that starts with `[` or `{`, or contains `": "` or `" | "`, MUST be JSON-quoted (the `_yaml_safe_scalar` predicate the surface generator applies to codex/pi wrappers; the claude surface ships frontmatter verbatim, so the author quotes it at the source).
 - **No trigger language** — "routed to" / "dispatched" only, and no `## Trigger` disclaimer block.
 - **Evidence lenses** (issue #612) — each checked where the skill's shape triggers it, skipped where it does not:
@@ -87,7 +87,7 @@ Gate: zero open self-review defects, and the user has seen the corrected skill. 
 
 A skill no one routes to is dead code. Wire it in.
 
-- Add a row to `${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md`: skill name (linked), "Routed to by", and "Owns" (the one-sentence responsibility from Phase 2).
+- Add a row to [routines/INDEX.md](../INDEX.md): skill name (linked), "Routed to by", and "Owns" (the one-sentence responsibility from Phase 2).
 - Add the skill to the routing table — the invocation cue (the `/<command>` or condition), the primary route, any dispatched agents, the hard gate. For a command-invoked skill, also register the `/<command>` in the command reference.
 - For an internal skill, update the named parent so it routes to the new skill explicitly.
 

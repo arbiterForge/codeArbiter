@@ -116,6 +116,23 @@ class CheckLiveRepoTest(unittest.TestCase):
     proves the gate can still fail by perturbing the real document.
     """
 
+    def test_historical_hash_map_is_bound_to_its_own_exercise(self):
+        document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
+        hashes = document["post_remediation_skill_sha256"]
+        reference = hashes.get("exercise_reference")
+        self.assertIn(reference, document, "hash metadata must name its exercise")
+        exercise = document[reference]
+        self.assertEqual(hashes[exercise["exercised_skill_path"]],
+                         exercise["exercised_skill_sha256"])
+
+    def test_external_transcript_is_non_authoritative_portable_metadata(self):
+        document = json.loads(REAL_ARTIFACT.read_text(encoding="utf-8"))
+        transcript = document["exercise"]["external_transcript"]
+        self.assertIsInstance(transcript, dict)
+        self.assertIs(transcript["authoritative"], False)
+        self.assertRegex(transcript["sha256"], r"\A[0-9a-f]{64}\Z")
+        self.assertNotRegex(transcript["name"], r"[:/\\]")
+
     def test_the_gates_verdict_matches_the_actual_hash_relationship(self):
         # Stated as an INVARIANT rather than "the artifact is currently
         # fresh", because the second form has to be inverted by hand every

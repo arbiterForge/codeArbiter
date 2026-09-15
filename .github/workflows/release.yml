@@ -118,6 +118,18 @@ jobs:
     name: "[GATE ] | [RELEASE] | Dispatch preflight"
     # Read-only authorization for the write-token publishers below. Fails
     # closed on every path: a refusal here skips both of them.
+    #
+    # Gated to the trigger that supplies its inputs (#654). This job resolves
+    # a target from the four dispatch confirmations, which exist on
+    # `workflow_dispatch` alone — on the auto-tag `workflow_run` path it read
+    # four empty inputs, resolved `none`, and exited 1, concluding every
+    # merge's `release` run `failure` while the auto-tag lanes below it
+    # tagged correctly. Nothing was mis-published (it fails closed, and the
+    # publishers skipped with it); what it destroyed was the signal, since a
+    # permanently-red run is indistinguishable from a real auto-tag failure.
+    # The four publishers need no guard of their own — `needs: preflight`
+    # skips them with it, and their conditions carry no status escape.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -127,6 +139,8 @@ jobs:
       target: ${{ steps.target.outputs.target }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Refuse a dispatch off the default branch
         run: |
@@ -135,6 +149,14 @@ jobs:
             echo "::error::release dispatches are only valid on refs/heads/main (got '$GITHUB_REF')"
             exit 1
           fi
+
+      - name: Require complete prior tag provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
+            --manifest .github/published-tags.json \
+            --legacy-manifest .github/legacy-published-tags.json
 
       - name: Resolve exactly one release target
         id: target
@@ -181,6 +203,13 @@ jobs:
               exit 1
               ;;
           esac
+          # Per-release evidence is not a per-PR CI gate (AC-6.8). Execute
+          # the selected declaration through the check-only runner before
+          # authorizing any publisher. No token or Actions output channel is
+          # inherited by declared commands; checkout credentials are absent.
+          PYTHON=$(python3 -c 'import sys; print(sys.executable)')
+          env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
+            "$PYTHON" core/pysrc/_releaselib.py run-pre-tag "$TARGET"
           echo "target=$TARGET" >> "$GITHUB_OUTPUT"
 
       - name: Require green merge readiness for this exact commit
@@ -240,6 +269,26 @@ jobs:
           mark-latest: "true"
           github-token: ${{ github.token }}
 
+  codex-provenance:
+    name: "[GATE ] | [CDX ] | Release candidate provenance"
+    needs: preflight
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the exact static Codex candidate
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/verify_codex_candidate_provenance.py \
+            --repo . --final-ref ${{ github.sha }} --json
+
   release-codex:
     name: CA-Codex | [Release] - Publish
     # An independently versioned sibling, never the repository's primary
@@ -247,7 +296,7 @@ jobs:
     # series, and `mark-latest` stays false so it cannot take ca's "Latest"
     # badge. Publish only from the default branch, and only for the one
     # target the read-only preflight resolved.
-    needs: preflight
+    needs: [preflight, codex-provenance]
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
     permissions:
       contents: write
@@ -337,14 +386,26 @@ jobs:
           mark-latest: "false"
           github-token: ${{ github.token }}
 
+  publish-pi-npm:
+    name: CA-Pi | [Release] - Publish npm
+    needs: [preflight, release-pi]
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/npm-publish.yml
+    with:
+      tag: ca-pi-v${{ github.event.inputs.pi_confirm }}
+      expected_sha: ${{ github.sha }}
+    secrets:
+      NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+
   # ------------------------------------------------------------------------- #
-  # Auto-tag-on-merge (drift-prevention campaign, adjacent to issue #645).
-  # Every push to main that advances a target's manifest past its last
-  # published tag gets that tag created and pushed immediately — no human
-  # dispatch, no batching, no drift to backfill later. Deliberately NEVER
-  # creates a GitHub Release (`create-release: "false"` on every lane below):
-  # publishing a Release stays a separate, human-triggered decision through
-  # the manual dispatch path above. A target whose manifest advanced but
+  # Auto-publish-on-merge. Every push to main that advances a target's manifest
+  # past its last published tag creates that tag and its GitHub Release after
+  # CI completes successfully — no human dispatch, no batching, and no drift
+  # between an installable tag and a visible release. A target whose manifest
+  # advanced but
   # whose CHANGELOG carries no matching section fails loudly (the shared
   # action's own "no CHANGELOG section found" guard) rather than tagging
   # silently or inventing content — the exact gap that let ca-codex drift 11
@@ -363,23 +424,44 @@ jobs:
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
       ca-sandbox: ${{ steps.eligible.outputs.ca-sandbox }}
       ca-pi: ${{ steps.eligible.outputs.ca-pi }}
+      ca-pi-version: ${{ steps.eligible.outputs.ca-pi-version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
 
       - name: Determine which targets have untagged work
         id: eligible
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
+          UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          UPSTREAM_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
+          # Execute only the independently selected trusted workflow tree.
+          # An older or foreign event candidate remains inert, even when its
+          # branch is named main or it reports a successful CI conclusion.
+          if [ "$UPSTREAM_EVENT" != push ] || [ "$UPSTREAM_CONCLUSION" != success ] || \
+             [ "$UPSTREAM_BRANCH" != main ] || [ "$UPSTREAM_REPOSITORY" != "$GITHUB_REPOSITORY" ] || \
+             [ "$UPSTREAM_SHA" != "$GITHUB_SHA" ] || [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+            echo "::error::upstream is not a same-repository main push at the trusted workflow revision"
+            exit 1
+          fi
           # "Eligible" mirrors payload_version_gate.py's own question, asked
           # again here rather than trusted from the PR that merged: is the
           # manifest ACTUALLY ahead of what is already tagged, right now, at
           # this exact commit? A target whose manifest did not move in this
           # push is silently skipped — not an error, just nothing to do.
           TAGS=$(git tag -l)
+          PYTHON=$(python3 -c 'import sys; print(sys.executable)')
+          OUTPUTS=()
+          ANY_ELIGIBLE=false
           for row in \
             "ca plugins/ca/.claude-plugin/plugin.json v" \
             "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
@@ -392,8 +474,25 @@ jobs:
             ELIGIBLE=$(printf '%s' "$TAGS" \
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
-            echo "$TARGET=$ELIGIBLE" >> "$GITHUB_OUTPUT"
+            if [ "$ELIGIBLE" = "true" ]; then
+              ANY_ELIGIBLE=true
+              # Same canonical, check-only release guard as manual dispatch;
+              # ineligible siblings need no new per-release evidence.
+              env -i PATH="$PATH" SYSTEMROOT="${SYSTEMROOT:-}" \
+                "$PYTHON" core/pysrc/_releaselib.py run-pre-tag "$TARGET"
+            fi
+            OUTPUTS+=("$TARGET=$ELIGIBLE")
+            if [ "$TARGET" = "ca-pi" ]; then
+              OUTPUTS+=("ca-pi-version=$VERSION")
+            fi
           done
+          if [ "$ANY_ELIGIBLE" = true ]; then
+            python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
+              --manifest .github/published-tags.json \
+              --legacy-manifest .github/legacy-published-tags.json
+          fi
+          # A late target failure must not leave earlier authorizations behind.
+          printf '%s\n' "${OUTPUTS[@]}" >> "$GITHUB_OUTPUT"
 
   auto-release:
     name: CA | [Auto-tag]
@@ -421,12 +520,51 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "true"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
+
+  auto-codex-provenance:
+    name: "[GATE ] | [CDX ] | Auto-tag candidate provenance"
+    needs: auto-preflight
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-codex == 'true'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the trusted default-branch verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Materialize the exact completed-run candidate as inert data
+        env:
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          case "$CANDIDATE_SHA" in
+            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
+          esac
+          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
+            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
+            exit 1
+          fi
+          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
+          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
+          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
+      - name: Verify the exact static Codex candidate
+        env:
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          python3 trusted/.github/scripts/verify_codex_candidate_provenance.py \
+            --repo candidate --final-ref "$CANDIDATE_SHA" --json
 
   auto-release-codex:
     name: CA-Codex | [Auto-tag]
-    needs: auto-preflight
+    needs: [auto-preflight, auto-codex-provenance]
     if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-codex == 'true'
     permissions:
       contents: write
@@ -450,7 +588,7 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "false"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
 
   auto-release-sandbox:
@@ -479,7 +617,7 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "false"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
 
   auto-release-pi:
@@ -509,5 +647,84 @@ jobs:
           requested-version: ""
           summary: ""
           mark-latest: "false"
-          create-release: "false"
+          create-release: "true"
           github-token: ${{ github.token }}
+
+  auto-publish-pi-npm:
+    name: CA-Pi | [Auto-publish npm]
+    needs: [auto-preflight, auto-release-pi]
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.outputs.ca-pi == 'true'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/npm-publish.yml
+    with:
+      tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}
+      expected_sha: ${{ github.event.workflow_run.head_sha }}
+    secrets:
+      NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+
+  auto-command-route-release-audit:
+    name: "[GATE ] | [RELEASE] | Command-route publication"
+    needs: [auto-preflight, auto-release, auto-release-codex, auto-release-pi, auto-publish-pi-npm]
+    # `always()` is required because an ineligible publisher is skipped. This
+    # read-only success receipt runs after every required RA-11 publisher has
+    # succeeded or been proven ineligible. An eligible npm failure suppresses
+    # this receipt while the npm publisher itself remains independently red.
+    # Every declared first-containing Release must also read back below.
+    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && (needs.auto-preflight.outputs.ca-pi != 'true' || needs.auto-publish-pi-npm.result == 'success')
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the trusted default-branch release auditor
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Materialize the exact completed-run release candidate as inert data
+        env:
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          case "$CANDIDATE_SHA" in
+            ""|*[!0-9a-f]*) echo "::error::candidate SHA must be lowercase hexadecimal"; exit 1 ;;
+          esac
+          if [ "${#CANDIDATE_SHA}" -ne 40 ]; then
+            echo "::error::candidate SHA must contain exactly 40 hexadecimal characters"
+            exit 1
+          fi
+          git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"
+          git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" "${{ github.sha }}"
+          git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"
+
+      - name: Capture exact GitHub Release API evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          EVIDENCE_DIR="$RUNNER_TEMP/command-route-release-state"
+          mkdir -p "$EVIDENCE_DIR"
+          python3 trusted/.github/scripts/check_command_route_release_state.py plan \
+            --repo candidate > "$EVIDENCE_DIR/plan.tsv"
+          while IFS=$'\t' read -r TARGET TAG; do
+            set +e
+            gh api --include \
+              "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
+              > "$EVIDENCE_DIR/$TARGET.http" \
+              2> "$EVIDENCE_DIR/$TARGET.stderr"
+            STATUS=$?
+            set -e
+            printf '%s\n' "$STATUS" > "$EVIDENCE_DIR/$TARGET.exit"
+          done < "$EVIDENCE_DIR/plan.tsv"
+
+      - name: Require every first-containing candidate to be published
+        run: |
+          python3 trusted/.github/scripts/check_command_route_release_state.py observe \
+            --repo candidate \
+            --evidence-dir "$RUNNER_TEMP/command-route-release-state"

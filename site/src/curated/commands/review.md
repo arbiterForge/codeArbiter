@@ -16,7 +16,7 @@ authn/crypto/key handling, `dependency-reviewer` for manifest/lockfile changes,
 `architecture-drift-reviewer` for code that may diverge from an accepted ADR. Each matched
 reviewer runs as one read-only unit through `dispatching-parallel-agents`; the results are
 deduped, then funneled through `finding-triage` (severity plus an inline `[NEEDS-TRIAGE]` marker
-on anything out of scope) and `checkpoint-aggregator` down to a single verdict. No file is
+on anything out of scope) and the read-only `verdict-aggregator` down to a single verdict. No file is
 modified by a run. A finding that turns on a genuinely-unresolved unknown surfaces as a numbered
 [`CONFIRM-NN`](/glossary/#confirm-nn) rather than being resolved by guessing.
 
@@ -24,8 +24,10 @@ Findings are surfaced by severity (CRITICAL/HIGH/MEDIUM/LOW), file:line, remedia
 security findings — the specific control in `.codearbiter/security-controls.md` they map to. Raw
 per-reviewer output is never consumed directly; only the triaged, aggregated verdict is.
 
-On current Codex hosts, codeArbiter loads each reviewer charter into a host-provided agent thread and
-retains its thread receipt. An older host may run a review role inline rather than skip it — see
+Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
+host-provided agent threads. Exact static-package and route-closure checks gate release. A bounded
+0.9.4 receipt proves one exact installed-charter review. The inline fallback applies only where the
+canonical workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 

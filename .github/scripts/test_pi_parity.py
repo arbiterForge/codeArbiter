@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from typing import ClassVar
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -140,19 +141,27 @@ class ParityCatalogCounts(unittest.TestCase):
     silent-drift shape as hand-written site prose, where a removed entry lives
     on in published docs because no gate reads both sides.
 
-    Counted from the generated catalogs the table itself names as its evidence,
-    so the test cannot agree with a stale table by construction.
+    Counted from the generated machine-readable catalogs. The grouped Markdown
+    projection deliberately gives internal and deprecated routes a leading
+    status column, so counting only rows whose first cell is a command would
+    silently omit those installed entries.
     """
 
-    _ROW = re.compile(r"(?m)^\| *`")
     _CATALOGS = {
-        "ca": Path("plugins") / "ca" / "COMMANDS.md",
-        "ca-codex": Path("plugins") / "ca-codex" / "COMMANDS.md",
-        "ca-pi": Path("plugins") / "ca-pi" / "COMMANDS.md",
+        "ca": Path("plugins") / "ca" / "generated" / "command-catalog.json",
+        "ca-codex": Path("plugins") / "ca-codex" / "generated" / "command-catalog.json",
+        "ca-pi": Path("plugins") / "ca-pi" / "generated" / "command-catalog.json",
+    }
+    _ROUTINES: ClassVar[dict[str, Path]] = {
+        "ca": Path("plugins") / "ca" / "skills",
+        "ca-codex": Path("plugins") / "ca-codex" / "routines",
+        "ca-pi": Path("plugins") / "ca-pi" / "routines",
     }
 
     def _generated_count(self, relpath):
-        return len(self._ROW.findall((REPO / relpath).read_text(encoding="utf-8")))
+        document = json.loads((REPO / relpath).read_text(encoding="utf-8"))
+        self.assertEqual(document["schemaVersion"], 1)
+        return len(document["commands"])
 
     def test_the_derived_counts_line_matches_the_generated_catalogs(self):
         parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
@@ -173,6 +182,21 @@ class ParityCatalogCounts(unittest.TestCase):
         for plugin, relpath in self._CATALOGS.items():
             with self.subTest(plugin=plugin):
                 self.assertIn(str(self._generated_count(relpath)), row)
+
+    def test_the_orchestrator_routines_row_matches_each_generated_host(self):
+        """Keep documented routine counts bound to each generated host surface."""
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        row = next((line for line in parity.splitlines()
+                    if line.startswith("| Orchestrator routines ")), None)
+        self.assertIsNotNone(row, "the Orchestrator routines row is gone")
+        cells = [cell.strip() for cell in row.strip("|").split("|")]
+        self.assertEqual(5, len(cells))
+        for index, (plugin, relpath) in enumerate(self._ROUTINES.items(), start=1):
+            with self.subTest(plugin=plugin):
+                expected = len(list((REPO / relpath).glob("*/SKILL.md")))
+                match = re.match(r"(\d+) generated (?:skills|routines)$", cells[index])
+                self.assertIsNotNone(match, f"malformed routine count cell for {plugin}")
+                self.assertEqual(expected, int(match.group(1)))
 
 
 class PiParityFixtures(unittest.TestCase):

@@ -141,4 +141,23 @@ describe("renderCommandPage", () => {
     expect(md).toContain("<code>/ca-prune</code>");
     expect(md).not.toContain("<code>$ca-prune</code>");
   });
+
+  it("describes deprecated routes as discoverable compatibility entries", () => {
+    const md = renderCommandPage(
+      input({
+        name: "btw",
+        description: "d",
+        commandCatalog: {
+          description: "d",
+          commandPath: "commands/btw.md",
+          visibility: "deprecated",
+          workflow: "help",
+          canonical: "btw",
+          replacement: "ask the question directly",
+        },
+      }),
+    );
+    expect(md).toContain("deprecated but remains listed for compatibility");
+    expect(md).not.toContain("retired from new discovery");
+  });
 });

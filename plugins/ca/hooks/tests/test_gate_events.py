@@ -47,6 +47,7 @@ class _GateEventsFixture(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.cad = os.path.join(self.root, ".codearbiter")
         os.makedirs(self.cad)
         self._env_patch = mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root})
@@ -244,6 +245,110 @@ class TestFailOpenAC2(_GateEventsFixture):
             _hooklib.warn("no dir to write into")  # must not raise
         self.assertFalse(os.path.isdir(os.path.join(missing_root, ".codearbiter")))
 
+    def test_sidecar_lock_contention_drops_event_without_opening_log(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        with mock.patch.object(_hooklib, "acquire_lock", return_value=None) as acquire, \
+             mock.patch("os.open") as open_log:
+            _hooklib.warn("contended audit sink remains fail-open")
+
+        acquire.assert_called_once_with(_hooklib.audit_lock_key(self.root, log_path))
+        open_log.assert_not_called()
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_sidecar_lock_is_held_until_after_append_and_then_released(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        handle = object()
+        order = []
+        real_write = os.write
+
+        def spy_write(fd, data):
+            order.append("write")
+            return real_write(fd, data)
+
+        def spy_release(observed):
+            self.assertIs(observed, handle)
+            order.append("release")
+
+        with mock.patch.object(_hooklib, "acquire_lock", return_value=handle) as acquire, \
+             mock.patch.object(_hooklib, "release_lock", side_effect=spy_release), \
+             mock.patch("os.write", side_effect=spy_write):
+            _hooklib.warn("locked append")
+
+        acquire.assert_called_once_with(_hooklib.audit_lock_key(self.root, log_path))
+        self.assertEqual(order, ["write", "release"])
+        self.assertIn("locked append", _read_log(self.cad))
+
+    def test_real_resolver_sidecar_lock_makes_best_effort_sink_skip(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        holder = _hooklib.acquire_lock(_hooklib.audit_lock_key(self.root, log_path))
+        self.assertIsNotNone(holder)
+        try:
+            _hooklib.warn("must not write outside the resolver lock")
+        finally:
+            _hooklib.release_lock(holder)
+
+        self.assertEqual(_read_log(self.cad), "")
+
+    def test_windows_process_lock_precedes_sidecar_acquisition(self):
+        class _NoopMsvcrt:
+            LK_NBLCK = 1
+            LK_UNLCK = 2
+
+            @staticmethod
+            def locking(_fd, _mode, _nbytes):
+                return None
+
+        process_lock = threading.Lock()
+        observed_process_lock_state = []
+
+        def acquire_sidecar(_path):
+            observed_process_lock_state.append(process_lock.locked())
+            return object()
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _NoopMsvcrt()}), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
+             mock.patch.object(_hooklib, "release_lock"):
+            _hooklib.warn("serialize same-process writers before sidecar acquisition")
+
+        self.assertEqual(observed_process_lock_state, [True])
+        self.assertFalse(process_lock.locked())
+
+    def test_posix_process_lock_precedes_sidecar_acquisition(self):
+        process_lock = threading.Lock()
+        observed_process_lock_state = []
+
+        def acquire_sidecar(_path):
+            observed_process_lock_state.append(process_lock.locked())
+            return object()
+
+        with mock.patch.object(os, "name", "posix"), \
+             mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
+             mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
+             mock.patch.object(_hooklib, "release_lock"):
+            _hooklib.warn("serialize POSIX same-process writers before sidecar acquisition")
+
+        self.assertEqual(observed_process_lock_state, [True])
+        self.assertFalse(process_lock.locked())
+
+    def test_repository_controlled_adjacent_lock_symlink_cannot_cross_boundary(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        outside = os.path.join(self._tmp.name, "outside-empty")
+        with open(outside, "wb"):
+            pass
+        adjacent = log_path + ".lock"
+        try:
+            os.symlink(outside, adjacent)
+        except OSError as error:
+            self.skipTest(f"symlink unavailable: {error}")
+
+        _hooklib.warn("trusted lock namespace")
+
+        with open(outside, "rb") as handle:
+            self.assertEqual(handle.read(), b"")
+        self.assertIn("trusted lock namespace", _read_log(self.cad))
+
     def test_block_exit_code_and_stderr_unchanged_by_sink_failure(self):
         # The stderr message itself (the pre-existing contract) must be
         # unaffected by a sink failure — capture it directly.
@@ -281,6 +386,25 @@ class TestWindowsLockAC3(_GateEventsFixture):
             self.calls.append((kind, fd, nbytes))
             if kind == "unlock" and self._on_unlock is not None:
                 self._on_unlock()
+
+    def setUp(self):
+        super().setUp()
+        # These cases isolate the legacy Windows lock on the log descriptor.
+        # The cross-platform sidecar protocol has independent tests above;
+        # patch it here so the injected fake msvcrt sees only the descriptor
+        # lock calls each assertion is designed to count.
+        self._sidecar_handle = object()
+        self._sidecar_acquire = mock.patch.object(
+            _hooklib, "acquire_lock", return_value=self._sidecar_handle
+        )
+        self._sidecar_release = mock.patch.object(_hooklib, "release_lock")
+        self._sidecar_acquire.start()
+        self._sidecar_release.start()
+
+    def tearDown(self):
+        self._sidecar_release.stop()
+        self._sidecar_acquire.stop()
+        super().tearDown()
 
     def test_windows_crt_deadlock_code_is_host_errno_independent(self):
         self.assertTrue(

@@ -209,5 +209,14 @@
       "bash",
       "write"
     ]
+  },
+  {
+    "name": "verdict-aggregator",
+    "classification": "reviewer",
+    "charterPath": "agents/verdict-aggregator.md",
+    "skillPaths": [],
+    "tools": [
+      "read"
+    ]
   }
 ]

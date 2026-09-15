@@ -36,6 +36,60 @@ def _write(root, rel, text):
     return p
 
 
+_VISIBILITY_ORDER = ["core", "advanced", "alias", "internal", "deprecated"]
+_WORKFLOW_ORDER = [
+    "evaluate", "initialize", "change", "review", "decide", "ship",
+    "operate", "extend", "help",
+]
+_COMPATIBILITY = {
+    "clockStarts": "confirmed-non-draft-github-release",
+    "removalRequires": "separately-approved-major",
+    "targets": {
+        "claude": {
+            "publishedWithoutMetadata": "2.16.0",
+            "firstContainingRelease": "2.17.0",
+            "retainThrough": "2.x",
+            "earliestRemoval": "3.0.0",
+        },
+        "codex": {
+            "publishedWithoutMetadata": "0.8.0",
+            "firstContainingRelease": "0.9.0",
+            "retainThrough": "0.x",
+            "earliestRemoval": "1.0.0",
+        },
+        "pi": {
+            "publishedWithoutMetadata": "0.9.0",
+            "firstContainingRelease": "0.10.0",
+            "retainThrough": "0.x",
+            "earliestRemoval": "1.0.0",
+        },
+    },
+}
+
+
+def _write_registry(root, commands, **overrides):
+    document = {
+        "schemaVersion": 1,
+        "visibilityOrder": _VISIBILITY_ORDER,
+        "workflowOrder": _WORKFLOW_ORDER,
+        "compatibility": _COMPATIBILITY,
+        "commands": dict(sorted(commands.items())),
+    }
+    document.update(overrides)
+    return _write(
+        root,
+        "core/surface/command-routes.json",
+        json.dumps(document, ensure_ascii=False, indent=2) + "\n",
+    )
+
+
+def _frontmatter(text):
+    end = text.find("\n---\n", 4)
+    if not text.startswith("---\n") or end < 0:
+        raise AssertionError("rendered command has no complete frontmatter")
+    return text[:end + len("\n---\n")]
+
+
 class _RepoCase(unittest.TestCase):
     """Base: a synthetic repo with a minimal surface tree."""
 
@@ -47,6 +101,23 @@ class _RepoCase(unittest.TestCase):
             self.repo,
             "core/hosts.json",
             (REPO_ROOT / "core" / "hosts.json").read_text(encoding="utf-8"),
+        )
+        _write_registry(
+            self.repo,
+            {
+                "init": {
+                    "visibility": "core", "workflow": "initialize",
+                    "canonical": "init", "legacyRoutes": [],
+                },
+                "status": {
+                    "visibility": "core", "workflow": "operate",
+                    "canonical": "status", "legacyRoutes": [],
+                },
+                "statusline": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "statusline", "legacyRoutes": [],
+                },
+            },
         )
         # A minimal but representative surface.
         _write(self.repo, "core/surface/commands/init.md",
@@ -70,7 +141,8 @@ class _RepoCase(unittest.TestCase):
         _write(self.repo, "core/surface/includes/codex-host-notes.md",
                "Codex-only operational notes.\n")
         _write(self.repo, "core/surface/COMMANDS.md",
-               "# catalog\n\n| {{CMD:init}} | opt in |\n{{IF:claude}}\n| {{CMD:statusline}} | statusline |\n{{END}}\n")
+               "# catalog\n\n<!-- command-visibility-summary -->\n\n"
+               "| {{CMD:init}} | opt in |\n{{IF:claude}}\n| {{CMD:statusline}} | statusline |\n{{END}}\n")
         _write(self.repo, "core/surface/SPRINT.md", "Sprint doc. {{CMD:init}}.\n")
         _write(self.repo, "core/surface/arbiter.md",
                "Persona. Invoke {{CMD:init}}. Paths: {{PLUGIN_ROOT}}/skills/.\n")
@@ -124,8 +196,10 @@ class TokenTest(_RepoCase):
         text = self.render("codex")["skills/ca-status/SKILL.md"].decode()
         self.assertIn("<project-root>/.codearbiter/CONTEXT.md", text)
         # skills/ -> routines/ rewrite, commands/x.md -> skills/ca-x/SKILL.md rewrite.
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md", text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/skills/ca-init/SKILL.md", text)
+        self.assertIn("[routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)", text)
+        self.assertIn("[skills/ca-init/SKILL.md](../ca-init/SKILL.md)", text)
+        self.assertNotIn("${CLAUDE_PLUGIN_ROOT}", text)
+        self.assertNotIn("${PLUGIN_ROOT}", text)
         self.assertIn("# $ca-status", text)
 
     def test_codex_entry_skill_paths_survive_the_routines_rewrite(self):
@@ -135,8 +209,153 @@ class TokenTest(_RepoCase):
                "{{IF:codex}}see {{PLUGIN_ROOT}}/skills/ca-init/SKILL.md{{END}}\n"
                "shared: {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n")
         text = self.render("codex")["includes/entry.md"].decode()
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/skills/ca-init/SKILL.md", text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/tdd/SKILL.md", text)
+        self.assertIn("[skills/ca-init/SKILL.md](../skills/ca-init/SKILL.md)", text)
+        self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text)
+
+    def test_codex_links_only_concrete_packaged_resources(self):
+        _write(
+            self.repo,
+            "core/surface/includes/resource-links.md",
+            "existing: {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n"
+            "generic: {{PLUGIN_ROOT}}/skills/<name>/SKILL.md\n"
+            "absent: {{PLUGIN_ROOT}}/tools/farm.js\n",
+        )
+        text = self.render("codex")["includes/resource-links.md"].decode()
+        self.assertIn(
+            "existing: [routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", text
+        )
+        self.assertIn(
+            "generic: [routines/<name>/SKILL.md](../routines/<name>/SKILL.md)",
+            text,
+        )
+        self.assertIn("absent: tools/farm.js", text)
+        self.assertNotIn("[tools/farm.js]", text)
+
+    def test_executable_root_token_survives_while_navigation_links_render(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/_releaselib.py",
+            "#!/usr/bin/env python3\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/release-helper.md",
+            "run `\"$PY\" \"{{PLUGIN_ROOT}}/hooks/_releaselib.py\" list-targets`; "
+            "then see {{PLUGIN_ROOT}}/skills/tdd/SKILL.md\n",
+        )
+        codex = self.render("codex")["includes/release-helper.md"].decode()
+        self.assertIn('"${PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', codex)
+        self.assertIn("[routines/tdd/SKILL.md](../routines/tdd/SKILL.md)", codex)
+        self.assertNotIn("[hooks/_releaselib.py]", codex)
+        claude = self.render("claude")["includes/release-helper.md"].decode()
+        self.assertIn('"${CLAUDE_PLUGIN_ROOT}/hooks/_releaselib.py" list-targets', claude)
+
+    def test_packaged_python_hook_in_executable_position_keeps_runtime_root(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        for interpreter in ('"$PY"', "python", "python3"):
+            with self.subTest(interpreter=interpreter):
+                _write(
+                    self.repo,
+                    "core/surface/includes/tribunal-helper.md",
+                    f'run `{interpreter} "{{{{PLUGIN_ROOT}}}}/'
+                    'hooks/tribunal-usage.py" observe`\n',
+                )
+                codex = self.render("codex")[
+                    "includes/tribunal-helper.md"
+                ].decode()
+                self.assertIn(
+                    '"${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe', codex
+                )
+                self.assertNotIn("[hooks/tribunal-usage.py]", codex)
+
+    def test_missing_python_hook_is_not_promoted_to_executable_path(self):
+        for interpreter in ('"$PY"', "python", "python3"):
+            with self.subTest(interpreter=interpreter):
+                _write(
+                    self.repo,
+                    "core/surface/includes/missing-helper.md",
+                    f'run `{interpreter} "{{{{PLUGIN_ROOT}}}}/'
+                    'hooks/not-packaged.py" observe`\n',
+                )
+                codex = self.render("codex")[
+                    "includes/missing-helper.md"
+                ].decode()
+                self.assertIn('"hooks/not-packaged.py" observe', codex)
+                self.assertNotIn("${PLUGIN_ROOT}/hooks/not-packaged.py", codex)
+
+    def test_packaged_python_hook_outside_executable_position_stays_a_link(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/tribunal-helper.md",
+            "read {{PLUGIN_ROOT}}/hooks/tribunal-usage.py first\n",
+        )
+        codex = self.render("codex")["includes/tribunal-helper.md"].decode()
+        self.assertIn(
+            "[hooks/tribunal-usage.py](../hooks/tribunal-usage.py)", codex
+        )
+        self.assertNotIn("${PLUGIN_ROOT}/hooks/tribunal-usage.py", codex)
+
+    def test_packaged_python_hook_requires_same_line_exact_interpreter_token(self):
+        _write(
+            self.repo,
+            "plugins/ca-codex/hooks/tribunal-usage.py",
+            "#!/usr/bin/env python3\n",
+        )
+        for prefix in ("python\n", "notpython ", "not-python ", "my_python "):
+            with self.subTest(prefix=prefix):
+                _write(
+                    self.repo,
+                    "core/surface/includes/tribunal-helper.md",
+                    f"{prefix}{{{{PLUGIN_ROOT}}}}/hooks/tribunal-usage.py\n",
+                )
+                codex = self.render("codex")[
+                    "includes/tribunal-helper.md"
+                ].decode()
+                self.assertIn(
+                    "[hooks/tribunal-usage.py](../hooks/tribunal-usage.py)",
+                    codex,
+                )
+                self.assertNotIn("${PLUGIN_ROOT}/hooks/tribunal-usage.py", codex)
+
+    def test_codex_normalizes_backslash_resource_links_to_posix(self):
+        _write(
+            self.repo,
+            "core/surface/skills/foo/SKILL.md",
+            "---\nname: foo\ndescription: Foo.\n---\n\n# foo\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/includes/backslash-link.md",
+            "see {{PLUGIN_ROOT}}/routines\\foo\\SKILL.md\n",
+        )
+        codex = self.render("codex")["includes/backslash-link.md"].decode()
+        self.assertIn(
+            "[routines/foo/SKILL.md](../routines/foo/SKILL.md)", codex
+        )
+        self.assertNotIn("\\", codex)
+
+    def test_codex_rejects_unsafe_resource_path_before_rendering_link(self):
+        for resource in (
+                "../escaped.md", "./escaped.md", "nested/./escaped.md",
+                "/escaped.md", "C:/escaped.md", r"C:\escaped.md",
+                r"nested\..\escaped.md"):
+            with self.subTest(resource=resource):
+                _write(
+                    self.repo,
+                    "core/surface/includes/escaped.md",
+                    f"load {{{{PLUGIN_ROOT}}}}/{resource}\n",
+                )
+                with self.assertRaises(B.SurfaceError):
+                    self.render("codex")
 
     def test_unknown_cmd_name_fails(self):
         _write(self.repo, "core/surface/includes/bad.md", "see {{CMD:no-such-cmd}}\n")
@@ -155,6 +374,59 @@ class TokenTest(_RepoCase):
         with self.assertRaises(B.SurfaceError):
             self.render("claude")
 
+
+class ReviewFeedbackRegressionTest(unittest.TestCase):
+    def test_surface_readme_describes_active_codex_agent_output(self):
+        text = (REPO_ROOT / "core" / "surface" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "| `agents/**` | `agents/**` | `agents/**` "
+            "(Markdown resource charters; never native registration) |",
+            text,
+        )
+        self.assertNotIn("reserved for Task 3 resource-charter generation", text)
+
+    def test_codex_tribunal_usage_receipt_resolves_interpreter_and_hook(self):
+        codex = B.render_all(REPO_ROOT, "codex")[
+            "routines/tribunal/SKILL.md"
+        ].decode()
+        self.assertIn(
+            "PY=python3; { command -v python3 >/dev/null 2>&1 && "
+            "python3 --version >/dev/null 2>&1; } || PY=python",
+            codex,
+        )
+        self.assertIn(
+            '"$PY" "${PLUGIN_ROOT}/hooks/tribunal-usage.py" observe '
+            "--thread-id <agent-thread-id>",
+            codex,
+        )
+        self.assertNotIn(
+            "Run `hooks/tribunal-usage.py observe --thread-id", codex
+        )
+
+    def test_tribunal_lens_directory_matches_each_host_surface(self):
+        codex = B.render_all(REPO_ROOT, "codex")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under routines/tribunal/references/lenses/", codex)
+        self.assertIn(
+            "names a card under routines/tribunal/references/lenses/", codex
+        )
+        claude = B.render_all(REPO_ROOT, "claude")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under skills/tribunal/references/lenses/", claude)
+        self.assertIn(
+            "names a card under skills/tribunal/references/lenses/", claude
+        )
+        pi = B.render_all(REPO_ROOT, "pi")[
+            "agents/tribunal-lens-reviewer.md"
+        ].decode()
+        self.assertIn("under skills/tribunal/references/lenses/", pi)
+        self.assertIn(
+            "names a card under skills/tribunal/references/lenses/", pi
+        )
 
 class ExtractionInversionTest(_RepoCase):
     def test_claude_render_inverts_extract(self):
@@ -222,6 +494,473 @@ class CodexMappingTest(_RepoCase):
             for rel in self.render(host):
                 self.assertNotIn("README", rel)
 
+    def test_codex_charter_strips_executable_frontmatter_and_keeps_policy_metadata(self):
+        _write(
+            self.repo,
+            "core/surface/agents/backend-author.md",
+            "---\nname: backend-author\ndescription: bounded author\n"
+            "tools: Read, Write\nclassification: author\npi-skills: [tdd]\n"
+            "model: sonnet\n---\n\n# Backend Author\n\n"
+            "Writes only inside the assigned worktree.\n",
+        )
+        charter = self.render("codex")["agents/backend-author.md"].decode()
+        self.assertIn("name: backend-author\n", charter)
+        self.assertIn("description: bounded author\n", charter)
+        self.assertIn("classification: author\n", charter)
+        self.assertNotIn("\ntools:", charter)
+        self.assertNotIn("\npi-skills:", charter)
+        self.assertNotIn("\nmodel:", charter)
+        self.assertIn("Writes only inside the assigned worktree.", charter)
+
+    def test_real_codex_charters_have_exact_inventory_and_dispatch_policy(self):
+        out = B.render_all(str(REPO_ROOT), "codex")
+        expected = {
+            "architecture-drift-reviewer", "auth-crypto-reviewer", "backend-author",
+            "checkpoint-aggregator", "coverage-auditor", "decision-challenger",
+            "dependency-reviewer", "design-quality-reviewer", "finding-triage",
+            "frontend-author", "grader", "infra-author", "map-deps", "map-structure",
+            "migration-reviewer", "scout", "security-reviewer", "tribunal-lens-reviewer",
+            "verdict-aggregator",
+        }
+        actual = {
+            path.removeprefix("agents/").removesuffix(".md")
+            for path in out
+            if path.startswith("agents/") and path.endswith(".md")
+            and path != "agents/INDEX.md"
+        }
+        self.assertEqual(actual, expected)
+        index = out["agents/INDEX.md"].decode()
+        self.assertIn("generic agent thread", index)
+        self.assertIn("not native Codex registrations", index)
+        self.assertIn("`backend-author`, `frontend-author`, `infra-author`", index)
+        self.assertIn("fresh isolated worktree/thread required", index)
+        self.assertIn("no file mutation", index)
+        self.assertIn("`scout`, map roles", index)
+        self.assertIn("`verdict-aggregator`", index)
+        self.assertIn("`checkpoint-aggregator`, `tribunal-lens-reviewer`", index)
+        self.assertIn("declared checkpoint/finding output path", index)
+        self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
+        self.assertIn(
+            "<!-- codearbiter-codex-agent-route-contract: "
+            "literal_route_lines=19 literal_route_occurrences=20 "
+            "generic_route_lines=6 generic_route_occurrences=6 -->",
+            index,
+        )
+        self.assertNotIn("\nmodel:", index)
+        for name in expected:
+            charter = out[f"agents/{name}.md"].decode()
+            self.assertIn(f"name: {name}\n", charter)
+            self.assertIn("description:", charter)
+            self.assertIn("classification:", charter)
+            self.assertNotIn("\ntools:", charter)
+            self.assertNotIn("\npi-skills:", charter)
+            self.assertNotIn("\nmodel:", charter)
+        manifest = json.loads(
+            (REPO_ROOT / "plugins/ca-codex/.codex-plugin/plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertNotIn("agents", manifest)
+
+
+class CommandCatalogTest(_RepoCase):
+    def setUp(self):
+        super().setUp()
+        _write(
+            self.repo,
+            "core/surface/commands/init.md",
+            "---\ndescription: Initialize a project.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:init}}\n\n"
+            "<!-- command-mode:--brownfield legacy-route:create-context -->\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/status.md",
+            "---\ndescription: Show project state.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:status}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/audit.md",
+            "---\ndescription: Assemble an audit packet.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:audit}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/conflict.md",
+            "---\ndescription: Surface a rule conflict.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:conflict}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/create-context.md",
+            "---\ndescription: Populate brownfield context.\nargument-hint: (none)\n---\n\n"
+            "# {{CMD:create-context}}\n",
+        )
+        _write(
+            self.repo,
+            "core/surface/commands/btw.md",
+            "---\ndescription: Answer a quick question.\nargument-hint: <question>\n---\n\n"
+            "# {{CMD:btw}}\n",
+        )
+        _write_registry(
+            self.repo,
+            {
+                "audit": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "audit", "legacyRoutes": [],
+                },
+                "btw": {
+                    "visibility": "deprecated", "workflow": "help",
+                    "replacement": "ask the question directly",
+                },
+                "conflict": {
+                    "visibility": "internal", "workflow": "decide",
+                    "canonical": "conflict", "legacyRoutes": [],
+                },
+                "create-context": {
+                    "visibility": "alias", "workflow": "initialize",
+                    "canonical": "init", "replacement": "init --brownfield",
+                },
+                "init": {
+                    "visibility": "core", "workflow": "initialize",
+                    "canonical": "init", "legacyRoutes": ["create-context"],
+                    "modes": ["--brownfield"],
+                },
+                "status": {
+                    "visibility": "core", "workflow": "operate",
+                    "canonical": "status", "legacyRoutes": [],
+                },
+                "statusline": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "statusline", "legacyRoutes": [],
+                },
+            },
+        )
+
+    def test_executable_frontmatter_retains_only_loader_facing_fields(self):
+        claude = self.render("claude")["commands/init.md"].decode()
+        codex = self.render("codex")["skills/ca-init/SKILL.md"].decode()
+        pi = self.render("pi")["skills/ca-init/SKILL.md"].decode()
+        self.assertEqual(
+            _frontmatter(claude),
+            "---\ndescription: Initialize a project.\nargument-hint: (none)\n---\n",
+        )
+        expected_skill = (
+            "---\nname: ca-init\ndescription: Initialize a project.\n"
+            "argument-hint: (none)\n---\n"
+        )
+        self.assertEqual(_frontmatter(codex), expected_skill)
+        self.assertEqual(_frontmatter(pi), expected_skill)
+
+    def test_pi_catalog_groups_installed_entries_and_reports_visibility_counts(self):
+        catalog = self.render("pi")["SKILLS.md"].decode()
+        self.assertIn(
+            "| Core | 2 |\n"
+            "| Advanced | 1 |\n"
+            "| Canonical total | 3 |\n"
+            "| Compatibility aliases | 1 |\n"
+            "| Internal | 1 |\n"
+            "| Deprecated | 1 |\n"
+            "| **Total** | **6** |",
+            catalog,
+        )
+        self.assertIn(
+            "## Core\n\n### Initialize\n\n"
+            "| Skill | Purpose |\n|---|---|\n"
+            "| `/ca-init` | Initialize a project. |",
+            catalog,
+        )
+        self.assertIn(
+            "## Advanced\n\n### Operate\n\n"
+            "| Skill | Purpose |\n|---|---|\n"
+            "| `/ca-audit` | Assemble an audit packet. |",
+            catalog,
+        )
+        self.assertIn(
+            "## Compatibility aliases\n\n### Initialize\n\n"
+            "| Skill | Purpose | Replacement |\n|---|---|---|\n"
+            "| `/ca-create-context` | Populate brownfield context. | `/ca-init --brownfield` |",
+            catalog,
+        )
+
+    def test_every_human_command_catalog_reports_host_visibility_counts(self):
+        expected = {
+            "claude": (2, 2, 1, 1, 1, 7),
+            "codex": (2, 1, 1, 1, 1, 6),
+            "pi": (2, 1, 1, 1, 1, 6),
+        }
+        for host, counts in expected.items():
+            with self.subTest(host=host):
+                catalog = self.render(host)["COMMANDS.md"].decode()
+                core, advanced, aliases, internal, deprecated, total = counts
+                self.assertIn(
+                    "## Installed surface\n\n"
+                    "| Visibility | Count |\n"
+                    "|---|---:|\n"
+                    f"| Core | {core} |\n"
+                    f"| Advanced | {advanced} |\n"
+                    f"| Canonical total | {core + advanced} |\n"
+                    f"| Compatibility aliases | {aliases} |\n"
+                    f"| Internal | {internal} |\n"
+                    f"| Deprecated | {deprecated} |\n"
+                    f"| **Total** | **{total}** |",
+                    catalog,
+                )
+
+    def test_all_hosts_receive_literal_sidecars_for_their_installed_routes(self):
+        claude = json.loads(self.render("claude")["generated/command-catalog.json"])
+        codex = json.loads(self.render("codex")["generated/command-catalog.json"])
+        pi = json.loads(self.render("pi")["generated/command-catalog.json"])
+        expected_entries = [
+            {
+                "name": "audit", "description": "Assemble an audit packet.",
+                "skillPath": "skills/ca-audit/SKILL.md",
+                "visibility": "advanced", "workflow": "operate", "canonical": "audit",
+                "legacyRoutes": [],
+            },
+            {
+                "name": "btw", "description": "Answer a quick question.",
+                "skillPath": "skills/ca-btw/SKILL.md",
+                "visibility": "deprecated", "workflow": "help",
+                "replacement": "ask the question directly",
+            },
+            {
+                "name": "conflict", "description": "Surface a rule conflict.",
+                "skillPath": "skills/ca-conflict/SKILL.md",
+                "visibility": "internal", "workflow": "decide", "canonical": "conflict",
+                "legacyRoutes": [],
+            },
+            {
+                "name": "create-context", "description": "Populate brownfield context.",
+                "skillPath": "skills/ca-create-context/SKILL.md",
+                "visibility": "alias", "workflow": "initialize", "canonical": "init",
+                "replacement": "init --brownfield",
+            },
+            {
+                "name": "init", "description": "Initialize a project.",
+                "skillPath": "skills/ca-init/SKILL.md",
+                "visibility": "core", "workflow": "initialize", "canonical": "init",
+                "legacyRoutes": ["create-context"],
+            },
+            {
+                "name": "status", "description": "Show project state.",
+                "skillPath": "skills/ca-status/SKILL.md",
+                "visibility": "core", "workflow": "operate", "canonical": "status",
+                "legacyRoutes": [],
+            },
+        ]
+        expected_pi = {
+            "schemaVersion": 1,
+            "visibilityOrder": _VISIBILITY_ORDER,
+            "workflowOrder": _WORKFLOW_ORDER,
+            "compatibility": _COMPATIBILITY,
+            "commands": {item["name"]: item for item in expected_entries},
+        }
+        self.assertEqual(pi, expected_pi)
+        self.assertEqual(set(codex["commands"]), set(expected_pi["commands"]))
+        self.assertEqual(
+            set(claude["commands"]),
+            {"audit", "btw", "conflict", "create-context", "init", "status", "statusline"},
+        )
+        self.assertEqual(claude["commands"]["audit"]["commandPath"], "commands/audit.md")
+        self.assertEqual(codex["commands"]["audit"]["skillPath"], "skills/ca-audit/SKILL.md")
+
+    def test_invalid_registry_schema_and_alias_graphs_fail_specifically(self):
+        def valid_commands():
+            return {
+                "pr": {
+                    "visibility": "core", "workflow": "ship", "canonical": "pr",
+                    "legacyRoutes": ["cleanup"], "modes": ["--cleanup"],
+                },
+                "cleanup": {
+                    "visibility": "alias", "workflow": "ship", "canonical": "pr",
+                    "replacement": "pr --cleanup",
+                },
+                "audit": {
+                    "visibility": "advanced", "workflow": "operate",
+                    "canonical": "audit", "legacyRoutes": [],
+                },
+                "conflict": {
+                    "visibility": "internal", "workflow": "decide",
+                    "canonical": "conflict", "legacyRoutes": [],
+                },
+                "btw": {
+                    "visibility": "deprecated", "workflow": "help",
+                    "replacement": "ask the question directly",
+                },
+            }
+
+        cases = []
+
+        def case(label, message, mutate, command_names=None, body_markers=None):
+            commands = valid_commands()
+            mutate(commands)
+            cases.append((label, message, commands, command_names, body_markers))
+
+        case("missing visibility", "visibility", lambda items: items["cleanup"].pop("visibility"))
+        case("invalid visibility", "visibility", lambda items: items["cleanup"].update(visibility="public"))
+        case("missing workflow", "workflow", lambda items: items["cleanup"].pop("workflow"))
+        case("invalid workflow", "workflow", lambda items: items["cleanup"].update(workflow="triage"))
+        case("canonical missing", "canonical", lambda items: items["pr"].pop("canonical"))
+        case("canonical mismatch", "must equal its route slug", lambda items: items["pr"].update(canonical="review"))
+        case("legacy routes missing", "legacyRoutes", lambda items: items["pr"].pop("legacyRoutes"))
+        case("legacy routes not a list", "legacyRoutes", lambda items: items["pr"].update(legacyRoutes="cleanup"))
+        case("duplicate legacy routes", "legacyRoutes.*duplicate", lambda items: items["pr"].update(legacyRoutes=["cleanup", "cleanup"]))
+        case("alias replacement missing", "replacement", lambda items: items["cleanup"].pop("replacement"))
+        case("dangling target", "target.*missing", lambda items: items["cleanup"].update(canonical="missing"))
+        def drop_reverse_route(items):
+            items["pr"].update(legacyRoutes=["cleanup", "ghost"])
+        case("reverse legacy route missing", "legacy route closure", drop_reverse_route)
+        case("replacement canonical mismatch", "replacement.*canonical", lambda items: items["cleanup"].update(replacement="init --cleanup"))
+        case("replacement mode undeclared", "replacement mode", lambda items: items["cleanup"].update(replacement="pr --watch"))
+        case("modes missing", "modes", lambda items: items["pr"].pop("modes"))
+        case("deprecated guidance missing", "replacement", lambda items: items["btw"].pop("replacement"))
+
+        def alias_chain(items):
+            items["redirect"] = {
+                "visibility": "alias", "workflow": "ship", "canonical": "cleanup",
+                "replacement": "cleanup --again",
+            }
+        case("alias chain", "alias target", alias_chain)
+
+        def unsorted(items):
+            items["watch"] = {
+                "visibility": "alias", "workflow": "ship", "canonical": "pr",
+                "replacement": "pr --watch",
+            }
+            items["pr"].update(
+                legacyRoutes=["watch", "cleanup"], modes=["--watch", "--cleanup"]
+            )
+        case("unsorted legacy routes and modes", "sorted", unsorted)
+
+        def host_excluded(items):
+            items.clear()
+            items["statusline"] = {
+                "visibility": "advanced", "workflow": "operate",
+                "canonical": "statusline", "legacyRoutes": ["cleanup"],
+                "modes": ["--cleanup"],
+            }
+            items["cleanup"] = {
+                "visibility": "alias", "workflow": "operate",
+                "canonical": "statusline", "replacement": "statusline --cleanup",
+            }
+        case("host-excluded target", "not installed.*codex", host_excluded)
+
+        case(
+            "registry missing a command", "inventory.*missing",
+            lambda items: items.pop("cleanup"),
+            command_names=["pr", "cleanup", "audit", "conflict", "btw"],
+        )
+        case(
+            "registry has an extra command", "inventory.*extra",
+            lambda items: items.update(ghost={
+                "visibility": "advanced", "workflow": "help",
+                "canonical": "ghost", "legacyRoutes": [],
+            }),
+            command_names=["pr", "cleanup", "audit", "conflict", "btw"],
+        )
+        case(
+            "mode marker missing", "command-mode.*missing",
+            lambda items: None,
+            body_markers={"pr": ""},
+        )
+
+        for label, message, commands, command_names, body_markers in cases:
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as repo:
+                _write(repo, "core/hosts.json",
+                       (REPO_ROOT / "core/hosts.json").read_text(encoding="utf-8"))
+                names = command_names or list(commands)
+                markers = {"pr": "<!-- command-mode:--cleanup legacy-route:cleanup -->\n"}
+                markers.update(body_markers or {})
+                for name in names:
+                    _write(
+                        repo,
+                        f"core/surface/commands/{name}.md",
+                        "---\ndescription: test\nargument-hint: (none)\n---\n\n"
+                        f"# {{{{CMD:{name}}}}}\n\n{markers.get(name, '')}",
+                    )
+                _write_registry(repo, commands)
+                with self.assertRaisesRegex(B.SurfaceError, message):
+                    B.render_all(repo, "claude")
+
+    def test_registry_json_rejects_duplicate_keys_and_unknown_top_level_fields(self):
+        duplicate = (
+            '{"schemaVersion":1,"visibilityOrder":[],"workflowOrder":[],'
+            '"compatibility":{},"commands":{},"commands":{}}\n'
+        )
+        _write(self.repo, "core/surface/command-routes.json", duplicate)
+        with self.assertRaisesRegex(B.SurfaceError, "duplicate.*commands"):
+            self.render("claude")
+
+        _write_registry(self.repo, {}, surprise=True)
+        with self.assertRaisesRegex(B.SurfaceError, "unknown.*surprise"):
+            self.render("claude")
+
+    def test_first_containing_release_must_follow_the_published_baseline(self):
+        registry_path = Path(self.repo) / "core/surface/command-routes.json"
+        original = json.loads(registry_path.read_text(encoding="utf-8"))
+        for version, message in (
+            (None, "must declare firstContainingRelease"),
+            ("2.16.0", "must follow publishedWithoutMetadata"),
+            ("3.0.0", "outside retainThrough"),
+        ):
+            with self.subTest(version=version):
+                document = json.loads(json.dumps(original))
+                document["compatibility"]["targets"]["claude"][
+                    "firstContainingRelease"
+                ] = version
+                _write(
+                    self.repo,
+                    "core/surface/command-routes.json",
+                    json.dumps(document, indent=2) + "\n",
+                )
+                with self.assertRaisesRegex(B.SurfaceError, message):
+                    self.render("claude")
+        _write(
+            self.repo,
+            "core/surface/command-routes.json",
+            json.dumps(original, indent=2) + "\n",
+        )
+        self.render("claude")
+
+    def test_real_registry_taxonomy_and_host_gaps_are_frozen(self):
+        expected = {
+            "core": {
+                "add-dep", "adr", "chore", "commit", "doctor", "feature", "fix",
+                "init", "override", "pr", "preview", "refactor", "release", "review",
+                "spike", "sprint", "status", "task",
+            },
+            "advanced": {
+                "adr-status", "audit", "checkpoint", "commands", "debug", "metrics",
+                "new-skill", "prune", "reconcile", "standup", "statusline",
+                "threat-model", "tribunal",
+            },
+            "alias": {"cleanup", "context-check", "create-context", "decompose", "watch"},
+            "internal": {"conflict"},
+            "deprecated": {"btw"},
+        }
+        catalogs = {
+            host: json.loads(B.render_all(str(REPO_ROOT), host)["generated/command-catalog.json"])
+            for host in ("claude", "codex", "pi")
+        }
+        claude_by_visibility = {
+            visibility: {entry["name"] for entry in catalogs["claude"]["commands"].values()
+                         if entry["visibility"] == visibility}
+            for visibility in expected
+        }
+        self.assertEqual(claude_by_visibility, expected)
+        all_routes = set().union(*expected.values())
+        self.assertEqual(set(catalogs["claude"]["commands"]), all_routes)
+        self.assertEqual(
+            set(catalogs["codex"]["commands"]),
+            all_routes - {"prune", "statusline"},
+        )
+        self.assertEqual(
+            set(catalogs["pi"]["commands"]),
+            all_routes - {"statusline"},
+        )
+
 
 class PiMappingTest(_RepoCase):
     def test_pi_commands_use_pi_aliases_in_bodies_and_catalog(self):
@@ -246,12 +985,13 @@ class PiMappingTest(_RepoCase):
             REPO_ROOT / "core/surface/skills/skill-author/SKILL.md"
         ).read_text(encoding="utf-8")
         _write(self.repo, "core/surface/skills/skill-author/SKILL.md", template)
+        _write(self.repo, "core/surface/skills/INDEX.md", "# routine catalog\n")
 
         pi_text = self.render("pi")["routines/skill-author/SKILL.md"].decode()
         codex_text = self.render("codex")["routines/skill-author/SKILL.md"].decode()
         self.assertIn("<plugin-root>/routines/INDEX.md", pi_text)
         self.assertNotIn("<plugin-root>/SKILLS.md", pi_text)
-        self.assertIn("${CLAUDE_PLUGIN_ROOT}/routines/INDEX.md", codex_text)
+        self.assertIn("[routines/INDEX.md](../INDEX.md)", codex_text)
 
     def test_pi_generated_command_catalog_is_an_orphan_cleaned_managed_surface(self):
         B.write_all(self.repo, hosts=("pi",))
@@ -286,7 +1026,7 @@ class PiMappingTest(_RepoCase):
             before_catalog,
         )
 
-    def test_real_pi_role_catalog_is_an_18_role_explicit_resource_bijection(self):
+    def test_real_pi_role_catalog_is_a_19_role_explicit_resource_bijection(self):
         out = B.render_all(str(REPO_ROOT), "pi")
         roles = json.loads(out["generated/roles.json"])
         agents = sorted(
@@ -295,9 +1035,9 @@ class PiMappingTest(_RepoCase):
             if path.startswith("agents/") and path.endswith(".md")
             and path != "agents/INDEX.md"
         )
-        self.assertEqual(len(agents), 18)
+        self.assertEqual(len(agents), 19)
         self.assertEqual(sorted(role["name"] for role in roles), agents)
-        self.assertEqual(len({role["name"] for role in roles}), 18)
+        self.assertEqual(len({role["name"] for role in roles}), 19)
         # security-controls.md assumes these three reviewers exist; a count pin
         # alone would stay green if one were swapped for an unrelated role.
         self.assertLessEqual(
@@ -504,6 +1244,129 @@ class WriteAndCheckTest(_RepoCase):
         B.write_all(self.repo)
         self.assertEqual(B.main(["--check"], repo=self.repo), 0)
         self.assertEqual(B.main(["--bogus"], repo=self.repo), 2)
+
+
+class VerificationBoundaryContractTest(unittest.TestCase):
+    """The contributor loop stays bounded while hosted CI owns exhaustive proof."""
+
+    def read(self, relative_path):
+        return (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+
+    def test_canonical_policy_assigns_exhaustive_proof_to_exact_head_ci(self):
+        policy = self.read("core/surface/includes/verification-boundary.md")
+        for required in (
+            "impact-bounded local verification",
+            "exact-head",
+            "hosted CI",
+            "missing, stale, cancelled, or mismatched",
+            "MUST NOT merge",
+            "coverage",
+            "generated-artifact parity",
+            "staged secret scanning",
+            "lint",
+            "type-check",
+            "security",
+            "dependency",
+            "migration",
+            "release",
+            "ADR",
+            "deployment",
+            "live device",
+            "private",
+            "environment",
+        ):
+            self.assertIn(required.lower(), policy.lower())
+
+    def test_local_lanes_defer_exhaustive_suites_to_hosted_ci(self):
+        paths = (
+            "core/surface/skills/commit-gate/SKILL.md",
+            "core/surface/skills/tdd/SKILL.md",
+            "core/surface/skills/refactor/SKILL.md",
+            "core/surface/includes/author-tdd-workflow.md",
+            "core/surface/commands/feature.md",
+            "core/surface/commands/commit.md",
+            "core/surface/commands/chore.md",
+            "core/surface/commands/refactor.md",
+            "core/surface/agents/backend-author.md",
+            "core/surface/agents/frontend-author.md",
+            "core/surface/skills/writing-plans/references/farm-plan.md",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            ".codearbiter/tech-stack.md",
+            "CONTRIBUTING.md",
+        )
+        obsolete = (
+            "Run all of these; ALL must pass before any commit",
+            "Run the full suite. A broken pre-existing",
+            "Run full suite — every test green",
+            "full suite must be green before",
+            "MUST NOT commit if the project test suite is not green",
+            "Run it before opening a PR",
+        )
+        for path in paths:
+            text = self.read(path)
+            with self.subTest(path=path):
+                for phrase in obsolete:
+                    self.assertNotIn(phrase, text)
+                self.assertIn("verification-boundary", text)
+
+        plan_schema = self.read("plugins/ca/tools/plan.schema.json")
+        self.assertNotIn("Typically: run this test, run full suite", plan_schema)
+        self.assertIn("exhaustive exact-head proof runs in hosted CI", plan_schema)
+
+    def test_tracked_curated_docs_do_not_restore_the_obsolete_local_rule(self):
+        paths = (
+            "site/src/curated/commands/chore.md",
+            "site/src/curated/commands/commit.md",
+            "site/src/curated/commands/feature.md",
+            "site/src/curated/commands/refactor.md",
+            "site/src/curated/skills/commit-gate.md",
+            "site/src/curated/skills/refactor.md",
+            "site/src/curated/skills/tdd.md",
+        )
+        obsolete = (
+            "full suite must pass",
+            "Run the full suite",
+            "Running full suite",
+            "before opening a PR",
+        )
+        for path in paths:
+            text = self.read(path)
+            with self.subTest(path=path):
+                for phrase in obsolete:
+                    self.assertNotIn(phrase, text)
+                self.assertIn("impact-bounded", text)
+                self.assertIn("exact-head", text)
+                self.assertIn("hosted CI", text)
+
+        refactor = self.read("site/src/curated/commands/refactor.md")
+        self.assertIn("no pre-existing parity test files modified", refactor)
+        self.assertNotIn("zero test files touched", refactor)
+
+    def test_every_host_projection_carries_the_same_boundary(self):
+        rendered = {
+            "claude": B.render_all(REPO_ROOT, "claude"),
+            "codex": B.render_all(REPO_ROOT, "codex"),
+            "pi": B.render_all(REPO_ROOT, "pi"),
+        }
+        for host, surface in rendered.items():
+            with self.subTest(host=host):
+                policy = surface["includes/verification-boundary.md"].decode()
+                routine_prefix = "skills" if host == "claude" else "routines"
+                self.assertIn("impact-bounded local verification", policy)
+                self.assertIn("hosted CI", policy)
+                self.assertIn("exact-head", policy)
+                self.assertIn("verification-boundary", surface[
+                    f"{routine_prefix}/commit-gate/SKILL.md"
+                ].decode())
+                self.assertIn("verification-boundary", surface[
+                    f"{routine_prefix}/tdd/SKILL.md"
+                ].decode())
+                finishing = surface[
+                    f"{routine_prefix}/finishing-a-development-branch/SKILL.md"
+                ].decode()
+                self.assertIn("verification-boundary", finishing)
+                self.assertIn("merge-readiness aggregate", finishing)
+                self.assertIn("current exact-head", finishing)
 
 
 if __name__ == "__main__":

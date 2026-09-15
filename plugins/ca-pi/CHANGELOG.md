@@ -4,6 +4,174 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.11.2] - 2026-09-15
+
+### Fixed
+
+- Keep exhaustive repository and cross-platform verification on exact-head hosted CI instead of requiring contributors to replay the full matrix locally before committing or opening a pull request.
+
+## [0.11.1] - 2026-09-14
+
+### Fixed
+
+- Permit explicit changelog reconciliation only for exact published commits through a reviewed, default-branch-bound ledger while retaining strict failure for ordinary missing footers.
+
+## [0.11.0] - 2026-09-13
+
+### Added
+
+- Support declared numeric release policies and exact verified asset inventories while preserving SemVer defaults and explicit publication authorization.
+
+## [0.10.13] - 2026-09-13
+
+### Fixed
+
+- Continue active authorized work across startup, resume, and compact hook boundaries while retaining the idle-session command prompt.
+
+## [0.10.12] - 2026-09-09
+
+### Fixed
+
+- Bind the reviewed Pi 0.84.1 npm configuration and lock bytes across Windows and POSIX checkouts, require CI to execute the integrity-checked install step, and reject the retired Pi 0.80.5 host explicitly.
+- Correct singleton Pi support wording and reconcile authenticated publication receipts for the already-published 0.10.11 release line.
+
+## [0.10.11] - 2026-09-08
+
+### Fixed
+
+- Resolve genuine append-only audit-log conflicts through a fail-closed helper that preserves both branch histories and records the immediate H-05 authorization, with shared audit-path locks and a locked mandatory-override writer preventing concurrent row loss.
+
+## [0.10.10] - 2026-09-07
+
+### Fixed
+
+- Use the same documented done-tasks template for initialization and first-use archiving, with byte-identical UTF-8 headers on Windows and POSIX.
+
+## [0.10.9] - 2026-09-06
+
+### Fixed
+
+- Keep task-board lifecycles Git-clean by locally excluding the retained OS-lock sidecar during initialization, with an explicit repair option for existing repositories.
+
+## [0.10.8] - 2026-09-06
+
+### Fixed
+
+- Distinguish ordinary return-code identifiers such as `rc2` from cipher configuration in the crypto/TLS commit gate.
+
+## [0.10.7] - 2026-09-06
+
+### Fixed
+
+- Recover an unsettled mode-enter audit row on a repeated request instead of reporting an ineffective posture as a no-op.
+
+## [0.10.6] - 2026-09-06
+
+### Changed
+
+- Correct privacy disclosures and align task archival documentation with the established standup-owned policy.
+
+## [0.10.5] - 2026-09-05
+
+### Fixed
+
+- Upgrade earlier codeArbiter-managed Git hook shims after ownership-banner wording changes while preserving foreign hooks.
+
+## [0.10.4] - 2026-09-05
+
+### Fixed
+
+- Select a history-preserving PR merge when ADR lifecycle evidence binds source commits outside the base branch.
+
+## [0.10.3] - 2026-09-04
+
+### Changed
+
+- Synchronize the shared host kernel's adapter identity metadata with the Claude adapter version.
+
+## [0.10.2] - 2026-09-03
+
+### Fixed
+
+- Report precise Windows containment startup stages and reject output-overflow admission races.
+
+## [0.10.1] - 2026-09-03
+
+### Fixed
+
+- Prevent read-only filename searches from falsely triggering protected-state interpreter guards while preserving mutation enforcement.
+
+## [0.10.0] - 2026-09-02
+
+### Added
+
+- Command discovery now groups the supported core lanes while retaining
+  advanced operations and compatibility routes in the generated Pi catalog.
+- Pi rejects malformed alias graphs at runtime, and release-state plus
+  documentation-inventory drift now fail closed against canonical source;
+  tag-only or unverified Releases are rejected.
+
+## [0.9.0] - 2026-09-02
+
+### Added
+
+- Accepted ADRs now have content-bound lifecycle records, sealed obligation
+  sets, and evidence-derived implementation and verification states.
+- Destructive-operation policy now uses one four-item registry with generated
+  host parity and item-for-item enforcement.
+
+## [0.8.9] - 2026-09-02
+
+### Fixed
+
+- Hook registration and doctor now bind every Git probe to the requested
+  repository, resolve effective hook paths through Git, and fail closed when
+  linked-worktree ownership cannot be proven.
+
+## [0.8.8] - 2026-09-02
+
+### Fixed
+
+- Release-note reconstruction now accepts only exact changelog headings,
+  rejects ambiguous `Unreleased` and duplicate sections, and reads the
+  regular-file blob from the exact tag and repository root without inherited
+  Git repository overrides or replacement objects.
+
+## [0.8.7] - 2026-09-01
+
+### Added
+
+- Review and generic parallel batches now terminate at a read-only verdict
+  aggregator, while checkpoint persistence remains a separate non-overwriting
+  writer invoked only by the explicit checkpoint workflow.
+
+## [0.8.6] - 2026-09-01
+
+### Fixed
+
+- The update notifier now ignores unrelated release series, keeps `ca-pi-v*`
+  state independent from Claude and Codex, and emits Pi's native package
+  update command.
+
+## [0.8.5] - 2026-08-26
+
+### Changed
+
+- The shared generated root kernel now derives its internal package root from the executing module and validates containment independently of host-native boundaries; Pi remains Forge-only and keeps its module/file-location semantics.
+- Generated status-line and hook payloads were refreshed in lockstep with the Claude and Codex adapters without adding a separate runtime core package.
+
+## [0.8.4] - 2026-08-24
+
+### Fixed
+
+- The shared Git enforcement hook now resolves linked-worktree security and migration markers through the main-checkout marker root while preserving worktree-local commit inspection.
+
+## [0.8.3] - 2026-08-21
+
+### Fixed
+
+- Shared hook payload refresh: the explicit-workdir recognition added for Codex desktop wrapped execution is carried by the common guard. Pi does not set this field, so its runtime behavior is unchanged.
+
 ## [0.8.2] - 2026-08-13
 
 ### Fixed

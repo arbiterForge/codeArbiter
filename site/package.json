@@ -14,12 +14,18 @@
     "prebuild": "npm run gen",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "vitest run",
+    "pretest": "npm run gen",
+    "test": "vitest run && npm run test:academy-base && npm run test:release-applicability-rendered",
+    "test:academy-base": "node scripts/test-academy-non-root-base.mjs",
+    "test:release-applicability-rendered": "astro build && tsx test/release-applicability/rendered.ts",
+    "test:academy-source": "vitest run scripts/academy-source.test.ts",
+    "test:browser": "playwright test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "link-audit": "tsx scripts/link-audit.ts",
     "audit:diagrams": "tsx scripts/diagram-audit.ts",
-    "coverage": "vitest run --coverage"
+    "precoverage": "npm run gen",
+    "coverage": "vitest run --coverage && npm run test:academy-base && npm run test:release-applicability-rendered"
   },
   "overrides": {
     "esbuild": "^0.28.1"
@@ -33,6 +39,7 @@
     "sharp": "^0.35.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "4.1.9",
     "tsx": "^4.19.2",

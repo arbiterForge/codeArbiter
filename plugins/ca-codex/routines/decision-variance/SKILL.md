@@ -8,8 +8,8 @@ description: Reconcile the project's architectural artifacts against the scaffol
 Reconcile the architectural artifacts against the scaffold; present variances; the user decides. This skill never arbitrates on its own — every recorded decision carries user attribution.
 
 The SMARTS lenses, cell rules, and strength labels are in
-`${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` — read it before Phase 3. The append-only decision-log
-entry format is in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md` — read it before
+[includes/smarts/core.md](../../includes/smarts/core.md) — read it before Phase 3. The append-only decision-log
+entry format is in [includes/smarts/decision-log-format.md](../../includes/smarts/decision-log-format.md) — read it before
 writing a log line.
 
 ## Pre-flight
@@ -40,7 +40,7 @@ comments stripped), and flag every decision whose hash changed. Surface the flag
 prior decisions reference artifact sections that have changed. Re-evaluate, keep as-is, or mark
 superseded?" Per the user's choice — re-evaluate (treat as a new variance), keep (update the
 recorded hash to current), or supersede (prompt for a new decision, append per the supersession
-protocol in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`).
+protocol in [includes/smarts/decision-log-format.md](../../includes/smarts/decision-log-format.md)).
 
 Gate: the three artifacts are located, ADRs and the decision log are indexed, and any stale prior
 decisions are surfaced and dispositioned by the user. A first session with no decision log skips the
@@ -74,7 +74,7 @@ sentences), the resolution options (adopt artifact / adopt scaffold / hybrid onl
 exists / defer with reason), a SMARTS analysis of each option, and a recommendation with a strength
 label. `concur` and `both-silent` cases produce no entry — they live in the evidence index only.
 
-The SMARTS table follows `${CLAUDE_PLUGIN_ROOT}/includes/smarts/core.md` exactly: six lenses, verdict-first cells (Strong /
+The SMARTS table follows [includes/smarts/core.md](../../includes/smarts/core.md) exactly: six lenses, verdict-first cells (Strong /
 Adequate / Weak / Indifferent), the length cap, no hedging adverbs, evidence specificity. The
 recommendation carries one strength label — strong / moderate / tied.
 
@@ -90,8 +90,8 @@ input to the user's choice, not a substitute for it.
 
 For more than ~10 open variances, group by area and present area-by-area. For a large pass (more
 than ~20 decision categories or ~50 scaffold files), MAY dispatch `scout`
-(`${CLAUDE_PLUGIN_ROOT}/agents/scout.md`) to gather evidence and `grader`
-(`${CLAUDE_PLUGIN_ROOT}/agents/grader.md`) to produce SMARTS analyses. Inline execution is fine for
+([agents/scout.md](../../agents/scout.md)) to gather evidence and `grader`
+([agents/grader.md](../../agents/grader.md)) to produce SMARTS analyses. Inline execution is fine for
 smaller passes.
 
 Gate: every qualifying variance has a conformant SMARTS table and a strength-labeled
@@ -101,7 +101,7 @@ recommendation. No `concur`/`both-silent` noise in the report.
 
 Present grouped by area, dependency-ordered within each area, one area at a time. For each variance:
 lead with the variance, present the recommendation (recommend, do not push), wait for the user's
-choice, confirm it back in one sentence, then append the decision to the log per `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`
+choice, confirm it back in one sentence, then append the decision to the log per [includes/smarts/decision-log-format.md](../../includes/smarts/decision-log-format.md)
 — immediately, never batched in memory.
 
 When two sources at the same authority level conflict (e.g., two `accepted` ADRs that contradict),
@@ -119,7 +119,7 @@ recorded log decision not yet superseded, (3) an `accepted` ADR, (4) the three a
 resort, flagged as inference). Same-level conflicts escalate to the user.
 
 After a session resolves ADR-touching variances, MAY dispatch `decision-challenger`
-(`${CLAUDE_PLUGIN_ROOT}/agents/decision-challenger.md`) to stress-test an ADR. Optional, not forced.
+([agents/decision-challenger.md](../../agents/decision-challenger.md)) to stress-test an ADR. Optional, not forced.
 
 Gate: every presented variance is either resolved with a user-attributed log entry or explicitly
 deferred. No variance is recorded against this skill's own judgment.

@@ -25,8 +25,10 @@ draft cold until it's addressed. Once everything clears, the PR itself gets writ
 summary, a test plan, and links to any decision record it touches — then, if you've opted into CI
 babysitting, a watcher attaches to follow the checks through to green.
 
-On current Codex hosts, codeArbiter loads each reviewer charter into a host-provided agent thread and
-retains its thread receipt. An older host may run a review role inline rather than skip it — see
+Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
+host-provided agent threads. Exact static-package and route-closure checks gate release. A bounded
+0.9.4 receipt proves one exact installed-charter review. The inline fallback applies only where the
+canonical workflow explicitly permits it and isolation is not mandatory. See
 [Claude Code + Codex → Intentional host
 differences](/getting-started/claude-code-and-codex/#intentional-host-differences).
 

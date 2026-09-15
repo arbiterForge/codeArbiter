@@ -1,12 +1,28 @@
 ---
 name: ca-pr
 description: Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.
-argument-hint: (none)
+argument-hint: "[\"title\"] | --watch [PR] | --cleanup"
 ---
 
 # $ca-pr — open a pull request
 
 The only permitted path to a pull request. Every change lands through a PR — never a direct write or force-push to the default branch. No PR is drafted while any BLOCK-level review finding stands.
+
+<!-- catalog-command-modes:start -->
+## Compatibility modes
+
+<!-- command-mode:--watch legacy-route:watch -->
+`--watch [PR number | URL | branch]` loads and follows
+[skills/ca-watch/SKILL.md](../ca-watch/SKILL.md) with the remaining arguments. This is an internal resource
+handoff to the exact watcher contract, not a second host-command invocation.
+
+<!-- command-mode:--cleanup legacy-route:cleanup -->
+`--cleanup` loads and follows [skills/ca-cleanup/SKILL.md](../ca-cleanup/SKILL.md) with no remaining argument. It
+retains the cleanup route's containment proof and per-item confirmations.
+
+The flags are mutually exclusive. A bare or quoted title named `watch` or `cleanup` is not a mode;
+without either flag, continue with the unchanged PR flow below.
+<!-- catalog-command-modes:end -->
 
 ## Flow
 
@@ -26,7 +42,7 @@ apply, then:
 5. **Stage the PR** once all BLOCK findings clear: concise title; summary of what changed and why; a
    bulleted test plan; a conflict-hierarchy tradeoff citation for any non-obvious tradeoff; a link to
    any ADR the change implements or contradicts. The PR body is a user-facing deliverable: before
-   composing it, load `${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md` and the
+   composing it, load [includes/anti-slop-design/core.md](../../includes/anti-slop-design/core.md) and the
    `medium-documents` leaf, and apply at least the §3.A em-dash ban and the §3.B copy self-audit to the
    prose. Then `gh pr create`; return the URL.
 6. **Auto-attach the babysitter** — resolve the flag with the canonical resolver, never by eyeballing
@@ -34,7 +50,7 @@ apply, then:
    interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/babysit.py" --root "<project-root>"
+   "$PY" "${PLUGIN_ROOT}/hooks/babysit.py" --root "<project-root>"
    ```
    It prints one JSON line, e.g. `{"enabled": true, "on_red": "propose"}`. Only when `enabled` is
    true (the global flag `CODEARBITER_BABYSIT` is on — default off, mirrors `CODEARBITER_PRUNE` — and
@@ -44,7 +60,7 @@ apply, then:
 
 ## Routes to
 
-`finishing-a-development-branch` (`${CLAUDE_PLUGIN_ROOT}/routines/finishing-a-development-branch/SKILL.md`),
+`finishing-a-development-branch` ([routines/finishing-a-development-branch/SKILL.md](../../routines/finishing-a-development-branch/SKILL.md)),
 open-PR path.
 
 ## When NOT to use

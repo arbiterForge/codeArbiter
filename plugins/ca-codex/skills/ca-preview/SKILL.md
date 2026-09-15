@@ -17,30 +17,30 @@ not the index, not `.codearbiter/`. `git status` is unchanged by a run.
 ## Flow
 
 1. **Collect the diff.** Call the thin entry hook `preview.py` in `diff` mode, which wraps
-   `collect_diff` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It unions HEAD-vs-worktree
+   `collect_diff` from [hooks/_previewlib.py](../../hooks/_previewlib.py). It unions HEAD-vs-worktree
    changes, staged changes, and untracked files (forward-slash paths). Run it from the project
    root so `_previewlib`/`_hooklib` resolve on the same `sys.path`. Resolve the interpreter once
    by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python`
    — never `python3 X || python X`, which reruns X on any nonzero exit (#577):
    ```
-   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" diff
+   "$PY" "${PLUGIN_ROOT}/hooks/preview.py" diff
    ```
    If the result is empty (clean tree, or not a git repo), print a friendly **"Nothing to
    preview"** line and STOP. This is a clean exit, not an error: no stack trace, no failure.
 
 2. **Predict reviewers by path.** Read the reviewer-to-path matrix at
-   `${CLAUDE_PLUGIN_ROOT}/includes/review-matrix.md`. That include is the single source of truth
+   [includes/review-matrix.md](../../includes/review-matrix.md). That include is the single source of truth
    for which reviewer is dispatched when scope touches a given path: do NOT restate, fork, or
    inline a second copy of the table here. For each changed path, list the reviewers that WOULD
    dispatch and name the triggering path for each. This is the same mapping `$ca-review` uses, so
    the predicted set matches what a real review would dispatch.
 
 3. **Run the state-free secret scan.** Call the thin entry hook `preview.py` in `secrets` mode,
-   which wraps `scan_secrets` from `${CLAUDE_PLUGIN_ROOT}/hooks/_previewlib.py`. It reads each
+   which wraps `scan_secrets` from [hooks/_previewlib.py](../../hooks/_previewlib.py). It reads each
    changed file's current content and returns `SecretFinding(path, line_no, snippet)` for every
    credential line, with the secret VALUE already masked to `****` in `snippet`:
    ```
-   "$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/preview.py" secrets
+   "$PY" "${PLUGIN_ROOT}/hooks/preview.py" secrets
    ```
    Report each finding by `path:line_no` with its redacted snippet. The snippet arrives already
    masked: never reconstruct or print a raw secret value.

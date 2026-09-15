@@ -21,7 +21,7 @@ remediation.
    Pi bash wrapper. The exact shared-core `[H-03]` block is healthy and cannot stage files; execution
    or a different block is unhealthy. This self-test does not traverse Pi's active dispatcher. Do not
    rerun or respell it.
-4. Its `active-dispatch` row remains degraded because supported Pi 0.80.5/0.84.1 public extension
+4. Its `active-dispatch` row remains degraded because supported Pi 0.84.1 public extension
    APIs cannot submit that deterministic call through the active dispatcher. PI-AC-28 remains blocked
    until supported-version real-host promotion/CI evidence closes the gap.
 
@@ -42,3 +42,7 @@ remediation.
 Read-only. MUST NOT create markers, stage files, grant trust, weaken a block, or retry the
 wrapper self-test with different spelling. MUST preserve the degraded active-dispatch diagnosis until
 supported-version real-host promotion/CI evidence closes PI-AC-28.
+
+For an arbiter-enabled repository, the mechanical report treats the Git backstop as healthy only
+after exact managed-shim and live-enforcer validation, plus a harmless selected-Git
+`git hook run pre-push` probe with empty input. It never executes a foreign hook.

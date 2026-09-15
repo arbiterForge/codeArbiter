@@ -396,15 +396,29 @@ class TestPersistence(unittest.TestCase):
         owner = L._acquire_lock(self.ledger)
         self.assertIsNotNone(owner)
         try:
-            started = time.monotonic()
-            rec, sess, day = L.ledger_update({}, "contended")
-            elapsed = time.monotonic() - started
+            # A wall-clock ceiling cannot distinguish a broken retry deadline
+            # from a correctly sleeping test process that the CI scheduler did
+            # not resume promptly. Drive the real lock's deadline clock
+            # deterministically instead: each contended operation gets its
+            # configured LOCK_WAIT budget exactly, then must fail soft without
+            # another retry sleep.
+            self.assertEqual(_hooklib.LOCK_WAIT, 0.2)
+            wait = _hooklib.LOCK_WAIT
+            with mock.patch.object(_hooklib, "time") as clock:
+                clock.monotonic.side_effect = (
+                    100.0, 100.0 + wait - 0.001, 100.0 + wait,
+                    200.0, 200.0 + wait - 0.001, 200.0 + wait,
+                )
+                rec, sess, day = L.ledger_update({}, "contended")
+                persisted = L.persist_sess_start("contended", 123.0)
             self.assertEqual((rec, sess, day), ({}, {"in": 0.0, "out": 0.0,
                                                      "cost": 0.0},
                                                     {"in": 0.0, "out": 0.0,
                                                      "cost": 0.0}))
-            self.assertFalse(L.persist_sess_start("contended", 123.0))
-            self.assertLessEqual(elapsed, 0.35)
+            self.assertFalse(persisted)
+            self.assertEqual(clock.monotonic.call_count, 6)
+            self.assertEqual(clock.sleep.call_args_list,
+                             [mock.call(0.005), mock.call(0.005)])
         finally:
             L._release_lock(owner)
 
@@ -421,9 +435,14 @@ class TestPersistence(unittest.TestCase):
         self.assertIsNotNone(owner)
         try:
             L._release_lock(None)
-            started = time.monotonic()
-            self.assertIsNone(L._acquire_lock(self.ledger))
-            self.assertLessEqual(time.monotonic() - started, 0.35)
+            wait = _hooklib.LOCK_WAIT
+            with mock.patch.object(_hooklib, "time") as clock:
+                clock.monotonic.side_effect = (
+                    300.0, 300.0 + wait - 0.001, 300.0 + wait,
+                )
+                self.assertIsNone(L._acquire_lock(self.ledger))
+            self.assertEqual(clock.monotonic.call_count, 3)
+            clock.sleep.assert_called_once_with(0.005)
         finally:
             L._release_lock(owner)
 

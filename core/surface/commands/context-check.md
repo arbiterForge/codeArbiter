@@ -5,6 +5,12 @@ argument-hint: (none)
 
 # {{CMD:context-check}} — manual drift audit
 
+<!-- catalog-compatibility-notice:start -->
+> Compatibility route. Prefer `{{CMD:status}} drift` for new usage. This installed route remains
+> functional under the command-route compatibility policy at {{PLUGIN_ROOT}}/includes/command-compatibility.md;
+> continue with the unchanged drift workflow below.
+<!-- catalog-compatibility-notice:end -->
+
 An optional, on-demand audit for bypass cases: a merge or external edit
 changed a tracked source file you are not about to commit, so commit-gate's
 auto-heal did not fire. Routes to the `context-check` skill.

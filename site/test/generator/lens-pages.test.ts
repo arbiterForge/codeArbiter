@@ -116,6 +116,23 @@ describe("generate — tribunal-lens collection wiring", () => {
       join(srcDir, "commands", "sample.md"),
       "---\ndescription: A sample command.\n---\n\nBody.\n",
     );
+    const generatedDir = join(srcDir, "generated");
+    mkdirSync(generatedDir, { recursive: true });
+    writeFileSync(join(generatedDir, "command-catalog.json"), JSON.stringify({
+      schemaVersion: 1,
+      visibilityOrder: ["core", "advanced", "alias", "internal", "deprecated"],
+      workflowOrder: ["evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help"],
+      compatibility: {},
+      commands: {
+        sample: {
+          description: "A sample command.",
+          commandPath: "commands/sample.md",
+          visibility: "core",
+          workflow: "change",
+          canonical: "sample",
+        },
+      },
+    }));
     const lensesDir = join(srcDir, "skills", "tribunal", "references", "lenses");
     mkdirSync(lensesDir, { recursive: true });
     writeFileSync(
@@ -146,7 +163,10 @@ describe("generate — tribunal-lens collection wiring", () => {
     // Entity groups keep their own pages only — the lens page joins no entity group.
     const total = sidebar
       .slice(0, -1)
-      .reduce((n: number, g: { items: unknown[] }) => n + g.items.length, 0);
+      .reduce((n: number, g: { type: string; items: Array<{ items?: unknown[] }> }) =>
+        n + (g.type === "command"
+          ? g.items.reduce((count, group) => count + (group.items?.length ?? 0), 0)
+          : g.items.length), 0);
     expect(total).toBe(result.pages.length);
   });
 

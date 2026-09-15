@@ -64,7 +64,7 @@ function healthyInput(): PiDoctorInput {
     commands: {
       collisions: [],
       ownerPaths: [`${ROOT}/extensions/codearbiter.js`, `${ROOT}/skills/ca-doctor/SKILL.md`],
-      expansionVerifiedVersions: ["0.80.5", "0.84.1"],
+      expansionVerifiedVersions: ["0.84.1"],
       expansionMatches: true,
     },
     bridge: { healthy: true },
@@ -91,10 +91,10 @@ function healthyInput(): PiDoctorInput {
 const remediation = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.80.5 or 0.84.1 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 0.84.1 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.80.5/0.84.1, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 0.84.1, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
@@ -106,7 +106,7 @@ const remediation = {
 } as const;
 
 const ACTIVE_DISPATCH_MESSAGE =
-  "Supported Pi 0.80.5/0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.";
+  "Supported Pi 0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.";
 const ACTIVE_DISPATCH_REMEDIATION =
   "Require passing supported-version real-host promotion/CI evidence before closing PI-AC-28.";
 
@@ -165,7 +165,7 @@ describe("Pi structured doctor", () => {
       "operator-launched Pi runtime; this does not prove publisher authenticity.",
     );
     expect(result.find((row) => row.id === "trust")?.message).toContain("repository is dormant");
-    expect(result.find((row) => row.id === "commands")?.message).toContain("0.80.5, 0.84.1");
+    expect(result.find((row) => row.id === "commands")?.message).toContain("0.84.1");
     expect(result.find((row) => row.id === "footer")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "sidebar")).toMatchObject({ state: "healthy" });
     expect(result.find((row) => row.id === "background")).toMatchObject({ state: "healthy" });
@@ -202,7 +202,7 @@ describe("Pi structured doctor", () => {
   });
 
   test("uses an independent version-specific expansion fingerprint and detects local drift", () => {
-    expect(verifyNativeSkillExpansion("0.80.5", PI_FINGERPRINTS)).toBe(true);
+    expect(verifyNativeSkillExpansion("0.80.5", PI_FINGERPRINTS)).toBe(false);
     expect(verifyNativeSkillExpansion("0.84.1", PI_FINGERPRINTS)).toBe(true);
     expect(verifyNativeSkillExpansion("0.84.1", PI_FINGERPRINTS, (...args) => `${args.join(":")} drift`)).toBe(false);
     expect(verifyNativeSkillExpansion("0.80.7", PI_FINGERPRINTS)).toBe(false);

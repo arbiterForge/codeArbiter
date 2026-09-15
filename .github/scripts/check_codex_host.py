@@ -52,6 +52,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from codex_agent_routes import expected_route_stats, validate_agent_routes
+
 REPO = Path(__file__).resolve().parents[2]
 MANIFEST = REPO / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json"
 HOOKS_JSON = REPO / "plugins" / "ca-codex" / "hooks" / "hooks.json"
@@ -172,6 +174,7 @@ def check_install(home: Path) -> list[dict]:
         missing: list[str] = []
         scripts: set[str] = set()
         try:
+            installed_root = plugin_root.resolve(strict=True)
             installed = json.loads(cached[0].read_text(encoding="utf-8"))["hooks"]
             for entries in installed.values():
                 for entry in entries:
@@ -181,17 +184,46 @@ def check_install(home: Path) -> list[dict]:
                             if not isinstance(command, str):
                                 continue
                             for match in re.finditer(
-                                    r"\$\{CLAUDE_PLUGIN_ROOT\}/(\S+?\.py)", command):
+                                    r"\$\{PLUGIN_ROOT\}/(\S+?\.py)", command):
                                 rel = match.group(1)
                                 scripts.add(rel)
-                                if not (plugin_root / rel).is_file():
+                                try:
+                                    target = (installed_root / rel).resolve(strict=True)
+                                    target.relative_to(installed_root)
+                                except (OSError, RuntimeError, ValueError):
+                                    missing.append(rel)
+                                    continue
+                                if not target.is_file():
                                     missing.append(rel)
             record("CODEX-HOST-HOOK-SCRIPTS", not missing and bool(scripts),
                    f"{len(scripts)} script(s) referenced, missing from the install: "
                    f"{sorted(set(missing))}" if missing
                    else "no hook script references were found to check")
-        except (ValueError, KeyError) as error:
+        except (OSError, RuntimeError, ValueError, KeyError) as error:
             record("CODEX-HOST-HOOK-SCRIPTS", False, str(error))
+
+        # The installed package must retain every literal and generic charter
+        # route advertised by its shipped Markdown.  This checks the cache
+        # copy, not the source checkout, so a dropped agents/ subtree or an
+        # index/resource mismatch cannot pass through a successful install.
+        expected_stats, expected_errors = expected_route_stats(
+            REPO / "plugins" / "ca-codex"
+        )
+        route_errors, route_stats = validate_agent_routes(plugin_root, expected_stats)
+        route_errors = expected_errors + route_errors
+        route_detail = (
+            f"{route_stats['literal_route_lines']} literal lines/"
+            f"{route_stats['literal_route_occurrences']} occurrences, "
+            f"{route_stats['generic_route_lines']} generic lines/"
+            f"{route_stats['generic_route_occurrences']} occurrences"
+        )
+        if route_errors:
+            route_detail += f"; errors: {route_errors}"
+        record(
+            "CODEX-HOST-AGENT-ROUTES",
+            not route_errors,
+            route_detail,
+        )
 
     return results
 

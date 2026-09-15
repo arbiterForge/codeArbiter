@@ -39,6 +39,46 @@ project. This is an explicit exception to a general "no process.env for secrets"
 rule: the project has no vault, the key is short-lived per-session, and the
 deployment model is a single-developer CLI tool.
 
+### ca-pi npm publication boundary
+
+ADR-0029 authorizes one release credential, `NPMJS_TOKEN`, sourced only from the
+repository or organization Actions secret store. The reusable publisher forwards
+that named secret explicitly—never through `secrets: inherit`—to the single
+`npm publish` step as `NODE_AUTH_TOKEN`. Its authority is limited to publishing
+the public `@arbiterforge/ca-pi` package at the approved npm registry. Candidate
+tag content is inert data: its scripts are never executed, packing and publishing
+use `--ignore-scripts`, and trusted verifier code is pinned to the protected-main
+workflow commit.
+
+The job acquires only exact `npm@11.19.1` from
+`https://registry.npmjs.org/npm/-/npm-11.19.1.tgz`, bound before extraction or
+execution to
+`sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g==`.
+Acquisition is credential-free and refuses redirects. It uses a fresh runner
+temporary root, performs path-containment checks before extraction, rejects
+links and special files, and executes only the regular resolved `npm-cli.js`
+beneath that root after an exact version check. It does not change a manifest,
+lockfile, global npm state, `PATH`, cache, or release artifact. The exact CLI is
+passed explicitly to packing, publication, and post-publication verification.
+
+Registry success is not inferred from metadata alone. Every npm network command
+pins both the general and `@arbiterforge` scoped registry on the CLI so ambient
+user configuration cannot redirect package traffic. The verifier installs the
+exact registry version into a disposable directory with scripts disabled and
+isolated empty user/global configuration, cache, and log paths; the entire root
+is removed afterward. It runs npm's supported `npm audit signatures` Sigstore
+verification, and then separately
+binds the registry-served SLSA subject digest, repository, main ref, workflow,
+protected-main source commit, and GitHub-hosted builder to the expected release.
+
+The publish job also receives GitHub's short-lived OIDC identity solely for npm
+OIDC provenance. GitHub's ephemeral `github.token` has read-only repository
+permissions and is scoped to checkout and Release evidence lookup; credentials
+are not persisted by checkout. Neither token is logged, written to an output, or
+retained after the job. Credential rotation or revocation of `NPMJS_TOKEN` occurs in the
+organization Actions secret store; no repository change or fallback credential
+is permitted.
+
 A second secret exists in the `ca-sandbox` plugin (ADR-0007): the
 `CLAUDE_CODE_OAUTH_TOKEN` used by `--with-claude` to authenticate Claude Code
 *inside* a sandbox box.
@@ -51,6 +91,37 @@ argv), and tests use a clearly-labelled DUMMY value only. Because a token in a b
 running untrusted code is stealable, `--with-claude` is hard-defaulted to
 offline/Anthropic-only egress and its credential volume is never co-mounted with
 an untrusted source volume (`TokenCoMountRejectedError`).
+
+### Hosted static ca-codex release boundary
+
+`ca-codex` release validation uses no authentication secret and no self-hosted
+machine. Trusted verifier and packager code is checked out from the exact
+release tree on GitHub-hosted runners. Any event-selected candidate tree or ZIP
+is inert data: the workflow never executes its scripts, hooks, or verifier code.
+
+Before reading entry content, the trusted candidate reader rejects an archive
+larger than 8 MiB, more than 1,024 entries, any regular file larger than 2 MiB
+uncompressed, more than 32 MiB total uncompressed content, or any entry whose
+declared compression ratio exceeds 100:1. It accepts only safe
+`plugins/ca-codex/` regular-file paths, validates the complete ZIP directory
+before streaming content, and re-enforces declared and aggregate sizes while
+reading. Symbolic/reparse files, encrypted entries, unsafe path normalization,
+Windows-reserved names, file/directory collisions, and case or Unicode path
+collisions fail closed.
+
+The static contract then validates the plugin manifest, required Markdown front
+matter, complete contained resource graph, generated parity, hook declarations
+and targets, approved root vocabulary, and deterministic package identity. The
+release tag, manifest, changelog, GitHub Release, provenance record, and rebuilt
+archive must agree exactly. Missing, malformed, ambiguous, escaping, stale, or
+mismatched evidence blocks publication.
+
+Practical host loading is verified after publication through the supported local
+Codex marketplace update and a fresh-task `$ca-doctor` check. It does not use a
+Store/MSIX desktop install, device authorization, API key, copied session,
+self-hosted runner, UAC, Hyper-V, ADK, VM, network mutation, screenshot, or
+synthetic receipt. The retired desktop boundary remains only in immutable
+historical ADRs, plans, reports, and audit records.
 
 Pi host authentication is an external trusted-runtime boundary. **No provider
 credential enters an isolated child in any form** (ADR-0019, superseding the
@@ -222,18 +293,23 @@ This supersedes the prior parse-time check that covered only `plan.meta.apiBaseU
 
 **Outbound surface — the update-available notifier.** The update-notifier
 (`plugins/ca/hooks/_updatelib.py`, run detached by `update-refresh.py`) makes one
-outbound call: an **unauthenticated HTTPS GET** to
-`https://api.github.com/repos/arbiterForge/codeArbiter/releases/latest`, at most
-once per day (cached in the user-global `~/.codearbiter/update-state.json`). It is
-the plugin's only routine outbound call outside the farm dispatcher. Posture per
-ADR-0003: `https://` is asserted on the initial URL *and* re-asserted on any 3xx
-via a custom redirect handler that refuses an `https://`→`http://` downgrade;
+outbound operation: bounded **unauthenticated HTTPS GETs** to the GitHub Releases
+collection (`/repos/arbiterForge/codeArbiter/releases?per_page=100`), at most once
+per day for each independently versioned release target. A refresh follows at
+most ten collection pages (up to 1,000 recent releases) so quiet host series can
+be found beyond the first page; exhausting that bound produces no new cached
+result rather than trusting a partial enumeration. Target-keyed results are cached in the user-global
+`~/.codearbiter/update-state.json`; unrelated tag prefixes are ignored. It is the
+plugin's only routine outbound operation outside the farm dispatcher. Posture
+per ADR-0003: `https://` is asserted on the initial URL *and* re-asserted on any
+3xx via a custom redirect handler that refuses an `https://`→`http://` downgrade;
 stdlib `urllib` only (ADR-0004), default verifying TLS, no `rejectUnauthorized`
 equivalent. It **sends no repo content, no PII, and no secret** (User-Agent +
 Accept headers only) and is **fail-silent** — any network/parse/cache error
-degrades to "no notice" and never raises into the SessionStart or statusline hook.
-It adds **no synchronous network call** to the SessionStart hot path (those hooks
-only read the cache; the fetch runs in the detached refresh child).
+degrades to the last known target-specific result or "no notice" and never
+raises into the SessionStart or statusline hook. It adds **no synchronous network
+call** to the SessionStart hot path (those hooks only read the cache; the fetch
+runs in the detached refresh child).
 
 ---
 
@@ -277,6 +353,16 @@ npm dependencies; the docs site under `site/` is not part of that payload):
   no attribution requirement — more permissive than MIT. Approved for `tslib`
   pulled transitively under `site/` and development-only `plugins/*/tools` locks.
   It is not approved as a runtime plugin dependency or distributed artifact.
+- Artistic-2.0 (CI-only, exact npm CLI only): approved 2026-09-03 by
+  `SUaDtL@users.noreply.github.com` solely for `npm@11.19.1` as the integrity-pinned,
+  script-disabled ca-pi publication tool fetched from the approved npm registry.
+  It is not approved for another package or npm version, a manifest or lockfile,
+  a runtime dependency, or any shipped plugin artifact.
+- CC-BY-3.0 (CI-only, one bundled data package): approved 2026-09-03 by
+  `SUaDtL@users.noreply.github.com` solely for `spdx-exceptions@2.5.0` bundled
+  inside exact `npm@11.19.1` as that same ca-pi publication tool. It is not
+  approved generally, for another package or version, for a manifest or
+  lockfile, as a runtime dependency, or in any shipped plugin artifact.
 
 `BlueOak-1.0.0` and `CC0-1.0` were approved 2026-06-22 (user decision via SMARTS
 arbitration, checkpoint 2026-06-22) to cover transitive `site/` dependencies
@@ -369,7 +455,15 @@ skip-when-unsure** — the fast path can never leave the #161 git-enforce backst
 unwired. Accepted residual: a `$GIT_CONFIG_GLOBAL`/`$GIT_CONFIG_SYSTEM`
 env-repointed config or `/etc/gitconfig` `core.hooksPath` set AFTER a
 default-location install (the cold/first install always resolves those via the
-full probe).
+full probe). The full probe does not parse `core.hooksPath` itself. It uses the
+selected Git binary's `rev-parse --git-path hooks` answer, so Git's own `~`,
+`%(prefix)`, absolute, relative, primary-checkout, and linked-worktree semantics
+remain authoritative. Doctor resolves the same effective directory, requires
+both exact managed shims there, and requires at least one live registered
+enforcer. On POSIX it also requires executable shim modes. Only after exact
+managed-byte validation does it ask the selected Git binary to run the managed
+`pre-push` shim with empty input, exposing Git discovery, trusted-identity,
+interpreter, and enforcer failures before it reports the backstop healthy.
 
 Each host refreshes a stable, manifest-named `<plugin>.path` entry under the
 repo-owned `.git/codearbiter-hooksd/`; version-directory-shaped legacy entries
@@ -377,7 +471,29 @@ are not authorities. The shim runs every live registered enforcer in
 deterministic order, returns the first non-zero verdict, and blocks when none
 resolve. Pre-push input is captured once and replayed identically to every
 enforcer. Registry order therefore cannot let an older host plugin mask a
-stricter sibling.
+stricter sibling. Missing or non-regular enforcer targets do not participate in
+heartbeat freshness ordering, so a dead newest heartbeat cannot suppress an
+older live sibling.
+
+This path contract is same-runtime. Windows with Git for Windows and its bundled
+hook shell, native Linux, and native macOS are supported cells. WSL is not a
+separately verified named cell, and sharing one physical repository or `.git`
+between Windows Git and WSL Git is unsupported. Foreign linked-worktree pointer
+dialects are rejected rather than translated or treated as relative marker
+roots. The selected Git binary must accept the worktree and return absolute,
+distinct admin and common directories before marker-root escalation. Native
+absolute and native relative worktree-admin pointers in Git's default
+`<main>/.git/worktrees` layout resolve to the shared primary marker root;
+both the linked checkout and Git-reported primary must also own real
+`CONTEXT.md` files that independently satisfy the canonical `arbiter: enabled`
+frontmatter parser. A `--separate-git-dir` storage location without that governed
+identity retains the local fail-closed fallback. Git does not retain a
+backpointer to the user-supplied primary when the separate directory itself is
+named `.git`; a storage location deliberately populated with its own enabled
+context is therefore inside the local-filesystem trust boundary and may
+be treated as the marker owner. Separate-git-dir remains unsupported.
+On Windows, Git's own `safe.directory` decision remains authoritative for UNC
+paths; codeArbiter never overrides that trust policy.
 
 Pi's trusted Python path, Git path, and owning plugin are one atomically
 replaced three-record identity bundle. Identity-less legacy hosts preserve an
@@ -439,6 +555,21 @@ ADR-0010's cooperative-agent residual-risk boundary.
 They may never be truncated, rewritten, or deleted. The `pre-bash.py` H-05 guard
 and the `pre-write.py` / `pre-edit.py` H-05 guards enforce this at every
 tool-call boundary.
+
+`.codearbiter/decisions/adr-lifecycle.jsonl` is the append-only decision-
+lifecycle ledger. Its exact repository-relative path is authoritative; hook
+classification also compares the path case-folded so equivalent mixed-case
+spellings cannot evade protection on supported case-insensitive filesystems.
+Tail append is its only permitted write shape. H-05 enforces append-only write
+shape by blocking shell and Write/Edit rewrites, truncation, deletion, and
+non-tail edits. The lifecycle checker separately validates JSONL syntax, event
+completeness, schema, and committed-prefix integrity after bytes are written and
+again in CI; H-05 does not inspect or validate appended content.
+H-11 separately protects governed decision-document paths and does not replace
+the ledger-specific H-05 integrity rule. In CI, the lifecycle checker reads the
+base and current ledger as committed Git blobs and requires the base to be an
+exact byte prefix of the current blob. A missing, unresolvable, or all-zero base
+fails closed rather than weakening append-only validation.
 
 **Enforcement scope (accepted residual risk).** These guards are *integrity*
 controls, not *completeness* controls — they protect a log once written, they do
@@ -713,12 +844,14 @@ availability: every pinned install breaks at once.
    review, and no red check anywhere.
 2. *Detection*: `.github/scripts/check_tag_immutability.py`, wired into the merge
    gate as `[CHECK] | [REPO] | Published tag immutability`. It compares every
-   live tag ref against `.github/published-tags.json`, a committed manifest
-   recording where each tag pointed when it was published, and fails the build on
-   any disagreement. Layer 2 is what notices if layer 1 is removed or was never
-   applied, and it is the only layer covering the 26 tags published before either
-   existed: a ruleset does not act retroactively, and GitHub's immutable-releases
-   feature protects only releases published after it is enabled.
+   live tag ref against the disjoint union of `.github/published-tags.json` and
+   `.github/legacy-published-tags.json`, and fails on any disagreement. The first
+   ledger contains original-publication receipts only. The second is ADR-0034's
+   closed 44-tag epoch observed at `2026-09-04T20:45:43Z`; it is not original-publication proof
+   and establishes forward detection only. Layer 2
+   notices if layer 1 is removed or was never applied; a ruleset does not act
+   retroactively, and GitHub's immutable-releases feature protects only releases
+   published after it is enabled.
 
 **Provenance manifest integrity.** The originally-published commit is not
 recoverable from the API after a move: a moved tag is indistinguishable from a
@@ -730,14 +863,33 @@ history plus branch protection on main: amending a recorded sha requires a
 reviewed pull request, whereas moving a tag requires nothing. Editing an entry to
 silence a red drift run is a review-visible act and is never the correct fix.
 
+**Legacy epoch integrity.** ADR-0034 pins the legacy ledger's exact canonical
+identity-and-grade digest, source-matrix digest, observation time, 44-record
+count, and 15/28/1 evidence-grade distribution. It accepts the residual risk
+that a historical ref could have moved before observation, while expressly
+forbidding any claim that the baseline proves original publication. The closed
+set cannot be extended by a publisher or receipt reconciler: changing an
+identity, source, or grade requires a new accepted, user-attributed ADR and
+architectural review. Any later governed tag must enter the original-publication
+ledger from its trusted receipt before another release. Deletion, retargeting,
+and movement remain prohibited with no break-glass path; correction is a new
+version.
+
 **Accepted residual risk.** The detection layer is read-only and after-the-fact:
 it reports a moved tag, it cannot prevent one. Between the move and the next CI
 run, a consumer can install the substituted payload. Closing that window is what
 layer 1 is for, which is why the ruleset is a maintainer action tracked on #386
-and not satisfied by the check alone. The audit also skips loudly rather than
-failing when it cannot read the refs (transport failure or rate limit); it needs
-only `contents:read`, which `GITHUB_TOKEN` grants, so it runs live in ordinary CI
-and a skip is an exception rather than the normal case.
+and not satisfied by the check alone. Required CI and release preflight both use
+`--require-recorded` and fail closed on missing receipts, credentials, unreadable
+refs, or invalid inventory. This deliberately makes transport failures and rate
+limits merge/release availability blockers. The check remains read-only with
+`contents:read`; it adds no writer or bypass authority. New receipts enter only
+through the independently authenticated, reviewed-PR reconciliation path. A
+receipt-only PR can validate its candidate ledger, but publication and PR merge
+are not transactional: a tag may appear after a PR's green check without changing
+the checked commit. The independent strict release preflight remains necessary
+for that timing race; retry unavailable evidence, never substitute current refs
+for original publication proof.
 
 **GitHub immutable Releases (AC-2).** Measured 2026-07-25: every Release on this
 repository reports `immutable: false`, and the owning organisation is on the
@@ -764,9 +916,16 @@ immutable Releases are available.
 | Pi child inference brokering | `ca-pi` binds a per-child loopback broker and projects a credential-blind `models.json` whose `apiKey` is a per-child ephemeral token; no provider credential enters the child (ADR-0019) | ADR-0017 amends ADR-0016 for **configuration only**, never credentials: exact-provider record, key AND value-shape allowlist pinned to the reviewed Pi provider schema, `apiKey`/`headers` admitted only as whole-value `$NAME`/`${NAME}` references, positively-accepted endpoint-only `baseUrl` (`http(s)`, no userinfo, no query, no fragment, bounded case-insensitive route) that is also registered in the scrub set and retained behind a scrub handle, and fail-closed rejection of literal values, `!command` forms, and unreviewed keys or shapes |
 | Pi child process isolation | Fresh Pi processes run with discovery/session loading disabled and only explicit enforcement/skill/charter inputs | Cooperative process isolation for context and recursion control, not an OS sandbox; bounded IPC and process-tree cleanup limit accidental spill |
 | Trusted same-process Pi extensions | An operator-approved extension may execute arbitrary same-user code in Pi's process | Accepted ADR-0010 cooperative-agent residual; final governed-argument ordering remains a live promotion STOP under ADR-0016's carried-forward controls |
-| Declared release-target commands | `.codearbiter/release-targets.md` rows carry `pre-tag`, `rebuild`, and `generate` shell commands that `/ca:release` executes before composing a tag, on a lane that later holds `contents: write` | Operator-authored executable input, on the `plan.json` `gate.commands` model above and length-capped identically (≤1024 chars, `VALUE_MAX_CHARS`, ADR-0002 precedent). Three controls bound it: commands are **check-only** and a clean-tree assertion runs after each (DECISION-0034), so a mutation blocks the release rather than reaching a tag; the runner (`_releaselib.py run-pre-tag`) enforces order, first-failure stop, and that assertion mechanically rather than by agent compliance; and the declaring file is itself protected under H-22 (ADR-0024), so planting a command requires a fresh authoring marker rather than any write. The residual is the cooperative-agent one ADR-0010 already accepts: a marker-holding session can still declare a command, and this is a governance boundary, not a sandbox |
+| Declared release-target commands | `.codearbiter/release-targets.md` rows carry `pre-tag`, `rebuild`, `generate`, and optional `release-build` shell commands that `/ca:release` executes before composing a tag, on a lane that later holds `contents: write` | Operator-authored executable input, on the `plan.json` `gate.commands` model above and length-capped identically (≤1024 chars, `VALUE_MAX_CHARS`, ADR-0002 precedent). Before either `pre-tag` or `release-build` executes, `releasehash.py` binds the ordered `pre-tag` list and optional `release-build` into one per-target human-read confirmation; changing either invalidates it, while rows without `release-build` retain their existing confirmation identity. `pre-tag` remains check-only and is guarded mechanically by `run-pre-tag`. `RELEASE_ASSET_DIR` is the declared output directory for `release-build`; the lane requires it to be newly empty, requires a clean tracked tree before and after the command, rejects any tracked mutation, and verifies that the directory contains exactly the safe declared non-empty regular files before tag composition and again before authorized upload. The declaring file is protected under H-22 (ADR-0024), so planting any command requires a fresh authoring marker. The residual is the cooperative-agent one ADR-0010 already accepts: a marker-holding session can still declare a command, and this is a governance boundary, not a sandbox or filesystem confinement mechanism |
+| Hosted ca-codex candidate data | A final-tree ZIP or directory is parsed by trusted release-tree code on GitHub-hosted runners | Candidate code is never executed; bounded archive limits, regular-file-only extraction semantics, contained paths, static manifest/front-matter/resource/hook validation, and exact deterministic digest binding fail closed before publication |
+| CI-only npm CLI acquisition | The ca-pi publisher downloads and executes exact `npm@11.19.1` from the approved npm registry without adding it to repository dependency state | Exact registry URL and SHA-512 SRI are drift-guarded; TLS verification stays enabled and redirects are not followed; acquisition is credential-free; archive path/link/device containment and the resolved executable root are checked before exact-version execution; only the absolute reviewed CLI path reaches pack, publish, and verification; all npm network commands pin the approved general and `@arbiterforge` scoped registry, while verifier config, cache, and logs live only in its cleaned disposable root |
 
 ### Closed exceptions
+
+- **Protected Codex desktop proof** - CLOSED 2026-08-31 (ADR-0032). The
+  self-hosted runner, Hyper-V/ADK broker, device-auth, desktop receipt, and OIDC
+  attestation boundary are retired. `ca-codex` now uses the credential-free
+  hosted static package boundary declared above.
 
 - **`curl | bash` nixpacks install** — CLOSED 2026-07-24 (issue #401). `build.ts`
   no longer acquires nixpacks: the pipe-to-shell branch is deleted, nixpacks is a

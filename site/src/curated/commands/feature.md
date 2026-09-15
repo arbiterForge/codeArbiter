@@ -27,6 +27,8 @@ numbered [`CONFIRM-NN`](/glossary/#confirm-nn) in the spec rather than being gue
 implemented test-first, reviewed, and checked in small groups — you're asked to confirm before the
 next group starts. Nothing gets built without an approved plan behind it, and the pipeline can always
 be resumed later from wherever it left off rather than starting over.
+Each group uses impact-bounded local verification. Exhaustive exact-head hosted CI remains mandatory
+before merge.
 
 ## Usage
 

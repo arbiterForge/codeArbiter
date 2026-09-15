@@ -11,7 +11,7 @@ Cost first — this lane routinely costs millions of tokens on a large repo. Pha
 
 ## Flow
 
-Load and follow the tribunal skill (`${CLAUDE_PLUGIN_ROOT}/routines/tribunal/SKILL.md`). In brief:
+Load and follow the tribunal skill ([routines/tribunal/SKILL.md](../../routines/tribunal/SKILL.md)). In brief:
 
 Phase 0 (STOP) — cost estimate, model recommendation, resume check.
 Phase 1 (BLOCK) — map the codebase; risk-rank and mark trust boundaries; record AI-authorship markers and iteration depth.
@@ -29,7 +29,7 @@ Phase 6 (STOP) — optional, opt-in KPI telemetry to the public codeArbiter repo
 
 ## Routes to
 
-`${CLAUDE_PLUGIN_ROOT}/routines/tribunal/SKILL.md` — dispatches `tribunal-lens-reviewer` once per active lens (and, on a large repo, the optional map-structure / map-deps mappers).
+[routines/tribunal/SKILL.md](../../routines/tribunal/SKILL.md) — dispatches `tribunal-lens-reviewer` once per active lens (and, on a large repo, the optional map-structure / map-deps mappers).
 
 ## When NOT to use
 

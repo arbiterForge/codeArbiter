@@ -10,7 +10,7 @@ import { pathToFileURL } from "node:url";
 import { describe, expect, test } from "vitest";
 
 import { compatibilityDirection } from "../src/compatibility.ts";
-import { createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
+import { commandCatalogEntries, createCodeArbiterPi, createPiFooterMetricsLoader } from "../src/extension.ts";
 import { exists, findPiPackageRoot } from "./live-pi-host.ts";
 
 const toolsRoot = resolve(import.meta.dirname, "..");
@@ -886,9 +886,9 @@ describe("ca-pi package", () => {
         }),
       ]);
       expect(result.count).toBe(1);
-      const commandCount = JSON.parse(
+      const commandCount = commandCatalogEntries(JSON.parse(
         await readFile(resolve(pluginRoot, "generated", "command-catalog.json"), "utf8"),
-      ).length as number;
+      ) as unknown).length;
       // Five parent lifecycle handlers, two tool-enforcement handlers,
       // Pi-native before/after compaction handlers, and the farm-preview tool
       // accompany the aliases.
@@ -914,19 +914,19 @@ describe("ca-pi package", () => {
         );
       }
       expect(result.compatibility).toEqual([
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
         { diagnosis: null, apiAccesses: 0 },
-        { diagnosis: null, apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
-        { diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
+        { diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.", apiAccesses: 0 },
         { diagnosis: "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.", apiAccesses: 0 },
         { diagnosis: "codeArbiter requires Python 3; install Python 3 and run /ca-doctor.", apiAccesses: 0 },
       ]);
@@ -943,13 +943,14 @@ describe("ca-pi package", () => {
   }, LIVE_DUPLICATE_HOST_TIMEOUT_MS);
 
   test("exact supported Pi versions and prerequisites return fixed directions", () => {
-    for (const piVersion of ["0.80.5", "0.84.1"]) {
+    for (const piVersion of ["0.84.1"]) {
       expect(compatibilityDirection({ piVersion, nodeVersion: "24.16.0", pythonMajor: 3 })).toBeNull();
     }
     const unsupportedDirection =
-      "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.";
+      "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.";
     for (const piVersion of [
       "0.80.4",
+      "0.80.5",
       "0.80.7",
       "0.81.0",
       "0.84.1-rc.1",
@@ -995,7 +996,7 @@ describe("ca-pi package", () => {
         nodeVersion: "24.16.0",
         pythonMajor: 3,
       })(api as never)).toThrow(
-        "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.",
+        "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.",
       );
       expect(apiAccesses).toBe(0);
     },
@@ -1038,7 +1039,7 @@ describe("ca-pi package", () => {
         moduleEvaluated: (globalThis as Record<string, unknown>)[sentinelName] === true,
       }).toEqual({
         apiAccesses: 0,
-        diagnosis: "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.",
+        diagnosis: "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.",
         moduleEvaluated: false,
       });
     } finally {

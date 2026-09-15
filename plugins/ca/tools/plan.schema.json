@@ -91,7 +91,7 @@
               "type": "array",
               "minItems": 1,
               "items": { "type": "string" },
-              "description": "Shell commands; ALL must exit 0. Typically: run this test, run full suite, lint, typecheck."
+              "description": "Shell commands; ALL must exit 0. Put the narrow behavioral test first, then affected contract tests and applicable lint/typecheck under the shared verification boundary; exhaustive exact-head proof runs in hosted CI."
             }
           }
         },

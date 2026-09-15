@@ -21,8 +21,9 @@ gates:
 This is the only door into version control — nothing else in the project runs `git commit`.
 Invoking it (via the commit command) hands control to a sequence of checks that read the
 repository's actual state rather than taking your word for it: what's staged, what changed,
-whether the suite is green. It walks from confirming you actually asked for a commit through
-classification, verification, a behavioral proof, and a full diff review before anything lands.
+whether the applicable local checks are green. It walks from confirming you actually asked for a
+commit through impact-bounded local verification, a behavioral proof, and a full diff review before
+anything lands. Exhaustive exact-head hosted CI remains mandatory before merge.
 
 ## Phases
 

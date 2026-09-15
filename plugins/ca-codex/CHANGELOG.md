@@ -6,6 +6,164 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-09-15
+
+### Fixed
+
+- Keep exhaustive repository and cross-platform verification on exact-head hosted CI instead of requiring contributors to replay the full matrix locally before committing or opening a pull request.
+
+## [0.10.1] - 2026-09-14
+
+### Fixed
+
+- Permit explicit changelog reconciliation only for exact published commits through a reviewed, default-branch-bound ledger while retaining strict failure for ordinary missing footers.
+
+## [0.10.0] - 2026-09-13
+
+### Added
+
+- Support declared numeric release policies and exact verified asset inventories while preserving SemVer defaults and explicit publication authorization.
+
+## [0.9.11] - 2026-09-13
+
+### Fixed
+
+- Continue active authorized work across startup, resume, and compact hook boundaries while retaining the idle-session command prompt.
+
+## [0.9.10] - 2026-09-08
+
+### Fixed
+
+- Resolve genuine append-only audit-log conflicts through a fail-closed helper that preserves both branch histories and records the immediate H-05 authorization, with shared audit-path locks and a locked mandatory-override writer preventing concurrent row loss.
+
+## [0.9.9] - 2026-09-07
+
+### Fixed
+
+- Use the same documented done-tasks template for initialization and first-use archiving, with byte-identical UTF-8 headers on Windows and POSIX.
+
+## [0.9.8] - 2026-09-06
+
+### Fixed
+
+- Keep task-board lifecycles Git-clean by locally excluding the retained OS-lock sidecar during initialization, with an explicit repair option for existing repositories.
+
+## [0.9.7] - 2026-09-06
+
+### Fixed
+
+- Distinguish ordinary return-code identifiers such as `rc2` from cipher configuration in the crypto/TLS commit gate.
+
+## [0.9.6] - 2026-09-06
+
+### Fixed
+
+- Recover an unsettled mode-enter audit row on a repeated request instead of reporting an ineffective posture as a no-op.
+
+## [0.9.5] - 2026-09-06
+
+### Changed
+
+- Correct privacy disclosures and align task archival documentation with the established standup-owned policy.
+
+## [0.9.4] - 2026-09-05
+
+### Fixed
+
+- Upgrade earlier codeArbiter-managed Git hook shims after ownership-banner wording changes while preserving foreign hooks.
+
+## [0.9.3] - 2026-09-05
+
+### Fixed
+
+- Select a history-preserving PR merge when ADR lifecycle evidence binds source commits outside the base branch.
+
+## [0.9.2] - 2026-09-04
+
+### Changed
+
+- Synchronize the shared host kernel's adapter identity metadata with the Claude adapter version.
+
+## [0.9.1] - 2026-09-03
+
+### Fixed
+
+- Prevent read-only filename searches from falsely triggering protected-state interpreter guards while preserving mutation enforcement.
+
+## [0.9.0] - 2026-09-02
+
+### Added
+
+- Command discovery now groups the supported core lanes while retaining
+  advanced operations and compatibility routes in the generated Codex catalog.
+- Route, release-state, and inventory drift now fail closed against canonical
+  source, with tag-only or unverified Releases rejected.
+
+## [0.8.0] - 2026-09-02
+
+### Added
+
+- Accepted ADRs now have content-bound lifecycle records, sealed obligation
+  sets, and evidence-derived implementation and verification states.
+- Destructive-operation policy now uses one four-item registry with generated
+  host parity and item-for-item enforcement.
+
+## [0.7.9] - 2026-09-02
+
+### Fixed
+
+- Hook registration and doctor now bind every Git probe to the requested
+  repository, resolve effective hook paths through Git, and fail closed when
+  linked-worktree ownership cannot be proven.
+
+## [0.7.8] - 2026-09-02
+
+### Fixed
+
+- Release-note reconstruction now accepts only exact changelog headings,
+  rejects ambiguous `Unreleased` and duplicate sections, and reads the
+  regular-file blob from the exact tag and repository root without inherited
+  Git repository overrides or replacement objects.
+
+## [0.7.7] - 2026-09-01
+
+### Added
+
+- Review and generic parallel batches now terminate at a read-only verdict
+  aggregator, while checkpoint persistence remains a separate non-overwriting
+  writer invoked only by the explicit checkpoint workflow.
+
+## [0.7.6] - 2026-09-01
+
+### Fixed
+
+- The update notifier now ignores Claude, Pi, and sandbox tags, caches the
+  `ca-codex-v*` series independently, and points users to Codex's native
+  plugin reinstall command.
+
+## [0.7.5] - 2026-08-26
+
+### Added
+
+- The installed Codex payload now ships the complete canonical set of 18 reviewer/author/scout charters, `agents/INDEX.md`, and generated dispatch policy with executable route-closure and role-policy checks.
+
+### Changed
+
+- Codex root handling now derives the package from the executing module, corroborates the host-native `PLUGIN_ROOT`, validates the internal normalized root, and fails closed on mismatch or containment violations.
+- Pull-request, merge-queue, and release gates now bind the protected desktop receipt and attestation to candidate commit C, the attestation-only commit R, the synthesized merge payload, and squash-safe final-main bytes before a Codex tag can be created.
+
+## [0.7.4] - 2026-08-24
+
+### Fixed
+
+- Linked-worktree commits now find fresh content-bound security and migration gate markers in the shared main-checkout marker root without redirecting Git or worktree reads away from the commit target.
+
+## [0.7.3] - 2026-08-21
+
+### Fixed
+
+- Codex desktop wrapped execution now carries its explicit worktree directory to H-01. The branch guard allows an intended feature-worktree commit while continuing to block a direct commit on `main`.
+
 ## [0.7.2] — 2026-08-13
 
 ### Fixed

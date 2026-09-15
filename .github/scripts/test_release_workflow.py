@@ -34,6 +34,7 @@ contract in this directory. The two execution classes need a POSIX shell and
 so are skipped on Windows — the structural classes above run everywhere, and
 the hooks job's ubuntu/macos cells run all of it.
 """
+import json
 import os
 import re
 import shutil
@@ -101,9 +102,9 @@ LANES = {
 PUBLISH_JOBS = tuple(LANES)
 PREFLIGHT_JOB = "preflight"
 
-# Auto-tag-on-merge (drift-prevention campaign, adjacent to #645): one
-# push-triggered write-token job per target, mirroring LANES/PUBLISH_JOBS but
-# never creating a Release (`create-release: "false"` on every one).
+# Auto-publish-on-merge: one push-triggered write-token job per target,
+# mirroring LANES/PUBLISH_JOBS and creating the corresponding GitHub Release
+# only after the existing eligibility preflight passes.
 AUTO_LANES = {
     "auto-release": {"target": "ca"},
     "auto-release-codex": {"target": "ca-codex"},
@@ -112,11 +113,33 @@ AUTO_LANES = {
 }
 AUTO_PUBLISH_JOBS = tuple(AUTO_LANES)
 AUTO_PREFLIGHT_JOB = "auto-preflight"
+MANUAL_CODEX_PROVENANCE_JOB = "codex-provenance"
+AUTO_CODEX_PROVENANCE_JOB = "auto-codex-provenance"
+AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB = "auto-command-route-release-audit"
+MANUAL_PI_NPM_JOB = "publish-pi-npm"
+AUTO_PI_NPM_JOB = "auto-publish-pi-npm"
+NPM_PUBLISH_WORKFLOW_REF = "./.github/workflows/npm-publish.yml"
+
+# #654: two triggers share this one file, and every job belongs to exactly one
+# of them. The manual lane reads dispatch inputs that do not exist on the
+# auto-tag lane, so a job that can start on both is not a lane — it is a bug.
+TRIGGERS = ("workflow_dispatch", "workflow_run")
+JOB_TRIGGER = dict(
+    [(PREFLIGHT_JOB, "workflow_dispatch")]
+    + [(job, "workflow_dispatch") for job in PUBLISH_JOBS]
+    + [(MANUAL_CODEX_PROVENANCE_JOB, "workflow_dispatch")]
+    + [(MANUAL_PI_NPM_JOB, "workflow_dispatch")]
+    + [(AUTO_PREFLIGHT_JOB, "workflow_run")]
+    + [(job, "workflow_run") for job in AUTO_PUBLISH_JOBS]
+    + [(AUTO_CODEX_PROVENANCE_JOB, "workflow_run")]
+    + [(AUTO_PI_NPM_JOB, "workflow_run")]
+    + [(AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB, "workflow_run")]
+)
 
 # A job-level `if:` that uses one of these status functions opts OUT of the
 # implicit "all `needs` succeeded" gate — which would let a publisher run after
 # its own preflight refused the dispatch.
-_STATUS_ESCAPES = ("always()", "!cancelled()", "cancelled()", "failure()")
+_STATUS_ESCAPES = ("always", "cancelled", "failure")
 
 
 def _release() -> str:
@@ -127,10 +150,101 @@ def _jobs() -> dict:
     return workflow_jobs(_release())
 
 
+def _named_step(job: str, name: str) -> str:
+    """Return one named workflow step without borrowing evidence from siblings."""
+    match = re.search(
+        rf"(?ms)^      - name: {re.escape(name)}\n.*?(?=^      - |\Z)",
+        job,
+    )
+    if not match:
+        raise AssertionError(f"missing workflow step: {name}")
+    return match.group(0)
+
+
 def _job_if(block: str) -> str:
     """The job-level `if:` expression (two-space indent), '' when absent."""
     match = re.search(r"(?m)^    if:[ ]*(.+)$", block)
     return match.group(1).strip() if match else ""
+
+
+def _job_needs(block: str) -> tuple:
+    """The job's `needs:` targets — scalar, inline-list, or block-list form.
+
+    Every form is read rather than only the scalar one this file happens to
+    use today, because a `needs:` this helper could not parse would read as
+    "depends on nothing", and a job that depends on nothing is exactly what
+    the trigger-isolation walk below treats as ungated.
+    """
+    scalar = re.search(r"(?m)^    needs:[ ]+([\w.-]+)[ ]*$", block)
+    if scalar:
+        return (scalar.group(1),)
+    inline = re.search(r"(?m)^    needs:[ ]*\[(.+)\][ ]*$", block)
+    if inline:
+        return tuple(name.strip().strip("'\"") for name in inline.group(1).split(","))
+    listed = re.search(r"(?m)^    needs:[ ]*\n((?:      - .+\n)+)", block)
+    if listed:
+        return tuple(re.findall(r"-[ ]+([\w.-]+)", listed.group(1)))
+    if re.search(r"(?m)^    needs:", block):
+        raise AssertionError("a `needs:` edge this suite cannot parse — "
+                             "an unreadable dependency must not read as none")
+    return ()
+
+
+def _condition_triggers(condition: str, *, allow_status_escape: bool = False) -> set:
+    """Return the workflow triggers permitted by one supported condition."""
+    if not allow_status_escape and any(
+        re.search(rf"(?<![\w.]){escape}\s*\(", condition, re.IGNORECASE)
+        for escape in _STATUS_ESCAPES
+    ):
+        raise AssertionError("a status function bypasses the implicit needs gate")
+    if "github.event_name" not in condition:
+        return set(TRIGGERS)
+    supported_pi_result_guard = (
+        "(needs.auto-preflight.outputs.ca-pi != 'true' || "
+        "needs.auto-publish-pi-npm.result == 'success')"
+    )
+    if "||" in condition.replace(supported_pi_result_guard, "true"):
+        raise AssertionError("unsupported boolean event guard")
+    named = re.findall(r"github\.event_name == '([\w_]+)'", condition)
+    if len(named) != 1 or named[0] not in TRIGGERS:
+        raise AssertionError("unsupported boolean event guard")
+    return {named[0]}
+
+
+def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
+    """Every event name `job` can start on (#654).
+
+    A job's own `if:` pins it when that expression names an event; otherwise
+    it inherits from the jobs it `needs`, because GitHub skips a dependent
+    whose dependency skipped — which is why the four manual publishers carry
+    no event guard of their own and do not need one.
+
+    A job that neither names an event nor reaches one through `needs` starts
+    on every trigger the file declares. That is not a conservative reading:
+    it is precisely what the shipped dispatch preflight did.
+
+    Only the single-quoted `github.event_name == 'X'` form is recognised. A
+    correct guard written some other way (double quotes, or gating on an
+    input's presence) reads here as "names no event" and turns these tests
+    red — fail-closed, and deliberately so, but it means a red from this
+    helper against a guard you believe is right is a signal to WIDEN the
+    pattern below, not to weaken the guard in release.yml.
+    """
+    if job in chain:
+        raise AssertionError(f"cyclic `needs` chain through {job!r}")
+    if job not in jobs:
+        raise AssertionError(f"`needs` names undeclared job {job!r}")
+    condition = _job_if(jobs[job])
+    permitted = _condition_triggers(
+        condition,
+        allow_status_escape=job == AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
+    )
+    parents = _job_needs(jobs[job])
+    if not parents:
+        return permitted
+    for parent in parents:
+        permitted &= _gated_triggers(parent, jobs, (*chain, job))
+    return permitted
 
 
 def _extract_run(text: str, name_fragment: str, step_indent: int, where: str) -> str:
@@ -219,11 +333,48 @@ _STUB_PRELUDE = """
 git() {
   echo "git $*" >> "$STUB_LOG"
   if [ "$1" = "ls-remote" ]; then cat "$STUB_LS_REMOTE"; fi
+  if [ "$1" = "tag" ] && [ "${2:-}" = "-l" ]; then printf '%s' "${STUB_TAGS:-}"; fi
+  if [ "$1" = "rev-parse" ] && [ "${2:-}" = "HEAD" ]; then printf '%s' "${STUB_HEAD:-$GITHUB_SHA}"; fi
   return 0
 }
 gh() {
   echo "gh $*" >> "$STUB_LOG"
   if [ "$1" = "api" ]; then
+    case " $* " in
+      *"/releases?per_page=100"*)
+        case "$STUB_RELEASE" in
+          unavailable)
+            echo "simulated Release API failure" >&2
+            return 1
+            ;;
+          none)
+            printf '[[]]\n'
+            return 0
+            ;;
+          published) DRAFT=false ;;
+          *) DRAFT=true ;;
+        esac
+        printf '[[{"draft":%s,"tag_name":"%s"}]]\n' "$DRAFT" "$STUB_TAGNAME"
+        return 0
+        ;;
+      *"/releases/tags/"*)
+        case "$STUB_RELEASE" in
+          none|draft)
+            printf 'HTTP/2.0 404 Not Found\ncontent-type: application/json\n\n{}\n'
+            return 1
+            ;;
+          unavailable)
+            echo "simulated Release API failure" >&2
+            return 1
+            ;;
+          published) DRAFT=false ;;
+          *) DRAFT=true ;;
+        esac
+        printf 'HTTP/2.0 200 OK\ncontent-type: application/json\n\n'
+        printf '{"draft":%s,"tag_name":"%s"}\n' "$DRAFT" "$STUB_TAGNAME"
+        return 0
+        ;;
+    esac
     for arg in "$@"; do
       if [ "$arg" = ".check_runs" ]; then
         "$STUB_PYTHON" -c 'import json,os;print(json.dumps(json.load(open(os.environ["STUB_CHECKS"]))["check_runs"]))'
@@ -288,6 +439,9 @@ class _ShellHarness(unittest.TestCase):
         scripts = root / ".github" / "scripts"
         scripts.mkdir(parents=True)
         shutil.copy(HERE / "_releaselib.py", scripts / "_releaselib.py")
+        shutil.copy(
+            HERE / "check_command_route_release_state.py",
+            scripts / "check_command_route_release_state.py")
         # The shim (copied above) resolves `core/pysrc/_releaselib.py` at
         # import time via its own __file__ -> parents[2] -- i.e. TWO levels
         # above `.github/scripts/`, exactly like this synthetic tree's
@@ -362,6 +516,20 @@ class _ShellHarness(unittest.TestCase):
 @POSIX_ONLY
 class PreflightExecutionTest(_ShellHarness):
     """#378 + #385, executed: the preflight's own shell against fake inputs."""
+
+    def _sandbox(self):
+        root = super()._sandbox()
+        # These existing tests isolate target selection/readiness. Supply
+        # check-free rows with the real target identities; the declared-check
+        # suite below supplies executable checks, failures, and mutations.
+        declared = root / ".codearbiter/release-targets.md"
+        declared.write_text(re.sub(r"(?m)^pre-tag:.*\n", "",
+                                   declared.read_text(encoding="utf-8")),
+                            encoding="utf-8", newline="\n")
+        shutil.copy(REPO_ROOT / "core/pysrc/_gitexec.py", root / "core/pysrc/_gitexec.py")
+        subprocess.run(["git", "-C", str(root), "init"], check=True,
+                       capture_output=True, text=True)
+        return root
 
     @classmethod
     def setUpClass(cls):
@@ -519,7 +687,23 @@ class PublishExecutionTest(_ShellHarness):
         self.assertNotIn("git tag -a", log)
         self.assertIn("gh release create v9.9.9", log)
 
-    # -- #645-adjacent auto-tag-on-merge: create-release="false" ---------------
+    def test_release_api_unavailability_aborts_before_any_tag_mutation(self):
+        proc, log, _ = self._publish("v9.9.9", release="unavailable")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("api-unavailable", proc.stdout + proc.stderr)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("git push origin refs/tags/v9.9.9", log)
+        self.assertNotIn("gh release create", log)
+
+    def test_existing_draft_aborts_before_any_tag_mutation(self):
+        proc, log, _ = self._publish("v9.9.9", release="draft")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("draft", proc.stdout + proc.stderr)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("git push origin refs/tags/v9.9.9", log)
+        self.assertNotIn("gh release create", log)
+
+    # -- Explicit tag-only action behavior --------------------------------------
     def test_create_release_false_tags_and_pushes_but_never_calls_release_create(self):
         proc, log, _ = self._publish("v9.9.9", create_release="false")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -529,9 +713,8 @@ class PublishExecutionTest(_ShellHarness):
         self.assertNotIn("gh release create", log)
 
     def test_create_release_false_on_an_already_tagged_commit_is_a_no_op(self):
-        # Steady state after the FIRST auto-tag run for a version: the tag
-        # already exists at GITHUB_SHA, and there is deliberately no Release
-        # to create — resume_publish must not retry anything.
+        # A tag-only caller can revisit an existing tag without creating a
+        # Release. `resume_publish` must not retry anything in that mode.
         proc, log, _ = self._publish("v9.9.9", tag_at=self.HEAD,
                                      create_release="false")
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -540,8 +723,8 @@ class PublishExecutionTest(_ShellHarness):
         self.assertNotIn("gh release create", log)
 
     def test_create_release_false_still_aborts_on_a_tag_at_the_wrong_commit(self):
-        # The #380 tag-integrity guard applies regardless of create-release —
-        # auto-tag must never silently move an existing tag either.
+        # The #380 tag-integrity guard applies regardless of create-release.
+        # A tag-only caller must never silently move an existing tag either.
         proc, log, _ = self._publish("v9.9.9", tag_at=self.OTHER,
                                      create_release="false")
         self.assertNotEqual(proc.returncode, 0)
@@ -780,8 +963,8 @@ class DispatchExclusivityTest(unittest.TestCase):
         jobs = _jobs()
         for job in PUBLISH_JOBS:
             with self.subTest(job=job):
-                self.assertRegex(
-                    jobs[job], r"(?m)^    needs: preflight$",
+                self.assertIn(
+                    PREFLIGHT_JOB, _job_needs(jobs[job]),
                     f"{job} must not start without the preflight's authorization")
 
     def test_publish_jobs_gate_on_the_single_resolved_target(self):
@@ -879,6 +1062,21 @@ class ExistingTagIntegrityTest(unittest.TestCase):
         self.assertIn("_releaselib.py classify", action,
                       "#380: the shared publish-state classifier must decide")
         self.assertIn('"$GITHUB_SHA"', action)
+
+    def test_the_publisher_distinguishes_release_absence_from_api_failure_before_tagging(self):
+        action = self._action()
+        lookup = action.index("check_command_route_release_state.py api-lookup")
+        mutation = action.index('git tag -a "$TAG"')
+        self.assertLess(lookup, mutation)
+        self.assertIn(
+            'gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100"',
+            action,
+        )
+        self.assertNotIn(
+            'gh api --include "repos/$GITHUB_REPOSITORY/releases/tags/$TAG"',
+            action,
+            "the tag endpoint hides drafts behind 404 and is unsafe before tag mutation",
+        )
 
     def test_the_bare_tag_exists_skip_is_gone(self):
         # The exact defect: any remote hit was treated as resumable and tag
@@ -1031,12 +1229,35 @@ class LaneIsolationTest(unittest.TestCase):
         self.assertNotIn("merge-readiness", action)
         self.assertNotIn("select-target", action)
 
+    def test_manual_pi_release_synchronously_requires_the_exact_npm_publisher(self):
+        jobs = _jobs()
+        self.assertIn(
+            MANUAL_PI_NPM_JOB,
+            jobs,
+            "manual Pi release can succeed without starting npm publication",
+        )
+        block = jobs[MANUAL_PI_NPM_JOB]
+        self.assertEqual(set(_job_needs(block)), {PREFLIGHT_JOB, "release-pi"})
+        self.assertIn("needs.preflight.outputs.target == 'ca-pi'", _job_if(block))
+        self.assertIn(f"uses: {NPM_PUBLISH_WORKFLOW_REF}", block)
+        self.assertIn("tag: ca-pi-v${{ github.event.inputs.pi_confirm }}", block)
+        self.assertIn("expected_sha: ${{ github.sha }}", block)
+        self.assertIn("contents: read", block)
+        self.assertIn("id-token: write", block)
+        self.assertNotIn("contents: write", block)
+        self.assertNotIn("secrets: inherit", block)
+        self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
+
+    def test_event_guard_parser_rejects_unrelated_or_widening(self):
+        with self.assertRaisesRegex(AssertionError, "unsupported boolean event guard"):
+            _condition_triggers(
+                "github.event_name == 'workflow_run' || github.actor == github.actor"
+            )
+
 
 class AutoTagLaneTest(unittest.TestCase):
-    """Drift-prevention campaign, adjacent to #645: every push to main that
-    advances a target's manifest past its last tag gets tagged immediately,
-    through a `workflow_run`-triggered mirror of the manual dispatch lanes
-    above — never creating a GitHub Release."""
+    """Every eligible manifest advance publishes its tag and GitHub Release
+    through a `workflow_run`-triggered mirror of the manual dispatch lanes."""
 
     def test_the_trigger_is_workflow_run_on_ci_completion_not_a_bare_push(self):
         # A bare `push` trigger here would race ci.yml's OWN concurrent
@@ -1067,8 +1288,8 @@ class AutoTagLaneTest(unittest.TestCase):
         jobs = _jobs()
         for job in AUTO_PUBLISH_JOBS:
             with self.subTest(job=job):
-                self.assertRegex(
-                    jobs[job], r"(?m)^    needs: auto-preflight$",
+                self.assertIn(
+                    AUTO_PREFLIGHT_JOB, _job_needs(jobs[job]),
                     f"{job} must not start without the auto-preflight's eligibility check")
 
     def test_every_auto_lane_gates_on_its_own_resolved_eligibility(self):
@@ -1081,13 +1302,13 @@ class AutoTagLaneTest(unittest.TestCase):
                               condition,
                               f"{job} must run only when {target} is eligible")
 
-    def test_every_auto_lane_never_creates_a_release(self):
+    def test_every_auto_lane_creates_a_release_after_eligibility_preflight(self):
         jobs = _jobs()
         for job in AUTO_PUBLISH_JOBS:
             with self.subTest(job=job):
                 inputs = _lane_inputs(job)
-                self.assertEqual(inputs.get("create-release"), '"false"',
-                                 f"{job} must never create a GitHub Release")
+                self.assertEqual(inputs.get("create-release"), '"true"',
+                                 f"{job} must create a GitHub Release after auto-tagging")
 
     def test_every_auto_lane_trusts_the_manifest_rather_than_a_dispatch_input(self):
         jobs = _jobs()
@@ -1159,6 +1380,324 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertEqual(proc.stdout.strip(), "true",
                          "a series with no tag yet is a first introduction")
+
+    def test_final_command_route_audit_waits_for_every_ra11_publisher(self):
+        block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        self.assertEqual(
+            set(_job_needs(block)),
+            {
+                AUTO_PREFLIGHT_JOB,
+                "auto-release",
+                "auto-release-codex",
+                "auto-release-pi",
+                AUTO_PI_NPM_JOB,
+            },
+        )
+        condition = _job_if(block)
+        self.assertIn("always()", condition)
+        self.assertIn("github.event_name == 'workflow_run'", condition)
+        self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
+        self.assertIn("needs.auto-preflight.result == 'success'", condition)
+        self.assertIn("needs.auto-publish-pi-npm.result == 'success'", condition)
+
+    def test_auto_pi_release_synchronously_requires_the_exact_npm_publisher(self):
+        jobs = _jobs()
+        self.assertIn(
+            AUTO_PI_NPM_JOB,
+            jobs,
+            "auto Pi release can succeed without starting npm publication",
+        )
+        block = jobs[AUTO_PI_NPM_JOB]
+        self.assertEqual(set(_job_needs(block)), {AUTO_PREFLIGHT_JOB, "auto-release-pi"})
+        condition = _job_if(block)
+        self.assertIn("github.event_name == 'workflow_run'", condition)
+        self.assertIn("needs.auto-preflight.outputs.ca-pi == 'true'", condition)
+        self.assertIn(f"uses: {NPM_PUBLISH_WORKFLOW_REF}", block)
+        self.assertIn("tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}", block)
+        self.assertIn(
+            "expected_sha: ${{ github.event.workflow_run.head_sha }}", block
+        )
+        self.assertIn("contents: read", block)
+        self.assertIn("id-token: write", block)
+        self.assertNotIn("contents: write", block)
+        self.assertNotIn("secrets: inherit", block)
+        self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
+
+    def test_final_command_route_audit_is_read_only_and_pins_the_candidate(self):
+        block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        self.assertIn("contents: read", block)
+        self.assertNotIn("contents: write", block)
+        self.assertIn("github.event.workflow_run.head_sha", block)
+        self.assertIn("fetch-tags: true", block)
+
+    def test_final_command_route_audit_collects_api_evidence_then_runs_hermetic_checker(self):
+        block = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        self.assertIn("gh api --include", block)
+        self.assertIn("check_command_route_release_state.py observe", block)
+        self.assertIn("--evidence-dir", block)
+
+    def test_final_command_route_audit_executes_only_trusted_default_branch_code(self):
+        audit = _jobs()[AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB]
+        trusted_checkout = _named_step(
+            audit, "Check out the trusted default-branch release auditor"
+        )
+        candidate_materialization = _named_step(
+            audit, "Materialize the exact completed-run release candidate as inert data"
+        )
+        evidence = _named_step(audit, "Capture exact GitHub Release API evidence")
+        observer = _named_step(
+            audit, "Require every first-containing candidate to be published"
+        )
+
+        self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
+        self.assertIn("path: trusted", trusted_checkout)
+        self.assertIn("persist-credentials: false", trusted_checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", trusted_checkout)
+        self.assertEqual(
+            audit.count("uses: actions/checkout@"), 1,
+            "the privileged publication audit may check out only trusted "
+            "default-branch code",
+        )
+        self.assertNotIn(
+            "ref: ${{ github.event.workflow_run.head_sha }}", audit,
+            "event-selected content must never enter this privileged job via "
+            "actions/checkout",
+        )
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}",
+            candidate_materialization,
+        )
+        required_materialization_controls = (
+            'case "$CANDIDATE_SHA" in',
+            '""|*[!0-9a-f]*)',
+            '[ "${#CANDIDATE_SHA}" -ne 40 ]',
+            'git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"',
+            'git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" '
+            '"${{ github.sha }}"',
+            'git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"',
+        )
+        for control in required_materialization_controls:
+            with self.subTest(control=control):
+                self.assertIn(control, candidate_materialization)
+        self.assertNotIn("|| true", candidate_materialization)
+        for step in (evidence, observer):
+            self.assertIn(
+                "python3 trusted/.github/scripts/check_command_route_release_state.py",
+                step,
+            )
+            self.assertIn("--repo candidate", step)
+        self.assertNotIn(
+            "python3 candidate/.github/scripts/check_command_route_release_state.py",
+            audit,
+        )
+        self.assertNotIn(
+            "python3 .github/scripts/check_command_route_release_state.py", audit
+        )
+
+
+class CodexCandidateProvenanceTest(unittest.TestCase):
+    """A ca-codex tag is authorized only for trusted static candidate bytes."""
+
+    def test_manual_and_auto_codex_publishers_need_hosted_static_provenance(self):
+        jobs = _jobs()
+        expected = {
+            "release-codex": MANUAL_CODEX_PROVENANCE_JOB,
+            "auto-release-codex": AUTO_CODEX_PROVENANCE_JOB,
+        }
+        for publisher, provenance in expected.items():
+            with self.subTest(publisher=publisher):
+                self.assertIn(provenance, jobs)
+                self.assertIn(provenance, _job_needs(jobs[publisher]))
+                block = jobs[provenance]
+                self.assertIn("contents: read", block)
+                self.assertNotIn("contents: write", block)
+                self.assertNotIn("actions: read", block)
+                self.assertNotIn("gh run download", block)
+                self.assertNotIn("codex-desktop-candidate", block)
+                self.assertNotIn("candidate-resolution.json", block)
+                self.assertNotIn("--receipt", block)
+                self.assertNotIn("--candidate-archive", block)
+                self.assertIn("verify_codex_candidate_provenance.py", block)
+                self.assertIn("--final-ref", block)
+
+    def test_manual_and_auto_provenance_pin_the_exact_final_main_commit(self):
+        jobs = _jobs()
+        manual = jobs[MANUAL_CODEX_PROVENANCE_JOB]
+        automatic = jobs[AUTO_CODEX_PROVENANCE_JOB]
+        self.assertIn("ref: ${{ github.sha }}", manual)
+        self.assertIn("--final-ref ${{ github.sha }}", manual)
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}", automatic
+        )
+        self.assertIn('--final-ref "$CANDIDATE_SHA"', automatic)
+
+    def test_auto_provenance_executes_only_trusted_default_branch_code(self):
+        automatic = _jobs()[AUTO_CODEX_PROVENANCE_JOB]
+        trusted_checkout = _named_step(
+            automatic, "Check out the trusted default-branch verifier"
+        )
+        candidate_materialization = _named_step(
+            automatic, "Materialize the exact completed-run candidate as inert data"
+        )
+        verifier = _named_step(automatic, "Verify the exact static Codex candidate")
+
+        self.assertIn("ref: ${{ github.sha }}", trusted_checkout)
+        self.assertIn("path: trusted", trusted_checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", trusted_checkout)
+        self.assertEqual(
+            automatic.count("uses: actions/checkout@"), 1,
+            "the privileged provenance job may use actions/checkout only for "
+            "trusted default-branch code",
+        )
+        self.assertNotIn(
+            "ref: ${{ github.event.workflow_run.head_sha }}", automatic,
+            "event-selected content must never enter this privileged job via "
+            "actions/checkout",
+        )
+        self.assertIn(
+            "CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}",
+            candidate_materialization,
+        )
+        required_materialization_controls = (
+            'case "$CANDIDATE_SHA" in',
+            '""|*[!0-9a-f]*)',
+            '[ "${#CANDIDATE_SHA}" -ne 40 ]',
+            'git -C trusted cat-file -e "$CANDIDATE_SHA^{commit}"',
+            'git -C trusted merge-base --is-ancestor "$CANDIDATE_SHA" '
+            '"${{ github.sha }}"',
+            'git -C trusted worktree add --detach ../candidate "$CANDIDATE_SHA"',
+        )
+        for control in required_materialization_controls:
+            with self.subTest(control=control):
+                self.assertIn(control, candidate_materialization)
+        self.assertNotIn("|| true", candidate_materialization)
+        self.assertIn(
+            "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py",
+            verifier,
+        )
+        self.assertIn("--repo candidate", verifier)
+        self.assertIn('--final-ref "$CANDIDATE_SHA"', verifier)
+        self.assertNotIn("--receipt", verifier)
+        self.assertNotIn("gh run download", verifier)
+        self.assertNotIn(
+            "python3 candidate/.github/scripts/verify_codex_candidate_provenance.py",
+            automatic,
+        )
+        self.assertNotIn(
+            "python3 .github/scripts/verify_codex_candidate_provenance.py",
+            automatic,
+        )
+
+
+class TriggerIsolationTest(unittest.TestCase):
+    """#654: two triggers share this file — a job written for one must never
+    wake up on the other.
+
+    `workflow_dispatch` supplies the four confirmation inputs the manual
+    preflight resolves its single target from. `workflow_run` supplies none
+    of them. The dispatch preflight shipped with no `if:` at all, so every
+    merge to main also woke it on the auto-tag path, where it read four
+    empty inputs, resolved `none`, and exited 1 — twelve consecutive
+    `release` runs concluded `failure` while the auto-tag lanes beside them
+    tagged correctly.
+
+    Nothing was mis-published: the preflight failed CLOSED, and the manual
+    publishers skipped with it. What it cost is the signal. At the run list
+    a permanently-red `release` is indistinguishable from a genuine
+    auto-tag failure — a tag never created, so npm-publish never fires —
+    which is the one alarm this workflow exists to raise.
+    """
+
+    def test_the_dispatch_preflight_runs_only_on_a_dispatch(self):
+        self.assertEqual(
+            _gated_triggers(PREFLIGHT_JOB, _jobs()), {"workflow_dispatch"},
+            "#654: the preflight reads dispatch inputs that exist on no other "
+            "trigger — it must be gated to the trigger that supplies them")
+
+    def test_every_job_is_bound_to_exactly_one_trigger(self):
+        jobs = _jobs()
+        for job in jobs:
+            with self.subTest(job=job):
+                self.assertEqual(
+                    len(_gated_triggers(job, jobs)), 1,
+                    f"{job} can start on more than one of this file's "
+                    "triggers; each lane must belong to exactly one")
+
+    def test_every_job_is_bound_to_the_trigger_its_own_lane_declares(self):
+        # Exactly-one is not enough on its own: a guard inverted to
+        # `!= 'workflow_run'` binds the preflight to one trigger — the wrong
+        # one. Pin which lane each job belongs to.
+        jobs = _jobs()
+        self.assertEqual(sorted(jobs), sorted(JOB_TRIGGER),
+                         "release.yml declares a job no lane accounts for")
+        for job, trigger in JOB_TRIGGER.items():
+            with self.subTest(job=job):
+                self.assertEqual(_gated_triggers(job, jobs), {trigger},
+                                 f"{job} belongs to the {trigger} lane")
+
+    def test_the_walk_reports_an_ungated_job_as_reachable_from_both(self):
+        # The assertions above earn their keep only if the walk actually
+        # discriminates. Proven against synthetic text, not by mutating the
+        # shipped workflow. This first case is #654 itself: no `if:` at all.
+        jobs = {"preflight": "    name: x\n",
+                "release": "    needs: preflight\n"
+                           "    if: needs.preflight.outputs.target == 'ca'\n"}
+        self.assertEqual(_gated_triggers("preflight", jobs), set(TRIGGERS))
+        self.assertEqual(_gated_triggers("release", jobs), set(TRIGGERS),
+                         "a publisher inherits its preflight's reach")
+
+    def test_the_walk_rejects_an_or_widened_event_guard(self):
+        jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'"
+                             " || github.event_name == 'workflow_run'\n"}
+        with self.assertRaisesRegex(AssertionError, "unsupported boolean"):
+            _gated_triggers("preflight", jobs)
+
+    def test_the_walk_inherits_a_parents_trigger_through_needs(self):
+        jobs = {"preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+                "release": "    needs: preflight\n"}
+        self.assertEqual(_gated_triggers("release", jobs), {"workflow_dispatch"})
+
+    def test_the_walk_intersects_its_guard_with_every_parents_lane(self):
+        jobs = {
+            "auto-preflight": "    if: github.event_name == 'workflow_run'\n",
+            "release": "    needs: auto-preflight\n"
+                       "    if: github.event_name == 'workflow_dispatch'\n",
+        }
+        self.assertEqual(_gated_triggers("release", jobs), set())
+
+    def test_the_walk_intersects_multiple_parents_rather_than_unions_them(self):
+        jobs = {
+            "dispatch-preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+            "auto-preflight": "    if: github.event_name == 'workflow_run'\n",
+            "release": "    needs: [dispatch-preflight, auto-preflight]\n",
+        }
+        self.assertEqual(_gated_triggers("release", jobs), set())
+
+    def test_the_walk_rejects_a_status_function_that_bypasses_needs(self):
+        for condition in (
+            "always() || github.event_name == 'workflow_dispatch'",
+            "always () && github.event_name == 'workflow_dispatch'",
+            "Always() && github.event_name == 'workflow_dispatch'",
+        ):
+            with self.subTest(condition=condition):
+                jobs = {
+                    "release": "    needs: preflight\n" f"    if: {condition}\n",
+                    "preflight": "    if: github.event_name == 'workflow_dispatch'\n",
+                }
+                with self.assertRaisesRegex(AssertionError, "status function"):
+                    _gated_triggers("release", jobs)
+
+    def test_the_walk_raises_rather_than_reading_an_unresolvable_needs(self):
+        # never-fold-unreadable-into-absent: a `needs:` this suite cannot
+        # parse, or one naming a job that does not exist, must stop the test
+        # rather than resolve to "depends on nothing".
+        for block, why in (("    needs: {a: b}\n", "unparseable form"),
+                           ("    needs: ghost\n", "undeclared dependency")):
+            with self.subTest(case=why):
+                with self.assertRaises(AssertionError):
+                    _gated_triggers("a", {"a": block})
+        with self.assertRaises(AssertionError):
+            _gated_triggers("a", {"a": "    needs: b\n", "b": "    needs: a\n"})
 
 
 class RegistrationTest(unittest.TestCase):
@@ -1312,6 +1851,259 @@ class NameKeyedTargetSelectionTest(unittest.TestCase):
             with self.subTest(label=label):
                 self.assertIn(f"{label})", self.text)
         self.assertIn("*)", self.text)
+
+
+@POSIX_ONLY
+class TagReceiptExecutionTest(_ShellHarness):
+    """Run the shipped capture shell and helper with only Git transport faked.
+
+    GitHub's always-step scheduling/upload is structurally checked separately;
+    this fixture cannot prove the external artifact service retained anything.
+    """
+
+    def _sandbox(self):
+        root = super()._sandbox()
+        scripts = root / ".github/scripts"
+        shutil.copy(HERE / "tag_publication_receipt.py", scripts / "_fixture_tag_receipt.py")
+        shutil.copy(HERE / "check_tag_immutability.py", scripts / "check_tag_immutability.py")
+        (scripts / "tag_publication_receipt.py").write_text(
+            "import os, subprocess, sys\n"
+            "from _fixture_tag_receipt import main\n"
+            "def run(args, **kwargs):\n"
+            "    tag = os.environ['TAG']\n"
+            "    assert args == ['git', 'ls-remote', '--tags', 'origin', "
+            "'refs/tags/' + tag, 'refs/tags/' + tag + '^{}']\n"
+            "    commit = os.environ.get('STUB_RECEIPT_COMMIT', os.environ['GITHUB_SHA'])\n"
+            "    refs = 'a' * 40 + '\\trefs/tags/' + tag + '\\n'\n"
+            "    refs += commit + '\\trefs/tags/' + tag + '^{}\\n'\n"
+            "    return subprocess.CompletedProcess(args, 0, refs, '')\n"
+            "sys.exit(main(run=run))\n",
+            encoding="utf-8", newline="\n")
+        self.receipt_path = root / "receipt.json"
+        return root
+
+    def _capture(self, *, before="", overrides=None):
+        env = {"TAG": "v9.9.9", "RECEIPT_PATH": "receipt.json",
+               "GITHUB_RUN_ID": "12345", "GITHUB_RUN_ATTEMPT": "2",
+               "VER": "9.9.9", "SUMMARY": "", "TITLE_PREFIX": "codeArbiter",
+               "MARK_LATEST": "false"}
+        env.update(overrides or {})
+        return self._run(before + _action_step("Capture published tag identity receipt"), env=env)
+
+    def test_capture_binds_remote_identity_and_hosted_run(self):
+        proc, _, _ = self._capture()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        receipt = json.loads(self.receipt_path.read_text(encoding="utf-8"))
+        self.assertEqual(receipt["repo"], "arbiterForge/codeArbiter")
+        self.assertEqual(receipt["tag"], "v9.9.9")
+        self.assertEqual(receipt["identity"], {"object_sha": "a" * 40,
+                         "object_type": "tag", "commit_sha": self.HEAD})
+        self.assertEqual(receipt["source"], {"kind": "hosted-tag-observation",
+                         "run_id": 12345, "run_attempt": 2, "workflow_sha": self.HEAD})
+
+    def test_capture_runs_after_push_succeeds_but_release_creation_fails(self):
+        # Execute the real publish body with a failed Release API mutation.
+        # Then model the separately asserted always-step scheduling.
+        before = (
+            "gh() { if [ \"$1\" = api ]; then printf '[[]]\\n'; else return 1; fi; }\n"
+            "set +e\n(\n" + _action_step("Create the tag and GitHub Release") +
+            "\n)\nPUBLISH_EXIT=$?\n[ \"$PUBLISH_EXIT\" -ne 0 ] || exit 99\n")
+        proc, log, _ = self._capture(before=before)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("git push origin refs/tags/v9.9.9", log)
+        self.assertTrue(self.receipt_path.is_file())
+        self.assertEqual(json.loads(self.receipt_path.read_text())["identity"]["commit_sha"], self.HEAD)
+
+    def test_capture_refuses_wrong_commit_without_a_receipt(self):
+        proc, _, _ = self._capture(overrides={"STUB_RECEIPT_COMMIT": "b" * 40})
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertFalse(self.receipt_path.exists())
+
+
+@POSIX_ONLY
+class DeclaredPreTagExecutionTest(_ShellHarness):
+    """AC-6.8/2.1-2.3: release authorization executes declared checks, not CI.
+
+    The real workflow shell and canonical runner operate on a disposable Git
+    fixture. Only publication/network commands are faked by _ShellHarness;
+    there are no commits, remotes, real credentials, or publication operations.
+    """
+
+    def _sandbox(self):
+        root = super()._sandbox()
+        # Exercise the real checker and CLI; replace only its network input.
+        # The empty fixture inventory is not evidence about production tags.
+        scripts = root / ".github/scripts"
+        shutil.copy(HERE / "check_tag_immutability.py", scripts / "_fixture_tag_checker.py")
+        (scripts / "check_tag_immutability.py").write_text(
+            "import os, sys\n"
+            "from _fixture_tag_checker import main\n"
+            "def rest(path):\n"
+            "    print('PROVENANCE-CHECK', flush=True)\n"
+            "    if os.environ.get('STUB_PROVENANCE_UNAVAILABLE') == '1':\n"
+            "        return 503, {}\n"
+            "    return 200, []\n"
+            "sys.exit(main(rest=rest, recorded={}))\n",
+            encoding="utf-8", newline="\n")
+        shutil.copy(REPO_ROOT / "core/pysrc/_gitexec.py", root / "core/pysrc/_gitexec.py")
+        declared = root / ".codearbiter/release-targets.md"
+        text = re.sub(r"(?m)^pre-tag:.*\n", "", declared.read_text(encoding="utf-8"))
+        for target in ("ca", "ca-codex", "ca-sandbox", "ca-pi"):
+            commands = self.commands.get(target, [])
+            text = text.replace(f"[{target}]\n", f"[{target}]\n" + "".join(
+                f"pre-tag: {command}\n" for command in commands))
+        if getattr(self, "malformed", False):
+            text = text.replace("prefix: v\n", "prefix: v\nprefix: duplicate\n", 1)
+        declared.write_text(text, encoding="utf-8", newline="\n")
+        (root / "check.py").write_text(
+            "import os, pathlib, sys\n"
+            "assert not any(os.environ.get(key) for key in "
+            "('GH_TOKEN', 'GITHUB_TOKEN', 'NPMJS_TOKEN', 'GITHUB_OUTPUT', "
+            "'GITHUB_ENV', 'CLAUDE_PROJECT_DIR', 'GIT_CONFIG_COUNT'))\n"
+            "print('CHECKED:' + sys.argv[1], flush=True)\n"
+            "if len(sys.argv) > 2 and sys.argv[2] == 'mutate':\n"
+            "    pathlib.Path('check.py').write_text('changed by checker')\n"
+            "if len(sys.argv) > 2 and sys.argv[2] == 'fail':\n"
+            "    sys.exit(1)\n",
+            encoding="utf-8", newline="\n")
+        # Stage only this disposable fixture so status reports individual
+        # paths; no commit or repository-local enforcement is involved.
+        for args in (("init",), ("add", ".")):
+            subprocess.run(["git", "-C", str(root), *args], check=True,
+                           capture_output=True, text=True)
+        return root
+
+    def _authorize(self, lane, *, target="ca", tags="", overrides=None):
+        env = dict.fromkeys(PreflightExecutionTest.DISPATCH_INPUTS, "")
+        env[dict(zip(("ca", "ca-codex", "ca-sandbox", "ca-pi"),
+                     PreflightExecutionTest.DISPATCH_INPUTS))[target]] = "9.9.9"
+        env.update({"STUB_TAGS": tags, "GH_TOKEN": "DUMMY-read-token",
+                    "GITHUB_TOKEN": "DUMMY-read-token", "NPMJS_TOKEN": "DUMMY-token"})
+        env.update({"UPSTREAM_EVENT": "push", "UPSTREAM_CONCLUSION": "success",
+                    "UPSTREAM_BRANCH": "main", "UPSTREAM_REPOSITORY": "arbiterForge/codeArbiter",
+                    "GITHUB_REPOSITORY": "arbiterForge/codeArbiter", "UPSTREAM_SHA": self.HEAD})
+        env.update(overrides or {})
+        step = ("Resolve exactly one release target" if lane == "preflight"
+                else "Determine which targets have untagged work")
+        script = _step_run(lane, step)
+        if lane == "preflight":
+            # GitHub stops the job on a failed earlier step. Model that
+            # boundary explicitly when composing the two real shell bodies.
+            script = "set -e\n" + _step_run(lane, "Require complete prior tag provenance") + "\n" + script
+        return self._run(script, env=env)
+
+    def test_unavailable_provenance_never_emits_publication_authority(self):
+        self.commands = {}
+        for lane in ("preflight", "auto-preflight"):
+            with self.subTest(lane=lane):
+                proc, log, out = self._authorize(
+                    lane, overrides={"STUB_PROVENANCE_UNAVAILABLE": "1"})
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertIn("release requires a complete live tag inventory", proc.stdout)
+                self.assertEqual(out, "")
+                self.assertNotIn("git push", log)
+
+    def test_auto_noop_does_not_require_publication_provenance(self):
+        self.commands = {}
+        tags = "v9.9.9\nca-codex-v9.9.9\nca-sandbox-v9.9.9\nca-pi-v9.9.9\n"
+        proc, log, out = self._authorize(
+            "auto-preflight", tags=tags,
+            overrides={"STUB_PROVENANCE_UNAVAILABLE": "1"})
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertNotIn("PROVENANCE-CHECK", proc.stdout)
+        self.assertEqual(out, "ca=false\nca-codex=false\nca-sandbox=false\nca-pi=false\n"
+                             "ca-pi-version=9.9.9\n")
+        self.assertNotIn("git push", log)
+
+    def test_manual_checks_are_ordered_target_scoped_and_credential_free(self):
+        self.commands = {target: [f'"$PY" check.py {target}-first',
+                                  f'"$PY" check.py {target}-second']
+                         for target in ("ca", "ca-codex", "ca-sandbox", "ca-pi")}
+        for target in self.commands:
+            with self.subTest(target=target):
+                proc, log, out = self._authorize("preflight", target=target)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertEqual(re.findall(r"^CHECKED:(.+)$", proc.stdout, re.M),
+                                 [f"{target}-first", f"{target}-second"])
+                self.assertEqual(out, f"target={target}\n")
+                self.assertNotIn("git push", log)
+
+    def test_failed_or_unavailable_check_never_authorizes_either_lane(self):
+        for command in ('"$PY" check.py first fail', 'missing-pretag-command'):
+            self.commands = {"ca-pi": [command, '"$PY" check.py forbidden-later']}
+            for lane in ("preflight", "auto-preflight"):
+                with self.subTest(lane=lane, command=command):
+                    proc, _, out = self._authorize(lane, target="ca-pi")
+                    self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                    self.assertEqual(out, "", "failure must not emit authorization")
+                    self.assertNotIn("CHECKED:forbidden-later", proc.stdout)
+
+    def test_mutating_check_never_authorizes_either_lane(self):
+        self.commands = {"ca-pi": ['"$PY" check.py mutation mutate']}
+        for lane in ("preflight", "auto-preflight"):
+            with self.subTest(lane=lane):
+                proc, _, out = self._authorize(lane, target="ca-pi")
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertIn("MUTATED", proc.stderr)
+                self.assertEqual(out, "")
+
+    def test_auto_only_checks_eligible_targets_and_accepts_no_check_targets(self):
+        self.commands = {"ca": ['"$PY" check.py forbidden-ineligible fail'],
+                         "ca-pi": ['"$PY" check.py eligible-pi']}
+        proc, _, out = self._authorize("auto-preflight", tags="v9.9.9\n")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(re.findall(r"^CHECKED:(.+)$", proc.stdout, re.M), ["eligible-pi"])
+        self.assertEqual(out, "ca=false\nca-codex=true\nca-sandbox=true\n"
+                             "ca-pi=true\nca-pi-version=9.9.9\n")
+
+    def test_auto_malformed_declaration_fails_closed_before_authorization(self):
+        self.commands = {}
+        self.malformed = True
+        proc, _, out = self._authorize("auto-preflight")
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertEqual(out, "")
+
+    def test_preflight_checkouts_do_not_persist_credentials(self):
+        for lane in ("preflight", "auto-preflight"):
+            with self.subTest(lane=lane):
+                block = _jobs()[lane]
+                checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
+                                     r"(?=^      - |\Z)", block).group(0)
+                self.assertIn("persist-credentials: false", checkout)
+                self.assertNotIn("contents: write", block)
+
+    def test_auto_rejects_untrusted_upstream_before_executing_checks(self):
+        self.commands = {"ca": ['"$PY" check.py forbidden-untrusted']}
+        for field, value in (("UPSTREAM_EVENT", "pull_request"),
+                             ("UPSTREAM_CONCLUSION", "failure"),
+                             ("UPSTREAM_BRANCH", "feature"),
+                             ("UPSTREAM_REPOSITORY", "fork/codeArbiter"),
+                             ("UPSTREAM_SHA", "b" * 40),
+                             ("STUB_HEAD", "c" * 40)):
+            with self.subTest(field=field):
+                proc, _, out = self._authorize("auto-preflight", overrides={field: value})
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertEqual(out, "")
+                self.assertNotIn("CHECKED:", proc.stdout)
+
+    def test_auto_checkout_is_pinned_to_trusted_workflow_revision(self):
+        block = _jobs()["auto-preflight"]
+        checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
+                             r"(?=^      - |\Z)", block).group(0)
+        self.assertIn("ref: ${{ github.sha }}", checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", checkout)
+
+    def test_auto_trust_inputs_are_bound_to_upstream_event_fields(self):
+        block = _jobs()["auto-preflight"].split("id: eligible", 1)[1].split("run: |", 1)[0]
+        for variable, field in (("UPSTREAM_EVENT", "event"),
+                                ("UPSTREAM_CONCLUSION", "conclusion"),
+                                ("UPSTREAM_BRANCH", "head_branch"),
+                                ("UPSTREAM_REPOSITORY", "head_repository.full_name"),
+                                ("UPSTREAM_SHA", "head_sha")):
+            with self.subTest(variable=variable):
+                self.assertRegex(block, rf"(?m)^          {variable}: "
+                                 + re.escape("${{ github.event.workflow_run." + field + " }}")
+                                 + r"$")
 
 
 if __name__ == "__main__":

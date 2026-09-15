@@ -14,9 +14,10 @@ gates:
 
 This is the single entry point for turning staged work into a commit — nothing in codeArbiter
 calls `git commit` any other way. Invoking it hands control to a multi-phase check that reads the
-repository's current state itself (what's staged, what changed, whether the test suite is green)
-rather than taking your word for it, then walks through verification, a behavioral check, and a
-diff review before anything is written to history.
+repository's current state itself (what's staged, what changed, whether the applicable local checks
+are green) rather than taking your word for it. It runs impact-bounded local verification, a
+behavioral check, and a diff review before anything is written to history. Exhaustive exact-head
+hosted CI remains a merge gate.
 
 ## Usage
 

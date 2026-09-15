@@ -19,7 +19,7 @@ capabilities, and tool classes without copying governance policy.
 | Host | Adapter entry | Public command form | Runtime boundary |
 |---|---|---|---|
 | Claude Code (`ca`) | `hooks/hooks.json` | `/ca:<name>` | native hook events and Claude agents |
-| Codex CLI (`ca-codex`) | `.codex-plugin/plugin.json` + generated hooks | `$ca-<name>` | compatible hook events; host-provided agent threads load shared charters, with a bounded older-host inline fallback |
+| Codex CLI (`ca-codex`) | `.codex-plugin/plugin.json` + generated hooks | `$ca-<name>` | compatible hook events; published releases from 0.7.5 include packaged resource charters (not native agent registrations) for host-provided threads, with exact static-package and route-closure release gates |
 | Pi (`ca-pi`) | `extensions/codearbiter.js` | `/ca-<name>` with `/skill:ca-<name>` fallback | TypeScript lifecycle/tool wrappers call the bounded Python bridge; roles use hardened child Pi processes |
 
 Pi's parent extension stays dormant until the repository is enabled and Pi
@@ -50,7 +50,7 @@ injected at `SessionStart` — `SessionStart` clears the session's mode marker a
 startup-state block only; the composed persona injects at the per-turn prompt seam instead, deduped
 per (session, mode, compaction generation), so a mid-session `mode --dangerous|--ops|--arbiter` flip
 changes what the next turn carries. Everything else — `routing-table.md`, `reference-map.md`, all 22
-skill bodies, all 18 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
+skill bodies, all 19 agent bodies, and the `anti-slop-design` lazy-load bundle — is paid on demand,
 only when its entry point is invoked, and only for the nodes that entry point actually reaches. A
 typical fix touches the persona + `tdd` + one author + maybe one reviewer, not the full
 payload. The read-only meta commands (`status`, `btw`, `commands`, `audit`) route

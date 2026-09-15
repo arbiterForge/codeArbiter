@@ -11,6 +11,7 @@ import importlib.util
 import json
 import fnmatch
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -23,6 +24,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _TOOL = REPO_ROOT / "tools" / "ci-impact.py"
 _DESCRIPTORS_TOOL = REPO_ROOT / "tools" / "host_descriptors.py"
 CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+CODEX_DESKTOP_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "codex-desktop-candidate.yml"
+ACTIONLINT_CONFIG = REPO_ROOT / ".github" / "actionlint.yaml"
 DOCS_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "docs.yml"
 GITLEAKS_CONFIG = REPO_ROOT / ".gitleaks.toml"
 # The one audit threshold every dependency graph in this repo is gated at.
@@ -110,6 +113,52 @@ def workflow_jobs(text: str) -> dict[str, str]:
     if current is not None:
         jobs[current] = "".join(body)
     return jobs
+
+
+def checkout_fetch_depth(job: str) -> str | None:
+    """Return the checkout step's structured ``with.fetch-depth`` value.
+
+    A comment mentioning ``fetch-depth: 0`` is not workflow configuration and
+    must not satisfy the full-history contract.
+    """
+    lines = job.splitlines()
+    try:
+        checkout = next(
+            index
+            for index, line in enumerate(lines)
+            if re.match(r"^      - uses: actions/checkout@", line)
+        )
+    except StopIteration:
+        return None
+
+    end = next(
+        (index for index in range(checkout + 1, len(lines)) if lines[index].startswith("      - ")),
+        len(lines),
+    )
+    step = lines[checkout:end]
+    try:
+        with_index = next(
+            index for index, line in enumerate(step) if re.match(r"^        with:\s*$", line)
+        )
+    except StopIteration:
+        return None
+    for line in step[with_index + 1:]:
+        match = re.match(r"^          fetch-depth:\s*([^\s#]+)", line)
+        if match is not None:
+            return match.group(1)
+    return None
+
+
+def run_step_index(job: str, command: str) -> int:
+    """Return the line index of an executable one-line run step."""
+    return next(
+        (
+            index
+            for index, line in enumerate(job.splitlines())
+            if line.strip() == f"run: {command}"
+        ),
+        -1,
+    )
 
 
 def push_trigger_paths(workflow: str) -> list[str]:
@@ -731,6 +780,147 @@ class DescriptorSurfaceTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_required_tag_immutability_job_requires_recorded_publications(self):
+        # A missing receipt must block the required merge gate, not first surface
+        # after merge when the next automatic release reaches strict preflight.
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("tag-immutability", aggregate_needs(ci))
+        self.assertIn("tag-immutability", aggregate_required_results(ci))
+        job = workflow_jobs(ci)["tag-immutability"]
+        invocation = re.search(
+            r"(?m)^        run: >-\n(?P<command>(?:          [^\n]+\n)+)", job
+        )
+        self.assertIsNotNone(invocation, "the required live tag audit has no run command")
+        argv = shlex.split(
+            " ".join(line.strip() for line in invocation.group("command").splitlines()),
+            comments=True,
+        )
+        self.assertEqual(argv[:2], ["python", ".github/scripts/check_tag_immutability.py"])
+        self.assertIn(
+            "--require-recorded", argv,
+            "required CI only warns about missing publication receipts; "
+            "the same missing receipt then blocks automatic release after merge",
+        )
+
+    def test_surface_job_fetches_complete_release_tag_history(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        job = workflow_jobs(ci)["surface"]
+        checkout = job.split("actions/checkout@", 1)[1].split("- uses:", 1)[0]
+        self.assertIn("fetch-depth: 0", checkout)
+        self.assertIn("fetch-tags: true", checkout)
+
+    def test_codex_static_candidate_verifier_is_required_without_desktop_receipts(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        watched = {
+            ".github/scripts/verify_codex_static_candidate.py",
+            ".github/scripts/verify_codex_candidate_provenance.py",
+            ".github/scripts/test_codex_candidate_provenance.py",
+        }
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "ca-codex"))))
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
+        self.assertTrue(watched.issubset(set(push_trigger_paths(ci))))
+        job = workflow_jobs(ci)["codex-candidate-provenance"]
+        self.assertIn("github.event_name == 'pull_request'", job)
+        self.assertIn("github.event_name == 'merge_group'", job)
+        self.assertIn("needs.changes.outputs.ca-codex == 'true'", job)
+        self.assertIn("contents: read", job)
+        self.assertIn("fetch-depth: 0", job)
+        self.assertIn("path: trusted", job)
+        self.assertIn(
+            "github.event.pull_request.base.sha || github.event.merge_group.base_sha", job
+        )
+        self.assertIn("git -C trusted worktree add --detach ../candidate", job)
+        self.assertIn(
+            "python3 trusted/.github/scripts/verify_codex_static_candidate.py", job
+        )
+        self.assertNotIn(
+            "python3 trusted/.github/scripts/verify_codex_candidate_provenance.py", job
+        )
+        self.assertIn("--repo candidate", job)
+        self.assertNotIn(
+            "python .github/scripts/test_codex_candidate_provenance.py", job
+        )
+        self.assertNotIn("actions: read", job)
+        self.assertNotIn("--receipt", job)
+        self.assertNotIn("--allow-missing-receipt", job)
+        self.assertNotIn("codex-desktop-candidate", job)
+        self.assertIn("--final-ref \"$HEAD_SHA\"", job)
+        self.assertIn("github.event.pull_request.head.sha || github.event.merge_group.head_sha", job)
+        self.assertIn("codex-candidate-provenance", aggregate_needs(ci))
+        self.assertIn("codex-candidate-provenance", aggregate_required_results(ci))
+
+    def test_active_workflows_have_no_desktop_or_self_hosted_release_path(self):
+        self.assertFalse(CODEX_DESKTOP_WORKFLOW.exists())
+        for workflow_path in sorted((REPO_ROOT / ".github/workflows").glob("*.yml")):
+            workflow = workflow_path.read_text(encoding="utf-8")
+            with self.subTest(workflow=workflow_path.name):
+                self.assertNotRegex(workflow, r"(?m)^\s*runs-on:\s*\[self-hosted")
+                self.assertNotIn("codex-desktop-ephemeral", workflow)
+                self.assertNotIn("environment: codex-desktop-candidate", workflow)
+
+    def test_codex_resource_changes_reach_an_exact_required_lane(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        watched = {
+            ".github/fixtures/codex-skill-resources/**",
+            ".github/scripts/check_codex_skill_resources.py",
+            ".github/scripts/check_codex_static_package.py",
+            ".github/scripts/test_codex_skill_resources.py",
+            ".github/scripts/test_codex_static_package.py",
+            ".github/scripts/test_codex_static_candidate.py",
+            ".github/scripts/verify_codex_static_candidate.py",
+            ".github/scripts/verify_codex_candidate_provenance.py",
+            ".github/scripts/test_codex_candidate_provenance.py",
+            "plugins/ca-codex/**",
+            "docs/reports/codex-skill-resource-resolution.md",
+            "docs/reports/evidence/codex-skill-resource-resolution/**",
+            ".github/workflows/ci.yml",
+        }
+        self.assertTrue(watched.issubset(set(paths_filter(ci, "codex-resources"))))
+        self.assertTrue(watched.issubset(set(push_trigger_paths(ci))))
+        job = workflow_jobs(ci)["codex-resource-contract"]
+        self.assertIn("needs.changes.outputs.codex-resources == 'true'", job)
+        self.assertIn("run: python .github/scripts/test_codex_skill_resources.py", job)
+        self.assertIn("run: python .github/scripts/test_codex_static_package.py", job)
+        self.assertIn("run: python .github/scripts/test_codex_static_candidate.py", job)
+        self.assertIn(
+            "git archive --format=zip --output=ca-codex-static.zip HEAD -- plugins/ca-codex",
+            job,
+        )
+        self.assertIn(
+            "python .github/scripts/check_codex_static_package.py --candidate-package ca-codex-static.zip",
+            job,
+        )
+        self.assertIn("run: python .github/scripts/test_codex_candidate_provenance.py", job)
+        self.assertIn(
+            "run: python .github/scripts/check_codex_skill_resources.py --fixtures-only", job
+        )
+        self.assertIn("--candidate-contract-only", job)
+        self.assertIn("--candidate-package plugins/ca-codex", job)
+        self.assertIn("codex-resource-contract", aggregate_needs(ci))
+        self.assertIn("codex-resource-contract", aggregate_required_results(ci))
+
+    def test_required_codex_host_lane_runs_the_host_checker_regression_suite(self):
+        """The fail-closed installed-host test must block, not merely advise."""
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        required = aggregate_required_results(ci)
+        self.assertIn("codex-host", required)
+        self.assertIn(
+            "run: python3 .github/scripts/test_check_codex_host.py",
+            workflow_jobs(ci)["codex-host"],
+        )
+        self.assertNotIn(
+            "run: python3 .github/scripts/test_check_codex_host.py",
+            workflow_jobs(ci)["codex-host-latest"],
+        )
+
+    def test_actionlint_has_no_self_hosted_runner_exception(self):
+        config = ACTIONLINT_CONFIG.read_text(encoding="utf-8")
+        self.assertNotRegex(config, r"(?m)^self-hosted-runner:\s*$")
+        self.assertNotIn("codex-desktop-ephemeral", config)
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(".github/actionlint.yaml", push_trigger_paths(ci))
+        self.assertIn(".github/actionlint.yaml", paths_filter(ci, "impact"))
+
     def test_every_third_party_action_is_pinned_to_a_commit_sha(self):
         """A `uses:` on a movable tag re-points under us.
 
@@ -1055,7 +1245,7 @@ class WorkflowContractTest(unittest.TestCase):
 
     def test_host_independent_pi_checks_run_once_outside_the_platform_matrix(self):
         # Issue #390: every one of these consumes neither matrix.os nor
-        # matrix.pi-version, so six cells produced six identical verdicts.
+        # matrix.pi-version, so platform cells must not repeat these verdicts.
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         jobs = workflow_jobs(ci)
         self.assertIn("ca-pi-checks", sorted(jobs))
@@ -1074,10 +1264,11 @@ class WorkflowContractTest(unittest.TestCase):
                 self.assertIn(token, canonical, f"ca-pi-checks must own `{token}`")
                 self.assertNotIn(token, matrix, f"ca-pi-tools still repeats `{token}` per cell")
         # Everything whose verdict genuinely depends on the installed Pi
-        # version or the host OS stays in the six-cell matrix.
+        # version or the host OS stays in the supported-host matrix.
         for token in (
             "os: [ubuntu-latest, windows-latest, macos-latest]",
-            "npm install --global @earendil-works/pi-coding-agent@${{ matrix.pi-version }}",
+            "pi-version: [\"0.84.1\"]",
+            "pi_host_locks.py install --version ${{ matrix.pi-version }}",
             "run: npm test -- test/package.test.ts",
             "run: python .github/scripts/test_pi_package.py --rpc-commands",
             "--pi-version ${{ matrix.pi-version }}",
@@ -1284,6 +1475,49 @@ class WorkflowContractTest(unittest.TestCase):
                     f"{merge_job}'s pattern does not match its own artifact {own!r}",
                 )
 
+    def test_cross_host_coverage_identity_is_verified_before_union(self):
+        """Absolute runner paths must not turn a union into two disjoint trees."""
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        for producer, consumer in (
+            ("coverage-union", "coverage-union-merge"),
+            ("coverage-union-pi", "coverage-union-pi-merge"),
+        ):
+            with self.subTest(producer=producer):
+                self.assertRegex(jobs[producer], r"coverage_union\.py\s+prepare",
+                                 "host coverage lacks source-bound canonical identities")
+                self.assertRegex(jobs[consumer], r"coverage_union\.py\s+verify",
+                                 "merge accepts unverified cross-host coverage identities")
+                self.assertLess(jobs[consumer].index("coverage_union.py"),
+                                jobs[consumer].index("--merge-reports"))
+                self.assertIn("--check", jobs[producer],
+                              "pre-test provenance is not rechecked after execution")
+                merge_command = next(line for line in jobs[consumer].splitlines()
+                                     if "npx vitest --merge-reports" in line)
+                verified_output = re.search(r"coverage_union\.py verify[^\n]*--output\s+(\S+)",
+                                            jobs[consumer]).group(1)
+                self.assertEqual(re.search(r"--merge-reports\s+(\S+)", merge_command).group(1),
+                                 verified_output, "Vitest must consume the verified copies")
+                producer_body = jobs[producer]
+                prepare_index = producer_body.index("coverage_union.py prepare")
+                run_index = producer_body.index("npx vitest run")
+                check_index = producer_body.index("coverage_union.py prepare --check")
+                upload_index = producer_body.index("actions/upload-artifact@")
+                self.assertLess(prepare_index, run_index)
+                self.assertLess(run_index, check_index)
+                self.assertLess(check_index, upload_index)
+                self.assertNotIn("|| true", merge_command,
+                                 "invalid coverage must not look like a successful merge")
+                self.assertIn("shell: bash", jobs[consumer],
+                              "explicit bash enables pipefail for the report pipeline")
+        self.assertIn("test_coverage_union.py", jobs["ca-pi-checks"],
+                      "coverage identity regression needs a required test lane")
+        for lane in ("ca", "ca-pi"):
+            for path in (".github/scripts/coverage_union.py",
+                         ".github/scripts/test_coverage_union.py"):
+                self.assertTrue(any(fnmatch.fnmatch(path, pattern) for pattern in
+                                    paths_filter(CI_WORKFLOW.read_text(encoding="utf-8"), lane)),
+                                f"{path} alone skips {lane} coverage validation")
+
     def test_the_coverage_union_artifact_path_is_not_a_hidden_directory(self):
         """The union silently merged NOTHING for every run after it shipped.
 
@@ -1397,6 +1631,25 @@ class WorkflowContractTest(unittest.TestCase):
                     r"--audit-level=high$",
                     "every audit gate in the repo must use the SAME threshold",
                 )
+
+    def test_every_npm_audit_step_exposes_http_diagnostics(self):
+        # Main CI 33822155490 hid the original bulk-request failure behind
+        # npm's retired quick-endpoint fallback. Keep status/timing visible
+        # without enabling verbose/silly request-body or config diagnostics.
+        audited_steps = 0
+        for workflow in (CI_WORKFLOW, DOCS_WORKFLOW):
+            steps = re.split(r"(?m)^      - ", workflow.read_text(encoding="utf-8"))
+            for step in steps:
+                if not npm_audit_invocations(step):
+                    continue
+                audited_steps += 1
+                with self.subTest(workflow=workflow.name, step=step.splitlines()[0]):
+                    self.assertRegex(
+                        step,
+                        r"(?m)^        env:\n          NPM_CONFIG_LOGLEVEL: http$",
+                        "audit HTTP status/timing must survive a fallback failure",
+                    )
+        self.assertEqual(audited_steps, 7)
 
     def test_each_plugin_tools_graph_is_audited_with_dev_dependencies_included(self):
         """Issue #434 AC-1: a HIGH advisory in a `plugins/*/tools` DEV dependency
@@ -1516,6 +1769,36 @@ class WorkflowContractTest(unittest.TestCase):
                     paths,
                     f"a {event} touching only docs.yml never runs docs.yml",
                 )
+
+    def test_docs_release_applicability_inputs_trigger_full_history_builds(self):
+        docs = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        required_inputs = {
+            ".github/published-tags.json",
+            ".codearbiter/release-targets.md",
+        }
+        for event in ("push", "pull_request"):
+            with self.subTest(event=event):
+                self.assertTrue(
+                    required_inputs.issubset(set(event_trigger_paths(docs, event))),
+                    f"{event} can leave published release applicability stale",
+                )
+
+        jobs = workflow_jobs(docs)
+        for job_name in ("site-check", "build"):
+            with self.subTest(job=job_name):
+                self.assertEqual(
+                    checkout_fetch_depth(jobs[job_name]),
+                    "0",
+                    f"{job_name} cannot inspect historical release manifests",
+                )
+
+        site_check = jobs["site-check"]
+        generate = run_step_index(site_check, "npm run gen")
+        typecheck = run_step_index(site_check, "npm run typecheck")
+        tests = run_step_index(site_check, "npm test")
+        self.assertGreaterEqual(generate, 0, "site-check never generates applicability")
+        self.assertGreater(typecheck, generate, "site-check typechecks before generation")
+        self.assertGreater(tests, generate, "site-check tests before generation")
 
     def test_ci_runs_a_pinned_read_only_secret_scan_wired_into_the_merge_gate(self):
         # Issue #404: the repository had NO independent secret scanner - only a
@@ -2580,6 +2863,166 @@ class GateCommandTest(unittest.TestCase):
             stale, [],
             "these COVERAGE_EXEMPT entries name no tested tree, so they exempt nothing and "
             "hide the next one that matches the name: " + ", ".join(stale))
+
+
+class SiteBrowserDependencyContractTest(unittest.TestCase):
+    """AC-01/05/06: reviewed browser tooling, local compute and proof boundaries."""
+
+    def test_browser_source_states_runner_chrome_evidence_boundary(self):
+        source = (REPO_ROOT / "site/test/browser/publication.spec.ts").read_text(encoding="utf-8")
+        self.assertNotRegex(source, r"(?i)pinned\s+Chromium(?:\s+runtime)?")
+        for boundary in ("Chrome-only", "already-built site on loopback",
+                         "GitHub runner image", "No exact hosted Chrome version"):
+            self.assertIn(boundary, source)
+        self.assertRegex(source, r"(?i)runner-(?:provided|maintained) Chrome")
+
+    def test_browser_dependency_graph_is_exact_and_registry_bound(self):
+        manifest = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["devDependencies"].get("@playwright/test"), "1.63.0")
+        lock = json.loads((REPO_ROOT / "site/package-lock.json").read_text(encoding="utf-8"))
+        self.assertEqual(lock["packages"][""]["devDependencies"]["@playwright/test"], "1.63.0")
+        for name, dependency in (("@playwright/test", "playwright"),
+                                 ("playwright", "playwright-core"),
+                                 ("playwright-core", None)):
+            with self.subTest(package=name):
+                package = lock["packages"].get(f"node_modules/{name}")
+                self.assertIsNotNone(package, f"missing reviewed package: {name}")
+                self.assertEqual(package["version"], "1.63.0")
+                self.assertEqual(package["license"], "Apache-2.0")
+                self.assertTrue(package["dev"])
+                self.assertTrue(package["resolved"].startswith("https://registry.npmjs.org/"))
+                self.assertRegex(package["integrity"], r"^sha512-[A-Za-z0-9+/]+={0,2}$")
+                self.assertFalse(package.get("hasInstallScript", False))
+                self.assertEqual(package.get("dependencies", {}),
+                                 {dependency: "1.63.0"} if dependency else {})
+
+    def test_browser_configuration_uses_owned_production_loopback_and_installed_chrome(self):
+        path = REPO_ROOT / "site/playwright.config.ts"
+        self.assertTrue(path.is_file(), "missing production-browser configuration")
+        config = path.read_text(encoding="utf-8")
+        self.assertIn('testDir: "./test/browser"', config)
+        self.assertIn('baseURL: "http://127.0.0.1:4322"', config)
+        self.assertIn('command: "npm run preview -- --host 127.0.0.1 --port 4322"', config)
+        self.assertIn('url: "http://127.0.0.1:4322"', config)
+        self.assertIn("reuseExistingServer: false", config)
+        self.assertEqual(re.findall(r'browserName:\s*"([^"]+)"', config), ["chromium"])
+        self.assertIn('process.env.GITHUB_ACTIONS === "true"', config)
+        self.assertRegex(config, r'(?m)^      channel: "chrome",$')
+        self.assertIn('trace: hostedCI ? "retain-on-failure" : "off"', config)
+        self.assertNotRegex(config, r"(?:exec|spawn|install)\s*\(")
+        for boundary in ("already-built production output", "Chrome-only",
+                         "GitHub runner image", "npm lockfile does not authenticate browser bytes",
+                         "No browser download", "installed Chrome", "No exact hosted Chrome version"):
+            self.assertIn(boundary, config)
+
+
+class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
+    """AC-05/06: the browser verdict blocks publication without local setup or PR writes."""
+
+    def test_browser_gate_blocks_artifact_upload_and_keeps_pr_execution_read_only(self):
+        workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(workflow)
+        # Strip comments before checking executed commands and control-flow keys.
+        build = re.sub(r"(?m)\s+#.*$", "", jobs["build"])
+        commands = re.findall(r"(?m)^        run: (.+)$", build)
+        version = "google-chrome --version"
+        self.assertIn(version, commands, "hosted build must record runner-provided Chrome")
+        self.assertIn("npm run test:browser", commands)
+        self.assertLess(commands.index("npm run build"), commands.index(version))
+        self.assertLess(commands.index("npm run build"), commands.index("npm run test:browser"))
+        self.assertLess(commands.index(version), commands.index("npm run test:browser"))
+        self.assertLess(build.index("run: npm run test:browser"),
+                        build.index("uses: actions/upload-pages-artifact@"))
+        self.assertRegex(build, r"(?m)^    runs-on: ubuntu-latest$")
+        self.assertNotRegex(build, r"(?m)^\s+(?:if|continue-on-error):")
+        for boundary in ("GitHub runner image", "No exact hosted Chrome version",
+                         "npm lockfile does not authenticate browser bytes"):
+            self.assertIn(boundary, jobs["build"])
+        global_config = workflow.split("jobs:", 1)[0]
+        self.assertRegex(global_config, r"(?m)^permissions:\n  contents: read\n")
+        self.assertNotRegex(global_config, r"(?m)^\s+(?:pages|id-token): write")
+        self.assertNotIn("pull_request_target:", workflow)
+        for job_id, job in jobs.items():
+            if job_id != "deploy":
+                self.assertNotRegex(job, r"(?m)^    permissions:")
+                self.assertNotIn("secrets.", job)
+        deploy = re.sub(r"(?m)\s+#.*$", "", jobs["deploy"])
+        self.assertRegex(deploy, r"(?m)^    needs: \[build, site-check\]$")
+        self.assertRegex(deploy, r"(?m)^    if: github.event_name != 'pull_request'$")
+        self.assertRegex(deploy, r"(?m)^    permissions:\n      contents: read\n"
+                                r"      pages: write\n      id-token: write\n")
+        self.assertNotIn("continue-on-error:", deploy)
+        scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
+        for name, command in scripts.items():
+            if name != "test:browser":
+                self.assertNotRegex(command, r"playwright|test:browser", name)
+        for path in (REPO_ROOT / ".codearbiter/tech-stack.md",
+                     REPO_ROOT / "core/surface/skills/commit-gate/SKILL.md"):
+            self.assertNotRegex(path.read_text(encoding="utf-8"), r"playwright install|run test:browser")
+
+    def test_build_has_no_browser_ffmpeg_or_os_dependency_acquisition(self):
+        build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(
+            DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"])
+        self.assertNotRegex(build, r"(?i)playwright\s+install|\bffmpeg\b|\bapt(?:-get)?\b")
+        self.assertNotRegex(build, r"(?i)\b(?:curl|wget)\b|install-(?:browser|deps)")
+        self.assertEqual(re.findall(r"(?m)^        run: (.+)$", build), [
+            "npm ci", "npm run build", "npm run link-audit",
+            "google-chrome --version", "npm run test:browser",
+        ], "browser validation must consume the runner image without executable downloads")
+
+    def test_playwright_configuration_is_inside_the_typecheck_scope(self):
+        config = json.loads((REPO_ROOT / "site/tsconfig.json").read_text(encoding="utf-8"))
+        self.assertIn("playwright.config.ts", config["include"])
+
+    def test_browser_results_stay_in_ignored_non_publication_output(self):
+        config = (REPO_ROOT / "site/playwright.config.ts").read_text(encoding="utf-8")
+        self.assertIn('outputDir: "./.astro/playwright"', config)
+        ignored = subprocess.run(
+            ["git", "check-ignore", "site/.astro/playwright/test/trace.zip"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(ignored.returncode, 0, ignored.stderr)
+
+
+class SiteBrowserBehaviorContractTest(unittest.TestCase):
+    """AC-01/02/03: retain production-browser obligations in the hosted suite."""
+
+    def test_preview_stays_owned_in_agent_environments(self):
+        config = (REPO_ROOT / "site/playwright.config.ts").read_text(encoding="utf-8")
+        self.assertIn('env: { ASTRO_PREVIEW_BACKGROUND: "1" }', config)
+
+    def test_browser_command_runs_the_publication_contract(self):
+        manifest = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["scripts"].get("test:browser"), "playwright test")
+
+    def test_browser_scenarios_cover_heading_keyboard_and_pagefind_lifecycle(self):
+        path = REPO_ROOT / "site/test/browser/publication.spec.ts"
+        self.assertTrue(path.is_file(), "missing production-browser behavior contract")
+        source = path.read_text(encoding="utf-8")
+        for obligation in ("AC-01", "AC-02", "AC-03"):
+            self.assertRegex(source, rf'test\("{obligation}:')
+        for assertion in ('getByRole("heading"', 'getByRole("combobox"',
+                          'getByRole("listbox"', 'getByRole("option"',
+                          '"ControlOrMeta+k"', '"Escape"', '"ArrowDown"', '"Enter"',
+                          "toBeFocused()", "toHaveURL(", '"aria-activedescendant"',
+                          '"aria-expanded", "false"', 'fill("")',
+                          "toBeHidden()", "toHaveCount(1)", "astro:page-load"):
+            self.assertIn(assertion, source)
+
+    def test_browser_contract_checks_academy_and_search_geometry_at_both_viewports(self):
+        source = (REPO_ROOT / "site/test/browser/publication.spec.ts").read_text(encoding="utf-8")
+        for width, height in ((1440, 900), (390, 844)):
+            self.assertRegex(source, rf"\{{\s*width: {width},\s*height: {height}\s*\}}")
+        self.assertIn('test(`AC-04:', source)
+        responsive = source.split('test(`AC-04:', 1)[1]
+        for obligation in ("page.setViewportSize(viewport)", 'page.goto("/academy/")',
+                           'getByRole("combobox"', 'getByRole("listbox"',
+                           "search.fill(quickstartTitle)", "toBeVisible()",
+                           "document.documentElement.scrollWidth",
+                           "document.documentElement.clientWidth", "toBeLessThanOrEqual(0)"):
+            self.assertIn(obligation, responsive)
+        self.assertGreaterEqual(responsive.count("await expectNoHorizontalOverflow()"), 2,
+                                "check geometry both before and during visible search results")
 
 
 if __name__ == "__main__":

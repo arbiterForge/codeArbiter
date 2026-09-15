@@ -20,25 +20,33 @@ written down at publication time, which is what `.github/published-tags.json`
 is - a committed manifest of tag -> (object sha, commit sha).  Its integrity
 comes from git history and branch protection on main: changing a recorded sha
 requires a reviewed pull request, whereas moving a tag requires nothing.  The
-audit compares the manifest against a live listing of the refs and reports any
+audit compares that ledger plus ADR-0034's separate closed legacy observation
+ledger against a live listing of the refs and reports any
 disagreement.  Comparing the REF OBJECT sha (not just the commit) is the
 stronger test: an annotated tag object is content-addressed over its target,
 message, and tagger, so re-annotating the same commit still changes it.
 
-WHY IT SKIPS RATHER THAN FAILS.  Every observation is three-valued - present,
-definitely different, or None for "this run could not see it".  A definite
-mismatch is a security finding; an unreadable run prints a loud SKIP and passes.
-Unlike the branch-protection audit beside it, this one needs only `contents:
-read`, which GITHUB_TOKEN does grant, so it runs LIVE in ordinary CI rather than
-skipping by default.  The skip path exists for transport failures, rate limits,
-and local runs without a token - never as the normal case.
+REQUIRED CI AND RELEASE PREFLIGHT. Both invoke --require-recorded, which refuses
+missing credentials, unreadable inventory, or any governed tag absent from the
+disjoint union. Availability failures therefore block merge as well as release.
+A new, non-legacy tag must be recorded afterward from its trusted run receipt
+through a reviewed PR. This is read-only verification, not automatic receipt
+ingestion or a transaction with publication: a tag published after a green CI
+check can still race a merge, so release preflight remains independently strict.
+The receipt writer has no legacy-ledger mutation path and there is no break-glass.
 
-READ-ONLY.  Paginated GETs against `/git/refs/tags`.  Nothing is written, and a
-partial listing is discarded rather than audited, because tags missing from a
-truncated page would otherwise read as deletions.
+OPTIONAL OBSERVATION MODE. Without --require-recorded, missing credentials or
+unavailable inventory produce a loud SKIP, and unrecorded tags produce warnings.
+A definite mismatch or invalid inventory still fails. Required CI never opts
+into this non-strict local-audit behavior.
+
+READ-ONLY.  One GET against `/git/matching-refs/tags/`. Nothing is written.
+Missing, unavailable, malformed, or incomplete evidence cannot authorize the
+strict required checks.
 """
 import argparse
 import dataclasses
+import hashlib
 import json
 import os
 import re
@@ -52,23 +60,65 @@ from pathlib import Path
 # anything else in refs/tags is a working tag this audit has no opinion about.
 NAMESPACES = ("v*", "ca-sandbox-v*", "ca-codex-v*", "ca-pi-v*")
 
+# Closed floor for the original-publication ledger as reconciled on 2026-09-06.
+# New trusted publication receipts may be appended, but none of these reviewed
+# identities may disappear or change without tripping this offline guard.
+ORIGINAL_RECEIPT_BASELINE_TAGS = frozenset("""
+ca-codex-v0.2.4 ca-codex-v0.3.0 ca-codex-v0.3.1 ca-codex-v0.3.2
+ca-codex-v0.3.3 ca-codex-v0.3.4 ca-codex-v0.3.5 ca-codex-v0.3.6
+ca-codex-v0.3.7 ca-codex-v0.4.0 ca-codex-v0.4.1 ca-codex-v0.4.10
+ca-codex-v0.4.11 ca-codex-v0.4.12 ca-codex-v0.4.13 ca-codex-v0.4.14
+ca-codex-v0.4.15 ca-codex-v0.4.16 ca-codex-v0.4.2 ca-codex-v0.4.3
+ca-codex-v0.4.4 ca-codex-v0.4.5 ca-codex-v0.4.6 ca-codex-v0.4.7
+ca-codex-v0.4.8 ca-codex-v0.4.9 ca-codex-v0.5.0 ca-codex-v0.5.1
+ca-codex-v0.9.1 ca-codex-v0.9.3 ca-codex-v0.9.4 ca-codex-v0.9.5 ca-codex-v0.9.6 ca-pi-v0.1.32 ca-pi-v0.1.33
+ca-pi-v0.1.34 ca-pi-v0.1.35 ca-pi-v0.1.36 ca-pi-v0.1.38
+ca-pi-v0.1.39 ca-pi-v0.1.40 ca-pi-v0.1.41 ca-pi-v0.1.42
+ca-pi-v0.1.43 ca-pi-v0.10.2 ca-pi-v0.10.4 ca-pi-v0.10.5 ca-pi-v0.10.6 ca-pi-v0.10.7 ca-pi-v0.2.0
+ca-pi-v0.2.1 ca-pi-v0.2.11 ca-pi-v0.2.12 ca-pi-v0.2.13
+ca-pi-v0.2.14 ca-pi-v0.2.15 ca-pi-v0.2.16 ca-pi-v0.2.17
+ca-pi-v0.2.18 ca-pi-v0.2.19 ca-pi-v0.2.2 ca-pi-v0.2.3
+ca-pi-v0.2.4 ca-pi-v0.2.5 ca-pi-v0.2.6 ca-pi-v0.2.7
+ca-pi-v0.2.8 ca-pi-v0.2.9 ca-pi-v0.3.0 ca-pi-v0.3.1
+ca-sandbox-v0.1.0 ca-sandbox-v0.1.3 ca-sandbox-v0.1.4 ca-sandbox-v0.1.5
+ca-sandbox-v0.1.6 v2.0.0 v2.0.1 v2.1.0 v2.1.0-beta.2 v2.1.0-beta.3
+v2.1.0-beta.4 v2.1.0-beta.5 v2.1.0-beta.6 v2.10.0 v2.10.1 v2.10.2
+v2.10.3 v2.10.4 v2.10.5 v2.10.6 v2.10.7 v2.10.8 v2.11.0 v2.11.1
+v2.11.10 v2.11.11 v2.11.12 v2.11.13 v2.11.14 v2.11.15 v2.11.16
+v2.11.17 v2.11.2 v2.11.3 v2.11.4 v2.11.5 v2.11.6 v2.11.7 v2.11.8
+v2.11.9 v2.12.0 v2.17.1 v2.17.3 v2.17.4 v2.17.5 v2.17.6 v2.2.0 v2.3.0 v2.3.1 v2.4.0
+v2.4.1 v2.4.2 v2.4.6 v2.5.0 v2.5.1 v2.5.2 v2.6.0 v2.6.1 v2.8.0
+v2.8.11 v2.8.13 v2.9.0 v2.9.1
+""".split())
+ORIGINAL_RECEIPT_BASELINE_COUNT = 133
+ORIGINAL_RECEIPT_BASELINE_SHA256 = (
+    "52ccf7197aa7a1e83397785ba9a83f4728e9032970a39ada99de8cfd0e92d2fb"
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = REPO_ROOT / ".github" / "published-tags.json"
+LEGACY_MANIFEST_PATH = REPO_ROOT / ".github" / "legacy-published-tags.json"
+
+LEGACY_SCHEMA = "legacy-published-tags/v1"
+LEGACY_ADR = "0034-establish-closed-legacy-published-tag-provenance-epoch"
+LEGACY_OBSERVED_AT = "2026-09-04T20:45:43Z"
+LEGACY_RECORD_COUNT = 44
+LEGACY_SET_SHA256 = "26f2d1b06b494dbcc721367e09af52f32ca1a50a71dddb457557af2a48cd8c48"
+LEGACY_MATRIX_SHA256 = "cfb3f66e933edb6b1f075f3e089103115c95837b944d56e2c7338d0d3519e8a6"
+LEGACY_GRADES = {
+    "publisher-log-corroborated": 15,
+    "associated-run-metadata-only": 28,
+    "current-release-metadata-only": 1,
+}
 
 _API = "https://api.github.com"
 _API_VERSION = "2022-11-28"
 _TIMEOUT_SECONDS = 30
 
-# `GET /git/refs/tags` caps at 100 per page. A reader that stopped at page one
-# would report every later tag as DELETED the moment this repo passes 100 tags.
-PER_PAGE = 100
-# A bound on the paging loop so a misbehaving API cannot spin it forever.
-MAX_PAGES = 50
-
 # A published tag is a namespace prefix followed by a SemVer core, optionally
 # with a pre-release or build suffix (`v2.1.0-beta.2` is a real published tag).
 # Requiring the version shape is what stops `v*` from swallowing `versioned-*`.
-_VERSION = r"\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?"
+_VERSION = r"\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?"
 _GOVERNED = re.compile(
     "^(?:%s)$" % "|".join(re.escape(ns[:-1]) + _VERSION for ns in NAMESPACES)
 )
@@ -81,6 +131,19 @@ class Provenance:
     object_sha: str
     object_type: str
     commit_sha: str
+
+
+@dataclasses.dataclass(frozen=True)
+class LegacyProvenance(Provenance):
+    """A later observation baseline; never original-publication evidence."""
+
+    observed_at: str
+    source_id: str
+    evidence_grade: str
+
+
+class InvalidInventory(ValueError):
+    """A successful response that cannot be a complete trustworthy inventory."""
 
 
 def is_governed(name: str) -> bool:
@@ -98,6 +161,137 @@ def load_recorded(mapping: dict) -> dict[str, Provenance]:
         )
         for name, entry in mapping.items()
     }
+
+
+def _exact_keys(value: object, expected: set[str], label: str) -> dict:
+    if not isinstance(value, dict) or set(value) != expected:
+        raise ValueError(f"invalid {label} schema")
+    return value
+
+
+def _identity(entry: object, *, label: str) -> Provenance:
+    data = _exact_keys(entry, {"object_sha", "object_type", "commit_sha"}, label)
+    object_sha = data["object_sha"]
+    commit_sha = data["commit_sha"]
+    object_type = data["object_type"]
+    if (not isinstance(object_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", object_sha)
+            or object_sha == "0" * 40
+            or not isinstance(commit_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", commit_sha)
+            or commit_sha == "0" * 40
+            or object_type not in ("tag", "commit")
+            or (object_type == "commit" and object_sha != commit_sha)):
+        raise ValueError(f"invalid {label} identity")
+    return Provenance(object_sha, object_type, commit_sha)
+
+
+def load_original_manifest(document: object) -> dict[str, Provenance]:
+    """Validate the original-publication ledger without changing its proof meaning."""
+    data = _exact_keys(document, {"$comment", "namespaces", "verified_at", "tags"},
+                       "original-publication ledger")
+    if (not isinstance(data["$comment"], list)
+            or not all(isinstance(line, str) for line in data["$comment"])
+            or data["namespaces"] != list(NAMESPACES)
+            or not isinstance(data["verified_at"], str)
+            or re.fullmatch(r"\d{4}-\d{2}-\d{2}", data["verified_at"]) is None
+            or not isinstance(data["tags"], dict)):
+        raise ValueError("invalid original-publication ledger metadata")
+    result = {}
+    for name, entry in data["tags"].items():
+        if not isinstance(name, str) or not is_governed(name) or name in result:
+            raise ValueError("invalid original-publication tag")
+        result[name] = _identity(entry, label="original-publication record")
+    return result
+
+
+def validate_original_receipt_baseline(records: dict[str, Provenance]) -> None:
+    """Require every receipt frozen at the 2026-09-06 reconciliation identity."""
+    if len(ORIGINAL_RECEIPT_BASELINE_TAGS) != ORIGINAL_RECEIPT_BASELINE_COUNT:
+        raise RuntimeError("invalid frozen receipt baseline metadata")
+    if not ORIGINAL_RECEIPT_BASELINE_TAGS.issubset(records):
+        raise ValueError("frozen receipt baseline changed")
+    canonical = [
+        {
+            "tag": name,
+            "object_sha": records[name].object_sha,
+            "object_type": records[name].object_type,
+            "commit_sha": records[name].commit_sha,
+        }
+        for name in sorted(ORIGINAL_RECEIPT_BASELINE_TAGS)
+    ]
+    payload = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    if hashlib.sha256(payload).hexdigest() != ORIGINAL_RECEIPT_BASELINE_SHA256:
+        raise ValueError("frozen receipt baseline changed")
+
+
+def load_legacy_manifest(document: object) -> dict[str, LegacyProvenance]:
+    """Validate the immutable, exact ADR-0034 historical observation set."""
+    keys = {"schema", "adr", "observed_at", "record_count", "canonical_set_sha256",
+            "source_matrix_sha256", "records"}
+    data = _exact_keys(document, keys, "legacy ledger")
+    if (data["schema"] != LEGACY_SCHEMA or data["adr"] != LEGACY_ADR
+            or data["observed_at"] != LEGACY_OBSERVED_AT
+            or type(data["record_count"]) is not int
+            or data["record_count"] != LEGACY_RECORD_COUNT
+            or data["canonical_set_sha256"] != LEGACY_SET_SHA256
+            or data["source_matrix_sha256"] != LEGACY_MATRIX_SHA256
+            or not isinstance(data["records"], list)
+            or len(data["records"]) != LEGACY_RECORD_COUNT):
+        raise ValueError("legacy ledger does not match accepted ADR-0034 metadata")
+
+    canonical = []
+    result = {}
+    grades = {grade: 0 for grade in LEGACY_GRADES}
+    record_keys = {"tag", "object_sha", "object_type", "commit_sha", "observed_at",
+                   "source_id", "evidence_grade"}
+    for item in data["records"]:
+        row = _exact_keys(item, record_keys, "legacy record")
+        name = row["tag"]
+        grade = row["evidence_grade"]
+        source_id = row["source_id"]
+        if (not isinstance(name, str) or not is_governed(name) or name in result
+                or row["observed_at"] != LEGACY_OBSERVED_AT
+                or grade not in LEGACY_GRADES
+                or not isinstance(source_id, str)
+                or re.fullmatch(r"[1-9][0-9]{0,19}", source_id) is None):
+            raise ValueError("invalid legacy record metadata")
+        identity = _identity(
+            {key: row[key] for key in ("object_sha", "object_type", "commit_sha")},
+            label="legacy record",
+        )
+        result[name] = LegacyProvenance(
+            identity.object_sha, identity.object_type, identity.commit_sha,
+            row["observed_at"], source_id, grade,
+        )
+        grades[grade] += 1
+        canonical.append({key: row[key] for key in (
+            "tag", "evidence_grade", "source_id", "object_sha", "object_type", "commit_sha"
+        )})
+    if [row["tag"] for row in data["records"]] != sorted(result) or grades != LEGACY_GRADES:
+        raise ValueError("legacy ledger closed set or evidence grades changed")
+    payload = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    if hashlib.sha256(payload).hexdigest() != LEGACY_SET_SHA256:
+        raise ValueError("legacy ledger approved identity set changed")
+    return result
+
+
+def validate_disjoint(original: dict[str, Provenance],
+                      legacy: dict[str, LegacyProvenance]) -> None:
+    overlap = set(original) & set(legacy)
+    if overlap:
+        raise ValueError("original-publication and legacy ledgers overlap")
+
+
+def _unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def _read_json(path: str) -> object:
+    return json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=_unique_object)
 
 
 def audit(recorded: dict[str, Provenance], live: dict[str, str] | None) -> list[str]:
@@ -130,12 +324,35 @@ def audit(recorded: dict[str, Provenance], live: dict[str, str] | None) -> list[
     return findings
 
 
+def audit_legacy(recorded: dict[str, LegacyProvenance],
+                 live: dict[str, str] | None) -> list[str]:
+    """Report only movement after observation, never original-publication history."""
+    if live is None:
+        return []
+    findings = []
+    for name in sorted(recorded):
+        baseline = recorded[name]
+        prefix = (f"legacy baseline {name} ({baseline.evidence_grade}) moved after its "
+                  f"{baseline.observed_at} observation")
+        if name not in live:
+            findings.append(
+                f"{prefix}: the ref no longer exists. This baseline is not "
+                "original-publication evidence; correct a release with a NEW version (issue #386)."
+            )
+        elif live[name] != baseline.object_sha:
+            findings.append(
+                f"{prefix}: observed object {baseline.object_sha}, now {live[name]}. "
+                "This baseline is not original-publication evidence; correct a release with a "
+                "NEW version (issue #386)."
+            )
+    return findings
+
+
 def unrecorded(recorded: dict[str, Provenance], live: dict[str, str]) -> list[str]:
     """Governed tags on the remote that the manifest does not yet record.
 
-    This is the NORMAL state right after a release, so it is a notice and never
-    a finding - but an unrecorded tag is an unguarded tag, so it is said out
-    loud until the release adds it.
+    This is expected immediately after a release. Required CI and release
+    preflight refuse until it is recorded; optional observation mode only warns.
     """
     return sorted(
         name for name in live if is_governed(name) and name not in recorded
@@ -152,40 +369,58 @@ def unreadable(live: dict[str, str] | None) -> list[str]:
 def read_live_tags(repo: str, *, rest) -> dict[str, str] | None:
     """Every tag ref as name -> object sha, or None if it could not be read.
 
-    All-or-nothing on purpose: a partially-read listing handed to `audit()`
-    would turn the pages it never fetched into fabricated deletion findings.
+    GitHub's matching-refs endpoint returns the complete matching array in one
+    response. All-or-nothing validation prevents malformed or partial data from
+    becoming fabricated deletion findings.
     """
+    status, payload = rest(f"/repos/{repo}/git/matching-refs/tags/")
+    if status != 200:
+        return None
+    if not isinstance(payload, list):
+        raise InvalidInventory("matching-refs response is not a list")
+
     tags: dict[str, str] = {}
-    for page in range(1, MAX_PAGES + 1):
-        status, payload = rest(
-            f"/repos/{repo}/git/refs/tags?per_page={PER_PAGE}&page={page}"
-        )
-        if status == 404 and page == 1:
-            # GitHub answers 404 for `git/refs/tags` on a repository with no
-            # tags at all. That is a definite empty, not a blind spot.
-            return {}
-        if status != 200 or not isinstance(payload, list):
-            return None
-        for ref in payload:
-            name = str(ref.get("ref", "")).removeprefix("refs/tags/")
-            sha = (ref.get("object") or {}).get("sha")
-            if name and sha:
-                tags[name] = sha
-        if len(payload) < PER_PAGE:
-            return tags
-    return None
+    for ref in payload:
+        if not isinstance(ref, dict):
+            raise InvalidInventory("malformed matching-refs entry")
+        full_name = ref.get("ref")
+        obj = ref.get("object")
+        if not isinstance(full_name, str) or not full_name.startswith("refs/tags/"):
+            raise InvalidInventory("malformed tag ref")
+        if not isinstance(obj, dict):
+            raise InvalidInventory("malformed tag identity")
+        name = full_name.removeprefix("refs/tags/")
+        sha = obj.get("sha")
+        if (
+            not name or name in tags or not isinstance(sha, str)
+            or re.fullmatch(r"[0-9a-f]{40}", sha) is None
+            # Working tags may legally label blobs or trees. Their presence
+            # must not turn a definite release-tag drift into a skipped audit.
+            or obj.get("type") not in ("tag", "commit", "blob", "tree")
+        ):
+            raise InvalidInventory("duplicate or invalid tag ref")
+        tags[name] = sha
+    return tags
 
 
 def _send(request: urllib.request.Request) -> tuple[int, object]:
-    """One request, reduced to (status, decoded body). Never raises."""
+    """Return one decoded response; reject an invalid successful JSON body."""
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS) as response:
-            body = response.read().decode("utf-8")
-            return response.status, (json.loads(body) if body.strip() else {})
+            status = response.status
+            raw_body = response.read()
     except urllib.error.HTTPError as error:
         return error.code, {}
-    except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
+    except (urllib.error.URLError, TimeoutError, OSError) as error:
         return 0, {"message": str(error)}
+
+    try:
+        body = raw_body.decode("utf-8")
+        payload = (json.loads(body, object_pairs_hook=_unique_object)
+                   if body.strip() else {})
+    except (UnicodeError, json.JSONDecodeError, ValueError) as error:
+        raise InvalidInventory("successful response contains invalid JSON") from error
+    return status, payload
 
 
 def _rest_reader(token: str):
@@ -205,11 +440,10 @@ def _rest_reader(token: str):
 
 _SKIP_NOTE = """SKIP: no token, so published-tag immutability was NOT audited.
 
-This check reads `/repos/{owner}/{repo}/git/refs/tags`, which needs only
-contents:read - a permission the default GITHUB_TOKEN DOES grant - so in ordinary
-CI it runs live and this skip should not appear. It exists for local runs and for
-transport failures, because a merge gate must report a settings or history
-regression, never a network problem.
+This check reads `/repos/{owner}/{repo}/git/matching-refs/tags/`, which needs only
+contents:read - a permission the default GITHUB_TOKEN DOES grant. This skip is
+only for optional observation mode. Required CI and release preflight use
+--require-recorded and fail closed on missing credentials or unavailable evidence.
 
 To run the audit by hand:
 
@@ -218,49 +452,88 @@ To run the audit by hand:
 """
 
 
-def main(argv=None, *, token=None, rest=None, recorded=None) -> int:
+def main(argv=None, *, token=None, rest=None, recorded=None, legacy=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", ""))
     parser.add_argument("--manifest", default=str(MANIFEST_PATH))
+    parser.add_argument("--legacy-manifest", default=str(LEGACY_MANIFEST_PATH))
+    parser.add_argument(
+        "--require-recorded", action="store_true",
+        help="Refuse release when prior tag records are incomplete or cannot be verified.",
+    )
     arguments = parser.parse_args(argv)
 
     if token is None:
         token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
     if not arguments.repo:
+        if arguments.require_recorded:
+            print("::error title=Tag provenance::release requires a repository to verify")
+            return 1
         print("SKIP: no --repo and no GITHUB_REPOSITORY; nothing to audit.")
         return 0
+
+    # Ledger integrity is locally knowable and must never be hidden by missing
+    # network credentials. Only the remote observation itself may skip.
+    injected_original = recorded is not None
+    try:
+        provenance = (load_recorded(recorded) if injected_original
+                      else load_original_manifest(_read_json(arguments.manifest)))
+        if not injected_original:
+            validate_original_receipt_baseline(provenance)
+        legacy = ({} if injected_original and legacy is None else legacy)
+        legacy_provenance = (load_legacy_manifest(_read_json(arguments.legacy_manifest))
+                             if legacy is None else legacy)
+        validate_disjoint(provenance, legacy_provenance)
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError, KeyError):
+        print("::error title=Tag provenance::invalid publication or legacy provenance ledger")
+        return 1
+
     if not token and rest is None:
+        if arguments.require_recorded:
+            print("::error title=Tag provenance::release requires authenticated tag evidence")
+            return 1
         print(_SKIP_NOTE)
         print(f"::notice title=Tag immutability::skipped for {arguments.repo} - no GH_TOKEN")
         return 0
 
-    if recorded is None:
-        recorded = json.loads(Path(arguments.manifest).read_text(encoding="utf-8"))["tags"]
-    provenance = load_recorded(recorded)
-
-    live = read_live_tags(
-        arguments.repo, rest=rest if rest is not None else _rest_reader(token)
-    )
+    try:
+        live = read_live_tags(
+            arguments.repo, rest=rest if rest is not None else _rest_reader(token)
+        )
+    except InvalidInventory:
+        print("::error title=Tag provenance::invalid live tag inventory; release requires a complete live tag inventory")
+        return 1
     findings = audit(provenance, live)
+    legacy_findings = audit_legacy(legacy_provenance, live)
 
-    for finding in findings:
+    for finding in findings + legacy_findings:
         print(f"::error title=Published tag immutability::{finding}")
     for blind in unreadable(live):
         print(f"SKIP (partial): could not read {blind} - see the note in this script.")
-    if findings:
+    if findings or legacy_findings:
         return 1
     if live is None:
+        if arguments.require_recorded:
+            print("::error title=Tag provenance::release requires a complete live tag inventory")
+            return 1
         return 0
 
-    for name in unrecorded(provenance, live):
+    coverage = {**provenance, **legacy_provenance}
+    missing = unrecorded(coverage, live)
+    for name in missing:
+        level = "error" if arguments.require_recorded else "warning"
         print(
-            f"::warning title=Unrecorded published tag::{name} is published but "
-            f"absent from {MANIFEST_PATH.name}, so its target is not being "
-            "verified. Add it in the release that published it (issue #386)."
+            f"::{level} title=Unrecorded published tag::{name} is published but "
+            f"absent from the disjoint provenance ledgers, so its target is not being "
+            "verified. Add its original-publication receipt through the reviewed "
+            "publication reconciliation path (issue #386)."
         )
+    if missing and arguments.require_recorded:
+        return 1
     print(
-        f"OK: {len(provenance)} published tags in {arguments.repo} still resolve "
-        "to the commits they were published at."
+        f"OK: {len(provenance)} original-publication receipts and "
+        f"{len(legacy_provenance)} legacy baselines in {arguments.repo} still resolve "
+        "to their separately recorded identities."
     )
     return 0
 

@@ -28,9 +28,12 @@ See [Enforcement & Security](/enforcement/#advisory-non-blocking-reminders).
 
 A focused author or reviewer role dispatched by a [skill](#skill). An agent is not a public
 command and not a second orchestrator; it receives only the tools and context its role needs.
-Claude Code dispatches packaged plugin agents. Current Codex releases load the equivalent charter
-into host-provided agent threads, with inline execution only as an older-host fallback; Pi uses
-hardened child dispatch. See the [Agents reference](/reference/#agents).
+Claude Code dispatches packaged plugin agents. Published releases from 0.7.5 include the complete
+packaged resource charter set for that release for Codex host-provided agent threads, with exact
+static-package and route-closure checks at release. A bounded 0.9.4 receipt proves one exact
+installed-charter review. Workflows use the bounded inline fallback only where the canonical
+workflow explicitly permits it and isolation is not mandatory. Pi uses hardened child dispatch. See the
+[Agents reference](/reference/#agents).
 
 ## Arbiter (enabled flag)
 
@@ -76,11 +79,11 @@ at. See [The `.codearbiter/` Directory Reference](/codearbiter-directory/#open-q
 entry per recorded decision, never edited after the fact. A superseding decision appends a new
 entry rather than rewriting the old one. See [ADRs and the Decision Log](/concepts/adrs/).
 
-## Feature Forge / Preview Features
+## Feature Forge
 
-The two-axis system that separates a payload's SemVer maturity from whether an individual
-feature is still a preview. In reader-facing copy this is labeled "Preview Features"; "Feature
-Forge" is the internal name. See [What Is the Feature Forge](/feature-forge/overview/).
+The two-axis system that separates a payload's SemVer version from an individual feature's
+maturity. Reader-facing copy calls the system "Feature Forge"; "preview" and "stable" are
+maturity labels within it. See [What Is the Feature Forge](/feature-forge/overview/).
 
 ## Gate
 

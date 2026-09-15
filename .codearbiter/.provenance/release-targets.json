@@ -1,55 +1,55 @@
 {
-  "created": "2026-07-31",
+  "created": "2026-09-09",
   "doc": "release-targets",
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "cb4c44268de2d20f76b7389bac7e80a83eb88c58",
+      "hash": "c9b105324a7aca9339ba966048c5f1174c55b143",
       "path": "CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "68cd30e388813cf4fabfb893e7a264bf3c4f843d",
+      "hash": "c288faead1be35d098e134748035aae18809c714",
       "path": "package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "ad52ff4f12eb3cefca4b047f80492f01b26ac433",
+      "hash": "4c1dfc77bcbeebff3c78222fa5db386fb3560d6b",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "32a9dfe26f3a4bd6cbf9bd73bc993da079cac6ce",
+      "hash": "46b040ae5e3fc82cb1f46336e99db5cbd0d9dff6",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "9da1bcac5679690ab85103b126bbf67b6d4f3d88",
+      "hash": "89193145cd1dcbb21d7d8d02979196ae622bad3b",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "b5812f8616f351ba2db9acafff5164a4e2939c87",
+      "hash": "168c4ce53e2dd0252f451163c1f2b602397119b7",
       "path": "plugins/ca-pi/extensions/codearbiter-child.js"
     },
     {
       "drift_trigger": true,
-      "hash": "7e5890e95d06e7f1455a6ee99641c11862f25b12",
+      "hash": "58658eab6a619e7fdbcab851a770404c6d0999e1",
       "path": "plugins/ca-pi/extensions/codearbiter.js"
     },
     {
       "drift_trigger": true,
-      "hash": "c7836c0c0ebd87d1005953de90576479b7335a0d",
+      "hash": "3b023522af378caeee29c57772f55088942cc667",
       "path": "plugins/ca-pi/package.json"
     },
     {
       "drift_trigger": true,
-      "hash": "4778082d5ea1466d96a6bb0640eeee58bbb30f0e",
+      "hash": "2c1cc323bc3049f6e6abc5124c167d607667a8b4",
       "path": "plugins/ca-sandbox/.claude-plugin/plugin.json"
     },
     {
       "drift_trigger": true,
-      "hash": "d2a8c793bcaaceb3649a06076a27533f79eb7161",
+      "hash": "e214498b4883046287d7dcb15c63014a287dfb27",
       "path": "plugins/ca-sandbox/CHANGELOG.md"
     },
     {
@@ -59,12 +59,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "937c440af255c8b6aa97a4edcd4283ec7130c665",
+      "hash": "801cc127704b6da8afaff4c429b343f6bab10e48",
       "path": "plugins/ca-sandbox/tools/sandbox.js"
     },
     {
       "drift_trigger": true,
-      "hash": "b8827458b4fb1f51c7d5fcb02d84d0e36477d702",
+      "hash": "b82a2060d38dacfbf879812b5e3d35be9199c92e",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {

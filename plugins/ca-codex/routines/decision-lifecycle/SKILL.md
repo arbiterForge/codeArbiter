@@ -7,9 +7,9 @@ description: Author and track Architecture Decision Records. Routed to when the 
 
 Author and track ADRs. Routed to when the user invokes `/adr "<title>"` (author a new ADR) or `/adr-status [--adr N]` (list ADR health, read-only). Every ADR is user-attributed — this skill never records a decision the user did not explicitly make.
 
-The append-only decision-log format (entry fields, supersession protocol) lives in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md`. Read it before writing a log line; do not restate it here.
+The append-only decision-log format (entry fields, supersession protocol) lives in [includes/smarts/decision-log-format.md](../../includes/smarts/decision-log-format.md). Read it before writing a log line; do not restate it here.
 
-**Boundary with `decision-variance`.** This skill owns ADR *authoring* and *status* (`/adr`, `/adr-status`) — recording a decision the user has already made, and reporting ADR health. `decision-variance` owns *arbitration* — detecting variances between artifacts and the scaffold, scoring options via SMARTS, and the decision log itself. The two share the canonical SMARTS reference under `${CLAUDE_PLUGIN_ROOT}/includes/smarts/` (`core.md` for scoring, `decision-log-format.md` for the log) and one ADR template (`references/adr-template.md`); they are one domain split by responsibility, not duplicated. When a decision needs *making* (competing options), route to `decision-variance`; when it needs *recording* (already decided), stay here.
+**Boundary with `decision-variance`.** This skill owns ADR *authoring* and *status* (`/adr`, `/adr-status`) — recording a decision the user has already made, and reporting ADR health. `decision-variance` owns *arbitration* — detecting variances between artifacts and the scaffold, scoring options via SMARTS, and the decision log itself. The two share the canonical SMARTS reference under [includes/smarts/](../../includes/smarts) (`core.md` for scoring, `decision-log-format.md` for the log) and one ADR template (`references/adr-template.md`); they are one domain split by responsibility, not duplicated. When a decision needs *making* (competing options), route to `decision-variance`; when it needs *recording* (already decided), stay here.
 
 ## Pre-flight
 
@@ -37,11 +37,11 @@ mkdir -p "$(git rev-parse --show-toplevel)/.codearbiter/.markers"
 touch "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-active"
 ```
 
-The marker is honored for 30 minutes. Then write `<project-root>/.codearbiter/decisions/NNNN-<slug>.md` using the canonical ADR template — `${CLAUDE_PLUGIN_ROOT}/routines/decision-lifecycle/references/adr-template.md` (the single source of truth for the ADR shape, shared with `decompose`). Author it with `status: proposed`. If this decision supersedes an existing one, set `supersedes:` to that ADR's **full filename stem** — `supersedes: 0014-githook-shim-dropin-fail-closed`, never `supersedes: 0014` — and leave the prior ADR's file untouched (forward-only chain — do not edit it to add a back-reference).
+The marker is honored for 30 minutes. Then write `<project-root>/.codearbiter/decisions/NNNN-<slug>.md` using the canonical ADR template — [routines/decision-lifecycle/references/adr-template.md](references/adr-template.md) (the single source of truth for the ADR shape, shared with `decompose`). Author it with `status: proposed`. If this decision supersedes an existing one, set `supersedes:` to that ADR's **full filename stem** — `supersedes: 0014-githook-shim-dropin-fail-closed`, never `supersedes: 0014` — and leave the prior ADR's file untouched (forward-only chain — do not edit it to add a back-reference).
 
 If the new ADR supersedes only *part* of the prior decision, say which part in the body. `supersedes:` names a document, not a clause, so a chain may legitimately fork — two ADRs can each supersede different clauses of one predecessor. That fork is correct and must not be "repaired"; only the prose can carry the scope.
 
-After writing the ADR, append a corresponding entry to the decision log per the format in `${CLAUDE_PLUGIN_ROOT}/includes/smarts/decision-log-format.md` — `Decided by:` names the user. Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction; never advance status on this skill's own judgment.
+After writing the ADR, append a corresponding entry to the decision log per the format in [includes/smarts/decision-log-format.md](../../includes/smarts/decision-log-format.md) — `Decided by:` names the user. Status transitions (`proposed → accepted → superseded | rejected`) require explicit user instruction; never advance status on this skill's own judgment.
 
 **`governs:` makes the decision live.** When an ADR names path globs in `governs:`, the post-write
 hook surfaces a one-line notice on any Write/Edit touching a matching file — "this file is governed
@@ -57,9 +57,64 @@ rm -f "$(git rev-parse --show-toplevel)/.codearbiter/.markers/adr-authoring-acti
 
 Gate: the ADR file is written with a real `decided-by` user attribution, numbered without a gap, and its log entry is appended. An ADR with no user attribution, or authored as the disposition of a finding, does not pass — STOP.
 
+### Accepted/Planned binding
+
+`accepted` means **Accepted/Planned**. It records the user's governance decision; it does not claim
+that any obligation is Implemented or Verified. When the user explicitly authorizes acceptance:
+
+1. Change only the ADR's status fields to accepted. Derive stable, stem-scoped obligations from every
+   normative clause in its immutable record, bind each obligation to exact ADR
+   text, and obtain independent review that the sealed obligation set is complete.
+2. Route through `commit-gate` to commit the accepted ADR and decision-log append. Do not add the
+   acceptance binding to that commit: its `source_commit` cannot truthfully name a commit that does
+   not exist yet.
+3. From that exact commit, hash the committed Git blob bytes and the separately canonicalized
+   immutable record: strict UTF-8 with LF-normalized line endings, containing the complete ADR while
+   replacing only the recognized status value in the strictly parsed frontmatter `status:` field and
+   `## Status` section with fixed sentinels. The two values must agree. All remaining Status prose,
+   including approval attribution, stays bound alongside title, date, `decided-by`, supersession,
+   governed paths, H1, and every other section. Malformed or duplicate frontmatter, status, or
+   headings fail closed. Append one
+   `acceptance` event to
+   `<project-root>/.codearbiter/decisions/adr-lifecycle.jsonl`, then persist that acceptance binding
+   in a subsequent commit. The event uses schema `adr-lifecycle/v1` and records `adr` (full stem),
+   `recorded_at`, `source_commit`, `blob_sha256`, `body_sha256`, `obligations`,
+   `obligations_sha256`, and `obligations_sealed: true`. A second acceptance or baseline binding for
+   the same stem is invalid.
+4. Preserve **ADR source ancestry** through delivery. Before opening the PR and again before
+   its merge offer, follow the finishing skill's `--merge-method` preflight on the exact base/head.
+   A source not already in base ancestry requires a true merge commit with `--match-head-commit`;
+   squash or rebase would orphan its identity. Missing source ancestry blocks delivery. Never
+   rewrite the acceptance binding or rely on deleted branch objects remaining remotely fetchable.
+
+The lifecycle ledger is append-only. A legacy accepted ADR receives a `baseline` with no fabricated
+acceptance commit, an `observed_commit` whose Git blob is rechecked as the migration snapshot, an
+empty or incrementally mapped obligation list, and
+`obligations_sealed: false`; it remains Accepted/Planned. Later delivery evidence appends records:
+`implemented` binds one declared obligation to a source commit and relevant input digests;
+`verified` additionally binds a unique event ID, explicit proof contract, repository-scoped claim,
+producer, command/workflow identity, timezone-aware observation and expiry times, and the same current
+inputs. Evidence paths and digests are recomputed from the named Git commit, never trusted from the
+caller. A later uniquely identified event may renew expired or changed-input evidence; an append-only
+invalidation event may withdraw a prior evidence event. Only a complete,
+sealed obligation set with current implementation inputs and fresh verification inputs derives
+Implemented or Verified. Changed inputs invalidate the derived state; history is never rewritten.
+
+After acceptance, do not edit any bound ADR content. A later user-authorized stored status transition
+may change only the recognized status value in the strictly parsed frontmatter `status:` and
+`## Status`; approval prose remains immutable. Supersession remains a forward reference in the new
+ADR. The acceptance commit retains the exact original blob while the immutable-record digest proves
+every other byte-equivalent field did not change.
+
 ## Phase 3 — Status (/adr-status) · gate: BLOCK
 
-Read-only. For each ADR (or the `--adr N` target), report: stem, title, status, date, and supersession state — found by scanning forward for any later ADR whose `supersedes:` **resolves to** it.
+Read-only. For each ADR (or the `--adr N` target), report: stem, title, stored governance status,
+derived delivery state, date, and supersession state. Read `adr-lifecycle.jsonl` when present. Display
+stored `accepted` as **Accepted/Planned**. Display Implemented or Verified only when every obligation
+in a sealed binding has the required current, input-bound evidence; otherwise name the narrow reason
+(unsealed, incomplete, stale, expired, or mismatched) and do not promote the ADR. Repository evidence
+never implies live-host, publication, support, legal, or other external truth. Find supersession by
+scanning forward for any later ADR whose `supersedes:` **resolves to** it.
 
 Resolve a `supersedes:` value like this, and never guess:
 
@@ -75,7 +130,7 @@ If a supersession candidate contradicts an `accepted` ADR with no clear directio
 ## ADR Status — YYYY-MM-DD
 
 ### Active
-- ADR-NNNN-<slug> — <title> — <status> (<date>)
+- ADR-NNNN-<slug> — <title> — governance: <status>; delivery: <Accepted/Planned | Implemented | Verified> (<date>)
 
 ### Superseded
 - ADR-NNNN-<slug> — <title> — superseded by ADR-MMMM-<slug>
@@ -87,7 +142,7 @@ If a supersession candidate contradicts an `accepted` ADR with no clear directio
 - ADR-NNNN-<slug> — [CONFIRM-NN]: <text>
 ```
 
-Every ADR is named by its stem, so a shared number never collapses two rows into one. An empty section is marked "None" — not omitted. MAY dispatch `decision-challenger` (`${CLAUDE_PLUGIN_ROOT}/agents/decision-challenger.md`) to stress-test an ADR; optional, never forced.
+Every ADR is named by its stem, so a shared number never collapses two rows into one. An empty section is marked "None" — not omitted. MAY dispatch `decision-challenger` ([agents/decision-challenger.md](../../agents/decision-challenger.md)) to stress-test an ADR; optional, never forced.
 
 Gate: every indexed ADR appears with its current status and supersession state; no `[CONFIRM-NN]` resolved; no file modified.
 
@@ -97,6 +152,8 @@ Gate: every indexed ADR appears with its current status and supersession state; 
 - MUST NOT record a decision the user did not explicitly make. "Use your best judgment," "I trust you" are declined.
 - MUST NOT resolve a `[CONFIRM-NN]` placeholder by guessing. Surface it and stop.
 - MUST NOT advance an ADR's status without explicit user instruction.
+- MUST NOT report accepted as Implemented or Verified without complete, sealed, current lifecycle evidence.
+- MUST NOT rewrite or truncate a committed `adr-lifecycle.jsonl`, create a second binding, or fabricate legacy acceptance evidence.
 - MUST NOT edit a prior ADR or a prior decision-log entry to add a back-reference — supersession is a forward-only chain; append a new record whose `supersedes:` names the prior one.
 - **The never-edit rule protects decision CONTENT, not identifiers.** Rewriting what was decided corrupts the record; disambiguating *which document a pointer names* repairs it. Maintainer ruling, 2026-07-25: *"the never edit rule is meant to prevent this situation, not prevent this situation from being fixed."* So a correction that is provably identifier-only — a `supersedes:` value changed from a number to the stem it already meant — is permissible, and nothing else about the file is. Any such correction MUST be a single-line diff that alters not one word of any decision, MUST be visible in its own commit, and still requires the maintainer-armed `adr-authoring-active` marker. MUST NOT touch Context, Decision, Alternatives, Consequences, Risks, `status:`, `date:`, `decided-by:`, or `title:` under this allowance.
 - MUST NOT number an ADR with a gap, and MUST NOT reuse a number an existing stem already holds — a shared number makes every bare reference to it ambiguous.

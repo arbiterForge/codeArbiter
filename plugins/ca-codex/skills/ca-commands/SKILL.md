@@ -10,7 +10,7 @@ Present the public command list. Read-only, no state change.
 
 ## Flow
 
-1. Read the quick-reference table from `${CLAUDE_PLUGIN_ROOT}/COMMANDS.md` — the single source of truth
+1. Read the quick-reference table from [COMMANDS.md](../../COMMANDS.md) — the single source of truth
    for the catalog.
 2. Output that table only — command, one-line description, route. No prose walkthrough, and no
    second copy maintained here (a hard-coded table drifts against `COMMANDS.md`).

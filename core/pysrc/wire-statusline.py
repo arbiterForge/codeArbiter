@@ -68,14 +68,19 @@ ARBITER_SPINNER_VERBS = {
 
 
 def plugin_root(opt):
-    if opt:
-        return os.path.abspath(opt)
-    # Host seam (ADR-0011): CLAUDE_PLUGIN_ROOT then this script's parent —
-    # exactly the prior inline lookup (hostapi.py lives in the same hooks/ dir,
-    # so its file-relative fallback names the same root). get_host() (#257),
-    # not a direct hostapi.load_host(): resolves the SAME Host run(host)
-    # injected instead of triggering a second disk load.
-    return os.path.abspath(_hooklib.get_host().plugin_root())
+    # The host seam authenticates the package currently executing this hook.
+    # --plugin-root remains test/operator corroboration, never an authority
+    # able to select a different executable for settings.json.
+    authenticated = os.path.realpath(
+        os.path.abspath(_hooklib.get_host().plugin_root()))
+    if not opt:
+        return authenticated
+    requested = os.path.realpath(os.path.abspath(opt))
+    if requested != authenticated:
+        raise SystemExit(
+            "ERROR: --plugin-root must match the authenticated executing "
+            f"adapter root ({authenticated}); got {requested}.")
+    return authenticated
 
 
 def settings_path(opt):

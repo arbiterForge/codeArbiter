@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-06T02:28:04Z",
+  "purpose": "Retain one exact-release Codex host-thread dispatch receipt for the packaged architecture-drift-reviewer charter.",
+  "agent": {
+    "task_identity": "/root/codex_closeout_coordinator/exact_094_architecture_drift",
+    "model": "gpt-6-astra",
+    "reasoning": "high"
+  },
+  "package": {
+    "name": "ca-codex",
+    "version": "0.9.4",
+    "tag": "ca-codex-v0.9.4",
+    "tag_object_sha": "9b8ef86a60143588febeaaeacdf90435f204b020",
+    "release_commit_sha": "07f8f475203876561561fa107d110e82d85c2c26"
+  },
+  "charter": {
+    "path_within_package": "agents/architecture-drift-reviewer.md",
+    "sha256_before": "e9ddab193d2082655be3b6fe53515fb6826316e5e2efa98fe6ef2675d1983f91",
+    "sha256_after": "e9ddab193d2082655be3b6fe53515fb6826316e5e2efa98fe6ef2675d1983f91",
+    "matched_exact_main_source": true,
+    "worker_reported_full_read_before_review": true
+  },
+  "review": {
+    "repository_commit_sha": "d4b120be828a671508588509f6c09b7b02be9bc6",
+    "scope": "ADR-0031 and ADR-0032 architecture drift across host roots, generated adapters, packaged charter routing, and hosted static release verification.",
+    "verdict": "confirmed",
+    "findings": [],
+    "worker_reported_status_before": "clean",
+    "worker_reported_status_after": "clean",
+    "worker_reported_mutations": []
+  },
+  "controller_verification": {
+    "repository_head_matched_origin_main": true,
+    "repository_status_clean_after_worker": true,
+    "installed_manifest_version_matched": true,
+    "installed_and_source_charter_hashes_matched": true,
+    "remote_tag_and_committed_publication_receipt_matched": true
+  },
+  "claim": "One host-provided Codex agent consumed the exact installed ca-codex 0.9.4 charter and returned the assigned bounded review.",
+  "limitations": [
+    "This sample does not prove host-enforced read-only isolation or full-filesystem immutability.",
+    "This sample does not exercise every generated dispatch route.",
+    "This sample does not replace static route-closure, release, installation, ca-doctor, or live-hook evidence.",
+    "This sample did not exercise cancellation or process-cleanup behavior."
+  ]
+}

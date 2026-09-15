@@ -1,11 +1,27 @@
 ---
 description: Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch.
-argument-hint: (none)
+argument-hint: "[\"title\"] | --watch [PR] | --cleanup"
 ---
 
 # {{CMD:pr}} — open a pull request
 
 The only permitted path to a pull request. Every change lands through a PR — never a direct write or force-push to the default branch. No PR is drafted while any BLOCK-level review finding stands.
+
+<!-- catalog-command-modes:start -->
+## Compatibility modes
+
+<!-- command-mode:--watch legacy-route:watch -->
+`--watch [PR number | URL | branch]` loads and follows
+`{{PLUGIN_ROOT}}/commands/watch.md` with the remaining arguments. This is an internal resource
+handoff to the exact watcher contract, not a second host-command invocation.
+
+<!-- command-mode:--cleanup legacy-route:cleanup -->
+`--cleanup` loads and follows `{{PLUGIN_ROOT}}/commands/cleanup.md` with no remaining argument. It
+retains the cleanup route's containment proof and per-item confirmations.
+
+The flags are mutually exclusive. A bare or quoted title named `watch` or `cleanup` is not a mode;
+without either flag, continue with the unchanged PR flow below.
+<!-- catalog-command-modes:end -->
 
 ## Flow
 

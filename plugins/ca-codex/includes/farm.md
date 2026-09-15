@@ -38,7 +38,7 @@ capable of the slice).
    `FARM_MUTATION_TEST_CMD` set and must print a trailing JSON line with a numeric `score`.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
-the mutation guard runs `gate.commands[0]` as the per-mutant test (running the full suite per mutant
+the mutation guard runs `gate.commands[0]` as the per-mutant test (running an exhaustive suite per mutant
 would be too slow).
 
 ### Best-of-N sampling and iterative retries
@@ -181,8 +181,8 @@ The dispatch skill surfaces the underlying model identity so you can make an inf
 
 ## Invocation
 
-Direct (dev): `cd "${CLAUDE_PLUGIN_ROOT}/tools" && npm run farm -- <plan.json>`
-Via plugin: `node "${CLAUDE_PLUGIN_ROOT}/tools/farm.js" <plan.json>`
+Direct (dev): `cd "tools" && npm run farm -- <plan.json>`
+Via plugin: `node "tools/farm.js" <plan.json>`
 
 Normal use: `$ca-sprint --farm` — the skill handles model selection and dispatch automatically.
 

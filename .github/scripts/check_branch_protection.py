@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only audit of main's merge-readiness enforcement (issue #383 AC-3).
+"""Read-only audit of main's merge readiness and ADR source-preserving merge policy.
 
 Run:  python .github/scripts/check_branch_protection.py --repo owner/name
 Local: GH_TOKEN=$(gh auth token) python .github/scripts/check_branch_protection.py
@@ -15,18 +15,25 @@ answers are accepted here: `strict` OR a queue.  Demanding both would fail the
 moment the ruled-on fix landed, because a queue makes `strict` redundant and it
 is expected to stay false.
 
+ADR SOURCE ANCESTRY. The accepted lifecycle can require a true merge to retain
+exact source-commit identities. Main must therefore not require linear history,
+and the repository must allow merge commits (PR #748, approved Option A).
+Squash remains the ordinary convention when the exact base/head selector permits
+it. This audit detects incompatible settings; it never changes them or substitutes
+for the selector's committed source/blob/ancestry proof.
+
 WHY IT SKIPS RATHER THAN FAILS.  `GET /repos/{owner}/{repo}/branches/{branch}
 /protection` requires Administration:read.  A workflow `permissions:` block has
 no key that grants it - `administration` is not among GITHUB_TOKEN's permission
 scopes - so in ordinary CI this audit CANNOT see the protection document, and a
 check that failed on that would jam every merge for a permission that cannot be
 granted.  Every field is therefore three-valued: True, False, or None for "this
-run could not see it".  A definite False is a violation; a None is a skip that
+run could not see it". A definitely incompatible value is a violation; None is a skip that
 prints what it could not check and how to check it.  Only a settings change is
 ever reported, never a transport or permission problem.
 
-READ-ONLY.  Two calls, both queries: a REST GET for the protection document and
-a GraphQL query for `repository.mergeQueue`.  The GraphQL call is an HTTP POST
+READ-ONLY. Three queries: REST GETs for repository metadata and the protection
+document, and a GraphQL query for `repository.mergeQueue`. The GraphQL call is an HTTP POST
 because that is the protocol's only verb; it mutates nothing.  The merge-queue
 answer needs plain repository read, so a run without admin rights can still
 prove the queue is on even when the protection document is invisible.
@@ -74,6 +81,8 @@ class Enforcement:
     strict: bool | None
     merge_queue: bool | None
     contexts: tuple[str, ...] | None
+    required_linear_history: bool | None = None
+    allow_merge_commit: bool | None = None
 
 
 def audit(enforcement: Enforcement) -> list[str]:
@@ -83,17 +92,27 @@ def audit(enforcement: Enforcement) -> list[str]:
     observed is wrong", which is not the same as "everything was checked" -
     `unreadable()` reports that half.
     """
+    findings: list[str] = []
     if enforcement.protected is False:
         # GitHub answers 404 for an unprotected branch and 403 when the token
         # merely lacks rights, so this is a real absence and not a blind spot.
-        # It short-circuits: naming a missing context on an unprotected branch
-        # is noise piled on the one finding that matters.
-        return [
+        # Independently readable repository settings can still be incompatible.
+        findings.append(
             "main has no branch protection at all, so nothing requires "
             f"{MERGE_READINESS_CONTEXT} before a merge (issue #383)."
-        ]
+        )
 
-    findings: list[str] = []
+    if enforcement.required_linear_history is True:
+        findings.append(
+            "required_linear_history is true: main forbids the true merge commits "
+            "that ADR source ancestry may require. Restore the approved source-preserving "
+            "merge policy; do not squash or rewrite acceptance bindings."
+        )
+    if enforcement.allow_merge_commit is False:
+        findings.append(
+            "allow_merge_commit is false: the repository disables true merges required "
+            "by ADR source ancestry. Restore the approved source-preserving merge policy."
+        )
     if enforcement.strict is False and enforcement.merge_queue is False:
         findings.append(
             "main can merge a stale-base result: required_status_checks.strict "
@@ -127,28 +146,62 @@ def unreadable(enforcement: Enforcement) -> list[str]:
         blind.append("required_status_checks.strict")
     if enforcement.contexts is None:
         blind.append("the required status-check contexts")
+    if enforcement.required_linear_history is None:
+        blind.append("required_linear_history")
+    if enforcement.allow_merge_commit is None:
+        blind.append("allow_merge_commit")
     return blind
 
 
+def _boolean_field(document: object, name: str) -> bool | None:
+    """Only JSON booleans are evidence; missing/malformed values are unreadable."""
+    value = document.get(name) if isinstance(document, dict) else None
+    return value if type(value) is bool else None
+
+
+def _status_check_fields(document: dict) -> tuple[bool | None, tuple[str, ...] | None]:
+    """Read exact freshness evidence without treating malformed JSON as policy."""
+    if "required_status_checks" not in document or document["required_status_checks"] is None:
+        return False, ()
+    checks = document["required_status_checks"]
+    if not isinstance(checks, dict) or not checks:
+        return None, None
+
+    strict = _boolean_field(checks, "strict")
+    contexts = checks.get("contexts")
+    if contexts is not None:
+        if not isinstance(contexts, list) or any(type(value) is not str for value in contexts):
+            return strict, None
+        return strict, tuple(contexts)
+
+    # `contexts` is deprecated in favour of `checks`; a response carrying only
+    # the newer array must not read as "the context was dropped".
+    entries = checks.get("checks")
+    if not isinstance(entries, list):
+        return strict, None
+    parsed: list[str] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return strict, None
+        context = entry.get("context")
+        if type(context) is not str or not context:
+            return strict, None
+        parsed.append(context)
+    return strict, tuple(parsed)
+
+
 def enforcement_from_protection(
-    document: dict, merge_queue: bool | None = None
+    document: dict, merge_queue: bool | None = None, allow_merge_commit: bool | None = None
 ) -> Enforcement:
     """Read a branch-protection response into an `Enforcement`."""
-    checks = document.get("required_status_checks") or {}
-    contexts = checks.get("contexts")
-    if contexts is None:
-        # `contexts` is deprecated in favour of `checks`; a response carrying
-        # only the newer array must not read as "the context was dropped".
-        contexts = [
-            entry.get("context")
-            for entry in (checks.get("checks") or [])
-            if isinstance(entry, dict) and entry.get("context")
-        ]
+    strict, contexts = _status_check_fields(document)
     return Enforcement(
         protected=True,
-        strict=bool(checks.get("strict", False)),
+        strict=strict,
         merge_queue=merge_queue,
-        contexts=tuple(contexts),
+        contexts=contexts,
+        required_linear_history=_boolean_field(document.get("required_linear_history"), "enabled"),
+        allow_merge_commit=allow_merge_commit,
     )
 
 
@@ -156,23 +209,35 @@ def read_enforcement(repo: str, branch: str, *, rest, graphql) -> Enforcement:
     """Gather what the given transports can see. Never raises on an API error."""
     owner, _, name = repo.partition("/")
 
+    status, payload = rest(f"/repos/{repo}")
+    allow_merge_commit = _boolean_field(payload, "allow_merge_commit") if status == 200 else None
+
     merge_queue: bool | None = None
     status, payload = graphql(
         _MERGE_QUEUE_QUERY, {"owner": owner, "name": name, "branch": branch}
     )
-    if status == 200 and not payload.get("errors"):
-        repository = (payload.get("data") or {}).get("repository")
+    if status == 200 and isinstance(payload, dict) and "errors" not in payload:
+        data = payload.get("data")
+        repository = data.get("repository") if isinstance(data, dict) else None
         if isinstance(repository, dict) and "mergeQueue" in repository:
-            merge_queue = repository["mergeQueue"] is not None
+            queue = repository["mergeQueue"]
+            if queue is None:
+                merge_queue = False
+            elif isinstance(queue, dict) and isinstance(queue.get("id"), str) and queue["id"].strip():
+                # The query requests id: arbitrary non-null values prove nothing.
+                merge_queue = True
 
     status, payload = rest(f"/repos/{repo}/branches/{branch}/protection")
-    if status == 200:
-        return enforcement_from_protection(payload, merge_queue=merge_queue)
+    if status == 200 and isinstance(payload, dict):
+        return enforcement_from_protection(payload, merge_queue=merge_queue,
+                                           allow_merge_commit=allow_merge_commit)
     if status == 404:
-        return Enforcement(protected=False, strict=None, merge_queue=merge_queue, contexts=None)
-    # 401/403 (no Administration:read), 5xx, or a transport failure reported as
-    # status 0 - all unreadable, none of them a finding.
-    return Enforcement(protected=None, strict=None, merge_queue=merge_queue, contexts=None)
+        return Enforcement(protected=False, strict=None, merge_queue=merge_queue, contexts=None,
+                           allow_merge_commit=allow_merge_commit)
+    # 401/403 (no Administration:read), 5xx, malformed documents, or a transport
+    # failure reported as status 0 - all unreadable, none of them a finding.
+    return Enforcement(protected=None, strict=None, merge_queue=merge_queue, contexts=None,
+                       allow_merge_commit=allow_merge_commit)
 
 
 def _send(request: urllib.request.Request) -> tuple[int, dict]:
@@ -269,9 +334,11 @@ def main(argv=None, *, token=None, rest=None, graphql=None) -> int:
         )
     if findings:
         return 1
+    if blind:
+        return 0
     print(
         f"OK: {arguments.repo}@{arguments.branch} still enforces merge readiness "
-        f"against the current base (strict={enforcement.strict}, "
+        f"and permits source-preserving merges against the current base (strict={enforcement.strict}, "
         f"merge_queue={enforcement.merge_queue})."
     )
     return 0

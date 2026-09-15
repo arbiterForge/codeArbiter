@@ -112,21 +112,30 @@ session start it:
    injects. Composed injection happens instead at the per-turn seam, see
    [UserPromptSubmit / PreCompact: `prompt-submit.py`](#userpromptsubmit-precompact-prompt-submitpy)
    below.
-5. **Emits the daily standup briefing** (first session of the local day only): a
+5. **Emits the cached update notice** when a newer release is known. In arbiter
+   mode it also launches `update-refresh.py` as a detached process. That process
+   reads and updates the target-keyed `~/.codearbiter/update-state.json` cache and,
+   only when the cache is stale, checks GitHub's public Releases API. The network
+   check runs at most once per day and never delays the startup hook.
+6. **Emits the daily standup briefing** (first session of the local day only): a
    **read-only** summary of repo hygiene covering working-tree state, ahead/behind
    vs. upstream, merge-able branches, stale worktrees, stashes, and a display-only
    governance line. Later sessions the same day collapse to at most a single offer
    line, or nothing.
 
 **Reads:** `.codearbiter/CONTEXT.md`, `open-questions.md`, `open-tasks.md` (in-flight
-count excluding done, plus a stale-in-progress nudge, via `_taskboardlib`);
+count excluding done, plus a stale-in-progress nudge, via `_taskboardlib`), the
+installed plugin version, and `~/.codearbiter/update-state.json`;
 read-only `git` queries (`status`, `rev-list`, `branch -vv`, `worktree list`,
 `stash list`, `rev-parse`). **Writes:** the first-of-day marker
 `.codearbiter/.markers/standup-<date>`, and possibly the statusline pin in
-`~/.claude/settings.json`. **Network:** it spawns a **detached, read-only
+`~/.claude/settings.json`; the detached update process can update
+`~/.codearbiter/update-state.json`. **Network:** it spawns a **detached, read-only
 `git fetch --quiet --no-tags`** against your own remote to refresh ahead/behind for
 *next* time. That fetch is never awaited, so an offline or slow network never stalls
-startup. There is no other process and there are no sockets.
+startup. It also spawns the detached, fail-silent update process described above;
+when its cache is stale, that process makes bounded unauthenticated HTTPS requests
+to GitHub's public Releases API and otherwise performs no network request.
 
 > This is the *only* hook that ever runs in a non-enabled repo, and there it does
 > nothing but clear the dev marker and heal the (already-installed) statusline pin.
@@ -289,13 +298,38 @@ here for completeness.
 | `statusline.py` | the statusline command in `settings.json` | Renders the token-aware statusline (folder, git, rate limits, usage, cost, context, and, in enabled repos, the arbiter governance row). Read-only |
 | `wire-statusline.py` | `/ca:statusline`, and the SessionStart self-heal | Installs/refreshes/removes the ca-owned statusline entry in `~/.claude/settings.json`, backing up and restoring any prior statusline |
 | `doctor.py` | `/ca:doctor` | Verifies the install is actually enforcing: interpreter, payload, cache staleness, a live-fire hook probe. Read-only |
-| `init-codearbiter.py` | `/ca:init` | Scaffolds the repo's `.codearbiter/` state store |
+| `init-codearbiter.py` | `/ca:init`, or its explicit repair flag | Scaffolds the repo's `.codearbiter/` state store and locally excludes the retained task-board OS lock |
 | `prune-transcript.py` | `/ca:prune` (CLI mode) | The same engine as the hook, driven manually with `status`/`dry`/`run`/`audit` subcommands |
 
 Shared, dependency-free library modules (`_hooklib.py`, `_standuplib.py`,
 `_prunelib.py`, `_babysitlib.py`) hold the pure logic the scripts above import; they
 have no side effects of their own. Everything under `plugins/ca/hooks/tests/` is the
 unit-test suite for these scripts. Run it with `pytest` from `plugins/ca/hooks/`.
+
+### Retained task-board lock and local exclusion
+
+`taskwrite` retains `.codearbiter/open-tasks.md.lock` as a one-byte OS-lock sidecar.
+Do not delete it to clean Git status: deleting a locked file can let another process
+acquire a different lock. Fresh Git-backed initialization adds the exact root-anchored
+rule `/.codearbiter/open-tasks.md.lock` to Git's local `info/exclude`, shared by linked
+worktrees. It does not edit a tracked `.gitignore` or hide other lock files.
+
+For an existing scaffold, invoke the installed host package's helper directly:
+
+```sh
+python /path/to/installed/plugin/hooks/init-codearbiter.py --repair-lock-exclusion --root /path/to/repository
+```
+
+Use the actual installed `ca`, `ca-codex`, or `ca-pi` package path. Omitting `--root`
+resolves the current checkout's Git toplevel; an explicit root must name that toplevel.
+This is a helper option, not a new `ca` command. It preserves existing exclusion bytes
+and is idempotent. It never reinitializes project state or changes tracked files, and
+cannot combine with `--check` or `--stage`.
+
+A tracked sidecar, higher-precedence `.gitignore` negation, unsafe file path, or existing
+`exclude.lock` is a reported failure. Resolve that condition before retrying; the helper
+does not untrack files, rewrite conflicting rules, or remove another writer's lock.
+Non-Git scaffolding remains supported; run this repair after creating the Git repository.
 
 ## Verifying for yourself
 

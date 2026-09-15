@@ -169,11 +169,13 @@ class SharedDoctorContract(RepoFixture):
         skill = (REPO / "plugins" / "ca-pi" / "skills" / "ca-doctor" / "SKILL.md").read_text(
             encoding="utf-8"
         )
-        catalog = json.loads(
+        catalog_document = json.loads(
             (REPO / "plugins" / "ca-pi" / "generated" / "command-catalog.json").read_text(
                 encoding="utf-8"
             )
         )
+        self.assertEqual(catalog_document["schemaVersion"], 1)
+        catalog = catalog_document["commands"].values()
         index = (REPO / "plugins" / "ca-pi" / "SKILLS.md").read_text(
             encoding="utf-8"
         )

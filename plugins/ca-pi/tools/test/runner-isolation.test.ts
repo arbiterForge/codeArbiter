@@ -21,6 +21,7 @@ const runnerMocks = vi.hoisted(() => {
   const cleanupReady = vi.fn(async () => true);
   return {
     spawn,
+    environmentCleanupStarted: vi.fn(),
     randomUUID: vi.fn(() => "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
     // The runner draws two 16-byte values (nonce, challenge) that the attestation digest pins,
     // so those stay deterministic. The #455 broker draws a 32-byte token; it must stay a REAL
@@ -62,6 +63,23 @@ vi.mock("../src/process-tree.ts", async (importOriginal) => ({
   processTreeSpawnOptions: runnerMocks.processTreeSpawnOptions,
   spawnProcessTree: runnerMocks.spawnProcessTree,
 }));
+
+vi.mock("../src/child-env.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../src/child-env.ts")>();
+  return {
+    ...actual,
+    prepareChildEnvironment: async (...args: Parameters<typeof actual.prepareChildEnvironment>) => {
+      const prepared = await actual.prepareChildEnvironment(...args);
+      return {
+        ...prepared,
+        cleanup: async () => {
+          runnerMocks.environmentCleanupStarted();
+          await prepared.cleanup();
+        },
+      };
+    },
+  };
+});
 
 type RunnerModule = typeof import("../src/runner.ts");
 type RolesModule = typeof import("../src/roles.ts");
@@ -168,6 +186,7 @@ function validationFor(request: object): Record<string, unknown> {
 }
 
 afterEach(async () => {
+  runnerMocks.environmentCleanupStarted.mockClear();
   runnerMocks.spawn.mockReset();
   runnerMocks.cleanupTerminate.mockReset();
   runnerMocks.cleanupTerminate.mockImplementation(async (reason: string) => ({
@@ -940,6 +959,15 @@ describe("Task 6 exact Pi child launch", () => {
     const child = new FakeChild(false);
     const controller = new AbortController();
     const request = await materializedRequest();
+    let releaseCleanup!: () => void;
+    let cleanupStarted!: () => void;
+    const started = new Promise<void>((resolve) => { cleanupStarted = resolve; });
+    const released = new Promise<void>((resolve) => { releaseCleanup = resolve; });
+    runnerMocks.cleanupTerminate.mockImplementation(async (cleanupReason: string) => {
+      cleanupStarted();
+      await released;
+      return { escalated: false, reason: cleanupReason, state: "terminated", verified: true };
+    });
     runnerMocks.spawn.mockImplementation(() => {
       setImmediate(() => {
         trigger(child, controller);
@@ -947,10 +975,22 @@ describe("Task 6 exact Pi child launch", () => {
       });
       return child;
     });
-    const observed = await Promise.race([
-      runPiChild(request as never, controller.signal),
-      new Promise<"unresolved">((resolve) => setTimeout(() => resolve("unresolved"), 250)),
-    ]);
+    let settled = false;
+    const running = runPiChild(request as never, controller.signal).finally(() => { settled = true; });
+    try {
+      await started;
+      // Observe an event-loop turn with cleanup deliberately pending, rather
+      // than charging real validation, filesystem and broker work to 250ms.
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      expect(settled).toBe(false);
+      expect(runnerMocks.environmentCleanupStarted).not.toHaveBeenCalled();
+      expect(runnerMocks.cleanupTerminate).toHaveBeenCalledOnce();
+      expect(runnerMocks.cleanupTerminate).toHaveBeenCalledWith(reason);
+    } finally {
+      releaseCleanup();
+      await running;
+    }
+    const observed = await running;
     expect(observed).toEqual({ terminal: "degraded", diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor." });
     expect(runnerMocks.cleanupTerminate).toHaveBeenCalledOnce();
     expect(runnerMocks.cleanupTerminate).toHaveBeenCalledWith(reason);
@@ -969,10 +1009,7 @@ describe("Task 6 exact Pi child launch", () => {
     const timeoutChild = new FakeChild(false);
     runnerMocks.spawn.mockReturnValue(timeoutChild);
     const timeoutRequest = await materializedRequest();
-    const timeoutObserved = await Promise.race([
-      runPiChild({ ...timeoutRequest, timeoutMs: 1 } as never, new AbortController().signal),
-      new Promise<"unresolved">((resolve) => setTimeout(() => resolve("unresolved"), 250)),
-    ]);
+    const timeoutObserved = await runPiChild({ ...timeoutRequest, timeoutMs: 1 } as never, new AbortController().signal);
     expect(timeoutObserved).toEqual(expected);
     expect(runnerMocks.cleanupTerminate).toHaveBeenCalledWith("timeout");
 
@@ -1085,10 +1122,7 @@ describe("Task 6 exact Pi child launch", () => {
     child.close(7);
     runnerMocks.spawn.mockReturnValue(child);
     const request = await materializedRequest();
-    const observed = await Promise.race([
-      runPiChild(request as never, new AbortController().signal),
-      new Promise<"unresolved">((resolve) => setTimeout(() => resolve("unresolved"), 250)),
-    ]);
+    const observed = await runPiChild(request as never, new AbortController().signal);
     expect(observed).toEqual({
       terminal: "degraded",
       diagnostic: "Pi child isolation failed safely; no inline promotion is available; run /ca-doctor.",

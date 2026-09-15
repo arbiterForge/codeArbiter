@@ -3,6 +3,14 @@ import proofMp4 from "../assets/proof/hook-proof.mp4";
 import proofWebm from "../assets/proof/hook-proof.webm";
 import proofPoster from "../assets/proof/hook-proof-poster.webp";
 import proof from "../assets/proof/hook-proof.json";
+import applicability from "../generated/release-applicability.json";
+import { presentProofApplicability } from "../release-applicability-presentation.ts";
+
+const repositoryUrl = "https://github.com/arbiterForge/codeArbiter";
+const publishedCa = applicability.hosts.find((host) => host.target === "ca");
+if (!publishedCa) {
+  throw new Error("Generated release applicability is missing the ca host row");
+}
 
 const capturedDate = new Intl.DateTimeFormat("en", {
   year: "numeric",
@@ -11,6 +19,8 @@ const capturedDate = new Intl.DateTimeFormat("en", {
   timeZone: "UTC",
 }).format(new Date(proof.capturedAt));
 const shortDigest = proof.sourceSha256.slice(0, 12);
+const shortPublicationCommit = publishedCa.publicationCommit.slice(0, 12);
+const proofApplicability = presentProofApplicability(applicability.proof);
 ---
 
 <figure class="ca-hook-proof">
@@ -29,6 +39,15 @@ const shortDigest = proof.sourceSha256.slice(0, 12);
   </video>
   <figcaption>
     <span><strong>Verified direct hook invocation</strong> · {capturedDate}</span>
+    <span class:list={["ca-hook-proof__applicability", { "is-mismatch": proofApplicability.isMismatch }]}>
+      {proofApplicability.message}:{" "}
+      <a href={`${repositoryUrl}/releases/tag/${publishedCa.tag}`}><code>{publishedCa.tag}</code></a>{" "}
+      at{" "}
+      <a
+        href={`${repositoryUrl}/commit/${publishedCa.publicationCommit}`}
+        aria-label={`View full ca publication commit ${publishedCa.publicationCommit}`}
+      ><code>{shortPublicationCommit}</code></a>
+    </span>
     <span><code>{shortDigest}</code> source digest</span>
   </figcaption>
   <details>
@@ -39,6 +58,10 @@ const shortDigest = proof.sourceSha256.slice(0, 12);
       <p><strong>Exit</strong> {proof.invocation.exitCode} · command not executed · no staged files</p>
       <p><strong>Audit side effect</strong> The block appended an H-03 event to <code>.codearbiter/gate-events.log</code>.</p>
       <p><strong>Capture source</strong> <code>{proof.source}</code> at SHA-256 <code>{proof.sourceSha256}</code>.</p>
+      <p>
+        <strong>Published-artifact applicability</strong> {applicability.proof.statement}{" "}
+        <a href="/release-applicability.json">Read the complete release applicability record.</a>
+      </p>
       <p><strong>Evidence boundary</strong> This directly invoked the shipped hook with the host payload shape. It does not prove a host discovered or registered that hook.</p>
     </div>
   </details>
@@ -76,6 +99,14 @@ const shortDigest = proof.sourceSha256.slice(0, 12);
 
   figcaption code {
     color: var(--ca-ink-soft);
+  }
+
+  .ca-hook-proof__applicability a {
+    color: inherit;
+  }
+
+  .ca-hook-proof__applicability.is-mismatch {
+    color: var(--ca-danger);
   }
 
   details {

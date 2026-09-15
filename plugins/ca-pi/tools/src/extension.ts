@@ -73,6 +73,118 @@ export { compatibilityDirection } from "./compatibility.ts";
 export { diagnosePi, formatPiDoctorReport, runPiWrapperSelfTest } from "./doctor.ts";
 export { PI_RUNTIME_DIAGNOSIS, resolvePiRuntime } from "./runtime-resolver.ts";
 
+const COMMAND_VISIBILITY_ORDER = ["core", "advanced", "alias", "internal", "deprecated"] as const;
+const COMMAND_WORKFLOW_ORDER = [
+  "evaluate", "initialize", "change", "review", "decide", "ship", "operate", "extend", "help",
+] as const;
+
+type CommandVisibility = typeof COMMAND_VISIBILITY_ORDER[number];
+type CommandWorkflow = typeof COMMAND_WORKFLOW_ORDER[number];
+
+export interface GeneratedCommandCatalogEntry extends CommandCatalogEntry {
+  visibility: CommandVisibility;
+  workflow: CommandWorkflow;
+  canonical?: string;
+  replacement?: string;
+  legacyRoutes?: string[];
+}
+
+function plainRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    && Object.getPrototypeOf(value) === Object.prototype;
+}
+
+function sameStrings(actual: readonly string[], expected: readonly string[]): boolean {
+  return actual.length === expected.length && actual.every((item, index) => item === expected[index]);
+}
+
+function validLegacyRoutes(value: unknown): value is string[] {
+  return Array.isArray(value)
+    && value.every((item) => typeof item === "string" && /^[a-z][a-z0-9-]*$/u.test(item))
+    && new Set(value).size === value.length
+    && sameStrings(value, [...value].sort());
+}
+
+/** Convert the generated registry envelope into the unchanged runtime entry array. */
+export function commandCatalogEntries(value: unknown): GeneratedCommandCatalogEntry[] {
+  const envelopeKeys = ["commands", "compatibility", "schemaVersion", "visibilityOrder", "workflowOrder"];
+  if (!plainRecord(value)
+    || !sameStrings(Object.keys(value).sort(), envelopeKeys)
+    || value.schemaVersion !== 1
+    || !Array.isArray(value.visibilityOrder)
+    || !sameStrings(value.visibilityOrder as string[], COMMAND_VISIBILITY_ORDER)
+    || !Array.isArray(value.workflowOrder)
+    || !sameStrings(value.workflowOrder as string[], COMMAND_WORKFLOW_ORDER)
+    || !plainRecord(value.compatibility)
+    || !plainRecord(value.commands)) {
+    throw new Error("codeArbiter Pi command catalog envelope is invalid; run /ca-doctor.");
+  }
+
+  const commands = value.commands;
+  const names = Object.keys(commands);
+  if (!sameStrings(names, [...names].sort()) || names.length === 0) {
+    throw new Error("codeArbiter Pi command catalog envelope has no sorted commands; run /ca-doctor.");
+  }
+  const entries: GeneratedCommandCatalogEntry[] = [];
+  for (const name of names) {
+    const fail = (): never => {
+      throw new Error(`codeArbiter Pi command catalog entry ${name} is invalid; run /ca-doctor.`);
+    };
+    const value = commands[name];
+    if (!plainRecord(value)) {
+      throw new Error(`codeArbiter Pi command catalog entry ${name} is invalid; run /ca-doctor.`);
+    }
+    const raw: Record<string, unknown> = value;
+    if (raw.name !== name
+      || typeof raw.description !== "string" || raw.description === ""
+      || raw.skillPath !== `skills/ca-${name}/SKILL.md`
+      || !COMMAND_VISIBILITY_ORDER.includes(raw.visibility as CommandVisibility)
+      || !COMMAND_WORKFLOW_ORDER.includes(raw.workflow as CommandWorkflow)) {
+      fail();
+    }
+    const visibility = raw.visibility as CommandVisibility;
+    const commonKeys = ["description", "name", "skillPath", "visibility", "workflow"];
+    let expectedKeys: string[];
+    if (visibility === "core" || visibility === "advanced" || visibility === "internal") {
+      expectedKeys = [...commonKeys, "canonical", "legacyRoutes"].sort();
+      if (raw.canonical !== name || !validLegacyRoutes(raw.legacyRoutes)) fail();
+    } else if (visibility === "alias") {
+      expectedKeys = [...commonKeys, "canonical", "replacement"].sort();
+      if (typeof raw.canonical !== "string"
+        || !/^[a-z][a-z0-9-]*$/u.test(raw.canonical)
+        || typeof raw.replacement !== "string"
+        || !raw.replacement.startsWith(`${raw.canonical} `)) fail();
+    } else {
+      expectedKeys = [...commonKeys, "replacement"].sort();
+      if (typeof raw.replacement !== "string" || raw.replacement === "") fail();
+    }
+    if (!sameStrings(Object.keys(raw).sort(), expectedKeys)) fail();
+    entries.push(Object.freeze({ ...raw }) as unknown as GeneratedCommandCatalogEntry);
+  }
+
+  const entriesByName = new Map(entries.map((entry) => [entry.name, entry]));
+  const expectedLegacyRoutes = new Map<string, string[]>();
+  for (const entry of entries) {
+    if (entry.visibility === "alias") {
+      const target = entriesByName.get(entry.canonical!);
+      if (target === undefined || target.visibility === "alias" || target.visibility === "deprecated") {
+        throw new Error(`codeArbiter Pi command catalog entry ${entry.name} has an invalid alias target; run /ca-doctor.`);
+      }
+      const routes = expectedLegacyRoutes.get(entry.canonical!) ?? [];
+      routes.push(entry.name);
+      expectedLegacyRoutes.set(entry.canonical!, routes);
+    }
+  }
+  for (const entry of entries) {
+    if (entry.visibility === "alias" || entry.visibility === "deprecated") continue;
+    const expected = (expectedLegacyRoutes.get(entry.name) ?? []).sort();
+    if (!sameStrings(entry.legacyRoutes ?? [], expected)) {
+      throw new Error(`codeArbiter Pi command catalog entry ${entry.name} has broken legacy-route closure; run /ca-doctor.`);
+    }
+  }
+  return Object.freeze(entries) as unknown as GeneratedCommandCatalogEntry[];
+}
+
 export interface ParentDependencies {
   bridge: BridgePort;
   catalog: readonly CommandCatalogEntry[];
@@ -750,7 +862,9 @@ export default async function codeArbiterPi(pi: ExtensionAPI): Promise<void> {
     if (parent === packageRoot) throw new Error("codeArbiter could not locate the ca-pi package; run /ca-doctor.");
     packageRoot = parent;
   }
-  const catalog = JSON.parse(await readFile(resolve(packageRoot, "generated", "command-catalog.json"), "utf8")) as CommandCatalogEntry[];
+  const catalog = commandCatalogEntries(
+    JSON.parse(await readFile(resolve(packageRoot, "generated", "command-catalog.json"), "utf8")) as unknown,
+  );
   const toolClasses = loadPiToolClasses(__CODEARBITER_PI_TOOL_CLASSES__);
   const rawPermissionSurfaces = __CODEARBITER_PI_PERMISSION_POLICY_SURFACES__;
   if (rawPermissionSurfaces === null || typeof rawPermissionSurfaces !== "object" || Array.isArray(rawPermissionSurfaces)) {

@@ -9,16 +9,6 @@ journey:
   proof: "You can identify who routes, who implements, who reviews, and who resolves a gate."
 ---
 
-codeArbiter ships four sibling plugins from one marketplace. Three are governance hosts: `ca` for
-Claude Code, `ca-codex` for Codex, and `ca-pi` for Pi. The fourth is `ca-sandbox`, an infrastructure
-plugin unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)). All three governance
-hosts inject the same orchestrator responsibilities, enforce the same policy core, and use one
-checked-in `.codearbiter/` directory for project context and audit state. See the
-[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
-between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
-The complete `ca-pi` adapter is currently a Feature Forge `preview`: real use
-and feedback are welcome while broader testing continues before stable status.
-
 ## codeArbiter Holds the Gates; You Hold the Decisions
 
 This is the organizing principle. codeArbiter enforces process; you make the calls. It
@@ -36,10 +26,13 @@ your behalf.
 2. **Route.** The orchestrator hands the command to the workflow that owns that lane.
    `/ca:fix` and `$ca-fix` both reach the same test-first obligations.
 3. **Execute the roles.** The owning skill selects the author and reviewer roles the change actually
-   demands. Claude Code dispatches plugin agents. Current Codex releases load the same charters into
-   host-provided agent threads and retain their thread receipts; older hosts may use an inline
-   fallback unless the workflow requires isolation. Pi launches hardened child processes through
-   its trusted parent. The policy stays shared even though each host's mechanism differs.
+   demands. Claude Code dispatches plugin agents. Published releases from 0.7.5 include the complete
+   packaged resource charter set for that release for Codex host-provided agent threads, with exact
+   static-package and route-closure checks at release. A bounded 0.9.4 receipt proves one exact
+   installed-charter review. Adapters may use the bounded inline fallback only where the canonical
+   workflow explicitly permits it and isolation is not mandatory.
+   Pi launches hardened child processes through its trusted parent. The policy stays shared even
+   though each host's mechanism differs.
 4. **Gate.** Nothing advances until its gates are green. A failing test, a CRITICAL
    security finding, an unresolved decision: each is a real stop.
 5. **Ship.** Code reaches version control only through the commit gate, and the default
@@ -56,6 +49,20 @@ your behalf.
   ship. When a gate trips, codeArbiter surfaces the decision and waits for you to resolve
   it.
 </div>
+
+## One Core, Three Host Adapters
+
+codeArbiter is one governance product with three host adapters: `ca` for Claude Code, `ca-codex`
+for Codex, and `ca-pi` for Pi. The Claude Code marketplace also carries `ca-sandbox`, an
+infrastructure plugin unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)); the
+Codex marketplace carries `ca-codex`, while Pi uses npm with pinned Git tags as the reproducible
+channel. All three governance adapters inject the same orchestrator responsibilities, enforce the
+same policy core, and use one checked-in `.codearbiter/` directory for project context and audit
+state. See the
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
+between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
+The complete `ca-pi` adapter is currently a Feature Forge `preview`: real use
+and feedback are welcome while broader testing continues before stable status.
 
 ## Context Minimization
 

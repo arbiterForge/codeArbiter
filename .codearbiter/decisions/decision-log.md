@@ -1455,3 +1455,378 @@ Scored against the alternative — serializing the read-modify-write with `_hook
 `core/pysrc/_modelib.py` gains `mode_entry_dir` / `mode_entry_path` / `session_has_entry` and drops the retry loop; `session-start.py`'s legacy-conversion check moves from a raw map membership test to `session_has_entry`; `_hooklib._STALE_FLOWS` points at the directory and gains `_mode_plane_active_since`, which also fixes an unrelated session's write resetting a stale session's staleness clock. Regenerated into the three vendored `plugins/*/hooks/` copies. The spec's State line is amended in place; `docs/hooks.md` and the dual-host concurrency section of `site/src/content/docs/getting-started/claude-code-and-codex.md` are corrected, the latter having documented the now-fixed race as accepted debt.
 
 ---
+
+## DECISION-0047 - adr-0031-authored - Internal generated kernel, host-native roots, and Codex resource charters
+
+**Date:** 2026-08-22
+**Status:** proposed
+**Supersedes:** DECISION-0011
+**Decided by:** SUaDtL@users.noreply.github.com - approved the six migration positions on 2026-08-21 and explicitly approved the internal kernel packaging boundary on 2026-08-22.
+**Decision category:** architecture / host packaging and dispatch
+**Artifact-section-hash:** d853b7cbef6e4587af607c03ca20877ef33299eb0998ea10c568898cb8cbd369
+
+### Variance summary
+- **Artifact position:** `.codearbiter/plans/cross-host-identity-packaging-migration.md` under `## Recommended architecture decision` specifies host-native root resolution, Codex resource charters, dispatch policy, and bounded compatibility; the user later fixed the kernel packaging boundary.
+- **Scaffold position:** `core/pysrc/`, `core/surface/`, `core/hosts.json`, `tools/sync-core.py`, and `tools/build-surface.py` already implement an internal canonical source with generated independently versioned adapters, while current `ca-codex` omits the charter payload.
+- **Status type:** open-decision-closure
+
+### Decision
+Use the existing `core/` plus deterministic generators as the internal `ca-core` source of truth, not a separately published or runtime package. Publish Claude and Codex as independently versioned host-native adapters, keep Pi Forge-only, resolve roots by validated host-native evidence, and ship all Codex charters as generated resources dispatched through host threads. This partially supersedes only ADR-0011's `.codex/agents/*.toml` scaffolding fallback; the rest of ADR-0011 remains in force.
+
+### SMARTS rationale
+Maintainable and Reliable are decisive: the existing canonical source plus checked generation preserves one behavior contract without adding a fourth release unit or runtime installation coupling. Testable is strong because source-to-payload drift, root precedence, complete route closure, and each supported host can be verified independently. Securable favors file/module-derived roots, corroborating environment values, containment checks, and fail-closed isolation over ambient aliases or project-scaffolded agents. Available and Scalable favor separate host-native packages because one adapter's distribution or host drift does not make the shared governance source unavailable to the other. Precedent: DECISION-0011 established build-time vendoring instead of runtime shared imports; DECISION-0015 extended that generated kernel to Pi; DECISION-0043 kept Pi's native publication route package-specific.
+
+### Implementation implication
+ADR-0031 governs the canonical kernel, generators, Claude/Codex/Pi adapter payloads, route-closure and portability checks, payload version gates, and host-specific release evidence. PR 2 must change canonical source and generated outputs atomically, add all Codex charter resources and dispatch policy, preserve the legacy Codex alias only for the approved window, and block release until exact-candidate Windows desktop proof succeeds without API-key billing or fabricated equivalence.
+
+---
+
+## DECISION-0048 - adr-0031-record-correction - Align the mutable plan and bind its canonical UTF-8 section hash
+
+**Date:** 2026-08-22
+**Status:** proposed
+**Supersedes:** DECISION-0047
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user's 2026-08-22 zero-API-key and internal-kernel approvals control; this entry corrects their durable plan/log representation without changing the decision.
+**Decision category:** record correction / architecture
+**Artifact-section-hash:** 850636eb9e7ef34cf165473f3e6e26d2c1b81bcdd04ce4dffff2aa474b199bdc
+
+### Variance summary
+- **Artifact position:** The mutable migration plan retained an obsolete API-key desktop lane and unauthored-ADR statement after the user prohibited API-key/API-billed substitution, approved ChatGPT browser/device authorization within included access, approved the internal `core/` plus generators boundary, and the four-cell prerequisite passed.
+- **Scaffold position:** ADR-0031 and DECISION-0047 already record the current zero-API-key, internal-kernel architecture as `proposed`; the plan and DECISION-0047's PowerShell-decoded artifact hash lagged that state.
+- **Status type:** divergent
+
+### Decision
+Keep ADR-0031's architecture decision unchanged and proposed. Align the mutable plan to the approved ChatGPT browser/device included-access lane, explicitly prohibit API-key/API-billed substitution, record the backend prerequisite complete and ADR-0031 authored but unratified, and bind this forward correction to the canonical raw-UTF-8 plan-section SHA-256. DECISION-0048 supersedes DECISION-0047 only as the current plan/hash record; it does not rewrite or broaden ADR-0031's Decision-5-only partial supersession of ADR-0011.
+
+### SMARTS rationale
+Recording-only correction. Reliable and Testable require the mutable plan, proposed ADR, and recomputable section hash to agree byte-for-byte; Securable requires the user's no-API-key boundary to replace the obsolete credential lane everywhere active. No architectural option was reopened and no acceptance was inferred.
+
+### Implementation implication
+Reviewers resolve ADR-0031 authoring through DECISION-0048 and SHA-256 `850636eb9e7ef34cf165473f3e6e26d2c1b81bcdd04ce4dffff2aa474b199bdc`; DECISION-0047 remains immutable history of the original authoring record and its corrected H-05 append. Exact-candidate Windows desktop proof remains a release blocker and now uses only explicit ChatGPT browser/device authorization within included access.
+
+---
+
+## DECISION-0049 - adr-0031-ratified - ADR-0031 accepted
+
+**Date:** 2026-08-22
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com - direct ratification after the exact proposed ADR and definitive independent PASS were presented: "Ratify ADR-0031: transition it from proposed to accepted with its content unchanged."
+**Decision category:** architecture lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0031 was authored as `proposed`, corrected forward through DECISION-0048 without changing its architecture, and independently reviewed PASS.
+- **Scaffold position:** n/a - this is the explicit lifecycle transition of the reviewed authored record.
+- **Status type:** open-decision-closure
+
+### Decision
+ADR-0031 is accepted with decision content unchanged. Only the authoritative `status:` frontmatter and its mirrored `## Status` text transition from proposed to accepted; the internal generated-kernel boundary, host-native root and Codex resource/dispatch contracts, compatibility window, zero-API-key release boundary, Pi Forge-only positioning, and ADR-0011 Decision-5-only partial supersession remain exactly as reviewed.
+
+### SMARTS rationale
+Recording-only lifecycle entry. The architecture rationale remains in ADR-0031 and DECISION-0048; this entry records the repository user's explicit post-review ratification and preserves the rule that authoring approval, tests, and reviewer PASS cannot self-ratify an ADR.
+
+### Implementation implication
+ADR-0031 now governs its declared paths and unblocks the next governed PR 1 delivery contract. It does not itself authorize staging, committing, pushing, opening or merging a pull request, payload implementation, release, or publication; those actions remain controlled by the campaign's next explicit execution contract and repository gates.
+
+---
+
+## DECISION-0050 - adr-0031-ratification-plan-sync - Bind the accepted lifecycle and ChatGPT-device receipt schema
+
+**Date:** 2026-08-22
+**Status:** accepted
+**Supersedes:** DECISION-0048
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user's direct ADR-0031 ratification and prior zero-API-key approval control this forward synchronization.
+**Decision category:** record correction / architecture lifecycle
+**Artifact-section-hash:** f6fbcf403075c02015bcf0e784a072bce0e21db218dca7591ee6bfb4cb58e4e8
+
+### Variance summary
+- **Artifact position:** After ADR-0031 moved to `accepted`, the mutable migration plan still described it as proposed/unratified and one PR 1 candidate-receipt task still named `api-key` authentication despite the approved ChatGPT browser/device included-access lane.
+- **Scaffold position:** Accepted ADR-0031 and DECISION-0049 already record unchanged architecture, explicit ratification, and the zero-API-key release boundary; only mutable plan lifecycle/schema wording and DECISION-0048's prior plan-section hash lagged that state.
+- **Status type:** divergent
+
+### Decision
+Keep accepted ADR-0031's architecture content unchanged. Align the mutable plan to the explicit ratification, replace the stale candidate-receipt `api-key` label with `chatgpt-device`, retain the prohibition on API-key/API-billed substitution, and bind this forward synchronization to the canonical raw-UTF-8 plan-section SHA-256. DECISION-0050 supersedes DECISION-0048 only as the current plan/hash record; DECISION-0049 remains the authoritative lifecycle acceptance record.
+
+### SMARTS rationale
+Recording-only synchronization. Reliable and Testable require the mutable plan, accepted ADR lifecycle, receipt schema, and recomputable section hash to agree. Securable requires the approved no-extra-spend authentication boundary to be explicit at every active candidate-evidence seam. No architecture option was reopened and no additional authority was inferred.
+
+### Implementation implication
+PR 1 reviewers resolve the current plan record through DECISION-0050 and SHA-256 `f6fbcf403075c02015bcf0e784a072bce0e21db218dca7591ee6bfb4cb58e4e8`. Exact-candidate Windows desktop proof remains deferred to its governed release gate and can be satisfied only by explicit ChatGPT browser/device authorization within included access; no API-key or API-billed substitute is permitted.
+
+---
+
+## DECISION-0051 - hosted-static-codex-release-evidence - Replace mandatory desktop proof with deterministic plugin evidence
+
+**Date:** 2026-08-31
+**Status:** proposed
+**Supersedes:** DECISION-0050
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user explicitly rejected desktop installation and personal-PC runner use, approved static package-shape CI plus local plugin loading, and granted continuing merge authority through parity release and local installation.
+**Decision category:** architecture / release evidence
+**Artifact-section-hash:** bb5980ac802d6e7db37b0d65ce3321b9dc06a75e7b7cde7481f0e4a0b0b46822
+
+### Variance summary
+- **Artifact position:** Accepted ADR-0031 Decision 5 requires an exact-candidate installed Windows desktop cell using ChatGPT device authorization before `ca-codex` release.
+- **Scaffold position:** The active release path now contains a self-hosted runner, Hyper-V/ADK broker stack, desktop receipt, and attestation chain whose operational cost is disproportionate to validating a static plugin package.
+- **Status type:** divergent
+
+### Decision
+Supersede only ADR-0031 Decision 5's mandatory desktop-shell release evidence. Require trusted GitHub-hosted deterministic validation of the exact plugin manifest, front matter, resource and route graph, generated parity, hooks, contained paths, and release/archive identity; retire the active desktop workflow and executable infrastructure. Prove practical host loading by updating the supported local Codex marketplace plugin and running a fresh-task `$ca-doctor`, not by installing or automating the Windows desktop application.
+
+### SMARTS rationale
+Simple and Reliable remove an interactive personal-machine dependency from an otherwise static artifact release. Testable strengthens direct assertions on every byte and reference the plugin actually ships. Securable eliminates device authorization, reusable runner registration, Hyper-V, ADK, and receipt-attestation attack surface while preserving trusted-code/inert-data separation, bounded archive parsing, CodeQL, secret scanning, and fail-closed publication.
+
+### Implementation implication
+ADR-0032 records the forward-only partial supersession. Active CI and release workflows move to hosted static candidate validation; desktop workflow, broker, driver, probe, boundary manifest, receipt, and attestation code are removed. The pending governed `ca-codex` release proceeds only after the replacement gate is reviewed, green, merged, and its exact artifact identity is verified.
+
+---
+
+## DECISION-0052 - adr-0032-ratified - ADR-0032 accepted
+
+**Date:** 2026-08-31
+**Status:** accepted
+**Supersedes:** DECISION-0051
+**Decided by:** SUaDtL@users.noreply.github.com - the repository user explicitly ratified ADR-0032 and instructed that its content remain unchanged.
+**Decision category:** architecture lifecycle acceptance
+**Artifact-section-hash:** bb5980ac802d6e7db37b0d65ce3321b9dc06a75e7b7cde7481f0e4a0b0b46822
+
+### Variance summary
+- **Artifact position:** ADR-0032 and DECISION-0051 recorded the hosted-static ca-codex release-evidence decision as proposed pending explicit ratification.
+- **Scaffold position:** The user has now explicitly accepted ADR-0032 with its decision content unchanged.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0032 without changing its architecture content. Supersede only ADR-0031 Decision 5's mandatory desktop-shell evidence with trusted hosted static package evidence and supported local marketplace load proof; every other ADR-0031 decision remains unchanged.
+
+### SMARTS rationale
+This is a lifecycle transition explicitly directed by the user, not a new architectural choice. Reliable and Securable preserve the independently reviewed trusted-verifier and inert-candidate boundary; Simple and Testable retain the proportionate static package contract and fresh-task `$ca-doctor` proof without personal-PC release infrastructure.
+
+### Implementation implication
+The conditional ADR blocker is cleared. Deliver the additive compatibility-preserving trusted static verifier prerequisite first, integrate its exact landed main revision into the hosted-static feature branch, then retire the desktop path and proceed through governed CI, CodeRabbit, merge, release, supported local installation, fresh-task verification, and campaign completion audit.
+
+---
+
+## DECISION-0053 — adr-0033-ratified — Accepted ADRs bind sealed obligations to current evidence
+
+**Date:** 2026-09-02
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** governance-integrity
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Accepted ADRs record approved plans but do not prove implementation, verification, or immutable accepted content.
+- **Scaffold position:** A separate append-only lifecycle ledger content-binds acceptance, seals obligations, and derives only current input-bound delivery states.
+- **Status type:** open-decision-closure
+
+### Decision
+Preserve `status: accepted` as Accepted/Planned and record delivery evidence separately in an append-only `adr-lifecycle.jsonl`. Bind future acceptance once to exact content and a sealed obligation set; treat legacy records as incomplete baselines; expose only fresh, input-matching Verified obligations.
+
+### SMARTS rationale
+Safety and maintainability reject rewriting accepted bodies or fabricating historical completeness. Reversibility favors an append-only companion ledger whose derived states can invalidate on changed inputs without erasing evidence. Specificity and testability require stable obligation IDs, exact digests, explicit proof contracts, and narrow repository claims.
+
+### Implementation implication
+Add the lifecycle ledger schema, parser, checker, tests, CI integration, decision-lifecycle guidance, truthful legacy baselines, and verified-only export. Complete ADR-0026's current four-item destructive registry and parity checker under ADR-0030's narrowing.
+
+---
+
+## DECISION-0054 — adr-0034-ratified — Establish a closed legacy published-tag provenance epoch
+
+**Date:** 2026-09-05
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** release-security-and-provenance
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Published-tag policy treats every manifest identity as original-publication evidence and prohibits editing an entry merely to silence drift.
+- **Scaffold position:** Forty-four governed historical tags are absent, current identities are later observations, and no accessible inspected source proves their original tag-ref objects.
+- **Status type:** open-decision-closure
+
+### Decision
+Keep `.github/published-tags.json` exclusive to original-publication receipts and establish a separate closed legacy ledger for the exact 44 approved September 4 observations. Preserve the 15/28/1 evidence grades, enforce drift from the baseline forward, and require original-publication receipts for every tag outside that closed set. Accept the explicit risk that undetected pre-epoch drift can be frozen, without ever relabeling the baseline as original proof.
+
+### SMARTS rationale
+Scalable is Strong because one closed epoch supports unlimited future receipt-backed tags without another historical rewrite. Maintainable is Strong because separate ledgers preserve one proof meaning per file. Available is Strong because reviewed reconciliation can unblock releases without a silent exception. Reliable is Adequate because claims remain truthful, while pre-epoch drift stays unknowable. Testable is Strong because closed-set, disjointness, class, receipt, and live-drift rules are deterministic. Securable is Adequate because future enforcement stays strict while the accepted historical interval remains an explicit residual risk.
+
+### Implementation implication
+Add the closed 44-record legacy ledger, extend the tag-immutability guard and its tests to validate both proof classes without overlap, retain receipt-only writers, update CI/release documentation and security controls, and deliver through governed PR plus exact-head CI before any release resumes.
+
+---
+
+## DECISION-0055 — adr-0035-ratified — Use reviewed host locks and two-phase Pi promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com
+**Decision category:** dependency-supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Supported Pi paths installed network-resolved host packages directly, and promotion executed a candidate before it had a durable dependency-review record.
+- **Scaffold position:** Exact Pi 0.84.1 is the sole authorized support floor; its graph must be repository-owned and reviewed, while pending promotion candidates remain inert until a committed review permits live CI.
+- **Status type:** open-decision-closure
+
+### Decision
+Use an exact committed and strictly reviewed Pi host lock for supported execution, with isolated `npm ci`, disabled scripts, sanitized npm configuration, pinned registries, and post-install audit and identity checks. Split promotion into inert candidate capture plus draft creation before review, followed by reviewed-PR installation and live cross-platform proof only after the receipt is `PASS`.
+
+### SMARTS rationale
+Securable and Reliable reject global resolution, ambient npm authority, free-form review states, and pre-review candidate execution. Testable requires a digest-bound receipt, deterministic graph, exact installed identity, and distinct static and live gates. Maintainable and Scalable favor one repository-owned helper and promotion plan over duplicated workflow shell logic. Available remains Adequate because automation can still create the review artifact without granting it execution authority.
+
+### Implementation implication
+Commit the exact Pi 0.84.1 host graph and structured review receipt, route supported CI through the isolated installer, keep candidate capture data-only, open draft promotion PRs, require reviewed-PR live host evidence, and update all current support projections atomically while retaining historical 0.80.5 evidence.
+
+---
+
+## DECISION-0056 — adr-0035-authoring-status-correction — Preserve Option A without pre-ratifying the ADR
+
+**Date:** 2026-09-08
+**Status:** proposed
+**Supersedes:** DECISION-0055
+**Decided by:** SUaDtL@users.noreply.github.com — the explicit 2026-09-08 Option A support-floor choice controls; this entry narrows its durable representation without changing that decision.
+**Decision category:** record correction / dependency-supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
++- **Artifact position:** DECISION-0055 correctly recorded the authorized Option A implementation but incorrectly labeled the newly authored ADR-0035 text as ratified.
++- **Scaffold position:** The support-floor and checkpoint implementation remain authorized; ADR-0035 must stay proposed until the user explicitly ratifies its complete authored text.
++- **Status type:** divergent
++
++### Decision
++Keep exact Pi 0.84.1 as the sole authorized support version and keep the reviewed-lock and inert-candidate implementation unchanged. Correct ADR-0035 to proposed and require explicit user ratification before any acceptance binding; DECISION-0056 supersedes DECISION-0055 only as the current ADR-lifecycle status record.
++
++### SMARTS rationale
++This is a recording correction, not a reopened architecture choice. Reliable and Securable preserve the user's actual authorization while refusing to infer approval of newly authored clauses. Testable requires the ADR status, decision log, and lifecycle ledger to agree before delivery.
++
++### Implementation implication
++Review and validate ADR-0035 as proposed. Do not prepare or append an acceptance lifecycle event until the user explicitly ratifies the complete ADR text; the implemented checkpoint may proceed only as far as governance permits without that acceptance.
++
++---
+
+## DECISION-0057 — adr-0035-authoring-correction — Keep ADR-0035 proposed pending ratification
+
+**Date:** 2026-09-08
+**Status:** proposed
+**Supersedes:** DECISION-0056
+**Decided by:** SUaDtL@users.noreply.github.com — the explicit 2026-09-08 Option A support-floor choice controls; this forward correction preserves its exact authority boundary.
+**Decision category:** record correction / dependency-supply-chain
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0055 overclaimed ADR ratification, and the append-only DECISION-0056 correction was recorded with literal patch-prefix characters in its body.
+- **Scaffold position:** The support-floor and checkpoint implementation remain authorized; ADR-0035 remains proposed until the user explicitly ratifies its complete authored text.
+- **Status type:** divergent
+
+### Decision
+Keep exact Pi 0.84.1 as the sole authorized support version and keep the reviewed-lock and inert-candidate implementation unchanged. Treat ADR-0035 as proposed and require explicit user ratification before any acceptance binding. DECISION-0057 supersedes DECISION-0056 as the current lifecycle-status record; the earlier append-only entries remain visible history rather than being rewritten.
+
+### SMARTS rationale
+This is a recording correction, not a reopened architecture choice. Reliable and Securable preserve the user's actual authorization, expose the malformed prior append, and refuse to infer approval of newly authored clauses. Testable requires the ADR status, decision log, and lifecycle ledger to agree before delivery.
+
+### Implementation implication
+Review and validate ADR-0035 as proposed. Do not prepare or append an acceptance lifecycle event until the user explicitly ratifies the complete ADR text.
+
+---
+
+## DECISION-0058 — adr-0035-version-policy-correction — Keep Pi support advancing with upstream releases
+
+**Date:** 2026-09-08
+**Status:** proposed
+**Supersedes:** DECISION-0057
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly directed that the ADR must not lock Pi to a single version and that supported Pi advances as Pi updates.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The proposed ADR named exact Pi 0.84.1 as the sole current version without explicitly separating checkpoint state from enduring architecture, allowing it to be read as a permanent single-version constraint.
+- **Scaffold position:** Reviewed host locks and two-phase promotion are the durable architecture; exact supported versions and the size of the support set are evolving operational policy.
+- **Status type:** divergent
+
+### Decision
+Do not lock the Pi architecture to version 0.84.1 or to exactly one supported version. Treat 0.84.1 as the current checkpoint baseline after retiring 0.80.5, and advance supported Pi through the reviewed promotion process as upstream Pi releases advance. A routine version advance does not require a new ADR when the reviewed-lock, inert-candidate, and live-proof boundaries remain unchanged.
+
+### SMARTS rationale
+Maintainable and Scalable require routine upstream adoption without reopening architecture for every version string. Reliable and Securable retain exact, reviewed graphs and fail-closed execution boundaries for every version that becomes supported. Testable keeps each concrete support claim bound to exact repository bytes and live host evidence while separating that changing evidence from the durable decision.
+
+### Implementation implication
+Revise proposed ADR-0035 to describe 0.84.1 as current operational state, explicitly reject a permanent version or singleton architecture lock, and preserve the existing promotion machinery as the path for subsequent Pi updates. Keep the ADR proposed until the user ratifies the revised complete text.
+
+---
+
+## DECISION-0059 — adr-0035-ratified — Accept reviewed Pi host locks and two-phase promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0058
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** Revised ADR-0035 separates evolving Pi version policy from the durable reviewed-lock and two-phase promotion architecture and remains proposed pending ratification.
+- **Scaffold position:** The user explicitly approved the revised decision and exact non-contradictory accepted Status wording.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0035 as revised. Pi 0.84.1 remains the current checkpoint baseline rather than a permanent pin or singleton architecture constraint; supported Pi advances through reviewed promotion as upstream releases advance.
+
+### SMARTS rationale
+Maintainable and Scalable permit routine upstream advancement without a new architecture decision for each version. Reliable, Securable, and Testable retain exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof before a version becomes supported.
+
+### Implementation implication
+Bind the accepted ADR to a newly derived and independently reviewed obligation set, preserve source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
+
+---
+
+## DECISION-0060 — adr-0035-accepted-transition — Store reviewed Pi architecture as Accepted/Planned
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0059
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 now contains the approved ratification attribution while remaining proposed for lifecycle-safe source preparation.
+- **Scaffold position:** The user explicitly directed acceptance of the revised decision without permanently pinning Pi 0.84.1 or making singleton support an architectural invariant.
+- **Status type:** open-decision-closure
+
+### Decision
+Store ADR-0035 as Accepted/Planned. Pi 0.84.1 is the current checkpoint baseline; subsequent supported Pi versions advance through the reviewed promotion process as upstream Pi advances.
+
+### SMARTS rationale
+Maintainable and Scalable preserve routine version advancement without reopening the architecture for each Pi release. Reliable, Securable, and Testable keep exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof as the durable promotion boundary.
+
+### Implementation implication
+Change only ADR-0035's recognized status tokens, seal every normative clause against the exact accepted bytes, commit the accepted source, then append its content-bound lifecycle event in a separate commit while preserving source ancestry.
+
+---
+
+## DECISION-0061 — adr-0035-ratified — Accept reviewed Pi host locks and two-phase promotion
+
+**Date:** 2026-09-08
+**Status:** accepted
+**Supersedes:** DECISION-0060
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved revised ADR-0035 and its exact accepted Status wording.
+**Decision category:** dependency-supply-chain / support lifecycle
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0035 contains the approved ratification attribution and remains proposed after lifecycle-safe source preparation.
+- **Scaffold position:** The user explicitly approved storing the revised decision as Accepted/Planned without permanently pinning Pi 0.84.1 or making singleton support an architectural invariant.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0035 as revised. Pi 0.84.1 remains the current checkpoint baseline rather than a permanent pin or singleton architecture constraint; supported Pi advances through reviewed promotion as upstream releases advance.
+
+### SMARTS rationale
+Maintainable and Scalable permit routine upstream advancement without a new architecture decision for each version. Reliable, Securable, and Testable retain exact reviewed graphs, inert pre-review candidates, hermetic installation, and live cross-platform proof before a version becomes supported.
+
+### Implementation implication
+Bind the accepted ADR to the newly derived and independently reviewed 65-obligation set, preserve its source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
+
+---

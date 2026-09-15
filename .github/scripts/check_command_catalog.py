@@ -3,21 +3,21 @@
 
 A dedicated, non-mutating pre-tag check for the `ca` release target
 (`.codearbiter/release-targets.md`), declared alongside
-`check_badge_consistency.py` — that script already asserts this same pair of
-invariants as part of a broader README-badge check, but the release skill
+`check_badge_consistency.py`. That script also owns the README's registry-backed
+core-lane chooser, while this release check owns complete catalog closure. The release skill
 (`core/surface/skills/release/SKILL.md`) delegates ALL of a target's extra
 release-surface consistency to whatever its row's declared `pre-tag`
 commands assert (DECISION-0034), and this repo's own `ca` row declares this
 script as its own, separate line — so it must exist on its own, not only as
 a side effect of the badge check.
 
-Invariants enforced (both derived from the repo, never hand-asserted):
-  1. The canonical catalog (plugins/ca/COMMANDS.md) enumerates exactly the
-     command files under plugins/ca/commands/ (excluding INDEX).
-  2. The README full-catalog table has a row for every command file (the
-     historical /ca:task omission this whole check family exists to catch).
+Invariant enforced from the repo, never hand-asserted: the canonical catalog
+(`plugins/ca/COMMANDS.md`) enumerates exactly the command files under
+`plugins/ca/commands/` (excluding INDEX). README intentionally advertises only
+core lanes; `check_badge_consistency.py` closes that subset against the registry.
 
-Mutates nothing — reads three files, prints a report, and exits 0 or 1.
+Mutates nothing. It reads the generated catalog and command directory, prints a
+report, and exits 0 or 1.
 
 Run: python .github/scripts/check_command_catalog.py   (exit 1 on any drift)
 """
@@ -42,7 +42,7 @@ def parse_ca_slugs(text):
     return slugs
 
 
-def consistency_errors(cmd_file_slugs, catalog_slugs, readme_table_slugs):
+def consistency_errors(cmd_file_slugs, catalog_slugs):
     errors = []
     if catalog_slugs != cmd_file_slugs:
         missing = cmd_file_slugs - catalog_slugs
@@ -51,23 +51,16 @@ def consistency_errors(cmd_file_slugs, catalog_slugs, readme_table_slugs):
             "canonical COMMANDS.md catalog drift — missing: %s extra: %s"
             % (sorted(missing), sorted(extra))
         )
-    missing_rows = cmd_file_slugs - readme_table_slugs
-    if missing_rows:
-        errors.append(
-            "README full-catalog table missing a row for: %s" % sorted(missing_rows)
-        )
     return errors
 
 
 def check(root):
     root = Path(root)
-    readme = (root / "README.md").read_text(encoding="utf-8")
     catalog = (root / "plugins" / "ca" / "COMMANDS.md").read_text(encoding="utf-8")
     cmd_slugs = command_file_slugs(root)
     return consistency_errors(
         cmd_file_slugs=cmd_slugs,
         catalog_slugs=parse_ca_slugs(catalog),
-        readme_table_slugs=parse_ca_slugs(readme),
     )
 
 

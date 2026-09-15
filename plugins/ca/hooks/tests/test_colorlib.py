@@ -35,6 +35,12 @@ from _helpers import isolate_user_state, release_user_state
 # backstop that fails if any suite writes outside its temp dirs.
 def setUpModule():
     global _USER_STATE
+    # Color assertions use a controlled default; NO_COLOR cases set it explicitly.
+    # Module cleanup restores the caller's environment even after test failures.
+    color_environment = mock.patch.dict(os.environ)
+    color_environment.start()
+    unittest.addModuleCleanup(color_environment.stop)
+    os.environ.pop("NO_COLOR", None)
     _USER_STATE = isolate_user_state()
 
 

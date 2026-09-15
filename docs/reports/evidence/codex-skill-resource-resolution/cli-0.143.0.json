@@ -1,0 +1,56 @@
+{
+  "authentication_mode": "chatgpt",
+  "desktop_shell_proven": false,
+  "effective_approval_policy": "never",
+  "effective_sandbox": "read-only",
+  "entry_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\skills\\probe\\SKILL.md",
+  "environment": {
+    "base_image": null,
+    "codex_home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z",
+    "execution_environment": "isolated-clean-home",
+    "machine": "AMD64",
+    "os": "nt",
+    "os_identity": "Windows-11-10.0.26200-SP0",
+    "platform": "Windows",
+    "release": "11"
+  },
+  "errors": [],
+  "errors_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "evidence_class": "supported",
+  "evidence_contract_sha256": "d7fee53403b48b14ffc5dcf86acaebbff72944ecb25bd0ffbdf4aac11db1d302",
+  "fixture_sha256": "a7cb361b93992a3d1d64f87d77650db82847f8a8dc931a1bba01094a63068ec1",
+  "installed_plugin_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0",
+  "integrity": "sha512-6h53sNtESIYncWVwU7zEjdVajwcad/0H94MOrgGqhwBMa9RRUDVG6DU9E9euC7yRdtrsKDAkJkz/m5moZ6MU3A==",
+  "native_executable_sha256": "5728e3ddf1480103bad235560e95cf7764ea3069f06029f9b2f39eb74a8066f6",
+  "network_policy": "model-api-only; tool-network-disabled",
+  "operation_transcript_sha256": "0ff78740e60b0088e1a96cdada7dc8b60469990c16404a4837ab9a13339bc5b7",
+  "provenance": "npm:@openai/codex@0.143.0",
+  "requested_approval_policy": "never",
+  "requested_sandbox": "read-only",
+  "resource_reads": [
+    {
+      "nonce": "skill-probe-nonce-7f4d",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\skills\\probe\\SKILL.md"
+    },
+    {
+      "nonce": "nested-routine-nonce-2ca1",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\routines\\nested.md"
+    },
+    {
+      "nonce": "agent-probe-nonce-91be",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\agents\\probe.md"
+    }
+  ],
+  "schema_version": 1,
+  "skill_invocation_evidence": {
+    "name": "codex-skill-resource-probe:probe",
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\codearbiter-stage1-oauth\\cli-0143-auth-20260822T1928Z\\plugins\\cache\\codex-skill-resource-characterization\\codex-skill-resource-probe\\0.0.0\\skills\\probe\\SKILL.md",
+    "source": "direct-entry-read",
+    "status": "completed"
+  },
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "722cb622b4f9d9bdfde9954bb4bc03375ed8aac176c2e0ef89b7510850ade43f",
+  "surface": "cli",
+  "verdict": "PASS",
+  "version": "0.143.0"
+}

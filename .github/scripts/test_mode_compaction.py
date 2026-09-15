@@ -49,10 +49,13 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYSRC = ROOT / "core" / "pysrc"
+HOOKS_TESTS = ROOT / "plugins" / "ca" / "hooks" / "tests"
 sys.path.insert(0, str(PYSRC))
+sys.path.insert(0, str(HOOKS_TESTS))
 
 import _modelib  # noqa: E402
 import hostapi  # noqa: E402
+from _helpers import durable_plugin_copy  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location("session_start", str(PYSRC / "session-start.py"))
 ss = importlib.util.module_from_spec(_spec)
@@ -148,6 +151,13 @@ class _RaisingModeRootHost(hostapi.Host):
     name = "fake"
     has_statusline = False
 
+    def __init__(self, plugin_root=None):
+        self._fixture_plugin_root = plugin_root or str(ROOT / "plugins" / "ca")
+
+    def plugin_root(self):
+        """The installed Claude adapter fixture, not canonical core source."""
+        return self._fixture_plugin_root
+
     def marker_root(self, payload=None):
         raise RuntimeError("CODEARBITER_GIT_EXECUTABLE is unavailable")
 
@@ -233,6 +243,7 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         with open(os.path.join(root, ".codearbiter", "CONTEXT.md"), "w",
                   encoding="utf-8", newline="\n") as f:
             f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
+        plugin_root = durable_plugin_copy(root)
 
         prev = os.environ.get("CLAUDE_PROJECT_DIR")
         os.environ["CLAUDE_PROJECT_DIR"] = root
@@ -242,7 +253,7 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 try:
-                    ss.run(_RaisingModeRootHost())
+                    ss.run(_RaisingModeRootHost(plugin_root))
                 except SystemExit as exc:
                     self.assertIn(exc.code, (0, None))
         finally:

@@ -25,23 +25,56 @@ check on fork pull requests. So this half is manual by decision — and the mani
 exactly that, instead of implying continuous coverage.
 
 **The failure mode of "manual per release" is that it quietly becomes "manual once."** It
-already did: the baseline below recorded `ca-codex` 0.2.4 and went unrefreshed across four
-minor versions. Re-run this runbook and update the baseline as part of any ca-codex release
-that touches `hooks/`. A stale baseline is a claim about a past afternoon, which is the exact
-thing #408 was filed about.
+already did: the initial baseline recorded `ca-codex` 0.2.4 and went unrefreshed across four
+minor versions. Re-run this procedure for every `ca-codex` release. Ordinary pull-request CI
+validates the last verified marker against its immutable candidate commit, so development can move
+forward without rewriting historical evidence. The declared pre-tag check additionally requires
+that marker's version and digest to match the exact current candidate; a mismatch blocks release,
+and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-Verified baseline: **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows, 2026-07-11.
-The installed hook set was approved through `/hooks`; SessionStart persona injection completed,
-and `$ca-doctor`'s staged-everything dry-run probe was blocked with `[H-03]`.
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.10.1","candidate_commit":"388da0b393f6a5bd62fb0830905d3096f683bb7a","candidate_package_sha256":"05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-14","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.10.1**, Windows, 2026-09-14.
+A fresh ephemeral Codex CLI task using the supported `gpt-5.5` model selected the exact installed
+0.10.1 tracked candidate package (`sha256:05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90`)
+and received the repository startup state through SessionStart context. With `PLUGIN_ROOT` resolved
+from the advertised 0.10.1 `$ca-doctor` skill path, the doctor reported 10 OK, 2 WARN, and 0 FAIL;
+the prescribed staging dry-run was denied exactly once with `[H-03]` before execution. This
+refreshes candidate selection, SessionStart delivery, doctor health, and the live H-03 boundary.
+It does not claim that the full scenario matrices below were rerun.
 
-> **STALE.** This baseline predates `ca-codex` 0.3.x. The continuously-verified half above has
-> not lapsed, but the live-firing half has not been re-confirmed since 0.2.4.
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.10.0**, Windows,
+2026-09-13. A fresh Codex CLI task selected the exact installed 0.10.0 candidate from commit
+`b479e8f1` and received the repository startup state through SessionStart context. With the installed
+plugin root resolved, `$ca-doctor` reported 10 OK, 2 WARN, and 0 FAIL; the prescribed staging dry-run
+was denied exactly once with `[H-03]` before execution.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.9.11**, Windows,
+2026-09-13. Fresh Codex CLI tasks selected the exact installed candidate from commit `603c6f42`. Their
+retained transcripts show the startup banner and corrected continuation instruction delivered as
+SessionStart developer context, with the obsolete unconditional wait instruction absent. With the
+installed plugin root resolved, `$ca-doctor` reported 12 OK, 0 WARN, and 0 FAIL; the prescribed
+staging dry-run was denied exactly once with `[H-03]` before execution. This refreshes candidate
+selection, SessionStart delivery, doctor health, and the live H-03 boundary. It does not claim that
+the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.9.10**, Windows,
+2026-09-09. A fresh task selected that installed package; `$ca-doctor` reported 10 OK, 2 WARN, and
+0 FAIL, and the prescribed staging dry-run was denied with `[H-03]` before execution.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.9.4**, Windows,
+2026-09-05. A fresh process selected that installed package, and the same scoped doctor and H-03
+checks passed. The linked dispatch receipt below belongs to this dated checkpoint.
+
+The initial live baseline remains **Codex CLI 0.144.1**, `ca-codex` **0.2.4**, Windows,
+2026-07-11. That run covered trusted startup and SessionStart persona injection in addition to H-03.
+A separate [0.9.4 dispatch receipt](./reports/evidence/codex-agent-dispatch/ca-codex-0.9.4-architecture-drift-reviewer.json)
+records one exact installed-charter host-thread review and its explicit limits.
 
 Requirements: **Python 3 on PATH**, **Codex CLI ≥ rust-v0.143.0** (the source-verified
 structured-deny baseline; plugin-bundled hooks came on by default earlier, at 0.134.0),
-this repo checked out on `feat/codex-support-m0`, and —
-for the side-by-side comparison — Claude Code with the `ca` plugin installed.
+this repo checked out on `main` or the exact candidate under review, and Claude Code with the
+`ca` plugin installed for the side-by-side comparison.
 
 Everything below runs against **throwaway fixture repos**, never this repo or a real project.
 
@@ -218,11 +251,10 @@ In order of likelihood:
    guards go dormant. Re-scaffold with a fresh fixture. (In the `--bare` fixture, dormant
    before `$ca-init` is the **expected** starting state, not a failure — O1/O2 run dormant.)
 
-## 8. What a PASS unblocks
+## 8. What a future PASS updates
 
 Seven-for-seven enforcement parity (§4), six-for-six onboarding parity (§5), plus persona
-injection (§3) is the live confirmation the campaign has been waiting on. It clears
-`feat/codex-support-m0` to merge to `main` (whose PR should list `Closes #255…#270`) and
-gives #287 its answer from observed behavior. Capture the LIVE-PENDING items from the spike
-as you go: the trust-review UX, the real exit-2 stderr surfaced to the model, and
-`commandWindows` on a Windows install.
+injection (§3) produces the next version-qualified live baseline. Record the exact Codex CLI and
+`ca-codex` versions, platform, trust-review behavior, surfaced block output, and Windows command
+registration. Do not use a static package or route-closure pass as a substitute for this live
+record.

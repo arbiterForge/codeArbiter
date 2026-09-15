@@ -64,8 +64,9 @@ that names every member, never an implied yes.
    user; do not auto-flip.
 
 6. **Archival sweep — proposed per item, never batched** (B-24). Long-done tasks
-   accumulate on the board and inflate the in-flight count until it stops meaning
-   anything. List the done items older than the cutoff, then ask about **each one
+   accumulate on the board; they are already excluded from the in-flight count.
+   List dated done items strictly more than 14 calendar days old
+   (`ARCHIVE_CUTOFF_DAYS`), then ask about **each one
    separately** and archive only the ones the user says yes to:
    `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/taskwrite.py" archive <id>`.
 

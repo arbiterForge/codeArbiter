@@ -441,13 +441,17 @@ class TestMainHealsBeforeDormantGate(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_main_heals_stale_pin_in_dormant_repo(self):
+        host = _mod.hostapi.Host()
         cwd = os.getcwd()
         os.chdir(self.repo)
         try:
-            # expanduser("~") -> our fake HOME, so settings_path resolves into it;
-            # CLAUDE_PLUGIN_ROOT -> the real plugin so statusline.py exists.
+            # The fixture runs the live entry but deliberately injects the
+            # copied payload through main's existing Host seam. An ambient
+            # root may only corroborate the executing module, so it cannot
+            # redirect that live module to this fixture.
             with mock.patch.object(os.path, "expanduser", return_value=self.home), \
-                 mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
+                 mock.patch.object(_mod, "get_host", return_value=host), \
+                 mock.patch.object(host, "plugin_root", return_value=self.plugin), \
                  contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
@@ -502,13 +506,13 @@ class TestMainSkipsHealUnderNoStatuslineHost(unittest.TestCase):
         cwd = os.getcwd()
         os.chdir(self.repo)
         try:
-            # expanduser("~") -> our fake HOME, so IF the heal ran it would
-            # resolve into it; CLAUDE_PLUGIN_ROOT -> the real plugin so
-            # statusline.py exists (proving a skip, not a load-time failure).
+            # The copied payload is an explicit Host-seam fixture, not an
+            # ambient root for the live adapter under test.
             with mock.patch.object(os.path, "expanduser", return_value=self.home), \
-                 mock.patch.dict(os.environ, {"CLAUDE_PLUGIN_ROOT": self.plugin}), \
                  mock.patch.object(_mod, "get_host",
                                     return_value=no_statusline_host), \
+                 mock.patch.object(no_statusline_host, "plugin_root",
+                                   return_value=self.plugin), \
                  contextlib.redirect_stdout(io.StringIO()), \
                  contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
@@ -630,10 +634,15 @@ class TestStartupInstructionsHostAware(unittest.TestCase):
             os.chdir(cwd)
         return buf.getvalue()
 
-    def test_initialized_repo_presents_state_then_awaits_a_command(self):
+    def test_initialized_repo_continues_active_work_before_idle_wait(self):
         self._write_context(initialized=True)
         out = self._run_main(self._FakeHost())
-        self.assertIn("Present this state, then await a fake-command.", out)
+        self.assertIn(
+            "Continue any active authorized work or accompanying user request; "
+            "otherwise await a fake-command.",
+            out,
+        )
+        self.assertNotIn("Present this state, then await a fake-command.", out)
         self.assertIn("Type $$fake-commands for the catalog.", out)
 
     def test_uninitialized_repo_with_source_routes_to_create_context(self):
@@ -670,6 +679,7 @@ class TestDevExitAudit(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.ca = os.path.join(self.root, ".codearbiter")
         self.markers = os.path.join(self.ca, ".markers")
         os.makedirs(self.markers)
@@ -884,6 +894,7 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = self._tmp.name
+        os.makedirs(os.path.join(self.root, ".git"))
         self.ca = os.path.join(self.root, ".codearbiter")
         self.markers = os.path.join(self.ca, ".markers")
         os.makedirs(self.markers)
@@ -936,6 +947,45 @@ class TestDevExitRetryablePendingClose(unittest.TestCase):
             rec = json.load(f)
         self.assertTrue(any("DEV: exit" in ln for ln in rec.get("lines", [])),
                         "the pending record must carry the owed DEV: exit line")
+
+    def test_override_append_uses_shared_sidecar_lock_and_fails_soft_on_contention(self):
+        with mock.patch.object(_mod._modelib, "acquire_lock", return_value=None) as acquire:
+            self.assertFalse(_mod._modelib._append_override_line(self.root, "owed\n"))
+
+        acquire.assert_called_once_with(_mod._modelib.audit_lock_key(self.root, self.log))
+        self.assertEqual(self._read_log(),
+                         "[2026-01-01T00:00:00Z] | BY: dev | DEV: enter | NOTE: —\n")
+
+    def test_override_append_holds_lock_through_fsync_then_releases(self):
+        handle = object()
+        order = []
+        real_fsync = os.fsync
+
+        def fsync(fd):
+            order.append("fsync")
+            return real_fsync(fd)
+
+        def release(observed):
+            self.assertIs(observed, handle)
+            order.append("release")
+
+        with mock.patch.object(_mod._modelib, "acquire_lock", return_value=handle), \
+             mock.patch.object(_mod._modelib, "release_lock", side_effect=release), \
+             mock.patch.object(_mod._modelib.os, "fsync", side_effect=fsync):
+            self.assertTrue(_mod._modelib._append_override_line(self.root, "locked row\n"))
+
+        self.assertEqual(order, ["fsync", "release"])
+        self.assertTrue(self._read_log().endswith("locked row\n"))
+
+    def test_override_fsync_failure_returns_false_and_releases_lock(self):
+        handle = object()
+        with mock.patch.object(_mod._modelib, "acquire_lock", return_value=handle), \
+             mock.patch.object(_mod._modelib, "release_lock") as release, \
+             mock.patch.object(_mod._modelib.os, "fsync", side_effect=OSError("fsync failed")):
+            self.assertFalse(_mod._modelib._append_override_line(self.root, "uncertain row\n"))
+        release.assert_called_once_with(handle)
+        self.assertTrue(self._read_log().endswith("uncertain row\n"),
+                        "a post-write durability failure is surfaced without rewriting audit bytes")
 
     def test_later_session_appends_the_missing_exit_exactly_once(self):
         # AC-2: the next SessionStart flushes the owed close and clears the
@@ -1266,7 +1316,9 @@ class TestUpdateNoticeLine(unittest.TestCase):
 
     def _write_cache(self, latest, checked_at=1000.0):
         with open(self.state_path, "w") as f:
-            json.dump({"latest": latest, "checked_at": checked_at}, f)
+            json.dump({"schema": 1, "targets": {
+                "ca": {"latest": latest, "checked_at": checked_at},
+            }}, f)
 
     def test_ac1_newer_cached_latest_yields_notice(self):
         self._write_cache("2.10.0")

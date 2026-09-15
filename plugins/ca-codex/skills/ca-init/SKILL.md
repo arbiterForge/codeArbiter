@@ -1,7 +1,7 @@
 ---
 name: ca-init
 description: Opt this repo into codeArbiter — scaffold the root-level .codearbiter/ state store.
-argument-hint: "(none) | --stage N | --check"
+argument-hint: "[--stage N] [--greenfield|--brownfield] | --check"
 ---
 
 # $ca-init — first-run scaffold
@@ -15,12 +15,29 @@ the SessionStart persona injection. The scaffolded
 `CONTEXT.md` is a **stub** (no initialization sentinel), so after scaffolding the project still needs
 populating before normal operation.
 
+<!-- catalog-command-modes:start -->
+## Explicit population strategies
+
+<!-- command-mode:--greenfield legacy-route:decompose -->
+`--greenfield` selects the exact [skills/ca-decompose/SKILL.md](../ca-decompose/SKILL.md) workflow.
+
+<!-- command-mode:--brownfield legacy-route:create-context -->
+`--brownfield` selects the exact [skills/ca-create-context/SKILL.md](../ca-create-context/SKILL.md) workflow.
+
+The two flags are mutually exclusive and neither may combine with `--check`. `--stage N` may
+accompany one only while `.codearbiter/CONTEXT.md` is absent: scaffold at that stage, then enter the
+selected workflow. When an uninitialized stub already exists, skip the refusing scaffolder and enter
+the selected workflow directly. An initialized marker or source-shape mismatch retains the selected
+legacy workflow's BLOCK. Without an explicit strategy, continue with the unchanged auto-detection
+procedure below.
+<!-- catalog-command-modes:end -->
+
 ## Procedure
 
 1. Run the scaffolder against the repo's git toplevel (resolved by the script):
 
    ```
-   python "${CLAUDE_PLUGIN_ROOT}/hooks/init-codearbiter.py"
+   python "${PLUGIN_ROOT}/hooks/init-codearbiter.py"
    ```
 
    It is idempotent and refuses if `.codearbiter/CONTEXT.md` already exists — it never overwrites

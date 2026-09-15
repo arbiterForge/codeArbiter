@@ -17,6 +17,7 @@
 #   "$PY" "<plugin>/hooks/security-pass.py"
 
 import os
+import stat
 import subprocess
 
 from _gitexec import git_executable
@@ -26,8 +27,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _entrylib  # noqa: E402 — shared run() dispatch (jscpd dedup)
 from _hooklib import (  # noqa: E402
-    CRYPTO_RE, SECRET_RE, SECURITY_DIFF_GIT_ARGS, is_sensitive_scan_exempt,
-    line_digest, marker_root, project_root, sensitive_scan_added_lines,
+    SECURITY_DIFF_GIT_ARGS, SecurityScan, is_sensitive_scan_exempt,
+    marker_root, project_root, security_scan_diff, security_scan_source,
     set_host, utf8_stdio, warn, write_text_atomic,
 )
 
@@ -41,20 +42,26 @@ def run_git(args, cwd):
     )
 
 
-def file_lines(root, rel):
+def file_scan(root, rel):
     p = os.path.join(root, rel)
     try:
-        if os.path.getsize(p) > MAX_UNTRACKED_BYTES:
-            return []
+        metadata = os.lstat(p)
+        if not stat.S_ISREG(metadata.st_mode):
+            return None
+        if metadata.st_size > MAX_UNTRACKED_BYTES:
+            return SecurityScan(False, set())
         with open(p, encoding="utf-8", errors="replace") as f:
-            return f.read().splitlines()
+            source = f.read()
+        return security_scan_source(rel, source, range(1, len(source.splitlines()) + 1))
     except Exception:  # noqa: BLE001
-        return []
+        return None
 
 
-def candidate_lines(root):
-    """Every line the next commit could introduce: added lines of the
-    worktree-vs-HEAD diff (staged and unstaged alike), plus the full content
+def candidate_scan(root):
+    """Separate classified index and worktree snapshots, plus untracked content.
+
+    Every line the next commit could introduce: added lines of the
+    staged diff AND worktree-vs-HEAD diff, plus the full content
     of untracked files — `git diff HEAD` never shows those, but they land in
     the staged diff the moment commit-gate stages them.
 
@@ -69,23 +76,41 @@ def candidate_lines(root):
     it pins the `a/`/`b/` prefix format `sensitive_scan_added_lines` depends
     on for path attribution, regardless of the caller's `diff.mnemonicPrefix`
     / `diff.noprefix` / external-diff config (#279 review MEDIUM-1)."""
-    lines = []
+    staged = run_git([*SECURITY_DIFF_GIT_ARGS, "--cached"], root)
+    if staged.returncode != 0:
+        return None
+    scans = [security_scan_diff(staged.stdout)]
     diff = run_git([*SECURITY_DIFF_GIT_ARGS, "HEAD"], root)
     if diff.returncode == 0:
-        lines += sensitive_scan_added_lines(diff.stdout)
+        scans.append(security_scan_diff(diff.stdout))
     else:
-        # Unborn branch (no HEAD yet): every tracked file is new content.
+        # Confirm an absent branch ref, not merely a failed diff read. A real
+        # read/parse failure must never be laundered through the unborn path.
+        head = run_git(["rev-parse", "--verify", "--quiet", "HEAD"], root)
+        branch = run_git(["symbolic-ref", "--quiet", "HEAD"], root)
+        if head.returncode != 1 or branch.returncode != 0:
+            return None
+        absent = run_git(["show-ref", "--verify", "--quiet", branch.stdout.strip()], root)
+        if absent.returncode != 1:
+            return None
         ls = run_git(["ls-files"], root)
+        if ls.returncode != 0:
+            return None
         for rel in ls.stdout.splitlines():
             if is_sensitive_scan_exempt(rel):
                 continue
-            lines += file_lines(root, rel)
+            scans.append(file_scan(root, rel))
     untracked = run_git(["ls-files", "--others", "--exclude-standard"], root)
+    if untracked.returncode != 0:
+        return None
     for rel in untracked.stdout.splitlines():
         if is_sensitive_scan_exempt(rel):
             continue
-        lines += file_lines(root, rel)
-    return lines
+        scans.append(file_scan(root, rel))
+    if any(scan is None for scan in scans):
+        return None
+    return SecurityScan(any(scan.crypto for scan in scans),
+                        set().union(*(scan.digests for scan in scans)))
 
 
 def main():
@@ -95,11 +120,16 @@ def main():
         warn("no .codearbiter/ here — security-pass.py records nothing outside "
              "an initialized repo")
         sys.exit(1)
-    sensitive = [ln for ln in candidate_lines(root)
-                 if CRYPTO_RE.search(ln) or SECRET_RE.search(ln)]
+    try:
+        scan = candidate_scan(root)
+    except (OSError, subprocess.SubprocessError, ValueError):
+        scan = None
+    if scan is None:
+        warn("security-gate pass refused: unavailable or malformed crypto/secret context")
+        sys.exit(1)
     # #604: the MARKER root is deliberately NOT `root` above. `root` (plain
     # project_root()) must stay wherever this process is actually running —
-    # candidate_lines(root) just scanned exactly that tree's diff, and binding
+    # candidate_scan(root) just scanned exactly that tree's diff, and binding
     # digests to a DIFFERENT tree would review lines nobody staged. But in a
     # linked git worktree, `root` names the worktree's own (gitignored,
     # never-checked-out) `.codearbiter/.markers/`, while the H-09b/H-10b
@@ -110,7 +140,7 @@ def main():
     marker_dir = os.path.join(write_root, ".codearbiter", ".markers")
     os.makedirs(marker_dir, exist_ok=True)
     marker = os.path.join(marker_dir, "security-gate-passed")
-    digests = sorted({line_digest(ln) for ln in sensitive})
+    digests = sorted(scan.digests)
     # Atomic write (migration-002): a crash mid-write never leaves a half-written
     # marker, which the backstop would read as an unrecognized digest and force a
     # spurious gate re-run.

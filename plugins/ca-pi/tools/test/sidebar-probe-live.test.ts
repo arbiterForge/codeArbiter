@@ -2,7 +2,7 @@
  * sidebar-probe-live.test.ts — AC-7's live leg: the compositor's hook probe
  * exercised against the INSTALLED Pi runtime's own `@earendil-works/pi-tui`,
  * with no hand-written double for the Pi-owned parts. The hosted matrix runs
- * this cell at both promoted window versions (0.80.5 and 0.84.1), so a Pi
+ * this cell at the promoted supported version (0.84.1), so a Pi
  * release that renames the screen classes, removes the undocumented
  * `doRender` method, or changes the text-metrics exports fails here before it
  * can strand the sidebar.

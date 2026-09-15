@@ -296,7 +296,15 @@ def scenario_env(path_value, fixture):
            if k.upper() not in ("PATH", "PYTHONHOME", "PYTHONPATH", "VIRTUAL_ENV",
                                  "HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH")}
     env["PATH"] = path_value
-    env["CLAUDE_PLUGIN_ROOT"] = _CURRENT_PLUGIN_ROOT[0]
+    if _CURRENT_PLUGIN_ROOT[0] == CODEX_PLUGIN_ROOT:
+        # Codex's native hook contract supplies PLUGIN_ROOT. Its legacy
+        # alias is covered by the resolver suite; omitting it here keeps this
+        # cold-install smoke focused on native hook execution.
+        env.pop("CLAUDE_PLUGIN_ROOT", None)
+        env["PLUGIN_ROOT"] = _CURRENT_PLUGIN_ROOT[0]
+    else:
+        env.pop("PLUGIN_ROOT", None)
+        env["CLAUDE_PLUGIN_ROOT"] = _CURRENT_PLUGIN_ROOT[0]
     env["CLAUDE_PROJECT_DIR"] = fixture
     # Sandbox the home dir. Hooks resolve ~/.claude/settings.json via
     # expanduser("~") — notably session-start.py's statusLine self-heal, which
@@ -394,9 +402,11 @@ def assert_stub_primary(e):
 # ------------------------------------------------------------- hooks.json map
 
 def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
-                     label, single_events=frozenset()):
+                     label, root_token, forbidden_root_token=None,
+                     single_events=frozenset(), compatible_root_tokens=()):
     """Parse `hooks_json_path`; return {script basename -> {"primary": cmd,
-    "fallback": cmd}} with ${CLAUDE_PLUGIN_ROOT} substituted. `field_of(h)`
+    "fallback": cmd}} after the selected host substitutes its native root
+    token. `field_of(h)`
     extracts the OS-appropriate command string from one hook object — for
     `ca` that is always `h["command"]`; for `ca-codex` it is
     `h["commandWindows"]` on Windows and `h["command"]` on POSIX (Codex's
@@ -405,6 +415,7 @@ def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
     sibling can neutralize an exit-2 block. Every referenced script exists."""
     with open(hooks_json_path, encoding="utf-8") as f:
         config = json.load(f)
+    root_tokens = (root_token,) + tuple(compatible_root_tokens)
 
     hooks = {}
     for event, groups in config["hooks"].items():
@@ -422,6 +433,13 @@ def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
             if len(primary) != 1 or len(fallback) not in (0, 1):
                 sys.exit(f"FATAL: {label} {event} group lacks a primary/fallback "
                          f"pair: {cmds}")
+            for command in primary + fallback:
+                if not any(token in command for token in root_tokens):
+                    sys.exit(f"FATAL: {label} {event} command lacks its native "
+                             f"root token {root_token!r}: {command}")
+                if forbidden_root_token and forbidden_root_token in command:
+                    sys.exit(f"FATAL: {label} {event} command uses forbidden root "
+                             f"token {forbidden_root_token!r}: {command}")
             referenced = [name for name in expected_scripts if name in primary[0]]
             if len(referenced) != 1:
                 sys.exit(f"FATAL: {label} cannot identify one hook script in: "
@@ -432,8 +450,8 @@ def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
                 sys.exit(f"FATAL: {label} hooks.json references a missing script: "
                          f"{script_path}")
             hooks[script] = {
-                "primary": primary[0].replace("${CLAUDE_PLUGIN_ROOT}", plugin_root).replace("%CLAUDE_PLUGIN_ROOT%", plugin_root),
-                "fallback": (fallback[0].replace("${CLAUDE_PLUGIN_ROOT}", plugin_root).replace("%CLAUDE_PLUGIN_ROOT%", plugin_root)
+                "primary": _substitute_root(primary[0], root_tokens, plugin_root),
+                "fallback": (_substitute_root(fallback[0], root_tokens, plugin_root)
                              if fallback else None),
             }
     if set(hooks) != expected_scripts:
@@ -441,6 +459,12 @@ def build_hooks_map(hooks_json_path, plugin_root, field_of, expected_scripts,
                  f"found {sorted(hooks)}, expected {sorted(expected_scripts)}")
     print(f"{label} hooks.json: {len(hooks)} hooks, registration shape valid")
     return hooks
+
+
+def _substitute_root(command, root_tokens, plugin_root):
+    for token in root_tokens:
+        command = command.replace(token, plugin_root)
+    return command
 
 
 def ca_field(h):
@@ -926,7 +950,8 @@ def main():
             pass
 
     ca_hooks = build_hooks_map(CA_HOOKS_JSON, CA_PLUGIN_ROOT, ca_field,
-                               CA_EXPECTED, "ca")
+                               CA_EXPECTED, "ca", "${CLAUDE_PLUGIN_ROOT}",
+                               compatible_root_tokens=("%CLAUDE_PLUGIN_ROOT%",))
 
     # ---- AC-02 Read-matcher wiring assertion (ca only — ca-codex has no
     # read tool and registers no pre-read.py entry, per docs/parity.md). ----
@@ -958,7 +983,8 @@ def main():
     print("Read matcher wiring: OK (matcher='Read', pre-read.py, primary+fallback dual-interpreter)")
 
     codex_hooks = build_hooks_map(CODEX_HOOKS_JSON, CODEX_PLUGIN_ROOT, codex_field,
-                                  CODEX_EXPECTED, "ca-codex",
+                                  CODEX_EXPECTED, "ca-codex", "${PLUGIN_ROOT}",
+                                  "${CLAUDE_PLUGIN_ROOT}",
                                   {"SessionStart", "PreToolUse", "PostToolUse",
                                    "UserPromptSubmit"})
 

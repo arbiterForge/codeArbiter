@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: "The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then checkpoint-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors drops its unit without corrupting the batch."
+description: "The parallel fan-out primitive. Routed to by any skill or command that splits work across independent units and dispatches an agent per unit — subagent-driven-development, /sprint, parallel /review. It owns the dispatch/collect/funnel discipline: bound concurrency, isolate units, collect every result, dedupe overlap, and funnel through finding-triage then the read-only verdict-aggregator. Raw agent output is never consumed before the funnel runs; an agent that errors records its unit as incomplete without corrupting the batch."
 disable-model-invocation: true
 ---
 
@@ -59,8 +59,8 @@ Gate: the result set is deduped, contradictions surfaced, and completion claims 
 
 The batch is consumed only here, through the fixed funnel — never directly by the caller.
 
-1. Dispatch `finding-triage` (`{{PLUGIN_ROOT}}/agents/finding-triage.md`) over the deduped result set: it classifies severity, marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker, and discards noise.
-2. Hand the triaged set to `checkpoint-aggregator` (`{{PLUGIN_ROOT}}/agents/checkpoint-aggregator.md`): it aggregates into the single batch verdict the caller consumes — pass, or a blocking finding list.
+1. Dispatch `finding-triage` (`{{PLUGIN_ROOT}}/agents/finding-triage.md`) over the deduped result set and batch completion contract: it classifies severity and marks out-of-scope items with an inline `[NEEDS-TRIAGE]` marker. Every reviewer finding reaches the verdict; only non-finding transport metadata may be omitted.
+2. Hand the triaged set to `verdict-aggregator` (`{{PLUGIN_ROOT}}/agents/verdict-aggregator.md`): it composes the single read-only batch verdict the caller consumes — `PASS`, `BLOCKING_FINDINGS`, or `INCOMPLETE`.
 
 The errored and deferred units from Phase 3 ride through the funnel as findings — an `ERRORED` unit is a finding the caller must see, not a silent gap.
 
@@ -71,6 +71,6 @@ Gate: the caller receives only the aggregated verdict. Bypassing the funnel — 
 - MUST NOT dispatch two units that mutate the same path in one batch; isolate via `using-git-worktrees` or serialize.
 - MUST NOT fan out unbounded; dispatch within the concurrency bound.
 - MUST NOT let one `ERRORED` unit discard or corrupt the rest of the batch.
-- MUST NOT consume agent output before the `finding-triage` → `checkpoint-aggregator` funnel runs.
+- MUST NOT consume agent output before the `finding-triage` → `verdict-aggregator` funnel runs.
 - MUST NOT trust a subagent's self-reported completion; verify with a fresh proving command.
 - MUST NOT silently drop a unit — every unit terminates with a recorded state that rides through the funnel.

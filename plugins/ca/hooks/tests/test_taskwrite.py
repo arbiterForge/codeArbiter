@@ -13,17 +13,15 @@ REAL `taskwrite.py` subprocesses.
 
 To make two independent processes' critical sections *provably* overlap
 (not just "launched close together and hopefully raced"), each subprocess
-runs against a private copy of the hook sources with one test-only
-instrumentation line appended to the copied `_hooklib.py`: when
-`CA_TEST_LOCK_HOLD_MS` is set, `acquire_lock` sleeps for that many
-milliseconds AFTER the real OS lock is taken and BEFORE returning the handle
-to its caller — extending, never faking, the real hold. When
-`CA_TEST_ACQUIRED_MARKER` is also set, the wrapper writes a wall-clock
-timestamp to that file the instant the real lock succeeds, so the test
-harness can observe precisely when a subprocess entered its held window
-without guessing at wall-clock timing. Neither knob exists in the real
-`core/pysrc/_hooklib.py` — this is scaffolding added only to the throwaway
-copy, never the shipped hook.
+runs against a private copy of the hook sources with test-only instrumentation
+appended to copied `_hooklib.py`. The first process writes an acquired marker
+after the real OS lock succeeds and then waits on an explicit release marker.
+The second writes a contended marker only after its real nonblocking lock
+attempt fails and the production retry loop reaches its sleep. The harness
+releases the first only after observing that proven conflict, then requires the
+second acquired marker. This is an event handshake, not a wall-clock race.
+None of these knobs exists in real `core/pysrc/_hooklib.py`; the scaffolding
+lives only in the throwaway test copy.
 
 Portability fix (macOS CI flake): the copy also raises `LOCK_WAIT` (test-only,
 default 8s vs production's real 0.2s — see `_HOLD_HOOK`) so a genuinely
@@ -52,6 +50,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 _HOOKS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -98,7 +97,7 @@ def _closure(entry):
 if _HOOKS_DIR not in sys.path:
     sys.path.insert(0, _HOOKS_DIR)
 
-CONCURRENCY_TEST_WAIT = 10.0
+CONCURRENCY_TEST_WAIT = 30.0
 
 BOARD = """\
 # Open tasks
@@ -120,6 +119,11 @@ import time as _ca_test_time
 
 _CA_TEST_HOLD_MS = float(_ca_test_os.environ.get("CA_TEST_LOCK_HOLD_MS", "0") or 0)
 _CA_TEST_MARKER = _ca_test_os.environ.get("CA_TEST_ACQUIRED_MARKER")
+_CA_TEST_CONTENDED_MARKER = _ca_test_os.environ.get("CA_TEST_CONTENDED_MARKER")
+_CA_TEST_RELEASE_MARKER = _ca_test_os.environ.get("CA_TEST_RELEASE_MARKER")
+_CA_TEST_RELEASE_WAIT = float(
+    _ca_test_os.environ.get("CA_TEST_RELEASE_WAIT", "30.0") or 30.0
+)
 
 # Portability fix (macOS CI flake, test-only — see test_taskwrite.py's class
 # docstring): production's LOCK_WAIT (0.2s, core/pysrc/_hooklib.py) is a
@@ -136,16 +140,38 @@ _CA_TEST_MARKER = _ca_test_os.environ.get("CA_TEST_ACQUIRED_MARKER")
 # plugin copy.
 LOCK_WAIT = float(_ca_test_os.environ.get("CA_TEST_LOCK_WAIT", "8.0"))
 
-if _CA_TEST_HOLD_MS > 0:
+if (_CA_TEST_HOLD_MS > 0 or _CA_TEST_MARKER or
+        _CA_TEST_CONTENDED_MARKER or _CA_TEST_RELEASE_MARKER):
     _ca_test_real_acquire_lock = acquire_lock
 
     def acquire_lock(path):
-        token = _ca_test_real_acquire_lock(path)
+        # `acquire_lock` sleeps only after a real nonblocking lock attempt has
+        # failed. Observe that exact event in this private process, rather than
+        # emitting before the call and merely proving the child was scheduled.
+        _real_sleep = _ca_test_time.sleep
+        if _CA_TEST_CONTENDED_MARKER:
+            def _observe_contention(seconds):
+                if not _ca_test_os.path.exists(_CA_TEST_CONTENDED_MARKER):
+                    with open(_CA_TEST_CONTENDED_MARKER, "w", encoding="utf-8") as _wait_f:
+                        _wait_f.write("contended")
+                _real_sleep(seconds)
+            _ca_test_time.sleep = _observe_contention
+        try:
+            token = _ca_test_real_acquire_lock(path)
+        finally:
+            _ca_test_time.sleep = _real_sleep
         if token is not None:
             if _CA_TEST_MARKER:
                 with open(_CA_TEST_MARKER, "w", encoding="utf-8") as _marker_f:
-                    _marker_f.write(str(_ca_test_time.time()))
-            _ca_test_time.sleep(_CA_TEST_HOLD_MS / 1000.0)
+                    _marker_f.write("acquired")
+            if _CA_TEST_RELEASE_MARKER:
+                _release_deadline = _ca_test_time.monotonic() + _CA_TEST_RELEASE_WAIT
+                while not _ca_test_os.path.exists(_CA_TEST_RELEASE_MARKER):
+                    if _ca_test_time.monotonic() >= _release_deadline:
+                        break
+                    _ca_test_time.sleep(0.005)
+            elif _CA_TEST_HOLD_MS > 0:
+                _ca_test_time.sleep(_CA_TEST_HOLD_MS / 1000.0)
         return token
 '''
 
@@ -172,13 +198,15 @@ def _reap(process):
                 pass
 
 
-def _wait_for_file(path, timeout=CONCURRENCY_TEST_WAIT):
+def _wait_for_file(path, timeout=CONCURRENCY_TEST_WAIT, process=None):
     """Bounded poll for a marker file's existence. Returns True/False; never
     raises, never blocks past `timeout`."""
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if os.path.exists(path):
             return True
+        if process is not None and process.poll() is not None:
+            return False
         time.sleep(0.005)
     return False
 
@@ -225,10 +253,11 @@ class TaskwriteContentionTest(unittest.TestCase):
         with open(self.board_path, "w", encoding="utf-8", newline="\n") as f:
             f.write(BOARD)
         self._markers = tempfile.mkdtemp(prefix="ca-taskwrite-markers-")
-
-    def tearDown(self):
-        self._tmp.cleanup()
-        shutil.rmtree(self._markers, ignore_errors=True)
+        # Register fixture cleanup before subprocess cleanups. TestCase runs
+        # cleanups LIFO, so any child left live by an early handshake assertion
+        # is reaped before Windows is asked to remove its open lock file.
+        self.addCleanup(self._tmp.cleanup)
+        self.addCleanup(shutil.rmtree, self._markers, True)
 
     def _read(self):
         with open(self.board_path, encoding="utf-8") as f:
@@ -237,10 +266,14 @@ class TaskwriteContentionTest(unittest.TestCase):
     def _marker(self, name):
         return os.path.join(self._markers, name)
 
-    def _popen(self, argv, hold_ms=0, marker=None):
+    def _popen(self, argv, hold_ms=0, marker=None, contended=None, release=None):
         """Launch a REAL taskwrite.py subprocess against the fixture board."""
         env = dict(os.environ)
         env["CLAUDE_PROJECT_DIR"] = self.root
+        # The private hook copy's retry budget is part of this harness, not an
+        # operator-tunable input. An inherited value (especially 0) can make a
+        # correctly contending writer fail soft before the event handshake.
+        env["CA_TEST_LOCK_WAIT"] = str(CONCURRENCY_TEST_WAIT)
         if hold_ms:
             env["CA_TEST_LOCK_HOLD_MS"] = str(hold_ms)
         else:
@@ -249,6 +282,16 @@ class TaskwriteContentionTest(unittest.TestCase):
             env["CA_TEST_ACQUIRED_MARKER"] = marker
         else:
             env.pop("CA_TEST_ACQUIRED_MARKER", None)
+        if contended:
+            env["CA_TEST_CONTENDED_MARKER"] = contended
+        else:
+            env.pop("CA_TEST_CONTENDED_MARKER", None)
+        if release:
+            env["CA_TEST_RELEASE_MARKER"] = release
+            env["CA_TEST_RELEASE_WAIT"] = str(CONCURRENCY_TEST_WAIT)
+        else:
+            env.pop("CA_TEST_RELEASE_MARKER", None)
+            env.pop("CA_TEST_RELEASE_WAIT", None)
         process = subprocess.Popen(
             [sys.executable, self._taskwrite_script] + argv,
             cwd=self.root, env=env, text=True,
@@ -261,6 +304,45 @@ class TaskwriteContentionTest(unittest.TestCase):
         self.addCleanup(_reap, process)
         return process
 
+    def _release(self, path):
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write("release")
+
+    def _serialized_add_pair(self):
+        """Start two real writers with a deterministic lock handshake."""
+        acquired1 = self._marker("acquired-1")
+        contended2 = self._marker("contended-2")
+        acquired2 = self._marker("acquired-2")
+        release1 = self._marker("release-1")
+        first = self._popen(
+            ["add", "first concurrent task", "--id", "mvp1.store"],
+            marker=acquired1,
+            release=release1,
+        )
+        self.assertTrue(
+            _wait_for_file(acquired1, process=first),
+            "process 1 never acquired the real lock",
+        )
+        second = self._popen(
+            ["add", "second concurrent task", "--id", "mvp1.store"],
+            marker=acquired2,
+            contended=contended2,
+        )
+        self.assertTrue(
+            _wait_for_file(contended2, process=second),
+            "process 2 never observed real lock contention",
+        )
+        self.assertFalse(
+            os.path.exists(acquired2),
+            "process 2 acquired while process 1 still held the real lock",
+        )
+        self._release(release1)
+        self.assertTrue(
+            _wait_for_file(acquired2, process=second),
+            "process 2 never acquired after release",
+        )
+        return first, second
+
     def _finish(self, proc):
         out, err = proc.communicate(timeout=CONCURRENCY_TEST_WAIT)
         return proc.returncode, out, err
@@ -270,38 +352,17 @@ class TaskwriteContentionTest(unittest.TestCase):
         classic lost-update shape: without a lock + re-read, the second
         os.replace() silently discards the first writer's edit.
 
-        Genuine overlap (not a lucky race) is proven directly: each process
-        stamps a wall-clock timestamp into its own marker file the instant it
-        holds the REAL OS lock, then holds it for `hold_ms`. If the lock
-        truly serializes, the second stamp cannot land before
-        (first stamp + hold_ms) — that gap is asserted below, not assumed."""
-        hold_ms = 150
-        m1, m2 = self._marker("m1"), self._marker("m2")
-        p1 = self._popen(["add", "first concurrent task", "--id", "mvp1.store"],
-                         hold_ms=hold_ms, marker=m1)
-        p2 = self._popen(["add", "second concurrent task", "--id", "mvp1.store"],
-                         hold_ms=hold_ms, marker=m2)
-        self.assertTrue(_wait_for_file(m1), "process 1 never acquired the real lock")
-        self.assertTrue(_wait_for_file(m2), "process 2 never acquired the real lock")
-        with open(m1, encoding="utf-8") as f:
-            t1 = float(f.read())
-        with open(m2, encoding="utf-8") as f:
-            t2 = float(f.read())
+        Genuine overlap is proven by the contended/acquired/release marker
+        handshake in `_serialized_add_pair`, without scheduler timing."""
+        # A hostile inherited test knob must not shorten the private copy's
+        # retry budget; `_popen` owns and normalizes it for every child.
+        with mock.patch.dict(os.environ, {"CA_TEST_LOCK_WAIT": "0"}):
+            p1, p2 = self._serialized_add_pair()
 
         rc1, out1, err1 = self._finish(p1)
         rc2, out2, err2 = self._finish(p2)
         self.assertEqual(rc1, 0, err1)
         self.assertEqual(rc2, 0, err2)
-
-        # The proof: whichever writer acquired second could not have stamped
-        # its marker until the first released — i.e. at least ~hold_ms after
-        # the first's own stamp. A generous floor (60% of hold_ms) absorbs
-        # scheduler jitter while still ruling out "both acquired at once".
-        gap = abs(t2 - t1)
-        self.assertGreaterEqual(
-            gap, (hold_ms / 1000.0) * 0.6,
-            f"lock did not serialize the two acquisitions: gap={gap:.3f}s, "
-            f"expected >= {(hold_ms / 1000.0) * 0.6:.3f}s (hold_ms={hold_ms})")
 
         text = self._read()
         self.assertIn("first concurrent task", text,
@@ -314,14 +375,7 @@ class TaskwriteContentionTest(unittest.TestCase):
         namespace. Reading the board fresh under the lock (not the stale
         snapshot each process opened with) is what makes next_seq allocate
         two DISTINCT ids instead of both computing the same 'max + 1'."""
-        hold_ms = 150
-        m1, m2 = self._marker("m1"), self._marker("m2")
-        p1 = self._popen(["add", "first concurrent task", "--id", "mvp1.store"],
-                         hold_ms=hold_ms, marker=m1)
-        p2 = self._popen(["add", "second concurrent task", "--id", "mvp1.store"],
-                         hold_ms=hold_ms, marker=m2)
-        self.assertTrue(_wait_for_file(m1), "process 1 never acquired the real lock")
-        self.assertTrue(_wait_for_file(m2), "process 2 never acquired the real lock")
+        p1, p2 = self._serialized_add_pair()
         rc1, _out1, err1 = self._finish(p1)
         rc2, _out2, err2 = self._finish(p2)
         self.assertEqual(rc1, 0, err1)
@@ -347,25 +401,19 @@ class TaskwriteContentionTest(unittest.TestCase):
         window closes is guaranteed to be visible to the holder's own
         re-read, exactly the ordering C-3 exists to guarantee.
 
-        `hold_ms` no longer needs to stay under production's own fail-soft
-        `LOCK_WAIT` (0.2s, core/pysrc/_hooklib.py, unchanged in production):
-        this test's private hooklib copy raises `LOCK_WAIT` (see
-        `_HOLD_HOOK`) so the second writer BLOCKS deterministically until the
-        first releases, instead of racing the real 0.2s budget against
-        scheduler jitter (the macOS CI flake this file was rewritten to
-        close — a loaded runner's jitter could push the first writer's hold
-        past the second's unpatched 0.2s retry window, correctly fail-hard
-        exiting it before it ever wrote its own marker). Serialization is
-        still proven end-to-end by the real OS lock and the outcome
-        assertions below (the external edit survives, both writes land) —
-        only the RETRY BUDGET is no longer the real production one; the lock
-        primitive itself, the hold, and the re-read-under-lock CAS all run
-        completely unmodified."""
-        hold_ms = 120
-        m1 = self._marker("holder")
+        The explicit release marker keeps the holder inside the real critical
+        section until both the out-of-band edit and second writer's attempt are
+        observed, with no scheduler-dependent sleep window."""
+        m1 = self._marker("holder-acquired")
+        contended2 = self._marker("second-contended")
+        m2 = self._marker("second-acquired")
+        release1 = self._marker("holder-release")
         p1 = self._popen(["add", "lock holder's task", "--id", "mvp1.store"],
-                         hold_ms=hold_ms, marker=m1)
-        self.assertTrue(_wait_for_file(m1), "lock holder never acquired the real lock")
+                         marker=m1, release=release1)
+        self.assertTrue(
+            _wait_for_file(m1, process=p1),
+            "lock holder never acquired the real lock",
+        )
 
         # The out-of-band Edit: the host's own Edit tool writing the board
         # directly (harvest/decompose), never taking taskwrite's lock.
@@ -375,7 +423,21 @@ class TaskwriteContentionTest(unittest.TestCase):
 
         # A second REAL taskwrite writer, contending for the same lock while
         # the first is still (per the marker) inside its held window.
-        p2 = self._popen(["add", "second writer's task", "--id", "mvp1.store"])
+        p2 = self._popen(
+            ["add", "second writer's task", "--id", "mvp1.store"],
+            marker=m2,
+            contended=contended2,
+        )
+        self.assertTrue(
+            _wait_for_file(contended2, process=p2),
+            "second writer never observed real lock contention",
+        )
+        self.assertFalse(os.path.exists(m2))
+        self._release(release1)
+        self.assertTrue(
+            _wait_for_file(m2, process=p2),
+            "second writer never acquired after release",
+        )
 
         rc1, _out1, err1 = self._finish(p1)
         rc2, _out2, err2 = self._finish(p2)

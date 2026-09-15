@@ -27,11 +27,114 @@
 # Behavioral contract for M1: under Claude Code, everything routed through
 # this seam resolves to byte-identical results as the pre-seam inline code.
 
+import json
 import os
+import re
 import subprocess
 import sys
 
-from _gitexec import git_executable
+from _gitexec import git_executable, root_bound_git_env
+
+
+class PluginRootError(RuntimeError):
+    """A host adapter's installed package boundary cannot be authenticated."""
+
+
+_VERSION_RE = re.compile(
+    r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.-]*)?(?:\+[0-9A-Za-z][0-9A-Za-z.-]*)?$")
+
+
+def _safe_relative_path(value, label):
+    """Reject an absolute or traversing adapter-relative path before joining."""
+    if not isinstance(value, str) or not value:
+        raise PluginRootError(f"{label} must be a non-empty relative path")
+    normalized = os.path.normpath(value)
+    if (os.path.isabs(value) or normalized == os.pardir or
+            normalized.startswith(os.pardir + os.sep)):
+        raise PluginRootError(f"{label} escapes the adapter: {value!r}")
+    return normalized
+
+
+def _inside(root, candidate):
+    """Whether normalized ``candidate`` is contained by normalized ``root``."""
+    try:
+        return os.path.commonpath((root, candidate)) == root
+    except ValueError:  # distinct Windows volumes are never contained
+        return False
+
+
+def resolve_plugin_root(authority_file, *, adapter_name, adapter_version, manifest_relpath,
+                        anchor_relpath, environment=None, signal_names=(),
+                        required_signal_names=(), legacy_signal_names=()):
+    """Return the authenticated root of the executing adapter, or fail closed.
+
+    The authority is the file/module that is already executing. Environment
+    variables may only corroborate that exact real path; none can select a
+    different, merely plausible package. ``anchor_relpath`` and the manifest
+    are constrained inside that root so traversal and symlink escapes cannot
+    authenticate an external file.
+    """
+    if not isinstance(adapter_name, str) or not adapter_name:
+        raise PluginRootError("adapter name must be a non-empty string")
+    if not isinstance(adapter_version, str) or not _VERSION_RE.fullmatch(adapter_version):
+        raise PluginRootError("adapter version must be an exact SemVer string")
+    manifest_relpath = _safe_relative_path(manifest_relpath, "manifest path")
+    anchor_relpath = _safe_relative_path(anchor_relpath, "anchor path")
+    env = os.environ if environment is None else environment
+
+    # Keep the package boundary lexical until after its parent directories are
+    # derived. If hooks/hostapi.py itself is a symlink, realpathing it first
+    # would re-home this adapter in a complete, matching foreign package.
+    lexical_authority = os.path.abspath(authority_file)
+    root = os.path.realpath(os.path.dirname(os.path.dirname(lexical_authority)))
+    source = os.path.realpath(lexical_authority)
+    anchor = os.path.realpath(os.path.join(root, anchor_relpath))
+    if (not _inside(root, source) or not _inside(root, anchor) or
+            anchor != source or not os.path.isfile(anchor)):
+        raise PluginRootError(
+            f"executing adapter anchor is outside or missing from its package: {source}")
+
+    manifest = os.path.realpath(os.path.join(root, manifest_relpath))
+    if not _inside(root, manifest) or not os.path.isfile(manifest):
+        raise PluginRootError(
+            f"{adapter_name}: required manifest is missing or outside the adapter: {manifest}")
+    try:
+        with open(manifest, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError) as error:
+        raise PluginRootError(
+            f"{adapter_name}: required manifest is unreadable: {manifest} ({error})") from error
+    name = data.get("name") if isinstance(data, dict) else None
+    version = data.get("version") if isinstance(data, dict) else None
+    if name != adapter_name:
+        raise PluginRootError(
+            f"adapter manifest mismatch at {manifest}: expected {adapter_name!r}, got {name!r}")
+    if not isinstance(version, str) or not _VERSION_RE.fullmatch(version):
+        raise PluginRootError(
+            f"adapter manifest has invalid version at {manifest}: {version!r}")
+    if version != adapter_version:
+        raise PluginRootError(
+            f"adapter manifest version mismatch at {manifest}: "
+            f"expected {adapter_version!r}, got {version!r}")
+
+    for signal in required_signal_names:
+        if not env.get(signal):
+            raise PluginRootError(
+                f"{adapter_name}: required {signal} is absent; executing root is {root}")
+    for signal in signal_names:
+        value = env.get(signal)
+        if not value:
+            continue
+        claimed = os.path.realpath(os.path.abspath(value))
+        if claimed != root:
+            raise PluginRootError(
+                f"{adapter_name}: {signal} root {claimed} disagrees with "
+                f"executing adapter root {root}")
+        if signal in legacy_signal_names:
+            sys.stderr.write(
+                f"codeArbiter: {signal} is deprecated for {adapter_name}; "
+                "accepted only as matching corroboration.\n")
+    return root
 
 
 def git_toplevel(cwd=None):
@@ -52,7 +155,7 @@ def git_toplevel(cwd=None):
     try:
         out = subprocess.run(
             args, capture_output=True, text=True, encoding="utf-8",
-            errors="replace", timeout=5,
+            errors="replace", timeout=5, env=root_bound_git_env(),
         )
         if out.returncode == 0:
             top = out.stdout.strip()
@@ -61,6 +164,38 @@ def git_toplevel(cwd=None):
     except Exception:  # noqa: BLE001
         pass
     return None
+
+
+def _root_bound_git_env():
+    """Compatibility seam for callers of the former local helper."""
+    return root_bound_git_env()
+
+
+def _has_enabled_context(root):
+    """Whether a real CONTEXT.md satisfies the canonical activation parser."""
+    canonical_root = os.path.realpath(root)
+    state_dir = os.path.join(canonical_root, ".codearbiter")
+    if os.path.islink(state_dir) or not os.path.isdir(state_dir):
+        return False
+    context = os.path.join(state_dir, "CONTEXT.md")
+    canonical_context = os.path.realpath(context)
+    try:
+        contained = os.path.normcase(os.path.commonpath(
+            [canonical_root, canonical_context])) == os.path.normcase(canonical_root)
+    except (TypeError, ValueError):
+        contained = False
+    if (not contained or os.path.islink(context)
+            or not os.path.isfile(canonical_context)):
+        return False
+    try:
+        # Deferred to avoid hostapi <-> _activationlib's import-time cycle.
+        # This must remain the single parser for the activation contract,
+        # including its accepted UTF-8 BOM spelling.
+        from _activationlib import frontmatter_enabled
+        enabled, malformed = frontmatter_enabled(canonical_context)
+        return enabled and not malformed
+    except Exception:  # noqa: BLE001 - root selection must fail closed
+        return False
 
 
 def git_worktree_main_root(root):
@@ -83,7 +218,7 @@ def git_worktree_main_root(root):
     of the command's effective exec root).
 
     Deliberately NOT wired into `Host.project_root()` itself: `project_root()`
-    also backs `security-pass.py`'s DIFF SCAN (`candidate_lines()`), which
+    also backs `security-pass.py`'s DIFF SCAN (`candidate_scan()`), which
     must stay worktree-local — escalating the general project root to "main"
     would bind digests to the wrong (unrelated, possibly dirty) tree and
     silently drop coverage for the diff actually being committed, the exact
@@ -100,24 +235,71 @@ def git_worktree_main_root(root):
     FILE, but only a worktree's `gitdir:` pointer names a path under
     `.git/worktrees/<name>`; a submodule's names `.git/modules/<name>`, which
     is not a "main root" to climb to and must fall through untouched (mirrors
-    `_durabilitylib._gitfile_points_at_worktree`'s same distinction)."""
+    `_durabilitylib._gitfile_points_at_worktree`'s same distinction).
+
+    The selected Git binary is the authority for accepting and resolving the
+    worktree metadata. That keeps native relative pointers aligned with Git,
+    rejects incomplete or foreign-dialect metadata Git itself cannot use, and
+    avoids translating a path grammar in Python. Only Git-confirmed linked
+    worktrees whose common directory is the main checkout's `.git` directory,
+    and whose linked and reported-main checkouts are both independently
+    arbiter-enabled, can escalate the marker root."""
     git_meta = os.path.join(root, ".git")
     if not os.path.isfile(git_meta):
         return None
     try:
-        with open(git_meta, encoding="utf-8", errors="replace") as f:
-            pointer = f.read().strip()
-    except OSError:
+        probe = subprocess.run(
+            [git_executable(), "-C", root, "rev-parse", "--path-format=absolute",
+             "--git-dir", "--git-common-dir"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5, env=_root_bound_git_env(),
+        )
+    except Exception:  # noqa: BLE001 - root selection must fail closed
         return None
-    if not pointer.startswith("gitdir: "):
+    lines = [line.strip() for line in probe.stdout.splitlines() if line.strip()]
+    if probe.returncode != 0 or len(lines) != 2:
         return None
-    gitdir = pointer[len("gitdir: "):].strip().replace("\\", "/")
-    marker = "/.git/worktrees/"
-    idx = gitdir.find(marker)
-    if idx == -1:
-        return None  # not a linked worktree (e.g. a submodule) — nothing to climb to
-    main_git_dir = gitdir[:idx + len("/.git")]
-    return os.path.dirname(main_git_dir) or None
+    git_dir = os.path.normpath(lines[0])
+    common_dir = os.path.normpath(lines[1])
+    if not os.path.isabs(git_dir) or not os.path.isabs(common_dir):
+        return None
+    real_git_dir = os.path.normcase(os.path.realpath(git_dir))
+    real_common_dir = os.path.normcase(os.path.realpath(common_dir))
+    if real_git_dir == real_common_dir:
+        return None  # ordinary checkout or submodule, not a linked worktree
+    expected_admin_parent = os.path.normcase(
+        os.path.realpath(os.path.join(common_dir, "worktrees")))
+    if os.path.normcase(os.path.realpath(os.path.dirname(git_dir))) != expected_admin_parent:
+        return None
+    if os.path.basename(common_dir) != ".git" or not os.path.isdir(common_dir):
+        return None
+    main_root = os.path.dirname(common_dir)
+    if not os.path.isdir(main_root):
+        return None
+    try:
+        main_probe = subprocess.run(
+            [git_executable(), "-C", main_root, "rev-parse", "--path-format=absolute",
+             "--show-toplevel", "--git-common-dir"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            timeout=5, env=_root_bound_git_env(),
+        )
+    except Exception:  # noqa: BLE001 - root selection must fail closed
+        return None
+    main_lines = [line.strip() for line in main_probe.stdout.splitlines() if line.strip()]
+    if main_probe.returncode != 0 or len(main_lines) != 2:
+        return None
+    main_toplevel = os.path.normpath(main_lines[0])
+    confirmed_common = os.path.normpath(main_lines[1])
+    if not os.path.isabs(main_toplevel) or not os.path.isabs(confirmed_common):
+        return None
+    if os.path.normcase(os.path.realpath(main_toplevel)) != os.path.normcase(
+            os.path.realpath(main_root)):
+        return None
+    if os.path.normcase(os.path.realpath(confirmed_common)) != real_common_dir:
+        return None
+    if not _has_enabled_context(root) or not _has_enabled_context(main_root):
+        return None
+    return main_root.replace("\\", "/") if os.name == "nt" else main_root
 
 
 class Host:
@@ -130,6 +312,17 @@ class Host:
     """
 
     name = "claude"
+    adapter_name = "ca"
+    adapter_version = "2.18.2"
+
+    # Update-notifier descriptor. Each independently versioned host overrides
+    # these three values in its per-plugin _host.py. Keeping the target,
+    # release prefix, and remediation command together on the active Host
+    # prevents the shared notifier from comparing or instructing for a sibling
+    # product line (RA-02).
+    update_target = "ca"
+    update_tag_prefix = "v"
+    update_command = "/plugin marketplace update codearbiter"
 
     # Capability flags — what surfaces this host actually has. A hook that
     # heals/queries a statusline gates on has_statusline; a hook registered
@@ -220,14 +413,16 @@ class Host:
         return git_worktree_main_root(root) or root
 
     def plugin_root(self):
-        """The plugin payload root: CLAUDE_PLUGIN_ROOT when set, else derived
-        from this file's own location (<root>/hooks/hostapi.py -> <root>) —
-        exactly the pre-seam per-entry-script derivation, which resolved
-        relative to a file in the same hooks/ directory."""
-        env = os.environ.get("CLAUDE_PLUGIN_ROOT")
-        if env:
-            return env
-        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        """The authenticated payload root derived from this executing module.
+
+        CLAUDE_PLUGIN_ROOT may corroborate that derived root, but can never
+        select a different adapter package.
+        """
+        return resolve_plugin_root(
+            __file__, adapter_name=self.adapter_name, adapter_version=self.adapter_version,
+            manifest_relpath=self.manifest_relpath(), anchor_relpath="hooks/hostapi.py",
+            signal_names=("CLAUDE_PLUGIN_ROOT",),
+        )
 
     def manifest_relpath(self):
         """The plugin manifest's path, relative to plugin_root() (#263,
@@ -402,6 +597,9 @@ class FailClosedHost(Host):
     silent (observability-002)."""
 
     name = "unknown"
+    update_target = None
+    update_tag_prefix = None
+    update_command = None
     has_statusline = False
     has_read_tool = False
     has_prunable_transcript = False

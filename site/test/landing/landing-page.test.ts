@@ -145,6 +145,13 @@ describe("first-class product splash", () => {
     expect(indexMdx).toContain("Pi preview");
   });
 
+  it("routes exact discovery without a hard-coded raw command count", () => {
+    expect(indexMdx).toContain("<code>Grouped reference</code>");
+    expect(indexMdx).toContain('href="./reference/"');
+    expect(indexMdx).not.toMatch(/<code>\d+ commands<\/code>/);
+    expect(indexMdx).not.toMatch(/\b(?:38|40) commands\b/);
+  });
+
   it("has one primary action above the fold", () => {
     const primaryMatches = indexMdx.match(/ca-button--primary/g) ?? [];
     expect(primaryMatches).toHaveLength(2);
@@ -173,6 +180,11 @@ describe("first-class product splash", () => {
     ]) {
       expect(indexMdx).toContain(className);
     }
+  });
+
+  it("uses an outcome CTA instead of an unsupported setup-time promise", () => {
+    expect(indexMdx).toContain("Put one repository under governed change.");
+    expect(indexMdx).not.toContain("Protect a repository in five minutes.");
   });
 
   it("links lifecycle and trust claims to their owning docs", () => {
@@ -228,6 +240,18 @@ describe("captured gate proof", () => {
     expect(proof.fixture.stagedAfter).toBe("");
     expect(proof.fixture.statusAfter).toContain("?? note.txt");
     expect(proof.fixture.gateEvent).toContain("BLOCK [H-03]");
+  });
+
+  it("binds the replay caption to the exact latest published ca artifact without widening the proof", () => {
+    expect(proofCmp).toContain('import applicability from "../generated/release-applicability.json"');
+    expect(proofCmp).toContain('applicability.hosts.find((host) => host.target === "ca")');
+    expect(proofCmp).toContain('import { presentProofApplicability } from "../release-applicability-presentation.ts"');
+    expect(proofCmp).toContain("presentProofApplicability(applicability.proof)");
+    expect(proofCmp).toContain("publishedCa.tag");
+    expect(proofCmp).toContain("publishedCa.publicationCommit");
+    expect(proofCmp).toContain('href="/release-applicability.json"');
+    expect(proofCmp).toContain("It does not prove a host discovered or registered that hook.");
+    expect(proofCmp).not.toMatch(/\b(?:2\.17\.11|0\.9\.11|0\.10\.13)\b/);
   });
 
   it("keeps both efficient video formats and a poster in the repository", () => {

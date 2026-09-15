@@ -20,8 +20,10 @@ on that same candidate. The final verifier restricts later commits to the saniti
 artifacts, this public parity ledger, and the append-only governance evidence for that update.
 
 Codex 0.144.1 live verification on 2026-07-11 covered trusted startup and the
-H-03 structured block. Pi's implementation and local supported-version
-contracts target Pi 0.80.5 and Pi 0.84.1. The completed hosted
+H-03 structured block. A fresh Codex CLI 0.145.0 process later selected `ca-codex` 0.9.4,
+completed `ca-doctor` with 10 OK, 2 WARN, and 0 FAIL, and received the expected H-03 denial on
+its single staging probe. Pi's implementation and local supported-version
+contracts target exact Pi 0.84.1. The completed hosted
 Windows/macOS/Linux promotion report records x64 Windows/Linux and arm64 macOS evidence without
 presenting the deliberately nonblocking unsupported-latest canary as supported.
 
@@ -30,8 +32,8 @@ presenting the deliberately nonblocking unsupported-latest canary as supported.
 | Surface | Claude Code (`ca`) | Codex CLI (`ca-codex`) | Pi (`ca-pi`) | Evidence |
 |---|---|---|---|---|
 | Public entries | 38 `/ca:*` commands | 36 `$ca-*` entry skills | 37 `/ca-*` aliases with `/skill:ca-*` fallback | `plugins/*/COMMANDS.md`, `plugins/ca-pi/SKILLS.md` |
-| Orchestrator routines | 22 generated skills | 22 generated routines | 22 generated routines | `python tools/build-surface.py --check` |
-| Role charters | 18 plugin agents | host-provided agent threads load the shared charters; inline is an older-host fallback | 18 generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-pi/generated/roles.json` |
+| Orchestrator routines | 23 generated skills | 23 generated routines | 23 generated routines | `python tools/build-surface.py --check` |
+| Role charters | 19 current plugin agents | published releases from 0.7.5 contain the complete packaged resource charter set for their release; current source and 0.9.4 contain 19 | 19 current generated roles used by hardened child dispatch | `core/surface/agents/`, `plugins/ca-codex/agents/`, `plugins/ca-pi/generated/roles.json` |
 | Shared Python | stdlib-only core | byte-identical vendored core | byte-identical vendored core behind bounded bridge | `python tools/sync-core.py --check` |
 | Project store | `.codearbiter/` | same store | same store with `HOST: pi` attribution | `.github/scripts/test_pi_shared_store.py` |
 
@@ -54,8 +56,8 @@ surface it describes, and an uncompared count drifts silently.
 | Git backstop | shared `.git/hooks` installer | same | same through Pi bridge |
 | Status | complete Claude statusline | startup state only | rich footer globally with a per-message burn sparkline and up to four activity rows (both wide-layout only); refresh-time git repository/dirty enrichment is trusted-only; governance row only when enabled and affirmatively trusted; rate windows omitted; optional probe-gated right sidebar (`/ca-sidebar`, auto-on at ≥120 columns) with session, subagents, workspace, and todos panels |
 | Prune/compaction | shared policy plus Claude transcript codec | transcript engine unavailable; audit warning remains | shared policy plus Pi native compaction; no active-session rewrite |
-| Role dispatch | Claude subagents | host-provided agent threads with retained receipts; bounded inline fallback on older hosts | fresh Pi RPC children: single, chain, parallel |
-| Process cleanup | host-managed subagents | host-managed agent threads (or current-thread lifecycle for an inline fallback) | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
+| Role dispatch | Claude subagents | published releases from 0.7.5 supply packaged resource charters for host-provided threads; static route closure is enforced, and a bounded 0.9.4 receipt proves one exact installed-charter dispatch | fresh Pi RPC children: single, chain, parallel |
+| Process cleanup | host-managed subagents | host-managed threads; the bounded 0.9.4 dispatch receipt did not exercise cancellation or cleanup | bounded cancellation/timeout plus verified whole-tree cleanup; unhealthy latch on failure |
 | Doctor | interpreter, payload, hooks, live H-03 probe | trusted hook/origin diagnostics | package/origin/trust/collision/core/child/wrapper plus footer/sidebar/background health |
 
 ## Pi live surface classifications
@@ -106,9 +108,9 @@ Every exception has a status and a source-visible evidence pointer.
 | Codex native Read event | HOST-IMPOSSIBLE | Codex exposes no equivalent read hook; governed notices still run after writes. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex transcript compaction | HOST-IMPOSSIBLE | Claude transcript JSONL is not a Codex session format. | `plugins/ca-codex/includes/codex-host-notes.md` |
 | Codex statusline | HOST-IMPOSSIBLE | Codex exposes no plugin statusline surface. | `plugins/ca-codex/includes/codex-host-notes.md` |
-| Codex packaged agents | DEGRADED | The plugin does not vendor custom agent definitions; current hosts still dispatch host-provided threads loaded with the shared charter, while older hosts may fall back inline. Context creation blocks if isolated scouts are unavailable. | `plugins/ca-codex/includes/codex-host-notes.md` |
+| Codex packaged agents | SUPPORTED | Published releases from 0.7.5 contain the complete generated charter set for their release; current source and 0.9.4 contain 19. Hosted static-package, resource-closure, and route-closure evidence is paired with one bounded exact-0.9.4 host-thread dispatch receipt. That sample does not claim enforced read-only isolation, every route, or process cleanup. | `plugins/ca-codex/agents/`, `.codearbiter/decisions/0032-hosted-static-codex-release-evidence.md`, `docs/reports/evidence/codex-agent-dispatch/ca-codex-0.9.4-architecture-drift-reviewer.json` |
 | Pi rate-window telemetry | HOST-IMPOSSIBLE | Pi exposes no supported provider rate-window source, so the rich footer omits it rather than fabricating data. | `plugins/ca-pi/tools/src/footer-state.ts` |
-| Pi active-dispatch doctor self-test | DEGRADED | Public 0.80.5/0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
+| Pi active-dispatch doctor self-test | DEGRADED | Public 0.84.1 APIs cannot submit the deterministic wrapper probe through active dispatch. | `plugins/ca-pi/tools/src/doctor.ts` |
 | Pi farm route | PREVIEW | Uses the shared backend but awaits real-run promotion under CONFIRM-05. | `plugins/ca-pi/tools/src/farm.ts` |
 | Pi npm package | SUPPORTED | Every `ca-pi-v*` tag publishes `npm:@arbiterforge/ca-pi` with provenance (ADR-0029); the pinned Git tag remains the reproducible install. | `.github/workflows/npm-publish.yml` |
 <!-- PI-EXCEPTIONS:END -->
@@ -117,5 +119,5 @@ Every exception has a status and a source-visible evidence pointer.
 
 The deterministic and trusted-live procedure is
 [`docs/pi-parity-testing.md`](./pi-parity-testing.md). The final promotion row is
-added only after the committed Windows/macOS/Linux by Pi 0.80.5/0.84.1 matrix
+added only after the committed Windows/macOS/Linux by Pi 0.84.1 matrix
 and the separately reported nonblocking latest canary complete.

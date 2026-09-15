@@ -102,6 +102,14 @@ class TestH05Write(_PreWriteFixture):
         # BLOCK/REMIND/WARN sink — an append-only audit artifact like the rest.
         self.assertBlocked(self.run_write(os.path.join(self.ca, "gate-events.log")), "H-05")
 
+    def test_write_to_adr_lifecycle_ledger_is_blocked(self):
+        path = os.path.join(self.ddir, "adr-lifecycle.jsonl")
+        self.assertBlocked(self.run_write(path), "H-05")
+
+    def test_mixed_case_write_to_adr_lifecycle_ledger_is_blocked(self):
+        path = os.path.join(self.root, ".CodeArbiter", "Decisions", "ADR-Lifecycle.JSONL")
+        self.assertBlocked(self.run_write(path), "H-05")
+
 
 class TestH11Write(_PreWriteFixture):
     def test_write_to_numbered_adr_without_marker_is_blocked(self):

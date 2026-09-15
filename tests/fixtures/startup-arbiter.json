@@ -17,6 +17,6 @@
     "in-flight tasks: 1",
     "codeArbiter: 1 doc(s) may be stale relative to source — see .codearbiter/CONTEXT.md",
     "codeArbiter: v9.9.9 is available (installed v1.0.0) — update via your plugin marketplace",
-    "Present this state, then await a fake-command. Type $$fake-commands for the catalog."
+    "Present this state. Continue any active authorized work or accompanying user request; otherwise await a fake-command. Type $$fake-commands for the catalog."
   ]
 }

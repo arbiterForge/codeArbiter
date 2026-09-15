@@ -42,6 +42,12 @@ from _helpers import isolate_user_state, redirect_home, release_user_state, rest
 # backstop that fails if any suite writes outside its temp dirs.
 def setUpModule():
     global _USER_STATE
+    # Color assertions use a controlled default; NO_COLOR cases set it explicitly.
+    # Module cleanup restores the caller's environment even after test failures.
+    color_environment = mock.patch.dict(os.environ)
+    color_environment.start()
+    unittest.addModuleCleanup(color_environment.stop)
+    os.environ.pop("NO_COLOR", None)
     _USER_STATE = isolate_user_state()
 
 
@@ -871,7 +877,9 @@ class TestSegUpdate(unittest.TestCase):
 
     def _write_cache(self, latest):
         with open(self.state_path, "w") as f:
-            json.dump({"latest": latest, "checked_at": 1000.0}, f)
+            json.dump({"schema": 1, "targets": {
+                "ca": {"latest": latest, "checked_at": 1000.0},
+            }}, f)
 
     def test_ac1_newer_cached_latest_renders_marker(self):
         self._write_cache("2.10.0")

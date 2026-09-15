@@ -19,7 +19,7 @@ Closes #
 - [ ] Branched off `main` (not a direct write to `main`)
 - [ ] Conventional Commits used in the commit messages
 - [ ] Tests added/updated for behavioral changes (`plugins/ca/hooks/tests/`)
-- [ ] Full suite green locally (`pytest`, and `npm test` if `tools/` changed)
+- [ ] Impact-bounded local verification is green under the shared [`verification-boundary`](../core/surface/includes/verification-boundary.md); exhaustive exact-head proof is delegated to required GitHub Actions checks
 - [ ] Version bumped if any shipped payload file changed (CI enforces this)
 - [ ] `CHANGELOG.md` entry added
 - [ ] ADR recorded via `/ca:adr` for any architectural decision

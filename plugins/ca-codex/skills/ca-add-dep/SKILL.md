@@ -13,7 +13,7 @@ available version.
 
 ## Routes to
 
-The `dependency-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/dependency-reviewer.md`). The agent
+The `dependency-reviewer` agent ([agents/dependency-reviewer.md](../../agents/dependency-reviewer.md)). The agent
 reads `<project-root>/.codearbiter/security-controls.md` (allowed/denied licenses, provenance
 and supply-chain policy) and `<project-root>/.codearbiter/tech-stack.md` (stack fit, dependency
 manager) to judge the package.

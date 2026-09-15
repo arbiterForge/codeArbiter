@@ -12,7 +12,7 @@ state (staged files, diff, test results) and decides whether every gate is green
 
 ## Routes to
 
-The `commit-gate` skill (`${CLAUDE_PLUGIN_ROOT}/routines/commit-gate/SKILL.md`) — all phases. The skill
+The `commit-gate` skill ([routines/commit-gate/SKILL.md](../../routines/commit-gate/SKILL.md)) — all phases. The skill
 is canonical for its phases, gates, and output format.
 
 ## When NOT to use
@@ -23,5 +23,6 @@ is canonical for its phases, gates, and output format.
 
 ## Hard gate
 
-MUST NOT commit without `commit-gate` clearing. MUST NOT commit if the project test suite is not
-green.
+MUST NOT commit without `commit-gate` clearing. The applicable impact-bounded local tests from
+[includes/verification-boundary.md](../../includes/verification-boundary.md) must be green; exhaustive repository and
+cross-platform suites are exact-head hosted-CI merge gates, not local commit prerequisites.

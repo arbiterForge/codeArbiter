@@ -12,6 +12,7 @@ The only permitted path to a commit. Bypassing it is a hard-rule violation. Rout
 Read these, or STOP and surface the gap — never guess a command:
 
 - `<project-root>/.codearbiter/tech-stack.md` — test, lint, and secrets-scan invocations. Stop if missing; do not guess.
+- [includes/verification-boundary.md](../../includes/verification-boundary.md) — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
 - The `tdd` skill must have cleared all six phases for any new or modified feature code in the staged set. If `tdd` is incomplete, STOP and surface the gap.
 
@@ -49,22 +50,23 @@ Gate: the staged set is type-homogeneous with a single type and scope.
 
 ## Phase 4 — Verification · gate: BLOCK
 
-Read the test, lint, and secrets-scan commands from `tech-stack.md`. Then:
+Read the test, lint, and secrets-scan commands from `tech-stack.md`, then apply
+[includes/verification-boundary.md](../../includes/verification-boundary.md):
 
-- Run the test command. ALL tests green. Any failure blocks.
+- Run the impact-bounded local tests that directly cover the staged paths and obligations. Any failure blocks. Repository-wide and cross-platform suites belong to exact-head hosted CI before merge, not this commit gate.
 - Run lint, and the type-check if the project is statically typed. Zero errors.
 - Run the secrets scan on ALL staged files, regardless of commit type. Any finding blocks.
-- **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` (`${CLAUDE_PLUGIN_ROOT}/routines/crypto-compliance/SKILL.md`) and/or `secret-handling` (`${CLAUDE_PLUGIN_ROOT}/routines/secret-handling/SKILL.md`) — they scan against `security-controls.md` and, on pass, record the diff-bound marker `.codearbiter/.markers/security-gate-passed` (via `hooks/security-pass.py`). This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded AND covers every sensitive line being committed.
-- **Migration gate (mandatory routing):** if the staged set contains a database migration (Phase 3 flags it; the detection rule is `_hooklib.is_migration_path` — default migration globs, extendable/narrowable via a `migration-paths` block in `security-controls.md`), dispatch the `migration-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/migration-reviewer.md`). **On a genuine PASS only**, record the content-bound marker `.codearbiter/.markers/migration-gate-passed` by resolving the interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python` — never `python3 X || python X`, which reruns X on any nonzero exit (#577) — and running `"$PY" "${CLAUDE_PLUGIN_ROOT}/hooks/migration-pass.py"`. This is not optional: the PreToolUse commit hook **H-14 blocks the commit** until the pass is recorded AND covers every migration file being committed (by content digest, no freshness window — an edit to a reviewed migration re-blocks). This closes the bare-`/commit` / small-lane gap from issue #77. On a BLOCK, do not record the pass.
-- **CI/deploy review (mandatory routing, no marker gate):** if the staged set touches a CI/CD workflow (`_hooklib.is_ci_path` — defaults extendable via a `ci-paths` block in `security-controls.md`) or a deployment/IaC manifest (`_hooklib.is_deploy_path` — `deploy-paths` block), dispatch the `security-reviewer` agent (`${CLAUDE_PLUGIN_ROOT}/agents/security-reviewer.md`). This is the enforcement point the advisory `post-write-edit` reminders **H-15/H-16** point to, and it closes the bare-`/commit` / small-lane gap for CI/deploy (the `/review`, `/pr`, `/checkpoint`, and sprint lanes already dispatch it). Unlike crypto/secret/migration there is **no commit-block marker** — a CI workflow runs only once merged and IaC bites only on apply, so a BLOCK-level finding halts the commit via Phase 6 review, but routine CI/deploy edits are not gated per-commit. Act on the findings by severity; do not record a marker.
+- **Security gates (mandatory routing):** if the staged diff touches crypto/TLS or secret patterns, route it through `crypto-compliance` ([routines/crypto-compliance/SKILL.md](../crypto-compliance/SKILL.md)) and/or `secret-handling` ([routines/secret-handling/SKILL.md](../secret-handling/SKILL.md)) — they scan against `security-controls.md` and, on pass, record the diff-bound marker `.codearbiter/.markers/security-gate-passed` (via `hooks/security-pass.py`). This is not optional: the PreToolUse commit hook **H-09b/H-10b blocks the commit** until that gate pass is recorded AND covers every sensitive line being committed.
+- **Migration gate (mandatory routing):** if the staged set contains a database migration (Phase 3 flags it; the detection rule is `_hooklib.is_migration_path` — default migration globs, extendable/narrowable via a `migration-paths` block in `security-controls.md`), dispatch the `migration-reviewer` agent ([agents/migration-reviewer.md](../../agents/migration-reviewer.md)). **On a genuine PASS only**, record the content-bound marker `.codearbiter/.markers/migration-gate-passed` by resolving the interpreter once by presence — `PY=python3; { command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; } || PY=python` — never `python3 X || python X`, which reruns X on any nonzero exit (#577) — and running `"$PY" "${PLUGIN_ROOT}/hooks/migration-pass.py"`. This is not optional: the PreToolUse commit hook **H-14 blocks the commit** until the pass is recorded AND covers every migration file being committed (by content digest, no freshness window — an edit to a reviewed migration re-blocks). This closes the bare-`/commit` / small-lane gap from issue #77. On a BLOCK, do not record the pass.
+- **CI/deploy review (mandatory routing, no marker gate):** if the staged set touches a CI/CD workflow (`_hooklib.is_ci_path` — defaults extendable via a `ci-paths` block in `security-controls.md`) or a deployment/IaC manifest (`_hooklib.is_deploy_path` — `deploy-paths` block), dispatch the `security-reviewer` agent ([agents/security-reviewer.md](../../agents/security-reviewer.md)). This is the enforcement point the advisory `post-write-edit` reminders **H-15/H-16** point to, and it closes the bare-`/commit` / small-lane gap for CI/deploy (the `/review`, `/pr`, `/checkpoint`, and sprint lanes already dispatch it). Unlike crypto/secret/migration there is **no commit-block marker** — a CI workflow runs only once merged and IaC bites only on apply, so a BLOCK-level finding halts the commit via Phase 6 review, but routine CI/deploy edits are not gated per-commit. Act on the findings by severity; do not record a marker.
 
 Record each result (PASS / BLOCK) for the report.
 
-Gate: test, lint, secrets scan, and (when crypto/secret is touched) the security gate all PASS. Any failure halts the commit until fixed and re-run.
+Gate: the applicable focused tests, lint/type-check, secrets scan, and specialized gates all PASS. Any failure halts the commit until fixed and re-run. This gate does not claim that exhaustive hosted CI has run; `finishing-a-development-branch` proves that separately before merge.
 
 ## Phase 5 — Behavioral proof · gate: BLOCK
 
-Apply the shared fresh-run discipline in `${CLAUDE_PLUGIN_ROOT}/includes/fresh-verification.md`, with
+Apply the shared fresh-run discipline in [includes/fresh-verification.md](../../includes/fresh-verification.md), with
 **the spec's acceptance criterion** as the target — prove the behavior against the spec, not against a
 self-report.
 
@@ -106,7 +108,7 @@ Gate: the diff is clean — zero blocking findings.
 
 ## Phase 7 — Selective stage · gate: BLOCK
 
-**First, run the follow-up harvest — before staging anything.** Run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-asides — promote discovered follow-ups to `open-tasks.md` (work) or `open-questions.md` (decision) via the existing harvest procedure. Running this before the commit means raised board tasks are staged and ride the work commit in the same payload.
+**First, run the follow-up harvest — before staging anything.** Run the follow-up harvest ([includes/harvest.md](../../includes/harvest.md)) over any Phase 6 `[NEEDS-TRIAGE]` set-asides — promote discovered follow-ups to `open-tasks.md` (work) or `open-questions.md` (decision) via the existing harvest procedure. Running this before the commit means raised board tasks are staged and ride the work commit in the same payload.
 
 **Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the board additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not the board.
 
@@ -142,10 +144,11 @@ Gate: the commit lands and `git status` is clean. Unexpected uncommitted changes
 - MUST NOT commit to `main`, `master`, or any protected branch.
 - MUST NOT run `git add -A`, `git add .`, or any wildcard staging.
 - MUST NOT commit while any test is failing, any lint error stands, or any secret is present.
+- MUST NOT turn exhaustive repository-wide or cross-platform CI into a local prerequisite when the shared `verification-boundary` assigns it to exact-head hosted CI.
 - MUST NOT accept a self-reported "it works" — prove the behavior against the spec with a fresh command run (Phase 5) before committing.
 - MUST NOT skip, disable, or work around any automated gate.
 - MUST NOT commit a staged database migration without a recorded migration-review pass — the H-14 hook blocks it until `migration-reviewer` passes and `hooks/migration-pass.py` records the content-bound marker.
 - MUST NOT `--amend` after a pre-commit hook failure — create a new commit.
 - MUST NOT guess the test, lint, or secrets-scan command — read `tech-stack.md` or STOP.
 - MUST NOT silently rewrite a doc's claims — a claim-change edit proposed by Phase 5.5 goes through diff review (Phase 6), never through the silent re-baseline path. The re-baseline path is strictly for claims that still hold; the Phase 5.5 re-baseline MUST ride the work commit (staged by explicit path in Phase 7).
-- MUST, **at Phase 7 before staging**, run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote to `open-tasks.md` (work) or `open-questions.md` (decision) so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not the board.
+- MUST, **at Phase 7 before staging**, run the follow-up harvest ([includes/harvest.md](../../includes/harvest.md)) over any Phase 6 `[NEEDS-TRIAGE]` set-aside — promote to `open-tasks.md` (work) or `open-questions.md` (decision) so raised tasks ride the work commit. A follow-up that must survive PR abandonment is filed as a GitHub issue, not the board.

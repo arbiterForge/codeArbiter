@@ -1,12 +1,12 @@
 ---
 title: Pi
-description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi Git-only install, supported versions, and version pinning."
+description: "Install codeArbiter for Pi, grant project trust, and verify enforcement. Covers the ca-pi npm and pinned-Git channels, supported versions, and version pinning."
 journey:
   level: "Foundation"
   time: "12 minutes"
   outcome: "Install a pinned ca-pi preview, trust the project, opt in a repository, and verify a real gate."
   prerequisites:
-    - "Pi 0.80.5 or Pi 0.84.1"
+    - "Pi 0.84.1"
     - "Node.js 22.19 or newer"
   proof: "Pi reports the pinned extension and a disposable broad-stage probe is blocked by H-03."
 ---
@@ -27,12 +27,13 @@ Confirm all before installing:
   a missing interpreter blocks mutating calls and points to `/ca-doctor` rather than silently
   disabling governance.
 - **`git config user.email` set**: overrides and ADRs are attributed to this identity.
-- **A supported Pi host**: Pi 0.80.5 or Pi 0.84.1 for this release line. See
+- **A supported Pi host**: exact Pi 0.84.1 for this release line. See
   [Compatibility](/getting-started/compatibility/) for the full matrix.
 
 ## 1. Install
 
-Pi distribution is Git-only. First list the repository's published Pi tags; do not guess a version
+Pi's pinned Git tags are the reproducible evidence channel, while npm is the convenience channel.
+First list the repository's published Pi tags; do not guess a version
 or substitute the core plugin's release number:
 
 ```sh

@@ -14,8 +14,8 @@ description: <One terse sentence: what routes to this skill, the phase count, an
 Read these, or STOP and surface the gap — never guess a command:
 
 - `<project-root>/.codearbiter/<doc>.md` — <what it provides>. Stop if missing; do not guess.
-- `${CLAUDE_PLUGIN_ROOT}/routines/<other-skill>/SKILL.md` — <only if a sibling skill must clear first>.
-- `${CLAUDE_PLUGIN_ROOT}/agents/<agent>.md` — <only if this skill dispatches an agent>.
+- [routines/<other-skill>/SKILL.md](../../<other-skill>/SKILL.md) — <only if a sibling skill must clear first>.
+- [agents/<agent>.md](../../../agents/<agent>.md) — <only if this skill dispatches an agent>.
 
 ## Phase 1 — <title> · gate: BLOCK
 
@@ -47,8 +47,8 @@ House-style reminders (delete before shipping):
 - H1 matches `name`. One-line intro names what routes to it.
 - Each non-declarative phase ends in a one-line `Gate:`.
 - Paths: project state -> `<project-root>/.codearbiter/<doc>`;
-  skills -> `${CLAUDE_PLUGIN_ROOT}/routines/<name>`;
-  agents -> `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`.
+  skills -> [routines/<name>](../../<name>);
+  agents -> [agents/<name>.md](../../../agents/<name>.md).
 - Surviving project docs only: CONTEXT.md, tech-stack.md, coding-standards.md,
   specs/, plans/, security-controls.md, decisions/, overrides.log.
 - Terminology lock: a skill is *routed to*; an agent is *dispatched*.

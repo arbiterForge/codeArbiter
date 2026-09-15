@@ -2,7 +2,7 @@
 var define_CODEARBITER_PI_PERMISSION_POLICY_SURFACES_default = { "ca-plan": "planning-write", codearbiter_background_bash: "background-launch" };
 
 // <define:__CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS__>
-var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "0.80.5": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51", "0.84.1": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
+var define_CODEARBITER_PI_SKILL_EXPANSION_FINGERPRINTS_default = { "0.84.1": "12632f365440b07d5183cff871d889b796a3c711b6b49df20f95d9bc198d6c51" };
 
 // <define:__CODEARBITER_PI_TOOL_CLASSES__>
 var define_CODEARBITER_PI_TOOL_CLASSES_default = { bash: "EXEC", codearbiter_background_bash: "EXEC", codearbiter_dispatch: "EXEC", codearbiter_farm_preview: "EXEC", write: "WRITE", edit: "EDIT", read: "READ" };
@@ -16,7 +16,7 @@ import { fileURLToPath as fileURLToPath5, pathToFileURL as pathToFileURL2 } from
 import { types as utilTypes9 } from "node:util";
 
 // src/compatibility.ts
-var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.80.5", "0.84.1"]);
+var SUPPORTED_PI_VERSIONS = /* @__PURE__ */ new Set(["0.84.1"]);
 var MINIMUM_NODE = [22, 19, 0];
 var SEMVER_PREFIX = /^(\d+)\.(\d+)\.(\d+)(?:$|[-+])/u;
 function atLeast(version, minimum) {
@@ -31,7 +31,7 @@ function atLeast(version, minimum) {
 }
 function compatibilityDirection(input) {
   if (!SUPPORTED_PI_VERSIONS.has(input.piVersion)) {
-    return "codeArbiter requires Pi 0.80.5 or 0.84.1; install a supported Pi version and run /ca-doctor.";
+    return "codeArbiter requires Pi 0.84.1; install a supported Pi version and run /ca-doctor.";
   }
   if (!atLeast(input.nodeVersion, MINIMUM_NODE)) {
     return "codeArbiter requires Node >=22.19.0 for Pi; upgrade Node and run /ca-doctor.";
@@ -1546,10 +1546,14 @@ public static class CodeArbiterJob {
 '@
 try {
   Add-Type -TypeDefinition $source -Language CSharp | Out-Null
+  [Console]::Out.WriteLine('COMPILED')
+  [Console]::Out.Flush()
   $line = [Console]::In.ReadLine()
   if ($null -eq $line -or $line -notmatch '^([1-9][0-9]*) ([1-9][0-9]*)$') { exit 40 }
   [UInt32]$target = $Matches[1]
   [UInt32]$parent = $Matches[2]
+  [Console]::Out.WriteLine('PID_ACCEPTED')
+  [Console]::Out.Flush()
   $job = [CodeArbiterJob]::CreateAndAssign($target)
   if ($job -eq [IntPtr]::Zero) { exit 41 }
   try {
@@ -1642,12 +1646,31 @@ async function awaitProgressTokens(readLine, expected, options) {
   if (idleMs > ceilingMs) throw new Error("progress idleMs must be bounded by the progress ceiling");
   const now = options.now ?? Date.now;
   const deadline = now() + ceilingMs;
+  if (options.windowsJobStages && (expected.length !== 2 || expected[0] !== WINDOWS_JOB_STARTING || expected[1] !== WINDOWS_JOB_READY)) {
+    throw new Error("Windows startup diagnostics require the bounded admission sequence");
+  }
+  let lastStage = "WAITING";
   for (const token of expected) {
-    const remaining = deadline - now();
-    if (remaining <= 0) return Object.freeze({ state: "stalled", phase: token, waitedMs: 0 });
     const started = now();
-    const line = await readLine(Math.min(idleMs, remaining));
-    if (line !== token) return Object.freeze({ state: "stalled", phase: token, waitedMs: now() - started });
+    const phaseDeadline = Math.min(deadline, started + idleMs);
+    const stalled = () => Object.freeze({
+      state: "stalled",
+      phase: token,
+      waitedMs: now() - started,
+      ...options.windowsJobStages ? { lastStage } : {}
+    });
+    const diagnostics = options.windowsJobStages && token === WINDOWS_JOB_READY ? ["COMPILED", "PID_ACCEPTED"] : [];
+    for (const diagnostic of diagnostics) {
+      const remaining2 = phaseDeadline - now();
+      if (remaining2 <= 0) return stalled();
+      if (await readLine(remaining2) !== diagnostic) return stalled();
+      lastStage = diagnostic;
+    }
+    const remaining = phaseDeadline - now();
+    if (remaining <= 0) return stalled();
+    const line = await readLine(remaining);
+    if (line !== token) return stalled();
+    if (options.windowsJobStages && token === WINDOWS_JOB_STARTING) lastStage = "STARTING";
   }
   return Object.freeze({ state: "ready" });
 }
@@ -1831,7 +1854,9 @@ function startWindowsJobGuard(pid, timing) {
   let closePending;
   let armed = false;
   let outputEnded = false;
+  let protocolFailed = false;
   let outputBuffer = "";
+  let queuedOutputBytes = 0;
   const outputLines = [];
   const outputWaiters = [];
   let resolveExitCode;
@@ -1851,7 +1876,11 @@ function startWindowsJobGuard(pid, timing) {
     settleExitCode();
   };
   const readOutputLine = (timeoutMs) => {
-    if (outputLines.length > 0) return Promise.resolve(outputLines.shift());
+    if (outputLines.length > 0) {
+      const { line, bytes } = outputLines.shift();
+      queuedOutputBytes -= bytes;
+      return Promise.resolve(line);
+    }
     if (outputEnded) return Promise.resolve(void 0);
     return new Promise((resolveLine) => {
       let timer;
@@ -1870,8 +1899,11 @@ function startWindowsJobGuard(pid, timing) {
   helper.stdout.setEncoding("utf8");
   helper.stdout.on("data", (chunk) => {
     if (outputEnded) return;
-    outputBuffer += chunk;
-    if (Buffer.byteLength(outputBuffer, "utf8") > MAX_JOB_PROTOCOL_BYTES) {
+    if (queuedOutputBytes + Buffer.byteLength(outputBuffer, "utf8") + Buffer.byteLength(chunk, "utf8") > MAX_JOB_PROTOCOL_BYTES) {
+      protocolFailed = true;
+      outputLines.length = 0;
+      queuedOutputBytes = 0;
+      outputBuffer = "";
       finishOutput();
       try {
         helper.stdin.end();
@@ -1879,13 +1911,17 @@ function startWindowsJobGuard(pid, timing) {
       }
       return;
     }
+    outputBuffer += chunk;
     let newline = outputBuffer.indexOf("\n");
     while (newline >= 0) {
+      const bytes = Buffer.byteLength(outputBuffer.slice(0, newline + 1), "utf8");
       const line = outputBuffer.slice(0, newline).replace(/\r$/u, "");
       outputBuffer = outputBuffer.slice(newline + 1);
       const waiter = outputWaiters.shift();
-      if (waiter === void 0) outputLines.push(line);
-      else waiter(line);
+      if (waiter === void 0) {
+        outputLines.push({ line, bytes });
+        queuedOutputBytes += bytes;
+      } else waiter(line);
       newline = outputBuffer.indexOf("\n");
     }
   });
@@ -1912,8 +1948,9 @@ function startWindowsJobGuard(pid, timing) {
     const finish = (accepted) => {
       if (settled) return false;
       settled = true;
-      resolveReady(accepted);
-      if (!accepted) {
+      const admitted = accepted && !protocolFailed;
+      resolveReady(admitted);
+      if (!admitted) {
         try {
           helper.stdin.end();
         } catch {
@@ -1930,9 +1967,9 @@ function startWindowsJobGuard(pid, timing) {
       if (!intentional) finish(false);
     });
     helper.once("error", () => finish(false));
-    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs }).then((outcome) => {
+    void awaitProgressTokens(readOutputLine, WINDOWS_JOB_READY_TOKENS, { ceilingMs, idleMs, windowsJobStages: true }).then((outcome) => {
       const refused = finish(outcome.state === "ready");
-      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms`;
+      if (refused && outcome.state === "stalled") stallDiagnostic = `stalled at ${outcome.phase} after ${outcome.waitedMs}ms; last startup stage ${outcome.lastStage}`;
     }, () => finish(false));
     try {
       helper.stdin.write(`${pid} ${process.pid}
@@ -1950,7 +1987,7 @@ function startWindowsJobGuard(pid, timing) {
       return stallDiagnostic;
     },
     async arm(rootPid) {
-      if (armed || !positivePid(rootPid) || !await ready || closed) return false;
+      if (armed || !positivePid(rootPid) || !await ready || closed || protocolFailed) return false;
       armed = true;
       const watched = readOutputLine(idleMs);
       const written = await new Promise((resolveWrite) => {
@@ -6844,10 +6881,10 @@ async function collectPiDoctorInput(dependencies) {
 var REMEDIATION = {
   package: "Reinstall ca-pi from the approved pinned Git tag, then restart Pi.",
   trust: "Run /trust in Pi, inspect the project, grant trust only if you accept it, then start a new session.",
-  version: "Upgrade Pi to 0.80.5 or 0.84.1 and Node to >=22.19.0, then restart Pi.",
+  version: "Upgrade Pi to 0.84.1 and Node to >=22.19.0, then restart Pi.",
   python: "Upgrade or install Python 3, then run /ca-doctor again.",
   core: "Reinstall ca-pi to restore the generated shared core, then run /ca-doctor again.",
-  commands: "Remove conflicting command owners or run Pi 0.80.5/0.84.1, then restart Pi and run /ca-doctor.",
+  commands: "Remove conflicting command owners or run Pi 0.84.1, then restart Pi and run /ca-doctor.",
   bridge: "Reinstall ca-pi and Python 3, then run /ca-doctor again.",
   child: "Reinstall ca-pi if the hardened child artifact is missing or tampered, then run /ca-doctor again.",
   "ambient-marker": "Remove CODEARBITER_SUBAGENT from the parent environment and restart Pi.",
@@ -6876,7 +6913,7 @@ function diagnosePi(input) {
   const packageHealthy = input.package.declared && input.package.name === "@arbiterforge/ca-pi" && existsSync(input.package.root) && existsSync(input.package.extensionPath) && samePath2(input.package.extensionPath, expectedExtension) && canonicallyInside(input.package.extensionPath, input.package.root);
   const trustHealthy = input.trust.inspected && (!input.trust.required || input.trust.projectTrusted);
   const waitingForTrust = input.trust.required && !input.trust.projectTrusted;
-  const versionHealthy = ["0.80.5", "0.84.1"].includes(input.runtime.piVersion) && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
+  const versionHealthy = input.runtime.piVersion === "0.84.1" && atLeast(input.runtime.nodeVersion, [22, 19, 0]);
   const piBelowMinimum = !atLeast(input.runtime.piVersion, [0, 80, 5]);
   const supportedExpansion = input.commands.expansionVerifiedVersions.includes(input.runtime.piVersion);
   const expectedDoctorSkill = resolve9(input.package.root, "skills", "ca-doctor", "SKILL.md");
@@ -6997,7 +7034,7 @@ function diagnosePi(input) {
     {
       id: "active-dispatch",
       state: "degraded",
-      message: "Supported Pi 0.80.5/0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
+      message: "Supported Pi 0.84.1 public extension APIs cannot submit this deterministic self-test through the active dispatcher; the wrapper self-test does not exercise active dispatch.",
       remediation: REMEDIATION["active-dispatch"]
     }
   ];
@@ -9722,6 +9759,88 @@ async function appendPiCompactionAudit(record2) {
 }
 
 // src/extension.ts
+var COMMAND_VISIBILITY_ORDER = ["core", "advanced", "alias", "internal", "deprecated"];
+var COMMAND_WORKFLOW_ORDER = [
+  "evaluate",
+  "initialize",
+  "change",
+  "review",
+  "decide",
+  "ship",
+  "operate",
+  "extend",
+  "help"
+];
+function plainRecord2(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value) && Object.getPrototypeOf(value) === Object.prototype;
+}
+function sameStrings2(actual, expected) {
+  return actual.length === expected.length && actual.every((item, index) => item === expected[index]);
+}
+function validLegacyRoutes(value) {
+  return Array.isArray(value) && value.every((item) => typeof item === "string" && /^[a-z][a-z0-9-]*$/u.test(item)) && new Set(value).size === value.length && sameStrings2(value, [...value].sort());
+}
+function commandCatalogEntries(value) {
+  const envelopeKeys = ["commands", "compatibility", "schemaVersion", "visibilityOrder", "workflowOrder"];
+  if (!plainRecord2(value) || !sameStrings2(Object.keys(value).sort(), envelopeKeys) || value.schemaVersion !== 1 || !Array.isArray(value.visibilityOrder) || !sameStrings2(value.visibilityOrder, COMMAND_VISIBILITY_ORDER) || !Array.isArray(value.workflowOrder) || !sameStrings2(value.workflowOrder, COMMAND_WORKFLOW_ORDER) || !plainRecord2(value.compatibility) || !plainRecord2(value.commands)) {
+    throw new Error("codeArbiter Pi command catalog envelope is invalid; run /ca-doctor.");
+  }
+  const commands = value.commands;
+  const names = Object.keys(commands);
+  if (!sameStrings2(names, [...names].sort()) || names.length === 0) {
+    throw new Error("codeArbiter Pi command catalog envelope has no sorted commands; run /ca-doctor.");
+  }
+  const entries = [];
+  for (const name of names) {
+    const fail2 = () => {
+      throw new Error(`codeArbiter Pi command catalog entry ${name} is invalid; run /ca-doctor.`);
+    };
+    const value2 = commands[name];
+    if (!plainRecord2(value2)) {
+      throw new Error(`codeArbiter Pi command catalog entry ${name} is invalid; run /ca-doctor.`);
+    }
+    const raw = value2;
+    if (raw.name !== name || typeof raw.description !== "string" || raw.description === "" || raw.skillPath !== `skills/ca-${name}/SKILL.md` || !COMMAND_VISIBILITY_ORDER.includes(raw.visibility) || !COMMAND_WORKFLOW_ORDER.includes(raw.workflow)) {
+      fail2();
+    }
+    const visibility = raw.visibility;
+    const commonKeys = ["description", "name", "skillPath", "visibility", "workflow"];
+    let expectedKeys;
+    if (visibility === "core" || visibility === "advanced" || visibility === "internal") {
+      expectedKeys = [...commonKeys, "canonical", "legacyRoutes"].sort();
+      if (raw.canonical !== name || !validLegacyRoutes(raw.legacyRoutes)) fail2();
+    } else if (visibility === "alias") {
+      expectedKeys = [...commonKeys, "canonical", "replacement"].sort();
+      if (typeof raw.canonical !== "string" || !/^[a-z][a-z0-9-]*$/u.test(raw.canonical) || typeof raw.replacement !== "string" || !raw.replacement.startsWith(`${raw.canonical} `)) fail2();
+    } else {
+      expectedKeys = [...commonKeys, "replacement"].sort();
+      if (typeof raw.replacement !== "string" || raw.replacement === "") fail2();
+    }
+    if (!sameStrings2(Object.keys(raw).sort(), expectedKeys)) fail2();
+    entries.push(Object.freeze({ ...raw }));
+  }
+  const entriesByName = new Map(entries.map((entry) => [entry.name, entry]));
+  const expectedLegacyRoutes = /* @__PURE__ */ new Map();
+  for (const entry of entries) {
+    if (entry.visibility === "alias") {
+      const target = entriesByName.get(entry.canonical);
+      if (target === void 0 || target.visibility === "alias" || target.visibility === "deprecated") {
+        throw new Error(`codeArbiter Pi command catalog entry ${entry.name} has an invalid alias target; run /ca-doctor.`);
+      }
+      const routes = expectedLegacyRoutes.get(entry.canonical) ?? [];
+      routes.push(entry.name);
+      expectedLegacyRoutes.set(entry.canonical, routes);
+    }
+  }
+  for (const entry of entries) {
+    if (entry.visibility === "alias" || entry.visibility === "deprecated") continue;
+    const expected = (expectedLegacyRoutes.get(entry.name) ?? []).sort();
+    if (!sameStrings2(entry.legacyRoutes ?? [], expected)) {
+      throw new Error(`codeArbiter Pi command catalog entry ${entry.name} has broken legacy-route closure; run /ca-doctor.`);
+    }
+  }
+  return Object.freeze(entries);
+}
 var PI_TRUST_REQUIRED_STATUS = "codeArbiter host: pi waiting for project trust - run /trust in Pi, approve this project, then start a new session";
 function hasAffirmativeProjectTrust(context) {
   try {
@@ -10257,7 +10376,9 @@ async function codeArbiterPi(pi) {
     if (parent === packageRoot) throw new Error("codeArbiter could not locate the ca-pi package; run /ca-doctor.");
     packageRoot = parent;
   }
-  const catalog = JSON.parse(await readFile6(resolve15(packageRoot, "generated", "command-catalog.json"), "utf8"));
+  const catalog = commandCatalogEntries(
+    JSON.parse(await readFile6(resolve15(packageRoot, "generated", "command-catalog.json"), "utf8"))
+  );
   const toolClasses = loadPiToolClasses(define_CODEARBITER_PI_TOOL_CLASSES_default);
   const rawPermissionSurfaces = define_CODEARBITER_PI_PERMISSION_POLICY_SURFACES_default;
   if (rawPermissionSurfaces === null || typeof rawPermissionSurfaces !== "object" || Array.isArray(rawPermissionSurfaces)) {
@@ -10467,7 +10588,7 @@ async function codeArbiterPi(pi) {
         activeTools: pi.getActiveTools(),
         allTools: pi.getAllTools(),
         expansionFingerprints,
-        childFingerprint: "c9573777b4c59abfb4adbe6879fc03de7f7962327d97c378c2fb71d300a4e22f"
+        childFingerprint: "22e5231b36a0af4a4202ced48a20e7dc9de435b6c6af985c6007bff96c5e04d1"
       });
       const wrapperSelfTest = await runPiWrapperSelfTest({
         enabled: enabledForDoctor,
@@ -10532,6 +10653,7 @@ export {
   PERSONA_SENTINEL,
   PI_RUNTIME_DIAGNOSIS,
   boundedPiEnvironment,
+  commandCatalogEntries,
   compatibilityDirection,
   createCodeArbiterPi,
   createPiFooterMetricsLoader,

@@ -27,12 +27,20 @@ class PermissionPolicy:
 
 
 @dataclass(frozen=True)
+class RootContract:
+    ordinary_markdown: str
+    hook_token: str | None
+    legacy_corroboration: str | None
+
+
+@dataclass(frozen=True)
 class HostDescriptor:
     name: str
     plugin_dir: str
     hooks_dir: str
     command_form: str
     tokens: Mapping[str, str]
+    root_contract: RootContract
     capabilities: Mapping[str, bool]
     surface_rules: tuple[SurfaceRule, ...]
     managed_subtrees: tuple[str, ...]
@@ -49,7 +57,7 @@ class DescriptorError(ValueError):
 _ROOT_KEYS = frozenset({"hosts"})
 _HOST_KEYS = frozenset({
     "name", "plugin_dir", "hooks_dir", "command_form", "tokens",
-    "capabilities", "surface", "tool_classes", "permission_policy", "package",
+    "root_contract", "capabilities", "surface", "tool_classes", "permission_policy", "package",
 })
 _HOST_REQUIRED_KEYS = _HOST_KEYS - {"permission_policy"}
 _SURFACE_KEYS = frozenset({"rules", "managed_subtrees", "catalog"})
@@ -58,6 +66,10 @@ _RULE_KEYS = frozenset({
     "source_prefix", "output_pattern", "exclude", "add_skill_frontmatter",
 })
 _TOKENS = frozenset({"PLUGIN_ROOT", "PROJECT_DIR"})
+_ROOT_CONTRACT_KEYS = frozenset({
+    "ordinary_markdown", "hook_token", "legacy_corroboration",
+})
+_ORDINARY_MARKDOWN_MODES = frozenset({"host-native", "relative", "file-relative"})
 _TOOL_CLASSES = frozenset({"EXEC", "WRITE", "EDIT", "READ", "OTHER"})
 _PERMISSION_ACTIONS = frozenset({
     "read", "inspection", "source-write", "source-edit", "config-write",
@@ -159,6 +171,50 @@ def _bool_mapping(value, where):
     return MappingProxyType(out)
 
 
+def _root_contract(value, where, name, tokens):
+    value = _mapping(value, where)
+    _keys(value, _ROOT_CONTRACT_KEYS, where)
+    ordinary_markdown = _string(value["ordinary_markdown"], f"{where}.ordinary_markdown")
+    if ordinary_markdown not in _ORDINARY_MARKDOWN_MODES:
+        raise DescriptorError(
+            f"{where}.ordinary_markdown: noncanonical mode {ordinary_markdown!r}"
+        )
+    hook_token = value["hook_token"]
+    legacy_corroboration = value["legacy_corroboration"]
+    if hook_token is not None:
+        hook_token = _string(hook_token, f"{where}.hook_token")
+    if legacy_corroboration is not None:
+        legacy_corroboration = _string(
+            legacy_corroboration, f"{where}.legacy_corroboration"
+        )
+    if name == "claude":
+        if (ordinary_markdown, hook_token, legacy_corroboration) != (
+            "host-native", "${CLAUDE_PLUGIN_ROOT}", None
+        ):
+            raise DescriptorError(f"{where}: Claude must retain its native root contract")
+    elif name == "codex":
+        if (ordinary_markdown, hook_token, legacy_corroboration) != (
+            "relative", "${PLUGIN_ROOT}", "${CLAUDE_PLUGIN_ROOT}"
+        ):
+            raise DescriptorError(
+                f"{where}: Codex requires native hook root, relative Markdown, "
+                "and legacy corroboration"
+            )
+        if tokens["PLUGIN_ROOT"] != hook_token:
+            raise DescriptorError(
+                f"{where}: Codex PLUGIN_ROOT token must be native hook authority"
+            )
+    elif name == "pi" and (ordinary_markdown, hook_token, legacy_corroboration) != (
+        "file-relative", None, None
+    ):
+        raise DescriptorError(f"{where}: Pi must retain file-relative root semantics")
+    return RootContract(
+        ordinary_markdown=ordinary_markdown,
+        hook_token=hook_token,
+        legacy_corroboration=legacy_corroboration,
+    )
+
+
 def _freeze(value, where):
     if isinstance(value, dict):
         return MappingProxyType({str(key): _freeze(item, f"{where}.{key}")
@@ -237,6 +293,9 @@ def _host(value, index):
     tokens = _string_mapping(value["tokens"], f"{where}.tokens")
     if frozenset(tokens) != _TOKENS:
         raise DescriptorError(f"{where}.tokens: keys must be PLUGIN_ROOT and PROJECT_DIR")
+    root_contract = _root_contract(
+        value["root_contract"], f"{where}.root_contract", name, tokens
+    )
     package = value["package"]
     if package is not None:
         package = _freeze(_mapping(package, f"{where}.package"), f"{where}.package")
@@ -251,6 +310,7 @@ def _host(value, index):
         hooks_dir=_relative_path(value["hooks_dir"], f"{where}.hooks_dir"),
         command_form=_command_form(value["command_form"], f"{where}.command_form"),
         tokens=tokens,
+        root_contract=root_contract,
         capabilities=_bool_mapping(value["capabilities"], f"{where}.capabilities"),
         surface_rules=tuple(_rule(rule, f"{where}.surface.rules[{number}]")
                             for number, rule in enumerate(rules)),

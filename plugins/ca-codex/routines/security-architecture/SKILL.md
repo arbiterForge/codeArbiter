@@ -38,7 +38,7 @@ Walk the surface from Phase 1 through STRIDE. For each relevant category, name t
 
 Mark each threat's mitigation `PRESENT`, `PLANNED`, or `GAP`. Skip a category only with a one-line reason it does not apply.
 
-If the threat depends on auth, crypto, key handling, or secrets, MAY dispatch `${CLAUDE_PLUGIN_ROOT}/agents/auth-crypto-reviewer.md`. For broader boundary or surface concerns, MAY dispatch `${CLAUDE_PLUGIN_ROOT}/agents/security-reviewer.md`. Both govern by `security-controls.md`.
+If the threat depends on auth, crypto, key handling, or secrets, MAY dispatch [agents/auth-crypto-reviewer.md](../../agents/auth-crypto-reviewer.md). For broader boundary or surface concerns, MAY dispatch [agents/security-reviewer.md](../../agents/security-reviewer.md). Both govern by `security-controls.md`.
 
 Gate: STOP only on a genuinely critical unmitigated threat — a `GAP` that is exploitable now with high impact. Lesser gaps are surfaced as constraints, not stops.
 

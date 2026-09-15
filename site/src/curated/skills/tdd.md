@@ -7,7 +7,7 @@ gates:
     effect: every verifiable claim about the change — spec, contract, or security — must be listed with a source and status before implementation starts
   - gate: red
     when: before implementation
-    effect: a failing test must exist for every obligation, failing for the right reason, with every pre-existing test still green
+    effect: a failing test must exist for every obligation, failing for the right reason, with every affected pre-existing test still green
   - gate: obligation verify
     when: after the implementation is green
     effect: every obligation must move to a genuinely covered state backed by a real passing test, or the workflow loops back to write one
@@ -26,12 +26,15 @@ coverage and cleanliness before the change is eligible for the commit gate.
 1. Derive every obligation the change must satisfy from the spec, the contract, and — where
    relevant — the security boundary, before any code is written.
 2. Write a failing test for each obligation, confirming it fails for the right reason and that
-   every pre-existing test still passes.
+   every affected pre-existing test still passes.
 3. Write the minimum implementation that satisfies those tests, without weakening any assertion.
 4. Walk the obligation list again, moving each to genuinely covered by a real passing test, or
    looping back to write one for anything missing.
 5. Confirm coverage meets the project's current maturity-scaled threshold.
 6. Run lint and type-checking with zero errors outstanding.
+
+The contributor loop uses impact-bounded local verification. Exhaustive exact-head hosted CI remains
+mandatory before merge.
 
 ## Exits
 

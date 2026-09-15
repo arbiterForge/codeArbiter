@@ -7,7 +7,7 @@ gates:
     effect: the request must sort cleanly into docs, deps, or revert; a behavioral change beyond that scope redirects to feature or fix
   - gate: type-scaled checks
     when: after classification
-    effect: docs gets a copy pass and a secrets scan; deps gets a dependency review and a full green suite; revert gets a clean git revert and a full green suite
+    effect: docs gets a copy pass and a secrets scan; deps gets dependency review plus affected tests; revert gets a clean git revert plus affected regression tests; exhaustive exact-head proof runs in hosted CI
   - gate: commit-gate
     when: after the type's checks pass
     effect: the change still exits through the standard commit gate and lands via branch and PR
@@ -19,8 +19,9 @@ This is the lane for changes with no behavior to test-drive — prose edits, a v
 existing dependency, or backing out a named commit. Each of the three types gets exactly the checks
 it needs and nothing more: a docs edit gets a secrets scan and a copy pass instead of a demand for
 failing tests that would never exist for prose; a dependency bump gets the same vetting `/ca:add-dep`
-applies plus a full suite run; a revert has to be a real `git revert`, never a hand-edited backout,
-and also needs the suite green afterward. Anything that smuggles in a behavioral code change gets
+applies plus impact-bounded local tests; a revert has to be a real `git revert`, never a hand-edited
+backout, and also needs the affected regression tests green afterward. Exhaustive cross-platform
+proof remains mandatory in exact-head hosted CI before merge. Anything that smuggles in a behavioral code change gets
 redirected — this lane exists precisely to keep TDD ceremony off changes that have nothing to test.
 
 ## Usage
@@ -39,7 +40,8 @@ Name the type first, then the docs description, the dependency to bump, or the c
 Classified: deps.
 Dispatching dependency-reviewer... license MIT (unchanged), no new transitive risk, changelog reviewed.
 Manifest and lockfile updated together.
-Running full suite... 412 passed, 0 failed.
+Running affected dependency and contract tests... 42 passed, 0 failed.
+Exhaustive exact-head GitHub Actions checks remain required before merge.
 Routing to commit-gate (classification: chore)...
 ```
 

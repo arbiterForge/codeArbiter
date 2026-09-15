@@ -160,6 +160,22 @@ class TestSuitesStayInsideTheirTempDirs(unittest.TestCase):
             with self.subTest(suite=name):
                 self.assert_home_untouched(name, command)
 
+    def test_color_suites_isolate_and_restore_ambient_no_color(self):
+        # Color assertions must establish their own rendering environment;
+        # intentional NO_COLOR behavior is still tested inside these modules.
+        for value in ("", "1"):
+            with self.subTest(no_color=value):
+                script = (
+                    "import os,sys,unittest;"
+                    f"os.environ['NO_COLOR']={value!r};"
+                    "sys.path.insert(0,'plugins/ca/hooks/tests');"
+                    "suite=unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromName(name) "
+                    "for name in ('test_colorlib','test_statusline')]);"
+                    "result=unittest.TextTestRunner().run(suite);"
+                    f"assert os.environ.get('NO_COLOR')=={value!r}, 'ambient NO_COLOR was not restored';"
+                    "sys.exit(not result.wasSuccessful())")
+                self.assert_home_untouched("color environment isolation", [sys.executable, "-c", script])
+
 
 class TestTheSuiteLeaksNoHandlesOrProcesses(unittest.TestCase):
     """Issue #462 — the intermittent-red half.

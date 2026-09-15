@@ -1,0 +1,8 @@
+{
+  "name": "@codearbiter/pi-host-0.84.1",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.1"
+  }
+}

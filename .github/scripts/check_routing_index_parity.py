@@ -68,6 +68,8 @@ import re
 import sys
 from pathlib import Path
 
+from codex_agent_routes import validate_agent_routes
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _LINK_ROW_RE = re.compile(r"^\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|")
@@ -241,7 +243,16 @@ def check(repo: Path = REPO_ROOT) -> tuple[list[str], dict]:
     so a CI log line can prove the check executed rather than passing on an
     empty comparison."""
     errors: list[str] = []
-    stats = {"surfaces": 0, "skills_checked": 0, "agents_checked": 0, "routing_rows_checked": 0}
+    stats = {
+        "surfaces": 0,
+        "skills_checked": 0,
+        "agents_checked": 0,
+        "routing_rows_checked": 0,
+        "codex_literal_route_lines": 0,
+        "codex_literal_route_occurrences": 0,
+        "codex_generic_route_lines": 0,
+        "codex_generic_route_occurrences": 0,
+    }
 
     core_agents_index = repo / "core" / "surface" / "agents" / "INDEX.md"
     core_agent_names = {n for n, _ in parse_link_rows(read(core_agents_index))}
@@ -250,7 +261,7 @@ def check(repo: Path = REPO_ROOT) -> tuple[list[str], dict]:
     surfaces = [
         ("core/surface", repo / "core" / "surface", "skills", True),
         ("plugins/ca", repo / "plugins" / "ca", "skills", True),
-        ("plugins/ca-codex", repo / "plugins" / "ca-codex", "routines", False),
+        ("plugins/ca-codex", repo / "plugins" / "ca-codex", "routines", True),
         ("plugins/ca-pi", repo / "plugins" / "ca-pi", "routines", True),
     ]
 
@@ -291,6 +302,14 @@ def check(repo: Path = REPO_ROOT) -> tuple[list[str], dict]:
             stats["agents_checked"] += len(agent_names)
             known_names |= agent_names
 
+        if label == "plugins/ca-codex":
+            route_errors, route_stats = validate_agent_routes(root)
+            errors += [f"{label}/{error}" for error in route_errors]
+            stats["codex_literal_route_lines"] = route_stats["literal_route_lines"]
+            stats["codex_literal_route_occurrences"] = route_stats["literal_route_occurrences"]
+            stats["codex_generic_route_lines"] = route_stats["generic_route_lines"]
+            stats["codex_generic_route_occurrences"] = route_stats["generic_route_occurrences"]
+
         # ca-codex additionally ships a second, unrelated index: the
         # command-wrapper skills under skills/ (distinct from routines/).
         if label == "plugins/ca-codex":
@@ -325,7 +344,11 @@ def main() -> int:
         f"routing/index parity: checked {stats['surfaces']} surfaces, "
         f"{stats['skills_checked']} skill/routine/wrapper entries, "
         f"{stats['agents_checked']} agent entries, "
-        f"{stats['routing_rows_checked']} routing-table rows"
+        f"{stats['routing_rows_checked']} routing-table rows, "
+        f"{stats['codex_literal_route_lines']} Codex literal-route lines/"
+        f"{stats['codex_literal_route_occurrences']} occurrences, "
+        f"{stats['codex_generic_route_lines']} generic-route lines/"
+        f"{stats['codex_generic_route_occurrences']} occurrences"
     )
     if errors:
         print("::error::INDEX/routing-surface drift detected:")

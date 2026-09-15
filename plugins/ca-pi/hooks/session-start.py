@@ -885,7 +885,7 @@ def update_notice_line(plugin):
     no network call itself."""
     try:
         state = _updatelib.read_state(_updatelib.state_path())
-        latest = state.get("latest") if isinstance(state, dict) else None
+        latest = _updatelib.target_state(state).get("latest")
         installed = _updatelib.installed_version(plugin)
         return _updatelib.notice_line(installed, latest) or ""
     except Exception:  # noqa: BLE001 — never crash session startup
@@ -1080,10 +1080,11 @@ def emit_update_notice(update_line):
 
 
 def emit_trailer(host):
-    """AC-32: the await-a-command trailer + catalog reference. ARBITER-ONLY —
+    """AC-32: the continue-or-await trailer + catalog reference. ARBITER-ONLY —
     the caller omits this emitter entirely for a non-arbiter startup (a mode
-    with no commands has nothing to 'await')."""
-    print(f"Present this state, then await a {host.command_noun}. "
+    with no commands has no command catalog to reference)."""
+    print("Present this state. Continue any active authorized work or accompanying "
+          f"user request; otherwise await a {host.command_noun}. "
           f"Type {host.cmd_ref('commands')} for the catalog.")
 
 
@@ -1221,7 +1222,7 @@ def main():
     # --- Startup-state block: per-mode composable emitters (T-44) ---------
     # AC-30: each emitter below is individually callable with only its own
     # explicit inputs. AC-32: host/stage/active-mode are unconditional in
-    # every mode; the await-a-command trailer and the daily briefing (which
+    # every mode; the continue-or-await trailer and the daily briefing (which
     # references {standup}) are ARBITER-ONLY.
     print("=== codeArbiter startup state ===")
     # observability-004 (#268): name the RESOLVED host so a dormant/broken

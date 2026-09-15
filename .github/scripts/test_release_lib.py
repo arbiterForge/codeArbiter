@@ -46,6 +46,7 @@ proof still lived only against the old, unmodified shim:
   CoreEscapeHatchWrappingTest     M5 — non-string input / unreadable path stay in-hierarchy
 """
 
+import contextlib
 import importlib.util
 import inspect
 import io
@@ -1854,6 +1855,492 @@ class SeriesIsolationTest(unittest.TestCase):
                 with self.subTest(target=row["target"], other=other_prefix):
                     self.assertFalse(chosen.startswith(other_prefix))
 
+    def test_release_series_rejects_noncanonical_numeric_identifiers(self):
+        tags = ["v1.2.3", "v02.0.0", "v١٠.٠.٠"]
+        self.assertEqual(
+            core_releaselib.last_tag_select(tags, "v"), "v1.2.3")
+
+
+class NumericSequenceParserTest(unittest.TestCase):
+    """AC-01/03: policy declarations are explicit and fail closed."""
+
+    _BASE = ("<!-- release-targets -->\n[app]\n"
+             "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n")
+
+    def _parse(self, extra=""):
+        return core_releaselib.parse_release_targets(
+            self._BASE + extra + "<!-- /release-targets -->\n")[0]
+
+    def test_omitted_policy_preserves_the_semver_default(self):
+        row = self._parse()
+        self.assertEqual(row["version_policy"], "semver")
+        self.assertIsNone(row["initial_version"])
+
+    def test_numeric_sequence_requires_a_valid_fixed_shape_initial_version(self):
+        row = self._parse(
+            "version-policy: numeric-sequence\ninitial-version: 0.1\n")
+        self.assertEqual(row["version_policy"], "numeric-sequence")
+        self.assertEqual(row["initial_version"], "0.1")
+
+        for initial in ("", "0", "01.2", "1.02", "1.2.3-beta", "1.two"):
+            with self.subTest(initial=initial):
+                declaration = "version-policy: numeric-sequence\n"
+                if initial != "":
+                    declaration += f"initial-version: {initial}\n"
+                with self.assertRaises(core_releaselib.MalformedBlockError):
+                    self._parse(declaration)
+
+    def test_unknown_policy_and_policy_incompatible_initial_version_are_rejected(self):
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            self._parse("version-policy: calendar\n")
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            self._parse("version-policy: semver\ninitial-version: 1.2.3\n")
+
+    def test_scratch_exclusions_cover_every_declared_surface_field(self):
+        scalar_fields = ("changelog", "provenance_manifest")
+        list_fields = ("manifest", "generated_manifest", "artifacts",
+                       "release_assets")
+        scratches = (
+            ".codearbiter/gate-events.log",
+            ".codearbiter/.markers",
+        )
+        for scratch in scratches:
+            for field in scalar_fields + list_fields:
+                with self.subTest(scratch=scratch, field=field):
+                    row = core_releaselib._new_row("app")
+                    row["payload"] = "src/"
+                    value = scratch + ("/receipt" if scratch.endswith(".markers") else "")
+                    row[field] = value if field in scalar_fields else [value]
+                    self.assertNotIn(
+                        scratch,
+                        core_releaselib.governance_scratch_exclusions(row))
+
+    def test_scratch_overlap_is_casefolded_and_globs_fail_closed(self):
+        for payload in (
+                ".CODEARBITER", ".codearbiter/*", ":(top).codearbiter",
+                ".codearbiter/gate-events.log src/"):
+            with self.subTest(payload=payload):
+                row = core_releaselib._new_row("app")
+                row["payload"] = payload
+                self.assertEqual(
+                    core_releaselib.governance_scratch_exclusions(row), [])
+
+        row = core_releaselib._new_row("app")
+        row["payload"] = "src/"
+        row["manifest"] = [".codearbiter./gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row), [])
+
+        row["manifest"] = [".codearbiter/GATE-E~1.LOG"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row), [])
+
+    def test_payload_exclude_subtracts_payload_but_direct_surfaces_win(self):
+        row = core_releaselib._new_row("app")
+        row["payload"] = "."
+        row["payload_exclude"] = [".CODEARBITER/"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/gate-events.log", ".codearbiter/.markers"])
+
+        row["payload_exclude"] = [".codearbiter/gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/gate-events.log"])
+
+        for exclusion in (
+                ".codearbiter/*", ":(top).codearbiter",
+                ".codearbiter/gate-events.log src/", ".codearbiter./",
+                ".codearbiter/gate-events.log.bak"):
+            with self.subTest(exclusion=exclusion):
+                row["payload_exclude"] = [exclusion]
+                self.assertEqual(
+                    core_releaselib.governance_scratch_exclusions(row), [])
+
+        row["payload_exclude"] = [".codearbiter/"]
+        row["manifest"] = [".CODEARBITER/gate-events.log"]
+        self.assertEqual(
+            core_releaselib.governance_scratch_exclusions(row),
+            [".codearbiter/.markers"])
+
+
+class NumericSequenceVersionPolicyTest(unittest.TestCase):
+    """AC-01/02/04/10: generic fixed-shape sequencing and SemVer parity."""
+
+    def test_numeric_key_accepts_only_canonical_fixed_shape_values(self):
+        self.assertEqual(
+            core_releaselib.numeric_sequence_key("0.31", "0.1"), (0, 31))
+        for candidate in ("0.31.0", "00.31", "0.031", "0.-1", "0.x", "0"):
+            with self.subTest(candidate=candidate):
+                self.assertIsNone(
+                    core_releaselib.numeric_sequence_key(candidate, "0.1"))
+
+    def test_selects_highest_same_shape_tag_and_ignores_malformed_candidates(self):
+        tags = [
+            "preview-0.9", "preview-0.30", "preview-0.31",
+            "preview-0.032", "preview-0.31.1", "preview-1", "v9.9.9",
+        ]
+        self.assertEqual(
+            core_releaselib.last_tag_select_for_policy(
+                tags, "preview-", "numeric-sequence", "0.1"),
+            "preview-0.31")
+
+    def test_first_release_uses_initial_then_each_later_release_advances_once(self):
+        self.assertEqual(
+            core_releaselib.derive_version(
+                core_releaselib.NONE_SENTINEL, "minor",
+                "numeric-sequence", "0.30"),
+            "0.30")
+        self.assertEqual(
+            core_releaselib.derive_version(
+                "0.30", "patch", "numeric-sequence", "0.1"),
+            "0.31")
+        self.assertEqual(
+            core_releaselib.derive_version(
+                "0.31", "major", "numeric-sequence", "0.1"),
+            "0.32")
+
+    def test_one_unchanged_parsed_declaration_drives_consecutive_releases(self):
+        text = (
+            "<!-- release-targets -->\n[preview]\n"
+            "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n"
+            "version-policy: numeric-sequence\ninitial-version: 0.30\n"
+            "<!-- /release-targets -->\n")
+        row = core_releaselib.parse_release_targets(text)[0]
+        selected = core_releaselib.last_tag_select_for_policy(
+            ["preview-0.29", "preview-0.30"], row["prefix"],
+            row["version_policy"], row["initial_version"])
+        first_base = selected[len(row["prefix"]):]
+        first_next = core_releaselib.derive_version(
+            first_base, "patch", row["version_policy"], row["initial_version"])
+        second_next = core_releaselib.derive_version(
+            first_next, "minor", row["version_policy"], row["initial_version"])
+        self.assertEqual((selected, first_next, second_next),
+                         ("preview-0.30", "0.31", "0.32"))
+
+    def test_every_bumping_word_advances_numeric_sequence_but_none_refuses(self):
+        for word in ("patch", "minor", "major"):
+            with self.subTest(word=word):
+                self.assertEqual(
+                    core_releaselib.derive_version(
+                        "2.9", word, "numeric-sequence", "0.1"),
+                    "2.10")
+        self.assertIsNone(
+            core_releaselib.derive_version(
+                "2.9", "none", "numeric-sequence", "0.1"))
+
+    def test_regressing_or_shape_changing_floor_is_refused(self):
+        self.assertFalse(
+            core_releaselib.version_greater(
+                "0.30", "0.31", "numeric-sequence", "0.1"))
+        self.assertFalse(
+            core_releaselib.version_greater(
+                "0.32.0", "0.31", "numeric-sequence", "0.1"))
+        self.assertTrue(
+            core_releaselib.version_greater(
+                "0.32", "0.31", "numeric-sequence", "0.1"))
+
+    def test_initial_version_constrains_candidate_not_a_lower_historical_floor(self):
+        self.assertTrue(
+            core_releaselib.version_greater(
+                "0.30", "0.29", "numeric-sequence", "0.30"))
+        self.assertFalse(
+            core_releaselib.version_greater(
+                "0.29", "0.28", "numeric-sequence", "0.30"))
+
+    def test_three_component_numeric_sequence_preserves_shape(self):
+        tags = ["train-1.0.9", "train-1.0.10", "train-1.00.11", "train-1.1"]
+        self.assertEqual(
+            core_releaselib.last_tag_select_for_policy(
+                tags, "train-", "numeric-sequence", "1.0.0"),
+            "train-1.0.10")
+        self.assertEqual(
+            core_releaselib.derive_version(
+                "1.0.10", "major", "numeric-sequence", "1.0.0"),
+            "1.0.11")
+
+    def test_default_policy_delegates_to_existing_semver_behavior(self):
+        tags = ["v1.9.9", "v2.0.0", "v2.0.1-rc.1"]
+        self.assertEqual(
+            core_releaselib.last_tag_select_for_policy(tags, "v"),
+            core_releaselib.last_tag_select(tags, "v"))
+        self.assertEqual(
+            core_releaselib.derive_version("2.3.4", "minor"),
+            core_releaselib.apply_bump("2.3.4", "minor"))
+        self.assertEqual(
+            core_releaselib.version_greater("2.4.0", "2.3.4"),
+            core_releaselib.semver_greater("2.4.0", "2.3.4"))
+
+
+class NumericSequenceCLITest(unittest.TestCase):
+    """AC-01/02/04/10: scheme-aware helpers are available to release prose."""
+
+    def _run(self, *args, stdin=""):
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, *args], input=stdin,
+            capture_output=True, text=True, cwd=REPO_ROOT)
+
+    def test_scheme_aware_cli_selects_compares_and_derives_numeric_versions(self):
+        selected = self._run(
+            "last-tag-for-policy", "preview-", "numeric-sequence", "0.1",
+            stdin="preview-0.30\npreview-0.31\npreview-0.032\n")
+        self.assertEqual(selected.returncode, 0, selected.stderr)
+        self.assertEqual(selected.stdout, "preview-0.31\n")
+
+        compared = self._run(
+            "version-greater", "0.32", "0.31", "numeric-sequence", "0.1")
+        self.assertEqual(compared.returncode, 0, compared.stderr)
+
+        derived = self._run(
+            "derive-version", "0.31", "minor", "numeric-sequence", "0.1")
+        self.assertEqual(derived.returncode, 0, derived.stderr)
+        self.assertEqual(derived.stdout, "0.32\n")
+
+    def test_scheme_aware_cli_refuses_bad_policy_state(self):
+        cases = (
+            ("version-greater", "0.32.0", "0.31", "numeric-sequence", "0.1"),
+            ("derive-version", "0.31", "none", "numeric-sequence", "0.1"),
+            ("derive-version", "0.31", "patch", "calendar", "0.1"),
+        )
+        for args in cases:
+            with self.subTest(args=args):
+                proc = self._run(*args)
+                self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+                self.assertEqual(proc.stdout, "")
+
+    def test_version_greater_cli_distinguishes_comparison_from_invalid_policy_state(self):
+        for candidate, floor in (("0.31", "0.31"), ("0.30", "0.31")):
+            with self.subTest(candidate=candidate, floor=floor):
+                proc = self._run(
+                    "version-greater", candidate, floor,
+                    "numeric-sequence", "0.30")
+                self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        for candidate, floor in (("0.29", "0.28"), ("0.31.0", "0.30")):
+            with self.subTest(candidate=candidate, floor=floor):
+                proc = self._run(
+                    "version-greater", candidate, floor,
+                    "numeric-sequence", "0.30")
+                self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
+
+    def test_scheme_aware_cli_default_semver_matches_existing_commands(self):
+        tags = "v1.9.9\nv2.0.0\nv2.0.1-rc.1\n"
+        selected = self._run(
+            "last-tag-for-policy", "v", "semver", "", stdin=tags)
+        self.assertEqual(selected.returncode, 0, selected.stderr)
+        self.assertEqual(selected.stdout, "v2.0.0\n")
+        compared = self._run(
+            "version-greater", "2.4.0", "2.3.4", "semver", "")
+        self.assertEqual(compared.returncode, 0, compared.stderr)
+        derived = self._run(
+            "derive-version", "2.3.4", "minor", "semver", "")
+        self.assertEqual(derived.returncode, 0, derived.stderr)
+        self.assertEqual(derived.stdout, "2.4.0\n")
+
+    def test_show_row_reads_new_policy_fields_without_changing_legacy_output(self):
+        declaration = (
+            "<!-- release-targets -->\n[preview]\n"
+            "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n"
+            "version-policy: numeric-sequence\ninitial-version: 0.30\n"
+            "<!-- /release-targets -->\n")
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                      "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(declaration)
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=root)
+            policy = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "show-row", "preview",
+                 "--field", "version-policy"],
+                capture_output=True, text=True, env=env)
+            initial = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "show-row", "preview",
+                 "--field", "initial-version"],
+                capture_output=True, text=True, env=env)
+            legacy = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "show-row", "preview"],
+                capture_output=True, text=True, env=env)
+        self.assertEqual(policy.returncode, 0, policy.stderr)
+        self.assertEqual(policy.stdout, "numeric-sequence\n")
+        self.assertEqual(initial.returncode, 0, initial.stderr)
+        self.assertEqual(initial.stdout, "0.30\n")
+        self.assertEqual(legacy.returncode, 0, legacy.stderr)
+        self.assertNotIn("VERSION_POLICY", legacy.stdout)
+        self.assertNotIn("INITIAL_VERSION", legacy.stdout)
+
+
+class DeclaredVersionChangelogTest(unittest.TestCase):
+    """AC-12: changelog and notes helpers honor the declared version shape."""
+
+    _CHANGELOG = (
+        "# Changelog\n\n"
+        "## [Unreleased]\n\n- pending\n\n"
+        "## [0.31] - 2026-09-13\n\n### Added\n\n- preview feature\n\n"
+        "## [0.30] - 2026-09-01\n\n### Fixed\n\n- older fix\n")
+
+    def test_numeric_sequence_extracts_and_validates_matching_notes(self):
+        section = core_releaselib.changelog_section(
+            self._CHANGELOG, "0.31", "numeric-sequence", "0.1")
+        self.assertEqual(
+            section,
+            "## [0.31] - 2026-09-13\n\n### Added\n\n- preview feature\n")
+        self.assertTrue(core_releaselib.notes_heading_matches(
+            section, "preview-0.31", "numeric-sequence", "0.1"))
+        self.assertFalse(core_releaselib.notes_heading_matches(
+            section, "preview-0.30", "numeric-sequence", "0.1"))
+
+    def test_numeric_sequence_rejects_wrong_shape_and_noncanonical_headings(self):
+        malformed = (
+            "## [0.031] - 2026-09-13\n\n- leading zero\n",
+            "## [0.31.0] - 2026-09-13\n\n- wrong shape\n",
+            "## [٠.٣١] - 2026-09-13\n\n- non-ASCII digits\n",
+        )
+        for text in malformed:
+            with self.subTest(text=text):
+                section, status = core_releaselib._changelog_section_result(
+                    text, "0.31", "numeric-sequence", "0.1")
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
+    def test_default_semver_contract_remains_strict(self):
+        numeric = "## [0.31] - 2026-09-13\n\n- preview feature\n"
+        self.assertIsNone(core_releaselib.changelog_section(numeric, "0.31"))
+        self.assertFalse(
+            core_releaselib.notes_heading_matches(numeric, "preview-0.31"))
+        semver = "## [1.2.3] - 2026-09-13\n\n- stable feature\n"
+        self.assertEqual(
+            core_releaselib.changelog_section(
+                semver, "1.2.3", "semver", None),
+            semver)
+        self.assertTrue(core_releaselib.notes_heading_matches(
+            semver, "v1.2.3", "semver", None))
+
+    def test_scheme_aware_cli_accepts_numeric_sequence_policy(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            notes_path = os.path.join(tmp, "notes.md")
+            with open(notes_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(
+                    "## [0.31] - 2026-09-13\n\n- preview feature\n")
+            self.assertEqual(core_releaselib.main([
+                "notes-match", "preview-0.31", notes_path,
+                "numeric-sequence", "0.1",
+            ]), 0)
+
+        out = io.StringIO()
+        with mock.patch.object(
+                core_releaselib, "_committed_changelog_text",
+                return_value=(self._CHANGELOG, None)), \
+                mock.patch("sys.stdout", out):
+            rc = core_releaselib.main([
+                "changelog-section", "repo", "preview-0.31", "CHANGELOG.md",
+                "0.31", "numeric-sequence", "0.1",
+            ])
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            out.getvalue(),
+            "## [0.31] - 2026-09-13\n\n### Added\n\n- preview feature\n")
+
+    def test_numeric_notes_reject_a_suffix_of_a_wrong_shape_dotted_tag(self):
+        cases = (
+            ("## [31.0] - 2026-09-13\n\n- wrong shape\n",
+             "preview-0.31.0"),
+            ("## [0.31] - 2026-09-13\n\n- wrong shape\n",
+             "preview-9.0.31"),
+        )
+        for notes, tag in cases:
+            with self.subTest(tag=tag):
+                self.assertFalse(core_releaselib.notes_heading_matches(
+                    notes, tag, "numeric-sequence", "0.1"))
+
+    def test_numeric_release_dates_round_trip_through_function_and_cli(self):
+        section = "## [0.31] - 2026-09-13\n\n- preview feature\n"
+        matching = "Preview 0.31\n\nReleased-at: 2026-09-13\n"
+        stale = "Preview 0.31\n\nReleased-at: 2026-09-12\n"
+        self.assertTrue(core_releaselib.release_dates_consistent(
+            section, matching, "numeric-sequence", "0.1"))
+        self.assertFalse(core_releaselib.release_dates_consistent(
+            section, stale, "numeric-sequence", "0.1"))
+        self.assertFalse(core_releaselib.release_dates_consistent(
+            section, matching))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            section_path = os.path.join(tmp, "section.md")
+            message_path = os.path.join(tmp, "message.txt")
+            with open(section_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(section)
+            with open(message_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(matching)
+            self.assertEqual(core_releaselib.main([
+                "dates-match", section_path, message_path,
+                "numeric-sequence", "0.1",
+            ]), 0)
+
+    def test_numeric_changelog_cli_distinguishes_absent_invalid_and_duplicate(self):
+        invalid_err = io.StringIO()
+        with contextlib.redirect_stderr(invalid_err):
+            invalid_rc = core_releaselib.main([
+                "changelog-section", "repo", "preview-0.31", "CHANGELOG.md",
+                "0.31", "calendar", "0.1",
+            ])
+        self.assertEqual(invalid_rc, 2)
+        self.assertEqual(
+            invalid_err.getvalue(),
+            "changelog-section: invalid policy declaration\n")
+
+        cases = (
+            ("## [0.30] - 2026-09-01\n\n- older\n", 1),
+            ("## [0.31] - 2026-09-13\n\n- target\n\n"
+             "## [0.031] - 2026-09-01\n\n- malformed later\n", 4),
+            ("## [0.31] - 2026-09-13\n\n- first\n\n"
+             "## v0.31 - 2026-09-13\n\n- duplicate\n", 4),
+        )
+        for changelog, expected in cases:
+            with self.subTest(expected=expected, changelog=changelog):
+                out, err = io.StringIO(), io.StringIO()
+                with mock.patch.object(
+                        core_releaselib, "_committed_changelog_text",
+                        return_value=(changelog, None)), \
+                        contextlib.redirect_stdout(out), \
+                        contextlib.redirect_stderr(err):
+                    rc = core_releaselib.main([
+                        "changelog-section", "repo", "preview-0.31",
+                        "CHANGELOG.md", "0.31", "numeric-sequence", "0.1",
+                    ])
+                self.assertEqual(rc, expected, out.getvalue() + err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+
+    def test_legacy_and_explicit_semver_arities_are_equivalent(self):
+        section = "## [1.2.3] - 2026-09-13\n\n- stable feature\n"
+        message = "Stable 1.2.3\n\nReleased-at: 2026-09-13\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            notes_path = os.path.join(tmp, "notes.md")
+            message_path = os.path.join(tmp, "message.txt")
+            with open(notes_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(section)
+            with open(message_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(message)
+            self.assertEqual(
+                core_releaselib.main(["notes-match", "v1.2.3", notes_path]),
+                core_releaselib.main([
+                    "notes-match", "v1.2.3", notes_path, "semver", ""]))
+            self.assertEqual(
+                core_releaselib.main(["dates-match", notes_path, message_path]),
+                core_releaselib.main([
+                    "dates-match", notes_path, message_path, "semver", ""]))
+
+        def run_changelog(extra):
+            out = io.StringIO()
+            with mock.patch.object(
+                    core_releaselib, "_committed_changelog_text",
+                    return_value=(section, None)), \
+                    contextlib.redirect_stdout(out):
+                rc = core_releaselib.main([
+                    "changelog-section", "repo", "v1.2.3", "CHANGELOG.md",
+                    "1.2.3", *extra,
+                ])
+            return rc, out.getvalue()
+
+        self.assertEqual(run_changelog([]), run_changelog(["semver", ""]))
+
 
 # --------------------------------------------------------------------------- #
 # Adversarial-review remediation (2026-07-31). See the module docstring for
@@ -2108,6 +2595,35 @@ class CoreNotesHeadingTest(unittest.TestCase):
     def test_bare_version_never_raises_on_non_string(self):
         self.assertIsNone(core_releaselib._bare_version(None))
 
+    def test_heading_version_token_must_match_exactly(self):
+        malformed = (
+            "## [1.2.3-rc.1] - 2026-09-01\n",
+            "## [1.2.3+build.7] - 2026-09-01\n",
+            "## [1.2.3.4] - 2026-09-01\n",
+            "## [1.2.3 - 2026-09-01\n",
+            "## [1.2.3]garbage\n",
+            "## 1.2.3 - 2026-09-01\n",
+            "##\n[1.2.3] - 2026-09-01\n",
+        )
+        for notes in malformed:
+            with self.subTest(notes=notes):
+                self.assertFalse(
+                    core_releaselib.notes_heading_matches(notes, "v1.2.3"))
+
+    def test_first_h2_unreleased_is_rejected_not_skipped(self):
+        notes = (
+            "## [Unreleased]\n\n- pending\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+        self.assertFalse(
+            core_releaselib.notes_heading_matches(notes, "v1.2.3"))
+
+    def test_duplicate_matching_sections_are_rejected(self):
+        notes = (
+            "## [1.2.3] - 2026-09-01\n\n- first\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- second\n")
+        self.assertFalse(
+            core_releaselib.notes_heading_matches(notes, "v1.2.3"))
+
 
 class CoreChangelogSectionTest(unittest.TestCase):
     """Blind exercise run 19, HIGH-2: `changelog_section` mechanically
@@ -2181,6 +2697,122 @@ class CoreChangelogSectionTest(unittest.TestCase):
         self.assertIn("### Added", section)
         self.assertNotIn("0.9.0", section)
 
+    def test_conventional_unreleased_before_releases_is_allowed_and_excluded(self):
+        text = (
+            "# Changelog\n\n## [Unreleased]\n\n- pending\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## [1.2.2] - 2026-08-01\n\n- older\n")
+        self.assertEqual(
+            core_releaselib.changelog_section(text, "1.2.3"),
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+
+    def test_unreleased_cannot_be_requested_as_a_release_version(self):
+        text = "## [Unreleased]\n\n- pending\n"
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "Unreleased"))
+
+    def test_unreleased_after_a_released_section_is_rejected(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## [Unreleased]\n\n- pending\n")
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "1.2.3"))
+
+    def test_duplicate_unreleased_sections_before_releases_are_rejected(self):
+        text = (
+            "## [Unreleased]\n\n- first pending batch\n\n"
+            "## [Unreleased]\n\n- second pending batch\n\n"
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "1.2.3"))
+
+    def test_duplicate_matching_sections_are_rejected_even_when_identical(self):
+        section = "## [1.2.3] - 2026-09-01\n\n- released\n"
+        self.assertIsNone(
+            core_releaselib.changelog_section(section + "\n" + section, "1.2.3"))
+
+    def test_duplicate_matching_sections_are_rejected_when_divergent(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- first\n\n"
+            "## v1.2.3 - 2026-09-01\n\n- second\n")
+        self.assertIsNone(
+            core_releaselib.changelog_section(text, "1.2.3"))
+
+    def test_any_h2_terminates_the_selected_section(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## Archive\n\n- not release notes\n")
+        self.assertEqual(
+            core_releaselib.changelog_section(text, "1.2.3"),
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+
+    def test_legacy_date_h2_is_a_boundary_not_a_malformed_release_heading(self):
+        text = (
+            "## [1.2.3] - 2026-09-01\n\n- released\n\n"
+            "## [2026-05-13] — legacy release notes\n\n- historical\n\n"
+            "## [2026-05-13] — more legacy notes\n\n- also historical\n")
+        section, status = core_releaselib._changelog_section_result(
+            text, "1.2.3")
+        self.assertEqual(status, core_releaselib._SECTION_OK)
+        self.assertEqual(
+            section,
+            "## [1.2.3] - 2026-09-01\n\n- released\n")
+
+    def test_malformed_target_headings_are_never_prefix_matches(self):
+        malformed = (
+            "## [1.2.3-rc.1] - 2026-09-01\n",
+            "## [1.2.3+build] - 2026-09-01\n",
+            "## [1.2.3.4] - 2026-09-01\n",
+            "## [01.2.3] - 2026-09-01\n",
+            "## [1.02.3] - 2026-09-01\n",
+            "## [1.2.03] - 2026-09-01\n",
+            "## [١.٢.٣] - 2026-09-01\n",
+            "## v01.2.3 - 2026-09-01\n",
+            "## v١.٢.٣ - 2026-09-01\n",
+            "## [1.2.3 - 2026-09-01\n",
+            "## [1.2.3]garbage\n",
+        )
+        for heading in malformed:
+            with self.subTest(heading=heading):
+                text = (
+                    heading + "\n- not a valid section\n\n"
+                    "## [1.2.3] - 2026-09-01\n\n- canonical target\n")
+                section, status = core_releaselib._changelog_section_result(
+                    text, "1.2.3")
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
+        non_changelog_h2s = (
+            "## 1.2.3 - 2026-09-01\n",
+            "##\n[1.2.3] - 2026-09-01\n",
+        )
+        for heading in non_changelog_h2s:
+            with self.subTest(non_changelog_h2=heading):
+                self.assertIsNone(core_releaselib.changelog_section(
+                    heading + "\n- not a valid section\n", "1.2.3"))
+
+    def test_heading_versions_require_canonical_ascii_semver(self):
+        invalid_versions = (
+            "01.2.3", "1.02.3", "1.2.03", "١.٢.٣", "1.٢.3")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                text = f"## [{version}] - 2026-09-01\n\n- invalid version\n"
+                section, status = core_releaselib._changelog_section_result(
+                    text, "1.2.3")
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
+    def test_requested_versions_independently_require_canonical_ascii_semver(self):
+        canonical_text = "## [2.12.0] - 2026-09-01\n\n- released\n"
+        invalid_versions = (
+            "02.12.0", "2.012.0", "2.12.00", "٢.١٢.٠", "2.١٢.0")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                section, status = core_releaselib._changelog_section_result(
+                    canonical_text, version)
+                self.assertIsNone(section)
+                self.assertEqual(status, core_releaselib._SECTION_INVALID)
+
 
 class CoreReleaseDatesTest(unittest.TestCase):
     """H3: release_dates_consistent exercised against the portable module."""
@@ -2202,6 +2834,18 @@ class CoreReleaseDatesTest(unittest.TestCase):
     def test_missing_tag_date_is_false(self):
         self.assertFalse(core_releaselib.release_dates_consistent(
             "## v2.6.0 — 2026-06-26\n", "no footer"))
+
+    def test_date_in_body_does_not_satisfy_a_dated_heading(self):
+        section = "## [1.2.3]\n\nReleased on 2026-09-01.\n"
+        tagmsg = "Released-at: 2026-09-01\n"
+        self.assertFalse(
+            core_releaselib.release_dates_consistent(section, tagmsg))
+
+    def test_malformed_heading_suffix_does_not_supply_a_release_date(self):
+        section = "## [1.2.3]garbage 2026-09-01\n\n- malformed\n"
+        tagmsg = "Released-at: 2026-09-01\n"
+        self.assertFalse(
+            core_releaselib.release_dates_consistent(section, tagmsg))
 
     def test_never_raises(self):
         self.assertFalse(core_releaselib.release_dates_consistent(None, None))
@@ -2245,6 +2889,19 @@ class CoreSemverTest(unittest.TestCase):
         self.assertIsNone(core_releaselib.semver_key("not-a-version"))
         self.assertIsNone(core_releaselib.semver_key(None))
         self.assertIsNone(core_releaselib.semver_key(42))
+
+    def test_semver_key_rejects_noncanonical_numeric_identifiers(self):
+        invalid_versions = (
+            "01.2.3", "1.02.3", "1.2.03", "١.٢.٣", "1.٢.3",
+            "1.2.3-00", "1.2.3-01", "1.2.3-٠", "1.2.3-1٢")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                self.assertIsNone(core_releaselib.semver_key(version))
+
+    def test_semver_build_numeric_identifiers_may_have_leading_zeroes(self):
+        self.assertEqual(
+            core_releaselib.semver_key("1.2.3+01"),
+            core_releaselib.semver_key("1.2.3"))
 
     def test_semver_key_discards_build_metadata_for_equality(self):
         self.assertEqual(
@@ -2418,6 +3075,7 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(rc, 0)
             self.assertEqual(out.getvalue().strip(), "v")
 
+
     def test_tag_prefix_unknown_target_exits_2(self):
         import io, contextlib
         with tempfile.TemporaryDirectory() as tmp:
@@ -2560,11 +3218,41 @@ class CoreCLITest(unittest.TestCase):
     # needs the exact text Phase 1 composed, and Phase 1's own scratch copy
     # is explicitly discardable -- this is the mechanical way to read it
     # back out of the COMMITTED changelog instead.
-    def _write_changelog(self, tmp_dir, text):
-        path = os.path.join(tmp_dir, "CHANGELOG.md")
-        with open(path, "w", encoding="utf-8") as fh:
+    def _git(self, repo, *args, input_bytes=None):
+        environment = dict(
+            os.environ,
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CONFIG_SYSTEM=os.devnull,
+        )
+        return subprocess.run(
+            [core_releaselib.git_executable(),
+             "-c", "commit.gpgsign=false",
+             "-c", "tag.gpgSign=false",
+             "-c", "core.hooksPath=", *args],
+            cwd=repo, env=environment, input=input_bytes,
+            capture_output=True, timeout=30, check=True)
+
+    def _init_changelog_repo(self, root, text=None,
+                             changelog_path="docs/CHANGELOG.md"):
+        os.makedirs(root, exist_ok=True)
+        self._git(root, "init", "--quiet")
+        hooks = os.path.join(root, "empty-hooks")
+        os.makedirs(hooks, exist_ok=True)
+        self._git(root, "config", "core.hooksPath", hooks)
+        self._git(root, "config", "core.autocrlf", "false")
+        self._git(root, "config", "user.name", "RA-05 fixture")
+        self._git(root, "config", "user.email", "ra05@example.invalid")
+        if text is None:
+            text = self._SAMPLE_CHANGELOG
+        disk_path = os.path.join(root, *changelog_path.split("/"))
+        os.makedirs(os.path.dirname(disk_path), exist_ok=True)
+        with open(disk_path, "w", encoding="utf-8", newline="") as fh:
             fh.write(text)
-        return path
+        self._git(root, "add", "--", changelog_path)
+        self._git(root, "commit", "--quiet", "-m", "fixture: release notes")
+        self._git(
+            root, "tag", "-a", "release-v2.12.0", "-m", "fixture release")
+        return disk_path
 
     _SAMPLE_CHANGELOG = (
         "# Changelog\n\n"
@@ -2572,19 +3260,55 @@ class CoreCLITest(unittest.TestCase):
         "## [2.11.0] — 2026-07-31\n\n### Fixed\n\n- middle thing\n"
     )
 
+    def test_changelog_fixture_ignores_global_signing_configuration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            global_config = os.path.join(tmp, "global.gitconfig")
+            with open(global_config, "w", encoding="utf-8") as fh:
+                fh.write("[commit]\n\tgpgsign = true\n[tag]\n\tgpgSign = true\n")
+            injected = {
+                "GIT_CONFIG_GLOBAL": global_config,
+                "GIT_CONFIG_SYSTEM": os.path.join(tmp, "missing-system-config"),
+            }
+            try:
+                with mock.patch.dict(os.environ, injected):
+                    self._init_changelog_repo(os.path.join(tmp, "repo"))
+            except subprocess.CalledProcessError as exc:
+                self.fail(
+                    "changelog fixture inherited signing configuration: "
+                    + exc.stderr.decode(errors="replace"))
+
     def test_changelog_section_exits_0_and_prints_the_section(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
-            result = self._run_core("changelog-section", path, "2.12.0")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
             self.assertEqual(result.returncode, 0)
             self.assertEqual(
                 result.stdout,
                 "## [2.12.0] — 2026-08-07\n\n### Added\n\n- newest thing\n")
 
+    def test_changelog_section_accepts_committed_legacy_date_h2_boundaries(self):
+        text = (
+            "## [2.12.0] - 2026-09-01\n\n- released\n\n"
+            "## [2026-05-13] — legacy release notes\n\n- historical\n\n"
+            "## [2026-05-13] — more legacy notes\n\n- also historical\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp, text)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "## [2.12.0] - 2026-09-01\n\n- released\n")
+
     def test_changelog_section_middle_version_stops_at_next_heading(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
-            result = self._run_core("changelog-section", path, "2.11.0")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.11.0")
             self.assertEqual(result.returncode, 0)
             self.assertEqual(
                 result.stdout,
@@ -2594,8 +3318,10 @@ class CoreCLITest(unittest.TestCase):
         # exit 1 = "compared and found nothing", distinct from exit 3
         # ("could not compare at all") -- never folded together.
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
-            result = self._run_core("changelog-section", path, "9.9.9")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "9.9.9")
             self.assertEqual(result.returncode, 1)
             self.assertIn("9.9.9", result.stderr)
 
@@ -2603,13 +3329,418 @@ class CoreCLITest(unittest.TestCase):
         # An unreadable changelog is NOT the same answer as "no such
         # version" -- [never-fold-unreadable-into-absent].
         with tempfile.TemporaryDirectory() as tmp:
-            missing = os.path.join(tmp, "does-not-exist.md")
-            result = self._run_core("changelog-section", missing, "2.12.0")
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "does-not-exist.md", "2.12.0")
             self.assertEqual(result.returncode, 3)
 
     def test_changelog_section_bad_invocation_exits_2(self):
-        result = self._run_core("changelog-section", "only-one-arg")
+        result = self._run_core(
+            "changelog-section", "root", "revision", "path-only")
         self.assertEqual(result.returncode, 2)
+
+    def test_release_skill_binds_section_to_project_root_tag_and_quoted_path(self):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            skill = fh.read()
+        self.assertIn(
+            'changelog-section "{{PROJECT_DIR}}" "${TAG_PREFIX}${VERSION}" '
+            '"$CHANGELOG" "$VERSION"', skill)
+
+    def test_changelog_section_malformed_or_ambiguous_exits_4(self):
+        cases = (
+            ("## [2.12.0-rc.1] - 2026-09-01\n\n- malformed\n",
+             "2.12.0"),
+            ("## [02.12.0] - 2026-09-01\n\n- leading zero\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## [٢.١٢.٠] - 2026-09-01\n\n- non-ASCII digits\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## v02.12.0 - 2026-09-01\n\n- v leading zero\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## v٢.١٢.٠ - 2026-09-01\n\n- v non-ASCII digits\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- canonical target\n",
+             "2.12.0"),
+            ("## [2.12.0] - 2026-09-01\n\n- first\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- duplicate\n", "2.12.0"),
+            ("## [2.12.0] - 2026-09-01\n\n- released\n\n"
+             "## [Unreleased]\n\n- misplaced\n", "2.12.0"),
+            ("## [Unreleased]\n\n- first pending batch\n\n"
+             "## [Unreleased]\n\n- second pending batch\n\n"
+             "## [2.12.0] - 2026-09-01\n\n- released\n", "2.12.0"),
+            ("## [Unreleased]\n\n- pending\n", "Unreleased"),
+        )
+        for text, version in cases:
+            with self.subTest(version=version, text=text):
+                with tempfile.TemporaryDirectory() as tmp:
+                    self._init_changelog_repo(tmp, text)
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        "docs/CHANGELOG.md", version)
+                self.assertEqual(result.returncode, 4, result.stderr)
+                self.assertIn("refusing ambiguous release notes", result.stderr)
+
+    def test_changelog_section_noncanonical_requested_version_exits_4(self):
+        invalid_versions = (
+            "02.12.0", "2.012.0", "2.12.00", "٢.١٢.٠", "2.١٢.0")
+        for version in invalid_versions:
+            with self.subTest(version=version):
+                with tempfile.TemporaryDirectory() as tmp:
+                    self._init_changelog_repo(tmp)
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        "docs/CHANGELOG.md", version)
+                self.assertEqual(result.returncode, 4, result.stderr)
+                self.assertEqual(result.stdout, "")
+                self.assertIn("refusing ambiguous release notes", result.stderr)
+
+    def test_changelog_section_reads_tag_commit_not_dirty_worktree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-01\n\n- counterfeit\n")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("counterfeit", result.stdout)
+
+    def test_changelog_section_reads_tag_commit_when_worktree_file_is_deleted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            os.remove(disk_path)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+
+    def test_changelog_section_reads_tag_commit_after_head_advances(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-02\n\n- later head\n")
+            self._git(tmp, "add", "--", "docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: advance head")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("later head", result.stdout)
+
+    def test_changelog_section_requires_an_exact_tag_not_a_same_named_branch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            self._git(tmp, "tag", "-d", "release-v2.12.0")
+            self._git(tmp, "branch", "release-v2.12.0")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_tag_branch_collision_selects_the_tag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-02\n\n- branch content\n")
+            self._git(tmp, "add", "--", "docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: branch content")
+            self._git(tmp, "branch", "release-v2.12.0")
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("branch content", result.stdout)
+
+    def test_changelog_section_refuses_non_tag_revision_spellings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            sha = self._git(tmp, "rev-parse", "HEAD").stdout.decode().strip()
+            for revision in ("HEAD", sha, "release-v2.12.0~0"):
+                with self.subTest(revision=revision):
+                    result = self._run_core(
+                        "changelog-section", tmp, revision,
+                        "docs/CHANGELOG.md", "2.12.0")
+                    self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_is_bound_to_explicit_root_not_cwd(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- counterfeit cwd\n")
+            old_cwd = os.getcwd()
+            os.chdir(counterfeit)
+            try:
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            finally:
+                os.chdir(old_cwd)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("counterfeit cwd", result.stdout)
+
+    def test_changelog_section_ignores_ambient_repository_rebinding(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- ambient counterfeit\n")
+            rebound = {
+                "GIT_DIR": os.path.join(counterfeit, ".git"),
+                "GIT_WORK_TREE": intended,
+            }
+            with mock.patch.dict(os.environ, rebound):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("ambient counterfeit", result.stdout)
+
+    def test_changelog_section_ignores_ambient_common_git_directory(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- common-dir counterfeit\n")
+            with mock.patch.dict(
+                    os.environ,
+                    {"GIT_COMMON_DIR": os.path.join(counterfeit, ".git")}):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("common-dir counterfeit", result.stdout)
+
+    def test_changelog_section_ignores_ambient_object_directory(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- object-dir counterfeit\n")
+            with mock.patch.dict(
+                    os.environ,
+                    {"GIT_OBJECT_DIRECTORY": os.path.join(
+                        counterfeit, ".git", "objects")}):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("object-dir counterfeit", result.stdout)
+
+    def test_changelog_section_refuses_ambient_alternate_object_store(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+                tempfile.TemporaryDirectory() as alternate:
+            self._init_changelog_repo(tmp)
+            oid = self._git(
+                tmp, "rev-parse",
+                "release-v2.12.0:docs/CHANGELOG.md").stdout.decode().strip()
+            trusted_object = os.path.join(tmp, ".git", "objects", oid[:2], oid[2:])
+            alternate_object = os.path.join(alternate, oid[:2], oid[2:])
+            os.makedirs(os.path.dirname(alternate_object), exist_ok=True)
+            shutil.copy2(trusted_object, alternate_object)
+            os.chmod(trusted_object, 0o666)
+            os.remove(trusted_object)
+            with mock.patch.dict(
+                    os.environ,
+                    {"GIT_ALTERNATE_OBJECT_DIRECTORIES": alternate}):
+                result = self._run_core(
+                    "changelog-section", tmp, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3, result.stderr)
+            self.assertEqual(result.stdout, "")
+
+    def test_changelog_section_ignores_command_scoped_git_config_injection(self):
+        with tempfile.TemporaryDirectory() as intended, \
+                tempfile.TemporaryDirectory() as counterfeit:
+            self._init_changelog_repo(intended)
+            self._init_changelog_repo(
+                counterfeit,
+                "## [2.12.0] - 2026-09-01\n\n- config counterfeit\n")
+            injected = {
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "core.worktree",
+                "GIT_CONFIG_VALUE_0": counterfeit,
+            }
+            with mock.patch.dict(os.environ, injected):
+                result = self._run_core(
+                    "changelog-section", intended, "release-v2.12.0",
+                    "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("config counterfeit", result.stdout)
+
+    def test_git_environment_sanitizer_removes_all_config_injection_fields(self):
+        injected = {
+            "GIT_CONFIG_COUNT": "2",
+            "GIT_CONFIG_KEY_0": "core.worktree",
+            "GIT_CONFIG_VALUE_0": "counterfeit-worktree",
+            "GIT_CONFIG_KEY_1": "include.path",
+            "GIT_CONFIG_VALUE_1": "counterfeit-config",
+        }
+        with mock.patch.dict(os.environ, injected):
+            sanitized = core_releaselib._sanitized_git_environment()
+        self.assertEqual(set(injected).intersection(sanitized), set())
+
+    def test_git_environment_sanitizer_removes_every_declared_repository_field(self):
+        repository_fields = {
+            "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+            "GIT_CEILING_DIRECTORIES",
+            "GIT_COMMON_DIR",
+            "GIT_DIR",
+            "GIT_DISCOVERY_ACROSS_FILESYSTEM",
+            "GIT_GRAFT_FILE",
+            "GIT_INDEX_FILE",
+            "GIT_NAMESPACE",
+            "GIT_OBJECT_DIRECTORY",
+            "GIT_PREFIX",
+            "GIT_QUARANTINE_PATH",
+            "GIT_REPLACE_REF_BASE",
+            "GIT_SHALLOW_FILE",
+            "GIT_WORK_TREE",
+        }
+        self.assertEqual(core_releaselib._GIT_REPOSITORY_ENV, repository_fields)
+        injected = {
+            name: f"counterfeit-{index}"
+            for index, name in enumerate(sorted(repository_fields))
+        }
+        with mock.patch.dict(os.environ, injected):
+            sanitized = core_releaselib._sanitized_git_environment()
+        for name in sorted(repository_fields):
+            with self.subTest(name=name):
+                self.assertNotIn(name, sanitized)
+
+    def test_changelog_section_ignores_git_replace_objects(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            disk_path = self._init_changelog_repo(tmp)
+            tagged_commit = self._git(tmp, "rev-parse", "HEAD").stdout.strip()
+            with open(disk_path, "w", encoding="utf-8", newline="") as fh:
+                fh.write("## [2.12.0] - 2026-09-02\n\n- replacement counterfeit\n")
+            self._git(tmp, "add", "--", "docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: replacement")
+            replacement_commit = self._git(tmp, "rev-parse", "HEAD").stdout.strip()
+            self._git(tmp, "replace", tagged_commit, replacement_commit)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+            self.assertNotIn("replacement counterfeit", result.stdout)
+
+    def test_changelog_section_rejects_a_nested_directory_as_repository_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            nested = os.path.join(tmp, "docs")
+            result = self._run_core(
+                "changelog-section", nested, "release-v2.12.0",
+                "CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+            self.assertIn("repository root", result.stderr)
+
+    def test_changelog_section_accepts_posix_and_windows_relative_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            for path in ("docs/CHANGELOG.md", "docs\\CHANGELOG.md"):
+                with self.subTest(path=path):
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        path, "2.12.0")
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("newest thing", result.stdout)
+
+    def test_changelog_section_rejects_paths_outside_the_git_tree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            unsafe = (
+                "../CHANGELOG.md", "/tmp/CHANGELOG.md",
+                "C:\\outside\\CHANGELOG.md", "//server/share/CHANGELOG.md",
+                "docs/../../CHANGELOG.md")
+            for path in unsafe:
+                with self.subTest(path=path):
+                    result = self._run_core(
+                        "changelog-section", tmp, "release-v2.12.0",
+                        path, "2.12.0")
+                    self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_wrong_case_path_is_rejected_on_every_host(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "DOCS/changelog.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_handles_spaces_and_unicode_in_root_and_path(self):
+        with tempfile.TemporaryDirectory(prefix="ra05 café space ") as tmp:
+            path = "release notes/CHANGELOG café.md"
+            self._init_changelog_repo(tmp, changelog_path=path)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0", path, "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("newest thing", result.stdout)
+
+    def test_changelog_section_rejects_a_committed_symlink_blob(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            blob = self._git(
+                tmp, "hash-object", "-w", "--stdin",
+                input_bytes=b"docs/CHANGELOG.md").stdout.decode().strip()
+            self._git(
+                tmp, "update-index", "--add", "--cacheinfo",
+                f"120000,{blob},linked-changelog.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: symlink blob")
+            self._git(
+                tmp, "tag", "-a", "linked-v2.12.0", "-m", "fixture symlink")
+            result = self._run_core(
+                "changelog-section", tmp, "linked-v2.12.0",
+                "linked-changelog.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+
+    def test_changelog_section_rejects_a_committed_invalid_utf8_blob(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            blob = self._git(
+                tmp, "hash-object", "-w", "--stdin",
+                input_bytes=(
+                    b"## [2.12.0] - 2026-09-01\n\n- invalid byte: \xff\n"
+                )).stdout.decode().strip()
+            self._git(
+                tmp, "update-index", "--add", "--cacheinfo",
+                f"100644,{blob},docs/CHANGELOG.md")
+            self._git(tmp, "commit", "--quiet", "-m", "fixture: invalid utf8")
+            self._git(
+                tmp, "tag", "-a", "invalid-v2.12.0", "-m", "fixture invalid")
+            result = self._run_core(
+                "changelog-section", tmp, "invalid-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3, result.stderr)
+            self.assertEqual(result.stdout, "")
+            self.assertIn("committed changelog is not UTF-8", result.stderr)
+
+    def test_changelog_section_normalizes_committed_crlf_to_utf8_lf(self):
+        sample = self._SAMPLE_CHANGELOG.replace("\n", "\r\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp, sample)
+            result = self._run_core(
+                "changelog-section", tmp, "release-v2.12.0",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertNotIn("\r", result.stdout)
 
     def test_changelog_section_round_trips_through_a_real_subprocess_as_utf8(self):
         # Regression for a real bug found while writing this fix: `sys.
@@ -2624,10 +3755,11 @@ class CoreCLITest(unittest.TestCase):
         # transcoding at all, so the bug is invisible unless stdout is a
         # REAL process stream. This test shells out for exactly that reason.
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write_changelog(tmp, self._SAMPLE_CHANGELOG)
+            self._init_changelog_repo(tmp)
             result = subprocess.run(
                 [sys.executable, _CORE_RELEASELIB_PATH,
-                 "changelog-section", path, "2.12.0"],
+                 "changelog-section", tmp, "release-v2.12.0",
+                 "docs/CHANGELOG.md", "2.12.0"],
                 capture_output=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stderr)
             expected = (
@@ -2771,6 +3903,27 @@ class CoreCLITest(unittest.TestCase):
         return subprocess.run(
             [sys.executable, _CORE_RELEASELIB_PATH, "run-pre-tag", "app"],
             cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+
+    def _run_clean_tree_status(self, root):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root, PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "clean-tree-status", "app"],
+            cwd=tempfile.gettempdir(), env=env, capture_output=True, text=True)
+
+    def test_clean_tree_status_ignores_ambient_repository_rebinding(self):
+        with tempfile.TemporaryDirectory() as intended_tmp, \
+                tempfile.TemporaryDirectory() as counterfeit_tmp:
+            intended = self._pretag_repo(intended_tmp, [], dirty=True)
+            counterfeit = self._pretag_repo(counterfeit_tmp, [], dirty=False)
+            rebound = {
+                "GIT_DIR": os.path.join(counterfeit, ".git"),
+                "GIT_WORK_TREE": counterfeit,
+            }
+            with mock.patch.dict(os.environ, rebound):
+                proc = self._run_clean_tree_status(intended)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("package.json", proc.stdout)
+            self.assertIn("CHANGELOG.md", proc.stdout)
 
     def test_run_pre_tag_tolerates_the_release_edits_that_precede_it(self):
         # HIGH, run 9: the assertion used to be "the tree is pristine",
@@ -3153,6 +4306,44 @@ class CoreCLITest(unittest.TestCase):
             self.assertEqual(
                 rh.confirmation_state(root, "app", ["python3 a.py"]), rh.NEVER)
 
+    def test_release_build_changes_invalidate_the_same_confirmation_marker(self):
+        rh = self._releasehash()
+        pre_tag = ["python3 checks/a.py"]
+        with tempfile.TemporaryDirectory() as root:
+            original = rh.pre_tag_digest(pre_tag, "python3 build.py --mode a")
+            changed = rh.pre_tag_digest(pre_tag, "python3 build.py --mode b")
+            self.assertNotEqual(original, changed)
+            rh.record_confirmation(root, "app", original)
+            self.assertEqual(
+                rh.confirmation_state(
+                    root, "app", pre_tag, "python3 build.py --mode a"),
+                rh.CONFIRMED)
+            self.assertEqual(
+                rh.confirmation_state(
+                    root, "app", pre_tag, "python3 build.py --mode b"),
+                rh.CHANGED)
+
+    def test_rows_without_release_build_keep_the_existing_digest_identity(self):
+        rh = self._releasehash()
+        self.assertEqual(
+            rh.pre_tag_digest(["check_a.py", "check_b.py"]),
+            "9e41b57a8b69eca55dec9fb6d86e446120686eb8a6b7cc6b163785bde2e24a02")
+        self.assertEqual(
+            rh.pre_tag_digest(["check_a.py", "check_b.py"], None),
+            rh.pre_tag_digest(["check_a.py", "check_b.py"], ""))
+
+    def test_release_build_alone_requires_confirmation(self):
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as root:
+            self.assertEqual(
+                rh.confirmation_state(root, "app", [], "python3 build.py"),
+                rh.NEVER)
+            rh.record_confirmation(
+                root, "app", rh.pre_tag_digest([], "python3 build.py"))
+            self.assertEqual(
+                rh.confirmation_state(root, "app", [], "python3 build.py"),
+                rh.CONFIRMED)
+
     def test_show_row_prints_every_declared_field(self):
         # Blind exercise run 14, HIGH. The lane forbids reading the declared
         # file by eye, but only `prefix` and the target names had readers —
@@ -3250,6 +4441,10 @@ class CoreCLITest(unittest.TestCase):
         out = self._run_core("show-row", "ca", "--field", "nope")
         self.assertEqual(out.returncode, 2)
         self.assertIn("unknown field", out.stderr)
+        for field in ("version_policy", "initial_version",
+                      "release_build", "release_assets"):
+            with self.subTest(field=field):
+                self.assertIn(field, out.stderr)
 
     def test_show_row_rejects_an_unknown_target(self):
         out = self._run_core("show-row", "not-a-target")
@@ -3492,6 +4687,505 @@ class CoreCLITest(unittest.TestCase):
         missing = core_releaselib.classify_window(commits)["missing_footer"]
         self.assertEqual([m["sha"][0] for m in missing], ["1", "4"])
 
+    def test_published_reconciliation_clears_only_its_exact_missing_footer(self):
+        sha = "a" * 40
+        commits = [
+            {"sha": sha, "subject": "fix: published squash", "body": ""},
+            {"sha": "b" * 40, "subject": "fix: still malformed", "body": ""},
+        ]
+        try:
+            window = core_releaselib.classify_window(
+                commits,
+                reconciliations={sha: "Recover the exact published release note."},
+                published_shas={sha},
+            )
+        except TypeError as exc:
+            self.fail(f"classify_window has no explicit reconciliation seam: {exc}")
+        self.assertEqual([row["sha"] for row in window["missing_footer"]], ["b" * 40])
+        self.assertEqual(
+            window["commits"][0]["changelog"],
+            "Recover the exact published release note.")
+        self.assertTrue(window["commits"][0]["footer_reconciled"])
+
+    def test_unpublished_or_short_sha_reconciliation_cannot_clear_the_gate(self):
+        sha = "c" * 40
+        commits = [{"sha": sha, "subject": "feat: candidate", "body": ""}]
+        for reconciliations, published in (
+                ({sha: "Candidate note."}, set()),
+                ({sha[:7]: "Short identity."}, {sha})):
+            with self.subTest(reconciliations=reconciliations, published=published):
+                try:
+                    window = core_releaselib.classify_window(
+                        commits,
+                        reconciliations=reconciliations,
+                        published_shas=published,
+                    )
+                except TypeError as exc:
+                    self.fail(f"classify_window has no explicit reconciliation seam: {exc}")
+                self.assertEqual(
+                    [row["sha"] for row in window["missing_footer"]], [sha])
+
+    def test_reconciliation_ledger_is_strict_and_duplicate_sha_fails_closed(self):
+        parser = getattr(core_releaselib, "parse_changelog_reconciliations", None)
+        self.assertIsNotNone(parser, "the release helper lacks a strict ledger parser")
+        valid = """{
+          "schema_version": 1,
+          "entries": [{
+            "target": "academy-preview",
+            "commit_sha": "dddddddddddddddddddddddddddddddddddddddd",
+            "changelog": "Restore the exact published release note.",
+            "reason": "The published squash body stored escaped newlines.",
+            "authorization": "Maintainer-approved evidence reconciliation."
+          }]
+        }"""
+        parsed = parser(valid, "academy-preview")
+        self.assertEqual(
+            parsed,
+            {"d" * 40: "Restore the exact published release note."})
+        duplicate = valid.replace(
+            "]\n        }",
+            ", {\"target\": \"academy-preview\", "
+            "\"commit_sha\": \"dddddddddddddddddddddddddddddddddddddddd\", "
+            "\"changelog\": \"Second note.\", \"reason\": \"Duplicate.\", "
+            "\"authorization\": \"No.\"}]\n        }")
+        with self.assertRaises(core_releaselib.ReleaseTargetsError):
+            parser(duplicate, "academy-preview")
+
+    def test_reconciliation_ledger_rejects_every_malformed_schema_arm(self):
+        valid_entry = {
+            "target": "app",
+            "commit_sha": "a" * 40,
+            "changelog": "Exact note.",
+            "reason": "Published footer was malformed.",
+            "authorization": "Maintainer approved.",
+        }
+        cases = {
+            "invalid json": "{",
+            "top level list": json.dumps([]),
+            "extra top key": json.dumps({
+                "schema_version": 1, "entries": [], "extra": True}),
+            "boolean schema": json.dumps({
+                "schema_version": True, "entries": []}),
+            "wrong schema": json.dumps({
+                "schema_version": 2, "entries": []}),
+            "entries not list": json.dumps({
+                "schema_version": 1, "entries": {}}),
+            "entry not object": json.dumps({
+                "schema_version": 1, "entries": [None]}),
+            "missing entry key": json.dumps({
+                "schema_version": 1,
+                "entries": [{k: v for k, v in valid_entry.items()
+                             if k != "reason"}]}),
+            "extra entry key": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, extra="no")]}),
+            "invalid target": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, target="bad target")]}),
+            "uppercase sha": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, commit_sha="A" * 40)]}),
+            "short sha": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, commit_sha="a" * 39)]}),
+            "leading whitespace": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, changelog=" Exact note.")]}),
+            "embedded newline": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, reason="line one\nline two")]}),
+            "overlong value": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, authorization="x" * 4097)]}),
+            "too many entries": json.dumps({
+                "schema_version": 1,
+                "entries": [dict(valid_entry, commit_sha=f"{i:040x}")
+                            for i in range(1025)]}),
+        }
+        for label, text in cases.items():
+            with self.subTest(label=label), \
+                    self.assertRaises(core_releaselib.ChangelogReconciliationError):
+                core_releaselib.parse_changelog_reconciliations(text, "app")
+
+        boundary_entry = dict(valid_entry, authorization="x" * 4096)
+        boundary_entries = [dict(boundary_entry, target="other",
+                                 commit_sha=f"{i:040x}") for i in range(1024)]
+        parsed = core_releaselib.parse_changelog_reconciliations(
+            json.dumps({"schema_version": 1, "entries": boundary_entries}), "app")
+        self.assertEqual(parsed, {})
+
+    def test_malformed_unrelated_target_entry_still_fails_whole_ledger(self):
+        ledger = {
+            "schema_version": 1,
+            "entries": [{
+                "target": "other target",
+                "commit_sha": "a" * 40,
+                "changelog": "Other note.",
+                "reason": "Malformed unrelated row.",
+                "authorization": "None.",
+            }],
+        }
+        with self.assertRaises(core_releaselib.ChangelogReconciliationError):
+            core_releaselib.parse_changelog_reconciliations(
+                json.dumps(ledger), "app")
+
+    def test_reconciliation_ledger_rejects_duplicate_json_members(self):
+        cases = (
+            '{"schema_version":1,"schema_version":1,"entries":[]}',
+            '{"schema_version":1,"entries":[{'
+            '"target":"app","commit_sha":"' + "a" * 40 + '",'
+            '"commit_sha":"' + "b" * 40 + '","changelog":"One.",'
+            '"reason":"Why.","authorization":"Who."}]}',
+            '{"schema_version":1,"entries":[{'
+            '"target":"app","commit_sha":"' + "a" * 40 + '",'
+            '"changelog":"One.","changelog":"Two.",'
+            '"reason":"Why.","authorization":"Who."}]}',
+            '{"schema_version":1,"entries":[{'
+            '"target":"app","commit_sha":"' + "a" * 40 + '",'
+            '"changelog":"One.","reason":"Why.",'
+            '"authorization":"Who.","authorization":"Other."}]}',
+        )
+        for text in cases:
+            with self.subTest(text=text), \
+                    self.assertRaises(core_releaselib.ChangelogReconciliationError):
+                core_releaselib.parse_changelog_reconciliations(text, "app")
+
+    def test_release_target_can_declare_one_reconciliation_ledger(self):
+        text = """<!-- release-targets -->
+[academy-preview]
+prefix: preview-
+changelog: CHANGELOG.md
+payload: .
+changelog-reconciliations: .codearbiter/release-changelog-reconciliations.json
+<!-- /release-targets -->
+"""
+        try:
+            row = core_releaselib.parse_release_targets(text)[0]
+        except core_releaselib.ReleaseTargetsError as exc:
+            self.fail(f"the declared reconciliation path is not supported: {exc}")
+        self.assertEqual(
+            row["changelog_reconciliations"],
+            ".codearbiter/release-changelog-reconciliations.json")
+
+    def _reconciliation_repo(self, tmp):
+        root = os.path.join(tmp, "consumer")
+        os.makedirs(os.path.join(root, ".codearbiter"))
+        self._git(root, "init", "--quiet", "--initial-branch=main")
+        self._git(root, "config", "user.name", "release fixture")
+        self._git(root, "config", "user.email", "release@example.invalid")
+        targets = """<!-- release-targets -->
+[app]
+prefix: v
+changelog: CHANGELOG.md
+payload: .
+changelog-reconciliations: .codearbiter/reconciliations.json
+<!-- /release-targets -->
+"""
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(targets)
+        with open(os.path.join(root, "CHANGELOG.md"), "w", encoding="utf-8",
+                  newline="\n") as handle:
+            handle.write("# Changelog\n")
+        with open(os.path.join(root, "payload.txt"), "w", encoding="utf-8",
+                  newline="\n") as handle:
+            handle.write("published\n")
+        with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            handle.write('{"schema_version":1,"entries":[]}\n')
+        self._git(root, "add", ".")
+        self._git(root, "commit", "--quiet", "-m", "feat: published squash")
+        sha = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+        self._git(root, "update-ref", "refs/remotes/origin/main", sha)
+        return root, sha
+
+    def _write_reconciliation(self, root, sha):
+        ledger = {
+            "schema_version": 1,
+            "entries": [{
+                "target": "app",
+                "commit_sha": sha,
+                "changelog": "Recover the exact published release note.",
+                "reason": "The published squash body stored escaped newlines.",
+                "authorization": "Maintainer-approved evidence reconciliation.",
+            }],
+        }
+        with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                  "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(ledger, handle)
+            handle.write("\n")
+
+    def _publish_ledger_commit(self, root, message="chore: publish reconciliation"):
+        self._git(root, "add", ".codearbiter/reconciliations.json")
+        self._git(root, "commit", "--quiet", "-m", message)
+        head = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+        self._git(root, "update-ref", "refs/remotes/origin/main", head)
+        return head
+
+    def test_classify_window_cli_accepts_only_exact_published_reconciliation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            self._write_reconciliation(root, sha)
+            self._publish_ledger_commit(root)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(
+            "[RECONCILED] " + sha[:7] + " feat: published squash :: "
+            "Recover the exact published release note.", result.stdout)
+        self.assertNotIn("[NEEDS-TRIAGE]", result.stdout)
+
+    def test_classify_window_cli_rejects_reconciliation_not_on_published_ref(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, published_sha = self._reconciliation_repo(tmp)
+            self._git(root, "switch", "--quiet", "-c", "candidate")
+            with open(os.path.join(root, "payload.txt"), "a", encoding="utf-8") as handle:
+                handle.write("candidate\n")
+            self._git(root, "add", "payload.txt")
+            self._git(root, "commit", "--quiet", "-m", "fix: unpublished candidate")
+            candidate_sha = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "tag", "main", candidate_sha)
+            self._git(root, "switch", "--quiet", "main")
+            self._write_reconciliation(root, candidate_sha)
+            self._publish_ledger_commit(root)
+            log = f"{candidate_sha}\nfix: unpublished candidate\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("[NEEDS-TRIAGE] " + candidate_sha[:7], result.stdout)
+        self.assertNotEqual(candidate_sha, published_sha)
+        self.assertNotIn("[RECONCILED]", result.stdout)
+
+    def test_classify_window_cli_rejects_candidate_sha_as_default_branch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            self._write_reconciliation(root, sha)
+            self._publish_ledger_commit(root)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", sha)
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("refs/remotes/origin/" + sha, result.stderr)
+
+    def test_classify_window_cli_fails_closed_on_missing_declared_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            os.unlink(os.path.join(root, ".codearbiter", "reconciliations.json"))
+            self._git(root, "add", ".codearbiter/reconciliations.json")
+            self._git(root, "commit", "--quiet", "-m", "chore: remove ledger")
+            removed = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", removed)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("must be one regular file committed", result.stderr)
+
+    def test_ignored_live_only_ledger_cannot_clear_the_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            os.unlink(os.path.join(root, ".codearbiter", "reconciliations.json"))
+            with open(os.path.join(root, ".gitignore"), "w", encoding="utf-8") as handle:
+                handle.write("/.codearbiter/reconciliations.json\n")
+            self._git(root, "add", ".gitignore", ".codearbiter/reconciliations.json")
+            self._git(root, "commit", "--quiet", "-m", "chore: ignore live ledger")
+            published = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", published)
+            self._write_reconciliation(root, sha)
+            self.assertEqual(
+                self._git(root, "status", "--porcelain").stdout.decode(), "")
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("must be one regular file committed", result.stderr)
+
+    def test_intermediate_symlink_ledger_path_cannot_clear_the_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            outside = os.path.join(tmp, "outside")
+            os.makedirs(outside)
+            outside_ledger = os.path.join(outside, "ledger.json")
+            with open(outside_ledger, "w", encoding="utf-8") as handle:
+                handle.write('{"schema_version":1,"entries":[]}\n')
+            linked = os.path.join(root, ".codearbiter", "linked")
+            try:
+                os.symlink(outside, linked, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("directory symlink creation unavailable on this host")
+            self._git(root, "config", "core.symlinks", "true")
+            targets_path = os.path.join(root, ".codearbiter", "release-targets.md")
+            with open(targets_path, encoding="utf-8") as handle:
+                targets = handle.read()
+            with open(targets_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(targets.replace(
+                    ".codearbiter/reconciliations.json",
+                    ".codearbiter/linked/ledger.json"))
+            self._git(root, "add", ".codearbiter/release-targets.md",
+                      ".codearbiter/linked")
+            self._git(root, "commit", "--quiet", "-m", "chore: publish linked ledger")
+            published = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", published)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("must be one regular file committed", result.stderr)
+
+    def test_classify_window_cli_fails_closed_on_non_utf8_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                      "wb") as handle:
+                handle.write(b"\xff\xfe")
+            self._publish_ledger_commit(root, "chore: publish invalid ledger")
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("committed ledger is not UTF-8", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_classify_window_cli_fails_closed_on_symlinked_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            ledger_path = os.path.join(root, ".codearbiter", "reconciliations.json")
+            outside = os.path.join(tmp, "outside.json")
+            os.unlink(ledger_path)
+            with open(outside, "w", encoding="utf-8") as handle:
+                handle.write('{"schema_version":1,"entries":[]}\n')
+            try:
+                os.symlink(outside, ledger_path)
+            except (OSError, NotImplementedError):
+                self.skipTest("file symlink creation unavailable on this host")
+            self._git(root, "config", "core.symlinks", "true")
+            self._git(root, "add", ".codearbiter/reconciliations.json")
+            self._git(root, "commit", "--quiet", "-m", "chore: publish symlink")
+            symlink_head = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "update-ref", "refs/remotes/origin/main", symlink_head)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("committed regular blob", result.stderr)
+
+    def test_classify_window_cli_fails_when_published_ref_cannot_be_verified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, sha = self._reconciliation_repo(tmp)
+            self._write_reconciliation(root, sha)
+            log = f"{sha}\nfeat: published squash\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core(
+                    "classify-window", "app", "missing")
+        self.assertEqual(result.returncode, 4)
+        self.assertIn("could not resolve exact published ref", result.stderr)
+        self.assertIn("refs/remotes/origin/missing", result.stderr)
+
+    def test_classify_window_cli_does_not_require_published_ref_without_ledger(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = os.path.join(tmp, "consumer")
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            self._git(root, "init", "--quiet", "--initial-branch=main")
+            self._git(root, "config", "user.name", "release fixture")
+            self._git(root, "config", "user.email", "release@example.invalid")
+            targets = """<!-- release-targets -->
+[app]
+prefix: v
+changelog: CHANGELOG.md
+payload: .
+<!-- /release-targets -->
+"""
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                      "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(targets)
+            log = "a" * 40 + "\nfeat: ordinary change\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.stdout.splitlines()[0], "minor")
+        self.assertIn("[NEEDS-TRIAGE] " + "a" * 7, result.stdout)
+        self.assertEqual(result.stderr, "")
+
+    def test_wrong_target_and_out_of_window_entries_remain_inert(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, historical_sha = self._reconciliation_repo(tmp)
+            self._git(root, "switch", "--quiet", "-c", "candidate")
+            with open(os.path.join(root, "payload.txt"), "a", encoding="utf-8") as handle:
+                handle.write("candidate\n")
+            self._git(root, "add", "payload.txt")
+            self._git(root, "commit", "--quiet", "-m", "fix: current candidate")
+            candidate_sha = self._git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            self._git(root, "switch", "--quiet", "main")
+            ledger = {
+                "schema_version": 1,
+                "entries": [
+                    {"target": "app", "commit_sha": historical_sha,
+                     "changelog": "Historical note.", "reason": "Prior defect.",
+                     "authorization": "Maintainer approved."},
+                    {"target": "other", "commit_sha": candidate_sha,
+                     "changelog": "Wrong target note.", "reason": "Other series.",
+                     "authorization": "Other maintainer."},
+                ],
+            }
+            with open(os.path.join(root, ".codearbiter", "reconciliations.json"),
+                      "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(ledger, handle)
+                handle.write("\n")
+            self._publish_ledger_commit(root)
+            log = f"{candidate_sha}\nfix: current candidate\n\n----\n"
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch("sys.stdin", io.StringIO(log)):
+                result = self._run_core("classify-window", "app", "main")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.stdout.splitlines()[0], "patch")
+        self.assertIn("[NEEDS-TRIAGE] " + candidate_sha[:7], result.stdout)
+        self.assertNotIn("[RECONCILED]", result.stdout)
+
+    def test_existing_footer_takes_precedence_over_reconciliation_text(self):
+        sha = "e" * 40
+        window = core_releaselib.classify_window(
+            [{"sha": sha, "subject": "fix: complete",
+              "body": "CHANGELOG: Authored footer."}],
+            reconciliations={sha: "Ledger text must remain inert."},
+            published_shas={sha})
+        self.assertTrue(window["commits"][0]["has_changelog_footer"])
+        self.assertFalse(window["commits"][0]["footer_reconciled"])
+        self.assertEqual(window["commits"][0]["changelog"], "")
+
+    def test_reconciliation_path_is_a_provenance_trigger(self):
+        rows = core_releaselib.parse_release_targets("""<!-- release-targets -->
+[app]
+prefix: v
+changelog: CHANGELOG.md
+payload: .
+changelog-reconciliations: .codearbiter/reconciliations.json
+<!-- /release-targets -->
+""")
+        self.assertIn(
+            ".codearbiter/reconciliations.json",
+            core_releaselib.provenance_trigger_paths(rows))
+
+    def test_reconciliation_path_must_be_one_repository_relative_file(self):
+        for value in ("../escape.json", "/absolute.json", ".", "a/../../escape"):
+            with self.subTest(value=value), \
+                    self.assertRaises(core_releaselib.ReleaseTargetsError):
+                core_releaselib.parse_release_targets(
+                    "<!-- release-targets -->\n[app]\nprefix: v\n"
+                    "changelog: CHANGELOG.md\npayload: .\n"
+                    f"changelog-reconciliations: {value}\n"
+                    "<!-- /release-targets -->\n")
+
     def test_parse_window_log_round_trips_the_prescribed_format(self):
         text = ("aaaaaaa\nfeat: one\nCHANGELOG: first\n----\n"
                 "bbbbbbb\nfix: two\n\n----\n")
@@ -3647,7 +5341,7 @@ class CoreCLITest(unittest.TestCase):
             self.assertIn("1.1.0", proc.stdout)
 
     # ---- #584 MEDIUM-1: the tree-state probe exempts the audit scratch ----
-    def _pretag_repo_with_gate_log(self, tmp, commands):
+    def _pretag_repo_with_gate_log(self, tmp, commands, payload="src/"):
         """Like `_pretag_repo`, but with `.codearbiter/gate-events.log`
         created and COMMITTED up front, so a declared command that appends
         to it mid-window is appending to a TRACKED file -- the shape the
@@ -3662,7 +5356,7 @@ class CoreCLITest(unittest.TestCase):
             fh.write("existing-line\n")
         with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
             fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
-                     "changelog: CHANGELOG.md\npayload: .\n"
+                     f"changelog: CHANGELOG.md\npayload: {payload}\n"
                      + "".join(f"pre-tag: {c}\n" for c in commands)
                      + "<!-- /release-targets -->\n")
         env = dict(os.environ,
@@ -3699,6 +5393,57 @@ class CoreCLITest(unittest.TestCase):
             root = self._pretag_repo_with_gate_log(tmp, [appender])
             proc = self._run_pre_tag(root)
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_run_pre_tag_does_not_exempt_a_declared_payload_surface(self):
+        appender = (f'"{sys.executable}" -c '
+                    '"open(\'.codearbiter/gate-events.log\',\'a\')'
+                    '.write(chr(10))"')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo_with_gate_log(
+                tmp, [appender], payload=".")
+            proc = self._run_pre_tag(root)
+            self.assertEqual(proc.returncode, 6, proc.stdout + proc.stderr)
+            self.assertIn(".codearbiter/gate-events.log", proc.stderr)
+
+    def test_clean_tree_status_applies_the_same_target_aware_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            unrelated = self._pretag_repo_with_gate_log(tmp, [], payload="src/")
+            with open(os.path.join(unrelated, ".codearbiter", "gate-events.log"),
+                      "a") as fh:
+                fh.write("scratch\n")
+            excluded = self._run_clean_tree_status(unrelated)
+            self.assertEqual(excluded.returncode, 0, excluded.stderr)
+            self.assertEqual(excluded.stdout, "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._pretag_repo_with_gate_log(tmp, [], payload=".")
+            with open(os.path.join(declared, ".codearbiter", "gate-events.log"),
+                      "a") as fh:
+                fh.write("release-surface\n")
+            visible = self._run_clean_tree_status(declared)
+            self.assertEqual(visible.returncode, 0, visible.stderr)
+            self.assertIn(".codearbiter/gate-events.log", visible.stdout)
+
+    def test_clean_tree_status_applies_target_aware_marker_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            unrelated = self._pretag_repo_with_gate_log(tmp, [], payload="src/")
+            markers = os.path.join(unrelated, ".codearbiter", ".markers")
+            os.makedirs(markers)
+            with open(os.path.join(markers, "proof"), "w") as fh:
+                fh.write("scratch\n")
+            excluded = self._run_clean_tree_status(unrelated)
+            self.assertEqual(excluded.returncode, 0, excluded.stderr)
+            self.assertEqual(excluded.stdout, "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._pretag_repo_with_gate_log(tmp, [], payload=".")
+            markers = os.path.join(declared, ".codearbiter", ".markers")
+            os.makedirs(markers)
+            with open(os.path.join(markers, "proof"), "w") as fh:
+                fh.write("release-surface\n")
+            visible = self._run_clean_tree_status(declared)
+            self.assertEqual(visible.returncode, 0, visible.stderr)
+            self.assertIn(".codearbiter/.markers/", visible.stdout)
 
     # ---- #583 MEDIUM-2 / #584 MEDIUM-3: PY exported to declared commands ----
     def test_run_pre_tag_exports_PY_to_declared_commands(self):
@@ -4535,9 +6280,9 @@ class ThisRepoRowsTest(unittest.TestCase):
             for command in row["pre_tag"]
         ]
         self.assertEqual(
-            len(all_pre_tag), 4,
-            "expected exactly 4 declared pre-tag commands across all rows "
-            "(3 on [ca], 1 on [ca-pi]) -- update this count deliberately if "
+            len(all_pre_tag), 5,
+            "expected exactly 5 declared pre-tag commands across all rows "
+            "(3 on [ca], 1 on [ca-codex], 1 on [ca-pi]) -- update this count deliberately if "
             "a row's pre-tag list ever changes shape")
         for command in all_pre_tag:
             with self.subTest(command=command):
@@ -5519,6 +7264,447 @@ class DecisionZeroZeroThreeSixTest(unittest.TestCase):
         window = self.text[max(0, idx - 200): idx + 200]
         self.assertNotIn("`ca`", window)
         self.assertNotIn("defaults to", window.lower())
+
+
+class ReleaseAssetContractTest(unittest.TestCase):
+    """AC-05/06/07/10: declared assets render and verify exactly."""
+
+    _BASE = ("<!-- release-targets -->\n[preview]\n"
+             "prefix: preview-\nchangelog: CHANGELOG.md\npayload: .\n"
+             "version-policy: numeric-sequence\ninitial-version: 0.30\n")
+    _ASSETS = (
+        "arbiter-preview-{version}.zip",
+        "arbiter-preview-{version}.zip.sha256",
+        "install-{tag}.ps1",
+        "install-{tag}.ps1.sha256",
+        "install-{version}.sh",
+        "install-{version}.sh.sha256",
+    )
+
+    def _declaration(self, build="python scripts/build.py", assets=None):
+        lines = [self._BASE]
+        if build is not None:
+            lines.append(f"release-build: {build}\n")
+        for asset in self._ASSETS if assets is None else assets:
+            lines.append(f"release-asset: {asset}\n")
+        lines.append("<!-- /release-targets -->\n")
+        return "".join(lines)
+
+    def test_parses_paired_build_and_repeated_asset_declarations(self):
+        row = core_releaselib.parse_release_targets(self._declaration())[0]
+        self.assertEqual(row["release_build"], "python scripts/build.py")
+        self.assertEqual(row["release_assets"], list(self._ASSETS))
+
+        legacy = core_releaselib.parse_release_targets(
+            self._BASE + "<!-- /release-targets -->\n")[0]
+        self.assertIsNone(legacy["release_build"])
+        self.assertEqual(legacy["release_assets"], [])
+
+    def test_partial_or_blank_asset_contract_is_rejected(self):
+        cases = (
+            self._declaration(assets=()),
+            self._declaration(build=None),
+            self._declaration(build=""),
+            self._declaration(assets=("",)),
+        )
+        for declaration in cases:
+            with self.subTest(declaration=declaration):
+                with self.assertRaises(core_releaselib.MalformedBlockError):
+                    core_releaselib.parse_release_targets(declaration)
+
+    def test_templates_render_six_names_across_consecutive_versions(self):
+        row = core_releaselib.parse_release_targets(self._declaration())[0]
+        first = core_releaselib.render_release_assets(
+            row["release_assets"], "0.31", "preview-0.31")
+        second = core_releaselib.render_release_assets(
+            row["release_assets"], "0.32", "preview-0.32")
+        self.assertEqual(first, [
+            "arbiter-preview-0.31.zip",
+            "arbiter-preview-0.31.zip.sha256",
+            "install-preview-0.31.ps1",
+            "install-preview-0.31.ps1.sha256",
+            "install-0.31.sh",
+            "install-0.31.sh.sha256",
+        ])
+        self.assertEqual(second, [name.replace("0.31", "0.32")
+                                  for name in first])
+
+    def test_unsafe_unknown_or_duplicate_rendered_names_are_rejected(self):
+        unsafe_sets = (
+            ["../escape-{version}.zip"],
+            ["nested/file-{version}.zip"],
+            [r"nested\file-{version}.zip"],
+            ["/absolute-{version}.zip"],
+            ["C:{version}.zip"],
+            ["asset {version}.zip"],
+            ["asset;touch-{version}"],
+            ["asset-$HOME-{version}"],
+            ["asset-{unknown}.zip"],
+            ["asset-{version!r}.zip"],
+            [""],
+            ["same-{version}.zip", "same-0.31.zip"],
+            ["asset-{version}.zip", "ASSET-{version}.ZIP"],
+            ["asset-{version}."],
+            ["CON.zip"],
+            ["AUX.txt"],
+            ["Lpt9.txt"],
+        )
+        for templates in unsafe_sets:
+            with self.subTest(templates=templates):
+                self.assertIsNone(core_releaselib.render_release_assets(
+                    templates, "0.31", "preview-0.31"))
+
+    def test_parser_rejects_unsafe_and_duplicate_templates_before_build(self):
+        for assets in (("../escape-{version}.zip",),
+                       ("asset-{unknown}.zip",),
+                       ("same-{version}.zip", "same-{version}.zip")):
+            with self.subTest(assets=assets):
+                with self.assertRaises(core_releaselib.MalformedBlockError):
+                    core_releaselib.parse_release_targets(
+                        self._declaration(assets=assets))
+
+    def test_parser_rejects_templates_that_collide_under_the_declared_prefix(self):
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            core_releaselib.parse_release_targets(self._declaration(assets=(
+                "preview-{version}.zip", "{tag}.zip",
+            )))
+
+    def test_parser_rejects_a_declared_prefix_that_makes_tag_assets_unsafe(self):
+        declaration = self._declaration(
+            assets=("{tag}.zip",)).replace(
+                "prefix: preview-\n", "prefix: preview/\n")
+        with self.assertRaises(core_releaselib.MalformedBlockError):
+            core_releaselib.parse_release_targets(declaration)
+
+    def test_exact_inventory_accepts_only_declared_nonempty_regular_files(self):
+        names = ["one-0.31.zip", "one-0.31.zip.sha256"]
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name in names:
+                with open(os.path.join(output_dir, name), "wb") as handle:
+                    handle.write(b"content")
+            expected = [os.path.join(os.path.abspath(output_dir), name)
+                        for name in names]
+            self.assertEqual(
+                core_releaselib.verify_release_asset_inventory(
+                    output_dir, names), expected)
+
+    def test_inventory_rejects_windows_equivalent_declared_names(self):
+        with tempfile.TemporaryDirectory() as output_dir:
+            invalid_declarations = (
+                ["asset.zip", "ASSET.ZIP"],
+                ["asset."],
+                ["CON.zip"],
+                ["aux"],
+                ["com1.txt"],
+                ["LPT9"],
+            )
+            with mock.patch.object(core_releaselib.os, "scandir") as scandir:
+                for names in invalid_declarations:
+                    with self.subTest(names=names):
+                        self.assertIsNone(
+                            core_releaselib.verify_release_asset_inventory(
+                                output_dir, names))
+                scandir.assert_not_called()
+
+            with open(os.path.join(output_dir, "ASSET.ZIP"), "wb") as handle:
+                handle.write(b"asset")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(
+                    output_dir, ["asset.zip"]))
+
+    def test_windows_reserved_name_neighbours_remain_valid(self):
+        names = ("COM0.txt", "COM10.txt", "LPT0", "LPT10", "console.zip")
+        for name in names:
+            with self.subTest(name=name):
+                self.assertEqual(
+                    core_releaselib.render_release_assets(
+                        [name], "0.31", "preview-0.31"),
+                    [name],
+                )
+
+    def test_exact_inventory_rejects_missing_extra_empty_directory_and_symlink(self):
+        names = ["one.zip", "two.zip"]
+        with tempfile.TemporaryDirectory() as root:
+            output_dir = os.path.join(root, "assets")
+            os.mkdir(output_dir)
+            with open(os.path.join(output_dir, "one.zip"), "wb") as handle:
+                handle.write(b"one")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+            with open(os.path.join(output_dir, "two.zip"), "wb") as handle:
+                handle.write(b"two")
+            with open(os.path.join(output_dir, "extra.zip"), "wb") as handle:
+                handle.write(b"extra")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+            os.remove(os.path.join(output_dir, "extra.zip"))
+
+            with open(os.path.join(output_dir, "two.zip"), "wb"):
+                pass
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+            os.remove(os.path.join(output_dir, "two.zip"))
+            os.mkdir(os.path.join(output_dir, "two.zip"))
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+            os.rmdir(os.path.join(output_dir, "two.zip"))
+            try:
+                os.symlink(os.path.join(output_dir, "one.zip"),
+                           os.path.join(output_dir, "two.zip"))
+            except (OSError, NotImplementedError):
+                self.skipTest("symlink creation unavailable on this host")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(output_dir, names))
+
+    def test_inventory_rejects_a_symlinked_output_directory(self):
+        with tempfile.TemporaryDirectory() as root:
+            real_dir = os.path.join(root, "real")
+            link_dir = os.path.join(root, "link")
+            os.mkdir(real_dir)
+            with open(os.path.join(real_dir, "asset.zip"), "wb") as handle:
+                handle.write(b"asset")
+            try:
+                os.symlink(real_dir, link_dir, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("directory symlink creation unavailable on this host")
+            self.assertIsNone(
+                core_releaselib.verify_release_asset_inventory(
+                    link_dir, ["asset.zip"]))
+
+    def test_cli_renders_and_prints_only_a_verified_inventory(self):
+        rendered = io.StringIO()
+        with contextlib.redirect_stdout(rendered):
+            rc = core_releaselib.main([
+                "render-release-assets", "0.31", "preview-0.31",
+                *self._ASSETS,
+            ])
+        self.assertEqual(rc, 0)
+        names = rendered.getvalue().splitlines()
+        self.assertEqual(len(names), 6)
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            for name in names:
+                with open(os.path.join(output_dir, name), "wb") as handle:
+                    handle.write(b"asset")
+            verified = io.StringIO()
+            with contextlib.redirect_stdout(verified):
+                rc = core_releaselib.main([
+                    "verify-release-assets", output_dir, *names,
+                ])
+            self.assertEqual(rc, 0)
+            self.assertEqual(
+                verified.getvalue().splitlines(),
+                [os.path.join(os.path.abspath(output_dir), name)
+                 for name in names])
+
+            with open(os.path.join(output_dir, "undeclared.txt"), "wb") as handle:
+                handle.write(b"extra")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(core_releaselib.main([
+                    "verify-release-assets", output_dir, *names,
+                ]), 1)
+
+    def test_cli_invalid_or_duplicate_templates_exit_2_without_stdout(self):
+        cases = (
+            ["render-release-assets", "0.31", "preview-0.31",
+             "asset-{unknown}.zip"],
+            ["render-release-assets", "0.31", "preview-0.31",
+             "same-{version}.zip", "same-0.31.zip"],
+        )
+        for argv in cases:
+            with self.subTest(argv=argv):
+                out, err = io.StringIO(), io.StringIO()
+                with contextlib.redirect_stdout(out), \
+                        contextlib.redirect_stderr(err):
+                    rc = core_releaselib.main(argv)
+                self.assertEqual(rc, 2, err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+
+    def test_cli_invalid_or_duplicate_asset_names_exit_2_without_stdout(self):
+        cases = (
+            ["../escape.zip"],
+            ["same.zip", "same.zip"],
+        )
+        with tempfile.TemporaryDirectory() as output_dir:
+            for names in cases:
+                with self.subTest(names=names):
+                    out, err = io.StringIO(), io.StringIO()
+                    with contextlib.redirect_stdout(out), \
+                            contextlib.redirect_stderr(err):
+                        rc = core_releaselib.main([
+                            "verify-release-assets", output_dir, *names,
+                        ])
+                    self.assertEqual(rc, 2, err.getvalue())
+                    self.assertEqual(out.getvalue(), "")
+
+    def test_show_row_exposes_asset_fields_only_through_explicit_queries(self):
+        with tempfile.TemporaryDirectory() as root:
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            path = os.path.join(root, ".codearbiter", "release-targets.md")
+            with open(path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(self._declaration())
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}):
+                build = io.StringIO()
+                assets = io.StringIO()
+                legacy = io.StringIO()
+                with contextlib.redirect_stdout(build):
+                    self.assertEqual(core_releaselib.main([
+                        "show-row", "preview", "--field", "release-build",
+                    ]), 0)
+                with contextlib.redirect_stdout(assets):
+                    self.assertEqual(core_releaselib.main([
+                        "show-row", "preview", "--field", "release-assets",
+                    ]), 0)
+                with contextlib.redirect_stdout(legacy):
+                    self.assertEqual(core_releaselib.main([
+                        "show-row", "preview",
+                    ]), 0)
+        self.assertEqual(build.getvalue(), "python scripts/build.py\n")
+        self.assertEqual(assets.getvalue().strip().split(","), list(self._ASSETS))
+        self.assertNotIn("RELEASE_BUILD", legacy.getvalue())
+        self.assertNotIn("RELEASE_ASSETS", legacy.getvalue())
+
+
+class ReleaseSurfaceTest(unittest.TestCase):
+    """AC-08 + security boundary: the release surface uses the new policy."""
+
+    @classmethod
+    def setUpClass(cls):
+        def read(*parts):
+            with open(os.path.join(REPO_ROOT, *parts), encoding="utf-8") as fh:
+                return fh.read()
+
+        cls.skill = read("core", "surface", "skills", "release", "SKILL.md")
+        cls.command = read("core", "surface", "commands", "release.md")
+        cls.index = read("core", "surface", "skills", "INDEX.md")
+        cls.security = read(".codearbiter", "security-controls.md")
+        cls.plan = read(".codearbiter", "plans", "preview-release-contract.md")
+
+    def test_skill_reads_every_new_field_mechanically(self):
+        for variable, field in (
+                ("VERSION_POLICY", "version-policy"),
+                ("INITIAL_VERSION", "initial-version"),
+                ("RELEASE_BUILD", "release-build"),
+                ("RELEASE_ASSETS", "release-assets"),
+                ("CHANGELOG_RECONCILIATIONS", "changelog-reconciliations")):
+            self.assertIn(
+                f'{variable}=$("$PY" "{{{{PLUGIN_ROOT}}}}/hooks/_releaselib.py" '
+                f'show-row $TARGET --field {field})',
+                self.skill)
+        self.assertIn('VERSION_POLICY=${VERSION_POLICY:-semver}', self.skill)
+
+    def test_reconciliation_route_binds_target_and_fresh_published_ref(self):
+        self.assertIn(
+            'classify-window "$TARGET" "$DEFAULT_BRANCH"', self.skill)
+        self.assertIn('git fetch origin "$DEFAULT_BRANCH"', self.skill)
+        self.assertIn("A failed fetch STOPs", self.skill)
+        self.assertIn("exact lowercase 40-character commit SHA", self.skill)
+        self.assertIn("MUST NOT be added to the ledger", self.skill)
+        self.assertIn("may supply changelog text only", self.skill)
+
+    def test_version_and_changelog_routes_are_policy_aware(self):
+        for command in (
+                "last-tag-for-policy", "derive-version", "version-greater",
+                "notes-match", "changelog-section"):
+            self.assertIn(command, self.skill)
+        self.assertIn('"$VERSION_POLICY" "$INITIAL_VERSION"', self.skill)
+        self.assertNotIn(
+            'VERSION=$("$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
+            'apply-bump', self.skill)
+
+    def test_preflight_clean_tree_probe_is_target_aware(self):
+        self.assertIn(
+            '"$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
+            'clean-tree-status "$TARGET"', self.skill)
+        self.assertIn("only when that path is disjoint", self.skill)
+        self.assertNotIn(
+            "git status --porcelain -- :/ "
+            "':(exclude,top).codearbiter/gate-events.log'",
+            self.skill)
+        self.assertGreaterEqual(self.skill.count("clean-tree-status"), 6)
+
+    def test_asset_build_runs_after_release_checks_with_clean_tree_guards(self):
+        checks = self.skill.index("run-pre-tag $TARGET")
+        build = self.skill.index('eval "$RELEASE_BUILD"')
+        tag = self.skill.index("git tag -a ${TAG_PREFIX}${VERSION}")
+        self.assertLess(checks, build)
+        self.assertLess(build, tag)
+        self.assertIn("RELEASE_ASSET_DIR=$(mktemp -d)", self.skill)
+        self.assertIn("export VERSION RELEASE_TAG RELEASE_ASSET_DIR", self.skill)
+        self.assertIn("render-release-assets", self.skill)
+        self.assertIn("verify-release-assets", self.skill)
+        build_section = self.skill[build - 2500:build + 2500]
+        self.assertGreaterEqual(build_section.count(
+            'clean-tree-status "$TARGET"'), 2)
+        self.assertIn("tracked tree", build_section)
+
+    def test_publication_uploads_verified_paths_and_checks_remote_names(self):
+        phase3 = self.skill[self.skill.index("## Phase 3") :]
+        self.assertIn("RELEASE_ASSET_PATHS_FILE", phase3)
+        self.assertIn('while IFS= read -r asset', phase3)
+        self.assertIn('set -- "$@" "$asset"', phase3)
+        self.assertIn('"$@"', phase3)
+        self.assertIn("--json url,isDraft,tagName,assets", phase3)
+        self.assertIn(".assets[].name", phase3)
+        self.assertIn("cmp -s", phase3)
+        self.assertIn("exactly the declared asset names", phase3)
+
+    def test_dry_run_never_executes_the_release_build(self):
+        dry_run = self.skill[
+            self.skill.index("## Dry run") : self.skill.index("## Phase 2")]
+        self.assertIn("$RELEASE_BUILD", dry_run)
+        self.assertIn("listed", dry_run)
+        self.assertIn("never executed", dry_run)
+
+    def test_command_index_and_security_boundary_describe_the_capability(self):
+        self.assertIn("declared version policy", self.command)
+        self.assertIn("exact release-asset inventory", self.command)
+        self.assertIn("version-policy", self.index)
+        self.assertIn("release-build", self.index)
+        self.assertIn("`release-build`", self.security)
+        self.assertIn("clean tracked tree before and after", self.security)
+        t04 = next(line for line in self.plan.splitlines()
+                   if line.startswith("| T-04 |"))
+        self.assertIn("`core/pysrc/releasehash.py`", t04)
+
+    def test_lost_asset_scratch_has_a_same_tag_resume_lane(self):
+        start = self.skill.index("### Asset recovery for `resume_publish`")
+        end = self.skill.index("## Recovering from a bad release")
+        recovery = self.skill[start:end]
+        for token in (
+                "resume_publish", "git rev-parse HEAD", "^{commit}",
+                "check-manifests", "changelog-section", "releasehash.py\" check",
+                "run-pre-tag", 'eval "$RELEASE_BUILD"',
+                "fresh publication authorization"):
+            self.assertIn(token, recovery)
+        self.assertNotIn("derive-version", recovery)
+        self.assertNotIn("git tag -a", recovery)
+        self.assertLess(recovery.index("git rev-parse HEAD"),
+                        recovery.index('eval "$RELEASE_BUILD"'))
+        first_clean = recovery.index('clean-tree-status "$TARGET"')
+        confirmation = recovery.index("releasehash.py\" check")
+        pre_tag = recovery.index("run-pre-tag")
+        second_clean = recovery.index("clean-tree-status", pre_tag)
+        build = recovery.index('eval "$RELEASE_BUILD"')
+        third_clean = recovery.index("clean-tree-status", build)
+        self.assertLess(first_clean, confirmation)
+        self.assertLess(confirmation, pre_tag)
+        self.assertLess(pre_tag, second_clean)
+        self.assertLess(second_clean, build)
+        self.assertLess(build, third_clean)
+        self.assertNotIn("Re-enter Phase 1", self.skill)
+
+    def test_asset_cleanup_occurs_only_after_successful_remote_readback(self):
+        phase3 = self.skill[self.skill.index("## Phase 3") :]
+        readback = phase3.index("--json url,isDraft,tagName,assets")
+        cleanup = phase3.index('rm -rf -- "$RELEASE_ASSET_DIR"')
+        self.assertLess(readback, cleanup)
+        self.assertIn("only after both metadata and inventory read-back pass",
+                      phase3)
+        self.assertIn("preserve the directory and scratch files", phase3)
 
 
 if __name__ == "__main__":

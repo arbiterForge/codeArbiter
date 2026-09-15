@@ -210,7 +210,11 @@ describe("#407 — the SHIPPED farm.js bundle, under plain Node", () => {
     expect(result.out).toContain("green=2");
     const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
     expect(report.results).toHaveLength(2);
-  });
+    // This is a two-task, real-git-worktree integration proof. Windows hosted
+    // runners can exceed Vitest's 5s unit-test default under concurrent CI
+    // load even though the child completes normally; keep the proof bounded
+    // without weakening any of its behavioral assertions.
+  }, 30_000);
 
   it("escalates and exits non-zero when the API fails", async () => {
     // Loopback FAILURE path: the port is closed, so every worker call errors.
