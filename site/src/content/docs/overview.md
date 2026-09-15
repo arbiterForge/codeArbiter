@@ -9,18 +9,6 @@ journey:
   proof: "You can identify who routes, who implements, who reviews, and who resolves a gate."
 ---
 
-codeArbiter is one governance product with three host adapters: `ca` for Claude Code, `ca-codex`
-for Codex, and `ca-pi` for Pi. The Claude Code marketplace also carries `ca-sandbox`, an
-infrastructure plugin unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)); the
-Codex marketplace carries `ca-codex`, while Pi uses npm with pinned Git tags as the reproducible
-channel. All three governance adapters inject the same orchestrator responsibilities, enforce the
-same policy core, and use one checked-in `.codearbiter/` directory for project context and audit
-state. See the
-[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
-between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
-The complete `ca-pi` adapter is currently a Feature Forge `preview`: real use
-and feedback are welcome while broader testing continues before stable status.
-
 ## codeArbiter Holds the Gates; You Hold the Decisions
 
 This is the organizing principle. codeArbiter enforces process; you make the calls. It
@@ -61,6 +49,20 @@ your behalf.
   ship. When a gate trips, codeArbiter surfaces the decision and waits for you to resolve
   it.
 </div>
+
+## One Core, Three Host Adapters
+
+codeArbiter is one governance product with three host adapters: `ca` for Claude Code, `ca-codex`
+for Codex, and `ca-pi` for Pi. The Claude Code marketplace also carries `ca-sandbox`, an
+infrastructure plugin unrelated to gate enforcement (see [ca-sandbox](/guides/ca-sandbox/)); the
+Codex marketplace carries `ca-codex`, while Pi uses npm with pinned Git tags as the reproducible
+channel. All three governance adapters inject the same orchestrator responsibilities, enforce the
+same policy core, and use one checked-in `.codearbiter/` directory for project context and audit
+state. See the
+[Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for the verified boundary
+between those two, and [Pi](/getting-started/pi/) for the third host's install and trust model.
+The complete `ca-pi` adapter is currently a Feature Forge `preview`: real use
+and feedback are welcome while broader testing continues before stable status.
 
 ## Context Minimization
 
