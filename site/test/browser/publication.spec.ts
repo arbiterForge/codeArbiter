@@ -100,6 +100,91 @@ test("AC-02: outside dismissal invalidates in-flight Pagefind work", async ({ pa
   await expect(search).toHaveAttribute("aria-expanded", "false");
 });
 
+test("WEB-035: clearing during in-flight Pagefind work cannot reopen results", async ({ page }) => {
+  let releasePagefind!: () => void;
+  const pagefindReleased = new Promise<void>((resolve) => {
+    releasePagefind = resolve;
+  });
+  await page.route("**/pagefind/pagefind.js", async (route) => {
+    await pagefindReleased;
+    await route.continue();
+  });
+  await page.goto(quickstartPath);
+  const search = page.getByRole("combobox", { name: "Search the docs", exact: true });
+  const results = page.getByRole("listbox", { name: "Search results", exact: true });
+  await page.keyboard.press("ControlOrMeta+k");
+  await search.fill(quickstartTitle);
+  await page.waitForTimeout(200);
+  await search.fill("");
+  await expect(results).toBeHidden();
+  releasePagefind();
+  await page.waitForTimeout(500);
+  await expect(results).toBeHidden();
+  await expect(search).toHaveAttribute("aria-expanded", "false");
+});
+
+test("WEB-035: Pagefind load failure is visible and retryable", async ({ page }) => {
+  let loadAttempts = 0;
+  await page.route("**/pagefind/pagefind.js*", async (route) => {
+    loadAttempts += 1;
+    if (loadAttempts === 1) {
+      await route.abort("failed");
+      return;
+    }
+    await route.fulfill({
+      contentType: "text/javascript",
+      body: `
+        export async function options() {}
+        export async function search() {
+          return { results: [{ data: async () => ({
+            url: "/retry-result/",
+            meta: { title: "Recovered search result" },
+            excerpt: "Search recovered after retry."
+          }) }] };
+        }
+      `,
+    });
+  });
+  await page.goto(quickstartPath);
+  const search = page.getByRole("combobox", { name: "Search the docs", exact: true });
+  const results = page.getByRole("listbox", { name: "Search results", exact: true });
+  await page.keyboard.press("ControlOrMeta+k");
+  await search.fill("recoverable query");
+  await expect(page.getByText("Search is temporarily unavailable.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Retry search", exact: true }).click();
+  await expect(results.getByRole("option", { name: /^Recovered search result/ })).toBeVisible();
+  expect(loadAttempts).toBe(2);
+});
+
+test("WEB-035: results beyond the first eight remain reachable", async ({ page }) => {
+  await page.route("**/pagefind/pagefind.js*", async (route) => {
+    await route.fulfill({
+      contentType: "text/javascript",
+      body: `
+        export async function options() {}
+        export async function search() {
+          return { results: Array.from({ length: 10 }, (_, index) => ({
+            data: async () => ({
+              url: \`/mock-result-\${index + 1}/\`,
+              meta: { title: \`Mock result \${index + 1}\` },
+              excerpt: \`Result \${index + 1}\`
+            })
+          })) };
+        }
+      `,
+    });
+  });
+  await page.goto(quickstartPath);
+  const search = page.getByRole("combobox", { name: "Search the docs", exact: true });
+  const results = page.getByRole("listbox", { name: "Search results", exact: true });
+  await page.keyboard.press("ControlOrMeta+k");
+  await search.fill("many results");
+  await expect(results.getByRole("option")).toHaveCount(8);
+  await page.getByRole("button", { name: "Show all 10 results", exact: true }).click();
+  await expect(results.getByRole("option")).toHaveCount(10);
+  await expect(results.getByRole("option", { name: /^Mock result 10/ })).toBeVisible();
+});
+
 test("AC-03: Pagefind keyboard results survive client navigation and reset cleanly", async ({ page }) => {
   await page.goto("/academy/");
   // A listener attached to this document survives a client transition but not a

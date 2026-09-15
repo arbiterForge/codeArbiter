@@ -15,8 +15,8 @@
  *
  * It drives the Pagefind JS API (the same index Starlight builds at
  * `astro build`), so search only works in a production build / on the deployed
- * site, not in `astro dev` (Pagefind has no dev index). In dev the box shows a
- * "build the site" hint instead of failing silently.
+ * site, not in `astro dev` (Pagefind has no dev index). A load failure exposes
+ * a retry control instead of failing silently or permanently poisoning search.
  *
  * Result URLs from Pagefind are site-root-relative (no base), so we prefix the
  * configured base ourselves, guarding against double-prefixing.
@@ -64,6 +64,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       aria-label="Search results"
     >
     </div>
+    <button class="ca-search__action ca-search__retry" type="button" hidden>
+      Retry search
+    </button>
+    <button class="ca-search__action ca-search__show-all" type="button" hidden>
+      Show all results
+    </button>
   </div>
 </ca-site-search>
 
@@ -81,6 +87,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       const panel = this.querySelector<HTMLElement>(".ca-search__panel")!;
       const status = this.querySelector<HTMLElement>(".ca-search__status")!;
       const listbox = this.querySelector<HTMLElement>("#ca-search-listbox")!;
+      const retry = this.querySelector<HTMLButtonElement>(".ca-search__retry")!;
+      const showAll = this.querySelector<HTMLButtonElement>(".ca-search__show-all")!;
 
       /** Pagefind stores root-relative urls; prefix the base, never twice. */
       const withBase = (url: string) => {
@@ -91,13 +99,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
       let pagefind: any = null;
       let loadErr = false;
-      const loadPagefind = async () => {
-        if (pagefind || loadErr) return;
+      let loadAttempt = 0;
+      const loadPagefind = async (force = false) => {
+        if (pagefind) return;
+        if (loadErr && !force) return;
+        if (force) {
+          loadErr = false;
+          loadAttempt += 1;
+        }
         try {
           // Runtime path so Vite does not try to bundle the build-time asset.
-          pagefind = await import(/* @vite-ignore */ `${base}/pagefind/pagefind.js`);
+          const retrySuffix = loadAttempt > 0 ? `?retry=${loadAttempt}` : "";
+          pagefind = await import(
+            /* @vite-ignore */ `${base}/pagefind/pagefind.js${retrySuffix}`
+          );
           await pagefind.options?.({ basePath: `${base}/pagefind/` });
         } catch {
+          pagefind = null;
           loadErr = true;
         }
       };
@@ -106,6 +124,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       let options: HTMLAnchorElement[] = [];
       let active = -1;
       let opener: HTMLElement | null = null;
+      let remainingResults: any[] = [];
+      let resultQuery = "";
 
       const setActive = (i: number) => {
         if (options.length === 0) {
@@ -139,19 +159,42 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         clearActive();
       };
 
+      const appendResult = (result: any, index: number) => {
+        const opt = document.createElement("a");
+        opt.className = "ca-search__result-link";
+        opt.id = `ca-search-opt-${index}`;
+        opt.setAttribute("role", "option");
+        opt.setAttribute("aria-selected", "false");
+        opt.href = withBase(result.url);
+        const title = document.createElement("span");
+        title.className = "ca-search__result-title";
+        title.textContent = result.meta?.title || result.url;
+        const excerpt = document.createElement("span");
+        excerpt.className = "ca-search__result-excerpt";
+        // Excerpt is our own content (Pagefind highlights with <mark>); safe.
+        excerpt.innerHTML = result.excerpt || "";
+        opt.append(title, excerpt);
+        // Mouse and keyboard share one highlight.
+        opt.addEventListener("mousemove", () => setActive(index));
+        listbox.append(opt);
+        options.push(opt);
+      };
+
       // Monotonic token so a slow query that resolves late cannot overwrite the
       // results of a newer keystroke (live search fires overlapping queries).
       let latest = 0;
-      const render = async (query: string) => {
+      const render = async (query: string, forceLoad = false) => {
         const token = ++latest;
-        await loadPagefind();
+        await loadPagefind(forceLoad);
         if (token !== latest) return;
         if (loadErr || !pagefind) {
           listbox.replaceChildren();
           options = [];
+          remainingResults = [];
           clearActive();
-          status.textContent =
-            "Search runs on the built site. Run the production build to try it locally.";
+          showAll.hidden = true;
+          retry.hidden = false;
+          status.textContent = "Search is temporarily unavailable.";
           open();
           return;
         }
@@ -163,8 +206,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         if (token !== latest) return;
         listbox.replaceChildren();
         options = [];
+        remainingResults = search.results.slice(8);
+        resultQuery = query;
         active = -1;
         input.setAttribute("aria-activedescendant", "");
+        retry.hidden = true;
+        showAll.disabled = false;
+        showAll.hidden = remainingResults.length === 0;
+        showAll.textContent = `Show all ${search.results.length} results`;
         if (data.length === 0) {
           status.textContent = `No results for "${query}".`;
           open();
@@ -173,28 +222,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         status.textContent = `${search.results.length} result${
           search.results.length === 1 ? "" : "s"
         } for "${query}".`;
-        data.forEach((r: any, i: number) => {
-          const opt = document.createElement("a");
-          opt.className = "ca-search__result-link";
-          opt.id = `ca-search-opt-${i}`;
-          opt.setAttribute("role", "option");
-          opt.setAttribute("aria-selected", "false");
-          opt.href = withBase(r.url);
-          const title = document.createElement("span");
-          title.className = "ca-search__result-title";
-          title.textContent = r.meta?.title || r.url;
-          const excerpt = document.createElement("span");
-          excerpt.className = "ca-search__result-excerpt";
-          // Excerpt is our own content (Pagefind highlights with <mark>); safe.
-          excerpt.innerHTML = r.excerpt || "";
-          opt.append(title, excerpt);
-          // Mouse and keyboard share one highlight.
-          opt.addEventListener("mousemove", () => setActive(i));
-          listbox.append(opt);
-          options.push(opt);
-        });
+        data.forEach(appendResult);
         open();
       };
+
+      retry.addEventListener("click", () => {
+        const query = input.value.trim();
+        if (query) void render(query, true);
+      });
+
+      showAll.addEventListener("click", async () => {
+        if (remainingResults.length === 0) return;
+        const token = ++latest;
+        const pending = remainingResults;
+        showAll.disabled = true;
+        const data = await Promise.all(pending.map((result: any) => result.data()));
+        if (token !== latest) return;
+        remainingResults = [];
+        const offset = options.length;
+        data.forEach((result: any, index: number) => appendResult(result, offset + index));
+        showAll.hidden = true;
+        showAll.disabled = false;
+        status.textContent = `${options.length} results for "${resultQuery}".`;
+      });
 
       // Live search: debounce keystrokes so we query as the user types without
       // firing on every character. Enter activates the highlighted option.
@@ -203,6 +253,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         const q = input.value.trim();
         window.clearTimeout(debounceId);
         if (!q) {
+          latest += 1;
+          retry.hidden = true;
+          showAll.hidden = true;
           close();
           return;
         }
@@ -214,6 +267,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         const q = input.value.trim();
         window.clearTimeout(debounceId);
         if (!q) {
+          latest += 1;
+          retry.hidden = true;
+          showAll.hidden = true;
           close();
           return;
         }
