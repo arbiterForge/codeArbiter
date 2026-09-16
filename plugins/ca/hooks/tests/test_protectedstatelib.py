@@ -362,7 +362,10 @@ class TestMarkerNameFor(unittest.TestCase):
     def test_marker_name_for_is_collision_free_across_sub_directories(self):
         # M5: two registry entries that merely share a filename in different
         # directories must mint two DIFFERENT markers - minting the marker
-        # for one would otherwise admit a write to the other.
+        # for one would otherwise admit a write to the other. Accepted,
+        # unexercised here: #624's case fold means two directories whose
+        # names differ ONLY by case (e.g. "nested" vs "Nested") DO collide
+        # into one marker - a deliberate widen, not a narrow, of H-22.
         self.assertNotEqual(
             marker_name_for(".codearbiter/release-targets.md"),
             marker_name_for(".codearbiter/nested/release-targets.md"),
@@ -400,6 +403,15 @@ class TestMarkerNameFor(unittest.TestCase):
         self.assertEqual(
             marker_name_for(".codearbiter/release-targets.md"),
             marker_name_for(".codearbiter/RELEASE-TARGETS.MD"),
+        )
+
+    def test_marker_name_for_is_case_insensitive_on_directory_segments(self):
+        # #624: the fold must apply to every path segment, not just the
+        # filename - a differently-cased directory segment is the same
+        # widen-not-narrow gap lookup_policy already closed for the basename.
+        self.assertEqual(
+            marker_name_for(".codearbiter/nested/release-targets.md"),
+            marker_name_for(".codearbiter/Nested/Release-Targets.md"),
         )
 
 

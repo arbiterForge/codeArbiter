@@ -381,6 +381,16 @@ def marker_name_for(rel_path):
     (non-empty) rel_path can ever produce, since a real segment always
     contributes a non-empty stem.
 
+    Every segment is case-folded (`.lower()`) before encoding (#624), matching
+    `_canon`/`lookup_policy`'s own case-insensitive registry comparison: a
+    marker name computed for a differently-cased Write/Edit target must equal
+    the one minted under the registry's canonical casing, or a legitimate
+    authoring write is wrongly blocked despite a fresh, correctly-minted
+    marker. This widens what two paths can collide into one marker (a
+    same-name directory differing only by case now shares a marker with its
+    canonical sibling) - the same accepted "widens admission, never narrows
+    protection" tradeoff `lookup_policy`'s own case fold already makes.
+
     Residual (accepted): the escaping above closes hyphen/segment-boundary
     ambiguity but is not a fully bijective encoding against adversarially
     crafted underscore runs (e.g. a directory literally named "a_" holding
