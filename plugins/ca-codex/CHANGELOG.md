@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.10.3] - 2026-09-16
+
+### Fixed
+
+- `marker_name_for()` now case-folds every path segment before encoding, matching `_canon`/`lookup_policy`'s existing case-insensitive registry comparison, so a differently-cased Write/Edit target no longer computes a marker name that was never minted (#624).
+
 ## [0.10.2] - 2026-09-15
 
 ### Fixed
