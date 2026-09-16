@@ -1830,3 +1830,28 @@ Maintainable and Scalable permit routine upstream advancement without a new arch
 Bind the accepted ADR to the newly derived and independently reviewed 65-obligation set, preserve its source ancestry through merge delivery, and apply the same reviewed promotion boundary to future Pi version updates.
 
 ---
+
+## DECISION-0062 — adr-0036-ratified — Adopt bounded authorization for routine cleanup, gated on a proven backend
+
+**Date:** 2026-09-16
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly instructed "Accept adr through /adr" after reviewing the drafted decision content in full.
+**Decision category:** governance / safety-policy direction
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** No existing ADR addresses whether routine branch/worktree cleanup may use bounded (batch) authorization instead of unconditional per-item confirmation.
+- **Scaffold position:** The user reviewed a commissioned proposal and an independent opus adversarial review of it, then explicitly directed recording bounded authorization as the target direction, gated on a proof/mutation backend existing first.
+- **Status type:** open-decision-closure
+
+### Decision
+Endorse bounded authorization as the target direction for routine local branch/worktree cleanup, without changing any confirmation behavior today. safety-core.md §6's unconditional per-item confirmation clause stays in force until a later ADR explicitly supersedes it, after an authoritative inventory, an integration-proof evaluator, and a guarded mutation backend exist and have been independently reviewed.
+
+### SMARTS rationale
+Maintainable and Scalable favor recording the direction now so safety-positive inventory-hardening work has a clear destination without re-litigating this question later. Securable and Reliable are why the gating precondition exists at all: the opus review found no hook backstops branch/worktree deletion today, so per-item confirmation is the entire control, and loosening it before a trusted backend exists would trade a fail-safe posture for a fail-open one.
+
+### Implementation implication
+Seal ADR-0036's obligations against its exact accepted bytes, commit the accepted source and this log entry together, then append the content-bound lifecycle acceptance event in a separate subsequent commit while preserving source ancestry through delivery. No change to safety-core.md, arbiter.md, routing-table.md, or commands/pr.md rides this decision.
+
+---
