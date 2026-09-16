@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.3] - 2026-09-16
+
+### Fixed
+
+- `marker_name_for()` now case-folds every path segment before encoding, matching `_canon`/`lookup_policy`'s existing case-insensitive registry comparison, so a differently-cased Write/Edit target no longer computes a marker name that was never minted (#624).
+
+### Added
+
+- Backfill `.codearbiter/code-map.md` and its provenance record for this repository's own project state.
+
 ## [2.18.2] - 2026-09-15
 
 ### Fixed

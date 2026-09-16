@@ -96,3 +96,6 @@ site/coverage/
 # docker-gate.ts when CA_SANDBOX_DOCKER_SENTINEL is set (required CI does; a
 # developer may set it locally too). Run output, never project state.
 *.sentinel
+
+# Local campaign dashboard used as persistent agent working memory.
+/campaign.html

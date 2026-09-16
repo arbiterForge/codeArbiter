@@ -713,9 +713,10 @@ not commit a sanctioned row edit. The residuals below were declared ahead of
 enrolment and remain live.
 
 **Case and canonicalization are deliberately GLOBAL, not host-filesystem-
-dependent.** Both flanks — `_protectedstatelib.lookup_policy`'s registry
-comparison and `_bashguardlib._state_write_res`'s shell regexes — treat a
-registered path case-INSENSITIVELY and tolerate a `./` prefix, a trailing
+dependent.** All THREE surfaces — `_protectedstatelib.lookup_policy`'s registry
+comparison, `_bashguardlib._state_write_res`'s shell regexes, and
+`_protectedstatelib.marker_name_for`'s marker-basename encoding (#624) — treat
+a registered path case-INSENSITIVELY and tolerate a `./` prefix, a trailing
 slash, a doubled slash, and a leading/trailing space. Matching the *host*
 filesystem's own case-sensitivity was considered and rejected: it varies by
 platform AND by volume on the same platform (Windows/NTFS and default macOS/
@@ -723,10 +724,15 @@ APFS are case-preserving-but-insensitive; Linux ext4 and non-default macOS
 volumes are case-sensitive), and `os.path.realpath` does not reliably fold
 case for a path that does not yet exist on disk — exactly the case of a Write
 that creates a protected-state file for the first time. A fixed,
-case-insensitive rule that both flanks can apply without inspecting the
-filesystem was judged safer: it only WIDENS what H-22 protects (a same-
-directory file whose name differs from a registered path only by case is also
-treated as protected), never narrows it.
+case-insensitive rule that all three surfaces can apply without inspecting the
+filesystem was judged safer, though the three widen two distinct things: the
+first two WIDEN CLASSIFICATION (a same-directory file whose name differs from
+a registered path only by case is also treated as protected, never narrowed
+out of protection); `marker_name_for` instead WIDENS ADMISSION (a
+differently-cased target now resolves to the same marker its canonical
+sibling mints, so a case variant is admitted by a marker it did not itself
+earn) — the correct direction for a helper that must AGREE with the other
+two's classification, not disagree and wrongly block.
 
 **The bare-basename shell anchor over-matches by design, and the known false
 blocks are accepted.** H-22's shell flank matches a registered file's bare
