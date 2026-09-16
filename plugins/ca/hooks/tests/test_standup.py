@@ -295,6 +295,25 @@ class TestStaleWorktreeCandidates(unittest.TestCase):
         )
         self.assertEqual(out, [])
 
+    def test_locked_worktree_never_a_candidate_even_with_gone_branch_and_missing_path(self):
+        # T-03: a lock is an explicit Git-level protection signal (git worktree
+        # remove itself refuses a locked worktree) -- surfacing a locked worktree
+        # as a hygiene candidate would misrepresent it as ordinary stale output.
+        locked = dict(self._wt("/wt/locked", "old-feature", False), locked=True)
+        out = sl.stale_worktree_candidates(
+            [locked], {"old-feature"}, path_exists=lambda p: False
+        )
+        self.assertEqual(out, [])
+
+    def test_unlocked_sibling_of_a_locked_worktree_still_a_candidate(self):
+        # The locked exclusion must not swallow other, unrelated stale entries.
+        locked = dict(self._wt("/wt/locked", "old-feature", False), locked=True)
+        unlocked = self._wt("/wt/gone", "old-feature", False)
+        out = sl.stale_worktree_candidates(
+            [locked, unlocked], {"old-feature"}, path_exists=lambda p: True
+        )
+        self.assertEqual(out, [unlocked])
+
 
 class TestParseWorktrees(unittest.TestCase):
     def test_main_worktree_flagged(self):
@@ -311,11 +330,16 @@ class TestParseWorktrees(unittest.TestCase):
         )
         out = sl.parse_worktrees(text, repo_root=root)
         self.assertEqual(len(out), 2)
-        self.assertEqual(out[0], {"path": "/home/u/repo", "branch": "main", "is_main": True})
-        self.assertEqual(
-            out[1],
-            {"path": "/home/u/repo-feature", "branch": "feature-x", "is_main": False},
-        )
+        self.assertEqual(out[0], {
+            "path": "/home/u/repo", "branch": "main", "is_main": True,
+            "head": "abc1234", "detached": False, "locked": False,
+            "locked_reason": None,
+        })
+        self.assertEqual(out[1], {
+            "path": "/home/u/repo-feature", "branch": "feature-x", "is_main": False,
+            "head": "def5678", "detached": False, "locked": False,
+            "locked_reason": None,
+        })
 
     def test_detached_worktree_has_none_branch(self):
         root = "/home/u/repo"
@@ -332,6 +356,43 @@ class TestParseWorktrees(unittest.TestCase):
         out = sl.parse_worktrees(text, repo_root=root)
         self.assertEqual(out[1]["branch"], None)
         self.assertFalse(out[1]["is_main"])
+        # SD/T-03: detached and the exact OID were previously dropped ("HEAD /
+        # detached / bare / locked lines carry no fields we surface here").
+        self.assertTrue(out[1]["detached"])
+        self.assertEqual(out[1]["head"], "def5678")
+
+    def test_locked_worktree_without_reason_captures_lock_state(self):
+        # T-03: a bare `locked` line (no reason given) was previously dropped
+        # entirely, so a caller had no way to know the worktree was protected.
+        root = "/home/u/repo"
+        text = (
+            "worktree /home/u/repo\n"
+            "HEAD abc1234\n"
+            "branch refs/heads/main\n"
+            "\n"
+            "worktree /home/u/repo-locked\n"
+            "HEAD def5678\n"
+            "branch refs/heads/feature-x\n"
+            "locked\n"
+            "\n"
+        )
+        out = sl.parse_worktrees(text, repo_root=root)
+        self.assertTrue(out[1]["locked"])
+        self.assertIsNone(out[1]["locked_reason"])
+        self.assertFalse(out[0]["locked"])
+
+    def test_locked_worktree_with_reason_captures_reason(self):
+        root = "/home/u/repo"
+        text = (
+            "worktree /home/u/repo-locked\n"
+            "HEAD def5678\n"
+            "branch refs/heads/feature-x\n"
+            "locked mid-rebase, do not touch\n"
+            "\n"
+        )
+        out = sl.parse_worktrees(text, repo_root=root)
+        self.assertTrue(out[0]["locked"])
+        self.assertEqual(out[0]["locked_reason"], "mid-rebase, do not touch")
 
     def test_empty_input(self):
         self.assertEqual(sl.parse_worktrees("", repo_root="/home/u/repo"), [])
