@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.10.4] - 2026-09-16
+
+### Fixed
+
+- `includes/routing-table.md`'s Hard gate column had drifted behind already-shipped skill behavior: the standup row required per-item confirmation for every worktree removal even though `commands/standup.md` already permits one named enumerated group, and the post-merge-cleanup row named ancestry + `branch -d` only even though `skills/post-merge-cleanup/SKILL.md` already documents the PR-record squash-proof path and its restricted `-D` exception.
+
 ## [0.10.3] - 2026-09-16
 
 ### Fixed
