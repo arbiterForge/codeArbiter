@@ -129,6 +129,47 @@ class TestBranchRefInventory(unittest.TestCase):
         self.assertEqual(cleanuplib.parse_branch_ref_inventory(""), [])
         self.assertEqual(cleanuplib.parse_branch_ref_inventory(None), [])
 
+    def test_a_unicode_line_separator_in_a_branch_name_does_not_fabricate_a_phantom_record(self):
+        # Independent review follow-up, 2026-09-17: this parser split on
+        # `str.splitlines()`, the exact same hazard HIGH-2 fixed in
+        # parse_worktree_inventory's sibling function -- `git
+        # check-ref-format` accepts a branch name containing U+2028, but
+        # `str.splitlines()` treats it as a record separator while this
+        # tab-delimited format does not. A `splitlines()` split truncates
+        # the genuine branch's line mid-name and parses the remainder as a
+        # second, fully "clean" record carrying the REAL branch's own OID
+        # and a fabricated confirmed-absent upstream -- reopening H-1's
+        # exact hazard (a confirmed-absent upstream fabricated from a
+        # truncated read) through a different door.
+        text = "refs/heads/a b\taaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\t\t\n"
+        records = cleanuplib.parse_branch_ref_inventory(text)
+        self.assertEqual(len(records), 1)
+        r = records[0]
+        self.assertEqual(r.name, "a b")
+        self.assertEqual(r.oid, "aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111")
+
+    def test_a_crlf_line_ending_does_not_corrupt_a_branch_row(self):
+        # Every field this parser reads is stripped individually, so a
+        # stray trailing "\r" from a CRLF-terminated line must never leak
+        # into name/oid/upstream/upstream_gone.
+        text = "main\taaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\torigin/main\t\r\n"
+        records = cleanuplib.parse_branch_ref_inventory(text)
+        r = records[0]
+        self.assertEqual(r.name, "main")
+        self.assertEqual(r.oid, "aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111")
+        self.assertEqual(r.upstream, "origin/main")
+        self.assertFalse(r.read_error)
+
+    def test_an_upstream_tracking_a_local_branch_is_also_stripped_to_its_short_name(self):
+        # Independent review follow-up, 2026-09-17: %(upstream) is USUALLY
+        # `refs/remotes/...` but is legally `refs/heads/...` when a branch
+        # tracks another local branch (`git branch --set-upstream-to`) --
+        # stripping only the remotes prefix left that shape unstripped,
+        # silently breaking the "upstream is the short name" contract.
+        text = "feature/y\taaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\trefs/heads/main\t\n"
+        records = cleanuplib.parse_branch_ref_inventory(text)
+        self.assertEqual(records[0].upstream, "main")
+
     def test_a_full_refname_is_stripped_by_fixed_prefix_not_gits_short_form(self):
         # Second independent review, HIGH-1: %(refname:short) shortens
         # differently depending on what else exists in the repo -- a branch
@@ -329,6 +370,48 @@ class TestWorktreeInventory(unittest.TestCase):
         self.assertEqual(r.path, path)
         self.assertEqual(r.branch, "main")
         self.assertFalse(r.read_error)
+
+    def test_a_crlf_locked_line_is_still_recognized_as_locked(self):
+        # Independent review follow-up, 2026-09-17: switching from
+        # `str.splitlines()` to a literal "\n"-only split (HIGH-2's fix)
+        # leaves a trailing "\r" on every line under CRLF input. The
+        # bare-keyword lines `_apply_worktree_line` matches by EXACT
+        # equality ("locked", "detached", "bare") would then silently fail
+        # to match at all. For "detached"/"bare" that surfaces safely as
+        # read_error=True (no branch/detached and no HEAD, respectively),
+        # but for bare "locked" (no reason) it is fail-UNSAFE: a genuinely
+        # locked worktree would come back locked=False, read_error=False --
+        # exactly the "confirmed not locked" a disposal decision would
+        # misuse. ("locked <reason>" survives even the buggy rstrip("\n")
+        # via startswith()+strip() on the reason text, so it does not by
+        # itself prove this fix -- the bare keyword is the real witness.)
+        text = (
+            "worktree /repo-wt/x\r\n"
+            "HEAD aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\r\n"
+            "branch refs/heads/feature/x\r\n"
+            "locked\r\n"
+        )
+        records = cleanuplib.parse_worktree_inventory(text, path_exists_fn=lambda p: True)
+        r = records[0]
+        self.assertTrue(r.locked)
+        self.assertFalse(r.read_error)
+
+    def test_a_crlf_detached_and_bare_line_are_still_recognized(self):
+        text = (
+            "worktree /repo-wt/y\r\n"
+            "HEAD bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222\r\n"
+            "detached\r\n"
+        )
+        records = cleanuplib.parse_worktree_inventory(text, path_exists_fn=lambda p: True)
+        r = records[0]
+        self.assertTrue(r.detached)
+        self.assertFalse(r.read_error)
+
+        bare_text = "worktree /repo.git\r\nbare\r\n"
+        bare_records = cleanuplib.parse_worktree_inventory(bare_text, path_exists_fn=lambda p: True)
+        br = bare_records[0]
+        self.assertTrue(br.bare)
+        self.assertFalse(br.read_error)
 
 
 class TestWorktreeInventoryNulDelimited(unittest.TestCase):
@@ -594,6 +677,18 @@ class TestWorktreeLossSurface(unittest.TestCase):
         self.assertIs(surface_locked.retain, True)
         self.assertIs(surface_current.retain, True)
         self.assertIs(surface_nested.retain, True)
+
+    def test_a_non_bool_truthy_signal_still_yields_a_real_bool_retain(self):
+        # Independent review follow-up, 2026-09-17: the unknown-input check
+        # only refuses `UNREADABLE` and `None` -- it does not refuse an
+        # arbitrary other non-bool value a careless caller might pass for
+        # is_locked/is_current_worktree/has_nested_repo (e.g. 1/0). `retain`
+        # must still come back a REAL bool (M-3), never whatever type
+        # happened to be the last truthy/falsy operand in the `or` chain.
+        surface = cleanuplib.classify_worktree_loss_surface(
+            status_text="", is_locked=1, is_current_worktree=False, has_nested_repo=False,
+        )
+        self.assertIs(surface.retain, True)
 
     def test_dirty_content_is_retained(self):
         surface = cleanuplib.classify_worktree_loss_surface(
