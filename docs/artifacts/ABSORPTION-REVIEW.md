@@ -160,7 +160,7 @@ packaging, release or rollout condition remains open.
   The old reference
   harness now writes explicit UTF-8/LF fixtures on Windows; reviewed artifact
   bytes and the production format were not changed.
-- Fresh exact-candidate native-Windows T-024 pilot: clean commit `12ab0ef2` built
+- Fresh exact-candidate native-Windows T-024 pilot: clean commit `2ea35d02` reproduced the
   release manifest `88310faf63984ad1a092002414be17ce1d50cf70c2a07ef4209e89a3558462f9`
   and executable `daf464c0d9bdea9ce363268b262f00ef8fba0abf9ebebb5a0c8969c483625fbe`.
   A selected legacy pair produced a digest-bound preview, applied with a
