@@ -68,9 +68,24 @@ STDIN_TIMEOUT_SECONDS = 5
 # indefinitely, exactly as the 2026-08-10 snapshot recorded (45 stranded
 # adapter/guard pairs, ~1.15GB). Env-overridable so a test can prove
 # termination without waiting out the production default.
-GUARD_TIMEOUT_SECONDS = float(
-    os.environ.get("CODEARBITER_CODEX_GUARD_TIMEOUT_SECONDS", "30")
-)
+_GUARD_TIMEOUT_DEFAULT_SECONDS = 30
+
+
+def _guard_timeout_seconds():
+    """A malformed override must not crash the adapter at import time — that
+    would turn a bug in an *observability* knob into a hard failure of every
+    tool call, the opposite of this file's fail-closed-but-never-crash
+    posture. Falls back to the production default on any parse failure."""
+    raw = os.environ.get("CODEARBITER_CODEX_GUARD_TIMEOUT_SECONDS")
+    if raw is None:
+        return _GUARD_TIMEOUT_DEFAULT_SECONDS
+    try:
+        return float(raw)
+    except ValueError:
+        return _GUARD_TIMEOUT_DEFAULT_SECONDS
+
+
+GUARD_TIMEOUT_SECONDS = _guard_timeout_seconds()
 
 # tool_name values Codex reports for the apply_patch envelope (Write/Edit are
 # matcher-only aliases carrying the same payload). This is a deliberate local

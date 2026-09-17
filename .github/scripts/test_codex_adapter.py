@@ -207,9 +207,16 @@ class TestPreToolAdapterLifecycle(unittest.TestCase):
                 )
                 self.assertEqual(proc.returncode, 0)
                 stdout = proc.stdout.read()
+                decision = json.loads(stdout)
                 self.assertEqual(
-                    json.loads(stdout).get("decision"), "block",
+                    decision.get("decision"), "block",
                     "a guard that never completes must fail closed",
+                )
+                self.assertIn(
+                    "did not complete within", decision.get("reason", ""),
+                    "the decline reason must name a timeout, not just any decline "
+                    "-- an operator needs to tell this apart from an incomplete or "
+                    "unroutable payload",
                 )
 
                 deadline = time.monotonic() + 5
@@ -229,6 +236,47 @@ class TestPreToolAdapterLifecycle(unittest.TestCase):
                     _pid_alive(guard_pid),
                     "the stalled guard must not survive as an orphan after the "
                     "adapter gives up waiting on it",
+                )
+            finally:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+                if proc.stdin and not proc.stdin.closed:
+                    proc.stdin.close()
+                if proc.stdout:
+                    proc.stdout.close()
+                if proc.stderr:
+                    proc.stderr.close()
+
+    def test_a_malformed_guard_timeout_override_falls_back_instead_of_crashing(self):
+        """#306 follow-up: GUARD_TIMEOUT_SECONDS parses
+        CODEARBITER_CODEX_GUARD_TIMEOUT_SECONDS at import time. A malformed
+        override (unset by a caller other than a test, or hand-edited) must
+        not turn an observability knob into a crash of every tool call --
+        the adapter should fall back to the production default and keep
+        working, not raise ValueError out of the process."""
+        with tempfile.TemporaryDirectory() as td:
+            adapter = stage_codex_hooks(td, lambda script: "")
+            repo = stage_repo(td, "repo-enabled", enabled=True)
+            payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": "echo hi"}})
+
+            proc = subprocess.Popen(
+                [sys.executable, adapter],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                cwd=repo,
+                env=adapter_env(guard_timeout="not-a-number"),
+            )
+            try:
+                proc.stdin.write(payload)
+                proc.stdin.close()
+                proc.wait(timeout=10)
+                self.assertEqual(
+                    proc.returncode, 0,
+                    f"a malformed timeout override must not crash the adapter; "
+                    f"stderr: {proc.stderr.read()}",
                 )
             finally:
                 if proc.poll() is None:
