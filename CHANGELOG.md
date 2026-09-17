@@ -26,6 +26,12 @@ predate the plugin rewrite and are grouped by date.
   Windows pinning is
   unchanged and no PATH or repository fallback is introduced.
 
+## [2.20.1] - 2026-09-17
+
+### Fixed
+
+- `core/pysrc/_cleanuplib.py`: a follow-on to 2.20.0's T-03 remediation, closing findings a further independent review surfaced after that fix had already merged. `parse_branch_ref_inventory` still split on `str.splitlines()` -- the same hazard already fixed in the sibling worktree parser -- letting a branch name containing a Unicode line-boundary character truncate its for-each-ref line and fabricate a phantom second record carrying the real branch's own OID and a confirmed-absent upstream. Also fixed: a CRLF-terminated worktree porcelain line could silently lose its `locked`/`detached`/`bare` flag (fail-unsafe for `locked`); `%(upstream)` pointing at another local branch (`refs/heads/...`, not just `refs/remotes/...`) was not stripped to its short name; and `classify_worktree_loss_surface`'s `retain` could come back a non-bool value for a non-bool caller input.
+
 ## [2.20.0] - 2026-09-17
 
 ### Added

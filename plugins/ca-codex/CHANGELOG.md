@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-09-17
+
+### Fixed
+
+- `_cleanuplib.py`: follow-on fixes to 0.12.0's T-03 remediation, found by a further independent review after that fix had merged (shared core/pysrc change). See the root `CHANGELOG.md` for full detail.
+
 ## [0.12.0] - 2026-09-17
 
 ### Added
