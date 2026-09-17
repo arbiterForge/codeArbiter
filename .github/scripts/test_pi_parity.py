@@ -173,15 +173,54 @@ class ParityCatalogCounts(unittest.TestCase):
                     "A source count is never a host count — each host excludes entries it "
                     "cannot serve.".format(relpath.as_posix()))
 
+    @staticmethod
+    def _row_cell(row, index):
+        """The `index`-th pipe-delimited cell of a Markdown table row (0 is the row label)."""
+        return row.strip().strip("|").split("|")[index]
+
+    @classmethod
+    def _with_columns_swapped(cls, row, i, j):
+        cells = row.strip().strip("|").split("|")
+        cells[i], cells[j] = cells[j], cells[i]
+        return "|" + "|".join(cells) + "|"
+
     def test_the_public_entries_row_matches_too(self):
-        """The table row and the prose line are two places one fact is stated."""
+        """The table row and the prose line are two places one fact is stated.
+
+        Bound to each plugin's OWN column, not the row as a whole (issue #690):
+        `assertIn(count, row)` alone passes even when two plugins' counts are
+        swapped between columns, since both numbers still appear SOMEWHERE in
+        the row — see test_the_public_entries_row_catches_a_swapped_column_mutant.
+        """
         parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
         row = next((line for line in parity.splitlines()
                     if line.startswith("| Public entries ")), None)
         self.assertIsNotNone(row, "the Public entries row is gone — this guard measures nothing")
-        for plugin, relpath in self._CATALOGS.items():
+        for index, (plugin, relpath) in enumerate(self._CATALOGS.items(), start=1):
             with self.subTest(plugin=plugin):
-                self.assertIn(str(self._generated_count(relpath)), row)
+                self.assertIn(str(self._generated_count(relpath)), self._row_cell(row, index))
+
+    def test_the_public_entries_row_catches_a_swapped_column_mutant(self):
+        """House rule: every test must die to a mutant. A column swap between
+        two plugins' counts must fail the per-cell check even though both
+        numbers still appear somewhere in the row — the #690 blind spot."""
+        parity = (REPO / "docs" / "parity.md").read_text(encoding="utf-8")
+        row = next(line for line in parity.splitlines() if line.startswith("| Public entries "))
+        counts = [self._generated_count(relpath) for relpath in self._CATALOGS.values()]
+        self.assertNotEqual(
+            counts[0], counts[1],
+            "ca and ca-codex currently report the same count — this mutant is "
+            "indistinguishable from a correct row; pick two columns that differ")
+        swapped = self._with_columns_swapped(row, 1, 2)  # ca <-> ca-codex columns
+
+        # the OLD whole-row assertIn still can't see the swap: both numbers are
+        # still present in the row somewhere, so it would have passed silently.
+        self.assertIn(str(counts[0]), swapped)
+        self.assertIn(str(counts[1]), swapped)
+
+        # the per-cell check correctly rejects ca's count sitting in ca-codex's column
+        with self.assertRaises(AssertionError):
+            self.assertIn(str(counts[0]), self._row_cell(swapped, 1))
 
     def test_the_orchestrator_routines_row_matches_each_generated_host(self):
         """Keep documented routine counts bound to each generated host surface."""
