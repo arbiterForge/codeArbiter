@@ -26,12 +26,6 @@ predate the plugin rewrite and are grouped by date.
   Windows pinning is
   unchanged and no PATH or repository fallback is introduced.
 
-## [2.19.0] - 2026-09-16
-
-### Added
-
-- Add a disabled-by-default, extensible structured-artifact engine foundation for canonical HTML specifications and implementation plans, with bounded typed operations, Linux and Windows recovery semantics, verified native bridges, descriptor-relative Unix installation, and required three-host CI. The Windows developer installer fails closed pending a reviewed release-packaging boundary, and HTML farm dispatch remains blocked pending integration and qualification.
-
 ## [2.20.0] - 2026-09-17
 
 ### Added
@@ -41,6 +35,12 @@ predate the plugin rewrite and are grouped by date.
 ### Fixed
 
 - `core/pysrc/_cleanuplib.py`: closes 3 blocking and 5 high-severity gaps an independent review found in T-03 as first merged (verdict: NO-GO). The main worktree is no longer identified by comparing a path string against a caller-supplied repo root (wrong on every linked worktree, and on any Windows-vs-forward-slash path mismatch); an unavailable worktree list no longer defaults branch occupancy to "confirmed unoccupied"; a for-each-ref line without exactly 4 tab-separated fields is now fully unreadable rather than partially trusted; the filesystem-path guard is now an exact-allowlist match returning the resolved path, replacing a "nested under the repo root" rule that refused every real (sibling) worktree; and the worktree-loss classifier now accepts an explicit read-error signal and never lets an unreadable input leak through as a false "safe to remove." The CI job that runs this suite is now itself wired in, closing the same orphaned-suite gap the T-04/T-05 fix below (2.18.9) had to close for its own tests. Still true and not claimed otherwise: this closes the inventory gap but does not by itself satisfy ADR-0036's gate -- this remediation pass has not itself been independently re-reviewed, and nothing here is wired into a live route (T-06's job).
+
+## [2.19.0] - 2026-09-16
+
+### Added
+
+- Add a disabled-by-default, extensible structured-artifact engine foundation for canonical HTML specifications and implementation plans, with bounded typed operations, Linux and Windows recovery semantics, verified native bridges, descriptor-relative Unix installation, and required three-host CI. The Windows developer installer fails closed pending a reviewed release-packaging boundary, and HTML farm dispatch remains blocked pending integration and qualification.
 
 ## [2.18.9] - 2026-09-17
 
