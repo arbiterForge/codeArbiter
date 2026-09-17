@@ -123,6 +123,7 @@ class BridgeTests(unittest.TestCase):
                         workflow="feature",
                         lane="full",
                         client=client,
+                        html_requested=True,
                     )
                 self.assertEqual(got.exception.code, "CAPABILITY_MISSING")
                 self.assertIn("repair or reinstall", str(got.exception))

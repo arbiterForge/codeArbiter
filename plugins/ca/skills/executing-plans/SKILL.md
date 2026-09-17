@@ -8,8 +8,9 @@ disable-model-invocation: true
 
 ## Structured-artifact format boundary
 
-With a qualified normal package, new full feature and sprint workflows use HTML
-by default. Load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before HTML artifact I/O;
+Default rollout remains disabled. Existing HTML pairs and explicitly requested
+typed-HTML pilots use the installed engine. Load
+`${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before HTML artifact I/O;
 its typed identity, binding, receipt, contextual-read, and scope-state rules
 replace rendered-document parsing and direct status-cell edits. Existing
 authoritative Markdown pairs stay on their exact legacy path without conversion.

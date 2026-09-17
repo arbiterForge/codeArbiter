@@ -40,6 +40,11 @@ disposition below was checked against implementation and repository wiring.
   including both required merge-gate registrations and an impact-map edge.
 - Preserved the architectural decision as an extensible structured-artifact
   engine; no change to ADR-0004 was made or needed.
+- Preserved RA-11's byte-frozen no-argument `status` body. T-017's requested
+  typed status diagnostics cannot be added during the current compatibility
+  window without a separately approved major compatibility decision, so that
+  requirement is recorded as an open rollout blocker rather than treated as
+  complete or hidden by changing the frozen digest.
 
 ## Acceptance-criterion disposition
 
@@ -65,7 +70,7 @@ packaging, release or rollout condition remains open.
 | AC-014 | Engine pass; orchestrator partial | Scope state, reconciliation, stale evidence, interrupted REVIEW resume and atomic acceptance pass against the native candidate; real callers are not qualified. |
 | AC-015 | Partial | Canonical feature and sprint entries carry the disabled pilot boundary, and synthetic native-candidate authoring/execution fixtures pass; no complete real-host workflow has run. |
 | AC-016 | Partial | Typed scope links avoid Markdown proof for new artifacts; external issue-checkbox coverage remains heuristic. |
-| AC-017 | Partial | Advisory discovery and receipt-aware cache invalidation exist; full live hook/cache/dedup qualification is absent. |
+| AC-017 | Partial; compatibility blocker | Advisory discovery and receipt-aware cache invalidation exist. Doctor diagnostics are integrated, but RA-11 freezes the no-argument `status` body for the current compatibility window; status diagnostics and full live hook/cache/dedup qualification remain open. |
 | AC-018 | Implemented; promotion qualification pending | The minimal current-slice projection, immutable authorization/base binding, actual pre-canary and pre-dispatch guards, provider-only enrichment and exact-byte seal pass exact-head three-host CI. Current authority adapters, release-channel installed payloads and a fresh model-era matrix remain open, so use stays disabled. |
 | AC-019 | Local pass; production conversion open | Loss-aware line mappings and non-transfer of approvals are implemented. An exact-candidate native-Windows pair preview/apply preserved draft and unverified-authority state; no production repository pair has been converted. |
 | AC-020 | Three-host pass; production conversion open | Semantic cutover/rollback and native storage recovery pass in exact-head Linux, Windows and macOS CI. The exact-candidate Windows pilot restored both legacy files byte-for-byte and removed both HTML authorities. Production-host execution remains open. |
@@ -96,7 +101,7 @@ packaging, release or rollout condition remains open.
 | T-014 | Partial | Task/evidence/resume state exists; real host checkpoint orchestration is incomplete. |
 | T-015 | Locally implemented; host qualification pending | Canonical producer guidance and bridge calls create/read real HTML pairs, preserve incomplete drafts and fail closed without the payload; full generated-host execution is unproved. |
 | T-016 | Partial | Native-candidate fixtures cover dispatch, stale blocking, interrupted REVIEW resume and atomic scope acceptance; real feature/sprint entry traces remain incomplete. |
-| T-017 | Partial | Candidate discovery/cache/capability integration exists; live host suites remain. |
+| T-017 | Partial; explicit deviation | Candidate discovery/cache/capability integration and doctor diagnostics exist. The original task also requires status diagnostics, but RA-11 byte-freezes that no-argument command body through the current compatibility window. The status portion is not implemented and requires a separately approved major compatibility decision or a future contract-compatible mechanism; live host suites also remain. |
 | T-018 | Implemented; promotion qualification pending | Projection, binding, durable downgrade marker, authorized enrichment, exact-byte/provider seal and shared runtime guards pass fresh local and exact-head three-host fixtures. Real authority, release-channel packaged-host and current mixed-model evidence are still required. |
 | T-019 | Local pass | Review-only loss-aware import is implemented; a selected production conversion remains. |
 | T-020 | Three-host pass; production conversion open | Recoverable pair cutover and guarded rollback pass in exact-head Linux, Windows and macOS CI; production-repository execution remains open. |
@@ -200,7 +205,9 @@ packaging, release or rollout condition remains open.
    release-channel installed host payloads and a fresh frontier/low-tier
    model matrix. The promotion bar starts at zero and gives the June 2026 run no credit.
 2. Complete real authority-event adapters and full producer, consumer, resume,
-   context, status and doctor closure on every generated host.
+   context and generated-host closure. T-017 status diagnostics remain blocked
+   by RA-11's current compatibility window; doctor diagnostics are integrated
+   but still need exact-head host qualification.
 3. Preserve the declared lack of physical-power-loss/network-filesystem proof
    until those fault classes are explicitly qualified.
 4. Package provenance-bound, checksummed native binaries into each release target and run

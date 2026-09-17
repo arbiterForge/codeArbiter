@@ -66,29 +66,42 @@ class PhysicalTestDirectoryTest(unittest.TestCase):
 class AuthoringRouteContractTest(unittest.TestCase):
     @staticmethod
     def _contract(text: str) -> dict[str, object]:
+        normalized = " ".join(text.split()).lower()
         default_off = any(
-            marker in text
+            marker in normalized
             for marker in (
-                "Legacy Markdown remains the default",
-                "Default legacy workflows remain unchanged",
-                "Keep existing Markdown workflows as the default",
+                "legacy markdown remains the default",
+                "default legacy workflows remain unchanged",
+                "keep existing markdown workflows as the default",
                 "normal host packages still ship no such payload",
+                "default rollout remains disabled",
+                "remains markdown by default",
+            )
+        )
+        html_default = any(
+            marker in normalized
+            for marker in (
+                "new full-lane specs use the installed structured-artifact engine",
+                "new full-lane sprint specs use the installed structured-artifact engine",
+                "new full feature and sprint spec/plan pairs default to canonical `.html`",
             )
         )
         return {
             "default_format": (
                 "conflict"
+                if default_off and html_default
+                else "md"
                 if default_off
                 else "html"
-                if "new full-lane" in text or "New full feature and sprint" in text
+                if html_default
                 else "unspecified"
             ),
             "capability_before_write": (
-                "before writing" in text and "must not fall back to Markdown" in text
+                "before writing" in normalized and "must not fall back to markdown" in normalized
             ),
             "existing_markdown": (
-                "existing `.md`" in text.lower()
-                and ("legacy path" in text.lower() or "remains markdown" in text.lower())
+                "existing `.md`" in normalized
+                and ("legacy path" in normalized or "remains markdown" in normalized)
             ),
             "html_farm": (
                 "disabled"
@@ -96,7 +109,7 @@ class AuthoringRouteContractTest(unittest.TestCase):
                 and ("disabled" in text or "blocked" in text or "must block" in text)
                 else "unspecified"
             ),
-            "pilot_or_default_off_language": "pilot" in text.lower() or default_off,
+            "pilot_or_default_off_language": "pilot" in normalized or default_off,
         }
 
     def test_composed_authoring_instructions_define_one_default_contract(self) -> None:
@@ -107,11 +120,11 @@ class AuthoringRouteContractTest(unittest.TestCase):
             "artifacts-include": ARTIFACTS_INCLUDE,
         }
         expected = {
-            "default_format": "html",
+            "default_format": "md",
             "capability_before_write": True,
             "existing_markdown": True,
             "html_farm": "disabled",
-            "pilot_or_default_off_language": False,
+            "pilot_or_default_off_language": True,
         }
 
         observed = {
@@ -121,22 +134,21 @@ class AuthoringRouteContractTest(unittest.TestCase):
 
         self.assertEqual(observed, {name: expected for name in sources})
 
-    def test_full_lane_defaults_to_installed_html_without_markdown_fallback(self) -> None:
+    def test_html_requires_explicit_pilot_without_markdown_fallback(self) -> None:
         feature = FEATURE_COMMAND.read_text(encoding="utf-8")
         sprint = SPRINT_PROCEDURE.read_text(encoding="utf-8")
         brainstorming = BRAINSTORMING_SKILL.read_text(encoding="utf-8")
 
         for source in (feature, sprint, brainstorming):
             self.assertIn("`_select_authoring_route`", source)
-            self.assertIn("new full-lane", source)
-            self.assertIn("installed structured-artifact engine", source)
-            self.assertIn("`.html`", source)
+            self.assertIn("explicit", source.lower())
+            self.assertIn("html_requested: true", source)
+            self.assertIn(".html", source)
             self.assertIn("before writing", source)
             self.assertIn("must not fall back to Markdown", source)
 
-        self.assertNotIn("Legacy Markdown remains the default", feature)
-        self.assertNotIn("Legacy Markdown remains the default", sprint)
-        self.assertNotIn("Default legacy workflows remain unchanged", brainstorming)
+        for source in (feature, sprint, brainstorming):
+            self.assertIn("remains Markdown by default", " ".join(source.split()))
 
     def test_feature_small_lane_remains_inline_and_does_not_create_an_artifact(self) -> None:
         feature = FEATURE_COMMAND.read_text(encoding="utf-8")
@@ -190,30 +202,57 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
             if path.is_file()
         }
 
-    def _select(self, workflow: str, lane: str, client: object | None = None) -> dict:
+    def _select(
+        self,
+        workflow: str,
+        lane: str,
+        client: object | None = None,
+        *,
+        html_requested: bool = False,
+    ) -> dict:
         selector = getattr(_artifactlib, "_select_authoring_route", None)
         self.assertIsNotNone(selector, "private authoring route selector is missing")
-        return selector(self.root, "flow", workflow=workflow, lane=lane, client=client)
+        return selector(
+            self.root,
+            "flow",
+            workflow=workflow,
+            lane=lane,
+            client=client,
+            html_requested=html_requested,
+        )
 
-    def test_full_feature_and_sprint_select_html_future_paths_without_writing(self) -> None:
+    def test_full_feature_and_sprint_default_to_markdown_without_writing(self) -> None:
         for workflow in ("feature", "sprint"):
             with self.subTest(workflow=workflow):
-                client = ArtifactClient(self.root, self.installation)
                 before = self._snapshot()
 
-                selected = self._select(workflow, "full", client)
+                selected = self._select(workflow, "full")
 
                 self.assertEqual(selected["mode"], "artifact")
                 self.assertEqual(selected["workflow"], workflow)
-                self.assertEqual(selected["format"], "html")
+                self.assertEqual(selected["format"], "md")
                 self.assertEqual(selected["state"], "absent")
                 self.assertEqual(
-                    selected["spec_path"], self.root / ".codearbiter/specs/flow.html"
+                    selected["spec_path"], self.root / ".codearbiter/specs/flow.md"
                 )
                 self.assertEqual(
-                    selected["plan_path"], self.root / ".codearbiter/plans/flow.html"
+                    selected["plan_path"], self.root / ".codearbiter/plans/flow.md"
                 )
                 self.assertEqual(self._snapshot(), before)
+
+    def test_explicit_html_pilot_selects_html_after_capability_probe(self) -> None:
+        client = ArtifactClient(self.root, self.installation)
+        before = self._snapshot()
+
+        selected = self._select(
+            "feature", "full", client, html_requested=True
+        )
+
+        self.assertEqual(selected["format"], "html")
+        self.assertEqual(
+            selected["spec_path"], self.root / ".codearbiter/specs/flow.html"
+        )
+        self.assertEqual(self._snapshot(), before)
 
     def test_forged_client_is_rejected_before_authoring_capability_call(self) -> None:
         class ForgedClient:
@@ -228,7 +267,7 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
         client = ForgedClient(self.root)
 
         with self.assertRaises(ArtifactError) as caught:
-            self._select("feature", "full", client)
+            self._select("feature", "full", client, html_requested=True)
 
         self.assertEqual(caught.exception.code, "CAPABILITY_MISSING")
         self.assertEqual(client.calls, 0)
@@ -244,7 +283,7 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
             side_effect=AssertionError("wrong-root client must not be called"),
         ):
             with self.assertRaises(ArtifactError) as caught:
-                self._select("sprint", "full", client)
+                self._select("sprint", "full", client, html_requested=True)
 
         self.assertEqual(caught.exception.code, "CAPABILITY_MISSING")
 
@@ -304,7 +343,7 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
             with self.subTest(client=type(client).__name__):
                 before = self._snapshot()
                 with self.assertRaises(ArtifactError):
-                    self._select("sprint", "full", client)
+                    self._select("sprint", "full", client, html_requested=True)
                 self.assertEqual(self._snapshot(), before)
 
     def test_selection_rechecks_namespace_after_capability_probe(self) -> None:
@@ -321,7 +360,7 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
 
         with mock.patch.object(client, "call", side_effect=inject):
             with self.assertRaises(ArtifactError) as caught:
-                self._select("feature", "full", client)
+                self._select("feature", "full", client, html_requested=True)
 
         self.assertIn(caught.exception.code, {"STALE_ROUTE", "AMBIGUOUS_ARTIFACT"})
         self.assertEqual(

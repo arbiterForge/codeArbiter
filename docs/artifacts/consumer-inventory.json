@@ -262,7 +262,7 @@
       "owner": "status command",
       "live": true,
       "treatment": "legacy-compatible",
-      "closure": "pending-capability-diagnostics",
+      "closure": "blocked-ra11-compatibility",
       "task_refs": ["T-017"],
       "canonical_paths": ["core/surface/commands/status.md"],
       "generated_paths": [
@@ -270,7 +270,7 @@
         "plugins/ca-codex/skills/ca-status/SKILL.md",
         "plugins/ca-pi/skills/ca-status/SKILL.md"
       ],
-      "reason": "Existing status behavior remains valid; typed capability and invalid-artifact diagnostics still require integration."
+      "reason": "Existing status behavior remains valid. RA-11 byte-freezes the no-argument status body throughout the current compatibility window, so typed capability and invalid-artifact diagnostics remain an explicit rollout blocker rather than being smuggled into the frozen surface."
     },
     {
       "id": "doctor-diagnostics",
@@ -278,7 +278,7 @@
       "owner": "doctor hook and command",
       "live": true,
       "treatment": "legacy-compatible",
-      "closure": "pending-capability-diagnostics",
+      "closure": "implemented-local-host-qualification-pending",
       "task_refs": ["T-017", "T-021"],
       "canonical_paths": ["core/pysrc/doctor.py", "core/surface/commands/doctor.md"],
       "generated_paths": [
@@ -289,7 +289,7 @@
         "plugins/ca-codex/skills/ca-doctor/SKILL.md",
         "plugins/ca-pi/skills/ca-doctor/SKILL.md"
       ],
-      "reason": "Doctor does not claim artifact availability; packaged-binary identity and capability rows remain open."
+      "reason": "Doctor invokes the installation-pinned capability and bounded repository diagnostics without eager schema loading or Markdown fallback. Exact-head generated-host qualification remains required."
     },
     {
       "id": "startup-context",

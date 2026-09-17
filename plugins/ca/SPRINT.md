@@ -9,20 +9,22 @@ that is not a true hard gate. Every auto-decision is logged. Hard gates are real
 
 ## Structured-artifact boundary
 
-For an existing `.html` spec/plan match or a new full-lane sprint, load
+For an existing `.html` spec/plan match, or when the user explicitly requests
+the typed-HTML pilot, load
 `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before resume classification or artifact
-I/O. New full-lane sprint specs use the installed structured-artifact engine to
-create the canonical `.html` artifact. Call `_select_authoring_route` with the
-trusted project root, slug, `workflow: sprint`, and `lane: full`; use only its
-returned format and paths. It checks the installed capability before writing;
-a missing or invalid helper is a STOP and the workflow must not fall back to Markdown.
+I/O. Call `_select_authoring_route` with the trusted project root, slug,
+`workflow: sprint`, `lane: full`, and `html_requested: true` only for that
+explicit pilot; use only its returned format and paths. For a selected HTML
+route it checks the installed capability before writing; a missing or invalid
+helper is a STOP and the workflow must not fall back to Markdown.
 Its validated identity, authority, binding and task-state operations replace the
 `.md` and status-column assumptions below for that pipeline. An existing `.md`
 pair remains on the legacy path. Discovery requires a
 complete same-extension spec/plan pair: select that exact pair as authoritative. A
 mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format, and the
 next plan must use the same extension. The workflow must not create, rename, or
-convert its counterpart to repair ambiguity. The HTML path must block `--farm` before canary
+convert its counterpart to repair ambiguity. New full-lane work remains Markdown
+by default during this rollout. The HTML path must block `--farm` before canary
 or dispatch; do not project it into legacy farm JSON.
 
 ## Execution backend: premium (default) vs. `--farm`
@@ -59,9 +61,11 @@ tasks → straight to Phase 2, executing only the remaining tasks; the legacy pl
 own format). An interrupted sprint is re-entered, never restarted.
 
 Route to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`), scoped to a **sprint** — a coherent chunk of work (several features or one
-goal), not a single feature. Drive it to a concrete sprint spec at
-`${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.html` through the installed engine, then to `writing-plans` (`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) for the task
-breakdown at `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<sprint-slug>.html`.
+goal), not a single feature. Drive it to a concrete sprint spec at the
+route-selected spec path, then to `writing-plans`
+(`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) for the task breakdown at the
+matching route-selected plan path. The disabled default uses `.md`; an explicit
+qualified pilot uses `.html` through the installed engine.
 
 This is the ONE interactive gate, and it is load-bearing: the thoroughness of the spec is what makes
 hard-gate stops rare later. Capture the user's intent, priorities, risk tolerance, and any

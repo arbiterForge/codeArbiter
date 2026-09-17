@@ -263,12 +263,17 @@ def _select_authoring_route(
     workflow: str,
     lane: str,
     client: object | None = None,
+    html_requested: bool = False,
 ) -> dict[str, object]:
     """Select inline or exact-format authoring without creating artifacts."""
     if workflow not in {"feature", "sprint"}:
         raise ArtifactError("INVALID_WORKFLOW", "workflow must be feature or sprint")
     if lane not in {"small", "full"}:
         raise ArtifactError("INVALID_LANE", "lane must be small or full")
+    if type(html_requested) is not bool:
+        raise ArtifactError(
+            "INVALID_ROUTE", "html_requested must be an explicit boolean"
+        )
     if lane == "small":
         return {
             "workflow": workflow,
@@ -280,6 +285,14 @@ def _select_authoring_route(
         }
 
     selected = _resolve_workflow_pair(root, slug)
+    if selected["state"] == "absent" and not html_requested:
+        trusted_root = Path(selected["spec_path"]).parent.parent.parent
+        selected = {
+            **selected,
+            "format": "md",
+            "spec_path": trusted_root / ".codearbiter" / "specs" / f"{slug}.md",
+            "plan_path": trusted_root / ".codearbiter" / "plans" / f"{slug}.md",
+        }
     if selected["format"] == "html":
         trusted_root = Path(selected["spec_path"]).parent.parent.parent
         if type(client) is not ArtifactClient or client.root != trusted_root:

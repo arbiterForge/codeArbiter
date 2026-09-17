@@ -201,9 +201,15 @@
         "T-015",
         "T-016"
       ],
-      "disposition": "Candidate integration",
+      "disposition": "Partial; status blocked by RA-11 compatibility",
       "formal_acceptance": "not_recorded",
-      "notes": "Advisory HTML catalog and receipt-aware dedup epoch, fail-open source inspection with explicit gate warning, seam tests. Full upstream cache/hook suite not run."
+      "deviation": {
+        "status": "open",
+        "original_requirement": "T-017 status diagnostics",
+        "conflicting_contract": "RA-11 frozen no-argument status body",
+        "required_resolution": "separately approved major compatibility decision or contract-compatible mechanism"
+      },
+      "notes": "Advisory HTML catalog and receipt-aware dedup epoch, fail-open source inspection with explicit gate warning, seam tests and doctor diagnostics are implemented. The original status-diagnostics requirement is not implemented because RA-11 byte-freezes the no-argument status body throughout the current compatibility window; changing the expected digest would weaken that contract. A separately approved major compatibility decision or a future contract-compatible mechanism is required. Full upstream cache/hook suite is also unqualified."
     },
     {
       "id": "T-018",

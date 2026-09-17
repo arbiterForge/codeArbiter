@@ -13,6 +13,8 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 INVENTORY_PATH = ROOT / "docs" / "artifacts" / "consumer-inventory.json"
+PLAN_STATUS_PATH = ROOT / "docs" / "artifacts" / "PLAN-STATUS.json"
+ABSORPTION_REVIEW_PATH = ROOT / "docs" / "artifacts" / "ABSORPTION-REVIEW.md"
 READINJECT_PATH = ROOT / "core" / "pysrc" / "_readinjectlib.py"
 DOCTOR_PATH = ROOT / "core" / "pysrc" / "doctor.py"
 STATUS_PATH = ROOT / "core" / "surface" / "commands" / "status.md"
@@ -247,16 +249,45 @@ class ArtifactConsumerClosureTest(unittest.TestCase):
         self.assertNotIn("_artifactlib", startup)
         self.assertNotIn("artifact.schema", startup)
 
-    def test_status_and_doctor_define_bounded_artifact_diagnostics(self) -> None:
+    def test_doctor_defines_bounded_artifact_diagnostics(self) -> None:
         status = STATUS_PATH.read_text(encoding="utf-8")
         doctor = DOCTOR_COMMAND_PATH.read_text(encoding="utf-8")
-        for text in (status, doctor):
-            self.assertIn("CAPABILITY_MISSING", text)
-            self.assertIn("repair or", text)
-            self.assertIn("reinstall", text)
-            self.assertIn("legacy Markdown", text)
-            self.assertIn("repair-preview", text)
-            self.assertIn("MUST NOT load the artifact schema", text)
+        self.assertIn("CAPABILITY_MISSING", doctor)
+        self.assertIn("repair or", doctor)
+        self.assertIn("reinstall", doctor)
+        self.assertIn("legacy Markdown", doctor)
+        self.assertIn("repair-preview", doctor)
+        self.assertIn("MUST NOT load the artifact schema", doctor)
+
+        diagnostics = next(
+            item
+            for item in self.inventory["consumers"]
+            if item["id"] == "status-diagnostics"
+        )
+        self.assertEqual(diagnostics["closure"], "blocked-ra11-compatibility")
+        self.assertIn("RA-11", diagnostics["reason"])
+        self.assertNotIn("CAPABILITY_MISSING", status)
+
+    def test_t017_status_deviation_remains_open_and_machine_readable(self) -> None:
+        plan_status = json.loads(PLAN_STATUS_PATH.read_text(encoding="utf-8"))
+        task = next(item for item in plan_status["tasks"] if item["id"] == "T-017")
+        self.assertEqual(task["formal_acceptance"], "not_recorded")
+        self.assertIn("Partial", task["disposition"])
+        self.assertEqual(
+            task["deviation"],
+            {
+                "status": "open",
+                "original_requirement": "T-017 status diagnostics",
+                "conflicting_contract": "RA-11 frozen no-argument status body",
+                "required_resolution": (
+                    "separately approved major compatibility decision or "
+                    "contract-compatible mechanism"
+                ),
+            },
+        )
+        review = ABSORPTION_REVIEW_PATH.read_text(encoding="utf-8")
+        self.assertIn("T-017 | Partial; explicit deviation", review)
+        self.assertIn("status portion is not implemented", review)
 
 
 if __name__ == "__main__":

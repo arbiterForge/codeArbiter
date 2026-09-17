@@ -1,17 +1,18 @@
 # Typed HTML specifications and plans
 
 Load inside the existing brainstorming, planning, TDD, execution or resume
-workflow for a full feature or sprint. This leaf adds no slash command, agent,
-skill registration or persistent model tool.
+workflow for an existing HTML pair or an explicitly requested typed-HTML pilot.
+This leaf adds no slash command, agent, skill registration or persistent model
+tool.
 
-**Default authoring boundary:** normal qualified packages provide the pinned
-native structured-artifact capability. New full feature and sprint spec/plan
-pairs default to canonical `.html` artifacts through that installed engine.
-Check the installed capability before writing; a missing, invalid, mismatched or
-unqualified capability is a STOP and the workflow must not fall back to Markdown
-or create any fallback artifact. Report `CAPABILITY_MISSING` and direct the user
-to repair or reinstall the pinned artifact payload before retrying. An existing `.md`
-exact pair remains Markdown
+**Pilot authoring boundary:** default rollout remains disabled until the
+required consumer and hosted qualification gaps are closed. New full feature
+and sprint pairs therefore remain Markdown unless the user explicitly selects
+the typed-HTML pilot. For that pilot, check the installed capability before
+writing; a missing, invalid, mismatched or unqualified capability is a STOP and
+the workflow must not fall back to Markdown or create any fallback artifact.
+Report `CAPABILITY_MISSING` and direct the user to repair or reinstall the pinned
+artifact payload before retrying. An existing `.md` exact pair remains Markdown
 and continues on the legacy path without automatic conversion. The feature
 small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
 dispatch remains disabled and outside this rollout.
@@ -40,7 +41,7 @@ failure). Logs/stderr are not artifact content.
 
 ## Authoring and approval
 
-New specs and plans use `.codearbiter/specs/<slug>.html` and
+Explicit-pilot specs and plans use `.codearbiter/specs/<slug>.html` and
 `.codearbiter/plans/<slug>.html`. Create a draft, then use typed `apply` changes;
 do not write or regex-edit HTML or its embedded JSON. `record.add` allocates a
 stable ID when omitted. Keep criterion IDs from the spec in plan references;
