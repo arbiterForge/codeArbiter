@@ -100,6 +100,7 @@ re-reviewed yet.
 """
 
 import json
+import ntpath
 import os
 import re
 import uuid
@@ -1336,15 +1337,24 @@ def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree,
 
 
 def _is_filesystem_root(path):
-    """True iff `path` (already realpath-resolved) IS a bare volume,
-    filesystem, or UNC-share root -- "/", "C:\\", "\\\\server\\share" --
-    with no further path component. Guards validate_resource_path's
-    allowlist against ever admitting "everything on this volume/share" as
-    an authorized target (H-4)."""
+    """True iff `path` (already realpath-resolved and separator-stripped)
+    IS a bare volume, filesystem, or UNC-share root -- "/", "C:",
+    "\\\\server\\share" -- with no further path component. Guards
+    validate_resource_path's allowlist against ever admitting "everything
+    on this volume/share" as an authorized target (H-4).
+
+    Uses `ntpath` explicitly rather than `os.path`: a Windows drive letter
+    or UNC prefix must be recognized the same way on every platform this
+    module's tests run on (Linux, macOS, Windows) -- `os.path.splitdrive`
+    is platform-native and never recognizes a Windows-shaped root at all on
+    POSIX, which silently admitted "C:\\" and "\\\\server\\share" as valid
+    (non-root) allowlist entries whenever this ran on a POSIX CI runner."""
     if not path:
         return False
-    _drive, tail = os.path.splitdrive(path)
-    return tail.rstrip("/\\") == ""
+    if path in ("/", "\\"):
+        return True
+    drive, tail = ntpath.splitdrive(path)
+    return bool(drive) and tail.rstrip("/\\") == ""
 
 
 def validate_resource_path(path, allowed_paths, real_path_fn=None):
