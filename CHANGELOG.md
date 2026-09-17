@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.6] - 2026-09-17
+
+### Added
+
+- `core/pysrc/_cleanuplib.py`: a repository-qualified integration-proof evaluator (`evaluate_merge_proof`) for routine branch cleanup. Proves a candidate branch tip's content landed on an authorized integration target via ancestry (no `gh` required) or an exact, repository-qualified PR-delivery record; tree-equality is accepted only as corroboration and never grants eligibility by itself. Not yet wired into any live cleanup route — a standalone, unit-tested decision function pending the guarded mutation backend and policy wiring the cleanup-framework proposal sequences after it.
+
 ## [2.18.5] - 2026-09-16
 
 ### Fixed
