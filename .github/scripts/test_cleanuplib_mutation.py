@@ -53,6 +53,21 @@ class TestJournalBasics(JournalTestCase):
         with self.assertRaises(cleanuplib.JournalCorruptError):
             cleanuplib.load_journal(self.root)
 
+    def test_a_journal_with_an_incompatible_schema_raises_rather_than_being_adopted(self):
+        # An unrecognized schema (a future version, or a hand-edited/foreign
+        # file that merely happens to have an "operations" list) must not be
+        # silently loaded, mutated, and rewritten as if it were ours.
+        with open(self.journal_path(), "w", encoding="utf-8") as f:
+            json.dump({"schema": "cleanup-journal/v2", "operations": []}, f)
+        with self.assertRaises(cleanuplib.JournalCorruptError):
+            cleanuplib.load_journal(self.root)
+
+    def test_a_journal_with_no_schema_field_at_all_raises(self):
+        with open(self.journal_path(), "w", encoding="utf-8") as f:
+            json.dump({"operations": []}, f)
+        with self.assertRaises(cleanuplib.JournalCorruptError):
+            cleanuplib.load_journal(self.root)
+
     def test_append_pending_then_load_shows_the_pending_record(self):
         op_id = cleanuplib.append_pending_operation(
             self.root, kind="branch_delete", target={"branch": "x", "expected_oid": OID_A},
@@ -226,8 +241,8 @@ class TestExecuteBranchDeletion(JournalTestCase):
     def test_happy_path_journals_pending_then_applied(self):
         calls = []
 
-        def delete_fn(branch, force):
-            calls.append((branch, force))
+        def delete_fn(branch, force, expected_oid):
+            calls.append((branch, force, expected_oid))
             return True, "deleted"
 
         result = cleanuplib.execute_branch_deletion(
@@ -237,15 +252,20 @@ class TestExecuteBranchDeletion(JournalTestCase):
             delete_fn=delete_fn, allow_force=False,
         )
         self.assertEqual(result.status, "applied")
-        self.assertEqual(calls, [("feature", False)])
+        # AC-06 (atomic compare-and-delete): the real deletion primitive must
+        # receive expected_oid itself, so a concrete implementation can use
+        # an atomic compare-and-delete (e.g. `git update-ref -d <ref>
+        # <expected_oid>`) rather than a plain `branch -d`/`-D` that performs
+        # its own unrelated lookup and could delete a tip our guard never saw.
+        self.assertEqual(calls, [("feature", False, OID_A)])
         journal = cleanuplib.load_journal(self.root)
         self.assertEqual(journal["operations"][0]["status"], "applied")
 
     def test_guard_refusal_journals_skipped_and_never_calls_delete_fn(self):
         calls = []
 
-        def delete_fn(branch, force):
-            calls.append((branch, force))
+        def delete_fn(branch, force, expected_oid):
+            calls.append((branch, force, expected_oid))
             return True, "deleted"
 
         result = cleanuplib.execute_branch_deletion(
@@ -260,7 +280,7 @@ class TestExecuteBranchDeletion(JournalTestCase):
         self.assertEqual(journal["operations"][0]["status"], "skipped")
 
     def test_d_failure_without_allow_force_is_recorded_as_failed(self):
-        def delete_fn(branch, force):
+        def delete_fn(branch, force, expected_oid):
             return False, "not fully merged"
 
         result = cleanuplib.execute_branch_deletion(
@@ -274,8 +294,8 @@ class TestExecuteBranchDeletion(JournalTestCase):
     def test_d_failure_with_allow_force_retries_as_D_when_tip_still_matches(self):
         calls = []
 
-        def delete_fn(branch, force):
-            calls.append(force)
+        def delete_fn(branch, force, expected_oid):
+            calls.append((force, expected_oid))
             if not force:
                 return False, "not fully merged"
             return True, "force-deleted"
@@ -286,7 +306,9 @@ class TestExecuteBranchDeletion(JournalTestCase):
             current_oid_fn=self._oid_fn({"feature": OID_A}),
             delete_fn=delete_fn, allow_force=True,
         )
-        self.assertEqual(calls, [False, True])
+        # Both attempts must carry the SAME expected_oid the guard validated
+        # -- the retry is not a license to re-derive a fresh "current" value.
+        self.assertEqual(calls, [(False, OID_A), (True, OID_A)])
         self.assertEqual(result.status, "applied")
 
     def test_tip_change_before_the_forced_retry_refuses_and_never_calls_D(self):
@@ -295,7 +317,7 @@ class TestExecuteBranchDeletion(JournalTestCase):
         calls = []
         state = {"feature": OID_A}
 
-        def delete_fn(branch, force):
+        def delete_fn(branch, force, expected_oid):
             calls.append(force)
             if not force:
                 state["feature"] = OID_B  # ref moves after the -d attempt

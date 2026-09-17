@@ -243,7 +243,11 @@ def load_journal(root):
         raise JournalCorruptError(
             "cleanup operation journal at %s is unreadable: %s" % (path, exc)
         ) from exc
-    if not isinstance(data, dict) or not isinstance(data.get("operations"), list):
+    if (
+        not isinstance(data, dict)
+        or data.get("schema") != _JOURNAL_SCHEMA
+        or not isinstance(data.get("operations"), list)
+    ):
         raise JournalCorruptError(
             "cleanup operation journal at %s has an unrecognized shape" % path
         )
@@ -426,14 +430,21 @@ OperationResult = namedtuple("OperationResult", ["operation_id", "status", "deta
 
 def execute_branch_deletion(root, branch, expected_oid, current_branch, default_branch,
                              protected_branches, worktree_branches, current_oid_fn,
-                             delete_fn, allow_force, operation_id=None):
+                             delete_fn, allow_force):
     """Journal-then-mutate, per-item outcome (AC-14, AC-19). This is the ONE
     guarded path branch deletion may go through; it verifies evidence itself
     (via guard_branch_deletion) rather than trusting a caller-supplied
     safe/owned flag.
 
-    `delete_fn(branch, force) -> (ok: bool, detail: str)` performs the actual
-    `git branch -d` (force=False) or `-D` (force=True). `allow_force` gates
+    `delete_fn(branch, force, expected_oid) -> (ok: bool, detail: str)`
+    performs the actual deletion. `expected_oid` is passed through so a real
+    implementation can make the git-level operation ITSELF atomic with
+    respect to the tip -- e.g. `git update-ref -d refs/heads/<branch>
+    <expected_oid>`, which the project's own Git-behavior probes (GIT-07)
+    confirm refuses a stale value -- rather than a plain `git branch -d`/`-D`,
+    which performs its own unrelated lookup and could still delete a branch
+    whose tip moved between our guard's check and git's own call. `force`
+    selects `-d` (False) or `-D` semantics (True); `allow_force` gates
     whether `-D` may ever be attempted at all -- the caller passes True only
     under the sanctioned squash-proof-restated path; this function does not
     itself decide when `-D` is legitimate, and never substitutes a blanket
@@ -445,7 +456,7 @@ def execute_branch_deletion(root, branch, expected_oid, current_branch, default_
     expected, and a ref move injected exactly at this seam must still refuse
     (AC-06), never fall through to a forced delete of a now-different branch.
     """
-    operation_id = operation_id or uuid.uuid4().hex
+    operation_id = uuid.uuid4().hex
     _append_operation_record(root, {
         "operation_id": operation_id,
         "kind": "branch_delete",
@@ -466,7 +477,7 @@ def execute_branch_deletion(root, branch, expected_oid, current_branch, default_
     except GuardRefusal as exc:
         return _finish("skipped", exc.reason)
 
-    ok, detail = delete_fn(branch, False)
+    ok, detail = delete_fn(branch, False, expected_oid)
     if not ok and allow_force:
         actual_oid = current_oid_fn(branch)
         if actual_oid != expected_oid:
@@ -474,6 +485,6 @@ def execute_branch_deletion(root, branch, expected_oid, current_branch, default_
                 "skipped",
                 "tip changed to %s before the -D retry -- refusing" % actual_oid,
             )
-        ok, detail = delete_fn(branch, True)
+        ok, detail = delete_fn(branch, True, expected_oid)
 
     return _finish("applied" if ok else "failed", detail)
