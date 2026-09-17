@@ -1846,6 +1846,12 @@ jobs:
         # refs never deleted, one guarded executor, per-item journaling with
         # state-based reconciliation. Branch-deletion slice only.
         run: python .github/scripts/test_cleanuplib_mutation.py
+      - name: Run cleanup authoritative branch/worktree inventory unit tests (T-03)
+        # AC-05/AC-07/AC-09/AC-11/AC-13/AC-26: pure for-each-ref/worktree-porcelain
+        # parsers, occupancy binding, worktree-loss classification, and the
+        # exact-allowlist filesystem-path guard. Must not repeat the #693/#800
+        # orphaned-suite gap the T-04/T-05 steps above already had to close.
+        run: python .github/scripts/test_cleanuplib_inventory.py
       - name: Run cleanup shared decision/interaction contract tests (T-02)
         # AC-01/AC-02/AC-03/AC-04/AC-05/AC-12/AC-26: the pure prompt-budget
         # and scope-coverage classifiers T-06's live routing will consume.

@@ -26,6 +26,16 @@ predate the plugin rewrite and are grouped by date.
   Windows pinning is
   unchanged and no PATH or repository fallback is introduced.
 
+## [2.20.0] - 2026-09-17
+
+### Added
+
+- `core/pysrc/_cleanuplib.py`: adds T-03, the authoritative branch/worktree inventory ADR-0036 named as one of three preconditions for superseding safety-core.md #6 (alongside the already-built T-04 proof evaluator and T-05 guarded mutation backend). New pure helpers: `parse_branch_ref_inventory` (full-OID branch facts from `git for-each-ref`, never `branch -vv`'s abbreviated form -- a line without exactly the format's 4 tab-separated fields is fully unreadable, not partially trusted), `parse_worktree_inventory`/`parse_worktree_inventory_nul` (newline- and NUL-delimited `git worktree list --porcelain`; the main worktree is identified by Git's own first-record ordering guarantee, never a repo-root string comparison), `bind_branch_occupancy` (cross-references the real worktree list rather than a display-only marker; an unavailable worktree list marks occupancy unreadable, never confirmed-unoccupied), `classify_worktree_loss_surface` (dirty/untracked/ignored/locked/current/nested-repo content all retain a worktree; an unreadable status, or an unreadable input of any kind, is never folded into clean), and `validate_resource_path` (an exact-match allowlist guard against the caller's own authorized targets, returning the resolved path -- not a "nested under the repo root" rule, since Git worktrees are conventionally siblings of the repository root, not descendants).
+
+### Fixed
+
+- `core/pysrc/_cleanuplib.py`: closes 3 blocking and 5 high-severity gaps an independent review found in T-03 as first merged (verdict: NO-GO). The main worktree is no longer identified by comparing a path string against a caller-supplied repo root (wrong on every linked worktree, and on any Windows-vs-forward-slash path mismatch); an unavailable worktree list no longer defaults branch occupancy to "confirmed unoccupied"; a for-each-ref line without exactly 4 tab-separated fields is now fully unreadable rather than partially trusted; the filesystem-path guard is now an exact-allowlist match returning the resolved path, replacing a "nested under the repo root" rule that refused every real (sibling) worktree; and the worktree-loss classifier now accepts an explicit read-error signal and never lets an unreadable input leak through as a false "safe to remove." The CI job that runs this suite is now itself wired in, closing the same orphaned-suite gap the T-04/T-05 fix below (2.18.9) had to close for its own tests. Still true and not claimed otherwise: this closes the inventory gap but does not by itself satisfy ADR-0036's gate -- this remediation pass has not itself been independently re-reviewed, and nothing here is wired into a live route (T-06's job).
+
 ## [2.19.0] - 2026-09-16
 
 ### Added
