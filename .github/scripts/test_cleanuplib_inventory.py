@@ -129,6 +129,21 @@ class TestBranchRefInventory(unittest.TestCase):
         self.assertEqual(cleanuplib.parse_branch_ref_inventory(""), [])
         self.assertEqual(cleanuplib.parse_branch_ref_inventory(None), [])
 
+    def test_a_full_refname_is_stripped_by_fixed_prefix_not_gits_short_form(self):
+        # Second independent review, HIGH-1: %(refname:short) shortens
+        # differently depending on what else exists in the repo -- a branch
+        # named "collide" that collides with a same-named tag comes back as
+        # "heads/collide", not "collide". This module now reads the FULL
+        # %(refname)/%(upstream) and strips the fixed "refs/heads/"/
+        # "refs/remotes/" prefix itself, so the derived name/upstream never
+        # depend on what else happens to exist in the repo.
+        text = "refs/heads/collide\taaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\trefs/remotes/origin/collide\t\n"
+        records = cleanuplib.parse_branch_ref_inventory(text)
+        r = records[0]
+        self.assertEqual(r.name, "collide")
+        self.assertEqual(r.upstream, "origin/collide")
+        self.assertFalse(r.read_error)
+
 
 class TestWorktreeInventory(unittest.TestCase):
     def test_the_first_record_is_always_is_main_regardless_of_its_path(self):
@@ -290,6 +305,30 @@ class TestWorktreeInventory(unittest.TestCase):
     def test_empty_input_yields_an_empty_inventory(self):
         self.assertEqual(cleanuplib.parse_worktree_inventory(""), [])
         self.assertEqual(cleanuplib.parse_worktree_inventory(None), [])
+
+    def test_a_unicode_line_separator_in_a_path_does_not_fabricate_a_phantom_record(self):
+        # Second independent review, HIGH-2: `str.splitlines()` treats
+        # U+2028 (and 8 other characters) as a line boundary, but Git's
+        # non-`-z` porcelain format never does -- it only ever splits on
+        # "\n". A worktree path that happens to contain a raw U+2028
+        # (unusual, but not filesystem-illegal) followed by text shaped
+        # like "worktree <path>" would, under `splitlines()`, be cut into
+        # TWO raw lines: the genuine record's HEAD/branch lines then attach
+        # to the SECOND half, fabricating a phantom worktree record at an
+        # attacker/accident-controlled path with read_error=False. This
+        # single logical porcelain line must survive as ONE record.
+        path = "/repo-wt/x worktree /evil/phantom"
+        text = (
+            "worktree " + path + "\n"
+            "HEAD aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\n"
+            "branch refs/heads/main\n"
+        )
+        records = cleanuplib.parse_worktree_inventory(text, path_exists_fn=lambda p: True)
+        self.assertEqual(len(records), 1)
+        r = records[0]
+        self.assertEqual(r.path, path)
+        self.assertEqual(r.branch, "main")
+        self.assertFalse(r.read_error)
 
 
 class TestWorktreeInventoryNulDelimited(unittest.TestCase):
@@ -466,6 +505,25 @@ class TestBindBranchOccupancy(unittest.TestCase):
         self.assertEqual(by_name["feature/good"], "/repo-wt/good")
         self.assertIs(by_name["feature/mystery"], cleanuplib.UNREADABLE)
 
+    def test_a_branch_shadowed_by_a_same_named_tag_still_binds_to_its_worktree(self):
+        # Second independent review, HIGH-1 end-to-end: with the old
+        # %(refname:short) join key, a branch named "collide" that shares
+        # its name with a tag would come back from for-each-ref as
+        # "heads/collide", which would never match the porcelain list's
+        # "collide" -- silently reporting a live, checked-out branch as
+        # "confirmed unoccupied". Feeding the FULL refname (as for-each-ref
+        # always emits, tag collision or not) proves the fixed-prefix strip
+        # matches regardless of what else exists in the repo.
+        branches = cleanuplib.parse_branch_ref_inventory(
+            "refs/heads/collide\taaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\t\t\n"
+        )
+        worktrees = cleanuplib.parse_worktree_inventory(
+            "worktree /repo-wt/collide\nHEAD aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\nbranch refs/heads/collide\n",
+            path_exists_fn=lambda p: True,
+        )
+        bound = cleanuplib.bind_branch_occupancy(branches, worktrees)
+        self.assertEqual(bound[0].occupied_by, "/repo-wt/collide")
+
 
 class TestWorktreeLossSurface(unittest.TestCase):
     def test_a_fully_clean_worktree_is_not_retained(self):
@@ -514,6 +572,27 @@ class TestWorktreeLossSurface(unittest.TestCase):
             has_nested_repo=cleanuplib.UNREADABLE,
         )
         self.assertIs(surface_locked.retain, True)
+        self.assertIs(surface_nested.retain, True)
+
+    def test_a_none_lock_current_or_nested_repo_signal_forces_retain_as_a_real_bool(self):
+        # Second independent review, MEDIUM-1: a caller that has not yet
+        # determined one of these three signals has no principled way to
+        # spell "unknown" other than `None` or the `UNREADABLE` sentinel --
+        # if only `UNREADABLE` were recognized, `None` sneaking through
+        # (e.g. `is_locked=None`) with every other signal False would let
+        # the `or` chain return the literal `None` instead of a real bool,
+        # and would fold "not yet determined" into "confirmed absent".
+        surface_locked = cleanuplib.classify_worktree_loss_surface(
+            status_text="", is_locked=None, is_current_worktree=False, has_nested_repo=False,
+        )
+        surface_current = cleanuplib.classify_worktree_loss_surface(
+            status_text="", is_locked=False, is_current_worktree=None, has_nested_repo=False,
+        )
+        surface_nested = cleanuplib.classify_worktree_loss_surface(
+            status_text="", is_locked=False, is_current_worktree=False, has_nested_repo=None,
+        )
+        self.assertIs(surface_locked.retain, True)
+        self.assertIs(surface_current.retain, True)
         self.assertIs(surface_nested.retain, True)
 
     def test_dirty_content_is_retained(self):
@@ -575,8 +654,20 @@ class TestValidateResourcePath(unittest.TestCase):
     def test_an_exact_allowlist_match_is_accepted_and_returns_the_resolved_path(self):
         # H-3: the resolved path is returned so a caller acts on what this
         # guard actually validated, never the original unresolved string.
+        # Second independent review, MEDIUM-2: an identity `real_path_fn`
+        # can't distinguish "returns resolved" from "returns the original
+        # path" -- a mutant that returned `path` instead of `resolved`
+        # would still pass. A `real_path_fn` that maps the candidate to a
+        # DIFFERENT string than what was passed in proves which one this
+        # function actually returns.
+        def real_path_fn(p):
+            return {
+                "/repo/worktrees/feature-link": "/repo/worktrees/feature",
+                "/repo/worktrees/feature": "/repo/worktrees/feature",
+            }[p]
+
         ok, resolved = cleanuplib.validate_resource_path(
-            "/repo/worktrees/feature", ["/repo/worktrees/feature"], real_path_fn=lambda p: p,
+            "/repo/worktrees/feature-link", ["/repo/worktrees/feature"], real_path_fn=real_path_fn,
         )
         self.assertTrue(ok)
         self.assertEqual(resolved, "/repo/worktrees/feature")
@@ -674,6 +765,39 @@ class TestValidateResourcePath(unittest.TestCase):
     def test_an_empty_path_is_refused(self):
         ok, reason = cleanuplib.validate_resource_path("", ["/repo"], real_path_fn=lambda p: p)
         self.assertFalse(ok)
+
+    def test_an_empty_or_blank_path_never_reaches_real_path_fn(self):
+        # Second independent review, MEDIUM-3: the empty-path guard must
+        # fire BEFORE real_path_fn is ever called. This matters because the
+        # production default, os.path.realpath(""), does NOT fail or
+        # return empty -- it (unintuitively) resolves to the CURRENT
+        # WORKING DIRECTORY -- so the guard's safety depends entirely on
+        # never reaching that call for an empty/blank path, not on
+        # real_path_fn happening to refuse it.
+        #
+        # A real_path_fn that RAISES on an unexpected input would be
+        # swallowed by this function's own "resolution failure is refused"
+        # handling (both paths return ok=False), so it cannot tell "the
+        # guard fired first" apart from "real_path_fn was called and
+        # failed". Instead, real_path_fn here RESOLVES the empty/blank
+        # candidate to something that WOULD match the allowlist -- so the
+        # only way this test can observe ok=False is if the early guard
+        # refused the candidate before real_path_fn ever ran.
+        mapping = {
+            "": "/repo/worktrees/feature",
+            "   ": "/repo/worktrees/feature",
+            "/repo/worktrees/feature": "/repo/worktrees/feature",
+        }
+        real_path_fn = mapping.__getitem__
+
+        ok, reason = cleanuplib.validate_resource_path(
+            "", ["/repo/worktrees/feature"], real_path_fn=real_path_fn,
+        )
+        self.assertFalse(ok)
+        ok_ws, reason_ws = cleanuplib.validate_resource_path(
+            "   ", ["/repo/worktrees/feature"], real_path_fn=real_path_fn,
+        )
+        self.assertFalse(ok_ws)
 
     def test_an_empty_allowlist_refuses_everything(self):
         ok, reason = cleanuplib.validate_resource_path("/repo/x", [], real_path_fn=lambda p: p)
