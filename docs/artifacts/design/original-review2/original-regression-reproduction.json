@@ -1,0 +1,9 @@
+{
+  "scope": "Reproduction on preserved original reference package, not codeArbiter runtime",
+  "visible_html_tamper_read": {
+    "exit_code": 0,
+    "returned_record": true,
+    "stdout_bytes": 1946,
+    "stderr": ""
+  }
+}

@@ -23,6 +23,22 @@ this file is the stale one; fix it here.
   TypeScript host extension and supervised child-process boundary.
 - **Infrastructure sibling** (`plugins/ca-sandbox/`) — isolated exploration tools;
   it is not part of the governance kernel.
+- **Structured-artifact engine** (`core/artifacts/`) — dependency-free Go 1.27.1
+  binary, configured for native testing on required Ubuntu, Windows and macOS CI
+  cells. Current local evidence covers Windows and WSL Linux; hosted exact-head
+  Linux/macOS results remain pending. Its
+  reference-conformance harness uses Python 3.14 only with the complete hashed,
+  wheel-only graph in `.github/requirements/artifact-conformance-py314.lock`;
+  those packages are CI review tooling and are not shipped runtime dependencies.
+  User-facing behavior and recovery boundaries are recorded in
+  `docs/artifacts/spec-and-plan-format.md` and
+  `docs/artifacts/migration-and-recovery.md`. A clean-commit native-Windows pilot
+  bound to the exact release manifest and binary covered draft rejection,
+  synthetic approval binding, process-recreation reconciliation and redispatch,
+  review receipts, atomic scope acceptance and exact-byte legacy rollback. That
+  remains fixture proof, not a production-host authority trace. Default
+  typed-HTML rollout and HTML farm use remain disabled pending the documented
+  host/release/model qualifications.
 - **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure.
 
 ## Runtime and Git support boundary
@@ -104,6 +120,18 @@ python .github/scripts/test_reconcile_tag_receipt.py
 
 # Cross-host coverage identity/provenance (requires the Pi tools test dependencies)
 python .github/scripts/test_coverage_union.py
+
+# Structured-artifact discovery, producer/workflow behavior, and consumer closure
+python .github/scripts/test_artifact_surface.py
+python .github/scripts/test_artifact_consumers.py
+python .github/scripts/test_artifact_authoring.py
+python .github/scripts/test_artifact_workflow.py
+python .github/scripts/test_artifact_farm.py
+python .github/scripts/test_artifact_native.py
+python .github/scripts/test_artifact_package.py
+# Run with Python 3.14 in a fresh venv installed from the adjacent hashed lock,
+# matching the wheel-only/no-deps install controls in .github/workflows/ci.yml.
+python .github/scripts/test_artifact_conformance.py
 
 # ADR-0033 accepted/planned lifecycle, immutable bindings, and verified-only export
 python .github/scripts/test_adr_lifecycle.py

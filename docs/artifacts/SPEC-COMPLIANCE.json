@@ -1,0 +1,526 @@
+{
+  "format": "codearbiter.merge-completeness/1",
+  "baseline": "45a17319f9ffda327cbdf3f3d40849bae8e920c0",
+  "original_spec_sha256": "d206bff4525ce9498b0d20ee5621a1199eeef57fb986b25c0828ebb60fc2c6b4",
+  "original_plan_sha256": "fdc917767b25928a5b27b1ecc5da89e3d3172d41ebe921ef0282c73077961bd8",
+  "complete_spec_accepted": false,
+  "default_rollout_permitted": false,
+  "interpretation": "A test reference is evidence to inspect, not satisfaction of every clause. The merging reviewer must examine the complete original normative document, not only this matrix.",
+  "criteria": [
+    {
+      "id": "AC-001",
+      "title": "No additional discovery surface",
+      "original_statement": "When the artifact capability is installed, existing public command, agent, top-level skill and persistent tool registrations shall gain no new entries.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Locally exercised: the captured pre-engine command, agent, top-level-skill and persistent-tool sets are unchanged; startup fixtures are byte-bound and negative controls reject /ca:spec, a persistent artifact tool and eager schema loading. Hosted exact-head proof remains pending.",
+      "local_test_references": [
+        {
+          "name": "ArtifactSurfaceTest.test_no_added_discovery",
+          "path": ".github/scripts/test_artifact_surface.py"
+        }
+      ]
+    },
+    {
+      "id": "AC-002",
+      "title": "Explicit spec contracts and honest drafts",
+      "original_statement": "When validating a specification for readiness, the engine shall require observable contract records and explicit intent relationships while allowing incomplete structural drafts.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "The 0.3.x content model differs from reviewed schema 0.2.0. Readiness checks presence/relationships, not prose truth; review every original content obligation.",
+      "local_test_references": [
+        {
+          "name": "TestSpecReadiness",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        },
+        {
+          "name": "TestDraftIncompleteRecords",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        },
+        {
+          "name": "TestReviewReadyRejectsWhitespaceScope",
+          "path": "core/artifacts/internal/operations/review_regressions_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-003",
+      "title": "Plan binding and bidirectional coverage",
+      "original_statement": "When validating an implementation plan, the engine shall resolve its spec binding and every task-to-criterion reference and reject an invalid dependency graph.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Local pair binding and coverage/DAG checks run. Existing plan-producing/consuming host workflows are not end-to-end qualified.",
+      "local_test_references": [
+        {
+          "name": "TestPlanGraphAndCoverage",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        },
+        {
+          "name": "TestSpecBinding",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-004",
+      "title": "Stable symbol identity",
+      "original_statement": "When records are edited, reordered or retired, the engine shall preserve existing symbol identities and never reuse a retired identifier.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Local stable IDs, retirement and duplicate authority checks run. Review rename/import behavior in the actual repository history.",
+      "local_test_references": [
+        {
+          "name": "TestSymbolRetirement",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestNoIDReuseWithinBatch",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-005",
+      "title": "Canonical HTML with detectable view drift",
+      "original_statement": "When rendering a valid model, the engine shall emit one deterministic HTML artifact whose visible normative content matches the embedded model.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Normal engine reads reject model/view drift. Byte-preserving prior-candidate reads are tested; manual integration must not bypass the parser.",
+      "local_test_references": [
+        {
+          "name": "TestRenderDriftRejectedByEveryRead",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestReviewReadPriorSchemaPreservesBytes",
+          "path": "core/artifacts/internal/render/review_compat_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-006",
+      "title": "Offline branded human review",
+      "original_statement": "When a valid spec or plan is rendered, the complete document shall remain readable offline with codeArbiter branding or a validated repository-owned replacement.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Offline Chromium and local branding tests are available. No cross-browser/native accessibility qualification or automatic repository branding-configuration discovery is claimed.",
+      "local_test_references": [
+        {
+          "name": "TestRebrandAndStandaloneExport",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestReviewSingleExportHasNoBrokenCompanionLocator",
+          "path": "core/artifacts/internal/operations/review_regressions_test.go"
+        },
+        {
+          "name": "TestSafeBrand",
+          "path": "core/artifacts/internal/render/render_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-007",
+      "title": "Bounded contextual reads",
+      "original_statement": "When an agent requests a symbol, the engine shall return complete records and explicit context completeness at a single model revision.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Whole-record contextual reads and forward progress are checked. Real-host context budget and complete dependency/use-site closure remain to review.",
+      "local_test_references": [
+        {
+          "name": "TestReadContextBounded",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestContextTicketRequired",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestReviewOutlineNeverReturnsNonAdvancingPage",
+          "path": "core/artifacts/internal/operations/review_regressions_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-008",
+      "title": "Typed operations and inert input",
+      "original_statement": "When processing an internal request, the engine shall accept only the closed versioned operation grammar and shall never execute specification or plan content.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Closed inert operation protocol is exercised. Invocation through each host permission boundary is not fully wired.",
+      "local_test_references": [
+        {
+          "name": "TestAllOperationSchemasClosed",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestStoredCommandIsInert",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-009",
+      "title": "Conflict-safe writes",
+      "original_statement": "When two cooperating writers use the same previous model identity, at most one shall replace the artifact and the other shall receive a conflict without changing it.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Linux and Windows cooperative writer/CAS/replay/recovery tests run. macOS exact-host and physical power-loss/network-filesystem guarantees remain unqualified.",
+      "local_test_references": [
+        {
+          "name": "TestTransactionalCAS",
+          "path": "core/artifacts/internal/store/store_test.go"
+        },
+        {
+          "name": "TestWriterLock",
+          "path": "core/artifacts/internal/store/store_test.go"
+        },
+        {
+          "name": "TestCreateRaceDoesNotOverwrite",
+          "path": "core/artifacts/internal/store/store_test.go"
+        },
+        {
+          "name": "TestReviewRetryOfRolledBackWriteIsNotSuccess",
+          "path": "core/artifacts/internal/store/review_regressions_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-010",
+      "title": "Repository and executable trust",
+      "original_statement": "When resolving artifacts, assets or the executable, the integration shall reject escapes and untrusted binary substitution.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Anchored Linux and root-handle Windows paths plus installation-pinned bridges pass locally. macOS and every real host permission boundary remain to qualify.",
+      "local_test_references": [
+        {
+          "name": "TestPathEscapeAndSymlink",
+          "path": "core/artifacts/internal/store/store_test.go"
+        },
+        {
+          "name": "TestPortablePaths",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-011",
+      "title": "Approval is a governed transition",
+      "original_statement": "When recording approval, the workflow shall bind its existing authority source to the exact normative content and reject ordinary edits that attempt that transition.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Cooperative receipt checks are implemented; actual user/SMARTS/reviewer event capture is not fully integrated. Synthetic tests are not production approval.",
+      "local_test_references": [
+        {
+          "name": "TestGenericMutationCannotApprove",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestNoAuthorityFromHTMLFlag",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestCaptureIsIdempotentNotApproval",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-012",
+      "title": "Changed contracts block stale execution",
+      "original_statement": "When a spec or normative plan changes, consumers shall reject stale bindings before dispatch, resume, farm projection or acceptance.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Local normative binding/freshness rejects stale content. Outer workflow resume and reapproval flows require target-host tests.",
+      "local_test_references": [
+        {
+          "name": "TestSpecBinding",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        },
+        {
+          "name": "TestPostSourceChangeRevalidation",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-013",
+      "title": "Evidence-backed task acceptance",
+      "original_statement": "When a task is marked ACCEPTED, its current identities, verification and required reviews shall all be present and valid under the existing workflow.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Named-test checks and declared-task input coverage are strengthened. Actual runner adapters and complete dependency/environment input closure remain required.",
+      "local_test_references": [
+        {
+          "name": "TestTaskAcceptanceEvidence",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestMissingOrSkippedNamedTests",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestReviewNoZeroTestProofForAlternateRunnerSpelling",
+          "path": "core/artifacts/internal/evidence/review_regressions_test.go"
+        },
+        {
+          "name": "TestReviewReadyPolicyCoversEveryDeclaredTaskPath",
+          "path": "core/artifacts/internal/operations/review_regressions_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-014",
+      "title": "Interruption-safe, deadlock-free scope execution",
+      "original_statement": "Within an execution scope, the coordinator shall permit verified provisional dependencies without claiming acceptance, and shall accept the scope only after final-snapshot verification and combined-diff quality review.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Engine scope transitions and stale-evidence revalidation run locally. A fresh native-candidate fixture proves interruption at REVIEW and atomic scope acceptance, but full real-host caller checkpoint/resume behavior is not integrated.",
+      "local_test_references": [
+        {
+          "name": "TestArtifactLifecycle",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestPostSourceChangeRevalidation",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "test_review_checkpoint_survives_resume_and_scope_acceptance_is_atomic",
+          "path": ".github/scripts/test_artifact_workflow.py"
+        }
+      ]
+    },
+    {
+      "id": "AC-015",
+      "title": "Existing workflow end-to-end integration",
+      "original_statement": "When a full-lane feature or sprint runs, existing producer and execution routines shall consume the HTML pair through the shared protocol with unchanged governance checkpoints.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Canonical feature/sprint pilot routing exists and fresh native-candidate fixtures cover typed authoring, dispatch, stale blocking, resume and atomic acceptance. These are synthetic workflow-authority fixtures, not complete real-host feature/sprint traces; do not report the criterion fully satisfied.",
+      "local_test_references": [
+        {
+          "name": "ArtifactAuthoringTest",
+          "path": ".github/scripts/test_artifact_authoring.py"
+        },
+        {
+          "name": "ArtifactWorkflowTest",
+          "path": ".github/scripts/test_artifact_workflow.py"
+        }
+      ]
+    },
+    {
+      "id": "AC-016",
+      "title": "Explicit intent coverage without false proof",
+      "original_statement": "When checking new-format intent coverage, the engine shall resolve scope-to-criterion relationships and report unsupported/missing input instead of treating it as an empty successful check.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Structured scope links replace Markdown heuristics for typed specs. External issue-checkbox checking remains a heuristic and cannot prove intent completeness.",
+      "local_test_references": [
+        {
+          "name": "TestSpecReadiness",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        },
+        {
+          "name": "TestRoleBoundReferences",
+          "path": "core/artifacts/internal/validate/validate_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-017",
+      "title": "HTML discovery and correct cache invalidation",
+      "original_statement": "When a governing spec changes or is imported, context discovery shall reflect current validated HTML metadata without hiding invalid new-format records.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Candidate advisory hook wrapper and mocked seam tests only; run actual cache/dedup/receipt freshness suites on all generated hosts.",
+      "local_test_references": []
+    },
+    {
+      "id": "AC-018",
+      "title": "Derived farm compatibility",
+      "original_statement": "When exporting a farm slice, the adapter shall derive the existing closed runtime JSON from a current approved HTML plan and preserve its narrow-test and review requirements.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Locally implemented: minimal current-slice projection, source/spec/plan/slice/ID/base/RED binding, pre-canary source validation, provider-only enrichment, exact execution-byte/provider seals, and shared built-dispatcher enforcement all have fresh native-candidate fixtures. This is not promotion evidence: real authority adapters, installed host payloads, exact-head generated-host/CI proof and a fresh frontier/low-tier model matrix remain required; June 2026 earns zero current credit and HTML farm use stays disabled.",
+      "local_test_references": [
+        "core/artifacts/internal/operations/farm_projection_test.go",
+        ".github/scripts/test_artifact_farm.py",
+        "plugins/ca/tools/farm.ts"
+      ]
+    },
+    {
+      "id": "AC-019",
+      "title": "Loss-aware legacy import",
+      "original_statement": "When converting a legacy feature spec/plan, import shall preserve source provenance and report ambiguous or missing meaning without manufacturing approval or evidence.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Explicit line-mapped pair import is exercised. An exact-candidate native-Windows pilot preserved draft/unverified authority and transferred no approval; human-reviewed mappings and old-approval disposition remain required for production files.",
+      "local_test_references": [
+        {
+          "name": "TestMigrationRequiresCompleteMapping",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        },
+        {
+          "name": "TestMigrationStalePreview",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-020",
+      "title": "Recoverable pair cutover and rollback",
+      "original_statement": "When switching a reviewed spec/plan pair to HTML, the system shall expose one live authority per artifact and stop execution during an interrupted or conflicting cutover.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Journaled pair cutover/guarded rollback runs on Linux, with native Windows storage primitives separately qualified. The exact-candidate Windows pilot restored both legacy files byte-for-byte and removed both HTML authorities; the full Windows semantic suite, macOS exact-host and production-host recovery remain open.",
+      "local_test_references": [
+        {
+          "name": "TestMigrationPairAndRollback",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        },
+        {
+          "name": "TestProcessDeathRecovery",
+          "path": "core/artifacts/internal/store/crash_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-021",
+      "title": "Consumer closure across canonical and generated sources",
+      "original_statement": "Before default enablement, every identified spec/implementation-plan producer and consumer shall be updated, explicitly compatible, or explicitly excluded with a tested reason.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Partial: the inventory-led closure gate accounts for entry/resume, planning/TDD/execution, context, status/doctor/startup/commit, farm, migration, CI, published instructions, generated copies and explicit exclusions. Entries marked pending still require their named runtime integration and host evidence before default enablement.",
+      "local_test_references": [
+        {
+          "name": "ArtifactConsumerClosureTest.test_consumer_closure",
+          "path": ".github/scripts/test_artifact_consumers.py"
+        }
+      ]
+    },
+    {
+      "id": "AC-022",
+      "title": "Trusted native binary distribution",
+      "original_statement": "When the capability is installed, the host shall select a matching reviewed binary without requiring an end-user Go toolchain or runtime downloads.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Linux and Windows native builders and pinned bridges pass. The release-only boundary rejects linked/replaced roots, fake architectures and unsupported identities, requires qualification receipts bound to exact commit, protected workflow run, platform, digest and named native tests, and is fed by a separately required three-host aggregation job. Linux and Windows cold execution pass from every staged package root without Go, PATH or network fallback while the ordinary installer remains fail-closed. Actual release-channel application, hosted macOS and published provenance remain incomplete.",
+      "local_test_references": [
+        {
+          "name": "test_release_packaging_stages_package_owned_native_payloads",
+          "path": ".github/scripts/test_artifact_package.py"
+        },
+        {
+          "name": "test_release_packaging_does_not_invoke_go_or_any_child_process",
+          "path": ".github/scripts/test_artifact_package.py"
+        },
+        {
+          "name": "test_production_binary_has_no_network_capable_dependencies",
+          "path": ".github/scripts/test_artifact_package.py"
+        },
+        {
+          "name": "test_candidate_assertion_without_trusted_qualification_is_rejected",
+          "path": ".github/scripts/test_artifact_package.py"
+        },
+        {
+          "name": "test_linked_ancestor_with_missing_descendant_cannot_mutate_external_tree",
+          "path": ".github/scripts/test_artifact_package.py"
+        }
+      ]
+    },
+    {
+      "id": "AC-023",
+      "title": "Platform-tested write and recovery guarantees",
+      "original_statement": "Before marking a native platform supported for new artifact writes, its actual replacement, locking and recovery behavior shall pass fault and concurrency tests.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Linux and Windows named process-death, locking and replacement tests pass; macOS compiles and vets but awaits exact-host CI. No physical power-loss or remote-filesystem certification.",
+      "local_test_references": [
+        {
+          "name": "TestReplaceRecovery",
+          "path": "core/artifacts/internal/store/store_test.go"
+        },
+        {
+          "name": "TestProcessDeathRecovery",
+          "path": "core/artifacts/internal/store/crash_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-024",
+      "title": "Safe HTML and adversarial parsing",
+      "original_statement": "When artifact content or branding contains hostile text, the parser and renderer shall reject or inertly escape it without executing code or corrupting symbol boundaries.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Fresh Windows conformance rejects duplicate JSON, appended executable script content, renderer drift and remote-reference SVG logos, and re-runs the strict parser/resource/inert-content suites against one exact candidate. Required Linux/macOS exact-head execution and remaining real-host seams are still open.",
+      "local_test_references": [
+        {
+          "name": "TestSpecPlanConformance",
+          "path": "core/artifacts/internal/conformance/conformance_test.go"
+        },
+        {
+          "name": "TestStrictJSON",
+          "path": "core/artifacts/internal/canonical/canonical_test.go"
+        },
+        {
+          "name": "TestResourceLimits",
+          "path": "core/artifacts/internal/canonical/canonical_test.go"
+        },
+        {
+          "name": "TestScriptAndMarkerPayload",
+          "path": "core/artifacts/internal/render/render_test.go"
+        },
+        {
+          "name": "TestSafeBrand",
+          "path": "core/artifacts/internal/render/render_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-025",
+      "title": "Separated identities and reproducible hashes",
+      "original_statement": "When normative content, execution state or presentation changes, the engine shall update only the corresponding identities under the declared canonicalization profile.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "A Python stdlib serializer independent of the Go canonicalizer verifies pinned current-schema normative/model/render identities, and a real task-start transition proves revision/model advancement without normative drift. The safe-integer/string canonical profile matches the original contract; hosted exact-head cross-platform qualification remains open.",
+      "local_test_references": [
+        {
+          "name": "TestSpecPlanConformance",
+          "path": "core/artifacts/internal/conformance/conformance_test.go"
+        },
+        {
+          "name": "TestDigestDomains",
+          "path": "core/artifacts/internal/canonical/canonical_test.go"
+        },
+        {
+          "name": "TestReviewReadPriorSchemaPreservesBytes",
+          "path": "core/artifacts/internal/render/review_compat_test.go"
+        }
+      ]
+    },
+    {
+      "id": "AC-026",
+      "title": "Capability diagnostics and conservative legacy behavior",
+      "original_statement": "When the new capability is absent, unsupported or not enabled, existing legacy workflows shall remain explicit and new-format workflows shall not fall back to ungoverned free-form writes.",
+      "disposition": "partial_or_locally_exercised",
+      "formal_acceptance": "not_recorded",
+      "implementation_notes_and_gaps": "Explicit engine/bridge failures and legacy isolation have local tests and published guidance. The evidence-backed rollout decision keeps legacy behavior as the default; actual all-host cold-install/production-resume handling remains to exercise.",
+      "local_test_references": [
+        {
+          "name": "TestUnknownVersionFailsClosed",
+          "path": "core/artifacts/internal/operations/engine_test.go"
+        },
+        {
+          "name": "TestCreateDoesNotShadowLegacy",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        },
+        {
+          "name": "TestDuplicateCanonicalAuthoritiesFailClosed",
+          "path": "core/artifacts/internal/operations/migration_test.go"
+        }
+      ]
+    }
+  ],
+  "final_review": "Consolidated regression suites; whole-feature acceptance remains pending."
+}

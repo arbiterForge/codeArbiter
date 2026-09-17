@@ -12,11 +12,31 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.19.0] - 2026-09-17
+## [2.20.0] - 2026-09-17
 
 ### Added
 
-- `core/pysrc/_cleanuplib.py`: adds T-03, the authoritative branch/worktree inventory ADR-0036 named as one of three preconditions for superseding safety-core.md #6 (alongside the already-built T-04 proof evaluator and T-05 guarded mutation backend, independently reviewed 2026-09-17). New pure parsers: `parse_branch_ref_inventory` (full-OID branch facts from `git for-each-ref`, never `branch -vv`'s abbreviated form), `parse_worktree_inventory`/`parse_worktree_inventory_nul` (newline- and NUL-delimited `git worktree list --porcelain`), `bind_branch_occupancy` (cross-references the real worktree list rather than a display-only marker), `classify_worktree_loss_surface` (dirty/untracked/ignored/locked/current/nested-repo content all retain a worktree; an unreadable status is never folded into clean), and `validate_resource_path` (refuses a path resolving on, above, or merely string-adjacent to the repository root). Still true and not claimed otherwise: this closes the inventory gap but does not by itself satisfy ADR-0036's gate -- this module still needs its own independent review, and nothing here is wired into a live route (T-06's job).
+- `core/pysrc/_cleanuplib.py`: adds T-03, the authoritative branch/worktree inventory ADR-0036 named as one of three preconditions for superseding safety-core.md #6 (alongside the already-built T-04 proof evaluator and T-05 guarded mutation backend). New pure parsers: `parse_branch_ref_inventory` (full-OID branch facts from `git for-each-ref`, never `branch -vv`'s abbreviated form), `parse_worktree_inventory`/`parse_worktree_inventory_nul` (newline- and NUL-delimited `git worktree list --porcelain`), `bind_branch_occupancy` (cross-references the real worktree list rather than a display-only marker), `classify_worktree_loss_surface` (dirty/untracked/ignored/locked/current/nested-repo content all retain a worktree; an unreadable status is never folded into clean), and `validate_resource_path` (refuses a path resolving on, above, or merely string-adjacent to the repository root). Still true and not claimed otherwise: this closes the inventory gap but does not by itself satisfy ADR-0036's gate -- this module still needs its own independent review, and nothing here is wired into a live route (T-06's job).
+
+## [2.19.0] - 2026-09-16
+
+### Added
+
+- Add a disabled-by-default, extensible structured-artifact engine foundation for canonical HTML specifications and implementation plans, with bounded typed operations, Linux and Windows recovery semantics, verified native bridges, descriptor-relative Unix installation, and required three-host CI. The Windows developer installer fails closed pending a reviewed release-packaging boundary, and HTML farm dispatch remains blocked pending integration and qualification.
+
+### Fixed
+
+- Structured-artifact Python bridge, workflow, package, farm, and conformance
+  fixtures now resolve only their test-owned temporary directories to physical
+  paths, matching the existing Go fixture rule so hosted macOS symlink roots and
+  Windows path aliases do not masquerade as production containment failures.
+- The reviewed reference HTML pair and its supporting assets are pinned to LF
+  checkout bytes so Windows autocrlf cannot manufacture renderer drift.
+- The macOS Python bridge and farm dispatcher now launch a private ephemeral
+  executable image written only from the already verified package descriptor,
+  because macOS does not permit native execution through `/dev/fd`; Linux and
+  Windows pinning is
+  unchanged and no PATH or repository fallback is introduced.
 
 ## [2.18.9] - 2026-09-17
 

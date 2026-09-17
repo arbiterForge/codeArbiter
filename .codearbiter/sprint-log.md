@@ -1601,3 +1601,18 @@ Options: (a) commit the 1,723-line month-old accumulation with the feature; (b) 
 - **Options:** (a) duplicate values in each surface; (b) generate one ignored JSON record before Astro builds and import it into the component, proof caption, and static endpoint.
 - **SMARTS:** Maintainable, Reliable, and Testable strongly favor (b); a single strict producer makes equality mechanically testable and preserves the existing generated-output discipline. Securable is neutral because all inputs are repository-owned inert data.
 - **Chosen:** (b). Strength: strong.
+
+## Owner decision — Feature Forge farm promotion bar · 2026-09-16
+
+- **Point:** Define the evidence required to promote `--farm` from Feature Forge `preview` while
+  accounting for material changes in both frontier and low-tier models since the June 2026 run.
+- **SMARTS:** Scalable, Maintainable, Reliable, Testable, and Securable strongly favor a fresh,
+  numeric, revision-bound qualification packet over immediate promotion or indefinite preview.
+  Available remains adequate because premium stays the blessed default and farm retains its fallback.
+- **Chosen by SUaDtL@users.noreply.github.com:** require five completed slices, three repositories,
+  50 tasks, Windows and POSIX evidence, two model identities, at least 85% direct completion, at most
+  15% escalation and 1.5 average attempts, zero circuit-breaker/gate/security/supply-chain failures,
+  complete review and verification, and at least 25% lower premium implementation-token consumption.
+  Qualification starts at zero on this date; the June 2026 run earns no credit. Material farm or
+  provider/model-set change before promotion invalidates affected evidence. Promotion is stable
+  opt-in only and does not enable typed-HTML farm projection. Strength: strong.

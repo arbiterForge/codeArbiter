@@ -6,8 +6,8 @@
  * plugins/ca/commands/<slug>.md, so a bogus slug fails fast.
  *
  * Scope note: this is the UNBLOCKED self-consistency form. The stronger check —
- * reconciling the allowlist against a recorded promotion in the decision log —
- * is tracked separately (CONFIRM-05) and intentionally NOT built here. This test
+ * reconciling the allowlist against a completed farm qualification record — is
+ * tracked by the resolved promotion bar and intentionally NOT built here. This test
  * READS plugins/ca/commands/ to check existence only; it never writes there.
  */
 import { describe, it, expect } from "vitest";

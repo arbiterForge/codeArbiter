@@ -2422,20 +2422,20 @@ class ReceiptCommandTest(unittest.TestCase):
                 [check["id"] for check in receipt["selected"]],
                 # `pi-checks` is the canonical host-independent job added by
                 # issue #390.  A Pi payload edit now predicts all three Pi
-                # contracts; omitting it made the receipt under-report the
-                # required jobs a reviewer must wait on.
-                ["pi-adapter", "pi-checks", "pi-latest"],
+                # contracts plus artifact surface closure; omitting either
+                # class under-reports the required jobs a reviewer must wait on.
+                ["artifact-engine", "pi-adapter", "pi-checks", "pi-latest"],
             )
             self.assertEqual(
                 receipt["predicted_not_selected"],
                 ["ca-surface", "codex-surface", "pi-surface"],
             )
             self.assertEqual(
-                receipt["selected"][0]["reproduce"],
+                receipt["selected"][1]["reproduce"],
                 "python .github/scripts/test_pi_platform_contract.py --pi-version 0.80.10",
             )
             self.assertEqual(
-                receipt["selected"][1]["reproduce"],
+                receipt["selected"][2]["reproduce"],
                 "npm --prefix plugins/ca-pi/tools test",
             )
             self.assertEqual(
@@ -2553,7 +2553,7 @@ class NoOrphanedSuiteTest(unittest.TestCase):
             # Caught by mutation - un-wiring test_planfilelib.py did not
             # turn the first version red.
             invocation = re.compile(
-                r"\s\.github/scripts/" + re.escape(name))
+                r"(?:\s|['\"])\.github/scripts/" + re.escape(name))
             if invocation.search(workflows):
                 continue
             # Or invoked by a sibling script, excluding its own source:
@@ -2982,6 +2982,212 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             cwd=REPO_ROOT, capture_output=True, text=True, check=False,
         )
         self.assertEqual(ignored.returncode, 0, ignored.stderr)
+
+
+class ArtifactEngineCIContractTest(unittest.TestCase):
+    """The structured-artifact engine is a required, native three-host gate."""
+
+    def test_artifact_engine_is_reachable_pinned_and_merge_required(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("artifact-engine", jobs)
+        job = jobs["artifact-engine"]
+
+        self.assertIn("needs: changes", job)
+        self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
+        for runner in ("ubuntu-latest", "windows-latest", "macos-latest"):
+            self.assertIn(runner, job)
+
+        self.assertIn(
+            "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0",
+            job,
+        )
+        self.assertIn(
+            "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0",
+            job,
+        )
+        self.assertIn("fetch-depth: 0", job)
+        for control in (
+            'python-version: "3.14"',
+            'go-version: "1.27.1"',
+            "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0",
+            "node-version: 22.19.0",
+            "check-latest: false",
+            "cache: false",
+            "go-download-base-url: https://go.dev/dl",
+            "GOTOOLCHAIN: local",
+            "subprocess.check_output(['go', 'env', 'GOVERSION']",
+            'go test -buildvcs=false ./...',
+            'go vet -buildvcs=false ./...',
+            'go test -buildvcs=false -race ./...',
+            'python .github/scripts/test_artifact_native.py',
+            'python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"',
+            'python .github/scripts/test_artifact_authoring.py',
+            'python .github/scripts/test_artifact_bridge.py',
+            'python .github/scripts/test_artifact_consumers.py',
+            'python .github/scripts/test_artifact_farm.py',
+            "'.github/scripts/test_artifact_conformance.py'",
+            'python .github/scripts/test_artifact_package.py',
+            'python .github/scripts/test_artifact_surface.py',
+            'python .github/scripts/test_artifact_workflow.py',
+            "ARTIFACT_CONFORMANCE_PYTHON",
+            "--isolated",
+            "--require-virtualenv",
+            "--only-binary=:all:",
+            "--require-hashes",
+            "--no-deps",
+            ".github/requirements/artifact-conformance-py314.lock",
+            '--qualify-existing "${{ runner.temp }}/artifact-candidate"',
+            'name: artifact-native-${{ matrix.os }}',
+        ):
+            self.assertIn(control, job)
+        qualification_position = job.index('--qualify-existing "${{ runner.temp }}/artifact-candidate"')
+        for proving_step in (
+            "go test -buildvcs=false ./...",
+            "go vet -buildvcs=false ./...",
+            "python .github/scripts/test_artifact_native.py",
+            "python .github/scripts/test_artifact_bridge.py",
+            "'.github/scripts/test_artifact_conformance.py'",
+            "python .github/scripts/test_artifact_package.py",
+        ):
+            self.assertLess(job.index(proving_step), qualification_position, proving_step)
+        self.assertGreater(job.index("name: artifact-native-${{ matrix.os }}"),
+                           qualification_position)
+        self.assertNotIn("continue-on-error", job)
+        builder = (REPO_ROOT / "tools" / "build-artifacts.py").read_text(encoding="utf-8")
+        self.assertIn('os.environ.get("GITHUB_JOB") != QUALIFICATION_JOB', builder)
+        self.assertIn('QUALIFICATION_JOB = "artifact-engine"', builder)
+        self.assertNotIn("CA_ARTIFACT_QUALIFICATION_JOB", builder)
+
+        self.assertIn("artifact-package-assembly", jobs)
+        assembly = jobs["artifact-package-assembly"]
+        for control in (
+            "needs: [changes, artifact-engine]",
+            "needs.artifact-engine.result == 'success'",
+            "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1",
+            "pattern: artifact-native-*",
+            '"--trusted-source-commit", os.environ["GITHUB_SHA"]',
+            '"--trusted-workflow-run", os.environ["GITHUB_RUN_ID"]',
+            '"--trusted-workflow", ".github/workflows/ci.yml"',
+            "expected three exact-host receipts",
+            "python .github/scripts/test_artifact_bridge.py",
+            "name: artifact-host-payloads-${{ github.sha }}",
+        ):
+            self.assertIn(control, assembly)
+
+        changes = jobs["changes"]
+        self.assertRegex(changes, r"(?m)^    steps:$")
+        self.assertRegex(
+            changes,
+            r"(?m)^      - uses: dorny/paths-filter@[0-9a-f]+[^\n]*\n"
+            r"        id: filter\n"
+            r"        with:$",
+        )
+        self.assertIn("artifacts: ${{ steps.filter.outputs.artifacts }}", changes)
+        for path in (
+            "core/artifacts/**",
+            "core/pysrc/**",
+            "core/surface/**",
+            ".github/scripts/test_artifact_bridge.py",
+            ".github/scripts/test_artifact_authoring.py",
+            ".github/scripts/test_artifact_consumers.py",
+            ".github/scripts/test_artifact_conformance.py",
+            ".github/scripts/test_artifact_farm.py",
+            ".github/scripts/test_artifact_native.py",
+            ".github/scripts/test_artifact_package.py",
+            ".github/scripts/test_artifact_surface.py",
+            ".github/scripts/test_artifact_workflow.py",
+            ".github/requirements/artifact-conformance.in",
+            ".github/requirements/artifact-conformance-py314.lock",
+            "docs/artifacts/**",
+            "plugins/ca-pi/tools/src/**",
+            "plugins/ca/tools/farm.ts",
+            "plugins/ca/tools/farm.js",
+            ".github/scripts/test_artifact_farm.py",
+            "plugins/ca/tools/farm.js",
+            "site/src/content/docs/**",
+            "site/src/curated/**",
+            "tools/build-artifacts.py",
+            "tools/build-host-packages.py",
+            "tools/install-artifact-payload.py",
+            "tools/generate-artifact-types.py",
+            "tools/create-artifact-examples.py",
+        ):
+            self.assertIn(f"- '{path}'", changes)
+
+        impact_map = json.loads(
+            (REPO_ROOT / ".github" / "ci-impact-map.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        artifact_edges = {
+            edge["glob"]
+            for edge in impact_map["edges"]
+            if "artifact-engine" in edge.get("checks", [])
+        }
+        for path in (
+            "core/pysrc/**",
+            "core/surface/**",
+            "plugins/ca-pi/tools/src/**",
+            "plugins/ca/tools/farm.ts",
+            "site/src/content/docs/**",
+            "site/src/curated/**",
+            ".github/scripts/test_artifact_conformance.py",
+            ".github/requirements/artifact-conformance*",
+        ):
+            self.assertIn(path, artifact_edges)
+
+        real_map = module.load_map(REPO_ROOT / ".github" / "ci-impact-map.json")
+        for path in (
+            "core/surface/command-routes.json",
+            "core/surface/agents/security-reviewer.md",
+            "core/surface/skills/tdd/SKILL.md",
+            "core/surface/arbiter.md",
+            "core/pysrc/session-start.py",
+            "plugins/ca-pi/tools/src/extension.ts",
+            "plugins/ca/tools/farm.ts",
+            "plugins/ca/tools/farm.js",
+            ".github/scripts/test_artifact_farm.py",
+            "site/src/content/docs/guides/feature-lane.md",
+            "site/src/curated/commands/sprint.md",
+            "tools/create-artifact-examples.py",
+            ".github/scripts/test_artifact_conformance.py",
+            ".github/requirements/artifact-conformance-py314.lock",
+        ):
+            result = module.evaluate(real_map, [path], hosts())
+            self.assertFalse(result.fallback, path)
+            self.assertIn(
+                "artifact-engine",
+                {check.id for check in result.selected},
+                path,
+            )
+
+        aggregate = jobs["ci-passed"]
+        self.assertRegex(aggregate, r"(?m)^      - artifact-engine$")
+        self.assertRegex(aggregate, r"(?m)^      - artifact-package-assembly$")
+        self.assertIn("${{ needs['artifact-engine'].result }}", aggregate)
+        self.assertIn("${{ needs['artifact-package-assembly'].result }}", aggregate)
+
+    def test_artifact_conformance_dependency_graph_is_exact_and_wheel_only(self):
+        direct = (REPO_ROOT / ".github/requirements/artifact-conformance.in").read_text(
+            encoding="utf-8"
+        )
+        lock = (REPO_ROOT / ".github/requirements/artifact-conformance-py314.lock").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(
+            [line for line in direct.splitlines() if line and not line.startswith("#")],
+            ["jsonschema==4.26.0", "referencing==0.37.0"],
+        )
+        for package in (
+            "attrs==26.1.0",
+            "jsonschema==4.26.0",
+            "jsonschema-specifications==2025.9.1",
+            "referencing==0.37.0",
+            "rpds-py==2026.6.3",
+        ):
+            self.assertEqual(lock.count(package), 1, package)
+        self.assertEqual(lock.count("--hash=sha256:"), 8)
 
 
 class SiteBrowserBehaviorContractTest(unittest.TestCase):

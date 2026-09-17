@@ -1,8 +1,31 @@
 # codeArbiter farm — setup and configuration
 
-> **Feature Forge `preview`.** The `--farm` backend ships off by default and is not yet validated on
-> real runs; the premium subagent path is the blessed default. Promotion bar:
-> `${CLAUDE_PROJECT_DIR}/.codearbiter/open-questions.md` (CONFIRM-05).
+> **Feature Forge `preview`.** The `--farm` backend ships off by default; the premium subagent path is
+> the blessed default. Historical runs informed the design but count as zero current qualification
+> evidence. Promotion requires the complete fresh-evidence bar below.
+
+## Stable opt-in promotion bar
+
+Qualification starts at zero on 2026-09-16. Runs before that date are historical development evidence
+only and earn no promotion credit. Before promotion, one durable qualification packet must bind all
+evidence to exact farm revisions and show:
+
+- at least five completed farm slices across at least three distinct repositories;
+- at least 50 dispatched implementation tasks;
+- completed evidence from Windows and a POSIX host, spanning at least two selected model identities;
+- at least 85% direct farm completion, no more than 15% premium escalation, and no more than 1.5
+  average attempts per dispatched task;
+- zero circuit-breaker trips, gate escapes, security incidents, supply-chain incidents, or unresolved
+  HIGH findings;
+- the ordinary integrated suite, full review chain, and fresh verification passing for every slice;
+- at least 25% lower premium implementation-token consumption than comparable premium execution,
+  counting escalations and review rather than treating worker tokens as the whole cost.
+
+All qualifying runs must use the then-current farm implementation and provider model set. A material
+farm implementation change or provider/model-set change before promotion invalidates the affected
+evidence and requires it to be rerun. Promotion means **stable opt-in** only: it does not make farm the
+default, remove any external-dispatch trust gate, or enable typed-HTML farm projection. The typed-HTML
+path remains blocked until its own integration and qualification are complete.
 
 `farm.ts` is the pluggable execution backend: Claude writes specs, failing tests, and a `plan.json`;
 the farm runs workers in isolated git worktrees to make each test pass; Claude reviews and merges. Its

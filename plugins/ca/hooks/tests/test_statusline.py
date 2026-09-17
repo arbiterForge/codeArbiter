@@ -831,7 +831,8 @@ class TestRenderParity(unittest.TestCase):
                                "context_window_size": 200000},
             "cost": {"total_cost_usd": 1.23},
         })
-        with mock.patch.object(sl, "git_dirty", return_value=True):
+        with mock.patch.object(sl, "git_dirty", return_value=True), \
+                mock.patch.object(sl.time, "time", return_value=1700000001.0):
             a = sl.render(payload)
             b = sl.render(payload)
         self.assertEqual(a, b)

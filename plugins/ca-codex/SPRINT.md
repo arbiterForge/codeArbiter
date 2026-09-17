@@ -7,11 +7,22 @@ file is the thin entry point, this file is the procedure. -->
 Brainstorm a sprint with the user, then execute it end-to-end — deciding "as the user" on everything
 that is not a true hard gate. Every auto-decision is logged. Hard gates are real stops, rare by design.
 
+## Typed-artifact pilot boundary
+
+For an existing `.html` spec/plan match, or when the user explicitly requests
+the typed-HTML pilot, load [includes/artifacts.md](includes/artifacts.md) before resume
+classification or artifact I/O. Its validated identity, authority, binding and
+task-state operations replace the `.md` and status-column assumptions below for
+that pipeline only. A missing or invalid helper is a STOP. The typed-HTML path
+must block `--farm` before canary or dispatch; do not project it into legacy farm
+JSON. Legacy Markdown remains the default until native-host, consumer and release
+qualification is complete.
+
 ## Execution backend: premium (default) vs. `--farm`
 
-> **`--farm` is a Feature Forge `preview`** — shipped off by default and not yet validated on real
-> runs. The premium subagent path is the blessed default. The promotion bar lives in
-> `<project-root>/.codearbiter/open-questions.md` (CONFIRM-05).
+> **`--farm` is a Feature Forge `preview`** — shipped off by default. Historical runs informed its
+> design but count as zero current qualification evidence. The premium subagent path is the blessed
+> default. The fresh-evidence promotion bar lives in [includes/farm.md](includes/farm.md).
 
 `/sprint` runs the normal premium-subagent path unless invoked as `/sprint --farm`. The `--farm` flag
 selects the pluggable execution backend: Claude still authors the spec, the failing tests, and the plan,
@@ -25,11 +36,13 @@ backends. The worker-seam design (the cheap/premium/agentic policies the seam ad
 
 ## Phase 1 — Sprint spec · gate: STOP
 
-**Resume first:** if `<project-root>/.codearbiter/specs/<sprint-slug>.md` and
-`plans/<sprint-slug>.md` already exist for this sprint, do not re-brainstorm — confirm the resume
+**Resume first:** if a matching canonical spec/plan pair exists for this sprint
+(`.md` on the legacy path or validated `.html` on the explicit pilot), do not
+re-brainstorm — confirm the resume
 with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan with non-`ACCEPTED`
-tasks → straight to Phase 2, executing only the remaining tasks; the plan's `status` column is the
-ledger). An interrupted sprint is re-entered, never restarted.
+tasks → straight to Phase 2, executing only the remaining tasks; the legacy plan's
+`status` column or the typed engine's execution ledger is authoritative for its
+own format). An interrupted sprint is re-entered, never restarted.
 
 Route to `brainstorming` ([routines/brainstorming/SKILL.md](routines/brainstorming/SKILL.md)), scoped to a **sprint** — a coherent chunk of work (several features or one
 goal), not a single feature. Drive it to a concrete sprint spec at

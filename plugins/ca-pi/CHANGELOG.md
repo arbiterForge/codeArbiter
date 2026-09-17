@@ -4,11 +4,17 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.12.0] - 2026-09-17
+## [0.13.0] - 2026-09-17
 
 ### Added
 
 - `_cleanuplib.py`: adds T-03, the authoritative branch/worktree inventory (shared core/pysrc change, synced via `tools/sync-core.py`). See the root `CHANGELOG.md` for full detail.
+
+## [0.12.0] - 2026-09-16
+
+### Added
+
+- Add the disabled structured-artifact foundation, Linux and Windows recovery support, verified native bridges, descriptor-relative Unix installation, and generated Pi workflow guidance while preserving the existing public surface. The Windows developer installer and HTML farm dispatch remain fail-closed pending their respective release/integration qualification.
 
 ## [0.11.9] - 2026-09-17
 

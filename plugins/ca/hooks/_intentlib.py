@@ -168,6 +168,8 @@ def uncovered_intent(spec_text, issue_body=None):
     docstring for what it cannot catch."""
     if not isinstance(spec_text, str):
         spec_text = ""
+    if spec_text.lstrip().lower().startswith(("<!doctype html", "<html")):
+        return ["[HTML-REQUIRES-VALIDATION] Use the path-based artifact validator; HTML is not empty Markdown."]
     criteria_tokens = set()
     for criterion in _criteria_texts(spec_text):
         criteria_tokens.update(_tokens(criterion))
@@ -230,6 +232,35 @@ def main(argv):
                 issue_body = fh.read()
         except OSError as exc:
             sys.stderr.write(f"_intentlib.py: cannot read {issue_body_path}: {exc}\n")
+            return 2
+
+    if positional[0].lower().endswith(".html"):
+        try:
+            from _artifactlib import resolve_spec_file, helper_installation
+            client, entry = resolve_spec_file(positional[0], helper_installation(__file__))
+            result = client.call("validate", {"artifact_id": entry["artifact_id"], "gate": "ready"}, permit_invalid=True)
+            findings = ["[INVALID-HTML-SPEC] " + item["code"] + ": " + item["message"]
+                        for item in result.get("diagnostics", [])]
+            # Explicit source->criterion mappings replace fuzzy scope matching.
+            # The legacy issue-checkbox heuristic is retained ONLY for external
+            # issue text until issue-source records receive their own schema.
+            if issue_body:
+                criteria_tokens = set()
+                for record in client.outline(entry["artifact_id"]):
+                    if record["kind"] == "criteria" and not record["retired"]:
+                        data = client.call("read", {"artifact_id": entry["artifact_id"], "symbol": record["id"], "mode": "exact"})
+                        criteria_tokens.update(_tokens(data["record"].get("statement", "")))
+                for box in _checkboxes(issue_body):
+                    if not _cited(box, criteria_tokens):
+                        findings.append("[UNCOVERED-CHECKBOX] " + box)
+            fresh = client.call("identity", {"artifact_id": entry["artifact_id"]})
+            if fresh["model_sha256"] != result["model_sha256"]:
+                raise RuntimeError("HTML spec changed during intent verification; retry a fresh read")
+            for finding in findings:
+                print(finding)
+            return 1 if findings or not result["valid"] else 0
+        except Exception as error:
+            sys.stderr.write("_intentlib.py: HTML validation failed: " + str(error)[:512] + "\n")
             return 2
 
     findings = uncovered_intent(spec_text, issue_body)

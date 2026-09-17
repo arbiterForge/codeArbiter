@@ -1,0 +1,4 @@
+# Direct review-tool inputs. The resolved Python 3.14 graph is owned by the
+# adjacent lock; production hooks and host packages do not install these.
+jsonschema==4.26.0
+referencing==0.37.0

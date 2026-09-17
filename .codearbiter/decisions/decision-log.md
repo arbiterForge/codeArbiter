@@ -1855,3 +1855,53 @@ Maintainable and Scalable favor recording the direction now so safety-positive i
 Seal ADR-0036's obligations against its exact accepted bytes, commit the accepted source and this log entry together, then append the content-bound lifecycle acceptance event in a separate subsequent commit while preserving source ancestry through delivery. No change to safety-core.md, arbiter.md, routing-table.md, or commands/pr.md rides this decision.
 
 ---
+
+## DECISION-0063 — adr-0037-structured-artifact-engine — Design the internal artifact binary for governed structured-file extensibility
+
+**Date:** 2026-09-16
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly directed that the binary expand beyond specifications and plans to encompass most structured file writes, including task boards, tickets, and decomposition documents.
+**Decision category:** architecture / governed state
+**Artifact-section-hash:** df7790423d975fd77ea18a4917cf551180bdff3bdeaf12822148cfd0ef1faf59
+
+### Variance summary
+- **Artifact position:** The package proposed a shared Go utility and versioned file schemas specifically for specifications and implementation plans.
+- **Scaffold position:** The internal binary is an extensible structured-artifact engine whose first kinds are specifications and plans, while each later artifact migration remains separately governed and qualified.
+- **Status type:** divergent
+
+### Decision
+Design one internal, database-free engine for governed structured-file writes rather than a permanently two-kind helper. Keep its kernel kind-neutral and its artifact kinds closed, compile-time, repository-owned contracts; permit future kinds such as task boards, tickets, and decomposition documents without forcing them into HTML or authorizing their migration now.
+
+### SMARTS rationale
+Scalable and Maintainable favor one tested identity, mutation, recovery, and packaging mechanism over new trusted writers for each artifact family. Reliable and Securable require closed per-kind contracts, no runtime plugin loading, no stored-command execution, and no authority transfer from document state. Specific and Testable keep every future kind behind its own approved scope, compatibility rules, negative controls, native evidence, and release qualification.
+
+### Implementation implication
+Author ADR-0037 as proposed. Shape `core/artifacts/` around a kind-neutral kernel and explicit kind contracts while delivering only the separately approved specs/plans feature now; retain every other existing artifact as legacy authority until its own governed migration is approved and proven.
+
+---
+
+## DECISION-0064 — adr-0037-ratified — Accept the extensible structured-artifact engine architecture
+
+**Date:** 2026-09-16
+**Status:** accepted
+**Supersedes:** DECISION-0063
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly approved the complete proposed ADR-0037 text after reviewing it in the Codex side panel.
+**Decision category:** architecture / governed state
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0037 recorded the extensible structured-artifact engine architecture as proposed pending review.
+- **Scaffold position:** The repository user explicitly approved the complete proposal as Accepted/Planned without authorizing implementation claims or artifact migrations.
+- **Status type:** open-decision-closure
+
+### Decision
+Accept ADR-0037 as written. The internal binary is designed as an extensible engine for governed structured-file reads and writes, with specifications and plans as its first kinds and every later kind separately approved and qualified.
+
+### SMARTS rationale
+This is the explicit acceptance of the reviewed record, not a new architecture choice. Scalable and Maintainable preserve shared mutation and recovery mechanics; Reliable, Securable, and Testable preserve closed kind contracts, existing authority boundaries, and separate proof for every future migration.
+
+### Implementation implication
+Store ADR-0037 as Accepted/Planned, seal every normative clause against the exact accepted bytes, preserve source ancestry through delivery, and do not represent the engine or any artifact-kind rollout as Implemented or Verified without current lifecycle evidence.
+
+---

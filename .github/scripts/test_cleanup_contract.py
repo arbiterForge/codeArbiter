@@ -33,17 +33,20 @@ def _branch(name):
     return cleanuplib.Target(kind="branch", locator=name, expected_identity="deadbeef")
 
 
+REPOSITORY_ID = "arbiterForge/codeArbiter"
+
+
 class TestScopeCovers(unittest.TestCase):
     def test_an_unauthorized_proposal_covers_nothing(self):
         # scope=None is the pre-authorization state: nothing is covered yet.
-        self.assertFalse(cleanuplib.scope_covers(None, _branch("feature")))
+        self.assertFalse(cleanuplib.scope_covers(None, _branch("feature"), REPOSITORY_ID))
 
     def test_a_branch_only_scope_covers_a_named_branch_member(self):
         scope = cleanuplib.Scope(
             source="direct_instruction", resource_kinds=frozenset({"branch"}),
             members=frozenset({"feature"}), repository_id="arbiterForge/codeArbiter",
         )
-        self.assertTrue(cleanuplib.scope_covers(scope, _branch("feature")))
+        self.assertTrue(cleanuplib.scope_covers(scope, _branch("feature"), REPOSITORY_ID))
 
     def test_a_branch_only_scope_never_covers_a_task_archive_candidate(self):
         # AC-03 / the plan's own named first-failing-proof case: a
@@ -56,7 +59,7 @@ class TestScopeCovers(unittest.TestCase):
         task_archive_target = cleanuplib.Target(
             kind="task_archive", locator="feature", expected_identity=None,
         )
-        self.assertFalse(cleanuplib.scope_covers(scope, task_archive_target))
+        self.assertFalse(cleanuplib.scope_covers(scope, task_archive_target, REPOSITORY_ID))
 
     def test_a_scope_never_covers_a_member_outside_its_bound_snapshot(self):
         # A later-discovered target is not silently added to an existing
@@ -65,7 +68,7 @@ class TestScopeCovers(unittest.TestCase):
             source="direct_instruction", resource_kinds=frozenset({"branch"}),
             members=frozenset({"feature"}), repository_id="arbiterForge/codeArbiter",
         )
-        self.assertFalse(cleanuplib.scope_covers(scope, _branch("late-discovered")))
+        self.assertFalse(cleanuplib.scope_covers(scope, _branch("late-discovered"), REPOSITORY_ID))
 
     def test_a_scope_with_no_authorization_source_covers_nothing_even_with_bound_members(self):
         # source=None means the proposal is not yet authorized, so it must
@@ -77,7 +80,7 @@ class TestScopeCovers(unittest.TestCase):
             source=None, resource_kinds=frozenset({"branch"}),
             members=frozenset({"feature"}), repository_id="arbiterForge/codeArbiter",
         )
-        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature")))
+        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature"), REPOSITORY_ID))
 
     def test_a_not_yet_enumerated_proposal_scope_covers_nothing(self):
         # A Scope with source set but members still None represents "offered,
@@ -86,7 +89,21 @@ class TestScopeCovers(unittest.TestCase):
             source="snapshot_reply", resource_kinds=frozenset({"branch"}),
             members=None, repository_id="arbiterForge/codeArbiter",
         )
-        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature")))
+        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature"), REPOSITORY_ID))
+
+    def test_an_unrecognized_authorization_source_covers_nothing(self):
+        scope = cleanuplib.Scope(
+            source="assumed_from_vibes", resource_kinds=frozenset({"branch"}),
+            members=frozenset({"feature"}), repository_id=REPOSITORY_ID,
+        )
+        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature"), REPOSITORY_ID))
+
+    def test_a_scope_from_another_repository_covers_nothing(self):
+        scope = cleanuplib.Scope(
+            source="direct_instruction", resource_kinds=frozenset({"branch"}),
+            members=frozenset({"feature"}), repository_id="arbiterForge/another-repo",
+        )
+        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature"), REPOSITORY_ID))
 
 
 class TestRequiredConfirmationCount(unittest.TestCase):
