@@ -4,7 +4,7 @@
   "entries": [
     {
       "drift_trigger": true,
-      "hash": "ad0a3ca719443cc96635d44eb7de9605d6a20d43",
+      "hash": "0c14435f2e181d1edf56906d51d881f1572d3a32",
       "path": "CHANGELOG.md"
     },
     {
@@ -19,12 +19,12 @@
     },
     {
       "drift_trigger": true,
-      "hash": "a996b8987fde8b66f788d365c2aac6995898decd",
+      "hash": "ac873bc80067b47c0adbece071a906e115d1e48f",
       "path": "plugins/ca-codex/CHANGELOG.md"
     },
     {
       "drift_trigger": true,
-      "hash": "055f51e40c54333cc7d52cd0dc6aa4e508459ee1",
+      "hash": "13b7f1b4e66a0f2721276f7b283006e3d5cd65bf",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -69,7 +69,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "98b9f9cfdf183698d8ad2b6291fd05f7d25ac74d",
+      "hash": "3136e7494e05fc1f034f5665b9947b4a31efb5e7",
       "path": "plugins/ca/tools/farm.js"
     }
   ],
