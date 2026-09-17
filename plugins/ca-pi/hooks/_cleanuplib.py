@@ -1051,11 +1051,20 @@ _REFS_HEADS_PREFIX = "refs/heads/"
 _REFS_REMOTES_PREFIX = "refs/remotes/"
 
 
-def _strip_fixed_ref_prefix(full_ref, prefix):
+def _strip_fixed_ref_prefix(full_ref, prefixes):
     """Strip a FIXED, unambiguous ref-namespace prefix ourselves -- never
     Git's own `:short` form, which shortens differently depending on what
-    else happens to exist in the repo (see module docstring)."""
-    return full_ref[len(prefix):] if full_ref.startswith(prefix) else full_ref
+    else happens to exist in the repo (see module docstring). `prefixes` is
+    a single prefix string, or a tuple of them tried in order -- %(upstream)
+    is USUALLY `refs/remotes/...` but can legally be `refs/heads/...` when a
+    branch tracks another local branch (independent review follow-up,
+    2026-09-17): trying only one fixed prefix left that shape unstripped."""
+    if isinstance(prefixes, str):
+        prefixes = (prefixes,)
+    for prefix in prefixes:
+        if full_ref.startswith(prefix):
+            return full_ref[len(prefix):]
+    return full_ref
 
 
 def parse_branch_ref_inventory(for_each_ref_text):
@@ -1064,9 +1073,21 @@ def parse_branch_ref_inventory(for_each_ref_text):
     per non-blank line, in the order Git printed them. The format string
     always emits exactly 4 tab-separated fields; any other count is a fully
     unreadable record (H-1) -- not a partially-trusted one with a
-    confirmed-absent upstream fabricated from a truncated read."""
+    confirmed-absent upstream fabricated from a truncated read.
+
+    Splits on a literal "\\n" ONLY -- never `str.splitlines()` (see
+    parse_worktree_inventory's docstring for the full hazard: Git accepts
+    a branch name containing a Unicode line-boundary character such as
+    U+2028 that `str.splitlines()` treats as a record separator but this
+    format does not). Here a `splitlines()` split would truncate such a
+    branch's for-each-ref line mid-name and parse the remainder as a
+    fully-plausible SECOND record, carrying the real branch's own OID and
+    a fabricated confirmed-absent upstream (independent review, second
+    round follow-up, 2026-09-17) -- reopening H-1's exact hazard through a
+    different door. Every field is `.strip()`-ed individually before use,
+    so this parser is otherwise CRLF-tolerant without further changes."""
     out = []
-    for raw in (for_each_ref_text or "").splitlines():
+    for raw in (for_each_ref_text or "").split("\n"):
         if not raw.strip():
             continue
         fields = raw.split("\t")
@@ -1084,7 +1105,10 @@ def parse_branch_ref_inventory(for_each_ref_text):
         oid_field = oid_field.strip()
         oid = oid_field if _FULL_HEX_RE.match(oid_field) else UNREADABLE
         upstream_field = upstream_field.strip()
-        upstream = _strip_fixed_ref_prefix(upstream_field, _REFS_REMOTES_PREFIX) if upstream_field else None
+        upstream = (
+            _strip_fixed_ref_prefix(upstream_field, (_REFS_REMOTES_PREFIX, _REFS_HEADS_PREFIX))
+            if upstream_field else None
+        )
         upstream_gone = "gone" in track_field.strip()
         out.append(BranchRefRecord(
             name=name, oid=oid, upstream=upstream, upstream_gone=upstream_gone,
@@ -1267,12 +1291,20 @@ def parse_worktree_inventory(porcelain_text, path_exists_fn=None):
     `read_error=False` (independent review, 2026-09-17) -- exactly the
     kind of confidently-wrong record `validate_resource_path`'s caller
     would trust as "one of the exact worktree paths a fresh inventory just
-    reported"."""
+    reported".
+
+    Each line still has a trailing "\\r" stripped explicitly (a literal
+    "\\n"-only split leaves one behind on CRLF input): without it, the
+    bare-keyword lines `_apply_worktree_line` matches by exact equality
+    (`detached`, `locked`, `bare`) would silently fail to match at all,
+    which for `locked` is fail-UNSAFE -- a genuinely locked worktree would
+    come back `locked=False, read_error=False` instead of retained
+    (independent review follow-up, 2026-09-17)."""
     path_exists_fn = path_exists_fn or os.path.exists
     out = []
     cur = None
     for raw in (porcelain_text or "").split("\n"):
-        line = raw.rstrip("\n")
+        line = raw.rstrip("\r\n")
         if not line.strip():
             if cur is not None:
                 _flush_worktree_record(out, cur, path_exists_fn)
@@ -1433,11 +1465,14 @@ def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree,
     # M-1: "ignored_only" means what it says -- ignored content coexisting
     # with dirty/untracked content is not "only" ignored content.
     ignored_only = has_ignored and not dirty and not untracked
-    # No bool() coercion needed here: the unknown_input check above already
-    # refused every UNREADABLE-or-None input via an early return with a
-    # literal True, so every operand below is a real bool by construction --
-    # an `or` chain over real bools is already a real bool.
-    retain = dirty or untracked or has_ignored or is_locked or is_current_worktree or has_nested_repo
+    # The unknown_input check above already refused every UNREADABLE-or-None
+    # input via an early return, but it does NOT refuse an arbitrary other
+    # non-bool truthy/falsy value a careless caller might pass for is_locked/
+    # is_current_worktree/has_nested_repo (e.g. 0/1) -- wrap explicitly so
+    # `retain` is always a real bool (M-3), never whatever type happened to
+    # be the last truthy/falsy operand in the `or` chain (independent
+    # review follow-up, 2026-09-17).
+    retain = bool(dirty or untracked or has_ignored or is_locked or is_current_worktree or has_nested_repo)
     return WorktreeLossSurface(
         dirty=dirty, untracked=untracked, ignored_only=ignored_only, locked=is_locked,
         is_current=is_current_worktree, nested_repo=has_nested_repo,

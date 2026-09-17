@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-09-17
+
+### Fixed
+
+- `_cleanuplib.py`: follow-on fixes to 0.13.0's T-03 remediation, found by a further independent review after that fix had merged (shared core/pysrc change). See the root `CHANGELOG.md` for full detail.
+
 ## [0.13.0] - 2026-09-17
 
 ### Added
