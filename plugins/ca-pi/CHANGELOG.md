@@ -4,6 +4,16 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.11.7] - 2026-09-17
+
+### Added
+
+- `core/pysrc/_cleanuplib.py`: a repository-bound operation journal and a guarded, revalidating branch-deletion executor for the cleanup-framework mutation backend (T-05, branch-deletion slice). The executor journals intent before mutating, revalidates a branch's tip immediately before every delete attempt (including the forced retry), refuses current/default/explicitly-protected/worktree-occupied branches, and reconciles any still-pending record from actual repository state rather than retrying blindly. Not yet wired into any live cleanup route. Worktree-removal guarding and filesystem-operation constraints are separate, not-yet-built increments sharing this same pattern.
+
+### Fixed
+
+- CI now runs the T-04 integration-proof evaluator's and T-05's own unit test suites (`test_cleanuplib.py`, `test_cleanuplib_mutation.py`) — both had been merged without a CI step invoking them, so they ran locally but were invisible to the pipeline.
+
 ## [0.11.6] - 2026-09-17
 
 ### Added
