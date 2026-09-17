@@ -2766,7 +2766,7 @@ class GateCommandTest(unittest.TestCase):
         trees = {}
         for manifest in sorted(REPO_ROOT.rglob("package.json")):
             relative = manifest.relative_to(REPO_ROOT).as_posix()
-            if "node_modules" in relative:
+            if "node_modules" in relative or ".claude/worktrees/" in relative:
                 continue
             try:
                 scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts", {})
@@ -2863,6 +2863,34 @@ class GateCommandTest(unittest.TestCase):
             stale, [],
             "these COVERAGE_EXEMPT entries name no tested tree, so they exempt nothing and "
             "hide the next one that matches the name: " + ", ".join(stale))
+
+    def test_tested_trees_ignores_a_linked_worktree(self):
+        """Issue #676: a worktree is a second checkout of the SAME repo, not a
+        separate project. `_tested_trees()` walked `REPO_ROOT.rglob("package.json")`
+        excluding only `node_modules`, so a linked worktree under
+        `.claude/worktrees/` got double-counted as untested trees lacking a
+        documented coverage command - a green suite that depends on the
+        developer's local worktree state.
+        """
+        branch = "test-tested-trees-worktree-676"
+        worktree = REPO_ROOT / ".claude" / "worktrees" / branch
+        subprocess.run(
+            ["git", "worktree", "add", str(worktree), "-b", branch],
+            cwd=REPO_ROOT, check=True, capture_output=True, text=True)
+        try:
+            trees = self._tested_trees()
+        finally:
+            subprocess.run(
+                ["git", "worktree", "remove", str(worktree), "--force"],
+                cwd=REPO_ROOT, check=True, capture_output=True, text=True)
+            subprocess.run(
+                ["git", "branch", "-D", branch],
+                cwd=REPO_ROOT, check=True, capture_output=True, text=True)
+        leaked = sorted(tree for tree in trees if ".claude/worktrees/" in tree)
+        self.assertEqual(
+            leaked, [],
+            "a linked worktree's own package.json trees leaked into _tested_trees(): "
+            + ", ".join(leaked))
 
 
 class SiteBrowserDependencyContractTest(unittest.TestCase):
