@@ -1,8 +1,15 @@
-"""observability-001 (#186): durable gate-events sink for block()/remind()/warn().
+"""observability-001 (#186): durable gate-events sink, scoped to block().
 
-AC-1: a repo-local run of a hook that hits block()/remind()/warn() produces a
-durable, greppable record in .codearbiter/gate-events.log, outside the live
-stderr transcript.
+AC-1: a repo-local run of a hook that hits block() produces a durable,
+greppable record in .codearbiter/gate-events.log, outside the live stderr
+transcript. remind()/warn() are stderr-only, non-blocking nudges — they are
+deliberately NOT persisted (2026-09-17 scope-down, see _hooklib._log_gate_event:
+REMIND/WARN were 76% of a live repo's log and 60% was one repeated boilerplate
+line, all carrying the full cost of a git-tracked H-05 append-only artifact).
+Their stderr output is asserted here so a dropped print() cannot pass green.
+The sink's own machinery (attribution, locking, fail-open) is exercised by
+calling _log_gate_event directly — it is the subject, and block() is now its
+only public caller.
 
 AC-2 (load-bearing): the write path is FAIL-OPEN — a locked/missing/unwritable
 gate-events.log (or a project_root() that itself misbehaves) must NEVER change
@@ -70,22 +77,33 @@ class TestDurableRecordAC1(_GateEventsFixture):
         # ISO-8601 UTC timestamp, bracketed.
         self.assertRegex(text, r"\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\]")
 
-    def test_remind_writes_record_and_does_not_raise(self):
-        _hooklib.remind("H-05", "example reminder")
-        text = _read_log(self.cad)
-        self.assertIn("REMIND", text)
-        self.assertIn("[H-05]", text)
-        self.assertIn("example reminder", text)
+    def test_remind_does_not_write_a_record_but_still_reaches_stderr(self):
+        # Scope-down: REMIND is not persisted. The stderr half is asserted in
+        # the same test on purpose — without it, deleting remind()'s print()
+        # would leave this suite green while silencing the nudge entirely.
+        import io
+        buf = io.StringIO()
+        with mock.patch.object(sys, "stderr", buf):
+            _hooklib.remind("H-05", "example reminder")  # must not raise
+        self.assertIn("REMINDER [H-05]: example reminder", buf.getvalue())
+        self.assertEqual(_read_log(self.cad), "")
 
-    def test_warn_writes_record_and_does_not_raise(self):
-        _hooklib.warn("example degradation")
-        text = _read_log(self.cad)
-        self.assertIn("WARN", text)
-        self.assertIn("example degradation", text)
+    def test_warn_does_not_write_a_record_but_still_reaches_stderr(self):
+        import io
+        buf = io.StringIO()
+        with mock.patch.object(sys, "stderr", buf):
+            _hooklib.warn("example degradation")  # must not raise
+        self.assertIn("codeArbiter hook: example degradation", buf.getvalue())
+        self.assertEqual(_read_log(self.cad), "")
 
     def test_multiple_events_append_rather_than_overwrite(self):
-        _hooklib.warn("first")
-        _hooklib.remind("TAG", "second")
+        # block() is the sink's only public caller now, so the append-not-
+        # overwrite property is proven with two separate blocks (each exits,
+        # hence one assertRaises apiece).
+        with self.assertRaises(SystemExit):
+            _hooklib.block("H-01", "first")
+        with self.assertRaises(SystemExit):
+            _hooklib.block("H-02", "second")
         text = _read_log(self.cad)
         self.assertIn("first", text)
         self.assertIn("second", text)
@@ -95,8 +113,12 @@ class TestDurableRecordAC1(_GateEventsFixture):
         # "hook/tool if available" — sys.argv[0] is the one signal available
         # at this shared layer without threading a new param through every
         # call site.
+        #
+        # Calls the sink directly: attribution formatting is a sink-internal
+        # concern, identical for every kind, and block() would drag an
+        # irrelevant assertRaises(SystemExit) into a test about field order.
         with mock.patch.object(sys, "argv", ["/path/to/pre-bash.py"]):
-            _hooklib.warn("hook-attributed line")
+            _hooklib._log_gate_event("WARN", None, "hook-attributed line")
         text = _read_log(self.cad)
         self.assertIn("hook=pre-bash.py", text)
 
@@ -110,7 +132,7 @@ class TestDurableRecordAC1(_GateEventsFixture):
         fake_host.name = "codex"
         fake_host.project_root.return_value = self.root
         with mock.patch.object(_hooklib, "get_host", return_value=fake_host):
-            _hooklib.warn("host-attributed line")
+            _hooklib._log_gate_event("WARN", None, "host-attributed line")
         text = _read_log(self.cad)
         self.assertIn("host=codex", text)
 
@@ -120,7 +142,7 @@ class TestDurableRecordAC1(_GateEventsFixture):
         fake_host.project_root.return_value = self.root
         with mock.patch.object(_hooklib, "get_host", return_value=fake_host), \
              mock.patch.object(sys, "argv", ["/path/to/pre-write.py"]):
-            _hooklib.remind("H-01", "ordering check")
+            _hooklib._log_gate_event("REMIND", "H-01", "ordering check")
         text = _read_log(self.cad)
         self.assertIn("host=claude hook=pre-write.py", text)
 
@@ -236,20 +258,22 @@ class TestFailOpenAC2(_GateEventsFixture):
                 _hooklib.block("H-04", "must still block despite root resolution failure")
         self.assertEqual(cm.exception.code, 2)
 
-    def test_warn_is_silent_no_op_when_codearbiter_dir_is_missing(self):
+    def test_sink_is_silent_no_op_when_codearbiter_dir_is_missing(self):
         # A repo that never opted in (no .codearbiter/ at all) must not have
-        # one conjured into existence just to hold this log.
+        # one conjured into existence just to hold this log. Addressed to the
+        # sink directly: this is _log_gate_event's own property, and warn()
+        # no longer reaches it at all.
         missing_root = os.path.join(self.root, "not-a-repo")
         os.makedirs(missing_root)
         with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": missing_root}):
-            _hooklib.warn("no dir to write into")  # must not raise
+            _hooklib._log_gate_event("WARN", None, "no dir to write into")  # must not raise
         self.assertFalse(os.path.isdir(os.path.join(missing_root, ".codearbiter")))
 
     def test_sidecar_lock_contention_drops_event_without_opening_log(self):
         log_path = os.path.join(self.cad, "gate-events.log")
         with mock.patch.object(_hooklib, "acquire_lock", return_value=None) as acquire, \
              mock.patch("os.open") as open_log:
-            _hooklib.warn("contended audit sink remains fail-open")
+            _hooklib._log_gate_event("WARN", None, "contended audit sink remains fail-open")
 
         acquire.assert_called_once_with(_hooklib.audit_lock_key(self.root, log_path))
         open_log.assert_not_called()
@@ -272,7 +296,7 @@ class TestFailOpenAC2(_GateEventsFixture):
         with mock.patch.object(_hooklib, "acquire_lock", return_value=handle) as acquire, \
              mock.patch.object(_hooklib, "release_lock", side_effect=spy_release), \
              mock.patch("os.write", side_effect=spy_write):
-            _hooklib.warn("locked append")
+            _hooklib._log_gate_event("WARN", None, "locked append")
 
         acquire.assert_called_once_with(_hooklib.audit_lock_key(self.root, log_path))
         self.assertEqual(order, ["write", "release"])
@@ -283,7 +307,7 @@ class TestFailOpenAC2(_GateEventsFixture):
         holder = _hooklib.acquire_lock(_hooklib.audit_lock_key(self.root, log_path))
         self.assertIsNotNone(holder)
         try:
-            _hooklib.warn("must not write outside the resolver lock")
+            _hooklib._log_gate_event("WARN", None, "must not write outside the resolver lock")
         finally:
             _hooklib.release_lock(holder)
 
@@ -310,7 +334,7 @@ class TestFailOpenAC2(_GateEventsFixture):
              mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
              mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
              mock.patch.object(_hooklib, "release_lock"):
-            _hooklib.warn("serialize same-process writers before sidecar acquisition")
+            _hooklib._log_gate_event("WARN", None, "serialize same-process writers before sidecar acquisition")
 
         self.assertEqual(observed_process_lock_state, [True])
         self.assertFalse(process_lock.locked())
@@ -327,7 +351,7 @@ class TestFailOpenAC2(_GateEventsFixture):
              mock.patch.object(_hooklib, "_GATE_EVENTS_PROCESS_LOCK", process_lock), \
              mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_sidecar), \
              mock.patch.object(_hooklib, "release_lock"):
-            _hooklib.warn("serialize POSIX same-process writers before sidecar acquisition")
+            _hooklib._log_gate_event("WARN", None, "serialize POSIX same-process writers before sidecar acquisition")
 
         self.assertEqual(observed_process_lock_state, [True])
         self.assertFalse(process_lock.locked())
@@ -343,7 +367,7 @@ class TestFailOpenAC2(_GateEventsFixture):
         except OSError as error:
             self.skipTest(f"symlink unavailable: {error}")
 
-        _hooklib.warn("trusted lock namespace")
+        _hooklib._log_gate_event("WARN", None, "trusted lock namespace")
 
         with open(outside, "rb") as handle:
             self.assertEqual(handle.read(), b"")
@@ -425,7 +449,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
              mock.patch("os.write", side_effect=spy_write):
-            _hooklib.warn("lock ordering check")
+            _hooklib._log_gate_event("WARN", None, "lock ordering check")
 
         kinds = [c[0] for c in fake.calls]
         self.assertIn("lock", kinds)
@@ -449,7 +473,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}):
             try:
-                _hooklib.warn("unlock failure must not propagate")
+                _hooklib._log_gate_event("WARN", None, "unlock failure must not propagate")
             except Exception as e:  # noqa: BLE001
                 self.fail(f"warn() raised despite unlock-failure catch: {e!r}")
         # The write itself happens before the (failing) unlock, so the line
@@ -495,7 +519,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
              mock.patch("time.sleep") as sleep:
-            _hooklib.warn("transient contention must not drop this event")
+            _hooklib._log_gate_event("WARN", None, "transient contention must not drop this event")
 
         self.assertEqual(fake.lock_attempts, 3)
         self.assertEqual(sleep.call_count, 2)
@@ -525,7 +549,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
              mock.patch("time.sleep") as sleep:
-            _hooklib.warn("Windows lock violation must be retried")
+            _hooklib._log_gate_event("WARN", None, "Windows lock violation must be retried")
 
         self.assertEqual(fake.lock_attempts, 2)
         sleep.assert_called_once()
@@ -554,7 +578,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
              mock.patch("time.sleep") as sleep:
-            _hooklib.warn("CRT access-denied contention must be retried")
+            _hooklib._log_gate_event("WARN", None, "CRT access-denied contention must be retried")
 
         self.assertEqual(fake.lock_attempts, 2)
         sleep.assert_called_once()
@@ -578,7 +602,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         with mock.patch.object(os, "name", "nt"), \
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
              mock.patch("time.sleep") as sleep:
-            _hooklib.warn("invalid handle must fail open immediately")
+            _hooklib._log_gate_event("WARN", None, "invalid handle must fail open immediately")
 
         self.assertEqual([call[0] for call in fake.calls], ["lock"])
         sleep.assert_not_called()
@@ -599,7 +623,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
              mock.patch.dict(sys.modules, {"msvcrt": fake}), \
              mock.patch("time.monotonic", side_effect=(100.0, 100.0, 105.0)) as monotonic, \
              mock.patch("time.sleep") as sleep:
-            _hooklib.warn("fail open without an unowned unlock")
+            _hooklib._log_gate_event("WARN", None, "fail open without an unowned unlock")
 
         self.assertEqual([call[0] for call in fake.calls], ["lock", "lock"])
         self.assertEqual(monotonic.call_count, 3)
@@ -609,15 +633,21 @@ class TestWindowsLockAC3(_GateEventsFixture):
 
 class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
     """Same-process concurrent-append coverage (FINDING 3c): many threads
-    calling warn() concurrently must each land as exactly one intact line —
-    no interleaving of two threads' text within a line and no truncation."""
+    appending to the sink concurrently must each land as exactly one intact
+    line — no interleaving of two threads' text within a line and no
+    truncation.
 
-    def test_concurrent_warn_calls_land_as_intact_non_interleaved_lines(self):
+    These drive _log_gate_event directly rather than through block(), the
+    sink's only remaining public caller: block() ends in sys.exit(2), which in
+    a non-main thread raises SystemExit there and buys nothing — the subject
+    here is the sink's thread-safety, not exit behavior."""
+
+    def test_concurrent_sink_appends_land_as_intact_non_interleaved_lines(self):
         n_threads = 16
         messages = [f"thread-payload-{i:03d}-{'x' * 40}" for i in range(n_threads)]
 
         def worker(msg):
-            _hooklib.warn(msg)
+            _hooklib._log_gate_event("WARN", None, msg)
 
         threads = [threading.Thread(target=worker, args=(m,)) for m in messages]
         for t in threads:
@@ -650,7 +680,8 @@ class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
         for round_no in range(n_rounds):
             round_messages = messages[round_no * n_threads:(round_no + 1) * n_threads]
             threads = [
-                threading.Thread(target=_hooklib.warn, args=(message,))
+                threading.Thread(target=_hooklib._log_gate_event,
+                                 args=("WARN", None, message))
                 for message in round_messages
             ]
             for thread in threads:

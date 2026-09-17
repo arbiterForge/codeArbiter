@@ -493,9 +493,22 @@ def marker_fresh(path, minutes):
 def _log_gate_event(kind, tag, msg):
     """Best-effort durable append of one gate decision to
     .codearbiter/gate-events.log (observability-001, issue #186) — the durable
-    sink block()/remind()/warn() funnel every BLOCK/REMIND/WARN through, so a
-    decision is no longer visible ONLY in the ephemeral per-turn stderr
-    transcript.
+    sink block() funnels every BLOCK through, so a decision is no longer
+    visible ONLY in the ephemeral per-turn stderr transcript.
+
+    remind()/warn() do NOT call this (2026-09-17 scope-down): measured on a
+    live repo, REMIND/WARN accounted for 76% of the file's lines and 60% were
+    one repeated boilerplate reminder carrying no information past its first
+    occurrence, while the file's git-tracked + H-05 append-only status gave
+    that noise the full cost of a protected audit artifact — two branches
+    that both merely touched it, independently, produced a real merge
+    conflict; _releaselib.py's clean-tree probe carries its own comment about
+    working around a mid-window REMIND/WARN append poisoning a release gate.
+    BLOCK is the one kind with real forensic value (evidence for diagnosing a
+    hook that misfired); REMIND/WARN remain full-strength on stderr, just not
+    persisted. Not ADR-governed — issue #186 shipped this as an implementation
+    detail of `_hooklib`, not an architectural decision, so scoping it back
+    down is the same kind of call.
 
     One line per event: `[ISO-8601Z] KIND [tag] host=<host> hook=<script> | msg`.
     `tag` may be None (warn() carries no tag) — the bracket is simply omitted
@@ -596,14 +609,15 @@ def block(tag, msg):
 
 
 def remind(tag, msg):
-    """Non-blocking nudge to stderr."""
-    _log_gate_event("REMIND", tag, msg)
+    """Non-blocking nudge to stderr. Deliberately NOT persisted to
+    gate-events.log (see _log_gate_event's 2026-09-17 scope-down note)."""
     print(f"REMINDER [{tag}]: {msg}", file=sys.stderr)
 
 
 def warn(msg):
-    """Loud degradation/diagnostic breadcrumb — never silent."""
-    _log_gate_event("WARN", None, msg)
+    """Loud degradation/diagnostic breadcrumb — never silent. Deliberately
+    NOT persisted to gate-events.log (see _log_gate_event's 2026-09-17
+    scope-down note)."""
     print(f"codeArbiter hook: {msg}", file=sys.stderr)
 
 
