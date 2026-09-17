@@ -9,6 +9,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
+	"math"
 )
 
 const Format = "codearbiter.artifact"
@@ -29,9 +30,7 @@ func NativeInt(v any) (int, bool) {
 	if !ok {
 		return 0, false
 	}
-	max := int64(^uint(0) >> 1)
-	min := -max - 1
-	if i < min || i > max {
+	if i < int64(math.MinInt) || i > int64(math.MaxInt) {
 		return 0, false
 	}
 	return int(i), true
