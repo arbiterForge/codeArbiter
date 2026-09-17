@@ -58,18 +58,19 @@ OID_C = "cccc3333cccc3333cccc3333cccc3333cccc3333"
 REPO = "arbiterForge/codeArbiter"
 
 
-def _proven(method="ancestry", candidate_sha=OID_A, pr_number=None, pr_merge_commit=None):
+def _proven(method="ancestry", candidate_sha=OID_A, pr_number=None, pr_merge_commit=None, target_repo=REPO):
     return cleanuplib.ProofResult(
         proven=True, method=method, target_ref="origin/main", target_sha=OID_B,
-        candidate_sha=candidate_sha, pr_number=pr_number, pr_merge_commit=pr_merge_commit,
+        target_repo=target_repo, candidate_sha=candidate_sha, pr_number=pr_number,
+        pr_merge_commit=pr_merge_commit,
         preserves_original_identity=(method == "ancestry"), corroboration=None, reason=None,
     )
 
 
-def _unproven(candidate_sha=OID_A, reason="not proven"):
+def _unproven(candidate_sha=OID_A, reason="not proven", target_repo=REPO):
     return cleanuplib.ProofResult(
         proven=False, method=None, target_ref="origin/main", target_sha=OID_B,
-        candidate_sha=candidate_sha, pr_number=None, pr_merge_commit=None,
+        target_repo=target_repo, candidate_sha=candidate_sha, pr_number=None, pr_merge_commit=None,
         preserves_original_identity=False, corroboration=None, reason=reason,
     )
 
@@ -190,6 +191,21 @@ class TestJournalBasics(JournalTestCase):
             cleanuplib.append_pending_operation(
                 self.root, kind="branch_delete", target={"branch": "y"},
                 repository_id="someone-else/other-repo",
+            )
+
+    def test_a_missing_repository_id_is_rejected(self):
+        # CodeRabbit review (2026-09-17): append_pending_operation must not
+        # accept an absent identity -- an unbound record can never be
+        # cross-checked against anything.
+        with self.assertRaises(ValueError):
+            cleanuplib.append_pending_operation(
+                self.root, kind="branch_delete", target={"branch": "x"}, repository_id=None,
+            )
+
+    def test_an_empty_repository_id_is_rejected(self):
+        with self.assertRaises(ValueError):
+            cleanuplib.append_pending_operation(
+                self.root, kind="branch_delete", target={"branch": "x"}, repository_id="",
             )
 
     def test_the_same_repository_id_repeated_is_accepted(self):
@@ -477,6 +493,29 @@ class TestExecuteBranchDeletion(JournalTestCase):
         self.assertEqual(calls, [])
         self.assertIn("not proven", result.detail)
 
+    def test_a_proof_for_a_different_repository_than_repository_id_is_skipped(self):
+        # CodeRabbit review (2026-09-17): ProofResult.target_repo is the
+        # repository the proof was actually validated against. A proof
+        # computed for one repository must never authorize a deletion
+        # journaled/executed under a different repository_id.
+        calls = []
+
+        def delete_fn(branch, force, expected_oid):
+            calls.append((branch, force, expected_oid))
+            return True, "deleted"
+
+        result = cleanuplib.execute_branch_deletion(
+            self.root, "feature",
+            _proven(candidate_sha=OID_A, target_repo="someone-else/other-repo"),
+            current_branch="other", default_branch="main",
+            protected_branches=(), worktree_branches_fn=_worktrees(),
+            current_oid_fn=_fn({"feature": OID_A}), delete_fn=delete_fn, repository_id=REPO,
+        )
+        self.assertEqual(result.status, "skipped")
+        self.assertEqual(calls, [])
+        self.assertIn("someone-else/other-repo", result.detail)
+        self.assertIn(REPO, result.detail)
+
     def test_guard_refusal_journals_skipped_and_never_calls_delete_fn(self):
         calls = []
 
@@ -632,7 +671,7 @@ class TestReconcilePendingOperations(JournalTestCase):
             self.root, kind="branch_delete", target={"branch": "feature", "expected_oid": OID_A},
             repository_id=REPO,
         )
-        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None)
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None, repository_id=REPO)
         journal = cleanuplib.load_journal(self.root)
         record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
         self.assertEqual(record["status"], "applied")
@@ -643,7 +682,7 @@ class TestReconcilePendingOperations(JournalTestCase):
             self.root, kind="branch_delete", target={"branch": "feature", "expected_oid": OID_A},
             repository_id=REPO,
         )
-        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: OID_A)
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: OID_A, repository_id=REPO)
         journal = cleanuplib.load_journal(self.root)
         record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
         self.assertEqual(record["status"], "pending")
@@ -653,7 +692,7 @@ class TestReconcilePendingOperations(JournalTestCase):
             self.root, kind="branch_delete", target={"branch": "feature", "expected_oid": OID_A},
             repository_id=REPO,
         )
-        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: OID_B)
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: OID_B, repository_id=REPO)
         journal = cleanuplib.load_journal(self.root)
         record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
         self.assertEqual(record["status"], "unknown")
@@ -666,7 +705,7 @@ class TestReconcilePendingOperations(JournalTestCase):
             self.root, kind="branch_delete", target={"branch": "feature", "expected_oid": OID_A},
             repository_id=REPO,
         )
-        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=_raising_fn())
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=_raising_fn(), repository_id=REPO)
         journal = cleanuplib.load_journal(self.root)
         record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
         self.assertEqual(record["status"], "unknown")
@@ -678,7 +717,7 @@ class TestReconcilePendingOperations(JournalTestCase):
             repository_id=REPO,
         )
         cleanuplib.update_operation_outcome(self.root, op_id, "applied", {"detail": "deleted"})
-        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: OID_A)
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: OID_A, repository_id=REPO)
         journal = cleanuplib.load_journal(self.root)
         record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
         self.assertEqual(record["result"]["detail"], "deleted")  # unchanged
@@ -691,7 +730,34 @@ class TestReconcilePendingOperations(JournalTestCase):
         op_id = cleanuplib.append_pending_operation(
             self.root, kind="worktree_remove", target={"path": "/tmp/wt"}, repository_id=REPO,
         )
-        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None)
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None, repository_id=REPO)
+        journal = cleanuplib.load_journal(self.root)
+        record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
+        self.assertEqual(record["status"], "pending")
+
+    def test_reconcile_requires_a_non_empty_repository_id(self):
+        # CodeRabbit review (2026-09-17): reconcile must require and
+        # validate the current repository identity, not silently process
+        # every record regardless of whose repository it belongs to.
+        cleanuplib.append_pending_operation(
+            self.root, kind="branch_delete", target={"branch": "feature", "expected_oid": OID_A},
+            repository_id=REPO,
+        )
+        with self.assertRaises(ValueError):
+            cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None, repository_id=None)
+        with self.assertRaises(ValueError):
+            cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None, repository_id="")
+
+    def test_reconcile_never_touches_a_pending_record_for_a_different_repository(self):
+        # A journal path could in principle hold records for a repository
+        # other than the one currently reconciling (a caller bug, or a
+        # shared path) -- reconcile must never resolve those from THIS
+        # repository's git state.
+        op_id = cleanuplib.append_pending_operation(
+            self.root, kind="branch_delete", target={"branch": "feature", "expected_oid": OID_A},
+            repository_id="someone-else/other-repo",
+        )
+        cleanuplib.reconcile_pending_operations(self.root, current_oid_fn=lambda b: None, repository_id=REPO)
         journal = cleanuplib.load_journal(self.root)
         record = next(op for op in journal["operations"] if op["operation_id"] == op_id)
         self.assertEqual(record["status"], "pending")

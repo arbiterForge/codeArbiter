@@ -241,5 +241,27 @@ class TestStructuredUnprovenReason(unittest.TestCase):
             _evaluate(target_repo=None)
 
 
+class TestProofResultCarriesTargetRepo(unittest.TestCase):
+    """CodeRabbit review (2026-09-17): the authorized repository identity
+    must survive on the ProofResult itself, so a downstream consumer
+    (execute_branch_deletion) can bind a proof to the repository_id it is
+    actually operating on, rather than trusting that the caller re-derived
+    the same repository correctly a second time."""
+
+    def test_a_proven_ancestry_result_carries_the_integration_repo(self):
+        is_ancestor = _is_ancestor_factory([(CANDIDATE, TARGET_SHA)])
+        result = _evaluate(is_ancestor=is_ancestor)
+        self.assertEqual(result.target_repo, INTEGRATION_REPO)
+
+    def test_an_unproven_result_still_carries_the_integration_repo(self):
+        result = _evaluate()
+        self.assertEqual(result.target_repo, INTEGRATION_REPO)
+
+    def test_a_repo_mismatch_result_carries_the_authorized_integration_repo_not_the_bad_one(self):
+        result = _evaluate(target_repo="someone-else/other-repo")
+        self.assertFalse(result.proven)
+        self.assertEqual(result.target_repo, INTEGRATION_REPO)
+
+
 if __name__ == "__main__":
     unittest.main()

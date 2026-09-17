@@ -74,6 +74,12 @@ ProofResult = namedtuple(
         "method",  # "ancestry" | "pr_delivery" | None
         "target_ref",
         "target_sha",
+        "target_repo",  # the AUTHORIZED integration_repo this proof was
+        # evaluated against (never the caller's unverified target_repo
+        # assertion) -- CodeRabbit review, 2026-09-17: lets a downstream
+        # consumer (execute_branch_deletion) bind a proof to the exact
+        # repository_id it is operating on, rather than re-trusting that
+        # the caller derived the same repository correctly a second time.
         "candidate_sha",
         "pr_number",
         "pr_merge_commit",
@@ -210,6 +216,7 @@ def evaluate_merge_proof(
             method=None,
             target_ref=target_ref,
             target_sha=target_sha,
+            target_repo=integration_repo,
             candidate_sha=candidate_sha,
             pr_number=None,
             pr_merge_commit=None,
@@ -227,6 +234,7 @@ def evaluate_merge_proof(
             method="ancestry",
             target_ref=target_ref,
             target_sha=target_sha,
+            target_repo=integration_repo,
             candidate_sha=candidate_sha,
             pr_number=None,
             pr_merge_commit=None,
@@ -244,6 +252,7 @@ def evaluate_merge_proof(
             method="pr_delivery",
             target_ref=target_ref,
             target_sha=target_sha,
+            target_repo=integration_repo,
             candidate_sha=candidate_sha,
             pr_number=pr_outcome.pr_number,
             pr_merge_commit=pr_outcome.landing_sha,
@@ -261,6 +270,7 @@ def evaluate_merge_proof(
         method=None,
         target_ref=target_ref,
         target_sha=target_sha,
+        target_repo=integration_repo,
         candidate_sha=candidate_sha,
         pr_number=None,
         pr_merge_commit=None,
@@ -305,6 +315,15 @@ def _require_branch_collection(value, label):
         raise TypeError(
             "%s must be a collection of branch names, not a bare string %r" % (label, value)
         )
+
+
+def _require_repository_id(value, label):
+    """CodeRabbit review (2026-09-17): a missing or empty repository_id can
+    never be cross-checked against anything, which is exactly the "unbound
+    journal record" gap the review named. Reject it up front rather than
+    silently accepting an identity that binds to nothing."""
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("%s must be a non-empty repository identity string" % label)
 
 
 _OID_UNREADABLE = object()
@@ -420,6 +439,13 @@ def _check_repository_identity(journal, repository_id):
     journal path is serving two different repositories -- and we refuse
     rather than silently mixing records from two repositories together.
 
+    `repository_id` is required non-empty by every caller (enforced in
+    `_append_operation_record` via `_require_repository_id`) before this
+    runs, so every record this ever compares against is itself non-empty --
+    there is no "either side is None" leniency left to exploit (CodeRabbit
+    review, 2026-09-17: the old skip-on-None behavior permitted unbound
+    records to coexist silently with bound ones).
+
     This does not solve cross-worktree mutual exclusion for one shared
     repository (a deeper structural question -- the journal path is still
     resolved relative to the caller's `root`, so two worktrees of the SAME
@@ -427,7 +453,7 @@ def _check_repository_identity(journal, repository_id):
     remains an explicitly open gap, not silently claimed as fixed here."""
     for op in journal.get("operations", []):
         existing = op.get("repository_id")
-        if existing is not None and repository_id is not None and existing != repository_id:
+        if existing != repository_id:
             raise ValueError(
                 "cleanup journal at this path already holds records for repository %r, "
                 "not %r -- refusing to mix operations across repositories"
@@ -436,6 +462,8 @@ def _check_repository_identity(journal, repository_id):
 
 
 def _append_operation_record(root, record):
+    _require_repository_id(record.get("repository_id"), "repository_id")
+
     def _mutate(journal):
         _check_repository_identity(journal, record.get("repository_id"))
         journal["operations"].append(record)
@@ -448,9 +476,11 @@ def _append_operation_record(root, record):
 def append_pending_operation(root, kind, target, repository_id):
     """Write-ahead intent (AC-19): record a pending operation BEFORE any
     mutation is attempted. Returns the new operation_id. `repository_id`
-    identifies the repository this operation belongs to (AC-05); it is
-    validated for consistency against any existing records in this journal
-    -- see _check_repository_identity."""
+    identifies the repository this operation belongs to (AC-05); it must be
+    a non-empty string (CodeRabbit review, 2026-09-17 -- an absent or empty
+    identity can never be cross-checked against anything) and is validated
+    for consistency against any existing records in this journal -- see
+    _check_repository_identity."""
     record = {
         "operation_id": uuid.uuid4().hex,
         "kind": kind,
@@ -485,7 +515,7 @@ def update_operation_outcome(root, operation_id, status, result):
     _with_locked_journal(root, _mutate)
 
 
-def reconcile_pending_operations(root, current_oid_fn):
+def reconcile_pending_operations(root, current_oid_fn, repository_id):
     """Crash-time reconciliation (AC-19): resolve every still-pending
     branch_delete record from ACTUAL current state, never by blind retry.
 
@@ -504,11 +534,21 @@ def reconcile_pending_operations(root, current_oid_fn):
     any other kind (e.g. a future worktree_remove) is left completely
     alone; this function has no basis for judging a different kind's state.
 
+    `repository_id` (CodeRabbit review, 2026-09-17) identifies the
+    repository actually being reconciled RIGHT NOW; it must be a non-empty
+    string. A pending record belonging to a DIFFERENT repository_id is left
+    completely untouched -- reconciliation must never resolve another
+    repository's operation from this repository's git state, even though
+    both currently share one journal path per `root`.
+
     Already-resolved (applied/skipped/failed) records are never touched."""
+    _require_repository_id(repository_id, "repository_id")
 
     def _mutate(journal):
         for op in journal["operations"]:
             if op.get("status") != "pending" or op.get("kind") != "branch_delete":
+                continue
+            if op.get("repository_id") != repository_id:
                 continue
             target = op.get("target") or {}
             branch = target.get("branch")
@@ -643,6 +683,7 @@ def execute_branch_deletion(root, branch, proof, current_branch, default_branch,
     """
     expected_oid = proof.candidate_sha
     _require_full_oid(expected_oid, "proof.candidate_sha")
+    _require_repository_id(repository_id, "repository_id")
     operation_id = uuid.uuid4().hex
     _append_operation_record(root, {
         "operation_id": operation_id,
@@ -652,6 +693,7 @@ def execute_branch_deletion(root, branch, proof, current_branch, default_branch,
             "method": proof.method,
             "target_ref": proof.target_ref,
             "target_sha": proof.target_sha,
+            "target_repo": proof.target_repo,
             "pr_number": proof.pr_number,
             "pr_merge_commit": proof.pr_merge_commit,
         },
@@ -666,6 +708,18 @@ def execute_branch_deletion(root, branch, proof, current_branch, default_branch,
 
     if not proof.proven:
         return _finish("skipped", "not proven delivered: %s" % proof.reason)
+
+    if proof.target_repo != repository_id:
+        # CodeRabbit review (2026-09-17): a proof validated for one
+        # repository must never authorize a deletion journaled/executed
+        # under a different repository_id -- ProofResult.target_repo and
+        # the operation's repository_id are two independently-derived
+        # facts and must agree before anything is deleted.
+        return _finish(
+            "skipped",
+            "proof was validated for repository %r, not this operation's repository %r"
+            % (proof.target_repo, repository_id),
+        )
 
     allow_force = proof.method == "pr_delivery"
 
