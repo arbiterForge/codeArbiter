@@ -33,6 +33,16 @@ legacy/
 # Removed when the sprint completes. Local-only, never committed.
 .codearbiter/sprint-active
 
+# Cleanup operation journal (T-05, _cleanuplib.py) — repository-bound,
+# same-runtime operational bookkeeping for the guarded mutation backend.
+# Not a compliance record; the append-only audit logs remain separate and
+# unaffected by this file's own bounded-history compaction. The `.lock`
+# sidecar is _hooklib.acquire_lock's OS-owned cross-process file lock
+# (same pattern as open-tasks.md.lock above) — never unlinked by
+# release_lock, so it persists on disk after every journal write.
+.codearbiter/.resources.json
+.codearbiter/.resources.json.lock
+
 # OS-owned sidecar lock file for the task-board writer (#271 C-2/C-3):
 # taskwrite.py takes a cross-process file lock on open-tasks.md.lock while it
 # reads/mutates/writes the board. It is not project state and is never committed.

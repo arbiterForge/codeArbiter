@@ -12,6 +12,22 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - Add the disabled structured-artifact foundation, Linux and Windows recovery support, verified native bridges, descriptor-relative Unix installation, and generated Codex workflow guidance without adding a public command, agent, persistent tool, top-level skill, or eagerly loaded schema surface. The Windows developer installer and HTML farm dispatch remain fail-closed pending their respective release/integration qualification.
 
+## [0.10.8] - 2026-09-17
+
+### Added
+
+- `core/pysrc/_cleanuplib.py`: the cleanup-framework's shared decision and interaction vocabulary (T-02) -- typed `Scope`, `Target`, and `Decision` objects with explicit `unknown`/`error` outcome states, plus two pure classifiers: `scope_covers` (a scope never authorizes a resource kind or member it didn't explicitly name) and `required_confirmation_count` (how many new confirmations an operation needs, based only on its authorization source -- zero for an already-bound direct instruction, snapshot reply, or accepted work lifecycle; exactly one for an unauthorized proposal; always one more for an unresolved unique-content loss, regardless of how many). Not yet wired into any live cleanup route.
+
+## [0.10.7] - 2026-09-17
+
+### Added
+
+- `core/pysrc/_cleanuplib.py`: a repository-bound operation journal and a guarded, revalidating branch-deletion executor for the cleanup-framework mutation backend (T-05, branch-deletion slice). The executor journals intent before mutating, revalidates a branch's tip immediately before every delete attempt (including the forced retry), refuses current/default/explicitly-protected/worktree-occupied branches, and reconciles any still-pending record from actual repository state rather than retrying blindly. Not yet wired into any live cleanup route. Worktree-removal guarding and filesystem-operation constraints are separate, not-yet-built increments sharing this same pattern.
+
+### Fixed
+
+- CI now runs the T-04 integration-proof evaluator's and T-05's own unit test suites (`test_cleanuplib.py`, `test_cleanuplib_mutation.py`) — both had been merged without a CI step invoking them, so they ran locally but were invisible to the pipeline.
+
 ## [0.10.6] - 2026-09-17
 
 ### Added
