@@ -167,7 +167,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "3b023522af378caeee29c57772f55088942cc667",
+      "hash": "45396b274ca82ae0db6744f7aa787f6b01f88a11",
       "path": "plugins/ca-pi/package.json"
     },
     {
