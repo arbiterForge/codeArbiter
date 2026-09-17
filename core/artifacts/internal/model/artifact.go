@@ -25,12 +25,16 @@ func M(v any) map[string]any { m, _ := v.(map[string]any); return m }
 func A(v any) []any          { a, _ := v.([]any); return a }
 func S(v any) string         { s, _ := v.(string); return s }
 func I(v any) int64          { i, _ := v.(int64); return i }
+
+// NativeInt accepts the portable integer range shared by every supported Go
+// architecture. Protocol budgets, offsets and line mappings are bounded well
+// below this range by their schemas and backing data.
 func NativeInt(v any) (int, bool) {
 	i, ok := v.(int64)
 	if !ok {
 		return 0, false
 	}
-	if i < int64(math.MinInt) || i > int64(math.MaxInt) {
+	if i < math.MinInt32 || i > math.MaxInt32 {
 		return 0, false
 	}
 	return int(i), true
