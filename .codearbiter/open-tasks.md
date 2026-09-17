@@ -5,6 +5,10 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] debug.note.0002 - release SKILL.md never states the Unreleased placement rule (residual from #637)
+  - Desc: Phase 1 step 5 of plugins/ca/skills/release/SKILL.md says only 'Prior sections stay intact' about where a new version section goes; it never states the new section must be inserted below the Unreleased marker. The code-level swallowing risk this protected against is already fixed (heading regex now stops at the marker and returns invalid), but the prose gap itself is still open. Docs-only fix, likely a /ca:chore.
+- [ ] debug.note.0001 - debug #798: audit-completeness vs. best-effort fail-open sink conflict
+  - Desc: test_dual_host_store.py's exact-count assertion (36/36) contradicts _hooklib.py's documented and tested best-effort, fail-open sink behavior under lock contention (see test_gate_events.py contention tests). Not a code bug -- a design ambiguity between audit trail completeness and non-blocking availability. Needs a user-attributed ADR to resolve; deferred per user direction 2026-09-17.
 - [ ] Add .codearbiter/decisions/decision-log.md to security-controls.md's append-only audit inventory so the documented inventory matches H-05 enforcement.  (from security-reviewer:reaudit-ra07-adr-integrity)
 - [ ] Harden git-facts seams flagged by coverage-auditor: pin the timeout/close race and kill-throw paths, add cross-project gitFacts isolation test (start A then B), and an end-to-end control-char sanitization test from collectGitFacts through renderFooter  (from spec:pi-footer-parity-gaps)
 - [x] release.feat.0001 - Publish to npm under the arbiterforge org (NPMJS_TOKEN actions secret is in place): own spec + ADR required — recorded posture is pinned-Git-only / npm-is-future-work (tech-stack.md, coding-standards.md); decide package set, npm provenance, CI publish workflow, and release-skill integration  (from user:2026-08-09)  (done 2026-08-09)
