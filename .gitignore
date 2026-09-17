@@ -39,9 +39,12 @@ legacy/
 # unaffected by this file's own bounded-history compaction. The `.lock`
 # sidecar is _hooklib.acquire_lock's OS-owned cross-process file lock
 # (same pattern as open-tasks.md.lock above) — never unlinked by
-# release_lock, so it persists on disk after every journal write.
-.codearbiter/.resources.json
-.codearbiter/.resources.json.lock
+# release_lock, so it persists on disk after every journal write. Renamed
+# from .resources.json (independent review, 2026-09-17): the old name was
+# misleading for a cleanup journal specifically and risked collision with
+# an unrelated future feature.
+.codearbiter/.cleanup-journal.json
+.codearbiter/.cleanup-journal.json.lock
 
 # OS-owned sidecar lock file for the task-board writer (#271 C-2/C-3):
 # taskwrite.py takes a cross-process file lock on open-tasks.md.lock while it

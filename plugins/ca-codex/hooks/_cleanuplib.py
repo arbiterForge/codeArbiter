@@ -30,15 +30,37 @@ Public API:
   executor (guard_branch_deletion / execute_branch_deletion). Scope: branch
   deletion only -- worktree-removal guarding is a distinct, not-yet-built
   increment sharing this same journal/executor pattern.
+  `execute_branch_deletion` REQUIRES a `ProofResult`: an unproven target is
+  refused outright, and the force/atomic-delete path is unlocked only by
+  `proof.method == "pr_delivery"` -- never a caller-supplied flag.
 - The T-02 slice below: the shared decision and interaction vocabulary
   (Scope, Target, Decision, make_decision, scope_covers,
   required_confirmation_count) that T-06's live routing will consume.
   ProofResult above already serves as the "proof outcome" type this layer
   wraps; T-02 adds no second proof representation.
+
+Independent-review status (2026-09-17): an adversarial review of T-03/T-04/
+T-05 as merged found 27 concrete gaps (6 blocking) against ADR-0036's gate
+for superseding safety-core.md #6, and returned NO-GO. The blocking findings
+are fixed here: force eligibility now derives from proof.method rather than
+a caller flag; the executor requires and journals a ProofResult instead of
+trusting a bare oid; the ancestry proof path is repository-qualified (it
+previously was not -- only the PR-delivery path was); worktree occupancy is
+revalidated fresh at every mutation attempt via a callable, not a static
+snapshot; and a claimed-successful delete is reverified before being
+recorded "applied". Still true, unchanged by this pass, and NOT claimed
+otherwise: nothing in this repository calls this module in production --
+`delete_fn` is entirely caller-injected with no real git-calling
+implementation anywhere, the three vendored plugin copies are unused, and
+worktree-removal guarding and filesystem-operation safety do not exist.
+Wiring any of this into a live route is T-06's job, not this module's, and
+this module being correct is a precondition for that work, not a
+substitute for the review T-06 will still need before it lands.
 """
 
 import json
 import os
+import re
 import uuid
 from collections import namedtuple
 from datetime import datetime, timezone
@@ -69,42 +91,58 @@ def _require_sha(value, label):
         raise ValueError("%s must be a non-empty sha string" % label)
 
 
+_PrDeliveryOutcome = namedtuple("_PrDeliveryOutcome", ["landing_sha", "pr_number", "reason"])
+# M-3: replaces an earlier (landing_or_none, detail) return where the SAME
+# slot meant "the landing sha" on success and "the failure reason" on
+# failure -- correct only because merge_commit_sha is proven truthy before
+# that slot is ever populated with a real value; a named, three-field
+# outcome makes success/failure unambiguous regardless of what future
+# fields carry.
+
+
 def _evaluate_pr_delivery(pr_record, candidate_sha, integration_repo, is_ancestor, target_sha):
-    """Return (ProofResult-or-None, reason). reason is set whenever proof is None."""
+    """Return a _PrDeliveryOutcome. `.reason` is set whenever `.landing_sha`
+    is None (failure); exactly one of the two is ever populated."""
     if pr_record is None:
-        return None, "no PR delivery record supplied"
+        return _PrDeliveryOutcome(None, None, "no PR delivery record supplied")
     if not isinstance(pr_record, dict):
-        return None, "PR delivery record must be a resolved record, not a name search result"
+        return _PrDeliveryOutcome(
+            None, None, "PR delivery record must be a resolved record, not a name search result",
+        )
 
     missing = [field for field in _PR_REQUIRED_FIELDS if not pr_record.get(field)]
     if missing:
-        return None, "PR record missing required field(s): %s" % ", ".join(missing)
+        return _PrDeliveryOutcome(
+            None, None, "PR record missing required field(s): %s" % ", ".join(missing),
+        )
 
     number = pr_record["number"]
 
     if pr_record["state"] != "MERGED":
-        return None, "PR #%s is not MERGED (state=%s)" % (number, pr_record["state"])
+        return _PrDeliveryOutcome(
+            None, None, "PR #%s is not MERGED (state=%s)" % (number, pr_record["state"]),
+        )
 
     if pr_record["head_sha"] != candidate_sha:
-        return None, (
+        return _PrDeliveryOutcome(None, None, (
             "PR #%s head %s does not match candidate tip %s (stale or wrong PR)"
             % (number, pr_record["head_sha"], candidate_sha)
-        )
+        ))
 
     if pr_record["base_repo"] != integration_repo:
-        return None, (
+        return _PrDeliveryOutcome(None, None, (
             "PR #%s base repository %s is not the authorized integration repository %s"
             % (number, pr_record["base_repo"], integration_repo)
-        )
+        ))
 
     landing = pr_record["merge_commit_sha"]
     if not is_ancestor(landing, target_sha):
-        return None, (
+        return _PrDeliveryOutcome(None, None, (
             "PR #%s landing commit %s is not retained in the fetched integration target"
             % (number, landing)
-        )
+        ))
 
-    return landing, number
+    return _PrDeliveryOutcome(landing, number, None)
 
 
 def _evaluate_tree_corroboration(candidate_sha, target_sha, tree_equal_fn):
@@ -119,6 +157,7 @@ def evaluate_merge_proof(
     candidate_sha,
     target_ref,
     target_sha,
+    target_repo,
     integration_repo,
     is_ancestor,
     pr_record=None,
@@ -131,9 +170,18 @@ def evaluate_merge_proof(
         target_ref: display name of the authorized, fetched integration target
             (e.g. "origin/main"), carried through into the result only.
         target_sha: full SHA the authorized integration target was fetched at.
-        integration_repo: the "owner/repo" the target belongs to, used to
-            reject a PR whose base repository does not match (fork-name
-            collision / ambiguous fork identity).
+        target_repo: the "owner/repo" the caller asserts target_ref/target_sha
+            were actually fetched from. Checked against `integration_repo`
+            unconditionally, before EITHER proof path runs (independent
+            review, 2026-09-17): without this, is_ancestor(candidate_sha,
+            target_sha) returning True "proved" ancestry no matter which
+            repository target_sha actually came from -- a caller bug, a
+              stale remote, or a fork could all forge a passing ancestry
+            check. Ancestry is not exempt from repository qualification
+            just because it needs no PR record.
+        integration_repo: the "owner/repo" the target must actually belong
+            to. Also used to reject a PR whose base repository does not
+            match (fork-name collision / ambiguous fork identity).
         is_ancestor: callable(a, b) -> bool, true when commit a is an
             ancestor of commit b. No git process is spawned here.
         pr_record: an already-resolved (by exact PR number/ID, never by a
@@ -151,8 +199,27 @@ def evaluate_merge_proof(
     """
     _require_sha(candidate_sha, "candidate_sha")
     _require_sha(target_sha, "target_sha")
+    if not isinstance(target_repo, str) or not target_repo.strip():
+        raise ValueError("target_repo must be a non-empty repository identity string")
 
     corroboration = _evaluate_tree_corroboration(candidate_sha, target_sha, tree_equal_fn)
+
+    if target_repo != integration_repo:
+        return ProofResult(
+            proven=False,
+            method=None,
+            target_ref=target_ref,
+            target_sha=target_sha,
+            candidate_sha=candidate_sha,
+            pr_number=None,
+            pr_merge_commit=None,
+            preserves_original_identity=False,
+            corroboration=corroboration,
+            reason=(
+                "fetched target repository %s is not the authorized integration repository %s"
+                % (target_repo, integration_repo)
+            ),
+        )
 
     if is_ancestor(candidate_sha, target_sha):
         return ProofResult(
@@ -168,24 +235,24 @@ def evaluate_merge_proof(
             reason=None,
         )
 
-    landing_or_none, pr_detail = _evaluate_pr_delivery(
+    pr_outcome = _evaluate_pr_delivery(
         pr_record, candidate_sha, integration_repo, is_ancestor, target_sha,
     )
-    if landing_or_none is not None:
+    if pr_outcome.landing_sha is not None:
         return ProofResult(
             proven=True,
             method="pr_delivery",
             target_ref=target_ref,
             target_sha=target_sha,
             candidate_sha=candidate_sha,
-            pr_number=pr_detail,
-            pr_merge_commit=landing_or_none,
+            pr_number=pr_outcome.pr_number,
+            pr_merge_commit=pr_outcome.landing_sha,
             preserves_original_identity=False,
             corroboration=corroboration,
             reason=None,
         )
 
-    reason = "not an ancestor of %s, and %s" % (target_ref, pr_detail)
+    reason = "not an ancestor of %s, and %s" % (target_ref, pr_outcome.reason)
     if corroboration:
         reason += "; %s, but that is corroboration only, not proof" % corroboration
 
@@ -212,9 +279,47 @@ def evaluate_merge_proof(
 # ---------------------------------------------------------------------------
 
 _JOURNAL_SCHEMA = "cleanup-journal/v1"
-_JOURNAL_RELPATH = os.path.join(".codearbiter", ".resources.json")
+_JOURNAL_RELPATH = os.path.join(".codearbiter", ".cleanup-journal.json")
 _COMPLETED_STATUSES = frozenset({"applied", "skipped", "failed"})
-_MAX_COMPLETED_RECORDS = 20
+# H-2: the proposal's own named example is a 40-branch bulk delete. The bound
+# must comfortably exceed that so the audit trail for the exact authorized
+# batch is never truncated mid-operation.
+_MAX_COMPLETED_RECORDS = 50
+
+_FULL_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+
+
+def _require_full_oid(value, label):
+    """M-4: an abbreviated or malformed OID is rejected up front with a
+    specific error, rather than silently causing every downstream
+    comparison to "skip" as stale with no diagnosis."""
+    if not isinstance(value, str) or not _FULL_SHA_RE.match(value):
+        raise ValueError("%s must be a full 40-character hex SHA, got %r" % (label, value))
+
+
+def _require_branch_collection(value, label):
+    """M-2: a bare string is iterable and would silently match by
+    SUBSTRING (`"ai" in "main"` is True) rather than by membership in a
+    branch-name collection. Reject it outright instead of guessing intent."""
+    if isinstance(value, str):
+        raise TypeError(
+            "%s must be a collection of branch names, not a bare string %r" % (label, value)
+        )
+
+
+_OID_UNREADABLE = object()
+
+
+def _read_oid(current_oid_fn, branch):
+    """Distinguish confirmed-absent (None, a positive answer from a
+    successful read) from unreadable (the read itself failed) -- H-1's
+    fix. Never fold the two together: `current_oid_fn` raising means "I
+    could not tell," which is a materially different fact from "I checked
+    and it is gone." Callers must never treat _OID_UNREADABLE as None."""
+    try:
+        return current_oid_fn(branch)
+    except Exception as exc:  # noqa: BLE001 -- any read failure is "unreadable"
+        return _OID_UNREADABLE
 
 
 class JournalCorruptError(Exception):
@@ -307,8 +412,32 @@ def _with_locked_journal(root, mutate_fn):
         release_lock(handle)
 
 
+def _check_repository_identity(journal, repository_id):
+    """H-3 (partial): AC-05's "invalid repository identity blocks the whole
+    operation" applies to the journal itself, not just Scope (T-02). If the
+    journal already holds records for a DIFFERENT repository_id than the one
+    supplied now, something is wrong -- the wrong root was passed, or one
+    journal path is serving two different repositories -- and we refuse
+    rather than silently mixing records from two repositories together.
+
+    This does not solve cross-worktree mutual exclusion for one shared
+    repository (a deeper structural question -- the journal path is still
+    resolved relative to the caller's `root`, so two worktrees of the SAME
+    repository currently get separate journals and separate locks). That
+    remains an explicitly open gap, not silently claimed as fixed here."""
+    for op in journal.get("operations", []):
+        existing = op.get("repository_id")
+        if existing is not None and repository_id is not None and existing != repository_id:
+            raise ValueError(
+                "cleanup journal at this path already holds records for repository %r, "
+                "not %r -- refusing to mix operations across repositories"
+                % (existing, repository_id)
+            )
+
+
 def _append_operation_record(root, record):
     def _mutate(journal):
+        _check_repository_identity(journal, record.get("repository_id"))
         journal["operations"].append(record)
         return journal
 
@@ -316,13 +445,17 @@ def _append_operation_record(root, record):
     return record["operation_id"]
 
 
-def append_pending_operation(root, kind, target):
+def append_pending_operation(root, kind, target, repository_id):
     """Write-ahead intent (AC-19): record a pending operation BEFORE any
-    mutation is attempted. Returns the new operation_id."""
+    mutation is attempted. Returns the new operation_id. `repository_id`
+    identifies the repository this operation belongs to (AC-05); it is
+    validated for consistency against any existing records in this journal
+    -- see _check_repository_identity."""
     record = {
         "operation_id": uuid.uuid4().hex,
         "kind": kind,
         "target": target,
+        "repository_id": repository_id,
         "status": "pending",
         "created_at": _now_iso(),
     }
@@ -332,8 +465,13 @@ def append_pending_operation(root, kind, target):
 def update_operation_outcome(root, operation_id, status, result):
     """Record the final outcome of a journaled operation. Raises KeyError if
     `operation_id` is not present -- an outcome for an operation that was
-    never journaled indicates a caller bug, not a state to paper over."""
-    found = {"ok": False}
+    never journaled indicates a caller bug, not a state to paper over.
+
+    H-5: the membership check happens INSIDE the locked mutation, and
+    raising there means _with_locked_journal never reaches its write --
+    an outcome update for an unknown operation_id never rewrites the
+    journal file at all, rather than writing an unchanged copy first and
+    only then discovering the id was never found."""
 
     def _mutate(journal):
         for op in journal["operations"]:
@@ -341,25 +479,30 @@ def update_operation_outcome(root, operation_id, status, result):
                 op["status"] = status
                 op["result"] = result
                 op["completed_at"] = _now_iso()
-                found["ok"] = True
-                break
-        return journal
+                return journal
+        raise KeyError("no operation %r in the cleanup journal" % operation_id)
 
     _with_locked_journal(root, _mutate)
-    if not found["ok"]:
-        raise KeyError("no operation %r in the cleanup journal" % operation_id)
 
 
 def reconcile_pending_operations(root, current_oid_fn):
     """Crash-time reconciliation (AC-19): resolve every still-pending
     branch_delete record from ACTUAL current state, never by blind retry.
 
-    - branch no longer exists -> the deletion evidently completed: "applied".
+    - branch no longer exists (a successful read confirms absence) -> the
+      deletion evidently completed: "applied".
+    - the read itself fails (H-1) -> "unknown", NEVER "applied". A read
+      failure is not evidence of absence; folding the two together would
+      let a transient git error masquerade as a confirmed deletion.
     - branch exists with the SAME expected tip -> still genuinely pending;
       left untouched for a fresh attempt.
     - branch exists with a DIFFERENT tip -> ambiguous (a fresh commit, or a
       partial/racing mutation); marked "unknown" for explicit review, never
       auto-resolved to "applied" and never silently retried.
+
+    Only "branch_delete" records are touched (H-6) -- a pending record of
+    any other kind (e.g. a future worktree_remove) is left completely
+    alone; this function has no basis for judging a different kind's state.
 
     Already-resolved (applied/skipped/failed) records are never touched."""
 
@@ -370,8 +513,12 @@ def reconcile_pending_operations(root, current_oid_fn):
             target = op.get("target") or {}
             branch = target.get("branch")
             expected_oid = target.get("expected_oid")
-            actual = current_oid_fn(branch)
-            if actual is None:
+            actual = _read_oid(current_oid_fn, branch)
+            if actual is _OID_UNREADABLE:
+                op["status"] = "unknown"
+                op["result"] = {"detail": "reconciled: could not determine current state (read failed)"}
+                op["completed_at"] = _now_iso()
+            elif actual is None:
                 op["status"] = "applied"
                 op["result"] = {"detail": "reconciled: branch no longer exists"}
                 op["completed_at"] = _now_iso()
@@ -401,26 +548,46 @@ class GuardRefusal(Exception):
 
 
 def guard_branch_deletion(branch, expected_oid, current_branch, default_branch,
-                           protected_branches, worktree_branches, current_oid_fn):
+                           protected_branches, worktree_branches_fn, current_oid_fn):
     """Pure guard (AC-09, AC-06): raises GuardRefusal if `branch` must not be
     deleted right now. Performs no mutation itself -- see
     execute_branch_deletion for the full journaled apply path.
 
+    `worktree_branches_fn` is a zero-argument callable invoked HERE, fresh,
+    every time the guard runs (B-6) -- never a snapshot bound earlier. A
+    worktree created after inspection but before this call must still be
+    caught.
+
     Refuses, in order: the current branch, the default branch, an explicitly
-    protected branch, a branch occupied by any worktree, a branch that no
-    longer exists, and -- the AC-06 case -- a branch whose ACTUAL current tip
-    (read here, immediately before mutation, via `current_oid_fn`) no longer
-    equals `expected_oid` bound at inspection time. A candidate that passed
-    inspection and then moved is never swept in on a stale proof."""
+    protected branch, a branch occupied by any worktree (occupancy read
+    fresh via `worktree_branches_fn`), a branch that no longer exists, and
+    -- the AC-06 case -- a branch whose ACTUAL current tip (read here,
+    immediately before mutation, via `current_oid_fn`) no longer equals
+    `expected_oid` bound at inspection time. A candidate that passed
+    inspection and then moved is never swept in on a stale proof.
+
+    A read failure (either callable raising) is fail-safe: refuse, never
+    crash, and never treat "could not tell" as "safe to proceed" (H-1)."""
+    _require_full_oid(expected_oid, "expected_oid")
+    _require_branch_collection(protected_branches, "protected_branches")
     if branch == current_branch:
         raise GuardRefusal("%r is the current branch" % branch)
     if branch == default_branch:
         raise GuardRefusal("%r is the protected default branch" % branch)
     if branch in (protected_branches or ()):
         raise GuardRefusal("%r is an explicitly protected branch" % branch)
+    try:
+        worktree_branches = worktree_branches_fn()
+    except Exception as exc:  # noqa: BLE001 -- any read failure is fail-safe refusal
+        raise GuardRefusal(
+            "could not determine worktree occupancy for %r: %s" % (branch, exc)
+        ) from exc
+    _require_branch_collection(worktree_branches, "worktree_branches_fn() result")
     if branch in (worktree_branches or ()):
         raise GuardRefusal("%r is checked out in a worktree" % branch)
-    actual_oid = current_oid_fn(branch)
+    actual_oid = _read_oid(current_oid_fn, branch)
+    if actual_oid is _OID_UNREADABLE:
+        raise GuardRefusal("could not determine %r's current state" % branch)
     if actual_oid is None:
         raise GuardRefusal("%r no longer exists (already deleted or renamed)" % branch)
     if actual_oid != expected_oid:
@@ -433,13 +600,24 @@ def guard_branch_deletion(branch, expected_oid, current_branch, default_branch,
 OperationResult = namedtuple("OperationResult", ["operation_id", "status", "detail"])
 
 
-def execute_branch_deletion(root, branch, expected_oid, current_branch, default_branch,
-                             protected_branches, worktree_branches, current_oid_fn,
-                             delete_fn, allow_force):
+def execute_branch_deletion(root, branch, proof, current_branch, default_branch,
+                             protected_branches, worktree_branches_fn, current_oid_fn,
+                             delete_fn, repository_id):
     """Journal-then-mutate, per-item outcome (AC-14, AC-19). This is the ONE
     guarded path branch deletion may go through; it verifies evidence itself
-    (via guard_branch_deletion) rather than trusting a caller-supplied
-    safe/owned flag.
+    (via `proof` and `guard_branch_deletion`) rather than trusting a
+    caller-supplied safe/owned flag.
+
+    `proof` is a `ProofResult` (from `evaluate_merge_proof`) for `branch`,
+    whose `candidate_sha` is used as the branch's expected tip. "Proven-
+    merged" is never caller honor (B-3): if `proof.proven` is not True, the
+    operation is skipped outright, before the guard even runs.
+
+    Force/atomic-delete (the `-D`-equivalent path) is permitted ONLY when
+    `proof.method == "pr_delivery"` -- NEVER a caller-supplied boolean
+    (B-1). An ancestry-proven branch has no legitimate reason to need a
+    forced delete; if its plain attempt fails, that is itself suspicious
+    and returns "failed" for investigation rather than escalating.
 
     `delete_fn(branch, force, expected_oid) -> (ok: bool, detail: str)`
     performs the actual deletion. `expected_oid` is passed through so a real
@@ -448,24 +626,36 @@ def execute_branch_deletion(root, branch, expected_oid, current_branch, default_
     <expected_oid>`, which the project's own Git-behavior probes (GIT-07)
     confirm refuses a stale value -- rather than a plain `git branch -d`/`-D`,
     which performs its own unrelated lookup and could still delete a branch
-    whose tip moved between our guard's check and git's own call. `force`
-    selects `-d` (False) or `-D` semantics (True); `allow_force` gates
-    whether `-D` may ever be attempted at all -- the caller passes True only
-    under the sanctioned squash-proof-restated path; this function does not
-    itself decide when `-D` is legitimate, and never substitutes a blanket
-    allowlist for that judgment.
+    whose tip moved between our guard's check and git's own call.
 
-    If the plain `-d` attempt fails and `allow_force` permits a retry, the
-    branch's actual tip is revalidated AGAIN immediately before the `-D`
-    attempt -- a `-d` refusal is not itself proof the tip is still what was
-    expected, and a ref move injected exactly at this seam must still refuse
-    (AC-06), never fall through to a forced delete of a now-different branch.
+    If the plain attempt fails and a forced retry is permitted, BOTH the
+    branch's actual tip AND its worktree occupancy are revalidated AGAIN,
+    fresh, immediately before the retry (B-6) -- a plain-attempt refusal is
+    not itself proof either fact is still what was expected, and a ref move
+    or new worktree injected exactly at this seam must still refuse (AC-06),
+    never fall through to a forced delete of a now-different branch.
+
+    After ANY claimed-successful delete, the branch's state is reverified
+    (H-4) -- `delete_fn` returning `ok=True` is never trusted absolutely.
+    If the branch still resolves, that is a contradiction and is recorded
+    "failed"; if the post-delete state cannot even be read, that is
+    honestly "unknown," never silently folded into "applied."
     """
+    expected_oid = proof.candidate_sha
+    _require_full_oid(expected_oid, "proof.candidate_sha")
     operation_id = uuid.uuid4().hex
     _append_operation_record(root, {
         "operation_id": operation_id,
         "kind": "branch_delete",
         "target": {"branch": branch, "expected_oid": expected_oid},
+        "proof": {
+            "method": proof.method,
+            "target_ref": proof.target_ref,
+            "target_sha": proof.target_sha,
+            "pr_number": proof.pr_number,
+            "pr_merge_commit": proof.pr_merge_commit,
+        },
+        "repository_id": repository_id,
         "status": "pending",
         "created_at": _now_iso(),
     })
@@ -474,23 +664,54 @@ def execute_branch_deletion(root, branch, expected_oid, current_branch, default_
         update_operation_outcome(root, operation_id, status, {"detail": detail})
         return OperationResult(operation_id, status, detail)
 
+    if not proof.proven:
+        return _finish("skipped", "not proven delivered: %s" % proof.reason)
+
+    allow_force = proof.method == "pr_delivery"
+
     try:
         guard_branch_deletion(
             branch, expected_oid, current_branch, default_branch,
-            protected_branches, worktree_branches, current_oid_fn,
+            protected_branches, worktree_branches_fn, current_oid_fn,
         )
     except GuardRefusal as exc:
         return _finish("skipped", exc.reason)
 
     ok, detail = delete_fn(branch, False, expected_oid)
     if not ok and allow_force:
-        actual_oid = current_oid_fn(branch)
-        if actual_oid != expected_oid:
+        actual_oid = _read_oid(current_oid_fn, branch)
+        if actual_oid is _OID_UNREADABLE or actual_oid != expected_oid:
             return _finish(
                 "skipped",
-                "tip changed to %s before the -D retry -- refusing" % actual_oid,
+                "tip changed (or became unreadable) before the forced retry -- refusing",
+            )
+        try:
+            worktree_branches = worktree_branches_fn()
+        except Exception as exc:  # noqa: BLE001
+            return _finish(
+                "skipped",
+                "could not confirm worktree occupancy before the forced retry -- refusing: %s" % exc,
+            )
+        _require_branch_collection(worktree_branches, "worktree_branches_fn() result")
+        if branch in (worktree_branches or ()):
+            return _finish(
+                "skipped",
+                "%r became worktree-occupied before the forced retry -- refusing" % branch,
             )
         ok, detail = delete_fn(branch, True, expected_oid)
+
+    if ok:
+        verify_oid = _read_oid(current_oid_fn, branch)
+        if verify_oid is _OID_UNREADABLE:
+            return _finish(
+                "unknown",
+                "delete_fn reported success but %r's post-delete state could not be reverified" % branch,
+            )
+        if verify_oid is not None:
+            return _finish(
+                "failed",
+                "delete_fn reported success but %r still resolves to %s" % (branch, verify_oid),
+            )
 
     return _finish("applied" if ok else "failed", detail)
 
