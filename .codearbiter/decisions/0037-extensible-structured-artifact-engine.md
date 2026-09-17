@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-09-16
 title: Use an extensible internal engine for governed structured-file writes
 decided-by: SUaDtL@users.noreply.github.com
@@ -10,7 +10,7 @@ governs: core/artifacts/**, core/pysrc/_artifactlib.py, core/surface/includes/ar
 # ADR-0037 — Use an extensible internal engine for governed structured-file writes
 
 ## Status
-Proposed — explicitly approved by SUaDtL@users.noreply.github.com on 2026-09-16. This is Accepted/Planned: it records the architecture decision but does not authorize rollout or migration of any artifact kind.
+Accepted — explicitly approved by SUaDtL@users.noreply.github.com on 2026-09-16. This is Accepted/Planned: it records the architecture decision but does not authorize rollout or migration of any artifact kind.
 
 ## Context
 codeArbiter currently writes several governed file families through separate prose-oriented helpers and workflow instructions. Feature specifications, implementation plans, open and completed task boards, tickets, decomposition documents, and other structured records all need some combination of stable identity, validation, bounded mutation, concurrency protection, recovery, migration, and generated-host parity.
