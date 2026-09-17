@@ -14,10 +14,10 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
-- Structured-artifact Python bridge and farm fixtures now resolve only their
-  test-owned temporary directories to physical paths, matching the existing Go
-  fixture rule so hosted macOS symlink roots and Windows path aliases do not
-  masquerade as production containment failures.
+- Structured-artifact Python bridge, workflow, package, farm, and conformance
+  fixtures now resolve only their test-owned temporary directories to physical
+  paths, matching the existing Go fixture rule so hosted macOS symlink roots and
+  Windows path aliases do not masquerade as production containment failures.
 - The macOS Python bridge now launches a private ephemeral executable image
   written only from the already verified package descriptor, because macOS does
   not permit native execution through `/dev/fd`; Linux and Windows pinning is

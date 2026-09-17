@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import tempfile
 import unittest
 
@@ -11,6 +10,7 @@ from test_artifact_authoring import (
     ArtifactError,
     WorkflowHarness,
     build_installation,
+    physical_test_directory,
 )
 
 
@@ -27,7 +27,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-workflow-")
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name) / "repo"
+        self.root = physical_test_directory(self.temporary.name) / "repo"
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
         self.harness.create_pair()

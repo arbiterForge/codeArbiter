@@ -17,7 +17,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core/pysrc"))
 sys.path.insert(0, str(REPO / ".github/scripts"))
 from _artifactlib import ArtifactClient, ArtifactError
-from test_artifact_authoring import WorkflowHarness
+from test_artifact_authoring import WorkflowHarness, physical_test_directory
 
 INSTALLATION: Path | None = None
 INSTALLATION_OWNER: tempfile.TemporaryDirectory | None = None
@@ -175,7 +175,7 @@ def setUpModule() -> None:
     else:
         INSTALLATION_OWNER = tempfile.TemporaryDirectory(prefix="ca-artifact-conformance-")
         unittest.addModuleCleanup(INSTALLATION_OWNER.cleanup)
-        INSTALLATION = Path(INSTALLATION_OWNER.name) / "payload"
+        INSTALLATION = physical_test_directory(INSTALLATION_OWNER.name) / "payload"
         subprocess.run(
             [sys.executable, str(REPO / "tools/build-artifacts.py"),
              "--output", str(INSTALLATION)],
@@ -246,7 +246,7 @@ class ArtifactConformanceTest(unittest.TestCase):
         self.assertEqual(plan["schema_version"], "0.2.0")
 
         with tempfile.TemporaryDirectory(prefix="ca-conformance-repo-") as temporary:
-            root = Path(temporary)
+            root = physical_test_directory(temporary)
             client = ArtifactClient(root, INSTALLATION)
             capabilities = client.call("capabilities")
             self.assertFalse(capabilities["host_default_enabled"])
@@ -314,7 +314,7 @@ class ArtifactConformanceTest(unittest.TestCase):
     def test_real_progress_transition_preserves_normative_identity(self) -> None:
         self.assertIsNotNone(INSTALLATION)
         with tempfile.TemporaryDirectory(prefix="ca-conformance-progress-") as temporary:
-            root = Path(temporary)
+            root = physical_test_directory(temporary)
             harness = WorkflowHarness(root, INSTALLATION)
             harness.create_pair()
             harness.approve_pair()

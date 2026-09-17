@@ -18,6 +18,7 @@ from unittest import mock
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core/pysrc"))
 from _artifactlib import ArtifactClient
+from test_artifact_authoring import physical_test_directory
 
 INSTALLATION = None
 INSTALLER = None
@@ -36,7 +37,7 @@ def setUpModule():
     else:
         temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-package-")
         unittest.addModuleCleanup(temporary.cleanup)
-        INSTALLATION = Path(temporary.name) / "payload"
+        INSTALLATION = physical_test_directory(temporary.name) / "payload"
         subprocess.run([sys.executable, str(REPO / "tools/build-artifacts.py"),
                         "--output", str(INSTALLATION)], check=True)
     spec = importlib.util.spec_from_file_location(
@@ -57,7 +58,7 @@ class PackageTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.base = Path(self.tmp.name)
+        self.base = physical_test_directory(self.tmp.name)
 
     def qualification(self, candidate=None, *, destination=None):
         candidate = candidate or INSTALLATION
