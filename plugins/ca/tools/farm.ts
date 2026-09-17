@@ -34,12 +34,13 @@
  * model in FARM_CANDIDATE_MODELS and reports a measured pass-rate ranking, so
  * model selection is objective rather than web hearsay. No merge, no mutation.
  */
-import { readFile, writeFile, appendFile, mkdir, rm, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { realpathSync } from "node:fs";
 import path from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 // v2.rev.0020 god-module split (architecture-003): the process/shell layer, the
 // outbound secret redactor, and the zero-token mutation engine now live in their
@@ -220,7 +221,7 @@ function artifactPlatform(): { key: string; file: string; magic: readonly Buffer
 const exactKeys = (value: Record<string, unknown>, keys: readonly string[]) =>
   Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 
-type InstalledArtifactBinary = { path: string; sha256: string; handle?: FileHandle };
+type InstalledArtifactBinary = { path: string; sha256: string; bytes: Buffer; handle?: FileHandle };
 
 const sameArtifactPath = (left: string, right: string) =>
   process.platform === "win32"
@@ -301,7 +302,7 @@ async function installedArtifactBinary(): Promise<InstalledArtifactBinary> {
     await pinned.handle.close();
     throw new Error("artifact executable bytes differ from the release manifest");
   }
-  return { path: realBinary, sha256: entry.sha256, handle: pinned.handle };
+  return { path: realBinary, sha256: entry.sha256, bytes: pinned.bytes, handle: pinned.handle };
 }
 
 const WINDOWS_PIN_GUARD = String.raw`
@@ -361,7 +362,43 @@ async function runPinnedArtifact(binary: InstalledArtifactBinary, root: string, 
     }
   }
   if (!binary.handle) throw new Error("artifact executable descriptor was not retained");
-  const descriptorPath = `${process.platform === "darwin" ? "/dev/fd" : "/proc/self/fd"}/3`;
+  if (process.platform === "darwin") {
+    // macOS exposes the retained descriptor at /dev/fd, but does not permit
+    // executing that path. Materialize only the bytes read from the already
+    // opened, manifest-hash-verified descriptor into a fresh private directory;
+    // never reopen the mutable installation pathname to construct the image.
+    const logicalDirectory = await mkdtemp(path.join(tmpdir(), "codearbiter-artifact-"));
+    const directory = await realpath(logicalDirectory);
+    const executable = path.join(directory, "ca-artifact");
+    let staged: FileHandle | undefined;
+    try {
+      staged = await open(
+        executable,
+        fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW,
+        0o600,
+      );
+      let offset = 0;
+      while (offset < binary.bytes.length) {
+        const { bytesWritten } = await staged.write(binary.bytes, offset, binary.bytes.length - offset, offset);
+        if (bytesWritten <= 0) throw new Error("could not stage the verified artifact executable");
+        offset += bytesWritten;
+      }
+      await staged.sync();
+      await staged.chmod(0o500);
+      // Darwin rejects exec of an image that is still open for writing.
+      await staged.close();
+      staged = undefined;
+      await chmod(directory, 0o500);
+      return spawnSync(executable, ["farm-verify", "--root", root, "--request", "-"], {
+        input: request, encoding: "utf8", env: {}, timeout: 30_000, maxBuffer: ARTIFACT_MAX_RESPONSE,
+      });
+    } finally {
+      await staged?.close().catch(() => undefined);
+      await chmod(directory, 0o700).catch(() => undefined);
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
+  const descriptorPath = "/proc/self/fd/3";
   return spawnSync(descriptorPath, ["farm-verify", "--root", root, "--request", "-"], {
     input: request, encoding: "utf8", env: {}, timeout: 30_000,
     maxBuffer: ARTIFACT_MAX_RESPONSE, stdio: ["pipe", "pipe", "pipe", binary.handle.fd],

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm, stat, lstat as lstat2, realpath as realpath2, rename, open as open2 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, mkdtemp, chmod, rm, stat, lstat as lstat2, realpath as realpath2, rename, open as open2 } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { realpathSync } from "node:fs";
 import path3 from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 // exec.ts
@@ -739,7 +740,7 @@ async function installedArtifactBinary() {
     await pinned.handle.close();
     throw new Error("artifact executable bytes differ from the release manifest");
   }
-  return { path: realBinary, sha256: entry.sha256, handle: pinned.handle };
+  return { path: realBinary, sha256: entry.sha256, bytes: pinned.bytes, handle: pinned.handle };
 }
 var WINDOWS_PIN_GUARD = String.raw`
 $ErrorActionPreference = 'Stop'
@@ -811,7 +812,42 @@ async function runPinnedArtifact(binary, root, request) {
     }
   }
   if (!binary.handle) throw new Error("artifact executable descriptor was not retained");
-  const descriptorPath = `${process.platform === "darwin" ? "/dev/fd" : "/proc/self/fd"}/3`;
+  if (process.platform === "darwin") {
+    const logicalDirectory = await mkdtemp(path3.join(tmpdir(), "codearbiter-artifact-"));
+    const directory = await realpath2(logicalDirectory);
+    const executable = path3.join(directory, "ca-artifact");
+    let staged;
+    try {
+      staged = await open2(
+        executable,
+        fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW,
+        384
+      );
+      let offset = 0;
+      while (offset < binary.bytes.length) {
+        const { bytesWritten } = await staged.write(binary.bytes, offset, binary.bytes.length - offset, offset);
+        if (bytesWritten <= 0) throw new Error("could not stage the verified artifact executable");
+        offset += bytesWritten;
+      }
+      await staged.sync();
+      await staged.chmod(320);
+      await staged.close();
+      staged = void 0;
+      await chmod(directory, 320);
+      return spawnSync(executable, ["farm-verify", "--root", root, "--request", "-"], {
+        input: request,
+        encoding: "utf8",
+        env: {},
+        timeout: 3e4,
+        maxBuffer: ARTIFACT_MAX_RESPONSE
+      });
+    } finally {
+      await staged?.close().catch(() => void 0);
+      await chmod(directory, 448).catch(() => void 0);
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
+  const descriptorPath = "/proc/self/fd/3";
   return spawnSync(descriptorPath, ["farm-verify", "--root", root, "--request", "-"], {
     input: request,
     encoding: "utf8",

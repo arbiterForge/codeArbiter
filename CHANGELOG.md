@@ -18,9 +18,12 @@ predate the plugin rewrite and are grouped by date.
   fixtures now resolve only their test-owned temporary directories to physical
   paths, matching the existing Go fixture rule so hosted macOS symlink roots and
   Windows path aliases do not masquerade as production containment failures.
-- The macOS Python bridge now launches a private ephemeral executable image
-  written only from the already verified package descriptor, because macOS does
-  not permit native execution through `/dev/fd`; Linux and Windows pinning is
+- The reviewed reference HTML pair and its supporting assets are pinned to LF
+  checkout bytes so Windows autocrlf cannot manufacture renderer drift.
+- The macOS Python bridge and farm dispatcher now launch a private ephemeral
+  executable image written only from the already verified package descriptor,
+  because macOS does not permit native execution through `/dev/fd`; Linux and
+  Windows pinning is
   unchanged and no PATH or repository fallback is introduced.
 
 ## [2.19.0] - 2026-09-16

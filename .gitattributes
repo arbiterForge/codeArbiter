@@ -14,6 +14,11 @@ hooks/* text eol=lf
 # Preserve those exact bytes on Windows as well as Unix checkouts.
 core/artifacts/** text eol=lf
 
+# The reviewed structured-artifact reference pair is renderer-verified against
+# its exact generated HTML bytes. A Windows autocrlf checkout must not turn the
+# LF renderer output into CRLF and manufacture RENDER_DRIFT.
+docs/artifacts/design/original-review2/** text eol=lf
+
 # Reviewed Pi host graphs are hash-bound byte-for-byte and must survive a
 # Windows checkout without newline conversion.
 .github/fixtures/pi-hosts/**/*.json text eol=lf
