@@ -79,14 +79,41 @@ def stage_repo(td, name, enabled):
     return root
 
 
-def adapter_env():
+def adapter_env(guard_timeout=None):
     """Codex sets NO project-dir env var, and CodexHost deliberately ignores a
     CLAUDE_PROJECT_DIR leaked in from an adjacent Claude session (_host.py).
     Dropping it leaves the fixture's cwd as the only root signal, so these
-    tests cannot accidentally resolve to the developer's own repo."""
+    tests cannot accidentally resolve to the developer's own repo.
+
+    `guard_timeout`, when given, overrides the adapter's routed-guard wall
+    clock bound (#306) so a test can prove termination without waiting out
+    the production default."""
     env = dict(os.environ)
     env.pop("CLAUDE_PROJECT_DIR", None)
+    if guard_timeout is not None:
+        env["CODEARBITER_CODEX_GUARD_TIMEOUT_SECONDS"] = str(guard_timeout)
     return env
+
+
+def _pid_alive(pid):
+    """Best-effort cross-platform liveness check for a PID this process did
+    not fork (the routed guard is the ADAPTER's child, not the test's, so
+    `os.waitpid` cannot observe it on any platform). POSIX: signal 0 via
+    `os.kill` raises iff the process is gone. Windows: `os.kill`'s signal-0
+    leg is not supported, so `tasklist` is the portable substitute."""
+    if sys.platform == "win32":
+        out = subprocess.run(
+            ["tasklist", "/fi", f"PID eq {pid}", "/fo", "csv", "/nh"],
+            capture_output=True, text=True, timeout=10,
+        ).stdout
+        return str(pid) in out
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
 
 
 class TestPreToolAdapterLifecycle(unittest.TestCase):
@@ -130,6 +157,84 @@ class TestPreToolAdapterLifecycle(unittest.TestCase):
                     proc.kill()
                     proc.wait()
                 if proc.stdin:
+                    proc.stdin.close()
+                if proc.stdout:
+                    proc.stdout.close()
+                if proc.stderr:
+                    proc.stderr.close()
+
+    def test_adapter_kills_a_stalled_routed_guard_and_leaves_no_orphan(self):
+        """#306 reopen: a payload that ROUTES successfully (unlike the
+        incomplete-stream leg above) dispatches pre-write.py/pre-bash.py via
+        a blocking `subprocess.run` with no wall-clock bound. If the guard
+        stalls, the adapter waits forever — and if Codex (the adapter's own
+        parent) is killed or gives up while that wait is in progress, both
+        processes are orphaned and accumulate exactly as the 2026-08-10
+        Windows snapshot recorded (45 stranded adapter/guard pairs, ~1.15GB).
+        The guard here writes its own PID before stalling so the test can
+        prove the descendant actually dies, not merely that the adapter's
+        own process returns."""
+        with tempfile.TemporaryDirectory() as td:
+            pid_file = os.path.join(td, "guard-pid")
+            adapter = stage_codex_hooks(td, lambda script: (
+                "from pathlib import Path\n"
+                "import os, time\n"
+                f"Path({pid_file!r}).write_text(str(os.getpid()), encoding='utf-8')\n"
+                "time.sleep(60)\n"
+            ))
+            repo = stage_repo(td, "repo-enabled", enabled=True)
+            payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": "echo hi"}})
+
+            proc = subprocess.Popen(
+                [sys.executable, adapter],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                cwd=repo,
+                env=adapter_env(guard_timeout=2),
+            )
+            try:
+                proc.stdin.write(payload)
+                proc.stdin.close()
+
+                started = time.monotonic()
+                proc.wait(timeout=15)
+                elapsed = time.monotonic() - started
+                self.assertLess(
+                    elapsed, 15,
+                    "adapter must bound a stalled routed guard, not wait on it forever",
+                )
+                self.assertEqual(proc.returncode, 0)
+                stdout = proc.stdout.read()
+                self.assertEqual(
+                    json.loads(stdout).get("decision"), "block",
+                    "a guard that never completes must fail closed",
+                )
+
+                deadline = time.monotonic() + 5
+                guard_pid = None
+                while time.monotonic() < deadline:
+                    if os.path.exists(pid_file):
+                        with open(pid_file, encoding="utf-8") as f:
+                            guard_pid = int(f.read().strip())
+                        break
+                    time.sleep(0.1)
+                self.assertIsNotNone(guard_pid, "the stalled guard never launched")
+
+                deadline = time.monotonic() + 5
+                while _pid_alive(guard_pid) and time.monotonic() < deadline:
+                    time.sleep(0.2)
+                self.assertFalse(
+                    _pid_alive(guard_pid),
+                    "the stalled guard must not survive as an orphan after the "
+                    "adapter gives up waiting on it",
+                )
+            finally:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+                if proc.stdin and not proc.stdin.closed:
                     proc.stdin.close()
                 if proc.stdout:
                     proc.stdout.close()

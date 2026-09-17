@@ -61,6 +61,17 @@ import threading
 
 STDIN_TIMEOUT_SECONDS = 5
 
+# #306 reopen: the stdin bound above only closes the INCOMPLETE-STREAM leg.
+# Once a payload routes, the adapter waits on the guard SYNCHRONOUSLY with no
+# wall-clock bound; if the guard stalls (or Codex — the adapter's own parent
+# — is killed or gives up mid-wait), both processes are orphaned and survive
+# indefinitely, exactly as the 2026-08-10 snapshot recorded (45 stranded
+# adapter/guard pairs, ~1.15GB). Env-overridable so a test can prove
+# termination without waiting out the production default.
+GUARD_TIMEOUT_SECONDS = float(
+    os.environ.get("CODEARBITER_CODEX_GUARD_TIMEOUT_SECONDS", "30")
+)
+
 # tool_name values Codex reports for the apply_patch envelope (Write/Edit are
 # matcher-only aliases carrying the same payload). This is a deliberate local
 # copy of CodexHost._PATCH_TOOLS / the "WRITE" entries of CodexHost.TOOL_MAP
@@ -167,12 +178,20 @@ def main():
         # decision, no guard, no output. Failing closed is a promise made to
         # repos that opted in, not a licence to interfere with the rest.
         return _decline(diagnostic) if active else 0
-    result = subprocess.run(
-        [sys.executable, os.path.join(os.path.dirname(__file__), script)],
-        input=raw,
-        text=True,
-        capture_output=True,
-    )
+    try:
+        result = subprocess.run(
+            [sys.executable, os.path.join(os.path.dirname(__file__), script)],
+            input=raw,
+            text=True,
+            capture_output=True,
+            timeout=GUARD_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        # subprocess.run kills the child and reaps it before raising, so the
+        # routed guard does not survive this leg — see GUARD_TIMEOUT_SECONDS.
+        # No verdict was produced; fail closed the same way an unroutable
+        # payload does.
+        return _decline(f"{script} did not complete within {GUARD_TIMEOUT_SECONDS:g}s")
     if result.returncode == 2:
         reason = result.stderr.strip() or "Blocked by codeArbiter policy"
         print(json.dumps({"decision": "block", "reason": reason}))
