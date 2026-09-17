@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-09-17
+
+### Added
+
+- `_cleanuplib.py`: adds T-03, the authoritative branch/worktree inventory (shared core/pysrc change, synced via `tools/sync-core.py`). See the root `CHANGELOG.md` for full detail.
+
 ## [0.11.9] - 2026-09-17
 
 ### Fixed
