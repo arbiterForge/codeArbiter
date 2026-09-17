@@ -4,6 +4,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.11.5] - 2026-09-16
+
+### Fixed
+
+- `core/pysrc/_standuplib.py`'s worktree inventory now captures lock state, detached-HEAD status, and the exact OID from `git worktree list --porcelain` output instead of silently dropping them; a locked worktree is now excluded outright from standup's hygiene-candidate list.
+
 ## [0.11.4] - 2026-09-16
 
 ### Fixed

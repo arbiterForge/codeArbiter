@@ -6,6 +6,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.10.5] - 2026-09-16
+
+### Fixed
+
+- `core/pysrc/_standuplib.py`'s worktree inventory now captures lock state, detached-HEAD status, and the exact OID from `git worktree list --porcelain` output instead of silently dropping them; a locked worktree is now excluded outright from standup's hygiene-candidate list.
+
 ## [0.10.4] - 2026-09-16
 
 ### Fixed

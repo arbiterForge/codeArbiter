@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.5] - 2026-09-16
+
+### Fixed
+
+- `core/pysrc/_standuplib.py`'s worktree inventory now captures lock state, detached-HEAD status, and the exact OID from `git worktree list --porcelain` output instead of silently dropping them; a locked worktree is now excluded outright from standup's hygiene-candidate list.
+
 ## [2.18.4] - 2026-09-16
 
 ### Fixed
