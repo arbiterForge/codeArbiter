@@ -26,6 +26,17 @@ predate the plugin rewrite and are grouped by date.
   Windows pinning is
   unchanged and no PATH or repository fallback is introduced.
 
+## [2.21.0] - 2026-09-17
+
+### Added
+
+- Make the qualified structured-artifact engine the fail-closed default for new
+  full-lane feature and sprint specification/plan pairs, with provenance-bound
+  native packages, exact-host cold-install qualification, installed-host
+  diagnostics, and serialized release/read-back gates. Existing Markdown pairs
+  remain authoritative, partial installs remain usable for legacy work, and the
+  HTML farm remains disabled pending its separate qualification.
+
 ## [2.20.1] - 2026-09-17
 
 ### Fixed
