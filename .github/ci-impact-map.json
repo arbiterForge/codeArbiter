@@ -54,16 +54,22 @@
       "scope": "CORE",
       "contract": "Structured artifact engine",
       "reproduce": "cd core/artifacts && go test -buildvcs=false ./..."
+    },
+    {
+      "id": "artifact-browser",
+      "lane": "CHECK",
+      "scope": "CORE",
+      "contract": "Structured artifact native Chrome qualification"
     }
   ],
   "edges": [
     {
       "glob": "core/artifacts/**",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-browser"]
     },
     {
       "glob": "docs/artifacts/**",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-browser"]
     },
     {
       "glob": "core/surface/**",
@@ -90,8 +96,24 @@
       "checks": ["artifact-engine"]
     },
     {
+      "glob": "site/package.json",
+      "checks": ["artifact-browser"]
+    },
+    {
+      "glob": "site/package-lock.json",
+      "checks": ["artifact-browser"]
+    },
+    {
+      "glob": "site/playwright.config.ts",
+      "checks": ["artifact-browser"]
+    },
+    {
+      "glob": "site/test/browser/artifact-review.spec.ts",
+      "checks": ["artifact-browser"]
+    },
+    {
       "glob": "tools/*artifact*.py",
-      "checks": ["artifact-engine"]
+      "checks": ["artifact-engine", "artifact-browser"]
     },
     {
       "glob": ".github/scripts/test_artifact_bridge.py",

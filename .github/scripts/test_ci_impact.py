@@ -1618,11 +1618,12 @@ class WorkflowContractTest(unittest.TestCase):
                 [f"run: {NPM_AUDIT_GATE}"] * 3
                 # ... plus the dev-inclusive gate that covers the real toolchain
                 + [f"run: {NPM_AUDIT_DEV_GATE}"] * 3
-                # site: the one graph with production dependencies (docs.yml)
-                + [f"run: {NPM_AUDIT_GATE}"]
+                # site: the graph with production dependencies, audited by
+                # docs.yml and independently by the artifact browser job.
+                + [f"run: {NPM_AUDIT_GATE}"] * 2
             ),
-            "expected a production and a dev-inclusive audit on each tools graph, "
-            "plus the site production audit",
+            "expected production and dev-inclusive audits on each tools graph, "
+            "plus production audits in both site jobs",
         )
         for name, command in invocations:
             with self.subTest(workflow=name, command=command):
@@ -1649,7 +1650,7 @@ class WorkflowContractTest(unittest.TestCase):
                         r"(?m)^        env:\n          NPM_CONFIG_LOGLEVEL: http$",
                         "audit HTTP status/timing must survive a fallback failure",
                     )
-        self.assertEqual(audited_steps, 7)
+        self.assertEqual(audited_steps, 8)
 
     def test_each_plugin_tools_graph_is_audited_with_dev_dependencies_included(self):
         """Issue #434 AC-1: a HIGH advisory in a `plugins/*/tools` DEV dependency
@@ -2428,7 +2429,7 @@ class ReceiptCommandTest(unittest.TestCase):
             )
             self.assertEqual(
                 receipt["predicted_not_selected"],
-                ["ca-surface", "codex-surface", "pi-surface"],
+                ["ca-surface", "codex-surface", "pi-surface", "artifact-browser"],
             )
             self.assertEqual(
                 receipt["selected"][1]["reproduce"],
@@ -3214,6 +3215,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             ".github/requirements/artifact-conformance.in",
             ".github/requirements/artifact-conformance-py314.lock",
             "docs/artifacts/**",
+            "site/package.json",
+            "site/package-lock.json",
+            "site/playwright.config.ts",
+            "site/test/browser/artifact-review.spec.ts",
             "plugins/ca-pi/tools/src/**",
             "plugins/ca/tools/farm.ts",
             "plugins/ca/tools/farm.js",
@@ -3278,11 +3283,78 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         aggregate = jobs["ci-passed"]
         self.assertRegex(aggregate, r"(?m)^      - artifact-engine$")
+        self.assertRegex(aggregate, r"(?m)^      - artifact-browser$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-assembly$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-cold$")
         self.assertIn("${{ needs['artifact-engine'].result }}", aggregate)
+        self.assertIn("${{ needs['artifact-browser'].result }}", aggregate)
         self.assertIn("${{ needs['artifact-package-assembly'].result }}", aggregate)
         self.assertIn("${{ needs['artifact-package-cold'].result }}", aggregate)
+
+        engine = jobs["artifact-engine"]
+        self.assertIn("Generate review examples with the native candidate", engine)
+        self.assertIn("python tools/create-artifact-examples.py", engine)
+        self.assertIn('${{ runner.temp }}/artifact-review', engine)
+
+    def test_artifact_browser_qualification_is_local_pinned_and_required(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        self.assertIn("artifact-browser", jobs)
+        browser = jobs["artifact-browser"]
+        for control in (
+            "needs: [changes, artifact-engine]",
+            "needs.artifact-engine.result == 'success'",
+            "runs-on: ubuntu-24.04",
+            "persist-credentials: false",
+            'node-version: "22.23.2"',
+            'python-version: "3.14"',
+            "artifact-native-ubuntu-24.04",
+            "tools/create-artifact-examples.py",
+            "ca-artifact-linux-amd64",
+            "npm ci",
+            "npm audit --omit=dev --audit-level=high",
+            "google-chrome --version",
+            'ARTIFACT_BROWSER_ONLY: "true"',
+            "ARTIFACT_REVIEW_ROOT:",
+            "npm run test:browser -- artifact-review.spec.ts",
+        ):
+            self.assertIn(control, browser)
+        self.assertNotIn("continue-on-error", browser)
+
+        playwright_config = (REPO_ROOT / "site/playwright.config.ts").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            'testIgnore: artifactOnly ? undefined : "artifact-review.spec.ts"',
+            playwright_config,
+        )
+
+        contract = (REPO_ROOT / "site/test/browser/artifact-review.spec.ts").read_text(
+            encoding="utf-8"
+        )
+        for boundary in (
+            "Chrome-only",
+            "JavaScript",
+            "remoteRequests",
+            "scrollWidth",
+            "emulateMedia",
+            "toBeFocused",
+            "headingJump",
+            "full WCAG certification",
+        ):
+            self.assertIn(boundary, contract)
+
+        qualification = json.loads(
+            (REPO_ROOT / "docs/artifacts/browser-qualification.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(qualification["browser"]["channel"], "chrome")
+        self.assertEqual(
+            {cell["name"] for cell in qualification["viewports"]},
+            {"desktop", "compact"},
+        )
+        self.assertIn("full WCAG certification", qualification["browser"]["unsupported_claims"])
 
     def test_artifact_conformance_dependency_graph_is_exact_and_wheel_only(self):
         direct = (REPO_ROOT / ".github/requirements/artifact-conformance.in").read_text(

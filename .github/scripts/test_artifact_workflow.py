@@ -663,6 +663,26 @@ class ArtifactWorkflowTest(unittest.TestCase):
             self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertEqual(caught.exception.code, "DRAFT_BINDING")
 
+    def test_caller_labels_cannot_widen_task_state_authority(self) -> None:
+        before = self._snapshot()
+        cases = (
+            ("prerequisite", "verification_runner", "satisfied"),
+            ("reconciliation", "review_workflow", "reconciled"),
+        )
+        for kind, authority_kind, verdict in cases:
+            with self.subTest(kind=kind, authority_kind=authority_kind):
+                with self.assertRaises(ArtifactError) as caught:
+                    self.harness.capture(
+                        "PLAN-FLOW",
+                        "T-001",
+                        kind,
+                        authority_kind,
+                        verdict,
+                        {},
+                    )
+                self.assertEqual(caught.exception.code, "AUTHORITY_UNVERIFIED")
+                self.assertEqual(self._snapshot(), before)
+
     def test_approved_pair_dispatches_with_complete_context_and_resumes_in_progress(self) -> None:
         self.harness.approve_pair()
         eligible = self.harness.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
@@ -753,7 +773,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
             "PLAN-FLOW",
             "T-001",
             "reconciliation",
-            "review_workflow",
+            "user_workflow",
             "reconciled",
             {
                 "input_sha256": snapshot["sha256"],

@@ -198,12 +198,12 @@ func ValidateEvent(ev map[string]any) error {
 			return fault.New("AUTHORITY_UNVERIFIED", "review needs a passed reviewer event")
 		}
 	case "prerequisite":
-		if verdict != "satisfied" {
-			return fault.New("AUTHORITY_UNVERIFIED", "prerequisite is not satisfied")
+		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "satisfied" {
+			return fault.New("AUTHORITY_UNVERIFIED", "prerequisite must come from the existing user or SMARTS workflow")
 		}
 	case "reconciliation":
-		if verdict != "reconciled" {
-			return fault.New("AUTHORITY_UNVERIFIED", "reconciliation has no applicable event")
+		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "reconciled" {
+			return fault.New("AUTHORITY_UNVERIFIED", "reconciliation must come from the existing user or SMARTS workflow")
 		}
 	case "farm_authorization":
 		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "approved" {

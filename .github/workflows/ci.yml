@@ -339,6 +339,10 @@ jobs:
               - 'plugins/ca-codex/includes/artifacts.md'
               - 'plugins/ca-pi/includes/artifacts.md'
               - 'docs/artifacts/**'
+              - 'site/package.json'
+              - 'site/package-lock.json'
+              - 'site/playwright.config.ts'
+              - 'site/test/browser/artifact-review.spec.ts'
               - 'site/src/content/docs/**'
               - 'site/src/curated/**'
               - 'tools/build-artifacts.py'
@@ -395,16 +399,22 @@ jobs:
         include:
           - os: ubuntu-24.04
             expected_platform: linux/amd64
+            artifact_binary: ca-artifact-linux-amd64
           - os: ubuntu-24.04-arm
             expected_platform: linux/arm64
+            artifact_binary: ca-artifact-linux-arm64
           - os: windows-2025
             expected_platform: windows/amd64
+            artifact_binary: ca-artifact-windows-amd64.exe
           - os: windows-11-arm
             expected_platform: windows/arm64
+            artifact_binary: ca-artifact-windows-arm64.exe
           - os: macos-15-intel
             expected_platform: darwin/amd64
+            artifact_binary: ca-artifact-darwin-amd64
           - os: macos-26
             expected_platform: darwin/arm64
+            artifact_binary: ca-artifact-darwin-arm64
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -441,6 +451,11 @@ jobs:
         run: python .github/scripts/test_artifact_native.py
       - name: Build native qualified candidate
         run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
+      - name: Generate review examples with the native candidate
+        run: >-
+          python tools/create-artifact-examples.py
+          --binary "${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}"
+          --output "${{ runner.temp }}/artifact-review"
       - name: Race-test Linux persistence paths
         if: matrix.os == 'ubuntu-24.04'
         working-directory: core/artifacts
@@ -496,6 +511,56 @@ jobs:
           retention-days: 14
           include-hidden-files: false
           overwrite: false
+
+  artifact-browser:
+    name: "[CHECK] | [CORE] | Structured artifact browser qualification"
+    needs: [changes, artifact-engine]
+    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-engine.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22.23.2"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - name: Download this run's exact Linux amd64 candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: artifact-native-ubuntu-24.04
+          path: ${{ runner.temp }}/artifact-native
+      - name: Generate the exact structured-artifact review bytes
+        working-directory: .
+        run: |
+          chmod +x "${{ runner.temp }}/artifact-native/artifact-candidate/ca-artifact-linux-amd64"
+          python tools/create-artifact-examples.py \
+            --binary "${{ runner.temp }}/artifact-native/artifact-candidate/ca-artifact-linux-amd64" \
+            --output "${{ runner.temp }}/artifact-browser-review"
+      - name: Install the reviewed browser-test graph
+        run: npm ci
+      - name: Audit the browser-test dependency graph
+        run: npm audit --omit=dev --audit-level=high
+        env:
+          NPM_CONFIG_LOGLEVEL: http
+      - name: Record runner Chrome version
+        run: google-chrome --version
+      - name: Qualify the exact structured-artifact review bytes
+        env:
+          ARTIFACT_BROWSER_ONLY: "true"
+          ARTIFACT_REVIEW_ROOT: ${{ runner.temp }}/artifact-browser-review
+        run: npm run test:browser -- artifact-review.spec.ts
 
   artifact-package-assembly:
     name: "[CHECK] | [CORE] | Structured artifact package assembly"
@@ -2811,6 +2876,7 @@ jobs:
       - tag-immutability
       - changes
       - artifact-engine
+      - artifact-browser
       - artifact-package-assembly
       - artifact-package-cold
       - host-descriptors
@@ -2846,7 +2912,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

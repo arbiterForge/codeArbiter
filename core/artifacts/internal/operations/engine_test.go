@@ -348,6 +348,43 @@ func TestGenericMutationCannotApprove(t *testing.T) {
 		t.Fatal("failed mutation changed artifact")
 	}
 }
+
+func TestCallerAuthorityLabelsCannotWidenWorkflowAuthority(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	d := h.doc("PLAN-EXAMPLE")
+	tests := []struct {
+		name          string
+		kind          string
+		authorityKind string
+		verdict       string
+	}{
+		{"runner cannot satisfy prerequisite", "prerequisite", "verification_runner", "satisfied"},
+		{"reviewer cannot reconcile task state", "reconciliation", "review_workflow", "reconciled"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			event := object{
+				"format":         "codearbiter.workflow-event/0.1.0",
+				"kind":           tc.kind,
+				"authority_kind": tc.authorityKind,
+				"subject": object{
+					"artifact_id":      d.ID(),
+					"normative_sha256": d.NormHash(),
+					"record_id":        "T-001",
+				},
+				"actor":       "caller supplied label",
+				"origin":      "untrusted request field",
+				"verdict":     tc.verdict,
+				"payload":     object{},
+				"source_text": "A caller label is not workflow authority.",
+			}
+			if _, err := h.request("capture", object{"event": event}); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
+				t.Fatalf("caller authority label was accepted: %v", err)
+			}
+		})
+	}
+}
 func TestSymbolRetirement(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
