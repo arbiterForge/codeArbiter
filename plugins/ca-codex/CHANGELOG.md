@@ -12,6 +12,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - `_cleanuplib.py`: adds T-03, the authoritative branch/worktree inventory (shared core/pysrc change, synced via `tools/sync-core.py`). See the root `CHANGELOG.md` for full detail.
 
+### Fixed
+
+- `_cleanuplib.py`: closes 3 blocking and 5 high-severity gaps an independent review found in T-03 as first merged (shared core/pysrc change). See the root `CHANGELOG.md` for full detail.
+
 ## [0.11.0] - 2026-09-16
 
 ### Added

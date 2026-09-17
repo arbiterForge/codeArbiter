@@ -45,7 +45,10 @@ Public API:
   classifiers only, same discipline as the rest of this module -- discovery
   facts in, structured records out, no eligibility or authorization claim
   made anywhere in this slice (AC-07: a gone upstream is a raw fact here,
-  never proof of merged eligibility).
+  never proof of merged eligibility). `validate_resource_path` takes the
+  caller's own exact allowlist of authorized targets, not a "nested under
+  a root" rule -- worktrees are conventionally siblings of the repo root,
+  not descendants of it.
 
 Independent-review status (2026-09-17): an adversarial review of T-04/T-05
 as merged (T-03, the authoritative inventory, did not exist yet at review
@@ -67,11 +70,33 @@ do not exist. Wiring any of this into a live route is T-06's job, not this
 module's, and this module being correct is a precondition for that work,
 not a substitute for the review T-06 will still need before it lands.
 
-T-03's own independent-review status is separate and not yet resolved as of
-this module revision -- it is new code, built to close exactly the gap the
-review above did not cover, and still needs its own independent pass before
-any ADR can honestly claim ADR-0036's three-part gate (inventory + proof
-evaluator + guarded backend) is satisfied.
+T-03's own independent review (2026-09-17, against this module as first
+merged) returned NO-GO: 3 blocking, 5 high. Both blocking defects it shares
+a class with the T-04/T-05 review above -- a read failure folded into
+"confirmed absent" -- are fixed here (B-3: unknown worktree-list readability
+no longer defaults branch occupancy to unoccupied; H-1: a for-each-ref line
+without exactly the documented 4 tab-separated fields is now a fully
+unreadable record, never a partially-trusted one). `is_main` no longer
+string-compares against a caller-supplied repo root -- a linked worktree's
+`show-toplevel` almost never equals it, silently flagging every worktree
+`is_main=False` including no ambiguity signal (B-2) -- it now trusts Git's
+own documented ordering guarantee (the main worktree is always first in
+`git worktree list`) instead of guessing from a path string. `validate_
+resource_path` no longer treats "nested under the repo root" as the safe
+shape: git worktrees are conventionally SIBLINGS of the repo root, not
+descendants, so that rule refused every real worktree this module exists to
+let a caller remove (H-2). It is now an exact-match allowlist guard --
+`(True, resolved_path)` only when the resolved path equals one of the
+caller's own authorized targets exactly -- which also fixes H-3 (the
+resolved path is now returned so a caller can act on what was actually
+validated, not the original unresolved string) and H-4 (no more prefix/
+separator heuristics to get wrong on a volume or UNC root).
+`classify_worktree_loss_surface` now accepts a `record_read_error` flag and
+folds any UNREADABLE input into retain=True (H-5, M-3) rather than silently
+being unreachable from the inventory's own error channel. Still true and
+not claimed otherwise: this module still has no live caller -- wiring it
+into a route is T-06's job -- and this remediation pass has not itself been
+re-reviewed yet.
 """
 
 import json
@@ -933,62 +958,80 @@ def required_confirmation_count(scope, has_unresolved_unique_loss=False):
 #
 # Branch OIDs come from `git for-each-ref refs/heads --format='%(refname:
 # short)%09%(objectname)%09%(upstream:short)%09%(upstream:track)'` -- full
-# 40-character SHAs, never the abbreviated form `git branch -vv` prints by
-# default. Branch occupancy is bound by cross-referencing the REAL worktree
-# list (`git worktree list --porcelain[|-z]`), never guessed from a
-# display-only "+"/"*" prefix: a marker alone would say a branch is occupied
-# without ever saying by which worktree, and the actual path is exactly
-# what a caller needs to make a real decision.
+# hex SHAs (40 characters for SHA-1, 64 for a SHA-256 repository), never the
+# abbreviated form `git branch -vv` prints by default. That format ALWAYS
+# emits exactly 4 tab-separated fields (empty ones for an unset upstream);
+# anything else means a truncated read, a format-string drift, or a
+# different git version, so a line with any other field count is rejected
+# as a whole, not partially trusted. Branch occupancy is bound by
+# cross-referencing the REAL worktree list (`git worktree list
+# --porcelain[|-z]`), never guessed from a display-only "+"/"*" prefix: a
+# marker alone would say a branch is occupied without ever saying by which
+# worktree, and the actual path is exactly what a caller needs to make a
+# real decision. The MAIN worktree is identified by Git's own documented
+# ordering guarantee -- it is always the first record `git worktree list`
+# prints -- never by string-comparing a path against a caller-supplied repo
+# root: a linked worktree's own `show-toplevel` is almost never equal to
+# that root, and Windows path separators never equal Git's forward slashes,
+# so a string-equality rule flags EVERY worktree "not main" with no
+# ambiguity signal at all.
 # ---------------------------------------------------------------------------
 
 BranchRefRecord = namedtuple("BranchRefRecord", [
     "name", "oid", "upstream", "upstream_gone", "occupied_by", "read_error",
 ])
-# oid: full 40-char hex SHA, or UNREADABLE if the line was missing a field or
-#   carried anything short of a full-length hex object name (an abbreviated
-#   SHA is refused, not silently accepted, since T-03's whole point is a
-#   FULL, authoritative ref ID).
+# oid: full-length hex SHA (40 or 64 characters), or UNREADABLE if the line
+#   did not carry exactly 4 tab-separated fields or the OID field was
+#   anything short of a full-length hex object name (an abbreviated SHA is
+#   refused, not silently accepted, since T-03's whole point is a FULL,
+#   authoritative ref ID).
 # upstream: the upstream ref's short name, or None for a real, confirmed
-#   "no upstream configured" -- never conflated with a read failure.
-# upstream_gone: True only when Git's own %(upstream:track) explicitly says
-#   the upstream is gone. AC-07: this is a raw discovery FACT, never proof
-#   of merged eligibility -- a gone-but-unmerged branch stays exactly that,
-#   unproven, through this entire module.
+#   "no upstream configured" -- or UNREADABLE if the line itself could not
+#   be parsed at all (never conflated with a confirmed-absent upstream).
+# upstream_gone: True/False only when Git's own %(upstream:track) explicitly
+#   said so from a fully-parsed line; UNREADABLE if the line could not be
+#   parsed. AC-07: this is a raw discovery FACT, never proof of merged
+#   eligibility -- a gone-but-unmerged branch stays exactly that, unproven,
+#   through this entire module.
 # occupied_by: the worktree path currently holding this branch checked out,
-#   or None. Populated ONLY by bind_branch_occupancy from a real
-#   list of WorktreeInventoryRecord -- never inferred here.
-# read_error: True if the source line was missing a required field or
-#   carried an unparseable OID. A malformed line still produces its own
-#   record (AC-05: an unknown item blocks only itself) with whatever name
-#   text could be salvaged, rather than vanishing from the inventory --
-#   a silently shrunken inventory is a worse failure than a visibly broken
-#   record.
+#   UNREADABLE if occupancy could not be determined, or None if it is
+#   affirmatively known to be unoccupied. Populated ONLY by
+#   bind_branch_occupancy from a real list of WorktreeInventoryRecord --
+#   never inferred here.
+# read_error: True if the source line did not carry exactly the 4
+#   tab-separated fields the --format string always emits, or carried an
+#   unparseable OID. A malformed line still produces its own record (AC-05:
+#   an unknown item blocks only itself) with whatever name text could be
+#   salvaged, rather than vanishing from the inventory -- a silently
+#   shrunken inventory is a worse failure than a visibly broken record.
 
-_FULL_HEX_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+_FULL_HEX_RE = re.compile(r"^(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})$")
 
 
 def parse_branch_ref_inventory(for_each_ref_text):
     """Parse tab-delimited `git for-each-ref refs/heads` output (see module
     docstring for the exact --format) into a list of BranchRefRecord, one
-    per non-blank line, in the order Git printed them."""
+    per non-blank line, in the order Git printed them. The format string
+    always emits exactly 4 tab-separated fields; any other count is a fully
+    unreadable record (H-1) -- not a partially-trusted one with a
+    confirmed-absent upstream fabricated from a truncated read."""
     out = []
     for raw in (for_each_ref_text or "").splitlines():
         if not raw.strip():
             continue
         fields = raw.split("\t")
         name = fields[0] if fields and fields[0] else raw.strip()
-        if len(fields) < 2:
+        if len(fields) != 4:
             out.append(BranchRefRecord(
-                name=name, oid=UNREADABLE, upstream=None, upstream_gone=False,
-                occupied_by=None, read_error=True,
+                name=name, oid=UNREADABLE, upstream=UNREADABLE,
+                upstream_gone=UNREADABLE, occupied_by=None, read_error=True,
             ))
             continue
-        oid_field = fields[1].strip()
+        _, oid_field, upstream_field, track_field = fields
+        oid_field = oid_field.strip()
         oid = oid_field if _FULL_HEX_RE.match(oid_field) else UNREADABLE
-        upstream_field = fields[2].strip() if len(fields) > 2 else ""
-        upstream = upstream_field or None
-        track_field = fields[3].strip() if len(fields) > 3 else ""
-        upstream_gone = "gone" in track_field
+        upstream = upstream_field.strip() or None
+        upstream_gone = "gone" in track_field.strip()
         out.append(BranchRefRecord(
             name=name, oid=oid, upstream=upstream, upstream_gone=upstream_gone,
             occupied_by=None, read_error=(oid is UNREADABLE),
@@ -998,38 +1041,91 @@ def parse_branch_ref_inventory(for_each_ref_text):
 
 WorktreeInventoryRecord = namedtuple("WorktreeInventoryRecord", [
     "path", "oid", "branch", "is_main", "detached", "locked", "locked_reason",
-    "path_exists", "read_error",
+    "bare", "prunable", "prunable_reason", "path_exists", "read_error",
 ])
-# oid: full 40-char hex from the record's HEAD line, or UNREADABLE if that
+# oid: full-length hex from the record's HEAD line, or UNREADABLE if that
 #   line was missing or malformed -- a worktree whose HEAD cannot be read is
 #   never silently treated as "no branch" or otherwise safe (AC-09, AC-11).
+#   Always UNREADABLE for a `bare` record (a bare worktree has no single
+#   checked-out commit and carries no HEAD line at all -- that absence is
+#   expected, not a read error).
+# is_main: True for exactly the first record a parse call produces -- Git's
+#   `worktree list` always lists the main worktree first (B-2) -- never
+#   derived by comparing `path` against a caller-supplied root.
+# bare: True for a bare-repository worktree record (a `bare` porcelain
+#   line, no HEAD/branch of its own). Never flagged as a read error merely
+#   for lacking a HEAD line.
+# prunable / prunable_reason: True and Git's stated reason when Git itself
+#   marked this record `prunable <reason>` -- an inventory that silently
+#   drops this fact would hide exactly the "this worktree's gitdir points
+#   nowhere real" signal an authoritative inventory exists to surface.
 # path_exists: computed via the injected path_exists_fn (production default
 #   os.path.exists). AC-11: a missing path is surfaced as its own fact,
 #   never auto-abandoned -- the caller decides what a missing path means.
-# read_error: True only when the HEAD line itself was missing/malformed;
-#   a missing path is NOT a read error (the record parsed fine; the path
-#   just isn't there right now).
+# read_error: True only when the HEAD line itself was missing/malformed for
+#   a non-bare record; a missing path is NOT a read error (the record
+#   parsed fine; the path just isn't there right now).
 
 
 def _strip_trailing_sep(path):
-    if path and path[-1] in ("/", "\\"):
-        return path[:-1]
-    return path
+    """Strip ALL trailing separators (M-9: a single-strip left a
+    double-separated path like "/repo//" not fully normalized, which could
+    under- or over-match in a caller's own comparison), while never
+    stripping a bare root down to nothing -- "/" stays "/"."""
+    if not path:
+        return path
+    stripped = path.rstrip("/\\")
+    return stripped or path[0]
 
 
-def _new_worktree_record(path, root):
+def _c_unquote(s):
+    """Undo Git's C-style quoting of a value that contains a raw newline or
+    other special byte -- Git wraps such a value in double quotes with
+    backslash/octal escapes when NOT using a NUL-delimited (`-z`) format
+    (M-6). Only ever applied on the newline-delimited porcelain parser; the
+    NUL-delimited parser already returns the raw bytes verbatim and must
+    never go through this. A value not shaped like a quoted string is
+    returned unchanged."""
+    if s is None or len(s) < 2 or not (s.startswith('"') and s.endswith('"')):
+        return s
+    inner = s[1:-1]
+    out = []
+    i = 0
+    simple = {"n": "\n", "t": "\t", "r": "\r", "\\": "\\", '"': '"'}
+    while i < len(inner):
+        ch = inner[i]
+        if ch == "\\" and i + 1 < len(inner):
+            nxt = inner[i + 1]
+            octal = inner[i + 1:i + 4]
+            if len(octal) == 3 and all(c in "01234567" for c in octal):
+                out.append(chr(int(octal, 8)))
+                i += 4
+                continue
+            if nxt in simple:
+                out.append(simple[nxt])
+                i += 2
+                continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def _new_worktree_record(path):
     return {
         "path": path, "head": None, "branch": None, "detached": False,
         "locked": False, "locked_reason": None, "head_seen": False,
-        "is_main": _strip_trailing_sep(path) == root,
+        "bare": False, "prunable": False, "prunable_reason": None,
     }
 
 
-def _apply_worktree_line(cur, line):
+def _apply_worktree_line(cur, line, unquote=False):
     """Mutate `cur` (the dict form of an in-progress record) with one
     porcelain line's worth of fact. Shared between the newline-delimited
     and NUL-delimited parsers so the two formats can never silently drift
-    apart in what they recognize."""
+    apart in what they recognize -- `unquote` is the one deliberate,
+    format-level difference (M-6): the newline-delimited format C-quotes a
+    lock reason containing special bytes onto one line; the NUL-delimited
+    format never does."""
     if line.startswith("HEAD "):
         cur["head"] = line[len("HEAD "):].strip() or None
         cur["head_seen"] = True
@@ -1042,50 +1138,74 @@ def _apply_worktree_line(cur, line):
         cur["locked"] = True
     elif line.startswith("locked "):
         cur["locked"] = True
-        cur["locked_reason"] = line[len("locked "):].strip() or None
+        reason = line[len("locked "):].strip() or None
+        cur["locked_reason"] = _c_unquote(reason) if (unquote and reason) else reason
+    elif line == "bare":
+        cur["bare"] = True
+    elif line == "prunable" or line.startswith("prunable "):
+        cur["prunable"] = True
+        cur["prunable_reason"] = line[len("prunable"):].strip() or None
 
 
 def _finish_worktree_record(cur, path_exists_fn):
     head = cur["head"]
-    read_error = not cur["head_seen"] or head is None or not _FULL_HEX_RE.match(head or "")
-    oid = head if (head and _FULL_HEX_RE.match(head)) else UNREADABLE
+    bare = cur["bare"]
+    if bare:
+        # A bare worktree record carries no HEAD line at all -- that is
+        # Git's normal shape for it, never a read error (M-4).
+        read_error = False
+        oid = UNREADABLE
+    else:
+        read_error = not cur["head_seen"] or head is None or not _FULL_HEX_RE.match(head or "")
+        oid = head if (head and _FULL_HEX_RE.match(head)) else UNREADABLE
     return WorktreeInventoryRecord(
-        path=cur["path"], oid=oid, branch=cur["branch"], is_main=cur["is_main"],
+        path=cur["path"], oid=oid, branch=cur["branch"], is_main=False,
         detached=cur["detached"], locked=cur["locked"], locked_reason=cur["locked_reason"],
+        bare=bare, prunable=cur["prunable"], prunable_reason=cur["prunable_reason"],
         path_exists=path_exists_fn(cur["path"]), read_error=read_error,
     )
 
 
-def parse_worktree_inventory(porcelain_text, repo_root, path_exists_fn=None):
+def _flush_worktree_record(out, cur, path_exists_fn):
+    """Append the finished record for `cur`, marking it `is_main=True` iff
+    it is the FIRST record either porcelain parser has produced so far
+    (B-2) -- Git's own documented guarantee, shared here so the two parsers
+    can never disagree about which record is main."""
+    record = _finish_worktree_record(cur, path_exists_fn)
+    if not out:
+        record = record._replace(is_main=True)
+    out.append(record)
+
+
+def parse_worktree_inventory(porcelain_text, path_exists_fn=None):
     """Parse newline/blank-line-delimited `git worktree list --porcelain`
     output into a list of WorktreeInventoryRecord. See
     parse_worktree_inventory_nul for the `-z` (NUL-terminated) variant
     needed for a path that could itself contain a newline."""
     path_exists_fn = path_exists_fn or os.path.exists
-    root = _strip_trailing_sep(repo_root or "")
     out = []
     cur = None
     for raw in (porcelain_text or "").splitlines():
         line = raw.rstrip("\n")
         if not line.strip():
             if cur is not None:
-                out.append(_finish_worktree_record(cur, path_exists_fn))
+                _flush_worktree_record(out, cur, path_exists_fn)
                 cur = None
             continue
         if line.startswith("worktree "):
             if cur is not None:
-                out.append(_finish_worktree_record(cur, path_exists_fn))
-            cur = _new_worktree_record(line[len("worktree "):].strip(), root)
+                _flush_worktree_record(out, cur, path_exists_fn)
+            cur = _new_worktree_record(line[len("worktree "):].strip())
             continue
         if cur is None:
             continue
-        _apply_worktree_line(cur, line)
+        _apply_worktree_line(cur, line, unquote=True)
     if cur is not None:
-        out.append(_finish_worktree_record(cur, path_exists_fn))
+        _flush_worktree_record(out, cur, path_exists_fn)
     return out
 
 
-def parse_worktree_inventory_nul(porcelain_z_text, repo_root, path_exists_fn=None):
+def parse_worktree_inventory_nul(porcelain_z_text, path_exists_fn=None):
     """Parse `git worktree list --porcelain -z` output: each LINE is
     NUL-terminated instead of newline-terminated, and a record ends at an
     EMPTY field (i.e. two consecutive NULs) instead of a blank line. This is
@@ -1093,7 +1213,6 @@ def parse_worktree_inventory_nul(porcelain_z_text, repo_root, path_exists_fn=Non
     unusual/non-ASCII bytes -- the ordinary newline-delimited porcelain
     format cannot represent that path unambiguously at all."""
     path_exists_fn = path_exists_fn or os.path.exists
-    root = _strip_trailing_sep(repo_root or "")
     out = []
     cur = None
     if not porcelain_z_text:
@@ -1101,31 +1220,47 @@ def parse_worktree_inventory_nul(porcelain_z_text, repo_root, path_exists_fn=Non
     for field in porcelain_z_text.split("\0"):
         if field == "":
             if cur is not None:
-                out.append(_finish_worktree_record(cur, path_exists_fn))
+                _flush_worktree_record(out, cur, path_exists_fn)
                 cur = None
             continue
         if field.startswith("worktree "):
             if cur is not None:
-                out.append(_finish_worktree_record(cur, path_exists_fn))
-            cur = _new_worktree_record(field[len("worktree "):], root)
+                _flush_worktree_record(out, cur, path_exists_fn)
+            cur = _new_worktree_record(field[len("worktree "):])
             continue
         if cur is None:
             continue
-        _apply_worktree_line(cur, field)
+        _apply_worktree_line(cur, field, unquote=False)
     if cur is not None:
-        out.append(_finish_worktree_record(cur, path_exists_fn))
+        _flush_worktree_record(out, cur, path_exists_fn)
     return out
 
 
 def bind_branch_occupancy(branch_records, worktree_records):
     """AC-09: return a new list of BranchRefRecord with `occupied_by` filled
     in from the REAL worktree list -- a branch is occupied iff some
-    worktree's (non-detached) `branch` field names it exactly. Never
-    mutates upstream_gone or any other field (AC-07: occupancy is a
-    separate fact from delivery-proof eligibility)."""
+    non-detached, readable worktree record's `branch` field names it
+    exactly. Never mutates upstream_gone or any other field (AC-07:
+    occupancy is a separate fact from delivery-proof eligibility).
+
+    `worktree_records` being `None` or `UNREADABLE` means the worktree list
+    itself could not be obtained -- every branch's occupancy is then
+    UNREADABLE (unknown), never silently defaulted to unoccupied (B-3): a
+    guard keyed on "confirmed not checked out anywhere" must never receive
+    that answer from a read that never actually happened. An explicit empty
+    list is trusted as a genuinely complete (if unusual) worktree list.
+
+    A branch bound here as occupied by a worktree whose OWN `path_exists`
+    is False is still reported occupied -- the fact is true (some record
+    still names this branch) even though the path is currently missing; a
+    caller that wants to treat "worktree gone from disk" differently from
+    "worktree present and checked out" can cross-reference `path_exists` on
+    the same worktree record this occupancy came from."""
+    if worktree_records is None or worktree_records is UNREADABLE:
+        return [b._replace(occupied_by=UNREADABLE) for b in (branch_records or [])]
     occupants = {}
-    for wt in worktree_records or []:
-        if wt.branch:
+    for wt in worktree_records:
+        if wt.branch and not wt.detached and not wt.read_error:
             occupants.setdefault(wt.branch, wt.path)
     out = []
     for b in branch_records or []:
@@ -1139,7 +1274,8 @@ WorktreeLossSurface = namedtuple("WorktreeLossSurface", [
 ])
 
 
-def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree, has_nested_repo):
+def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree,
+                                    has_nested_repo, record_read_error=False):
     """AC-11/AC-12: classify what a worktree actually holds BEFORE any
     directory removal is even proposed.
 
@@ -1147,14 +1283,25 @@ def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree, 
     files=all` run INSIDE the worktree, or `None`/`UNREADABLE` if that read
     failed. A failed read is NEVER folded into "no output means clean"
     (AC-05, AC-11) -- it retains the worktree and sets `read_error=True`.
+    The same applies if `is_locked`, `is_current_worktree`, or
+    `has_nested_repo` is itself `UNREADABLE` (M-3: "unknown" must never
+    silently coerce to "confirmed absent" in a boolean `or` chain), or if
+    the caller passes `record_read_error=True` -- the inventory record this
+    worktree came from was itself unreadable (H-5: a caller MUST be able to
+    fold that fact in here, since this function is the only one that
+    produces the retention verdict).
 
     `retain` is True -- i.e. this worktree is NOT a disposal candidate
     without a separate, explicit named-loss decision (AC-12) -- if it is
     dirty, has ANY untracked content (ignored or not), is locked, is the
     currently executing worktree, contains a nested repository/unsupported
-    submodule boundary, or its status could not be read at all. `retain` is
-    False only when every one of those signals is affirmatively absent."""
-    if status_text is None or status_text is UNREADABLE:
+    submodule boundary, or any input above could not be determined at all.
+    `retain` is False only when every one of those signals is affirmatively
+    absent, and is always a real bool (M-3), never a sentinel."""
+    unknown_input = record_read_error or any(
+        v is UNREADABLE for v in (is_locked, is_current_worktree, has_nested_repo)
+    )
+    if status_text is None or status_text is UNREADABLE or unknown_input:
         return WorktreeLossSurface(
             dirty=False, untracked=False, ignored_only=False, locked=is_locked,
             is_current=is_current_worktree, nested_repo=has_nested_repo,
@@ -1162,18 +1309,25 @@ def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree, 
         )
     dirty = False
     untracked = False
-    ignored_only = False
+    has_ignored = False
     for raw in status_text.splitlines():
         if not raw.strip():
             continue
         code = raw[:2]
         if code == "!!":
-            ignored_only = True
+            has_ignored = True
         elif code == "??":
             untracked = True
         else:
             dirty = True
-    retain = dirty or untracked or ignored_only or is_locked or is_current_worktree or has_nested_repo
+    # M-1: "ignored_only" means what it says -- ignored content coexisting
+    # with dirty/untracked content is not "only" ignored content.
+    ignored_only = has_ignored and not dirty and not untracked
+    # No bool() coercion needed here: the unknown_input check above already
+    # refused every UNREADABLE input via an early return with a literal
+    # True, so every operand below is a real bool by construction -- an
+    # `or` chain over real bools is already a real bool.
+    retain = dirty or untracked or has_ignored or is_locked or is_current_worktree or has_nested_repo
     return WorktreeLossSurface(
         dirty=dirty, untracked=untracked, ignored_only=ignored_only, locked=is_locked,
         is_current=is_current_worktree, nested_repo=has_nested_repo,
@@ -1181,34 +1335,65 @@ def classify_worktree_loss_surface(status_text, is_locked, is_current_worktree, 
     )
 
 
-def validate_resource_path(path, repo_root, real_path_fn=None):
+def _is_filesystem_root(path):
+    """True iff `path` (already realpath-resolved) IS a bare volume,
+    filesystem, or UNC-share root -- "/", "C:\\", "\\\\server\\share" --
+    with no further path component. Guards validate_resource_path's
+    allowlist against ever admitting "everything on this volume/share" as
+    an authorized target (H-4)."""
+    if not path:
+        return False
+    _drive, tail = os.path.splitdrive(path)
+    return tail.rstrip("/\\") == ""
+
+
+def validate_resource_path(path, allowed_paths, real_path_fn=None):
     """AC-13: pure guard against an unsafe filesystem target -- BEFORE any
-    directory removal is even proposed. Returns (True, None) only when
-    `path` resolves (via `real_path_fn`, production default
-    os.path.realpath) to somewhere genuinely NESTED under `repo_root`'s own
-    resolved real path -- never equal to it, never above it. Returns
-    (False, reason) for an empty/blank path, a resolution that lands on or
-    above repo_root (a symlink, junction, or `..`-escaping path pointed
-    somewhere it must never reach), or a resolution that raises -- a
-    resolution failure is refused, never defaulted to safe."""
+    directory removal is even proposed. `allowed_paths` is the CALLER'S own
+    authorized target set -- e.g. the exact worktree paths a fresh
+    inventory just reported -- never a "nested under some root" rule (H-2):
+    Git worktrees are conventionally SIBLINGS of the repository root, not
+    descendants of it, so a nesting rule refuses every real worktree this
+    guard exists to let a caller remove.
+
+    Returns `(True, resolved_path)` only when `path` resolves (via
+    `real_path_fn`, production default os.path.realpath) to EXACTLY one
+    entry of `allowed_paths` (also resolved, and compared with
+    OS-appropriate case-folding via os.path.normcase) -- and that entry is
+    not itself a bare volume/filesystem/UNC-share root (H-4). Returns
+    `(False, reason)` for an empty/blank path, a resolution that raises, or
+    a resolution matching no authorized target -- a resolution failure is
+    refused, never defaulted to safe.
+
+    The RESOLVED path is returned specifically so a caller acts on what
+    this guard actually validated (H-3) -- but this function proves nothing
+    about what a symlink or junction resolves to a moment later. A caller
+    MUST revalidate at the actual mutation seam (the same discipline
+    execute_branch_deletion already applies to worktree occupancy), not
+    cache this result across a delay."""
     real_path_fn = real_path_fn or os.path.realpath
     if not path or not path.strip():
         return (False, "path is empty")
     try:
         resolved = real_path_fn(path)
-        resolved_root = real_path_fn(repo_root)
     except Exception as exc:  # noqa: BLE001 -- any resolution failure is fail-safe refusal
         return (False, "path could not be resolved: %s" % exc)
-    if resolved is None or resolved_root is None:
+    if not resolved:
         return (False, "path could not be resolved")
     resolved = _strip_trailing_sep(resolved)
-    resolved_root = _strip_trailing_sep(resolved_root)
-    # A single separator-boundary check subsumes both refusals: it rejects
-    # `resolved == resolved_root` (the root itself never satisfies
-    # `startswith(root + sep)`, since that is strictly longer) and rejects
-    # anything not genuinely nested underneath -- no separate equality
-    # check needed, and a redundant one would be untestable dead code.
-    sep = "\\" if "\\" in resolved_root else "/"
-    if not resolved.startswith(resolved_root + sep):
-        return (False, "path is not genuinely nested under the repository root")
-    return (True, None)
+    resolved_key = os.path.normcase(resolved)
+    for allowed in (allowed_paths or []):
+        if not allowed or not allowed.strip():
+            continue
+        try:
+            resolved_allowed = real_path_fn(allowed)
+        except Exception:  # noqa: BLE001 -- an unresolvable allowlist entry is skipped, not fatal
+            continue
+        if not resolved_allowed:
+            continue
+        resolved_allowed = _strip_trailing_sep(resolved_allowed)
+        if _is_filesystem_root(resolved_allowed):
+            continue
+        if os.path.normcase(resolved_allowed) == resolved_key:
+            return (True, resolved)
+    return (False, "path does not exactly match an authorized target")
