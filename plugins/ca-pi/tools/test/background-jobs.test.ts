@@ -101,11 +101,83 @@ function withoutUnboundedReflection<T>(operation: () => T): T {
 // protocol window, where the product's own aggregate bound would otherwise let
 // the test sit for well over a minute.
 const WINDOWS_LIVE_SETTLE_CEILING_MS = 45_000;
-const WINDOWS_LIVE_TEST_TIMEOUT_MS = 60_000;
+// Issue #339 recurrence, 2026-09-17: the product's own fail-closed refusal
+// (a "ready-timeout" stall inside WINDOWS_JOB_READY_CEILING_MS, 30s) is
+// correct, intended behavior for a GENUINE hang - #339 explicitly ruled out
+// widening that production budget. But a REAL, occasional CI-runner
+// contention spike can legitimately exceed even a generous per-phase budget
+// without anything being hung, and #339 proposed (but never shipped) the
+// narrower fix: tolerate exactly one such stall here, in the test/proof
+// controller only, never in the product. WINDOWS_LIVE_TEST_TIMEOUT_MS must
+// therefore bound TWO attempts, not one: a worst-case first attempt that
+// rides its own 30s ceiling to a ready-timeout refusal, then a retry that
+// itself rides ITS OWN 30s ceiling before finally succeeding, plus the
+// settle/dispose overhead measured elsewhere in this file (~5s). 120s is
+// ~1.85x that 65s double-worst-case, and is trivially inside the job's own
+// 25-minute timeout-minutes budget (ci.yml, ca-pi-tools).
+const WINDOWS_LIVE_TEST_TIMEOUT_MS = 120_000;
 // AC-2, first half: an injected delay strictly larger than the 5000 ms default
 // this suite's live test used to inherit, so the slowed-spawn proof fails on the
 // pre-#428 budget and passes on the derived one.
 const WINDOWS_LIVE_INJECTED_SLOWDOWN_MS = 5_200;
+const READY_TIMEOUT_RETRY_MARKER = "ready-timeout";
+const READY_TIMEOUT_MAX_RETRIES = 1;
+
+/**
+ * Issue #339: retries `attempt` up to `READY_TIMEOUT_MAX_RETRIES` additional
+ * times, but ONLY when the failure is shaped like the product's own
+ * "ready-timeout" refusal (see the module comment above) - any other failure
+ * is a genuine defect and must fail on the first attempt, exactly like today,
+ * so this tolerance can never mask a real regression in the launch/dispose
+ * path it wraps.
+ */
+async function retryOnReadyTimeout<T>(attempt: () => Promise<T>): Promise<T> {
+  let attemptNumber = 0;
+  while (true) {
+    try {
+      return await attempt();
+    } catch (error) {
+      const isReadyTimeout = error instanceof Error && error.message.includes(READY_TIMEOUT_RETRY_MARKER);
+      if (!isReadyTimeout || attemptNumber >= READY_TIMEOUT_MAX_RETRIES) throw error;
+      attemptNumber += 1;
+    }
+  }
+}
+
+describe("retryOnReadyTimeout", () => {
+  function readyTimeoutFailure(): Error {
+    return new Error(
+      "launch refused because the spawn threw: Windows Job Object holder refused " +
+      "containment (stalled at ATTACHED after 15000ms; last startup stage STARTING): " +
+      "ready-timeout",
+    );
+  }
+
+  test("retries exactly once after a ready-timeout failure and succeeds on the retry", async () => {
+    const attempt = vi.fn(async () => {
+      if (attempt.mock.calls.length === 1) throw readyTimeoutFailure();
+      return "ok" as const;
+    });
+    await expect(retryOnReadyTimeout(attempt)).resolves.toBe("ok");
+    expect(attempt).toHaveBeenCalledTimes(2);
+  });
+
+  test("bounds the retry - a persistent ready-timeout failure still fails, never retries forever", async () => {
+    const attempt = vi.fn(async () => { throw readyTimeoutFailure(); });
+    await expect(retryOnReadyTimeout(attempt)).rejects.toThrow(/ready-timeout/);
+    expect(attempt).toHaveBeenCalledTimes(1 + READY_TIMEOUT_MAX_RETRIES);
+  });
+
+  test("never retries a non-ready-timeout failure - fails on the first attempt", async () => {
+    const attempt = vi.fn(async () => {
+      throw new Error(
+        "launch refused before spawning; see the diagnose() detail above",
+      );
+    });
+    await expect(retryOnReadyTimeout(attempt)).rejects.toThrow(/diagnose/);
+    expect(attempt).toHaveBeenCalledTimes(1);
+  });
+});
 
 /**
  * Condition-based wait. Resolves the moment `condition` settles - a fast runner
@@ -793,7 +865,7 @@ describe("session-local background job state", () => {
   }
 
   test.runIf(process.platform === "win32")("launches and disposes a real Git Bash background job", async () => {
-    await runLiveGitBashJob();
+    await retryOnReadyTimeout(() => runLiveGitBashJob());
   }, WINDOWS_LIVE_TEST_TIMEOUT_MS);
 
   // AC-2 of #428, first half: a deliberately slowed real spawn is still admitted.
@@ -801,10 +873,10 @@ describe("session-local background job state", () => {
   // inherit, so this proof is red on the pre-#428 budget and green on the derived one.
   test.runIf(process.platform === "win32")("admits a real Git Bash launch deliberately slowed past the historical bare budget", async () => {
     const started = Date.now();
-    await runLiveGitBashJob(async (command, args, options) => {
+    await retryOnReadyTimeout(() => runLiveGitBashJob(async (command, args, options) => {
       await new Promise<void>((wake) => setTimeout(wake, WINDOWS_LIVE_INJECTED_SLOWDOWN_MS));
       return await openProcessTree(command, args, options);
-    });
+    }));
     expect(Date.now() - started).toBeGreaterThan(WINDOWS_LIVE_INJECTED_SLOWDOWN_MS);
   }, WINDOWS_LIVE_TEST_TIMEOUT_MS);
 
