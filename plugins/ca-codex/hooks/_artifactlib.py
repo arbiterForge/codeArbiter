@@ -15,6 +15,7 @@ import platform
 import re
 import stat
 import subprocess
+import tempfile
 import threading
 from typing import Any
 
@@ -103,6 +104,40 @@ def _open_pinned_regular(path: Path) -> int:
     except BaseException:
         ctypes.WinDLL("kernel32", use_last_error=True).CloseHandle(handle)
         raise
+
+
+def _stage_darwin_executable(fd: int, directory: Path) -> Path:
+    """Materialize verified descriptor bytes for macOS executable launch.
+
+    macOS exposes inherited descriptors below /dev/fd but does not permit
+    executing a native binary through that path. The caller supplies a fresh,
+    private temporary directory; no installation or repository pathname is
+    reopened while producing the executable image.
+    """
+    target = directory / "ca-artifact"
+    output = os.open(
+        target,
+        os.O_WRONLY
+        | os.O_CREAT
+        | os.O_EXCL
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0),
+        stat.S_IRUSR | stat.S_IWUSR,
+    )
+    try:
+        os.lseek(fd, 0, os.SEEK_SET)
+        while chunk := os.read(fd, 1 << 20):
+            remaining = memoryview(chunk)
+            while remaining:
+                written = os.write(output, remaining)
+                if written <= 0:
+                    raise OSError("short write while staging verified executable")
+                remaining = remaining[written:]
+        os.fsync(output)
+        os.fchmod(output, stat.S_IRUSR | stat.S_IXUSR)
+    finally:
+        os.close(output)
+    return target
 
 
 def _trusted_directory(path: str | Path, code: str) -> Path:
@@ -268,12 +303,28 @@ class ArtifactClient:
             if platform.system() == "Linux":
                 executable = f"/proc/self/fd/{fd}"
             elif platform.system() == "Darwin":
-                executable = f"/dev/fd/{fd}"
+                with tempfile.TemporaryDirectory(prefix="ca-artifact-exec-") as temporary:
+                    try:
+                        directory = Path(os.path.realpath(temporary))
+                        executable = _stage_darwin_executable(fd, directory)
+                        os.chmod(directory, stat.S_IRUSR | stat.S_IXUSR)
+                        code, stdout, stderr = _bounded_child(
+                            [str(executable), operation, "--root", str(self.root), "--request", "-"],
+                            raw, fd, self.timeout)
+                    except OSError as exc:
+                        raise ArtifactError(
+                            "CAPABILITY_MISSING",
+                            "could not stage the verified macOS artifact executable",
+                        ) from exc
+                    finally:
+                        os.chmod(directory, stat.S_IRWXU)
+                executable = None
             else:
                 executable = str(self.installation / self._binary_name())
-            code, stdout, stderr = _bounded_child(
-                [executable, operation, "--root", str(self.root), "--request", "-"],
-                raw, fd, self.timeout)
+            if executable is not None:
+                code, stdout, stderr = _bounded_child(
+                    [executable, operation, "--root", str(self.root), "--request", "-"],
+                    raw, fd, self.timeout)
         finally:
             os.close(fd)
         result = _decode(stdout)

@@ -43,6 +43,7 @@ EXPECTED_SUITES = {
         "test_symlink_binary_rejected", "test_linked_or_reparse_installation_directory_rejected",
         "test_artifact_mutations_never_execute_content",
         "test_helper_child_receives_no_parent_environment",
+        "test_darwin_staging_uses_only_the_verified_open_descriptor",
     },
     "test_artifact_authoring.py": {
         "test_producers_create_and_read_canonical_html_pair",

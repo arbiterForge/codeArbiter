@@ -7,6 +7,7 @@ import os
 import platform
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -14,7 +15,7 @@ import unittest
 from unittest import mock
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO/"core/pysrc"))
-from _artifactlib import ArtifactClient, ArtifactError, checked_spec_index
+from _artifactlib import ArtifactClient, ArtifactError, _stage_darwin_executable, checked_spec_index
 from test_artifact_authoring import physical_test_directory
 INSTALLATION = None
 
@@ -101,5 +102,20 @@ class BridgeTests(unittest.TestCase):
         with mock.patch.object(subprocess, "Popen", side_effect=recording_popen):
             self.client.call("capabilities")
         self.assertEqual(calls[-1].get("env"), {})
+
+    def test_darwin_staging_uses_only_the_verified_open_descriptor(self):
+        source = self.test_directory / "source-binary"
+        source.write_bytes(b"verified executable bytes")
+        descriptor = os.open(source, os.O_RDONLY)
+        self.addCleanup(os.close, descriptor)
+        if os.name != "nt":
+            source.unlink()
+            source.write_bytes(b"substituted pathname bytes")
+        stage = self.test_directory / "stage"
+        stage.mkdir()
+        executable = _stage_darwin_executable(descriptor, stage)
+        self.assertEqual(executable.read_bytes(), b"verified executable bytes")
+        if os.name != "nt":
+            self.assertTrue(executable.stat().st_mode & stat.S_IXUSR)
 
 if __name__=="__main__":unittest.main(verbosity=2)
