@@ -116,12 +116,17 @@ def _strip_trailing_sep(path):
 def parse_worktrees(porcelain_text, repo_root):
     """Parse `git worktree list --porcelain` output.
 
-    Returns a list of {"path": str, "branch": str|None, "is_main": bool}. Records
-    are separated by blank lines; each starts with a `worktree <path>` line and may
-    carry a `branch refs/heads/<name>` line (absent / `detached` => branch None).
-    The main worktree is the record whose path equals `repo_root` (trailing
-    separator tolerated). Parses faithfully; staleness/merge classification is a
-    later task's job.
+    Returns a list of {"path": str, "branch": str|None, "is_main": bool,
+    "head": str|None, "detached": bool, "locked": bool, "locked_reason": str|None}.
+    Records are separated by blank lines; each starts with a `worktree <path>`
+    line and may carry a `HEAD <oid>` line, a `branch refs/heads/<name>` line
+    (absent / `detached` => branch stays None), and a `locked` line (bare
+    `locked` or `locked <reason>`). The main worktree is the record whose path
+    equals `repo_root` (trailing separator tolerated). Parses faithfully;
+    merge-proof classification is a later task's job — this only surfaces what
+    Git itself reports, including the occupancy/protection state (locked,
+    detached, exact OID) that a caller needs to exclude a worktree honestly
+    rather than silently dropping it.
     """
     root = _strip_trailing_sep(repo_root or "")
     out = []
@@ -137,11 +142,25 @@ def parse_worktrees(porcelain_text, repo_root):
             if cur is not None:
                 out.append(cur)
             path = line[len("worktree "):].strip()
-            cur = {"path": path, "branch": None, "is_main": path == root}
-        elif line.startswith("branch ") and cur is not None:
+            cur = {"path": path, "branch": None, "is_main": path == root,
+                   "head": None, "detached": False, "locked": False,
+                   "locked_reason": None}
+            continue
+        if cur is None:
+            continue
+        if line.startswith("HEAD "):
+            cur["head"] = line[len("HEAD "):].strip() or None
+        elif line == "detached":
+            cur["detached"] = True
+        elif line.startswith("branch "):
             ref = line[len("branch "):].strip()
             cur["branch"] = ref[len("refs/heads/"):] if ref.startswith("refs/heads/") else ref
-        # HEAD / detached / bare / locked lines carry no fields we surface here.
+        elif line == "locked":
+            cur["locked"] = True
+        elif line.startswith("locked "):
+            cur["locked"] = True
+            cur["locked_reason"] = line[len("locked "):].strip() or None
+        # bare / other lines carry no fields we surface here.
     if cur is not None:
         out.append(cur)
     return out
@@ -175,11 +194,20 @@ def stale_worktree_candidates(worktrees, gone_or_merged_branches, path_exists=os
     tests (pass a fake predicate); production defaults to os.path.exists. This is a
     PURE classifier: it only IDENTIFIES candidates and removes/mutates nothing —
     the /ca:standup command removes a worktree only on explicit per-item user
-    confirmation, which is why the broad (gone OR missing) candidate rule is safe."""
+    confirmation, which is why the broad (gone OR missing) candidate rule is safe.
+
+    A LOCKED worktree (per `parse_worktrees`'s `locked` field) is NEVER a
+    candidate, regardless of its branch or path state — a lock is an explicit
+    Git-level protection signal (and `git worktree remove` itself refuses a
+    locked worktree), so surfacing one as a hygiene candidate would misrepresent
+    it as ordinary stale output rather than something the user deliberately
+    protected."""
     gone = gone_or_merged_branches or set()
     out = []
     for wt in worktrees or []:
         if wt.get("is_main"):
+            continue
+        if wt.get("locked"):
             continue
         branch = wt.get("branch")
         path = wt.get("path")
