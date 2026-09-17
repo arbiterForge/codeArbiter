@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-09-17
+
+### Fixed
+
+- `pre-tool-adapter.py`: bound the routed guard (`pre-write.py`/`pre-bash.py`)
+  invocation to a wall-clock timeout and kill it on expiry, instead of waiting
+  on it forever. Closes the still-open half of #306: once a payload routed
+  successfully, a stalled guard (or Codex itself dying mid-wait) left both the
+  adapter and its child orphaned and resident indefinitely, observed
+  accumulating to 45 stranded pairs (~1.15GB) over a workday.
+
 ## [0.12.1] - 2026-09-17
 
 ### Fixed
