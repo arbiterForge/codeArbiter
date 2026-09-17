@@ -6,6 +6,18 @@ disable-model-invocation: true
 
 # brainstorming
 
+## Typed-artifact pilot boundary
+
+For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
+`<plugin-root>/includes/artifacts.md` before artifact I/O. Its typed ID, binding,
+readiness, receipt, contextual-read and scope-state rules replace the legacy
+Markdown parsing and direct status-cell edits below for that pilot only. Keep
+all other workflow gates, including human checkpoints, unchanged. Missing or
+invalid HTML capability is a STOP for this path, not a fallback to Markdown.
+HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
+remain unchanged until native host qualification and cutover approval.
+
+
 Refine the idea before it touches code. Routed to by `/feature` (before `tdd`) and by `/sprint` (the planning front).
 
 ## Pre-flight
@@ -84,7 +96,7 @@ Write the agreed spec to `<project-root>/.codearbiter/specs/<slug>.md`. The slug
 - **Approach** — the Phase 2 choice and the trade-off that picked it, in two or three sentences.
 - **Scope** — what is in, and the explicit out-of-scope boundary.
 - **Decided parameters** — the parameter-level choices made in Phase 3, each in one line, so the approval reads them instead of discovering them in code review.
-- **Acceptance criteria** — a numbered list, each criterion concrete and testable: a specific input, the observable output, the boundary or failure behavior. Each criterion is verifiable by a single test. "It works well" is not a criterion. These become `tdd` Phase 1 obligations — one obligation per criterion, so an untestable criterion is a defect to fix here, not in `tdd`.
+- **Acceptance criteria** — a numbered list, each criterion concrete and testable: a specific input, the observable output, the boundary or failure behavior. Each criterion is verifiable by one or more focused tests. "It works well" is not a criterion. These become `tdd` Phase 1 obligations — one obligation per criterion, so an untestable criterion is a defect to fix here, not in `tdd`.
 - **Open questions** — every `[CONFIRM-NN]` raised, cross-referenced to `open-questions.md`.
 - **Governs** *(optional)* — a spec-header line `**Governs:** <comma-separated globs>` that enrolls the approved spec in file-scoped just-in-time context injection: on a Read of any file matching one of the listed globs, a pointer to this spec is surfaced to the agent (tier 3 of the file→knowledge map). Adding the line is sufficient to enroll; no other change required.
 
@@ -94,7 +106,7 @@ Gate: the spec file exists on disk under `specs/`, with at least one acceptance 
 
 The spec earns its approval; it is not waved through. Two passes over the FILE as written, then the stop:
 
-1. **Mechanical self-review** — one pass, fix inline, no re-review: no placeholder text (`TBD`, `???`, an unfilled section); no criterion that contradicts the scope; nothing that crosses the `CONTEXT.md` NOT-building boundary; no criterion that contradicts an accepted ADR or `plans/01`'s recorded component boundaries (ADR-0025); every criterion still testable by a single test after the edits; the vague-language lens applied to the spec's own prose.
+1. **Mechanical self-review** — one pass, fix inline, no re-review: no placeholder text (`TBD`, `???`, an unfilled section); no criterion that contradicts the scope; nothing that crosses the `CONTEXT.md` NOT-building boundary; no criterion that contradicts an accepted ADR or `plans/01`'s recorded component boundaries (ADR-0025); every criterion still testable by one or more focused tests after the edits; the vague-language lens applied to the spec's own prose.
 2. **Adversarial pass** — build the strongest case AGAINST the design before the user reads it: the failure mode most likely to be real, the criterion most likely to be wrong, the assumption that would invalidate the approach if false. Present what survives WITH the spec at approval — the user rules on a challenged design, not a defended one. Finding nothing is a reportable result, stated in one line, not a silent skip.
 3. **Approval:**
    - **Under `/feature`** — present the spec and the adversarial findings, and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.
@@ -109,7 +121,7 @@ Gate: both review passes run against the file on disk, adversarial findings pres
 - MUST NOT write implementation code or route to `tdd` before the spec is on disk under `specs/` AND approved.
 - MUST NOT refine a bundle — an idea holding more than one independently shippable concern splits in Phase 1, before any question budget is spent.
 - MUST NOT manufacture alternatives in Phase 2 — when one sane approach exists, say so and why.
-- MUST NOT write an acceptance criterion that cannot be verified by a single test.
+- MUST NOT write an acceptance criterion that cannot be verified by one or more focused tests.
 - MUST decide parameter-level choices and record them in the spec; MUST ask genuine forks in full, with a recommendation, the first time — never name an open decision without asking it.
 - MUST stop a non-converging refinement loop and force one adjudication — a contradiction or a resurfacing fork is a breaker, not a prompt to circle.
 - MUST run the `uncovered_intent` mechanical backstop and ask the negative-judgment question ("if every criterion passed and nothing else changed, what would still be broken?") before closing Phase 3 — bijective coverage in `writing-plans` proves the plan and the ledger agree with each other, never that the ledger is complete (#566).

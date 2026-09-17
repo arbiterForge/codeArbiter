@@ -12,6 +12,26 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+### Fixed
+
+- Structured-artifact Python bridge, workflow, package, farm, and conformance
+  fixtures now resolve only their test-owned temporary directories to physical
+  paths, matching the existing Go fixture rule so hosted macOS symlink roots and
+  Windows path aliases do not masquerade as production containment failures.
+- The reviewed reference HTML pair and its supporting assets are pinned to LF
+  checkout bytes so Windows autocrlf cannot manufacture renderer drift.
+- The macOS Python bridge and farm dispatcher now launch a private ephemeral
+  executable image written only from the already verified package descriptor,
+  because macOS does not permit native execution through `/dev/fd`; Linux and
+  Windows pinning is
+  unchanged and no PATH or repository fallback is introduced.
+
+## [2.19.0] - 2026-09-16
+
+### Added
+
+- Add a disabled-by-default, extensible structured-artifact engine foundation for canonical HTML specifications and implementation plans, with bounded typed operations, Linux and Windows recovery semantics, verified native bridges, descriptor-relative Unix installation, and required three-host CI. The Windows developer installer fails closed pending a reviewed release-packaging boundary, and HTML farm dispatch remains blocked pending integration and qualification.
+
 ## [2.18.9] - 2026-09-17
 
 ### Fixed

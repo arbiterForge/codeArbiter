@@ -6,6 +6,18 @@ disable-model-invocation: true
 
 # writing-plans
 
+## Typed-artifact pilot boundary
+
+For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
+[includes/artifacts.md](../../includes/artifacts.md) before artifact I/O. Its typed ID, binding,
+readiness, receipt, contextual-read and scope-state rules replace the legacy
+Markdown parsing and direct status-cell edits below for that pilot only. Keep
+all other workflow gates, including human checkpoints, unchanged. Missing or
+invalid HTML capability is a STOP for this path, not a fallback to Markdown.
+HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
+remain unchanged until native host qualification and cutover approval.
+
+
 Turn an approved spec into an executable plan. Routed to by `/feature` (after spec approval) and `/sprint`.
 
 ## Pre-flight

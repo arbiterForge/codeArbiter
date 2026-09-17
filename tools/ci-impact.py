@@ -371,6 +371,12 @@ def _match_path(
         matched = True
         affected = affected_surface_hosts(path, hosts)
         if not affected:
+            # A path may have an explicit non-surface contract in addition to
+            # living below core/surface/. Preserve that stronger explicit
+            # mapping; only fall back when the descriptor edge is its sole
+            # attempted classification.
+            if selected_ids:
+                continue
             return None, f"surface path matches no host descriptor: {path}"
         host_checks = dict(edge.host_checks)
         for host in affected:

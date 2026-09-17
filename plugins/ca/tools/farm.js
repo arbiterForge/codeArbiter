@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, rm, stat, rename, open as open2 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, mkdtemp, chmod, rm, stat, lstat as lstat2, realpath as realpath2, rename, open as open2 } from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
-import { spawnSync } from "node:child_process";
+import { spawn as spawn3, spawnSync } from "node:child_process";
 import { realpathSync } from "node:fs";
 import path3 from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 // exec.ts
@@ -651,6 +653,274 @@ var ENV = {
 };
 var git = (args, cwd) => run("git", args, cwd);
 var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+var ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0";
+var ARTIFACT_SCHEMA_VERSION = "0.3.1";
+var ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0";
+var ARTIFACT_MAX_RESPONSE = 65536;
+function artifactPlatform() {
+  const systems = { linux: "linux", darwin: "darwin", win32: "windows" };
+  const arches = { x64: "amd64", arm64: "arm64" };
+  const system = systems[process.platform];
+  const arch = arches[process.arch];
+  if (!system || !arch) throw new Error("artifact engine does not support this platform/architecture");
+  const file = `ca-artifact-${system}-${arch}${system === "windows" ? ".exe" : ""}`;
+  const magic = system === "linux" ? [Buffer.from([127, 69, 76, 70])] : system === "windows" ? [Buffer.from("MZ")] : [Buffer.from([207, 250, 237, 254]), Buffer.from([202, 254, 186, 190]), Buffer.from([190, 186, 254, 202])];
+  return { key: `${system}/${arch}`, file, magic };
+}
+var exactKeys = (value, keys) => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+var sameArtifactPath = (left, right) => process.platform === "win32" ? path3.resolve(left).toLocaleLowerCase() === path3.resolve(right).toLocaleLowerCase() : path3.resolve(left) === path3.resolve(right);
+async function trustedInstallationDirectory(requested) {
+  const absolute = path3.resolve(requested);
+  const resolved = await realpath2(absolute).catch(() => "");
+  if (!resolved || !sameArtifactPath(absolute, resolved))
+    throw new Error("artifact installation must be a real directory without linked ancestors");
+  let current = absolute;
+  for (; ; ) {
+    const info = await lstat2(current).catch(() => null);
+    if (!info?.isDirectory() || info.isSymbolicLink())
+      throw new Error("artifact installation must be a real directory without linked ancestors");
+    const parent = path3.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  return absolute;
+}
+async function pinnedRegular(pathname, maximum) {
+  const noFollow = process.platform === "win32" ? 0 : fsConstants.O_NOFOLLOW;
+  const handle = await open2(pathname, fsConstants.O_RDONLY | noFollow).catch(() => null);
+  if (!handle) throw new Error("install the bounded pinned artifact payload; no PATH fallback is permitted");
+  try {
+    const info = await handle.stat();
+    if (!info.isFile() || info.size <= 0 || info.size > maximum)
+      throw new Error("artifact payload entry must be a bounded regular file");
+    return { handle, bytes: await handle.readFile() };
+  } catch (error) {
+    await handle.close();
+    throw error;
+  }
+}
+async function installedArtifactBinary() {
+  const installation = path3.resolve(path3.dirname(fileURLToPath(import.meta.url)), "..", "helpers", "artifacts");
+  await trustedInstallationDirectory(installation);
+  const manifestPath = path3.join(installation, "release.json");
+  const pinnedManifest = await pinnedRegular(manifestPath, 65536);
+  let manifest;
+  try {
+    manifest = JSON.parse(pinnedManifest.bytes.toString("utf8"));
+  } finally {
+    await pinnedManifest.handle.close();
+  }
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest) || !exactKeys(manifest, ["format", "version", "protocol", "schema_version", "binaries"]))
+    throw new Error("artifact release manifest has an unexpected shape");
+  const release = manifest;
+  if (release.format !== ARTIFACT_RELEASE_FORMAT || release.protocol !== ARTIFACT_PROTOCOL || release.schema_version !== ARTIFACT_SCHEMA_VERSION || typeof release.version !== "string" || !release.version)
+    throw new Error("installed artifact engine protocol/schema identity is incompatible");
+  const binaries = release.binaries;
+  if (!binaries || typeof binaries !== "object" || Array.isArray(binaries))
+    throw new Error("artifact release manifest has no platform map");
+  const platform = artifactPlatform();
+  const rawEntry = binaries[platform.key];
+  if (!rawEntry || typeof rawEntry !== "object" || Array.isArray(rawEntry) || !exactKeys(rawEntry, ["file", "sha256", "native_tested"]))
+    throw new Error("artifact payload has no matching native-tested binary");
+  const entry = rawEntry;
+  if (entry.file !== platform.file || entry.native_tested !== true || typeof entry.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(entry.sha256))
+    throw new Error("artifact payload platform entry is invalid or not native-qualified");
+  const binaryPath = path3.join(installation, platform.file);
+  const pinned = await pinnedRegular(binaryPath, 32 << 20);
+  const realBinary = await realpath2(binaryPath).catch(() => "");
+  if (!realBinary || !sameArtifactPath(path3.dirname(realBinary), installation)) {
+    await pinned.handle.close();
+    throw new Error("artifact executable resolves outside its pinned installation");
+  }
+  if (!platform.magic.some((prefix) => pinned.bytes.subarray(0, prefix.length).equals(prefix))) {
+    await pinned.handle.close();
+    throw new Error("artifact executable has an unexpected native format");
+  }
+  if (createHash("sha256").update(pinned.bytes).digest("hex") !== entry.sha256) {
+    await pinned.handle.close();
+    throw new Error("artifact executable bytes differ from the release manifest");
+  }
+  return { path: realBinary, sha256: entry.sha256, bytes: pinned.bytes, handle: pinned.handle };
+}
+var WINDOWS_PIN_GUARD = String.raw`
+$ErrorActionPreference = 'Stop'
+$binary = $env:CA_ARTIFACT_BINARY
+$expected = $env:CA_ARTIFACT_SHA256
+$stream = [IO.File]::Open($binary, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+try {
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { $actual = -join ($sha.ComputeHash($stream) | ForEach-Object { $_.ToString('x2') }) }
+  finally { $sha.Dispose() }
+  if ($actual -cne $expected) { [Console]::Error.Write('verified artifact executable changed before launch'); exit 121 }
+  [Console]::Out.WriteLine('READY')
+  [Console]::Out.Flush()
+  [Console]::In.ReadLine() | Out-Null
+} finally { $stream.Dispose() }
+`;
+async function windowsPinGuard(binary) {
+  const systemRoot = process.env.SystemRoot || process.env.WINDIR;
+  if (!systemRoot) throw new Error("Windows system root is unavailable for pinned artifact launch");
+  const powershell = path3.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
+  const guard = spawn3(powershell, ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", WINDOWS_PIN_GUARD], {
+    env: { CA_ARTIFACT_BINARY: binary.path, CA_ARTIFACT_SHA256: binary.sha256 },
+    stdio: ["pipe", "pipe", "pipe"]
+  });
+  await new Promise((resolve, reject) => {
+    let stdout = "";
+    let stderr = "";
+    const timer = setTimeout(() => reject(new Error("timed out pinning the verified artifact executable")), 5e3);
+    const fail = () => {
+      clearTimeout(timer);
+      reject(new Error(`could not pin the verified artifact executable: ${stderr.trim().slice(0, 512) || `exit ${guard.exitCode}`}`));
+    };
+    guard.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+      if (stderr.length > 8192) stderr = stderr.slice(-8192);
+    });
+    guard.stdout.on("data", (chunk) => {
+      stdout += chunk.toString();
+      if (stdout === "READY\r\n" || stdout === "READY\n") {
+        clearTimeout(timer);
+        resolve();
+      } else if (stdout.length > 16) fail();
+    });
+    guard.once("error", (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    guard.once("exit", fail);
+  }).catch((error) => {
+    guard.kill();
+    throw error;
+  });
+  return guard;
+}
+async function runPinnedArtifact(binary, root, request) {
+  if (process.platform === "win32") {
+    const guard = await windowsPinGuard(binary);
+    try {
+      return spawnSync(binary.path, ["farm-verify", "--root", root, "--request", "-"], {
+        input: request,
+        encoding: "utf8",
+        env: {},
+        timeout: 3e4,
+        maxBuffer: ARTIFACT_MAX_RESPONSE
+      });
+    } finally {
+      guard.stdin.end("release\n");
+      guard.kill();
+    }
+  }
+  if (!binary.handle) throw new Error("artifact executable descriptor was not retained");
+  if (process.platform === "darwin") {
+    const logicalDirectory = await mkdtemp(path3.join(tmpdir(), "codearbiter-artifact-"));
+    const directory = await realpath2(logicalDirectory);
+    const executable = path3.join(directory, "ca-artifact");
+    let staged;
+    try {
+      staged = await open2(
+        executable,
+        fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW,
+        384
+      );
+      let offset = 0;
+      while (offset < binary.bytes.length) {
+        const { bytesWritten } = await staged.write(binary.bytes, offset, binary.bytes.length - offset, offset);
+        if (bytesWritten <= 0) throw new Error("could not stage the verified artifact executable");
+        offset += bytesWritten;
+      }
+      await staged.sync();
+      await staged.chmod(320);
+      await staged.close();
+      staged = void 0;
+      await chmod(directory, 320);
+      return spawnSync(executable, ["farm-verify", "--root", root, "--request", "-"], {
+        input: request,
+        encoding: "utf8",
+        env: {},
+        timeout: 3e4,
+        maxBuffer: ARTIFACT_MAX_RESPONSE
+      });
+    } finally {
+      await staged?.close().catch(() => void 0);
+      await chmod(directory, 448).catch(() => void 0);
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
+  const descriptorPath = "/proc/self/fd/3";
+  return spawnSync(descriptorPath, ["farm-verify", "--root", root, "--request", "-"], {
+    input: request,
+    encoding: "utf8",
+    env: {},
+    timeout: 3e4,
+    maxBuffer: ARTIFACT_MAX_RESPONSE,
+    stdio: ["pipe", "pipe", "pipe", binary.handle.fd]
+  });
+}
+function artifactResult(operation, stdout, status) {
+  if (Buffer.byteLength(stdout) > ARTIFACT_MAX_RESPONSE) throw new Error("artifact response exceeded its bound");
+  let envelope;
+  try {
+    envelope = JSON.parse(stdout);
+  } catch {
+    throw new Error("artifact engine returned invalid JSON");
+  }
+  if (!envelope || typeof envelope !== "object" || Array.isArray(envelope))
+    throw new Error("artifact engine returned an invalid envelope");
+  const value = envelope;
+  if (value.protocol !== ARTIFACT_PROTOCOL || value.operation !== operation || typeof value.ok !== "boolean")
+    throw new Error("artifact engine response identity does not match the request");
+  if (value.ok !== true || status !== 0) {
+    const error = value.error && typeof value.error === "object" && !Array.isArray(value.error) ? value.error : {};
+    const code = typeof error.code === "string" ? error.code : "SUBPROCESS_FAILED";
+    const message = typeof error.message === "string" ? error.message.slice(0, 512) : "artifact verification failed";
+    throw new Error(`${code}: ${message}`);
+  }
+  if (!exactKeys(value, ["protocol", "operation", "ok", "result"]) || !value.result || typeof value.result !== "object" || Array.isArray(value.result))
+    throw new Error("artifact engine returned a malformed success envelope");
+  return value.result;
+}
+async function verifyFarmArtifactBoundary(planPath, phase, expectedProjectionSha256, effective) {
+  const absolutePlan = path3.resolve(planPath);
+  const htmlPath = absolutePlan.endsWith(".plan.json") ? `${absolutePlan.slice(0, -".plan.json".length)}.html` : "";
+  const htmlInfo = htmlPath ? await stat(htmlPath).catch(() => null) : null;
+  const root = repoTopLevel();
+  const [bindingDirectory, markerDirectory] = await Promise.all([
+    stat(path3.join(root, ".codearbiter", ".artifacts", "farm-bindings")).catch(() => null),
+    stat(path3.join(root, ".codearbiter", ".artifacts", "farm-markers")).catch(() => null)
+  ]);
+  if (!htmlInfo && !bindingDirectory && !markerDirectory) return { typed: false };
+  const relative = path3.relative(root, absolutePlan);
+  if (!relative || path3.isAbsolute(relative) || relative === ".." || relative.startsWith(`..${path3.sep}`))
+    throw new Error("HTML-backed farm projection must live inside the current repository");
+  const request = {
+    protocol: ARTIFACT_PROTOCOL,
+    projection_path: relative.split(path3.sep).join("/"),
+    phase
+  };
+  if (phase === "dispatch") {
+    if (!effective?.model || !effective.apiBaseUrl) throw new Error("dispatch verification needs effective provider identity");
+    request.effective_model = effective.model;
+    request.effective_api_base_url = effective.apiBaseUrl;
+  }
+  const binary = await installedArtifactBinary();
+  let child;
+  try {
+    child = await runPinnedArtifact(binary, root, JSON.stringify(request));
+  } finally {
+    await binary.handle?.close();
+  }
+  if (child.error) throw new Error(`artifact verification subprocess failed: ${child.error.message}`);
+  if (!(child.stdout || "").trim() && (child.stderr || "").trim())
+    throw new Error(`artifact verification subprocess failed: ${(child.stderr || "").trim().slice(0, 512)}`);
+  const result = artifactResult("farm-verify", child.stdout || "", child.status);
+  if (result.typed === false && !htmlInfo) return { typed: false };
+  if (result.typed !== true || result.phase !== phase)
+    throw new Error("HTML-backed farm projection was not recognized as typed and current");
+  if (result.projection_sha256 !== expectedProjectionSha256)
+    throw new Error("artifact engine verified different projection bytes than the dispatcher parsed");
+  return { typed: true };
+}
 function createLimiter(max) {
   const cap = Math.max(1, Math.floor(max) || 1);
   let active = 0;
@@ -699,13 +969,13 @@ function repoTopLevel() {
   }
   return path3.resolve(process.cwd());
 }
-function canonicalize(target, label, realpath2 = realpathSync.native) {
+function canonicalize(target, label, realpath3 = realpathSync.native) {
   const resolved = path3.resolve(target);
   const missing = [];
   let cursor = resolved;
   for (; ; ) {
     try {
-      const real = realpath2(cursor);
+      const real = realpath3(cursor);
       return missing.length ? path3.join(real, ...missing.slice().reverse()) : real;
     } catch (error) {
       const code = error.code;
@@ -1898,9 +2168,13 @@ async function main() {
   const canary = args.includes("--canary");
   const planPath = args.find((a) => !a.startsWith("--")) ?? "plan.json";
   let plan;
+  let projectionSha256;
   try {
-    plan = parsePlan(JSON.parse(await readFile2(planPath, "utf8")));
+    const planBytes = await readFile2(planPath);
+    projectionSha256 = createHash("sha256").update(planBytes).digest("hex");
+    plan = parsePlan(JSON.parse(planBytes.toString("utf8")));
     validate(plan);
+    if (canary) await verifyFarmArtifactBoundary(planPath, "canary", projectionSha256);
   } catch (e) {
     console.error(`Error: invalid plan ${planPath}: ${msgOf(e).slice(0, 300)}`);
     return process.exit(1);
@@ -1913,6 +2187,12 @@ async function main() {
   }
   if (canary) return runCanary(plan);
   const { model, apiBaseUrl, apiKey } = resolveConfig(plan);
+  try {
+    await verifyFarmArtifactBoundary(planPath, "dispatch", projectionSha256, { model, apiBaseUrl });
+  } catch (e) {
+    console.error(`Error: farm artifact verification failed: ${msgOf(e).slice(0, 300)}`);
+    return process.exit(1);
+  }
   let runId;
   try {
     runId = ENV.runId === null ? mintRunId() : assertSafeRunId(ENV.runId);
@@ -2269,6 +2549,7 @@ export {
   screenEntitlements,
   validate,
   validateWorktreeRoot,
+  verifyFarmArtifactBoundary,
   withWorktreeLock,
   writeFilesInto
 };

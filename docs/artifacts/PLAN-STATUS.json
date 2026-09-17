@@ -1,0 +1,303 @@
+{
+  "original_plan_sha256": "fdc917767b25928a5b27b1ecc5da89e3d3172d41ebe921ef0282c73077961bd8",
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Inventory consumers and freeze the no-growth baseline",
+      "checkpoint": "CP-01",
+      "depends_on": [],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Owned consumer inventory, independent live-reference search, generated-path accounting, captured public registration baseline, byte-bound startup fixtures, negative controls and required CI wiring are present. This inventory task does not close the pending integrations it identifies."
+    },
+    {
+      "id": "T-002",
+      "title": "Define both model types and schemas",
+      "checkpoint": "CP-01",
+      "depends_on": [
+        "T-001"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Closed schema 0.3.1, with 0.3.0 read compatibility, generated views, embedded-schema parity check, draft/readiness regressions."
+    },
+    {
+      "id": "T-003",
+      "title": "Implement strict JSON and independent hash domains",
+      "checkpoint": "CP-01",
+      "depends_on": [
+        "T-002"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "`canonical` tests and fuzz target, strict duplicate/UTF-8/integer/resource checks. Restricted numeric domain is explicit."
+    },
+    {
+      "id": "T-004",
+      "title": "Validate spec contracts and structured intent coverage",
+      "checkpoint": "CP-01",
+      "depends_on": [
+        "T-002",
+        "T-003"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Structural/readiness checks, typed references, concrete contract fields and source semantics. Content truth still requires review."
+    },
+    {
+      "id": "T-005",
+      "title": "Validate plan references, paths and dependency order",
+      "checkpoint": "CP-02",
+      "depends_on": [
+        "T-003",
+        "T-004"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Binding, criterion coverage/disposition, dependency cycles, checkpoints, paths/verification definitions. Review 3 additionally rejects uncovered input paths and missing named-test outcomes; reproduced original T-023 remains not ready pending explicit reconciliation."
+    },
+    {
+      "id": "T-006",
+      "title": "Create durable symbol registry and retirement rules",
+      "checkpoint": "CP-02",
+      "depends_on": [
+        "T-002",
+        "T-003"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Add/update/retire, nested retirement, ID reuse refusal, complete marker correspondence."
+    },
+    {
+      "id": "T-007",
+      "title": "Render and parse canonical static HTML",
+      "checkpoint": "CP-02",
+      "depends_on": [
+        "T-003",
+        "T-006",
+        "T-004",
+        "T-005"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Offline deterministic renderer; normal reads reject model/view drift and hostile embedded content."
+    },
+    {
+      "id": "T-008",
+      "title": "Implement safe local branding and browser conformance",
+      "checkpoint": "CP-02",
+      "depends_on": [
+        "T-007"
+      ],
+      "disposition": "Implemented locally; qualification partial",
+      "formal_acceptance": "not_recorded",
+      "notes": "Default logo, local asset validation, actual rebrand/export test, Chromium desktop/mobile/text-size checks. Not full accessibility or multi-browser certification."
+    },
+    {
+      "id": "T-009",
+      "title": "Implement bounded outline and context extraction",
+      "checkpoint": "CP-03",
+      "depends_on": [
+        "T-005",
+        "T-006",
+        "T-007"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Exact/outline/context modes, whole-record budgets, dependency context, multi-document receipt-bound cursors and final delivery ticket. Review 3 fixes nonadvancing outline pages and validates bridge progress before yielding."
+    },
+    {
+      "id": "T-010",
+      "title": "Implement trusted path resolution and locked compare-and-swap",
+      "checkpoint": "CP-03",
+      "depends_on": [
+        "T-003"
+      ],
+      "disposition": "Implemented on Linux and Windows; macOS exact-host pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "Anchored/no-follow path handling, expected revision plus model hash, conflicts/duplicate authority checks. Review 3 prevents rolled-back operations being replayed as success."
+    },
+    {
+      "id": "T-011",
+      "title": "Add native replacement and recovery primitives",
+      "checkpoint": "CP-03",
+      "depends_on": [
+        "T-010"
+      ],
+      "disposition": "Partial",
+      "formal_acceptance": "not_recorded",
+      "notes": "Linux and Windows staging, native locking, journals and real subprocess-death recovery tests pass. macOS compiles/vets but exact-host and physical power-loss tests are missing."
+    },
+    {
+      "id": "T-012",
+      "title": "Expose typed mutation and the bounded CLI protocol",
+      "checkpoint": "CP-03",
+      "depends_on": [
+        "T-004",
+        "T-005",
+        "T-006",
+        "T-007",
+        "T-009",
+        "T-011"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Closed request schemas and bounded envelopes, inert document commands, real subprocess bridge tests. No public command registration."
+    },
+    {
+      "id": "T-013",
+      "title": "Bind approval and rebind transitions to existing policy",
+      "checkpoint": "CP-04",
+      "depends_on": [
+        "T-012"
+      ],
+      "disposition": "Engine implemented; host integration partial",
+      "formal_acceptance": "not_recorded",
+      "notes": "Cooperative receipt protocol, event capture, stale normative-binding checks, no authority from HTML flags. Real-host capture mappings remain."
+    },
+    {
+      "id": "T-014",
+      "title": "Persist task state, evidence and safe resume eligibility",
+      "checkpoint": "CP-04",
+      "depends_on": [
+        "T-005",
+        "T-013"
+      ],
+      "disposition": "Engine implemented; host integration partial",
+      "formal_acceptance": "not_recorded",
+      "notes": "Dependencies, scope baselines, current tests/reviews, reconciliation and stale-evidence behavior; actual CLI smoke with synthetic reviewer authority."
+    },
+    {
+      "id": "T-015",
+      "title": "Connect brainstorming, planning and TDD producers",
+      "checkpoint": "CP-04",
+      "depends_on": [
+        "T-012",
+        "T-013",
+        "T-014"
+      ],
+      "disposition": "Locally implemented; host qualification pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "Existing-routine on-demand pilot reference and structured intent CLI bridge. Fresh native-candidate fixtures create, validate and read the canonical HTML pair, preserve incomplete drafts without invented fields, and fail closed without the payload. Full generated-host execution is not yet qualified."
+    },
+    {
+      "id": "T-016",
+      "title": "Connect execution, acceptance and entry-point resume",
+      "checkpoint": "CP-04",
+      "depends_on": [
+        "T-014",
+        "T-015"
+      ],
+      "disposition": "Partial",
+      "formal_acceptance": "not_recorded",
+      "notes": "Engine eligibility and ledger are implemented; native-candidate fixtures cover approved dispatch, stale pre-dispatch rejection without mutation, interruption at REVIEW, stale worktree evidence rejection and atomic scope acceptance. Canonical routine pilot integration is supplied, but real feature/sprint host traces and complete outer entry-point closure remain."
+    },
+    {
+      "id": "T-017",
+      "title": "Update governing-spec discovery, cache and capability diagnostics",
+      "checkpoint": "CP-05",
+      "depends_on": [
+        "T-013",
+        "T-015",
+        "T-016"
+      ],
+      "disposition": "Candidate integration",
+      "formal_acceptance": "not_recorded",
+      "notes": "Advisory HTML catalog and receipt-aware dedup epoch, fail-open source inspection with explicit gate warning, seam tests. Full upstream cache/hook suite not run."
+    },
+    {
+      "id": "T-018",
+      "title": "Bind existing farm projection to HTML plans",
+      "checkpoint": "CP-05",
+      "depends_on": [
+        "T-014",
+        "T-015",
+        "T-016"
+      ],
+      "disposition": "Locally implemented; qualification pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "Minimal current-slice projection, immutable base/RED binding, canary preflight, provider-only enrichment, exact-byte seal and the shared dispatcher guard are implemented and freshly tested. HTML farm use remains disabled pending real authority adapters, packaged native payloads, generated-host/CI proof and a fresh frontier/low-tier qualification matrix; June 2026 earns zero credit."
+    },
+    {
+      "id": "T-019",
+      "title": "Build review-only legacy pair import",
+      "checkpoint": "CP-05",
+      "depends_on": [
+        "T-005",
+        "T-012",
+        "T-014"
+      ],
+      "disposition": "Implemented locally",
+      "formal_acceptance": "not_recorded",
+      "notes": "Explicit complete line mappings, preserved provenance, no invented obligations or transferred approvals, stale-preview tests."
+    },
+    {
+      "id": "T-020",
+      "title": "Implement recovery-aware pair cutover and rollback reports",
+      "checkpoint": "CP-05",
+      "depends_on": [
+        "T-011",
+        "T-013",
+        "T-019"
+      ],
+      "disposition": "Implemented on Linux and Windows; macOS exact-host pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "Journaled pair transition and guarded inverse transaction; original bytes retained; unrelated edits are not clobbered."
+    },
+    {
+      "id": "T-021",
+      "title": "Package trusted binaries and cold-install capability checks",
+      "checkpoint": "CP-06",
+      "depends_on": [
+        "T-012",
+        "T-013",
+        "T-020"
+      ],
+      "disposition": "Locally implemented; release qualification pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "Linux and Windows native payloads and pinned bridges pass. The release-only boundary rejects linked/replaced roots, fake architectures and unsupported identities, requires exact-host qualification receipts bound to commit/workflow run/platform/digest/tests, and assembles package-owned payload overlays for every canonical host. Linux and Windows cold execution pass from each staged package root without Go, PATH or network fallback; the ordinary Windows developer installer still fails closed. Applying the overlay in actual Claude, Codex and Pi release channels plus hosted macOS/release proof remain open."
+    },
+    {
+      "id": "T-022",
+      "title": "Wire generated-host parity and native CI gates",
+      "checkpoint": "CP-06",
+      "depends_on": [
+        "T-017",
+        "T-018",
+        "T-021"
+      ],
+      "disposition": "Partial",
+      "formal_acceptance": "not_recorded",
+      "notes": "A required three-host Go 1.27.1 CI matrix runs named storage/recovery, bridge and package checks, emits qualification receipts only after success, and feeds a second required job that assembles and Linux-cold-executes the multi-host overlay. Both jobs are registered in both merge-gate locations. Linux and Windows pass locally; hosted exact-head results, farm qualification and actual release-channel application remain unproved."
+    },
+    {
+      "id": "T-023",
+      "title": "Run full cross-kind conformance and adversarial workflow fixtures",
+      "checkpoint": "CP-06",
+      "depends_on": [
+        "T-015",
+        "T-016",
+        "T-017",
+        "T-018",
+        "T-020",
+        "T-022"
+      ],
+      "disposition": "Locally implemented; hosted qualification pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "The reviewed spec/plan pair is hash-pinned as draft-only source evidence and reproduced through the current installed protocol. Go conformance checks cover cross-kind bindings, bidirectional coverage, DAG/checkpoint membership, marker/DOM integrity, identity-domain behavior and hostile JSON/HTML/logo inputs. An independent Python stdlib serializer verifies pinned current-schema normative/model/render identities, and a real PENDING-to-IN_PROGRESS transition verifies revision/model advancement without normative drift. The orchestrator requires the exact reviewed test membership and non-skipped results from all applicable bridge, authoring, workflow, farm and package cases, revalidating one candidate manifest/binary identity before and after every suite; it also runs all 41 original reference regressions without skips. Windows orchestration and Windows/Linux Go test, vet and Linux race execution are fresh and green. Required three-host CI runs the gate before minting a qualification receipt; hosted Linux/macOS exact-head results remain open. No independent acceptance claimed."
+    },
+    {
+      "id": "T-024",
+      "title": "Publish existing-workflow guidance and perform selected pilot",
+      "checkpoint": "CP-06",
+      "depends_on": [
+        "T-023"
+      ],
+      "disposition": "Locally implemented; rollout and host qualification pending",
+      "formal_acceptance": "not_recorded",
+      "notes": "The format and migration/recovery guides document the existing workflow, offline review, capability preflight/diagnostics, pair-only migration and explicit unsupported cells without adding a public command reference. A native-Windows pilot built from clean commit 12ab0ef2d720420b90265f35675fb961375a439b is bound to release-manifest and executable digests and embeds canonical receipt/event bytes plus transaction identities. It demonstrated loss-aware pair preview/cutover, draft/no-approval preservation, exact-byte rollback, new-feature draft rejection, synthetic spec/plan approval and binding, task start, process recreation with persisted IN_PROGRESS, explicit reconciliation to PENDING, context-bound redispatch, verification/spec review, REVIEW, and quality-review-bound atomic scope acceptance. This is exact local fixture evidence, not production authority or release qualification. The evidence-backed default decision remains to keep typed HTML and HTML farm use disabled; there is no mass migration. Hosted exact-head macOS/Linux, production host/release integration and fresh model-era farm qualification remain open."
+    }
+  ],
+  "interpretation": "First-candidate task assessment plus review-3 corrections; no original task has been marked ACCEPTED. See REVIEW-REPORT.md for current corrections and fresh results.",
+  "final_review": "Consolidated regression suites; whole-feature acceptance remains pending."
+}

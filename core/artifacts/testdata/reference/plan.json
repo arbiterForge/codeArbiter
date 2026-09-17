@@ -1,0 +1,2633 @@
+{
+  "artifact_id": "PLAN-ARTIFACTS-001",
+  "execution": {
+    "prerequisites": {
+      "GATE-01": "not_satisfied",
+      "GATE-02": "not_satisfied"
+    },
+    "tasks": {
+      "T-001": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-002": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-003": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-004": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-005": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-006": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-007": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-008": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-009": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-010": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-011": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-012": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-013": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-014": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-015": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-016": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-017": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-018": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-019": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-020": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-021": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-022": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-023": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      },
+      "T-024": {
+        "evidence_refs": [],
+        "reason": null,
+        "state": "PENDING"
+      }
+    }
+  },
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [
+      "Second-pass author review corrected schema, execution-scope, evidence-fingerprint, read-validation and farm-binding defects. No user approval, independent implementation review, or runtime acceptance is recorded."
+    ],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "2972ffb4e859d9cc631945c164a71f5ba73e0a7f893483a2429b66cd888c4655",
+    "normative_sha256": "70555c2020a55d9ca3c374b6406d5cc2b926a70bf0989cbb0d1e9e55344ca8e2",
+    "symbol_count": 59
+  },
+  "kind": "plan",
+  "normative": {
+    "baseline": {
+      "commit": "45a17319f9ffda327cbdf3f3d40849bae8e920c0",
+      "observed_date": "2026-09-14",
+      "repository": "https://github.com/arbiterForge/codeArbiter"
+    },
+    "checkpoints": [
+      {
+        "depends_on": [],
+        "exit": "Consumer inventory, no-growth baseline, strict hash domains and spec semantics reviewed; both kinds modeled.",
+        "id": "CP-01",
+        "tasks": [
+          "T-001",
+          "T-002",
+          "T-003",
+          "T-004"
+        ],
+        "title": "Schemas and source-of-truth boundaries"
+      },
+      {
+        "depends_on": [
+          "CP-01"
+        ],
+        "exit": "Plan references/DAG, durable symbols and offline safe rendering demonstrated for both kinds.",
+        "id": "CP-02",
+        "tasks": [
+          "T-005",
+          "T-006",
+          "T-007",
+          "T-008"
+        ],
+        "title": "Plan semantics and readable artifacts"
+      },
+      {
+        "depends_on": [
+          "CP-02"
+        ],
+        "exit": "Bounded reads, locked hash-CAS, native recovery primitives and typed CLI work together.",
+        "id": "CP-03",
+        "tasks": [
+          "T-009",
+          "T-010",
+          "T-011",
+          "T-012"
+        ],
+        "title": "Safe read and mutation engine"
+      },
+      {
+        "depends_on": [
+          "CP-03"
+        ],
+        "exit": "Existing authority, evidence-bound task state, authoring and resume integration work without new surface.",
+        "id": "CP-04",
+        "tasks": [
+          "T-013",
+          "T-014",
+          "T-015",
+          "T-016"
+        ],
+        "title": "Complete existing workflow path"
+      },
+      {
+        "depends_on": [
+          "CP-04"
+        ],
+        "exit": "Discovery, farm projection, loss-aware import and interruption-safe pair cutover are verified.",
+        "id": "CP-05",
+        "tasks": [
+          "T-017",
+          "T-018",
+          "T-019",
+          "T-020"
+        ],
+        "title": "Compatibility and selected conversion"
+      },
+      {
+        "depends_on": [
+          "CP-05"
+        ],
+        "exit": "Native and generated-host gates, cross-kind conformance and pilot/runbook acceptance complete.",
+        "id": "CP-06",
+        "tasks": [
+          "T-021",
+          "T-022",
+          "T-023",
+          "T-024"
+        ],
+        "title": "Package, prove and roll out"
+      }
+    ],
+    "criterion_dispositions": [],
+    "prerequisites": [
+      {
+        "id": "GATE-01",
+        "requirement": "Use the existing feature approval policy for the exact normative identities. This requested draft preview does not authorize implementation.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-04"
+        ],
+        "title": "Approve this specification and plan"
+      },
+      {
+        "id": "GATE-02",
+        "requirement": "Use the existing ADR workflow to record the Go helper and typed file-schema decision, explicitly clarifying ADR-0004 while retaining file-based state and stdlib-only Python hooks. The existing ADR allocator owns the final filename. Do not edit a protected accepted ADR in place.",
+        "source_refs": [
+          "SRC-11",
+          "SRC-12"
+        ],
+        "title": "Ratify the narrow architecture addition"
+      }
+    ],
+    "retired_symbols": [],
+    "sections": [
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Implement the companion specification as one release that converts both feature specifications and implementation plans to typed, canonical, human-readable HTML. The binary is the shared mechanism; existing codeArbiter workflows remain the user-facing interface.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "This is an explicitly requested DRAFT planning preview. It is bound to the companion draft’s normative hash for review and traceability, but is not eligible for execution. No code has been implemented and no task has been accepted. Approving the documents is not implied by requesting them.",
+            "type": "paragraph"
+          },
+          {
+            "columns": [
+              "Preserved",
+              "Changed"
+            ],
+            "refs": [],
+            "rows": [
+              [
+                "Existing /feature, /sprint and governed execution tools.",
+                "Their active routines use an on-demand internal binary protocol."
+              ],
+              [
+                "Existing author agents and review/approval policies.",
+                "Specs allocate stable contract identities; plans reference them."
+              ],
+              [
+                "Existing TDD and human checkpoint gates.",
+                "Task progress becomes typed state, with current-contract evidence."
+              ],
+              [
+                "Farm’s current closed runtime schema.",
+                "Its JSON becomes a digest-bound current-slice projection of HTML."
+              ],
+              [
+                "Legacy project context, taskboards, tickets and ADR artifacts.",
+                "Only feature specs and implementation plans move in this release."
+              ]
+            ],
+            "type": "table"
+          },
+          {
+            "refs": [],
+            "text": "Review revision 2 uses reference schema 0.2.0 and renderer 0.2.0 because the unpublished reference schema changed incompatibly. The proposed first codeArbiter product release is still v0.1.0. Document revision, schema version and product release are independent. This is not a released format upgrade or an approved implementation.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PLAN-INTENT",
+        "title": "Implementation objective and execution boundary"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [
+              "SRC-01",
+              "SRC-02",
+              "SRC-03",
+              "SRC-04",
+              "SRC-05",
+              "SRC-06",
+              "SRC-09"
+            ],
+            "text": "Based on main at 45a17319f9ffda327cbdf3f3d40849bae8e920c0. Relevant producer/consumer source was inspected, including brainstorming, planning, TDD, feature resume, execution and the farm projection leaf. Full consumer closure is planned work, not an asserted completed audit.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "All paths marked create are proposed new files. Paths marked modify name known integration targets. T-001 must inspect the actual checkout and generate the consumer inventory before downstream edits. If that inventory reveals extra live consumers, revise this plan’s path sets and obtain the applicable approval; do not quietly enlarge a task.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Work from a feature branch or isolated working tree with a recoverable baseline. Preserve current generated-source and commit gates. Python hook code remains standard-library-only. New Go dependencies, if required for canonicalization, schema validation or safe HTML parsing, must be pinned and reviewed under the existing dependency policy. No runtime dependency downloads are allowed.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-10",
+              "SRC-11",
+              "SRC-12"
+            ],
+            "text": "Select and lock a supported Go build toolchain during T-001/T-002; do not claim a toolchain version is already part of this repository. End users run prebuilt binaries. Native target/version claims are restricted to the cells that actually pass the platform matrix.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "The verification commands below are planned test contracts except where explicitly marked existing. A proposed go test name must be implemented by its task. Exit 0 with zero matching tests or a skipped expected test does not satisfy verification. No command shown here has been run against an implementation of this feature.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "The bundled schemas describe structural drafts, not just these two completed specimens. The reference tests now cover partial records, open blockers, local source provenance and non-default rendered states. Unknown runtime authority and farm entry paths remain inventory work; approve any added exact mutation paths before those tasks execute.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PLAN-BASELINE",
+        "title": "Baseline, prerequisites and path discipline"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "core/artifacts/                         proposed shared Go module\n  cmd/ca-artifact/                      thin CLI/protocol entry\n  internal/model/                      common, spec and plan types\n  internal/canonical/                  strict JSON and hash domains\n  internal/validate/                   schema + semantic validation\n  internal/symbol/                     IDs, retirement and lookup\n  internal/render/                     trusted static HTML + safe assets\n  internal/read/                       bounded selection and closure\n  internal/store/                      locking, replacement and recovery\n  internal/operations/                 typed mutation and lifecycle\n  internal/migrate/                    legacy pair conversion and cutover\n  schemas/                            packaged spec + plan schema sources\n  testdata/                           golden and adversarial fixtures\ncore/pysrc/_artifactlib.py             proposed stdlib invocation adapter\ncore/surface/includes/artifacts.md    proposed on-demand protocol leaf\ndocs/artifacts/                       consumer inventory and runbooks",
+            "type": "code"
+          },
+          {
+            "refs": [],
+            "text": "Do not add an MCP server, resident daemon, generic plugin loader or permanent agent tools. Keep the CLI’s dispatch in Go thin; schema/validation/operations/render/storage logic is shared across both artifact kinds. Host integration resolves the installed binary and passes bounded inert requests through the existing governed execution contract.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "The renderer is one source with two content-specific views. No manually maintained second JSON/Markdown authority is written beside HTML. Embedded state remains inside the canonical file; recovery/audit records are explicit operational metadata, not another definition of the spec or plan.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Execution scopes are the checkpoint memberships below, with explicit predecessor edges. A task may depend on a same-scope REVIEW task only after task-level review and verification; cross-scope dependencies require accepted scopes. Final-snapshot revalidation and combined-diff review precede atomic scope acceptance. This is an intentional ordering correction, not a relaxation of quality authority.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PLAN-ARCH",
+        "title": "Implementation shape"
+      },
+      {
+        "blocks": [
+          {
+            "columns": [
+              "Check class",
+              "Required evidence"
+            ],
+            "refs": [],
+            "rows": [
+              [
+                "Unit / contract",
+                "Named tests actually run, verify behavior and fail against a discriminating fault; no skipped or zero-test success."
+              ],
+              [
+                "Schema / semantic",
+                "Valid and invalid fixtures for both kinds; reference/digest/DAG checks; readiness does not imply authority."
+              ],
+              [
+                "Rendering / browser",
+                "Same-model deterministic bytes; safe script-data escaping; offline render; anchors; keyboard; print; no container escape."
+              ],
+              [
+                "Storage",
+                "Controlled writer races and interruption injection on each declared native platform. Report process-crash and power-loss evidence separately."
+              ],
+              [
+                "Workflow",
+                "Full feature and sprint traces including approval, TDD, batch quality barrier, task acceptance and interrupted resume."
+              ],
+              [
+                "Migration",
+                "Legacy preview, source-hash conflict, pair cutover crash points and reviewed rollback."
+              ],
+              [
+                "Host / package",
+                "Existing generator/parity/command gates; cold install without Go; correct trusted binary resolution."
+              ]
+            ],
+            "type": "table"
+          },
+          {
+            "refs": [
+              "SRC-03",
+              "SRC-06"
+            ],
+            "text": "Every task follows the existing TDD obligation gate. New tests go red for the intended behavioral reason before implementation; setup/import failure is not evidence of a missing behavior. Spec-compliance review and fresh verification precede acceptance, and the scope quality-review barrier still applies.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-10"
+            ],
+            "text": "All touched surfaces still run their applicable full repository checks from tech-stack.md and authoritative CI. The focused commands here supplement those checks; they do not replace them. Go checks proposed for the new module include go test ./..., go test -race ./... on supported runners, and go vet ./....",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "This package’s validation report checks only these reference HTML files, their schemas, digests, relationships and layout. It is not a result for any future Go test or codeArbiter integration test.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Verification evidence uses a reviewed input manifest and a separate input fingerprint. Do not include the acceptance state or receipt bytes that recording the result changes. Exclude exact validated control outputs, not the entire .codearbiter tree. Track directory membership and source/test/policy changes. A stale input receipt triggers revalidation, not automatic task reimplementation.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "required_tests is machine-readable for each Go -run command. The verifier consumes -json events and rejects missing, skipped, failed or zero-matching tests, even when the process exits zero. Bootstrap authoring and inspection tasks may use the current workflow’s documented non-code inspection route; never claim an impossible red behavioral test for merely approving an ADR or inspecting files.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PLAN-VERIFY",
+        "title": "Verification discipline"
+      },
+      {
+        "blocks": [
+          {
+            "refs": [],
+            "text": "Checkpoint 1 freezes both schemas and the source-consumer inventory. Checkpoints 2–4 build the file mechanism and complete the existing workflow path. Checkpoint 5 handles selected legacy pairs and cold installation. Checkpoint 6 completes generated-host, native-platform and end-to-end proof. No checkpoint is independently permission to enable only half the workflow in production.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Default enablement waits for both artifact kinds, full consumer closure and native support evidence. Use selected fixture projects first; no automatic repository-wide conversion. Keep legacy reading explicit throughout. Backups and migration receipts retain exact old/new identities.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "Rollback stops new dispatch, preserves newly produced evidence and returns through a reviewed compatibility/reconciliation path. Restoring an older binary alone cannot safely reinterpret new HTML state. A conversion after additional HTML edits needs a loss report rather than a silent reverse transformation.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [
+              "SRC-15",
+              "SRC-16"
+            ],
+            "text": "Research follow-through is a separately budget-approved pilot, not autonomous model spend hidden in a test command. Compare current Markdown specs/plans, semantically equivalent structured specimens, and contract-enriched specimens under pinned models/harness snapshots. Repeated trials and independent acceptance checks should measure correctness, omissions, review/repair effort and total cost. Do not infer superior performance merely from valid schemas.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "All 26 criteria have task coverage below. That is bidirectional traceability, not proof that the criteria fully describe user intent. The final walkthrough must still ask which required behavior would be missing if every listed check passed.",
+            "type": "paragraph"
+          },
+          {
+            "refs": [],
+            "text": "The bootstrap implementation uses the existing codeArbiter workflow to avoid requiring this not-yet-built binary to execute its own plan. The new runtime is validated in fixture repositories first. Reference-schema validation cannot substitute for native Go, permission, farm or crash-recovery evidence.",
+            "type": "paragraph"
+          }
+        ],
+        "id": "SEC-PLAN-ROLLOUT",
+        "title": "Release, rollback and research follow-through"
+      }
+    ],
+    "sources": [
+      {
+        "id": "SRC-01",
+        "locator": "core/surface/skills/brainstorming/SKILL.md",
+        "note": "Defines the existing sections, refinement, review and approval workflow. Content is currently written directly as Markdown.",
+        "title": "Brainstorming: current spec producer",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/brainstorming/SKILL.md"
+      },
+      {
+        "id": "SRC-02",
+        "locator": "core/surface/skills/writing-plans/SKILL.md",
+        "note": "Assigns AC identifiers during extraction and writes paths, verification, covers, dependencies and task status to Markdown.",
+        "title": "Writing plans: current bridge",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/writing-plans/SKILL.md"
+      },
+      {
+        "id": "SRC-03",
+        "locator": "core/surface/skills/tdd/SKILL.md",
+        "note": "One obligation per spec criterion; one or more tests may exercise an obligation. Preserve the test-first and fresh-evidence gates.",
+        "title": "TDD: obligation and verification rules",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/tdd/SKILL.md"
+      },
+      {
+        "id": "SRC-04",
+        "locator": "core/surface/commands/feature.md",
+        "note": "Existing entry owns specification approval, planning and resume. A new public spec or plan command is unnecessary.",
+        "title": "Feature entry and interrupted-run resume",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/commands/feature.md"
+      },
+      {
+        "id": "SRC-05",
+        "locator": "core/surface/skills/executing-plans/SKILL.md",
+        "note": "Batch coordinator reads plan/spec, checks dependencies and excludes accepted tasks. It retains the checkpoint authority.",
+        "title": "Executing plans: human checkpoints",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/executing-plans/SKILL.md"
+      },
+      {
+        "id": "SRC-06",
+        "locator": "core/surface/skills/subagent-driven-development/SKILL.md",
+        "note": "Accepts only after spec review, fresh verification and the scope quality barrier. Status in the plan is the durable resume record.",
+        "title": "Subagent execution and task acceptance",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/subagent-driven-development/SKILL.md"
+      },
+      {
+        "id": "SRC-07",
+        "locator": "core/pysrc/_intentlib.py",
+        "note": "Markdown headings and shared distinctive words drive a heuristic citation check. Missing sections yield nothing to check, not a completeness proof.",
+        "title": "Intent-coverage implementation",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/pysrc/_intentlib.py"
+      },
+      {
+        "id": "SRC-08",
+        "locator": "core/pysrc/_readinjectlib.py",
+        "note": "Approved-spec discovery scans .md and parses Markdown status/governs lines. New HTML and its cache invalidation require explicit handling.",
+        "title": "Spec discovery and just-in-time context",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/pysrc/_readinjectlib.py"
+      },
+      {
+        "id": "SRC-09",
+        "locator": "core/surface/skills/writing-plans/references/farm-plan.md",
+        "note": "The farm consumes a closed .plan.json schema. Current-slice projection, narrow first test command and runtime validation must remain intact.",
+        "title": "Farm projection contract",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/writing-plans/references/farm-plan.md"
+      },
+      {
+        "id": "SRC-10",
+        "locator": ".codearbiter/tech-stack.md",
+        "note": "Lists existing verification commands, native Windows/Linux/macOS support, generated-core checks and Pi package gates. New test commands below are proposals, not pre-existing commands.",
+        "title": "Repository validation and runtime boundaries",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/.codearbiter/tech-stack.md"
+      },
+      {
+        "id": "SRC-11",
+        "locator": ".codearbiter/decisions/0004-database-free-stdlib-only-architecture.md",
+        "note": "The wording includes no schema layer. A follow-on ADR must explicitly permit typed file artifacts and the Go helper without weakening Python hook guarantees.",
+        "title": "Database-free / Python-stdlib architecture",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/.codearbiter/decisions/0004-database-free-stdlib-only-architecture.md"
+      },
+      {
+        "id": "SRC-12",
+        "locator": ".codearbiter/decisions/0011-multi-host-codex-plugin-shared-core.md",
+        "note": "Keep canonical logic and schema shared; preserve generated host parity rather than creating independent implementations.",
+        "title": "Shared core with generated host adapters",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/.codearbiter/decisions/0011-multi-host-codex-plugin-shared-core.md"
+      },
+      {
+        "id": "SRC-13",
+        "locator": "site/src/assets/logo.svg",
+        "note": "This package embeds the exact retrieved SVG. Git blob: ec56d4e2f2d512f59128acdd20b1e5b1eda475cf.",
+        "title": "Canonical codeArbiter logo",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/site/src/assets/logo.svg"
+      },
+      {
+        "id": "SRC-14",
+        "locator": "plugins/ca-pi/tools/src/tool-guard.ts",
+        "note": "Read and mutation classifications are distinct. Existing EXEC calls remain governed; invoking the artifact binary must not create an inspection or approval bypass.",
+        "title": "Pi governed-tool classification",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/plugins/ca-pi/tools/src/tool-guard.ts"
+      },
+      {
+        "id": "SRC-15",
+        "locator": "",
+        "note": "Google evaluated contract-first test generation on 90 historical bugs using fixed post-fix source and removed prior tests. Supports explicit behavioral contracts and test suggestions, not the proposed HTML format, planning schema, or whole-feature implementation. No comparative performance claim is made for this schema.",
+        "title": "Grounding AI Agents in Contracts (2026 preprint)",
+        "type": "primary_research",
+        "url": "https://arxiv.org/html/2608.17177v1"
+      },
+      {
+        "id": "SRC-16",
+        "locator": "",
+        "note": "The 15-programmer user study supports using tests to clarify intent and assess generated code. Its separate automated evaluation uses idealized feedback. It does not establish a preferred artifact serialization.",
+        "title": "TiCoder: test-driven intent clarification (TSE, 2024)",
+        "type": "primary_research",
+        "url": "https://arxiv.org/abs/2404.10100"
+      },
+      {
+        "id": "SRC-17",
+        "locator": "",
+        "note": "Use event, state and unwanted-behavior patterns when they clarify a requirement. This is an established writing convention, not comparative proof that this schema is best.",
+        "title": "EARS: the originator’s guide",
+        "type": "primary_documentation",
+        "url": "https://alistairmavin.com/ears/"
+      },
+      {
+        "id": "SRC-18",
+        "locator": "",
+        "note": "Use trusted templates with escaped data. HTML comments are stripped by the template package; symbol comments need an explicit trusted emission path.",
+        "title": "Go html/template documentation",
+        "type": "primary_documentation",
+        "url": "https://pkg.go.dev/html/template"
+      },
+      {
+        "id": "SRC-19",
+        "locator": "",
+        "note": "The proposed hashing profile uses the integer/string subset of JCS, including UTF-16 property ordering. Reject ambiguous JSON; do not call ordinary map serialization canonical.",
+        "title": "RFC 8785: JSON Canonicalization Scheme",
+        "type": "primary_documentation",
+        "url": "https://www.rfc-editor.org/rfc/rfc8785.html"
+      },
+      {
+        "id": "SRC-20",
+        "locator": "core/surface/SPRINT.md",
+        "note": "The canonical sprint flow explicitly checks matching Markdown spec/plan files and re-enters the feature resume ladder. It must join the format-aware migration.",
+        "title": "Sprint entry and resume",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/SPRINT.md"
+      },
+      {
+        "id": "SRC-21",
+        "locator": "Current conversation: standardize codeArbiter specs/plans; Go helper; branded, symbol-addressable HTML; no additional public context surface.",
+        "note": "User-provided intent, not a public website or inferred requirement.",
+        "title": "User request and constraints",
+        "type": "user_request",
+        "url": null
+      },
+      {
+        "id": "SRC-22",
+        "locator": "Step 1 model selection; Step 2 dispatch; Step 2.6 review barrier",
+        "note": "The existing workflow writes meta.model and meta.apiBaseUrl after planning and may run a canary before final model choice. Projection checks must allow authorized enrichment without allowing task or test changes.",
+        "title": "Farm dispatch: authorized runtime model selection",
+        "type": "repository",
+        "url": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+      }
+    ],
+    "spec_ref": {
+      "artifact_id": "SPEC-ARTIFACTS-001",
+      "binding_mode": "draft_preview",
+      "normative_sha256": "60e252e63b6310b8748337b7dba9530bff62209b30dd3ae0f905027e6e48bb92"
+    },
+    "summary": "A dependency-ordered implementation plan for the shared Go engine, both HTML schemas, existing workflow integration, selected migration and native-platform verification.",
+    "tasks": [
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-001",
+          "SPEC-ARTIFACTS-001#AC-021",
+          "SPEC-ARTIFACTS-001#AC-022",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [],
+        "done_when": [
+          "Inventory has an owner and explicit treatment for every discovered live consumer.",
+          "The baseline test rejects added public discovery and full-schema startup injection."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-001",
+        "paths": [
+          {
+            "action": "create",
+            "path": "docs/artifacts/consumer-inventory.json"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_surface.py"
+          },
+          {
+            "action": "modify",
+            "path": ".codearbiter/tech-stack.md"
+          }
+        ],
+        "rollback": "Revert only the new inventory/tests and reviewed tech-stack entry; do not change runtime behavior in this task.",
+        "source_refs": [
+          "SRC-04",
+          "SRC-10",
+          "SRC-12",
+          "SRC-14"
+        ],
+        "steps": [
+          "Inspect all current spec/plan references in canonical source, generated host packages, status/startup/doctor, execution, farm, CI and public documentation. Classify live writers/readers, historical mentions and decomposition-plan exclusions.",
+          "Capture exact baseline command/agent/top-level-skill/tool registration sets and startup fixtures; add negative fixtures for a new /ca:spec command and eager schema loading.",
+          "Record the build/target inventory and proposed Go verification commands. Update task path sets through review when the closure inventory exposes additional consumers."
+        ],
+        "title": "Inventory consumers and freeze the no-growth baseline",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_surface.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-002",
+          "SPEC-ARTIFACTS-001#AC-003",
+          "SPEC-ARTIFACTS-001#AC-025"
+        ],
+        "depends_on": [
+          "T-001"
+        ],
+        "done_when": [
+          "Both schema definitions are packaged locally.",
+          "Draft validity and execution eligibility are distinct in types and fixtures.",
+          "Partial-draft, local-source, unborn-repository and default/custom-brand examples validate structurally without invented metadata."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-002",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/go.mod"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/model/artifact.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/model/spec.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/model/plan.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/schemas/spec.schema.json"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/schemas/plan.schema.json"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/model/schema_test.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/schemas/common.schema.json"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/schemas/protocol.schema.json"
+          }
+        ],
+        "rollback": "No runtime enablement yet; revert the module/schema files as one reviewed unit.",
+        "source_refs": [
+          "SRC-11",
+          "SRC-12"
+        ],
+        "steps": [
+          "Pin the reviewed Go/tool dependency inputs; keep Python hooks dependency-free.",
+          "Define the common envelope and separate normative/governance/execution/presentation domains. Define contract, task, source, blocker and tombstone records without generic unvalidated extension bags.",
+          "Add positive/negative fixtures for drafts, ready records, numeric bounds, unsupported versions and forbidden extra fields. Include the delivered reference pair as candidate fixtures after review.",
+          "Freeze the closed per-operation request/response grammar, including operation IDs, source snapshot vectors, error precedence, draft patch fields and acceptance-scope requests, before implementing dispatch. No implicit arbitrary JSON patch escape hatch.",
+          "Model typed intent/approach/constraints, local provenance, null unborn commit, nullable logo Git provenance, partial draft criteria/tasks, criterion dispositions and ordered checkpoint scopes."
+        ],
+        "title": "Define both model types and schemas",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/model",
+              "-run",
+              "^(TestSchemaKinds|TestClosedRecordTypes)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestSchemaKinds, TestClosedRecordTypes. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestSchemaKinds",
+              "TestClosedRecordTypes"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-008",
+          "SPEC-ARTIFACTS-001#AC-024",
+          "SPEC-ARTIFACTS-001#AC-025"
+        ],
+        "depends_on": [
+          "T-002"
+        ],
+        "done_when": [
+          "Independent expected hashes match, including non-ASCII key ordering.",
+          "Same model hashes identically; each domain-changing test produces the specified change."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-003",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/canonical/json.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/canonical/digest.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/canonical/canonical_test.go"
+          }
+        ],
+        "rollback": "Revert the hash implementation before any live artifacts are produced; changing a released algorithm later requires a versioned migration.",
+        "source_refs": [
+          "SRC-19"
+        ],
+        "steps": [
+          "Reject duplicate keys, invalid Unicode, multiple trailing JSON values, floats and integers outside the declared safe range.",
+          "Implement the declared JCS-compatible integer/string profile with UTF-16 key ordering and stable string serialization; test against independent conformance vectors.",
+          "Implement normative/model projections excluding integrity recursion and separating state/branding from normative content."
+        ],
+        "title": "Implement strict JSON and independent hash domains",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/canonical",
+              "-run",
+              "^(TestStrictJSON|TestDigestDomains|TestCanonicalVectors)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestStrictJSON, TestDigestDomains, TestCanonicalVectors. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestStrictJSON",
+              "TestDigestDomains",
+              "TestCanonicalVectors"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-01",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-002",
+          "SPEC-ARTIFACTS-001#AC-016"
+        ],
+        "depends_on": [
+          "T-002",
+          "T-003"
+        ],
+        "done_when": [
+          "Incomplete drafts persist without invented content.",
+          "Ready validation flags uncovered scope and unresolved core decisions; mechanical coverage is not labeled complete intent proof."
+        ],
+        "execution_scope": "CP-01",
+        "id": "T-004",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/validate/spec.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/validate/spec_test.go"
+          }
+        ],
+        "rollback": "Revert only the new validator and its tests; do not downgrade requirements to clear fixtures.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-07",
+          "SRC-15",
+          "SRC-16",
+          "SRC-17"
+        ],
+        "steps": [
+          "Implement structural-vs-readiness checks, typed blockers, mandatory active criteria and explicit scope/source links.",
+          "Return exact symbol/field diagnostics without inferring missing conditions, expected values or approvals.",
+          "Preserve a separate recorded semantic-review requirement and a counterexample where every reference resolves but intent is only partially covered.",
+          "Validate the typed intent and applicability fields, reference role restrictions, supplied open-decision owner/source/status, and explicit should/may dispositions without making all criteria mandatory."
+        ],
+        "title": "Validate spec contracts and structured intent coverage",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/validate",
+              "-run",
+              "^(TestSpecReadiness|TestStructuredIntentCoverage)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestSpecReadiness, TestStructuredIntentCoverage. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestSpecReadiness",
+              "TestStructuredIntentCoverage"
+            ]
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/validate",
+              "-run",
+              "^(TestPartialDraftRecords|TestTypedIntentAndApplicability)$",
+              "-count=1"
+            ],
+            "assertion": "Require a non-skipped pass event for every named test: TestPartialDraftRecords, TestTypedIntentAndApplicability. Reject zero-test success, missing results and skips.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestPartialDraftRecords",
+              "TestTypedIntentAndApplicability"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-003",
+          "SPEC-ARTIFACTS-001#AC-012"
+        ],
+        "depends_on": [
+          "T-003",
+          "T-004"
+        ],
+        "done_when": [
+          "Two tasks may advance one criterion and a task may advance several.",
+          "Unknown/cyclic/stale inputs fail; draft preview never becomes executable.",
+          "Backward checkpoint dependencies fail even when the task graph is acyclic; each active task belongs to exactly one ordered execution scope."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-005",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/validate/plan.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/validate/plan_test.go"
+          }
+        ],
+        "rollback": "Revert the plan validator without changing spec definitions or inventing mapping repairs.",
+        "source_refs": [
+          "SRC-02"
+        ],
+        "steps": [
+          "Resolve spec ID/hash and qualified criterion references without copying an editable AC ledger.",
+          "Validate exact task paths, verification definitions, dependency existence/acyclicity and many-to-many bidirectional coverage.",
+          "Distinguish an explicitly requested draft-preview binding from an execution-eligible binding."
+        ],
+        "title": "Validate plan references, paths and dependency order",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/validate",
+              "-run",
+              "^(TestPlanCoverageAndDAG|TestDraftPlanBinding)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestPlanCoverageAndDAG, TestDraftPlanBinding. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestPlanCoverageAndDAG",
+              "TestDraftPlanBinding"
+            ]
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/validate",
+              "-run",
+              "^(TestCheckpointOrder|TestOptionalCriterionDisposition)$",
+              "-count=1"
+            ],
+            "assertion": "Require a non-skipped pass event for every named test: TestCheckpointOrder, TestOptionalCriterionDisposition. Reject zero-test success, missing results and skips.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestCheckpointOrder",
+              "TestOptionalCriterionDisposition"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-004",
+          "SPEC-ARTIFACTS-001#AC-007"
+        ],
+        "depends_on": [
+          "T-002",
+          "T-003"
+        ],
+        "done_when": [
+          "IDs survive wording/order changes.",
+          "Duplicate and retired identifiers never resolve ambiguously."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-006",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/symbol/index.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/symbol/index_test.go"
+          }
+        ],
+        "rollback": "Revert unshipped registry code; never repair test failures by renumbering approved records.",
+        "source_refs": [],
+        "steps": [
+          "Implement artifact-qualified lookup, stable identity and separate display order.",
+          "Prevent collisions/reuse across current and retired IDs; preserve tombstones and reject deletion of referenced records.",
+          "Define recursive symbol discovery and marker correspondence for criteria, scenarios, verification definitions, tasks and typed sections."
+        ],
+        "title": "Create durable symbol registry and retirement rules",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/symbol",
+              "-run",
+              "^(TestStableSymbols|TestRetiredIdentity|TestSymbolIndex)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestStableSymbols, TestRetiredIdentity, TestSymbolIndex. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestStableSymbols",
+              "TestRetiredIdentity",
+              "TestSymbolIndex"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-005",
+          "SPEC-ARTIFACTS-001#AC-006",
+          "SPEC-ARTIFACTS-001#AC-024"
+        ],
+        "depends_on": [
+          "T-003",
+          "T-006",
+          "T-004",
+          "T-005"
+        ],
+        "done_when": [
+          "Same inputs produce identical standalone bytes for both kinds.",
+          "Changed visible content, duplicate containers and unsafe payloads cannot silently validate."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-007",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/render.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/parse.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/templates.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/artifact.css"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/render_test.go"
+          }
+        ],
+        "rollback": "Do not rewrite existing artifacts; revert the renderer version and retain originals for any explicit repair tests.",
+        "source_refs": [
+          "SRC-18"
+        ],
+        "steps": [
+          "Build one trusted renderer with kind-specific body views, complete embedded JSON, stable anchors and visible draft/evidence states.",
+          "Emit CA marker comments through a validated trusted writer rather than literal comments stripped by html/template. Escape every user field and script-data JSON.",
+          "Implement exact model/view consistency checks and explicit drift diagnostics. Repair must preserve originals and show a diff.",
+          "Render all schema-valid draft variants, open blockers, tombstones, actual SHOULD/MAY labels and state/evidence metadata. Reject unsupported renderers separately; bind the package-owned stylesheet digest. Validate view/digests before normal read and outline."
+        ],
+        "title": "Render and parse canonical static HTML",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/render",
+              "-run",
+              "^(TestHTMLRoundTripAndDrift|TestMarkerPreservation|TestAdversarialHTMLAndJSON)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestHTMLRoundTripAndDrift, TestMarkerPreservation, TestAdversarialHTMLAndJSON. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestHTMLRoundTripAndDrift",
+              "TestMarkerPreservation",
+              "TestAdversarialHTMLAndJSON"
+            ]
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/render",
+              "-run",
+              "^(TestOpenDecisionsAndTombstones|TestTruthfulLabels|TestReadRejectsViewDrift)$",
+              "-count=1"
+            ],
+            "assertion": "Require a non-skipped pass event for every named test: TestOpenDecisionsAndTombstones, TestTruthfulLabels, TestReadRejectsViewDrift. Reject zero-test success, missing results and skips.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestOpenDecisionsAndTombstones",
+              "TestTruthfulLabels",
+              "TestReadRejectsViewDrift"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-02",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-006",
+          "SPEC-ARTIFACTS-001#AC-010",
+          "SPEC-ARTIFACTS-001#AC-024"
+        ],
+        "depends_on": [
+          "T-007"
+        ],
+        "done_when": [
+          "No network or JavaScript required to review either file.",
+          "All tested text/content stays within its container; actual branding is visible."
+        ],
+        "execution_scope": "CP-02",
+        "id": "T-008",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/brand.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/brand_test.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/render/assets/logo.svg"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_render.py"
+          }
+        ],
+        "rollback": "Revert to bundled default branding; keep rejected asset originals untouched.",
+        "source_refs": [
+          "SRC-13"
+        ],
+        "steps": [
+          "Embed the verified repository logo as the default. Resolve only bounded local approved asset types; reject remote references and active SVG constructs.",
+          "Allow repository display-name/logo overrides without arbitrary templates/scripts. Keep branded assets excluded from normative hashing.",
+          "Add browser tests for offline 390/1440 widths, long code/IDs, keyboard focus, print disclosure, contrast and 200% text scaling."
+        ],
+        "title": "Implement safe local branding and browser conformance",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/render",
+              "-run",
+              "^(TestSafeBrandAssets|TestBrandingDigestSeparation)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestSafeBrandAssets, TestBrandingDigestSeparation. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestSafeBrandAssets",
+              "TestBrandingDigestSeparation"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_render.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-007",
+          "SPEC-ARTIFACTS-001#AC-008"
+        ],
+        "depends_on": [
+          "T-005",
+          "T-006",
+          "T-007"
+        ],
+        "done_when": [
+          "Expected closure and actual returned IDs match.",
+          "A budget cannot hide missing safety context; reads leave canonical files unchanged."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-009",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/read/select.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/read/closure.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/read/read_test.go"
+          }
+        ],
+        "rollback": "Revert read commands or disable their entry; never fall back to truncated raw HTML as complete context.",
+        "source_refs": [],
+        "steps": [
+          "Implement exact symbol reads and contextual task reads including linked criteria, mandatory constraints, blockers and dependency state.",
+          "Enforce byte limits on whole-record boundaries; return a required-record manifest and incomplete flag when closure cannot fit.",
+          "Bind cursors to model identity and reject continuation after any relevant model change; do not execute or silently repair on read.",
+          "Pin a vector of all contributing model/receipt identities, not only the plan. Include all normative sections and global constraints; a spec-only update invalidates continuation."
+        ],
+        "title": "Implement bounded outline and context extraction",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/read",
+              "-run",
+              "^(TestBoundedContextRead|TestStaleCursor|TestReadHasNoSideEffects)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestBoundedContextRead, TestStaleCursor, TestReadHasNoSideEffects. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestBoundedContextRead",
+              "TestStaleCursor",
+              "TestReadHasNoSideEffects"
+            ]
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/read",
+              "-run",
+              "^(TestSpecOnlyCursorInvalidation|TestGlobalContextClosure)$",
+              "-count=1"
+            ],
+            "assertion": "Require a non-skipped pass event for every named test: TestSpecOnlyCursorInvalidation, TestGlobalContextClosure. Reject zero-test success, missing results and skips.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestSpecOnlyCursorInvalidation",
+              "TestGlobalContextClosure"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-009",
+          "SPEC-ARTIFACTS-001#AC-010",
+          "SPEC-ARTIFACTS-001#AC-023"
+        ],
+        "depends_on": [
+          "T-003"
+        ],
+        "done_when": [
+          "One competing writer wins; other conflicts leave its bytes intact.",
+          "Same revision/different content is rejected."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-010",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/path.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/lock.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/store.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/store_test.go"
+          }
+        ],
+        "rollback": "Disable writes while preserving read capability; do not remove another process’s lock based only on age.",
+        "source_refs": [],
+        "steps": [
+          "Implement repository-constrained resolution including symlink/reparse escape tests and bounded input/lock behavior.",
+          "Validate current state and compare expected revision plus model hash while holding the same writer lock.",
+          "Accept prevalidated staged byte buffers through an injected writer seam; do not depend on unimplemented rendering code in this task. Native replacement follows in T-011; competing CAS writers cannot overwrite a newer model."
+        ],
+        "title": "Implement trusted path resolution and locked compare-and-swap",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/store",
+              "-run",
+              "^(TestTrustedPathResolution|TestConcurrentCAS|TestInvalidMutationNoWrite)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestTrustedPathResolution, TestConcurrentCAS, TestInvalidMutationNoWrite. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestTrustedPathResolution",
+              "TestConcurrentCAS",
+              "TestInvalidMutationNoWrite"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-009",
+          "SPEC-ARTIFACTS-001#AC-020",
+          "SPEC-ARTIFACTS-001#AC-023"
+        ],
+        "depends_on": [
+          "T-010"
+        ],
+        "done_when": [
+          "Native tested cells expose only complete old/new bytes or a non-executable recovery state.",
+          "No unsupported cross-platform atomicity claim appears in docs or test receipts."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-011",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/replace_unix.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/replace_windows.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/recovery.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/store/recovery_test.go"
+          }
+        ],
+        "rollback": "Stop writers, inspect the recovery report and reconcile exact stored identities; never blindly delete temp/recovery records.",
+        "source_refs": [
+          "SRC-10"
+        ],
+        "steps": [
+          "Implement platform-specific complete-file replacement and explicit recovery metadata; distinguish interruption from durability beyond tested guarantees.",
+          "Inject failure at stage/write/flush/replace/record boundaries. Read-only inspection reports recovery state instead of repairing automatically.",
+          "Add native concurrency/termination test fixtures; unsupported storage must fail with a precise boundary diagnostic.",
+          "Cover failure after replacement but before acknowledgment; operation ID reconciliation prevents double-apply and does not falsely report unchanged bytes."
+        ],
+        "title": "Add native replacement and recovery primitives",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/store",
+              "-run",
+              "^(TestNativeStoreRecovery|TestRecoveryReadOnly|TestUnsupportedStorage)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestNativeStoreRecovery, TestRecoveryReadOnly, TestUnsupportedStorage. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestNativeStoreRecovery",
+              "TestRecoveryReadOnly",
+              "TestUnsupportedStorage"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-03",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-004",
+          "SPEC-ARTIFACTS-001#AC-008",
+          "SPEC-ARTIFACTS-001#AC-011",
+          "SPEC-ARTIFACTS-001#AC-025"
+        ],
+        "depends_on": [
+          "T-004",
+          "T-005",
+          "T-006",
+          "T-007",
+          "T-009",
+          "T-011"
+        ],
+        "done_when": [
+          "Each allowed operation has positive/negative behavior fixtures.",
+          "No CLI help or JSON validation path introduces new persistent tool definitions."
+        ],
+        "execution_scope": "CP-03",
+        "id": "T-012",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/apply.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/protocol.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/apply_test.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/cmd/ca-artifact/main.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/cmd/ca-artifact/main_test.go"
+          }
+        ],
+        "rollback": "Remove/disable the unpromoted binary entry and leave any created test artifacts intact for diagnosis.",
+        "source_refs": [],
+        "steps": [
+          "Implement create-only artifact creation and typed atomic add/update/retire/reorder batches for both kinds.",
+          "Keep governance and task-acceptance fields outside ordinary apply. Reject unknown operations/fields before writing.",
+          "Implement operation-scoped help, bounded requests, stdout JSON/stderr diagnostics and specified exit codes. Do not execute plan commands or fetch remote resources."
+        ],
+        "title": "Expose typed mutation and the bounded CLI protocol",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/operations",
+              "-run",
+              "^(TestClosedProtocolAndInertInput|TestAtomicTypedApply)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestClosedProtocolAndInertInput, TestAtomicTypedApply. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestClosedProtocolAndInertInput",
+              "TestAtomicTypedApply"
+            ]
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./cmd/ca-artifact",
+              "-run",
+              "^(TestCLIProtocol)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestCLIProtocol. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestCLIProtocol"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-010",
+          "SPEC-ARTIFACTS-001#AC-011",
+          "SPEC-ARTIFACTS-001#AC-012"
+        ],
+        "depends_on": [
+          "T-012"
+        ],
+        "done_when": [
+          "Positive authorization and negative forged/missing-source tests pass under the stated same-user trust model.",
+          "No new approval service, command or blanket execution exemption exists."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-013",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/approval.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/rebind.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/approval_test.go"
+          },
+          {
+            "action": "create",
+            "path": "core/pysrc/_artifactlib.py"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_bridge.py"
+          }
+        ],
+        "rollback": "Disable new-format transitions and preserve attestations/history; do not automatically reapprove old hashes.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-14"
+        ],
+        "steps": [
+          "Create the stdlib invocation bridge with trusted package resolution and exact protocol checks; existing EXEC permission mediation remains in force.",
+          "Adapt current user/SMARTS approval records to hash-bound workflow attestations with honest trust-level labeling. Generic editing cannot manufacture them.",
+          "Implement explicit plan rebind and stale-evidence retention. Missing/unbound source evidence blocks execution rather than being silently approved.",
+          "Document the concrete existing policy-owned receipt source, how it is resolved and digest-bound, and the cooperative same-user limitation. A caller-created source_ref string must never pass as verified authorization. Stop integration until this mapping is demonstrated in fixtures."
+        ],
+        "title": "Bind approval and rebind transitions to existing policy",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/operations",
+              "-run",
+              "^(TestApprovalTransitionBoundary|TestStaleContractRebind)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestApprovalTransitionBoundary, TestStaleContractRebind. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestApprovalTransitionBoundary",
+              "TestStaleContractRebind"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_bridge.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-012",
+          "SPEC-ARTIFACTS-001#AC-013",
+          "SPEC-ARTIFACTS-001#AC-014",
+          "SPEC-ARTIFACTS-001#AC-025"
+        ],
+        "depends_on": [
+          "T-005",
+          "T-013"
+        ],
+        "done_when": [
+          "Missing review, stale dirty tree and self-reported acceptance fail.",
+          "Current accepted tasks resume without redoing approved framing.",
+          "A two-task dependency in one scope completes without deadlock, neither task is accepted early, and progress/receipt writes do not stale their own verification."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-014",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/task_state.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/resume.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/task_state_test.go"
+          }
+        ],
+        "rollback": "Block further dispatch and preserve the plan/evidence; use explicit reconciliation instead of resetting status cells.",
+        "source_refs": [
+          "SRC-03",
+          "SRC-04",
+          "SRC-05",
+          "SRC-06"
+        ],
+        "steps": [
+          "Implement PENDING/IN_PROGRESS/BLOCKED/REVIEW/ACCEPTED/STALE transitions with evidence prerequisites and immutable historical refs.",
+          "Bind verification to spec/task/plan identities and code/test-tree state, including dirty-tree changes; do not accept exit 0 with skipped/zero tests.",
+          "Compute next eligible task only after approval/freshness checks. Interrupted work returns reconciliation; checkpoints/quality barriers remain with the existing coordinator.",
+          "Implement same-scope provisional REVIEW dependencies and accept-scope after one final input snapshot plus combined review; cross-scope readiness still requires accepted predecessor scopes.",
+          "Define the verification-input manifest excluding exact validated progress/receipt outputs but including policy/config and directory membership. Source staleness causes revalidation, not reflexive reimplementation."
+        ],
+        "title": "Persist task state, evidence and safe resume eligibility",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/operations",
+              "-run",
+              "^(TestTaskAcceptanceEvidence|TestResumeEligibility|TestStatusNotNormative)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestTaskAcceptanceEvidence, TestResumeEligibility, TestStatusNotNormative. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestTaskAcceptanceEvidence",
+              "TestResumeEligibility",
+              "TestStatusNotNormative"
+            ]
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/operations",
+              "-run",
+              "^(TestSameScopeDependencyProgress|TestEvidenceFingerprintExcludesOwnOutputs|TestFinalScopeSnapshot)$",
+              "-count=1"
+            ],
+            "assertion": "Require a non-skipped pass event for every named test: TestSameScopeDependencyProgress, TestEvidenceFingerprintExcludesOwnOutputs, TestFinalScopeSnapshot. Reject zero-test success, missing results and skips.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestSameScopeDependencyProgress",
+              "TestEvidenceFingerprintExcludesOwnOutputs",
+              "TestFinalScopeSnapshot"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-001",
+          "SPEC-ARTIFACTS-001#AC-002",
+          "SPEC-ARTIFACTS-001#AC-003",
+          "SPEC-ARTIFACTS-001#AC-015",
+          "SPEC-ARTIFACTS-001#AC-016"
+        ],
+        "depends_on": [
+          "T-012",
+          "T-013",
+          "T-014"
+        ],
+        "done_when": [
+          "Producer fixtures create and read the actual canonical HTML pair.",
+          "Full schemas are not inserted into routine descriptions or startup payloads."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-015",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/brainstorming/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/writing-plans/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/tdd/SKILL.md"
+          },
+          {
+            "action": "create",
+            "path": "core/surface/includes/artifacts.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/pysrc/_intentlib.py"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_authoring.py"
+          }
+        ],
+        "rollback": "For legacy-only repositories retain old behavior. For new-format runs disable entry with a diagnostic rather than write replacement Markdown.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-02",
+          "SRC-03",
+          "SRC-07"
+        ],
+        "steps": [
+          "Replace direct new-format writes with short calls to the shared on-demand protocol leaf. Preserve framing, user questions and approval authorities.",
+          "Allocate AC identity in the spec and consume qualified refs in plans/TDD; correct bijection terminology to bidirectional coverage and allow multiple tests per criterion. Replace fixed-minute task claims with bounded, verifiable work packages; preserve exact paths and verification.",
+          "Route format-aware intent checking and retain the negative-completeness question. Draft preview remains non-executable; small-lane inline behavior stays unchanged."
+        ],
+        "title": "Connect brainstorming, planning and TDD producers",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_authoring.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_surface.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-04",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-012",
+          "SPEC-ARTIFACTS-001#AC-013",
+          "SPEC-ARTIFACTS-001#AC-014",
+          "SPEC-ARTIFACTS-001#AC-015",
+          "SPEC-ARTIFACTS-001#AC-021"
+        ],
+        "depends_on": [
+          "T-014",
+          "T-015"
+        ],
+        "done_when": [
+          "Both feature and sprint traces consume HTML, not a retained Markdown status table.",
+          "Both canonical feature and sprint entry paths are updated and recorded in the consumer inventory."
+        ],
+        "execution_scope": "CP-04",
+        "id": "T-016",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/commands/feature.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/SPRINT.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/executing-plans/SKILL.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/subagent-driven-development/SKILL.md"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_workflow.py"
+          }
+        ],
+        "rollback": "Stop active runs and preserve state; restore reviewed legacy routing only for unmigrated artifacts.",
+        "source_refs": [
+          "SRC-04",
+          "SRC-05",
+          "SRC-06",
+          "SRC-20"
+        ],
+        "steps": [
+          "Use canonical-pair resolution and model-based eligibility before dispatch, resume and commit handoff. Update both core/surface/commands/feature.md and core/surface/SPRINT.md, not generated plugin copies.",
+          "Pass bounded task context to existing author agents. Record acceptance only after existing spec review, fresh verification and the scope quality gate.",
+          "Exercise clean resume, stale spec, changed worktree, missing approval, interrupted IN_PROGRESS and user checkpoint halt.",
+          "Correct the dependency-selection/whole-scope acceptance ordering in both executors; test interruption after REVIEW but before scope quality review and atomic acceptance."
+        ],
+        "title": "Connect execution, acceptance and entry-point resume",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_workflow.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-05",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-017",
+          "SPEC-ARTIFACTS-001#AC-021",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [
+          "T-013",
+          "T-015",
+          "T-016"
+        ],
+        "done_when": [
+          "Warm and cold indexes agree with current canonical metadata.",
+          "No unsupported HTML is silently treated as absent or migrated to Markdown."
+        ],
+        "execution_scope": "CP-05",
+        "id": "T-017",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/pysrc/_readinjectlib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_readinjectlib.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_pre_read.py"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_consumers.py"
+          },
+          {
+            "action": "modify",
+            "path": "docs/artifacts/consumer-inventory.json"
+          }
+        ],
+        "rollback": "Disable the new-format capability with an explicit message; retain legacy reader and source inspection behavior.",
+        "source_refs": [
+          "SRC-08",
+          "SRC-10"
+        ],
+        "steps": [
+          "Index explicit spec metadata from validated HTML and legacy Markdown; compare content identity when checking a cached governing record.",
+          "Add same-size/same-mtime replacement, malformed-model and unsupported-version fixtures; emit bounded diagnostics without changing advisory Read fail direction.",
+          "Apply status/doctor/startup/commit reader changes identified and path-pinned by T-001. Gate on the closed inventory rather than claiming these three known files are the entire surface."
+        ],
+        "title": "Update governing-spec discovery, cache and capability diagnostics",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_readinjectlib.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_pre_read.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_consumers.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-05",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-018",
+          "SPEC-ARTIFACTS-001#AC-021"
+        ],
+        "depends_on": [
+          "T-014",
+          "T-015",
+          "T-016"
+        ],
+        "done_when": [
+          "Existing farm parser accepts the projection without new arbitrary metadata fields.",
+          "Stale/unapproved sources block before farm side effects.",
+          "Model selection does not invalidate a legitimate base receipt; changing a task/test does. Runtime canary/dispatch cannot bypass the guard."
+        ],
+        "execution_scope": "CP-05",
+        "id": "T-018",
+        "paths": [
+          {
+            "action": "modify",
+            "path": "core/surface/skills/writing-plans/references/farm-plan.md"
+          },
+          {
+            "action": "modify",
+            "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/farm_projection.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/operations/farm_projection_test.go"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_farm.py"
+          }
+        ],
+        "rollback": "Remove stale projections/receipts only through reviewed disposable-output cleanup; never remove canonical HTML or bypass farm review.",
+        "source_refs": [
+          "SRC-09",
+          "SRC-06"
+        ],
+        "steps": [
+          "Project only the current eligible slice and keep the current closed authoring/runtime farm schema unchanged.",
+          "Bind a separate derived receipt to source spec/plan/slice hashes, ID mapping and projection bytes; recheck before dispatch.",
+          "Preserve narrow test first, fresh red evidence, dispatch-time model choice and post-farm reviews/acceptance.",
+          "Enforce source/base receipt checks at actual runtime/canary entry points discovered by T-001, after adding those exact source paths to this plan through review. Documentation-only validation is insufficient.",
+          "Permit only authorized meta.model/meta.apiBaseUrl enrichment, then seal exact full execution bytes and provider provenance. Check base before canary; check full seal before normal dispatch. Revalidate changes to source or scope."
+        ],
+        "title": "Bind existing farm projection to HTML plans",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/operations",
+              "-run",
+              "^(TestFarmProjectionBinding)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestFarmProjectionBinding. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestFarmProjectionBinding"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_farm.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/operations",
+              "-run",
+              "^(TestAuthorizedFarmEnrichment|TestCanaryPreflightBinding)$",
+              "-count=1"
+            ],
+            "assertion": "Require a non-skipped pass event for every named test: TestAuthorizedFarmEnrichment, TestCanaryPreflightBinding. Reject zero-test success, missing results and skips.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestAuthorizedFarmEnrichment",
+              "TestCanaryPreflightBinding"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-05",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-019",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [
+          "T-005",
+          "T-012",
+          "T-014"
+        ],
+        "done_when": [
+          "Every source section is accounted for and every ambiguity is visible.",
+          "No imported ACCEPTED claim silently becomes verified."
+        ],
+        "execution_scope": "CP-05",
+        "id": "T-019",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/migrate/legacy.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/migrate/report.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/migrate/legacy_test.go"
+          }
+        ],
+        "rollback": "Discard only explicitly temporary candidates after review; originals and source hashes remain unchanged.",
+        "source_refs": [
+          "SRC-01",
+          "SRC-02"
+        ],
+        "steps": [
+          "Parse known feature-spec and implementation-plan variants while preserving original bytes/hashes and unrecognized material in a conversion report.",
+          "Create candidate stable identity/ref mappings and blockers for genuinely missing meaning. Keep claimed historical approval/status distinct from current evidence.",
+          "Reject wrong-kind project decomposition records and leave original artifacts untouched in preview."
+        ],
+        "title": "Build review-only legacy pair import",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/migrate",
+              "-run",
+              "^(TestLegacyImportReport|TestWrongKindNotMigrated)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestLegacyImportReport, TestWrongKindNotMigrated. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestLegacyImportReport",
+              "TestWrongKindNotMigrated"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-05",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-020",
+          "SPEC-ARTIFACTS-001#AC-023",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [
+          "T-011",
+          "T-013",
+          "T-019"
+        ],
+        "done_when": [
+          "All cutover crash points produce a coherent pair or non-executable recovery state.",
+          "Conflicting legacy changes never get overwritten."
+        ],
+        "execution_scope": "CP-05",
+        "id": "T-020",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/migrate/cutover.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/migrate/rollback.go"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/migrate/cutover_test.go"
+          }
+        ],
+        "rollback": "Use the exact stored transition report; if new HTML work exists, stop for reviewed reverse-export/reconciliation.",
+        "source_refs": [],
+        "steps": [
+          "Validate reviewed candidates and source hashes before switching canonical authority; write exact recoverable transition metadata.",
+          "Block mixed/incomplete pair discovery during every injected interruption. Reconcile under an explicit recovery action, never an ordinary read.",
+          "Implement pre-mutation restore and post-mutation loss-aware rollback reports that retain new evidence/history."
+        ],
+        "title": "Implement recovery-aware pair cutover and rollback reports",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/migrate",
+              "-run",
+              "^(TestPairCutoverRecovery|TestRollbackAfterNewWork)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestPairCutoverRecovery, TestRollbackAfterNewWork. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestPairCutoverRecovery",
+              "TestRollbackAfterNewWork"
+            ]
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-06",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-010",
+          "SPEC-ARTIFACTS-001#AC-022",
+          "SPEC-ARTIFACTS-001#AC-023",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [
+          "T-012",
+          "T-013",
+          "T-020"
+        ],
+        "done_when": [
+          "A supported cold install performs real artifact operations offline without Go.",
+          "An incompatible package cannot mutate new-format files."
+        ],
+        "execution_scope": "CP-06",
+        "id": "T-021",
+        "paths": [
+          {
+            "action": "create",
+            "path": "tools/build-artifacts.py"
+          },
+          {
+            "action": "modify",
+            "path": "tools/build-host-packages.py"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_package.py"
+          },
+          {
+            "action": "modify",
+            "path": "docs/artifacts/consumer-inventory.json"
+          }
+        ],
+        "rollback": "Disable capability and preserve files; never blindly downgrade a repository containing active HTML plans.",
+        "source_refs": [
+          "SRC-10",
+          "SRC-12"
+        ],
+        "steps": [
+          "Build pinned reproducible platform packages with explicit binary/protocol/schema identity and the current installation trust boundary.",
+          "Resolve package-owned executables without PATH or repository substitution; no user Go installation and no runtime fetches.",
+          "Exercise disabled/absent/mismatched installs and preserve legacy-only behavior. Mark actual native-tested targets separately from compile-only outputs."
+        ],
+        "title": "Package trusted binaries and cold-install capability checks",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_package.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-06",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-001",
+          "SPEC-ARTIFACTS-001#AC-021",
+          "SPEC-ARTIFACTS-001#AC-022",
+          "SPEC-ARTIFACTS-001#AC-023",
+          "SPEC-ARTIFACTS-001#AC-024"
+        ],
+        "depends_on": [
+          "T-017",
+          "T-018",
+          "T-021"
+        ],
+        "done_when": [
+          "All promoted native cells have actual execution receipts, not compilation-only logs.",
+          "Existing release/resource closure and applicable host suites remain green."
+        ],
+        "execution_scope": "CP-06",
+        "id": "T-022",
+        "paths": [
+          {
+            "action": "modify",
+            "path": ".github/workflows/ci.yml"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_ci_impact.py"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_native.py"
+          },
+          {
+            "action": "modify",
+            "path": ".github/scripts/test_artifact_surface.py"
+          }
+        ],
+        "rollback": "Revert enablement/routing only through reviewed CI changes; do not weaken required gates to ship.",
+        "source_refs": [
+          "SRC-10",
+          "SRC-12"
+        ],
+        "steps": [
+          "Route core/artifacts and integration changes to applicable existing host and repository gates; preserve trusted/untrusted workflow separation.",
+          "Run native locking/replacement/interruption tests on supported Windows, Linux and macOS cells; capture evidence for each claimed architecture/runtime.",
+          "Regenerate shared payloads and assert command/agent/tool registration sets remain unchanged. Do not hand-edit generated plugin copies."
+        ],
+        "title": "Wire generated-host parity and native CI gates",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_native.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_ci_impact.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/sync-core.py",
+              "--check"
+            ],
+            "assertion": "Canonical and generated Python payloads are byte-identical.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/build-surface.py",
+              "--check"
+            ],
+            "assertion": "Canonical surfaces regenerate without differences or new discovery entries.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              "tools/build-host-packages.py",
+              "--check"
+            ],
+            "assertion": "Host packages match canonical generated sources.",
+            "availability": "existing",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-06",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-001",
+          "SPEC-ARTIFACTS-001#AC-002",
+          "SPEC-ARTIFACTS-001#AC-003",
+          "SPEC-ARTIFACTS-001#AC-004",
+          "SPEC-ARTIFACTS-001#AC-005",
+          "SPEC-ARTIFACTS-001#AC-006",
+          "SPEC-ARTIFACTS-001#AC-007",
+          "SPEC-ARTIFACTS-001#AC-008",
+          "SPEC-ARTIFACTS-001#AC-009",
+          "SPEC-ARTIFACTS-001#AC-010",
+          "SPEC-ARTIFACTS-001#AC-011",
+          "SPEC-ARTIFACTS-001#AC-012",
+          "SPEC-ARTIFACTS-001#AC-013",
+          "SPEC-ARTIFACTS-001#AC-014",
+          "SPEC-ARTIFACTS-001#AC-015",
+          "SPEC-ARTIFACTS-001#AC-016",
+          "SPEC-ARTIFACTS-001#AC-017",
+          "SPEC-ARTIFACTS-001#AC-018",
+          "SPEC-ARTIFACTS-001#AC-019",
+          "SPEC-ARTIFACTS-001#AC-020",
+          "SPEC-ARTIFACTS-001#AC-021",
+          "SPEC-ARTIFACTS-001#AC-022",
+          "SPEC-ARTIFACTS-001#AC-023",
+          "SPEC-ARTIFACTS-001#AC-024",
+          "SPEC-ARTIFACTS-001#AC-025",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [
+          "T-015",
+          "T-016",
+          "T-017",
+          "T-018",
+          "T-020",
+          "T-022"
+        ],
+        "done_when": [
+          "Both artifact kinds and their whole workflow pass independent reference checks.",
+          "No unresolved HIGH/CRITICAL issue or stale evidence is hidden by schema validity."
+        ],
+        "execution_scope": "CP-06",
+        "id": "T-023",
+        "paths": [
+          {
+            "action": "create",
+            "path": "core/artifacts/testdata/spec-plan-golden/README.md"
+          },
+          {
+            "action": "create",
+            "path": "core/artifacts/internal/conformance/conformance_test.go"
+          },
+          {
+            "action": "create",
+            "path": ".github/scripts/test_artifact_conformance.py"
+          }
+        ],
+        "rollback": "Hold default enablement, preserve failure fixtures and revert only offending changes; never adjust expected behavior merely to make tests pass.",
+        "source_refs": [
+          "SRC-03",
+          "SRC-10"
+        ],
+        "steps": [
+          "Promote the reviewed reference pair into golden fixtures and test schema/model/render round trips, marker maps, DAG/coverage and hash-domain separation.",
+          "Run adversarial corrupt JSON/HTML, hostile logos, cursor races, stale evidence, cold install, interrupted execution and pair migration cases end-to-end.",
+          "Perform a negative-completeness review against original scope and record any newly found obligation as a reviewed spec/plan revision, not an extra hidden task.",
+          "Add lifecycle variant and tampered-read tests, not just two golden files: partial drafts, open decisions, tombstones, should/may labels, missing named tests, spec-only cursor changes, scope deadlock and evidence-output self-invalidation."
+        ],
+        "title": "Run full cross-kind conformance and adversarial workflow fixtures",
+        "verification": [
+          {
+            "argv": [
+              "go",
+              "test",
+              "-json",
+              "./internal/conformance",
+              "-run",
+              "^(TestSpecPlanConformance)$",
+              "-count=1"
+            ],
+            "assertion": "Every expected named test emits a non-skipped pass event: TestSpecPlanConformance. Zero matching tests or any skipped expected test fails verification.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": [
+              "TestSpecPlanConformance"
+            ]
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_conformance.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "go",
+              "test",
+              "./..."
+            ],
+            "assertion": "All Go module tests actually run and pass; no skipped required native cell is reported as complete.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "go",
+              "vet",
+              "./..."
+            ],
+            "assertion": "No Go vet findings.",
+            "availability": "proposed",
+            "cwd": "core/artifacts",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      },
+      {
+        "checkpoint": "CP-06",
+        "criterion_refs": [
+          "SPEC-ARTIFACTS-001#AC-001",
+          "SPEC-ARTIFACTS-001#AC-005",
+          "SPEC-ARTIFACTS-001#AC-006",
+          "SPEC-ARTIFACTS-001#AC-015",
+          "SPEC-ARTIFACTS-001#AC-019",
+          "SPEC-ARTIFACTS-001#AC-020",
+          "SPEC-ARTIFACTS-001#AC-021",
+          "SPEC-ARTIFACTS-001#AC-022",
+          "SPEC-ARTIFACTS-001#AC-026"
+        ],
+        "depends_on": [
+          "T-023"
+        ],
+        "done_when": [
+          "Guidance matches implemented and tested behavior; both artifacts can be reviewed offline.",
+          "Default rollout decision is explicit and evidence-backed; no mass migration occurs."
+        ],
+        "execution_scope": "CP-06",
+        "id": "T-024",
+        "paths": [
+          {
+            "action": "create",
+            "path": "docs/artifacts/spec-and-plan-format.md"
+          },
+          {
+            "action": "create",
+            "path": "docs/artifacts/migration-and-recovery.md"
+          },
+          {
+            "action": "modify",
+            "path": "site/src/content/docs/codearbiter-directory.md"
+          },
+          {
+            "action": "modify",
+            "path": ".codearbiter/tech-stack.md"
+          }
+        ],
+        "rollback": "Disable new default capability if the pilot fails, retain legacy reading and all evidence, then reconcile under the documented rollback procedure.",
+        "source_refs": [
+          "SRC-10",
+          "SRC-15",
+          "SRC-16"
+        ],
+        "steps": [
+          "Document the schema/identity model, existing entry flow, offline review, version/capability diagnostics and migration/recovery boundaries. Do not create a new command reference entry.",
+          "Demonstrate one selected legacy-pair conversion and one new-feature fixture through approval, plan, execution, interruption/resume and rollback drill.",
+          "Record actual outcomes and known unsupported cells. Describe evidence-informed content separately from unproven agent-performance claims; any paid model pilot requires separate budget approval."
+        ],
+        "title": "Publish existing-workflow guidance and perform selected pilot",
+        "verification": [
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_surface.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_consumers.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          },
+          {
+            "argv": [
+              "python",
+              ".github/scripts/test_artifact_conformance.py"
+            ],
+            "assertion": "All documented behavior cases run and pass; a missing script, skip-only run or empty case set is not success.",
+            "availability": "proposed",
+            "cwd": ".",
+            "expected_exit": 0,
+            "required_tests": []
+          }
+        ]
+      }
+    ],
+    "title": "Build the spec-to-plan artifact path"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "spec.html",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": "ec56d4e2f2d512f59128acdd20b1e5b1eda475cf",
+    "logo_origin": "https://github.com/arbiterForge/codeArbiter/blob/45a17319f9ffda327cbdf3f3d40849bae8e920c0/site/src/assets/logo.svg",
+    "renderer": "codearbiter-reference-html/0.2.0",
+    "stylesheet_sha256": "0626e3dc381407b8e84652219cb09ece51dc46e47d7c0f13cc3dcb2423384c09"
+  },
+  "revision": 2,
+  "schema_version": "0.2.0",
+  "slug": "html-specs-and-plans"
+}

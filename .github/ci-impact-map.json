@@ -47,16 +47,99 @@
       "lane": "WATCH",
       "scope": "PI",
       "contract": "Upstream compatibility"
+    },
+    {
+      "id": "artifact-engine",
+      "lane": "CHECK",
+      "scope": "CORE",
+      "contract": "Structured artifact engine",
+      "reproduce": "cd core/artifacts && go test -buildvcs=false ./..."
     }
   ],
   "edges": [
+    {
+      "glob": "core/artifacts/**",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "docs/artifacts/**",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "core/surface/**",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "plugins/ca-pi/tools/src/**",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "plugins/ca/tools/farm.ts",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "plugins/ca/tools/farm.js",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "site/src/content/docs/**",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "site/src/curated/**",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": "tools/*artifact*.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_bridge.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_authoring.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_consumers.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_conformance.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_farm.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_native.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_package.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_surface.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/scripts/test_artifact_workflow.py",
+      "checks": ["artifact-engine"]
+    },
+    {
+      "glob": ".github/requirements/artifact-conformance*",
+      "checks": ["artifact-engine"]
+    },
     {
       "glob": "plugins/ca-pi/**",
       "checks": ["pi-adapter", "pi-checks", "pi-latest"]
     },
     {
       "glob": "core/pysrc/**",
-      "checks": ["broad-lane"]
+      "checks": ["broad-lane", "artifact-engine"]
     },
     {
       "kind": "descriptor_surface",

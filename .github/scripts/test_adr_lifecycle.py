@@ -1968,6 +1968,42 @@ class LifecycleContractTest(unittest.TestCase):
                       "ordinary-evidence.txt")
             self.assertIsNone(cal._local_binding_transition_error(root, [], {}))
 
+    def test_merge_imports_committed_acceptance_without_second_leg_packet(self):
+        with tempfile.TemporaryDirectory() as root:
+            self._git(root, "init", "-b", "main")
+            decisions = os.path.join(root, ".codearbiter", "decisions")
+            os.makedirs(decisions)
+            ledger_path = os.path.join(decisions, "adr-lifecycle.jsonl")
+            with open(ledger_path, "wb") as handle:
+                handle.write(b"")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            self._git(root, "commit", "-m", "seed ledger")
+
+            self._git(root, "switch", "-c", "accepted-topic")
+            acceptance = self._acceptance()
+            self._write_ledger(root, [acceptance])
+            outside_path = os.path.join(root, "feature.txt")
+            with open(outside_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write("feature\n")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl",
+                      "feature.txt")
+            self._git(root, "commit", "-m", "bind accepted ADR")
+
+            self._git(root, "switch", "main")
+            self._git(root, "merge", "--no-commit", "--no-ff", "accepted-topic")
+            events = al.read_jsonl(ledger_path)
+            self.assertIsNone(cal._local_binding_transition_error(root, events, {}))
+
+            with open(ledger_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(json.dumps(acceptance, sort_keys=True, separators=(",", ":")) + "\n")
+                forged = dict(acceptance)
+                forged["adr"] = "0002-forged"
+                handle.write(json.dumps(forged, sort_keys=True, separators=(",", ":")) + "\n")
+            self._git(root, "add", ".codearbiter/decisions/adr-lifecycle.jsonl")
+            forged_events = al.read_jsonl(ledger_path)
+            error = cal._local_binding_transition_error(root, forged_events, {})
+            self.assertIn("not the sole exact append", error)
+
     def test_local_acceptance_cannot_replace_the_committed_ledger_without_a_packet(self):
         with tempfile.TemporaryDirectory() as root:
             self._git(root, "init", "-b", "main")

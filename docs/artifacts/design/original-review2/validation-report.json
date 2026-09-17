@@ -1,0 +1,46 @@
+{
+  "spec": {
+    "bytes": 337431,
+    "symbols": 174,
+    "model_sha256": "9bbd7d30fdbeacc151c3ab2c803121ae73974743b975c23de520537592d61d90",
+    "normative_sha256": "60e252e63b6310b8748337b7dba9530bff62209b30dd3ae0f905027e6e48bb92",
+    "symbol_count": 174,
+    "draft": true,
+    "schema_integrity_render": "pass"
+  },
+  "plan": {
+    "bytes": 260136,
+    "symbols": 59,
+    "model_sha256": "2972ffb4e859d9cc631945c164a71f5ba73e0a7f893483a2429b66cd888c4655",
+    "normative_sha256": "70555c2020a55d9ca3c374b6406d5cc2b926a70bf0989cbb0d1e9e55344ca8e2",
+    "symbol_count": 59,
+    "draft": true,
+    "schema_integrity_render": "pass"
+  },
+  "pair": {
+    "criteria": 26,
+    "tasks": 24,
+    "checkpoints": 6,
+    "targeted_criteria": 26,
+    "resolved_internal_links": 880,
+    "dependency_graph": "acyclic with ordered checkpoint partition",
+    "spec_binding": "current normative draft hash",
+    "readiness": "structural/relationship/content-field checks passed; semantic correctness still requires review",
+    "execution_eligible": false,
+    "authority_verified": false,
+    "reason": "External workflow authority, runtime state and evidence are not verified by reference tools.",
+    "implementation_tests_run": false
+  },
+  "scope": "Reference artifacts only; not implementation or host acceptance",
+  "reference_tests": {
+    "run": 41,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "cells": 4,
+    "passed": true,
+    "report": "browser-report.json"
+  }
+}

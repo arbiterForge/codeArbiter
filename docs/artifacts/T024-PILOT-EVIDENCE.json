@@ -1,0 +1,727 @@
+{
+  "candidate": {
+    "binary_file": "ca-artifact-windows-amd64.exe",
+    "binary_sha256": "daf464c0d9bdea9ce363268b262f00ef8fba0abf9ebebb5a0c8969c483625fbe",
+    "go_version": "1.27.1",
+    "manifest_native_tested": true,
+    "platform": "windows/amd64",
+    "release_json_sha256": "88310faf63984ad1a092002414be17ce1d50cf70c2a07ef4209e89a3558462f9",
+    "upstream_host_qualified": false
+  },
+  "legacy_pair": {
+    "apply": {
+      "old_approvals_transferred": false,
+      "preview_sha256": "e9e1d9670e57b1f3896944664260ef51ad5c432be666192074871631746e7b13",
+      "rollback": "Use migration-rollback with a new operation_id and this cutover_operation_id before any candidate edits. For an uncertain transaction use recover.",
+      "state": "draft",
+      "transaction": {
+        "operation_id": "pilot-cutover-exact-001",
+        "paths": [
+          ".codearbiter/specs/pilot.html",
+          ".codearbiter/specs/pilot.md",
+          ".codearbiter/plans/pilot.html",
+          ".codearbiter/plans/pilot.md"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "capabilities": {
+      "binary": "ca-artifact",
+      "host_default_enabled": false,
+      "operations": [
+        "accept-scope",
+        "apply",
+        "approve",
+        "capabilities",
+        "capture",
+        "create",
+        "diff",
+        "eligible",
+        "export",
+        "farm-project",
+        "farm-seal",
+        "farm-verify",
+        "identity",
+        "index",
+        "migration-apply",
+        "migration-preview",
+        "migration-rollback",
+        "outline",
+        "plan-bind",
+        "prerequisite",
+        "read",
+        "rebrand",
+        "recover",
+        "repair-apply",
+        "repair-preview",
+        "schema",
+        "scope-reconcile",
+        "snapshot",
+        "task-block",
+        "task-reconcile",
+        "task-review",
+        "task-start",
+        "validate"
+      ],
+      "platform": "windows/amd64",
+      "protocol": "codearbiter.artifact-api/0.1.0",
+      "public_registrations_added": 0,
+      "renderer": "codearbiter-html/0.1.0",
+      "repository_operations_available": true,
+      "runtime_downloads": false,
+      "schema_version": "0.3.1",
+      "storage_backend": "windows-osroot-lockfileex",
+      "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes",
+      "version": "0.1.0"
+    },
+    "plan_identity_after_cutover": {
+      "artifact_id": "PLAN-PILOT",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "plan",
+      "model_sha256": "8dba323279e8f81ad73e842316979a8bdc8b6643fc2418946755ae2835c1fd56",
+      "normative_sha256": "a9f53ba2c2ad9a6342e2629810bf592e5cc700efaebeed64a49aed3a62f44873",
+      "path": ".codearbiter/plans/pilot.html",
+      "revision": 1,
+      "symbol_count": 4
+    },
+    "post_cutover": {
+      "html_plan_exists": true,
+      "html_spec_exists": true,
+      "legacy_plan_exists": false,
+      "legacy_spec_exists": false
+    },
+    "post_rollback": {
+      "expected_legacy_sha256": "ad1d9eb215be56240f857112b87db20f5e850786bc4aeef9de09148a8e3f9fb5",
+      "html_plan_exists": false,
+      "html_spec_exists": false,
+      "plan_sha256": "ad1d9eb215be56240f857112b87db20f5e850786bc4aeef9de09148a8e3f9fb5",
+      "spec_sha256": "ad1d9eb215be56240f857112b87db20f5e850786bc4aeef9de09148a8e3f9fb5"
+    },
+    "preview": {
+      "all_targets_are_drafts": true,
+      "manifest": {
+        "format": "codearbiter.migration-preview/0.1.0",
+        "items": [
+          {
+            "artifact_id": "SPEC-PILOT",
+            "mapping": [
+              {
+                "disposition": "mapped",
+                "end_line": 3,
+                "reason": "Disposable exact-candidate pilot mapping; not implementation approval.",
+                "start_line": 1,
+                "target": "INTENT-01"
+              }
+            ],
+            "model_sha256": "f3f386fe64d9b92453279663324418a3c9b211fe2d62332280cec6d162560c44",
+            "normative_sha256": "a3bf67bd181675b665254d8801b5f6faef08479d04dd1c4c3baa6638112b80df",
+            "source_lines": 3,
+            "source_path": ".codearbiter/specs/pilot.md",
+            "source_sha256": "ad1d9eb215be56240f857112b87db20f5e850786bc4aeef9de09148a8e3f9fb5",
+            "target_path": ".codearbiter/specs/pilot.html"
+          },
+          {
+            "artifact_id": "PLAN-PILOT",
+            "mapping": [
+              {
+                "disposition": "mapped",
+                "end_line": 3,
+                "reason": "Disposable exact-candidate pilot mapping; not implementation approval.",
+                "start_line": 1,
+                "target": "T-001"
+              }
+            ],
+            "model_sha256": "a15467d340f9ecc78eeeae6144e7174e652a04158dbf8ec84f17beab7d515ad5",
+            "normative_sha256": "a9f53ba2c2ad9a6342e2629810bf592e5cc700efaebeed64a49aed3a62f44873",
+            "source_lines": 3,
+            "source_path": ".codearbiter/plans/pilot.md",
+            "source_sha256": "ad1d9eb215be56240f857112b87db20f5e850786bc4aeef9de09148a8e3f9fb5",
+            "target_path": ".codearbiter/plans/pilot.html"
+          }
+        ]
+      },
+      "old_approval_transferred": false,
+      "preview_sha256": "e9e1d9670e57b1f3896944664260ef51ad5c432be666192074871631746e7b13",
+      "semantic_mapping_verified": false
+    },
+    "rollback": {
+      "refresh_required": true,
+      "transaction": {
+        "operation_id": "pilot-rollback-exact-001",
+        "paths": [
+          ".codearbiter/specs/pilot.html",
+          ".codearbiter/specs/pilot.md",
+          ".codearbiter/plans/pilot.html",
+          ".codearbiter/plans/pilot.md"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "spec_identity_after_cutover": {
+      "artifact_id": "SPEC-PILOT",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "spec",
+      "model_sha256": "ace6669503dbc00b45b61cff91a084ae06985d665fbd43ead980395abf6749e1",
+      "normative_sha256": "a3bf67bd181675b665254d8801b5f6faef08479d04dd1c4c3baa6638112b80df",
+      "path": ".codearbiter/specs/pilot.html",
+      "revision": 1,
+      "symbol_count": 9
+    }
+  },
+  "limitations": [
+    "All authority and review events are synthetic cooperative fixture receipts, not authenticated human identity.",
+    "The candidate is locally native-tested but not an upstream hosted or release-channel qualification.",
+    "The run does not qualify macOS, Linux exact-head hosting, physical power loss, network filesystems, multi-browser accessibility, or farm model performance."
+  ],
+  "new_feature": {
+    "capabilities": {
+      "binary": "ca-artifact",
+      "host_default_enabled": false,
+      "operations": [
+        "accept-scope",
+        "apply",
+        "approve",
+        "capabilities",
+        "capture",
+        "create",
+        "diff",
+        "eligible",
+        "export",
+        "farm-project",
+        "farm-seal",
+        "farm-verify",
+        "identity",
+        "index",
+        "migration-apply",
+        "migration-preview",
+        "migration-rollback",
+        "outline",
+        "plan-bind",
+        "prerequisite",
+        "read",
+        "rebrand",
+        "recover",
+        "repair-apply",
+        "repair-preview",
+        "schema",
+        "scope-reconcile",
+        "snapshot",
+        "task-block",
+        "task-reconcile",
+        "task-review",
+        "task-start",
+        "validate"
+      ],
+      "platform": "windows/amd64",
+      "protocol": "codearbiter.artifact-api/0.1.0",
+      "public_registrations_added": 0,
+      "renderer": "codearbiter-html/0.1.0",
+      "repository_operations_available": true,
+      "runtime_downloads": false,
+      "schema_version": "0.3.1",
+      "storage_backend": "windows-osroot-lockfileex",
+      "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes",
+      "version": "0.1.0"
+    },
+    "context_ticket": "5f4e0cf1cddd0e7f1be692fbbdc9cc72b947ae0bec9be5faf4fc591dbfbf94e3",
+    "created_plan_identity": {
+      "artifact_id": "PLAN-FLOW",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "plan",
+      "model_sha256": "1d0373db0c8d74a40e3589b403595ec5586069a601eb7fe4c73b579ae2a10e94",
+      "normative_sha256": "33c59662050a04b3eae5f7e18463a0fe8a7da08cf50108926b16feaa1bcde173",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 1,
+      "symbol_count": 2
+    },
+    "created_spec_identity": {
+      "artifact_id": "SPEC-FLOW",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "kind": "spec",
+      "model_sha256": "e0b5e53b3a10852f8feed659deb7180d41ac843fe13c34b1bbdaeb2d231fe76a",
+      "normative_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+      "path": ".codearbiter/specs/flow.html",
+      "revision": 1,
+      "symbol_count": 7
+    },
+    "draft_dispatch_error": {
+      "code": "DRAFT_BINDING",
+      "message": "DRAFT_BINDING: plan must be explicitly rebound to an approved source"
+    },
+    "eligible_before_start": {
+      "all_accepted_and_current": false,
+      "artifact_id": "PLAN-FLOW",
+      "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+      "model_sha256": "e2a080d85357a510df0646660f54bbfdfa61db8625c70ad453ec0a5dfab5c774",
+      "next_task": "T-001",
+      "tasks": [
+        {
+          "eligible": true,
+          "state": "PENDING",
+          "task": "T-001"
+        }
+      ]
+    },
+    "final_state": {
+      "all_accepted_and_current": true,
+      "artifact_id": "PLAN-FLOW",
+      "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+      "model_sha256": "893ac021613ca5ccf7b05209e4915573e0d718ed254fb953617b025d37df408f",
+      "next_task": "",
+      "tasks": [
+        {
+          "current_evidence": true,
+          "diagnostic": "NOT_PENDING",
+          "eligible": false,
+          "state": "ACCEPTED",
+          "task": "T-001"
+        }
+      ]
+    },
+    "plan_approval": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "e2a080d85357a510df0646660f54bbfdfa61db8625c70ad453ec0a5dfab5c774",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 3,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-approve-0007",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "plan_approval_receipt": ".codearbiter/.artifacts/receipts/79bb3d306b2004f8c2e18573d4fc91ba31286b543745a43e02e1a296ca3379bc.json",
+    "plan_binding": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "7bf7a93b8656f2b03b1177e17d5f06e5eb603d4f6db13f609e473b482c5f3350",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 2,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-plan-bind-0005",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "quality_review_receipt": ".codearbiter/.artifacts/receipts/a52311bd11630baf065230c4ebf4de51643a829d1aa531701c0400e832ccee25.json",
+    "receipt_event_bundle": [
+      {
+        "event": {
+          "actor": "synthetic behavioral fixture",
+          "authority_kind": "user_workflow",
+          "format": "codearbiter.workflow-event/0.1.0",
+          "kind": "approval",
+          "origin": "isolated test fixture-event-0003",
+          "payload": {},
+          "source_text": "Synthetic event for boundary testing; not production authority.",
+          "subject": {
+            "artifact_id": "SPEC-FLOW",
+            "normative_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+            "record_id": "SPEC-FLOW"
+          },
+          "verdict": "approved"
+        },
+        "event_locator": ".codearbiter/.artifacts/events/628bd482e8f707a0df8db63fe6ccae68d014abdf7f564d5a4866a4e385422649.json",
+        "event_sha256": "628bd482e8f707a0df8db63fe6ccae68d014abdf7f564d5a4866a4e385422649",
+        "receipt": {
+          "authority_kind": "user_workflow",
+          "event_sha256": "628bd482e8f707a0df8db63fe6ccae68d014abdf7f564d5a4866a4e385422649",
+          "format": "codearbiter.receipt/0.1.0",
+          "kind": "approval",
+          "subject": {
+            "artifact_id": "SPEC-FLOW",
+            "normative_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+            "record_id": "SPEC-FLOW"
+          }
+        },
+        "receipt_locator": ".codearbiter/.artifacts/receipts/cef185c0bb20ad53d58d5c5b3bd491aa6b01d804a3efa5c747dfa19674c5ddd1.json",
+        "receipt_sha256": "cef185c0bb20ad53d58d5c5b3bd491aa6b01d804a3efa5c747dfa19674c5ddd1"
+      },
+      {
+        "event": {
+          "actor": "synthetic behavioral fixture",
+          "authority_kind": "user_workflow",
+          "format": "codearbiter.workflow-event/0.1.0",
+          "kind": "approval",
+          "origin": "isolated test fixture-event-0006",
+          "payload": {},
+          "source_text": "Synthetic event for boundary testing; not production authority.",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "PLAN-FLOW"
+          },
+          "verdict": "approved"
+        },
+        "event_locator": ".codearbiter/.artifacts/events/6e1012d29a11cfc058c90b93d419848d39b9c7382a88fa6ac89a4a44e57fbbb8.json",
+        "event_sha256": "6e1012d29a11cfc058c90b93d419848d39b9c7382a88fa6ac89a4a44e57fbbb8",
+        "receipt": {
+          "authority_kind": "user_workflow",
+          "event_sha256": "6e1012d29a11cfc058c90b93d419848d39b9c7382a88fa6ac89a4a44e57fbbb8",
+          "format": "codearbiter.receipt/0.1.0",
+          "kind": "approval",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "PLAN-FLOW"
+          }
+        },
+        "receipt_locator": ".codearbiter/.artifacts/receipts/79bb3d306b2004f8c2e18573d4fc91ba31286b543745a43e02e1a296ca3379bc.json",
+        "receipt_sha256": "79bb3d306b2004f8c2e18573d4fc91ba31286b543745a43e02e1a296ca3379bc"
+      },
+      {
+        "event": {
+          "actor": "synthetic behavioral fixture",
+          "authority_kind": "review_workflow",
+          "format": "codearbiter.workflow-event/0.1.0",
+          "kind": "reconciliation",
+          "origin": "isolated test fixture-event-0001",
+          "payload": {
+            "assessment": "Synthetic interruption reconciliation; rerun the task from PENDING.",
+            "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+            "target_state": "PENDING",
+            "task_sha256": "0e16b4bce843cb4c8fa41c0bb94d7d297de2ef61080a734221828930e6a44c67"
+          },
+          "source_text": "Synthetic event for boundary testing; not production authority.",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "T-001"
+          },
+          "verdict": "reconciled"
+        },
+        "event_locator": ".codearbiter/.artifacts/events/58dd53ef921dfd5edc91254c609c5b533a45b32ef0bd2dfb413fe2508339641d.json",
+        "event_sha256": "58dd53ef921dfd5edc91254c609c5b533a45b32ef0bd2dfb413fe2508339641d",
+        "receipt": {
+          "authority_kind": "review_workflow",
+          "event_sha256": "58dd53ef921dfd5edc91254c609c5b533a45b32ef0bd2dfb413fe2508339641d",
+          "format": "codearbiter.receipt/0.1.0",
+          "kind": "reconciliation",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "T-001"
+          }
+        },
+        "receipt_locator": ".codearbiter/.artifacts/receipts/085cd7a113276f2ad242b63f7f3de3ae5cbe20cd746c32102097e7949d4d871d.json",
+        "receipt_sha256": "085cd7a113276f2ad242b63f7f3de3ae5cbe20cd746c32102097e7949d4d871d"
+      },
+      {
+        "event": {
+          "actor": "synthetic behavioral fixture",
+          "authority_kind": "verification_runner",
+          "format": "codearbiter.workflow-event/0.1.0",
+          "kind": "verification",
+          "origin": "isolated test fixture-event-0004",
+          "payload": {
+            "commands": [
+              {
+                "definition_sha256": "4114608ad706796722bc7840b562da3d3c701f13ffdaba358d9283c2a49290f9",
+                "exit": 0,
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_sha256": "b4121e124dbf0514057439e112202d62be3af46d50ad2204c82cb5a2a7e44598",
+                "tests": [
+                  {
+                    "name": "test_environment_overrides",
+                    "status": "pass"
+                  }
+                ]
+              }
+            ],
+            "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+            "spec_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+            "task_sha256": "0e16b4bce843cb4c8fa41c0bb94d7d297de2ef61080a734221828930e6a44c67"
+          },
+          "source_text": "Synthetic event for boundary testing; not production authority.",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "T-001"
+          },
+          "verdict": "passed"
+        },
+        "event_locator": ".codearbiter/.artifacts/events/13c1f9649785dddd9e3ad502187767fc7a6e2601a0577a0269cf098fcb89d358.json",
+        "event_sha256": "13c1f9649785dddd9e3ad502187767fc7a6e2601a0577a0269cf098fcb89d358",
+        "receipt": {
+          "authority_kind": "verification_runner",
+          "event_sha256": "13c1f9649785dddd9e3ad502187767fc7a6e2601a0577a0269cf098fcb89d358",
+          "format": "codearbiter.receipt/0.1.0",
+          "kind": "verification",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "T-001"
+          }
+        },
+        "receipt_locator": ".codearbiter/.artifacts/receipts/46d2409763b24588912558f23de473619bb4ae0bcfe229375bf82b0c08032c43.json",
+        "receipt_sha256": "46d2409763b24588912558f23de473619bb4ae0bcfe229375bf82b0c08032c43"
+      },
+      {
+        "event": {
+          "actor": "synthetic behavioral fixture",
+          "authority_kind": "review_workflow",
+          "format": "codearbiter.workflow-event/0.1.0",
+          "kind": "spec_review",
+          "origin": "isolated test fixture-event-0005",
+          "payload": {
+            "assessment": "Synthetic specification review fixture.",
+            "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+            "spec_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+            "task_sha256": "0e16b4bce843cb4c8fa41c0bb94d7d297de2ef61080a734221828930e6a44c67"
+          },
+          "source_text": "Synthetic event for boundary testing; not production authority.",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "T-001"
+          },
+          "verdict": "passed"
+        },
+        "event_locator": ".codearbiter/.artifacts/events/41657111bdab36fd814362291d2eca949280eb455a498eee109d8ef1c5c35f63.json",
+        "event_sha256": "41657111bdab36fd814362291d2eca949280eb455a498eee109d8ef1c5c35f63",
+        "receipt": {
+          "authority_kind": "review_workflow",
+          "event_sha256": "41657111bdab36fd814362291d2eca949280eb455a498eee109d8ef1c5c35f63",
+          "format": "codearbiter.receipt/0.1.0",
+          "kind": "spec_review",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "T-001"
+          }
+        },
+        "receipt_locator": ".codearbiter/.artifacts/receipts/74e0145d013ba5b0f7d7dab6948ba6e62809aa42ca7abb7ce8bb686401e0eb3c.json",
+        "receipt_sha256": "74e0145d013ba5b0f7d7dab6948ba6e62809aa42ca7abb7ce8bb686401e0eb3c"
+      },
+      {
+        "event": {
+          "actor": "synthetic behavioral fixture",
+          "authority_kind": "review_workflow",
+          "format": "codearbiter.workflow-event/0.1.0",
+          "kind": "quality_review",
+          "origin": "isolated test fixture-event-0007",
+          "payload": {
+            "assessment": "Synthetic combined-scope review fixture.",
+            "base_input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+            "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+            "spec_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+            "task_hashes": {
+              "T-001": "0e16b4bce843cb4c8fa41c0bb94d7d297de2ef61080a734221828930e6a44c67"
+            }
+          },
+          "source_text": "Synthetic event for boundary testing; not production authority.",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "CP-01"
+          },
+          "verdict": "passed"
+        },
+        "event_locator": ".codearbiter/.artifacts/events/cacad9f45b22996eb9b792fb679da85770abac876b52cfeab08797d493ca76d8.json",
+        "event_sha256": "cacad9f45b22996eb9b792fb679da85770abac876b52cfeab08797d493ca76d8",
+        "receipt": {
+          "authority_kind": "review_workflow",
+          "event_sha256": "cacad9f45b22996eb9b792fb679da85770abac876b52cfeab08797d493ca76d8",
+          "format": "codearbiter.receipt/0.1.0",
+          "kind": "quality_review",
+          "subject": {
+            "artifact_id": "PLAN-FLOW",
+            "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+            "record_id": "CP-01"
+          }
+        },
+        "receipt_locator": ".codearbiter/.artifacts/receipts/a52311bd11630baf065230c4ebf4de51643a829d1aa531701c0400e832ccee25.json",
+        "receipt_sha256": "a52311bd11630baf065230c4ebf4de51643a829d1aa531701c0400e832ccee25"
+      }
+    ],
+    "reconciled_state": {
+      "all_accepted_and_current": false,
+      "artifact_id": "PLAN-FLOW",
+      "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+      "model_sha256": "29bb9789c9a99c704fc99566dd526411fdae9cdfc7c1429e0ad9c5f5519d0b18",
+      "next_task": "T-001",
+      "tasks": [
+        {
+          "eligible": true,
+          "state": "PENDING",
+          "task": "T-001"
+        }
+      ]
+    },
+    "reconciliation": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "29bb9789c9a99c704fc99566dd526411fdae9cdfc7c1429e0ad9c5f5519d0b18",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 5,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-task-reconcile-0002",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "reconciliation_receipt": ".codearbiter/.artifacts/receipts/085cd7a113276f2ad242b63f7f3de3ae5cbe20cd746c32102097e7949d4d871d.json",
+    "resumed_after_process_recreation": {
+      "all_accepted_and_current": false,
+      "artifact_id": "PLAN-FLOW",
+      "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+      "model_sha256": "b4f6448402c0b7fb172ef1cd0a613d9a9b1c04765156bf0c657401aa91f46cf1",
+      "next_task": "",
+      "tasks": [
+        {
+          "diagnostic": "NOT_PENDING",
+          "eligible": false,
+          "state": "IN_PROGRESS",
+          "task": "T-001"
+        }
+      ]
+    },
+    "resumed_context_ticket": "b785992cab23640cb2b865d643d4833276a5a5e41efffa4feb1094f106904f91",
+    "resumed_task_start": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "61cc4b03f5afb34c25f8297cc9d0b225f96afcf26c0358be4960af55bcddd165",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 6,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-task-start-0003",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "review_state": {
+      "all_accepted_and_current": false,
+      "artifact_id": "PLAN-FLOW",
+      "input_sha256": "4c97b64435797c15650da89011d5a86ee7297fb2435b0bb1c80ed85585741e86",
+      "model_sha256": "72d04829a13966a39d7e206ec8174dc9e0fd51e613b4eb55930fd6fe3104f77d",
+      "next_task": "",
+      "tasks": [
+        {
+          "diagnostic": "NOT_PENDING",
+          "eligible": false,
+          "state": "REVIEW",
+          "task": "T-001"
+        }
+      ]
+    },
+    "scope_acceptance": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "893ac021613ca5ccf7b05209e4915573e0d718ed254fb953617b025d37df408f",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 8,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-accept-scope-0008",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "spec_approval": {
+      "artifact_id": "SPEC-FLOW",
+      "kind": "spec",
+      "model_sha256": "43b57bfa6fa5d29b77cce916e27f9fff9971d38e11999da792085ca75925ac07",
+      "normative_sha256": "ff9fb7faef4879d010e885f073ca794d03f4d217c834f14cdd196171289a0eb9",
+      "path": ".codearbiter/specs/flow.html",
+      "revision": 2,
+      "symbol_count": 7,
+      "transaction": {
+        "operation_id": "fixture-approve-0004",
+        "paths": [
+          ".codearbiter/specs/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "spec_approval_receipt": ".codearbiter/.artifacts/receipts/cef185c0bb20ad53d58d5c5b3bd491aa6b01d804a3efa5c747dfa19674c5ddd1.json",
+    "spec_review_receipt": ".codearbiter/.artifacts/receipts/74e0145d013ba5b0f7d7dab6948ba6e62809aa42ca7abb7ce8bb686401e0eb3c.json",
+    "task_review": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "72d04829a13966a39d7e206ec8174dc9e0fd51e613b4eb55930fd6fe3104f77d",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 7,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-task-review-0006",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "task_start": {
+      "artifact_id": "PLAN-FLOW",
+      "kind": "plan",
+      "model_sha256": "b4f6448402c0b7fb172ef1cd0a613d9a9b1c04765156bf0c657401aa91f46cf1",
+      "normative_sha256": "e2cf0e24567ffa5fe47ca9a8e7ee94f2560d061316d0d590f0345544a61ebb5c",
+      "path": ".codearbiter/plans/flow.html",
+      "revision": 4,
+      "symbol_count": 2,
+      "transaction": {
+        "operation_id": "fixture-task-start-0008",
+        "paths": [
+          ".codearbiter/plans/flow.html"
+        ],
+        "replay": false,
+        "state": "committed"
+      }
+    },
+    "verification_receipt": ".codearbiter/.artifacts/receipts/46d2409763b24588912558f23de473619bb4ae0bcfe229375bf82b0c08032c43.json"
+  },
+  "record_kind": "exact-candidate direct protocol pilot",
+  "recorded_on": "2026-09-16",
+  "source_snapshot": {
+    "git_commit": "2ea35d02e368104f28650e9d5df94b9f3894339d",
+    "worktree_state": "clean"
+  }
+}

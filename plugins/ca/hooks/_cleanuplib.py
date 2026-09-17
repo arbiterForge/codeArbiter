@@ -837,19 +837,25 @@ def make_decision(target, outcome, reason):
     )
 
 
-def scope_covers(scope, target):
+def scope_covers(scope, target, repository_id):
     """AC-03 (keep the scope closed): a target is covered only when its
     resource kind is one the scope explicitly names AND its locator is in
     the scope's exact bound member set. Kind is checked before membership,
     so a same-named resource of the wrong kind (a task-archive candidate
     sharing a branch's name) is never covered by a branch-only scope. A
     scope with no bound members yet (an unaccepted proposal) covers
-    nothing, and neither does no scope at all. A Scope with no
+    nothing, and neither does no scope at all. A Scope with an unknown
     authorization source covers nothing either, even if members happens
     to already be populated (e.g. a displayed-but-not-yet-accepted
-    snapshot) -- source is the actual authorization signal, and checking
-    members alone would let a bound-but-unauthorized Scope slip through."""
-    if scope is None or scope.source is None or scope.members is None:
+    snapshot). The caller also supplies the active repository identity;
+    authorization bound in one repository never transfers to another."""
+    if (
+        scope is None
+        or scope.source not in AUTHORIZATION_SOURCES
+        or scope.members is None
+    ):
+        return False
+    if not repository_id or scope.repository_id != repository_id:
         return False
     if target.kind not in scope.resource_kinds:
         return False

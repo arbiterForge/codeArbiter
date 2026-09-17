@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codearbiter:reference:spec:0.2.0",
+  "title": "codeArbiter spec reference schema 0.2.0",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "codearbiter.artifact"
+    },
+    "format_version": {
+      "const": "0.1.0"
+    },
+    "kind": {
+      "const": "spec"
+    },
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "governance": {
+      "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/governance"
+    },
+    "presentation": {
+      "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/presentation"
+    },
+    "integrity": {
+      "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/integrity"
+    },
+    "normative": {
+      "type": "object",
+      "properties": {
+        "retired_symbols": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/retired"
+          },
+          "minItems": 0
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/baseline"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/section"
+          },
+          "minItems": 0
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/source"
+          },
+          "minItems": 0
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/scope"
+          },
+          "minItems": 0
+        },
+        "non_goals": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/scope"
+          },
+          "minItems": 0
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/decision"
+          },
+          "minItems": 0
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/criterion"
+          },
+          "minItems": 0
+        },
+        "governs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "open_decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/open_decision"
+          },
+          "minItems": 0
+        },
+        "intent": {
+          "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/intent"
+        },
+        "approach": {
+          "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/approach"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:reference:common:0.2.0#/$defs/constraint"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "retired_symbols",
+        "title",
+        "summary",
+        "baseline",
+        "sections",
+        "sources",
+        "scope",
+        "non_goals",
+        "decisions",
+        "criteria",
+        "governs",
+        "open_decisions",
+        "intent",
+        "approach",
+        "constraints"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "format",
+    "format_version",
+    "kind",
+    "schema_version",
+    "artifact_id",
+    "slug",
+    "revision",
+    "governance",
+    "presentation",
+    "integrity",
+    "normative"
+  ],
+  "additionalProperties": false
+}

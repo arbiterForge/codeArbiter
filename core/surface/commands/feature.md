@@ -7,6 +7,17 @@ argument-hint: "<what you want to build>"
 
 The single permitted entry to implementation work. No feature code is written before a spec is approved and `tdd` Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes it one.
 
+## Typed-artifact pilot boundary
+
+For an existing `.html` spec/plan match, or when the user explicitly requests
+the typed-HTML pilot, load `{{PLUGIN_ROOT}}/includes/artifacts.md` before resume
+classification or artifact I/O. Its validated identity, authority, binding and
+task-state operations replace this command's `.md`, approval-label and status-cell
+assumptions for that pipeline only. A missing or invalid helper is a STOP; never
+fall back to interpreting the HTML as Markdown or as an empty artifact. HTML
+`--farm` dispatch is blocked. Legacy Markdown remains the default until the
+native-host, consumer and release qualification gates are complete.
+
 **Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal.
 
 ## Resume — an interrupted pipeline is re-entered, never restarted
@@ -14,7 +25,8 @@ The single permitted entry to implementation work. No feature code is written be
 Before triage, scan `{{PROJECT_DIR}}/.codearbiter/specs/` and `plans/` for an existing slug
 matching `$ARGUMENTS` (invoked bare, list every resumable pipeline and ask which). A crash,
 compaction, or closed session mid-pipeline loses nothing — the spec, the plan, and each task's
-`status` cell are on disk. On a match, confirm the resume with the user in one line
+state are on disk. For HTML, obtain state only through the typed-artifact protocol;
+do not scrape rendered labels or the embedded JSON directly. On a match, confirm the resume with the user in one line
 ("resume `<slug>` at <point>?") and re-enter at the furthest checkpoint reached:
 
 1. **Plan exists with non-`ACCEPTED` tasks** → `executing-plans` (its Phase 1 batches only the
