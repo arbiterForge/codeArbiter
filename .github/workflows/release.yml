@@ -541,7 +541,7 @@ jobs:
               OUTPUTS+=("ca-pi-version=$VERSION")
             fi
           done
-          IFS=,; OUTPUTS+=("cohort-targets=${COHORT_TARGETS[*]}"); unset IFS
+          IFS=,; OUTPUTS+=("cohort-targets=${COHORT_TARGETS[*]-}"); unset IFS
           if [ "$ANY_ELIGIBLE" = true ]; then
             python3 .github/scripts/check_tag_immutability.py --repo "$GITHUB_REPOSITORY" --require-recorded \
               --manifest .github/published-tags.json \

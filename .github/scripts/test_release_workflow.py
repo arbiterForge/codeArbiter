@@ -2023,6 +2023,13 @@ class RegistrationTest(unittest.TestCase):
         self.assertIn(".github/workflows/release.yml", push_trigger_paths(ci),
                       "a push touching only release.yml must still start CI")
 
+    def test_auto_noop_empty_cohort_is_portable_to_bash_3(self):
+        workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(
+            'OUTPUTS+=("cohort-targets=${COHORT_TARGETS[*]-}")',
+            workflow,
+        )
+
     def test_the_publish_action_starts_a_push_run(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn(".github/actions/**", push_trigger_paths(ci),

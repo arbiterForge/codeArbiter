@@ -1002,9 +1002,13 @@ class PackageTests(unittest.TestCase):
     def test_release_packaging_rejects_missing_duplicate_and_mismatched_candidates(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
         native_platform = next(iter(manifest["binaries"]))
+        missing_platform = next(
+            platform_name for platform_name in sorted(PACKAGER.ARTIFACT_PLATFORMS)
+            if platform_name != native_platform
+        )
         with self.assertRaisesRegex(ValueError, "missing required native-tested platform"):
             self.stage(output=self.base / "missing",
-                       required_platforms=[native_platform, "linux/arm64"])
+                       required_platforms=[native_platform, missing_platform])
         with self.assertRaisesRegex(ValueError, "duplicate native platform"):
             PACKAGER.stage_artifact_host_payloads(
                 candidates=[INSTALLATION, INSTALLATION],
