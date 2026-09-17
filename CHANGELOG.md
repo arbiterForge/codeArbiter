@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.18.9] - 2026-09-17
+
+### Fixed
+
+- `core/pysrc/_cleanuplib.py`: closes 6 blocking and several high-severity gaps an independent review found in the T-03/T-04/T-05 cleanup-framework backend against ADR-0036's supersession gate (verdict: NO-GO on the backend as it stood). `execute_branch_deletion` now requires a `ProofResult` and refuses an unproven target outright -- "proven-merged" is no longer caller honor; the force/atomic-delete path is unlocked only by `proof.method == "pr_delivery"`, never a caller-supplied flag; `evaluate_merge_proof`'s ancestry path is now repository-qualified (previously only the PR-delivery path checked the target's repository); worktree occupancy is revalidated fresh via a callable at every mutation attempt, not a static snapshot; a claimed-successful delete is reverified before being recorded "applied"; a read failure is never folded into "branch confirmed absent" in reconciliation or the guard; the journal's retention bound now comfortably exceeds the proposal's own named 40-branch batch example; and `repository_id` is threaded through and validated for consistency. The journal file is renamed `.cleanup-journal.json` (was `.resources.json`). Still true and not claimed otherwise: nothing in this repository calls this module in production, and wiring it into a live route remains T-06's job.
+
 ## [2.18.8] - 2026-09-17
 
 ### Added
