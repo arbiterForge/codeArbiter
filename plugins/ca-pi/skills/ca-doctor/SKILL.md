@@ -12,6 +12,17 @@ remediation.
 
 ## Flow
 
+
+The mechanical report also invokes the installation-pinned artifact client's `capabilities`
+operation. When the repository contains an HTML authority, it performs a bounded catalog read to
+surface invalid or ambiguous artifacts. It MUST NOT load the artifact schema, search `PATH`, use a
+repository binary, mutate an artifact, or silently fall back to Markdown.
+
+- `CAPABILITY_MISSING` or another installation identity failure is unhealthy: report “repair or
+  reinstall the pinned artifact payload; HTML work is blocked.” Unrelated legacy Markdown remains
+  usable.
+- An invalid HTML artifact is unhealthy: preserve the bounded engine code and direct the user to
+  inspect `repair-preview` before any explicit reviewed repair.
 1. The `/ca-doctor` alias has already run the extension's structured Pi doctor report before sending
    this generated skill. Present the `<codearbiter-doctor-report>` block below verbatim.
 2. The report inspects, without granting trust: active Git package origin/version, exact Pi CLI and
@@ -24,6 +35,9 @@ remediation.
 4. Its `active-dispatch` row remains degraded because supported Pi 0.84.1 public extension
    APIs cannot submit that deterministic call through the active dispatcher. PI-AC-28 remains blocked
    until supported-version real-host promotion/CI evidence closes the gap.
+5. Resolve Python once, run `<plugin-root>/hooks/doctor.py`, and present its mechanical report
+   verbatim. This is the on-demand artifact-capability and repository-artifact check; it is separate
+   from the wrapper self-test and must not be respelled into an active-dispatch claim.
 
 ## Remediation ladder
 

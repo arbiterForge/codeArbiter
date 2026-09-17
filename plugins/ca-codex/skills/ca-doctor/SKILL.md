@@ -12,6 +12,17 @@ remediation.
 
 ## Flow
 
+
+The mechanical report also invokes the installation-pinned artifact client's `capabilities`
+operation. When the repository contains an HTML authority, it performs a bounded catalog read to
+surface invalid or ambiguous artifacts. It MUST NOT load the artifact schema, search `PATH`, use a
+repository binary, mutate an artifact, or silently fall back to Markdown.
+
+- `CAPABILITY_MISSING` or another installation identity failure is unhealthy: report “repair or
+  reinstall the pinned artifact payload; HTML work is blocked.” Unrelated legacy Markdown remains
+  usable.
+- An invalid HTML artifact is unhealthy: preserve the bounded engine code and direct the user to
+  inspect `repair-preview` before any explicit reviewed repair.
 1. Resolve the plugin root from this loaded skill path, then run its `hooks/doctor.py` with Python 3
    and present the report verbatim. Do not try an empty plugin-root environment variable first.
 2. In an arbiter-enabled repo, attempt `git add --all --dry-run` via the shell tool. `[H-03]` means

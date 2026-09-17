@@ -34,6 +34,8 @@ contract in this directory. The two execution classes need a POSIX shell and
 so are skipped on Windows — the structural classes above run everywhere, and
 the hooks job's ubuntu/macos cells run all of it.
 """
+import base64
+import hashlib
 import json
 import os
 import re
@@ -57,6 +59,7 @@ CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 # to read a publisher job's shell now reads THIS file, and proves it for all
 # four lanes at once rather than for two of four copies.
 PUBLISH_ACTION = REPO_ROOT / ".github" / "actions" / "publish-release" / "action.yml"
+NPM_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "npm-publish.yml"
 PUBLISH_ACTION_REF = "./.github/actions/publish-release"
 
 # What each lane must bring of its own. Issue #382's acceptance criteria name
@@ -116,6 +119,10 @@ AUTO_PREFLIGHT_JOB = "auto-preflight"
 MANUAL_CODEX_PROVENANCE_JOB = "codex-provenance"
 AUTO_CODEX_PROVENANCE_JOB = "auto-codex-provenance"
 AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB = "auto-command-route-release-audit"
+AUTO_CLAUDE_COHORT_GATE = "auto-claude-cohort-gate"
+AUTO_CODEX_COHORT_GATE = "auto-codex-cohort-gate"
+AUTO_COHORT_RECONCILIATION = "auto-cohort-reconciliation"
+AUTO_PI_RECEIPT_JOB = "auto-retain-pi-cohort-receipt"
 MANUAL_PI_NPM_JOB = "publish-pi-npm"
 AUTO_PI_NPM_JOB = "auto-publish-pi-npm"
 NPM_PUBLISH_WORKFLOW_REF = "./.github/workflows/npm-publish.yml"
@@ -134,6 +141,10 @@ JOB_TRIGGER = dict(
     + [(AUTO_CODEX_PROVENANCE_JOB, "workflow_run")]
     + [(AUTO_PI_NPM_JOB, "workflow_run")]
     + [(AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB, "workflow_run")]
+    + [(AUTO_CLAUDE_COHORT_GATE, "workflow_run"),
+       (AUTO_CODEX_COHORT_GATE, "workflow_run")]
+    + [(AUTO_COHORT_RECONCILIATION, "workflow_run")]
+    + [(AUTO_PI_RECEIPT_JOB, "workflow_run")]
 )
 
 # A job-level `if:` that uses one of these status functions opts OUT of the
@@ -199,11 +210,18 @@ def _condition_triggers(condition: str, *, allow_status_escape: bool = False) ->
         raise AssertionError("a status function bypasses the implicit needs gate")
     if "github.event_name" not in condition:
         return set(TRIGGERS)
-    supported_pi_result_guard = (
-        "(needs.auto-preflight.outputs.ca-pi != 'true' || "
-        "needs.auto-publish-pi-npm.result == 'success')"
+    supported_guards = (
+        "((needs.auto-preflight.outputs.ca-pi != 'true' && needs.auto-cohort-reconciliation.outputs.repair-ca-pi != 'true') || needs.auto-retain-pi-cohort-receipt.result == 'success')",
+        "((needs.auto-preflight.outputs.ca != 'true' && needs.auto-cohort-reconciliation.outputs.repair-ca != 'true') || needs.auto-release.result == 'success')",
+        "((needs.auto-preflight.outputs.ca-codex != 'true' && needs.auto-cohort-reconciliation.outputs.repair-ca-codex != 'true') || needs.auto-release-codex.result == 'success')",
+        "(needs.auto-preflight.outputs.ca == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca == 'true')",
+        "(needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true')",
+        "(needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true')",
     )
-    if "||" in condition.replace(supported_pi_result_guard, "true"):
+    reduced = condition
+    for guard in supported_guards:
+        reduced = reduced.replace(guard, "true")
+    if "||" in reduced:
         raise AssertionError("unsupported boolean event guard")
     named = re.findall(r"github\.event_name == '([\w_]+)'", condition)
     if len(named) != 1 or named[0] not in TRIGGERS:
@@ -237,7 +255,11 @@ def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
     condition = _job_if(jobs[job])
     permitted = _condition_triggers(
         condition,
-        allow_status_escape=job == AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
+        allow_status_escape=job in {
+            AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
+            AUTO_CLAUDE_COHORT_GATE,
+            AUTO_CODEX_COHORT_GATE,
+        },
     )
     parents = _job_needs(jobs[job])
     if not parents:
@@ -332,8 +354,22 @@ def _lane_inputs(job: str) -> dict:
 _STUB_PRELUDE = """
 git() {
   echo "git $*" >> "$STUB_LOG"
-  if [ "$1" = "ls-remote" ]; then cat "$STUB_LS_REMOTE"; fi
+  if [ "$1" = "ls-remote" ]; then
+    if [ -s "$STUB_LS_REMOTE" ]; then cat "$STUB_LS_REMOTE"
+    elif [ -s "$STUB_TAG_CREATED" ]; then
+      printf '%s\trefs/tags/%s\n%s\trefs/tags/%s^{}\n' "$STUB_TAG_OBJECT" "$TAG" "$GITHUB_SHA" "$TAG"
+    fi
+  fi
   if [ "$1" = "tag" ] && [ "${2:-}" = "-l" ]; then printf '%s' "${STUB_TAGS:-}"; fi
+  if [ "$1" = "tag" ] && [ "${2:-}" = "-a" ] && [ "${STUB_FAIL_TAG:-}" = "1" ]; then return 1; fi
+  if [ "$1" = "tag" ] && [ "${2:-}" = "-a" ]; then printf 'created\n' > "$STUB_TAG_CREATED"; fi
+  if [ "$1" = "push" ]; then printf 'created\n' > "$STUB_TAG_CREATED"; fi
+  if [ "$1" = "cat-file" ] && [ "${2:-}" = "tag" ]; then
+    printf 'object %s\ntype commit\ntag %s\ntagger Test <test@example.invalid> 0 +0000\n\n' "$GITHUB_SHA" "$TAG"
+    cat tagmsg.txt
+  fi
+  if [ "$1" = "hash-object" ]; then cat >/dev/null; printf '%s' "$STUB_TAG_OBJECT"; return 0; fi
+  if [ "$1" = "rev-parse" ] && [ -n "${TAG:-}" ] && [ "${2:-}" = "${TAG}^{tag}" ]; then printf '%s' "$STUB_TAG_OBJECT"; return 0; fi
   if [ "$1" = "rev-parse" ] && [ "${2:-}" = "HEAD" ]; then printf '%s' "${STUB_HEAD:-$GITHUB_SHA}"; fi
   return 0
 }
@@ -342,7 +378,9 @@ gh() {
   if [ "$1" = "api" ]; then
     case " $* " in
       *"/releases?per_page=100"*)
-        case "$STUB_RELEASE" in
+        CURRENT_RELEASE="$STUB_RELEASE"
+        if [ -s "$STUB_RELEASE_STATE" ]; then CURRENT_RELEASE=$(cat "$STUB_RELEASE_STATE"); fi
+        case "$CURRENT_RELEASE" in
           unavailable)
             echo "simulated Release API failure" >&2
             return 1
@@ -354,7 +392,15 @@ gh() {
           published) DRAFT=false ;;
           *) DRAFT=true ;;
         esac
-        printf '[[{"draft":%s,"tag_name":"%s"}]]\n' "$DRAFT" "$STUB_TAGNAME"
+        DRAFT="$DRAFT" "$STUB_PYTHON" -c 'import json,os; print(json.dumps([[{
+          "id":42,"draft":os.environ["DRAFT"]=="true","tag_name":os.environ["STUB_TAGNAME"],
+          "body":"notes\\n\\n<!-- codearbiter-cohort-start-v1:"+os.environ["STUB_MARKER_B64"]+" -->\\n",
+          "assets":[]}]]))'
+        return 0
+        ;;
+      *"/releases "*)
+        printf 'draft\n' > "$STUB_RELEASE_STATE"
+        printf '{"id":42,"draft":true,"tag_name":"%s"}\n' "$STUB_TAGNAME"
         return 0
         ;;
       *"/releases/tags/"*)
@@ -439,6 +485,7 @@ class _ShellHarness(unittest.TestCase):
         scripts = root / ".github" / "scripts"
         scripts.mkdir(parents=True)
         shutil.copy(HERE / "_releaselib.py", scripts / "_releaselib.py")
+        shutil.copy(HERE / "_npm_publishlib.py", scripts / "_npm_publishlib.py")
         shutil.copy(
             HERE / "check_command_route_release_state.py",
             scripts / "check_command_route_release_state.py")
@@ -475,6 +522,11 @@ class _ShellHarness(unittest.TestCase):
              manifest_version="9.9.9", root_version=None):
         root = self._sandbox()
         (root / "notes.md").write_text(notes, encoding="utf-8", newline="\n")
+        release_date = re.search(r"\d{4}-\d{2}-\d{2}", notes)
+        if release_date:
+            (root / "tagmsg.txt").write_text(
+                notes.rstrip("\n") + f"\nReleased-at: {release_date.group(0)}\n",
+                encoding="utf-8", newline="\n")
         (root / "ls-remote.txt").write_text(ls_remote, encoding="utf-8", newline="\n")
         # Deliberately NOT `checks.json`: the step redirects its own `gh api`
         # output there, and the redirection truncates before the fake reads.
@@ -483,8 +535,11 @@ class _ShellHarness(unittest.TestCase):
         environ.update({
             "STUB_LOG": str(root / "calls.log"),
             "STUB_LS_REMOTE": str(root / "ls-remote.txt"),
+            "STUB_TAG_CREATED": str(root / "tag-created.txt"),
+            "STUB_TAG_OBJECT": "4" * 40,
             "STUB_CHECKS": str(root / "stub-checks.json"),
             "STUB_RELEASE": release,
+            "STUB_RELEASE_STATE": str(root / "release-state.txt"),
             "STUB_TAGNAME": tagname,
             "STUB_MANIFEST_VERSION": manifest_version,
             "STUB_ROOT_VERSION": (manifest_version if root_version is None
@@ -493,6 +548,7 @@ class _ShellHarness(unittest.TestCase):
             "GITHUB_SHA": self.HEAD,
             "GITHUB_REPOSITORY": "arbiterForge/codeArbiter",
             "GITHUB_OUTPUT": str(root / "gh-output.txt"),
+            "RUNNER_TEMP": str(root),
             # Nothing authenticating is set here: the fake `gh` never signs in
             # and never reaches the network.
             # Mirrors action.yml's own `create-release` default ("true") so
@@ -502,7 +558,26 @@ class _ShellHarness(unittest.TestCase):
             "CREATE_RELEASE": "true",
         })
         environ.update(env or {})
-        proc = subprocess.run([BASH, "-c", _STUB_PRELUDE + "\n" + script],
+        marker = {
+            "format": "codearbiter.cohort-start/0.1.0", "target": "ca",
+            "host": "claude", "tag": environ.get("TAG", "v9.9.9"),
+            "source_commit": self.HEAD, "source_tree": "2" * 40,
+            "workflow": ".github/workflows/ci.yml", "ci_run_id": "123",
+            "cohort_sha256": "3" * 64,
+            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
+            "cohort_tags": {"ca": environ.get("TAG", "v9.9.9"),
+                            "ca-codex": "ca-codex-v9.9.9",
+                            "ca-pi": "ca-pi-v9.9.9"},
+            "cohort_targets": ["ca"],
+        }
+        marker_bytes = json.dumps(marker, sort_keys=True, separators=(",", ":")).encode()
+        (root / "cohort-marker.json").write_bytes(marker_bytes + b"\n")
+        (root / "qualified-notes.md").write_text("notes\n", encoding="utf-8")
+        environ["STUB_MARKER_B64"] = base64.urlsafe_b64encode(marker_bytes).decode().rstrip("=")
+        run_script = root / "run-test.sh"
+        run_script.write_text(_STUB_PRELUDE + "\n" + script, encoding="utf-8",
+                              newline="\n")
+        proc = subprocess.run([BASH, str(run_script)],
                               cwd=str(root), env=environ,
                               capture_output=True, text=True)
         log_path = root / "calls.log"
@@ -575,8 +650,13 @@ class PreflightExecutionTest(_ShellHarness):
         for name, (version, target) in cases.items():
             with self.subTest(input=name):
                 proc, _, out = self._select(**{name: version})
-                self.assertEqual(proc.returncode, 0, proc.stderr)
-                self.assertIn(f"target={target}\n", out)
+                if target == "ca-sandbox":
+                    self.assertEqual(proc.returncode, 0, proc.stderr)
+                    self.assertIn(f"target={target}\n", out)
+                else:
+                    self.assertNotEqual(proc.returncode, 0)
+                    self.assertEqual(out, "")
+                    self.assertIn("serialized hosted CI cohort", proc.stdout)
 
     def test_no_input_refuses(self):
         proc, _, out = self._select()
@@ -648,17 +728,21 @@ class PublishExecutionTest(_ShellHarness):
     NAMESPACES = tuple((job, LANES[job]["tag-prefix"] + "9.9.9") for job in LANES)
 
     def _publish(self, tag, version="9.9.9", *, tag_at=None, release="none",
-                 mark_latest="false", summary="", title_prefix="codeArbiter",
-                 create_release="true"):
+                  mark_latest="false", summary="", title_prefix="codeArbiter",
+                  create_release="true", package_host="", fail_tag=False,
+                  tag_object=None):
         ls_remote = ""
         if tag_at:
-            ls_remote = (f"9{'0' * 39}\trefs/tags/{tag}\n"
+            direct = tag_object or ("4" * 40 if package_host else "9" + "0" * 39)
+            ls_remote = (f"{direct}\trefs/tags/{tag}\n"
                          f"{tag_at}\trefs/tags/{tag}^{{}}\n")
         return self._run(_action_step(self.STEP_NAME),
                          env={"TAG": tag, "VER": version, "SUMMARY": summary,
-                              "TITLE_PREFIX": title_prefix,
-                              "MARK_LATEST": mark_latest,
-                              "CREATE_RELEASE": create_release},
+                               "TITLE_PREFIX": title_prefix,
+                               "MARK_LATEST": mark_latest,
+                               "CREATE_RELEASE": create_release,
+                               "PACKAGE_HOST": package_host,
+                               "STUB_FAIL_TAG": "1" if fail_tag else "0"},
                          ls_remote=ls_remote, release=release, tagname=tag)
 
     def test_fresh_publish_tags_and_releases(self):
@@ -686,6 +770,47 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("publish state: resume_publish", proc.stdout)
         self.assertNotIn("git tag -a", log)
         self.assertIn("gh release create v9.9.9", log)
+
+    def test_qualified_marker_precedes_tag_and_exact_draft_retry_resumes(self):
+        fresh, fresh_log, _ = self._publish("v9.9.9", package_host="claude")
+        self.assertEqual(fresh.returncode, 0, fresh.stderr)
+        self.assertIn("gh api --method POST repos/arbiterForge/codeArbiter/releases", fresh_log)
+        self.assertLess(fresh_log.index("gh api --method POST"),
+                        fresh_log.index("git tag -a v9.9.9"))
+        self.assertLess(fresh_log.index("git tag -a v9.9.9"),
+                        fresh_log.index("git push origin refs/tags/v9.9.9"))
+        failed, failed_log, _ = self._publish(
+            "v9.9.9", package_host="claude", fail_tag=True)
+        self.assertNotEqual(failed.returncode, 0)
+        self.assertLess(failed_log.index("gh api --method POST"),
+                        failed_log.index("git tag -a v9.9.9"))
+        resume, resume_log, _ = self._publish(
+            "v9.9.9", release="draft", package_host="claude")
+        self.assertEqual(resume.returncode, 0, resume.stderr)
+        self.assertNotIn("gh api --method POST", resume_log)
+        self.assertIn("git tag -a v9.9.9", resume_log)
+        exact, exact_log, _ = self._publish(
+            "v9.9.9", tag_at=self.HEAD, release="draft", package_host="claude")
+        self.assertEqual(exact.returncode, 0, exact.stderr)
+        self.assertNotIn("git tag -a", exact_log)
+        retagged, retagged_log, _ = self._publish(
+            "v9.9.9", tag_at=self.HEAD, release="draft", package_host="claude",
+            tag_object="5" * 40)
+        # A different direct object that peels to the same source is still a
+        # retag and must not be accepted as an exact retry.
+        self.assertNotEqual(retagged.returncode, 0)
+        self.assertNotIn("git tag -a", retagged_log)
+        wrong, wrong_log, _ = self._publish(
+            "v9.9.9", tag_at=self.OTHER, release="draft", package_host="claude")
+        self.assertNotEqual(wrong.returncode, 0)
+        self.assertNotIn("git tag -a", wrong_log)
+
+    def test_qualified_markerless_current_tag_refuses(self):
+        markerless, retry_log, _ = self._publish(
+            "v9.9.9", tag_at=self.HEAD, package_host="claude")
+        self.assertNotEqual(markerless.returncode, 0)
+        self.assertIn("markerless current qualified tag", markerless.stdout + markerless.stderr)
+        self.assertNotIn("--method POST", retry_log)
 
     def test_release_api_unavailability_aborts_before_any_tag_mutation(self):
         proc, log, _ = self._publish("v9.9.9", release="unavailable")
@@ -923,6 +1048,176 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("draft/unpublished", proc.stdout + proc.stderr)
 
 
+@POSIX_ONLY
+class QualifiedMutationBoundaryExecutionTest(unittest.TestCase):
+    """Execute shipped last-observation shells; late drift must suppress mutation."""
+
+    TAG = "ca-pi-v1.2.3"
+
+    def _fixture(self, root: Path, assets: list[dict]):
+        scripts = root / "trusted" / ".github" / "scripts"
+        scripts.mkdir(parents=True)
+        shutil.copy(HERE / "_npm_publishlib.py", scripts / "_npm_publishlib.py")
+        local_scripts = root / ".github" / "scripts"
+        local_scripts.mkdir(parents=True)
+        shutil.copy(HERE / "_npm_publishlib.py", local_scripts / "_npm_publishlib.py")
+        notes = b"## [1.2.3] - 2026-09-17\n\n### Added\n\n- exact\n"
+        marker = {
+            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
+            "host": "pi", "tag": self.TAG, "source_commit": "a" * 40,
+            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
+            "ci_run_id": "123", "cohort_sha256": "c" * 64,
+            "release_notes_sha256": hashlib.sha256(notes).hexdigest(),
+            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
+                            "ca-pi": self.TAG}, "cohort_targets": ["ca-pi"],
+        }
+        raw = json.dumps(marker, sort_keys=True, separators=(",", ":")).encode()
+        encoded = base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        body = notes.decode() + f"\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n"
+        release = {"id": 42, "tag_name": self.TAG, "draft": True,
+                   "body": body, "assets": assets}
+        marker_path = root / "pi-cohort-marker.json"
+        marker_path.write_bytes(raw + b"\n")
+        (root / "cohort-marker.json").write_bytes(raw + b"\n")
+        return release, marker_path
+
+    def _write_pages(self, path: Path, release: dict):
+        path.write_text(json.dumps([[release]]), encoding="utf-8", newline="\n")
+
+    def _observe(self, root: Path, pages: Path, marker: Path, assets: list[str],
+                 expected: Path | None = None):
+        command = [sys.executable, str(HERE / "_npm_publishlib.py"),
+                   "qualified-finalize", "--releases", str(pages), "--tag", self.TAG,
+                   "--marker", str(marker)]
+        for asset in assets:
+            command.extend(("--asset", asset))
+        if expected is not None:
+            command.extend(("--expected-assets", str(expected)))
+        return subprocess.run(command, cwd=root, capture_output=True, text=True)
+
+    def _run_bash(self, root: Path, script: str, env: dict):
+        path = root / "boundary.sh"
+        path.write_text(script, encoding="utf-8", newline="\n")
+        return subprocess.run([BASH, str(path)], cwd=root, env={**os.environ, **env},
+                              capture_output=True, text=True)
+
+    def test_shipped_npm_guard_blocks_stateful_second_observation_mutations(self):
+        workflow = NPM_WORKFLOW.read_text(encoding="utf-8")
+        guard = _extract_run(workflow, "Re-fetch exact empty marker-owned draft", 6,
+                             "npm-publish workflow")
+        publish_block = workflow.split("- name: Publish with provenance", 1)[1].split(
+            "- name: Verify exact registry publication evidence", 1)[0]
+        publish = re.search(r"(?m)^        run: '(.*)'$", publish_block).group(1)
+        for mutation in ("published", "notes", "asset"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp); valid, marker = self._fixture(root, [])
+                first = root / "first.json"; self._write_pages(first, valid)
+                self.assertEqual(self._observe(root, first, marker, []).returncode, 0)
+                changed = dict(valid)
+                if mutation == "published": changed["draft"] = False
+                elif mutation == "notes": changed["body"] = changed["body"].replace("- exact", "- replaced")
+                else: changed["assets"] = [{"name": "unexpected", "url": "x"}]
+                second = root / "second.json"; self._write_pages(second, changed)
+                log = root / "mutation.log"
+                fake_npm = root / "fake-npm.sh"
+                fake_npm.write_text('#!/usr/bin/env bash\necho npm-publish >> "$MUTATION_LOG"\n',
+                                    encoding="utf-8", newline="\n")
+                fake_npm.chmod(0o755)
+                script = ("set -euo pipefail\n"
+                          "gh() { cat \"$SECOND_PAGES\"; }\n"
+                          "python3() { \"$TEST_PYTHON\" \"$@\"; }\n" + guard + "\n" + publish + "\n")
+                proc = self._run_bash(root, script, {
+                    "RUNNER_TEMP": str(root), "GITHUB_REPOSITORY": "arbiterForge/codeArbiter",
+                    "RELEASE_TAG": self.TAG, "SECOND_PAGES": str(second),
+                    "TEST_PYTHON": sys.executable.replace("\\", "/"),
+                    "NPM_CLI": str(fake_npm).replace("\\", "/"), "TARBALL": "unused.tgz",
+                    "MUTATION_LOG": str(log).replace("\\", "/"),
+                })
+                self.assertNotEqual(proc.returncode, 0)
+                self.assertFalse(log.exists(), proc.stdout + proc.stderr)
+
+    def test_shipped_patch_tail_blocks_stateful_second_observation_mutations(self):
+        step = _action_step("Publish qualified Release only after receipt readback")
+        tail = step[step.rindex('gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100"'):]
+        receipt = {"name": "codearbiter-cohort-publication-v1.json", "url": "receipt-url"}
+        package = {"name": "package.tgz", "url": "package-url"}
+        for mutation in ("published", "notes", "add", "remove", "replace"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp); valid, marker = self._fixture(root, [receipt, package])
+                first = root / "first.json"; self._write_pages(first, valid)
+                expected = root / "final-asset-identity.json"
+                expected.write_text(json.dumps({receipt["name"]: receipt["url"],
+                                                package["name"]: package["url"]}),
+                                    encoding="utf-8", newline="\n")
+                self.assertEqual(self._observe(
+                    root, first, marker, sorted((receipt["name"], package["name"])),
+                    expected).returncode, 0)
+                changed = dict(valid); changed["assets"] = list(valid["assets"])
+                if mutation == "published": changed["draft"] = False
+                elif mutation == "notes": changed["body"] = changed["body"].replace("- exact", "- replaced")
+                elif mutation == "add": changed["assets"].append({"name": "extra", "url": "x"})
+                elif mutation == "remove": changed["assets"] = [receipt]
+                else: changed["assets"] = [{**receipt, "url": "replacement"}, package]
+                second = root / "second.json"; self._write_pages(second, changed)
+                log = root / "mutation.log"
+                script = ("set -euo pipefail\nreleases=\"$RUNNER_TEMP/releases.json\"\n"
+                          "gh() { if [[ \" $* \" == *\" --method PATCH \"* ]]; then "
+                          "echo PATCH >> \"$MUTATION_LOG\"; else cat \"$SECOND_PAGES\"; fi; }\n"
+                          "python3() { \"$TEST_PYTHON\" \"$@\"; }\n" + tail)
+                proc = self._run_bash(root, script, {
+                    "RUNNER_TEMP": str(root), "GITHUB_REPOSITORY": "arbiterForge/codeArbiter",
+                    "TAG": self.TAG, "ASSET_FILE": "package.tgz", "MARK_LATEST": "false",
+                    "SECOND_PAGES": str(second), "MUTATION_LOG": str(log).replace("\\", "/"),
+                    "TEST_PYTHON": sys.executable.replace("\\", "/"),
+                })
+                self.assertNotEqual(proc.returncode, 0)
+                self.assertFalse(log.exists(), proc.stdout + proc.stderr)
+
+    def test_shipped_pi_patch_tail_blocks_stateful_second_observation_mutations(self):
+        step = _step_run(
+            "auto-retain-pi-cohort-receipt",
+            "Retain and read back immutable Pi receipt on the Release",
+        )
+        tail = step[step.rindex(
+            'gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100"'
+        ):]
+        receipt = {"name": "codearbiter-cohort-publication-v1.json", "url": "receipt-url"}
+        for mutation in ("published", "notes", "add", "remove", "receipt"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp); valid, marker = self._fixture(root, [receipt])
+                first = root / "first.json"; self._write_pages(first, valid)
+                expected = root / "pi-final-asset-identity.json"
+                expected.write_text(json.dumps({receipt["name"]: receipt["url"]}),
+                                    encoding="utf-8", newline="\n")
+                self.assertEqual(self._observe(
+                    root, first, marker, [receipt["name"]], expected).returncode, 0)
+                changed = dict(valid); changed["assets"] = list(valid["assets"])
+                if mutation == "published": changed["draft"] = False
+                elif mutation == "notes": changed["body"] = changed["body"].replace(
+                    "- exact", "- replaced")
+                elif mutation == "add":
+                    changed["assets"].append({"name": "extra", "url": "x"})
+                elif mutation == "remove": changed["assets"] = []
+                else: changed["assets"] = [{**receipt, "url": "replacement"}]
+                second = root / "second.json"; self._write_pages(second, changed)
+                log = root / "mutation.log"
+                script = (
+                    "set -euo pipefail\nreleases=\"$RUNNER_TEMP/releases.json\"\n"
+                    "marker=\"$RUNNER_TEMP/pi-cohort-marker.json\"\n"
+                    "gh() { if [[ \" $* \" == *\" --method PATCH \"* ]]; then "
+                    "echo PATCH >> \"$MUTATION_LOG\"; else cat \"$SECOND_PAGES\"; fi; }\n"
+                    "python3() { \"$TEST_PYTHON\" \"$@\"; }\n" + tail
+                )
+                proc = self._run_bash(root, script, {
+                    "RUNNER_TEMP": str(root), "GITHUB_REPOSITORY": "arbiterForge/codeArbiter",
+                    "RELEASE_TAG": self.TAG, "SECOND_PAGES": str(second),
+                    "MUTATION_LOG": str(log).replace("\\", "/"),
+                    "TEST_PYTHON": sys.executable.replace("\\", "/"),
+                })
+                self.assertNotEqual(proc.returncode, 0)
+                self.assertFalse(log.exists(), proc.stdout + proc.stderr)
+
+
 class DispatchExclusivityTest(unittest.TestCase):
     """#378: one dispatch releases exactly one plugin — enforced, not documented."""
 
@@ -941,7 +1236,8 @@ class DispatchExclusivityTest(unittest.TestCase):
     def test_only_the_publish_jobs_carry_a_write_token(self):
         writers = sorted(job for job, block in _jobs().items()
                          if re.search(r"(?m)^      contents: write$", block))
-        self.assertEqual(writers, sorted(PUBLISH_JOBS + AUTO_PUBLISH_JOBS),
+        self.assertEqual(writers, sorted(PUBLISH_JOBS + AUTO_PUBLISH_JOBS +
+                                         (AUTO_PI_RECEIPT_JOB,)),
                          "exactly the declared publishers (manual + auto-tag) "
                          "may declare `contents: write`")
 
@@ -961,6 +1257,8 @@ class DispatchExclusivityTest(unittest.TestCase):
 
     def test_every_publish_job_depends_on_the_preflight(self):
         jobs = _jobs()
+        self.assertIn(AUTO_COHORT_RECONCILIATION,
+                      _job_needs(jobs["auto-release"]))
         for job in PUBLISH_JOBS:
             with self.subTest(job=job):
                 self.assertIn(
@@ -1244,7 +1542,6 @@ class LaneIsolationTest(unittest.TestCase):
         self.assertIn("expected_sha: ${{ github.sha }}", block)
         self.assertIn("contents: read", block)
         self.assertIn("id-token: write", block)
-        self.assertNotIn("contents: write", block)
         self.assertNotIn("secrets: inherit", block)
         self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
 
@@ -1387,10 +1684,14 @@ class AutoTagLaneTest(unittest.TestCase):
             set(_job_needs(block)),
             {
                 AUTO_PREFLIGHT_JOB,
+                AUTO_COHORT_RECONCILIATION,
                 "auto-release",
                 "auto-release-codex",
                 "auto-release-pi",
                 AUTO_PI_NPM_JOB,
+                AUTO_PI_RECEIPT_JOB,
+                AUTO_CLAUDE_COHORT_GATE,
+                AUTO_CODEX_COHORT_GATE,
             },
         )
         condition = _job_if(block)
@@ -1398,7 +1699,7 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn("github.event_name == 'workflow_run'", condition)
         self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
         self.assertIn("needs.auto-preflight.result == 'success'", condition)
-        self.assertIn("needs.auto-publish-pi-npm.result == 'success'", condition)
+        self.assertIn("needs.auto-retain-pi-cohort-receipt.result == 'success'", condition)
 
     def test_auto_pi_release_synchronously_requires_the_exact_npm_publisher(self):
         jobs = _jobs()
@@ -1408,7 +1709,9 @@ class AutoTagLaneTest(unittest.TestCase):
             "auto Pi release can succeed without starting npm publication",
         )
         block = jobs[AUTO_PI_NPM_JOB]
-        self.assertEqual(set(_job_needs(block)), {AUTO_PREFLIGHT_JOB, "auto-release-pi"})
+        self.assertEqual(set(_job_needs(block)), {
+            AUTO_PREFLIGHT_JOB, AUTO_COHORT_RECONCILIATION,
+            AUTO_CODEX_COHORT_GATE, "auto-release-pi"})
         condition = _job_if(block)
         self.assertIn("github.event_name == 'workflow_run'", condition)
         self.assertIn("needs.auto-preflight.outputs.ca-pi == 'true'", condition)
@@ -1419,7 +1722,6 @@ class AutoTagLaneTest(unittest.TestCase):
         )
         self.assertIn("contents: read", block)
         self.assertIn("id-token: write", block)
-        self.assertNotIn("contents: write", block)
         self.assertNotIn("secrets: inherit", block)
         self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
 
@@ -2012,14 +2314,14 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertNotIn("PROVENANCE-CHECK", proc.stdout)
         self.assertEqual(out, "ca=false\nca-codex=false\nca-sandbox=false\nca-pi=false\n"
-                             "ca-pi-version=9.9.9\n")
+                         "ca-pi-version=9.9.9\ncohort-targets=\n")
         self.assertNotIn("git push", log)
 
     def test_manual_checks_are_ordered_target_scoped_and_credential_free(self):
         self.commands = {target: [f'"$PY" check.py {target}-first',
                                   f'"$PY" check.py {target}-second']
                          for target in ("ca", "ca-codex", "ca-sandbox", "ca-pi")}
-        for target in self.commands:
+        for target in ("ca-sandbox",):
             with self.subTest(target=target):
                 proc, log, out = self._authorize("preflight", target=target)
                 self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -2031,7 +2333,7 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
     def test_failed_or_unavailable_check_never_authorizes_either_lane(self):
         for command in ('"$PY" check.py first fail', 'missing-pretag-command'):
             self.commands = {"ca-pi": [command, '"$PY" check.py forbidden-later']}
-            for lane in ("preflight", "auto-preflight"):
+            for lane in ("auto-preflight",):
                 with self.subTest(lane=lane, command=command):
                     proc, _, out = self._authorize(lane, target="ca-pi")
                     self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
@@ -2039,10 +2341,10 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
                     self.assertNotIn("CHECKED:forbidden-later", proc.stdout)
 
     def test_mutating_check_never_authorizes_either_lane(self):
-        self.commands = {"ca-pi": ['"$PY" check.py mutation mutate']}
-        for lane in ("preflight", "auto-preflight"):
+        for lane, target in (("preflight", "ca-sandbox"), ("auto-preflight", "ca-pi")):
+            self.commands = {target: ['"$PY" check.py mutation mutate']}
             with self.subTest(lane=lane):
-                proc, _, out = self._authorize(lane, target="ca-pi")
+                proc, _, out = self._authorize(lane, target=target)
                 self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
                 self.assertIn("MUTATED", proc.stderr)
                 self.assertEqual(out, "")
@@ -2054,7 +2356,8 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertEqual(re.findall(r"^CHECKED:(.+)$", proc.stdout, re.M), ["eligible-pi"])
         self.assertEqual(out, "ca=false\nca-codex=true\nca-sandbox=true\n"
-                             "ca-pi=true\nca-pi-version=9.9.9\n")
+                         "ca-pi=true\nca-pi-version=9.9.9\n"
+                         "cohort-targets=ca-codex,ca-pi\n")
 
     def test_auto_malformed_declaration_fails_closed_before_authorization(self):
         self.commands = {}
@@ -2104,6 +2407,307 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
                 self.assertRegex(block, rf"(?m)^          {variable}: "
                                  + re.escape("${{ github.event.workflow_run." + field + " }}")
                                  + r"$")
+
+
+class StructuredArtifactPublicationTest(unittest.TestCase):
+    """AC-04/AC-10: publication consumes and reads back one exact CI cohort."""
+
+    def test_release_lanes_use_the_protected_exact_commit_cohort(self):
+        text = _release()
+        self.assertIn("cohort-run-id: ${{ steps.cohort.outputs.run-id }}", text)
+        self.assertIn("cohort-run-id: ${{ github.event.workflow_run.id }}", text)
+        self.assertIn("actions/workflows/ci.yml/runs", text)
+        self.assertIn("actions: read", _jobs()["preflight"])
+        for job, host in (("release", "claude"), ("release-codex", "codex")):
+            block = _jobs()[job]
+            self.assertIn("actions: read", block)
+            self.assertIn(f"package-host: {host}", block)
+            self.assertIn("ci-run-id: ${{ needs.preflight.outputs.cohort-run-id }}", block)
+        for job, host in (("auto-release", "claude"),
+                          ("auto-release-codex", "codex")):
+            block = _jobs()[job]
+            self.assertIn("actions: read", block)
+            self.assertIn(f"package-host: {host}", block)
+            self.assertIn("ci-run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}", block)
+
+    def test_qualified_targets_declare_assets_and_prohibit_local_publication(self):
+        rows = {row["target"]: row for row in _releaselib.load_targets(
+            REPO_ROOT / ".codearbiter" / "release-targets.md")}
+        expected = {
+            "ca": "codearbiter-ca-{version}.tar.gz",
+            "ca-codex": "codearbiter-ca-codex-{version}.tar.gz",
+            "ca-pi": "arbiterforge-ca-pi-{version}.tgz",
+        }
+        for target, asset in expected.items():
+            with self.subTest(target=target):
+                self.assertEqual(rows[target]["release_assets"], [asset])
+                self.assertIn("hosted release.yml cohort", rows[target]["release_build"])
+        resolver = _extract_run(_release(), "Resolve exactly one release target", 6, "release")
+        self.assertIn('if [ "$TARGET" != "ca-sandbox" ]', resolver)
+        self.assertIn("independent manual publication is prohibited", resolver)
+
+    def test_hosted_cohort_is_serialized_and_sandbox_remains_independent(self):
+        workflow = _release()
+        self.assertIn("group: release-${{ github.event_name == 'workflow_run' && 'hosted-cohort' || github.run_id }}", workflow)
+        self.assertIn("cancel-in-progress: false", workflow)
+        jobs = _jobs()
+        self.assertEqual(set(_job_needs(jobs[AUTO_CLAUDE_COHORT_GATE])),
+                         {AUTO_PREFLIGHT_JOB, AUTO_COHORT_RECONCILIATION,
+                          "auto-release"})
+        self.assertIn("needs.auto-cohort-reconciliation.result == 'success'",
+                      jobs[AUTO_CLAUDE_COHORT_GATE])
+        self.assertIn(AUTO_CLAUDE_COHORT_GATE,
+                      _job_needs(jobs[AUTO_CODEX_PROVENANCE_JOB]))
+        self.assertEqual(set(_job_needs(jobs[AUTO_CODEX_COHORT_GATE])),
+                         {AUTO_PREFLIGHT_JOB, AUTO_COHORT_RECONCILIATION,
+                          AUTO_CLAUDE_COHORT_GATE,
+                          "auto-release-codex"})
+        self.assertIn(AUTO_CODEX_COHORT_GATE, _job_needs(jobs["auto-release-pi"]))
+        self.assertEqual(_job_needs(jobs["auto-release-sandbox"]),
+                         (AUTO_PREFLIGHT_JOB,))
+        for job in ("auto-release", AUTO_CLAUDE_COHORT_GATE,
+                    AUTO_CODEX_PROVENANCE_JOB, "auto-release-codex",
+                    AUTO_CODEX_COHORT_GATE, "auto-release-pi",
+                    "auto-publish-pi-npm", "auto-retain-pi-cohort-receipt",
+                    "auto-command-route-release-audit"):
+            with self.subTest(job=job):
+                self.assertIn(AUTO_COHORT_RECONCILIATION, _job_needs(jobs[job]))
+                self.assertIn("needs.auto-cohort-reconciliation.result == 'success'",
+                              jobs[job])
+        reconciliation = jobs[AUTO_COHORT_RECONCILIATION]
+        self.assertIn("codearbiter-cohort-publication-v1.json", reconciliation)
+        self.assertIn("reconcile-state", reconciliation)
+        self.assertIn("draft_markers.append(marker)", reconciliation)
+        self.assertIn("marker-owned Release was published without its durable receipt",
+                      reconciliation)
+        self.assertIn('"--paginate", "--slurp"', reconciliation)
+        self.assertIn('"receipts": receipts', reconciliation)
+        self.assertIn('"missing_current": sorted(missing)', reconciliation)
+        self.assertIn('receipt.get("package_sha256")', reconciliation)
+        self.assertIn("cohort-targets: ${{ steps.eligible.outputs.cohort-targets }}",
+                      jobs[AUTO_PREFLIGHT_JOB])
+
+    def test_shared_publisher_reverifies_attaches_and_reads_back_exact_asset(self):
+        text = PUBLISH_ACTION.read_text(encoding="utf-8")
+        for required in (
+            "artifact-host-payloads-${{ inputs.source-commit }}",
+            "artifact-release-packages-${{ inputs.source-commit }}",
+            "artifact-package-cold-*-${{ inputs.source-commit }}",
+            "verify-cohort",
+            "Accept: application/octet-stream", "sha256sum --check",
+            "codearbiter-cohort-start-v1", "draft=true",
+            "artifact-package-publication-", "retention-days: 90",
+        ):
+            self.assertIn(required, text)
+        publish = _action_step("Create the tag and GitHub Release")
+        self.assertIn("draft=true", publish)
+        self.assertNotIn('ASSET_ARGUMENTS', publish)
+        self.assertLess(text.index("codearbiter-cohort-start-v1"),
+                        text.index("Upload and read back exact draft package asset"))
+        self.assertLess(text.index("verify-cohort"),
+                        text.index("Create the tag and GitHub Release"))
+
+    def test_qualified_release_makes_marker_durable_before_annotated_tag(self):
+        publish = _action_step("Create the tag and GitHub Release")
+        match = re.search(r'if \[ -n "\$PACKAGE_HOST" \]; then\n(.*?)^fi$',
+                          publish, re.MULTILINE | re.DOTALL)
+        self.assertIsNotNone(match)
+        qualified = match.group(1)
+        for field in ('tag_name="$TAG"', 'target_commitish="$GITHUB_SHA"',
+                      'draft=true', 'body=@qualified-notes.md'):
+            self.assertIn(field, qualified)
+        self.assertIn('body', qualified)
+        self.assertNotIn("gh release create", qualified)
+        self.assertLess(qualified.index("qualified-draft"),
+                        qualified.index('git tag -a "$TAG"'))
+        self.assertLess(qualified.index('git tag -a "$TAG"'),
+                        qualified.index('git push origin "refs/tags/$TAG"'))
+        self.assertNotIn("one server-side operation", qualified)
+
+    def test_qualified_tag_uses_committed_canonical_deterministic_release_contract(self):
+        text = PUBLISH_ACTION.read_text(encoding="utf-8")
+        notes = _action_step("Extract the CHANGELOG section as release notes")
+        publish = _action_step("Create the tag and GitHub Release")
+        self.assertIn('git show "$GITHUB_SHA:$CHANGELOG"', notes)
+        self.assertIn("core/pysrc/_releaselib.py dates-match", notes)
+        self.assertNotIn("date +", notes)
+        self.assertIn('GIT_COMMITTER_DATE="$TAGGER_DATE" git tag -a "$TAG" -F tagmsg.txt --cleanup=verbatim "$GITHUB_SHA"',
+                      publish)
+        self.assertIn('TAGGER_DATE="$RELEASE_DATE 00:00:00 +0000"', publish)
+        self.assertIn("EXPECTED_TAG_OBJECT_SHA=$(git hash-object -t tag --stdin", publish)
+        self.assertIn('--expected-object "$EXPECTED_TAG_OBJECT_SHA"', publish)
+        self.assertIn('git cat-file tag "$TAG"', publish)
+        self.assertIn("core/pysrc/_releaselib.py dates-match", publish)
+        self.assertLess(publish.index('git cat-file tag "$TAG"'),
+                        publish.index('git push origin "refs/tags/$TAG"'))
+        self.assertIn("tag-identity", publish)
+        self.assertIn("tag-object-sha=$TAG_OBJECT_SHA", publish)
+
+    def test_real_git_canonical_tag_preserves_annotations_and_is_deterministic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.name",
+                            "github-actions[bot]"], check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.email",
+                            "41898282+github-actions[bot]@users.noreply.github.com"],
+                           check=True)
+            (repo / "payload").write_text("one\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "payload"], check=True)
+            fixed = "2026-09-17 00:00:00 +0000"
+            env = {**os.environ, "GIT_AUTHOR_DATE": fixed, "GIT_COMMITTER_DATE": fixed}
+            subprocess.run(["git", "-C", str(repo), "commit", "-qm", "one"],
+                           check=True, env=env)
+            source = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+            tag = "ca-pi-v1.2.3"
+            message = ("## [1.2.3] - 2026-09-17\n\n"
+                       "### Added\n\n- Exact annotation.\n\n"
+                       "Released-at: 2026-09-17\n")
+            message_file = repo / "tag-message.txt"
+            message_file.write_text(message, encoding="utf-8", newline="\n")
+
+            def create(message_path):
+                subprocess.run(
+                    ["git", "-C", str(repo), "tag", "-a", tag, "-F",
+                     str(message_path), "--cleanup=verbatim", source],
+                    check=True, env={**os.environ, "GIT_COMMITTER_DATE": fixed})
+                direct = subprocess.check_output(
+                    ["git", "-C", str(repo), "rev-parse", tag + "^{tag}"],
+                    text=True).strip()
+                raw = subprocess.check_output(
+                    ["git", "-C", str(repo), "cat-file", "tag", tag])
+                return direct, raw
+
+            first_sha, raw = create(message_file)
+            self.assertEqual(raw.split(b"\n\n", 1)[1], message.encode())
+            self.assertIn(b"## [1.2.3]", raw)
+            self.assertIn(b"### Added", raw)
+            raw_file = repo / "stored-tag.txt"
+            raw_file.write_bytes(raw)
+            self.assertEqual(subprocess.run(
+                [sys.executable, str(HERE / "_releaselib.py"), "notes-match", tag,
+                 str(raw_file)]).returncode, 0)
+            self.assertTrue(_releaselib.release_dates_consistent(message, raw.decode()))
+
+            subprocess.run(["git", "-C", str(repo), "tag", "-d", tag],
+                           check=True, capture_output=True)
+            second_sha, _ = create(message_file)
+            self.assertEqual(first_sha, second_sha)
+
+            subprocess.run(["git", "-C", str(repo), "tag", "-d", tag],
+                           check=True, capture_output=True)
+            stripped_file = repo / "stripped.txt"
+            stripped_file.write_text(
+                "- Exact annotation.\n\nReleased-at: 2026-09-17\n",
+                encoding="utf-8", newline="\n")
+            altered_sha, altered_raw = create(stripped_file)
+            self.assertNotEqual(first_sha, altered_sha)
+            altered_file = repo / "altered-tag.txt"
+            altered_file.write_bytes(altered_raw)
+            self.assertNotEqual(subprocess.run(
+                [sys.executable, str(HERE / "_releaselib.py"), "notes-match", tag,
+                 str(altered_file)]).returncode, 0)
+            remote = repo / "remote.txt"
+            remote.write_text(
+                f"{altered_sha}\trefs/tags/{tag}\n{source}\trefs/tags/{tag}^{{}}\n",
+                encoding="utf-8", newline="\n")
+            rejected = subprocess.run(
+                [sys.executable, str(HERE / "_npm_publishlib.py"), "tag-identity",
+                 "--remote", str(remote), "--tag", tag, "--source", source,
+                 "--expected-object", first_sha], capture_output=True, text=True)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("object identity changed", rejected.stderr)
+
+    def test_every_qualified_asset_boundary_rechecks_exact_draft_marker(self):
+        text = PUBLISH_ACTION.read_text(encoding="utf-8")
+        marker = _action_step("Read back exact cohort-start marker")
+        package = _action_step("Upload and read back exact draft package asset")
+        receipt = _action_step("Retain immutable durable cohort receipt")
+        self.assertIn("qualified-draft", marker)
+        self.assertGreaterEqual(package.count("require_exact_draft"), 4)
+        self.assertGreaterEqual(receipt.count("require_exact_draft"), 4)
+        self.assertLess(package.index("require_exact_draft"), package.index("--method POST"))
+        self.assertLess(receipt.index("require_exact_draft"), receipt.index("--method POST"))
+        helper = (REPO_ROOT / ".github" / "scripts" / "_npm_publishlib.py").read_text(
+            encoding="utf-8")
+        self.assertIn("must remain draft", helper)
+
+    def test_every_host_finalization_revalidates_exact_release_and_publication_evidence(self):
+        finalize = _action_step("Publish qualified Release only after receipt readback")
+        for required in ("qualified-finalize", "cohort-receipt", "sha256sum --check --strict",
+                         'cmp "$RUNNER_TEMP/codearbiter-cohort-publication-v1.json"',
+                         'refs/tags/$TAG^{}', '"tag_object_sha"',
+                         '--expected-object "$TAG_OBJECT_SHA"'):
+            self.assertIn(required, finalize)
+        self.assertLess(finalize.index("qualified-finalize"),
+                        finalize.index("--method PATCH"))
+        self.assertGreater(finalize.rindex("qualified-finalize"),
+                           finalize.index("tag-identity"))
+        self.assertIn('--expected-assets "$RUNNER_TEMP/final-asset-identity.json"',
+                      finalize)
+        self.assertLess(finalize.rindex("qualified-finalize"),
+                        finalize.index("--method PATCH"))
+        pi = _jobs()["auto-retain-pi-cohort-receipt"]
+        for required in ("qualified-finalize", "cohort-receipt", "_npm_publishlib.py verify",
+                         "publication-mode existing", "package_sha256",
+                         'refs/tags/$RELEASE_TAG^{}', '"tag_object_sha"',
+                         '--expected-object "$TAG_OBJECT_SHA"'):
+            self.assertIn(required, pi)
+        self.assertGreaterEqual(pi.count("require_exact_draft"), 4)
+        self.assertLess(pi.index("qualified-finalize"), pi.index("--method PATCH"))
+        self.assertLess(pi.index("_npm_publishlib.py verify"), pi.index("--method PATCH"))
+        self.assertGreater(pi.rindex("qualified-finalize"), pi.index("tag-identity"))
+        self.assertIn('--expected-assets "$RUNNER_TEMP/pi-final-asset-identity.json"', pi)
+
+    def test_pi_immediate_prepublish_guard_is_adjacent_and_requires_empty_inventory(self):
+        npm = (REPO_ROOT / ".github" / "workflows" / "npm-publish.yml").read_text(
+            encoding="utf-8")
+        guard = "- name: Re-fetch exact empty marker-owned draft immediately before npm publish"
+        publish = "- name: Publish with provenance"
+        self.assertIn(guard, npm)
+        between = npm.split(guard, 1)[1].split(publish, 1)[0]
+        self.assertIn("gh api --paginate --slurp", between)
+        self.assertIn("qualified-finalize", between)
+        self.assertNotIn("--asset", between)
+        self.assertNotIn("git ls-remote", between)
+        self.assertNotRegex(between, r"(?m)^      - name:")
+
+    def test_reconciliation_refuses_new_markerless_exact_current_tag(self):
+        reconciliation = _jobs()[AUTO_COHORT_RECONCILIATION]
+        self.assertIn("reject_markerless_current_tag", reconciliation)
+        helper = (REPO_ROOT / ".github" / "scripts" / "_npm_publishlib.py").read_text(
+            encoding="utf-8")
+        self.assertIn("markerless current qualified tag", helper)
+        self.assertNotIn(
+            'current["eligible_targets"] = sorted(set(current["eligible_targets"])',
+            reconciliation,
+        )
+
+    def test_pi_publication_gets_same_cohort_and_cannot_repack(self):
+        npm = (REPO_ROOT / ".github" / "workflows" / "npm-publish.yml").read_text(
+            encoding="utf-8")
+        for job in ("publish-pi-npm", "auto-publish-pi-npm"):
+            self.assertIn("ci_run_id:", _jobs()[job])
+        self.assertIn("actions: read", npm)
+        self.assertIn("artifact-release-packages-${{ inputs.expected_sha }}", npm)
+        self.assertIn("artifact-host-payloads-${{ inputs.expected_sha }}", npm)
+        self.assertIn("verify-cohort", npm)
+        self.assertIn('--tarball "$TARBALL"', npm)
+        self.assertIn("Retain npm package publication disposition", npm)
+        self.assertNotIn('"$NPM_CLI" pack', npm)
+        self.assertNotIn('npm pack --', npm)
+
+    def test_failed_publication_records_partial_disposition(self):
+        action = PUBLISH_ACTION.read_text(encoding="utf-8")
+        npm = (REPO_ROOT / ".github" / "workflows" / "npm-publish.yml").read_text(
+            encoding="utf-8")
+        self.assertIn("always() && inputs.package-host != ''", action)
+        self.assertIn("steps.publish.outcome", action)
+        self.assertIn("steps.package-readback.outcome", action)
+        self.assertIn("if: ${{ always() }}", npm)
+        self.assertIn("steps.publish.outcome", npm)
+        self.assertIn("steps.registry-readback.outcome", npm)
 
 
 if __name__ == "__main__":

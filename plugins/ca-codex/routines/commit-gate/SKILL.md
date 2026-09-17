@@ -15,6 +15,22 @@ Read these, or STOP and surface the gap — never guess a command:
 - [includes/verification-boundary.md](../../includes/verification-boundary.md) — the required split between focused local proof and exhaustive exact-head hosted CI.
 - A git repository must be present and `git status` available.
 - The `tdd` skill must have cleared all six phases for any new or modified feature code in the staged set. If `tdd` is incomplete, STOP and surface the gap.
+- The discovered authoritative spec/plan pair, when this commit belongs to a
+  `/feature` or `/sprint` pipeline. For HTML, load
+  [includes/artifacts.md](../../includes/artifacts.md); use the engine `identity` and `eligible`
+  results, and treat the exact spec and plan identities plus the acceptance
+  receipts bound in engine state as the commit proof. Require
+  `all_accepted_and_current: true` before this gate can commit completed plan
+  work. The gate must not parse rendered HTML and must not consult a shadow
+  Markdown ledger. Displayed state, checkboxes, hashes, or caller-supplied
+  labels cannot substitute for current engine acceptance.
+
+For that HTML pair, invoke the installed bridge's
+`_preflight_current_acceptance` with the exact `_resolve_workflow_pair` result,
+the repository-bound client, and the spec/plan IDs returned by the engine. Use
+its returned identities and receipts as the proof for this gate. A refusal is a
+BLOCK before staging or committing; never construct an equivalent proof from
+caller metadata.
 
 ## Phase 1 — Permission · gate: BLOCK
 
@@ -70,7 +86,11 @@ Apply the shared fresh-run discipline in [includes/fresh-verification.md](../../
 **the spec's acceptance criterion** as the target — prove the behavior against the spec, not against a
 self-report.
 
-- Identify the proving command or observable: the acceptance criterion from `<project-root>/.codearbiter/specs/<slug>.md` (or the task's verification in the plan). If none exists, derive the smallest command that exercises the claimed behavior.
+- Identify the proving command or observable from the selected authoritative
+  pair. For Markdown, use the existing criterion and task-verification text. For
+  HTML, use the exact criterion and task records returned by symbol-scoped
+  engine `read`; never scrape the rendered document. If none exists, derive the
+  smallest command that exercises the claimed behavior.
 - Run it fresh in this phase, read its output and exit code, and confirm the observed behavior matches the spec's acceptance criteria. A mismatch, or an unverifiable claim, blocks.
 
 **Stakes:** a behavioral-proof mismatch means the change does not do what the spec claims — state what would ship broken if this passed ("the retry path never fires; a transient error would hang the caller"), not just "proof mismatch." That gap is exactly what a green-looking suite hides.

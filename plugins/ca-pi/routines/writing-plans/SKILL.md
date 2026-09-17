@@ -1,21 +1,20 @@
 ---
 name: writing-plans
-description: The spec-to-plan bridge. Routed to by /feature once the brainstormed spec is approved, and by /sprint before execution. Decomposes the spec into 2–5 minute tasks, each carrying its exact file path(s) and a concrete verification step that maps to a tdd obligation. Writes the plan to .codearbiter/plans/<slug>.md, ordered with dependencies flagged and an MVP slice identifiable. Nothing executes until every task has a path and a verification and the task set covers every acceptance criterion.
+description: The spec-to-plan bridge. Routed to by /feature once the brainstormed spec is approved, and by /sprint before execution. Decomposes the spec into 2–5 minute tasks, each carrying its exact file path(s) and a concrete verification step that maps to a tdd obligation. Writes the plan in the approved spec's authoritative format, ordered with dependencies flagged and an MVP slice identifiable. Nothing executes until every task has a path and a verification and the task set covers every acceptance criterion.
 disable-model-invocation: true
 ---
 
 # writing-plans
 
-## Typed-artifact pilot boundary
+## Authoritative format boundary
 
-For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
-`<plugin-root>/includes/artifacts.md` before artifact I/O. Its typed ID, binding,
-readiness, receipt, contextual-read and scope-state rules replace the legacy
-Markdown parsing and direct status-cell edits below for that pilot only. Keep
-all other workflow gates, including human checkpoints, unchanged. Missing or
-invalid HTML capability is a STOP for this path, not a fallback to Markdown.
-HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
-remain unchanged until native host qualification and cutover approval.
+For a new full-lane HTML spec, load `<plugin-root>/includes/artifacts.md` and
+use the installed structured-artifact engine for every spec and plan read or
+write. The resulting pair is `.codearbiter/specs/<slug>.html` and
+`.codearbiter/plans/<slug>.html`. Missing or invalid HTML capability is a STOP
+before writing and must not fall back to Markdown. An existing authoritative
+Markdown spec continues through the legacy Markdown path without conversion.
+HTML `--farm` dispatch remains blocked.
 
 
 Turn an approved spec into an executable plan. Routed to by `/feature` (after spec approval) and `/sprint`.
@@ -24,7 +23,10 @@ Turn an approved spec into an executable plan. Routed to by `/feature` (after sp
 
 Read these, or STOP and surface the gap — never plan against an unapproved or missing spec:
 
-- `<project-root>/.codearbiter/specs/<slug>.md` — the approved brainstorming spec. The single source of acceptance criteria. Absent or unapproved → STOP and route back to `/feature`.
+- The authoritative approved spec selected by `/feature`: for HTML, resolve it
+  through the installed engine and verify its ready approval and exact identity;
+  for legacy Markdown, read `<project-root>/.codearbiter/specs/<slug>.md`.
+  Absent or unapproved → STOP and route back to `/feature`.
 - `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `<project-root>/.codearbiter/tech-stack.md` — file layout, build/test/lint invocations. A verification step cites a real command from here, never a guess.
 - `<project-root>/.codearbiter/coding-standards.md` — structure and naming, so a task names the right path.
@@ -33,8 +35,10 @@ Read these, or STOP and surface the gap — never plan against an unapproved or 
 
 ## Phase 1 — Criterion extraction · gate: BLOCK
 
-Lift every acceptance criterion from the spec verbatim and assign each a stable ID (`AC-01`,
-`AC-02`, …). This list is the coverage ledger for the whole plan — Phase 4 checks the task set
+Lift every acceptance criterion from the spec and retain its stable ID (`AC-01`,
+`AC-02`, …). For HTML, obtain criterion records through typed engine reads and
+retain their typed IDs; rendered document text is not an authority source. This
+list is the coverage ledger for the whole plan — Phase 4 checks the task set
 against it.
 
 A criterion the spec leaves ambiguous is a `[CONFIRM-NN]` against
@@ -43,7 +47,8 @@ A criterion the spec leaves ambiguous is a `[CONFIRM-NN]` against
 **Backstop the ledger against the spec's own stated intent, mechanically, before trusting it — this
 runs even when `brainstorming` already ran the same check, because a hole that survived Phase 3
 survives Phase 4's bijection too, silently** (#566): run `"$PY" "<plugin-root>/hooks/_intentlib.py"
-uncovered-intent <project-root>/.codearbiter/specs/<slug>.md [--issue-body <scratch-file>]` —
+uncovered-intent <spec-path> [--issue-body <scratch-file>]`, where `<spec-path>`
+is the authoritative `.html` or legacy `.md` spec selected above —
 `<scratch-file>` holds the linked issue's body when one exists (`gh issue view <N> --json body -q
 .body > <scratch-file>`, written outside the working tree), omitted when none does. A non-empty
 result names an in-scope bullet or an acceptance checkbox the criteria never cited — BLOCK and route
@@ -101,10 +106,20 @@ that completeness gap is caught earlier, by Phase 1's `uncovered_intent` backsto
 - Every `AC-NN` is covered by at least one task's `covers`. An uncovered criterion blocks — author the missing task.
 - Every task advances at least one `AC-NN`. A task that covers nothing is scope creep — cut it or surface it.
 
-Then write the plan to `<project-root>/.codearbiter/plans/<slug>.md` — `<slug>` matching the
-spec — with the `AC-NN` ledger, the ordered task table (id · path(s) · verification · maps-to ·
-covers · depends-on · **status**, initialized `PENDING`), the marked MVP slice, and any out-of-scope
-item tagged inline `[NEEDS-TRIAGE]`.
+For an HTML source, pass the selected route, installed client, and the spec
+identity just read from the engine through `_preflight_plan_authoring`. Only its
+returned same-slug `.codearbiter/plans/<slug>.html` target may be created. Create
+that plan through the installed structured-artifact engine as `draft_preview`,
+using the approved spec's exact artifact ID and normative digest. Populate it only with typed operations,
+validate it at the ready gate, then use `plan-bind` to bind it to that approved
+spec before plan approval. This path must not create `.codearbiter/plans/<slug>.md`;
+that would be a shadow authority.
+
+For an existing authoritative Markdown source, write
+`<project-root>/.codearbiter/plans/<slug>.md` — `<slug>` matching the spec —
+with the `AC-NN` ledger, the ordered task table (id · path(s) · verification ·
+maps-to · covers · depends-on · **status**, initialized `PENDING`), the marked
+MVP slice, and any out-of-scope item tagged inline `[NEEDS-TRIAGE]`.
 
 The status column is the pipeline's resume ledger: `subagent-driven-development` flips a task to
 `ACCEPTED` the moment it accepts it, so an interrupted run (crash, compaction, closed session) is
@@ -118,7 +133,7 @@ completeness of the ledger itself was Phase 1's gate, not this one. This clears 
 
 ### Phase 4-farm extension (only when `--farm` was requested)
 
-When `--farm` was requested, after the bijective coverage gate passes and the `.md` plan is written,
+When `--farm` was requested for a legacy Markdown workflow, after the bijective coverage gate passes and the `.md` plan is written,
 produce the farm artifact (`plan.json`) — **one MVP slice at a time** — per
 `<plugin-root>/routines/writing-plans/references/farm-plan.md`. Load that leaf and follow it;
 it owns the per-task failing-test + schema-valid `plan.json` procedure.
@@ -129,6 +144,8 @@ artifacts exist before handing off to `subagent-driven-development` (`<plugin-ro
 ## Hard rules
 
 - MUST NOT plan against an absent or unapproved spec — STOP and route back to `/feature`.
+- MUST NOT write or parse rendered HTML directly, create a Markdown shadow for
+  an HTML spec, or bind a plan from a caller-supplied identity.
 - MUST NOT emit a task without an exact path AND a concrete verification step.
 - MUST NOT let a task's verification stand in for a `tdd` gate — it maps to a tdd obligation, it does not replace one.
 - MUST NOT write the plan while any acceptance criterion is uncovered or any task covers nothing.

@@ -13,6 +13,11 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 INVENTORY_PATH = ROOT / "docs" / "artifacts" / "consumer-inventory.json"
+READINJECT_PATH = ROOT / "core" / "pysrc" / "_readinjectlib.py"
+DOCTOR_PATH = ROOT / "core" / "pysrc" / "doctor.py"
+STATUS_PATH = ROOT / "core" / "surface" / "commands" / "status.md"
+DOCTOR_COMMAND_PATH = ROOT / "core" / "surface" / "commands" / "doctor.md"
+STARTUP_PATH = ROOT / "core" / "pysrc" / "session-start.py"
 ALLOWED_TREATMENTS = {
     "candidate-guidance",
     "explicit-exclusion",
@@ -230,6 +235,28 @@ class ArtifactConsumerClosureTest(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_diagnostic_readers_are_on_demand_and_schema_free(self) -> None:
+        implementation = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (READINJECT_PATH, DOCTOR_PATH)
+        )
+        self.assertNotIn('call("schema"', implementation)
+        self.assertNotIn("call('schema'", implementation)
+        startup = STARTUP_PATH.read_text(encoding="utf-8")
+        self.assertNotIn("_artifactlib", startup)
+        self.assertNotIn("artifact.schema", startup)
+
+    def test_status_and_doctor_define_bounded_artifact_diagnostics(self) -> None:
+        status = STATUS_PATH.read_text(encoding="utf-8")
+        doctor = DOCTOR_COMMAND_PATH.read_text(encoding="utf-8")
+        for text in (status, doctor):
+            self.assertIn("CAPABILITY_MISSING", text)
+            self.assertIn("repair or", text)
+            self.assertIn("reinstall", text)
+            self.assertIn("legacy Markdown", text)
+            self.assertIn("repair-preview", text)
+            self.assertIn("MUST NOT load the artifact schema", text)
 
 
 if __name__ == "__main__":

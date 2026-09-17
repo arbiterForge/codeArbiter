@@ -42,6 +42,14 @@ MCP_SCAN_MAX_DEPTH = 6
 results = []  # (level, line)
 
 
+class ArtifactDiagnosticError(RuntimeError):
+    """Bounded testable wrapper for an installation or engine diagnostic."""
+
+    def __init__(self, code):
+        self.code = str(code)[:80]
+        super().__init__(self.code)
+
+
 def ok(line):
     results.append(("OK", line))
 
@@ -168,6 +176,100 @@ def check_payload(root, host=None):
                 ok("single cached plugin version (no stale siblings)")
         except Exception:  # noqa: BLE001
             pass
+
+
+def _artifact_client(plugin_root_path, repository_root):
+    """Construct the installation-pinned client without PATH or repo fallback."""
+    try:
+        from _artifactlib import ArtifactClient, helper_installation
+        return ArtifactClient(
+            repository_root or plugin_root_path,
+            helper_installation(__file__),
+        )
+    except Exception as error:  # noqa: BLE001 - doctor reports, never crashes
+        code = getattr(error, "code", "CAPABILITY_MISSING")
+        raise ArtifactDiagnosticError(code) from error
+
+
+def _artifact_contract():
+    """Read adapter-owned protocol constants without loading any schema."""
+    from _artifactlib import PROTOCOL, SCHEMA_VERSION
+    return PROTOCOL, SCHEMA_VERSION
+
+
+def _repository_has_html(root):
+    if not root:
+        return False
+    try:
+        for directory in ("specs", "plans"):
+            base = os.path.join(root, ".codearbiter", directory)
+            if os.path.isdir(base) and any(
+                name.endswith(".html") for name in os.listdir(base)
+            ):
+                return True
+    except OSError:
+        return True  # force the engine to produce the bounded path diagnostic
+    return False
+
+
+def check_artifact_capability(plugin_root_path, repository_root=None):
+    """Probe only capabilities, then validate existing HTML only when present.
+
+    This is an explicit doctor invocation, not startup loading. It never requests
+    the schema operation and never falls back to PATH, repository binaries, or
+    Markdown when an HTML authority exists.
+    """
+    try:
+        client = _artifact_client(plugin_root_path, repository_root)
+        capabilities = client.call("capabilities")
+        protocol, schema_version = _artifact_contract()
+    except Exception as error:  # noqa: BLE001 - bounded unhealthy result
+        code = str(getattr(error, "code", "CAPABILITY_MISSING"))[:80]
+        fail(
+            f"artifact capability unavailable ({code}) — repair or reinstall the "
+            "pinned artifact payload; new/existing HTML work is blocked, while "
+            "unrelated legacy Markdown remains usable"
+        )
+        return
+
+    required = {
+        "binary": "ca-artifact",
+        "protocol": protocol,
+        "schema_version": schema_version,
+    }
+    if (not isinstance(capabilities, dict)
+            or any(capabilities.get(key) != value for key, value in required.items())
+            or not isinstance(capabilities.get("platform"), str)):
+        fail(
+            "artifact capability unavailable (INVALID_RESPONSE) — repair or reinstall "
+            "the pinned artifact payload; new/existing HTML work is blocked, while "
+            "unrelated legacy Markdown remains usable"
+        )
+        return
+    if capabilities.get("repository_operations_available") is not True:
+        fail(
+            "artifact capability unavailable (UNSUPPORTED_PLATFORM) — repair or reinstall "
+            "a native-qualified pinned artifact payload; new/existing HTML work is blocked, "
+            "while unrelated legacy Markdown remains usable"
+        )
+        return
+    ok(
+        "artifact capability available: "
+        f"{capabilities['platform']}, schema {capabilities['schema_version']}"
+    )
+
+    if not _repository_has_html(repository_root):
+        return
+    try:
+        count = sum(1 for _ in client.index())
+    except Exception as error:  # noqa: BLE001 - bounded invalid-artifact result
+        code = str(getattr(error, "code", "INVALID_ARTIFACT"))[:80]
+        fail(
+            f"HTML artifact validation failed ({code}) — inspect the engine diagnostic "
+            "and run repair-preview before an explicit reviewed repair; HTML work is blocked"
+        )
+        return
+    ok(f"HTML artifact catalog validates: {count} artifact{'s' if count != 1 else ''}")
 
 
 def check_repo():
@@ -423,6 +525,7 @@ def main():
     check_interpreters()
     check_payload(root, host)
     repo_root = check_repo()
+    check_artifact_capability(root, repo_root)
     check_git_hook_freshness(repo_root)
     check_mcp(host)
     if getattr(host, "has_statusline", True):

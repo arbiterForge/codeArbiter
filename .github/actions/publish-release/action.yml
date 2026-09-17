@@ -5,6 +5,11 @@ description: >
   from its own CHANGELOG, create the namespaced tag and GitHub Release
   idempotently, and read back what was actually published.
 
+outputs:
+  tag-object-sha:
+    description: "Exact immutable annotated tag object retained by the remote"
+    value: ${{ steps.publish.outputs.tag-object-sha }}
+
 # Issue #382 added the ca-sandbox and ca-pi lanes. The `release` and
 # `release-codex` jobs were byte-identical apart from nine parameters, so a
 # fourth and fifth copy would have put the #380 tag classifier, the #380
@@ -74,6 +79,30 @@ inputs:
       without a public release. Defaults to "true".
     required: false
     default: "true"
+  package-host:
+    description: "Qualified release-package host to verify and attach; empty for non-artifact targets"
+    required: false
+    default: ""
+  attach-package:
+    description: "Whether the verified package is a GitHub Release asset (Pi publishes to npm)"
+    required: false
+    default: "true"
+  ci-run-id:
+    description: "Protected successful CI run retaining the exact package cohort"
+    required: false
+    default: ""
+  source-commit:
+    description: "Exact source commit bound to the retained package cohort"
+    required: false
+    default: ""
+  cohort-targets:
+    description: "Comma-separated qualified targets owned by this exact hosted cohort"
+    required: false
+    default: ""
+  finalize-release:
+    description: "Publish the qualified draft after receipt readback; Pi defers until npm readback"
+    required: false
+    default: "true"
   github-token:
     description: "Token with `contents: write` for the tag and Release"
     required: true
@@ -81,6 +110,78 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Download exact promoted host payloads
+      if: ${{ inputs.package-host != '' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: artifact-host-payloads-${{ inputs.source-commit }}
+        path: ${{ runner.temp }}/artifact-publication-stage
+        run-id: ${{ inputs.ci-run-id }}
+        github-token: ${{ inputs.github-token }}
+    - name: Download exact normal release package cohort
+      if: ${{ inputs.package-host != '' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: artifact-release-packages-${{ inputs.source-commit }}
+        path: ${{ runner.temp }}/artifact-publication-packages
+        run-id: ${{ inputs.ci-run-id }}
+        github-token: ${{ inputs.github-token }}
+    - name: Download exact cold-execution receipt matrix
+      if: ${{ inputs.package-host != '' }}
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        pattern: artifact-package-cold-*-${{ inputs.source-commit }}
+        path: ${{ runner.temp }}/artifact-publication-cold
+        merge-multiple: false
+        run-id: ${{ inputs.ci-run-id }}
+        github-token: ${{ inputs.github-token }}
+    - name: Acquire reviewed npm@11.19.1 CLI
+      id: npm-cli
+      if: ${{ inputs.package-host != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        root="$(mktemp -d "$RUNNER_TEMP/npm-cli.XXXXXXXX")"
+        archive="$root/npm.tgz"
+        curl --disable --fail --show-error --silent --proto '=https' --tlsv1.2 --max-redirs 0 \
+          --output "$archive" "https://registry.npmjs.org/npm/-/npm-11.19.1.tgz"
+        actual="sha512-$(openssl dgst -sha512 -binary "$archive" | openssl base64 -A)"
+        test "$actual" = "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
+        python3 - "$archive" <<'PY'
+        import pathlib, sys, tarfile
+        with tarfile.open(sys.argv[1], "r:gz") as stream:
+            for member in stream.getmembers():
+                path = pathlib.PurePosixPath(member.name)
+                if (path.is_absolute() or ".." in path.parts or member.issym()
+                        or member.islnk() or member.isdev() or member.isfifo()):
+                    raise SystemExit(f"unsafe npm CLI archive member: {member.name}")
+        PY
+        tar --extract --gzip --no-same-owner --no-same-permissions --file "$archive" --directory "$root"
+        cli="$(realpath "$root/package/bin/npm-cli.js")"
+        case "$cli" in "$root"/*) ;; *) exit 1 ;; esac
+        test ! -L "$cli" && test "$("$cli" --version)" = "11.19.1"
+        echo "executable=$cli" >> "$GITHUB_OUTPUT"
+    - name: Reverify exact retained package cohort before publication
+      id: artifact-package
+      if: ${{ inputs.package-host != '' }}
+      shell: bash
+      env:
+        PACKAGE_HOST: ${{ inputs.package-host }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        STAGE_ROOT: ${{ runner.temp }}/artifact-publication-stage
+        PACKAGE_ROOT: ${{ runner.temp }}/artifact-publication-packages
+        COLD_ROOT: ${{ runner.temp }}/artifact-publication-cold
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+        WORKFLOW_SHA: ${{ github.sha }}
+      run: |
+        set -euo pipefail
+        python3 .github/scripts/_npm_publishlib.py verify-cohort \
+          --package-root "$PACKAGE_ROOT" --stage-root "$STAGE_ROOT" --cold-root "$COLD_ROOT" \
+          --source-repo . --source-commit "$SOURCE_COMMIT" --ci-run-id "$CI_RUN_ID" \
+          --workflow-sha "$WORKFLOW_SHA" --npm "$NPM_CLI" --trusted-repo . \
+          --host "$PACKAGE_HOST" --output "$GITHUB_OUTPUT"
+
     - name: Resolve and verify version against the manifest
       id: v
       shell: bash
@@ -125,7 +226,8 @@ runs:
       run: |
         set -euo pipefail
         # Capture from "## [VER]" up to (not including) the next "## [" section heading.
-        awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' "$CHANGELOG" > notes.md
+        git show "$GITHUB_SHA:$CHANGELOG" \
+          | awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' > notes.md
         # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
         python3 - <<'PY'
         import re
@@ -135,7 +237,61 @@ runs:
         test -s notes.md || { echo "::error::no CHANGELOG section found for $VER in $CHANGELOG"; exit 1; }
         # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
         python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
+        RELEASE_DATE=$(python3 - <<'PY'
+        import re
+        heading=open("notes.md",encoding="utf-8").readline().rstrip("\n")
+        match=re.search(r"(?: - | — )(\d{4}-\d{2}-\d{2})$",heading)
+        if not match: raise SystemExit("committed changelog section has no canonical release date")
+        print(match.group(1))
+        PY
+        )
+        printf '%s\nReleased-at: %s\n' "$(cat notes.md)" "$RELEASE_DATE" > tagmsg.txt
+        python3 core/pysrc/_releaselib.py dates-match notes.md tagmsg.txt
         echo "---- notes.md ----"; head -1 notes.md
+
+    - name: Create exact immutable cohort-start marker
+      if: ${{ inputs.package-host != '' }}
+      shell: bash
+      env:
+        TARGET: ${{ inputs.target }}
+        HOST: ${{ inputs.package-host }}
+        TAG: ${{ steps.v.outputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        SOURCE_TREE: ${{ steps.artifact-package.outputs.source-tree }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
+        COHORT_TARGETS: ${{ inputs.cohort-targets }}
+      run: |
+        set -euo pipefail
+        python3 - <<'PY'
+        import base64, hashlib, json, os
+        versions = {"ca": json.load(open("plugins/ca/.claude-plugin/plugin.json"))["version"],
+                    "ca-codex": json.load(open("plugins/ca-codex/.codex-plugin/plugin.json"))["version"],
+                    "ca-pi": json.load(open("plugins/ca-pi/package.json"))["version"]}
+        targets = os.environ["COHORT_TARGETS"].split(",")
+        if (targets != sorted(set(targets)) or os.environ["TARGET"] not in targets
+                or not set(targets) <= {"ca", "ca-codex", "ca-pi"}):
+            raise SystemExit("hosted cohort targets are missing, duplicate, or unexpected")
+        notes = open("notes.md", "rb").read()
+        if not notes.endswith(b"\n"):
+            raise SystemExit("canonical release notes must end in exactly retained LF bytes")
+        marker = {"format": "codearbiter.cohort-start/0.1.0",
+                  "target": os.environ["TARGET"], "host": os.environ["HOST"],
+                  "tag": os.environ["TAG"], "source_commit": os.environ["SOURCE_COMMIT"],
+                  "source_tree": os.environ["SOURCE_TREE"],
+                  "workflow": ".github/workflows/ci.yml", "ci_run_id": os.environ["CI_RUN_ID"],
+                  "cohort_sha256": os.environ["COHORT_SHA256"],
+                  "release_notes_sha256": hashlib.sha256(notes).hexdigest(),
+                  "cohort_tags": {"ca": "v" + versions["ca"],
+                                  "ca-codex": "ca-codex-v" + versions["ca-codex"],
+                                  "ca-pi": "ca-pi-v" + versions["ca-pi"]},
+                  "cohort_targets": targets}
+        raw = json.dumps(marker, sort_keys=True, separators=(",", ":")).encode()
+        encoded = base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        open("cohort-marker.json", "wb").write(raw + b"\n")
+        open("qualified-notes.md", "wb").write(
+            notes + b"\n<!-- codearbiter-cohort-start-v1:" + encoded.encode() + b" -->\n")
+        PY
 
     - name: Create the tag and GitHub Release (resumable, mismatch-aborting)
       id: publish
@@ -148,10 +304,16 @@ runs:
         CREATE_RELEASE: ${{ inputs.create-release }}
         TAG: ${{ steps.v.outputs.tag }}
         VER: ${{ steps.v.outputs.version }}
+        ASSET_PATH: ${{ inputs.attach-package == 'true' && steps.artifact-package.outputs.path || '' }}
+        ASSET_FILE: ${{ steps.artifact-package.outputs.file }}
+        ASSET_SHA256: ${{ steps.artifact-package.outputs.sha256 }}
+        PACKAGE_HOST: ${{ inputs.package-host }}
       run: |
         set -euo pipefail
+        PACKAGE_HOST="${PACKAGE_HOST:-}"
         SUM="$SUMMARY"
         if [ -n "$SUM" ]; then TITLE="$TITLE_PREFIX $VER: $SUM"; else TITLE="$TITLE_PREFIX $VER"; fi
+        export TITLE
 
         # Only the primary release claims the "Latest" badge; every sibling
         # plugin versions independently and must not steal it.
@@ -170,6 +332,22 @@ runs:
         # An annotated tag needs a committer identity; the runner has none by default.
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        RELEASE_DATE=$(sed -n 's/^Released-at: //p' tagmsg.txt)
+        [ "$(printf '%s\n' "$RELEASE_DATE" | wc -l)" -eq 1 ]
+        printf '%s\n' "$RELEASE_DATE" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+        TAGGER_DATE="$RELEASE_DATE 00:00:00 +0000"
+        TAGGER_EPOCH=$(python3 - "$RELEASE_DATE" <<'PY'
+        import datetime,sys
+        print(int(datetime.datetime.strptime(sys.argv[1], "%Y-%m-%d").replace(
+            tzinfo=datetime.timezone.utc).timestamp()))
+        PY
+        )
+        {
+          printf 'object %s\ntype commit\ntag %s\n' "$GITHUB_SHA" "$TAG"
+          printf 'tagger github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com> %s +0000\n\n' "$TAGGER_EPOCH"
+          cat tagmsg.txt
+        } > "$RUNNER_TEMP/expected-tag-object.txt"
+        EXPECTED_TAG_OBJECT_SHA=$(git hash-object -t tag --stdin < "$RUNNER_TEMP/expected-tag-object.txt")
 
         # PEEL the remote tag (#380). An annotated tag's own object id is not
         # the commit it names, so the `^{}` line is the one that can be
@@ -202,7 +380,7 @@ runs:
           --api-exit "$RELEASE_API_EXIT")
         RELEASE_LOOKUP_EXIT=$?
         set -e
-        if [ "$RELEASE_LOOKUP_EXIT" -ne 0 ]; then
+        if [ "$RELEASE_LOOKUP_EXIT" -ne 0 ] && ! { [ -n "$PACKAGE_HOST" ] && [ "$RELEASE_LOOKUP" = draft ]; }; then
           [ ! -s "$RELEASE_ERROR" ] || cat "$RELEASE_ERROR" >&2
           echo "::error::refusing to publish $TAG: Release lookup classified as '$RELEASE_LOOKUP'"
           exit 1
@@ -211,6 +389,61 @@ runs:
           RELEASE_NONDRAFT=true
         else
           RELEASE_NONDRAFT=false
+        fi
+        RELEASE_PHASE="$RELEASE_LOOKUP"
+
+        if [ -n "$PACKAGE_HOST" ]; then
+          [ "$CREATE_RELEASE" = "true" ] || { echo "::error::qualified publication requires its marker-owned draft Release"; exit 1; }
+          case "$RELEASE_PHASE" in
+            missing)
+              [ "$TAG_EXISTS" = false ] || { echo "::error::markerless current qualified tag is an unresolved partial publication"; exit 1; }
+              # GitHub retains this draft body before it creates the named ref;
+              # qualified publication deliberately relies on that lazy-tag
+              # behavior so the durable marker always precedes the tag.
+              gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
+                -f tag_name="$TAG" -f target_commitish="$GITHUB_SHA" \
+                -f name="$TITLE" -F body=@qualified-notes.md \
+                -F draft=true -F prerelease=false -f make_latest="$MARK_LATEST" >/dev/null
+              ;;
+            draft) ;;
+            *)
+              echo "::error::qualified Release is not the exact marker-owned draft"
+              exit 1
+              ;;
+          esac
+
+          # The marker-owned draft must be durably readable and exact before
+          # the first qualified tag mutation. A failure after this check leaves
+          # a recoverable draft-without-tag state for exact-A retry.
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+            > "$RELEASE_RESPONSE"
+          python3 .github/scripts/_npm_publishlib.py qualified-draft \
+            --releases "$RELEASE_RESPONSE" --tag "$TAG" --marker cohort-marker.json >/dev/null
+          TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
+            | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
+          if [ -z "$TAG_SHA" ]; then
+            GIT_COMMITTER_DATE="$TAGGER_DATE" git tag -a "$TAG" -F tagmsg.txt --cleanup=verbatim "$GITHUB_SHA"
+            git cat-file tag "$TAG" > "$RUNNER_TEMP/stored-qualified-tag.txt"
+            python3 .github/scripts/_releaselib.py notes-match "$TAG" "$RUNNER_TEMP/stored-qualified-tag.txt"
+            [ "$(git rev-parse "$TAG^{tag}")" = "$EXPECTED_TAG_OBJECT_SHA" ]
+            git push origin "refs/tags/$TAG"
+            echo "qualified publish state: marker_durable_tag_created"
+          elif [ "$TAG_SHA" = "$GITHUB_SHA" ]; then
+            echo "qualified publish state: exact_marker_and_tag_resume"
+          else
+            echo "::error::qualified tag $TAG resolves to '$TAG_SHA', not exact source '$GITHUB_SHA'"
+            exit 1
+          fi
+          git cat-file tag "$TAG" > "$RUNNER_TEMP/stored-qualified-tag.txt"
+          python3 .github/scripts/_releaselib.py notes-match "$TAG" "$RUNNER_TEMP/stored-qualified-tag.txt"
+          python3 core/pysrc/_releaselib.py dates-match notes.md "$RUNNER_TEMP/stored-qualified-tag.txt"
+          [ "$(git rev-parse "$TAG^{tag}")" = "$EXPECTED_TAG_OBJECT_SHA" ]
+          git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" > "$RUNNER_TEMP/qualified-tag-identity.txt"
+          TAG_OBJECT_SHA=$(python3 .github/scripts/_npm_publishlib.py tag-identity \
+            --remote "$RUNNER_TEMP/qualified-tag-identity.txt" --tag "$TAG" --source "$GITHUB_SHA" \
+            --expected-object "$EXPECTED_TAG_OBJECT_SHA")
+          echo "tag-object-sha=$TAG_OBJECT_SHA" >> "$GITHUB_OUTPUT"
+          exit 0
         fi
 
         # One classifier shared with the /ca:release skill: the hosted and the
@@ -221,8 +454,10 @@ runs:
 
         case "$STATE" in
           publish_fresh)
-            printf '%s\n\nReleased-at: %s\n' "$(cat notes.md)" "$(date +%F)" > tagmsg.txt
-            git tag -a "$TAG" -F tagmsg.txt "$GITHUB_SHA"
+            GIT_COMMITTER_DATE="$TAGGER_DATE" git tag -a "$TAG" -F tagmsg.txt --cleanup=verbatim "$GITHUB_SHA"
+            git cat-file tag "$TAG" > "$RUNNER_TEMP/stored-tag.txt"
+            python3 .github/scripts/_releaselib.py notes-match "$TAG" "$RUNNER_TEMP/stored-tag.txt"
+            [ "$(git rev-parse "$TAG^{tag}")" = "$EXPECTED_TAG_OBJECT_SHA" ]
             git push origin "refs/tags/$TAG"
             if [ "$CREATE_RELEASE" = "true" ]; then
               gh release create "$TAG" \
@@ -231,29 +466,46 @@ runs:
                 --target "$GITHUB_SHA" \
                 $LATEST --verify-tag
             else
-              echo "create-release is false — tag published, GitHub Release intentionally skipped"
+              echo "create-release is false -- tag published, GitHub Release intentionally skipped"
             fi
             ;;
           resume_publish)
             if [ "$CREATE_RELEASE" = "true" ]; then
-              echo "tag $TAG is already at $GITHUB_SHA with no published Release — creating the Release only"
+              echo "tag $TAG is already at $GITHUB_SHA with no published Release -- creating the Release only"
               gh release create "$TAG" \
                 --title "$TITLE" \
                 --notes-file notes.md \
                 --target "$GITHUB_SHA" \
                 $LATEST --verify-tag
             else
-              echo "tag $TAG is already at $GITHUB_SHA; create-release is false — nothing to do"
+              echo "tag $TAG is already at $GITHUB_SHA; create-release is false -- nothing to do"
             fi
             ;;
           already_published)
-            echo "release $TAG is already published at $GITHUB_SHA — nothing to publish"
+            echo "release $TAG is already published at $GITHUB_SHA -- nothing to publish"
             ;;
           *)
-            echo "::error::refusing to publish $TAG: state '$STATE' — the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
+            echo "::error::refusing to publish $TAG: state '$STATE' -- the existing tag resolves to '$TAG_SHA', this dispatch targets '$GITHUB_SHA'"
             exit 1
             ;;
         esac
+        git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" > "$RUNNER_TEMP/tag-identity.txt"
+        TAG_OBJECT_SHA=$(python3 .github/scripts/_npm_publishlib.py tag-identity \
+          --remote "$RUNNER_TEMP/tag-identity.txt" --tag "$TAG" --source "$GITHUB_SHA")
+        echo "tag-object-sha=$TAG_OBJECT_SHA" >> "$GITHUB_OUTPUT"
+
+    - name: Read back exact cohort-start marker before public package mutation
+      if: ${{ inputs.package-host != '' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+      run: |
+        set -euo pipefail
+        gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/marker-readback.json"
+        python3 .github/scripts/_npm_publishlib.py qualified-draft \
+          --releases "$RUNNER_TEMP/marker-readback.json" --tag "$TAG" \
+          --marker cohort-marker.json >/dev/null
 
     # A push can succeed before Release creation fails. Preserve the observed
     # identity in that case too; never infer a successful publication from it.
@@ -288,8 +540,10 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         TAG: ${{ steps.v.outputs.tag }}
         CREATE_RELEASE: ${{ inputs.create-release }}
+        PACKAGE_HOST: ${{ inputs.package-host }}
       run: |
         set -euo pipefail
+        PACKAGE_HOST="${PACKAGE_HOST:-}"
         # Verify publication rather than assume it (a create can partially succeed),
         # and verify WHAT was published: non-draft alone says nothing about which
         # commit the tag installs (#380).
@@ -299,12 +553,216 @@ runs:
         # never calls `gh release create` above, so asserting a Release exists
         # here would reject its intentional tag-only publication.
         if [ "$CREATE_RELEASE" = "true" ]; then
-          gh release view "$TAG" --json url,isDraft,tagName
-          DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
-          [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
-          NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
-          [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+          if [ -n "$PACKAGE_HOST" ]; then
+            gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+              | python3 -c 'import json,sys; tag=sys.argv[1]; pages=json.load(sys.stdin); found=[r for p in pages for r in p if r.get("tag_name")==tag]; assert len(found)==1 and found[0].get("draft") in (True,False)' "$TAG"
+          else
+            gh release view "$TAG" --json url,isDraft,tagName
+            DRAFT=$(gh release view "$TAG" --json isDraft --jq .isDraft)
+            [ "$DRAFT" = "false" ] || { echo "::error::release $TAG is draft/unpublished"; exit 1; }
+            NAMED=$(gh release view "$TAG" --json tagName --jq .tagName)
+            [ "$NAMED" = "$TAG" ] || { echo "::error::release read back names tag '$NAMED', expected '$TAG'"; exit 1; }
+          fi
         fi
         FINAL_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
           | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
         [ "$FINAL_SHA" = "$GITHUB_SHA" ] || { echo "::error::tag $TAG resolves to '$FINAL_SHA', not the dispatched commit '$GITHUB_SHA'"; exit 1; }
+
+    - name: Upload and read back exact draft package asset
+      id: package-readback
+      if: ${{ inputs.package-host != '' && inputs.attach-package == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+        ASSET_FILE: ${{ steps.artifact-package.outputs.file }}
+        ASSET_SHA256: ${{ steps.artifact-package.outputs.sha256 }}
+        ASSET_PATH: ${{ steps.artifact-package.outputs.path }}
+      run: |
+        set -euo pipefail
+        releases="$RUNNER_TEMP/draft-release-assets.json"
+        require_exact_draft() {
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
+          python3 .github/scripts/_npm_publishlib.py qualified-draft \
+            --releases "$releases" --tag "$TAG" --marker cohort-marker.json \
+            --asset "$ASSET_FILE"
+        }
+        read -r RELEASE_ID ASSET_URL < <(require_exact_draft)
+        if [ "$ASSET_URL" = missing ]; then
+          # Close the listing-to-upload window: a concurrent early publish is
+          # observed here and makes the package mutation fail closed.
+          read -r RELEASE_ID ASSET_URL < <(require_exact_draft)
+          if [ "$ASSET_URL" = missing ]; then
+            gh api --method POST -H "Content-Type: application/gzip" --input "$ASSET_PATH" \
+              "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$ASSET_FILE" >/dev/null
+          fi
+        fi
+        # Re-fetch immediately before either new-upload or reuse readback.
+        read -r RELEASE_ID ASSET_URL < <(require_exact_draft)
+        [ "$ASSET_URL" != missing ] || { echo "::error::qualified package asset is missing after upload"; exit 1; }
+        gh api -H "Accept: application/octet-stream" "$ASSET_URL" > "$RUNNER_TEMP/$ASSET_FILE"
+        printf '%s  %s\n' "$ASSET_SHA256" "$RUNNER_TEMP/$ASSET_FILE" | sha256sum --check --strict
+
+    - name: Retain immutable durable cohort receipt on the Release
+      if: ${{ inputs.package-host != '' && inputs.attach-package == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TARGET: ${{ inputs.target }}
+        HOST: ${{ inputs.package-host }}
+        TAG: ${{ steps.v.outputs.tag }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        SOURCE_TREE: ${{ steps.artifact-package.outputs.source-tree }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
+        PACKAGE_FILE: ${{ steps.artifact-package.outputs.file }}
+        PACKAGE_SHA256: ${{ steps.artifact-package.outputs.sha256 }}
+        TAG_OBJECT_SHA: ${{ steps.publish.outputs.tag-object-sha }}
+        COHORT_TARGETS: ${{ inputs.cohort-targets }}
+      run: |
+        set -euo pipefail
+        receipt="$RUNNER_TEMP/codearbiter-cohort-publication-v1.json"
+        python3 - "$receipt" <<'PY'
+        import json, os, sys
+        versions = {"ca": json.load(open("plugins/ca/.claude-plugin/plugin.json"))["version"],
+                    "ca-codex": json.load(open("plugins/ca-codex/.codex-plugin/plugin.json"))["version"],
+                    "ca-pi": json.load(open("plugins/ca-pi/package.json"))["version"]}
+        cohort_targets = os.environ["COHORT_TARGETS"].split(",")
+        if (cohort_targets != sorted(set(cohort_targets))
+                or os.environ["TARGET"] not in cohort_targets
+                or not set(cohort_targets) <= {"ca", "ca-codex", "ca-pi"}):
+            raise SystemExit("hosted cohort targets are missing, duplicate, or unexpected")
+        receipt = {"format": "codearbiter.cohort-publication/0.1.0",
+                   "target": os.environ["TARGET"], "host": os.environ["HOST"],
+                   "tag": os.environ["TAG"], "source_commit": os.environ["SOURCE_COMMIT"],
+                   "source_tree": os.environ["SOURCE_TREE"], "ci_run_id": os.environ["CI_RUN_ID"],
+                   "cohort_sha256": os.environ["COHORT_SHA256"],
+                   "package_file": os.environ["PACKAGE_FILE"],
+                   "package_sha256": os.environ["PACKAGE_SHA256"],
+                   "tag_object_sha": os.environ["TAG_OBJECT_SHA"],
+                   "release_notes_sha256": json.load(open("cohort-marker.json"))["release_notes_sha256"],
+                   "cohort_tags": {"ca": "v" + versions["ca"],
+                                   "ca-codex": "ca-codex-v" + versions["ca-codex"],
+                                   "ca-pi": "ca-pi-v" + versions["ca-pi"]},
+                   "cohort_targets": cohort_targets,
+                   "readback": "verified", "disposition": "published-and-read-back"}
+        with open(sys.argv[1], "x", encoding="utf-8", newline="\n") as stream:
+            json.dump(receipt, stream, indent=2, sort_keys=True); stream.write("\n")
+        PY
+        releases="$RUNNER_TEMP/durable-receipt-releases.json"
+        require_exact_draft() {
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
+          python3 .github/scripts/_npm_publishlib.py qualified-draft \
+            --releases "$releases" --tag "$TAG" --marker cohort-marker.json \
+            --asset codearbiter-cohort-publication-v1.json
+        }
+        read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
+        if [ "$RECEIPT_URL" = missing ]; then
+          # Re-observe the exact draft immediately before the irreversible upload.
+          read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
+          if [ "$RECEIPT_URL" = missing ]; then
+            gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
+              "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-cohort-publication-v1.json" >/dev/null
+          fi
+        fi
+        # Re-fetch immediately before either new-upload or reuse readback.
+        read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
+        [ "$RECEIPT_URL" != missing ] || { echo "::error::durable cohort receipt is missing after upload"; exit 1; }
+        gh api -H "Accept: application/octet-stream" "$RECEIPT_URL" > "$RUNNER_TEMP/receipt-readback.json"
+        cmp "$receipt" "$RUNNER_TEMP/receipt-readback.json"
+
+    - name: Publish qualified Release only after receipt readback
+      if: ${{ inputs.package-host != '' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        TAG: ${{ steps.v.outputs.tag }}
+        MARK_LATEST: ${{ inputs.mark-latest }}
+        ASSET_FILE: ${{ steps.artifact-package.outputs.file }}
+        ASSET_SHA256: ${{ steps.artifact-package.outputs.sha256 }}
+      run: |
+        set -euo pipefail
+        releases="$RUNNER_TEMP/finalize-qualified-release.json"
+        validate_final_state() {
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
+          read -r RELEASE_ID RECEIPT_URL PACKAGE_URL < <(
+            python3 .github/scripts/_npm_publishlib.py qualified-finalize \
+              --releases "$releases" --tag "$TAG" --marker cohort-marker.json \
+              --asset codearbiter-cohort-publication-v1.json --asset "$ASSET_FILE")
+          python3 .github/scripts/_npm_publishlib.py cohort-receipt \
+            --receipt "$RUNNER_TEMP/codearbiter-cohort-publication-v1.json" --marker cohort-marker.json
+          gh api -H "Accept: application/octet-stream" "$RECEIPT_URL" > "$RUNNER_TEMP/final-receipt.json"
+          cmp "$RUNNER_TEMP/codearbiter-cohort-publication-v1.json" "$RUNNER_TEMP/final-receipt.json"
+          gh api -H "Accept: application/octet-stream" "$PACKAGE_URL" > "$RUNNER_TEMP/final-$ASSET_FILE"
+          printf '%s  %s\n' "$ASSET_SHA256" "$RUNNER_TEMP/final-$ASSET_FILE" | sha256sum --check --strict
+          TAG_OBJECT_SHA=$(python3 - "$RUNNER_TEMP/final-receipt.json" <<'PY'
+        import json,sys
+        print(json.load(open(sys.argv[1],encoding="utf-8"))["tag_object_sha"])
+        PY
+          )
+          git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" > "$RUNNER_TEMP/final-tag.txt"
+          python3 .github/scripts/_npm_publishlib.py tag-identity \
+            --remote "$RUNNER_TEMP/final-tag.txt" --tag "$TAG" --source "$GITHUB_SHA" \
+            --expected-object "$TAG_OBJECT_SHA" >/dev/null
+        }
+        # Validate every publication datum, then make a second complete Release
+        # inventory validation the literal final operation before PATCH.
+        validate_final_state
+        python3 - "$RUNNER_TEMP/final-asset-identity.json" "$RECEIPT_URL" "$PACKAGE_URL" <<'PY'
+        import json,os,sys
+        with open(sys.argv[1],"w",encoding="utf-8",newline="\n") as stream:
+            json.dump({"codearbiter-cohort-publication-v1.json":sys.argv[2],
+                       os.environ["ASSET_FILE"]:sys.argv[3]},stream,
+                      sort_keys=True,separators=(",",":")); stream.write("\n")
+        PY
+        gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
+        read -r RELEASE_ID _ _ < <(
+          python3 .github/scripts/_npm_publishlib.py qualified-finalize \
+            --releases "$releases" --tag "$TAG" --marker cohort-marker.json \
+            --asset codearbiter-cohort-publication-v1.json --asset "$ASSET_FILE" \
+            --expected-assets "$RUNNER_TEMP/final-asset-identity.json")
+        gh api --method PATCH -F draft=false -f make_latest="$MARK_LATEST" \
+          "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" >/dev/null
+        gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.draft == false' | grep -qx true
+
+    - name: Capture package publication disposition
+      if: ${{ always() && inputs.package-host != '' && inputs.attach-package == 'true' }}
+      shell: bash
+      env:
+        PACKAGE_HOST: ${{ inputs.package-host }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        CI_RUN_ID: ${{ inputs.ci-run-id }}
+        TAG: ${{ steps.v.outputs.tag }}
+        PACKAGE_VERSION: ${{ steps.v.outputs.version }}
+        ASSET_FILE: ${{ steps.artifact-package.outputs.file }}
+        ASSET_SHA256: ${{ steps.artifact-package.outputs.sha256 }}
+        COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
+        PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+        READBACK_OUTCOME: ${{ steps.package-readback.outcome }}
+        RECEIPT_PATH: ${{ runner.temp }}/artifact-package-publication-${{ inputs.package-host }}-${{ github.run_id }}-${{ github.run_attempt }}.json
+      run: |
+        python3 - <<'PY'
+        import json, os
+        receipt = {
+            "format": "codearbiter.artifact-package-publication/0.1.0",
+            "host": os.environ["PACKAGE_HOST"], "source_commit": os.environ["SOURCE_COMMIT"],
+            "ci_run_id": os.environ["CI_RUN_ID"], "release_run_id": os.environ["GITHUB_RUN_ID"],
+            "release_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "tag": os.environ["TAG"],
+            "version": os.environ["PACKAGE_VERSION"],
+            "cohort_sha256": os.environ["COHORT_SHA256"], "asset_file": os.environ["ASSET_FILE"],
+            "asset_sha256": os.environ["ASSET_SHA256"], "publish_outcome": os.environ["PUBLISH_OUTCOME"],
+            "readback_outcome": os.environ["READBACK_OUTCOME"],
+            "disposition": "published-and-read-back" if os.environ["READBACK_OUTCOME"] == "success" else "partial-publication-stop",
+        }
+        with open(os.environ["RECEIPT_PATH"], "x", encoding="utf-8", newline="\n") as stream:
+            json.dump(receipt, stream, indent=2, sort_keys=True); stream.write("\n")
+        PY
+
+    - name: Retain package publication disposition
+      if: ${{ always() && inputs.package-host != '' && inputs.attach-package == 'true' }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: artifact-package-publication-${{ inputs.package-host }}-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/artifact-package-publication-${{ inputs.package-host }}-${{ github.run_id }}-${{ github.run_attempt }}.json
+        if-no-files-found: error
+        retention-days: 90

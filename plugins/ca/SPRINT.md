@@ -7,16 +7,23 @@ file is the thin entry point, this file is the procedure. -->
 Brainstorm a sprint with the user, then execute it end-to-end — deciding "as the user" on everything
 that is not a true hard gate. Every auto-decision is logged. Hard gates are real stops, rare by design.
 
-## Typed-artifact pilot boundary
+## Structured-artifact boundary
 
-For an existing `.html` spec/plan match, or when the user explicitly requests
-the typed-HTML pilot, load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before resume
-classification or artifact I/O. Its validated identity, authority, binding and
-task-state operations replace the `.md` and status-column assumptions below for
-that pipeline only. A missing or invalid helper is a STOP. The typed-HTML path
-must block `--farm` before canary or dispatch; do not project it into legacy farm
-JSON. Legacy Markdown remains the default until native-host, consumer and release
-qualification is complete.
+For an existing `.html` spec/plan match or a new full-lane sprint, load
+`${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before resume classification or artifact
+I/O. New full-lane sprint specs use the installed structured-artifact engine to
+create the canonical `.html` artifact. Call `_select_authoring_route` with the
+trusted project root, slug, `workflow: sprint`, and `lane: full`; use only its
+returned format and paths. It checks the installed capability before writing;
+a missing or invalid helper is a STOP and the workflow must not fall back to Markdown.
+Its validated identity, authority, binding and task-state operations replace the
+`.md` and status-column assumptions below for that pipeline. An existing `.md`
+pair remains on the legacy path. Discovery requires a
+complete same-extension spec/plan pair: select that exact pair as authoritative. A
+mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format, and the
+next plan must use the same extension. The workflow must not create, rename, or
+convert its counterpart to repair ambiguity. The HTML path must block `--farm` before canary
+or dispatch; do not project it into legacy farm JSON.
 
 ## Execution backend: premium (default) vs. `--farm`
 
@@ -36,9 +43,16 @@ backends. The worker-seam design (the cheap/premium/agentic policies the seam ad
 
 ## Phase 1 — Sprint spec · gate: STOP
 
-**Resume first:** if a matching canonical spec/plan pair exists for this sprint
-(`.md` on the legacy path or validated `.html` on the explicit pilot), do not
-re-brainstorm — confirm the resume
+**Resume first:** discover this sprint's existing artifacts. Call the private
+bridge resolver `_resolve_workflow_pair` with the trusted project root and sprint
+slug; its returned paths and format own this resume. Select a complete
+same-extension spec/plan pair as authoritative. A lone spec resumes in its exact
+format, and the next plan must use the same extension. A mixed-extension or
+duplicate match is a STOP. For an HTML pair, obtain state only through the
+installed engine `identity`, `index`, and symbol-scoped `read` operations. For a
+Markdown pair, use the existing Markdown status ledger. Resume either exact format
+without creating or consulting a shadow artifact; the workflow must not create,
+rename, or convert its counterpart. Do not re-brainstorm — confirm the resume
 with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan with non-`ACCEPTED`
 tasks → straight to Phase 2, executing only the remaining tasks; the legacy plan's
 `status` column or the typed engine's execution ledger is authoritative for its
@@ -46,8 +60,8 @@ own format). An interrupted sprint is re-entered, never restarted.
 
 Route to `brainstorming` (`${CLAUDE_PLUGIN_ROOT}/skills/brainstorming/SKILL.md`), scoped to a **sprint** — a coherent chunk of work (several features or one
 goal), not a single feature. Drive it to a concrete sprint spec at
-`${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.md`, then to `writing-plans` (`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) for the task
-breakdown at `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<sprint-slug>.md`.
+`${CLAUDE_PROJECT_DIR}/.codearbiter/specs/<sprint-slug>.html` through the installed engine, then to `writing-plans` (`${CLAUDE_PLUGIN_ROOT}/skills/writing-plans/SKILL.md`) for the task
+breakdown at `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<sprint-slug>.html`.
 
 This is the ONE interactive gate, and it is load-bearing: the thoroughness of the spec is what makes
 hard-gate stops rare later. Capture the user's intent, priorities, risk tolerance, and any

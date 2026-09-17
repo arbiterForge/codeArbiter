@@ -21,8 +21,17 @@ that terminal step into one PR per unit.
 Read these, or STOP and surface the gap — never guess:
 
 - `<project-root>/.codearbiter/CONTEXT.md` — confirm the repo is a git repo and the base/working branch.
+- The discovered authoritative spec/plan pair for the caller's pipeline. Use its
+  exact selected plan for the parallel unit list. Re-run the private bridge resolver
+  `_resolve_workflow_pair` with the trusted project root and pipeline slug rather
+  than reconstructing either path. For an HTML pair, load
+  `<plugin-root>/includes/artifacts.md` and obtain
+  HTML task and path records only through the installed engine `identity`, `index`, and symbol-scoped `read`
+  operations. For a Markdown pair, use its existing Markdown task table. Worktree
+  planning must not create, convert, or consult a counterpart.
 
-Confirm the caller passed an explicit isolation opt-in AND the parallel unit list (from `plans/<slug>.md`). Absent either, do not stand up worktrees.
+Confirm the caller passed an explicit isolation opt-in AND the parallel unit list
+from the exact selected plan. Absent either, do not stand up worktrees.
 
 ## Phase 1 — Provision · gate: BLOCK
 

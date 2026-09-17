@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -53,6 +54,33 @@ class StaticPackageContractTest(unittest.TestCase):
         )
         self.assertEqual(result["verdict"], "PASS")
         self.assertEqual(result["plugin_version"], manifest["version"])
+
+    def test_large_promoted_native_member_requires_exact_explicit_receipt_context(self):
+        relative = "helpers/artifacts/ca-artifact-linux-amd64"
+        content = b"native" + (b"x" * (2 * 1024 * 1024))
+        target = self.package / relative
+        target.parent.mkdir(parents=True)
+        target.write_bytes(content)
+        declaration = {
+            "type": "file",
+            "mode": "0755",
+            "size": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(),
+            "origin": "promotion",
+        }
+        with self.assertRaisesRegex(ValueError, "size limit"):
+            self.checker.candidate_static_contract(self.package)
+        with self.assertRaisesRegex(ValueError, "does not match its receipt"):
+            self.checker.candidate_static_contract(
+                self.package,
+                verified_large_files={
+                    relative: {**declaration, "sha256": "0" * 64}
+                },
+            )
+        result = self.checker.candidate_static_contract(
+            self.package, verified_large_files={relative: declaration}
+        )
+        self.assertEqual("PASS", result["verdict"])
 
     def test_rejects_missing_or_ambiguous_manifest_identity(self):
         manifest_path = self.package / ".codex-plugin" / "plugin.json"

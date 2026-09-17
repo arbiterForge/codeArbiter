@@ -10,11 +10,30 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import sys
+from typing import NamedTuple
 
 SCHEMA_VERSION = "0.3.1"
 PROTOCOL = "codearbiter.artifact-api/0.1.0"
+PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
+NATIVE_TESTS = [
+    'artifact-bridge', 'artifact-conformance', 'artifact-native', 'artifact-package',
+    'go-test', 'go-vet',
+]
+
+
+class VerifiedPromotionPayload(NamedTuple):
+    """Immutable bytes proven by one trusted promotion receipt."""
+    receipt_bytes: bytes
+    manifest_bytes: bytes
+    payload: tuple[tuple[str, bytes], ...]
+
+    @property
+    def receipt(self) -> dict:
+        # Return a fresh object so callers cannot mutate the verified snapshot.
+        return json.loads(self.receipt_bytes, object_pairs_hook=_pairs)
 
 
 def read_regular(path: Path, limit: int) -> bytes:
@@ -73,7 +92,93 @@ def load_payload(source: Path):
     return manifest_bytes,payload
 
 
-def install_payload(repo: Path, plugin_dir: str, source: Path) -> Path:
+def load_promotion_receipt(source: Path, receipt_path: Path, *, host: str,
+                           source_commit: str, workflow: str, run_id: str,
+                           receipt_sha256: str) -> VerifiedPromotionPayload:
+    """Verify one staged host payload against its immutable promotion receipt."""
+    receipt_source = receipt_path.absolute()
+    if (receipt_source.is_symlink()
+            or os.path.normcase(str(receipt_source.resolve(strict=True))) !=
+            os.path.normcase(str(receipt_source))):
+        raise ValueError('promotion receipt must be a real file without linked ancestors')
+    receipt_bytes = read_regular(receipt_source, 65_536)
+    if (not isinstance(receipt_sha256, str)
+            or hashlib.sha256(receipt_bytes).hexdigest() != receipt_sha256):
+        raise ValueError('promotion receipt bytes drifted from the trusted digest')
+    receipt = json.loads(receipt_bytes, object_pairs_hook=_pairs)
+    expected_keys = {
+        'format', 'source_commit', 'workflow', 'run_id', 'version', 'protocol',
+        'schema_version', 'hosts', 'qualifications', 'payload',
+    }
+    if (not isinstance(receipt, dict) or set(receipt) != expected_keys
+            or receipt['format'] != PROMOTION_FORMAT
+            or receipt['source_commit'] != source_commit
+            or receipt['workflow'] != workflow or receipt['run_id'] != run_id):
+        raise ValueError('promotion receipt does not match the trusted release context')
+    hosts = receipt['hosts']
+    if (not isinstance(hosts, dict) or host not in hosts or not isinstance(hosts[host], str)):
+        raise ValueError('promotion receipt does not authorize this host payload')
+    expected_source = receipt_source.parent.joinpath(*hosts[host].split('/')).absolute()
+    actual_source = source.absolute()
+    if (actual_source.is_symlink()
+            or os.path.normcase(str(actual_source.resolve(strict=True))) !=
+            os.path.normcase(str(actual_source))):
+        raise ValueError('promotion receipt host payload must be a real directory')
+    if (os.path.normcase(str(actual_source.resolve(strict=True))) !=
+            os.path.normcase(str(expected_source.resolve(strict=True)))):
+        raise ValueError('promotion receipt does not authorize this host payload')
+
+    payload = receipt['payload']
+    if (not isinstance(payload, dict) or 'release.json' not in payload
+            or any(not isinstance(name, str) or not isinstance(value, str)
+                   for name, value in payload.items())):
+        raise ValueError('promotion receipt payload map is invalid')
+    expected_files = set(payload)
+    actual_files = {entry.name for entry in actual_source.iterdir()}
+    if actual_files != expected_files or any(not entry.is_file() or entry.is_symlink()
+                                             for entry in actual_source.iterdir()):
+        raise ValueError('promotion receipt payload file set drifted')
+    try:
+        manifest_bytes, binaries = load_payload(actual_source)
+    except ValueError as error:
+        raise ValueError('promotion receipt payload bytes drifted') from error
+    manifest = json.loads(manifest_bytes, object_pairs_hook=_pairs)
+    if (receipt['version'], receipt['protocol'], receipt['schema_version']) != (
+            manifest['version'], manifest['protocol'], manifest['schema_version']):
+        raise ValueError('promotion receipt identity drifted from the payload manifest')
+    if expected_files != {'release.json', *binaries}:
+        raise ValueError('promotion receipt payload file set drifted')
+    current = {
+        'release.json': hashlib.sha256(manifest_bytes).hexdigest(),
+        **{filename: hashlib.sha256(data).hexdigest()
+           for filename, data in binaries.items()},
+    }
+    if current != payload:
+        raise ValueError('promotion receipt payload bytes drifted')
+    qualifications = receipt['qualifications']
+    if (not isinstance(qualifications, dict)
+            or set(qualifications) != set(manifest['binaries'])):
+        raise ValueError('promotion receipt qualification set drifted')
+    for platform_name, entry in manifest['binaries'].items():
+        qualification = qualifications[platform_name]
+        if (not isinstance(qualification, dict)
+                or set(qualification) != {
+                    'receipt_sha256', 'job', 'binary_sha256', 'native_tests'}
+                or qualification['job'] != 'artifact-engine'
+                or qualification['binary_sha256'] != entry['sha256']
+                or not isinstance(qualification['receipt_sha256'], str)
+                or re.fullmatch(r'[0-9a-f]{64}', qualification['receipt_sha256']) is None
+                or qualification['native_tests'] != NATIVE_TESTS):
+            raise ValueError('promotion receipt qualification binding is invalid')
+    return VerifiedPromotionPayload(
+        receipt_bytes=receipt_bytes,
+        manifest_bytes=manifest_bytes,
+        payload=tuple(sorted(binaries.items())),
+    )
+
+
+def _install_payload_bytes(repo: Path, plugin_dir: str, manifest: bytes,
+                           payload: dict[str, bytes]) -> Path:
     # The normal caller obtains plugin_dir from validated canonical descriptors;
     # this check prevents an accidental or malformed descriptor escaping repo.
     if (not plugin_dir or plugin_dir.startswith('/') or '\\' in plugin_dir or ':' in plugin_dir
@@ -81,7 +186,6 @@ def install_payload(repo: Path, plugin_dir: str, source: Path) -> Path:
         raise ValueError('unsafe plugin path')
     if os.name == 'nt':
         raise ValueError('Windows payload installation is release-packaging only; the developer installer fails closed')
-    manifest,payload=load_payload(source)
     flags=os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC
     current=os.open(repo,flags)
     target=repo
@@ -116,6 +220,25 @@ def install_payload(repo: Path, plugin_dir: str, source: Path) -> Path:
         return target
     finally:
         os.close(current)
+
+
+def install_payload(repo: Path, plugin_dir: str, source: Path) -> Path:
+    """Install an ordinary verified payload without promotion provenance."""
+    if os.name == 'nt':
+        raise ValueError('Windows payload installation is release-packaging only; the developer installer fails closed')
+    manifest, payload = load_payload(source)
+    return _install_payload_bytes(repo, plugin_dir, manifest, payload)
+
+
+def install_promoted_payload(repo: Path, plugin_dir: str, source: Path,
+                             receipt_path: Path, *, host: str, source_commit: str,
+                             workflow: str, run_id: str, receipt_sha256: str) -> Path:
+    """Verify and consume one immutable promotion snapshot without reopening source."""
+    verified = load_promotion_receipt(
+        source, receipt_path, host=host, source_commit=source_commit,
+        workflow=workflow, run_id=run_id, receipt_sha256=receipt_sha256)
+    return _install_payload_bytes(
+        repo, plugin_dir, verified.manifest_bytes, dict(verified.payload))
 
 
 def main():
