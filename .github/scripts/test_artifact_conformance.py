@@ -48,6 +48,7 @@ EXPECTED_SUITES = {
         "test_producers_create_and_read_canonical_html_pair",
         "test_incomplete_draft_is_named_without_inventing_contract_fields",
         "test_missing_payload_fails_closed_without_markdown_fallback",
+        "test_resolves_a_test_owned_linked_ancestor",
     },
     "test_artifact_workflow.py": {
         "test_draft_or_missing_approval_cannot_dispatch",
