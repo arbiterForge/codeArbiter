@@ -6,16 +6,16 @@ disable-model-invocation: true
 
 # tdd
 
-## Typed-artifact pilot boundary
+## Authoritative format boundary
 
-For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
-`{{PLUGIN_ROOT}}/includes/artifacts.md` before artifact I/O. Its typed ID, binding,
-readiness, receipt, contextual-read and scope-state rules replace the legacy
-Markdown parsing and direct status-cell edits below for that pilot only. Keep
-all other workflow gates, including human checkpoints, unchanged. Missing or
-invalid HTML capability is a STOP for this path, not a fallback to Markdown.
-HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
-remain unchanged until native host qualification and cutover approval.
+For an HTML spec/plan pair, load `{{PLUGIN_ROOT}}/includes/artifacts.md` and use
+the installed structured-artifact engine for artifact I/O. Verify the plan's
+binding to the approved spec, use typed `index`, `outline`, and symbol-scoped `read`,
+and follow contextual pages for the selected task. The workflow must not parse rendered HTML
+for criteria, status, evidence, or authority. Missing or
+invalid HTML capability is a STOP, not a fallback to Markdown. Existing
+authoritative Markdown pairs continue through the legacy path. HTML `--farm`
+dispatch remains blocked.
 
 
 Test-first, or it does not ship. Routed to by `/feature` (after spec approval), `/fix`, and `/refactor`.
@@ -28,7 +28,11 @@ Read these, or STOP and surface the gap — never guess a command or a threshold
 - `{{PROJECT_DIR}}/.codearbiter/tech-stack.md` — test, coverage, and lint invocations; file layout; mock patterns.
 - `{{PLUGIN_ROOT}}/includes/verification-boundary.md` — the required split between focused local proof and exhaustive exact-head hosted CI.
 - `{{PROJECT_DIR}}/.codearbiter/coding-standards.md` — style, structure, naming. Required for Phase 3.
-- `{{PROJECT_DIR}}/.codearbiter/specs/<slug>.md` — the approved spec, when `/feature` produced one. It is the primary obligation source.
+- The authoritative approved spec selected by `/feature`. For HTML, read its
+  typed criterion records through the installed engine and confirm the paired
+  plan's exact binding; for legacy Markdown, read
+  `{{PROJECT_DIR}}/.codearbiter/specs/<slug>.md`. It is the primary obligation
+  source.
 - `{{PROJECT_DIR}}/.codearbiter/security-controls.md` — only when the change touches a security boundary (auth, crypto, secrets, a trust boundary). Optional; absent on most changes.
 - `{{PROJECT_DIR}}/.codearbiter/code-map.md` — if present, a coarse concern→path→role map to orient before writing tests and code. Absent is fine — it is read-on-demand, populated by context-creation or commit-gate heal.
 
@@ -40,7 +44,10 @@ test is `MISSING`. "We should test X" is not an obligation.
 
 Derive every obligation before any code is written, and record each as `ID · source · OPEN`:
 
-- **Spec** — one obligation per acceptance criterion in the approved spec.
+- **Spec** — one obligation per acceptance criterion in the approved spec. For
+  HTML, cite the exact artifact ID and criterion ID returned by the engine;
+  caller-supplied labels cannot manufacture obligations or widen the approved
+  criterion set.
 - **Contract** — API and input-validation invariants, error responses, boundary conditions.
 - **Security** — only when `security-controls.md` applies: the assertion that the security-relevant boundary holds.
 

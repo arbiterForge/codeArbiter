@@ -15,7 +15,13 @@ import unittest
 from unittest import mock
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO/"core/pysrc"))
-from _artifactlib import ArtifactClient, ArtifactError, _stage_darwin_executable, checked_spec_index
+from _artifactlib import (
+    ArtifactClient,
+    ArtifactError,
+    _select_authoring_route,
+    _stage_darwin_executable,
+    checked_spec_index,
+)
 from test_artifact_authoring import physical_test_directory
 INSTALLATION = None
 
@@ -42,6 +48,22 @@ class BridgeTests(unittest.TestCase):
     def create(self):
         return self.client.call("create",{"operation_id":"bridge-spec-create","artifact_id":"SPEC-BRIDGE","kind":"spec","slug":"bridge","title":"Bridge fixture","summary":"Incomplete draft, not an approved fixture."})
 
+    def repository_bytes(self):
+        return {
+            path.relative_to(self.root).as_posix(): path.read_bytes()
+            for path in sorted(self.root.rglob("*"))
+            if path.is_file()
+        }
+
+    def damaged_installation(self, name, mutate):
+        destination = self.test_directory / name
+        shutil.copytree(INSTALLATION, destination)
+        release_path = destination / "release.json"
+        release = json.loads(release_path.read_text(encoding="utf-8"))
+        mutate(destination, release)
+        release_path.write_text(json.dumps(release), encoding="utf-8")
+        return destination
+
     def test_real_cli_draft_and_index(self):
         caps=self.client.call("capabilities");self.assertEqual(caps["public_registrations_added"],0)
         self.create();items=list(self.client.index("spec"));self.assertEqual(len(items),1)
@@ -67,6 +89,144 @@ class BridgeTests(unittest.TestCase):
         p=dest/name;p.write_bytes(p.read_bytes()+b"changed")
         with self.assertRaises(ArtifactError) as got:ArtifactClient(self.root,dest).call("capabilities")
         self.assertEqual(got.exception.code,"PACKAGE_INTEGRITY")
+
+    def test_new_html_route_reports_actionable_capability_error_before_writing(self):
+        (self.root / ".codearbiter" / "specs").mkdir(parents=True)
+        (self.root / ".codearbiter" / "plans").mkdir(parents=True)
+
+        def corrupt_binary(destination, release):
+            entry = next(iter(release["binaries"].values()))
+            binary = destination / entry["file"]
+            binary.write_bytes(binary.read_bytes() + b"corrupt")
+
+        def unsupported_cell(_destination, release):
+            release["binaries"] = {}
+
+        def incompatible_protocol(_destination, release):
+            release["protocol"] = "codearbiter.artifact-api/999.0.0"
+
+        installations = {
+            "missing": self.test_directory / "missing-payload",
+            "corrupt": self.damaged_installation("corrupt-payload", corrupt_binary),
+            "unsupported": self.damaged_installation("unsupported-payload", unsupported_cell),
+            "incompatible": self.damaged_installation("incompatible-payload", incompatible_protocol),
+        }
+        installations["missing"].mkdir()
+        before = self.repository_bytes()
+        for name, installation in installations.items():
+            with self.subTest(payload=name):
+                client = ArtifactClient(self.root, installation)
+                with self.assertRaises(ArtifactError) as got:
+                    _select_authoring_route(
+                        self.root,
+                        "new-work",
+                        workflow="feature",
+                        lane="full",
+                        client=client,
+                    )
+                self.assertEqual(got.exception.code, "CAPABILITY_MISSING")
+                self.assertIn("repair or reinstall", str(got.exception))
+                self.assertEqual(self.repository_bytes(), before)
+
+    def test_existing_html_mutation_revalidates_payload_before_writing(self):
+        self.create()
+        identity = self.client.call("identity", {"artifact_id": "SPEC-BRIDGE"})
+        system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}[
+            platform.system()
+        ]
+        architecture = {
+            "x86_64": "amd64",
+            "amd64": "amd64",
+            "aarch64": "arm64",
+            "arm64": "arm64",
+        }[platform.machine().lower()]
+        current_cell = f"{system}/{architecture}"
+
+        def corrupt_binary(destination, release):
+            binary = destination / release["binaries"][current_cell]["file"]
+            binary.write_bytes(binary.read_bytes() + b"corrupt")
+
+        def advertise_other_cell(_destination, release):
+            other_architecture = "arm64" if architecture == "amd64" else "amd64"
+            release["binaries"] = {
+                f"{system}/{other_architecture}": release["binaries"][current_cell]
+            }
+
+        def mismatch_binary_identity(_destination, release):
+            release["binaries"][current_cell]["file"] = "wrong-artifact-binary"
+
+        def mismatch_protocol(_destination, release):
+            release["protocol"] = "codearbiter.artifact-api/999.0.0"
+
+        missing = self.test_directory / "missing-existing-mutation"
+        missing.mkdir()
+        installations = {
+            "missing": (missing, "CAPABILITY_MISSING"),
+            "corrupt": (
+                self.damaged_installation("corrupt-existing-mutation", corrupt_binary),
+                "PACKAGE_INTEGRITY",
+            ),
+            "unsupported-advertised-cell": (
+                self.damaged_installation(
+                    "unsupported-existing-mutation", advertise_other_cell
+                ),
+                "CAPABILITY_MISSING",
+            ),
+            "manifest-binary-identity": (
+                self.damaged_installation(
+                    "identity-existing-mutation", mismatch_binary_identity
+                ),
+                "INVALID_INSTALLATION",
+            ),
+            "protocol-mismatch": (
+                self.damaged_installation(
+                    "protocol-existing-mutation", mismatch_protocol
+                ),
+                "UNSUPPORTED_VERSION",
+            ),
+        }
+        before = self.repository_bytes()
+        for name, (installation, error_code) in installations.items():
+            with self.subTest(payload=name):
+                broken = ArtifactClient(self.root, installation)
+                with self.assertRaises(ArtifactError) as got:
+                    broken.call(
+                        "apply",
+                        {
+                            "artifact_id": "SPEC-BRIDGE",
+                            "operation_id": f"must-not-write-{name}",
+                            "expected": {
+                                "revision": identity["revision"],
+                                "model_sha256": identity["model_sha256"],
+                            },
+                            "changes": [],
+                        },
+                    )
+                self.assertEqual(got.exception.code, error_code)
+                self.assertEqual(self.repository_bytes(), before)
+
+    def test_legacy_markdown_route_remains_usable_with_missing_payload(self):
+        specs = self.root / ".codearbiter" / "specs"
+        plans = self.root / ".codearbiter" / "plans"
+        specs.mkdir(parents=True)
+        plans.mkdir(parents=True)
+        spec = specs / "legacy.md"
+        plan = plans / "legacy.md"
+        spec.write_text("# Existing specification\n", encoding="utf-8")
+        plan.write_text("# Existing plan\n", encoding="utf-8")
+        empty_installation = self.test_directory / "empty-installation"
+        empty_installation.mkdir()
+        selected = _select_authoring_route(
+            self.root,
+            "legacy",
+            workflow="feature",
+            lane="full",
+            client=ArtifactClient(self.root, empty_installation),
+        )
+        self.assertEqual(selected["format"], "md")
+        self.assertEqual(selected["state"], "pair")
+        self.assertEqual(selected["spec_path"], spec)
+        self.assertEqual(selected["plan_path"], plan)
 
     def test_symlink_binary_rejected(self):
         dest=self.test_directory/"installation";dest.mkdir()

@@ -2105,8 +2105,47 @@ def _candidate_archive_limits() -> dict[str, int]:
     return dict(EXPECTED_CANDIDATE_ARCHIVE_LIMITS)
 
 
-def _candidate_package_files(path: Path) -> dict[str, bytes]:
-    """Read candidate-owned package files without trusting receipt declarations."""
+def _verified_large_candidate_files(value: object) -> dict[str, dict[str, object]]:
+    """Validate caller-proven exceptions for promoted native payload files only."""
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError("verified large-file declarations are malformed")
+    if len(value) > 6:
+        raise ValueError("verified large-file declarations exceed the native cohort bound")
+    result: dict[str, dict[str, object]] = {}
+    for relative, declaration in value.items():
+        if (
+            not isinstance(relative, str)
+            or re.fullmatch(
+                r"helpers/artifacts/ca-artifact-(?:(?:darwin|linux)-"
+                r"(?:amd64|arm64)|windows-(?:amd64|arm64)\.exe)",
+                relative,
+            ) is None
+            or posixpath.normpath(relative) != relative
+            or not isinstance(declaration, dict)
+            or set(declaration) != {"type", "mode", "size", "sha256", "origin"}
+            or declaration.get("type") != "file"
+            or declaration.get("mode") != "0755"
+            or declaration.get("origin") != "promotion"
+            or not isinstance(declaration.get("size"), int)
+            or isinstance(declaration.get("size"), bool)
+            or declaration["size"] <= EXPECTED_CANDIDATE_ARCHIVE_LIMITS[
+                "max_entry_uncompressed_bytes"
+            ]
+            or not isinstance(declaration.get("sha256"), str)
+            or re.fullmatch(r"[0-9a-f]{64}", declaration["sha256"]) is None
+        ):
+            raise ValueError("verified large-file declaration is not a promoted native payload")
+        result[relative] = declaration
+    return result
+
+
+def _candidate_package_files(
+    path: Path, *, verified_large_files: object = None
+) -> dict[str, bytes]:
+    """Read candidate files with narrow, already-receipt-verified native exceptions."""
+    large_files = _verified_large_candidate_files(verified_large_files)
     path_metadata = path.lstat() if path.exists() or path.is_symlink() else None
     reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
     if (
@@ -2232,13 +2271,16 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                     continue
                 if not stat.S_ISREG(metadata.st_mode):
                     raise ValueError("candidate package contains a non-regular file")
-                if metadata.st_size > limits["max_entry_uncompressed_bytes"]:
-                    raise ValueError("candidate directory entry exceeds the size limit")
-                resolved = item.resolve()
                 try:
-                    relative = resolved.relative_to(package_root).as_posix()
+                    relative = item.resolve().relative_to(package_root).as_posix()
                 except ValueError as error:
                     raise ValueError("candidate package file escapes package root") from error
+                large = large_files.get(relative)
+                if (
+                    metadata.st_size > limits["max_entry_uncompressed_bytes"]
+                    and (large is None or large["size"] != metadata.st_size)
+                ):
+                    raise ValueError("candidate directory entry exceeds the size limit")
                 entries.append((relative, item, metadata))
         _validate_candidate_paths(relative for relative, _, _ in entries)
         total_bytes = 0
@@ -2252,7 +2294,11 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
                 ):
                     raise ValueError("candidate directory entry changed while being read")
                 size = opened.st_size
-                if size > limits["max_entry_uncompressed_bytes"]:
+                large = large_files.get(relative)
+                if (
+                    size > limits["max_entry_uncompressed_bytes"]
+                    and (large is None or large["size"] != size)
+                ):
                     raise ValueError("candidate directory entry exceeds the size limit")
                 if size > limits["max_total_uncompressed_bytes"] - total_bytes:
                     raise ValueError("candidate directory exceeds the total-size limit")
@@ -2267,8 +2313,16 @@ def _candidate_package_files(path: Path) -> dict[str, bytes]:
             content = output.getvalue()
             if len(content) != size:
                 raise ValueError("candidate directory entry changed while being read")
+            if large is not None and hashlib.sha256(content).hexdigest() != large["sha256"]:
+                raise ValueError("verified large candidate file does not match its receipt")
             total_bytes += len(content)
             files[relative] = content
+        observed_large = {
+            relative for relative, content in files.items()
+            if len(content) > limits["max_entry_uncompressed_bytes"]
+        }
+        if observed_large != set(large_files):
+            raise ValueError("verified large-file receipt does not match candidate membership")
         return files
     raise ValueError("candidate package must be a ca-codex directory or ZIP archive")
 

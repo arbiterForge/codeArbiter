@@ -6,16 +6,19 @@ disable-model-invocation: true
 
 # brainstorming
 
-## Typed-artifact pilot boundary
+## Structured-artifact boundary
 
-For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
-`<plugin-root>/includes/artifacts.md` before artifact I/O. Its typed ID, binding,
-readiness, receipt, contextual-read and scope-state rules replace the legacy
-Markdown parsing and direct status-cell edits below for that pilot only. Keep
-all other workflow gates, including human checkpoints, unchanged. Missing or
-invalid HTML capability is a STOP for this path, not a fallback to Markdown.
-HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
-remain unchanged until native host qualification and cutover approval.
+For an existing HTML spec/plan or a new full-lane feature or sprint, load
+`<plugin-root>/includes/artifacts.md` before artifact I/O. New full-lane specs
+use the installed structured-artifact engine to create the canonical `.html`
+artifact. Before Phase 1, call `_select_authoring_route` with the trusted project
+root, slug, invoking workflow, and selected lane; use only its returned mode,
+format, and paths. It checks the installed capability before writing; missing or invalid HTML
+capability is a STOP and the workflow must not fall back to Markdown. Its typed
+ID, binding, readiness, receipt, contextual-read and scope-state rules replace
+legacy Markdown parsing and direct status-cell edits for that pipeline. Keep all
+other workflow gates, including human checkpoints, unchanged. Existing `.md`
+artifacts remain on their legacy path. HTML `--farm` dispatch remains blocked.
 
 
 Refine the idea before it touches code. Routed to by `/feature` (before `tdd`) and by `/sprint` (the planning front).
@@ -90,7 +93,9 @@ Gate: every vague term made concrete; every fork resolved by the user or recorde
 
 ## Phase 4 — Write the spec · gate: BLOCK
 
-Write the agreed spec to `<project-root>/.codearbiter/specs/<slug>.md`. The slug is derived from the feature. The spec holds:
+Create the agreed spec through the installed structured-artifact engine at
+`<project-root>/.codearbiter/specs/<slug>.html`; do not write the HTML or its
+embedded model directly. The slug is derived from the feature. The spec holds:
 
 - **Problem** — the Phase 1 framing in final form.
 - **Approach** — the Phase 2 choice and the trade-off that picked it, in two or three sentences.

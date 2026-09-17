@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tarfile
 import threading
 import time
 import unittest
@@ -2111,11 +2112,11 @@ class NpmPublishContractTest(unittest.TestCase):
         workflow_prefix = text.split("    steps:\n", 1)[0] + "    steps:\n"
         self.assertEqual(
             hashlib.sha256(workflow_prefix.encode("utf-8")).hexdigest(),
-            "97ab8cfd4f9dceebeb78e8c68fcd34ebb1bf040a6f7be39666d2e141e9e6b6cd",
+            "8d8bb42b34aab673af1020cb6990b3bda8b66c6132ecb6417a471895550b6e3e",
             "the privileged workflow prelude drifted",
         )
         permissions = text.split("permissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
-        self.assertEqual(permissions, "  contents: read\n  id-token: write\n")
+        self.assertEqual(permissions, "  actions: read\n  contents: read\n  id-token: write\n")
         concurrency = text.split("concurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
         self.assertEqual(
             concurrency,
@@ -2128,7 +2129,7 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertEqual(
             job_header,
             '    name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"\n'
-            "    if: github.ref == 'refs/heads/main'\n"
+            "    if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'\n"
             "    runs-on: ubuntu-latest\n"
             "    timeout-minutes: 10\n",
         )
@@ -2163,7 +2164,15 @@ class NpmPublishContractTest(unittest.TestCase):
             candidate_consumers,
             [
                 "run: git -C candidate fetch --no-tags origin main:refs/remotes/origin/main",
+                '--source-repo candidate --source-commit "$SOURCE_COMMIT" --ci-run-id "$CI_RUN_ID" \\',
+                'versions={"ca":json.load(open("candidate/plugins/ca/.claude-plugin/plugin.json"))["version"],',
+                '"ca-codex":json.load(open("candidate/plugins/ca-codex/.codex-plugin/plugin.json"))["version"],',
+                '"ca-pi":json.load(open("candidate/plugins/ca-pi/package.json"))["version"]}',
                 "--repo candidate \\",
+                'git -C candidate ls-remote --tags origin "refs/tags/$RELEASE_TAG" \\',
+                'versions = {"ca": json.load(open("candidate/plugins/ca/.claude-plugin/plugin.json"))["version"],',
+                '"ca-codex": json.load(open("candidate/plugins/ca-codex/.codex-plugin/plugin.json"))["version"],',
+                '"ca-pi": json.load(open("candidate/plugins/ca-pi/package.json"))["version"]}',
             ],
             "candidate content reached a command outside the exact inert-data allowlist",
         )
@@ -2185,6 +2194,9 @@ class NpmPublishContractTest(unittest.TestCase):
             [
                 ("- name: Check out the trusted default-branch verifier", "e5f2364f9cd674ffb2154ccfa5731f2bafc85406538d0154d409c28dbe216f97"),
                 ("- name: Validate untrusted release inputs before use", "fd21e6f82c6dac0b24da721059d653135a44289b46c541cdd4f9eb999e1101c9"),
+                ("- name: Download exact promoted host payloads", "d9d89c456edb713a79b7de9ffd3953315599e0f02dd8e32841d9f14b6a106869"),
+                ("- name: Download exact normal release package cohort", "0937dba9b0aa2812e4b14d2fcb9e1bb148f2c9be229170d869e2ed5c53242e71"),
+                ("- name: Download exact cold-execution receipt matrix", "8a0a09aae2c3f52186da9f05269a9e22f1eb0e8ea9e10122309307a9d05248b6"),
                 ("- name: Materialize the exact tagged package as inert data", "d2f4e3fe952dc4276ef6cd7169935f52fbd76e30dac74e5a24586e79782e2e1f"),
                 ("- uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0", "72f4f712094c2099d186d3e7f571517102fc456dc598a5977dcf997794a5df7d"),
                 (
@@ -2195,10 +2207,18 @@ class NpmPublishContractTest(unittest.TestCase):
                     "- name: Fetch protected main without credentials",
                     "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730",
                 ),
-                ("- name: Capture exact published GitHub Release evidence", "73ed3a2d933eb9ca00bb0d794377d49c328df0813d4307f192932b30749605e8"),
-                ("- name: Validate identity, pack once, and classify exact registry state", "be6463c41587b42a755828b2e2a253defcc347823a838d59b56651aab7aa20d2"),
-                ("- name: Publish with provenance", "40f63d300e3f49f6cc0398d2dfd7577a92fee1d2ebcafc2c1993a7f2cddab78c"),
-                ("- name: Verify exact registry publication evidence", "8240768220719d3eaf88be08d6bbca28d8bafef785bbdda448607b5493a38636"),
+                ("- name: Capture draft-inclusive GitHub Release evidence", "d1453085ae5dede76e863387e84d5ad236184236d591c71bfe5174c02c28519f"),
+                ("- name: Reverify the exact retained package cohort", "a160ee94d7060c8b693be86d08f2e2cdfc3a8b1d87f37fa5453532ad1d4c4c9c"),
+                ("- name: Verify exact draft cohort-start marker before npm mutation", "f70ebba615690509cef78d9abe440a337fc661fd5b211a9eab50ae7054faeb29"),
+                ("- name: Validate identity, select prebuilt tarball, and classify exact registry state", "5fef60bd55d82145a1e554ca7ecb2e4f079359306769fc04049d98a268f1e06e"),
+                ("- name: Require exact annotated tag object before npm mutation", "2018ffe36b25c717cfb3698e814ef04d865786bb664f5cf49fc57c1290155820"),
+                ("- name: Re-fetch exact empty marker-owned draft immediately before npm publish", "b5a07c1faced20dea8566ab36ebffdf26b28a8bc805ddea3fdb5f8d53d4c9c43"),
+                ("- name: Publish with provenance", "c3beb4d9d68652884af4c9ab7532d0a8cc2df7052baa5efee27ada23f5a05c32"),
+                ("- name: Verify exact registry publication evidence", "2ddcad576019ac148c3fac1a02bc960eb73a157c27b215b16079c491a0833f8c"),
+                ("- name: Create immutable durable cohort receipt", "50e65e49ba2c4beaaef31bc5a80b4bd0ca3b4569fab4d9f1f29b1180493aa0ba"),
+                ("- name: Stage durable Pi cohort receipt for publisher-isolated retention", "339c472a2d4bd0368353b39a817dd12a7019e3ea6d2da7b11fbb91e8476c72e2"),
+                ("- name: Capture npm package publication disposition", "e714059551391922498475735e2f36a9e9188b8c8f05af62cccc383e61214bad"),
+                ("- name: Retain npm package publication disposition", "5975b978cc79ecda5c4aa0896ec2c5b362eeec6fcd33f7d5da1aa7dc01753e3b"),
             ],
             "the complete publisher step contract drifted",
         )
@@ -2267,7 +2287,7 @@ class NpmPublishContractTest(unittest.TestCase):
             "an immutable historical tag needs the same exact-tag/SHA verifier as a recovery path",
         )
         dispatch = text.split("  workflow_dispatch:", 1)[1].split("\n\npermissions:", 1)[0]
-        for name in ("tag", "expected_sha"):
+        for name in ("tag", "expected_sha", "ci_run_id"):
             self.assertRegex(
                 dispatch,
                 rf"(?ms)^      {name}:\n        required: true\n        type: string$",
@@ -2276,7 +2296,7 @@ class NpmPublishContractTest(unittest.TestCase):
         workflow_call = text.split("  workflow_call:\n", 1)[1].split(
             "  workflow_dispatch:\n", 1
         )[0]
-        for name in ("tag", "expected_sha"):
+        for name in ("tag", "expected_sha", "ci_run_id"):
             self.assertRegex(
                 workflow_call,
                 rf"(?ms)^      {name}:\n        required: true\n        type: string$",
@@ -2285,9 +2305,8 @@ class NpmPublishContractTest(unittest.TestCase):
             text,
             r"(?ms)^    secrets:\n      NPMJS_TOKEN:\n        required: true$",
         )
-        self.assertRegex(text, r"(?ms)^permissions:\n\s+contents: read\n\s+id-token: write\n")
+        self.assertRegex(text, r"(?ms)^permissions:\n\s+actions: read\n\s+contents: read\n\s+id-token: write\n")
         self.assertIn("timeout-minutes: 10", text)
-        self.assertNotIn("contents: write", text)
         self.assertIn("format('refs/tags/{0}', inputs.tag)", text)
         # Re-runs are serialized per tag and become no-ops once the exact
         # artifact and provenance are proven on the registry.
@@ -2346,7 +2365,7 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertNotIn("NODE_AUTH_TOKEN", cli_step)
         self.assertNotIn("NPMJS_TOKEN", cli_step)
         self.assertNotIn("npm install", text)
-        self.assertEqual(text.count("steps.npm-cli.outputs.executable"), 3)
+        self.assertEqual(text.count("steps.npm-cli.outputs.executable"), 4)
         self.assertNotIn("npm ci", text)
         for manifest in ("package.json", "plugins/ca-pi/package.json"):
             self.assertIn(manifest, text)
@@ -2385,8 +2404,8 @@ class NpmPublishContractTest(unittest.TestCase):
             text.replace("runs-on: ubuntu-latest", "runs-on: self-hosted", 1),
             text.replace("  id-token: write", "  id-token: write\n  actions: write", 1),
             text.replace(
-                "if: github.ref == 'refs/heads/main'",
-                "if: github.ref == 'refs/heads/main' || github.actor == github.actor",
+                "if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'",
+                "if: github.event_name == 'workflow_call' && (github.ref == 'refs/heads/main' || github.actor == github.actor)",
                 1,
             ),
             text.replace("curl --disable", "curl --location", 1),
@@ -2432,7 +2451,7 @@ class NpmPublishContractTest(unittest.TestCase):
 
     def test_publisher_executes_only_trusted_verifier_against_tagged_candidate_data(self):
         text = self.WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("if: github.ref == 'refs/heads/main'", text)
+        self.assertIn("if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'", text)
         self.assertIn("ref: ${{ github.sha }}", text)
         self.assertNotIn("ref: refs/heads/main", text)
         self.assertIn("path: trusted", text)
@@ -2603,8 +2622,11 @@ class NpmPublishContractTest(unittest.TestCase):
             integrity="sha512-expected",
             attempts=2,
             delay_seconds=0,
+            repo=".",
+            publication_mode="new",
         )
-        with mock.patch.object(helper, "registry_lookup", return_value=absent):
+        with mock.patch.object(helper, "validate_release_source_binding"), \
+                mock.patch.object(helper, "registry_lookup", return_value=absent):
             with self.assertRaisesRegex(ValueError, "evidence deadline"):
                 helper.verify(args)
 
@@ -2624,7 +2646,8 @@ class NpmPublishContractTest(unittest.TestCase):
         unavailable = subprocess.CompletedProcess(
             ["npm"], 1, "", "npm error code ETIMEDOUT"
         )
-        with mock.patch.object(helper, "registry_lookup", return_value=unavailable) as lookup:
+        with mock.patch.object(helper, "validate_release_source_binding"), \
+                mock.patch.object(helper, "registry_lookup", return_value=unavailable) as lookup:
             with self.assertRaisesRegex(helper.RegistryUnavailable, "unavailable"):
                 helper.verify(args)
         self.assertEqual(lookup.call_count, 3)
@@ -2632,7 +2655,8 @@ class NpmPublishContractTest(unittest.TestCase):
         permanent = subprocess.CompletedProcess(
             ["npm"], 1, "", "npm error code EUSAGE"
         )
-        with mock.patch.object(helper, "registry_lookup", return_value=permanent) as lookup:
+        with mock.patch.object(helper, "validate_release_source_binding"), \
+                mock.patch.object(helper, "registry_lookup", return_value=permanent) as lookup:
             with self.assertRaisesRegex(ValueError, "without a confirmed 404"):
                 helper.verify(args)
         self.assertEqual(lookup.call_count, 1)
@@ -2643,7 +2667,8 @@ class NpmPublishContractTest(unittest.TestCase):
             json.dumps({"version": "0.9.9", "dist": {}}),
             "",
         )
-        with mock.patch.object(helper, "registry_lookup", return_value=mismatch) as lookup:
+        with mock.patch.object(helper, "validate_release_source_binding"), \
+                mock.patch.object(helper, "registry_lookup", return_value=mismatch) as lookup:
             with self.assertRaisesRegex(ValueError, "version does not match"):
                 helper.verify(args)
         self.assertEqual(lookup.call_count, 1)
@@ -2667,7 +2692,7 @@ class NpmPublishContractTest(unittest.TestCase):
             ),
             "",
         )
-        with mock.patch.object(helper, "registry_lookup", return_value=present) as lookup, mock.patch.object(
+        with mock.patch.object(helper, "validate_release_source_binding"), mock.patch.object(helper, "registry_lookup", return_value=present) as lookup, mock.patch.object(
             helper,
             "verify_registry_authenticity",
             side_effect=ValueError("invalid cryptographic evidence"),
@@ -2954,7 +2979,9 @@ class NpmPublishContractTest(unittest.TestCase):
 
     def test_present_publication_orchestration_binds_verified_bundle(self):
         helper = self._helper()
-        integrity = "sha512-" + base64.b64encode(b"x" * 64).decode("ascii")
+        tarball_bytes = b"exact-prebuilt-pi-package"
+        integrity = "sha512-" + base64.b64encode(
+            hashlib.sha512(tarball_bytes).digest()).decode("ascii")
         registry = subprocess.CompletedProcess(
             ["npm"],
             0,
@@ -2975,7 +3002,7 @@ class NpmPublishContractTest(unittest.TestCase):
             "",
         )
         verified_document = {"attestations": [{"verified": True}]}
-        source_sha = "b" * 40
+        source_sha = "a" * 40
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
             (repo / "plugins" / "ca-pi").mkdir(parents=True)
@@ -3005,33 +3032,42 @@ class NpmPublishContractTest(unittest.TestCase):
                 encoding="utf-8",
             )
             output = repo / "output.txt"
+            tarball = repo / "arbiterforge-ca-pi-0.10.0.tgz"
+            tarball.write_bytes(tarball_bytes)
+            cohort = repo / "artifact-package-cohort.json"
+            cohort.write_text(json.dumps({
+                "format": "codearbiter.artifact-package-cohort/0.1.0",
+                "source_commit": "a" * 40,
+                "source_tree": "e" * 40,
+                "workflow": ".github/workflows/ci.yml",
+                "run_id": "123",
+                "promotion_receipt_sha256": "d" * 64,
+                "pi_packer": {"name": "npm", "version": "11.19.1", "qualification": "production",
+                              "package_integrity": helper.NPM_PACKER_INTEGRITY,
+                              "executable_sha256": "f" * 64},
+                "packages": {
+                    "claude": {}, "codex": {},
+                    "pi": {"file": tarball.name, "version": "0.10.0",
+                           "size": len(tarball_bytes),
+                           "sha256": hashlib.sha256(tarball_bytes).hexdigest()},
+                },
+            }), encoding="utf-8")
             args = argparse.Namespace(
                 repo=str(repo),
+                trusted_repo=str(repo),
                 tag="ca-pi-v0.10.0",
                 expected_sha="a" * 40,
-                trusted_sha="c" * 40,
+                trusted_sha="a" * 40,
                 npm="npm",
                 root_manifest="package.json",
                 plugin_manifest="plugins/ca-pi/package.json",
                 release_json=str(release_json),
+                cohort=str(cohort),
+                tarball=str(tarball),
+                ci_run_id="123",
                 output=str(output),
             )
-            packed = subprocess.CompletedProcess(
-                ["npm", "pack"],
-                0,
-                json.dumps(
-                    [
-                        {
-                            "filename": "arbiterforge-ca-pi-0.10.0.tgz",
-                            "integrity": integrity,
-                        }
-                    ]
-                ),
-                "",
-            )
-            with mock.patch.object(helper, "validate_git_identity"), mock.patch.object(
-                helper.subprocess, "run", return_value=packed
-            ) as pack_run, mock.patch.object(
+            with mock.patch.object(helper, "validate_release_source_binding"), mock.patch.object(helper, "validate_git_identity"), mock.patch.object(
                 helper, "registry_lookup", return_value=registry
             ), mock.patch.object(
                 helper, "verify_registry_authenticity", return_value=verified_document
@@ -3041,10 +3077,9 @@ class NpmPublishContractTest(unittest.TestCase):
                 self.assertEqual(helper.prepare(args), 0)
             authenticity.assert_called_once_with("npm", "0.10.0")
             semantic.assert_called_once_with(
-                verified_document, "0.10.0", integrity, None
+                verified_document, "0.10.0", integrity, "a" * 40
             )
-            ancestry.assert_called_once_with(repo.resolve(), source_sha, "c" * 40)
-            self.assertIn(helper.SCOPED_REGISTRY_OPTION, pack_run.call_args.args[0])
+            ancestry.assert_not_called()
             output_values = dict(
                 line.split("=", 1)
                 for line in output.read_text(encoding="utf-8").splitlines()
@@ -3052,22 +3087,19 @@ class NpmPublishContractTest(unittest.TestCase):
             self.assertEqual(output_values["skip"], "true")
             self.assertEqual(output_values["publication_mode"], "existing")
 
-        for mode, expected_trusted, expect_ancestry in (
-            ("new", "c" * 40, False),
-            ("existing", None, True),
-        ):
+        for mode in ("new", "existing"):
             args = argparse.Namespace(
                 repo="trusted",
                 tag="ca-pi-v0.10.0",
                 expected_sha="a" * 40,
-                trusted_sha="c" * 40,
+                trusted_sha="a" * 40,
                 npm="npm",
                 integrity=integrity,
                 publication_mode=mode,
                 attempts=1,
                 delay_seconds=0,
             )
-            with self.subTest(mode=mode), mock.patch.object(
+            with self.subTest(mode=mode), mock.patch.object(helper, "validate_release_source_binding"), mock.patch.object(
                 helper, "registry_lookup", return_value=registry
             ), mock.patch.object(
                 helper, "verify_registry_authenticity", return_value=verified_document
@@ -3077,17 +3109,12 @@ class NpmPublishContractTest(unittest.TestCase):
                 self.assertEqual(helper.verify(args), 0)
                 authenticity.assert_called_once_with("npm", "0.10.0")
                 semantic.assert_called_once_with(
-                    verified_document, "0.10.0", integrity, expected_trusted
+                    verified_document, "0.10.0", integrity, "a" * 40
                 )
-                if expect_ancestry:
-                    ancestry.assert_called_once_with(
-                        Path("trusted"), source_sha, "c" * 40
-                    )
-                else:
-                    ancestry.assert_not_called()
+                ancestry.assert_not_called()
 
         args.publication_mode = "new"
-        with mock.patch.object(
+        with mock.patch.object(helper, "validate_release_source_binding"), mock.patch.object(
             helper, "registry_lookup", return_value=registry
         ), mock.patch.object(
             helper,
@@ -3095,6 +3122,288 @@ class NpmPublishContractTest(unittest.TestCase):
             side_effect=ValueError("signature failure"),
         ), self.assertRaisesRegex(ValueError, "signature failure"):
             helper.verify(args)
+
+    def test_prebuilt_pi_package_rejects_cohort_context_packer_and_byte_drift(self):
+        helper = self._helper()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tarball = root / "arbiterforge-ca-pi-0.10.0.tgz"
+            tarball.write_bytes(b"prebuilt")
+            base = {
+                "format": "codearbiter.artifact-package-cohort/0.1.0",
+                "source_commit": "a" * 40, "source_tree": "b" * 40,
+                "workflow": ".github/workflows/ci.yml", "run_id": "123",
+                "promotion_receipt_sha256": "c" * 64,
+                "pi_packer": {"name": "npm", "version": "11.19.1",
+                              "package_integrity": helper.NPM_PACKER_INTEGRITY,
+                              "executable_sha256": "d" * 64, "qualification": "production"},
+                "packages": {"claude": {}, "codex": {}, "pi": {
+                    "file": tarball.name, "version": "0.10.0", "size": 8,
+                    "sha256": hashlib.sha256(b"prebuilt").hexdigest()}},
+            }
+            cohort = root / "artifact-package-cohort.json"
+            cohort.write_text(json.dumps(base), encoding="utf-8")
+            self.assertEqual(
+                helper.load_prebuilt_pi_package(
+                    cohort, tarball, version="0.10.0", expected_sha="a" * 40,
+                    ci_run_id="123")[0],
+                str(tarball.resolve()),
+            )
+            mutations = (
+                ("source_commit", "e" * 40),
+                ("run_id", "124"),
+                ("promotion_receipt_sha256", "short"),
+            )
+            for field, value in mutations:
+                changed = copy.deepcopy(base); changed[field] = value
+                cohort.write_text(json.dumps(changed), encoding="utf-8")
+                with self.subTest(field=field), self.assertRaisesRegex(
+                        ValueError, "exact production CI cohort"):
+                    helper.load_prebuilt_pi_package(
+                        cohort, tarball, version="0.10.0", expected_sha="a" * 40,
+                        ci_run_id="123")
+            cohort.write_text(json.dumps(base), encoding="utf-8")
+            tarball.write_bytes(b"drifted!")
+            with self.assertRaisesRegex(ValueError, "bytes drifted"):
+                helper.load_prebuilt_pi_package(
+                    cohort, tarball, version="0.10.0", expected_sha="a" * 40,
+                    ci_run_id="123")
+
+    def test_release_source_binding_rejects_cross_sha_before_publication(self):
+        helper = self._helper()
+        with self.assertRaisesRegex(ValueError, "must be identical"):
+            helper.validate_release_source_binding(
+                Path("trusted"), Path("candidate"), "a" * 40, "b" * 40
+            )
+
+    def test_durable_cross_run_cohort_stops_source_mixing_and_allows_exact_resume(self):
+        helper = self._helper()
+        cohort_tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
+                       "ca-pi": "ca-pi-v1.0.0"}
+        intended = ["ca", "ca-codex"]
+        current = {"source_commit": "a" * 40, "source_tree": "b" * 40,
+                   "workflow": ".github/workflows/ci.yml",
+                   "ci_run_id": "123", "cohort_sha256": "c" * 64,
+                   "cohort_tags": cohort_tags, "eligible_targets": ["ca-codex"]}
+        def receipt(target):
+            host = {"ca": "claude", "ca-codex": "codex"}[target]
+            return {"format": "codearbiter.cohort-publication/0.1.0", "target": target,
+                    "host": host, "tag": cohort_tags[target], "source_commit": "a" * 40,
+                    "source_tree": "b" * 40, "ci_run_id": "123", "cohort_sha256": "c" * 64,
+                    "release_notes_sha256": "4" * 64,
+                    "package_file": target + ".tgz", "package_sha256": "1" * 64,
+                    "tag_object_sha": "2" * 40,
+                    "cohort_tags": cohort_tags, "cohort_targets": intended,
+                    "readback": "verified", "disposition": "published-and-read-back"}
+        partial = [receipt("ca")]
+        self.assertEqual(helper.classify_durable_cohort(partial, current=current), "resume")
+        repair = helper.reconcile_durable_cohort(
+            partial, current=current, missing_current=["ca-codex"])
+        self.assertEqual(repair, {"mode": "resume", "cohort_targets": intended,
+                                  "repair_targets": ["ca-codex"]})
+        source_b = copy.deepcopy(current); source_b["source_commit"] = "d" * 40
+        with self.assertRaisesRegex(ValueError, "exact original source"):
+            helper.classify_durable_cohort(partial, current=source_b)
+        self.assertEqual(helper.classify_durable_cohort(
+            [receipt(target) for target in intended], current=current), "complete")
+        for mutation, message in (
+            ({**receipt("ca"), "extra": True}, "schema is not exact"),
+            ({**receipt("ca"), "host": "pi"}, "target binding"),
+        ):
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                helper.classify_durable_cohort([mutation], current=current)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); current_path = root / "current.json"; state_path = root / "state.json"
+            current_path.write_text(json.dumps(current)); state_path.write_text(json.dumps({
+                "receipts": [], "markers": [], "missing_current": ["ca"],
+                "draft_markers": [],
+            }))
+            self.assertEqual(helper.main(["reconcile-state", "--current", str(current_path),
+                                          "--state", str(state_path), "--output", str(root / "out")]), 1)
+
+    def test_durable_reconciliation_cannot_forget_incomplete_historical_cohorts(self):
+        helper = self._helper()
+        tags_a = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
+                  "ca-pi": "ca-pi-v1.0.0"}
+        def current(tags, source="a", eligible=None):
+            return {"source_commit": source * 40, "source_tree": "b" * 40,
+                    "workflow": ".github/workflows/ci.yml",
+                    "ci_run_id": "123", "cohort_sha256": "c" * 64,
+                    "cohort_tags": tags, "eligible_targets": sorted(eligible or [])}
+        def receipt(target, tags=tags_a, intended=("ca", "ca-codex")):
+            return {"format": "codearbiter.cohort-publication/0.1.0", "target": target,
+                    "host": {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}[target],
+                    "tag": tags[target], "source_commit": "a" * 40,
+                    "source_tree": "b" * 40, "ci_run_id": "123",
+                    "cohort_sha256": "c" * 64, "package_file": target + ".tgz",
+                    "release_notes_sha256": "4" * 64,
+                    "package_sha256": "1" * 64, "cohort_tags": tags,
+                    "tag_object_sha": "2" * 40,
+                    "cohort_targets": sorted(intended), "readback": "verified",
+                    "disposition": "published-and-read-back"}
+        partial = [receipt("ca")]
+        tags_b = {**tags_a, "ca-codex": "ca-codex-v1.0.1"}
+        with self.assertRaisesRegex(ValueError, "exact original source"):
+            helper.classify_durable_cohort(
+                partial, current=current(tags_b, source="d", eligible=["ca-codex"]))
+        complete = [receipt("ca"), receipt("ca-codex")]
+        self.assertEqual(helper.classify_durable_cohort(
+            complete, current=current(tags_a, source="d")), "complete")
+        self.assertEqual(helper.classify_durable_cohort(
+            complete, current=current(tags_b, source="d", eligible=["ca-codex"])), "start")
+        self.assertEqual(helper.classify_durable_cohort(
+            complete, current=current(tags_a, source="d", eligible=["ca-codex"])), "start")
+        with self.assertRaisesRegex(ValueError, "missing its durable receipt"):
+            helper.classify_durable_cohort(complete, current=current(tags_a, source="d"),
+                                           missing_current=["ca-pi"])
+        duplicate = [receipt("ca"), receipt("ca")]
+        with self.assertRaisesRegex(ValueError, "duplicate target"):
+            helper.classify_durable_cohort(duplicate, current=current(tags_a))
+
+    def test_cohort_start_marker_recovers_first_receipt_failure_and_blocks_source_b(self):
+        helper = self._helper()
+        tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
+                "ca-pi": "ca-pi-v1.0.0"}
+        intended = ["ca", "ca-codex"]
+        current = {"source_commit": "a" * 40, "source_tree": "b" * 40,
+                   "workflow": ".github/workflows/ci.yml",
+                   "ci_run_id": "123", "cohort_sha256": "c" * 64,
+                   "cohort_tags": tags, "eligible_targets": intended}
+        def marker(target):
+            return {"format": "codearbiter.cohort-start/0.1.0", "target": target,
+                    "host": {"ca": "claude", "ca-codex": "codex"}[target],
+                    "tag": tags[target], "source_commit": "a" * 40,
+                    "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
+                    "ci_run_id": "123", "cohort_sha256": "c" * 64,
+                    "release_notes_sha256": "4" * 64,
+                    "cohort_tags": tags, "cohort_targets": intended}
+        def receipt(target):
+            return {"format": "codearbiter.cohort-publication/0.1.0", "target": target,
+                    "host": {"ca": "claude", "ca-codex": "codex"}[target],
+                    "tag": tags[target], "source_commit": "a" * 40,
+                    "source_tree": "b" * 40, "ci_run_id": "123",
+                    "cohort_sha256": "c" * 64, "package_file": target + ".tgz",
+                    "release_notes_sha256": "4" * 64,
+                    "package_sha256": "1" * 64, "cohort_tags": tags,
+                    "tag_object_sha": "2" * 40,
+                    "cohort_targets": intended, "readback": "verified",
+                    "disposition": "published-and-read-back"}
+        first = marker("ca")
+        result = helper.reconcile_durable_cohort(
+            [], current=current, markers=[first], draft_markers=[first])
+        self.assertEqual(result, {"mode": "resume", "cohort_targets": intended,
+                                  "repair_targets": intended})
+        source_b = copy.deepcopy(current); source_b["source_commit"] = "d" * 40
+        with self.assertRaisesRegex(ValueError, "exact original source"):
+            helper.reconcile_durable_cohort(
+                [], current=source_b, markers=[first], draft_markers=[first])
+        changed = copy.deepcopy(current)
+        changed["cohort_tags"] = {**tags, "ca-codex": "ca-codex-v1.0.1"}
+        with self.assertRaisesRegex(ValueError, "exact original source"):
+            helper.reconcile_durable_cohort(
+                [], current=changed, markers=[first], draft_markers=[first])
+        with self.assertRaisesRegex(ValueError, "duplicate target markers"):
+            helper.reconcile_durable_cohort(
+                [], current=current, markers=[first, first], draft_markers=[first])
+        with self.assertRaisesRegex(ValueError, "schema is not exact"):
+            helper.reconcile_durable_cohort(
+                [], current=current, markers=[{**first, "extra": True}],
+                draft_markers=[])
+        with self.assertRaisesRegex(ValueError, "published without"):
+            helper.reconcile_durable_cohort([], current=current, markers=[first])
+        complete_markers = [marker(target) for target in intended]
+        complete_receipts = [receipt(target) for target in intended]
+        notes_mismatch = copy.deepcopy(complete_receipts)
+        notes_mismatch[0]["release_notes_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "exact cohort-start marker"):
+            helper.reconcile_durable_cohort(
+                notes_mismatch, current=current, markers=complete_markers)
+        later = copy.deepcopy(current); later["source_commit"] = "d" * 40
+        later["eligible_targets"] = []
+        self.assertEqual(helper.reconcile_durable_cohort(
+            complete_receipts, current=later, markers=complete_markers),
+            {"mode": "complete", "cohort_targets": [], "repair_targets": []})
+
+    def test_exact_cold_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
+        helper = self._helper()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); trusted = root / "trusted"; packages = root / "packages"
+            cold_root = root / "cold"; stage = root / "stage"; source = root / "source"
+            for path in (trusted / "tools", packages, cold_root, stage, source):
+                path.mkdir(parents=True, exist_ok=True)
+            prefixes = {"claude": "plugins/ca/helpers/artifacts/",
+                        "codex": "plugins/ca-codex/helpers/artifacts/",
+                        "pi": "package/plugins/ca-pi/helpers/artifacts/"}
+            platforms = sorted(helper.COLD_PLATFORMS)
+            cohort = {"promotion_receipt_sha256": "c" * 64, "packages": {}}
+            binary = b"binary"; binary_sha = hashlib.sha256(binary).hexdigest()
+            for host, prefix in prefixes.items():
+                manifest = json.dumps({"binaries": {
+                    platform: {"file": "artifact-bin", "sha256": binary_sha}
+                    for platform in platforms
+                }}, separators=(",", ":")).encode()
+                manifest_sha = hashlib.sha256(manifest).hexdigest()
+                archive_path = packages / f"{host}.tgz"
+                with tarfile.open(archive_path, "w:gz") as archive:
+                    for name, data in ((prefix + "release.json", manifest),
+                                       (prefix + "artifact-bin", binary)):
+                        info = tarfile.TarInfo(name); info.size = len(data)
+                        archive.addfile(info, io.BytesIO(data))
+                package_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+                cohort["packages"][host] = {
+                    "file": archive_path.name, "sha256": package_sha,
+                    "members": {prefix + "release.json": {"sha256": manifest_sha},
+                                prefix + "artifact-bin": {"sha256": binary_sha}},
+                }
+                for platform in platforms:
+                    cell = cold_root / f"{host}-{platform.replace('/', '-')}"
+                    cell.mkdir()
+                    receipt = {
+                        "format": "codearbiter.artifact-cold-execution/0.1.0",
+                        "source_commit": "a" * 40, "workflow": ".github/workflows/ci.yml",
+                        "run_id": "123", "job": "artifact-package-cold", "host": host,
+                        "platform": platform, "promotion_receipt_sha256": "c" * 64,
+                        "package_sha256": package_sha, "manifest_sha256": manifest_sha,
+                        "binary_sha256": binary_sha, "response_sha256": "d" * 64,
+                        "operation": "capabilities", "repository_operations_available": True,
+                        "runtime_downloads": False,
+                    }
+                    (cell / "artifact-package-cold.json").write_text(json.dumps(receipt))
+            (packages / "artifact-package-cohort.json").write_text(json.dumps(cohort))
+            (trusted / "tools" / "build-host-packages.py").write_text(
+                "import json\nfrom pathlib import Path\n"
+                "def verify_artifact_release_packages(**kwargs):\n"
+                " return json.loads((Path(kwargs['package_root'])/'artifact-package-cohort.json').read_text())\n"
+            )
+            kwargs = dict(package_root=packages, stage_root=stage, cold_root=cold_root,
+                          source_repo=source, source_commit="a" * 40, ci_run_id="123",
+                          npm_executable=root / "npm", trusted_repo=trusted,
+                          workflow_sha="a" * 40)
+            with mock.patch.object(helper, "validate_release_source_binding"):
+                helper.verify_release_cohort(**kwargs)
+            first = next(cold_root.glob("*/artifact-package-cold.json"))
+            original = json.loads(first.read_text())
+            for mutation, message in (
+                ({**original, "extra": True}, "schema is not exact"),
+                ({**original, "binary_sha256": "e" * 64}, "do not link"),
+            ):
+                first.write_text(json.dumps(mutation))
+                with self.subTest(message=message), mock.patch.object(
+                        helper, "validate_release_source_binding"), self.assertRaisesRegex(ValueError, message):
+                    helper.verify_release_cohort(**kwargs)
+                first.write_text(json.dumps(original))
+            duplicate_key = json.dumps(original).replace(
+                '"format":', '"format":"shadow","format":', 1)
+            first.write_text(duplicate_key)
+            with mock.patch.object(helper, "validate_release_source_binding"), \
+                    self.assertRaisesRegex(ValueError, "duplicate JSON field"):
+                helper.verify_release_cohort(**kwargs)
+            first.write_text(json.dumps(original))
+            duplicate = cold_root / "duplicate"; duplicate.mkdir()
+            (duplicate / "artifact-package-cold.json").write_text(json.dumps(original))
+            with mock.patch.object(helper, "validate_release_source_binding"), \
+                    self.assertRaisesRegex(ValueError, "duplicate"):
+                helper.verify_release_cohort(**kwargs)
 
     def test_historical_attestation_commit_must_remain_on_protected_main(self):
         helper = self._helper()
@@ -3145,7 +3454,7 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertIn("NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}", publish_step)
         self.assertIn('--ignore-scripts', publish_step)
 
-    def test_release_and_git_identity_require_published_annotated_exact_tag(self):
+    def test_release_and_git_identity_require_exact_annotated_tag(self):
         helper = self._helper()
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
@@ -3184,8 +3493,10 @@ class NpmPublishContractTest(unittest.TestCase):
                     repo, "ca-pi-v0.10.2", side_sha, main_ref=sha
                 )
             subprocess.run(["git", "-C", str(repo), "tag", "ca-pi-v0.10.1"], check=True)
-            with self.assertRaises(ValueError):
-                helper.validate_git_identity(repo, "ca-pi-v0.10.1", sha, main_ref="HEAD")
+            with self.assertRaisesRegex(ValueError, "must be an annotated tag"):
+                helper.validate_git_identity(
+                    repo, "ca-pi-v0.10.1", side_sha, main_ref="HEAD"
+                )
         helper.validate_release_document(
             {"tag_name": "ca-pi-v0.10.0", "draft": False}, "ca-pi-v0.10.0"
         )
@@ -3196,6 +3507,245 @@ class NpmPublishContractTest(unittest.TestCase):
         ):
             with self.subTest(doc=doc), self.assertRaises(ValueError):
                 helper.validate_release_document(doc, "ca-pi-v0.10.0")
+
+    def test_remote_annotated_tag_identity_binds_direct_object_and_peeled_source(self):
+        helper = self._helper()
+        tag = "ca-pi-v0.10.0"
+        source = "a" * 40
+        object_sha = "b" * 40
+        remote = (f"{object_sha}\trefs/tags/{tag}\n"
+                  f"{source}\trefs/tags/{tag}^{{}}\n")
+        self.assertEqual(
+            helper.validate_remote_annotated_tag(
+                remote, tag, source, expected_object=object_sha
+            ),
+            object_sha,
+        )
+        cases = (
+            (f"{source}\trefs/tags/{tag}\n", None, "exact annotated tag"),
+            (remote, "c" * 40, "object identity changed"),
+            (f"{'c' * 40}\trefs/tags/{tag}\n{source}\trefs/tags/{tag}^{{}}\n",
+             object_sha, "object identity changed"),
+            (f"{object_sha}\trefs/tags/{tag}\n{'c' * 40}\trefs/tags/{tag}^{{}}\n",
+             object_sha, "exact source"),
+        )
+        for observed, expected, message in cases:
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                helper.validate_remote_annotated_tag(
+                    observed, tag, source, expected_object=expected
+                )
+
+    def test_qualified_draft_guard_rejects_published_marker_drift_and_duplicate_assets(self):
+        helper = self._helper()
+        marker_document = {
+            "format": "codearbiter.cohort-start/0.1.0", "target": "ca",
+            "host": "claude", "tag": "v1.2.3", "source_commit": "a" * 40,
+            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
+            "ci_run_id": "123", "cohort_sha256": "c" * 64,
+            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
+            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
+                            "ca-pi": "ca-pi-v1.2.3"},
+            "cohort_targets": ["ca"],
+        }
+        marker = json.dumps(marker_document, sort_keys=True, separators=(",", ":")).encode()
+        encoded = base64.urlsafe_b64encode(marker).decode().rstrip("=")
+        release = {"id": 42, "tag_name": "v1.2.3", "draft": True,
+                   "body": f"notes\n\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n",
+                   "assets": [{"name": "package.tgz", "url": "asset-url"}]}
+        self.assertEqual(
+            helper.validate_qualified_draft_release(
+                [[release]], "v1.2.3", marker, asset_name="package.tgz"),
+            (42, "asset-url"),
+        )
+        for changed, message in (
+            ({**release, "draft": False}, "must remain draft"),
+            ({**release, "body": "marker removed"}, "marker is missing"),
+            ({**release, "body": release["body"].replace("notes\n", "replaced\n", 1)},
+             "notes identity mismatch"),
+            ({**release, "body": "extra prefix\n" + release["body"]},
+             "notes identity mismatch"),
+            ({**release, "body": release["body"] + "extra suffix\n"},
+             "marker is missing"),
+            ({**release, "body": release["body"] + release["body"].split("\n\n", 1)[1]},
+             "marker is missing"),
+            ({**release, "assets": release["assets"] * 2}, "duplicate"),
+        ):
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                helper.validate_qualified_draft_release(
+                    [[changed]], "v1.2.3", marker, asset_name="package.tgz")
+        final = {**release, "assets": [
+            {"name": "codearbiter-cohort-publication-v1.json", "url": "receipt-url"},
+            {"name": "package.tgz", "url": "package-url"},
+        ]}
+        self.assertEqual(helper.validate_qualified_finalization(
+            [[final]], "v1.2.3", marker,
+            allowed_assets=["codearbiter-cohort-publication-v1.json", "package.tgz"]),
+            (42, {"codearbiter-cohort-publication-v1.json": "receipt-url",
+                  "package.tgz": "package-url"}))
+        with self.assertRaisesRegex(ValueError, "missing, duplicate, or extra"):
+            helper.validate_qualified_finalization(
+                [[{**final, "assets": final["assets"] + [{"name": "extra", "url": "x"}]}]],
+                "v1.2.3", marker,
+                allowed_assets=["codearbiter-cohort-publication-v1.json", "package.tgz"])
+
+    def test_finalization_fault_injection_refuses_every_mutated_evidence_class(self):
+        helper = self._helper()
+        marker_document = {
+            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
+            "host": "pi", "tag": "ca-pi-v1.2.3", "source_commit": "a" * 40,
+            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
+            "ci_run_id": "123", "cohort_sha256": "c" * 64,
+            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
+            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
+                            "ca-pi": "ca-pi-v1.2.3"},
+            "cohort_targets": ["ca-pi"],
+        }
+        marker = json.dumps(
+            marker_document, sort_keys=True, separators=(",", ":")
+        ).encode()
+        encoded = base64.urlsafe_b64encode(marker).decode().rstrip("=")
+        release = {
+            "id": 42, "tag_name": "ca-pi-v1.2.3", "draft": True,
+            "body": f"notes\n\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n",
+            "assets": [{"name": "codearbiter-cohort-publication-v1.json",
+                        "url": "receipt-url"}],
+        }
+        helper.validate_qualified_finalization(
+            [[release]], "ca-pi-v1.2.3", marker,
+            allowed_assets=["codearbiter-cohort-publication-v1.json"],
+        )
+        for changed in (
+            {**release, "body": "mutated after initial observation"},
+            {**release, "assets": release["assets"] + [{"name": "extra", "url": "x"}]},
+            {**release, "draft": False},
+        ):
+            with self.subTest(release_mutation=changed), self.assertRaises(ValueError):
+                helper.validate_qualified_finalization(
+                    [[changed]], "ca-pi-v1.2.3", marker,
+                    allowed_assets=["codearbiter-cohort-publication-v1.json"],
+                )
+
+        receipt = {
+            "format": "codearbiter.cohort-publication/0.1.0", "target": "ca-pi",
+            "host": "pi", "tag": "ca-pi-v1.2.3", "source_commit": "a" * 40,
+            "source_tree": "b" * 40, "ci_run_id": "123", "cohort_sha256": "c" * 64,
+            "package_file": "arbiterforge-ca-pi-1.2.3.tgz",
+            "package_sha256": "d" * 64, "tag_object_sha": "e" * 40,
+            "release_notes_sha256": marker_document["release_notes_sha256"],
+            "cohort_tags": marker_document["cohort_tags"], "cohort_targets": ["ca-pi"],
+            "readback": "verified", "disposition": "published-and-read-back",
+        }
+        helper.validate_durable_receipt_with_marker(receipt, marker_document)
+        with self.assertRaisesRegex(ValueError, "exact cohort-start marker"):
+            helper.validate_durable_receipt_with_marker(
+                {**receipt, "source_commit": "f" * 40}, marker_document
+            )
+        with self.assertRaisesRegex(ValueError, "exact cohort-start marker"):
+            helper.validate_durable_receipt_with_marker(
+                {**receipt, "release_notes_sha256": "f" * 64}, marker_document
+            )
+
+        source = "a" * 40
+        remote = (f"{'e' * 40}\trefs/tags/ca-pi-v1.2.3\n"
+                  f"{source}\trefs/tags/ca-pi-v1.2.3^{{}}\n")
+        helper.validate_remote_annotated_tag(
+            remote, "ca-pi-v1.2.3", source, expected_object="e" * 40
+        )
+        same_commit_retag = remote.replace("e" * 40, "f" * 40, 1)
+        with self.assertRaisesRegex(ValueError, "object identity changed"):
+            helper.validate_remote_annotated_tag(
+                same_commit_retag, "ca-pi-v1.2.3", source,
+                expected_object=receipt["tag_object_sha"],
+            )
+
+        integrity = "sha512-" + base64.b64encode(b"integrity").decode()
+        registry = json.dumps({
+            "version": "1.2.3",
+            "dist": {"integrity": integrity, "attestations": {
+                "url": "https://registry.npmjs.org/-/npm/v1/attestations/"
+                       "@arbiterforge%2fca-pi@1.2.3",
+                "provenance": {"predicateType": helper.PROVENANCE_PREDICATE},
+            }},
+        })
+        self.assertEqual(helper.classify_registry_lookup(
+            0, registry, "", "1.2.3", integrity), "present")
+        with self.assertRaisesRegex(ValueError, "integrity"):
+            helper.classify_registry_lookup(
+                0, registry, "", "1.2.3",
+                "sha512-" + base64.b64encode(b"mutated").decode(),
+            )
+
+    def test_second_observation_drift_never_reaches_npm_publish_or_undraft(self):
+        helper = self._helper()
+        marker_document = {
+            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
+            "host": "pi", "tag": "ca-pi-v1.2.3", "source_commit": "a" * 40,
+            "source_tree": "b" * 40, "workflow": ".github/workflows/ci.yml",
+            "ci_run_id": "123", "cohort_sha256": "c" * 64,
+            "release_notes_sha256": hashlib.sha256(b"notes\n").hexdigest(),
+            "cohort_tags": {"ca": "v1.2.3", "ca-codex": "ca-codex-v1.2.3",
+                            "ca-pi": "ca-pi-v1.2.3"},
+            "cohort_targets": ["ca-pi"],
+        }
+        marker = json.dumps(
+            marker_document, sort_keys=True, separators=(",", ":")
+        ).encode()
+        encoded = base64.urlsafe_b64encode(marker).decode().rstrip("=")
+        body = f"notes\n\n<!-- codearbiter-cohort-start-v1:{encoded} -->\n"
+        receipt = {"name": "codearbiter-cohort-publication-v1.json", "url": "r"}
+        package = {"name": "package.tgz", "url": "p"}
+
+        def assert_stopped(first, second, assets, command):
+            invoked = []
+            _, observed = helper.validate_qualified_finalization(
+                [[first]], "ca-pi-v1.2.3", marker, allowed_assets=assets)
+            try:
+                helper.validate_qualified_finalization(
+                    [[second]], "ca-pi-v1.2.3", marker, allowed_assets=assets,
+                    expected_assets=observed)
+            except ValueError:
+                pass
+            else:
+                invoked.append(command)
+            self.assertNotIn(command, invoked)
+
+        empty = {"id": 42, "tag_name": "ca-pi-v1.2.3", "draft": True,
+                 "body": body, "assets": []}
+        for changed in (
+            {**empty, "draft": False},
+            {**empty, "body": "late body drift"},
+            {**empty, "assets": [receipt]},
+        ):
+            with self.subTest(boundary="npm", changed=changed):
+                assert_stopped(empty, changed, [], "npm publish")
+
+        complete = {**empty, "assets": [receipt, package]}
+        complete_assets = sorted((receipt["name"], package["name"]))
+        for changed in (
+            {**complete, "draft": False},
+            {**complete, "body": "late body drift"},
+            {**complete, "assets": [receipt]},
+            {**complete, "assets": [{**receipt, "url": "replacement-receipt"}, package]},
+            {**complete, "assets": [receipt, {"name": "replacement.tgz", "url": "x"}]},
+            {**complete, "assets": [receipt, package,
+                                     {"name": "unexpected", "url": "x"}]},
+        ):
+            with self.subTest(boundary="patch", changed=changed):
+                assert_stopped(complete, changed, complete_assets,
+                               "gh api --method PATCH")
+
+    def test_markerless_exact_current_tag_is_unresolved_but_historical_tag_is_outside(self):
+        helper = self._helper()
+        source_a = "a" * 40
+        source_b = "b" * 40
+        remote_a = f"{source_a}\trefs/tags/v1.2.3\n"
+        with self.assertRaisesRegex(ValueError, "markerless current qualified tag"):
+            helper.reject_markerless_current_tag(
+                remote_a, "v1.2.3", source_a, has_marker=False)
+        helper.reject_markerless_current_tag(
+            remote_a, "v1.2.3", source_b, has_marker=False)
+        helper.reject_markerless_current_tag(
+            remote_a, "v1.2.3", source_a, has_marker=True)
 
 
 if __name__ == "__main__":

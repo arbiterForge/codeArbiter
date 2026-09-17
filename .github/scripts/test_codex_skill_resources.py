@@ -2228,6 +2228,72 @@ class CandidateResourceContractSafetyTest(CheckerPresentMixin, unittest.TestCase
                 ), self.assertRaises(ValueError):
                     self.checker._candidate_package_files(package)
 
+    def test_accepts_only_exact_receipt_bound_large_native_payload(self):
+        content = os.urandom(2 * 1024 * 1024 + 1)
+        relative = "helpers/artifacts/ca-artifact-linux-amd64"
+        declaration = {
+            "type": "file",
+            "mode": "0755",
+            "size": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(),
+            "origin": "promotion",
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            target = package / relative
+            target.parent.mkdir(parents=True)
+            target.write_bytes(content)
+            files = self.checker._candidate_package_files(
+                package, verified_large_files={relative: declaration}
+            )
+            self.assertEqual(content, files[relative])
+
+            for label, receipt in {
+                "unbound": {},
+                "wrong digest": {
+                    relative: {**declaration, "sha256": "0" * 64},
+                },
+                "wrong mode": {
+                    relative: {**declaration, "mode": "0644"},
+                },
+                "wrong origin": {
+                    relative: {**declaration, "origin": "source"},
+                },
+                "outside payload": {
+                    "agents/ca-artifact-linux-amd64": declaration,
+                },
+            }.items():
+                with self.subTest(label=label), self.assertRaises(ValueError):
+                    self.checker._candidate_package_files(
+                        package, verified_large_files=receipt
+                    )
+
+    def test_verified_large_native_payload_still_obeys_total_limit(self):
+        content = os.urandom(2 * 1024 * 1024 + 1)
+        relative = "helpers/artifacts/ca-artifact-linux-amd64"
+        declaration = {
+            "type": "file",
+            "mode": "0755",
+            "size": len(content),
+            "sha256": hashlib.sha256(content).hexdigest(),
+            "origin": "promotion",
+        }
+        limits = {
+            **self.checker.EXPECTED_CANDIDATE_ARCHIVE_LIMITS,
+            "max_total_uncompressed_bytes": len(content) - 1,
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary) / "ca-codex"
+            target = package / relative
+            target.parent.mkdir(parents=True)
+            target.write_bytes(content)
+            with mock.patch.object(
+                self.checker, "_candidate_archive_limits", return_value=limits
+            ), self.assertRaisesRegex(ValueError, "total-size"):
+                self.checker._candidate_package_files(
+                    package, verified_large_files={relative: declaration}
+                )
+
     def test_rejects_too_many_empty_candidate_directories_before_descent(self):
         limits = {
             "max_archive_bytes": 8,

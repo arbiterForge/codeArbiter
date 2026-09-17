@@ -58,6 +58,8 @@ latest-eligible: true
 pre-tag: "$PY" .github/scripts/check_badge_consistency.py
 pre-tag: "$PY" .github/scripts/check_command_catalog.py
 pre-tag: "$PY" .github/scripts/check_skill_proof_fresh.py
+release-build: "$PY" -c "raise SystemExit('ca package publication is owned by the hosted release.yml cohort')"
+release-asset: codearbiter-ca-{version}.tar.gz
 
 [ca-codex]
 prefix: ca-codex-v
@@ -67,6 +69,8 @@ payload: plugins/ca-codex/
 provenance-manifest: .github/published-tags.json
 latest-eligible: false
 pre-tag: "$PY" .github/scripts/test_public_codex_docs.py --require-current-candidate
+release-build: "$PY" -c "raise SystemExit('ca-codex package publication is owned by the hosted release.yml cohort')"
+release-asset: codearbiter-ca-codex-{version}.tar.gz
 
 [ca-sandbox]
 prefix: ca-sandbox-v
@@ -94,4 +98,6 @@ artifacts: plugins/ca-pi/extensions/codearbiter-child.js
 provenance-manifest: .github/published-tags.json
 latest-eligible: false
 pre-tag: "$PY" tools/build-host-packages.py --check
+release-build: "$PY" -c "raise SystemExit('ca-pi package publication is owned by the hosted release.yml cohort')"
+release-asset: arbiterforge-ca-pi-{version}.tgz
 <!-- /release-targets -->

@@ -13,9 +13,29 @@ after `commit-gate` clears — never before.
 Read these, or STOP and surface the gap — never guess the branch name or the default branch:
 
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/CONTEXT.md` — the default-branch name and project context.
-- `${CLAUDE_PROJECT_DIR}/.codearbiter/plans/<slug>.md` — the plan this branch executed, when `/feature` or `/sprint` produced one. The yardstick for "is the work complete."
+- The discovered authoritative spec/plan pair for the pipeline, when `/feature`
+  or `/sprint` produced one. Use the exact selected `.md` or `.html` plan as the
+  yardstick for "is the work complete." Re-run the private bridge resolver
+  `_resolve_workflow_pair` with the trusted project root and pipeline slug rather
+  than reconstructing either path. Load `${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md`
+  for HTML and obtain HTML plan state only through the installed engine
+  `identity`, `index`, and symbol-scoped `read` operations. The finishing step
+  must not create, convert, or consult a counterpart.
 - `${CLAUDE_PROJECT_DIR}/.codearbiter/last-checkpoint` — the most recent gate results; confirms `commit-gate` cleared on this branch.
 - `${CLAUDE_PLUGIN_ROOT}/includes/verification-boundary.md` — the exact-head hosted-CI evidence required before merge.
+
+For an HTML pair, query the engine `identity` and `eligible` again after process
+recreation. Require `all_accepted_and_current: true` for the exact spec and plan
+identities, with their acceptance receipts still bound in engine state and the
+commit-gate proof. Finalization must not parse rendered HTML and must not consult
+a shadow Markdown ledger; displayed labels, status words, checkboxes, or digests
+cannot establish completion.
+
+Enforce that requirement by invoking the installed bridge's
+`_preflight_current_acceptance` with the exact `_resolve_workflow_pair` result,
+repository-bound client, and engine-returned spec/plan IDs. Carry its returned
+identity/receipt proof into state assembly. Any refusal blocks terminal options;
+do not recreate the proof from the PR description, checkpoint prose, or labels.
 
 `commit-gate` MUST have cleared on the current HEAD. If it has not, this skill does not run — return to it.
 

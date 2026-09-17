@@ -3013,7 +3013,28 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 
 
 class ArtifactEngineCIContractTest(unittest.TestCase):
-    """The structured-artifact engine is a required, native three-host gate."""
+    """The structured-artifact engine is a required six-platform package gate."""
+
+    def test_artifact_consumer_closure_selects_exactly_one_declared_native_cell(self):
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        job = jobs["artifact-engine"]
+        declared_cells = re.findall(r"(?m)^          - os: ([^\s]+)$", job)
+        step = re.search(
+            r"(?ms)^      - name: Verify artifact consumer inventory closure\n"
+            r"(?P<body>.*?)(?=^      - name:)",
+            job,
+        )
+        self.assertIsNotNone(step, "artifact consumer inventory step is missing")
+        predicate = re.search(
+            r"(?m)^        if: matrix\.os == '([^']+)'$", step.group("body")
+        )
+        self.assertIsNotNone(predicate, "consumer closure needs one exact matrix-cell predicate")
+        selected = predicate.group(1)
+        self.assertIn(selected, declared_cells, "consumer closure targets no declared matrix cell")
+        self.assertEqual(
+            declared_cells.count(selected), 1,
+            "consumer closure predicate must select exactly one declared matrix cell",
+        )
 
     def test_artifact_engine_is_reachable_pinned_and_merge_required(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -3023,8 +3044,16 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
 
         self.assertIn("needs: changes", job)
         self.assertIn("needs.changes.outputs.artifacts == 'true'", job)
-        for runner in ("ubuntu-latest", "windows-latest", "macos-latest"):
+        for runner in (
+            "ubuntu-24.04", "ubuntu-24.04-arm", "windows-2025", "windows-11-arm",
+            "macos-15-intel", "macos-26",
+        ):
             self.assertIn(runner, job)
+        for platform_name in (
+            "linux/amd64", "linux/arm64", "windows/amd64", "windows/arm64",
+            "darwin/amd64", "darwin/arm64",
+        ):
+            self.assertIn(f"expected_platform: {platform_name}", job)
 
         self.assertIn(
             "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0",
@@ -3097,11 +3126,68 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             '"--trusted-source-commit", os.environ["GITHUB_SHA"]',
             '"--trusted-workflow-run", os.environ["GITHUB_RUN_ID"]',
             '"--trusted-workflow", ".github/workflows/ci.yml"',
-            "expected three exact-host receipts",
-            "python .github/scripts/test_artifact_bridge.py",
+            "exact-host receipts, found",
             "name: artifact-host-payloads-${{ github.sha }}",
+            "name: artifact-release-packages-${{ github.sha }}",
+            '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+            '--release-package-output "${{ runner.temp }}/artifact-release-packages"',
+            '--source-repo .',
+            "Acquire reviewed npm@11.19.1 CLI for Pi assembly",
+            'NPM_CLI_VERSION: "11.19.1"',
+            'NPM_CLI_INTEGRITY: "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="',
+            '--npm-executable "${{ steps.npm-cli.outputs.executable }}"',
+            '--npm-package-integrity "${{ steps.npm-cli.outputs.integrity }}"',
+            '--promotion-receipt-sha256 "${{ steps.assemble.outputs.promotion-receipt-sha256 }}"',
+            'REQUIRED_PLATFORMS = {"darwin/amd64", "darwin/arm64", "linux/amd64", "linux/arm64", "windows/amd64", "windows/arm64"}',
+            '"promotion-receipt-sha256=" + result["promotion_receipt_sha256"]',
         ):
             self.assertIn(control, assembly)
+        self.assertLess(
+            assembly.index("Acquire reviewed npm@11.19.1 CLI for Pi assembly"),
+            assembly.index("Build and verify the exact-head normal release packages"),
+        )
+        self.assertIn(
+            'test "$ACTUAL_INTEGRITY" = "$NPM_CLI_INTEGRITY"', assembly
+        )
+        self.assertIn(
+            'test "$("$resolved_cli" --version)" = "$NPM_CLI_VERSION"', assembly
+        )
+
+        self.assertIn("artifact-package-cold", jobs)
+        cold = jobs["artifact-package-cold"]
+        self.assertIn("needs: [changes, artifact-package-assembly]", cold)
+        self.assertIn("needs.artifact-package-assembly.result == 'success'", cold)
+        self.assertEqual(cold.count("host: claude"), 6)
+        self.assertEqual(cold.count("host: codex"), 6)
+        self.assertEqual(cold.count("host: pi"), 6)
+        for runner, platform_name in (
+            ("ubuntu-24.04", "linux/amd64"),
+            ("ubuntu-24.04-arm", "linux/arm64"),
+            ("windows-2025", "windows/amd64"),
+            ("windows-11-arm", "windows/arm64"),
+            ("macos-15-intel", "darwin/amd64"),
+            ("macos-26", "darwin/arm64"),
+        ):
+            self.assertEqual(
+                len(re.findall(rf"(?m)^\s+- os: {re.escape(runner)}$", cold)), 3
+            )
+            self.assertEqual(
+                len(re.findall(rf"(?m)^\s+platform: {re.escape(platform_name)}$", cold)), 3
+            )
+        for control in (
+            "name: artifact-host-payloads-${{ github.sha }}",
+            "name: artifact-release-packages-${{ github.sha }}",
+            '--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
+            '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
+            '--source-repo .',
+            '--cold-host "${{ matrix.host }}"',
+            '--cold-platform "${{ matrix.platform }}"',
+            'needs.artifact-package-assembly.outputs.promotion-receipt-sha256',
+            'name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}',
+            "retention-days: 14",
+        ):
+            self.assertIn(control, cold)
+        self.assertNotIn("continue-on-error", cold)
 
         changes = jobs["changes"]
         self.assertRegex(changes, r"(?m)^    steps:$")
@@ -3193,8 +3279,10 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         aggregate = jobs["ci-passed"]
         self.assertRegex(aggregate, r"(?m)^      - artifact-engine$")
         self.assertRegex(aggregate, r"(?m)^      - artifact-package-assembly$")
+        self.assertRegex(aggregate, r"(?m)^      - artifact-package-cold$")
         self.assertIn("${{ needs['artifact-engine'].result }}", aggregate)
         self.assertIn("${{ needs['artifact-package-assembly'].result }}", aggregate)
+        self.assertIn("${{ needs['artifact-package-cold'].result }}", aggregate)
 
     def test_artifact_conformance_dependency_graph_is_exact_and_wheel_only(self):
         direct = (REPO_ROOT / ".github/requirements/artifact-conformance.in").read_text(
@@ -3215,7 +3303,18 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "rpds-py==2026.6.3",
         ):
             self.assertEqual(lock.count(package), 1, package)
-        self.assertEqual(lock.count("--hash=sha256:"), 8)
+        expected_rpds_platform_hashes = {
+            "linux/amd64": "dc319e5a1de4b6913aac94bf6a2f9e847371e0a140a43dd4991db1a09bc2d504",
+            "linux/arm64": "bcfbcf66006befb9fd2aeaa9e01feaf881b4dc330a02ba07d2322b1c11be7b5d",
+            "windows/amd64": "0be972be84cfcaf46c8c6edf690ca0f154ac17babf1f6a955a51579b34ad2dc5",
+            "windows/arm64": "2a9c6f195058cb45335e8cc3802745c603d716eb96bc9625950c1aac71c0c703",
+            "darwin/amd64": "931908d9fc855d8f74783377822be318edb6dcb19e47169dc038f9a1bf60b06e",
+            "darwin/arm64": "d7469697dce35be237db177d42e2a2ee26e6dcc5fc052078a6fefabd288c6edd",
+        }
+        rpds = lock.split("rpds-py==2026.6.3", 1)[1]
+        actual_rpds_hashes = set(re.findall(r"--hash=sha256:([0-9a-f]{64})", rpds))
+        self.assertEqual(set(expected_rpds_platform_hashes.values()), actual_rpds_hashes)
+        self.assertEqual(lock.count("--hash=sha256:"), 10)
 
 
 class SiteBrowserBehaviorContractTest(unittest.TestCase):

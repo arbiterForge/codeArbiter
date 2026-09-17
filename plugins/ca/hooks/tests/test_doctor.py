@@ -10,6 +10,15 @@ from unittest import mock
 # Ensure hooks/ is importable
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(
+    0,
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
+        "..",
+        "core",
+        "pysrc",
+    ),
+)
 
 # doctor.py uses a module-level `results` list that accumulates (level, line)
 # tuples. We import doctor and reset that list between tests to isolate them.
@@ -254,6 +263,110 @@ class TestCheckPayloadHostAware(unittest.TestCase):
             open(os.path.join(hooks_dir, script), "w").close()
         doctor.check_payload(root)
         self.assertNotIn("FAIL", _levels())
+
+
+class TestArtifactCapabilityDiagnostics(unittest.TestCase):
+    """T-06: doctor reports installed capability and invalid HTML distinctly."""
+
+    def setUp(self):
+        _reset()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.plugin_root = os.path.join(self.tmp.name, "plugin")
+        self.repo_root = os.path.join(self.tmp.name, "repo")
+        os.makedirs(self.plugin_root)
+        os.makedirs(os.path.join(self.repo_root, ".codearbiter", "specs"))
+
+    def tearDown(self):
+        _reset()
+        self.tmp.cleanup()
+
+    def test_capability_probe_is_bounded_and_never_loads_schema(self):
+        client = mock.Mock()
+        client.call.return_value = {
+            "binary": "ca-artifact",
+            "protocol": "codearbiter.artifact-api/0.1.0",
+            "schema_version": "0.3.1",
+            "platform": "windows/amd64",
+            "repository_operations_available": True,
+        }
+        client.index.return_value = iter(())
+        with mock.patch.object(doctor, "_artifact_client", return_value=client):
+            doctor.check_artifact_capability(self.plugin_root, self.repo_root)
+
+        client.call.assert_called_once_with("capabilities")
+        client.index.assert_not_called()
+        self.assertEqual(_levels(), ["OK"])
+        self.assertIn("windows/amd64", _lines()[0])
+
+    def test_missing_payload_is_an_actionable_failure_but_preserves_legacy(self):
+        error = doctor.ArtifactDiagnosticError("CAPABILITY_MISSING")
+        with mock.patch.object(doctor, "_artifact_client", side_effect=error):
+            doctor.check_artifact_capability(self.plugin_root, self.repo_root)
+
+        self.assertEqual(_levels(), ["FAIL"])
+        line = _lines()[0]
+        self.assertIn("CAPABILITY_MISSING", line)
+        self.assertIn("repair or reinstall", line)
+        self.assertIn("legacy Markdown", line)
+
+    def test_unqualified_platform_is_not_reported_available(self):
+        client = mock.Mock()
+        client.call.return_value = {
+            "binary": "ca-artifact",
+            "protocol": "codearbiter.artifact-api/0.1.0",
+            "schema_version": "0.3.1",
+            "platform": "unsupported/test",
+            "repository_operations_available": False,
+        }
+        with mock.patch.object(doctor, "_artifact_client", return_value=client):
+            doctor.check_artifact_capability(self.plugin_root, self.repo_root)
+
+        self.assertEqual(_levels(), ["FAIL"])
+        self.assertIn("UNSUPPORTED_PLATFORM", _lines()[0])
+        client.index.assert_not_called()
+
+    def test_invalid_html_is_reported_without_schema_loading(self):
+        html = os.path.join(self.repo_root, ".codearbiter", "specs", "demo.html")
+        with open(html, "w", encoding="utf-8") as handle:
+            handle.write("invalid")
+        client = mock.Mock()
+        client.call.return_value = {
+            "binary": "ca-artifact",
+            "protocol": "codearbiter.artifact-api/0.1.0",
+            "schema_version": "0.3.1",
+            "platform": "windows/amd64",
+            "repository_operations_available": True,
+        }
+        client.index.side_effect = doctor.ArtifactDiagnosticError("INVALID_ARTIFACT")
+        with mock.patch.object(doctor, "_artifact_client", return_value=client):
+            doctor.check_artifact_capability(self.plugin_root, self.repo_root)
+
+        self.assertEqual(_levels(), ["OK", "FAIL"])
+        self.assertIn("INVALID_ARTIFACT", _lines()[1])
+        self.assertIn("repair-preview", _lines()[1])
+        client.call.assert_called_once_with("capabilities")
+        client.index.assert_called_once_with()
+
+    def test_valid_html_catalog_reports_checked_count(self):
+        html = os.path.join(self.repo_root, ".codearbiter", "specs", "demo.html")
+        with open(html, "w", encoding="utf-8") as handle:
+            handle.write("validated-by-test-double")
+        client = mock.Mock()
+        client.call.return_value = {
+            "binary": "ca-artifact",
+            "protocol": "codearbiter.artifact-api/0.1.0",
+            "schema_version": "0.3.1",
+            "platform": "windows/amd64",
+            "repository_operations_available": True,
+        }
+        client.index.return_value = iter(({"artifact_id": "SPEC-1"}, {"artifact_id": "PLAN-1"}))
+        with mock.patch.object(doctor, "_artifact_client", return_value=client):
+            doctor.check_artifact_capability(self.plugin_root, self.repo_root)
+
+        self.assertEqual(_levels(), ["OK", "OK"])
+        self.assertIn("2 artifacts", _lines()[1])
+        client.call.assert_called_once_with("capabilities")
+        client.index.assert_called_once_with()
 
 
 class TestCheckRepoEnabled(unittest.TestCase):

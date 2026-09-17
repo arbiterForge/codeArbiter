@@ -8,26 +8,44 @@ argument-hint: "<what you want to build>"
 
 The single permitted entry to implementation work. No feature code is written before a spec is approved and `tdd` Phase 1 clears. A one-line idea is not a spec — `brainstorming` makes it one.
 
-## Typed-artifact pilot boundary
+## Structured-artifact boundary
 
-For an existing `.html` spec/plan match, or when the user explicitly requests
-the typed-HTML pilot, load [includes/artifacts.md](../../includes/artifacts.md) before resume
-classification or artifact I/O. Its validated identity, authority, binding and
-task-state operations replace this command's `.md`, approval-label and status-cell
-assumptions for that pipeline only. A missing or invalid helper is a STOP; never
-fall back to interpreting the HTML as Markdown or as an empty artifact. HTML
-`--farm` dispatch is blocked. Legacy Markdown remains the default until the
-native-host, consumer and release qualification gates are complete.
+For an existing `.html` spec/plan match or a new full-lane pipeline, load
+[includes/artifacts.md](../../includes/artifacts.md) before resume classification or artifact
+I/O. New full-lane specs use the installed structured-artifact engine to create
+the canonical `.html` artifact. After lane classification, call
+`_select_authoring_route` with the trusted project root, slug, `workflow: feature`,
+and the selected lane. Use only its returned mode, format, and paths. It checks
+the installed capability before writing;
+a missing or invalid helper is a STOP and the workflow must not fall back to Markdown.
+Its validated identity, authority, binding and task-state operations replace this
+command's `.md`, approval-label and status-cell assumptions for that pipeline.
+An existing `.md` pair remains on the legacy path. Discovery requires a
+complete same-extension spec/plan pair: select that exact pair as authoritative. A
+mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format,
+and the next plan must use the same extension. The workflow must not create, rename, or convert its counterpart to repair ambiguity. HTML `--farm` dispatch stays
+blocked. Small-lane behavior is unchanged: its confirmed mini-spec remains inline
+and does not create a spec artifact.
 
 **Orientation:** if `.codearbiter/code-map.md` is present, read it first — a coarse concern→path→role map that orients task authoring. Absent is fine; it is read-on-demand, populated by context-creation or commit-gate heal.
 
 ## Resume — an interrupted pipeline is re-entered, never restarted
 
-Before triage, scan `<project-root>/.codearbiter/specs/` and `plans/` for an existing slug
-matching `$ARGUMENTS` (invoked bare, list every resumable pipeline and ask which). A crash,
-compaction, or closed session mid-pipeline loses nothing — the spec, the plan, and each task's
-state are on disk. For HTML, obtain state only through the typed-artifact protocol;
-do not scrape rendered labels or the embedded JSON directly. On a match, confirm the resume with the user in one line
+Before triage, scan `<project-root>/.codearbiter/specs/` and `plans/` for artifacts
+whose slug matches `$ARGUMENTS` (invoked bare, list every resumable pipeline and
+ask which). Call the private bridge resolver `_resolve_workflow_pair` with the
+trusted project root and selected slug; its returned paths and format own this
+resume. Select a complete same-extension pair as authoritative. A lone spec
+resumes in its exact format, and the next plan must use the same extension. A
+mixed-extension or duplicate match is a STOP. A crash, compaction,
+or closed session mid-pipeline loses nothing — the spec, the plan, and each task's
+state are on disk. For an HTML pair, obtain state only through the installed
+engine `identity`, `index`, and symbol-scoped `read` operations; do not scrape
+rendered labels or embedded JSON. For a Markdown pair, use the
+existing Markdown status ledger. Resume either exact format
+without creating or consulting a shadow artifact; the workflow must not create,
+rename, or convert its counterpart. On a match,
+confirm the resume with the user in one line
 ("resume `<slug>` at <point>?") and re-enter at the furthest checkpoint reached:
 
 1. **Plan exists with non-`ACCEPTED` tasks** → `executing-plans` (its Phase 1 batches only the
@@ -74,12 +92,12 @@ Route through the pipeline in order; each step gates the next:
 
 1. **`brainstorming`** ([routines/brainstorming/SKILL.md](../../routines/brainstorming/SKILL.md)) — refine `$ARGUMENTS` into a concrete spec by Socratic questioning: challenge
    vague language, surface hidden complexity, force trade-offs. Writes the spec to
-   `<project-root>/.codearbiter/specs/<slug>.md`. **Hard gate: no plan and no code until the
+   `<project-root>/.codearbiter/specs/<slug>.html` through the installed engine. **Hard gate: no plan and no code until the
    user approves the spec.** Genuinely-unresolved unknowns become `[CONFIRM-NN]` in
    `open-questions.md`, never guesses.
 2. **`writing-plans`** ([routines/writing-plans/SKILL.md](../../routines/writing-plans/SKILL.md)) — decompose the approved spec into small tasks, each with an exact path and a
    verification that maps to a `tdd` obligation (it does not replace one). Writes
-   `<project-root>/.codearbiter/plans/<slug>.md` with bijective criterion↔task coverage.
+   `<project-root>/.codearbiter/plans/<slug>.html` with bijective criterion↔task coverage.
 3. **`executing-plans`** ([routines/executing-plans/SKILL.md](../../routines/executing-plans/SKILL.md)) — coordinates the plan in small batches with human checkpoints. Each batch is
    delegated to `subagent-driven-development` ([routines/subagent-driven-development/SKILL.md](../../routines/subagent-driven-development/SKILL.md) — fresh author agent per task, spec-compliance review,
    quality review, fresh verification). The user acknowledges between batches; nothing advances until

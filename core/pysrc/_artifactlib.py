@@ -164,6 +164,412 @@ def _trusted_directory(path: str | Path, code: str) -> Path:
         raise ArtifactError(code, "directory must be an existing real path without links or reparse points") from exc
 
 
+def _workflow_path_exists(root: Path, path: Path) -> bool:
+    """Inspect one canonical artifact path without following links or writing."""
+    for parent in (root / ".codearbiter", path.parent):
+        try:
+            info = parent.lstat()
+        except FileNotFoundError:
+            return False
+        except OSError as exc:
+            raise ArtifactError(
+                "UNSAFE_ARTIFACT_PATH", "canonical artifact directory is unreadable"
+            ) from exc
+        reparse = getattr(info, "st_file_attributes", 0) & getattr(
+            stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0
+        )
+        if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISDIR(info.st_mode):
+            raise ArtifactError(
+                "UNSAFE_ARTIFACT_PATH",
+                "canonical artifact directory must be a real directory",
+            )
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return False
+    except OSError as exc:
+        raise ArtifactError(
+            "UNSAFE_ARTIFACT_PATH", "canonical artifact path is unreadable"
+        ) from exc
+    reparse = getattr(info, "st_file_attributes", 0) & getattr(
+        stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0
+    )
+    if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISREG(info.st_mode):
+        raise ArtifactError(
+            "UNSAFE_ARTIFACT_PATH", "canonical artifact path must be a regular file"
+        )
+    return True
+
+
+def _resolve_workflow_pair(root: str | Path, slug: str) -> dict[str, object]:
+    """Select an exact-format spec/plan authority without parsing or writing it."""
+    trusted_root = _trusted_directory(root, "UNSAFE_ROOT")
+    if not isinstance(slug, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,99}", slug):
+        raise ArtifactError("INVALID_SLUG", "slug must match the canonical artifact slug grammar")
+
+    candidates = {
+        kind: {
+            extension: trusted_root / ".codearbiter" / f"{kind}s" / f"{slug}.{extension}"
+            for extension in ("md", "html")
+        }
+        for kind in ("spec", "plan")
+    }
+    present = {
+        kind: [
+            extension
+            for extension, path in paths.items()
+            if _workflow_path_exists(trusted_root, path)
+        ]
+        for kind, paths in candidates.items()
+    }
+    if len(present["spec"]) > 1 or len(present["plan"]) > 1:
+        raise ArtifactError(
+            "AMBIGUOUS_ARTIFACT", "multiple canonical files claim the workflow slug"
+        )
+    if present["plan"] and not present["spec"]:
+        raise ArtifactError("ORPHAN_PLAN", "canonical plan has no matching spec")
+    if present["spec"] and present["plan"] and present["spec"] != present["plan"]:
+        raise ArtifactError(
+            "AMBIGUOUS_ARTIFACT", "spec and plan use different authority formats"
+        )
+
+    extension = present["spec"][0] if present["spec"] else "html"
+    state = "pair" if present["plan"] else "spec" if present["spec"] else "absent"
+    return {
+        "slug": slug,
+        "format": extension,
+        "state": state,
+        "spec_path": candidates["spec"][extension],
+        "plan_path": candidates["plan"][extension],
+    }
+
+
+def _require_authoring_capability(client: "ArtifactClient") -> None:
+    """Fail one default-HTML route with a bounded repair diagnostic."""
+    try:
+        client.call("capabilities")
+    except ArtifactError as exc:
+        raise ArtifactError(
+            "CAPABILITY_MISSING",
+            f"repair or reinstall the pinned artifact payload ({exc.code}); "
+            "new HTML work cannot fall back to Markdown",
+        ) from exc
+
+
+def _select_authoring_route(
+    root: str | Path,
+    slug: str,
+    *,
+    workflow: str,
+    lane: str,
+    client: object | None = None,
+) -> dict[str, object]:
+    """Select inline or exact-format authoring without creating artifacts."""
+    if workflow not in {"feature", "sprint"}:
+        raise ArtifactError("INVALID_WORKFLOW", "workflow must be feature or sprint")
+    if lane not in {"small", "full"}:
+        raise ArtifactError("INVALID_LANE", "lane must be small or full")
+    if lane == "small":
+        return {
+            "workflow": workflow,
+            "lane": lane,
+            "mode": "inline",
+            "slug": slug,
+            "spec_path": None,
+            "plan_path": None,
+        }
+
+    selected = _resolve_workflow_pair(root, slug)
+    if selected["format"] == "html":
+        trusted_root = Path(selected["spec_path"]).parent.parent.parent
+        if type(client) is not ArtifactClient or client.root != trusted_root:
+            raise ArtifactError(
+                "CAPABILITY_MISSING",
+                "an installation-pinned artifact client bound to this repository is required",
+            )
+        _require_authoring_capability(client)
+        if _resolve_workflow_pair(root, slug) != selected:
+            raise ArtifactError(
+                "STALE_ROUTE",
+                "artifact namespace changed during the capability probe",
+            )
+    return {"workflow": workflow, "lane": lane, "mode": "artifact", **selected}
+
+
+def _preflight_plan_authoring(
+    selected: dict[str, object],
+    client: object,
+    *,
+    spec_artifact_id: str,
+    spec_normative_sha256: str,
+) -> Path:
+    """Verify one approved HTML spec and return its unwritten plan target."""
+    if not isinstance(selected, dict):
+        raise ArtifactError("INVALID_ROUTE", "plan authoring requires a selected route")
+    slug = selected.get("slug")
+    spec_path = selected.get("spec_path")
+    plan_path = selected.get("plan_path")
+    if (
+        selected.get("mode") != "artifact"
+        or selected.get("format") != "html"
+        or selected.get("state") != "spec"
+        or not isinstance(slug, str)
+        or not isinstance(spec_path, Path)
+        or not isinstance(plan_path, Path)
+    ):
+        raise ArtifactError(
+            "INVALID_ROUTE",
+            "plan authoring requires one existing HTML spec and no plan",
+        )
+    root = spec_path.parent.parent.parent
+    current = _resolve_workflow_pair(root, slug)
+    if any(
+        current.get(field) != selected.get(field)
+        for field in ("slug", "format", "state", "spec_path", "plan_path")
+    ):
+        raise ArtifactError("STALE_ROUTE", "selected artifact route is no longer current")
+    if (
+        spec_path != root / ".codearbiter" / "specs" / f"{slug}.html"
+        or plan_path != root / ".codearbiter" / "plans" / f"{slug}.html"
+    ):
+        raise ArtifactError("INVALID_ROUTE", "plan target must match the HTML spec slug")
+    if type(client) is not ArtifactClient or client.root != root:
+        raise ArtifactError(
+            "CAPABILITY_MISSING",
+            "an installation-pinned artifact client must be bound to the selected repository",
+        )
+    if not isinstance(spec_artifact_id, str) or not spec_artifact_id:
+        raise ArtifactError("AUTHORITY_MISMATCH", "spec artifact identity is required")
+    if not isinstance(spec_normative_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", spec_normative_sha256
+    ):
+        raise ArtifactError("AUTHORITY_MISMATCH", "spec normative digest is invalid")
+
+    identity = client.call("identity", {"artifact_id": spec_artifact_id})
+    expected_path = f".codearbiter/specs/{slug}.html"
+    if (
+        identity.get("artifact_id") != spec_artifact_id
+        or identity.get("kind") != "spec"
+        or identity.get("path") != expected_path
+        or identity.get("normative_sha256") != spec_normative_sha256
+    ):
+        raise ArtifactError(
+            "AUTHORITY_MISMATCH",
+            "caller spec identity does not match the selected current HTML spec",
+        )
+    approved = client.call(
+        "validate",
+        {"artifact_id": spec_artifact_id, "gate": "approved"},
+        permit_invalid=True,
+    )
+    authority = approved.get("authority")
+    if (
+        approved.get("valid") is not True
+        or approved.get("artifact_id") != spec_artifact_id
+        or approved.get("normative_sha256") != spec_normative_sha256
+        or not isinstance(authority, dict)
+        or authority.get("state") != "approved"
+        or authority.get("authority_verified") is not True
+    ):
+        raise ArtifactError(
+            "AUTHORITY_UNVERIFIED",
+            "plan authoring requires the exact current ready and approved spec",
+        )
+    if _resolve_workflow_pair(root, slug) != current:
+        raise ArtifactError(
+            "STALE_ROUTE",
+            "artifact namespace changed during plan-authoring preflight",
+        )
+    return plan_path
+
+
+def _preflight_current_acceptance(
+    selected: dict[str, object],
+    client: object,
+    *,
+    spec_artifact_id: str,
+    plan_artifact_id: str,
+) -> dict[str, object]:
+    """Return engine-bound proof that one exact HTML pair is currently accepted.
+
+    This is a private workflow boundary, not a public command. Caller-provided
+    labels, hashes, state, or receipts are deliberately outside its input shape.
+    """
+    route_fields = {"slug", "format", "state", "spec_path", "plan_path"}
+    if not isinstance(selected, dict) or set(selected) != route_fields:
+        raise ArtifactError(
+            "INVALID_ROUTE",
+            "current acceptance requires an exact resolver-produced route",
+        )
+    slug = selected.get("slug")
+    spec_path = selected.get("spec_path")
+    plan_path = selected.get("plan_path")
+    if (
+        selected.get("format") != "html"
+        or selected.get("state") != "pair"
+        or not isinstance(slug, str)
+        or not isinstance(spec_path, Path)
+        or not isinstance(plan_path, Path)
+    ):
+        raise ArtifactError(
+            "INVALID_ROUTE", "current acceptance requires one complete HTML pair"
+        )
+    root = spec_path.parent.parent.parent
+    if (
+        spec_path != root / ".codearbiter" / "specs" / f"{slug}.html"
+        or plan_path != root / ".codearbiter" / "plans" / f"{slug}.html"
+    ):
+        raise ArtifactError(
+            "INVALID_ROUTE", "selected paths must be the canonical same-slug HTML pair"
+        )
+    current = _resolve_workflow_pair(root, slug)
+    if any(current.get(field) != selected.get(field) for field in route_fields):
+        raise ArtifactError(
+            "STALE_ROUTE", "selected HTML pair is no longer the sole current authority"
+        )
+    if type(client) is not ArtifactClient or client.root != root:
+        raise ArtifactError(
+            "CAPABILITY_MISSING",
+            "an installation-pinned artifact client must be bound to the selected repository",
+        )
+    if not all(
+        isinstance(value, str) and re.fullmatch(r"[A-Z][A-Z0-9_-]{0,127}", value)
+        for value in (spec_artifact_id, plan_artifact_id)
+    ):
+        raise ArtifactError(
+            "AUTHORITY_MISMATCH", "exact spec and plan artifact identities are required"
+        )
+
+    expected = {
+        "spec": f".codearbiter/specs/{slug}.html",
+        "plan": f".codearbiter/plans/{slug}.html",
+    }
+    entries = {}
+    for kind, artifact_id in (
+        ("spec", spec_artifact_id),
+        ("plan", plan_artifact_id),
+    ):
+        matches = [entry for entry in client.index(kind) if entry.get("path") == expected[kind]]
+        if len(matches) != 1 or matches[0].get("artifact_id") != artifact_id:
+            raise ArtifactError(
+                "AUTHORITY_MISMATCH",
+                f"caller {kind} identity does not match the selected HTML pair",
+            )
+        entries[kind] = matches[0]
+
+    identities = {}
+    for kind, artifact_id in (
+        ("spec", spec_artifact_id),
+        ("plan", plan_artifact_id),
+    ):
+        identity = client.call("identity", {"artifact_id": artifact_id})
+        authority = identity.get("authority")
+        if (
+            identity.get("artifact_id") != artifact_id
+            or identity.get("kind") != kind
+            or identity.get("path") != expected[kind]
+            or identity.get("model_sha256") != entries[kind].get("model_sha256")
+            or identity.get("normative_sha256")
+            != entries[kind].get("normative_sha256")
+            or not isinstance(authority, dict)
+            or authority.get("state") != "approved"
+            or authority.get("authority_verified") is not True
+        ):
+            raise ArtifactError(
+                "AUTHORITY_UNVERIFIED",
+                f"selected {kind} lacks exact current workflow approval",
+            )
+        identities[kind] = identity
+
+    eligible = client.call("eligible", {"artifact_id": plan_artifact_id})
+    if (
+        eligible.get("artifact_id") != plan_artifact_id
+        or eligible.get("model_sha256") != identities["plan"].get("model_sha256")
+        or eligible.get("all_accepted_and_current") is not True
+        or not isinstance(eligible.get("tasks"), list)
+        or not eligible["tasks"]
+        or any(
+            not isinstance(task, dict)
+            or task.get("state") != "ACCEPTED"
+            or task.get("current_evidence") is not True
+            for task in eligible["tasks"]
+        )
+    ):
+        raise ArtifactError(
+            "ACCEPTANCE_REQUIRED",
+            "the exact selected HTML plan is not fully accepted with current evidence",
+        )
+
+    task_ids = [
+        record.get("id")
+        for record in client.outline(plan_artifact_id)
+        if record.get("kind") == "tasks" and record.get("retired") is False
+    ]
+    if not task_ids or any(not isinstance(task_id, str) for task_id in task_ids):
+        raise ArtifactError("INVALID_RESPONSE", "accepted plan has no live task identity")
+    pages = list(client.contextual_pages(plan_artifact_id, task_ids[0], 65536))
+    if not pages:
+        raise ArtifactError("INVALID_RESPONSE", "engine returned no acceptance context")
+    records = {
+        item.get("key"): item.get("record")
+        for page in pages
+        for item in page.get("items", [])
+        if isinstance(item, dict)
+    }
+    plan_context = records.get(f"{plan_artifact_id}#@context")
+    spec_context = records.get(f"{spec_artifact_id}#@context")
+    spec_ref = plan_context.get("spec_ref") if isinstance(plan_context, dict) else None
+    if (
+        not isinstance(spec_context, dict)
+        or not isinstance(spec_ref, dict)
+        or spec_ref.get("artifact_id") != spec_artifact_id
+        or spec_ref.get("normative_sha256")
+        != identities["spec"].get("normative_sha256")
+        or spec_ref.get("binding_mode") != "approved_source"
+    ):
+        raise ArtifactError(
+            "AUTHORITY_MISMATCH",
+            "selected plan is not bound to the exact approved HTML spec",
+        )
+    final_page = pages[-1]
+    receipts = {
+        "context_ticket": final_page.get("context_ticket"),
+        "vector_sha256": final_page.get("vector_sha256"),
+        "manifest_sha256": final_page.get("manifest_sha256"),
+        "input_sha256": eligible.get("input_sha256"),
+    }
+    if any(
+        not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
+        for value in receipts.values()
+    ):
+        raise ArtifactError(
+            "INVALID_RESPONSE", "engine acceptance proof lacks bounded receipt identities"
+        )
+
+    final_spec = client.call("identity", {"artifact_id": spec_artifact_id})
+    final_plan = client.call("identity", {"artifact_id": plan_artifact_id})
+    final_eligible = client.call("eligible", {"artifact_id": plan_artifact_id})
+    if (
+        final_spec.get("model_sha256") != identities["spec"].get("model_sha256")
+        or final_plan.get("model_sha256") != identities["plan"].get("model_sha256")
+        or final_eligible != eligible
+    ):
+        raise ArtifactError(
+            "STALE_ROUTE", "artifact identity or acceptance changed during preflight"
+        )
+    final_route = _resolve_workflow_pair(root, slug)
+    if final_route != selected:
+        raise ArtifactError(
+            "STALE_ROUTE", "selected HTML pair changed during acceptance preflight"
+        )
+    return {
+        "spec_identity": identities["spec"],
+        "plan_identity": identities["plan"],
+        "eligible": eligible,
+        "receipts": receipts,
+    }
+
+
 def _bounded_child(argv: list[str], request: bytes, fd: int, timeout: float) -> tuple[int, bytes, bytes]:
     options = dict(stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                    close_fds=True, start_new_session=True, env={})

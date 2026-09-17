@@ -1,21 +1,25 @@
 # Typed HTML specifications and plans
 
-Load only inside the existing brainstorming, planning, TDD, execution or resume
-workflow when the installation has the typed-artifact capability. This leaf adds
-no slash command, agent, skill registration or persistent model tool.
+Load inside the existing brainstorming, planning, TDD, execution or resume
+workflow for a full feature or sprint. This leaf adds no slash command, agent,
+skill registration or persistent model tool.
 
-**Candidate boundary:** the current source qualifies the standalone Linux
-engine, not an installed host payload or every upstream host adapter. No current
-host package ships the binary, so the HTML pilot is unavailable from a normal
-installation. Keep existing Markdown workflows as the default until packaging
-and host qualification complete. A later explicit HTML pilot must stop on a
-missing binary, invalid artifact, stale binding or unverified authority; never
-reinterpret a failed HTML read as an empty legacy spec.
+**Default authoring boundary:** normal qualified packages provide the pinned
+native structured-artifact capability. New full feature and sprint spec/plan
+pairs default to canonical `.html` artifacts through that installed engine.
+Check the installed capability before writing; a missing, invalid, mismatched or
+unqualified capability is a STOP and the workflow must not fall back to Markdown
+or create any fallback artifact. Report `CAPABILITY_MISSING` and direct the user
+to repair or reinstall the pinned artifact payload before retrying. An existing `.md`
+exact pair remains Markdown
+and continues on the legacy path without automatic conversion. The feature
+small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
+dispatch remains disabled and outside this rollout.
 
 ## Internal execution contract
 
-Once a qualified payload is actually packaged, its installation-owned
-`release.json` pins the native executable bytes. The stdlib
+The normal qualified package's installation-owned `release.json` pins the native
+executable bytes. The stdlib
 `hooks/_artifactlib.py` bridge selects only that verified installed payload,
 never PATH, an environment-selected binary or a path supplied by the project.
 The existing host's governed execution mechanism and permissions remain
@@ -73,7 +77,7 @@ delivery receipts. They are not authentication secrets and do not claim
 resistance to an unrestricted same-user filesystem writer. A digest without its
 corresponding engine-written receipt is rejected.
 
-`eligible` is authoritative for task selection on the supported pilot path.
+`eligible` is authoritative for task selection on the HTML path.
 `task-start` checks current spec/plan approval, binding, prerequisites, source
 snapshot, dependency evidence and the complete context ticket. Within a checkpoint,
 a predecessor in `REVIEW` can provisionally unblock its dependent after fresh
@@ -118,7 +122,7 @@ new artifacts are drafts. Original approval/status prose is not transferred.
 Cutover is recoverable as a pair; completed cutovers use `migration-rollback`, which
 refuses any intervening candidate edit. Original bytes remain in transaction history.
 
-**HTML farm dispatch is implemented but not qualified in this candidate.** The
+**HTML farm dispatch remains disabled and out of scope.** The
 engine can derive an immutable base-bound projection, verify it before canary,
 permit only `meta.model`/`meta.apiBaseUrl` enrichment, and seal exact execution
 bytes plus caller-supplied provider-selection assertions. Those assertions are
@@ -126,6 +130,5 @@ auditable correspondence, not authenticated provenance. The shared built dispatc
 before side effects. Keep the HTML `--farm` path disabled until real authority
 adapters, native packaged payloads and the fresh frontier/low-tier qualification
 matrix all pass; the June 2026 run earns no current credit. Existing legacy farm
-behavior is unchanged. Native artifact writes are available only from a matching,
-manifest-verified, natively tested candidate; normal host packages still ship no
-such payload, and macOS remains pending exact-host CI evidence.
+behavior is unchanged. Enabling normal premium-path HTML authoring does not count
+as farm qualification or authorize farm dispatch.

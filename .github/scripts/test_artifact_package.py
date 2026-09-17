@@ -10,6 +10,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import textwrap
 import unittest
@@ -59,14 +60,35 @@ class PackageTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.base = physical_test_directory(self.tmp.name)
+        ambient_npm = shutil.which("npm.cmd") or shutil.which("npm")
+        if ambient_npm is None:
+            self.fail("npm is required for package tests")
+        if os.name == "nt":
+            self.npm_executable = self.base / "reviewed-npm.cmd"
+            self.npm_executable.write_text(
+                "@echo off\r\n"
+                "if \"%1\"==\"--version\" (echo 11.19.1& exit /b 0)\r\n"
+                f'\"{ambient_npm}\" %*\r\n',
+                encoding="utf-8",
+            )
+        else:
+            self.npm_executable = self.base / "reviewed-npm"
+            self.npm_executable.write_text(
+                "#!/bin/sh\n"
+                "if [ \"$1\" = \"--version\" ]; then echo 11.19.1; exit 0; fi\n"
+                f"exec '{ambient_npm}' \"$@\"\n",
+                encoding="utf-8",
+            )
+            self.npm_executable.chmod(0o755)
 
-    def qualification(self, candidate=None, *, destination=None):
+    def qualification(self, candidate=None, *, destination=None,
+                      source_commit=FIXTURE_SOURCE_COMMIT):
         candidate = candidate or INSTALLATION
         manifest = json.loads((candidate / "release.json").read_text(encoding="utf-8"))
         platform_name, entry = next(iter(manifest["binaries"].items()))
         receipt = {
             "format": "codearbiter.artifact-qualification/0.1.0",
-            "source_commit": FIXTURE_SOURCE_COMMIT,
+            "source_commit": source_commit,
             "workflow": FIXTURE_WORKFLOW,
             "run_id": FIXTURE_WORKFLOW_RUN,
             "job": "artifact-engine",
@@ -85,14 +107,15 @@ class PackageTests(unittest.TestCase):
         return path
 
     def stage(self, *, candidates=None, output=None, required_platforms=None,
-              qualification_receipts=None):
+              qualification_receipts=None, source_commit=FIXTURE_SOURCE_COMMIT):
         candidates = candidates or [INSTALLATION]
         manifest = json.loads((candidates[0] / "release.json").read_text(encoding="utf-8"))
         native_platform = next(iter(manifest["binaries"]))
         return PACKAGER.stage_artifact_host_payloads(
             candidates=candidates,
-            qualification_receipts=qualification_receipts or [self.qualification(candidates[0])],
-            trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+            qualification_receipts=qualification_receipts or [self.qualification(
+                candidates[0], source_commit=source_commit)],
+            trusted_source_commit=source_commit,
             trusted_workflow=FIXTURE_WORKFLOW,
             trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
             output=output or (self.base / "stage"),
@@ -122,6 +145,65 @@ class PackageTests(unittest.TestCase):
         manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "unqualified platform entry"):
             INSTALLER.load_payload(candidate)
+
+    def test_invalid_candidates_are_rejected_before_package_output_is_created(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+
+        def corrupt_protocol(_candidate, release):
+            release["protocol"] = "invalid"
+
+        def advertise_other_cell(_candidate, release):
+            entry = release["binaries"][native_platform]
+            release["binaries"] = {"freebsd/amd64": entry}
+
+        def mismatch_binary_identity(_candidate, release):
+            release["binaries"][native_platform]["file"] = "wrong-artifact-binary"
+
+        def mark_unqualified(_candidate, release):
+            next(iter(release["binaries"].values()))["native_tested"] = False
+
+        mutations = {
+            "corrupt": (
+                corrupt_protocol,
+                "unsupported protocol/schema/version identity",
+            ),
+            "unsupported-advertised-cell": (
+                advertise_other_cell,
+                "unqualified platform entry",
+            ),
+            "manifest-binary-identity": (
+                mismatch_binary_identity,
+                "unqualified platform entry",
+            ),
+            "unqualified": (
+                mark_unqualified,
+                "unqualified platform entry",
+            ),
+        }
+        for index, (name, (mutate, diagnostic)) in enumerate(mutations.items()):
+            candidate = self.base / f"candidate-{name}"
+            shutil.copytree(INSTALLATION, candidate)
+            release_path = candidate / "release.json"
+            release = json.loads(release_path.read_text(encoding="utf-8"))
+            mutate(candidate, release)
+            release_path.write_text(json.dumps(release), encoding="utf-8")
+            output = self.base / f"output-{name}"
+            receipt = self.qualification(
+                destination=self.base / f"candidate-receipt-{index}.json"
+            )
+            with self.subTest(payload=name), self.assertRaisesRegex(ValueError, diagnostic):
+                PACKAGER.stage_artifact_host_payloads(
+                    candidates=[candidate],
+                    qualification_receipts=[receipt],
+                    trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                    trusted_workflow=FIXTURE_WORKFLOW,
+                    trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
+                    output=output,
+                    required_platforms=[native_platform],
+                    repo=REPO,
+                )
+            self.assertFalse(output.exists())
 
     def test_install_target_is_create_only(self):
         consumer = self.base / "consumer"
@@ -167,6 +249,599 @@ class PackageTests(unittest.TestCase):
                 capabilities = client.call("capabilities")
             self.assertTrue(capabilities["repository_operations_available"])
             self.assertFalse(capabilities["host_default_enabled"])
+
+    def test_final_normal_packages_bind_exact_source_and_promoted_bytes(self):
+        source_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, encoding="utf-8"
+        ).strip()
+        source_tree = subprocess.check_output(
+            ["git", "rev-parse", f"{source_commit}^{{tree}}"],
+            cwd=REPO, text=True, encoding="utf-8",
+        ).strip()
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        stage = self.base / "stage"
+        staged = self.stage(
+            output=stage,
+            required_platforms=[native_platform],
+            source_commit=source_commit,
+        )
+        output = self.base / "packages"
+
+        result = PACKAGER.build_artifact_release_packages(
+            stage=stage,
+            source_repo=REPO,
+            source_commit=source_commit,
+            workflow=FIXTURE_WORKFLOW,
+            run_id=FIXTURE_WORKFLOW_RUN,
+            promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+            output=output,
+            npm_executable=self.npm_executable,
+            npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+            production=False,
+        )
+        verified = PACKAGER.verify_artifact_release_packages(
+            package_root=output,
+            source_repo=REPO,
+            source_commit=source_commit,
+            workflow=FIXTURE_WORKFLOW,
+            run_id=FIXTURE_WORKFLOW_RUN,
+            promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+            stage=stage,
+            require_production=False,
+            npm_executable=self.npm_executable,
+        )
+
+        self.assertEqual(source_tree, result["source_tree"])
+        self.assertEqual(result, verified)
+        self.assertEqual(["claude", "codex", "pi"], sorted(result["packages"]))
+        self.assertTrue((output / "artifact-package-cohort.json").is_file())
+        expected_payload = {
+            path.name: path.read_bytes()
+            for path in (stage / "plugins" / "ca" / "helpers" / "artifacts").iterdir()
+        }
+        extracted = {}
+        for host in ("claude", "codex", "pi"):
+            artifact = output / result["packages"][host]["file"]
+            self.assertEqual(
+                result["packages"][host]["sha256"],
+                hashlib.sha256(artifact.read_bytes()).hexdigest(),
+            )
+            destination = self.base / f"extracted-{host}"
+            PACKAGER.extract_artifact_release_package(artifact, destination, host=host)
+            extracted[host] = destination
+            relative = {
+                "claude": "plugins/ca/helpers/artifacts",
+                "codex": "plugins/ca-codex/helpers/artifacts",
+                "pi": "package/plugins/ca-pi/helpers/artifacts",
+            }[host]
+            payload = destination / relative
+            self.assertEqual(
+                expected_payload,
+                {path.name: path.read_bytes() for path in payload.iterdir()},
+            )
+            repository = self.base / f"repo-{host}"
+            repository.mkdir()
+            empty_path = self.base / f"empty-path-{host}"
+            empty_path.mkdir()
+            with mock.patch.dict(os.environ, {"PATH": str(empty_path)}):
+                capabilities = ArtifactClient(repository, payload).call("capabilities")
+            self.assertTrue(capabilities["repository_operations_available"])
+            self.assertFalse(capabilities["runtime_downloads"])
+
+        checker_spec = importlib.util.spec_from_file_location(
+            "codex_static_package",
+            REPO / ".github" / "scripts" / "check_codex_static_package.py",
+        )
+        checker = importlib.util.module_from_spec(checker_spec)
+        checker_spec.loader.exec_module(checker)
+        self.assertEqual(
+            "PASS",
+            checker.candidate_static_contract(
+                extracted["codex"] / "plugins" / "ca-codex",
+                verified_large_files={
+                    name.removeprefix("plugins/ca-codex/"): {
+                        key: member[key]
+                        for key in ("type", "mode", "size", "sha256", "origin")
+                    }
+                    for name, member in result["packages"]["codex"]["members"].items()
+                    if (
+                        name.startswith(
+                            "plugins/ca-codex/helpers/artifacts/ca-artifact-"
+                        )
+                        and member["size"] > 2 * 1024 * 1024
+                    )
+                },
+            )["verdict"],
+        )
+        claude_catalog = json.loads(
+            (extracted["claude"] / ".claude-plugin" / "marketplace.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        codex_catalog = json.loads(
+            (extracted["codex"] / ".agents" / "plugins" / "marketplace.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(["ca"], [entry["name"] for entry in claude_catalog["plugins"]])
+        self.assertEqual(
+            ["ca-codex"], [entry["name"] for entry in codex_catalog["plugins"]]
+        )
+
+        pi_artifact = output / result["packages"]["pi"]["file"]
+        with tarfile.open(pi_artifact, "r:gz") as archive:
+            members = {member.name: member for member in archive.getmembers()}
+        for name in expected_payload:
+            member = members[f"package/plugins/ca-pi/helpers/artifacts/{name}"]
+            expected_mode = 0o644 if name == "release.json" else 0o755
+            self.assertEqual(expected_mode, member.mode)
+
+        cohort_path = output / "artifact-package-cohort.json"
+        cohort_bytes = cohort_path.read_bytes()
+        for field, value in {
+            "version": "11.19.0",
+            "package_integrity": "sha512-invalid",
+            "executable_sha256": "0" * 64,
+        }.items():
+            cohort = json.loads(cohort_bytes)
+            cohort["pi_packer"][field] = value
+            cohort_path.write_text(json.dumps(cohort), encoding="utf-8")
+            with self.subTest(packer_receipt=field), self.assertRaisesRegex(
+                ValueError, "Pi packer"
+            ):
+                PACKAGER.verify_artifact_release_packages(
+                    package_root=output, source_repo=REPO,
+                    source_commit=source_commit, workflow=FIXTURE_WORKFLOW,
+                    run_id=FIXTURE_WORKFLOW_RUN,
+                    promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+                    stage=stage, require_production=False,
+                    npm_executable=self.npm_executable,
+                )
+            cohort_path.write_bytes(cohort_bytes)
+
+        with self.assertRaisesRegex(ValueError, "output already exists"):
+            PACKAGER.build_artifact_release_packages(
+                stage=stage,
+                source_repo=REPO,
+                source_commit=source_commit,
+                workflow=FIXTURE_WORKFLOW,
+                run_id=FIXTURE_WORKFLOW_RUN,
+                promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+                output=output,
+                npm_executable=self.npm_executable,
+                npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+                production=False,
+            )
+
+    def test_final_package_build_refuses_wrong_source_or_promotion_before_output(self):
+        source_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, encoding="utf-8"
+        ).strip()
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        stage = self.base / "stage"
+        staged = self.stage(
+            output=stage,
+            required_platforms=[native_platform],
+            source_commit=source_commit,
+        )
+        cases = {
+            "source": dict(source_commit="b" * 40,
+                           receipt=staged["promotion_receipt_sha256"]),
+            "promotion": dict(source_commit=source_commit, receipt="0" * 64),
+        }
+        for index, (name, case) in enumerate(cases.items()):
+            output = self.base / f"rejected-{index}"
+            with self.subTest(drift=name), self.assertRaises((ValueError, RuntimeError)):
+                PACKAGER.build_artifact_release_packages(
+                    stage=stage,
+                    source_repo=REPO,
+                    source_commit=case["source_commit"],
+                    workflow=FIXTURE_WORKFLOW,
+                    run_id=FIXTURE_WORKFLOW_RUN,
+                    promotion_receipt_sha256=case["receipt"],
+                    output=output,
+                    npm_executable=self.npm_executable,
+                    npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+                    production=False,
+                )
+            self.assertFalse(output.exists())
+
+    def test_npm_packer_receives_only_isolated_environment_and_redacts_failures(self):
+        source_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, encoding="utf-8"
+        ).strip()
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        stage = self.base / "npm-env-stage"
+        staged = self.stage(
+            output=stage, required_platforms=[native_platform],
+            source_commit=source_commit,
+        )
+        secret = "npm-child-secret-sentinel"
+        secret_names = {
+            "NPMJS_TOKEN", "NODE_AUTH_TOKEN", "GH_TOKEN", "GITHUB_TOKEN",
+            "FARM_API_KEY", "UNDECLARED_BUILD_SECRET",
+        }
+        captured = []
+        real_run = PACKAGER.subprocess.run
+
+        def record(argv, **kwargs):
+            if Path(argv[0]) == self.npm_executable:
+                captured.append(kwargs.get("env"))
+            return real_run(argv, **kwargs)
+
+        injected = {name: f"{secret}-{name}" for name in secret_names}
+        output = self.base / "npm-env-packages"
+        with mock.patch.dict(os.environ, injected), mock.patch.object(
+            PACKAGER.subprocess, "run", side_effect=record
+        ):
+            PACKAGER.build_artifact_release_packages(
+                stage=stage, source_repo=REPO, source_commit=source_commit,
+                workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+                output=output, npm_executable=self.npm_executable,
+                npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+                production=False,
+            )
+        self.assertGreaterEqual(len(captured), 3)
+        allowed_environment = {
+            "PATH", "SystemRoot", "WINDIR", "ComSpec", "PATHEXT",
+            "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TEMP",
+            "LANG", "LC_ALL", "NO_COLOR", "FORCE_COLOR",
+            "npm_config_userconfig", "npm_config_globalconfig", "npm_config_cache",
+            "npm_config_logs_dir", "npm_config_logs_max", "npm_config_offline",
+            "npm_config_audit", "npm_config_fund", "npm_config_ignore_scripts",
+            "npm_config_update_notifier",
+        }
+        for child_environment in captured:
+            self.assertIsInstance(child_environment, dict)
+            self.assertTrue(set(child_environment) <= allowed_environment)
+            self.assertTrue(secret_names.isdisjoint(child_environment))
+            self.assertNotIn(secret, "\n".join(child_environment.values()))
+            self.assertNotEqual(os.environ.get("HOME"), child_environment["HOME"])
+            for key in (
+                "npm_config_userconfig", "npm_config_globalconfig",
+                "npm_config_cache", "npm_config_logs_dir",
+            ):
+                self.assertIn("ca-artifact-", child_environment[key])
+
+        def fail_pack(argv, **kwargs):
+            if Path(argv[0]) == self.npm_executable and "pack" in argv:
+                return subprocess.CompletedProcess(
+                    argv, 19, stdout="", stderr=f"failure relayed {secret}"
+                )
+            return real_run(argv, **kwargs)
+
+        failed_output = self.base / "npm-error-packages"
+        with mock.patch.dict(os.environ, injected), mock.patch.object(
+            PACKAGER.subprocess, "run", side_effect=fail_pack
+        ):
+            with self.assertRaises(ValueError) as failure:
+                PACKAGER.build_artifact_release_packages(
+                    stage=stage, source_repo=REPO, source_commit=source_commit,
+                    workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                    promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+                    output=failed_output, npm_executable=self.npm_executable,
+                    npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+                    production=False,
+                )
+        self.assertNotIn(secret, str(failure.exception))
+        self.assertFalse(failed_output.exists())
+
+        def fail_identity(argv, **kwargs):
+            return subprocess.CompletedProcess(
+                argv, 23, stdout="", stderr=f"identity relayed {secret}"
+            )
+
+        with mock.patch.object(PACKAGER.subprocess, "run", side_effect=fail_identity):
+            with self.assertRaises(ValueError) as identity_failure:
+                PACKAGER._verified_npm_packer(
+                    self.npm_executable,
+                    package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+                    production=False,
+                )
+        self.assertNotIn(secret, str(identity_failure.exception))
+
+        ambient_npm = Path(shutil.which("npm.cmd") or shutil.which("npm"))
+        for name, executable, integrity in (
+            ("ambient-version", ambient_npm, PACKAGER.NPM_PACKER_INTEGRITY),
+            ("wrong-integrity", self.npm_executable, "sha512-invalid"),
+        ):
+            output = self.base / f"rejected-packer-{name}"
+            with self.subTest(packer=name), self.assertRaisesRegex(
+                ValueError, "npm packer"
+            ):
+                PACKAGER.build_artifact_release_packages(
+                    stage=stage, source_repo=REPO, source_commit=source_commit,
+                    workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                    promotion_receipt_sha256=staged["promotion_receipt_sha256"],
+                    output=output, npm_executable=executable,
+                    npm_package_integrity=integrity, production=False,
+                )
+            self.assertFalse(output.exists())
+
+    def test_promotion_receipt_binds_exact_payload_and_native_qualification_bytes(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        qualification = self.qualification(destination=self.base / "native-qualification.json")
+        stage = self.base / "stage"
+        result = self.stage(
+            output=stage,
+            required_platforms=[native_platform],
+            qualification_receipts=[qualification],
+        )
+
+        receipt_path = stage / "artifact-promotion.json"
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        self.assertEqual("codearbiter.artifact-promotion/0.1.0", receipt["format"])
+        self.assertEqual(FIXTURE_SOURCE_COMMIT, receipt["source_commit"])
+        self.assertEqual(FIXTURE_WORKFLOW, receipt["workflow"])
+        self.assertEqual(FIXTURE_WORKFLOW_RUN, receipt["run_id"])
+        self.assertEqual(
+            hashlib.sha256(qualification.read_bytes()).hexdigest(),
+            receipt["qualifications"][native_platform]["receipt_sha256"],
+        )
+        self.assertEqual(str(receipt_path), result["promotion_receipt"])
+        self.assertEqual(
+            hashlib.sha256(receipt_path.read_bytes()).hexdigest(),
+            result["promotion_receipt_sha256"],
+        )
+        for host, plugin_dir in {
+            "claude": "plugins/ca",
+            "codex": "plugins/ca-codex",
+            "pi": "plugins/ca-pi",
+        }.items():
+            payload = stage / plugin_dir / "helpers" / "artifacts"
+            verified = INSTALLER.load_promotion_receipt(
+                payload,
+                receipt_path,
+                host=host,
+                source_commit=FIXTURE_SOURCE_COMMIT,
+                workflow=FIXTURE_WORKFLOW,
+                run_id=FIXTURE_WORKFLOW_RUN,
+                receipt_sha256=result["promotion_receipt_sha256"],
+            )
+            self.assertEqual(receipt, verified.receipt)
+
+    def test_verified_promotion_snapshot_cannot_be_swapped_before_install(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform, entry = next(iter(manifest["binaries"].items()))
+        stage = self.base / "stage"
+        result = self.stage(output=stage, required_platforms=[native_platform])
+        receipt_path = stage / "artifact-promotion.json"
+        payload = stage / "plugins" / "ca" / "helpers" / "artifacts"
+        verified = INSTALLER.load_promotion_receipt(
+            payload, receipt_path, host="claude",
+            source_commit=FIXTURE_SOURCE_COMMIT,
+            workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+            receipt_sha256=result["promotion_receipt_sha256"])
+        original_manifest = (payload / "release.json").read_bytes()
+        original_binary = (payload / entry["file"]).read_bytes()
+
+        real_verifier = INSTALLER.load_promotion_receipt
+        def verify_then_replace(*args, **kwargs):
+            snapshot = real_verifier(*args, **kwargs)
+            (payload / "release.json").write_bytes(original_manifest + b" ")
+            (payload / entry["file"]).write_bytes(original_binary + b"replaced")
+            return snapshot
+
+        consumer = self.base / "consumer"
+        consumer.mkdir()
+        with mock.patch.object(INSTALLER, "load_promotion_receipt",
+                               side_effect=verify_then_replace):
+            if os.name == "nt":
+                with self.assertRaisesRegex(ValueError, "release-packaging only"):
+                    INSTALLER.install_promoted_payload(
+                        consumer, "plugin", payload, receipt_path,
+                        host="claude", source_commit=FIXTURE_SOURCE_COMMIT,
+                        workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                        receipt_sha256=result["promotion_receipt_sha256"])
+            else:
+                installed = INSTALLER.install_promoted_payload(
+                    consumer, "plugin", payload, receipt_path,
+                    host="claude", source_commit=FIXTURE_SOURCE_COMMIT,
+                    workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                    receipt_sha256=result["promotion_receipt_sha256"])
+                self.assertEqual(original_manifest, (installed / "release.json").read_bytes())
+                self.assertEqual(original_binary, (installed / entry["file"]).read_bytes())
+        self.assertEqual(original_manifest, verified.manifest_bytes)
+        self.assertEqual(original_binary, dict(verified.payload)[entry["file"]])
+        with self.assertRaisesRegex(ValueError, "payload bytes drifted"):
+            real_verifier(
+                payload, receipt_path, host="claude",
+                source_commit=FIXTURE_SOURCE_COMMIT,
+                workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                receipt_sha256=result["promotion_receipt_sha256"])
+
+    def test_promotion_receipt_rejects_context_host_file_set_and_byte_drift(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform, entry = next(iter(manifest["binaries"].items()))
+        stage = self.base / "stage"
+        result = self.stage(output=stage, required_platforms=[native_platform])
+        receipt_path = stage / "artifact-promotion.json"
+        payload = stage / "plugins" / "ca" / "helpers" / "artifacts"
+
+        bad_contexts = {
+            "host": dict(host="codex", source_commit=FIXTURE_SOURCE_COMMIT,
+                         workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                         receipt_sha256=result["promotion_receipt_sha256"]),
+            "commit": dict(host="claude", source_commit="b" * 40,
+                           workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                           receipt_sha256=result["promotion_receipt_sha256"]),
+            "workflow": dict(host="claude", source_commit=FIXTURE_SOURCE_COMMIT,
+                             workflow=".github/workflows/release.yml",
+                             run_id=FIXTURE_WORKFLOW_RUN,
+                             receipt_sha256=result["promotion_receipt_sha256"]),
+            "run": dict(host="claude", source_commit=FIXTURE_SOURCE_COMMIT,
+                        workflow=FIXTURE_WORKFLOW, run_id="987654321",
+                        receipt_sha256=result["promotion_receipt_sha256"]),
+        }
+        for name, context in bad_contexts.items():
+            with self.subTest(drift=name), self.assertRaisesRegex(
+                    ValueError, "promotion receipt"):
+                INSTALLER.load_promotion_receipt(payload, receipt_path, **context)
+
+        binary = payload / entry["file"]
+        original = binary.read_bytes()
+        binary.write_bytes(original + b"drift")
+        with self.assertRaisesRegex(ValueError, "payload bytes drifted"):
+            INSTALLER.load_promotion_receipt(
+                payload, receipt_path, host="claude",
+                source_commit=FIXTURE_SOURCE_COMMIT,
+                workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                receipt_sha256=result["promotion_receipt_sha256"])
+        binary.write_bytes(original)
+
+        extra = payload / "unqualified-extra"
+        extra.write_bytes(b"extra")
+        with self.assertRaisesRegex(ValueError, "payload file set drifted"):
+            INSTALLER.load_promotion_receipt(
+                payload, receipt_path, host="claude",
+                source_commit=FIXTURE_SOURCE_COMMIT,
+                workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                receipt_sha256=result["promotion_receipt_sha256"])
+        extra.unlink()
+
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        receipt["qualifications"][native_platform]["receipt_sha256"] = "0" * 64
+        receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "promotion receipt bytes drifted"):
+            INSTALLER.load_promotion_receipt(
+                payload, receipt_path, host="claude",
+                source_commit=FIXTURE_SOURCE_COMMIT,
+                workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                receipt_sha256=result["promotion_receipt_sha256"])
+
+    def test_promotion_receipt_is_create_only_with_the_stage(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        stage = self.base / "stage"
+        self.stage(output=stage, required_platforms=[native_platform])
+        receipt = stage / "artifact-promotion.json"
+        original = receipt.read_bytes()
+        with self.assertRaisesRegex(ValueError, "output already exists"):
+            self.stage(output=stage, required_platforms=[native_platform])
+        self.assertEqual(original, receipt.read_bytes())
+
+    def test_cold_execution_receipt_binds_each_host_to_the_native_promoted_bytes(self):
+        source_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, encoding="utf-8"
+        ).strip()
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform, entry = next(iter(manifest["binaries"].items()))
+        stage = self.base / "stage"
+        result = self.stage(
+            output=stage, required_platforms=[native_platform],
+            source_commit=source_commit,
+        )
+        packages = self.base / "packages"
+        PACKAGER.build_artifact_release_packages(
+            stage=stage, source_repo=REPO, source_commit=source_commit,
+            workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+            promotion_receipt_sha256=result["promotion_receipt_sha256"],
+            output=packages,
+            npm_executable=self.npm_executable,
+            npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+            production=False,
+        )
+        observed = []
+        real_run = PACKAGER.subprocess.run
+
+        def record_run(argv, **kwargs):
+            if "capabilities" in argv:
+                observed.append((argv, kwargs))
+            return real_run(argv, **kwargs)
+
+        with mock.patch.object(PACKAGER.subprocess, "run", side_effect=record_run):
+            for host in ("claude", "codex", "pi"):
+                destination = self.base / f"cold-{host}.json"
+                cold = PACKAGER.cold_execute_artifact_host_payload(
+                    stage=stage,
+                    package_root=packages,
+                    source_repo=REPO,
+                    host=host,
+                    expected_platform=native_platform,
+                    source_commit=source_commit,
+                    workflow=FIXTURE_WORKFLOW,
+                    run_id=FIXTURE_WORKFLOW_RUN,
+                    promotion_receipt_sha256=result["promotion_receipt_sha256"],
+                    output=destination,
+                    require_production=False,
+                )
+                self.assertEqual(host, cold["host"])
+                self.assertEqual(native_platform, cold["platform"])
+                self.assertEqual(entry["sha256"], cold["binary_sha256"])
+                self.assertEqual(result["promotion_receipt_sha256"],
+                                 cold["promotion_receipt_sha256"])
+                self.assertEqual(cold, json.loads(destination.read_text(encoding="utf-8")))
+
+        self.assertEqual(3, len(observed))
+        for argv, kwargs in observed:
+            self.assertTrue(Path(argv[0]).is_absolute())
+            self.assertEqual({}, kwargs["env"])
+            self.assertNotIn("shell", kwargs)
+
+    def test_cold_execution_refuses_wrong_cell_context_and_is_create_only(self):
+        source_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True, encoding="utf-8"
+        ).strip()
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        native_platform = next(iter(manifest["binaries"]))
+        stage = self.base / "stage"
+        result = self.stage(
+            output=stage, required_platforms=[native_platform],
+            source_commit=source_commit,
+        )
+        packages = self.base / "packages"
+        PACKAGER.build_artifact_release_packages(
+            stage=stage, source_repo=REPO, source_commit=source_commit,
+            workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+            promotion_receipt_sha256=result["promotion_receipt_sha256"],
+            output=packages,
+            npm_executable=self.npm_executable,
+            npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
+            production=False,
+        )
+        wrong_platform = "linux/arm64" if native_platform != "linux/arm64" else "linux/amd64"
+        cases = {
+            "host": dict(host="other", expected_platform=native_platform,
+                         promotion_receipt_sha256=result["promotion_receipt_sha256"]),
+            "platform": dict(host="claude", expected_platform=wrong_platform,
+                             promotion_receipt_sha256=result["promotion_receipt_sha256"]),
+            "promotion": dict(host="claude", expected_platform=native_platform,
+                              promotion_receipt_sha256="0" * 64),
+        }
+        for name, context in cases.items():
+            output = self.base / f"rejected-{name}.json"
+            with self.subTest(context=name), self.assertRaises((ValueError, RuntimeError)):
+                PACKAGER.cold_execute_artifact_host_payload(
+                    stage=stage, package_root=packages, source_repo=REPO,
+                    source_commit=source_commit,
+                    workflow=FIXTURE_WORKFLOW, run_id=FIXTURE_WORKFLOW_RUN,
+                    output=output, require_production=False, **context)
+            self.assertFalse(output.exists())
+
+        output = self.base / "cold.json"
+        PACKAGER.cold_execute_artifact_host_payload(
+            stage=stage, package_root=packages, source_repo=REPO,
+            host="claude", expected_platform=native_platform,
+            source_commit=source_commit, workflow=FIXTURE_WORKFLOW,
+            run_id=FIXTURE_WORKFLOW_RUN,
+            promotion_receipt_sha256=result["promotion_receipt_sha256"], output=output,
+            require_production=False,
+        )
+        original = output.read_bytes()
+        with self.assertRaisesRegex(ValueError, "cold-execution receipt output"):
+            PACKAGER.cold_execute_artifact_host_payload(
+                stage=stage, package_root=packages, source_repo=REPO,
+                host="claude", expected_platform=native_platform,
+                source_commit=source_commit, workflow=FIXTURE_WORKFLOW,
+                run_id=FIXTURE_WORKFLOW_RUN,
+                promotion_receipt_sha256=result["promotion_receipt_sha256"], output=output,
+                require_production=False)
+        self.assertEqual(original, output.read_bytes())
 
     def test_production_binary_has_no_network_capable_dependencies(self):
         completed = subprocess.run(
@@ -475,6 +1150,7 @@ class PackageTests(unittest.TestCase):
                 output=self.base / "fake-stage", required_platforms=[native_platform], repo=REPO)
 
     def test_qualification_receipt_requires_protected_exact_host_ci(self):
+        self.assertEqual(PACKAGER.ARTIFACT_PLATFORMS, BUILDER.QUALIFIED_CI_PLATFORMS)
         destination = self.base / "qualification.json"
         with mock.patch.dict(os.environ, {}, clear=True):
             with self.assertRaisesRegex(SystemExit, "protected exact-host CI"):
@@ -490,6 +1166,7 @@ class PackageTests(unittest.TestCase):
             "GITHUB_RUN_ID": FIXTURE_WORKFLOW_RUN,
             "GITHUB_WORKFLOW_REF": f"arbiterForge/codeArbiter/{FIXTURE_WORKFLOW}@refs/heads/main",
             "GITHUB_JOB": "artifact-engine",
+            "EXPECTED_ARTIFACT_PLATFORM": native_platform,
         }
         def checked_output(args, **_kwargs):
             if args[:3] == ["git", "rev-parse", "HEAD"]:
@@ -505,6 +1182,18 @@ class PackageTests(unittest.TestCase):
         receipt = json.loads(destination.read_text(encoding="utf-8"))
         self.assertEqual(receipt["source_commit"], FIXTURE_SOURCE_COMMIT)
         self.assertEqual(receipt["binary_sha256"], next(iter(manifest["binaries"].values()))["sha256"])
+
+        wrong = self.base / "wrong-cell.json"
+        other_platform = next(
+            cell for cell in sorted(BUILDER.QUALIFIED_CI_PLATFORMS)
+            if cell != native_platform
+        )
+        with mock.patch.dict(os.environ, {
+                **environment, "EXPECTED_ARTIFACT_PLATFORM": other_platform}, clear=True), \
+                mock.patch.object(BUILDER.subprocess, "check_output", side_effect=checked_output):
+            with self.assertRaisesRegex(SystemExit, "candidate platform does not match"):
+                BUILDER.write_qualification(INSTALLATION, wrong)
+        self.assertFalse(wrong.exists())
 
     def test_empty_or_malformed_artifact_version_is_rejected(self):
         for index, version in enumerate(("", "version-one", "0.2.0")):

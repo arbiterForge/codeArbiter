@@ -13,6 +13,10 @@ import subprocess
 QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 QUALIFICATION_WORKFLOW = ".github/workflows/ci.yml"
 QUALIFICATION_JOB = "artifact-engine"
+QUALIFIED_CI_PLATFORMS = frozenset({
+    "linux/amd64", "linux/arm64", "windows/amd64", "windows/arm64",
+    "darwin/amd64", "darwin/arm64",
+})
 NATIVE_TESTS = [
     "artifact-bridge", "artifact-conformance", "artifact-native", "artifact-package",
     "go-test", "go-vet",
@@ -24,10 +28,12 @@ def write_qualification(candidate: Path, destination: Path) -> None:
     source_commit = os.environ.get("GITHUB_SHA", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     workflow_ref = os.environ.get("GITHUB_WORKFLOW_REF", "")
+    expected_platform = os.environ.get("EXPECTED_ARTIFACT_PLATFORM", "")
     if (os.environ.get("GITHUB_ACTIONS") != "true"
             or os.environ.get("GITHUB_JOB") != QUALIFICATION_JOB
             or not re.fullmatch(r"[0-9a-f]{40}", source_commit)
             or not re.fullmatch(r"[1-9][0-9]*", run_id)
+            or expected_platform not in QUALIFIED_CI_PLATFORMS
             or f"/{QUALIFICATION_WORKFLOW}@" not in workflow_ref):
         raise SystemExit("native qualification receipts are emitted only by the protected exact-host CI job")
     repo = Path(__file__).resolve().parents[1]
@@ -49,7 +55,8 @@ def write_qualification(candidate: Path, destination: Path) -> None:
     platform_name, entry = next(iter(entries.items()))
     goos = subprocess.check_output(["go", "env", "GOOS"], text=True).strip()
     goarch = subprocess.check_output(["go", "env", "GOARCH"], text=True).strip()
-    if platform_name != f"{goos}/{goarch}" or entry.get("native_tested") is not True:
+    if (platform_name != expected_platform or platform_name != f"{goos}/{goarch}"
+            or entry.get("native_tested") is not True):
         raise SystemExit("candidate platform does not match the exact host")
     binary = candidate / entry["file"]
     digest = hashlib.sha256(binary.read_bytes()).hexdigest()

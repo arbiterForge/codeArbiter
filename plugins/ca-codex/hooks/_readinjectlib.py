@@ -1097,15 +1097,44 @@ def build_index(root):
         return result
     result = dict(result)
     try:
-        from _artifactlib import checked_spec_index, helper_installation, has_html
+        from _artifactlib import ArtifactClient, helper_installation, has_html
         if not has_html(root):
             return result
-        extra = checked_spec_index(root, helper_installation(__file__))
+        # Preserve full engine identities in the advisory snapshot. Pointer
+        # matching uses only spec/path/globs, while dedup below hashes the same
+        # entries including revision/model/normative identity. Do not reread the
+        # artifact after this validated index stream.
+        extra = []
+        client = ArtifactClient(root, helper_installation(__file__))
+        for entry in client.index("spec"):
+            authority = entry["authority"]
+            if authority["authority_verified"] and entry.get("governs"):
+                extra.append({
+                    "spec": entry["artifact_id"],
+                    "path": entry["path"],
+                    "globs": entry["governs"],
+                    "artifact_html": True,
+                    "revision": entry.get("revision"),
+                    "model_sha256": entry.get("model_sha256"),
+                    "normative_sha256": entry.get("normative_sha256"),
+                })
     except Exception as error:
         # Advisory read injection remains fail-open. This warning is NOT an
         # approved-spec pointer and MUST NOT authorize a planning/execution gate.
         code = getattr(error, "code", "CAPABILITY_MISSING")
-        extra = [{"artifact_diagnostic": str(code)[:80], "artifact_html": True}]
+        code = str(code)[:80]
+        capability_codes = {
+            "CAPABILITY_MISSING", "INVALID_INSTALLATION", "PACKAGE_INTEGRITY",
+            "UNSUPPORTED_PLATFORM", "UNSUPPORTED_VERSION", "UNVERIFIED_PLATFORM",
+            "INVALID_RESPONSE", "RESPONSE_TOO_LARGE", "SUBPROCESS_FAILED", "TIMEOUT",
+        }
+        extra = [{
+            "artifact_diagnostic": code,
+            "artifact_diagnostic_kind": (
+                "capability" if code in capability_codes else "invalid-artifact"
+            ),
+            "artifact_html": True,
+        }]
     result["spec"] = [item for item in result.get("spec", [])
                       if not isinstance(item, dict) or not item.get("artifact_html")] + extra
     return result
@@ -1118,26 +1147,60 @@ def spec_pointers(rel, index):
     normal = [item for item in index if not isinstance(item, dict) or not item.get("artifact_diagnostic")]
     result = _artifact_legacy_spec_pointers(rel, normal)
     if warnings:
-        result.append({"tier": "specs", "text": "HTML specification validation unavailable ("
-                       + warnings[0]["artifact_diagnostic"]
-                       + "). Source inspection may continue; HTML planning/execution must stop until resolved."})
+        warning = warnings[0]
+        code = warning["artifact_diagnostic"]
+        if warning.get("artifact_diagnostic_kind") == "capability":
+            text = (
+                "HTML artifact capability unavailable (" + code + "). Repair or reinstall "
+                "the pinned artifact payload. Source inspection and unrelated legacy Markdown "
+                "may continue; HTML planning/execution must stop until resolved."
+            )
+        else:
+            text = (
+                "HTML specification is invalid or unreadable (" + code + "). Inspect the "
+                "engine diagnostic and repair-preview before any repair. Source inspection may "
+                "continue; HTML planning/execution must stop until resolved."
+            )
+        result.append({"tier": "artifact-diagnostic", "text": text})
     return result
 
 _artifact_legacy_compute_injection = compute_injection
 
 
 def compute_injection(root, session_id, rel, runner=None):
-    # Namespace existing dedup markers by the current validated HTML identities
-    # and authority status. A changed spec or missing receipt cannot hide behind
-    # an old session/file marker. This is an advisory epoch, not an approval.
+    # Bind the injected pointers and dedup epoch to ONE validated HTML snapshot.
+    # A second artifact read here permits B(epoch) -> A(content) and records A
+    # under B's marker, suppressing a later stable B read. HTML therefore builds
+    # once before dedup; the same entries drive both context and epoch. This is
+    # advisory identity only, never approval or execution authority.
     if not isinstance(rel, str) or rel.replace("\\", "/").split("/", 1)[0] == ".codearbiter":
         return _artifact_legacy_compute_injection(root, session_id, rel, runner)
     try:
-        from _artifactlib import ArtifactClient, helper_installation, has_html
+        from _artifactlib import has_html
         if not has_html(root):
             return _artifact_legacy_compute_injection(root, session_id, rel, runner)
-        entries = list(ArtifactClient(root, helper_installation(__file__)).index("spec"))
-        epoch = hashlib.sha256(json.dumps(entries, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
-    except Exception as error:
-        epoch = "unavailable-" + str(getattr(error, "code", "CAPABILITY_MISSING"))[:80]
-    return _artifact_legacy_compute_injection(root, str(session_id) + "|html:" + epoch, rel, runner)
+        index = build_index(root)
+        if not isinstance(index, dict):
+            return ""
+        artifact_entries = [
+            item for item in index.get("spec", [])
+            if isinstance(item, dict) and item.get("artifact_html") is True
+        ]
+        epoch = hashlib.sha256(
+            json.dumps(
+                artifact_entries, sort_keys=True, separators=(",", ":")
+            ).encode()
+        ).hexdigest()
+        epoch_session = str(session_id) + "|html:" + epoch
+        if already_injected(root, epoch_session, rel):
+            return ""
+        pointers = governing_docs(rel, index, runner)
+        if not pointers:
+            return ""
+        context = assemble_context(pointers, budget=150)
+        if context:
+            record_injection(root, epoch_session, rel)
+            return context
+        return ""
+    except Exception:  # noqa: BLE001 - advisory injection always fails open
+        return ""

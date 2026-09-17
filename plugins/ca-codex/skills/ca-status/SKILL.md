@@ -25,10 +25,13 @@ them as drift mode.
 The orchestrator reads and presents:
 
 1. **Stage** — the `stage:` maturity value from `<project-root>/.codearbiter/CONTEXT.md` frontmatter.
-2. **Pipelines** — every slug in `<project-root>/.codearbiter/specs/` and `plans/`, with how
-   far each got: spec awaiting approval, spec approved / no plan, plan in progress (`ACCEPTED` count
-   vs. total from the plan's status column), or complete. An interrupted pipeline is resumable via
-   `$ca-feature` — say so on its line.
+2. **Pipelines** — every slug in `<project-root>/.codearbiter/specs/` and `plans/`. Select the
+   exact `.md` or `.html` authority for each slug; never merge or silently prefer duplicate/mixed
+   formats. Read Markdown as before. For HTML, use only the installation-pinned artifact client:
+   call `capabilities`, then bounded `index`/`identity`/`outline` reads to report spec awaiting
+   approval, spec approved / no plan, plan in progress (`ACCEPTED` count vs. total), or complete.
+   MUST NOT load the artifact schema. This is on-demand status inspection, not startup context.
+   An interrupted pipeline is resumable via `$ca-feature` — say so on its line.
 3. **Open tasks** — the in-flight count from `<project-root>/.codearbiter/open-tasks.md`
    (top-level `- ` bullets excluding done `- [x]`; the same `_taskboardlib` count the
    SessionStart hook uses).
@@ -56,6 +59,13 @@ Overrides since last checkpoint: N
 No specs and no plans → `Pipelines: none`.
 
 If `[CONFIRM-NN]` placeholders are open, surface them — do not resolve them here.
+
+If the pinned client returns `CAPABILITY_MISSING` (including a missing, corrupt, mismatched, or
+unsupported installation), report the code and: “repair or reinstall the pinned artifact payload;
+HTML work is blocked.” Do not reinterpret the HTML pair as Markdown. Unrelated legacy Markdown
+pipelines remain readable. If an HTML read reports an invalid or ambiguous artifact, report the
+bounded engine code and direct the user to inspect `repair-preview` before any explicit reviewed
+repair; do not derive pipeline state from the document text.
 
 ## When NOT to use
 
