@@ -203,6 +203,22 @@ class TestWorktreeInventory(unittest.TestCase):
         self.assertFalse(r.read_error)
         self.assertIs(r.oid, cleanuplib.UNREADABLE)
 
+    def test_a_non_bare_record_with_neither_branch_nor_detached_is_a_read_error(self):
+        # CodeRabbit, 2026-09-17: a genuine, complete Git record for a
+        # non-bare worktree always states EITHER `branch <ref>` OR
+        # `detached` -- Git never omits both. A record with a valid HEAD
+        # but neither signals a truncated read or format drift, not a
+        # worktree that legitimately has no checkout state; treating it as
+        # fully readable would let bind_branch_occupancy silently confirm
+        # every OTHER branch as unoccupied from a list that might have
+        # concealed one of them right here.
+        text = "worktree /repo-wt/odd\nHEAD aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\n"
+        records = cleanuplib.parse_worktree_inventory(text, path_exists_fn=lambda p: True)
+        r = records[0]
+        self.assertTrue(r.read_error)
+        self.assertIsNone(r.branch)
+        self.assertFalse(r.detached)
+
     def test_a_prunable_record_surfaces_its_reason(self):
         # M-5: Git's own "this worktree is prunable, and here is why" must
         # reach an inventory whose entire premise is authoritativeness.
@@ -239,6 +255,21 @@ class TestWorktreeInventory(unittest.TestCase):
         # The embedded "worktree " text must never be parsed as a second
         # record -- it is quoted onto ONE porcelain line.
         self.assertEqual(len(records), 1)
+
+    def test_a_non_ascii_c_quoted_lock_reason_decodes_as_utf8_not_per_byte(self):
+        # CodeRabbit, 2026-09-17: Git represents a multi-byte UTF-8
+        # character as one octal escape per RAW BYTE -- "\302\265" is the
+        # two bytes 0xC2 0xB5, together spelling "µ" (micro sign).
+        # Converting each octal triplet to its own chr() independently
+        # decodes each byte as a separate Latin-1-shaped code point instead,
+        # corrupting "µ" into the two mojibake characters "Âµ".
+        text = (
+            'worktree /repo-wt/x\n'
+            'HEAD aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111\n'
+            'locked "reason: \\302\\265s timing budget"\n'
+        )
+        records = cleanuplib.parse_worktree_inventory(text, path_exists_fn=lambda p: True)
+        self.assertEqual(records[0].locked_reason, "reason: µs timing budget")
 
     def test_multiple_worktree_records_are_all_parsed(self):
         text = (
@@ -385,7 +416,7 @@ class TestBindBranchOccupancy(unittest.TestCase):
         bound = cleanuplib.bind_branch_occupancy(branches, worktrees)
         self.assertIsNone(bound[0].occupied_by)
 
-    def test_a_worktree_record_with_a_read_error_does_not_bind_occupancy(self):
+    def test_a_worktree_record_with_a_read_error_does_not_confirm_occupancy(self):
         # M-8: an untrustworthy worktree record (its OWN HEAD line could not
         # be parsed) must not be used as the basis for "this branch is
         # occupied" -- that would launder a read failure into a confirmed
@@ -402,7 +433,38 @@ class TestBindBranchOccupancy(unittest.TestCase):
             )
         ]
         bound = cleanuplib.bind_branch_occupancy(branches, worktrees)
-        self.assertIsNone(bound[0].occupied_by)
+        # CodeRabbit, 2026-09-17: a read-error record's own branch identity
+        # is exactly the unknown quantity -- the corrupted record COULD
+        # have been naming this very branch, so the correct answer is
+        # "unknown", not "confirmed unoccupied".
+        self.assertIs(bound[0].occupied_by, cleanuplib.UNREADABLE)
+
+    def test_a_read_error_elsewhere_in_the_list_does_not_undo_a_confirmed_match(self):
+        # A branch a CLEAN record actually names stays confirmed occupied
+        # even when some OTHER record in the same list is unreadable --
+        # good data is not punished for a neighbor's corruption.
+        branches = cleanuplib.parse_branch_ref_inventory(
+            "feature/good\tffff6666ffff6666ffff6666ffff6666ffff6666\t\t\n"
+            "feature/mystery\t1111777711117777111177771111777711117777\t\t\n"
+        )
+        worktrees = [
+            cleanuplib.WorktreeInventoryRecord(
+                path="/repo-wt/good", oid="ffff6666ffff6666ffff6666ffff6666ffff6666",
+                branch="feature/good", is_main=False, detached=False, locked=False,
+                locked_reason=None, bare=False, prunable=False, prunable_reason=None,
+                path_exists=True, read_error=False,
+            ),
+            cleanuplib.WorktreeInventoryRecord(
+                path="/repo-wt/broken", oid=cleanuplib.UNREADABLE,
+                branch=None, is_main=False, detached=False, locked=False,
+                locked_reason=None, bare=False, prunable=False, prunable_reason=None,
+                path_exists=True, read_error=True,
+            ),
+        ]
+        bound = cleanuplib.bind_branch_occupancy(branches, worktrees)
+        by_name = {b.name: b.occupied_by for b in bound}
+        self.assertEqual(by_name["feature/good"], "/repo-wt/good")
+        self.assertIs(by_name["feature/mystery"], cleanuplib.UNREADABLE)
 
 
 class TestWorktreeLossSurface(unittest.TestCase):

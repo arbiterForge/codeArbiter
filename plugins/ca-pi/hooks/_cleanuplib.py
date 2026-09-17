@@ -1086,29 +1086,37 @@ def _c_unquote(s):
     (M-6). Only ever applied on the newline-delimited porcelain parser; the
     NUL-delimited parser already returns the raw bytes verbatim and must
     never go through this. A value not shaped like a quoted string is
-    returned unchanged."""
+    returned unchanged.
+
+    Builds a raw BYTE buffer and decodes it as UTF-8 once at the end,
+    rather than converting each octal escape to a Unicode code point one at
+    a time: a multi-byte UTF-8 character is written as one octal escape per
+    RAW BYTE (e.g. "\\302\\265" is the two bytes 0xC2 0xB5, together
+    spelling "µ"), and `chr()`-per-triplet would decode each byte as
+    its own Latin-1-shaped code point instead, corrupting it into two
+    mojibake characters."""
     if s is None or len(s) < 2 or not (s.startswith('"') and s.endswith('"')):
         return s
     inner = s[1:-1]
-    out = []
+    out = bytearray()
     i = 0
-    simple = {"n": "\n", "t": "\t", "r": "\r", "\\": "\\", '"': '"'}
+    simple = {"n": b"\n", "t": b"\t", "r": b"\r", "\\": b"\\", '"': b'"'}
     while i < len(inner):
         ch = inner[i]
         if ch == "\\" and i + 1 < len(inner):
             nxt = inner[i + 1]
             octal = inner[i + 1:i + 4]
             if len(octal) == 3 and all(c in "01234567" for c in octal):
-                out.append(chr(int(octal, 8)))
+                out.append(int(octal, 8))
                 i += 4
                 continue
             if nxt in simple:
-                out.append(simple[nxt])
+                out.extend(simple[nxt])
                 i += 2
                 continue
-        out.append(ch)
+        out.extend(ch.encode("utf-8"))
         i += 1
-    return "".join(out)
+    return out.decode("utf-8", errors="replace")
 
 
 def _new_worktree_record(path):
@@ -1157,7 +1165,19 @@ def _finish_worktree_record(cur, path_exists_fn):
         read_error = False
         oid = UNREADABLE
     else:
-        read_error = not cur["head_seen"] or head is None or not _FULL_HEX_RE.match(head or "")
+        # A genuine, complete Git record for a non-bare worktree always
+        # states EITHER `branch <ref>` OR `detached` -- Git never omits
+        # both. Neither present means the read was truncated or the format
+        # drifted mid-record, not that this worktree legitimately has no
+        # checkout state; treating it as fully readable would let
+        # bind_branch_occupancy silently confirm every OTHER branch as
+        # unoccupied from a list that might have concealed one of them
+        # right here (CodeRabbit, 2026-09-17).
+        incomplete_checkout_state = not cur["branch"] and not cur["detached"]
+        read_error = (
+            not cur["head_seen"] or head is None or not _FULL_HEX_RE.match(head or "")
+            or incomplete_checkout_state
+        )
         oid = head if (head and _FULL_HEX_RE.match(head)) else UNREADABLE
     return WorktreeInventoryRecord(
         path=cur["path"], oid=oid, branch=cur["branch"], is_main=False,
@@ -1256,16 +1276,35 @@ def bind_branch_occupancy(branch_records, worktree_records):
     still names this branch) even though the path is currently missing; a
     caller that wants to treat "worktree gone from disk" differently from
     "worktree present and checked out" can cross-reference `path_exists` on
-    the same worktree record this occupancy came from."""
+    the same worktree record this occupancy came from.
+
+    If ANY record in an otherwise-obtained list carries `read_error=True`,
+    every branch that no CLEAN record actually claims is bound to
+    UNREADABLE rather than None: a corrupted or truncated record's own
+    branch identity is exactly the unknown quantity, so we cannot rule out
+    that it was the very branch left unmatched. A branch a clean record DID
+    claim stays confirmed occupied regardless -- a positive match from
+    good data is trustworthy even alongside one bad record elsewhere in
+    the same list (CodeRabbit, 2026-09-17)."""
     if worktree_records is None or worktree_records is UNREADABLE:
         return [b._replace(occupied_by=UNREADABLE) for b in (branch_records or [])]
     occupants = {}
+    any_unreadable = False
     for wt in worktree_records:
-        if wt.branch and not wt.detached and not wt.read_error:
+        if wt.read_error:
+            any_unreadable = True
+            continue
+        if wt.branch and not wt.detached:
             occupants.setdefault(wt.branch, wt.path)
     out = []
     for b in branch_records or []:
-        out.append(b._replace(occupied_by=occupants.get(b.name)))
+        if b.name in occupants:
+            occupied = occupants[b.name]
+        elif any_unreadable:
+            occupied = UNREADABLE
+        else:
+            occupied = None
+        out.append(b._replace(occupied_by=occupied))
     return out
 
 
