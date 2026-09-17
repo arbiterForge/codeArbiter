@@ -12,6 +12,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 - Add the disabled structured-artifact foundation, Linux and Windows recovery support, verified native bridges, descriptor-relative Unix installation, and generated Codex workflow guidance without adding a public command, agent, persistent tool, top-level skill, or eagerly loaded schema surface. The Windows developer installer and HTML farm dispatch remain fail-closed pending their respective release/integration qualification.
 
+## [0.10.9] - 2026-09-17
+
+### Fixed
+
+- `core/pysrc/_cleanuplib.py`: closes 6 blocking and several high-severity gaps an independent review found in the T-03/T-04/T-05 cleanup-framework backend against ADR-0036's supersession gate (verdict: NO-GO on the backend as it stood). `execute_branch_deletion` now requires a `ProofResult` and refuses an unproven target outright; the force/atomic-delete path is unlocked only by `proof.method == "pr_delivery"`, never a caller-supplied flag; `evaluate_merge_proof`'s ancestry path is now repository-qualified; worktree occupancy is revalidated fresh at every mutation attempt; a claimed-successful delete is reverified before being recorded "applied"; a read failure is never folded into "branch confirmed absent"; the journal's retention bound now exceeds the proposal's own named 40-branch batch example. The journal file is renamed `.cleanup-journal.json` (was `.resources.json`). Still not wired into any live cleanup route -- that remains T-06's job.
+
 ## [0.10.8] - 2026-09-17
 
 ### Added
