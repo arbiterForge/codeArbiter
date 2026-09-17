@@ -569,8 +569,12 @@ def scope_covers(scope, target):
     so a same-named resource of the wrong kind (a task-archive candidate
     sharing a branch's name) is never covered by a branch-only scope. A
     scope with no bound members yet (an unaccepted proposal) covers
-    nothing, and neither does no scope at all."""
-    if scope is None or scope.members is None:
+    nothing, and neither does no scope at all. A Scope with no
+    authorization source covers nothing either, even if members happens
+    to already be populated (e.g. a displayed-but-not-yet-accepted
+    snapshot) -- source is the actual authorization signal, and checking
+    members alone would let a bound-but-unauthorized Scope slip through."""
+    if scope is None or scope.source is None or scope.members is None:
         return False
     if target.kind not in scope.resource_kinds:
         return False

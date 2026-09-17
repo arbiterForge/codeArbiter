@@ -67,6 +67,18 @@ class TestScopeCovers(unittest.TestCase):
         )
         self.assertFalse(cleanuplib.scope_covers(scope, _branch("late-discovered")))
 
+    def test_a_scope_with_no_authorization_source_covers_nothing_even_with_bound_members(self):
+        # source=None means the proposal is not yet authorized, so it must
+        # cover nothing -- regardless of whether members happens to already
+        # be populated (e.g. a displayed-but-not-yet-accepted snapshot).
+        # Checking members alone would let a bound-but-unauthorized Scope
+        # slip through.
+        scope = cleanuplib.Scope(
+            source=None, resource_kinds=frozenset({"branch"}),
+            members=frozenset({"feature"}), repository_id="arbiterForge/codeArbiter",
+        )
+        self.assertFalse(cleanuplib.scope_covers(scope, _branch("feature")))
+
     def test_a_not_yet_enumerated_proposal_scope_covers_nothing(self):
         # A Scope with source set but members still None represents "offered,
         # not yet bound to a concrete snapshot" -- nothing is authorized yet.
