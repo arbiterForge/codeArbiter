@@ -23,6 +23,36 @@ sys.path.insert(0, str(REPO / "core" / "pysrc"))
 from _artifactlib import ArtifactClient, ArtifactError  # noqa: E402
 
 
+def physical_test_directory(path: str | Path) -> Path:
+    """Return the physical spelling of an existing test-owned directory.
+
+    Hosted macOS and Windows runners can expose their temporary directory below
+    a symlink, junction, or short-name alias. Production correctly rejects those
+    spellings, so fixtures resolve only the temporary directories they own.
+    """
+    return Path(os.path.realpath(Path(path).absolute())).resolve(strict=True)
+
+
+class PhysicalTestDirectoryTest(unittest.TestCase):
+    def test_resolves_a_test_owned_linked_ancestor(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="ca-artifact-physical-root-") as temporary:
+            base = Path(temporary)
+            physical = base / "physical"
+            linked = base / "linked"
+            physical.mkdir()
+            if os.name == "nt":
+                made = subprocess.run(
+                    ["cmd", "/d", "/c", "mklink", "/J", str(linked), str(physical)],
+                    text=True,
+                    capture_output=True,
+                )
+                if made.returncode != 0:
+                    self.skipTest(f"junction creation unavailable: {made.stderr.strip()}")
+            else:
+                linked.symlink_to(physical, target_is_directory=True)
+            self.assertTrue(os.path.samefile(physical_test_directory(linked), physical))
+
+
 def canonical_hash(value: object) -> str:
     raw = json.dumps(
         value,
@@ -161,7 +191,7 @@ def build_installation(
     temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-authoring-install-")
     if owner is not None:
         owner.addCleanup(temporary.cleanup)
-    installation = Path(temporary.name) / "payload"
+    installation = physical_test_directory(temporary.name) / "payload"
     subprocess.run(
         [sys.executable, str(REPO / "tools" / "build-artifacts.py"), "--output", str(installation)],
         cwd=REPO,
@@ -368,7 +398,7 @@ class ArtifactAuthoringTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-authoring-")
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name) / "repo"
+        self.root = physical_test_directory(self.temporary.name) / "repo"
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
 

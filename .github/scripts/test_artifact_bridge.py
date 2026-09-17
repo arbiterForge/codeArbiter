@@ -15,6 +15,7 @@ from unittest import mock
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO/"core/pysrc"))
 from _artifactlib import ArtifactClient, ArtifactError, checked_spec_index
+from test_artifact_authoring import physical_test_directory
 INSTALLATION = None
 
 def setUpModule():
@@ -25,7 +26,7 @@ def setUpModule():
     else:
         temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-test-install-")
         unittest.addModuleCleanup(temporary.cleanup)
-        INSTALLATION = Path(temporary.name)/"payload"
+        INSTALLATION = physical_test_directory(temporary.name)/"payload"
         subprocess.run([sys.executable,str(REPO/"tools/build-artifacts.py"),
                         "--output",str(INSTALLATION)],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
@@ -33,7 +34,8 @@ def setUpModule():
 class BridgeTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
-        self.root=Path(self.tmp.name)/"repo";self.root.mkdir()
+        self.test_directory=physical_test_directory(self.tmp.name)
+        self.root=self.test_directory/"repo";self.root.mkdir()
         self.client=ArtifactClient(self.root,INSTALLATION)
 
     def create(self):
@@ -57,7 +59,7 @@ class BridgeTests(unittest.TestCase):
         with self.assertRaises(ArtifactError):self.client.call("create",{"force":True})
 
     def test_changed_installed_binary(self):
-        dest=Path(self.tmp.name)/"installation";shutil.copytree(INSTALLATION,dest)
+        dest=self.test_directory/"installation";shutil.copytree(INSTALLATION,dest)
         system={"Linux":"linux","Darwin":"darwin","Windows":"windows"}[platform.system()]
         arch={"x86_64":"amd64","amd64":"amd64","aarch64":"arm64","arm64":"arm64"}[platform.machine().lower()]
         manifest=json.loads((dest/"release.json").read_text());name=manifest["binaries"][system+"/"+arch]["file"]
@@ -66,13 +68,13 @@ class BridgeTests(unittest.TestCase):
         self.assertEqual(got.exception.code,"PACKAGE_INTEGRITY")
 
     def test_symlink_binary_rejected(self):
-        dest=Path(self.tmp.name)/"installation";dest.mkdir()
+        dest=self.test_directory/"installation";dest.mkdir()
         shutil.copy(INSTALLATION/"release.json",dest/"release.json")
         for p in INSTALLATION.glob("ca-artifact-*"):(dest/p.name).symlink_to(p)
         with self.assertRaises(ArtifactError):ArtifactClient(self.root,dest).call("capabilities")
 
     def test_linked_or_reparse_installation_directory_rejected(self):
-        linked=Path(self.tmp.name)/"linked-installation"
+        linked=self.test_directory/"linked-installation"
         if os.name == "nt":
             subprocess.run(["cmd","/c","mklink","/J",str(linked),str(INSTALLATION)],
                            check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)

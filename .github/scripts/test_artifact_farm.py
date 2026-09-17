@@ -22,6 +22,7 @@ from test_artifact_authoring import (
     WorkflowHarness,
     build_installation,
     canonical_hash,
+    physical_test_directory,
 )
 
 
@@ -51,7 +52,8 @@ class ArtifactFarmTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-farm-")
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name) / "repo"
+        self.test_directory = physical_test_directory(self.temporary.name)
+        self.root = self.test_directory / "repo"
         self.root.mkdir()
         self.harness = WorkflowHarness(self.root, self.installation)
         self.harness.create_pair()
@@ -188,7 +190,7 @@ class ArtifactFarmTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, "STALE_EVIDENCE")
 
     def test_real_dispatcher_blocks_unbound_html_before_side_effects(self) -> None:
-        plugin = Path(self.temporary.name) / "isolated-plugin"
+        plugin = self.test_directory / "isolated-plugin"
         (plugin / "tools").mkdir(parents=True)
         shutil.copy2(REPO / "plugins" / "ca" / "tools" / "farm.js", plugin / "tools" / "farm.js")
         shutil.copytree(self.installation, plugin / "helpers" / "artifacts")
@@ -209,7 +211,7 @@ class ArtifactFarmTest(unittest.TestCase):
 
     def test_dispatcher_rejects_projection_bytes_other_than_the_parsed_bytes(self) -> None:
         projected = self.project()
-        plugin = Path(self.temporary.name) / "isolated-plugin"
+        plugin = self.test_directory / "isolated-plugin"
         (plugin / "tools").mkdir(parents=True)
         shutil.copy2(REPO / "plugins" / "ca" / "tools" / "farm.js", plugin / "tools" / "farm.js")
         shutil.copytree(self.installation, plugin / "helpers" / "artifacts")
@@ -238,8 +240,8 @@ import(process.argv[1])
         self.assertFalse((self.root / ".farm").exists())
 
     def test_dispatcher_rejects_linked_plugin_installation_ancestors(self) -> None:
-        real_plugin = Path(self.temporary.name) / "real-plugin"
-        linked_plugin = Path(self.temporary.name) / "linked-plugin"
+        real_plugin = self.test_directory / "real-plugin"
+        linked_plugin = self.test_directory / "linked-plugin"
         (real_plugin / "tools").mkdir(parents=True)
         shutil.copy2(REPO / "plugins" / "ca" / "tools" / "farm.js", real_plugin / "tools" / "farm.js")
         shutil.copytree(self.installation, real_plugin / "helpers" / "artifacts")

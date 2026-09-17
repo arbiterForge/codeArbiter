@@ -12,6 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+### Fixed
+
+- Structured-artifact Python bridge and farm fixtures now resolve only their
+  test-owned temporary directories to physical paths, matching the existing Go
+  fixture rule so hosted macOS symlink roots and Windows path aliases do not
+  masquerade as production containment failures.
+
 ## [2.19.0] - 2026-09-16
 
 ### Added
