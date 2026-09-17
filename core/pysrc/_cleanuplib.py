@@ -30,6 +30,11 @@ Public API:
   executor (guard_branch_deletion / execute_branch_deletion). Scope: branch
   deletion only -- worktree-removal guarding is a distinct, not-yet-built
   increment sharing this same journal/executor pattern.
+- The T-02 slice below: the shared decision and interaction vocabulary
+  (Scope, Target, Decision, make_decision, scope_covers,
+  required_confirmation_count) that T-06's live routing will consume.
+  ProofResult above already serves as the "proof outcome" type this layer
+  wraps; T-02 adds no second proof representation.
 """
 
 import json
@@ -488,3 +493,119 @@ def execute_branch_deletion(root, branch, expected_oid, current_branch, default_
         ok, detail = delete_fn(branch, True, expected_oid)
 
     return _finish("applied" if ok else "failed", detail)
+
+
+# ---------------------------------------------------------------------------
+# T-02: shared decision and interaction typed objects.
+#
+# Pure policy-decision vocabulary: how many confirmations an operation needs
+# (authorization), whether a scope covers a given target (eligibility-of-
+# scope, not eligibility-of-content -- that's ProofResult/guard_branch_
+# deletion's job), and one typed outcome per target. Consumed by T-06's live
+# routing and by shared/host orchestration tests alike; this module makes no
+# orchestration decisions and calls no git/gh itself.
+# ---------------------------------------------------------------------------
+
+AUTHORIZATION_SOURCES = frozenset({
+    # AC-01: an explicit instruction that already names a bounded operation.
+    "direct_instruction",
+    # The interaction model's snapshot-bind row: a reply that accepts (all
+    # or a subset of) an already-displayed enumerated proposal.
+    "snapshot_reply",
+    # AC-04: an accepted work lifecycle's own disposable housekeeping.
+    "accepted_lifecycle",
+})
+
+RESOURCE_KINDS = frozenset({"branch", "worktree", "file", "directory"})
+
+DECISION_OUTCOMES = frozenset({
+    "eligible",      # proven and unblocked; may proceed
+    "excluded",      # protected, occupied, or outside the scope's kinds -- never a loss
+    "unique_loss",   # eligible for removal, but discards unique work (AC-12)
+    "unknown",       # cannot be determined; blocks only itself and dependants (AC-05)
+    "error",         # invalid identity or corrupt state; blocks the whole operation (AC-05)
+})
+
+Scope = namedtuple("Scope", ["source", "resource_kinds", "members", "repository_id"])
+# source: one of AUTHORIZATION_SOURCES, or None for a not-yet-authorized
+#   proposal (nothing is covered until the user responds).
+# resource_kinds: frozenset naming EVERY resource kind this scope covers
+#   (AC-03: composite scopes name their resource kinds and members --
+#   there is no implicit "and anything else that looks related").
+# members: frozenset of exact target locators bound at authorization time,
+#   or None when offered but not yet enumerated/accepted. A later-
+#   discovered target is never silently added to an existing operation.
+# repository_id: the exact repository identity this authorization applies
+#   to (AC-05: an invalid repository identity blocks the whole operation).
+
+Target = namedtuple("Target", ["kind", "locator", "expected_identity"])
+# kind: a RESOURCE_KINDS member, or an out-of-band kind (e.g. "task_archive")
+#   that a scope may legitimately never cover.
+# locator: the exact name/path identifying this target.
+# expected_identity: an oid/fingerprint bound at inspection time, or None
+#   when identity is not yet resolved.
+
+Decision = namedtuple("Decision", ["target", "outcome", "reason", "blocks_operation"])
+
+
+def make_decision(target, outcome, reason):
+    """One typed outcome for one target (AC-05, AC-12). `reason` is always a
+    specific, human-readable string -- callers never see a bare outcome
+    without why. `blocks_operation` is True only for "error": an unknown,
+    excluded, or unique-loss decision blocks only its own target and
+    dependants, never the whole operation."""
+    if outcome not in DECISION_OUTCOMES:
+        raise ValueError("unrecognized decision outcome %r" % outcome)
+    return Decision(
+        target=target, outcome=outcome, reason=reason,
+        blocks_operation=(outcome == "error"),
+    )
+
+
+def scope_covers(scope, target):
+    """AC-03 (keep the scope closed): a target is covered only when its
+    resource kind is one the scope explicitly names AND its locator is in
+    the scope's exact bound member set. Kind is checked before membership,
+    so a same-named resource of the wrong kind (a task-archive candidate
+    sharing a branch's name) is never covered by a branch-only scope. A
+    scope with no bound members yet (an unaccepted proposal) covers
+    nothing, and neither does no scope at all. A Scope with no
+    authorization source covers nothing either, even if members happens
+    to already be populated (e.g. a displayed-but-not-yet-accepted
+    snapshot) -- source is the actual authorization signal, and checking
+    members alone would let a bound-but-unauthorized Scope slip through."""
+    if scope is None or scope.source is None or scope.members is None:
+        return False
+    if target.kind not in scope.resource_kinds:
+        return False
+    return target.locator in scope.members
+
+
+def required_confirmation_count(scope, has_unresolved_unique_loss=False):
+    """Pure prompt-budget classifier (AC-01, AC-02, AC-04, AC-12, AC-26):
+    how many NEW confirmation questions this scope's operation needs, based
+    only on its authorization source -- never per-target, never per-branch.
+
+    - scope=None (a proposal not yet authorized, e.g. a generic standup
+      sweep) needs exactly one batch offer (AC-02): "at most 1 per
+      proposed scope," not zero and not one per candidate.
+    - Each AUTHORIZATION_SOURCES member is already self-authorizing for
+      the members it binds (AC-01's direct instruction, the snapshot-bind
+      reply, AC-04's accepted lifecycle): zero further questions.
+    - A declined proposal is represented the same way as one never made
+      (scope stays None) -- there is no per-item prompt primitive here for
+      a decline to fall into; re-offering the same declined proposal is an
+      orchestration decision, not this function's job to inflate.
+    - An unresolved unique loss (AC-12) always adds exactly one further
+      question on top of any authorization source, because routine
+      cleanup authorization never covers a unique loss by itself. The
+      flag is boolean, not a count: multiple named losses still share one
+      explicit decision, never one prompt each.
+    """
+    if scope is None or scope.source is None:
+        base = 1
+    elif scope.source in AUTHORIZATION_SOURCES:
+        base = 0
+    else:
+        raise ValueError("unrecognized authorization source %r" % scope.source)
+    return base + (1 if has_unresolved_unique_loss else 0)
