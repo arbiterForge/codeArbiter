@@ -4,6 +4,7 @@ package store
 
 import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,7 +38,7 @@ func TestProcessDeathRecovery(t *testing.T) {
 	for _, point := range []string{"after-stage-1", "after-journal", "after-replace-0", "after-replace-1"} {
 		for _, mode := range []string{"complete", "rollback"} {
 			t.Run(point+"/"+mode, func(t *testing.T) {
-				root := t.TempDir()
+				root := testutil.Root(t)
 				os.WriteFile(filepath.Join(root, "a.txt"), []byte("old-a"), 0644)
 				os.WriteFile(filepath.Join(root, "b.txt"), []byte("old-b"), 0644)
 				command := exec.Command(os.Args[0], "-test.run=^TestProcessDeathRecovery$")

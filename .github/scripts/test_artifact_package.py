@@ -23,9 +23,9 @@ INSTALLATION = None
 INSTALLER = None
 PACKAGER = None
 BUILDER = None
-TRUSTED_SOURCE_COMMIT = "a" * 40
-TRUSTED_WORKFLOW_RUN = "123456789"
-TRUSTED_WORKFLOW = ".github/workflows/ci.yml"
+FIXTURE_SOURCE_COMMIT = "a" * 40
+FIXTURE_WORKFLOW_RUN = "123456789"
+FIXTURE_WORKFLOW = ".github/workflows/ci.yml"
 
 
 def setUpModule():
@@ -65,9 +65,9 @@ class PackageTests(unittest.TestCase):
         platform_name, entry = next(iter(manifest["binaries"].items()))
         receipt = {
             "format": "codearbiter.artifact-qualification/0.1.0",
-            "source_commit": TRUSTED_SOURCE_COMMIT,
-            "workflow": TRUSTED_WORKFLOW,
-            "run_id": TRUSTED_WORKFLOW_RUN,
+            "source_commit": FIXTURE_SOURCE_COMMIT,
+            "workflow": FIXTURE_WORKFLOW,
+            "run_id": FIXTURE_WORKFLOW_RUN,
             "job": "artifact-engine",
             "platform": platform_name,
             "binary_sha256": entry["sha256"],
@@ -91,9 +91,9 @@ class PackageTests(unittest.TestCase):
         return PACKAGER.stage_artifact_host_payloads(
             candidates=candidates,
             qualification_receipts=qualification_receipts or [self.qualification(candidates[0])],
-            trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-            trusted_workflow=TRUSTED_WORKFLOW,
-            trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+            trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+            trusted_workflow=FIXTURE_WORKFLOW,
+            trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
             output=output or (self.base / "stage"),
             required_platforms=required_platforms or [native_platform],
             repo=REPO,
@@ -334,9 +334,9 @@ class PackageTests(unittest.TestCase):
                 candidates=[INSTALLATION, INSTALLATION],
                 qualification_receipts=[self.qualification(), self.qualification(
                     destination=self.base / "qualification-duplicate.json")],
-                trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-                trusted_workflow=TRUSTED_WORKFLOW,
-                trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+                trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                trusted_workflow=FIXTURE_WORKFLOW,
+                trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                 output=self.base / "duplicate", required_platforms=[native_platform], repo=REPO)
 
         mismatched = self.base / "mismatched"
@@ -350,9 +350,9 @@ class PackageTests(unittest.TestCase):
                 candidates=[INSTALLATION, mismatched],
                 qualification_receipts=[self.qualification(), self.qualification(
                     mismatched, destination=self.base / "qualification-mismatch.json")],
-                trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-                trusted_workflow=TRUSTED_WORKFLOW,
-                trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+                trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                trusted_workflow=FIXTURE_WORKFLOW,
+                trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                 output=self.base / "mismatch", required_platforms=[native_platform], repo=REPO)
 
     def test_release_packaging_is_create_only_and_rejects_linked_output(self):
@@ -447,9 +447,9 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "qualification receipt"):
             PACKAGER.stage_artifact_host_payloads(
                 candidates=[INSTALLATION], qualification_receipts=[],
-                trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-                trusted_workflow=TRUSTED_WORKFLOW,
-                trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+                trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                trusted_workflow=FIXTURE_WORKFLOW,
+                trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                 output=self.base / "unqualified", required_platforms=[native_platform], repo=REPO)
 
     def test_magic_only_fake_is_rejected_even_with_matching_receipt(self):
@@ -468,9 +468,9 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "declared native architecture"):
             PACKAGER.stage_artifact_host_payloads(
                 candidates=[fake], qualification_receipts=[receipt],
-                trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-                trusted_workflow=TRUSTED_WORKFLOW,
-                trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+                trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                trusted_workflow=FIXTURE_WORKFLOW,
+                trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                 output=self.base / "fake-stage", required_platforms=[native_platform], repo=REPO)
 
     def test_qualification_receipt_requires_protected_exact_host_ci(self):
@@ -485,14 +485,14 @@ class PackageTests(unittest.TestCase):
         goos, goarch = native_platform.split("/", 1)
         environment = {
             "GITHUB_ACTIONS": "true",
-            "GITHUB_SHA": TRUSTED_SOURCE_COMMIT,
-            "GITHUB_RUN_ID": TRUSTED_WORKFLOW_RUN,
-            "GITHUB_WORKFLOW_REF": f"arbiterForge/codeArbiter/{TRUSTED_WORKFLOW}@refs/heads/main",
+            "GITHUB_SHA": FIXTURE_SOURCE_COMMIT,
+            "GITHUB_RUN_ID": FIXTURE_WORKFLOW_RUN,
+            "GITHUB_WORKFLOW_REF": f"arbiterForge/codeArbiter/{FIXTURE_WORKFLOW}@refs/heads/main",
             "GITHUB_JOB": "artifact-engine",
         }
         def checked_output(args, **_kwargs):
             if args[:3] == ["git", "rev-parse", "HEAD"]:
-                return TRUSTED_SOURCE_COMMIT + "\n"
+                return FIXTURE_SOURCE_COMMIT + "\n"
             if args == ["go", "env", "GOOS"]:
                 return goos + "\n"
             if args == ["go", "env", "GOARCH"]:
@@ -502,7 +502,7 @@ class PackageTests(unittest.TestCase):
                 mock.patch.object(BUILDER.subprocess, "check_output", side_effect=checked_output):
             BUILDER.write_qualification(INSTALLATION, destination)
         receipt = json.loads(destination.read_text(encoding="utf-8"))
-        self.assertEqual(receipt["source_commit"], TRUSTED_SOURCE_COMMIT)
+        self.assertEqual(receipt["source_commit"], FIXTURE_SOURCE_COMMIT)
         self.assertEqual(receipt["binary_sha256"], next(iter(manifest["binaries"].values()))["sha256"])
 
     def test_empty_or_malformed_artifact_version_is_rejected(self):
@@ -517,9 +517,9 @@ class PackageTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "supported artifact version"):
                 PACKAGER.stage_artifact_host_payloads(
                     candidates=[candidate], qualification_receipts=[receipt],
-                    trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-                    trusted_workflow=TRUSTED_WORKFLOW,
-                    trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+                    trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                    trusted_workflow=FIXTURE_WORKFLOW,
+                    trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                     output=self.base / f"bad-version-stage-{index}",
                     required_platforms=[next(iter(release["binaries"]))], repo=REPO)
 
@@ -550,9 +550,9 @@ class PackageTests(unittest.TestCase):
                     ValueError, "qualification receipt"):
                 PACKAGER.stage_artifact_host_payloads(
                     candidates=[INSTALLATION], qualification_receipts=[path],
-                    trusted_source_commit=TRUSTED_SOURCE_COMMIT,
-                    trusted_workflow=TRUSTED_WORKFLOW,
-                    trusted_workflow_run=TRUSTED_WORKFLOW_RUN,
+                    trusted_source_commit=FIXTURE_SOURCE_COMMIT,
+                    trusted_workflow=FIXTURE_WORKFLOW,
+                    trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                     output=self.base / f"tampered-{index}",
                     required_platforms=[native_platform], repo=REPO)
 

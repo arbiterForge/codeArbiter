@@ -24,6 +24,18 @@ func M(v any) map[string]any { m, _ := v.(map[string]any); return m }
 func A(v any) []any          { a, _ := v.([]any); return a }
 func S(v any) string         { s, _ := v.(string); return s }
 func I(v any) int64          { i, _ := v.(int64); return i }
+func NativeInt(v any) (int, bool) {
+	i, ok := v.(int64)
+	if !ok {
+		return 0, false
+	}
+	max := int64(^uint(0) >> 1)
+	min := -max - 1
+	if i < min || i > max {
+		return 0, false
+	}
+	return int(i), true
+}
 func Strings(v any) []string {
 	out := []string{}
 	for _, x := range A(v) {

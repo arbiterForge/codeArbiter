@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "owner": "codeArbiter artifact-engine maintainers",
-  "baseline_revision": "f3eb8a658c5f3fed37cc4f4f7eb3c3f0644ef293",
+  "baseline_revision": "4c1fe026d2eb26ea842308d312f7f1250d835a51",
   "evidence_boundary": "This inventory and its gates establish surface and consumer accounting only. They do not prove runtime integration, host authority, packaging, release qualification, or default-rollout readiness.",
   "rollout": {
     "legacy_markdown_default": true,

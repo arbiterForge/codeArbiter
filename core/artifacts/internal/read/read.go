@@ -226,8 +226,9 @@ func Page(f *store.FS, c *repository.Catalog, d *model.Document, id, cursor stri
 		if model.S(p["vector_sha256"]) != sel.VectorHash || model.S(p["manifest_sha256"]) != sel.ManifestHash {
 			return nil, fault.New("STALE_CURSOR", "a contributing artifact or receipt changed")
 		}
-		offset = int(model.I(p["offset"]))
-		if offset < 0 || offset >= len(sel.Items) {
+		var ok bool
+		offset, ok = model.NativeInt(p["offset"])
+		if !ok || offset < 0 || offset >= len(sel.Items) {
 			return nil, fault.New("INVALID_CURSOR", "cursor offset is outside selection")
 		}
 	}

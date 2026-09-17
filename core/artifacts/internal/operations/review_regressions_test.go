@@ -10,6 +10,7 @@ import (
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
 )
 
@@ -26,7 +27,7 @@ func TestReviewOutlineNeverReturnsNonAdvancingPage(t *testing.T) {
 func TestReviewSnapshotHonorsExcludedLinkWithoutFollowingIt(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
-	outside := t.TempDir()
+	outside := testutil.Root(t)
 	if err := os.WriteFile(filepath.Join(outside, "private"), []byte("outside must not be read"), 0600); err != nil {
 		t.Fatal(err)
 	}

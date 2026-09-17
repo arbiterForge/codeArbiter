@@ -14,6 +14,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/symbol"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
 )
 
@@ -74,7 +75,7 @@ func resolve(t *testing.T, root, id string) (*model.Document, string) {
 
 func createCurrentPair(t *testing.T, specSource, planSource sourceGolden) (golden, golden) {
 	t.Helper()
-	root := t.TempDir()
+	root := testutil.Root(t)
 	create := func(operationID string, source map[string]any, kind, specID string) {
 		normative := model.M(source["normative"])
 		request := map[string]any{

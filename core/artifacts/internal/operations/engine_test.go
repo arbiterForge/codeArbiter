@@ -26,7 +26,7 @@ type harness struct {
 	n    int
 }
 
-func newHarness(t *testing.T) *harness { t.Helper(); return &harness{t: t, root: t.TempDir()} }
+func newHarness(t *testing.T) *harness { t.Helper(); return &harness{t: t, root: testutil.Root(t)} }
 func (h *harness) request(op string, r object) (any, error) {
 	h.t.Helper()
 	if r == nil {
@@ -241,6 +241,19 @@ func TestArtifactLifecycle(t *testing.T) {
 	}
 	if h.doc("PLAN-EXAMPLE").NormHash() != before || h.input() != input {
 		t.Fatal("progress invalidated normative/input identity")
+	}
+}
+func TestOptionalOffsetsDefaultToZero(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+
+	outline := h.run("outline", object{"artifact_id": "SPEC-EXAMPLE", "budget": int64(4096)})
+	if model.I(outline["offset"]) != 0 {
+		t.Fatalf("outline without an offset did not start at zero: %v", outline["offset"])
+	}
+	index := h.run("index", object{"budget": int64(4096)})
+	if model.I(index["offset"]) != 0 {
+		t.Fatalf("index without an offset did not start at zero: %v", index["offset"])
 	}
 }
 func TestTaskAcceptanceEvidence(t *testing.T) {

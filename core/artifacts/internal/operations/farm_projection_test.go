@@ -24,7 +24,7 @@ type farmHarness struct {
 
 func newFarmHarness(t *testing.T) *farmHarness {
 	t.Helper()
-	return &farmHarness{t: t, root: t.TempDir()}
+	return &farmHarness{t: t, root: testutil.Root(t)}
 }
 func (h *farmHarness) next() string { h.n++; return fmt.Sprintf("farm-fixture-%04d", h.n) }
 func (h *farmHarness) request(op string, r object) (any, error) {

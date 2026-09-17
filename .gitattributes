@@ -10,6 +10,10 @@ hooks/* text eol=lf
 # Coverage provenance compares this shared Pi input to its exact Git bytes.
 /core/hosts.json text eol=lf
 
+# The native artifact engine hash-binds reviewed fixtures and legacy bytes.
+# Preserve those exact bytes on Windows as well as Unix checkouts.
+core/artifacts/** text eol=lf
+
 # Reviewed Pi host graphs are hash-bound byte-for-byte and must survive a
 # Windows checkout without newline conversion.
 .github/fixtures/pi-hosts/**/*.json text eol=lf

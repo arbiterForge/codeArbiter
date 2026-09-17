@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,7 +17,7 @@ import (
 
 func fs(t *testing.T) *FS {
 	t.Helper()
-	f, e := Open(t.TempDir())
+	f, e := Open(testutil.Root(t))
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -118,7 +119,7 @@ func TestRecoveryConflictPreservesExternalEdit(t *testing.T) {
 }
 func TestPathEscapeAndSymlink(t *testing.T) {
 	f := fs(t)
-	outside := t.TempDir()
+	outside := testutil.Root(t)
 	os.WriteFile(filepath.Join(outside, "secret"), []byte("secret"), 0600)
 	if e := os.Symlink(outside, filepath.Join(f.Root, "escape")); e != nil {
 		t.Fatal(e)

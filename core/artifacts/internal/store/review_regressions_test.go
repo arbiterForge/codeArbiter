@@ -6,12 +6,13 @@ import (
 	"errors"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"testing"
 	"time"
 )
 
 func TestReviewRetryOfRolledBackWriteIsNotSuccess(t *testing.T) {
-	f, err := Open(t.TempDir())
+	f, err := Open(testutil.Root(t))
 	if err != nil {
 		t.Fatal(err)
 	}

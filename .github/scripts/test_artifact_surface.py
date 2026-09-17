@@ -14,7 +14,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 INVENTORY_PATH = ROOT / "docs" / "artifacts" / "consumer-inventory.json"
-POLICY_BASELINE_REVISION = "f3eb8a658c5f3fed37cc4f4f7eb3c3f0644ef293"
+POLICY_BASELINE_REVISION = "4c1fe026d2eb26ea842308d312f7f1250d835a51"
 POLICY_STARTUP_FIXTURES = (
     "core/surface/arbiter.md",
     "core/pysrc/session-start.py",
@@ -158,6 +158,25 @@ class ArtifactSurfaceTest(unittest.TestCase):
         self.assertEqual(
             surface_delta(historical, surface_at_revision()),
             [],
+        )
+
+    def test_policy_baseline_is_in_candidate_history(self) -> None:
+        result = subprocess.run(
+            [
+                "git",
+                "merge-base",
+                "--is-ancestor",
+                POLICY_BASELINE_REVISION,
+                "HEAD",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(
+            result.returncode,
+            0,
+            "policy baseline must be reachable from the candidate history",
         )
 
     def test_added_spec_command_is_named(self) -> None:

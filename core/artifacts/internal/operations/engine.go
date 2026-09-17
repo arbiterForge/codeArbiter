@@ -134,7 +134,11 @@ func Run(root, op string, input object) (any, error) {
 	}
 	budget := reads.DefaultBudget
 	if b := model.I(r["budget"]); b != 0 {
-		budget = int(b)
+		var ok bool
+		budget, ok = model.NativeInt(b)
+		if !ok {
+			return nil, fault.New("INVALID_BUDGET", "response budget is outside the native integer range")
+		}
 	}
 	if op == "index" {
 		return engine.index(r, budget)
@@ -166,7 +170,10 @@ func Run(root, op string, input object) (any, error) {
 		}
 		return reads.Page(f, c, d, model.S(r["symbol"]), model.S(r["cursor"]), budget)
 	case "outline":
-		offset := int(model.I(r["offset"]))
+		offset, ok := model.NativeInt(model.I(r["offset"]))
+		if !ok {
+			return nil, fault.New("INVALID_OFFSET", "outline offset is outside the native integer range")
+		}
 		if offset > 0 && model.S(r["model_sha256"]) != d.Hash() {
 			return nil, fault.New("STALE_CURSOR", "outline continuation requires the same model identity")
 		}
@@ -281,7 +288,10 @@ func (e *Engine) index(r object, budget int) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	offset := int(model.I(r["offset"]))
+	offset, ok := model.NativeInt(model.I(r["offset"]))
+	if !ok {
+		return nil, fault.New("INVALID_OFFSET", "index offset is outside the native integer range")
+	}
 	if offset < 0 || offset > len(c.Order) {
 		return nil, fault.New("INVALID_OFFSET", "index offset is outside the catalog")
 	}

@@ -71,8 +71,9 @@ func (e *Engine) migration(r object) ([]migrationItem, object, error) {
 		}
 		for _, v := range model.A(item["mappings"]) {
 			m := model.M(v)
-			a, b := int(model.I(m["start_line"])), int(model.I(m["end_line"]))
-			if a < 1 || b < a || b > len(lines) {
+			a, aok := model.NativeInt(m["start_line"])
+			b, bok := model.NativeInt(m["end_line"])
+			if !aok || !bok || a < 1 || b < a || b > len(lines) {
 				return nil, nil, fault.New("INVALID_LINE_MAPPING", "mapping range is outside the legacy source")
 			}
 			target := model.S(m["target"])
