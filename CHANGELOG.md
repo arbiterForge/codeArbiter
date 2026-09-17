@@ -16,12 +16,12 @@ predate the plugin rewrite and are grouped by date.
 
 ### Added
 
-- Make the qualified structured-artifact engine the fail-closed default for new
-  full-lane feature and sprint specification/plan pairs, with provenance-bound
-  native packages, exact-host cold-install qualification, installed-host
-  diagnostics, and serialized release/read-back gates. Existing Markdown pairs
-  remain authoritative, partial installs remain usable for legacy work, and the
-  HTML farm remains disabled pending its separate qualification.
+- Add provenance-bound structured-artifact native packages, exact-host
+  cold-install qualification, installed-host diagnostics, and serialized
+  release/read-back gates. New full-lane feature and sprint work remains
+  Markdown by default; typed HTML is available only as an explicitly requested,
+  fail-closed pilot, and the HTML farm remains disabled pending its separate
+  qualification.
 
 ## [2.20.2] - 2026-09-17
 
@@ -39,7 +39,8 @@ predate the plugin rewrite and are grouped by date.
 - The macOS Python bridge and farm dispatcher now launch a private ephemeral
   executable image written only from the already verified package descriptor,
   because macOS does not permit native execution through `/dev/fd`; Linux and
-  Windows pinning is unchanged and no PATH or repository fallback is introduced.
+  Windows pinning is
+  unchanged and no PATH or repository fallback is introduced.
 
 ## [2.20.1] - 2026-09-17
 

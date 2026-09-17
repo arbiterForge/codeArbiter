@@ -8,10 +8,11 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Added
 
-- Make qualified typed-HTML specifications and plans the fail-closed default
-  for new full-lane work, and publish the exact preassembled npm tarball only
-  from the native-qualified release cohort with cold-install and read-back
-  receipts. Existing Markdown work and partial Git-tag installs remain usable.
+- Publish the exact preassembled structured-artifact npm tarball only from the
+  native-qualified release cohort with cold-install and read-back receipts. New
+  full-lane work remains Markdown by default; typed HTML is available only as an
+  explicitly requested, fail-closed pilot, and partial Git-tag installs remain
+  usable.
 
 ## [0.13.2] - 2026-09-17
 

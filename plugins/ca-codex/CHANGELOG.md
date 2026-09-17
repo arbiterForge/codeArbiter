@@ -10,10 +10,10 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Added
 
-- Make qualified typed-HTML specifications and plans the fail-closed default
-  for new full-lane work, and ship the source-commit-bound Codex release archive
-  plus exact-host cold-install and read-back gates. Existing Markdown work stays
-  authoritative and repository-directory installs remain supported partial
+- Ship the source-commit-bound structured-artifact Codex release archive plus
+  exact-host cold-install and read-back gates. New full-lane work remains
+  Markdown by default; typed HTML is available only as an explicitly requested,
+  fail-closed pilot, and repository-directory installs remain supported partial
   installs when the native payload is absent.
 
 ## [0.12.3] - 2026-09-17
