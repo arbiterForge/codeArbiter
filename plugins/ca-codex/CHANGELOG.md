@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.12.3] - 2026-09-17
+
+### Fixed
+
+- `_hooklib.py`: `gate-events.log` no longer accumulates REMIND/WARN noise
+  (shared core/pysrc change, synced via `tools/sync-core.py`). See the root
+  `CHANGELOG.md` for full detail.
+
 ## [0.12.2] - 2026-09-17
 
 ### Fixed
