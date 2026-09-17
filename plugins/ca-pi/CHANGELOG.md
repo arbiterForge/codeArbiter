@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.2] - 2026-09-17
+
+### Fixed
+
+- `_hooklib.py`: `gate-events.log` no longer accumulates REMIND/WARN noise
+  (shared core/pysrc change, synced via `tools/sync-core.py`). See the root
+  `CHANGELOG.md` for full detail.
+
 ## [0.13.1] - 2026-09-17
 
 ### Fixed

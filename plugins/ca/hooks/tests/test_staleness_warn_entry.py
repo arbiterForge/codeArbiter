@@ -1,7 +1,8 @@
 """CONFIRM-09: prune-transcript.py's UserPromptSubmit entry point wires
 _hooklib.staleness_warning into a real WARN — via _hooklib.warn(), which is
-non-blocking and also writes the durable gate-events.log record
-(observability-001, #186), so the two features are proven together here.
+non-blocking and, since the 2026-09-17 scope-down of observability-001 (#186),
+stderr-only: only block() still persists to gate-events.log, so this WARN
+must leave no durable record at all.
 
 WARN-only contract: the hook-mode entry point (staleness_check / main())
 must NEVER raise and must NEVER change prune-transcript.py's hook-mode exit
@@ -79,22 +80,23 @@ class _Fixture(unittest.TestCase):
 
 
 class TestStalenessCheckFunction(_Fixture):
-    def test_stale_dangerous_mode_emits_a_warn_and_durable_record(self):
+    def test_stale_dangerous_mode_emits_a_stderr_warn_and_no_durable_record(self):
         _write_mode_marker(self.cad, {"sess-x": "dangerous"}, age_seconds=3600)
         buf = io.StringIO()
-        # _hooklib.warn()'s durable-sink half resolves its own root via
-        # project_root() (CLAUDE_PROJECT_DIR, else a git spawn) independently
-        # of the payload["cwd"] staleness_check reads its flow state from — as
-        # every production hook invocation does, pin it to the same repo.
+        # CLAUDE_PROJECT_DIR is still pinned to this repo: it is the root the
+        # sink WOULD resolve, so the negative assertion below rules out a
+        # write to the log this WARN could plausibly have reached — not
+        # merely one the resolver would have missed anyway.
         with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": self.root}):
             with mock.patch.object(sys, "stderr", buf):
                 pt.staleness_check(self.payload())
         self.assertIn("codeArbiter hook:", buf.getvalue())
         self.assertIn("CONFIRM-09", buf.getvalue())
-        with open(os.path.join(self.cad, "gate-events.log"), encoding="utf-8") as f:
-            log = f.read()
-        self.assertIn("WARN", log)
-        self.assertIn("CONFIRM-09", log)
+        # Scope-down (2026-09-17): a WARN is stderr-only. CONFIRM-09's
+        # completeness half was never keyed on gate-events.log — _STALE_FLOWS
+        # watches overrides.log / sprint-log.md — so nothing about this
+        # mechanism depends on the WARN persisting.
+        self.assertFalse(os.path.isfile(os.path.join(self.cad, "gate-events.log")))
 
     def test_stale_ops_mode_emits_a_warn_too(self):
         # AC-36 covers every non-arbiter mode, not just 'dangerous'.

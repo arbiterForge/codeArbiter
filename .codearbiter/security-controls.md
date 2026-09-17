@@ -580,12 +580,20 @@ flow has not appended its expected log line (`sprint-log.md` / `overrides.log`)
 within a bounded window — paired with the durable gate-events sink from
 `observability-001` (issue #186). It is a *warn*, not a hard gate: a missed write
 is surfaced, not blocked, keeping the integrity guards the sole true STOP.
-**Shipped in ca 2.8.11 (#186):** `_hooklib` `block()`/`remind()`/`warn()`
-best-effort append a structured line to `.codearbiter/gate-events.log` (fail-open
+**Shipped in ca 2.8.11 (#186), scoped down 2026-09-17:** `_hooklib` `block()`
+best-effort appends a structured line to `.codearbiter/gate-events.log` (fail-open
 — a locked/missing/unwritable log never changes a hook's exit code nor suppresses
 a BLOCK; the write is wrapped so no exception escapes into any of the 16 entry
-hooks), and `_hooklib.staleness_warning` surfaces stale active flows only through
-`warn()` (non-blocking by construction). `gate-events.log` is append-only —
+hooks). `remind()` and `warn()` are **not** persisted: they remain fail-open,
+non-blocking stderr-only nudges. A BLOCK is the kind with forensic value — it is
+the evidence for diagnosing a hook that misfired — whereas measured on a live
+repo REMIND/WARN were 76% of the log's lines, 60% of it one boilerplate reminder
+repeated verbatim, carrying the full cost of a git-tracked append-only artifact
+(two branches that merely touched it conflicted on landing) for no signal.
+`_hooklib.staleness_warning` still surfaces stale active flows only through
+`warn()` (non-blocking by construction); CONFIRM-09's completeness half is
+unaffected, since it watches `overrides.log` / `sprint-log.md`, never
+`gate-events.log`. `gate-events.log` is append-only —
 added to `AUDIT_LOG_BASENAMES`, the single source that `AUDIT_LOG_NAMES` and all
 three H-05 flanks (shell pre-filter + regex, Write, Edit) derive from, so the set
 cannot drift. `/override` is deliberately **not** staleness-tracked: it is a

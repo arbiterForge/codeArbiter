@@ -12,8 +12,13 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.20.2] - 2026-09-17
+
 ### Fixed
 
+- `gate-events.log` no longer accumulates REMIND/WARN noise — only BLOCK
+  events (actual enforcement decisions) are persisted. `remind()`/`warn()`
+  remain full-strength on stderr, unchanged in every other respect.
 - Structured-artifact Python bridge, workflow, package, farm, and conformance
   fixtures now resolve only their test-owned temporary directories to physical
   paths, matching the existing Go fixture rule so hosted macOS symlink roots and
