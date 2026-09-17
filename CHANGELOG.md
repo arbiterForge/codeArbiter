@@ -12,6 +12,12 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.19.0] - 2026-09-16
+
+### Added
+
+- Add a disabled-by-default, extensible structured-artifact engine foundation for canonical HTML specifications and implementation plans, with bounded typed operations, Linux and Windows recovery semantics, verified native bridges, descriptor-relative Unix installation, and required three-host CI. The Windows developer installer fails closed pending a reviewed release-packaging boundary, and HTML farm dispatch remains blocked pending integration and qualification.
+
 ## [2.18.6] - 2026-09-17
 
 ### Added

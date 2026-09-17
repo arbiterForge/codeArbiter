@@ -1,0 +1,176 @@
+{
+  "scope": "Python reference model/reader/renderer regressions; NOT proposed Go/host/storage/farm implementation tests",
+  "python": "3.13.5",
+  "tests_run": 41,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "passed": true,
+  "elapsed_seconds": 19.015,
+  "outcomes": [
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_acceptance_without_evidence_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_approval_label_never_confers_authority",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_backward_scope_dependency_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_bounded_depth",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_canonical_string_and_safe_integer",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_canonical_utf16_order",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_changed_model_without_digest_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_cross_scope_path_partition_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_delivered_pair",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_duplicate_attribute_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_duplicate_identity_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_duplicate_json_keys_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_duplicate_model_block_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_float_nan_large_integer_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_html_script_data_escaped",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_invalid_unicode_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_local_provenance_and_unborn_repository",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_mandatory_disposition_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_missing_and_crossed_markers_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_missing_kind_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_missing_named_go_test_guard_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_open_decision_visible_and_blocks_readiness",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_optional_obligation_label_not_must",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_oversized_cli_output_is_not_partially_returned",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_partial_criterion_is_valid_draft_not_ready",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_partial_task_is_valid_draft_not_ready",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_plan_roundtrip",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_progress_and_branding_preserve_normative_hash",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_read_and_outline_refuse_drift_before_emitting_data",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_requirement_change_alters_normative_hash",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_spec_roundtrip",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_stale_spec_binding_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_state_display_is_actual_not_hardcoded_pending",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_task_cycle_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_tombstone_visible_and_not_reusable",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_unknown_criterion_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_unknown_field_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_unsafe_logo_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_unsafe_path_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_unsupported_version_rejected",
+      "outcome": "pass"
+    },
+    {
+      "test": "test_reference_regressions.ReferenceRegressions.test_visible_model_disagreement_rejected",
+      "outcome": "pass"
+    }
+  ]
+}

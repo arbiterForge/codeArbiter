@@ -6,6 +6,18 @@ disable-model-invocation: true
 
 # subagent-driven-development
 
+## Typed-artifact pilot boundary
+
+For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
+`${CLAUDE_PLUGIN_ROOT}/includes/artifacts.md` before artifact I/O. Its typed ID, binding,
+readiness, receipt, contextual-read and scope-state rules replace the legacy
+Markdown parsing and direct status-cell edits below for that pilot only. Keep
+all other workflow gates, including human checkpoints, unchanged. Missing or
+invalid HTML capability is a STOP for this path, not a fallback to Markdown.
+HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
+remain unchanged until native host qualification and cutover approval.
+
+
 One task, one fresh subagent, two reviews, proof on a fresh run. Routed to by `/sprint` (full plan,
 autonomous) and by `executing-plans` (one batch at a time, with human checkpoints between batches).
 The loop processes tasks in dependency order and never trusts a self-report.

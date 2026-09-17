@@ -68,6 +68,13 @@ on:
       - "tools/sync-core.py"
       - "tools/build-host-packages.py"
       - "tools/ci-impact.py"
+      # The structured-artifact protocol and its payload builders are a
+      # required native-host contract even when a change touches no plugin.
+      - "docs/artifacts/**"
+      - "tools/build-artifacts.py"
+      - "tools/install-artifact-payload.py"
+      - "tools/generate-artifact-types.py"
+      - "tools/create-artifact-examples.py"
       # Issue #384: the hooks job runs this generator's own unit tests
       # (.github/scripts/test_codex_parity_fixture.py), so a push that edits
       # only the generator must still start a run.
@@ -126,6 +133,7 @@ jobs:
       impact: ${{ steps.filter.outputs.impact }}
       manifests: ${{ steps.filter.outputs.manifests }}
       codex-resources: ${{ steps.filter.outputs.codex-resources }}
+      artifacts: ${{ steps.filter.outputs.artifacts }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -316,6 +324,40 @@ jobs:
             manifests:
               - '**/*.json'
               - '.github/workflows/ci.yml'
+            artifacts:
+              - 'core/artifacts/**'
+              - 'core/pysrc/**'
+              - 'core/surface/**'
+              - 'plugins/ca/hooks/_artifactlib.py'
+              - 'plugins/ca-codex/hooks/_artifactlib.py'
+              - 'plugins/ca-pi/hooks/_artifactlib.py'
+              - 'plugins/ca-pi/tools/src/**'
+              - 'plugins/ca/tools/farm.ts'
+              - 'plugins/ca/tools/farm.js'
+              - 'core/surface/includes/artifacts.md'
+              - 'plugins/ca/includes/artifacts.md'
+              - 'plugins/ca-codex/includes/artifacts.md'
+              - 'plugins/ca-pi/includes/artifacts.md'
+              - 'docs/artifacts/**'
+              - 'site/src/content/docs/**'
+              - 'site/src/curated/**'
+              - 'tools/build-artifacts.py'
+              - 'tools/build-host-packages.py'
+              - 'tools/install-artifact-payload.py'
+              - 'tools/generate-artifact-types.py'
+              - 'tools/create-artifact-examples.py'
+              - '.github/scripts/test_artifact_bridge.py'
+              - '.github/scripts/test_artifact_authoring.py'
+              - '.github/scripts/test_artifact_consumers.py'
+              - '.github/scripts/test_artifact_conformance.py'
+              - '.github/scripts/test_artifact_farm.py'
+              - '.github/scripts/test_artifact_native.py'
+              - '.github/scripts/test_artifact_package.py'
+              - '.github/scripts/test_artifact_surface.py'
+              - '.github/scripts/test_artifact_workflow.py'
+              - '.github/requirements/artifact-conformance.in'
+              - '.github/requirements/artifact-conformance-py314.lock'
+              - '.github/workflows/ci.yml'
       - name: Write impact receipt
         id: impact
         env:
@@ -332,6 +374,178 @@ jobs:
         with:
           name: ci-impact-receipt
           path: impact.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+  artifact-engine:
+    name: "[CHECK] | [CORE] | Structured artifact  <os: ${{ matrix.os }}>"
+    needs: changes
+    if: needs.changes.outputs.artifacts == 'true'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      GOTOOLCHAIN: local
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.19.0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Verify exact Go toolchain
+        run: python -c "import subprocess; actual = subprocess.check_output(['go', 'env', 'GOVERSION'], text=True).strip(); assert actual == 'go1.27.1', actual"
+      - name: Create locked reference-validation environment
+        run: >-
+          python -c "import os,pathlib,subprocess,venv;
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'artifact-conformance-venv';
+          venv.EnvBuilder(with_pip=True).create(root);
+          exe=root/('Scripts/python.exe' if os.name=='nt' else 'bin/python');
+          subprocess.run([str(exe),'-m','pip','install','--isolated','--require-virtualenv','--disable-pip-version-check','--no-input','--no-cache-dir','--only-binary=:all:','--require-hashes','--no-deps','--index-url','https://pypi.org/simple','-r','.github/requirements/artifact-conformance-py314.lock'],check=True);
+          pathlib.Path(os.environ['GITHUB_ENV']).open('a',encoding='utf-8').write('ARTIFACT_CONFORMANCE_PYTHON='+str(exe)+'\n')"
+      - name: Test artifact engine
+        working-directory: core/artifacts
+        run: go test -buildvcs=false ./...
+      - name: Vet artifact engine
+        working-directory: core/artifacts
+        run: go vet -buildvcs=false ./...
+      - name: Verify named native storage and recovery contract
+        run: python .github/scripts/test_artifact_native.py
+      - name: Build native qualified candidate
+        run: python tools/build-artifacts.py --output "${{ runner.temp }}/artifact-candidate"
+      - name: Race-test Linux persistence paths
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: core/artifacts
+        run: go test -buildvcs=false -race ./...
+      - name: Verify generated artifact types
+        if: matrix.os == 'ubuntu-latest'
+        run: python tools/generate-artifact-types.py --check
+      - name: Verify artifact public-surface baseline
+        if: matrix.os == 'ubuntu-latest'
+        run: python .github/scripts/test_artifact_surface.py
+      - name: Verify artifact consumer inventory closure
+        if: matrix.os == 'ubuntu-latest'
+        run: python .github/scripts/test_artifact_consumers.py
+      - name: Test Python-to-binary bridge
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_bridge.py
+      - name: Test canonical spec and plan authoring behavior
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_authoring.py
+      - name: Test feature and sprint workflow behavior
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_workflow.py
+      - name: Test HTML farm projection and dispatcher boundary
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_farm.py
+      - name: Test native package boundary and supported cold install
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_package.py
+      - name: Test cross-kind reference and workflow conformance
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_artifact_conformance.py'], check=True)"
+      - name: Bind the candidate to this exact-host native result
+        run: >-
+          python tools/build-artifacts.py
+          --qualify-existing "${{ runner.temp }}/artifact-candidate"
+          --qualification-output "${{ runner.temp }}/artifact-qualification.json"
+      - name: Preserve the exact native candidate and qualification receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: artifact-native-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/artifact-candidate
+            ${{ runner.temp }}/artifact-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
+
+  artifact-package-assembly:
+    name: "[CHECK] | [CORE] | Structured artifact package assembly"
+    needs: [changes, artifact-engine]
+    if: needs.changes.outputs.artifacts == 'true' && needs.artifact-engine.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download this workflow run's exact-host candidates
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: artifact-native-*
+          path: ${{ runner.temp }}/artifact-native
+          merge-multiple: false
+      - name: Assemble the provenance-bound host payload overlay
+        env:
+          CANDIDATE_ROOT: ${{ runner.temp }}/artifact-native
+          STAGE_ROOT: ${{ runner.temp }}/artifact-host-payloads
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          root = Path(os.environ["CANDIDATE_ROOT"])
+          arguments = [
+              sys.executable, "tools/build-host-packages.py",
+              "--artifact-stage", os.environ["STAGE_ROOT"],
+              "--trusted-source-commit", os.environ["GITHUB_SHA"],
+              "--trusted-workflow", ".github/workflows/ci.yml",
+              "--trusted-workflow-run", os.environ["GITHUB_RUN_ID"],
+          ]
+          receipts = sorted(root.glob("artifact-native-*/artifact-qualification.json"))
+          if len(receipts) != 3:
+              raise SystemExit(f"expected three exact-host receipts, found {len(receipts)}")
+          for receipt in receipts:
+              candidate = receipt.parent / "artifact-candidate"
+              platform_name = json.loads(receipt.read_text(encoding="utf-8"))["platform"]
+              arguments.extend(("--artifact-candidate", str(candidate)))
+              arguments.extend(("--artifact-qualification", str(receipt)))
+              arguments.extend(("--require-platform", platform_name))
+          subprocess.run(arguments, check=True)
+          PY
+      - name: Cold-execute the assembled Linux host payload
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-host-payloads/plugins/ca/helpers/artifacts
+        run: python .github/scripts/test_artifact_bridge.py
+      - name: Preserve the exact multi-host package overlay
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: artifact-host-payloads-${{ github.sha }}
+          path: ${{ runner.temp }}/artifact-host-payloads
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -1478,6 +1692,11 @@ jobs:
         # the guard decisions themselves - every blocked spelling of
         # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
         run: python .github/scripts/test_hook_guards.py
+      - name: Run repository-qualified cleanup proof evaluator tests
+        # The evaluator is deliberately not wired into a live cleanup route yet,
+        # but its repository/target/content proof contract must still execute in
+        # required CI rather than existing as an orphaned test file.
+        run: python .github/scripts/test_cleanuplib.py
       - name: Run /ca:preview helper unit tests
         # Unit tests for the /ca:preview diff-collection + secret-scan helpers
         # (_previewlib): collect_diff over the three change kinds it unions and
@@ -2343,6 +2562,8 @@ jobs:
       - branch-protection
       - tag-immutability
       - changes
+      - artifact-engine
+      - artifact-package-assembly
       - host-descriptors
       - ci-impact
       - codex-resource-contract
@@ -2376,7 +2597,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

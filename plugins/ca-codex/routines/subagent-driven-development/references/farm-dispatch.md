@@ -9,6 +9,11 @@ designed for — roadmap, not built). It does **not** replace review: every task
 still routed through Phases 3, 4, and 5 before acceptance. Swapping the worker only changes who *writes*
 the code, never whether it is *reviewed*. See [includes/farm.md](../../../includes/farm.md) for setup.
 
+**Current rollout gate:** HTML-backed farm use is disabled. Do not launch it in ordinary feature or
+sprint work until the fresh frontier/low-tier qualification matrix, native payload packaging and real
+authority integration are complete. The checks below define the real qualification boundary; the June
+2026 run has zero promotion credit. Legacy farm plans with no sibling HTML retain their existing path.
+
 ## Step 1 — Model selection
 
 If `FARM_MODEL` env var is set, use it directly and skip selection. Otherwise, prefer a **measured**
@@ -23,7 +28,9 @@ choice over web hearsay:
 3. Run a canary probe to judge quality objectively: set `FARM_CANDIDATE_MODELS=<comma-separated ids>`
    and invoke `node "tools/farm.js" --canary "<plan.json>"`. It runs the plan's
    smallest task against each candidate and writes `.farm/canary-report.json` ranked by measured
-   pass-rate / attempts / latency. Pick the top passing model.
+   pass-rate / attempts / latency. For an HTML projection, the shared backend first invokes the pinned
+   artifact engine's `farm-verify` canary phase. A missing/stale source binding blocks before worktree,
+   report or network activity. Pick the top passing model.
 4. Surface the choice with its measured basis: "Selected `<model-id>` — canary passed in `<n>` attempts,
    `<ms>`ms (vs. `<alternatives>`). Proceed, or set `FARM_MODEL` to override." For any opaque codename,
    add one line of websearched identity context (e.g. "community reports GLM4-based") for the audit log.
@@ -31,8 +38,12 @@ choice over web hearsay:
    websearch-selected model with a clear warning that the choice is unmeasured; (c) only if all fail,
    BLOCK and ask the user to set `FARM_MODEL`. Halting the whole feature on a noisy websearch is wrong —
    exhaust the ladder first.
-6. Write the chosen `meta.model` + `meta.apiBaseUrl` into `plan.json`, and update `.farm/model-cache.json`
-   (model + timestamp + canary pass-rate) before dispatching.
+6. Write only the chosen `meta.model` + `meta.apiBaseUrl` into `plan.json`. For an HTML projection,
+   immediately call the artifact protocol's `farm-seal` operation with the exact effective model,
+   API base URL, bounded selection source and caller-stated origin. These are auditable assertions,
+   not independently authenticated provenance. It rejects any other base-projection
+   change and seals the exact full execution bytes plus provider identity. Then update
+   `.farm/model-cache.json` (model + timestamp + canary pass-rate) before dispatching.
 
 ## Step 2 — Farm dispatch
 
@@ -50,6 +61,12 @@ enforces gates and a zero-token anti-gaming guard, and writes to `<project-root>
 - `farm-results.jsonl` — the incremental stream: one `Result` JSON object per line, appended the moment
   each task settles (drives completion-order consumption — see Step 2.6)
 - `diffs/<task-id>.patch` — the actual change per task, for audit
+
+The built shared dispatcher resolves `ca-artifact` only from its manifest-verified sibling payload.
+It never consults PATH or repository configuration. Immediately before ordinary HTML dispatch it
+invokes `farm-verify` with the effective model and API base URL; missing or mismatched full-byte seals
+fail before creating `.farm/`, worktrees, branches, or network requests. Pi preview uses this same built
+backend and therefore the same guard. Do not bypass it with a source-tree or host-local dispatcher.
 
 Each of those is published twice: once under the run's own artifact directory
 `<project-root>/.farm/runs/<run-id>/` (the durable, attributable receipt — concurrent runs never

@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codearbiter:artifact:plan:0.3.1",
+  "title": "codeArbiter plan reference schema 0.3.1",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "codearbiter.artifact"
+    },
+    "format_version": {
+      "const": "0.1.0"
+    },
+    "kind": {
+      "const": "plan"
+    },
+    "schema_version": {
+      "enum": [
+        "0.3.0",
+        "0.3.1"
+      ]
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "governance": {
+      "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/governance"
+    },
+    "presentation": {
+      "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/presentation"
+    },
+    "integrity": {
+      "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/integrity"
+    },
+    "normative": {
+      "type": "object",
+      "properties": {
+        "retired_symbols": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/retired"
+          },
+          "minItems": 0
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline": {
+          "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/baseline"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/section"
+          },
+          "minItems": 0
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/source"
+          },
+          "minItems": 0
+        },
+        "spec_ref": {
+          "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/spec_ref"
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/task"
+          },
+          "minItems": 0
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/checkpoint"
+          },
+          "minItems": 0
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/prerequisite"
+          },
+          "minItems": 0
+        },
+        "criterion_dispositions": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/criterion_disposition"
+          },
+          "minItems": 0
+        },
+        "verification_inputs": {
+          "type": "object",
+          "properties": {
+            "roots": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "exclude_directories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "roots",
+            "exclude_directories"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "retired_symbols",
+        "title",
+        "summary",
+        "baseline",
+        "sections",
+        "sources",
+        "spec_ref",
+        "tasks",
+        "checkpoints",
+        "prerequisites",
+        "criterion_dispositions"
+      ],
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "tasks": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/task_state"
+          }
+        },
+        "prerequisites": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "enum": [
+              "not_satisfied",
+              "satisfied"
+            ]
+          }
+        },
+        "prerequisite_evidence": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "scopes": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "base_input_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "plan_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "base_input_sha256",
+              "plan_sha256"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "tasks",
+        "prerequisites",
+        "prerequisite_evidence",
+        "scopes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "format",
+    "format_version",
+    "kind",
+    "schema_version",
+    "artifact_id",
+    "slug",
+    "revision",
+    "governance",
+    "presentation",
+    "integrity",
+    "normative",
+    "execution"
+  ],
+  "additionalProperties": false
+}

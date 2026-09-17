@@ -1,0 +1,63 @@
+{
+  "artifact_sha256": {
+    "spec": "d206bff4525ce9498b0d20ee5621a1199eeef57fb986b25c0828ebb60fc2c6b4",
+    "plan": "fdc917767b25928a5b27b1ecc5da89e3d3172d41ebe921ef0282c73077961bd8"
+  },
+  "scope": "Chromium reference-HTML layout/safety checks only; not complete accessibility or native-host certification",
+  "cells": [
+    {
+      "artifact": "spec",
+      "viewport_width": 1440,
+      "load_mode": "in_memory_fallback",
+      "javascript_enabled": false,
+      "embedded_logo_loaded": true,
+      "page_horizontal_overflow": false,
+      "text_200_percent_page_overflow": false,
+      "mobile_contents_available": false,
+      "collapsed_detail_visible_in_print": true,
+      "automatic_external_requests": [],
+      "pass": true
+    },
+    {
+      "artifact": "spec",
+      "viewport_width": 390,
+      "load_mode": "in_memory_fallback",
+      "javascript_enabled": false,
+      "embedded_logo_loaded": true,
+      "page_horizontal_overflow": false,
+      "text_200_percent_page_overflow": false,
+      "mobile_contents_available": true,
+      "collapsed_detail_visible_in_print": true,
+      "automatic_external_requests": [],
+      "pass": true
+    },
+    {
+      "artifact": "plan",
+      "viewport_width": 1440,
+      "load_mode": "in_memory_fallback",
+      "javascript_enabled": false,
+      "embedded_logo_loaded": true,
+      "page_horizontal_overflow": false,
+      "text_200_percent_page_overflow": false,
+      "mobile_contents_available": false,
+      "collapsed_detail_visible_in_print": true,
+      "automatic_external_requests": [],
+      "pass": true
+    },
+    {
+      "artifact": "plan",
+      "viewport_width": 390,
+      "load_mode": "in_memory_fallback",
+      "javascript_enabled": false,
+      "embedded_logo_loaded": true,
+      "page_horizontal_overflow": false,
+      "text_200_percent_page_overflow": false,
+      "mobile_contents_available": true,
+      "collapsed_detail_visible_in_print": true,
+      "automatic_external_requests": [],
+      "pass": true
+    }
+  ],
+  "browser_version": "144.0.7559.96",
+  "passed": true
+}

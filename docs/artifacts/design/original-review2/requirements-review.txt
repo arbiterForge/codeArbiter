@@ -1,0 +1,4 @@
+# Reference-package validation only; install through your normal reviewed environment workflow.
+jsonschema==4.26.0
+referencing==0.37.0
+# Optional browser checks additionally used playwright==1.57.0 and a Chromium executable.

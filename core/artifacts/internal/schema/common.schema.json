@@ -1,0 +1,1136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codearbiter:artifact:common:0.3.1",
+  "title": "codeArbiter artifact common records 0.3.1",
+  "$defs": {
+    "block": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "paragraph"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "type",
+            "text",
+            "refs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "list"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "type",
+            "items",
+            "refs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "code"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "type",
+            "text",
+            "refs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "table"
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "minItems": 0
+            },
+            "refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "type",
+            "columns",
+            "rows",
+            "refs"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/block"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "blocks"
+      ],
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "statement"
+      ],
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1
+        },
+        "choice": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority": {
+          "enum": [
+            "proposed",
+            "inherited"
+          ]
+        },
+        "source_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "topic",
+        "choice",
+        "rationale",
+        "authority"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "repository",
+            "primary_research",
+            "primary_documentation",
+            "user_request",
+            "local_document",
+            "decision_record",
+            "test_reference"
+          ]
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^https://[^\\s]+$"
+        },
+        "locator": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "type",
+        "url",
+        "locator",
+        "note"
+      ],
+      "additionalProperties": false
+    },
+    "baseline": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "observed_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      },
+      "required": [
+        "repository",
+        "commit",
+        "observed_date"
+      ],
+      "additionalProperties": false
+    },
+    "scenario": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "given": {
+          "type": "string"
+        },
+        "when": {
+          "type": "string"
+        },
+        "then": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "method": {
+          "enum": [
+            "automated",
+            "inspection",
+            "automated_and_review"
+          ]
+        },
+        "planned_target": {
+          "type": "string"
+        },
+        "oracle": {
+          "type": "string"
+        },
+        "negative_control": {
+          "type": "string"
+        },
+        "evidence_state": {
+          "const": "planned"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "criterion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "behavior",
+            "invariant",
+            "interface",
+            "compatibility",
+            "security",
+            "performance",
+            "operational"
+          ]
+        },
+        "obligation": {
+          "enum": [
+            "must",
+            "should",
+            "may"
+          ]
+        },
+        "intent_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "statement": {
+          "type": "string"
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "trigger": {
+          "type": "string"
+        },
+        "guarantees": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/scenario"
+          },
+          "minItems": 0
+        },
+        "verification": {
+          "anyOf": [
+            {
+              "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/verification"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "applicability": {
+          "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/applicability"
+        },
+        "constraint_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "open_decision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "affects": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ]
+        },
+        "resolution": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "blocking",
+        "affects",
+        "source_ref",
+        "owner",
+        "status",
+        "resolution"
+      ],
+      "additionalProperties": false
+    },
+    "path": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "enum": [
+            "create",
+            "modify",
+            "inspect"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "command": {
+      "type": "object",
+      "properties": {
+        "availability": {
+          "enum": [
+            "existing",
+            "proposed"
+          ]
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "expected_exit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "assertion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_tests": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "availability",
+        "cwd",
+        "argv",
+        "expected_exit",
+        "assertion",
+        "required_tests"
+      ],
+      "additionalProperties": false
+    },
+    "task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkpoint": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/path"
+          },
+          "minItems": 0
+        },
+        "criterion_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}#[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/command"
+          },
+          "minItems": 0
+        },
+        "done_when": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "rollback": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "execution_scope": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "checkpoint",
+        "execution_scope"
+      ],
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "exit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "tasks",
+        "exit",
+        "depends_on"
+      ],
+      "additionalProperties": false
+    },
+    "prerequisite": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requirement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "requirement",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "spec_ref": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "normative_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "binding_mode": {
+          "enum": [
+            "draft_preview",
+            "approved_source"
+          ]
+        }
+      },
+      "required": [
+        "artifact_id",
+        "normative_sha256",
+        "binding_mode"
+      ],
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "authority_kind": {
+          "enum": [
+            "user_workflow",
+            "smarts_workflow"
+          ]
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "normative_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "attestation_level": {
+          "const": "workflow_attested"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        }
+      },
+      "required": [
+        "authority_kind",
+        "source_ref",
+        "normative_sha256",
+        "attestation_level",
+        "source_sha256",
+        "artifact_id"
+      ],
+      "additionalProperties": false
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "draft",
+            "ready",
+            "approved",
+            "superseded"
+          ]
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:codearbiter:artifact:common:0.3.1#/$defs/approval"
+          },
+          "minItems": 0
+        },
+        "review_notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "state",
+        "approvals",
+        "review_notes"
+      ],
+      "additionalProperties": false
+    },
+    "presentation": {
+      "type": "object",
+      "properties": {
+        "renderer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "brand_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logo_data_uri": {
+          "type": "string",
+          "pattern": "^data:image/"
+        },
+        "logo_origin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logo_git_blob": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "companion_path": {
+          "type": "string",
+          "pattern": "^(?:|(?:\\.\\./(?:specs|plans)/)?[a-zA-Z0-9][a-zA-Z0-9._/-]*\\.html)$"
+        },
+        "stylesheet_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "renderer",
+        "brand_name",
+        "logo_data_uri",
+        "logo_origin",
+        "logo_git_blob",
+        "companion_path",
+        "stylesheet_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "integrity": {
+      "type": "object",
+      "properties": {
+        "normative_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "symbol_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "normative_sha256",
+        "model_sha256",
+        "symbol_count"
+      ],
+      "additionalProperties": false
+    },
+    "task_state": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "PENDING",
+            "IN_PROGRESS",
+            "BLOCKED",
+            "REVIEW",
+            "ACCEPTED",
+            "STALE"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "evidence_refs",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "retired": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "retired_in_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "replacement_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}(?:#[A-Z][A-Z0-9-]{1,79})?$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "retired_in_revision",
+        "replacement_ref",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "intent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "problem": {
+          "type": "string"
+        },
+        "caller": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "approach": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "choice": {
+          "type": "string"
+        },
+        "tradeoff": {
+          "type": "string"
+        },
+        "binding_decision_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "constraint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "statement": {
+          "type": "string"
+        },
+        "applies_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]{1,79}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "statement",
+        "applies_to",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "applicability": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "conditional",
+            "unconditional",
+            "invariant",
+            "not_applicable"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "mode",
+        "rationale"
+      ],
+      "additionalProperties": false
+    },
+    "criterion_disposition": {
+      "type": "object",
+      "properties": {
+        "criterion_ref": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,79}#[A-Z][A-Z0-9-]{1,79}$"
+        },
+        "disposition": {
+          "enum": [
+            "deferred",
+            "not_applicable"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "criterion_ref",
+        "disposition",
+        "rationale"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

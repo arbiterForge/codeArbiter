@@ -37,6 +37,7 @@ only while a flow is active or after the owning feature first runs (`.decompose-
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
 | `specs/*.md` | `brainstorming` skill (via `/ca:feature`, `/ca:sprint`) | `writing-plans`, `/ca:status` | Yes |
 | `plans/*.md` | `writing-plans` skill | `executing-plans`, `subagent-driven-development`, `/ca:status` | Yes |
+| `specs/*.html`, `plans/*.html` | Existing feature/sprint workflows through the internal typed-artifact engine (candidate; disabled by default) | The same workflow readers through validated, scoped reads | No: use typed engine operations |
 | `.decompose-draft/` | `/ca:decompose` while an interview is in progress | `/ca:decompose` on resume | No need: temporary resumable interview state |
 | `checkpoints/*.md` | `checkpoint-aggregator` agent (`/ca:checkpoint`) | `/ca:audit`, `/ca:status`-adjacent reads | Yes |
 | `audits/*.md` | `/ca:audit` | humans (report only) | Yes |
@@ -194,6 +195,35 @@ the ACCEPTED-vs-total count for an in-progress plan.
 `/ca:status`. **Editable by hand?** Yes, though editing mid-execution risks desyncing the
 plan from tasks already marked accepted. **Delete it:** an in-progress feature loses its
 resumption point; `/ca:status` can no longer report that pipeline's progress.
+
+### Typed HTML candidate
+
+Specifications and plans also have a structured HTML candidate format. It is an
+internal leaf of the existing feature and sprint workflows, not another public
+command or agent surface. Each file contains an authoritative typed JSON model
+and a deterministic visible view, so it can be reviewed offline in a browser
+without JavaScript or network access. Engine reads validate the model, hashes,
+local resources, symbol markers and visible view together; opening the file does
+not approve or mutate it.
+
+The candidate remains disabled by default. Normal host packages do not yet ship
+a qualified native payload, hosted macOS and release-channel proof are pending,
+and HTML farm use has an additional unclosed qualification bar. Existing
+Markdown workflows therefore remain authoritative unless a selected pair is
+explicitly previewed, reviewed and cut over. Conversion always handles a spec
+and plan together, creates drafts, transfers no old approvals, and retains exact
+legacy bytes for guarded rollback. See the repository guidance for the
+[format](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/spec-and-plan-format.md)
+and [migration/recovery](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/migration-and-recovery.md)
+contracts.
+
+**Writers:** the existing feature/sprint coordinator through the installed,
+manifest-verified engine. **Readers:** those same workflows through indexed and
+contextual engine reads; humans through an offline browser. **Editable by hand?**
+No. Use typed operations so revisions, stable IDs, hashes and recovery records
+remain coherent. **Delete it:** a governing typed artifact is lost; recover it
+from version control or the recorded transaction rather than silently restarting
+as Markdown.
 
 ## .decompose-draft/
 

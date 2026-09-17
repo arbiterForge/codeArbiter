@@ -1084,3 +1084,60 @@ def compute_injection(root, session_id, rel, runner=None):
         return ""
     except Exception:  # noqa: BLE001
         return ""
+
+# Typed artifact pilot bridge. Keep legacy matching unchanged; never cache HTML
+# authority by mtime. Importing this module performs no subprocess or file I/O.
+_artifact_legacy_build_index = build_index
+_artifact_legacy_spec_pointers = spec_pointers
+
+
+def build_index(root):
+    result = _artifact_legacy_build_index(root)
+    if not isinstance(result, dict):
+        return result
+    result = dict(result)
+    try:
+        from _artifactlib import checked_spec_index, helper_installation, has_html
+        if not has_html(root):
+            return result
+        extra = checked_spec_index(root, helper_installation(__file__))
+    except Exception as error:
+        # Advisory read injection remains fail-open. This warning is NOT an
+        # approved-spec pointer and MUST NOT authorize a planning/execution gate.
+        code = getattr(error, "code", "CAPABILITY_MISSING")
+        extra = [{"artifact_diagnostic": str(code)[:80], "artifact_html": True}]
+    result["spec"] = [item for item in result.get("spec", [])
+                      if not isinstance(item, dict) or not item.get("artifact_html")] + extra
+    return result
+
+
+def spec_pointers(rel, index):
+    if not isinstance(index, list):
+        return _artifact_legacy_spec_pointers(rel, index)
+    warnings = [item for item in index if isinstance(item, dict) and item.get("artifact_diagnostic")]
+    normal = [item for item in index if not isinstance(item, dict) or not item.get("artifact_diagnostic")]
+    result = _artifact_legacy_spec_pointers(rel, normal)
+    if warnings:
+        result.append({"tier": "specs", "text": "HTML specification validation unavailable ("
+                       + warnings[0]["artifact_diagnostic"]
+                       + "). Source inspection may continue; HTML planning/execution must stop until resolved."})
+    return result
+
+_artifact_legacy_compute_injection = compute_injection
+
+
+def compute_injection(root, session_id, rel, runner=None):
+    # Namespace existing dedup markers by the current validated HTML identities
+    # and authority status. A changed spec or missing receipt cannot hide behind
+    # an old session/file marker. This is an advisory epoch, not an approval.
+    if not isinstance(rel, str) or rel.replace("\\", "/").split("/", 1)[0] == ".codearbiter":
+        return _artifact_legacy_compute_injection(root, session_id, rel, runner)
+    try:
+        from _artifactlib import ArtifactClient, helper_installation, has_html
+        if not has_html(root):
+            return _artifact_legacy_compute_injection(root, session_id, rel, runner)
+        entries = list(ArtifactClient(root, helper_installation(__file__)).index("spec"))
+        epoch = hashlib.sha256(json.dumps(entries, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    except Exception as error:
+        epoch = "unavailable-" + str(getattr(error, "code", "CAPABILITY_MISSING"))[:80]
+    return _artifact_legacy_compute_injection(root, str(session_id) + "|html:" + epoch, rel, runner)

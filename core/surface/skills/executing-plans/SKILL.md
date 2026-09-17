@@ -6,6 +6,18 @@ disable-model-invocation: true
 
 # executing-plans
 
+## Typed-artifact pilot boundary
+
+For an existing HTML spec/plan or an explicitly requested typed-HTML pilot, load
+`{{PLUGIN_ROOT}}/includes/artifacts.md` before artifact I/O. Its typed ID, binding,
+readiness, receipt, contextual-read and scope-state rules replace the legacy
+Markdown parsing and direct status-cell edits below for that pilot only. Keep
+all other workflow gates, including human checkpoints, unchanged. Missing or
+invalid HTML capability is a STOP for this path, not a fallback to Markdown.
+HTML `--farm` dispatch is blocked in this candidate. Default legacy workflows
+remain unchanged until native host qualification and cutover approval.
+
+
 Coordinate the plan in small, user-acknowledged batches. Routed to by `/feature` after
 `writing-plans` has produced a plan. Each batch is executed by `subagent-driven-development` — fresh
 author agent per task, spec-compliance review, quality review, fresh verification — and the user

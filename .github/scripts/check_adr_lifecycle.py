@@ -282,6 +282,27 @@ def _local_binding_transition_error(root, events, blobs):
     if not acceptances:
         return ("ADR acceptance binding is not fully staged"
                 if new_work_acceptance else None)
+    # A true merge can import an acceptance that was already reviewed and
+    # committed on MERGE_HEAD.  That is not a new local second-leg binding,
+    # so the ledger-only staging rule does not apply.  Require every appended
+    # event to exist in the committed merge parent; this keeps an unrelated
+    # staged acceptance from hiding inside a merge.
+    merge_head = _git(root, "rev-parse", "--verify", "MERGE_HEAD^{commit}")
+    if (merge_head.returncode == 0 and
+            al._normalized_text(worktree_ledger) == al._normalized_text(index_ledger)):
+        merge_ledger = _ledger_at(root, "MERGE_HEAD")
+        try:
+            imported = [json.dumps(event, sort_keys=True, separators=(",", ":"))
+                        for event in (json.loads(line.decode("utf-8"))
+                                      for line in (merge_ledger or b"").splitlines()
+                                      if line.strip())]
+            requested = [json.dumps(event, sort_keys=True, separators=(",", ":"))
+                         for event in new_events]
+            for event in requested:
+                imported.remove(event)
+            return None
+        except (TypeError, UnicodeError, ValueError):
+            pass
     if (paths != {LEDGER_REL} or
             al._normalized_text(worktree_ledger) != al._normalized_text(index_ledger)):
         return "staged ADR acceptance binding is not the sole exact append"
