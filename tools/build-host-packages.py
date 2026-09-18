@@ -554,7 +554,8 @@ def _git_archive_files(source_repo: Path, source_commit: str,
             stream = archive.extractfile(member)
             if stream is None:
                 raise ValueError(f"package source member is unreadable: {name}")
-            files[name] = (stream.read(), member.mode & 0o777, "source", name)
+            mode = 0o755 if member.mode & 0o111 else 0o644
+            files[name] = (stream.read(), mode, "source", name)
     if not files:
         raise ValueError("package source archive is empty")
     return files

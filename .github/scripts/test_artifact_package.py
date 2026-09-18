@@ -1035,6 +1035,38 @@ class PackageTests(unittest.TestCase):
                 trusted_workflow_run=FIXTURE_WORKFLOW_RUN,
                 output=self.base / "mismatch", required_platforms=[native_platform], repo=REPO)
 
+    def test_git_archive_modes_are_canonical_across_host_umasks(self):
+        source = self.base / "source-modes"
+        source.mkdir()
+        subprocess.run(["git", "init"], cwd=source, check=True,
+                       capture_output=True)
+        (source / "plain.txt").write_text("plain\n", encoding="utf-8")
+        (source / "tool.sh").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        subprocess.run(["git", "add", "plain.txt", "tool.sh"], cwd=source,
+                       check=True, capture_output=True)
+        subprocess.run(["git", "update-index", "--chmod=+x", "tool.sh"],
+                       cwd=source, check=True, capture_output=True)
+        subprocess.run([
+            "git", "-c", "user.name=Artifact Test", "-c",
+            "user.email=artifact@example.invalid", "commit", "-m", "fixture",
+        ], cwd=source, check=True, capture_output=True)
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=source, check=True,
+            capture_output=True, text=True, encoding="utf-8",
+        ).stdout.strip()
+
+        observed = []
+        for umask in ("0002", "0000"):
+            subprocess.run(["git", "config", "tar.umask", umask], cwd=source,
+                           check=True, capture_output=True)
+            observed.append(PACKAGER._git_archive_files(
+                source, commit, ("plain.txt", "tool.sh")
+            ))
+
+        self.assertEqual(observed[0], observed[1])
+        self.assertEqual(observed[0]["plain.txt"][1], 0o644)
+        self.assertEqual(observed[0]["tool.sh"][1], 0o755)
+
     def test_release_packaging_is_create_only_and_rejects_linked_output(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
         native_platform = next(iter(manifest["binaries"]))

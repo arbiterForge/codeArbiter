@@ -122,6 +122,7 @@ EXPECTED_SUITES = {
         "test_release_packaging_stages_package_owned_native_payloads",
         "test_production_binary_has_no_network_capable_dependencies",
         "test_release_packaging_rejects_missing_duplicate_and_mismatched_candidates",
+        "test_git_archive_modes_are_canonical_across_host_umasks",
         "test_release_packaging_is_create_only_and_rejects_linked_output",
         "test_release_packaging_does_not_invoke_go_or_any_child_process",
         "test_linked_ancestor_with_missing_descendant_cannot_mutate_external_tree",
