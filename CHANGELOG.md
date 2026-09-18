@@ -30,7 +30,7 @@ predate the plugin rewrite and are grouped by date.
   record output to LF on Windows, qualify hosted-owned asset cohorts without
   executing their local sentinels, reject duplicate committed release-note
   sections before tag mutation, and bind automatic publication to the exact
-  commit that advanced every release surface.
+  changelog commit plus the candidate's exact manifest blobs.
 - Ensure a release-proof-only correction selects both proof validation and the
   exact-head package cohort needed by automatic publication.
 

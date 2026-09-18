@@ -18,7 +18,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   derive provenance identities from one remote ref snapshot. Preserve helper
   records as LF on Windows, reject ambiguous committed release notes before tag
   mutation, and bind hosted assets and automatic publication to the exact
-  qualified release cohort.
+  qualified changelog commit and manifest blobs.
 
 ## [0.13.0] - 2026-09-17
 

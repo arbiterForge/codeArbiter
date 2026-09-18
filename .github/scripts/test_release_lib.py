@@ -3235,9 +3235,13 @@ class CoreCLITest(unittest.TestCase):
             capture_output=True, timeout=30, check=True)
 
     def _init_changelog_repo(self, root, text=None,
-                             changelog_path="docs/CHANGELOG.md"):
+                             changelog_path="docs/CHANGELOG.md",
+                             object_format=None):
         os.makedirs(root, exist_ok=True)
-        self._git(root, "init", "--quiet")
+        init_args = ["init", "--quiet"]
+        if object_format is not None:
+            init_args.append(f"--object-format={object_format}")
+        self._git(root, *init_args)
         hooks = os.path.join(root, "empty-hooks")
         os.makedirs(hooks, exist_ok=True)
         self._git(root, "config", "core.hooksPath", hooks)
@@ -3300,6 +3304,30 @@ class CoreCLITest(unittest.TestCase):
                 "docs/CHANGELOG.md", "2.12.0")
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("## [2.12.0]", result.stdout)
+
+    def test_changelog_section_requires_a_full_sha256_candidate_commit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            try:
+                self._init_changelog_repo(tmp, object_format="sha256")
+            except subprocess.CalledProcessError as exc:
+                self.skipTest(
+                    "installed Git lacks SHA-256 repository support: "
+                    + exc.stderr.decode(errors="replace"))
+            self._git(tmp, "tag", "-d", "release-v2.12.0")
+            candidate = self._git(
+                tmp, "rev-parse", "HEAD").stdout.decode().strip()
+            self.assertEqual(len(candidate), 64)
+
+            accepted = self._run_core(
+                "changelog-section", tmp, candidate,
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(accepted.returncode, 0, accepted.stderr)
+
+            abbreviated = self._run_core(
+                "changelog-section", tmp, candidate[:40],
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(abbreviated.returncode, 3)
+            self.assertIn("exact full commit id", abbreviated.stderr)
 
     def test_changelog_section_rejects_mutable_non_tag_revision_expression(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -6658,7 +6686,7 @@ _GOVERNANCE_RULES = {
         "reads the FIRST declared manifest, while Pre-flight",
         "check-manifests $TARGET <derived>"),
     "LOW (run 6): the show-ref exit-status rationale is corrected, not repeated": (
-        "the reason given for it was wrong",),
+        "the expected non-zero status is on the left of `||`",),
     # Run 10 (2026-07-31).
     "HIGH (run 10): the release edits are committed before tagging": (
         "this is not conditional", "names a COMMIT, not the working tree"),
@@ -7874,6 +7902,38 @@ class ReleaseSurfaceTest(unittest.TestCase):
         self.assertIn('[ "$SHOW_REF_STATUS" -ne 1 ]', phase2)
         self.assertIn("set -euo pipefail", phase2)
 
+    def test_guarded_zero_tag_probe_executes_under_pipefail(self):
+        bash = (core_releaselib._resolve_posix_shell()
+                if os.name == "nt" else working_bash())
+        if bash is None:
+            self.skipTest("no working POSIX shell")
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(
+                [core_releaselib.git_executable(), "init", "--quiet", tmp],
+                check=True, capture_output=True)
+            script = r'''
+set -euo pipefail
+cd "$1"
+TAG_REFS_FILE=$(mktemp)
+SHOW_REF_STATUS=0
+git show-ref --tags -d > "$TAG_REFS_FILE" || SHOW_REF_STATUS=$?
+if [ "$SHOW_REF_STATUS" -ne 0 ] && [ "$SHOW_REF_STATUS" -ne 1 ]; then
+  rm -f -- "$TAG_REFS_FILE"
+  exit "$SHOW_REF_STATUS"
+fi
+TAG_SHA=$("$2" "$3" peel-tag v0.1.0 < "$TAG_REFS_FILE")
+rm -f -- "$TAG_REFS_FILE"
+test -z "$TAG_SHA"
+'''
+            result = subprocess.run(
+                [bash, "-s", "--", Path(tmp).as_posix(),
+                 Path(sys.executable).as_posix(),
+                 Path(_CORE_RELEASELIB_PATH).as_posix()],
+                input=script.encode(), capture_output=True, timeout=60)
+            self.assertEqual(
+                result.returncode, 0,
+                (result.stdout + result.stderr).decode(errors="replace"))
+
     def test_payload_pathspecs_are_loaded_with_argument_boundaries(self):
         targets = self.skill[
             self.skill.index("## Targets") : self.skill.index("## Back-fill")]
@@ -7920,8 +7980,29 @@ class ReleaseSurfaceTest(unittest.TestCase):
             self.skill.index("## Phase 2") : self.skill.index("## Phase 3")]
         self.assertIn("HOSTED_HEAD=$(git rev-parse HEAD)", phase2)
         self.assertIn('git log --first-parent -1 --format=%H -- "$CHANGELOG"', phase2)
-        self.assertIn("every declared manifest path", phase2)
+        self.assertIn('git rev-parse "$HOSTED_HEAD:$SURFACE"', phase2)
+        self.assertIn('git hash-object "$SURFACE"', phase2)
+        self.assertIn("Do not require an unchanged manifest's last-touch commit", phase2)
         self.assertIn("restarts Phase 1", phase2)
+
+    def test_zero_tag_execution_order_contains_no_unguarded_pipeline(self):
+        phase2 = self.skill[
+            self.skill.index("## Phase 2") : self.skill.index("## Phase 3")]
+        warning = phase2.index("Zero-tag execution order")
+        correction = phase2.index("Zero-tag correction")
+        self.assertLess(warning, correction)
+        self.assertIn("MUST NOT be executed", phase2[warning:correction])
+        self.assertNotIn("git show-ref --tags -d |", phase2)
+        self.assertIn("SHOW_REF_STATUS=0", phase2)
+
+    def test_asset_cleanup_names_only_minted_scratch_state(self):
+        phase3 = self.skill[self.skill.index("## Phase 3") :]
+        cleanup = phase3[phase3.index("Clean up declared-asset scratch state") :]
+        cleanup = cleanup[:cleanup.index("\n\n")]
+        self.assertIn("RELEASE_ASSET_DIR", cleanup)
+        self.assertIn("RELEASE_ASSET_NAMES_FILE", cleanup)
+        self.assertIn("RELEASE_ASSET_PATHS_FILE", cleanup)
+        self.assertNotIn("RELEASE_ASSET_RECHECK_FILE", cleanup)
 
     def test_automatic_publisher_consumes_explicit_merge_authorization_once(self):
         phase3 = self.skill[self.skill.index("## Phase 3") :]

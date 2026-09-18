@@ -149,6 +149,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Refuse a dispatch off the default branch
@@ -216,6 +217,27 @@ jobs:
             echo "::error::$TARGET is owned by the serialized hosted CI cohort; independent manual publication is prohibited"
             exit 1
           fi
+          MANIFEST=$(python3 core/pysrc/_releaselib.py show-row "$TARGET" --field manifest)
+          CHANGELOG=$(python3 core/pysrc/_releaselib.py show-row "$TARGET" --field changelog)
+          test -n "$MANIFEST" && test -n "$CHANGELOG" || {
+            echo "::error::$TARGET declaration lacks a manifest or changelog"
+            exit 1
+          }
+          test "$(git log --first-parent -1 --format=%H -- "$CHANGELOG")" = "$GITHUB_SHA" || {
+            echo "::error::$TARGET release surface $CHANGELOG was not advanced by $GITHUB_SHA"
+            exit 1
+          }
+          for SURFACE in "$MANIFEST" "$CHANGELOG"; do
+            CANDIDATE_BLOB=$(git rev-parse "$GITHUB_SHA:$SURFACE") || {
+              echo "::error::$TARGET release surface $SURFACE is absent from $GITHUB_SHA"
+              exit 1
+            }
+            test "$(git hash-object "$SURFACE")" = "$CANDIDATE_BLOB" || {
+              echo "::error::$TARGET release surface $SURFACE differs from $GITHUB_SHA"
+              exit 1
+            }
+            echo "$TARGET: candidate=$GITHUB_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
+          done
           # Per-release evidence is not a per-PR CI gate (AC-6.8). Execute
           # the selected declaration through the check-only runner before
           # authorizing any publisher. No token or Actions output channel is
@@ -529,23 +551,37 @@ jobs:
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             if [ "$ELIGIBLE" = "true" ]; then
-              # Bind this automatic cohort to the release-surface commit the
-              # user authorized, not merely to a later green main revision
-              # that still happens to carry an ahead-of-tag version.  A
-              # no-fast-forward PR merge owns its tree result on first-parent
-              # history even when default path simplification names the topic
-              # commit, hence --first-parent is required here.
+              # The changelog is the candidate-authorization surface. Bind it
+              # to this exact first-parent commit so a later green main commit
+              # cannot consume an older unpublished version. Manifests may
+              # already contain that version from an earlier correction; bind
+              # their exact blobs to this candidate instead of requiring a
+              # meaningless rewrite of unchanged JSON.
+              test "$(git log --first-parent -1 --format=%H -- "$CHANGELOG")" = "$GITHUB_SHA" || {
+                echo "::error::$TARGET release surface $CHANGELOG was not advanced by $GITHUB_SHA"
+                exit 1
+              }
               for SURFACE in "$MANIFEST" "$CHANGELOG"; do
-                test "$(git log --first-parent -1 --format=%H -- "$SURFACE")" = "$GITHUB_SHA" || {
-                  echo "::error::$TARGET release surface $SURFACE was not advanced by $GITHUB_SHA"
+                CANDIDATE_BLOB=$(git rev-parse "$GITHUB_SHA:$SURFACE") || {
+                  echo "::error::$TARGET release surface $SURFACE is absent from $GITHUB_SHA"
                   exit 1
                 }
+                test "$(git hash-object "$SURFACE")" = "$CANDIDATE_BLOB" || {
+                  echo "::error::$TARGET release surface $SURFACE differs from $GITHUB_SHA"
+                  exit 1
+                }
+                echo "$TARGET: candidate=$GITHUB_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
               done
               if [ "$COMPANION" != "-" ]; then
-                test "$(git log --first-parent -1 --format=%H -- "$COMPANION")" = "$GITHUB_SHA" || {
-                  echo "::error::$TARGET companion manifest $COMPANION was not advanced by $GITHUB_SHA"
+                COMPANION_BLOB=$(git rev-parse "$GITHUB_SHA:$COMPANION") || {
+                  echo "::error::$TARGET companion manifest $COMPANION is absent from $GITHUB_SHA"
                   exit 1
                 }
+                test "$(git hash-object "$COMPANION")" = "$COMPANION_BLOB" || {
+                  echo "::error::$TARGET companion manifest $COMPANION differs from $GITHUB_SHA"
+                  exit 1
+                }
+                echo "$TARGET: candidate=$GITHUB_SHA companion=$COMPANION blob=$COMPANION_BLOB"
               fi
               ANY_ELIGIBLE=true
               if [ "$TARGET" != "ca-sandbox" ]; then COHORT_TARGETS+=("$TARGET"); fi

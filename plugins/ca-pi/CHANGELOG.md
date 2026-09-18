@@ -17,7 +17,7 @@ All notable changes to `ca-pi` are documented in this file.
   generation through the portable Python command on Windows and CI hosts,
   preserve helper records as LF, reject ambiguous committed release notes
   before tag mutation, and bind hosted assets and automatic publication to the
-  exact qualified release cohort.
+  exact qualified changelog commit and manifest blobs.
 
 ## [0.14.0] - 2026-09-17
 
