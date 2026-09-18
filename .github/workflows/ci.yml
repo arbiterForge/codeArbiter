@@ -94,6 +94,11 @@ on:
       # workflow's dispatch-exclusivity, merge-readiness, and tag-integrity
       # gates. A push that weakens only release.yml must still start a run.
       - ".github/workflows/release.yml"
+      # The automatic release cohort starts only after this workflow succeeds
+      # on main and consumes this run's exact-head package artifacts. A
+      # live-proof-only correction must therefore start CI rather than leave
+      # the corrected main commit ineligible for release.
+      - "docs/codex-parity-testing.md"
       # test_pi_promotion.py guards the promotion workflow itself. A workflow-
       # only edit must start the hooks job that executes that contract suite.
       - ".github/workflows/pi-promotion.yml"
@@ -228,6 +233,8 @@ jobs:
               # test_release_workflow.py runs in the hooks job and is the only
               # guard on the release workflow's publish gates (#378/#380/#385).
               - '.github/workflows/release.yml'
+              # This job validates the release-critical live-proof marker.
+              - 'docs/codex-parity-testing.md'
               # test_pi_promotion.py guards this workflow's runner-bound state
               # and receipt contract, so a workflow-only PR must reach hooks.
               - '.github/workflows/pi-promotion.yml'
@@ -339,6 +346,9 @@ jobs:
               - 'plugins/ca-codex/includes/artifacts.md'
               - 'plugins/ca-pi/includes/artifacts.md'
               - 'docs/artifacts/**'
+              # A main-branch live-proof correction must produce the exact-head
+              # package cohort consumed by the automatic release workflow.
+              - 'docs/codex-parity-testing.md'
               - 'site/package.json'
               - 'site/package-lock.json'
               - 'site/playwright.config.ts'
