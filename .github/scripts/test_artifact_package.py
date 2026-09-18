@@ -1067,6 +1067,34 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(observed[0]["plain.txt"][1], 0o644)
         self.assertEqual(observed[0]["tool.sh"][1], 0o755)
 
+    def test_git_archive_bytes_are_canonical_across_host_autocrlf(self):
+        source = self.base / "source-autocrlf"
+        source.mkdir()
+        subprocess.run(["git", "init"], cwd=source, check=True,
+                       capture_output=True)
+        (source / "unclassified.txt").write_bytes(b"first\nsecond\n")
+        subprocess.run(["git", "add", "unclassified.txt"], cwd=source,
+                       check=True, capture_output=True)
+        subprocess.run([
+            "git", "-c", "user.name=Artifact Test", "-c",
+            "user.email=artifact@example.invalid", "commit", "-m", "fixture",
+        ], cwd=source, check=True, capture_output=True)
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=source, check=True,
+            capture_output=True, text=True, encoding="utf-8",
+        ).stdout.strip()
+
+        observed = []
+        for autocrlf in ("false", "true"):
+            subprocess.run(["git", "config", "core.autocrlf", autocrlf],
+                           cwd=source, check=True, capture_output=True)
+            observed.append(PACKAGER._git_archive_files(
+                source, commit, ("unclassified.txt",)
+            ))
+
+        self.assertEqual(observed[0], observed[1])
+        self.assertEqual(observed[0]["unclassified.txt"][0], b"first\nsecond\n")
+
     def test_release_packaging_is_create_only_and_rejects_linked_output(self):
         manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
         native_platform = next(iter(manifest["binaries"]))

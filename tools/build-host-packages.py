@@ -540,7 +540,8 @@ def _source_identity(source_repo: Path, source_commit: str) -> str:
 def _git_archive_files(source_repo: Path, source_commit: str,
                        paths: tuple[str, ...]) -> dict[str, tuple[bytes, int, str, str]]:
     raw = _git_package_output(
-        "archive", "--format=tar", source_commit, "--", *paths,
+        "-c", "core.autocrlf=false", "archive", "--format=tar", source_commit,
+        "--", *paths,
         repo=source_repo, binary=True,
     )
     files: dict[str, tuple[bytes, int, str, str]] = {}
