@@ -33,7 +33,7 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.1","candidate_commit":"a82f9a47f895367df0f36142df7b12068a090d57","candidate_package_sha256":"e0bdcf94cb273e5a22900f7edfb4bcbfdcd8a3941d870fbfec92e33af4d59d15","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-18","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.1","candidate_commit":"690b2e202462eaa86d92700dc676b76fe5b4b9f7","candidate_package_sha256":"e0bdcf94cb273e5a22900f7edfb4bcbfdcd8a3941d870fbfec92e33af4d59d15","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-18","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.1**, Windows, 2026-09-18.
 A fresh ephemeral Codex CLI task using the supported `gpt-5.5` model selected the exact 0.13.1
 package installed from the CI-assembled release archive. Its tracked candidate content has digest
