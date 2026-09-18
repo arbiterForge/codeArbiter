@@ -2143,13 +2143,15 @@ class LaneDriverTest(unittest.TestCase):
         # LAST_TAG..HEAD -- $PAYLOAD`, default pretty format) is a RUN
         # invocation whose only other test coverage is its exit code — a
         # mutant substituting a bogus-but-still-zero-exit revision range
-        # into it would survive undetected without this. Its stdout is
-        # git's own default format, one `commit <sha>` line per entry.
+        # into it would survive undetected without this. The lane now pins
+        # `--format=%H`, so stdout is one full object ID per entry rather
+        # than git's human-oriented `commit <sha>` blocks.
         last_tag = self.result["last_tag_lib"]
         independent_count = int(_git(
             ["rev-list", "--count", f"{last_tag}..HEAD"], self.lane.consumer_root).stdout.strip())
         stdout = self.result["processes"]["window_scope_bare"].stdout
-        commit_lines = [ln for ln in stdout.splitlines() if ln.startswith("commit ")]
+        commit_lines = [ln for ln in stdout.splitlines()
+                        if re.fullmatch(r"[0-9a-f]{40,64}", ln)]
         self.assertEqual(len(commit_lines), independent_count)
         self.assertEqual(len(commit_lines), 3)
 
