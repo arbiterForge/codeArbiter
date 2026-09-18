@@ -757,6 +757,43 @@ try {
   [Console]::In.ReadLine() | Out-Null
 } finally { $stream.Dispose() }
 `;
+var WINDOWS_PIN_READY_TIMEOUT_MS = 3e4;
+var WINDOWS_PIN_CLOSE_TIMEOUT_MS = 5e3;
+function waitForChildClose(child, timeoutMs) {
+  if (child.exitCode !== null || child.signalCode !== null) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      clearTimeout(timer);
+      child.off("close", closed);
+      child.off("error", failed);
+    };
+    const closed = () => {
+      cleanup();
+      resolve();
+    };
+    const failed = (error) => {
+      cleanup();
+      reject(error);
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("timed out waiting for the artifact executable pin guard to close"));
+    }, timeoutMs);
+    child.once("close", closed);
+    child.once("error", failed);
+  });
+}
+async function releaseWindowsPinGuard(guard) {
+  if (guard.exitCode !== null || guard.signalCode !== null) return;
+  guard.stdin.end("release\n");
+  try {
+    await waitForChildClose(guard, WINDOWS_PIN_CLOSE_TIMEOUT_MS);
+  } catch (error) {
+    guard.kill();
+    await waitForChildClose(guard, WINDOWS_PIN_CLOSE_TIMEOUT_MS);
+    throw error;
+  }
+}
 async function windowsPinGuard(binary) {
   const systemRoot = process.env.SystemRoot || process.env.WINDIR;
   if (!systemRoot) throw new Error("Windows system root is unavailable for pinned artifact launch");
@@ -768,7 +805,7 @@ async function windowsPinGuard(binary) {
   await new Promise((resolve, reject) => {
     let stdout = "";
     let stderr = "";
-    const timer = setTimeout(() => reject(new Error("timed out pinning the verified artifact executable")), 5e3);
+    const timer = setTimeout(() => reject(new Error("timed out pinning the verified artifact executable")), WINDOWS_PIN_READY_TIMEOUT_MS);
     const fail = () => {
       clearTimeout(timer);
       reject(new Error(`could not pin the verified artifact executable: ${stderr.trim().slice(0, 512) || `exit ${guard.exitCode}`}`));
@@ -789,8 +826,9 @@ async function windowsPinGuard(binary) {
       reject(error);
     });
     guard.once("exit", fail);
-  }).catch((error) => {
+  }).catch(async (error) => {
     guard.kill();
+    await waitForChildClose(guard, WINDOWS_PIN_CLOSE_TIMEOUT_MS).catch(() => void 0);
     throw error;
   });
   return guard;
@@ -807,8 +845,7 @@ async function runPinnedArtifact(binary, root, request) {
         maxBuffer: ARTIFACT_MAX_RESPONSE
       });
     } finally {
-      guard.stdin.end("release\n");
-      guard.kill();
+      await releaseWindowsPinGuard(guard);
     }
   }
   if (!binary.handle) throw new Error("artifact executable descriptor was not retained");
@@ -2507,6 +2544,7 @@ export {
   PLAN_SHAPE,
   SAFE_RUN_ID,
   SAFE_TASK_ID,
+  WINDOWS_PIN_READY_TIMEOUT_MS,
   _resetAllowedWorktreeRoot,
   allowedWorktreeRoot,
   assertContainedWorktree,
@@ -2540,6 +2578,7 @@ export {
   projectPlanMetaForReport,
   readSampling,
   redactSecrets,
+  releaseWindowsPinGuard,
   removeWorktreeVerified,
   run,
   runArtifactDir,

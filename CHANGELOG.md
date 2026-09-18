@@ -19,6 +19,9 @@ predate the plugin rewrite and are grouped by date.
 - Require a merged default-branch commit and green hosted exact-head evidence
   before release tag composition, and establish one POSIX shell before the
   portable workflow runs on Windows.
+- Give the Windows artifact pin guard enough time to start on native ARM64 and
+  wait for it to release the verified executable before returning, preventing
+  false farm failures and locked temporary repositories.
 
 ## [2.21.0] - 2026-09-17
 
