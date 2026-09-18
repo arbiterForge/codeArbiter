@@ -16,7 +16,7 @@ workflow runs inside one POSIX-compatible shell session. On Windows, resolve and
 Windows' own `bash.exe` before the interpreter step below; MUST NOT paste the `sh` snippets into
 PowerShell and treat PowerShell's exit status as their verdict. A native PowerShell session may be
 used only to locate and launch Git Bash, for example by resolving `git.exe`, taking its installation
-root, and invoking the sibling `bin/bash.exe --noprofile --norc`. Reject WSL aliases and WindowsApps
+root, and invoking `bash.exe --noprofile --norc` from that installation's `bin` directory. Reject WSL aliases and WindowsApps
 stubs because they execute in a different filesystem. If no POSIX-compatible shell is available,
 STOP; do not translate the workflow ad hoc into a second command language.
 
