@@ -13,6 +13,7 @@ import { readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 const repositoryRoot = path.resolve(process.cwd(), "..");
@@ -36,9 +37,34 @@ const digest = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex
 const escapesRoot = (relative: string) =>
   path.isAbsolute(relative) || /^\.\.(?:[/\\]|$)/u.test(relative);
 
+const layoutDefects = (page: import("@playwright/test").Page) => page.evaluate(() => {
+  const describe = (element: Element) => {
+    const html = element as HTMLElement;
+    return `${element.tagName.toLowerCase()}${html.id ? `#${html.id}` : ""}${html.className ? `.${String(html.className).trim().replace(/\s+/gu, ".")}` : ""}`;
+  };
+  const unexpectedOverflow = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+    .filter((element) => {
+      const style = getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden" || element.clientWidth === 0) return false;
+      if (element.matches("pre,.table-wrap") || element.closest("pre,.table-wrap")) return false;
+      return element.scrollWidth > element.clientWidth + 1;
+    })
+    .map(describe);
+  const escapedContainers = Array.from(
+    document.querySelectorAll<HTMLElement>("article.record,header.hero,section.group,footer.footer,.table-wrap,pre"),
+  ).filter((element) => {
+    const parent = element.parentElement;
+    if (!parent || getComputedStyle(element).display === "none") return false;
+    const own = element.getBoundingClientRect();
+    const boundary = parent.getBoundingClientRect();
+    return own.left < boundary.left - 1 || own.right > boundary.right + 1;
+  }).map(describe);
+  return { unexpectedOverflow, escapedContainers };
+});
+
 for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
   for (const viewport of qualification.viewports) {
-    test(`${artifact} is locally reviewable at ${viewport.name}`, async ({ browser }) => {
+    test(`${artifact} is locally reviewable at ${viewport.name}`, async ({ browser }, testInfo) => {
       const artifactPath = path.resolve(artifactRoot, identity.path);
       const lexicalRelative = path.relative(artifactRoot, artifactPath);
       if (escapesRoot(lexicalRelative)) {
@@ -61,6 +87,7 @@ for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
       page.on("request", (request) => {
         if (/^https?:/u.test(request.url())) remoteRequests.push(request.url());
       });
+      await page.route(/^https?:/u, (route) => route.abort("blockedbyclient"));
 
       await page.goto(pathToFileURL(artifactPathReal).href, {
         waitUntil: "load",
@@ -73,6 +100,16 @@ for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
         await embeddedBrand.evaluate((image: HTMLImageElement) => image.naturalWidth),
       ).toBeGreaterThan(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect(await layoutDefects(page)).toEqual({
+        unexpectedOverflow: [],
+        escapedContainers: [],
+      });
+      const initialPath = testInfo.outputPath(`${artifact}-${viewport.name}-initial.png`);
+      await page.screenshot({ fullPage: false, path: initialPath });
+      await testInfo.attach(`${artifact}-${viewport.name}-initial`, {
+        path: initialPath,
+        contentType: "image/png",
+      });
 
       const semantics = await page.evaluate(() => {
         const headings = Array.from(document.querySelectorAll("h1,h2,h3,h4,h5,h6"));
@@ -90,6 +127,7 @@ for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
           unnamedLinks: Array.from(document.links).filter((link) => !link.textContent?.trim() && !link.getAttribute("aria-label")).length,
           unnamedSummaries: Array.from(document.querySelectorAll("summary")).filter((summary) => !summary.textContent?.trim()).length,
           remoteLinks: Array.from(document.links).map((link) => link.href).filter((href) => /^https?:/u.test(href)),
+          executableScripts: document.querySelectorAll('script:not([type="application/json"])').length,
         };
       });
       expect(semantics.lang).toBe("en");
@@ -102,6 +140,13 @@ for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
       expect(semantics.unnamedLinks).toBe(0);
       expect(semantics.unnamedSummaries).toBe(0);
       expect(semantics.remoteLinks).toEqual([]);
+      expect(semantics.executableScripts).toBe(0);
+
+      const skip = page.locator("a.skip");
+      await page.keyboard.press("Tab");
+      await expect(skip).toBeFocused();
+      await page.keyboard.press("Enter");
+      expect(new URL(page.url()).hash).toBe("#main-content");
 
       const disclosures = page.locator("details > summary");
       if (artifact === "plan") expect(await disclosures.count()).toBeGreaterThan(0);
@@ -119,14 +164,29 @@ for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
           (details: HTMLDetailsElement) => details.open,
         )).toBe(!initiallyOpen);
       }
-
-      await page.evaluate(() => {
-        const selectors = "p,li,td,th,summary,h1,h2,h3,h4,code,pre,.deck";
-        for (const element of Array.from(document.querySelectorAll<HTMLElement>(selectors))) {
-          element.style.fontSize = `${Number.parseFloat(getComputedStyle(element).fontSize) * 2}px`;
-        }
+      const screenPath = testInfo.outputPath(`${artifact}-${viewport.name}-screen.png`);
+      await page.screenshot({ fullPage: false, path: screenPath });
+      await testInfo.attach(`${artifact}-${viewport.name}-screen`, {
+        path: screenPath,
+        contentType: "image/png",
       });
+
+      const resizeMismatches = await page.evaluate(() => {
+        const elements = [document.body, ...Array.from(document.body.querySelectorAll<HTMLElement>("*"))];
+        const originalSizes = elements.map((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+        elements.forEach((element, index) => {
+          element.style.fontSize = `${originalSizes[index] * 2}px`;
+        });
+        return elements.filter((element, index) =>
+          Math.abs(Number.parseFloat(getComputedStyle(element).fontSize) - originalSizes[index] * 2) > 0.1
+        ).map((element) => element.tagName.toLowerCase());
+      });
+      expect(resizeMismatches).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect(await layoutDefects(page)).toEqual({
+        unexpectedOverflow: [],
+        escapedContainers: [],
+      });
 
       await page.emulateMedia({ media: "print" });
       const hiddenDisclosureBodies = await page.locator("details > :not(summary)").evaluateAll((elements) =>
@@ -136,8 +196,45 @@ for (const [artifact, identity] of Object.entries(qualification.artifacts)) {
         }).length,
       );
       expect(hiddenDisclosureBodies).toBe(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       expect(remoteRequests).toEqual([]);
+      const printPath = testInfo.outputPath(`${artifact}-${viewport.name}-print.png`);
+      await page.screenshot({ fullPage: false, path: printPath });
+      await testInfo.attach(`${artifact}-${viewport.name}-print`, {
+        path: printPath,
+        contentType: "image/png",
+      });
       await context.close();
+
+      // Axe itself is JavaScript. Run it in a separate instrumentation-only
+      // context over the same digest-checked file; the native review above
+      // remains JavaScript-disabled and proves the artifact has no executable
+      // script surface of its own.
+      const auditContext = await browser.newContext({
+        bypassCSP: true,
+        javaScriptEnabled: true,
+        viewport: { width: viewport.width, height: viewport.height },
+      });
+      const auditPage = await auditContext.newPage();
+      await auditPage.route(/^https?:/u, (route) => route.abort("blockedbyclient"));
+      await auditPage.goto(pathToFileURL(artifactPathReal).href, { waitUntil: "load" });
+      await auditPage.locator("details").evaluateAll((details) => {
+        for (const detail of details) (detail as HTMLDetailsElement).open = true;
+      });
+      const accessibility = await new AxeBuilder({ page: auditPage })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(
+        accessibility.violations,
+        JSON.stringify(
+          accessibility.violations.map((violation) => ({
+            id: violation.id,
+            impact: violation.impact,
+            targets: violation.nodes.map((node) => node.target),
+          })),
+        ),
+      ).toEqual([]);
+      await auditContext.close();
     });
   }
 }

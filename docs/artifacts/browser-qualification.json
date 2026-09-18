@@ -45,7 +45,8 @@
     "keyboard focus and disclosure toggle",
     "print exposes disclosure bodies",
     "single named main landmark and h1",
-    "ordered headings, unique IDs, and named images, links, and summaries"
+    "ordered headings, unique IDs, and named images, links, and summaries",
+    "axe-core WCAG 2 A/AA, WCAG 2.1 A/AA, and WCAG 2.2 AA rules report no violations in a separate instrumentation-only context over the same exact bytes"
   ],
-  "evidence_boundary": "The committed file declares the matrix and deterministic identities expected from the current native candidate. A current hosted run against the PR head is required before T-13 is accepted; this file alone is not execution evidence."
+  "evidence_boundary": "The committed file declares the matrix and deterministic identities expected from the current native candidate. Native file review runs with page JavaScript disabled and rejects any executable script element; axe-core necessarily uses a separate JavaScript-enabled, CSP-bypassed instrumentation context over the same digest-checked local file, with HTTP and HTTPS blocked. Axe-core provides an automated ruleset evaluation, not full WCAG certification or a substitute for assistive-technology testing. A current hosted run against the PR head is required before T-13 is accepted; this file alone and the historical original-review2 browser report are not execution evidence."
 }

@@ -3319,6 +3319,9 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             'ARTIFACT_BROWSER_ONLY: "true"',
             "ARTIFACT_REVIEW_ROOT:",
             "npm run test:browser -- artifact-review.spec.ts",
+            "Preserve browser qualification views",
+            "name: artifact-browser-review",
+            "path: site/.astro/playwright",
         ):
             self.assertIn(control, browser)
         self.assertNotIn("continue-on-error", browser)
@@ -3330,6 +3333,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             'testIgnore: artifactOnly ? undefined : "artifact-review.spec.ts"',
             playwright_config,
         )
+        self.assertIn('preserveOutput: artifactOnly ? "always" : "failures-only"', playwright_config)
 
         contract = (REPO_ROOT / "site/test/browser/artifact-review.spec.ts").read_text(
             encoding="utf-8"
@@ -3343,6 +3347,11 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "toBeFocused",
             "headingJump",
             "full WCAG certification",
+            "route(/^https?:/u",
+            "executableScripts",
+            "bypassCSP: true",
+            "testInfo.outputPath",
+            "wcag22aa",
         ):
             self.assertIn(boundary, contract)
 
@@ -3357,6 +3366,25 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             {"desktop", "compact"},
         )
         self.assertIn("full WCAG certification", qualification["browser"]["unsupported_claims"])
+        self.assertIn("@axe-core/playwright", contract)
+        manifest = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))
+        lock = json.loads((REPO_ROOT / "site/package-lock.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["devDependencies"].get("@axe-core/playwright"), "4.13.0")
+        axe_playwright = lock["packages"]["node_modules/@axe-core/playwright"]
+        axe_core = lock["packages"]["node_modules/axe-core"]
+        self.assertEqual(axe_playwright["version"], "4.13.0")
+        self.assertEqual(
+            axe_playwright["resolved"],
+            "https://registry.npmjs.org/@axe-core/playwright/-/playwright-4.13.0.tgz",
+        )
+        self.assertEqual(axe_playwright["license"], "MPL-2.0")
+        self.assertEqual(axe_playwright["dependencies"], {"axe-core": "~4.13.0"})
+        self.assertEqual(axe_core["version"], "4.13.0")
+        self.assertEqual(
+            axe_core["resolved"],
+            "https://registry.npmjs.org/axe-core/-/axe-core-4.13.0.tgz",
+        )
+        self.assertEqual(axe_core["license"], "MPL-2.0")
 
     def test_artifact_conformance_dependency_graph_is_exact_and_wheel_only(self):
         direct = (REPO_ROOT / ".github/requirements/artifact-conformance.in").read_text(

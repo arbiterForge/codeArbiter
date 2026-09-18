@@ -18,6 +18,7 @@ export default defineConfig({
   retries: 0,
   timeout: 30_000,
   reporter: "list",
+  preserveOutput: artifactOnly ? "always" : "failures-only",
   testMatch: artifactOnly ? "artifact-review.spec.ts" : undefined,
   testIgnore: artifactOnly ? undefined : "artifact-review.spec.ts",
   use: {

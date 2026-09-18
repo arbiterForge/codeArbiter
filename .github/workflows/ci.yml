@@ -562,6 +562,16 @@ jobs:
           ARTIFACT_BROWSER_ONLY: "true"
           ARTIFACT_REVIEW_ROOT: ${{ runner.temp }}/artifact-browser-review
         run: npm run test:browser -- artifact-review.spec.ts
+      - name: Preserve browser qualification views
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: artifact-browser-review
+          path: site/.astro/playwright
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
 
   artifact-package-assembly:
     name: "[CHECK] | [CORE] | Structured artifact package assembly"
