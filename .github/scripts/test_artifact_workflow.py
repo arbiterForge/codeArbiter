@@ -298,6 +298,21 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
             )
             self.assertIn("must not read or write a shadow Markdown ledger", source)
 
+    def test_authority_capture_is_bound_to_host_owned_source_bytes(self) -> None:
+        source = " ".join(
+            (REPO / "core/surface/includes/artifacts.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        self.assertIn("does not expose an event-authoring helper", source)
+        self.assertIn("source's exact locator and digest", source)
+        self.assertIn("Never call `capture` with request-authored", source)
+        self.assertIn("still-present policy source", source)
+        self.assertIn("0.1.0 remains readable for inspection", source)
+        self.assertIn("fresh 0.2.0 attestation", source)
+        self.assertIn("cooperative same-user attestation model", source)
+        self.assertFalse(hasattr(_artifactlib.ArtifactClient, "capture_workflow_event"))
+
     def test_execution_surfaces_share_the_disabled_default_format_contract(self) -> None:
         sources = tuple(
             " ".join(path.read_text(encoding="utf-8").split())
@@ -525,6 +540,29 @@ class ArtifactWorkflowTest(unittest.TestCase):
 
         self.assertEqual(self._snapshot(), before)
 
+    def test_current_acceptance_gate_refuses_missing_host_authority_source(self) -> None:
+        self._accept_first_scope()
+        receipts = self.root / ".codearbiter" / ".artifacts" / "receipts"
+        quality_receipts = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in receipts.glob("*.json")
+            if json.loads(path.read_text(encoding="utf-8")).get("kind")
+            == "quality_review"
+        ]
+        self.assertEqual(len(quality_receipts), 1)
+        source = self.root / quality_receipts[0]["authority_source_ref"]
+        source.unlink()
+        before = self._snapshot()
+
+        with self.assertRaises(ArtifactError) as caught:
+            self._acceptance_gate()
+
+        self.assertIn(
+            caught.exception.code,
+            {"AUTHORITY_UNVERIFIED", "ACCEPTANCE_REQUIRED"},
+        )
+        self.assertEqual(self._snapshot(), before)
+
     def test_current_acceptance_gate_refuses_a_plan_rebound_elsewhere(self) -> None:
         root = self.root.parent / "wrong-binding"
         root.mkdir()
@@ -660,13 +698,13 @@ class ArtifactWorkflowTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, "DRAFT_BINDING")
 
     def test_caller_labels_cannot_widen_task_state_authority(self) -> None:
-        before = self._snapshot()
         cases = (
             ("prerequisite", "verification_runner", "satisfied"),
             ("reconciliation", "review_workflow", "reconciled"),
         )
         for kind, authority_kind, verdict in cases:
             with self.subTest(kind=kind, authority_kind=authority_kind):
+                before = self._snapshot()
                 with self.assertRaises(ArtifactError) as caught:
                     self.harness.capture(
                         "PLAN-FLOW",
@@ -677,7 +715,27 @@ class ArtifactWorkflowTest(unittest.TestCase):
                         {},
                     )
                 self.assertEqual(caught.exception.code, "AUTHORITY_UNVERIFIED")
-                self.assertEqual(self._snapshot(), before)
+                after = self._snapshot()
+                for path, contents in before.items():
+                    self.assertEqual(after.get(path), contents, path)
+                added = set(after) - set(before)
+                self.assertTrue(added)
+                self.assertTrue(
+                    all(
+                        path.startswith(
+                            ".codearbiter/.artifacts/authority-sources/"
+                        )
+                        for path in added
+                    ),
+                    added,
+                )
+                self.assertFalse(
+                    any(
+                        path.startswith(".codearbiter/.artifacts/events/")
+                        or path.startswith(".codearbiter/.artifacts/receipts/")
+                        for path in added
+                    )
+                )
 
     def test_approved_pair_dispatches_with_complete_context_and_resumes_in_progress(self) -> None:
         self.harness.approve_pair()

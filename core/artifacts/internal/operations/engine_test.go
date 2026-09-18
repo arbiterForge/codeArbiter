@@ -48,6 +48,25 @@ func (h *harness) run(op string, r object) object {
 	return m
 }
 func (h *harness) next() string { h.n++; return fmt.Sprintf("fixture-op-%04d", h.n) }
+func (h *harness) authoritySource(event object) object {
+	h.t.Helper()
+	b, err := canonical.Marshal(event)
+	if err != nil {
+		h.t.Fatal(err)
+	}
+	digest := canonical.BytesHash(b)
+	dir := filepath.Join(h.root, ".codearbiter", ".artifacts", "authority-sources")
+	if err = os.MkdirAll(dir, 0700); err != nil {
+		h.t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(dir, digest+".json"), b, 0600); err != nil {
+		h.t.Fatal(err)
+	}
+	return object{
+		"source_ref":    ".codearbiter/.artifacts/authority-sources/" + digest + ".json",
+		"source_sha256": digest,
+	}
+}
 func (h *harness) doc(id string) *model.Document {
 	h.t.Helper()
 	f, e := store.Open(h.root)
@@ -106,7 +125,15 @@ func (h *harness) receipt(d *model.Document, record, kind string, payload object
 		h.t.Fatal(e)
 	}
 	eh := canonical.BytesHash(eb)
-	receipt := object{"format": "codearbiter.receipt/0.1.0", "kind": kind, "authority_kind": ak, "subject": subject, "event_sha256": eh}
+	sourcePath := authority.SourceRef(eh)
+	sourceDir := filepath.Join(h.root, filepath.FromSlash(filepath.Dir(sourcePath)))
+	if e = os.MkdirAll(sourceDir, 0700); e != nil {
+		h.t.Fatal(e)
+	}
+	if e = os.WriteFile(filepath.Join(h.root, filepath.FromSlash(sourcePath)), eb, 0600); e != nil {
+		h.t.Fatal(e)
+	}
+	receipt := object{"format": "codearbiter.receipt/0.2.0", "kind": kind, "authority_kind": ak, "subject": subject, "event_sha256": eh, "authority_source_ref": sourcePath, "authority_source_sha256": eh}
 	rb, e := canonical.Marshal(receipt)
 	if e != nil {
 		h.t.Fatal(e)
@@ -124,6 +151,167 @@ func (h *harness) receipt(d *model.Document, record, kind string, payload object
 		h.t.Fatal(e)
 	}
 	return authority.Ref(rh)
+}
+
+func TestLegacyReceiptIsInspectableButCannotConferAuthority(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	h.approvePair()
+	h.start("T-001")
+	h.review("T-001")
+	h.start("T-002")
+	h.review("T-002")
+	h.accept("CP-01")
+	h.start("T-003")
+	h.review("T-003")
+	h.accept("CP-02")
+
+	// Rewrite every referenced current receipt as its v0.1 equivalent to model
+	// a real pre-upgrade artifact: legacy approvals, task verification/review,
+	// and quality acceptance all remain attached to their workflow records.
+	docs := []*model.Document{h.doc("SPEC-EXAMPLE"), h.doc("PLAN-EXAMPLE")}
+	refs := map[string]bool{}
+	var collect func(any)
+	collect = func(v any) {
+		switch value := v.(type) {
+		case map[string]any:
+			for _, child := range value {
+				collect(child)
+			}
+		case []any:
+			for _, child := range value {
+				collect(child)
+			}
+		case string:
+			if strings.HasPrefix(value, authority.Root+"/receipts/") {
+				refs[value] = true
+			}
+		}
+	}
+	for _, d := range docs {
+		collect(d.Data)
+	}
+
+	f, err := store.Open(h.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacements := map[string]string{}
+	legacyRefs := []string{}
+	for ref := range refs {
+		current, loadErr := authority.Load(f, ref)
+		if loadErr != nil {
+			t.Fatal(loadErr)
+		}
+		legacy := object{
+			"format":         "codearbiter.receipt/0.1.0",
+			"kind":           current.Data["kind"],
+			"authority_kind": current.Data["authority_kind"],
+			"subject":        current.Data["subject"],
+			"event_sha256":   current.Data["event_sha256"],
+		}
+		legacyBytes, marshalErr := canonical.Marshal(legacy)
+		if marshalErr != nil {
+			t.Fatal(marshalErr)
+		}
+		legacyHash := canonical.BytesHash(legacyBytes)
+		legacyRef := authority.Ref(legacyHash)
+		if err = f.PutReceipt(legacyHash+".json", legacyBytes); err != nil {
+			t.Fatal(err)
+		}
+		replacements[ref] = legacyRef
+		replacements[current.Hash] = legacyHash
+		legacyRefs = append(legacyRefs, legacyRef)
+	}
+	f.Close()
+
+	var replace func(any)
+	replace = func(v any) {
+		switch value := v.(type) {
+		case map[string]any:
+			for key, child := range value {
+				if text, ok := child.(string); ok {
+					if replacement, found := replacements[text]; found {
+						value[key] = replacement
+					}
+				} else {
+					replace(child)
+				}
+			}
+		case []any:
+			for index, child := range value {
+				if text, ok := child.(string); ok {
+					if replacement, found := replacements[text]; found {
+						value[index] = replacement
+					}
+				} else {
+					replace(child)
+				}
+			}
+		}
+	}
+	for _, d := range docs {
+		replace(d.Data)
+		legacyDoc := testutil.Seal(t, d.Data)
+		body, renderErr := render.Render(legacyDoc)
+		if renderErr != nil {
+			t.Fatal(renderErr)
+		}
+		dir := "specs"
+		if d.Kind() == "plan" {
+			dir = "plans"
+		}
+		if err = os.WriteFile(filepath.Join(h.root, ".codearbiter", dir, "example.html"), body, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	f, err = store.Open(h.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, ref := range legacyRefs {
+		if _, err = authority.Inspect(f, ref); err != nil {
+			t.Fatalf("legacy receipt is not inspectable: %v", err)
+		}
+		if _, err = authority.Load(f, ref); fault.Code(err) != "AUTHORITY_UNVERIFIED" || !strings.Contains(err.Error(), "fresh policy-owned attestation") {
+			t.Fatalf("legacy receipt conferred authority or lacked upgrade guidance: %v", err)
+		}
+	}
+	if _, err = authority.Approved(f, h.doc("SPEC-EXAMPLE")); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
+		t.Fatalf("legacy approval conferred current authority: %v", err)
+	}
+	if _, err = evidence.Snapshot(f, h.doc("PLAN-EXAMPLE")); err != nil {
+		t.Fatalf("legacy receipt prevented evidence snapshot: %v", err)
+	}
+	f.Close()
+
+	if _, err = h.request("eligible", object{"artifact_id": "PLAN-EXAMPLE"}); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
+		t.Fatalf("legacy workflow remained dispatchable: %v", err)
+	}
+	spec := h.doc("SPEC-EXAMPLE")
+	h.mut("approve", spec.ID(), object{"receipt": h.receipt(spec, spec.ID(), "approval", object{})})
+	plan := h.doc("PLAN-EXAMPLE")
+	h.mut("approve", plan.ID(), object{"receipt": h.receipt(plan, plan.ID(), "approval", object{})})
+
+	// The tasks were accepted before upgrade. Fresh v0.2 reviews and quality
+	// evidence replace their authority without deleting any v0.1 history.
+	h.review("T-001")
+	h.review("T-002")
+	h.accept("CP-01")
+	h.review("T-003")
+	h.accept("CP-02")
+	if result := h.run("eligible", object{"artifact_id": "PLAN-EXAMPLE"}); result["all_accepted_and_current"] != true {
+		t.Fatalf("fresh attestation did not restore current acceptance: %v", result)
+	}
+	if ticket := h.context("T-001", 65536); len(ticket) != 64 {
+		t.Fatalf("freshly attested workflow did not restore contextual reads: %q", ticket)
+	}
+	for _, ref := range legacyRefs {
+		if _, err = os.Stat(filepath.Join(h.root, filepath.FromSlash(ref))); err != nil {
+			t.Fatalf("legacy receipt was not preserved: %v", err)
+		}
+	}
 }
 func (h *harness) approvePair() {
 	h.t.Helper()
@@ -379,7 +567,7 @@ func TestCallerAuthorityLabelsCannotWidenWorkflowAuthority(t *testing.T) {
 				"payload":     object{},
 				"source_text": "A caller label is not workflow authority.",
 			}
-			if _, err := h.request("capture", object{"event": event}); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
+			if _, err := h.request("capture", h.authoritySource(event)); fault.Code(err) != "AUTHORITY_UNVERIFIED" {
 				t.Fatalf("caller authority label was accepted: %v", err)
 			}
 		})

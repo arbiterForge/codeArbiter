@@ -9,6 +9,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -93,8 +94,12 @@ func TestCaptureIsIdempotentNotApproval(t *testing.T) {
 	h.createPair()
 	s := h.doc("SPEC-EXAMPLE")
 	ev := object{"format": "codearbiter.workflow-event/0.1.0", "kind": "approval", "authority_kind": "user_workflow", "subject": object{"artifact_id": s.ID(), "record_id": s.ID(), "normative_sha256": s.NormHash()}, "actor": "synthetic test", "origin": "unit test", "verdict": "approved", "payload": object{}, "source_text": "Synthetic event; no production approval."}
-	a := h.run("capture", object{"event": ev})
-	b := h.run("capture", object{"event": ev})
+	if _, e := h.request("capture", object{"event": ev}); fault.Code(e) != "INVALID_MODEL" {
+		t.Fatalf("inline caller event was accepted: %v", e)
+	}
+	source := h.authoritySource(ev)
+	a := h.run("capture", source)
+	b := h.run("capture", source)
 	if a["receipt"] != b["receipt"] {
 		t.Fatal("capture not idempotent")
 	}
@@ -105,12 +110,31 @@ func TestCaptureIsIdempotentNotApproval(t *testing.T) {
 	// A kind/verdict mismatch must fail before saving any event bytes.
 	ev["authority_kind"] = "verification_runner"
 	raw, _ := canonical.Marshal(ev)
-	_, e := h.request("capture", object{"event": ev})
+	_, e := h.request("capture", h.authoritySource(ev))
 	if fault.Code(e) != "AUTHORITY_UNVERIFIED" {
 		t.Fatal(e)
 	}
 	if _, e := os.Stat(filepath.Join(h.root, ".codearbiter/.artifacts/events/"+canonical.BytesHash(raw)+".json")); !os.IsNotExist(e) {
 		t.Fatal("invalid event persisted")
+	}
+}
+
+func TestCaptureRejectsUnboundOrChangedAuthoritySource(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	s := h.doc("SPEC-EXAMPLE")
+	ev := object{"format": "codearbiter.workflow-event/0.1.0", "kind": "approval", "authority_kind": "user_workflow", "subject": object{"artifact_id": s.ID(), "record_id": s.ID(), "normative_sha256": s.NormHash()}, "actor": "synthetic test", "origin": "unit test", "verdict": "approved", "payload": object{}, "source_text": "Synthetic event; no production approval."}
+	source := h.authoritySource(ev)
+	wrong := object{"source_ref": source["source_ref"], "source_sha256": strings.Repeat("0", 64)}
+	if _, e := h.request("capture", wrong); fault.Code(e) != "AUTHORITY_UNVERIFIED" {
+		t.Fatalf("wrong source digest was accepted: %v", e)
+	}
+	path := filepath.Join(h.root, filepath.FromSlash(model.S(source["source_ref"])))
+	if e := os.WriteFile(path, []byte("{}\n"), 0600); e != nil {
+		t.Fatal(e)
+	}
+	if _, e := h.request("capture", source); fault.Code(e) != "AUTHORITY_UNVERIFIED" {
+		t.Fatalf("changed authority source was accepted: %v", e)
 	}
 }
 func TestNoIDReuseWithinBatch(t *testing.T) {

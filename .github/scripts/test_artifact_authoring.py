@@ -600,25 +600,41 @@ class WorkflowHarness:
         payload: dict,
     ) -> str:
         identity = self.client.call("identity", {"artifact_id": artifact_id})
+        event = {
+                "format": "codearbiter.workflow-event/0.1.0",
+                "kind": kind,
+                "authority_kind": authority_kind,
+                "subject": {
+                    "artifact_id": artifact_id,
+                    "normative_sha256": identity["normative_sha256"],
+                    "record_id": record_id,
+                },
+                "actor": "synthetic behavioral fixture",
+                "origin": f"isolated test {self.operation_id('event')}",
+                "verdict": verdict,
+                "payload": payload,
+                "source_text": "Synthetic event for boundary testing; not production authority.",
+            }
+        raw = json.dumps(
+            event,
+            ensure_ascii=True,
+            allow_nan=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("ascii")
+        digest = hashlib.sha256(raw).hexdigest()
+        source_ref = f".codearbiter/.artifacts/authority-sources/{digest}.json"
+        target = self.root / source_ref
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with target.open("xb") as stream:
+                stream.write(raw)
+        except FileExistsError:
+            if target.read_bytes() != raw:
+                raise AssertionError("fixture authority-source digest collision")
         result = self.client.call(
             "capture",
-            {
-                "event": {
-                    "format": "codearbiter.workflow-event/0.1.0",
-                    "kind": kind,
-                    "authority_kind": authority_kind,
-                    "subject": {
-                        "artifact_id": artifact_id,
-                        "normative_sha256": identity["normative_sha256"],
-                        "record_id": record_id,
-                    },
-                    "actor": "synthetic behavioral fixture",
-                    "origin": f"isolated test {self.operation_id('event')}",
-                    "verdict": verdict,
-                    "payload": payload,
-                    "source_text": "Synthetic event for boundary testing; not production authority.",
-                }
-            },
+            {"source_ref": source_ref, "source_sha256": digest},
         )
         return result["receipt"]
 

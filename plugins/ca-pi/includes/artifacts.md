@@ -55,10 +55,21 @@ ADR compatibility review, open-question handling, harvest and user/SMARTS gates.
 One criterion may need multiple tests. Never invent a condition, oracle, source,
 command, result, approval or reviewer to satisfy a required field.
 
-`capture` records the actual existing user/SMARTS or review event with exact
-artifact/definition identity. It does not change approval state. `approve` checks
-that receipt against current ready content. This is the repository's cooperative
-attestation model, not proof against an unrestricted same-user adversary.
+The existing user, SMARTS, reviewer, or verification boundary must first persist
+its actual policy-owned workflow event as canonical JSON in the reserved
+content-addressed authority-source store. The artifact adapter does not expose an
+event-authoring helper: it receives only that existing source's exact locator and
+digest and passes those two fields to `capture`. Never call `capture` with
+request-authored `authority_kind`, verdict, actor, or source-text labels, and
+never create an authority source merely to satisfy an artifact transition.
+`capture` does not change approval state. `approve` checks the resulting receipt
+against current ready content. A missing or changed receipt, captured event, or
+still-present policy source returns `AUTHORITY_UNVERIFIED`. Receipt format 0.1.0
+remains readable for inspection after upgrade but is not authority-bearing; the
+applicable policy boundary must produce a fresh 0.2.0 attestation before further
+approval, dispatch, acceptance, commit proof, or finalization. This is the
+repository's cooperative same-user attestation model, not cryptographic identity
+proof or protection from an unrestricted same-user filesystem writer.
 
 Create a plan as `draft_preview`, consume existing criterion IDs, then `plan-bind`
 to the approved spec. Approve the plan through the applicable existing workflow.
