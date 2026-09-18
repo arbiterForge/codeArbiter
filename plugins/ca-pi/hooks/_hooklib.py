@@ -571,7 +571,10 @@ def _log_gate_event(kind, tag, msg):
         os_lock_acquired = False
         try:
             fd = os.open(log_path, flags, 0o600)
-            if os.name == "nt":
+            # The trusted sidecar already serializes current writers. Keep the
+            # legacy descriptor lock for compatibility once the log has data,
+            # but Windows cannot reliably lock byte zero of a new empty file.
+            if os.name == "nt" and os.fstat(fd).st_size:
                 import msvcrt
                 os.lseek(fd, 0, os.SEEK_SET)
                 lock_mode = getattr(msvcrt, "LK_NBLCK", msvcrt.LK_LOCK)

@@ -443,6 +443,8 @@ class TestWindowsLockAC3(_GateEventsFixture):
 
     def setUp(self):
         super().setUp()
+        with open(os.path.join(self.cad, "gate-events.log"), "wb") as handle:
+            handle.write(b"seed\n")
         # These cases isolate the legacy Windows lock on the log descriptor.
         # The cross-platform sidecar protocol has independent tests above;
         # patch it here so the injected fake msvcrt sees only the descriptor
@@ -466,6 +468,23 @@ class TestWindowsLockAC3(_GateEventsFixture):
                 OSError(36, "simulated Windows CRT deadlock")
             )
         )
+
+    def test_empty_log_uses_the_trusted_sidecar_without_byte_range_lock(self):
+        os.unlink(os.path.join(self.cad, "gate-events.log"))
+
+        class _UnexpectedMsvcrt:
+            LK_LOCK = 1
+            LK_UNLCK = 0
+
+            @staticmethod
+            def locking(_fd, _mode, _nbytes):
+                raise AssertionError("an empty log has no byte zero to lock")
+
+        with mock.patch.object(os, "name", "nt"), \
+             mock.patch.dict(sys.modules, {"msvcrt": _UnexpectedMsvcrt()}):
+            _hooklib._log_gate_event("WARN", None, "first append")
+
+        self.assertIn("first append", _read_log(self.cad))
 
     def test_lock_called_before_write_and_unlock_called_after(self):
         fake = self._FakeMsvcrt()
@@ -636,7 +655,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
 
         self.assertEqual([call[0] for call in fake.calls], ["lock"])
         sleep.assert_not_called()
-        self.assertEqual(_read_log(self.cad), "")
+        self.assertEqual(_read_log(self.cad), "seed\n")
 
     def test_lock_failure_never_attempts_unlock_without_acquisition(self):
         class _PermanentContentionMsvcrt(self._FakeMsvcrt):
@@ -658,7 +677,7 @@ class TestWindowsLockAC3(_GateEventsFixture):
         self.assertEqual([call[0] for call in fake.calls], ["lock", "lock"])
         self.assertEqual(monotonic.call_count, 3)
         sleep.assert_called_once_with(_hooklib._WINDOWS_LOCK_RETRY_SECONDS)
-        self.assertEqual(_read_log(self.cad), "")
+        self.assertEqual(_read_log(self.cad), "seed\n")
 
 
 class TestConcurrentAppendNoInterleaving(_GateEventsFixture):
