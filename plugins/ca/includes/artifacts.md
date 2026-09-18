@@ -1,21 +1,24 @@
 # Typed HTML specifications and plans
 
-Load only inside the existing brainstorming, planning, TDD, execution or resume
-workflow when the installation has the typed-artifact capability. This leaf adds
-no slash command, agent, skill registration or persistent model tool.
+Load inside the existing brainstorming, planning, TDD, execution or resume
+workflow for new full-lane work or an existing HTML pair.
+This leaf adds no slash command, agent, skill registration or persistent model
+tool.
 
-**Candidate boundary:** the current source qualifies the standalone Linux
-engine, not an installed host payload or every upstream host adapter. No current
-host package ships the binary, so the HTML pilot is unavailable from a normal
-installation. Keep existing Markdown workflows as the default until packaging
-and host qualification complete. A later explicit HTML pilot must stop on a
-missing binary, invalid artifact, stale binding or unverified authority; never
-reinterpret a failed HTML read as an empty legacy spec.
+**Default authoring boundary:** new full feature and sprint spec/plan pairs
+default to canonical `.html`. Check the installed capability before writing; a
+missing, invalid, mismatched or unqualified capability is a STOP and
+the workflow must not fall back to Markdown or create any fallback artifact.
+Report `CAPABILITY_MISSING` and direct the user to repair or reinstall the pinned
+artifact payload before retrying. An existing `.md` exact pair remains Markdown
+and continues on the legacy path without automatic conversion. The feature
+small lane remains an inline mini-spec and creates no artifact. HTML `--farm`
+dispatch remains disabled and outside this rollout.
 
 ## Internal execution contract
 
-Once a qualified payload is actually packaged, its installation-owned
-`release.json` pins the native executable bytes. The stdlib
+The normal qualified package's installation-owned `release.json` pins the native
+executable bytes. The stdlib
 `hooks/_artifactlib.py` bridge selects only that verified installed payload,
 never PATH, an environment-selected binary or a path supplied by the project.
 The existing host's governed execution mechanism and permissions remain
@@ -36,7 +39,7 @@ failure). Logs/stderr are not artifact content.
 
 ## Authoring and approval
 
-New specs and plans use `.codearbiter/specs/<slug>.html` and
+New full-lane specs and plans use `.codearbiter/specs/<slug>.html` and
 `.codearbiter/plans/<slug>.html`. Create a draft, then use typed `apply` changes;
 do not write or regex-edit HTML or its embedded JSON. `record.add` allocates a
 stable ID when omitted. Keep criterion IDs from the spec in plan references;
@@ -50,10 +53,21 @@ ADR compatibility review, open-question handling, harvest and user/SMARTS gates.
 One criterion may need multiple tests. Never invent a condition, oracle, source,
 command, result, approval or reviewer to satisfy a required field.
 
-`capture` records the actual existing user/SMARTS or review event with exact
-artifact/definition identity. It does not change approval state. `approve` checks
-that receipt against current ready content. This is the repository's cooperative
-attestation model, not proof against an unrestricted same-user adversary.
+The existing user, SMARTS, reviewer, or verification boundary must first persist
+its actual policy-owned workflow event as canonical JSON in the reserved
+content-addressed authority-source store. The artifact adapter does not expose an
+event-authoring helper: it receives only that existing source's exact locator and
+digest and passes those two fields to `capture`. Never call `capture` with
+request-authored `authority_kind`, verdict, actor, or source-text labels, and
+never create an authority source merely to satisfy an artifact transition.
+`capture` does not change approval state. `approve` checks the resulting receipt
+against current ready content. A missing or changed receipt, captured event, or
+still-present policy source returns `AUTHORITY_UNVERIFIED`. Receipt format 0.1.0
+remains readable for inspection after upgrade but is not authority-bearing; the
+applicable policy boundary must produce a fresh 0.2.0 attestation before further
+approval, dispatch, acceptance, commit proof, or finalization. This is the
+repository's cooperative same-user attestation model, not cryptographic identity
+proof or protection from an unrestricted same-user filesystem writer.
 
 Create a plan as `draft_preview`, consume existing criterion IDs, then `plan-bind`
 to the approved spec. Approve the plan through the applicable existing workflow.
@@ -73,7 +87,7 @@ delivery receipts. They are not authentication secrets and do not claim
 resistance to an unrestricted same-user filesystem writer. A digest without its
 corresponding engine-written receipt is rejected.
 
-`eligible` is authoritative for task selection on the supported pilot path.
+`eligible` is authoritative for task selection on the HTML path.
 `task-start` checks current spec/plan approval, binding, prerequisites, source
 snapshot, dependency evidence and the complete context ticket. Within a checkpoint,
 a predecessor in `REVIEW` can provisionally unblock its dependent after fresh
@@ -118,7 +132,7 @@ new artifacts are drafts. Original approval/status prose is not transferred.
 Cutover is recoverable as a pair; completed cutovers use `migration-rollback`, which
 refuses any intervening candidate edit. Original bytes remain in transaction history.
 
-**HTML farm dispatch is implemented but not qualified in this candidate.** The
+**HTML farm dispatch remains disabled and out of scope.** The
 engine can derive an immutable base-bound projection, verify it before canary,
 permit only `meta.model`/`meta.apiBaseUrl` enrichment, and seal exact execution
 bytes plus caller-supplied provider-selection assertions. Those assertions are
@@ -126,6 +140,5 @@ auditable correspondence, not authenticated provenance. The shared built dispatc
 before side effects. Keep the HTML `--farm` path disabled until real authority
 adapters, native packaged payloads and the fresh frontier/low-tier qualification
 matrix all pass; the June 2026 run earns no current credit. Existing legacy farm
-behavior is unchanged. Native artifact writes are available only from a matching,
-manifest-verified, natively tested candidate; normal host packages still ship no
-such payload, and macOS remains pending exact-host CI evidence.
+behavior is unchanged. Enabling normal premium-path HTML authoring does not count
+as farm qualification or authorize farm dispatch.

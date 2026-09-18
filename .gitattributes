@@ -42,6 +42,12 @@ plugins/**/*.md text eol=lf
 docs/**/*.md    text eol=lf
 /*.md           text eol=lf
 
+# The selected production-byte rollout pilot is bound to one cross-host digest
+# pair. Keep only those two legacy inputs LF-stable so Windows checkout cannot
+# rewrite the bytes the migration/rollback evidence promises to preserve.
+/.codearbiter/specs/reaudit-ra03-read-only-review-aggregation.md text eol=lf
+/.codearbiter/plans/reaudit-ra03-read-only-review-aggregation.md text eol=lf
+
 # Workflows and their composite actions. Not a style preference: an editor on
 # Windows that rewrites one of these wholesale turns a four-line change into a
 # whole-file diff, which is what happened to ci.yml in #530 (3323 changed lines

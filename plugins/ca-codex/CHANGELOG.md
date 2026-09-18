@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-09-17
+
+### Added
+
+- Ship the source-commit-bound structured-artifact Codex release archive plus
+  exact-host cold-install and read-back gates. New full-lane work remains
+  Markdown by default; typed HTML is available only as an explicitly requested,
+  fail-closed pilot, and repository-directory installs remain supported partial
+  installs when the native payload is absent.
+
 ## [0.12.3] - 2026-09-17
 
 ### Fixed

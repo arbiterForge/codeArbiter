@@ -25,9 +25,10 @@ to approve it in the moment.
 /ca:sprint [goal] [--farm]
 ```
 
-A short goal seeds the spec conversation that opens the sprint. Add `--farm` to send
-implementation work to lower-cost worker agents while the same spec-authoring, test-writing, and
-review responsibilities stay put.
+A short goal seeds the spec conversation that opens the sprint. New full-lane
+sprints author typed HTML by default. `--farm` remains blocked for HTML plans
+until its separate current-model qualification closes; the flag continues to
+name the existing legacy Markdown backend without changing that boundary.
 
 ## Example
 
@@ -36,7 +37,7 @@ review responsibilities stay put.
 
 Opening the sprint spec conversation...
 [Socratic refinement — per-IP limit, window, response on exceed]
-Spec written to .codearbiter/specs/webhook-rate-limit.md. Plan written with 5 tasks.
+Spec written to .codearbiter/specs/webhook-rate-limit.html. Plan written with 5 tasks.
 Approve spec and plan to begin autonomous execution? (y/n)
 > y
 

@@ -5,6 +5,7 @@
 package authority
 
 import (
+	"bytes"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
@@ -30,6 +31,9 @@ func subjectSchema() map[string]any {
 	return obj(map[string]any{"artifact_id": str(), "normative_sha256": digestSchema(), "record_id": str()}, "artifact_id", "normative_sha256", "record_id")
 }
 func ReceiptSchema() map[string]any {
+	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.2.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema(), "authority_source_ref": str(), "authority_source_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256", "authority_source_ref", "authority_source_sha256")
+}
+func legacyReceiptSchema() map[string]any {
 	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.1.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256")
 }
 func EventSchema() map[string]any {
@@ -41,8 +45,9 @@ func first(es []fault.Error) error {
 	}
 	return nil
 }
-func Ref(sha string) string      { return Root + "/receipts/" + sha + ".json" }
-func EventRef(sha string) string { return Root + "/events/" + sha + ".json" }
+func Ref(sha string) string       { return Root + "/receipts/" + sha + ".json" }
+func EventRef(sha string) string  { return Root + "/events/" + sha + ".json" }
+func SourceRef(sha string) string { return Root + "/authority-sources/" + sha + ".json" }
 func refHash(p, sub string) (string, error) {
 	if path.Dir(p) != Root+"/"+sub || !strings.HasSuffix(p, ".json") {
 		return "", fault.New("INVALID_RECEIPT", "receipt/event path is not in its content-addressed store")
@@ -54,12 +59,43 @@ func refHash(p, sub string) (string, error) {
 	return h, nil
 }
 
+// LoadSource reads the host-owned, content-addressed workflow event that the
+// adapter captured from its existing authority boundary. The request supplies
+// only a locator and digest; authority labels are taken from these independently
+// read bytes. This remains a cooperative same-user filesystem boundary, not
+// cryptographic identity authentication.
+func LoadSource(f *store.FS, p, expected string) (map[string]any, []byte, error) {
+	h, err := refHash(p, "authority-sources")
+	if err != nil || h != expected {
+		return nil, nil, fault.New("AUTHORITY_UNVERIFIED", "authority source locator and digest do not agree")
+	}
+	b, err := f.Read(p, 1<<20)
+	if err != nil || canonical.BytesHash(b) != expected {
+		return nil, nil, fault.New("AUTHORITY_UNVERIFIED", "authority source is unavailable or changed")
+	}
+	ev, err := canonical.Object(b)
+	if err != nil {
+		return nil, nil, fault.New("AUTHORITY_UNVERIFIED", "authority source is not canonical workflow-event JSON")
+	}
+	if err = first(schema.ValidateWith(EventSchema(), ev)); err != nil {
+		return nil, nil, err
+	}
+	if err = ValidateEvent(ev); err != nil {
+		return nil, nil, err
+	}
+	return ev, b, nil
+}
+
 type Receipt struct {
 	Data, Event           map[string]any
 	Path, Hash, EventPath string
 }
 
-func Load(f *store.FS, p string) (*Receipt, error) {
+// Inspect validates and returns a content-addressed receipt for evidence
+// inventory. Legacy receipts remain inspectable so repositories can preserve
+// their history while acquiring fresh authority, but callers must use Load
+// before allowing a receipt to confer authority.
+func Inspect(f *store.FS, p string) (*Receipt, error) {
 	h, e := refHash(p, "receipts")
 	if e != nil {
 		return nil, e
@@ -75,7 +111,12 @@ func Load(f *store.FS, p string) (*Receipt, error) {
 	if e != nil {
 		return nil, e
 	}
-	if e = first(schema.ValidateWith(ReceiptSchema(), r)); e != nil {
+	receiptFormat := model.S(r["format"])
+	receiptSchema := ReceiptSchema()
+	if receiptFormat == "codearbiter.receipt/0.1.0" {
+		receiptSchema = legacyReceiptSchema()
+	}
+	if e = first(schema.ValidateWith(receiptSchema, r)); e != nil {
 		return nil, e
 	}
 	ep := EventRef(model.S(r["event_sha256"]))
@@ -100,7 +141,24 @@ func Load(f *store.FS, p string) (*Receipt, error) {
 	if e = ValidateEvent(ev); e != nil {
 		return nil, e
 	}
+	if receiptFormat == "codearbiter.receipt/0.2.0" {
+		_, sourceBytes, sourceErr := LoadSource(f, model.S(r["authority_source_ref"]), model.S(r["authority_source_sha256"]))
+		if sourceErr != nil || !bytes.Equal(sourceBytes, eb) || model.S(r["authority_source_sha256"]) != model.S(r["event_sha256"]) {
+			return nil, fault.New("AUTHORITY_UNVERIFIED", "captured event no longer matches its policy-owned authority source")
+		}
+	}
 	return &Receipt{r, ev, p, h, ep}, nil
+}
+
+func Load(f *store.FS, p string) (*Receipt, error) {
+	r, err := Inspect(f, p)
+	if err != nil {
+		return nil, err
+	}
+	if model.S(r.Data["format"]) == "codearbiter.receipt/0.1.0" {
+		return nil, fault.New("AUTHORITY_UNVERIFIED", "legacy receipt remains readable but requires a fresh policy-owned attestation")
+	}
+	return r, nil
 }
 func (r *Receipt) Subject(d *model.Document, id, kind string) error {
 	s := model.M(r.Data["subject"])
@@ -145,7 +203,10 @@ func Status(f *store.FS, d *model.Document) map[string]any {
 	return out
 }
 
-// Vector includes receipt AND event bytes. It never authenticates a cursor.
+// Vector includes receipt AND event bytes. It is an inspection dependency
+// vector, not an authority decision: retained legacy evidence must keep reads
+// reproducible without making that evidence current. It never authenticates a
+// cursor.
 func Vector(f *store.FS, docs ...*model.Document) (map[string]any, error) {
 	out := map[string]any{}
 	refs := map[string]bool{}
@@ -168,12 +229,15 @@ func Vector(f *store.FS, docs ...*model.Document) (map[string]any, error) {
 		}
 	}
 	for p := range refs {
-		r, e := Load(f, p)
+		r, e := Inspect(f, p)
 		if e != nil {
 			return nil, e
 		}
 		out[p] = r.Hash
 		out[r.EventPath] = model.S(r.Data["event_sha256"])
+		if model.S(r.Data["format"]) == "codearbiter.receipt/0.2.0" {
+			out[model.S(r.Data["authority_source_ref"])] = model.S(r.Data["authority_source_sha256"])
+		}
 	}
 	return out, nil
 }
@@ -198,12 +262,12 @@ func ValidateEvent(ev map[string]any) error {
 			return fault.New("AUTHORITY_UNVERIFIED", "review needs a passed reviewer event")
 		}
 	case "prerequisite":
-		if verdict != "satisfied" {
-			return fault.New("AUTHORITY_UNVERIFIED", "prerequisite is not satisfied")
+		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "satisfied" {
+			return fault.New("AUTHORITY_UNVERIFIED", "prerequisite must come from the existing user or SMARTS workflow")
 		}
 	case "reconciliation":
-		if verdict != "reconciled" {
-			return fault.New("AUTHORITY_UNVERIFIED", "reconciliation has no applicable event")
+		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "reconciled" {
+			return fault.New("AUTHORITY_UNVERIFIED", "reconciliation must come from the existing user or SMARTS workflow")
 		}
 	case "farm_authorization":
 		if (authority != "user_workflow" && authority != "smarts_workflow") || verdict != "approved" {
@@ -244,6 +308,12 @@ func InspectionVector(f *store.FS, d *model.Document) map[string]any {
 		h := model.S(receipt["event_sha256"])
 		if digest.MatchString(h) {
 			read(EventRef(h))
+		}
+		if model.S(receipt["format"]) == "codearbiter.receipt/0.2.0" {
+			source := model.S(receipt["authority_source_ref"])
+			if _, err := refHash(source, "authority-sources"); err == nil {
+				read(source)
+			}
 		}
 	}
 	return out

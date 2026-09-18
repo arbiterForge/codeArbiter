@@ -85,7 +85,22 @@ func (h *farmHarness) capture(id, record, kind string, payload object) string {
 	h.t.Helper()
 	d := h.doc(id)
 	event := object{"format": "codearbiter.workflow-event/0.1.0", "kind": kind, "authority_kind": "user_workflow", "subject": object{"artifact_id": id, "normative_sha256": d.NormHash(), "record_id": record}, "actor": "synthetic farm fixture", "origin": "isolated test " + h.next(), "verdict": "approved", "payload": payload, "source_text": "Synthetic farm authorization fixture; not production authority."}
-	return model.S(h.run("capture", object{"event": event})["receipt"])
+	b, err := canonical.Marshal(event)
+	if err != nil {
+		h.t.Fatal(err)
+	}
+	digest := canonical.BytesHash(b)
+	dir := filepath.Join(h.root, ".codearbiter", ".artifacts", "authority-sources")
+	if err = os.MkdirAll(dir, 0700); err != nil {
+		h.t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(dir, digest+".json"), b, 0600); err != nil {
+		h.t.Fatal(err)
+	}
+	return model.S(h.run("capture", object{
+		"source_ref":    ".codearbiter/.artifacts/authority-sources/" + digest + ".json",
+		"source_sha256": digest,
+	})["receipt"])
 }
 func (h *farmHarness) approve(id string) {
 	h.t.Helper()

@@ -476,7 +476,11 @@ def _plan_file_response(result):
 
 def dispatch(request):
     if request["event"] == "plan_file":
-        result = _planfilelib.plan_file_operation(request["cwd"], _plan_file_request(request["input"]))
+        result = _planfilelib.plan_file_operation(
+            request["cwd"],
+            _plan_file_request(request["input"]),
+            require_legacy_pair=True,
+        )
         return {
             "version": 1,
             "outcome": "notice",

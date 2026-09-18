@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.0] - 2026-09-17
+
+### Added
+
+- Add provenance-bound structured-artifact native packages, exact-host
+  cold-install qualification, installed-host diagnostics, and serialized
+  release/read-back gates. New full-lane feature and sprint work remains
+  Markdown by default; typed HTML is available only as an explicitly requested,
+  fail-closed pilot, and the HTML farm remains disabled pending its separate
+  qualification.
+
 ## [2.20.2] - 2026-09-17
 
 ### Fixed

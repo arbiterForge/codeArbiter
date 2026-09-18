@@ -4,15 +4,21 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager
+import gzip
 import hashlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
+import platform
 import re
 import stat
 import subprocess
 import sys
+import tarfile
+import tempfile
+import unicodedata
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from host_descriptors import HostDescriptor, host_descriptor, load_host_descriptors  # noqa: E402
@@ -28,6 +34,14 @@ from _releaselib import SEMVER, semver_greater, semver_key  # noqa: E402,F401
 
 ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0"
 ARTIFACT_QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
+ARTIFACT_PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
+ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.1.0"
+ARTIFACT_PACKAGE_FORMAT = "codearbiter.artifact-package-cohort/0.1.0"
+NPM_PACKER_NAME = "npm"
+NPM_PACKER_VERSION = "11.19.1"
+NPM_PACKER_INTEGRITY = (
+    "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
+)
 ARTIFACT_PROTOCOL = "codearbiter.artifact-api/0.1.0"
 ARTIFACT_SCHEMA_VERSION = "0.3.1"
 ARTIFACT_VERSION = "0.1.0"
@@ -39,6 +53,43 @@ ARTIFACT_PLATFORMS = frozenset({
     "linux/amd64", "linux/arm64", "darwin/amd64", "darwin/arm64",
     "windows/amd64", "windows/arm64",
 })
+
+_WINDOWS_RESERVED_MEMBER = re.compile(
+    r"(?i)^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$"
+)
+
+
+def _subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> RuntimeError:
+    stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
+    return RuntimeError(
+        f"{label} failed with exit {completed.returncode}; "
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+    )
+
+
+def _portable_member_parts(name: str) -> tuple[tuple[str, ...], str]:
+    """Return safe host-independent archive parts and a collision key."""
+    if (
+        not isinstance(name, str)
+        or not name
+        or name.startswith("/")
+        or "\\" in name
+        or "\x00" in name
+        or any(unicodedata.category(character) in {"Cc", "Cf"} for character in name)
+    ):
+        raise ValueError("release package has an unsafe member name")
+    parts = tuple(name.split("/"))
+    if any(
+        not part
+        or part in {".", ".."}
+        or ":" in part
+        or part.endswith((" ", "."))
+        or _WINDOWS_RESERVED_MEMBER.fullmatch(part) is not None
+        for part in parts
+    ):
+        raise ValueError("release package has an unsafe member name")
+    key = unicodedata.normalize("NFC", "/".join(parts)).casefold()
+    return parts, key
 
 
 def _artifact_installer_module():
@@ -77,7 +128,7 @@ def _artifact_candidate(candidate: Path) -> tuple[dict, str, str, bytes]:
     return manifest, platform_name, filename, payload[filename]
 
 
-def _artifact_qualification(path: Path, candidate: Path, installer) -> dict:
+def _artifact_qualification(path: Path, candidate: Path, installer) -> tuple[dict, bytes]:
     source = path.absolute()
     candidate_root = candidate.absolute()
     if (source.is_symlink()
@@ -93,7 +144,7 @@ def _artifact_qualification(path: Path, candidate: Path, installer) -> dict:
     }
     if not isinstance(receipt, dict) or set(receipt) != expected:
         raise ValueError("qualification receipt has an unexpected shape")
-    return receipt
+    return receipt, raw
 
 
 def _binary_matches_platform(platform_name: str, data: bytes) -> bool:
@@ -137,7 +188,7 @@ class _UnixArtifactStage:
         self._fds = {(): root_fd}
         self._parent_fd = parent_fd
 
-    def _directory(self, parts: tuple[str, ...]) -> int:
+    def _directory(self, parts: tuple[str, ...], *, new_leaf: bool = False) -> int:
         flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
         for index in range(1, len(parts) + 1):
             prefix = parts[:index]
@@ -146,14 +197,15 @@ class _UnixArtifactStage:
             parent = self._fds[prefix[:-1]]
             try:
                 os.mkdir(prefix[-1], 0o755, dir_fd=parent)
-            except FileExistsError:
-                pass
+            except FileExistsError as error:
+                if new_leaf and index == len(parts):
+                    raise ValueError("artifact package payload target already exists") from error
             self._fds[prefix] = os.open(prefix[-1], flags, dir_fd=parent)
         return self._fds[parts]
 
     def write_payload(self, parts: tuple[str, ...], manifest_bytes: bytes,
                       binaries: dict[str, bytes]) -> None:
-        directory = self._directory(parts)
+        directory = self._directory(parts, new_leaf=True)
         for filename in sorted(binaries):
             fd = os.open(filename, os.O_WRONLY | os.O_CREAT | os.O_EXCL |
                          os.O_NOFOLLOW | os.O_CLOEXEC, 0o755, dir_fd=directory)
@@ -171,6 +223,16 @@ class _UnixArtifactStage:
         finally:
             os.close(fd)
         os.fsync(directory)
+
+    def write_root_file(self, filename: str, data: bytes) -> None:
+        fd = os.open(filename, os.O_WRONLY | os.O_CREAT | os.O_EXCL |
+                     os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=self._fds[()])
+        try:
+            _write_all(fd, data)
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        os.fsync(self._fds[()])
 
     def verify(self) -> None:
         current = os.stat(self.output, follow_symlinks=False)
@@ -191,15 +253,16 @@ class _WindowsArtifactStage:
         self._handles = handles
         self._pinned: dict[Path, object] = {output: handles[-1]}
 
-    def _directory(self, parts: tuple[str, ...]) -> Path:
+    def _directory(self, parts: tuple[str, ...], *, new_leaf: bool = False) -> Path:
         current = self.output
-        for part in parts:
+        for index, part in enumerate(parts, start=1):
             current = current / part
             if current not in self._pinned:
                 try:
                     current.mkdir()
-                except FileExistsError:
-                    pass
+                except FileExistsError as error:
+                    if new_leaf and index == len(parts):
+                        raise ValueError("artifact package payload target already exists") from error
                 handle = _pin_windows_directory(current)
                 self._handles.append(handle)
                 self._pinned[current] = handle
@@ -207,7 +270,7 @@ class _WindowsArtifactStage:
 
     def write_payload(self, parts: tuple[str, ...], manifest_bytes: bytes,
                       binaries: dict[str, bytes]) -> None:
-        directory = self._directory(parts)
+        directory = self._directory(parts, new_leaf=True)
         for filename in sorted(binaries):
             with (directory / filename).open("xb") as stream:
                 stream.write(binaries[filename])
@@ -215,6 +278,12 @@ class _WindowsArtifactStage:
                 os.fsync(stream.fileno())
         with (directory / "release.json").open("xb") as stream:
             stream.write(manifest_bytes)
+            stream.flush()
+            os.fsync(stream.fileno())
+
+    def write_root_file(self, filename: str, data: bytes) -> None:
+        with (self.output / filename).open("xb") as stream:
+            stream.write(data)
             stream.flush()
             os.fsync(stream.fileno())
 
@@ -367,6 +436,7 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
 
     binaries: dict[str, bytes] = {}
     entries: dict[str, dict[str, object]] = {}
+    qualifications: dict[str, dict[str, object]] = {}
     identity: tuple[str, str, str] | None = None
     installer = _artifact_installer_module()
     for candidate, qualification_path in zip(candidates, qualification_receipts, strict=True):
@@ -387,7 +457,7 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
             raise ValueError(f"artifact candidate changed after verification: {platform_name}")
         if not _binary_matches_platform(platform_name, data):
             raise ValueError(f"artifact candidate does not match its declared native architecture: {platform_name}")
-        receipt = _artifact_qualification(qualification_path, candidate, installer)
+        receipt, receipt_bytes = _artifact_qualification(qualification_path, candidate, installer)
         expected_receipt = {
             "format": ARTIFACT_QUALIFICATION_FORMAT,
             "source_commit": trusted_source_commit,
@@ -407,6 +477,12 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
             )
         entries[platform_name] = dict(entry)
         binaries[filename] = data
+        qualifications[platform_name] = {
+            "receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+            "job": receipt["job"],
+            "binary_sha256": receipt["binary_sha256"],
+            "native_tests": receipt["native_tests"],
+        }
 
     missing = set(required) - set(entries)
     extra = set(entries) - set(required)
@@ -425,10 +501,33 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
     release_bytes = (json.dumps(release, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
     hosts = sorted(load_host_descriptors(str(repo)), key=lambda host: host.name)
+    host_payloads = {
+        host.name: "/".join((*host.plugin_dir.split("/"), "helpers", "artifacts"))
+        for host in hosts
+    }
+    payload_hashes = {
+        "release.json": hashlib.sha256(release_bytes).hexdigest(),
+        **{filename: hashlib.sha256(data).hexdigest()
+           for filename, data in sorted(binaries.items())},
+    }
+    promotion = {
+        "format": ARTIFACT_PROMOTION_FORMAT,
+        "source_commit": trusted_source_commit,
+        "workflow": trusted_workflow,
+        "run_id": trusted_workflow_run,
+        "version": identity[0],
+        "protocol": identity[1],
+        "schema_version": identity[2],
+        "hosts": host_payloads,
+        "qualifications": {name: qualifications[name] for name in sorted(qualifications)},
+        "payload": payload_hashes,
+    }
+    promotion_bytes = (json.dumps(promotion, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
     with _pinned_artifact_stage(output) as stage:
         for host in hosts:
             parts = tuple(host.plugin_dir.split("/")) + ("helpers", "artifacts")
             stage.write_payload(parts, release_bytes, binaries)
+        stage.write_root_file("artifact-promotion.json", promotion_bytes)
     return {
         "format": ARTIFACT_RELEASE_FORMAT,
         "version": identity[0],
@@ -440,8 +539,919 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
         "source_commit": trusted_source_commit,
         "workflow": trusted_workflow,
         "workflow_run": trusted_workflow_run,
+        "promotion_receipt": str(output / "artifact-promotion.json"),
+        "promotion_receipt_sha256": hashlib.sha256(promotion_bytes).hexdigest(),
         "host_default_enabled": False,
     }
+
+
+def _git_package_output(*args: str, repo: Path, binary: bool = False):
+    completed = subprocess.run(
+        ["git", *args], cwd=repo, check=False, capture_output=True,
+        text=not binary, encoding=None if binary else "utf-8",
+    )
+    if completed.returncode != 0:
+        error = completed.stderr if isinstance(completed.stderr, str) else completed.stderr.decode(
+            "utf-8", errors="replace")
+        raise ValueError(f"cannot read exact package source from Git: {error[-512:]}")
+    return completed.stdout
+
+
+def _source_identity(source_repo: Path, source_commit: str) -> str:
+    source_repo = source_repo.absolute()
+    if (source_repo.is_symlink() or not source_repo.is_dir()
+            or os.path.normcase(str(source_repo.resolve(strict=True))) !=
+            os.path.normcase(str(source_repo))):
+        raise ValueError("package source repository must be a real directory")
+    if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise ValueError("package source commit must be a full lowercase commit id")
+    resolved = _git_package_output(
+        "rev-parse", f"{source_commit}^{{commit}}", repo=source_repo
+    ).strip()
+    if resolved != source_commit:
+        raise ValueError("package source commit did not resolve exactly")
+    return _git_package_output(
+        "rev-parse", f"{source_commit}^{{tree}}", repo=source_repo
+    ).strip()
+
+
+def _git_archive_files(source_repo: Path, source_commit: str,
+                       paths: tuple[str, ...]) -> dict[str, tuple[bytes, int, str, str]]:
+    raw = _git_package_output(
+        "-c", "core.autocrlf=false", "archive", "--format=tar", source_commit,
+        "--", *paths,
+        repo=source_repo, binary=True,
+    )
+    files: dict[str, tuple[bytes, int, str, str]] = {}
+    portable_names: set[str] = set()
+    with tarfile.open(fileobj=io.BytesIO(raw), mode="r:") as archive:
+        for member in archive.getmembers():
+            name = member.name.rstrip("/")
+            if not name or member.isdir():
+                continue
+            try:
+                _parts, portable_key = _portable_member_parts(name)
+            except ValueError:
+                raise ValueError("package source contains an unsupported archive member") from None
+            if not member.isfile() or portable_key in portable_names:
+                raise ValueError("package source contains an unsupported archive member")
+            portable_names.add(portable_key)
+            stream = archive.extractfile(member)
+            if stream is None:
+                raise ValueError("package source member is unreadable")
+            mode = 0o755 if member.mode & 0o111 else 0o644
+            files[name] = (stream.read(), mode, "source", name)
+    if not files:
+        raise ValueError("package source archive is empty")
+    return files
+
+
+def _promotion_snapshots(*, stage: Path, source_commit: str, workflow: str,
+                         run_id: str, promotion_receipt_sha256: str,
+                         repo: Path, installer):
+    receipt_path = stage.absolute() / "artifact-promotion.json"
+    descriptors = {host.name: host.plugin_dir for host in load_host_descriptors(str(repo))}
+    expected = {"claude": "plugins/ca", "codex": "plugins/ca-codex", "pi": "plugins/ca-pi"}
+    if descriptors != expected:
+        raise ValueError("canonical host descriptors do not define the package cohort")
+    snapshots = {}
+    for host, relative in expected.items():
+        source = stage.absolute().joinpath(*relative.split("/"), "helpers", "artifacts")
+        snapshots[host] = installer.load_promotion_receipt(
+            source, receipt_path, host=host, source_commit=source_commit,
+            workflow=workflow, run_id=run_id,
+            receipt_sha256=promotion_receipt_sha256,
+        )
+    first = snapshots["claude"]
+    if any(snapshot != first for snapshot in snapshots.values()):
+        raise ValueError("promoted host payload snapshots disagree")
+    return first
+
+
+def _payload_members(snapshot, prefix: str) -> dict[str, tuple[bytes, int, str, str]]:
+    result = {
+        f"{prefix}/release.json": (
+            snapshot.manifest_bytes, 0o644, "promotion", "release.json"
+        )
+    }
+    for filename, data in snapshot.payload:
+        result[f"{prefix}/{filename}"] = (data, 0o755, "promotion", filename)
+    return result
+
+
+def _claude_catalog(source: bytes, installer) -> bytes:
+    document = json.loads(source, object_pairs_hook=installer._pairs)
+    plugins = document.get("plugins") if isinstance(document, dict) else None
+    selected = [item for item in plugins or []
+                if isinstance(item, dict) and item.get("name") == "ca"]
+    if len(selected) != 1 or selected[0].get("source") != "./plugins/ca":
+        raise ValueError("source Claude marketplace does not identify one canonical ca package")
+    output = {key: value for key, value in document.items() if key != "plugins"}
+    output["plugins"] = selected
+    return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def _codex_catalog(source: bytes, installer) -> bytes:
+    document = json.loads(source, object_pairs_hook=installer._pairs)
+    plugins = document.get("plugins") if isinstance(document, dict) else None
+    selected = [item for item in plugins or []
+                if isinstance(item, dict) and item.get("name") == "ca-codex"]
+    expected_source = {"source": "local", "path": "./plugins/ca-codex"}
+    if len(selected) != 1 or selected[0].get("source") != expected_source:
+        raise ValueError("source Codex marketplace does not identify one canonical ca-codex package")
+    output = {key: value for key, value in document.items() if key != "plugins"}
+    output["plugins"] = selected
+    return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def _write_member_tree(root: Path,
+                       members: dict[str, tuple[bytes, int, str, str]]) -> None:
+    for name, (data, mode, _origin, _source) in sorted(members.items()):
+        parts, _key = _portable_member_parts(name)
+        path = root.joinpath(*parts)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("xb") as stream:
+            stream.write(data)
+        path.chmod(mode)
+
+
+def _isolated_npm_environment(root: Path) -> dict[str, str]:
+    """Build a secret-free npm environment with disposable config and state."""
+    root.mkdir(parents=True, exist_ok=True)
+    home = root / "home"
+    cache = root / "cache"
+    logs = root / "logs"
+    temporary = root / "tmp"
+    appdata = root / "appdata"
+    local_appdata = root / "local-appdata"
+    for directory in (home, cache, logs, temporary, appdata, local_appdata):
+        directory.mkdir()
+    user_config = root / "user.npmrc"
+    global_config = root / "global.npmrc"
+    user_config.write_text("", encoding="utf-8")
+    global_config.write_text("", encoding="utf-8")
+    environment = {
+        key: os.environ[key]
+        for key in ("PATH", "SystemRoot", "WINDIR", "ComSpec", "PATHEXT")
+        if key in os.environ
+    }
+    environment.update({
+        "HOME": str(home),
+        "USERPROFILE": str(home),
+        "APPDATA": str(appdata),
+        "LOCALAPPDATA": str(local_appdata),
+        "TMP": str(temporary),
+        "TEMP": str(temporary),
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "NO_COLOR": "1",
+        "FORCE_COLOR": "0",
+        "npm_config_userconfig": str(user_config),
+        "npm_config_globalconfig": str(global_config),
+        "npm_config_cache": str(cache),
+        "npm_config_logs_dir": str(logs),
+        "npm_config_logs_max": "0",
+        "npm_config_offline": "true",
+        "npm_config_audit": "false",
+        "npm_config_fund": "false",
+        "npm_config_ignore_scripts": "true",
+        "npm_config_update_notifier": "false",
+    })
+    return environment
+
+
+def _verified_npm_packer(
+    executable: Path, *, package_integrity: str, production: bool
+) -> dict[str, object]:
+    executable = executable.absolute()
+    if (
+        executable.is_symlink()
+        or not executable.is_file()
+        or os.path.normcase(str(executable.resolve(strict=True)))
+        != os.path.normcase(str(executable))
+    ):
+        raise ValueError("npm packer must be an explicit real executable file")
+    if package_integrity != NPM_PACKER_INTEGRITY:
+        raise ValueError("npm packer package integrity is not the reviewed npm@11.19.1 integrity")
+    with tempfile.TemporaryDirectory(prefix="ca-artifact-npm-identity-") as temporary:
+        environment = _isolated_npm_environment(Path(temporary) / "runtime")
+        completed = subprocess.run(
+            [str(executable), "--version"], capture_output=True, text=True,
+            encoding="utf-8", timeout=30, check=False, env=environment,
+        )
+    version = completed.stdout.strip()
+    if completed.returncode != 0 or completed.stderr or version != NPM_PACKER_VERSION:
+        raise ValueError(f"npm packer must be the reviewed npm@{NPM_PACKER_VERSION} CLI")
+    if production and os.name == "nt":
+        raise ValueError("production Pi package assembly requires native POSIX mode evidence")
+    return {
+        "name": NPM_PACKER_NAME,
+        "version": version,
+        "package_integrity": package_integrity,
+        "executable_sha256": hashlib.sha256(executable.read_bytes()).hexdigest(),
+        "qualification": "production" if production else "local-portability",
+    }
+
+
+def _npm_selected_pi_members(candidate: Path,
+                             members: dict[str, tuple[bytes, int, str, str]],
+                             npm_executable: Path,
+                             ) -> dict[str, tuple[bytes, int, str, str]]:
+    with tempfile.TemporaryDirectory(prefix="ca-artifact-npm-select-") as temporary:
+        environment = _isolated_npm_environment(Path(temporary) / "runtime")
+        completed = subprocess.run(
+            [str(npm_executable), "pack", "--dry-run", "--ignore-scripts", "--json"],
+            cwd=candidate, env=environment, capture_output=True, text=True,
+            encoding="utf-8", timeout=120, check=False,
+        )
+    if completed.returncode != 0:
+        raise ValueError(
+            f"npm could not enumerate the exact Pi package (exit {completed.returncode})"
+        )
+    try:
+        report = json.loads(completed.stdout)
+        selected = [entry["path"].replace("\\", "/") for entry in report[0]["files"]]
+    except (IndexError, KeyError, TypeError, json.JSONDecodeError) as error:
+        raise ValueError("npm returned malformed Pi package membership") from error
+    if len(selected) != len(set(selected)) or not selected:
+        raise ValueError("npm returned duplicate or empty Pi package membership")
+    output = {}
+    for relative in selected:
+        source = members.get(relative)
+        if source is None:
+            path = candidate.joinpath(*relative.split("/"))
+            if not path.is_file() or path.is_symlink():
+                raise ValueError(f"npm selected an undeclared Pi package member: {relative}")
+            source = (path.read_bytes(), 0o644, "source", relative)
+        data, mode, origin, source_path = source
+        if origin == "promotion":
+            mode = 0o644 if relative.endswith("/release.json") else 0o755
+        else:
+            mode = 0o755 if mode & 0o111 else 0o644
+        output[f"package/{relative}"] = (data, mode, origin, source_path)
+    return output
+
+
+def _npm_pack_pi_bytes(
+    members: dict[str, tuple[bytes, int, str, str]], npm_executable: Path,
+    *, production: bool,
+) -> bytes:
+    """Create the Pi artifact with npm itself, using only the preassembled tree."""
+    candidate_members = {
+        name.removeprefix("package/"): value for name, value in members.items()
+    }
+    with tempfile.TemporaryDirectory(prefix="ca-artifact-pi-npm-pack-") as temporary:
+        root = Path(temporary)
+        candidate = root / "candidate"
+        destination = root / "output"
+        candidate.mkdir()
+        destination.mkdir()
+        environment = _isolated_npm_environment(root / "runtime")
+        _write_member_tree(candidate, candidate_members)
+        completed = subprocess.run(
+            [str(npm_executable), "pack", "--ignore-scripts", "--json",
+             "--pack-destination", str(destination)],
+            cwd=candidate, env=environment, capture_output=True, text=True,
+            encoding="utf-8", timeout=120, check=False,
+        )
+        if completed.returncode != 0:
+            raise ValueError(
+                f"npm could not create the exact Pi package (exit {completed.returncode})"
+            )
+        try:
+            report = json.loads(completed.stdout)
+            filename = report[0]["filename"]
+        except (IndexError, KeyError, TypeError, json.JSONDecodeError) as error:
+            raise ValueError("npm returned malformed Pi package output") from error
+        artifact = destination / filename
+        outputs = [path for path in destination.iterdir() if path.is_file()]
+        if outputs != [artifact] or artifact.is_symlink():
+            raise ValueError("npm produced an unexpected Pi package output set")
+        npm_bytes = artifact.read_bytes()
+        observed = _read_archive(artifact)
+        expected = {name: (value[0], value[1]) for name, value in members.items()}
+        if set(observed) != set(expected) or any(
+            observed[name][0] != expected[name][0] for name in expected
+        ):
+            raise ValueError("npm package membership or bytes drifted from the preassembled tree")
+        if observed == expected:
+            return npm_bytes
+        mode_drift = {
+            name for name in expected if observed[name][1] != expected[name][1]
+        }
+        if production or os.name != "nt" or any(
+            members[name][2] != "promotion"
+            or name.endswith("/release.json")
+            or observed[name][1] != 0o644
+            or expected[name][1] != 0o755
+            for name in mode_drift
+        ):
+            raise ValueError("npm package modes drifted from the preassembled tree")
+        # npm on Windows cannot observe POSIX executable bits. Re-emit the exact
+        # npm-selected bytes with only the receipt-required native modes restored.
+        return _archive_bytes(members)
+
+
+def _archive_bytes(members: dict[str, tuple[bytes, int, str, str]]) -> bytes:
+    output = io.BytesIO()
+    with gzip.GzipFile(filename="", mode="wb", fileobj=output, mtime=0) as compressed:
+        with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as archive:
+            for name, (data, mode, _origin, _source) in sorted(members.items()):
+                info = tarfile.TarInfo(name)
+                info.size = len(data)
+                info.mode = mode
+                info.mtime = 0
+                info.uid = info.gid = 0
+                info.uname = info.gname = ""
+                archive.addfile(info, io.BytesIO(data))
+    return output.getvalue()
+
+
+def _read_archive(
+    path: Path, *, expected_members: dict[str, dict] | None = None
+) -> dict[str, tuple[bytes, int]]:
+    files = {}
+    portable_names: dict[str, str] = {}
+    with tarfile.open(path, "r:gz") as archive:
+        for member in archive.getmembers():
+            name = member.name.rstrip("/")
+            if not name or member.isdir():
+                continue
+            try:
+                _parts, portable_key = _portable_member_parts(name)
+            except ValueError:
+                raise ValueError("release package has an unsafe member name") from None
+            if (
+                not member.isfile()
+                or name in files
+                or portable_key in portable_names
+            ):
+                raise ValueError("release package has an unsafe member name")
+            portable_names[portable_key] = name
+            expected = expected_members.get(name) if expected_members is not None else None
+            if expected_members is not None and (
+                expected is None
+                or member.size != expected["size"]
+                or member.mode & 0o777 != int(expected["mode"], 8)
+            ):
+                raise ValueError("release package member metadata drifted")
+            stream = archive.extractfile(member)
+            if stream is None:
+                raise ValueError("release package member is unreadable")
+            data = stream.read((expected["size"] if expected is not None else 256 << 20) + 1)
+            if expected is not None and (
+                len(data) != expected["size"]
+                or hashlib.sha256(data).hexdigest() != expected["sha256"]
+            ):
+                raise ValueError("release package member bytes drifted")
+            if expected is None and len(data) > 256 << 20:
+                raise ValueError("release package member exceeds the extraction limit")
+            files[name] = (data, member.mode & 0o777)
+    if expected_members is not None and set(files) != set(expected_members):
+        raise ValueError("release package member set drifted")
+    return files
+
+
+def _member_receipt(members: dict[str, tuple[bytes, int, str, str]]) -> dict[str, dict]:
+    return {
+        name: {
+            "type": "file",
+            "mode": f"{mode:04o}",
+            "size": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "origin": origin,
+            "source": source,
+        }
+        for name, (data, mode, origin, source) in sorted(members.items())
+    }
+
+
+def _expected_release_package_members(*, stage: Path, source_repo: Path,
+                                      source_commit: str, workflow: str,
+                                      run_id: str, promotion_receipt_sha256: str,
+                                      npm_executable: Path | None = None,
+                                      pi_selected_paths: set[str] | None = None,
+                                      repo: Path = REPO):
+    installer = _artifact_installer_module()
+    snapshot = _promotion_snapshots(
+        stage=stage, source_commit=source_commit, workflow=workflow, run_id=run_id,
+        promotion_receipt_sha256=promotion_receipt_sha256, repo=repo,
+        installer=installer,
+    )
+    claude = _git_archive_files(source_repo, source_commit, (
+        ".claude-plugin/marketplace.json", "plugins/ca",
+    ))
+    original_catalog = claude.pop(".claude-plugin/marketplace.json")
+    claude[".claude-plugin/marketplace.json"] = (
+        _claude_catalog(original_catalog[0], installer), 0o644,
+        "generated-catalog", ".claude-plugin/marketplace.json",
+    )
+    if any(name.startswith("plugins/ca/helpers/artifacts/") for name in claude):
+        raise ValueError("source commit already contains a Claude artifact payload")
+    claude.update(_payload_members(snapshot, "plugins/ca/helpers/artifacts"))
+
+    codex = _git_archive_files(source_repo, source_commit, (
+        ".agents/plugins/marketplace.json", "plugins/ca-codex",
+    ))
+    original_codex_catalog = codex.pop(".agents/plugins/marketplace.json")
+    codex[".agents/plugins/marketplace.json"] = (
+        _codex_catalog(original_codex_catalog[0], installer), 0o644,
+        "generated-catalog", ".agents/plugins/marketplace.json",
+    )
+    if any(name.startswith("plugins/ca-codex/helpers/artifacts/") for name in codex):
+        raise ValueError("source commit already contains a Codex artifact payload")
+    codex.update(_payload_members(snapshot, "plugins/ca-codex/helpers/artifacts"))
+
+    pi_source = _git_archive_files(source_repo, source_commit, (
+        "package.json", "LICENSE", "README.md", "plugins/ca-pi",
+    ))
+    if any(name.startswith("plugins/ca-pi/helpers/artifacts/") for name in pi_source):
+        raise ValueError("source commit already contains a Pi artifact payload")
+    pi_candidate_members = dict(pi_source)
+    pi_candidate_members.update(_payload_members(snapshot, "plugins/ca-pi/helpers/artifacts"))
+    if pi_selected_paths is None:
+        if npm_executable is None:
+            raise ValueError("exact npm packer is required to select Pi package membership")
+        with tempfile.TemporaryDirectory(prefix="ca-artifact-pi-package-") as temporary:
+            candidate = Path(temporary)
+            _write_member_tree(candidate, pi_candidate_members)
+            pi = _npm_selected_pi_members(
+                candidate, pi_candidate_members, npm_executable
+            )
+    else:
+        if not pi_selected_paths or any(
+            not isinstance(path, str) or path not in pi_candidate_members
+            for path in pi_selected_paths
+        ):
+            raise ValueError("Pi package receipt selects an unknown or empty source set")
+        pi = {
+            f"package/{path}": (
+                pi_candidate_members[path][0],
+                (0o644 if path.endswith("/release.json") else 0o755)
+                if pi_candidate_members[path][2] == "promotion"
+                else (0o755 if pi_candidate_members[path][1] & 0o111 else 0o644),
+                pi_candidate_members[path][2],
+                pi_candidate_members[path][3],
+            )
+            for path in sorted(pi_selected_paths)
+        }
+    return snapshot, {"claude": claude, "codex": codex, "pi": pi}
+
+
+def build_artifact_release_packages(*, stage: Path, source_repo: Path,
+                                    source_commit: str, workflow: str,
+                                    run_id: str, promotion_receipt_sha256: str,
+                                    output: Path, npm_executable: Path,
+                                    npm_package_integrity: str,
+                                    production: bool = True,
+                                    repo: Path = REPO) -> dict[str, object]:
+    """Build final immutable Claude, Codex, and Pi installation artifacts."""
+    source_tree = _source_identity(source_repo, source_commit)
+    output = output.absolute()
+    if output.exists() or output.is_symlink():
+        raise ValueError(f"artifact package output already exists: {output}")
+    packer = _verified_npm_packer(
+        npm_executable, package_integrity=npm_package_integrity,
+        production=production,
+    )
+    snapshot, members_by_host = _expected_release_package_members(
+        stage=stage, source_repo=source_repo, source_commit=source_commit,
+        workflow=workflow, run_id=run_id,
+        promotion_receipt_sha256=promotion_receipt_sha256,
+        npm_executable=npm_executable, repo=repo,
+    )
+    manifest = json.loads(snapshot.manifest_bytes)
+    versions = {
+        "claude": json.loads(members_by_host["claude"][
+            "plugins/ca/.claude-plugin/plugin.json"][0])["version"],
+        "codex": json.loads(members_by_host["codex"][
+            "plugins/ca-codex/.codex-plugin/plugin.json"][0])["version"],
+        "pi": json.loads(members_by_host["pi"]["package/package.json"][0])["version"],
+    }
+    filenames = {
+        "claude": f"codearbiter-ca-{versions['claude']}.tar.gz",
+        "codex": f"codearbiter-ca-codex-{versions['codex']}.tar.gz",
+        "pi": f"arbiterforge-ca-pi-{versions['pi']}.tgz",
+    }
+    archives = {
+        "claude": _archive_bytes(members_by_host["claude"]),
+        "codex": _archive_bytes(members_by_host["codex"]),
+        "pi": _npm_pack_pi_bytes(
+            members_by_host["pi"], npm_executable, production=production
+        ),
+    }
+    receipt = {
+        "format": ARTIFACT_PACKAGE_FORMAT,
+        "source_commit": source_commit,
+        "source_tree": source_tree,
+        "workflow": workflow,
+        "run_id": run_id,
+        "promotion_receipt_sha256": promotion_receipt_sha256,
+        "artifact_version": manifest["version"],
+        "protocol": manifest["protocol"],
+        "schema_version": manifest["schema_version"],
+        "pi_packer": packer,
+        "packages": {
+            host: {
+                "file": filenames[host],
+                "version": versions[host],
+                "size": len(archives[host]),
+                "sha256": hashlib.sha256(archives[host]).hexdigest(),
+                "members": _member_receipt(members_by_host[host]),
+            }
+            for host in sorted(archives)
+        },
+    }
+    receipt_bytes = (json.dumps(receipt, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    with _pinned_artifact_stage(output) as package:
+        for host in sorted(archives):
+            package.write_root_file(filenames[host], archives[host])
+        package.write_root_file("artifact-package-cohort.json", receipt_bytes)
+    return receipt
+
+
+def verify_artifact_release_packages(*, package_root: Path, source_repo: Path,
+                                     source_commit: str, workflow: str,
+                                     run_id: str, promotion_receipt_sha256: str,
+                                     stage: Path, require_production: bool = True,
+                                     npm_executable: Path | None = None,
+                                     repo: Path = REPO) -> dict[str, object]:
+    """Re-derive and verify the final package archives against Git and promotion bytes."""
+    package_root = package_root.absolute()
+    if (package_root.is_symlink() or not package_root.is_dir()
+            or os.path.normcase(str(package_root.resolve(strict=True))) !=
+            os.path.normcase(str(package_root))):
+        raise ValueError("artifact package root must be a real directory")
+    installer = _artifact_installer_module()
+    raw = installer.read_regular(package_root / "artifact-package-cohort.json", 8 << 20)
+    receipt = json.loads(raw, object_pairs_hook=installer._pairs)
+    receipt_fields = {
+        "format", "source_commit", "source_tree", "workflow", "run_id",
+        "promotion_receipt_sha256", "artifact_version", "protocol",
+        "schema_version", "pi_packer", "packages",
+    }
+    if (not isinstance(receipt, dict) or set(receipt) != receipt_fields
+            or receipt.get("format") != ARTIFACT_PACKAGE_FORMAT
+            or receipt.get("source_commit") != source_commit
+            or receipt.get("source_tree") != _source_identity(source_repo, source_commit)
+            or receipt.get("workflow") != workflow or receipt.get("run_id") != run_id
+            or receipt.get("promotion_receipt_sha256") != promotion_receipt_sha256):
+        raise ValueError("artifact package cohort does not match the trusted source context")
+    packer = receipt["pi_packer"]
+    expected_qualification = "production" if require_production else None
+    if (
+        not isinstance(packer, dict)
+        or set(packer) != {
+            "name", "version", "package_integrity", "executable_sha256", "qualification"
+        }
+        or packer.get("name") != NPM_PACKER_NAME
+        or packer.get("version") != NPM_PACKER_VERSION
+        or packer.get("package_integrity") != NPM_PACKER_INTEGRITY
+        or re.fullmatch(r"[0-9a-f]{64}", packer.get("executable_sha256", "")) is None
+        or packer.get("qualification") not in {"production", "local-portability"}
+        or expected_qualification is not None
+        and packer.get("qualification") != expected_qualification
+    ):
+        raise ValueError("artifact package cohort has no reviewed Pi packer identity")
+    if npm_executable is not None:
+        observed_packer = _verified_npm_packer(
+            npm_executable, package_integrity=NPM_PACKER_INTEGRITY,
+            production=require_production,
+        )
+        if observed_packer != packer:
+            raise ValueError("artifact package cohort Pi packer receipt drifted")
+    packages = receipt.get("packages")
+    pi_package = packages.get("pi") if isinstance(packages, dict) else None
+    pi_members = pi_package.get("members") if isinstance(pi_package, dict) else None
+    if not isinstance(pi_members, dict):
+        raise ValueError("artifact package cohort Pi membership is malformed")
+    pi_selected_paths = {
+        name.removeprefix("package/") for name in pi_members
+        if isinstance(name, str) and name.startswith("package/")
+    }
+    if len(pi_selected_paths) != len(pi_members):
+        raise ValueError("artifact package cohort Pi membership is malformed")
+    snapshot, expected = _expected_release_package_members(
+        stage=stage, source_repo=source_repo, source_commit=source_commit,
+        workflow=workflow, run_id=run_id,
+        promotion_receipt_sha256=promotion_receipt_sha256,
+        pi_selected_paths=pi_selected_paths, repo=repo,
+    )
+    manifest = json.loads(snapshot.manifest_bytes, object_pairs_hook=installer._pairs)
+    if (
+        receipt["artifact_version"] != manifest["version"]
+        or receipt["protocol"] != manifest["protocol"]
+        or receipt["schema_version"] != manifest["schema_version"]
+    ):
+        raise ValueError("artifact package cohort engine identity drifted")
+    expected_versions = {
+        "claude": json.loads(expected["claude"][
+            "plugins/ca/.claude-plugin/plugin.json"][0],
+            object_pairs_hook=installer._pairs,
+        )["version"],
+        "codex": json.loads(expected["codex"][
+            "plugins/ca-codex/.codex-plugin/plugin.json"][0],
+            object_pairs_hook=installer._pairs,
+        )["version"],
+        "pi": json.loads(expected["pi"]["package/package.json"][0],
+                         object_pairs_hook=installer._pairs)["version"],
+    }
+    if not isinstance(packages, dict) or set(packages) != set(expected):
+        raise ValueError("artifact package cohort host set drifted")
+    expected_files = {"artifact-package-cohort.json"}
+    for host, members in expected.items():
+        package = packages[host]
+        if (not isinstance(package, dict)
+                or set(package) != {"file", "version", "size", "sha256", "members"}
+                or not isinstance(package.get("file"), str)
+                or Path(package["file"]).name != package["file"]
+                or re.fullmatch(r"[A-Za-z0-9._-]+\.(?:tar\.gz|tgz)", package["file"])
+                is None or package.get("version") != expected_versions[host]):
+            raise ValueError("artifact package cohort entry is malformed")
+        path = package_root / package["file"]
+        expected_files.add(package["file"])
+        data = installer.read_regular(path, 256 << 20)
+        expected_member_receipt = _member_receipt(members)
+        if (package.get("size") != len(data)
+                or package.get("sha256") != hashlib.sha256(data).hexdigest()
+                or package.get("members") != expected_member_receipt):
+            drifted_members = sorted(
+                set(package.get("members", {})) ^ set(expected_member_receipt)
+                | {
+                    name for name in set(package.get("members", {})) & set(expected_member_receipt)
+                    if package["members"][name] != expected_member_receipt[name]
+                }
+            )
+            detail = ", ".join(drifted_members[:3])
+            raise ValueError(f"artifact package cohort receipt drifted: {host}: {detail}")
+        observed = _read_archive(path, expected_members=package["members"])
+        wanted = {name: (value[0], value[1]) for name, value in members.items()}
+        if observed != wanted:
+            raise ValueError(f"artifact package members drifted from source or promotion: {host}")
+    actual_files = {entry.name for entry in package_root.iterdir()
+                    if entry.is_file() and not entry.is_symlink()}
+    if actual_files != expected_files or any(entry.is_symlink() or not entry.is_file()
+                                             for entry in package_root.iterdir()):
+        raise ValueError("artifact package cohort file set drifted")
+    checker_path = repo / ".github" / "scripts" / "check_codex_static_package.py"
+    spec = importlib.util.spec_from_file_location(
+        "codearbiter_artifact_release_static_check", checker_path
+    )
+    if spec is None or spec.loader is None:
+        raise ValueError("trusted Codex static package checker is unavailable")
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    codex_members = packages["codex"]["members"]
+    verified_large_files = {
+        name.removeprefix("plugins/ca-codex/"): {
+            key: member[key]
+            for key in ("type", "mode", "size", "sha256", "origin")
+        }
+        for name, member in codex_members.items()
+        if (
+            name.startswith("plugins/ca-codex/helpers/artifacts/ca-artifact-")
+            and member["size"] > 2 * 1024 * 1024
+        )
+    }
+    with tempfile.TemporaryDirectory(prefix="ca-artifact-codex-verify-") as temporary:
+        extracted = Path(temporary) / "candidate"
+        extract_artifact_release_package(
+            package_root / packages["codex"]["file"], extracted, host="codex"
+        )
+        result = checker.candidate_static_contract(
+            extracted / "plugins" / "ca-codex",
+            verified_large_files=verified_large_files,
+        )
+        if result.get("verdict") != "PASS":
+            raise ValueError("final Codex package failed its static contract")
+    return receipt
+
+
+def extract_artifact_release_package(artifact: Path, destination: Path, *, host: str) -> Path:
+    """Safely extract one already-verified release package for cold-use proof."""
+    if host not in {"claude", "codex", "pi"}:
+        raise ValueError("unknown artifact release package host")
+    if destination.exists() or destination.is_symlink():
+        raise ValueError("artifact package extraction output already exists")
+    files = _read_archive(artifact)
+    destination.mkdir()
+    for name, (data, mode) in sorted(files.items()):
+        parts, _key = _portable_member_parts(name)
+        path = destination.joinpath(*parts)
+        if not path.absolute().is_relative_to(destination.absolute()):
+            raise ValueError("release package member escaped extraction root")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("xb") as stream:
+            stream.write(data)
+        path.chmod(mode)
+    return destination
+
+
+def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
+                                       source_repo: Path, host: str,
+                                       expected_platform: str,
+                                       source_commit: str, workflow: str,
+                                       run_id: str,
+                                       promotion_receipt_sha256: str,
+                                       output: Path,
+                                       require_production: bool = True) -> dict[str, object]:
+    """Execute one verified host/platform payload and retain a bound receipt.
+
+    The executable and Python bridge are read from the verified immutable final
+    package archive. The executable is first launched by absolute path with an
+    empty environment, then the complete workflow is exercised through the
+    extracted package bridge with an empty PATH. No checkout binary, PATH lookup,
+    Go invocation, or network installer can satisfy this check.
+    """
+    if expected_platform not in ARTIFACT_PLATFORMS:
+        raise ValueError(f"unsupported cold-execution platform: {expected_platform}")
+    native_system = {"Linux": "linux", "Darwin": "darwin", "Windows": "windows"}.get(
+        platform.system())
+    native_arch = {
+        "x86_64": "amd64", "amd64": "amd64", "aarch64": "arm64", "arm64": "arm64",
+    }.get(platform.machine().lower())
+    native_platform = f"{native_system}/{native_arch}" if native_system and native_arch else None
+    if expected_platform != native_platform:
+        raise ValueError(
+            f"cold-execution cell expected {expected_platform}, actual host is {native_platform}"
+        )
+    output = output.absolute()
+    if output.exists() or output.is_symlink() or not output.parent.is_dir():
+        raise ValueError("cold-execution receipt output must be a new file in a real directory")
+    if (output.parent.is_symlink()
+            or os.path.normcase(str(output.parent.resolve(strict=True))) !=
+            os.path.normcase(str(output.parent))):
+        raise ValueError("cold-execution receipt output must be a new file in a real directory")
+
+    cohort = verify_artifact_release_packages(
+        package_root=package_root, source_repo=source_repo,
+        source_commit=source_commit, workflow=workflow, run_id=run_id,
+        promotion_receipt_sha256=promotion_receipt_sha256, stage=stage,
+        require_production=require_production,
+    )
+    installer = _artifact_installer_module()
+    host_descriptors = {descriptor.name: descriptor for descriptor in load_host_descriptors(str(REPO))}
+    descriptor = host_descriptors.get(host)
+    if descriptor is None:
+        raise ValueError("cold-execution host must be a canonical governance host")
+    package = cohort["packages"][host]
+    archive = package_root / package["file"]
+    archived = _read_archive(archive, expected_members=package["members"])
+    payload_prefix = {
+        "claude": "plugins/ca/helpers/artifacts/",
+        "codex": "plugins/ca-codex/helpers/artifacts/",
+        "pi": "package/plugins/ca-pi/helpers/artifacts/",
+    }[host]
+    payload = {
+        name.removeprefix(payload_prefix): data
+        for name, (data, _mode) in archived.items()
+        if name.startswith(payload_prefix)
+    }
+    manifest_bytes = payload.get("release.json")
+    if manifest_bytes is None:
+        raise ValueError("final release package has no promoted artifact manifest")
+    manifest = json.loads(manifest_bytes, object_pairs_hook=installer._pairs)
+    entry = manifest["binaries"].get(expected_platform)
+    if not isinstance(entry, dict) or entry.get("native_tested") is not True:
+        raise ValueError("promoted payload has no qualified binary for this cold-execution cell")
+    binary = payload.get(entry["file"])
+    if binary is None or hashlib.sha256(binary).hexdigest() != entry["sha256"]:
+        raise ValueError("promoted payload binary drifted before cold execution")
+
+    request = json.dumps({"protocol": ARTIFACT_PROTOCOL}, separators=(",", ":")).encode("ascii")
+    with tempfile.TemporaryDirectory(prefix="ca-artifact-cold-") as temporary:
+        isolated = Path(temporary)
+        repository = isolated / "repository"
+        repository.mkdir()
+        executable = isolated / entry["file"]
+        executable.write_bytes(binary)
+        if native_system != "windows":
+            executable.chmod(0o700)
+        completed = subprocess.run(
+            [str(executable.absolute()), "capabilities", "--root", str(repository),
+             "--request", "-"],
+            input=request, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            timeout=30, check=False, cwd=repository, env={},
+        )
+        if completed.returncode != 0 or completed.stderr:
+            raise _subprocess_failure("cold execution", completed)
+        response = json.loads(completed.stdout, object_pairs_hook=installer._pairs)
+        if (not isinstance(response, dict)
+                or set(response) != {"protocol", "operation", "ok", "result"}
+                or response.get("protocol") != ARTIFACT_PROTOCOL
+                or response.get("operation") != "capabilities"
+                or response.get("ok") is not True
+                or not isinstance(response.get("result"), dict)):
+            raise RuntimeError("cold execution returned a malformed capabilities response")
+        capabilities = response["result"]
+        if (capabilities.get("platform") != expected_platform
+                or capabilities.get("repository_operations_available") is not True
+                or capabilities.get("runtime_downloads") is not False):
+            raise RuntimeError(
+                "cold execution did not prove the required native offline capability"
+            )
+
+        extracted = isolated / "package"
+        extract_artifact_release_package(archive, extracted, host=host)
+        plugin_root = extracted.joinpath(*{
+            "claude": ("plugins", "ca"),
+            "codex": ("plugins", "ca-codex"),
+            "pi": ("package", "plugins", "ca-pi"),
+        }[host])
+        workflow_repository = isolated / "workflow-repository"
+        workflow_repository.mkdir()
+        empty_path = isolated / "empty-path"
+        empty_path.mkdir()
+        workflow_script = source_repo / ".github" / "scripts" / "test_artifact_installed_host.py"
+        workflow_env = {
+            "PATH": str(empty_path),
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "HTTP_PROXY": "http://127.0.0.1:1",
+            "HTTPS_PROXY": "http://127.0.0.1:1",
+            "ALL_PROXY": "http://127.0.0.1:1",
+        }
+        for name in ("SYSTEMROOT", "WINDIR"):
+            if name in os.environ:
+                workflow_env[name] = os.environ[name]
+        workflow_completed = subprocess.run(
+            [
+                sys.executable,
+                str(workflow_script.absolute()),
+                "--host", host,
+                "--plugin-root", str(plugin_root.absolute()),
+                "--repository", str(workflow_repository.absolute()),
+                "--expected-binary-sha256", entry["sha256"],
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=120,
+            check=False,
+            cwd=workflow_repository,
+            env=workflow_env,
+        )
+        if workflow_completed.returncode != 0 or workflow_completed.stderr:
+            raise _subprocess_failure("cold installed-host workflow", workflow_completed)
+        workflow_result = json.loads(
+            workflow_completed.stdout, object_pairs_hook=installer._pairs
+        )
+        expected_workflow_fields = {
+            "format", "host", "bridge_sha256", "binary_sha256",
+            "spec_artifact_id", "spec_normative_sha256", "plan_artifact_id",
+            "plan_normative_sha256", "interruption_reconciled", "redispatched",
+            "commit_proof", "finalization_proof", "all_accepted_and_current",
+            "markdown_shadow_count",
+        }
+        if (
+            not isinstance(workflow_result, dict)
+            or set(workflow_result) != expected_workflow_fields
+            or workflow_result.get("format")
+            != "codearbiter.installed-host-workflow/0.1.0"
+            or workflow_result.get("host") != host
+            or workflow_result.get("binary_sha256") != entry["sha256"]
+            or any(
+                workflow_result.get(field) is not True
+                for field in (
+                    "interruption_reconciled", "redispatched", "commit_proof",
+                    "finalization_proof", "all_accepted_and_current",
+                )
+            )
+            or workflow_result.get("markdown_shadow_count") != 0
+        ):
+            raise RuntimeError("cold installed-host workflow returned malformed proof")
+
+    cold_receipt = {
+        "format": ARTIFACT_COLD_EXECUTION_FORMAT,
+        "source_commit": source_commit,
+        "workflow": workflow,
+        "run_id": run_id,
+        "job": "artifact-package-cold",
+        "host": host,
+        "platform": expected_platform,
+        "promotion_receipt_sha256": promotion_receipt_sha256,
+        "package_sha256": package["sha256"],
+        "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
+        "binary_sha256": entry["sha256"],
+        "response_sha256": hashlib.sha256(completed.stdout).hexdigest(),
+        "operation": "capabilities",
+        "repository_operations_available": True,
+        "runtime_downloads": False,
+        "installed_workflow_response_sha256": hashlib.sha256(
+            workflow_completed.stdout
+        ).hexdigest(),
+        "installed_bridge_sha256": workflow_result["bridge_sha256"],
+        "installed_workflow_format": workflow_result["format"],
+        "interruption_reconciled": True,
+        "redispatched": True,
+        "commit_proof": True,
+        "finalization_proof": True,
+        "all_accepted_and_current": True,
+        "markdown_shadow_count": 0,
+    }
+    with output.open("x", encoding="utf-8", newline="\n") as stream:
+        json.dump(cold_receipt, stream, indent=2, ensure_ascii=False)
+        stream.write("\n")
+    return cold_receipt
 
 
 def render_package(
@@ -623,7 +1633,85 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--trusted-source-commit")
     parser.add_argument("--trusted-workflow")
     parser.add_argument("--trusted-workflow-run")
+    parser.add_argument("--release-package-stage", type=Path)
+    parser.add_argument("--release-package-output", type=Path)
+    parser.add_argument("--source-repo", type=Path)
+    parser.add_argument("--npm-executable", type=Path)
+    parser.add_argument("--npm-package-integrity")
+    parser.add_argument("--promotion-receipt-sha256")
+    parser.add_argument("--cold-package-root", type=Path)
+    parser.add_argument("--cold-host")
+    parser.add_argument("--cold-platform")
+    parser.add_argument("--cold-promotion-receipt-sha256")
+    parser.add_argument("--cold-receipt", type=Path)
     args = parser.parse_args(argv)
+    package_mode = args.release_package_output is not None
+    if package_mode:
+        if (args.check or args.release_guard_base or args.artifact_candidate
+                or args.artifact_qualification or args.artifact_stage
+                or args.require_platform or args.cold_package_root or args.cold_host
+                or args.cold_platform or args.cold_promotion_receipt_sha256
+                or args.cold_receipt):
+            parser.error(
+                "release package assembly cannot be combined with checks, staging, or cold execution"
+            )
+        if (args.release_package_stage is None or args.release_package_output is None
+                or args.source_repo is None
+                or args.npm_executable is None or not args.npm_package_integrity
+                or not args.trusted_source_commit or not args.trusted_workflow
+                or not args.trusted_workflow_run or not args.promotion_receipt_sha256):
+            parser.error(
+                "release package assembly requires stage, output, source repository, reviewed npm, provenance, and receipt digest"
+            )
+        result = build_artifact_release_packages(
+            stage=args.release_package_stage,
+            source_repo=args.source_repo,
+            source_commit=args.trusted_source_commit,
+            workflow=args.trusted_workflow,
+            run_id=args.trusted_workflow_run,
+            promotion_receipt_sha256=args.promotion_receipt_sha256,
+            output=args.release_package_output,
+            npm_executable=args.npm_executable,
+            npm_package_integrity=args.npm_package_integrity,
+        )
+        verified = verify_artifact_release_packages(
+            package_root=args.release_package_output,
+            source_repo=args.source_repo,
+            source_commit=args.trusted_source_commit,
+            workflow=args.trusted_workflow,
+            run_id=args.trusted_workflow_run,
+            promotion_receipt_sha256=args.promotion_receipt_sha256,
+            stage=args.release_package_stage,
+            npm_executable=args.npm_executable,
+        )
+        if verified != result:
+            raise ValueError("release package verification result changed after assembly")
+        print("artifact release packages assembled and verified")
+        return 0
+    cold_mode = any((args.cold_package_root, args.cold_host, args.cold_platform,
+                     args.cold_promotion_receipt_sha256, args.cold_receipt))
+    if cold_mode:
+        if (args.check or args.release_guard_base or args.artifact_candidate
+                or args.artifact_qualification or args.artifact_stage
+                or args.require_platform):
+            parser.error("cold execution cannot be combined with package checks or artifact staging")
+        if (args.cold_package_root is None or args.release_package_stage is None
+                or args.source_repo is None or not args.cold_host or not args.cold_platform
+                or not args.trusted_source_commit or not args.trusted_workflow
+                or not args.trusted_workflow_run or not args.cold_promotion_receipt_sha256
+                or args.cold_receipt is None):
+            parser.error("cold execution requires package root, stage, source, host, platform, provenance, and receipt output")
+        result = cold_execute_artifact_host_payload(
+            stage=args.release_package_stage, package_root=args.cold_package_root,
+            source_repo=args.source_repo, host=args.cold_host,
+            expected_platform=args.cold_platform,
+            source_commit=args.trusted_source_commit,
+            workflow=args.trusted_workflow, run_id=args.trusted_workflow_run,
+            promotion_receipt_sha256=args.cold_promotion_receipt_sha256,
+            output=args.cold_receipt,
+        )
+        print("artifact cold execution verified")
+        return 0
     artifact_mode = bool(
         args.artifact_candidate or args.artifact_qualification or args.artifact_stage
         or args.require_platform or args.trusted_source_commit or args.trusted_workflow

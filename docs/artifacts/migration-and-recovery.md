@@ -1,9 +1,10 @@
 # Migrating and recovering a spec/plan pair
 
 Migration is an explicit, reviewed pair operation. It is not performed by
-opening a file, starting codeArbiter, installing the capability or reading a
-legacy repository. There is no mass-conversion step, and the default rollout
-remains disabled.
+opening a file, starting codeArbiter, installing or upgrading the capability,
+or reading a legacy repository. There is no mass-conversion step. Making the
+capability available never reinterprets an existing Markdown pair; an explicit
+reviewed migration remains required.
 
 ## Before conversion
 
@@ -72,43 +73,41 @@ Produce a loss report and perform a reviewed reverse export or reconciliation;
 retain the HTML artifacts, transaction records and repository history as
 evidence. Never treat deleting HTML or installing an older binary as recovery.
 
-## Selected pilot result
+## Selected production-repository pilot
 
-A native-Windows pilot built from clean commit
-`12ab0ef2d720420b90265f35675fb961375a439b` exercised one legacy pair through the
-installed subprocess protocol independently of the pre-existing automated
-migration fixtures:
+The current pilot copies the exact bytes of codeArbiter's real
+`reaudit-ra03-read-only-review-aggregation` spec/plan pair into a disposable,
+isolated repository root. It does not mutate the authoritative pair. The test
+binds the recorded source hashes, so a change to either production file makes
+the evidence stale instead of silently exercising different bytes.
 
-- preview completed with SHA-256
-  `e9e1d9670e57b1f3896944664260ef51ad5c432be666192074871631746e7b13`;
-- apply with a fixture-supplied mapping-review attestation bound to the preview
-  digest produced a draft pair with `authority_verified: false` and no
-  transferred approvals;
-- both Markdown authorities were absent only after the pair cutover committed;
-- rollback restored both original files byte-for-byte and removed both HTML
-  authorities; and
-- the inverse transaction committed with `refresh_required: true`.
+The fresh native-Windows candidate proved that making the installed capability
+available leaves the Markdown pair byte-identical and does not create HTML.
+Explicit preview and apply then produced a draft HTML pair with no transferred
+authority. A selected-pair fault injection then recreated the durable prepared
+state after the spec switch but before the plan switch. Exact-format discovery
+rejected the mixed pair, engine reads returned `RECOVERY_REQUIRED`, and dispatch
+eligibility was never reached. Explicit complete recovery restored the HTML
+pair, after which the same operation ID and request replayed the durable result.
+A downgraded client with no payload failed
+`CAPABILITY_MISSING`; exact-format routing remained HTML and no Markdown shadow
+was recreated. Journal-bound rollback restored both original SHA-256 byte
+streams, removed both HTML authorities, and retained exact cutover and rollback
+journal identity, source/candidate hashes and before-image evidence.
 
-The same exact candidate created a new spec/plan fixture, exercised the
-approval/binding boundary with synthetic receipts, started execution, recreated
-the process, observed the task still `IN_PROGRESS`, explicitly reconciled it to
-`PENDING`, acquired a fresh context ticket, redispatched it, then reviewed and
-accepted the scope. That complements the legacy rollback drill; it does not
-prove a real host's authority adapter or a human-authentication boundary.
-
-The exact observed fields, clean source commit, toolchain identity,
-release-manifest/executable digests, canonical receipt and workflow-event
-objects with their locators, transaction identities and limitations are retained
-in `docs/artifacts/T024-PILOT-EVIDENCE.json`. It is a direct local protocol
-observation, not an independently signed CI receipt or a production authority
-trace.
+The complete result, candidate identity, executable and release-manifest
+digests, source hashes, test locators and limitations are retained in
+`docs/artifacts/DEFAULT-ROLLOUT-PILOT.json`. The mapping deliberately classifies
+all lines as a fixture-only historical disposition: `semantic_mapping_verified`
+is false. The pilot proves transition safety, not semantic adoption, production
+authority, or approval of that real pair. `T024-PILOT-EVIDENCE.json` is retained
+as historical evidence and is not current qualification.
 
 ## Unsupported and unqualified cells
 
 The current evidence does not cover:
 
-- hosted exact-head macOS native write/recovery and package execution;
-- hosted exact-head Linux results for the current revision;
+- hosted exact-head Windows, Linux and macOS results for the committed pilot revision;
 - actual Claude, Codex and Pi release-channel installation and provenance;
 - production authority-adapter captures or full real-host feature/sprint traces;
 - physical power interruption or remote/network filesystem guarantees; or
@@ -116,9 +115,9 @@ The current evidence does not cover:
 - current frontier/low-tier HTML farm performance.
 
 Local Windows and native WSL Linux process-death, lock and replacement suites
-are green. The semantic migration/rollback suite and selected pilot ran natively
-on Linux and Windows respectively; Windows has not run the complete semantic
-migration test suite, while the selected pair pilot did run there. Cross-
-compilation is not native-host proof. The default typed-HTML rollout and HTML
-farm therefore remain disabled, while legacy Markdown behavior remains
-unchanged.
+are green. The semantic migration/rollback suite and selected production-byte
+pilot ran locally on native Windows. Cross-compilation is not native-host proof.
+Promotion of the default typed-HTML rollout still requires the committed
+revision's required hosted checks; the HTML farm remains independently
+disabled. Existing Markdown pairs remain exact-format authorities until an
+explicit migration.

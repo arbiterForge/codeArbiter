@@ -102,7 +102,7 @@ func Run(root, op string, input object) (any, error) {
 	}
 	engine.Catalog = c
 	if op == "capture" {
-		return engine.capture(model.M(r["event"]))
+		return engine.capture(r)
 	}
 	if op == "migration-preview" || op == "migration-apply" {
 		return engine.migrate(op, r)

@@ -16,12 +16,15 @@ import json
 import os
 import sys
 import tempfile
+import types
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 HOOKS = os.path.join(REPO, "plugins", "ca", "hooks")
 sys.path.insert(0, HOOKS)
+sys.path.insert(0, os.path.join(REPO, "core", "pysrc"))
 
 import _readinjectlib as ril  # noqa: E402 — needs sys.path mutation above
 
@@ -3210,6 +3213,276 @@ class FailOpenAC12Test(unittest.TestCase):
             except Exception as exc:
                 self.fail("compute_injection raised on int session_id: {}".format(exc))
             self.assertIsInstance(result, str)
+
+
+class HtmlArtifactDiagnosticTest(unittest.TestCase):
+    """T-06: HTML discovery is on-demand, bounded, and non-authorizing."""
+
+    class _ArtifactError(RuntimeError):
+        def __init__(self, code):
+            self.code = code
+            super().__init__(code)
+
+    def _root_with_html_spec(self):
+        temporary = tempfile.TemporaryDirectory()
+        specs = os.path.join(temporary.name, ".codearbiter", "specs")
+        os.makedirs(specs)
+        with open(os.path.join(specs, "demo.html"), "w", encoding="utf-8") as handle:
+            handle.write("invalid-or-unreadable-by-test-double")
+        return temporary
+
+    def test_missing_payload_is_a_repair_diagnostic_not_an_approval_pointer(self):
+        temporary = self._root_with_html_spec()
+        calls = []
+
+        def checked_spec_index(root, installation):
+            calls.append((root, installation))
+            raise self._ArtifactError("CAPABILITY_MISSING")
+
+        class Client:
+            def __init__(self, root, installation):
+                self.root = root
+                self.installation = installation
+
+            def index(self, kind):
+                return checked_spec_index(self.root, self.installation)
+
+        fake = types.SimpleNamespace(
+            ArtifactClient=Client,
+            helper_installation=lambda source: "installed-payload",
+            has_html=lambda root: True,
+        )
+        try:
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                index = ril.build_index(temporary.name)
+                pointers = ril.spec_pointers("src/app.py", index["spec"])
+        finally:
+            temporary.cleanup()
+
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(pointers[0]["tier"], "artifact-diagnostic")
+        self.assertIn("CAPABILITY_MISSING", pointers[0]["text"])
+        self.assertIn("repair or reinstall", pointers[0]["text"].lower())
+        self.assertNotIn("implement to its acceptance criteria", pointers[0]["text"])
+
+    def test_invalid_html_is_distinguished_from_missing_capability(self):
+        temporary = self._root_with_html_spec()
+
+        def checked_spec_index(root, installation):
+            raise self._ArtifactError("INVALID_ARTIFACT")
+
+        class Client:
+            def __init__(self, root, installation):
+                self.root = root
+                self.installation = installation
+
+            def index(self, kind):
+                return checked_spec_index(self.root, self.installation)
+
+        fake = types.SimpleNamespace(
+            ArtifactClient=Client,
+            helper_installation=lambda source: "installed-payload",
+            has_html=lambda root: True,
+        )
+        try:
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                index = ril.build_index(temporary.name)
+                pointers = ril.spec_pointers("src/app.py", index["spec"])
+        finally:
+            temporary.cleanup()
+
+        self.assertEqual(pointers[0]["tier"], "artifact-diagnostic")
+        self.assertIn("invalid", pointers[0]["text"].lower())
+        self.assertIn("INVALID_ARTIFACT", pointers[0]["text"])
+        self.assertIn("repair-preview", pointers[0]["text"])
+
+    def test_no_html_keeps_legacy_reader_and_never_loads_artifact_capability(self):
+        with tempfile.TemporaryDirectory() as root:
+            fake = types.SimpleNamespace(
+                has_html=mock.Mock(return_value=False),
+                helper_installation=mock.Mock(side_effect=AssertionError("must stay lazy")),
+                ArtifactClient=mock.Mock(side_effect=AssertionError("must stay lazy")),
+            )
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                index = ril.build_index(root)
+        self.assertEqual(index["spec"], [])
+        fake.has_html.assert_called_once_with(root)
+        fake.helper_installation.assert_not_called()
+        fake.ArtifactClient.assert_not_called()
+
+    @staticmethod
+    def _entry(name):
+        return {
+            "spec": name,
+            "path": ".codearbiter/specs/demo.html",
+            "globs": ["src/*.py"],
+            "artifact_html": True,
+            "model_sha256": ("a" if name.endswith("A") else "b") * 64,
+        }
+
+    @staticmethod
+    def _engine_entry(name, model_marker=None):
+        pointer = HtmlArtifactDiagnosticTest._entry(name)
+        return {
+            "artifact_id": pointer["spec"],
+            "path": pointer["path"],
+            "governs": pointer["globs"],
+            "authority": {"authority_verified": True},
+            "revision": 1,
+            "model_sha256": (model_marker * 64 if model_marker else pointer["model_sha256"]),
+            "normative_sha256": "c" * 64,
+        }
+
+    def test_epoch_and_injected_entries_come_from_one_validated_snapshot(self):
+        temporary = self._root_with_html_spec()
+        phase = {"value": "B"}
+        checked_calls = []
+        client_calls = []
+
+        class RacingClient:
+            def __init__(self, root, installation):
+                client_calls.append((root, installation))
+
+            def index(self, kind):
+                phase["value"] = "A"
+                return iter((HtmlArtifactDiagnosticTest._engine_entry("SPEC-B"),))
+
+        fake = types.SimpleNamespace(
+            ArtifactClient=RacingClient,
+            helper_installation=lambda source: "installed-payload",
+            has_html=lambda root: True,
+        )
+        try:
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                first = ril.compute_injection(
+                    temporary.name, "race-session", "src/app.py"
+                )
+                phase["value"] = "B"
+                second = ril.compute_injection(
+                    temporary.name, "race-session", "src/app.py"
+                )
+        finally:
+            temporary.cleanup()
+
+        self.assertIn("SPEC-B", first)
+        self.assertNotIn("SPEC-A", first)
+        self.assertEqual(second, "")
+        self.assertEqual(checked_calls, [])
+        self.assertEqual(len(client_calls), 2, "each read must use exactly one artifact snapshot")
+
+    def test_same_size_same_mtime_html_replacement_changes_dedup_identity(self):
+        temporary = self._root_with_html_spec()
+        html = os.path.join(temporary.name, ".codearbiter", "specs", "demo.html")
+        original_stat = os.stat(html)
+
+        def checked_spec_index(root, installation):
+            with open(html, encoding="utf-8") as handle:
+                suffix = handle.read()[-1]
+            return iter((self._engine_entry("SPEC-STABLE", suffix.lower()),))
+
+        class Client:
+            def __init__(self, root, installation):
+                self.root = root
+                self.installation = installation
+
+            def index(self, kind):
+                return checked_spec_index(self.root, self.installation)
+
+        fake = types.SimpleNamespace(
+            ArtifactClient=Client,
+            helper_installation=lambda source: "installed-payload",
+            has_html=lambda root: True,
+        )
+        try:
+            with open(html, "w", encoding="utf-8") as handle:
+                handle.write("artifact-A")
+            os.utime(html, ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns))
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                first = ril.compute_injection(temporary.name, "same-stat", "src/app.py")
+                with open(html, "w", encoding="utf-8") as handle:
+                    handle.write("artifact-B")
+                os.utime(html, ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns))
+                second = ril.compute_injection(temporary.name, "same-stat", "src/app.py")
+        finally:
+            temporary.cleanup()
+
+        self.assertIn("SPEC-STABLE", first)
+        self.assertEqual(second, first)
+        self.assertTrue(second, "changed model identity must bypass the old dedup marker")
+
+    def test_warm_and_cold_sessions_share_identity_but_not_markers(self):
+        temporary = self._root_with_html_spec()
+        calls = []
+
+        def checked_spec_index(root, installation):
+            calls.append(root)
+            return iter((self._engine_entry("SPEC-A"),))
+
+        class Client:
+            def __init__(self, root, installation):
+                self.root = root
+                self.installation = installation
+
+            def index(self, kind):
+                return checked_spec_index(self.root, self.installation)
+
+        fake = types.SimpleNamespace(
+            ArtifactClient=Client,
+            helper_installation=lambda source: "installed-payload",
+            has_html=lambda root: True,
+        )
+        try:
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                cold = ril.compute_injection(temporary.name, "session-one", "src/app.py")
+                warm = ril.compute_injection(temporary.name, "session-one", "src/app.py")
+                other_session = ril.compute_injection(
+                    temporary.name, "session-two", "src/app.py"
+                )
+        finally:
+            temporary.cleanup()
+
+        self.assertIn("SPEC-A", cold)
+        self.assertEqual(warm, "")
+        self.assertEqual(other_session, cold)
+        self.assertEqual(len(calls), 3, "HTML identities must be freshly validated before dedup")
+
+    def test_malformed_model_and_unsupported_version_invalidate_dedup(self):
+        temporary = self._root_with_html_spec()
+        outcomes = iter(("INVALID_ARTIFACT", "UNSUPPORTED_VERSION", "UNSUPPORTED_VERSION"))
+
+        def checked_spec_index(root, installation):
+            raise self._ArtifactError(next(outcomes))
+
+        class Client:
+            def __init__(self, root, installation):
+                self.root = root
+                self.installation = installation
+
+            def index(self, kind):
+                return checked_spec_index(self.root, self.installation)
+
+        fake = types.SimpleNamespace(
+            ArtifactClient=Client,
+            helper_installation=lambda source: "installed-payload",
+            has_html=lambda root: True,
+        )
+        try:
+            with mock.patch.dict(sys.modules, {"_artifactlib": fake}):
+                malformed = ril.compute_injection(
+                    temporary.name, "diagnostic-session", "src/app.py"
+                )
+                unsupported = ril.compute_injection(
+                    temporary.name, "diagnostic-session", "src/app.py"
+                )
+                repeated = ril.compute_injection(
+                    temporary.name, "diagnostic-session", "src/app.py"
+                )
+        finally:
+            temporary.cleanup()
+
+        self.assertIn("INVALID_ARTIFACT", malformed)
+        self.assertIn("UNSUPPORTED_VERSION", unsupported)
+        self.assertEqual(repeated, "")
 
 
 if __name__ == "__main__":

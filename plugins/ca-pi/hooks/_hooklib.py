@@ -92,7 +92,8 @@
 #                                         restating the literal.
 #   marker_fresh(path, minutes) -> bool   True iff marker file exists and is recent
 #   write_text_atomic(path, text) -> None  crash-safe write (temp + os.replace)
-#   acquire_lock(path) -> handle|None     OS-owned cross-process file lock (#271 C-2);
+#   acquire_lock(path, wait_seconds=None) -> handle|None
+#                                         OS-owned cross-process file lock (#271 C-2);
 #                                         non-blocking + bounded LOCK_WAIT retry spin,
 #                                         fail-soft None on contention/timeout/OSError
 #   release_lock(handle) -> None          release + close; None handle is a no-op
@@ -222,6 +223,7 @@ from _sensitivelib import (  # noqa: F401
 # POSIX flock and Windows byte-range locks are process-scoped, so sibling
 # threads can otherwise burn the shared wait budget contending with each other.
 _GATE_EVENTS_PROCESS_LOCK = threading.Lock()
+GATE_EVENT_LOCK_WAIT_SECONDS = 5.0
 _WINDOWS_LOCK_TIMEOUT_SECONDS = 5.0
 _WINDOWS_LOCK_RETRY_SECONDS = 0.01
 _WINDOWS_CRT_EDEADLK = 36
@@ -345,7 +347,7 @@ def write_text_atomic(path, text, newline=None):
         raise
 
 
-def acquire_lock(path):
+def acquire_lock(path, wait_seconds=None):
     """Acquire an OS-owned cross-process file lock keyed on `path`; process
     death releases it automatically (#271 C-2 — hoisted from the
     statusline-ledger-only `_ledgerlib._acquire_lock`, now shared with
@@ -355,7 +357,8 @@ def acquire_lock(path):
     with one byte so the OS byte-range lock has a byte to lock (an empty file
     has no range to range-lock). Non-blocking (`msvcrt.locking(..., LK_NBLCK,
     1)` on Windows, `fcntl.flock(..., LOCK_EX | LOCK_NB)` elsewhere) with a
-    bounded `LOCK_WAIT`-second retry spin; any `OSError` opening the lock file,
+    bounded `LOCK_WAIT`-second retry spin (or an explicit non-negative
+    `wait_seconds` budget); any `OSError` opening the lock file,
     or exhausting the deadline still contended, is FAIL-SOFT: returns `None`
     rather than raising or blocking indefinitely. Callers decide what
     "fail-soft" means for them — `_ledgerlib.ledger_update`/`persist_sess_start`
@@ -373,7 +376,8 @@ def acquire_lock(path):
             handle.flush()
     except OSError:
         return None
-    deadline = time.monotonic() + LOCK_WAIT
+    wait_seconds = LOCK_WAIT if wait_seconds is None else max(0.0, wait_seconds)
+    deadline = time.monotonic() + wait_seconds
     while True:
         try:
             handle.seek(0)
@@ -551,7 +555,10 @@ def _log_gate_event(kind, tag, msg):
         try:
             _GATE_EVENTS_PROCESS_LOCK.acquire()
             process_lock_acquired = True
-            audit_lock = acquire_lock(audit_lock_key(root, log_path))
+            audit_lock = acquire_lock(
+                audit_lock_key(root, log_path),
+                wait_seconds=GATE_EVENT_LOCK_WAIT_SECONDS,
+            )
         except Exception:
             if process_lock_acquired:
                 _GATE_EVENTS_PROCESS_LOCK.release()
@@ -564,7 +571,10 @@ def _log_gate_event(kind, tag, msg):
         os_lock_acquired = False
         try:
             fd = os.open(log_path, flags, 0o600)
-            if os.name == "nt":
+            # The trusted sidecar already serializes current writers. Keep the
+            # legacy descriptor lock for compatibility once the log has data,
+            # but Windows cannot reliably lock byte zero of a new empty file.
+            if os.name == "nt" and os.fstat(fd).st_size:
                 import msvcrt
                 os.lseek(fd, 0, os.SEEK_SET)
                 lock_mode = getattr(msvcrt, "LK_NBLCK", msvcrt.LK_LOCK)

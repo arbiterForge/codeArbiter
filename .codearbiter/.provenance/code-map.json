@@ -167,7 +167,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "3b023522af378caeee29c57772f55088942cc667",
+      "hash": "45396b274ca82ae0db6744f7aa787f6b01f88a11",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "c26864a87303fb0de659a91e9e202d0d66ceece2",
+      "hash": "b499654fb32b0d02ac1bf7a8b5a2c1979833252c",
       "path": ".github/workflows/ci.yml"
     },
     {
@@ -419,7 +419,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "f083ea2387b6a37fd9f2e987d47713f190b56334",
+      "hash": "912334c94c31b9e405883746d8d9d98eb7e4a24f",
       "path": ".github/workflows/release.yml"
     }
   ],

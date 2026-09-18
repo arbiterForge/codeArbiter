@@ -16,11 +16,17 @@ import (
 	"strings"
 )
 
-// capture records a host-supplied cooperative attestation. It NEVER asserts
-// that the source text proves a human identity or executes the claimed tests.
-// Immutable objects are independently verifiable; retry completes a missing
-// receipt after an interrupted event write without modifying an artifact.
-func (e *Engine) capture(ev object) (any, error) {
+// capture records a host-owned cooperative attestation. The request contains
+// only the exact source locator and digest; it cannot manufacture authority by
+// supplying kind, authority_kind or verdict labels. It NEVER asserts that the
+// source text proves a human identity or executes the claimed tests. Immutable
+// objects are independently verifiable; retry completes a missing receipt after
+// an interrupted event write without modifying an artifact.
+func (e *Engine) capture(r object) (any, error) {
+	ev, eb, err := authority.LoadSource(e.FS, model.S(r["source_ref"]), model.S(r["source_sha256"]))
+	if err != nil {
+		return nil, err
+	}
 	subject := model.M(ev["subject"])
 	entry, err := e.Catalog.Resolve(model.S(subject["artifact_id"]))
 	if err != nil {
@@ -42,21 +48,13 @@ func (e *Engine) capture(ev object) (any, error) {
 			return nil, &es[0]
 		}
 	}
-	eb, err := canonical.Marshal(ev)
-	if err != nil {
-		return nil, err
-	}
 	eh := canonical.BytesHash(eb)
-	receipt := object{"format": "codearbiter.receipt/0.1.0", "kind": ev["kind"], "authority_kind": ev["authority_kind"], "subject": subject, "event_sha256": eh}
+	receipt := object{"format": "codearbiter.receipt/0.2.0", "kind": ev["kind"], "authority_kind": ev["authority_kind"], "subject": subject, "event_sha256": eh, "authority_source_ref": r["source_ref"], "authority_source_sha256": r["source_sha256"]}
 	rb, err := canonical.Marshal(receipt)
 	if err != nil {
 		return nil, err
 	}
 	rh := canonical.BytesHash(rb)
-	// Validate the authority/verdict relationship BEFORE persisting anything.
-	if err = authority.ValidateEvent(ev); err != nil {
-		return nil, err
-	}
 	ep, rp := authority.EventRef(eh), authority.Ref(rh)
 	for _, item := range []struct {
 		p     string
@@ -80,7 +78,7 @@ func (e *Engine) capture(ev object) (any, error) {
 	if _, err = authority.Load(e.FS, rp); err != nil {
 		return nil, err
 	}
-	return object{"receipt": rp, "receipt_sha256": rh, "event": ep, "event_sha256": eh, "artifact_approval_changed": false, "trust_model": "captured cooperative workflow attestation; not independent identity authentication"}, nil
+	return object{"receipt": rp, "receipt_sha256": rh, "event": ep, "event_sha256": eh, "authority_source": r["source_ref"], "authority_source_sha256": r["source_sha256"], "artifact_approval_changed": false, "trust_model": "host-source-bound cooperative workflow attestation; not independent identity authentication"}, nil
 }
 func (e *Engine) export(r object, entry repository.Entry) (any, error) {
 	target := model.S(r["target"])

@@ -54,7 +54,7 @@ func internalOutputs(f *store.FS) (map[string]bool, error) {
 		switch d.Name() {
 		case "transactions", "history":
 			continue
-		case "events", "receipts", "context-tokens", "farm-bindings", "farm-seals", "farm-markers":
+		case "authority-sources", "events", "receipts", "context-tokens", "farm-bindings", "farm-seals", "farm-markers":
 		default:
 			return nil, fault.New("UNRECOGNIZED_OUTPUT", "unrecognized reserved output directory")
 		}
@@ -76,10 +76,13 @@ func internalOutputs(f *store.FS) (map[string]bool, error) {
 				return nil, fault.New("INVALID_OUTPUT", "generated output filename does not match its bytes")
 			}
 			if d.Name() == "receipts" {
-				if _, e := authority.Load(f, p); e != nil {
+				// Historical v0.1 receipts are valid inventory inputs but cannot
+				// confer current authority. Authority-consuming paths use Load,
+				// which continues to reject them until freshly attested.
+				if _, e := authority.Inspect(f, p); e != nil {
 					return nil, e
 				}
-			} else if d.Name() == "events" {
+			} else if d.Name() == "events" || d.Name() == "authority-sources" {
 				v, e := canonical.Object(b)
 				if e != nil {
 					return nil, e

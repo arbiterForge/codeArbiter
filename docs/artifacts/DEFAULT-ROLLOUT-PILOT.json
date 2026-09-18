@@ -1,0 +1,83 @@
+{
+  "format": "codearbiter.default-rollout-pilot/0.1.0",
+  "observed_at_utc": "2026-09-18T05:04:14Z",
+  "status": "local_candidate_pass_hosted_exact_head_pending",
+  "scope": {
+    "repository": "arbiterForge/codeArbiter",
+    "base_commit": "1281de39d4877f8935f8f424a0b15f32955fb568",
+    "execution": "exact production bytes copied into a disposable isolated repository root",
+    "authoritative_repository_mutated": false
+  },
+  "selected_pair": {
+    "slug": "reaudit-ra03-read-only-review-aggregation",
+    "spec": {
+      "path": ".codearbiter/specs/reaudit-ra03-read-only-review-aggregation.md",
+      "sha256": "7657f8494ca5bfc2f7cf47c914fa50fb197d246f3fbecb7b007bd177c4b54040",
+      "lines": 34
+    },
+    "plan": {
+      "path": ".codearbiter/plans/reaudit-ra03-read-only-review-aggregation.md",
+      "sha256": "d0c6f233f20e0e1af3a71789316827e77af70b2061675090a4f1c175c69310b9",
+      "lines": 131
+    }
+  },
+  "local_unverified_observation": {
+    "authority": "local_unverified_not_ci_qualification",
+    "platform": "windows/amd64",
+    "binary_sha256": "a6eeb63b026ae3404bce1b5bd449b6063de9f9fc000472552e315c6e33ebfa3f",
+    "release_manifest_sha256": "38151519e49707932fb143baaf873497aa4e76baf857cc8df4fac73cb9c588ed",
+    "module_tests_passed_before_candidate_build": true,
+    "upstream_host_qualified_by_local_build": false
+  },
+  "cases": [
+    {
+      "id": "upgrade-inertness",
+      "test": "test_capability_upgrade_does_not_reinterpret_legacy_pair",
+      "result": "local_pass_hosted_pending",
+      "proof": "Making the current installed capability available leaves both exact Markdown byte streams authoritative and creates no HTML files."
+    },
+    {
+      "id": "explicit-cutover",
+      "test": "test_production_pair_cutover_survives_recreation_and_rolls_back_exactly",
+      "result": "local_pass_hosted_pending",
+      "proof": "Preview is non-mutating; explicit apply creates a same-slug HTML pair in DRAFT, transfers no approvals, and removes Markdown only after the pair transaction commits."
+    },
+    {
+      "id": "interruption-recreation",
+      "test": "test_production_pair_cutover_survives_recreation_and_rolls_back_exactly",
+      "result": "local_pass_hosted_pending",
+      "proof": "A prepared cutover is fault-injected after the spec switch but before the plan switch. Discovery rejects the mixed pair, engine reads return RECOVERY_REQUIRED, explicit complete recovery restores the HTML pair, and identical operation replay returns the durable result."
+    },
+    {
+      "id": "downgrade-refusal",
+      "test": "test_production_pair_cutover_survives_recreation_and_rolls_back_exactly",
+      "result": "local_pass_hosted_pending",
+      "proof": "A client without the installed payload fails CAPABILITY_MISSING while routing remains HTML; it neither recreates nor reinterprets Markdown."
+    },
+    {
+      "id": "exact-byte-rollback",
+      "test": "test_production_pair_cutover_survives_recreation_and_rolls_back_exactly",
+      "result": "local_pass_hosted_pending",
+      "proof": "Journal-bound rollback removes both HTML authorities, restores both recorded SHA-256 byte streams exactly, and retains the cutover and rollback transaction journals."
+    },
+    {
+      "id": "dispatch-stop",
+      "test": "test_production_pair_cutover_survives_recreation_and_rolls_back_exactly",
+      "result": "local_pass_hosted_pending",
+      "proof": "During the fault-injected prepared cutover, exact-format discovery and the engine recovery guard both stop before the dispatch boundary is reached."
+    }
+  ],
+  "related_current_evidence": {
+    "normal_html_lifecycle": ".github/scripts/test_artifact_installed_host.py",
+    "native_browser_review": "docs/artifacts/browser-qualification.json",
+    "historical_pilot_not_current_evidence": "docs/artifacts/T024-PILOT-EVIDENCE.json"
+  },
+  "limitations": [
+    "The mapping is a safety-only fixture disposition over every source line; semantic_mapping_verified remains false and this is not adoption of the selected pair.",
+    "No historic approval or task status is transferred, and no production authority capture is manufactured.",
+    "The drill uses exact production bytes in a disposable isolated repository root rather than mutating the authoritative codeArbiter pair.",
+    "The local candidate observation is not hosted exact-head evidence; the status must not be promoted until the committed revision passes required CI.",
+    "Physical power loss and remote or network filesystems remain unqualified.",
+    "The HTML farm is outside this pilot and remains disabled."
+  ]
+}

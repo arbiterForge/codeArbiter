@@ -38,8 +38,8 @@ def main() -> None:
             raise RuntimeError(f"{operation}: {body}; {result.stderr}")
         return body["result"]
 
-    spec = json.loads((source / "spec.json").read_text())
-    plan = json.loads((source / "plan.json").read_text())
+    spec = json.loads((source / "spec.json").read_text(encoding="utf-8"))
+    plan = json.loads((source / "plan.json").read_text(encoding="utf-8"))
     call("create", operation_id="example-spec-create-001", artifact_id=spec["artifact_id"],
          kind="spec", slug=spec["slug"], title=spec["normative"]["title"],
          summary=spec["normative"]["summary"], normative=spec["normative"])
@@ -59,7 +59,9 @@ def main() -> None:
               "all_ready": all(c["valid"] for c in checks),
               "readiness_note": "Faithful draft reproduction, not a promise the historical plan satisfies every tightened runtime gate. Missing verification details are reported, never invented."}
     # Outside canonical state, for humans. This report is not an evidence receipt.
-    (root / "generation-report.json").write_text(json.dumps(output, indent=2) + "\n")
+    (root / "generation-report.json").write_text(
+        json.dumps(output, indent=2) + "\n", encoding="utf-8"
+    )
     print(json.dumps(output, indent=2))
 
 

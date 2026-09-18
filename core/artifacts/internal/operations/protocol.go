@@ -3,7 +3,6 @@
 package operations
 
 import (
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/authority"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
@@ -68,7 +67,8 @@ func RequestSchema(op string) (object, error) {
 	}
 	switch op {
 	case "capture":
-		add("event", authority.EventSchema(), true)
+		add("source_ref", text(), true)
+		add("source_sha256", digestType(), true)
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")

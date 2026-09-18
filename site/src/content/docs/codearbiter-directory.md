@@ -35,9 +35,9 @@ only while a flow is active or after the owning feature first runs (`.decompose-
 | `done-tasks.md` | `/ca:task archive`, `/ca:standup`'s per-item archival sweep | the permanent record; read on demand | No: guarded (hook `H-22`, append-only) |
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
-| `specs/*.md` | `brainstorming` skill (via `/ca:feature`, `/ca:sprint`) | `writing-plans`, `/ca:status` | Yes |
-| `plans/*.md` | `writing-plans` skill | `executing-plans`, `subagent-driven-development`, `/ca:status` | Yes |
-| `specs/*.html`, `plans/*.html` | Existing feature/sprint workflows through the internal typed-artifact engine (candidate; disabled by default) | The same workflow readers through validated, scoped reads | No: use typed engine operations |
+| `specs/*.md` | Legacy feature/sprint workflows already owned by Markdown | `writing-plans`, `/ca:status` | Yes |
+| `plans/*.md` | `writing-plans` for an existing Markdown spec | `executing-plans`, `subagent-driven-development`, `/ca:status` | Yes |
+| `specs/*.html`, `plans/*.html` | New full-lane feature/sprint workflows through the internal typed-artifact engine (default) | The same workflow readers through validated, scoped reads | No: use typed engine operations |
 | `.decompose-draft/` | `/ca:decompose` while an interview is in progress | `/ca:decompose` on resume | No need: temporary resumable interview state |
 | `checkpoints/*.md` | `checkpoint-aggregator` agent (`/ca:checkpoint`) | `/ca:audit`, `/ca:status`-adjacent reads | Yes |
 | `audits/*.md` | `/ca:audit` | humans (report only) | Yes |
@@ -174,31 +174,34 @@ to cover a file stop firing, and `/ca:adr-status` has nothing to report.
 
 ## specs/
 
-One markdown file per feature/campaign spec, written by the `brainstorming` skill once a spec is
-approved (`/ca:feature`, `/ca:sprint`). `writing-plans` reads an approved spec to derive its task
-plan, and `/ca:status` lists every slug here alongside its plan to show how far each pipeline got.
+One canonical file per feature/campaign spec, written by the `brainstorming` skill once a spec is
+approved (`/ca:feature`, `/ca:sprint`). New full-lane workflows use typed `.html`; existing `.md`
+authority remains on its legacy path. `writing-plans` reads an approved spec to derive its task
+plan, and `/ca:status` lists supported legacy slugs alongside their plans during the current
+RA-11 compatibility window.
 
 **Writers:** `brainstorming`. **Readers:** `writing-plans`, `/ca:status`.
-**Editable by hand?** Yes. Specs are prose documents; edit for clarity, but avoid rewriting
-acceptance criteria the plan and its tests already trace against.
+**Editable by hand?** Markdown only. Use typed engine operations for HTML so its model and view
+remain one authority.
 **Delete it:** `/ca:status` no longer lists that pipeline; a plan that referenced the missing spec
 still runs (the plan is self-contained), but nothing can re-derive it from the (now-gone) spec.
 
 ## plans/
 
-One markdown file per feature's task plan, written by `writing-plans` from an approved spec.
+One same-format file per feature's task plan, written by `writing-plans` from an approved spec.
+New full-lane plans use typed `.html`; existing Markdown specs continue to matching `.md` plans.
 Each task carries an exact file path and a verification step that maps to a `tdd` obligation.
 `executing-plans` and `subagent-driven-development` consume it task by task; `/ca:status` reports
 the ACCEPTED-vs-total count for an in-progress plan.
 
 **Writers:** `writing-plans`. **Readers:** `executing-plans`, `subagent-driven-development`,
-`/ca:status`. **Editable by hand?** Yes, though editing mid-execution risks desyncing the
-plan from tasks already marked accepted. **Delete it:** an in-progress feature loses its
+`/ca:status`. **Editable by hand?** Markdown only; HTML uses typed engine operations. Editing a
+legacy plan mid-execution risks desyncing it from tasks already marked accepted. **Delete it:** an in-progress feature loses its
 resumption point; `/ca:status` can no longer report that pipeline's progress.
 
-### Typed HTML candidate
+### Typed HTML default
 
-Specifications and plans also have a structured HTML candidate format. It is an
+New full-lane specifications and plans use a structured HTML format. It is an
 internal leaf of the existing feature and sprint workflows, not another public
 command or agent surface. Each file contains an authoritative typed JSON model
 and a deterministic visible view, so it can be reviewed offline in a browser
@@ -206,13 +209,13 @@ without JavaScript or network access. Engine reads validate the model, hashes,
 local resources, symbol markers and visible view together; opening the file does
 not approve or mutate it.
 
-The candidate remains disabled by default. Normal host packages do not yet ship
-a qualified native payload, hosted macOS and release-channel proof are pending,
-and HTML farm use has an additional unclosed qualification bar. Existing
-Markdown workflows therefore remain authoritative unless a selected pair is
-explicitly previewed, reviewed and cut over. Conversion always handles a spec
-and plan together, creates drafts, transfers no old approvals, and retains exact
-legacy bytes for guarded rollback. See the repository guidance for the
+The workflow checks its installation-owned, manifest-verified native payload
+before writing and fails closed without it; it never falls back to a new Markdown
+artifact. Existing Markdown pairs remain authoritative in their exact format,
+with no automatic migration. HTML farm use has a separate unclosed qualification
+bar and remains disabled. Explicit conversion always handles a spec and plan
+together, creates drafts, transfers no old approvals, and retains exact legacy
+bytes for guarded rollback. See the repository guidance for the
 [format](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/spec-and-plan-format.md)
 and [migration/recovery](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/migration-and-recovery.md)
 contracts.

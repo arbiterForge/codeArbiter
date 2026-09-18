@@ -2,10 +2,10 @@
   "schema_version": 1,
   "owner": "codeArbiter artifact-engine maintainers",
   "baseline_revision": "4c1fe026d2eb26ea842308d312f7f1250d835a51",
-  "evidence_boundary": "This inventory and its gates establish surface and consumer accounting only. They do not prove runtime integration, host authority, packaging, release qualification, or default-rollout readiness.",
+  "evidence_boundary": "This inventory and its independent-search gate establish complete ordinary default-path consumer accounting. Runtime, authority, package, browser, pilot, exact-head CI, release, and farm qualification remain separate evidence boundaries.",
   "rollout": {
-    "legacy_markdown_default": true,
-    "typed_html_default_enabled": false,
+    "legacy_markdown_default": false,
+    "typed_html_default_enabled": true,
     "typed_html_farm_enabled": false
   },
   "public_surface_baseline": {
@@ -62,6 +62,10 @@
       "core/surface",
       "core/pysrc",
       "plugins/ca/tools/farm.ts",
+      "plugins/ca-pi/tools/src",
+      "plugins/ca-pi/hooks/pi-bridge.py",
+      "plugins/ca-pi/hooks/_planfilelib.py",
+      "plugins/ca-pi/extensions/codearbiter.js",
       ".github/workflows/ci.yml",
       "site/src/content/docs",
       "site/src/curated",
@@ -74,8 +78,18 @@
       "(?:specs|plans)/<",
       "plan\\.json",
       "ca-artifact",
-      "artifacts\\.md"
-    ]
+      "artifacts\\.md",
+      "\\bcallPlanFileBridge\\b",
+      "\\bplan_file_operation\\b"
+    ],
+    "external_gitlinks": ["academy-source"]
+  },
+  "ephemeral_generated_outputs": {
+    "path_prefixes": ["site/src/content/docs/reference/"],
+    "paths": ["site/src/content/docs/changelog.md"],
+    "generator": "site/scripts/gen.ts",
+    "source_root": "plugins/ca",
+    "workflow": ".github/workflows/docs.yml"
   },
   "consumers": [
     {
@@ -83,116 +97,130 @@
       "area": "entry-resume",
       "owner": "feature command",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-and-legacy-routing",
       "task_refs": ["T-016"],
       "canonical_paths": ["core/surface/commands/feature.md"],
       "generated_paths": [
         "plugins/ca/commands/feature.md",
         "plugins/ca-codex/skills/ca-feature/SKILL.md",
-        "plugins/ca-pi/skills/ca-feature/SKILL.md"
+        "plugins/ca-pi/skills/ca-feature/SKILL.md",
+        "site/src/content/docs/reference/commands/feature.md"
       ],
-      "reason": "The entry command selects the typed pilot and fails closed, but real host authority and complete resume behavior remain unproved."
+      "reason": "The entry command resolves one exact-format pair, routes new full-lane work through the installed capability, resumes HTML only through typed reads, preserves existing Markdown pairs, and fails closed without creating shadow authority."
     },
     {
       "id": "sprint-entry-resume",
       "area": "entry-resume",
       "owner": "sprint mode",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-ordinary-path-farm-disabled",
       "task_refs": ["T-016", "T-018"],
       "canonical_paths": ["core/surface/SPRINT.md"],
-      "generated_paths": ["plugins/ca/SPRINT.md", "plugins/ca-codex/SPRINT.md", "plugins/ca-pi/SPRINT.md"],
-      "reason": "Typed resume is described, while typed farm dispatch remains blocked and full execution integration is incomplete."
+      "generated_paths": ["plugins/ca/SPRINT.md", "plugins/ca-codex/SPRINT.md", "plugins/ca-pi/SPRINT.md", "site/src/content/docs/reference/commands/sprint.md"],
+      "reason": "The ordinary sprint path resolves and resumes exact-format HTML or Markdown authority through the installed bridge. HTML farm dispatch is a separate disabled consumer and is not counted as ordinary-path closure."
     },
     {
       "id": "brainstorming-producer",
       "area": "planning-tdd-execution",
       "owner": "brainstorming skill",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-producer",
       "task_refs": ["T-015"],
       "canonical_paths": ["core/surface/skills/brainstorming/SKILL.md"],
       "generated_paths": [
         "plugins/ca/skills/brainstorming/SKILL.md",
         "plugins/ca-codex/routines/brainstorming/SKILL.md",
-        "plugins/ca-pi/routines/brainstorming/SKILL.md"
+        "plugins/ca-pi/routines/brainstorming/SKILL.md",
+        "site/src/content/docs/reference/skills/brainstorming.md"
       ],
-      "reason": "The pilot routes to the on-demand artifact contract; normal installed hosts do not yet ship the native payload."
+      "reason": "New full-lane default authoring routes through the installed capability and writes HTML only through typed operations; existing Markdown authority stays on its legacy path and missing capability fails before writes."
     },
     {
       "id": "writing-plans-producer",
       "area": "planning-tdd-execution",
       "owner": "writing-plans skill",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-producer",
       "task_refs": ["T-015"],
       "canonical_paths": ["core/surface/skills/writing-plans/SKILL.md"],
       "generated_paths": [
         "plugins/ca/skills/writing-plans/SKILL.md",
         "plugins/ca-codex/routines/writing-plans/SKILL.md",
-        "plugins/ca-pi/routines/writing-plans/SKILL.md"
+        "plugins/ca-pi/routines/writing-plans/SKILL.md",
+        "site/src/content/docs/reference/skills/writing-plans.md"
       ],
-      "reason": "Typed task creation and plan binding are specified on demand and exercised against the native candidate; normal installed-host delivery remains open."
+      "reason": "The plan producer consumes the selected spec in its exact format, creates and binds HTML plans through typed operations, preserves Markdown pairs, and cannot create a Markdown shadow for HTML authority."
     },
     {
       "id": "tdd-obligation-reader",
       "area": "planning-tdd-execution",
       "owner": "tdd skill",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-reader",
       "task_refs": ["T-015"],
       "canonical_paths": ["core/surface/skills/tdd/SKILL.md"],
       "generated_paths": [
         "plugins/ca/skills/tdd/SKILL.md",
         "plugins/ca-codex/routines/tdd/SKILL.md",
-        "plugins/ca-pi/routines/tdd/SKILL.md"
+        "plugins/ca-pi/routines/tdd/SKILL.md",
+        "site/src/content/docs/reference/skills/tdd.md"
       ],
-      "reason": "The typed pilot replaces Markdown obligation reads and its producer fixture fails closed without the native payload; normal installed-host delivery remains open."
+      "reason": "TDD derives HTML obligations and bindings through typed reads, preserves legacy Markdown reads for existing pairs, and fails closed when HTML capability is unavailable or invalid."
     },
     {
       "id": "checkpoint-execution",
       "area": "planning-tdd-execution",
       "owner": "executing-plans skill",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-reader-and-state",
       "task_refs": ["T-016"],
       "canonical_paths": ["core/surface/skills/executing-plans/SKILL.md"],
       "generated_paths": [
         "plugins/ca/skills/executing-plans/SKILL.md",
         "plugins/ca-codex/routines/executing-plans/SKILL.md",
-        "plugins/ca-pi/routines/executing-plans/SKILL.md"
+        "plugins/ca-pi/routines/executing-plans/SKILL.md",
+        "site/src/content/docs/reference/skills/executing-plans.md"
       ],
-      "reason": "Typed eligibility, interruption-safe REVIEW state and atomic scope acceptance are exercised against the native candidate without claiming complete real-host execution."
+      "reason": "Execution reads typed task and dependency state, records receipt-bound lifecycle transitions, re-enters safely after interruption, and preserves the existing Markdown ledger path."
     },
     {
       "id": "subagent-execution-acceptance",
       "area": "planning-tdd-execution",
       "owner": "subagent-driven-development skill",
       "live": true,
-      "treatment": "candidate-guidance",
-      "closure": "pending-runtime-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-reader-and-acceptance",
       "task_refs": ["T-016", "T-018"],
       "canonical_paths": ["core/surface/skills/subagent-driven-development/SKILL.md"],
       "generated_paths": [
         "plugins/ca/skills/subagent-driven-development/SKILL.md",
         "plugins/ca-codex/routines/subagent-driven-development/SKILL.md",
-        "plugins/ca-pi/routines/subagent-driven-development/SKILL.md"
+        "plugins/ca-pi/routines/subagent-driven-development/SKILL.md",
+        "site/src/content/docs/reference/skills/subagent-driven-development.md"
       ],
-      "reason": "Typed state, review and sealed farm projection semantics are described; complete real-host acceptance wiring and farm qualification remain blocked."
+      "reason": "Ordinary execution and acceptance use engine-returned task identity and stored authority receipts. Farm projection remains a separately inventoried disabled path and does not qualify this ordinary-path closure."
     },
     {
       "id": "finalization-and-worktree-plan-readers",
       "area": "planning-tdd-execution",
       "owner": "branch finalization and worktree skills",
       "live": true,
-      "treatment": "legacy-compatible",
-      "closure": "pending-html-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-exact-format-readers",
       "task_refs": ["T-016", "T-024"],
       "canonical_paths": [
         "core/surface/skills/finishing-a-development-branch/SKILL.md",
@@ -204,16 +232,19 @@
         "plugins/ca-codex/routines/finishing-a-development-branch/SKILL.md",
         "plugins/ca-codex/routines/using-git-worktrees/SKILL.md",
         "plugins/ca-pi/routines/finishing-a-development-branch/SKILL.md",
-        "plugins/ca-pi/routines/using-git-worktrees/SKILL.md"
+        "plugins/ca-pi/routines/using-git-worktrees/SKILL.md",
+        "site/src/content/docs/reference/skills/finishing-a-development-branch.md",
+        "site/src/content/docs/reference/skills/using-git-worktrees.md"
       ],
-      "reason": "Both readers still name Markdown implementation plans; typed completion and isolation inputs must be wired before default rollout."
+      "reason": "Both readers resolve the authoritative pair first, consume HTML only through current engine identity/state, and retain the existing Markdown reader without conversion or counterpart creation."
     },
     {
       "id": "artifact-protocol-leaf",
       "area": "context-capability",
       "owner": "shared artifact include",
       "live": true,
-      "treatment": "implemented-on-demand-guidance",
+      "default_path": true,
+      "treatment": "html-capable",
       "closure": "explicitly-compatible",
       "task_refs": ["T-012", "T-015", "T-016", "T-017", "T-019", "T-020"],
       "canonical_paths": ["core/surface/includes/artifacts.md"],
@@ -222,15 +253,16 @@
         "plugins/ca-codex/includes/artifacts.md",
         "plugins/ca-pi/includes/artifacts.md"
       ],
-      "reason": "The complete artifact contract is loaded only after an existing workflow selects the pilot; it is absent from startup context."
+      "reason": "The complete artifact contract is loaded only after an existing workflow selects an HTML route; it is absent from startup context."
     },
     {
       "id": "artifact-binary-bridge",
       "area": "context-capability",
       "owner": "shared Python host bridge",
       "live": true,
-      "treatment": "implemented-unpackaged",
-      "closure": "pending-release-qualification",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-installed-payload-bridge",
       "task_refs": ["T-012", "T-021"],
       "canonical_paths": ["core/pysrc/_artifactlib.py"],
       "generated_paths": [
@@ -238,15 +270,16 @@
         "plugins/ca-codex/hooks/_artifactlib.py",
         "plugins/ca-pi/hooks/_artifactlib.py"
       ],
-      "reason": "The bridge verifies installation-owned payloads and fails closed, but no normal host package contains a qualified binary."
+      "reason": "The bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. Publication read-back remains a separate post-merge release gate."
     },
     {
       "id": "governing-spec-discovery",
       "area": "context-capability",
       "owner": "read-injection library",
       "live": true,
-      "treatment": "legacy-compatible",
-      "closure": "pending-html-discovery",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-html-discovery-and-invalidation",
       "task_refs": ["T-017"],
       "canonical_paths": ["core/pysrc/_readinjectlib.py"],
       "generated_paths": [
@@ -254,31 +287,34 @@
         "plugins/ca-codex/hooks/_readinjectlib.py",
         "plugins/ca-pi/hooks/_readinjectlib.py"
       ],
-      "reason": "Legacy Markdown discovery remains live; validated HTML discovery, identity-aware invalidation and diagnostics are not implemented."
+      "reason": "Legacy Markdown discovery remains live while validated HTML discovery, identity-bound dedup invalidation, and bounded capability/invalid-artifact diagnostics are integrated on demand without eager schema loading."
     },
     {
       "id": "status-diagnostics",
       "area": "status-doctor-startup-commit",
       "owner": "status command",
       "live": true,
+      "default_path": false,
       "treatment": "legacy-compatible",
-      "closure": "pending-capability-diagnostics",
+      "closure": "blocked-ra11-compatibility",
       "task_refs": ["T-017"],
       "canonical_paths": ["core/surface/commands/status.md"],
       "generated_paths": [
         "plugins/ca/commands/status.md",
         "plugins/ca-codex/skills/ca-status/SKILL.md",
-        "plugins/ca-pi/skills/ca-status/SKILL.md"
+        "plugins/ca-pi/skills/ca-status/SKILL.md",
+        "site/src/content/docs/reference/commands/status.md"
       ],
-      "reason": "Existing status behavior remains valid; typed capability and invalid-artifact diagnostics still require integration."
+      "reason": "Existing status behavior remains valid. RA-11 byte-freezes the no-argument status body throughout the current compatibility window, so typed capability and invalid-artifact diagnostics remain an explicit rollout blocker rather than being smuggled into the frozen surface."
     },
     {
       "id": "doctor-diagnostics",
       "area": "status-doctor-startup-commit",
       "owner": "doctor hook and command",
       "live": true,
+      "default_path": false,
       "treatment": "legacy-compatible",
-      "closure": "pending-capability-diagnostics",
+      "closure": "implemented-local-host-qualification-pending",
       "task_refs": ["T-017", "T-021"],
       "canonical_paths": ["core/pysrc/doctor.py", "core/surface/commands/doctor.md"],
       "generated_paths": [
@@ -289,13 +325,14 @@
         "plugins/ca-codex/skills/ca-doctor/SKILL.md",
         "plugins/ca-pi/skills/ca-doctor/SKILL.md"
       ],
-      "reason": "Doctor does not claim artifact availability; packaged-binary identity and capability rows remain open."
+      "reason": "Doctor invokes the installation-pinned capability and bounded repository diagnostics without eager schema loading or Markdown fallback. Exact-head generated-host qualification remains required."
     },
     {
       "id": "startup-context",
       "area": "status-doctor-startup-commit",
       "owner": "arbiter persona and session-start hook",
       "live": true,
+      "default_path": false,
       "treatment": "explicitly-compatible",
       "closure": "closed-no-eager-loading",
       "task_refs": ["T-001", "T-017"],
@@ -312,22 +349,49 @@
       "area": "status-doctor-startup-commit",
       "owner": "commit-gate skill",
       "live": true,
-      "treatment": "legacy-compatible",
-      "closure": "pending-html-integration",
+      "default_path": true,
+      "treatment": "html-capable",
+      "closure": "closed-current-acceptance-reader",
       "task_refs": ["T-016", "T-017"],
       "canonical_paths": ["core/surface/skills/commit-gate/SKILL.md"],
       "generated_paths": [
         "plugins/ca/skills/commit-gate/SKILL.md",
         "plugins/ca-codex/routines/commit-gate/SKILL.md",
-        "plugins/ca-pi/routines/commit-gate/SKILL.md"
+        "plugins/ca-pi/routines/commit-gate/SKILL.md",
+        "site/src/content/docs/reference/skills/commit-gate.md"
       ],
-      "reason": "The commit gate still reads Markdown specs; typed acceptance proof must be integrated before default rollout."
+      "reason": "The commit gate verifies current HTML identity, binding, accepted scope, receipts, and review currency through the bridge while retaining the legacy Markdown gate for existing pairs."
+    },
+    {
+      "id": "pi-native-plan-legacy",
+      "area": "planning-tdd-execution",
+      "owner": "Pi native ca-plan controller and canonical plan-file bridge",
+      "live": true,
+      "default_path": true,
+      "treatment": "legacy-only",
+      "closure": "closed-legacy-pair-only-html-refused",
+      "task_refs": ["T-015"],
+      "canonical_paths": [
+        "plugins/ca-pi/tools/src/plan-mode.ts",
+        "plugins/ca-pi/tools/src/native-plan.ts",
+        "plugins/ca-pi/tools/src/bridge.ts",
+        "plugins/ca-pi/hooks/pi-bridge.py",
+        "core/pysrc/_planfilelib.py"
+      ],
+      "generated_paths": [
+        "plugins/ca-pi/extensions/codearbiter.js",
+        "plugins/ca/hooks/_planfilelib.py",
+        "plugins/ca-codex/hooks/_planfilelib.py",
+        "plugins/ca-pi/hooks/_planfilelib.py"
+      ],
+      "reason": "The pre-existing Pi ca-plan session controller remains intentionally Markdown-only. Its bridge now requires one complete same-slug Markdown spec/plan pair and rechecks that no HTML authority exists before reads or CAS publication, so it cannot create a Markdown shadow for an HTML workflow or claim HTML task authority."
     },
     {
       "id": "farm-plan-projection",
       "area": "farm",
       "owner": "writing-plans farm leaf",
       "live": true,
+      "default_path": false,
       "treatment": "implemented-unpackaged",
       "closure": "typed-html-implemented-disabled",
       "task_refs": ["T-018"],
@@ -344,6 +408,7 @@
       "area": "farm",
       "owner": "farm dispatch leaf and runtime",
       "live": true,
+      "default_path": false,
       "treatment": "implemented-unpackaged",
       "closure": "typed-html-implemented-disabled",
       "task_refs": ["T-018"],
@@ -367,21 +432,23 @@
       "area": "migration",
       "owner": "artifact engine migration operations",
       "live": false,
+      "default_path": false,
       "treatment": "implemented-pilot-only",
-      "closure": "pending-selected-pilot",
+      "closure": "closed-selected-disposable-pilot",
       "task_refs": ["T-019", "T-020", "T-024"],
       "canonical_paths": [
         "core/artifacts/internal/operations/migration.go",
         "core/artifacts/internal/operations/migration_test.go"
       ],
       "generated_paths": [],
-      "reason": "Review-only conversion and recovery operations exist, but no selected real repository conversion or installed-host cutover is complete."
+      "reason": "Review-only conversion and recovery operations were exercised over exact bytes from a selected production pair in a disposable repository, including interruption completion, downgrade refusal, and exact-byte rollback. No live authority was converted."
     },
     {
       "id": "native-ci-and-packaging",
       "area": "ci-release",
       "owner": "artifact-engine CI job",
       "live": true,
+      "default_path": false,
       "treatment": "partial",
       "closure": "pending-hosted-and-release-evidence",
       "task_refs": ["T-021", "T-022", "T-023"],
@@ -401,6 +468,7 @@
       "area": "published-instructions",
       "owner": "artifact documentation",
       "live": true,
+      "default_path": false,
       "treatment": "candidate-guidance",
       "closure": "pending-complete-runbooks",
       "task_refs": ["T-024"],
@@ -419,13 +487,14 @@
         "plugins/ca-codex/skills/INDEX.md",
         "plugins/ca-pi/SKILLS.md"
       ],
-      "reason": "Current docs state the disabled rollout honestly; full format, migration and recovery runbooks plus pilot evidence remain incomplete."
+      "reason": "Current docs state the enabled full-lane HTML default and disabled farm boundary honestly; complete migration, recovery, and release runbooks remain separate work."
     },
     {
       "id": "decomposition-plans",
       "area": "explicit-exclusions",
       "owner": "decompose skill",
       "live": true,
+      "default_path": false,
       "treatment": "explicit-exclusion",
       "closure": "excluded-with-tested-reason",
       "task_refs": ["NG-02"],
@@ -443,7 +512,10 @@
         "plugins/ca-codex/skills/ca-reconcile/SKILL.md",
         "plugins/ca-pi/routines/decompose/SKILL.md",
         "plugins/ca-pi/routines/decision-variance/SKILL.md",
-        "plugins/ca-pi/skills/ca-reconcile/SKILL.md"
+        "plugins/ca-pi/skills/ca-reconcile/SKILL.md",
+        "site/src/content/docs/reference/commands/reconcile.md",
+        "site/src/content/docs/reference/skills/decision-variance.md",
+        "site/src/content/docs/reference/skills/decompose.md"
       ],
       "reason": "Whole-project decomposition documents are not feature implementation plans and remain Markdown in this release."
     },
@@ -452,6 +524,7 @@
       "area": "explicit-exclusions",
       "owner": "existing specialized writers",
       "live": true,
+      "default_path": false,
       "treatment": "explicit-exclusion",
       "closure": "excluded-from-this-release",
       "task_refs": ["NG-02", "ADR-0037"],
@@ -473,11 +546,13 @@
       "area": "explicit-exclusions",
       "owner": "documentation history",
       "live": false,
+      "default_path": false,
       "treatment": "historical-only",
       "closure": "excluded-with-tested-reason",
       "task_refs": ["AC-021"],
       "canonical_paths": [
-        "CHANGELOG.md"
+        "CHANGELOG.md",
+        "site/src/content/docs/changelog.md"
       ],
       "tree_paths": [
         "docs/artifacts/design/original-review2",
@@ -485,6 +560,20 @@
       ],
       "generated_paths": [],
       "reason": "Historical prose and immutable reference fixtures retain accurate Markdown-era statements and are not live consumer instructions."
+    },
+    {
+      "id": "academy-versioned-downstream",
+      "area": "explicit-exclusions",
+      "owner": "arbiter-academy repository and its independent release process",
+      "live": true,
+      "default_path": false,
+      "treatment": "explicit-exclusion",
+      "closure": "external-gitlink-owned-separate-release",
+      "task_refs": ["T-015", "AC-005"],
+      "canonical_paths": [".gitmodules"],
+      "tree_paths": ["academy-source"],
+      "generated_paths": [],
+      "reason": "academy-source is a version-pinned external repository, not canonical codeArbiter package/runtime source. Its current training contracts still name Markdown feature/sprint artifacts and require a separately governed Academy update before that downstream can consume the new default; they are not counted as internal default-path closure."
     }
   ]
 }

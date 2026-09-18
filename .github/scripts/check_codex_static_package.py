@@ -215,9 +215,13 @@ def _candidate_hook_targets(hooks: object) -> list[str]:
     return targets
 
 
-def candidate_static_contract(path: Path) -> dict[str, Any]:
+def candidate_static_contract(
+    path: Path, *, verified_large_files: object = None
+) -> dict[str, Any]:
     resource_checker = _load_resource_checker()
-    files = resource_checker._candidate_package_files(path)
+    files = resource_checker._candidate_package_files(
+        path, verified_large_files=verified_large_files
+    )
     manifest = _candidate_json(files, ".codex-plugin/plugin.json", "plugin manifest")
     if not isinstance(manifest, dict):
         raise ValueError("candidate plugin manifest must be an object")

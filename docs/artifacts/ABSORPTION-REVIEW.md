@@ -1,6 +1,6 @@
 # Independent absorption review
 
-Date: 2026-09-16
+Date: 2026-09-18
 
 Reviewed base: `a3d7785f`
 
@@ -8,19 +8,52 @@ Package SHA-256: `4b518d4cf73089ce0adbaca173f96c06380efebc2580f44bae3b4713882243
 
 ## Verdict
 
-The package is suitable to retain as a disabled foundation, not as a complete
-feature rollout. The engine and its three-host persistence paths have substantial
-behavioral coverage, the canonical/generated ownership model is now respected,
-and required native-host CI is wired. The default remains the legacy Markdown
-workflow. HTML farm use remains explicitly blocked.
+The original package was suitable only as a disabled foundation. The current
+rollout branch has since closed the ordinary spec/plan producer and reader
+inventory, installed-payload workflow, native browser review, and selected
+production-byte rollback pilot locally. T-16 now activates canonical HTML for
+new full-lane feature and sprint work after an installation-pinned capability
+probe; existing Markdown authority remains exact-format and small-lane work
+remains inline. Exact-head CI and documentation qualification now prove the
+complete branch, so the implementation is merge-ready. Release publication,
+published-asset read-back, restore proof, and HTML-farm promotion remain
+separate readiness boundaries. HTML farm use remains explicitly blocked and is
+not part of ordinary default-path closure.
 
-The disabled-foundation implementation is merge-ready based on hosted run
-`35197079060`; full feature rollout and farm promotion are **not asserted**. The
-remaining work is real host
-authority integration, complete producer/consumer closure, HTML farm qualification,
-release-channel payload shipping, and a selected live pilot. Tests,
-package progress notes and regenerated examples were used as leads only; each
-disposition below was checked against implementation and repository wiring.
+The earlier disabled-foundation implementation at `e954e509` and hosted run
+`35293729672` remain historical evidence only. They are not current-head proof.
+Tests, progress notes, and regenerated examples were used as leads only; the
+current consumer disposition below was checked against canonical implementation,
+generated ownership, package wiring, and an independent repository search.
+
+## Default-rollout consumer closure update
+
+The T-15 inventory names the complete ordinary default-path set rather than
+inferring closure from test success. Feature and sprint entry/resume,
+brainstorming, writing-plans, TDD, executing-plans, subagent acceptance,
+finalization/worktree reads, the artifact protocol and bridge, governing-spec
+discovery, and commit-gate acceptance are explicitly HTML-capable while retaining
+the exact existing Markdown authority path. Pi's pre-existing native `ca-plan`
+session controller is the thirteenth consumer and is explicitly legacy-only: its
+bridge requires a complete Markdown pair and refuses any same-slug HTML authority
+before reads or CAS publication. None has a pending closure label.
+
+Independent search over the declared canonical, runtime, CI, documentation, and
+generation roots finds no unowned spec/plan or artifact-protocol reference. The
+published reference copies found by that search are assigned to their canonical
+owners rather than treated as separate authorities.
+
+This closure does not reclassify adjacent surfaces. Status diagnostics remain an
+explicit RA-11 compatibility deviation and are not a spec/plan producer or
+reader. HTML farm projection/dispatch remains implemented but disabled pending
+its separate authority, release-channel, and current-model qualification.
+Decomposition documents, task/ticket/done-task files, ADRs, and historical
+records remain explicit future-kind or historical exclusions. The
+`academy-source` gitlink is also explicit: it is a version-pinned external
+repository with Markdown-specific training contracts, owned by a separate
+governed Academy release rather than codeArbiter runtime/package source. That
+downstream must be updated before it adopts this new default; it is not silently
+counted as internal closure.
 
 ## Corrections made during review
 
@@ -31,15 +64,20 @@ disposition below was checked against implementation and repository wiring.
   backend; unknown platforms fail closed instead of claiming Linux semantics.
 - Corrected the package's claim that safe-integer/string canonical JSON deviated
   from the design. The original design itself rejects floats and unsafe integers.
-- Added the missing feature/sprint pilot and resume boundary while keeping the
-  normal path on legacy Markdown.
-- Removed guidance that falsely implied current host packages contain the native
-  binary. The bridge contract is retained, but the pilot is unavailable until a
-  verified payload is actually packaged.
+- Added the missing feature/sprint authoring and resume boundary. Existing
+  Markdown authority remains exact-format; new full-lane work now selects HTML.
+- Removed early guidance that falsely implied the disabled-foundation packages
+  already contained the native binary. The completed package matrix now carries
+  the qualified payload through all three host packages.
 - Added a path-scoped, pinned Go 1.27.1 CI matrix for Ubuntu, Windows and macOS,
   including both required merge-gate registrations and an impact-map edge.
 - Preserved the architectural decision as an extensible structured-artifact
   engine; no change to ADR-0004 was made or needed.
+- Preserved RA-11's byte-frozen no-argument `status` body. T-017's requested
+  typed status diagnostics cannot be added during the current compatibility
+  window without a separately approved major compatibility decision, so that
+  requirement is recorded as an open rollout blocker rather than treated as
+  complete or hidden by changing the frozen digest.
 
 ## Acceptance-criterion disposition
 
@@ -63,18 +101,18 @@ packaging, release or rollout condition remains open.
 | AC-012 | Engine pass; workflow partial | Stale normative bindings are rejected; every resume/dispatch caller has not been converted and exercised. |
 | AC-013 | Partial | Named-test and evidence-input checks exist; real runner adapters and complete environment/input closure remain. |
 | AC-014 | Engine pass; orchestrator partial | Scope state, reconciliation, stale evidence, interrupted REVIEW resume and atomic acceptance pass against the native candidate; real callers are not qualified. |
-| AC-015 | Partial | Canonical feature and sprint entries carry the disabled pilot boundary, and synthetic native-candidate authoring/execution fixtures pass; no complete real-host workflow has run. |
+| AC-015 | Hosted pass | Canonical feature and sprint entries default new full-lane work to HTML only after an installation-pinned capability probe, preserve existing Markdown authority, and fail before writes without the capability. Exact-head authoring, workflow, installed-host, package and native matrices pass. |
 | AC-016 | Partial | Typed scope links avoid Markdown proof for new artifacts; external issue-checkbox coverage remains heuristic. |
-| AC-017 | Partial | Advisory discovery and receipt-aware cache invalidation exist; full live hook/cache/dedup qualification is absent. |
+| AC-017 | Partial; compatibility blocker | Advisory discovery and receipt-aware cache invalidation exist. Doctor diagnostics are integrated, but RA-11 freezes the no-argument `status` body for the current compatibility window; status diagnostics and full live hook/cache/dedup qualification remain open. |
 | AC-018 | Implemented; promotion qualification pending | The minimal current-slice projection, immutable authorization/base binding, actual pre-canary and pre-dispatch guards, provider-only enrichment and exact-byte seal pass exact-head three-host CI. Current authority adapters, release-channel installed payloads and a fresh model-era matrix remain open, so use stays disabled. |
 | AC-019 | Local pass; production conversion open | Loss-aware line mappings and non-transfer of approvals are implemented. An exact-candidate native-Windows pair preview/apply preserved draft and unverified-authority state; no production repository pair has been converted. |
 | AC-020 | Three-host pass; production conversion open | Semantic cutover/rollback and native storage recovery pass in exact-head Linux, Windows and macOS CI. The exact-candidate Windows pilot restored both legacy files byte-for-byte and removed both HTML authorities. Production-host execution remains open. |
-| AC-021 | Partial | Inventory-led search now accounts for live canonical/generated consumers and explicit exclusions, and the no-growth gate passes. Entries marked pending still identify incomplete runtime, host and release integration. |
+| AC-021 | Local pass | Inventory-led search accounts for every live canonical/generated/published-reference consumer and explicit exclusion. Twelve ordinary default-path producers/readers are HTML-capable and Pi's native `ca-plan` is enforced as legacy-pair-only, with no pending closure label; farm and future artifact kinds remain separately disabled or excluded. |
 | AC-022 | Partial | Native builders, verified bridges and cold execution pass on Linux, Windows and macOS. The release-only boundary rejects linked/replaced roots, fake architectures and unsupported identities, requires exact commit/workflow-run/platform/digest/test receipts, and required CI aggregates all three host candidates into package-owned overlays. The ordinary installer remains fail-closed; actual release-channel application and published provenance are open. |
 | AC-023 | Partial | Named native locking/replacement/process-death suites pass in exact-head Linux, Windows and macOS CI; physical-power-loss and network-filesystem fault evidence remain open. |
 | AC-024 | Local engine pass | Strict parser, resource bounds, inert content and renderer checks pass; unqualified host seams prevent whole-feature acceptance. |
 | AC-025 | Local pass | Normative/model identities are separated and safe-integer/string canonicalization matches the original contract. |
-| AC-026 | Partial | Diagnostics and published guidance are explicit, and the recorded rollout decision keeps legacy behavior as the default. Exact-head all-host cold-install passes; production resume behavior remains unproved. |
+| AC-026 | Hosted pass with explicit deviation | Diagnostics and published guidance are explicit. Existing legacy artifacts remain on their exact legacy path, while new full-lane work defaults to HTML and fails closed without the qualified payload. Exact-head all-host cold-install and resume fixtures pass. T-017's byte-frozen no-argument status diagnostic remains the separately recorded RA-11 deviation. |
 
 ## Implementation-task disposition
 
@@ -94,16 +132,16 @@ packaging, release or rollout condition remains open.
 | T-012 | Local pass | Closed bounded CLI protocol and inert mutation operations exist without a public registration. |
 | T-013 | Partial | Approval/rebind checks exist; real host authority capture mappings are incomplete. |
 | T-014 | Partial | Task/evidence/resume state exists; real host checkpoint orchestration is incomplete. |
-| T-015 | Locally implemented; host qualification pending | Canonical producer guidance and bridge calls create/read real HTML pairs, preserve incomplete drafts and fail closed without the payload; full generated-host execution is unproved. |
-| T-016 | Partial | Native-candidate fixtures cover dispatch, stale blocking, interrupted REVIEW resume and atomic scope acceptance; real feature/sprint entry traces remain incomplete. |
-| T-017 | Partial | Candidate discovery/cache/capability integration exists; live host suites remain. |
+| T-015 | Hosted pass | Canonical producer guidance and bridge calls create/read real HTML pairs, preserve incomplete drafts and fail closed without the payload; exact-head generated-host and package matrices pass. |
+| T-016 | Hosted pass | Native-candidate and installed-host fixtures cover dispatch, stale blocking, interrupted REVIEW resume, redispatch and atomic scope acceptance through feature/sprint entry paths. |
+| T-017 | Partial; explicit deviation | Candidate discovery/cache/capability integration and doctor diagnostics exist. The original task also requires status diagnostics, but RA-11 byte-freezes that no-argument command body through the current compatibility window. The status portion is not implemented and requires a separately approved major compatibility decision or a future contract-compatible mechanism; live host suites also remain. |
 | T-018 | Implemented; promotion qualification pending | Projection, binding, durable downgrade marker, authorized enrichment, exact-byte/provider seal and shared runtime guards pass fresh local and exact-head three-host fixtures. Real authority, release-channel packaged-host and current mixed-model evidence are still required. |
-| T-019 | Local pass | Review-only loss-aware import is implemented; a selected production conversion remains. |
-| T-020 | Three-host pass; production conversion open | Recoverable pair cutover and guarded rollback pass in exact-head Linux, Windows and macOS CI; production-repository execution remains open. |
+| T-019 | Pass | Review-only loss-aware import is implemented and the selected legacy-pair pilot preserves draft and unverified-authority state without transferring approval. |
+| T-020 | Three-host pass | Recoverable pair cutover and guarded rollback pass in exact-head Linux, Windows and macOS CI; the selected pilot restores both legacy files byte-for-byte after interruption and downgrade refusal. |
 | T-021 | Implemented; release qualification pending | Linux, Windows and macOS native build/bridge/cold-install checks pass. The reviewed release-only copier pins its roots, rejects fake architecture and unsupported identity, and accepts candidates only with independently supplied exact-host qualification receipts bound to the protected CI identity. The ordinary installer intentionally fails closed. Actual release-channel application and published provenance proof remain absent. |
-| T-022 | Pass | Required three-host CI runs named native, bridge, package and cold-install checks, emits qualification receipts only after cell success, and feeds a separately required aggregation/cold-execution job; implementation-head run `35197079060` and its merge-readiness aggregate passed. |
+| T-022 | Pass | Required three-host CI runs named native, bridge, package and cold-install checks, emits qualification receipts only after cell success, and feeds a separately required aggregation/cold-execution job; exact-head run `35314663940` and its merge-readiness aggregate passed. |
 | T-023 | Hosted pass; not farm-promotion evidence | The reviewed draft pair is byte-pinned and reproduced through the current protocol. Go checks cover pair bindings, coverage/DAG/checkpoints, marker/DOM integrity, identity-domain behavior and hostile inputs. A separate Python stdlib serializer verifies pinned current-schema normative/model/render identities, while a real task-start transition verifies revision/model advancement without normative drift. The orchestrator requires exact reviewed test membership and applicable non-skipped results from the 41 reference cases and all bridge, authoring, workflow, farm and package cases, revalidating the same candidate manifest/binary identity before and after each suite. Exact-head Linux, macOS and Windows results are green; this is not farm-promotion evidence. |
-| T-024 | Implemented; rollout qualification pending | The two required guides and directory/tech-stack integration describe implemented behavior, offline review, capability diagnostics, migration/recovery and unsupported cells. A clean-commit native-Windows candidate is bound to manifest/binary digests and embeds canonical receipt/event bytes plus transaction identities for pair conversion/rollback and synthetic-authority new-feature execution through process recreation, reconciliation to PENDING, redispatch, REVIEW and atomic acceptance. Exact-head three-host CI is green. The explicit evidence-backed decision remains no default cutover and no mass migration; typed HTML and HTML farm use remain disabled. |
+| T-024 | Hosted pass | The required guides and directory/tech-stack integration describe implemented behavior, offline review, capability diagnostics, migration/recovery and unsupported cells. A clean-commit native-Windows candidate is bound to manifest/binary digests and embeds canonical receipt/event bytes plus transaction identities for selected pair conversion/rollback and synthetic-authority new-feature execution through process recreation, reconciliation to PENDING, redispatch, REVIEW and atomic acceptance. Exact-head CI and docs qualification pass. New full-lane feature/sprint authoring defaults to typed HTML; no mass migration occurs and HTML farm use remains disabled. |
 
 ## Fresh evidence
 
@@ -186,29 +224,39 @@ packaging, release or rollout condition remains open.
   `build-host-packages.py --check`, artifact type generation, 18 descriptor
   tests, 65 surface tests, 145 Codex resource tests (one skip), 195 read-inject
   tests, 18 pre-read checks, 18 recorded-intent tests, four command-catalog
-  tests, plugin reference closure and 77 CI-impact tests passed.
-- Implementation-head hosted run `35197079060` passed the required merge-readiness
-  aggregate, structured-artifact and hook matrices on Linux, Windows and macOS,
-  three-host artifact package assembly, Pi adapters and coverage, CodeQL, site
-  generation and site build. The macOS Python bridge and farm dispatcher passed
-  with executable images staged only from already verified descriptor bytes;
-  the Windows original-reference contract passed with LF checkout ownership.
+  tests, plugin reference closure and 80 CI-impact tests passed.
+- Exact-head hosted run `35314663940` at `07f138f6` passed 67/67 selected jobs and
+  the required merge-readiness aggregate. That includes structured-artifact and hook
+  matrices on Linux, Windows and macOS; all 18 host/platform cold-package cells;
+  package assembly and browser qualification; Pi adapters and coverage; CodeQL
+  with zero new alert annotations; the Windows
+  Python-to-binary bridge, HTML farm projection/dispatcher boundary and dual-host
+  concurrent audit store; and deterministic package verification across Git
+  archive mode and line-ending configurations.
+- Exact-head docs run `35314664005` passed generator tests, typecheck, the
+  156-page Astro build, 26,663-link audit, and browser publication gate.
 
 ## Remaining blockers before full rollout and promotion
 
 1. Qualify the locally implemented AC-018/T-018 path through real authority events,
    release-channel installed host payloads and a fresh frontier/low-tier
    model matrix. The promotion bar starts at zero and gives the June 2026 run no credit.
-2. Complete real authority-event adapters and full producer, consumer, resume,
-   context, status and doctor closure on every generated host.
+2. T-017 status diagnostics remain blocked by RA-11's current compatibility
+   window. This explicit non-consumer deviation is not counted as ordinary-path
+   closure and was not relabeled as complete.
 3. Preserve the declared lack of physical-power-loss/network-filesystem proof
    until those fault classes are explicitly qualified.
-4. Package provenance-bound, checksummed native binaries into each release target and run
-   cold-install and restore drills; no normal installation can use the pilot yet.
-5. Run a selected production-repository conversion and full real-host interrupted
-   workflow trace; the disposable T-024 fixture does not establish those claims.
+4. Publish the provenance-bound packages through each real release channel and
+   capture exact published-asset read-back plus restore-drill evidence. Hosted
+   package assembly and cold-install are green, but no released installation can
+   use the pilot yet.
+5. Do not overstate the selected production-byte pilot: it ran in a disposable
+   isolated repository using selected production bytes and proves interruption,
+   downgrade refusal, and exact-byte rollback, not conversion of live repository
+   authority.
 6. Satisfy normal version/changelog/release policy before any release-channel
    publication.
 
-Until those items are closed, legacy Markdown remains the default, HTML use is
-explicit opt-in only after a payload exists, and HTML farm use remains disabled.
+New full-lane feature and sprint work now defaults to HTML after the pinned
+capability check. Existing Markdown pairs remain on their exact legacy path,
+release publication remains a separate gate, and HTML farm use remains disabled.
