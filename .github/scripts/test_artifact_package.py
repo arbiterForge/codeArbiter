@@ -19,6 +19,7 @@ from unittest import mock
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core/pysrc"))
 from _artifactlib import ArtifactClient
+import _artifactlib
 from test_artifact_authoring import physical_test_directory
 
 INSTALLATION = None
@@ -153,7 +154,7 @@ class PackageTests(unittest.TestCase):
         entry = next(iter(manifest["binaries"].values()))
         binary = (INSTALLATION / entry["file"]).resolve(strict=True)
         with tempfile.TemporaryDirectory(prefix="ca-artifact-exec-") as temporary:
-            staged = Path(temporary) / "ca-artifact"
+            staged = physical_test_directory(temporary) / "ca-artifact"
             staged.write_bytes(binary.read_bytes())
             staged.chmod(0o500)
             details = (str(staged), [str(staged), "capabilities"], None, {})
@@ -228,6 +229,44 @@ class PackageTests(unittest.TestCase):
         caps = ArtifactClient(repository, installed).call("capabilities")
         self.assertTrue(caps["repository_operations_available"])
         self.assertFalse(caps["host_default_enabled"])
+
+    def test_capability_upgrade_does_not_reinterpret_legacy_pair(self):
+        slug = "reaudit-ra03-read-only-review-aggregation"
+        repository = self.base / "legacy-production-pair"
+        (repository / ".codearbiter/specs").mkdir(parents=True)
+        (repository / ".codearbiter/plans").mkdir(parents=True)
+        paths = {
+            kind: repository / ".codearbiter" / f"{kind}s" / f"{slug}.md"
+            for kind in ("spec", "plan")
+        }
+        for kind, path in paths.items():
+            path.write_bytes(
+                (REPO / ".codearbiter" / f"{kind}s" / f"{slug}.md").read_bytes()
+            )
+        before = {kind: path.read_bytes() for kind, path in paths.items()}
+        evidence = json.loads(
+            (REPO / "docs/artifacts/DEFAULT-ROLLOUT-PILOT.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        upgrade_case = next(
+            case for case in evidence["cases"] if case["id"] == "upgrade-inertness"
+        )
+        self.assertEqual(upgrade_case["test"], self._testMethodName)
+        self.assertEqual(upgrade_case["result"], "local_pass_hosted_pending")
+
+        self.assertEqual(
+            _artifactlib._resolve_workflow_pair(repository, slug)["format"], "md"
+        )
+        capabilities = ArtifactClient(repository, INSTALLATION).call("capabilities")
+
+        self.assertTrue(capabilities["repository_operations_available"])
+        self.assertEqual(
+            _artifactlib._resolve_workflow_pair(repository, slug)["format"], "md"
+        )
+        self.assertEqual({kind: path.read_bytes() for kind, path in paths.items()}, before)
+        self.assertFalse((repository / ".codearbiter/specs" / f"{slug}.html").exists())
+        self.assertFalse((repository / ".codearbiter/plans" / f"{slug}.html").exists())
 
     def test_unqualified_binary_is_rejected_before_install(self):
         candidate = self.base / "candidate"

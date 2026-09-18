@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import platform
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,7 +16,9 @@ from test_artifact_authoring import (
     WorkflowHarness,
     build_installation,
     canonical_hash,
+    plan_normative,
     physical_test_directory,
+    spec_normative,
 )
 import _artifactlib
 
@@ -362,6 +366,372 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
         ):
             source = path.read_text(encoding="utf-8")
             self.assertIn("`_preflight_current_acceptance`", source, path.as_posix())
+
+
+class ArtifactProductionPilotTest(unittest.TestCase):
+    """Rollback drill over exact bytes from one real codeArbiter workflow pair.
+
+    The typed model and line dispositions are deliberately fixture-only. This
+    proves cutover safety; it does not claim semantic adoption or authority.
+    """
+
+    SLUG = "reaudit-ra03-read-only-review-aggregation"
+    SPEC_ID = "SPEC-PRODUCTION-PILOT"
+    PLAN_ID = "PLAN-PRODUCTION-PILOT"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.installation_owner, cls.installation = build_installation()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        if cls.installation_owner is not None:
+            cls.installation_owner.cleanup()
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory(prefix="ca-artifact-pilot-")
+        self.addCleanup(self.temporary.cleanup)
+        self.root = physical_test_directory(self.temporary.name) / "repo"
+        (self.root / ".codearbiter/specs").mkdir(parents=True)
+        (self.root / ".codearbiter/plans").mkdir(parents=True)
+        self.sources = {
+            "spec": REPO / ".codearbiter/specs" / f"{self.SLUG}.md",
+            "plan": REPO / ".codearbiter/plans" / f"{self.SLUG}.md",
+        }
+        self.paths = {
+            kind: self.root / ".codearbiter" / f"{kind}s" / f"{self.SLUG}.md"
+            for kind in ("spec", "plan")
+        }
+        self.original = {
+            kind: source.read_bytes() for kind, source in self.sources.items()
+        }
+        for kind, path in self.paths.items():
+            path.write_bytes(self.original[kind])
+
+    def _request(self) -> dict[str, object]:
+        def item(kind: str, artifact_id: str, normative: dict, target: str) -> dict:
+            return {
+                "source_path": f".codearbiter/{kind}s/{self.SLUG}.md",
+                "artifact_id": artifact_id,
+                "slug": self.SLUG,
+                "normative": normative,
+                "mappings": [{
+                    "start_line": 1,
+                    "end_line": len(self.original[kind].decode("utf-8").splitlines()),
+                    "target": target,
+                    "disposition": "historical",
+                    "reason": "Safety-only pilot mapping; no semantic adoption or authority transfer.",
+                }],
+            }
+
+        return {
+            "spec": item("spec", self.SPEC_ID, spec_normative(), "INTENT-01"),
+            "plan": item(
+                "plan",
+                self.PLAN_ID,
+                plan_normative(self.SPEC_ID, "0" * 64),
+                "T-001",
+            ),
+        }
+
+    def test_production_pair_cutover_survives_recreation_and_rolls_back_exactly(self) -> None:
+        before = {kind: hashlib.sha256(raw).hexdigest() for kind, raw in self.original.items()}
+        evidence = json.loads(
+            (REPO / "docs/artifacts/DEFAULT-ROLLOUT-PILOT.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(evidence["selected_pair"]["slug"], self.SLUG)
+        self.assertEqual(
+            set(evidence),
+            {
+                "format",
+                "observed_at_utc",
+                "status",
+                "scope",
+                "selected_pair",
+                "local_unverified_observation",
+                "cases",
+                "related_current_evidence",
+                "limitations",
+            },
+        )
+        self.assertEqual(evidence["format"], "codearbiter.default-rollout-pilot/0.1.0")
+        self.assertRegex(evidence["observed_at_utc"], r"^2026-09-18T\d{2}:\d{2}:\d{2}Z$")
+        self.assertEqual(evidence["status"], "local_candidate_pass_hosted_exact_head_pending")
+        self.assertEqual(
+            evidence["scope"],
+            {
+                "repository": "arbiterForge/codeArbiter",
+                "base_commit": "1281de39d4877f8935f8f424a0b15f32955fb568",
+                "execution": "exact production bytes copied into a disposable isolated repository root",
+                "authoritative_repository_mutated": False,
+            },
+        )
+        self.assertEqual(set(evidence["selected_pair"]), {"slug", "spec", "plan"})
+        self.assertEqual(
+            {
+                kind: evidence["selected_pair"][kind]["sha256"]
+                for kind in ("spec", "plan")
+            },
+            before,
+        )
+        for kind, lines in (("spec", 34), ("plan", 131)):
+            self.assertEqual(
+                set(evidence["selected_pair"][kind]), {"path", "sha256", "lines"}
+            )
+            self.assertEqual(
+                evidence["selected_pair"][kind]["path"],
+                f".codearbiter/{kind}s/{self.SLUG}.md",
+            )
+            self.assertEqual(evidence["selected_pair"][kind]["lines"], lines)
+        observation = evidence["local_unverified_observation"]
+        self.assertEqual(
+            set(observation),
+            {
+                "authority",
+                "platform",
+                "binary_sha256",
+                "release_manifest_sha256",
+                "module_tests_passed_before_candidate_build",
+                "upstream_host_qualified_by_local_build",
+            },
+        )
+        self.assertEqual(observation["authority"], "local_unverified_not_ci_qualification")
+        self.assertTrue(observation["module_tests_passed_before_candidate_build"])
+        self.assertFalse(observation["upstream_host_qualified_by_local_build"])
+        if platform.system() == "Windows" and platform.machine().lower() == "amd64":
+            manifest_bytes = (self.installation / "release.json").read_bytes()
+            manifest = json.loads(manifest_bytes)
+            entry = manifest["binaries"]["windows/amd64"]
+            self.assertEqual(observation["platform"], "windows/amd64")
+            self.assertEqual(
+                observation["release_manifest_sha256"],
+                hashlib.sha256(manifest_bytes).hexdigest(),
+            )
+            self.assertEqual(
+                observation["binary_sha256"],
+                hashlib.sha256((self.installation / entry["file"]).read_bytes()).hexdigest(),
+            )
+        expected_cases = {
+            "upgrade-inertness": "test_capability_upgrade_does_not_reinterpret_legacy_pair",
+            "explicit-cutover": self._testMethodName,
+            "interruption-recreation": self._testMethodName,
+            "downgrade-refusal": self._testMethodName,
+            "exact-byte-rollback": self._testMethodName,
+            "dispatch-stop": self._testMethodName,
+        }
+        self.assertEqual(
+            {case["id"]: case["test"] for case in evidence["cases"]}, expected_cases
+        )
+        for case in evidence["cases"]:
+            self.assertEqual(set(case), {"id", "test", "result", "proof"})
+            self.assertEqual(case["result"], "local_pass_hosted_pending")
+            self.assertIsInstance(case["proof"], str)
+            self.assertGreater(len(case["proof"]), 40)
+        self.assertEqual(
+            evidence["related_current_evidence"],
+            {
+                "normal_html_lifecycle": ".github/scripts/test_artifact_installed_host.py",
+                "native_browser_review": "docs/artifacts/browser-qualification.json",
+                "historical_pilot_not_current_evidence": "docs/artifacts/T024-PILOT-EVIDENCE.json",
+            },
+        )
+        self.assertEqual(len(evidence["limitations"]), 6)
+        self.assertTrue(all(isinstance(item, str) and item for item in evidence["limitations"]))
+        client = _artifactlib.ArtifactClient(self.root, self.installation)
+        request = self._request()
+        preview = client.call("migration-preview", request)
+        self.assertFalse(preview["semantic_mapping_verified"])
+        self.assertFalse(preview["old_approval_transferred"])
+        self.assertEqual(
+            {kind: self.paths[kind].read_bytes() for kind in self.paths}, self.original
+        )
+        self.assertFalse(
+            (self.root / ".codearbiter/specs" / f"{self.SLUG}.html").exists()
+        )
+        self.assertFalse(
+            (self.root / ".codearbiter/plans" / f"{self.SLUG}.html").exists()
+        )
+
+        request.update({
+            "operation_id": "pilot-cutover-001",
+            "preview_sha256": preview["preview_sha256"],
+            "review": {
+                "actor": "automated safety pilot",
+                "origin": ".github/scripts/test_artifact_workflow.py",
+                "source_text": "Fixture-only complete line disposition; not semantic or implementation approval.",
+            },
+        })
+        applied = client.call("migration-apply", request)
+        self.assertEqual(applied["state"], "draft")
+        self.assertFalse(applied["old_approvals_transferred"])
+        self.assertEqual(
+            _artifactlib._resolve_workflow_pair(self.root, self.SLUG)["format"],
+            "html",
+        )
+        self.assertTrue(all(not path.exists() for path in self.paths.values()))
+
+        journal_path = (
+            self.root
+            / ".codearbiter/.artifacts/transactions/pilot-cutover-001.json"
+        )
+        cutover = json.loads(journal_path.read_text(encoding="utf-8"))
+        plan_html_entry = next(
+            entry for entry in cutover["entries"] if entry["path"].endswith("/" + self.SLUG + ".html")
+            and "/plans/" in entry["path"]
+        )
+        plan_md_entry = next(
+            entry for entry in cutover["entries"] if entry["path"].endswith("/" + self.SLUG + ".md")
+            and "/plans/" in entry["path"]
+        )
+        plan_html_path = self.root / plan_html_entry["path"]
+        plan_stage_path = self.root / plan_html_entry["stage"]
+        plan_stage_path.write_bytes(plan_html_path.read_bytes())
+        plan_html_path.unlink()
+        self.paths["plan"].write_bytes(
+            (self.root / plan_md_entry["backup"]).read_bytes()
+        )
+        cutover["state"] = "prepared"
+        journal_path.write_bytes(
+            json.dumps(
+                cutover,
+                ensure_ascii=True,
+                allow_nan=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        )
+
+        recreated = _artifactlib.ArtifactClient(self.root, self.installation)
+        with self.assertRaises(ArtifactError) as mixed:
+            _artifactlib._resolve_workflow_pair(self.root, self.SLUG)
+        self.assertEqual(mixed.exception.code, "AMBIGUOUS_ARTIFACT")
+        with self.assertRaises(ArtifactError) as pending:
+            recreated.call("identity", {"artifact_id": self.SPEC_ID})
+        self.assertEqual(pending.exception.code, "RECOVERY_REQUIRED")
+        dispatch_reached = False
+        try:
+            selected = _artifactlib._resolve_workflow_pair(self.root, self.SLUG)
+            _artifactlib._preflight_current_acceptance(
+                selected,
+                recreated,
+                spec_artifact_id=self.SPEC_ID,
+                plan_artifact_id=self.PLAN_ID,
+            )
+            dispatch_reached = True
+        except ArtifactError as stopped:
+            self.assertIn(stopped.code, {"AMBIGUOUS_ARTIFACT", "RECOVERY_REQUIRED"})
+        self.assertFalse(dispatch_reached)
+
+        recovered = recreated.call(
+            "recover", {"operation_id": "pilot-cutover-001", "mode": "complete"}
+        )
+        self.assertEqual(recovered["state"], "committed")
+        self.assertFalse(recovered["replay"])
+        self.assertEqual(
+            _artifactlib._resolve_workflow_pair(self.root, self.SLUG)["format"],
+            "html",
+        )
+        self.assertTrue(all(not path.exists() for path in self.paths.values()))
+
+        replayed = recreated.call("migration-apply", request)
+        self.assertEqual(
+            {key: value for key, value in replayed.items() if key != "transaction"},
+            {key: value for key, value in applied.items() if key != "transaction"},
+        )
+        self.assertFalse(applied["transaction"]["replay"])
+        self.assertTrue(replayed["transaction"]["replay"])
+        self.assertEqual(
+            {key: value for key, value in replayed["transaction"].items() if key != "replay"},
+            {key: value for key, value in applied["transaction"].items() if key != "replay"},
+        )
+        for artifact_id in (self.SPEC_ID, self.PLAN_ID):
+            identity = recreated.call("identity", {"artifact_id": artifact_id})
+            self.assertEqual(identity["artifact_id"], artifact_id)
+        with self.assertRaises(ArtifactError) as draft:
+            _artifactlib._preflight_current_acceptance(
+                _artifactlib._resolve_workflow_pair(self.root, self.SLUG),
+                recreated,
+                spec_artifact_id=self.SPEC_ID,
+                plan_artifact_id=self.PLAN_ID,
+            )
+        self.assertIn(draft.exception.code, {"AUTHORITY_UNVERIFIED", "DRAFT_BINDING"})
+
+        missing_installation = self.root.parent / "downgraded-without-payload"
+        missing_installation.mkdir()
+        downgraded = _artifactlib.ArtifactClient(self.root, missing_installation)
+        with self.assertRaises(ArtifactError) as unavailable:
+            downgraded.call("capabilities")
+        self.assertEqual(unavailable.exception.code, "CAPABILITY_MISSING")
+        selected = _artifactlib._resolve_workflow_pair(self.root, self.SLUG)
+        self.assertEqual(selected["format"], "html")
+        self.assertTrue(all(not path.exists() for path in self.paths.values()))
+
+        rolled_back = recreated.call("migration-rollback", {
+            "operation_id": "pilot-rollback-001",
+            "cutover_operation_id": "pilot-cutover-001",
+        })
+        self.assertTrue(rolled_back["refresh_required"])
+        selected = _artifactlib._resolve_workflow_pair(self.root, self.SLUG)
+        self.assertEqual((selected["format"], selected["state"]), ("md", "pair"))
+        self.assertEqual(
+            {
+                kind: hashlib.sha256(path.read_bytes()).hexdigest()
+                for kind, path in self.paths.items()
+            },
+            before,
+        )
+        self.assertTrue(
+            all(
+                self.paths[kind].read_bytes() == self.original[kind]
+                for kind in self.paths
+            )
+        )
+        self.assertFalse((self.root / ".codearbiter/specs" / f"{self.SLUG}.html").exists())
+        self.assertFalse((self.root / ".codearbiter/plans" / f"{self.SLUG}.html").exists())
+        cutover = json.loads(journal_path.read_text(encoding="utf-8"))
+        rollback_path = (
+            self.root
+            / ".codearbiter/.artifacts/transactions/pilot-rollback-001.json"
+        )
+        rollback = json.loads(rollback_path.read_text(encoding="utf-8"))
+        for journal, operation_id in (
+            (cutover, "pilot-cutover-001"),
+            (rollback, "pilot-rollback-001"),
+        ):
+            self.assertEqual(
+                set(journal),
+                {"format", "operation_id", "request_sha256", "state", "entries", "result"},
+            )
+            self.assertEqual(journal["format"], "codearbiter.transaction/0.2.0")
+            self.assertEqual(journal["operation_id"], operation_id)
+            self.assertEqual(journal["state"], "committed")
+            self.assertRegex(journal["request_sha256"], r"^[0-9a-f]{64}$")
+            self.assertEqual(len(journal["entries"]), 4)
+        self.assertEqual(cutover["result"]["preview_sha256"], preview["preview_sha256"])
+        cutover_entries = {entry["path"]: entry for entry in cutover["entries"]}
+        rollback_entries = {entry["path"]: entry for entry in rollback["entries"]}
+        self.assertEqual(set(cutover_entries), set(rollback_entries))
+        for kind in ("spec", "plan"):
+            md_path = f".codearbiter/{kind}s/{self.SLUG}.md"
+            html_path = f".codearbiter/{kind}s/{self.SLUG}.html"
+            md_entry = cutover_entries[md_path]
+            html_entry = cutover_entries[html_path]
+            self.assertEqual(md_entry["before_sha256"], before[kind])
+            self.assertIsNone(md_entry["after_sha256"])
+            self.assertIsNone(html_entry["before_sha256"])
+            self.assertRegex(html_entry["after_sha256"], r"^[0-9a-f]{64}$")
+            self.assertEqual(
+                hashlib.sha256((self.root / md_entry["backup"]).read_bytes()).hexdigest(),
+                before[kind],
+            )
+            self.assertEqual(
+                rollback_entries[md_path]["after_sha256"], md_entry["before_sha256"]
+            )
+            self.assertEqual(
+                rollback_entries[html_path]["before_sha256"], html_entry["after_sha256"]
+            )
 
 
 class ArtifactWorkflowTest(unittest.TestCase):
