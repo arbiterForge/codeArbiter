@@ -8,7 +8,7 @@ import { readFileSync, mkdtempSync, mkdirSync, symlinkSync, rmSync, realpathSync
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId } from "./farm.ts";
+import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId, WINDOWS_PIN_READY_TIMEOUT_MS, releaseWindowsPinGuard } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines, withWorktreeLock, prepareWorktree } from "./farm.ts";
@@ -17,6 +17,25 @@ import { scrubbedEnv, treeKill, taskkillPath } from "./exec.ts";
 import type { RunResult } from "./exec.ts";
 import { spawn } from "node:child_process";
 import { mutationCheck as realMutationCheck } from "./mutation.ts";
+
+describe("Windows artifact executable pin guard", () => {
+  it("allows a cold native PowerShell startup on slower Windows hosts", () => {
+    expect(WINDOWS_PIN_READY_TIMEOUT_MS).toBeGreaterThanOrEqual(30_000);
+  });
+
+  it("does not return until the guard has released its file handle", async () => {
+    const guard = spawn(process.execPath, [
+      "-e",
+      "process.stdin.once('data', () => setTimeout(() => process.exit(0), 50))",
+    ], { stdio: ["pipe", "pipe", "pipe"] });
+    let closed = false;
+    guard.once("close", () => { closed = true; });
+
+    await releaseWindowsPinGuard(guard);
+
+    expect(closed).toBe(true);
+  });
+});
 
 // ---------------------------------------------------------------------------
 // redactSecrets — outbound-boundary redactor must stay aligned with the hook

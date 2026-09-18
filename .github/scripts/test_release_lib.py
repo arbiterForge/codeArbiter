@@ -742,7 +742,7 @@ class SkillPortabilityTest(unittest.TestCase):
         self.assertIn("skips this step", window)
         self.assertIn("say so explicitly in the report", window)
 
-    # -- T-41d: hosted-lane and immutability prose are conditional ----------
+    # -- T-41d: hosted publication is mandatory; immutability prose conditional
 
     def test_skill_conditional_prose(self):
         phase3_idx = self.text.index("## Phase 3")
@@ -750,8 +750,9 @@ class SkillPortabilityTest(unittest.TestCase):
         phase3_preamble = self.text[phase3_idx:phase3_idx + 900]
         recovering = self.text[recovering_idx:]
 
-        self.assertIn("If this project has a hosted release workflow", phase3_preamble)
-        self.assertIn("A project with no hosted workflow", phase3_preamble)
+        self.assertIn("A qualifying hosted release workflow is mandatory", phase3_preamble)
+        self.assertIn("requires green merge readiness for that exact SHA", phase3_preamble)
+        self.assertIn("Otherwise dispatch the reviewed hosted lane", phase3_preamble)
 
         self.assertIn("If this project runs an automated tag-immutability",
                        recovering)
@@ -7658,6 +7659,29 @@ class ReleaseSurfaceTest(unittest.TestCase):
         self.assertIn("$RELEASE_BUILD", dry_run)
         self.assertIn("listed", dry_run)
         self.assertIn("never executed", dry_run)
+
+    def test_release_publication_requires_merged_hosted_exact_head_evidence(self):
+        normalized = " ".join(self.skill.split())
+        self.assertIn(
+            "The release commit must merge through a pull request before any tag is composed",
+            normalized)
+        self.assertIn(
+            "Publication requires a hosted workflow that verifies green exact-head evidence",
+            normalized)
+        self.assertIn(
+            "A project with no qualifying hosted publisher STOPs before tag composition",
+            normalized)
+        self.assertNotIn(
+            "A project with no hosted workflow — every fresh consumer, until it builds one — "
+            "performs the steps below locally",
+            self.skill)
+
+    def test_release_establishes_one_posix_shell_on_windows(self):
+        normalized = " ".join(self.skill.split())
+        self.assertIn("Execution-shell contract", normalized)
+        self.assertIn("Git for Windows' own `bash.exe`", normalized)
+        self.assertIn("MUST NOT paste the `sh` snippets into PowerShell", normalized)
+        self.assertIn("If no POSIX-compatible shell is available, STOP", normalized)
 
     def test_command_index_and_security_boundary_describe_the_capability(self):
         self.assertIn("declared version policy", self.command)

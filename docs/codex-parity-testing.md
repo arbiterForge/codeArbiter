@@ -33,15 +33,18 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.10.1","candidate_commit":"388da0b393f6a5bd62fb0830905d3096f683bb7a","candidate_package_sha256":"05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-14","proof":"fresh candidate selection, SessionStart delivery, ca-doctor health, and live H-03 denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.10.1**, Windows, 2026-09-14.
-A fresh ephemeral Codex CLI task using the supported `gpt-5.5` model selected the exact installed
-0.10.1 tracked candidate package (`sha256:05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90`)
-and received the repository startup state through SessionStart context. With `PLUGIN_ROOT` resolved
-from the advertised 0.10.1 `$ca-doctor` skill path, the doctor reported 10 OK, 2 WARN, and 0 FAIL;
-the prescribed staging dry-run was denied exactly once with `[H-03]` before execution. This
-refreshes candidate selection, SessionStart delivery, doctor health, and the live H-03 boundary.
-It does not claim that the full scenario matrices below were rerun.
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.1","candidate_commit":"a82f9a47f895367df0f36142df7b12068a090d57","candidate_package_sha256":"e0bdcf94cb273e5a22900f7edfb4bcbfdcd8a3941d870fbfec92e33af4d59d15","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-18","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.1**, Windows, 2026-09-18.
+A fresh ephemeral Codex CLI task using the supported `gpt-5.5` model selected the exact 0.13.1
+package installed from the CI-assembled release archive. Its tracked candidate content has digest
+`sha256:e0bdcf94cb273e5a22900f7edfb4bcbfdcd8a3941d870fbfec92e33af4d59d15`. The task received the
+repository startup state through SessionStart context. With `PLUGIN_ROOT` resolved from the
+installed 0.13.1 `$ca-doctor` skill path, the doctor reported 12 OK, 1 WARN, and 0 FAIL, including
+the packaged Windows/AMD64 artifact capability and live Git-hook backstop. The warning identified
+stale `ca` and `ca-pi` sibling registry entries that the fresher shim safely skips. The prescribed
+staging dry-run was denied exactly once with `[H-03]` before execution. This refreshes assembled
+package selection, SessionStart delivery, doctor health, native payload availability, and the live
+H-03 boundary. It does not claim that the full scenario matrices below were rerun.
 
 The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.10.0**, Windows,
 2026-09-13. A fresh Codex CLI task selected the exact installed 0.10.0 candidate from commit
