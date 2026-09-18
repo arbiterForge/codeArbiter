@@ -1,6 +1,6 @@
 # Independent absorption review
 
-Date: 2026-09-16
+Date: 2026-09-17
 
 Reviewed base: `a3d7785f`
 
@@ -14,9 +14,10 @@ behavioral coverage, the canonical/generated ownership model is now respected,
 and required native-host CI is wired. The default remains the legacy Markdown
 workflow. HTML farm use remains explicitly blocked.
 
-The disabled-foundation implementation is merge-ready based on hosted run
-`35197079060`; full feature rollout and farm promotion are **not asserted**. The
-remaining work is real host
+The disabled-foundation implementation at `e954e509` passed hosted run
+`35293729672`; full feature rollout and farm promotion are **not asserted**. This
+review update is documentation-only and still requires the pull request's final
+exact-head merge-readiness aggregate before merge. The remaining work is real host
 authority integration, complete producer/consumer closure, HTML farm qualification,
 release-channel payload shipping, and a selected live pilot. Tests,
 package progress notes and regenerated examples were used as leads only; each
@@ -106,7 +107,7 @@ packaging, release or rollout condition remains open.
 | T-019 | Local pass | Review-only loss-aware import is implemented; a selected production conversion remains. |
 | T-020 | Three-host pass; production conversion open | Recoverable pair cutover and guarded rollback pass in exact-head Linux, Windows and macOS CI; production-repository execution remains open. |
 | T-021 | Implemented; release qualification pending | Linux, Windows and macOS native build/bridge/cold-install checks pass. The reviewed release-only copier pins its roots, rejects fake architecture and unsupported identity, and accepts candidates only with independently supplied exact-host qualification receipts bound to the protected CI identity. The ordinary installer intentionally fails closed. Actual release-channel application and published provenance proof remain absent. |
-| T-022 | Pass | Required three-host CI runs named native, bridge, package and cold-install checks, emits qualification receipts only after cell success, and feeds a separately required aggregation/cold-execution job; implementation-head run `35197079060` and its merge-readiness aggregate passed. |
+| T-022 | Pass | Required three-host CI runs named native, bridge, package and cold-install checks, emits qualification receipts only after cell success, and feeds a separately required aggregation/cold-execution job; implementation-head run `35293729672` and its merge-readiness aggregate passed. |
 | T-023 | Hosted pass; not farm-promotion evidence | The reviewed draft pair is byte-pinned and reproduced through the current protocol. Go checks cover pair bindings, coverage/DAG/checkpoints, marker/DOM integrity, identity-domain behavior and hostile inputs. A separate Python stdlib serializer verifies pinned current-schema normative/model/render identities, while a real task-start transition verifies revision/model advancement without normative drift. The orchestrator requires exact reviewed test membership and applicable non-skipped results from the 41 reference cases and all bridge, authoring, workflow, farm and package cases, revalidating the same candidate manifest/binary identity before and after each suite. Exact-head Linux, macOS and Windows results are green; this is not farm-promotion evidence. |
 | T-024 | Implemented; rollout qualification pending | The two required guides and directory/tech-stack integration describe implemented behavior, offline review, capability diagnostics, migration/recovery and unsupported cells. A clean-commit native-Windows candidate is bound to manifest/binary digests and embeds canonical receipt/event bytes plus transaction identities for pair conversion/rollback and synthetic-authority new-feature execution through process recreation, reconciliation to PENDING, redispatch, REVIEW and atomic acceptance. Exact-head three-host CI is green. The explicit evidence-backed decision remains no default cutover and no mass migration; typed HTML and HTML farm use remain disabled. |
 
@@ -191,13 +192,15 @@ packaging, release or rollout condition remains open.
   `build-host-packages.py --check`, artifact type generation, 18 descriptor
   tests, 65 surface tests, 145 Codex resource tests (one skip), 195 read-inject
   tests, 18 pre-read checks, 18 recorded-intent tests, four command-catalog
-  tests, plugin reference closure and 77 CI-impact tests passed.
-- Implementation-head hosted run `35197079060` passed the required merge-readiness
-  aggregate, structured-artifact and hook matrices on Linux, Windows and macOS,
-  three-host artifact package assembly, Pi adapters and coverage, CodeQL, site
-  generation and site build. The macOS Python bridge and farm dispatcher passed
-  with executable images staged only from already verified descriptor bytes;
-  the Windows original-reference contract passed with LF checkout ownership.
+  tests, plugin reference closure and 80 CI-impact tests passed.
+- Implementation-head hosted run `35293729672` passed 67/67 selected jobs and the
+  required merge-readiness aggregate. That includes structured-artifact and hook
+  matrices on Linux, Windows and macOS; all 18 host/platform cold-package cells;
+  package assembly and browser qualification; Pi adapters and coverage; CodeQL
+  with zero new alert annotations; site generation and build; the Windows
+  Python-to-binary bridge, HTML farm projection/dispatcher boundary and dual-host
+  concurrent audit store; and deterministic package verification across Git
+  archive mode and line-ending configurations.
 
 ## Remaining blockers before full rollout and promotion
 
@@ -207,11 +210,13 @@ packaging, release or rollout condition remains open.
 2. Complete real authority-event adapters and full producer, consumer, resume,
    context and generated-host closure. T-017 status diagnostics remain blocked
    by RA-11's current compatibility window; doctor diagnostics are integrated
-   but still need exact-head host qualification.
+   but still need installed-host live qualification.
 3. Preserve the declared lack of physical-power-loss/network-filesystem proof
    until those fault classes are explicitly qualified.
-4. Package provenance-bound, checksummed native binaries into each release target and run
-   cold-install and restore drills; no normal installation can use the pilot yet.
+4. Publish the provenance-bound packages through each real release channel and
+   capture exact published-asset read-back plus restore-drill evidence. Hosted
+   package assembly and cold-install are green, but no released installation can
+   use the pilot yet.
 5. Run a selected production-repository conversion and full real-host interrupted
    workflow trace; the disposable T-024 fixture does not establish those claims.
 6. Satisfy normal version/changelog/release policy before any release-channel
