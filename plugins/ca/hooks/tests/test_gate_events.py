@@ -275,7 +275,10 @@ class TestFailOpenAC2(_GateEventsFixture):
              mock.patch("os.open") as open_log:
             _hooklib._log_gate_event("WARN", None, "contended audit sink remains fail-open")
 
-        acquire.assert_called_once_with(_hooklib.audit_lock_key(self.root, log_path))
+        acquire.assert_called_once_with(
+            _hooklib.audit_lock_key(self.root, log_path),
+            wait_seconds=_hooklib.GATE_EVENT_LOCK_WAIT_SECONDS,
+        )
         open_log.assert_not_called()
         self.assertEqual(_read_log(self.cad), "")
 
@@ -298,7 +301,10 @@ class TestFailOpenAC2(_GateEventsFixture):
              mock.patch("os.write", side_effect=spy_write):
             _hooklib._log_gate_event("WARN", None, "locked append")
 
-        acquire.assert_called_once_with(_hooklib.audit_lock_key(self.root, log_path))
+        acquire.assert_called_once_with(
+            _hooklib.audit_lock_key(self.root, log_path),
+            wait_seconds=_hooklib.GATE_EVENT_LOCK_WAIT_SECONDS,
+        )
         self.assertEqual(order, ["write", "release"])
         self.assertIn("locked append", _read_log(self.cad))
 
@@ -313,6 +319,28 @@ class TestFailOpenAC2(_GateEventsFixture):
 
         self.assertEqual(_read_log(self.cad), "")
 
+    def test_gate_event_waits_past_generic_lock_budget_for_short_contention(self):
+        log_path = os.path.join(self.cad, "gate-events.log")
+        holder = _hooklib.acquire_lock(_hooklib.audit_lock_key(self.root, log_path))
+        self.assertIsNotNone(holder)
+
+        def release_after_generic_budget():
+            time.sleep(_hooklib.LOCK_WAIT + 0.15)
+            _hooklib.release_lock(holder)
+
+        releaser = threading.Thread(target=release_after_generic_budget)
+        releaser.start()
+        try:
+            _hooklib._log_gate_event(
+                "WARN", None, "retained after short cross-process contention"
+            )
+        finally:
+            releaser.join()
+
+        self.assertIn(
+            "retained after short cross-process contention", _read_log(self.cad)
+        )
+
     def test_windows_process_lock_precedes_sidecar_acquisition(self):
         class _NoopMsvcrt:
             LK_NBLCK = 1
@@ -325,7 +353,8 @@ class TestFailOpenAC2(_GateEventsFixture):
         process_lock = threading.Lock()
         observed_process_lock_state = []
 
-        def acquire_sidecar(_path):
+        def acquire_sidecar(_path, *, wait_seconds):
+            self.assertEqual(wait_seconds, _hooklib.GATE_EVENT_LOCK_WAIT_SECONDS)
             observed_process_lock_state.append(process_lock.locked())
             return object()
 
@@ -343,7 +372,8 @@ class TestFailOpenAC2(_GateEventsFixture):
         process_lock = threading.Lock()
         observed_process_lock_state = []
 
-        def acquire_sidecar(_path):
+        def acquire_sidecar(_path, *, wait_seconds):
+            self.assertEqual(wait_seconds, _hooklib.GATE_EVENT_LOCK_WAIT_SECONDS)
             observed_process_lock_state.append(process_lock.locked())
             return object()
 
