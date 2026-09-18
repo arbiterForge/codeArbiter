@@ -435,6 +435,12 @@ class ArtifactProductionPilotTest(unittest.TestCase):
         }
 
     def test_production_pair_cutover_survives_recreation_and_rolls_back_exactly(self) -> None:
+        attributes = (REPO / ".gitattributes").read_text(encoding="utf-8")
+        for kind in ("spec", "plan"):
+            self.assertIn(
+                f"/.codearbiter/{kind}s/{self.SLUG}.md text eol=lf",
+                attributes,
+            )
         before = {kind: hashlib.sha256(raw).hexdigest() for kind, raw in self.original.items()}
         evidence = json.loads(
             (REPO / "docs/artifacts/DEFAULT-ROLLOUT-PILOT.json").read_text(

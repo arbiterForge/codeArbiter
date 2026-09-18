@@ -2,8 +2,11 @@
 """Adversarial tests for canonical planning-file CAS publication."""
 
 import importlib.util
+import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -57,6 +60,68 @@ class PlanFileTests(unittest.TestCase):
         self.assertEqual(created["status"], "committed")
         self.assertEqual(self.spec.read_text(encoding="utf-8"), "created\n")
         self.assert_no_artifacts()
+
+    def test_legacy_only_surface_refuses_any_same_slug_html_authority(self):
+        for kind, parent in (("spec", self.spec.parent), ("plan", self.plan.parent)):
+            html = parent / "demo.html"
+            html.write_text("<!doctype html>\n", encoding="utf-8")
+            with self.subTest(kind=kind, action="read"):
+                self.assertEqual(
+                    P.plan_file_operation(
+                        str(self.root),
+                        {"slug": "demo", "kind": kind, "action": "read"},
+                        lock_root=str(self.lock_root),
+                        require_legacy_pair=True,
+                    ),
+                    {"status": "error", "code": "html_authority"},
+                )
+            with self.subTest(kind=kind, action="replace"):
+                self.assertEqual(
+                    P.plan_file_operation(str(self.root), {
+                        "slug": "demo", "kind": kind, "action": "replace",
+                        "expectedHash": P.hashlib.sha256(
+                            (self.spec if kind == "spec" else self.plan).read_bytes()
+                        ).hexdigest(),
+                        "content": "must not write\n",
+                    }, lock_root=str(self.lock_root), require_legacy_pair=True),
+                    {"status": "error", "code": "html_authority"},
+                )
+            html.unlink()
+
+        self.spec.unlink()
+        self.assertEqual(
+            P.plan_file_operation(
+                str(self.root),
+                {"slug": "demo", "kind": "plan", "action": "read"},
+                lock_root=str(self.lock_root),
+                require_legacy_pair=True,
+            ),
+            {"status": "error", "code": "legacy_pair_required"},
+        )
+
+    def test_pi_bridge_applies_the_legacy_pair_guard(self):
+        (self.plan.parent / "demo.html").write_text(
+            "<!doctype html>\n", encoding="utf-8"
+        )
+        request = {
+            "version": 1,
+            "event": "plan_file",
+            "cwd": str(self.root),
+            "input": {"slug": "demo", "kind": "plan", "action": "read"},
+        }
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "plugins/ca-pi/hooks/pi-bridge.py")],
+            input=json.dumps(request),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        response = json.loads(result.stdout)
+        self.assertEqual(
+            response["resultPatch"]["planFile"],
+            {"status": "error", "code": "html_authority"},
+        )
 
     def test_partial_temp_write_and_sync_fail_without_touching_original(self):
         original_write = P._write_all

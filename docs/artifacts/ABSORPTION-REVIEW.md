@@ -8,20 +8,48 @@ Package SHA-256: `4b518d4cf73089ce0adbaca173f96c06380efebc2580f44bae3b4713882243
 
 ## Verdict
 
-The package is suitable to retain as a disabled foundation, not as a complete
-feature rollout. The engine and its three-host persistence paths have substantial
-behavioral coverage, the canonical/generated ownership model is now respected,
-and required native-host CI is wired. The default remains the legacy Markdown
-workflow. HTML farm use remains explicitly blocked.
+The original package was suitable only as a disabled foundation. The current
+rollout branch has since closed the ordinary spec/plan producer and reader
+inventory, installed-payload workflow, native browser review, and selected
+production-byte rollback pilot locally. Default activation is still withheld at
+this T-15 checkpoint until the T-16 activation guard is changed and the final
+exact-head hosted run proves the complete branch. HTML farm use remains
+explicitly blocked and is not part of ordinary default-path closure.
 
-The disabled-foundation implementation at `e954e509` passed hosted run
-`35293729672`; full feature rollout and farm promotion are **not asserted**. This
-review update is documentation-only and still requires the pull request's final
-exact-head merge-readiness aggregate before merge. The remaining work is real host
-authority integration, complete producer/consumer closure, HTML farm qualification,
-release-channel payload shipping, and a selected live pilot. Tests,
-package progress notes and regenerated examples were used as leads only; each
-disposition below was checked against implementation and repository wiring.
+The earlier disabled-foundation implementation at `e954e509` and hosted run
+`35293729672` remain historical evidence only. They are not current-head proof.
+Tests, progress notes, and regenerated examples were used as leads only; the
+current consumer disposition below was checked against canonical implementation,
+generated ownership, package wiring, and an independent repository search.
+
+## Default-rollout consumer closure update
+
+The T-15 inventory names the complete ordinary default-path set rather than
+inferring closure from test success. Feature and sprint entry/resume,
+brainstorming, writing-plans, TDD, executing-plans, subagent acceptance,
+finalization/worktree reads, the artifact protocol and bridge, governing-spec
+discovery, and commit-gate acceptance are explicitly HTML-capable while retaining
+the exact existing Markdown authority path. Pi's pre-existing native `ca-plan`
+session controller is the thirteenth consumer and is explicitly legacy-only: its
+bridge requires a complete Markdown pair and refuses any same-slug HTML authority
+before reads or CAS publication. None has a pending closure label.
+
+Independent search over the declared canonical, runtime, CI, documentation, and
+generation roots finds no unowned spec/plan or artifact-protocol reference. The
+published reference copies found by that search are assigned to their canonical
+owners rather than treated as separate authorities.
+
+This closure does not reclassify adjacent surfaces. Status diagnostics remain an
+explicit RA-11 compatibility deviation and are not a spec/plan producer or
+reader. HTML farm projection/dispatch remains implemented but disabled pending
+its separate authority, release-channel, and current-model qualification.
+Decomposition documents, task/ticket/done-task files, ADRs, and historical
+records remain explicit future-kind or historical exclusions. The
+`academy-source` gitlink is also explicit: it is a version-pinned external
+repository with Markdown-specific training contracts, owned by a separate
+governed Academy release rather than codeArbiter runtime/package source. That
+downstream must be updated before it adopts this new default; it is not silently
+counted as internal closure.
 
 ## Corrections made during review
 
@@ -75,7 +103,7 @@ packaging, release or rollout condition remains open.
 | AC-018 | Implemented; promotion qualification pending | The minimal current-slice projection, immutable authorization/base binding, actual pre-canary and pre-dispatch guards, provider-only enrichment and exact-byte seal pass exact-head three-host CI. Current authority adapters, release-channel installed payloads and a fresh model-era matrix remain open, so use stays disabled. |
 | AC-019 | Local pass; production conversion open | Loss-aware line mappings and non-transfer of approvals are implemented. An exact-candidate native-Windows pair preview/apply preserved draft and unverified-authority state; no production repository pair has been converted. |
 | AC-020 | Three-host pass; production conversion open | Semantic cutover/rollback and native storage recovery pass in exact-head Linux, Windows and macOS CI. The exact-candidate Windows pilot restored both legacy files byte-for-byte and removed both HTML authorities. Production-host execution remains open. |
-| AC-021 | Partial | Inventory-led search now accounts for live canonical/generated consumers and explicit exclusions, and the no-growth gate passes. Entries marked pending still identify incomplete runtime, host and release integration. |
+| AC-021 | Local pass | Inventory-led search accounts for every live canonical/generated/published-reference consumer and explicit exclusion. Twelve ordinary default-path producers/readers are HTML-capable and Pi's native `ca-plan` is enforced as legacy-pair-only, with no pending closure label; farm and future artifact kinds remain separately disabled or excluded. |
 | AC-022 | Partial | Native builders, verified bridges and cold execution pass on Linux, Windows and macOS. The release-only boundary rejects linked/replaced roots, fake architectures and unsupported identities, requires exact commit/workflow-run/platform/digest/test receipts, and required CI aggregates all three host candidates into package-owned overlays. The ordinary installer remains fail-closed; actual release-channel application and published provenance are open. |
 | AC-023 | Partial | Named native locking/replacement/process-death suites pass in exact-head Linux, Windows and macOS CI; physical-power-loss and network-filesystem fault evidence remain open. |
 | AC-024 | Local engine pass | Strict parser, resource bounds, inert content and renderer checks pass; unqualified host seams prevent whole-feature acceptance. |
@@ -207,18 +235,19 @@ packaging, release or rollout condition remains open.
 1. Qualify the locally implemented AC-018/T-018 path through real authority events,
    release-channel installed host payloads and a fresh frontier/low-tier
    model matrix. The promotion bar starts at zero and gives the June 2026 run no credit.
-2. Complete real authority-event adapters and full producer, consumer, resume,
-   context and generated-host closure. T-017 status diagnostics remain blocked
-   by RA-11's current compatibility window; doctor diagnostics are integrated
-   but still need installed-host live qualification.
+2. Preserve the now-closed ordinary producer/consumer/resume/context inventory
+   through final generated parity and exact-head CI. T-017 status diagnostics
+   remain blocked by RA-11's current compatibility window; this explicit
+   non-consumer deviation is not counted as ordinary-path closure.
 3. Preserve the declared lack of physical-power-loss/network-filesystem proof
    until those fault classes are explicitly qualified.
 4. Publish the provenance-bound packages through each real release channel and
    capture exact published-asset read-back plus restore-drill evidence. Hosted
    package assembly and cold-install are green, but no released installation can
    use the pilot yet.
-5. Run a selected production-repository conversion and full real-host interrupted
-   workflow trace; the disposable T-024 fixture does not establish those claims.
+5. Do not overstate the selected production-byte pilot: it ran in a disposable
+   isolated repository and proves interruption, downgrade refusal, and exact-byte
+   rollback, not conversion of live repository authority.
 6. Satisfy normal version/changelog/release policy before any release-channel
    publication.
 

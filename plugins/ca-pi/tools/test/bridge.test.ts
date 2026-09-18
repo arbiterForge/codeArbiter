@@ -105,6 +105,13 @@ describe("plan-file bridge protocol", () => {
     roots.push(cwd);
     await mkdir(resolve(cwd, ".codearbiter", "specs"), { recursive: true });
     await mkdir(resolve(cwd, ".codearbiter", "plans"));
+    const original = "# Legacy spec\n";
+    await writeFile(resolve(cwd, ".codearbiter", "specs", "demo.md"), original, "utf8");
+    await writeFile(
+      resolve(cwd, ".codearbiter", "plans", "demo.md"),
+      "| Task | Status |\n|---|---|\n| T-01 | PENDING |\n",
+      "utf8",
+    );
     const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
     const bridge = new BridgeClient({
       bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
@@ -115,12 +122,43 @@ describe("plan-file bridge protocol", () => {
       toolClasses: {},
     });
     await expect(callPlanFileBridge(bridge, cwd, {
-      slug: "demo", kind: "spec", action: "replace", expectedHash: null, content,
+      slug: "demo", kind: "spec", action: "replace",
+      expectedHash: createHash("sha256").update(original).digest("hex"), content,
     })).resolves.toMatchObject({ status: "committed", observed: true, content });
     await expect(readFile(resolve(cwd, ".codearbiter", "specs", "demo.md"), "utf8")).resolves.toBe(content);
     // Keep the harness deadline outside the bridge's unchanged 10s transport
     // limit and 2s kill-settlement allowance. Coverage/cold startup must not
     // abort the test before its real response and on-disk assertions run.
+  }, 15_000);
+
+  test("real BridgeClient refuses absent or HTML-owned pairs on the legacy-only surface", async () => {
+    const cwd = await realpath(await mkdtemp(resolve(tmpdir(), "ca-pi-plan-authority-")));
+    roots.push(cwd);
+    await mkdir(resolve(cwd, ".codearbiter", "specs"), { recursive: true });
+    await mkdir(resolve(cwd, ".codearbiter", "plans"));
+    const packageRoot = fileURLToPath(new URL("../..", import.meta.url));
+    const bridge = new BridgeClient({
+      bridgeScript: resolve(packageRoot, "hooks", "pi-bridge.py"),
+      maxStreamBytes: 262_144,
+      packageRoot,
+      pythonExecutable: pythonExecutable(),
+      gitExecutable: gitExecutable(),
+      toolClasses: {},
+    });
+    await expect(callPlanFileBridge(bridge, cwd, {
+      slug: "demo", kind: "plan", action: "read",
+    })).resolves.toEqual({ status: "error" });
+
+    await writeFile(resolve(cwd, ".codearbiter", "specs", "demo.md"), "# Legacy spec\n", "utf8");
+    await writeFile(
+      resolve(cwd, ".codearbiter", "plans", "demo.md"),
+      "| Task | Status |\n|---|---|\n| T-01 | PENDING |\n",
+      "utf8",
+    );
+    await writeFile(resolve(cwd, ".codearbiter", "specs", "demo.html"), "<!doctype html>\n", "utf8");
+    await expect(callPlanFileBridge(bridge, cwd, {
+      slug: "demo", kind: "plan", action: "read",
+    })).resolves.toEqual({ status: "error" });
   }, 15_000);
 });
 

@@ -70,6 +70,30 @@ def _request_path(root, slug, kind):
     return os.path.join(root, ".codearbiter", KINDS[kind], f"{slug}.md")
 
 
+def _require_legacy_pair(root, slug):
+    """Refuse Pi's Markdown-only plan surface unless one exact legacy pair owns the slug."""
+    _request_path(root, slug, "spec")
+    root_info = os.lstat(root)
+    if not _directory(root_info):
+        raise PlanFileError("root")
+    state_path, _ = _exact_absolute_child(root, ".codearbiter")
+    for kind in KINDS:
+        parent_path, _ = _exact_absolute_child(state_path, KINDS[kind])
+        html_leaf = f"{slug}.html"
+        if _aliases(parent_path, html_leaf):
+            raise PlanFileError("html_authority")
+        markdown_leaf = f"{slug}.md"
+        aliases = _aliases(parent_path, markdown_leaf)
+        if not aliases:
+            raise PlanFileError("legacy_pair_required")
+        if aliases != [markdown_leaf]:
+            raise PlanFileError("path_alias")
+        path = os.path.join(parent_path, markdown_leaf)
+        info = os.lstat(path)
+        if not _regular_single(info) or os.path.realpath(path) != os.path.abspath(path):
+            raise PlanFileError("path_type")
+
+
 def _windows_handle_identity(handle):
     from ctypes import wintypes
 
@@ -580,7 +604,8 @@ def _committed_result(path, data, content, fault=None, initial_diagnostic=None):
     return result
 
 
-def plan_file_operation(root, request, *, lock_root=None, fault=None):
+def plan_file_operation(root, request, *, lock_root=None, fault=None,
+                        require_legacy_pair=False):
     """Run a bounded CAS. The lock serializes cooperating codeArbiter Pi writers only."""
     try:
         if not isinstance(request, dict) or set(request) - {"slug", "kind", "action", "expectedHash", "content"}:
@@ -593,7 +618,13 @@ def plan_file_operation(root, request, *, lock_root=None, fault=None):
         if action not in ("read", "replace"):
             raise PlanFileError("request")
         target = _request_path(root, request.get("slug"), request.get("kind"))
+        if require_legacy_pair is not False:
+            if require_legacy_pair is not True:
+                raise PlanFileError("request")
+            _require_legacy_pair(root, request["slug"])
         with _lock_for(target, lock_root), _held_path(root, request["slug"], request["kind"], fault) as path:
+            if require_legacy_pair:
+                _require_legacy_pair(root, request["slug"])
             chosen = _read_target(path, fault)
             if action == "read":
                 if chosen is None:
@@ -625,6 +656,8 @@ def plan_file_operation(root, request, *, lock_root=None, fault=None):
                 for phase in ("before_publish", "publish"):
                     if fault:
                         fault(phase, path)
+                    if require_legacy_pair:
+                        _require_legacy_pair(root, request["slug"])
                     try:
                         latest = _read_target(path)
                     except Exception:
