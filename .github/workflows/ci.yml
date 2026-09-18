@@ -352,6 +352,7 @@ jobs:
               - 'tools/create-artifact-examples.py'
               - '.github/scripts/test_artifact_bridge.py'
               - '.github/scripts/test_artifact_authoring.py'
+              - '.github/scripts/test_artifact_installed_host.py'
               - '.github/scripts/test_artifact_consumers.py'
               - '.github/scripts/test_artifact_conformance.py'
               - '.github/scripts/test_artifact_farm.py'
@@ -820,7 +821,7 @@ jobs:
         with:
           name: artifact-release-packages-${{ github.sha }}
           path: ${{ runner.temp }}/artifact-release-packages
-      - name: Cold-execute the exact final package host/platform cell
+      - name: Cold-execute the complete exact-package installed-host workflow
         run: >-
           python tools/build-host-packages.py
           --release-package-stage "${{ runner.temp }}/artifact-host-payloads"

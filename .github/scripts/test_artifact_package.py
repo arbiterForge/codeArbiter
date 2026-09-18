@@ -25,13 +25,14 @@ INSTALLATION = None
 INSTALLER = None
 PACKAGER = None
 BUILDER = None
+INSTALLED_HOST = None
 FIXTURE_SOURCE_COMMIT = "a" * 40
 FIXTURE_WORKFLOW_RUN = "123456789"
 FIXTURE_WORKFLOW = ".github/workflows/ci.yml"
 
 
 def setUpModule():
-    global INSTALLATION, INSTALLER, PACKAGER, BUILDER
+    global INSTALLATION, INSTALLER, PACKAGER, BUILDER, INSTALLED_HOST
     configured = os.environ.get("ARTIFACT_TEST_INSTALLATION")
     if configured:
         INSTALLATION = Path(configured).resolve(strict=True)
@@ -53,6 +54,12 @@ def setUpModule():
         "build_artifacts", REPO / "tools/build-artifacts.py")
     BUILDER = importlib.util.module_from_spec(builder_spec)
     builder_spec.loader.exec_module(BUILDER)
+    workflow_spec = importlib.util.spec_from_file_location(
+        "test_artifact_installed_host",
+        REPO / ".github/scripts/test_artifact_installed_host.py",
+    )
+    INSTALLED_HOST = importlib.util.module_from_spec(workflow_spec)
+    workflow_spec.loader.exec_module(INSTALLED_HOST)
 
 
 class PackageTests(unittest.TestCase):
@@ -80,6 +87,92 @@ class PackageTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.npm_executable.chmod(0o755)
+
+    def test_installed_bridge_offline_guard_has_negative_controls(self):
+        bridge = (REPO / "core/pysrc/_artifactlib.py").read_bytes()
+        INSTALLED_HOST.assert_offline_bridge(bridge)
+        cases = (
+            (bridge + b"\nimport socket\n", "unreviewed modules"),
+            (bridge + b"\nimport os\nos.system('escape')\n", "process escape"),
+            (bridge + b"\nimport os\nos.fork()\n", "process escape"),
+            (
+                bridge
+                + b"\nimport ctypes\nctypes.WinDLL('kernel32').CreateProcessW\n",
+                "unreviewed kernel32 procedure",
+            ),
+            (bridge + b"\neval('1 + 1')\n", "dynamic code/import escape"),
+        )
+        for candidate, diagnostic in cases:
+            with self.subTest(diagnostic=diagnostic), self.assertRaisesRegex(
+                AssertionError, diagnostic
+            ):
+                INSTALLED_HOST.assert_offline_bridge(candidate)
+
+    def test_installed_host_runtime_guard_and_failure_redaction(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        entry = next(iter(manifest["binaries"].values()))
+        binary = (INSTALLATION / entry["file"]).resolve(strict=True)
+        INSTALLED_HOST.enforce_runtime_event(
+            "subprocess.Popen", (str(binary), [str(binary)], None, {}),
+            binary=binary, binary_sha256=entry["sha256"],
+            permit_verifier_children=False,
+        )
+        with self.assertRaisesRegex(RuntimeError, "forbids network access"):
+            INSTALLED_HOST.enforce_runtime_event(
+                "socket.connect", (None, None), binary=binary,
+                binary_sha256=entry["sha256"],
+                permit_verifier_children=False,
+            )
+        with self.assertRaisesRegex(RuntimeError, "process escape"):
+            INSTALLED_HOST.enforce_runtime_event(
+                "os.fork", (), binary=binary, binary_sha256=entry["sha256"],
+                permit_verifier_children=False,
+            )
+        with self.assertRaisesRegex(RuntimeError, "unreviewed process"):
+            INSTALLED_HOST.enforce_runtime_event(
+                "subprocess.Popen",
+                (sys.executable, [sys.executable, "-c", "pass"], None, {}),
+                binary=binary, binary_sha256=entry["sha256"],
+                permit_verifier_children=False,
+            )
+
+        tainted = b"::stop-commands::candidate\nsecret-value"
+        completed = subprocess.CompletedProcess([], 9, b"", tainted)
+        for failure in (
+            INSTALLED_HOST.subprocess_failure("phase", completed),
+            PACKAGER._subprocess_failure("cold", completed),
+        ):
+            message = str(failure)
+            self.assertNotIn("stop-commands", message)
+            self.assertNotIn("secret-value", message)
+            self.assertIn(f"stderr_bytes={len(tainted)}", message)
+            self.assertIn(hashlib.sha256(tainted).hexdigest(), message)
+
+    def test_installed_host_runtime_guard_accepts_only_exact_darwin_stage(self):
+        manifest = json.loads((INSTALLATION / "release.json").read_text(encoding="utf-8"))
+        entry = next(iter(manifest["binaries"].values()))
+        binary = (INSTALLATION / entry["file"]).resolve(strict=True)
+        with tempfile.TemporaryDirectory(prefix="ca-artifact-exec-") as temporary:
+            staged = Path(temporary) / "ca-artifact"
+            staged.write_bytes(binary.read_bytes())
+            staged.chmod(0o500)
+            details = (str(staged), [str(staged), "capabilities"], None, {})
+            with (
+                mock.patch.object(INSTALLED_HOST.platform, "system", return_value="Darwin"),
+                mock.patch.object(INSTALLED_HOST.stat, "S_IMODE", return_value=0o500),
+            ):
+                INSTALLED_HOST.enforce_runtime_event(
+                    "subprocess.Popen", details, binary=binary,
+                    binary_sha256=entry["sha256"], permit_verifier_children=False,
+                )
+                staged.chmod(0o600)
+                staged.write_bytes(staged.read_bytes() + b"drift")
+                staged.chmod(0o500)
+                with self.assertRaisesRegex(RuntimeError, "unreviewed process"):
+                    INSTALLED_HOST.enforce_runtime_event(
+                        "subprocess.Popen", details, binary=binary,
+                        binary_sha256=entry["sha256"], permit_verifier_children=False,
+                    )
 
     def qualification(self, candidate=None, *, destination=None,
                       source_commit=FIXTURE_SOURCE_COMMIT):
@@ -412,6 +505,44 @@ class PackageTests(unittest.TestCase):
                 npm_executable=self.npm_executable,
                 npm_package_integrity=PACKAGER.NPM_PACKER_INTEGRITY,
                 production=False,
+            )
+
+    def test_release_package_extraction_rejects_nonportable_member_names(self):
+        cases = (
+            "plugins/ca/C:\\escape.txt",
+            "plugins/ca/CON",
+            "plugins/ca/trailing.",
+            "plugins/ca/alternate:data",
+            "plugins/ca/x\n::stop-commands::secret-value",
+        )
+        for index, name in enumerate(cases):
+            archive_path = self.base / f"unsafe-{index}.tar.gz"
+            with tarfile.open(archive_path, "w:gz") as archive:
+                data = b"unsafe"
+                member = tarfile.TarInfo(name)
+                member.size = len(data)
+                archive.addfile(member, __import__("io").BytesIO(data))
+            destination = self.base / f"unsafe-output-{index}"
+            with self.subTest(name=name), self.assertRaisesRegex(
+                ValueError, "unsafe member"
+            ) as raised:
+                PACKAGER.extract_artifact_release_package(
+                    archive_path, destination, host="claude"
+                )
+            self.assertNotIn(name, str(raised.exception))
+            self.assertNotIn("stop-commands", str(raised.exception))
+            self.assertNotIn("secret-value", str(raised.exception))
+            self.assertFalse(destination.exists())
+
+        collision = self.base / "unicode-collision.tar.gz"
+        with tarfile.open(collision, "w:gz") as archive:
+            for name in ("plugins/ca/\u00e9.txt", "plugins/ca/e\u0301.txt"):
+                member = tarfile.TarInfo(name)
+                member.size = 1
+                archive.addfile(member, __import__("io").BytesIO(b"x"))
+        with self.assertRaisesRegex(ValueError, "unsafe member"):
+            PACKAGER.extract_artifact_release_package(
+                collision, self.base / "collision-output", host="claude"
             )
 
     def test_final_package_build_refuses_wrong_source_or_promotion_before_output(self):
@@ -747,11 +878,22 @@ class PackageTests(unittest.TestCase):
             production=False,
         )
         observed = []
+        observed_workflows = []
+        observed_workflow_paths = []
         real_run = PACKAGER.subprocess.run
 
         def record_run(argv, **kwargs):
             if "capabilities" in argv:
                 observed.append((argv, kwargs))
+            is_workflow = any(
+                str(value).endswith("test_artifact_installed_host.py") for value in argv
+            )
+            if is_workflow:
+                observed_workflows.append((argv, kwargs))
+                empty_path = Path(kwargs["env"]["PATH"])
+                observed_workflow_paths.append(
+                    (empty_path.is_dir(), list(empty_path.iterdir()))
+                )
             return real_run(argv, **kwargs)
 
         with mock.patch.object(PACKAGER.subprocess, "run", side_effect=record_run):
@@ -775,12 +917,32 @@ class PackageTests(unittest.TestCase):
                 self.assertEqual(entry["sha256"], cold["binary_sha256"])
                 self.assertEqual(result["promotion_receipt_sha256"],
                                  cold["promotion_receipt_sha256"])
+                self.assertTrue(cold["all_accepted_and_current"])
+                self.assertTrue(cold["interruption_reconciled"])
+                self.assertTrue(cold["redispatched"])
+                self.assertTrue(cold["commit_proof"])
+                self.assertTrue(cold["finalization_proof"])
+                self.assertEqual(0, cold["markdown_shadow_count"])
                 self.assertEqual(cold, json.loads(destination.read_text(encoding="utf-8")))
 
         self.assertEqual(3, len(observed))
         for argv, kwargs in observed:
             self.assertTrue(Path(argv[0]).is_absolute())
             self.assertEqual({}, kwargs["env"])
+            self.assertNotIn("shell", kwargs)
+        self.assertEqual(3, len(observed_workflows))
+        for (argv, kwargs), (path_existed, path_contents) in zip(
+            observed_workflows, observed_workflow_paths, strict=True
+        ):
+            self.assertTrue(Path(argv[0]).is_absolute())
+            self.assertIn("--plugin-root", argv)
+            self.assertIn("--expected-binary-sha256", argv)
+            self.assertTrue(Path(kwargs["cwd"]).is_absolute())
+            self.assertTrue(path_existed)
+            self.assertEqual([], path_contents)
+            self.assertFalse(Path(kwargs["env"]["PATH"]).exists())
+            self.assertEqual("1", kwargs["env"]["PYTHONNOUSERSITE"])
+            self.assertNotIn("PYTHONPATH", kwargs["env"])
             self.assertNotIn("shell", kwargs)
 
     def test_cold_execution_refuses_wrong_cell_context_and_is_create_only(self):

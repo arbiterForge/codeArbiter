@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import unicodedata
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from host_descriptors import HostDescriptor, host_descriptor, load_host_descriptors  # noqa: E402
@@ -52,6 +53,43 @@ ARTIFACT_PLATFORMS = frozenset({
     "linux/amd64", "linux/arm64", "darwin/amd64", "darwin/arm64",
     "windows/amd64", "windows/arm64",
 })
+
+_WINDOWS_RESERVED_MEMBER = re.compile(
+    r"(?i)^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$"
+)
+
+
+def _subprocess_failure(label: str, completed: subprocess.CompletedProcess) -> RuntimeError:
+    stderr = completed.stderr if isinstance(completed.stderr, bytes) else b""
+    return RuntimeError(
+        f"{label} failed with exit {completed.returncode}; "
+        f"stderr_bytes={len(stderr)}; stderr_sha256={hashlib.sha256(stderr).hexdigest()}"
+    )
+
+
+def _portable_member_parts(name: str) -> tuple[tuple[str, ...], str]:
+    """Return safe host-independent archive parts and a collision key."""
+    if (
+        not isinstance(name, str)
+        or not name
+        or name.startswith("/")
+        or "\\" in name
+        or "\x00" in name
+        or any(unicodedata.category(character) in {"Cc", "Cf"} for character in name)
+    ):
+        raise ValueError("release package has an unsafe member name")
+    parts = tuple(name.split("/"))
+    if any(
+        not part
+        or part in {".", ".."}
+        or ":" in part
+        or part.endswith((" ", "."))
+        or _WINDOWS_RESERVED_MEMBER.fullmatch(part) is not None
+        for part in parts
+    ):
+        raise ValueError("release package has an unsafe member name")
+    key = unicodedata.normalize("NFC", "/".join(parts)).casefold()
+    return parts, key
 
 
 def _artifact_installer_module():
@@ -545,16 +583,22 @@ def _git_archive_files(source_repo: Path, source_commit: str,
         repo=source_repo, binary=True,
     )
     files: dict[str, tuple[bytes, int, str, str]] = {}
+    portable_names: set[str] = set()
     with tarfile.open(fileobj=io.BytesIO(raw), mode="r:") as archive:
         for member in archive.getmembers():
             name = member.name.rstrip("/")
             if not name or member.isdir():
                 continue
-            if not member.isfile() or name.startswith("/") or ".." in Path(name).parts:
-                raise ValueError(f"package source contains an unsupported archive member: {name}")
+            try:
+                _parts, portable_key = _portable_member_parts(name)
+            except ValueError:
+                raise ValueError("package source contains an unsupported archive member") from None
+            if not member.isfile() or portable_key in portable_names:
+                raise ValueError("package source contains an unsupported archive member")
+            portable_names.add(portable_key)
             stream = archive.extractfile(member)
             if stream is None:
-                raise ValueError(f"package source member is unreadable: {name}")
+                raise ValueError("package source member is unreadable")
             mode = 0o755 if member.mode & 0o111 else 0o644
             files[name] = (stream.read(), mode, "source", name)
     if not files:
@@ -623,7 +667,8 @@ def _codex_catalog(source: bytes, installer) -> bytes:
 def _write_member_tree(root: Path,
                        members: dict[str, tuple[bytes, int, str, str]]) -> None:
     for name, (data, mode, _origin, _source) in sorted(members.items()):
-        path = root.joinpath(*name.split("/"))
+        parts, _key = _portable_member_parts(name)
+        path = root.joinpath(*parts)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("xb") as stream:
             stream.write(data)
@@ -826,30 +871,39 @@ def _read_archive(
     path: Path, *, expected_members: dict[str, dict] | None = None
 ) -> dict[str, tuple[bytes, int]]:
     files = {}
+    portable_names: dict[str, str] = {}
     with tarfile.open(path, "r:gz") as archive:
         for member in archive.getmembers():
             name = member.name.rstrip("/")
             if not name or member.isdir():
                 continue
-            if (not member.isfile() or name.startswith("/") or ".." in Path(name).parts
-                    or name in files):
-                raise ValueError(f"release package has an unsafe member: {name}")
+            try:
+                _parts, portable_key = _portable_member_parts(name)
+            except ValueError:
+                raise ValueError("release package has an unsafe member name") from None
+            if (
+                not member.isfile()
+                or name in files
+                or portable_key in portable_names
+            ):
+                raise ValueError("release package has an unsafe member name")
+            portable_names[portable_key] = name
             expected = expected_members.get(name) if expected_members is not None else None
             if expected_members is not None and (
                 expected is None
                 or member.size != expected["size"]
                 or member.mode & 0o777 != int(expected["mode"], 8)
             ):
-                raise ValueError(f"release package member metadata drifted: {name}")
+                raise ValueError("release package member metadata drifted")
             stream = archive.extractfile(member)
             if stream is None:
-                raise ValueError(f"release package member is unreadable: {name}")
+                raise ValueError("release package member is unreadable")
             data = stream.read((expected["size"] if expected is not None else 256 << 20) + 1)
             if expected is not None and (
                 len(data) != expected["size"]
                 or hashlib.sha256(data).hexdigest() != expected["sha256"]
             ):
-                raise ValueError(f"release package member bytes drifted: {name}")
+                raise ValueError("release package member bytes drifted")
             if expected is None and len(data) > 256 << 20:
                 raise ValueError("release package member exceeds the extraction limit")
             files[name] = (data, member.mode & 0o777)
@@ -1182,7 +1236,10 @@ def extract_artifact_release_package(artifact: Path, destination: Path, *, host:
     files = _read_archive(artifact)
     destination.mkdir()
     for name, (data, mode) in sorted(files.items()):
-        path = destination.joinpath(*name.split("/"))
+        parts, _key = _portable_member_parts(name)
+        path = destination.joinpath(*parts)
+        if not path.absolute().is_relative_to(destination.absolute()):
+            raise ValueError("release package member escaped extraction root")
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("xb") as stream:
             stream.write(data)
@@ -1200,10 +1257,11 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
                                        require_production: bool = True) -> dict[str, object]:
     """Execute one verified host/platform payload and retain a bound receipt.
 
-    The executable is read from the verified immutable final package archive,
-    copied into an otherwise empty temporary directory, and launched by absolute
-    path with an empty environment. No checkout binary, PATH lookup, Go
-    invocation, or network installer can satisfy this check.
+    The executable and Python bridge are read from the verified immutable final
+    package archive. The executable is first launched by absolute path with an
+    empty environment, then the complete workflow is exercised through the
+    extracted package bridge with an empty PATH. No checkout binary, PATH lookup,
+    Go invocation, or network installer can satisfy this check.
     """
     if expected_platform not in ARTIFACT_PLATFORMS:
         raise ValueError(f"unsupported cold-execution platform: {expected_platform}")
@@ -1275,24 +1333,92 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
             input=request, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             timeout=30, check=False, cwd=repository, env={},
         )
-    if completed.returncode != 0 or completed.stderr:
-        raise RuntimeError(
-            f"cold execution failed with exit {completed.returncode}: "
-            f"{completed.stderr[:512].decode('utf-8', errors='replace')}"
+        if completed.returncode != 0 or completed.stderr:
+            raise _subprocess_failure("cold execution", completed)
+        response = json.loads(completed.stdout, object_pairs_hook=installer._pairs)
+        if (not isinstance(response, dict)
+                or set(response) != {"protocol", "operation", "ok", "result"}
+                or response.get("protocol") != ARTIFACT_PROTOCOL
+                or response.get("operation") != "capabilities"
+                or response.get("ok") is not True
+                or not isinstance(response.get("result"), dict)):
+            raise RuntimeError("cold execution returned a malformed capabilities response")
+        capabilities = response["result"]
+        if (capabilities.get("platform") != expected_platform
+                or capabilities.get("repository_operations_available") is not True
+                or capabilities.get("runtime_downloads") is not False):
+            raise RuntimeError(
+                "cold execution did not prove the required native offline capability"
+            )
+
+        extracted = isolated / "package"
+        extract_artifact_release_package(archive, extracted, host=host)
+        plugin_root = extracted.joinpath(*{
+            "claude": ("plugins", "ca"),
+            "codex": ("plugins", "ca-codex"),
+            "pi": ("package", "plugins", "ca-pi"),
+        }[host])
+        workflow_repository = isolated / "workflow-repository"
+        workflow_repository.mkdir()
+        empty_path = isolated / "empty-path"
+        empty_path.mkdir()
+        workflow_script = source_repo / ".github" / "scripts" / "test_artifact_installed_host.py"
+        workflow_env = {
+            "PATH": str(empty_path),
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "HTTP_PROXY": "http://127.0.0.1:1",
+            "HTTPS_PROXY": "http://127.0.0.1:1",
+            "ALL_PROXY": "http://127.0.0.1:1",
+        }
+        for name in ("SYSTEMROOT", "WINDIR"):
+            if name in os.environ:
+                workflow_env[name] = os.environ[name]
+        workflow_completed = subprocess.run(
+            [
+                sys.executable,
+                str(workflow_script.absolute()),
+                "--host", host,
+                "--plugin-root", str(plugin_root.absolute()),
+                "--repository", str(workflow_repository.absolute()),
+                "--expected-binary-sha256", entry["sha256"],
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=120,
+            check=False,
+            cwd=workflow_repository,
+            env=workflow_env,
         )
-    response = json.loads(completed.stdout, object_pairs_hook=installer._pairs)
-    if (not isinstance(response, dict)
-            or set(response) != {"protocol", "operation", "ok", "result"}
-            or response.get("protocol") != ARTIFACT_PROTOCOL
-            or response.get("operation") != "capabilities"
-            or response.get("ok") is not True
-            or not isinstance(response.get("result"), dict)):
-        raise RuntimeError("cold execution returned a malformed capabilities response")
-    capabilities = response["result"]
-    if (capabilities.get("platform") != expected_platform
-            or capabilities.get("repository_operations_available") is not True
-            or capabilities.get("runtime_downloads") is not False):
-        raise RuntimeError("cold execution did not prove the required native offline capability")
+        if workflow_completed.returncode != 0 or workflow_completed.stderr:
+            raise _subprocess_failure("cold installed-host workflow", workflow_completed)
+        workflow_result = json.loads(
+            workflow_completed.stdout, object_pairs_hook=installer._pairs
+        )
+        expected_workflow_fields = {
+            "format", "host", "bridge_sha256", "binary_sha256",
+            "spec_artifact_id", "spec_normative_sha256", "plan_artifact_id",
+            "plan_normative_sha256", "interruption_reconciled", "redispatched",
+            "commit_proof", "finalization_proof", "all_accepted_and_current",
+            "markdown_shadow_count",
+        }
+        if (
+            not isinstance(workflow_result, dict)
+            or set(workflow_result) != expected_workflow_fields
+            or workflow_result.get("format")
+            != "codearbiter.installed-host-workflow/0.1.0"
+            or workflow_result.get("host") != host
+            or workflow_result.get("binary_sha256") != entry["sha256"]
+            or any(
+                workflow_result.get(field) is not True
+                for field in (
+                    "interruption_reconciled", "redispatched", "commit_proof",
+                    "finalization_proof", "all_accepted_and_current",
+                )
+            )
+            or workflow_result.get("markdown_shadow_count") != 0
+        ):
+            raise RuntimeError("cold installed-host workflow returned malformed proof")
 
     cold_receipt = {
         "format": ARTIFACT_COLD_EXECUTION_FORMAT,
@@ -1310,6 +1436,17 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         "operation": "capabilities",
         "repository_operations_available": True,
         "runtime_downloads": False,
+        "installed_workflow_response_sha256": hashlib.sha256(
+            workflow_completed.stdout
+        ).hexdigest(),
+        "installed_bridge_sha256": workflow_result["bridge_sha256"],
+        "installed_workflow_format": workflow_result["format"],
+        "interruption_reconciled": True,
+        "redispatched": True,
+        "commit_proof": True,
+        "finalization_proof": True,
+        "all_accepted_and_current": True,
+        "markdown_shadow_count": 0,
     }
     with output.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(cold_receipt, stream, indent=2, ensure_ascii=False)

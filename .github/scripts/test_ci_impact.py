@@ -3185,6 +3185,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             '--cold-platform "${{ matrix.platform }}"',
             'needs.artifact-package-assembly.outputs.promotion-receipt-sha256',
             'name: artifact-package-cold-${{ matrix.platform_token }}-${{ matrix.host }}-${{ github.sha }}',
+            "Cold-execute the complete exact-package installed-host workflow",
             "retention-days: 14",
         ):
             self.assertIn(control, cold)
@@ -3205,6 +3206,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             "core/surface/**",
             ".github/scripts/test_artifact_bridge.py",
             ".github/scripts/test_artifact_authoring.py",
+            ".github/scripts/test_artifact_installed_host.py",
             ".github/scripts/test_artifact_consumers.py",
             ".github/scripts/test_artifact_conformance.py",
             ".github/scripts/test_artifact_farm.py",
