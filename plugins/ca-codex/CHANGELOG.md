@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-09-18
+
+### Fixed
+
+- Require a merged default-branch commit and green hosted exact-head evidence
+  before release tag composition, and establish one POSIX shell before the
+  portable workflow runs on Windows.
+
 ## [0.13.0] - 2026-09-17
 
 ### Added

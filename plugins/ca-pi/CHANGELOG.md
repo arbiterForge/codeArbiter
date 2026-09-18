@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.1] - 2026-09-18
+
+### Fixed
+
+- Require a merged default-branch commit and green hosted exact-head evidence
+  before release tag composition, and establish one POSIX shell before the
+  portable workflow runs on Windows.
+
 ## [0.14.0] - 2026-09-17
 
 ### Added

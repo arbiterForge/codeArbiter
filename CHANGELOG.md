@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.1] - 2026-09-18
+
+### Fixed
+
+- Require a merged default-branch commit and green hosted exact-head evidence
+  before release tag composition, and establish one POSIX shell before the
+  portable workflow runs on Windows.
+
 ## [2.21.0] - 2026-09-17
 
 ### Added
