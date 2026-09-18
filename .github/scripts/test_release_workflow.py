@@ -2023,6 +2023,26 @@ class RegistrationTest(unittest.TestCase):
         self.assertIn(".github/workflows/release.yml", push_trigger_paths(ci),
                       "a push touching only release.yml must still start CI")
 
+    def test_live_codex_baseline_starts_a_push_run(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        live_baseline = "docs/codex-parity-testing.md"
+        self.assertIn(
+            live_baseline,
+            push_trigger_paths(ci),
+            "a live-proof correction on main must start the exact-SHA CI run "
+            "that authorizes the automatic release cohort",
+        )
+        self.assertIn(
+            live_baseline,
+            paths_filter(ci, "hooks"),
+            "the exact-SHA run must validate the live-proof marker",
+        )
+        self.assertIn(
+            live_baseline,
+            paths_filter(ci, "artifacts"),
+            "the exact-SHA run must assemble the release package cohort",
+        )
+
     def test_auto_noop_empty_cohort_is_portable_to_bash_3(self):
         workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn(
