@@ -59,6 +59,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -747,7 +748,7 @@ class SkillPortabilityTest(unittest.TestCase):
     def test_skill_conditional_prose(self):
         phase3_idx = self.text.index("## Phase 3")
         recovering_idx = self.text.index("## Recovering from a bad release")
-        phase3_preamble = self.text[phase3_idx:phase3_idx + 900]
+        phase3_preamble = self.text[phase3_idx:phase3_idx + 1600]
         recovering = self.text[recovering_idx:]
 
         self.assertIn("A qualifying hosted release workflow is mandatory", phase3_preamble)
@@ -3289,6 +3290,36 @@ class CoreCLITest(unittest.TestCase):
                 result.stdout,
                 "## [2.12.0] — 2026-08-07\n\n### Added\n\n- newest thing\n")
 
+    def test_changelog_section_accepts_exact_candidate_commit_before_tag_exists(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            self._git(tmp, "tag", "-d", "release-v2.12.0")
+            candidate = self._git(tmp, "rev-parse", "HEAD").stdout.decode().strip()
+            result = self._run_core(
+                "changelog-section", tmp, candidate,
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("## [2.12.0]", result.stdout)
+
+    def test_changelog_section_rejects_mutable_non_tag_revision_expression(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            result = self._run_core(
+                "changelog-section", tmp, "HEAD",
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertNotEqual(result.returncode, 0)
+
+    def test_changelog_section_rejects_raw_tag_object_as_candidate_commit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._init_changelog_repo(tmp)
+            tag_object = self._git(
+                tmp, "rev-parse", "release-v2.12.0^{tag}").stdout.decode().strip()
+            result = self._run_core(
+                "changelog-section", tmp, tag_object,
+                "docs/CHANGELOG.md", "2.12.0")
+            self.assertEqual(result.returncode, 3)
+            self.assertIn("exact full commit id", result.stderr)
+
     def test_changelog_section_accepts_committed_legacy_date_h2_boundaries(self):
         text = (
             "## [2.12.0] - 2026-09-01\n\n- released\n\n"
@@ -3460,11 +3491,10 @@ class CoreCLITest(unittest.TestCase):
             self.assertIn("newest thing", result.stdout)
             self.assertNotIn("branch content", result.stdout)
 
-    def test_changelog_section_refuses_non_tag_revision_spellings(self):
+    def test_changelog_section_refuses_mutable_non_tag_revision_spellings(self):
         with tempfile.TemporaryDirectory() as tmp:
             self._init_changelog_repo(tmp)
-            sha = self._git(tmp, "rev-parse", "HEAD").stdout.decode().strip()
-            for revision in ("HEAD", sha, "release-v2.12.0~0"):
+            for revision in ("HEAD", "release-v2.12.0~0"):
                 with self.subTest(revision=revision):
                     result = self._run_core(
                         "changelog-section", tmp, revision,
@@ -4460,8 +4490,8 @@ class CoreCLITest(unittest.TestCase):
         # counted toward the bump and the changelog.
         out = self._run_core("payload-pathspec", "ca-pi")
         self.assertEqual(out.returncode, 0, out.stderr)
-        self.assertEqual(out.stdout.strip(),
-                         "plugins/ca-pi/ :(exclude)plugins/ca-pi/tools/")
+        self.assertEqual(out.stdout.splitlines(),
+                         ["plugins/ca-pi/", ":(exclude)plugins/ca-pi/tools/"])
 
     def test_payload_pathspec_on_a_row_without_an_exclude_is_just_the_payload(self):
         out = self._run_core("payload-pathspec", "ca")
@@ -4471,7 +4501,7 @@ class CoreCLITest(unittest.TestCase):
     def test_payload_pathspec_actually_narrows_a_real_git_window(self):
         # Driven through git rather than asserted as a string: the point of
         # the subcommand is that its output works verbatim after `--`.
-        pathspec = self._run_core("payload-pathspec", "ca-pi").stdout.split()
+        pathspec = self._run_core("payload-pathspec", "ca-pi").stdout.splitlines()
         base = ["git", "log", "--oneline", "-40", "--"]
         with_exclude = subprocess.run(base + pathspec, cwd=REPO_ROOT,
                                       capture_output=True, text=True)
@@ -4480,6 +4510,65 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(with_exclude.returncode, 0, with_exclude.stderr)
         self.assertLessEqual(len(with_exclude.stdout.splitlines()),
                              len(without.stdout.splitlines()))
+
+    def test_payload_pathspec_preserves_a_payload_containing_spaces(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = os.path.join(tmp, "consumer")
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            os.makedirs(os.path.join(root, "app dir"))
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
+                fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
+                         "manifest: package.json\nchangelog: CHANGELOG.md\n"
+                         "payload: app dir/\n<!-- /release-targets -->\n")
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                       PYTHONDONTWRITEBYTECODE="1")
+            out = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH,
+                 "payload-pathspec", "app"],
+                cwd=tempfile.gettempdir(), env=env,
+                capture_output=True)
+            stderr = out.stderr.decode("utf-8", "replace")
+            self.assertEqual(out.returncode, 0, stderr)
+            self.assertEqual(out.stdout, b"app dir/\n")
+            with open(os.path.join(root, "app dir", "feature.txt"), "w") as fh:
+                fh.write("tracked\n")
+            subprocess.run(["git", "init"], cwd=root, check=True,
+                           capture_output=True, text=True)
+            subprocess.run(["git", "config", "user.name", "Test"],
+                           cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"],
+                           cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-m", "feat: tracked path"],
+                           cwd=root, check=True, capture_output=True, text=True)
+            selected = subprocess.run(
+                ["git", "log", "--format=%s", "--",
+                 *out.stdout.decode("utf-8").splitlines()],
+                cwd=root, capture_output=True, text=True)
+            self.assertEqual(selected.returncode, 0, selected.stderr)
+            self.assertEqual(selected.stdout.strip(), "feat: tracked path")
+
+            bash = (core_releaselib._resolve_posix_shell()
+                    if os.name == "nt" else working_bash())
+            if bash is not None:
+                helper = _CORE_RELEASELIB_PATH.replace("\\", "/")
+                project = root.replace("\\", "/")
+                script = (
+                    f'export CLAUDE_PROJECT_DIR={shlex.quote(project)}\n'
+                    'set --\n'
+                    f'while IFS= read -r pathspec; do set -- "$@" "$pathspec"; '
+                    f'done < <(python "{helper}" '
+                    'payload-pathspec app)\n'
+                    'printf "<%s>" "$1"\n'
+                    'git log --format=%s -- "$@"\n')
+                shell = subprocess.run(
+                    [bash, "-s"], input=script.encode("utf-8"), cwd=root,
+                    capture_output=True)
+                shell_stderr = shell.stderr.decode("utf-8", "replace")
+                shell_stdout = shell.stdout.decode("utf-8", "replace")
+                self.assertEqual(shell.returncode, 0, shell_stderr)
+                self.assertIn("<app dir/>", shell_stdout)
+                self.assertIn("feat: tracked path", shell_stdout)
 
     def test_pre_tag_marker_names_do_not_collide_across_targets(self):
         # CodeRabbit MAJOR, confirmed. The sanitizer folded every
@@ -4554,6 +4643,10 @@ class CoreCLITest(unittest.TestCase):
             with open(tm, "w") as fh:
                 fh.write('[project]\nversion = "4.5.6"\n')
             self.assertEqual(core_releaselib._manifest_version(tm), "4.5.6")
+            cargo = os.path.join(tmp, "Cargo.toml")
+            with open(cargo, "w") as fh:
+                fh.write('[package]\nname = "blind-probe"\nversion = "7.8.9"\n')
+            self.assertEqual(core_releaselib._manifest_version(cargo), "7.8.9")
             # An unknown extension is "no comparison happened", not a guess.
             other = os.path.join(tmp, "version.txt")
             with open(other, "w") as fh:
@@ -4594,6 +4687,22 @@ class CoreCLITest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = self._manifest_fixture(tmp, ["1.4.3", "1.4.3"])
             self.assertEqual(self._run_check_manifests(root, "1.4.3").returncode, 0)
+
+    def test_backfilled_cargo_manifest_passes_the_required_manifest_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = os.path.join(tmp, "consumer")
+            os.makedirs(os.path.join(root, ".codearbiter"))
+            with open(os.path.join(root, "Cargo.toml"), "w") as fh:
+                fh.write('[package]\nname = "blind-probe"\nversion = "1.2.3"\n')
+            with open(os.path.join(root, "CHANGELOG.md"), "w") as fh:
+                fh.write("# Changelog\n")
+            with open(os.path.join(root, ".codearbiter", "release-targets.md"), "w") as fh:
+                fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
+                         "manifest: Cargo.toml\nchangelog: CHANGELOG.md\n"
+                         "payload: .\nlatest-eligible: true\n"
+                         "<!-- /release-targets -->\n")
+            proc = self._run_check_manifests(root, "1.2.3")
+            self.assertEqual(proc.returncode, 0, proc.stderr)
 
     def test_check_manifests_catches_a_PARTIAL_bump_and_names_the_laggard(self):
         # The exact fresh-publish hole: one path bumped, one left behind.
@@ -5264,6 +5373,64 @@ changelog-reconciliations: .codearbiter/reconciliations.json
             input="", capture_output=True, text=True, env=env)
         self.assertEqual(proc.returncode, 0)
         self.assertEqual(proc.stdout.strip(), "")
+
+    def test_zero_tag_manifest_adoption_window_derives_first_release_above_manifest(self):
+        """Run 30 HIGH-1: an ordinary 0.1.0 manifest is a valid first-tag base.
+
+        The user's explicit never-published choice is a prose authority gate;
+        this fixture proves the mechanical path that choice unlocks: zero tags,
+        a confirmed adoption boundary, one footer-complete feature, and a
+        version derived strictly above the manifest rather than a dead-end STOP.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.name", "test"],
+                           check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.email",
+                            "test@example.invalid"], check=True)
+            (repo / "README.md").write_text("before adoption\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "README.md"], check=True)
+            subprocess.run(["git", "-C", str(repo), "commit", "-qm", "chore: seed"],
+                           check=True)
+
+            state = repo / ".codearbiter"
+            state.mkdir()
+            (state / "CONTEXT.md").write_text("default branch: main\n", encoding="utf-8")
+            (state / "release-targets.md").write_text("adopted\n", encoding="utf-8")
+            (repo / "manifest.json").write_text('{"version":"0.1.0"}\n',
+                                                encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", ".codearbiter",
+                            "manifest.json"], check=True)
+            subprocess.run(["git", "-C", str(repo), "commit", "-qm",
+                            "chore: adopt release lane"], check=True)
+            (repo / "feature.txt").write_text("feature\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "feature.txt"], check=True)
+            subprocess.run(["git", "-C", str(repo), "commit", "-qm", "feat: first", "-m",
+                            "CHANGELOG: first governed feature"], check=True)
+
+            self.assertEqual(subprocess.check_output(
+                ["git", "-C", str(repo), "tag", "-l"], text=True), "")
+            additions = subprocess.check_output(
+                ["git", "-C", str(repo), "log", "--diff-filter=A", "--format=%H", "--",
+                 ".codearbiter/CONTEXT.md", ".codearbiter/release-targets.md"],
+                text=True)
+            adopted = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "adoption-commit"],
+                input=additions, capture_output=True, text=True, check=True).stdout.strip()
+            window = f"{adopted}^..HEAD"
+            log = subprocess.check_output(
+                ["git", "-C", str(repo), "log", window,
+                 "--pretty=format:%H%n%s%n%b%n----", "--", "."], text=True)
+            classified = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "classify-window"],
+                input=log, capture_output=True, text=True)
+            self.assertEqual(classified.returncode, 0, classified.stderr)
+            self.assertEqual(classified.stdout.splitlines()[0], "minor")
+            derived = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "derive-version", "0.1.0",
+                 "minor", "semver", ""], capture_output=True, text=True, check=True)
+            self.assertEqual(derived.stdout.strip(), "0.2.0")
 
     def test_adoption_commit_cli_two_file_pathspec_prints_the_oldest_addition(self):
         # #585 (2a): the Back-fill lane's own first release floors the
@@ -6093,7 +6260,10 @@ class ThisRepoRowsTest(unittest.TestCase):
         # mean nothing ever asserts its version, silently defeating the
         # whole point of naming it.
         self.assertIn("package.json", row["manifest"])
-        self.assertEqual(row["generate"], "python3 tools/build-host-packages.py")
+        # The release lane resolves the available interpreter once. The row
+        # must consume that value instead of hardcoding either platform's
+        # common spelling and failing on the other supported host shape.
+        self.assertEqual(row["generate"], '"$PY" tools/build-host-packages.py')
 
     def test_this_repo_rows_ca_declares_a_display_name(self):
         # M-1 (adversarial review 2026-07-31): the Phase-3 Release title has
@@ -6501,6 +6671,9 @@ _GOVERNANCE_RULES = {
     "A-5.5 (run 11 prose): the first-release window floors at the adoption commit": (
         "floor the window at the adoption commit",
         "_releaselib.py\" adoption-commit"),
+    "HIGH (run 30): zero-tag manifest requires an explicit adoption classification": (
+        "A zero-tag target needs an explicit adoption classification",
+        "never published", "previously published without tags"),
     "A-3.6: the interpreter fallback is stated as a file-wide convention": (
         "Interpreter convention, stated once",),
     "HIGH-adjacent (run 11): window classification runs through the helper": (
@@ -6851,6 +7024,7 @@ class BackfillDetectionTest(unittest.TestCase):
             "target": "app", "prefix": "v",
             "manifest": ["package.json"], "changelog": "CHANGELOG.md",
             "payload": ".",
+            "payload_exclude": [".codearbiter/"],
             "latest_eligible": True,
         })
 
@@ -6935,6 +7109,7 @@ class BackfillDetectionTest(unittest.TestCase):
         self.assertEqual(rows[0]["manifest"], ["package.json"])
         self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
         self.assertEqual(rows[0]["payload"], ".")
+        self.assertEqual(rows[0]["payload_exclude"], [".codearbiter/"])
         # HIGH-2 (adversarial review 2026-07-31): the emitted
         # `latest-eligible: true` line must round-trip back through the
         # REAL grammar parser as the boolean `True`, not merely appear as a
@@ -6994,11 +7169,30 @@ class BackfillCLITest(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["manifest"], ["package.json"])
             self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+            self.assertEqual(rows[0]["payload_exclude"], [".codearbiter/"])
             # HIGH-2 (adversarial review 2026-07-31): the full CLI path
             # (`backfill-detect` -> printed text -> real parser) must also
             # carry the eligibility declaration, not just the pure-function
             # call tested above.
             self.assertIs(rows[0]["latest_eligible"], True)
+
+    def test_backfilled_root_payload_excludes_hook_governance_scratch(self):
+        row = core_releaselib.detect_candidate_target(
+            ["package.json"], ["CHANGELOG.md"])
+        text = core_releaselib.format_release_targets_block(row)
+        self.assertIn("payload: .\n", text)
+        self.assertIn("payload-exclude: .codearbiter/\n", text)
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, ".codearbiter"))
+            targets = os.path.join(tmp, ".codearbiter", "release-targets.md")
+            with open(targets, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            with open(os.path.join(tmp, ".codearbiter", "gate-events.log"),
+                      "w", encoding="utf-8") as fh:
+                fh.write("hook scratch\n")
+            parsed = core_releaselib.load_targets(targets)[0]
+            exclusions = core_releaselib.governance_scratch_exclusions(parsed)
+            self.assertIn(".codearbiter/gate-events.log", exclusions)
 
     def test_backfill_detect_writes_nothing_to_disk_even_on_success(self):
         # T-49: detection alone is the mechanical half of "does not proceed
@@ -7625,22 +7819,26 @@ class ReleaseSurfaceTest(unittest.TestCase):
             "git status --porcelain -- :/ "
             "':(exclude,top).codearbiter/gate-events.log'",
             self.skill)
-        self.assertGreaterEqual(self.skill.count("clean-tree-status"), 6)
+        self.assertGreaterEqual(self.skill.count("clean-tree-status"), 5)
 
-    def test_asset_build_runs_after_release_checks_with_clean_tree_guards(self):
+    def test_asset_build_runs_only_in_hosted_prepublication_with_guards(self):
         checks = self.skill.index("run-pre-tag $TARGET")
         build = self.skill.index('eval "$RELEASE_BUILD"')
-        tag = self.skill.index("git tag -a ${TAG_PREFIX}${VERSION}")
+        push = self.skill.index("git push origin ${TAG_PREFIX}${VERSION}")
         self.assertLess(checks, build)
-        self.assertLess(build, tag)
-        self.assertIn("RELEASE_ASSET_DIR=$(mktemp -d)", self.skill)
-        self.assertIn("export VERSION RELEASE_TAG RELEASE_ASSET_DIR", self.skill)
+        self.assertLess(build, push)
+        phase1 = self.skill[
+            self.skill.index("## Phase 1") : self.skill.index("## Phase 2")]
+        self.assertNotIn('eval "$RELEASE_BUILD"', phase1)
+        self.assertIn("do not execute that command in the interactive checkout", phase1)
+        self.assertIn("new empty `RELEASE_ASSET_DIR`", self.skill)
+        self.assertIn("export `VERSION RELEASE_TAG RELEASE_ASSET_DIR`", self.skill)
         self.assertIn("render-release-assets", self.skill)
         self.assertIn("verify-release-assets", self.skill)
         build_section = self.skill[build - 2500:build + 2500]
         self.assertGreaterEqual(build_section.count(
             'clean-tree-status "$TARGET"'), 2)
-        self.assertIn("tracked tree", build_section)
+        self.assertIn("exact candidate", build_section)
 
     def test_publication_uploads_verified_paths_and_checks_remote_names(self):
         phase3 = self.skill[self.skill.index("## Phase 3") :]
@@ -7659,6 +7857,96 @@ class ReleaseSurfaceTest(unittest.TestCase):
         self.assertIn("$RELEASE_BUILD", dry_run)
         self.assertIn("listed", dry_run)
         self.assertIn("never executed", dry_run)
+
+    def test_first_release_adoption_floor_precedes_classification(self):
+        phase1 = self.skill[
+            self.skill.index("## Phase 1") : self.skill.index("## Dry run")]
+        self.assertIn("EFFECTIVE_WINDOW", phase1)
+        self.assertLess(phase1.index("adoption-commit"),
+                        phase1.index("then run `git log"))
+        self.assertIn('${ADOPTED}^..HEAD', phase1)
+        self.assertIn("root commit", phase1)
+
+    def test_zero_tag_probe_normalizes_only_show_ref_exit_one(self):
+        phase2 = self.skill[
+            self.skill.index("## Phase 2") : self.skill.index("## Phase 3")]
+        self.assertIn("SHOW_REF_STATUS", phase2)
+        self.assertIn('[ "$SHOW_REF_STATUS" -ne 1 ]', phase2)
+        self.assertIn("set -euo pipefail", phase2)
+
+    def test_payload_pathspecs_are_loaded_with_argument_boundaries(self):
+        targets = self.skill[
+            self.skill.index("## Targets") : self.skill.index("## Back-fill")]
+        self.assertIn("PAYLOAD_PATHS_FILE", targets)
+        self.assertIn('while IFS= read -r pathspec', targets)
+        self.assertIn('set -- "$@" "$pathspec"', targets)
+        self.assertIn('"$@"', targets)
+        self.assertNotIn("pass it unquoted", targets)
+
+    def test_provenance_pair_is_derived_from_one_remote_ref_snapshot(self):
+        phase3 = self.skill[
+            self.skill.index("## Phase 3") :
+            self.skill.index("### Asset recovery for `resume_publish`")]
+        step5 = phase3[phase3.index("5. **Record the tag's provenance") :]
+        self.assertIn("REMOTE_TAG_REFS", step5)
+        self.assertIn("peel-tag", step5)
+        self.assertNotIn("git rev-parse ${TAG_PREFIX}", step5)
+
+    def test_phase2_reconstructs_the_section_after_the_pr_boundary(self):
+        phase2 = self.skill[
+            self.skill.index("## Phase 2") : self.skill.index("## Phase 3")]
+        reconstruction = phase2.index("PHASE2_SECTION_FILE")
+        composition = phase2.index("1. Compose the annotated tag message")
+        self.assertLess(reconstruction, composition)
+        self.assertIn("changelog-section", phase2[reconstruction:composition])
+        self.assertIn("notes-match", phase2[reconstruction:composition])
+        self.assertIn("dates-match", phase2[reconstruction:composition])
+        self.assertIn("exact merged commit", phase2[reconstruction:composition])
+
+    def test_phase3_validates_deterministic_inputs_before_tag_push(self):
+        phase3 = self.skill[
+            self.skill.index("## Phase 3") :
+            self.skill.index("### Asset recovery for `resume_publish`")]
+        gate = phase3.index("Deterministic publication-input gate")
+        push = phase3.index("git push origin")
+        self.assertLess(gate, push)
+        prepush = phase3[gate:push]
+        for token in ("PUBLISH_SECTION_FILE", "changelog-section",
+                      "notes-match", "dates-match", "gh auth status"):
+            self.assertIn(token, prepush)
+
+    def test_hosted_candidate_is_the_release_surface_commit(self):
+        phase2 = self.skill[
+            self.skill.index("## Phase 2") : self.skill.index("## Phase 3")]
+        self.assertIn("HOSTED_HEAD=$(git rev-parse HEAD)", phase2)
+        self.assertIn('git log --first-parent -1 --format=%H -- "$CHANGELOG"', phase2)
+        self.assertIn("every declared manifest path", phase2)
+        self.assertIn("restarts Phase 1", phase2)
+
+    def test_automatic_publisher_consumes_explicit_merge_authorization_once(self):
+        phase3 = self.skill[self.skill.index("## Phase 3") :]
+        for token in (
+                "explicit user instruction to merge or complete",
+                "one-cohort Phase-3 authorization",
+                "CI success alone never creates authorization",
+                "Do not ask the user to authorize the same cohort again"):
+            self.assertIn(token, phase3)
+
+    def test_assets_are_qualified_in_hosted_prepublication_state(self):
+        phase1 = self.skill[
+            self.skill.index("## Phase 1") : self.skill.index("## Phase 2")]
+        phase3 = self.skill[
+            self.skill.index("## Phase 3") :
+            self.skill.index("### Asset recovery for `resume_publish`")]
+        self.assertIn("Phase 1 never supplies a Phase-3 asset", phase1)
+        self.assertIn("retained exact-head CI package cohort", phase1)
+        hosted_build = phase3.index("reviewed hosted qualification path")
+        push = phase3.index("git push origin")
+        self.assertLess(hosted_build, push)
+        prepush = phase3[hosted_build:push]
+        for token in ("RELEASE_ASSET_DIR", 'eval "$RELEASE_BUILD"',
+                      "retained-cohort path", "clean-tree-status"):
+            self.assertIn(token, prepush)
 
     def test_release_publication_requires_merged_hosted_exact_head_evidence(self):
         normalized = " ".join(self.skill.split())
@@ -7702,6 +7990,7 @@ class ReleaseSurfaceTest(unittest.TestCase):
                 "resume_publish", "git rev-parse HEAD", "^{commit}",
                 "check-manifests", "changelog-section", "releasehash.py\" check",
                 "run-pre-tag", 'eval "$RELEASE_BUILD"',
+                "retained exact-source CI package",
                 "fresh publication authorization"):
             self.assertIn(token, recovery)
         self.assertNotIn("derive-version", recovery)
@@ -7713,12 +8002,10 @@ class ReleaseSurfaceTest(unittest.TestCase):
         pre_tag = recovery.index("run-pre-tag")
         second_clean = recovery.index("clean-tree-status", pre_tag)
         build = recovery.index('eval "$RELEASE_BUILD"')
-        third_clean = recovery.index("clean-tree-status", build)
         self.assertLess(first_clean, confirmation)
         self.assertLess(confirmation, pre_tag)
         self.assertLess(pre_tag, second_clean)
         self.assertLess(second_clean, build)
-        self.assertLess(build, third_clean)
         self.assertNotIn("Re-enter Phase 1", self.skill)
 
     def test_asset_cleanup_occurs_only_after_successful_remote_readback(self):

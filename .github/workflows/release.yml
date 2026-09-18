@@ -517,18 +517,36 @@ jobs:
           COHORT_TARGETS=()
           ANY_ELIGIBLE=false
           for row in \
-            "ca plugins/ca/.claude-plugin/plugin.json v" \
-            "ca-codex plugins/ca-codex/.codex-plugin/plugin.json ca-codex-v" \
-            "ca-sandbox plugins/ca-sandbox/.claude-plugin/plugin.json ca-sandbox-v" \
-            "ca-pi plugins/ca-pi/package.json ca-pi-v"
+            "ca plugins/ca/.claude-plugin/plugin.json CHANGELOG.md - v" \
+            "ca-codex plugins/ca-codex/.codex-plugin/plugin.json plugins/ca-codex/CHANGELOG.md - ca-codex-v" \
+            "ca-sandbox plugins/ca-sandbox/.claude-plugin/plugin.json plugins/ca-sandbox/CHANGELOG.md - ca-sandbox-v" \
+            "ca-pi plugins/ca-pi/package.json plugins/ca-pi/CHANGELOG.md package.json ca-pi-v"
           do
             set -- $row
-            TARGET="$1"; MANIFEST="$2"; PREFIX="$3"
+            TARGET="$1"; MANIFEST="$2"; CHANGELOG="$3"; COMPANION="$4"; PREFIX="$5"
             VERSION=$(node -p "require('./$MANIFEST').version")
             ELIGIBLE=$(printf '%s' "$TAGS" \
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             if [ "$ELIGIBLE" = "true" ]; then
+              # Bind this automatic cohort to the release-surface commit the
+              # user authorized, not merely to a later green main revision
+              # that still happens to carry an ahead-of-tag version.  A
+              # no-fast-forward PR merge owns its tree result on first-parent
+              # history even when default path simplification names the topic
+              # commit, hence --first-parent is required here.
+              for SURFACE in "$MANIFEST" "$CHANGELOG"; do
+                test "$(git log --first-parent -1 --format=%H -- "$SURFACE")" = "$GITHUB_SHA" || {
+                  echo "::error::$TARGET release surface $SURFACE was not advanced by $GITHUB_SHA"
+                  exit 1
+                }
+              done
+              if [ "$COMPANION" != "-" ]; then
+                test "$(git log --first-parent -1 --format=%H -- "$COMPANION")" = "$GITHUB_SHA" || {
+                  echo "::error::$TARGET companion manifest $COMPANION was not advanced by $GITHUB_SHA"
+                  exit 1
+                }
+              fi
               ANY_ELIGIBLE=true
               if [ "$TARGET" != "ca-sandbox" ]; then COHORT_TARGETS+=("$TARGET"); fi
               # Same canonical, check-only release guard as manual dispatch;

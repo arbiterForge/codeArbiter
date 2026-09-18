@@ -879,20 +879,28 @@ def _committed_changelog_text(repo_root, revision, changelog_path):
     if os.path.normcase(supplied_root) != os.path.normcase(resolved_root):
         return None, "supplied path is not the repository root"
 
-    tag_ref = f"refs/tags/{revision}"
-    try:
-        tag_probe = subprocess.run(
-            [git, "check-ref-format", tag_ref],
-            capture_output=True, timeout=30, env=git_environment)
-    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
-        return None, f"cannot validate release tag: {exc}"
-    if tag_probe.returncode != 0:
-        return None, "release tag name is invalid"
+    # Hosted qualification runs before the tag exists and therefore binds the
+    # changelog blob by the exact candidate commit object. Recovery/read-back
+    # uses the immutable tag ref. Admit only those two explicit shapes: never
+    # let an arbitrary revision expression cross this trust boundary.
+    exact_object_id = re.fullmatch(r"[0-9a-fA-F]{40,64}", revision) is not None
+    if exact_object_id:
+        revision_ref = revision
+    else:
+        revision_ref = f"refs/tags/{revision}"
+        try:
+            tag_probe = subprocess.run(
+                [git, "check-ref-format", revision_ref],
+                capture_output=True, timeout=30, env=git_environment)
+        except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+            return None, f"cannot validate release tag: {exc}"
+        if tag_probe.returncode != 0:
+            return None, "release tag name is invalid"
 
     try:
         commit_probe = subprocess.run(
             [git, "-C", actual_root, "rev-parse", "--verify",
-             f"{tag_ref}^{{commit}}"],
+             f"{revision_ref}^{{commit}}"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             timeout=30, env=git_environment)
     except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
@@ -900,6 +908,11 @@ def _committed_changelog_text(repo_root, revision, changelog_path):
     if commit_probe.returncode != 0:
         return None, "cannot resolve committed revision"
     commit = commit_probe.stdout.strip()
+    if exact_object_id and revision.lower() != commit.lower():
+        # Reject abbreviated SHA-256 object names and raw annotated-tag object
+        # IDs. Hosted qualification promises the exact commit object itself,
+        # not merely a spelling Git can peel or prefix-expand to that commit.
+        return None, "candidate object is not the exact full commit id"
 
     try:
         entry_probe = subprocess.run(
@@ -1306,9 +1319,12 @@ def _manifest_version(path):
                 return None
             with open(path, "rb") as fh:
                 data = tomllib.load(fh)
-            value = data.get("project", {}).get("version")
-            if value is None:
-                value = data.get("tool", {}).get("poetry", {}).get("version")
+            if os.path.basename(lower) == "cargo.toml":
+                value = data.get("package", {}).get("version")
+            else:
+                value = data.get("project", {}).get("version")
+                if value is None:
+                    value = data.get("tool", {}).get("poetry", {}).get("version")
         else:
             return None
     except (OSError, ValueError, AttributeError, TypeError):
@@ -2289,7 +2305,7 @@ def detect_candidate_target(manifest_candidates, changelog_candidates,
     (`scan_backfill_candidates` is the one filesystem reader, kept separate
     per this module's read-isolation convention). Returns a row dict shaped
     like one `load_targets` entry (`target`, `prefix`, `manifest`,
-    `changelog`, `payload`, `latest_eligible`) ONLY when exactly one manifest
+    `changelog`, `payload`, `payload_exclude`, `latest_eligible`) ONLY when exactly one manifest
     candidate and exactly one changelog candidate were found. Raises
     `BackfillAmbiguousError` for every other case — zero or multiple of
     either — naming which side was ambiguous and what was found, so a caller
@@ -2341,6 +2357,10 @@ def detect_candidate_target(manifest_candidates, changelog_candidates,
         "manifest": [manifest_candidates[0]],
         "changelog": changelog_candidates[0],
         "payload": ".",
+        # Back-fill is the release-only adoption lane. Its own hooks create
+        # governance scratch under .codearbiter/, so a root payload without
+        # this exclusion can never become clean after ordinary hook use.
+        "payload_exclude": [".codearbiter/"],
         "latest_eligible": True,
     }
 
@@ -2366,6 +2386,8 @@ def format_release_targets_block(row):
         lines.append(f"manifest: {manifest}")
     lines.append(f"changelog: {row['changelog']}")
     lines.append(f"payload: {row['payload']}")
+    for excluded in row.get("payload_exclude", []):
+        lines.append(f"payload-exclude: {excluded}")
     if "latest_eligible" in row:
         lines.append(f"latest-eligible: {'true' if row['latest_eligible'] else 'false'}")
     lines.append("<!-- /release-targets -->")
@@ -2815,7 +2837,10 @@ def main(argv):
             payload = row.get("payload") or "."
             parts = [payload] + [f":(exclude){p}"
                                  for p in (row.get("payload_exclude") or [])]
-            print(" ".join(parts))
+            # One record per line preserves a pathspec containing spaces.
+            # The release skill loads these records into quoted positional
+            # parameters; shell words cannot represent this boundary safely.
+            print("\n".join(parts))
             return 0
 
         # Emitted as SHELL-QUOTED `NAME='value'` pairs, and named for the
@@ -3698,4 +3723,13 @@ def main(argv):
 
 
 if __name__ == "__main__":
+    # This CLI is consumed as a line-record protocol by POSIX shells on every
+    # supported host.  Native Windows text stdout otherwise translates each
+    # ``\n`` to ``\r\n``; Git Bash's ``read -r`` removes the newline but keeps
+    # the carriage return, corrupting pathspecs, target names, and asset paths.
+    # Force the wire format to LF once at the executable boundary.  Imported
+    # library calls retain their caller-owned stream configuration.
+    reconfigure = getattr(sys.stdout, "reconfigure", None)
+    if callable(reconfigure):
+        reconfigure(newline="\n")
     sys.exit(main(sys.argv[1:]))

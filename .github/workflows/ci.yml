@@ -99,6 +99,9 @@ on:
       # live-proof-only correction must therefore start CI rather than leave
       # the corrected main commit ineligible for release.
       - "docs/codex-parity-testing.md"
+      # The release skill's agent-judgment proof is enforced by pre-tag. A
+      # proof-only refresh must start exact-main CI and produce its packages.
+      - ".codearbiter/reports/agent-lane-proof.json"
       # test_pi_promotion.py guards the promotion workflow itself. A workflow-
       # only edit must start the hooks job that executes that contract suite.
       - ".github/workflows/pi-promotion.yml"
@@ -235,6 +238,8 @@ jobs:
               - '.github/workflows/release.yml'
               # This job validates the release-critical live-proof marker.
               - 'docs/codex-parity-testing.md'
+              # Pre-tag validates this release-skill proof against shipped bytes.
+              - '.codearbiter/reports/agent-lane-proof.json'
               # test_pi_promotion.py guards this workflow's runner-bound state
               # and receipt contract, so a workflow-only PR must reach hooks.
               - '.github/workflows/pi-promotion.yml'
@@ -349,6 +354,7 @@ jobs:
               # A main-branch live-proof correction must produce the exact-head
               # package cohort consumed by the automatic release workflow.
               - 'docs/codex-parity-testing.md'
+              - '.codearbiter/reports/agent-lane-proof.json'
               - 'site/package.json'
               - 'site/package-lock.json'
               - 'site/playwright.config.ts'

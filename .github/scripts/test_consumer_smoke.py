@@ -113,6 +113,7 @@ Stdlib only. No third-party imports.
 from __future__ import annotations
 
 import datetime
+import hashlib
 import importlib.util
 import io
 import json
@@ -1455,8 +1456,8 @@ _INVOCATION_SHAPE_RE = re.compile(
 _LANE_INVOCATION_ANCHORS = (
     ("target_resolution_tag_prefix", "never typed from memory:", "run"),
     ("window_last_tag", "Resolve it through the tested helper:", "run"),
-    ("window_scope_bare", "the commit set is", "run"),
-    ("window_scope_full_log", "Read every commit in the", "run"),
+    ("window_scope_bare", "positional parameters with the sanctioned", "run"),
+    ("window_scope_full_log", "Then read every commit in that same payload-scoped window:", "run"),
     # Re-anchored from the former "Tag with": Phase 2 step 1 was reordered
     # so `git tag` runs only inside the `publish_fresh` branch, AFTER
     # classification (MEDIUM, run-3 adversarial review — a literal reading
@@ -1910,7 +1911,15 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     for label in ("window_scope_bare", "window_scope_full_log"):
         argv = _substitute_argv(
             shlex.split(result["invocations"][label]),
-            {"$WINDOW": window, "$PAYLOAD": payload})
+            {"$EFFECTIVE_WINDOW": window, "$WINDOW": window,
+             "$PAYLOAD": payload})
+        # The current lane reloads the declared pathspec file into shell
+        # positional parameters and passes them as quoted ``"$@"``.  This
+        # no-shell driver must perform that one argv expansion explicitly;
+        # replacing it with a whitespace-split string would recreate the
+        # exact path-with-spaces defect the lane is designed to prevent.
+        argv = [part for token in argv
+                for part in ((payload,) if token == "$@" else (token,))]
         result["processes"][label] = _run_argv(argv, consumer_root)
 
     result["window_entries"] = _parse_window_log(
@@ -2199,6 +2208,48 @@ class LaneDriverTest(unittest.TestCase):
         obj_type = _git(
             ["cat-file", "-t", self.result["tag_name"]], self.lane.consumer_root).stdout.strip()
         self.assertEqual(obj_type, "tag")
+
+
+class WorkingTreeLaneDriverTest(unittest.TestCase):
+    """Pre-commit companion to the archive-backed consumer proof.
+
+    The distribution-faithful fixture above deliberately archives committed
+    ``HEAD``.  That is the correct installed-payload proof after a commit, but
+    it cannot prove an edited candidate before the commit gate.  This class
+    executes the exact generated working-tree skill and helper in the same
+    disposable consumer lane and records the exercised skill digest, so a
+    green pre-commit run cannot silently describe predecessor bytes.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.lane = _LaneFixture("t74-current")
+        try:
+            cls.skill_path = os.path.join(
+                REPO_ROOT, "plugins", "ca", "skills", "release", "SKILL.md")
+            helper_path = os.path.join(
+                REPO_ROOT, "plugins", "ca", "hooks", "_releaselib.py")
+            with open(cls.skill_path, "rb") as fh:
+                cls.skill_bytes = fh.read()
+            cls.skill_sha256 = hashlib.sha256(cls.skill_bytes).hexdigest()
+            cls.skill_text = cls.skill_bytes.decode("utf-8")
+            cls.core_lane = _load_mechanism(helper_path, "_lane_driver_current_t74")
+            cls.result = _execute_lane_sequence(
+                cls.skill_text, cls.core_lane, cls.lane.consumer_root)
+        except Exception:
+            cls.lane.cleanup()
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.lane.cleanup()
+
+    def test_exact_working_tree_skill_bytes_were_exercised(self):
+        with open(self.skill_path, "rb") as fh:
+            observed = fh.read()
+        self.assertEqual(hashlib.sha256(observed).hexdigest(), self.skill_sha256)
+        self.assertEqual(observed, self.skill_bytes)
+        self.assertEqual(self.result["publish_state"], "publish_fresh")
 
 
 class ConsumerEndToEndTest(unittest.TestCase):

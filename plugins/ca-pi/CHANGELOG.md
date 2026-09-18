@@ -11,6 +11,13 @@ All notable changes to `ca-pi` are documented in this file.
 - Require a merged default-branch commit and green hosted exact-head evidence
   before release tag composition, and establish one POSIX shell before the
   portable workflow runs on Windows.
+- Preserve payload pathspec argument boundaries, validate Cargo manifests,
+  establish first-release and zero-tag behavior before classification, and
+  derive provenance identities from one remote ref snapshot. Run package
+  generation through the portable Python command on Windows and CI hosts,
+  preserve helper records as LF, reject ambiguous committed release notes
+  before tag mutation, and bind hosted assets and automatic publication to the
+  exact qualified release cohort.
 
 ## [0.14.0] - 2026-09-17
 
