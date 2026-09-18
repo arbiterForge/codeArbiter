@@ -609,7 +609,10 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          # Execute only verifier code from the trusted default-branch workflow
+          # revision. The exact upstream package identity comes from the bound
+          # cohort receipt below; no code from head_sha runs in this job.
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Download exact retained package cohort identity
@@ -628,6 +631,7 @@ jobs:
           sys.path.insert(0, ".github/scripts")
           from _npm_publishlib import (_validate_qualified_release_body,
                                        reject_markerless_current_tag)
+          from _releaselib import SEMVER
           root = pathlib.Path(os.environ["RUNNER_TEMP"])
           package_root = root / "artifact-publication-packages"
           cohort_path = package_root / "artifact-package-cohort.json"
@@ -637,11 +641,17 @@ jobs:
                   or cohort.get("run_id") != os.environ["CI_RUN_ID"]
                   or re.fullmatch(r"[0-9a-f]{40}", cohort.get("source_tree", "")) is None):
               raise SystemExit("retained cohort identity does not match this exact release run")
-          versions = {
-              "ca": json.load(open("plugins/ca/.claude-plugin/plugin.json", encoding="utf-8"))["version"],
-              "ca-codex": json.load(open("plugins/ca-codex/.codex-plugin/plugin.json", encoding="utf-8"))["version"],
-              "ca-pi": json.load(open("plugins/ca-pi/package.json", encoding="utf-8"))["version"],
-          }
+          packages = cohort.get("packages")
+          host_targets = {"claude": "ca", "codex": "ca-codex", "pi": "ca-pi"}
+          if not isinstance(packages, dict) or set(packages) != set(host_targets):
+              raise SystemExit("retained cohort package inventory is malformed")
+          versions = {}
+          for host, target in host_targets.items():
+              package = packages.get(host)
+              version = package.get("version") if isinstance(package, dict) else None
+              if not isinstance(version, str) or re.fullmatch(SEMVER, version) is None:
+                  raise SystemExit(f"retained {host} package version is malformed")
+              versions[target] = version
           config = {"ca": "v" + versions["ca"],
                     "ca-codex": "ca-codex-v" + versions["ca-codex"],
                     "ca-pi": "ca-pi-v" + versions["ca-pi"]}

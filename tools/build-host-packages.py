@@ -1549,7 +1549,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         if verified != result:
             raise ValueError("release package verification result changed after assembly")
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        print("artifact release packages assembled and verified")
         return 0
     cold_mode = any((args.cold_package_root, args.cold_host, args.cold_platform,
                      args.cold_promotion_receipt_sha256, args.cold_receipt))
@@ -1573,7 +1573,7 @@ def main(argv: list[str] | None = None) -> int:
             promotion_receipt_sha256=args.cold_promotion_receipt_sha256,
             output=args.cold_receipt,
         )
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        print("artifact cold execution verified")
         return 0
     artifact_mode = bool(
         args.artifact_candidate or args.artifact_qualification or args.artifact_stage

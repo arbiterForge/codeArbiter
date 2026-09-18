@@ -2494,6 +2494,17 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
         self.assertIn("cohort-targets: ${{ steps.eligible.outputs.cohort-targets }}",
                       jobs[AUTO_PREFLIGHT_JOB])
 
+    def test_cohort_reconciliation_executes_only_trusted_default_branch_code(self):
+        reconciliation = _jobs()[AUTO_COHORT_RECONCILIATION]
+        checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
+                             r"(?=^      - |\Z)", reconciliation).group(0)
+        self.assertIn("ref: ${{ github.sha }}", checkout)
+        self.assertIn("persist-credentials: false", checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", checkout)
+        self.assertIn('packages = cohort.get("packages")', reconciliation)
+        self.assertIn('"claude": "ca"', reconciliation)
+        self.assertNotIn('open("plugins/ca/', reconciliation)
+
     def test_shared_publisher_reverifies_attaches_and_reads_back_exact_asset(self):
         text = PUBLISH_ACTION.read_text(encoding="utf-8")
         for required in (
