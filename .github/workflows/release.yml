@@ -491,6 +491,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      actions: read
       contents: read
     outputs:
       ca: ${{ steps.eligible.outputs.ca }}
@@ -508,6 +509,20 @@ jobs:
           fetch-tags: true
           persist-credentials: false
 
+      - name: Validate Codex live candidate CI
+        id: live-proof
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
+          CANDIDATE_SHA=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_commit"])')
+          CANDIDATE_RUN=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_id"])')
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" \
+            | python3 .github/scripts/test_public_codex_docs.py --validate-live-candidate-run
+          echo "candidate-sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+          echo "ca-codex: live candidate=$CANDIDATE_SHA ci-run=$CANDIDATE_RUN"
+
       - name: Determine which targets have untagged work
         id: eligible
         env:
@@ -517,6 +532,7 @@ jobs:
           UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
           UPSTREAM_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
           UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+          LIVE_CANDIDATE_SHA: ${{ steps.live-proof.outputs.candidate-sha }}
         run: |
           set -euo pipefail
           # Execute only the independently selected trusted workflow tree.
@@ -535,6 +551,15 @@ jobs:
           # push is silently skipped — not an error, just nothing to do.
           TAGS=$(git tag -l)
           PYTHON=$(python3 -c 'import sys; print(sys.executable)')
+          LIVE_CANDIDATE_SHA=${LIVE_CANDIDATE_SHA:-$GITHUB_SHA}
+          PROOF_ONLY=false
+          mapfile -t PROOF_DIFF < <(git diff --name-only "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA")
+          if [ "$LIVE_CANDIDATE_SHA" != "$GITHUB_SHA" ] && \
+             [ "${#PROOF_DIFF[@]}" -eq 1 ] && \
+             [ "${PROOF_DIFF[0]}" = docs/codex-parity-testing.md ]; then
+            PROOF_ONLY=true
+            echo "release continuation is limited to the Codex live-proof record"
+          fi
           OUTPUTS=()
           COHORT_TARGETS=()
           ANY_ELIGIBLE=false
@@ -557,10 +582,12 @@ jobs:
               # already contain that version from an earlier correction; bind
               # their exact blobs to this candidate instead of requiring a
               # meaningless rewrite of unchanged JSON.
-              test "$(git log --first-parent -1 --format=%H -- "$CHANGELOG")" = "$GITHUB_SHA" || {
-                echo "::error::$TARGET release surface $CHANGELOG was not advanced by $GITHUB_SHA"
+              CHANGELOG_COMMIT=$(git log --first-parent -1 --format=%H -- "$CHANGELOG")
+              if [ "$CHANGELOG_COMMIT" != "$GITHUB_SHA" ] && \
+                 { [ "$PROOF_ONLY" != true ] || [ "$CHANGELOG_COMMIT" != "$LIVE_CANDIDATE_SHA" ]; }; then
+                echo "::error::$TARGET release surface $CHANGELOG was not advanced by this exact candidate"
                 exit 1
-              }
+              fi
               for SURFACE in "$MANIFEST" "$CHANGELOG"; do
                 CANDIDATE_BLOB=$(git rev-parse "$GITHUB_SHA:$SURFACE") || {
                   echo "::error::$TARGET release surface $SURFACE is absent from $GITHUB_SHA"

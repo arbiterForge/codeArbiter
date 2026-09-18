@@ -7,11 +7,12 @@ current brainstorming, planning, TDD, execution and resume paths.
 
 ## Rollout status
 
-Typed HTML is **not the default format**. Existing Markdown workflows remain the
-default because normal host packages do not yet contain a qualified native
-payload and exact-head hosted macOS qualification is still pending. A missing,
-untrusted or unsupported payload is a capability error; it is never permission
-to edit embedded JSON or fall back from an HTML artifact to an ungoverned write.
+Typed HTML is the default format for new full-lane feature and sprint work when
+the installed host package contains its qualified native payload. Existing
+Markdown pairs remain on their exact legacy path and small-lane work remains
+inline; there is no implicit migration. A missing, untrusted or unsupported
+payload is a capability error, never permission to edit embedded JSON or fall
+back from an HTML artifact to an ungoverned write.
 
 HTML farm use is also disabled. Its separate promotion bar requires real
 authority adapters, packaged native payloads and a fresh frontier/low-tier model
@@ -87,18 +88,18 @@ not partial context.
 
 ## Capability and diagnostics
 
-When a host eventually packages the capability, its installation-owned
-`release.json` pins the correct native executable. The bridge selects that
-payload only: not `PATH`, a project-supplied binary or an environment override.
-The host's existing governed-execution rules and permissions still apply.
+Each qualified host package carries an installation-owned `release.json` that
+pins the correct native executable. The bridge selects that payload only: not
+`PATH`, a project-supplied binary or an environment override. The host's
+existing governed-execution rules and permissions still apply.
 
 Call `capabilities` before repository operations. The response reports the
 binary, protocol, schema and renderer versions; selected native platform and
 storage backend; available operations; whether repository operations are
-available; and the invariant values `public_registrations_added: 0`,
-`host_default_enabled: false` and `runtime_downloads: false`. A false write
-capability or any bridge failure stops the HTML path while leaving the explicit
-legacy workflow unchanged.
+available; and the rollout values `public_registrations_added: 0`,
+`host_default_enabled: true` and `runtime_downloads: false`. A false write
+capability or any bridge failure stops new full-lane HTML authoring while
+leaving an existing authoritative legacy workflow unchanged.
 
 The internal protocol shape is:
 

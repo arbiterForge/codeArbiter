@@ -317,7 +317,7 @@ class ArtifactConformanceTest(unittest.TestCase):
             root = physical_test_directory(temporary)
             client = ArtifactClient(root, INSTALLATION)
             capabilities = client.call("capabilities")
-            self.assertFalse(capabilities["host_default_enabled"])
+            self.assertTrue(capabilities["host_default_enabled"])
             self.assertFalse(capabilities["runtime_downloads"])
             client.call("create", {
                 "operation_id": "conformance-spec-create",

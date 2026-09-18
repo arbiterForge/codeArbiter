@@ -27,6 +27,12 @@ predate the plugin rewrite and are grouped by date.
   changelog commit plus the candidate's exact manifest blobs.
 - Ensure a release-proof-only correction selects both proof validation and the
   exact-head package cohort needed by automatic publication.
+- Default new full-lane feature and sprint work to qualified typed HTML
+  specifications and plans while preserving exact-format legacy pairs and
+  keeping HTML farm dispatch disabled.
+- Accept a manually exercised Codex candidate as current release proof only
+  when its canonical package bytes still match and its exact same-repository CI
+  run completed successfully.
 
 ## [2.21.1] - 2026-09-18
 

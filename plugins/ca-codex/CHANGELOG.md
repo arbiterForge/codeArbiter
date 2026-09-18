@@ -16,6 +16,12 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   records as LF on Windows, reject ambiguous committed release notes before tag
   mutation, and bind hosted assets and automatic publication to the exact
   qualified changelog commit and manifest blobs.
+- Default new full-lane feature and sprint work to qualified typed HTML
+  specifications and plans while preserving exact-format legacy pairs and
+  keeping HTML farm dispatch disabled.
+- Bind the per-release live-host proof to an exact successful CI candidate and
+  accept it after review-only commits only while canonical package bytes remain
+  identical.
 
 ## [0.13.1] - 2026-09-18
 

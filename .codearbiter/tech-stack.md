@@ -36,9 +36,10 @@ this file is the stale one; fix it here.
   bound to the exact release manifest and binary covered draft rejection,
   synthetic approval binding, process-recreation reconciliation and redispatch,
   review receipts, atomic scope acceptance and exact-byte legacy rollback. That
-  remains fixture proof, not a production-host authority trace. Default
-  typed-HTML rollout and HTML farm use remain disabled pending the documented
-  host/release/model qualifications.
+  remains fixture proof, not a production-host authority trace. New full-lane
+  feature and sprint work defaults to typed HTML from a qualified installed
+  payload; existing Markdown authority remains exact-format. HTML farm use
+  remains disabled pending its separate authority/release/model qualifications.
 - **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure.
 
 ## Runtime and Git support boundary

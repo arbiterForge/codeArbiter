@@ -17,6 +17,61 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 REQUIRE_CURRENT_CANDIDATE = "--require-current-candidate" in sys.argv
 if REQUIRE_CURRENT_CANDIDATE:
     sys.argv.remove("--require-current-candidate")
+PRINT_LIVE_CANDIDATE = "--print-live-candidate" in sys.argv
+if PRINT_LIVE_CANDIDATE:
+    sys.argv.remove("--print-live-candidate")
+VALIDATE_LIVE_CANDIDATE_RUN = "--validate-live-candidate-run" in sys.argv
+if VALIDATE_LIVE_CANDIDATE_RUN:
+    sys.argv.remove("--validate-live-candidate-run")
+
+
+def live_baseline_marker(runbook):
+    """Return the single machine-readable live-proof marker."""
+    marker_match = re.search(
+        r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
+        runbook,
+    )
+    if marker_match is None:
+        raise ValueError("the current Codex live baseline has no machine-readable metadata")
+    return json.loads(marker_match.group("meta"))
+
+
+def validate_live_candidate_run(marker, run):
+    """Bind live proof to protected main CI for an ancestor candidate."""
+    candidate = marker.get("candidate_commit")
+    if not isinstance(candidate, str) or re.fullmatch(r"[0-9a-f]{40}", candidate) is None:
+        raise ValueError("live candidate commit is malformed")
+    expected = {
+        "id": marker.get("candidate_ci_run_id"),
+        "head_sha": candidate,
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push",
+        "head_branch": "main",
+        "repository": "arbiterForge/codeArbiter",
+        "path": ".github/workflows/ci.yml",
+    }
+    observed = {
+        "id": run.get("id"),
+        "head_sha": run.get("head_sha"),
+        "status": run.get("status"),
+        "conclusion": run.get("conclusion"),
+        "event": run.get("event"),
+        "head_branch": run.get("head_branch"),
+        "repository": (run.get("head_repository") or {}).get("full_name"),
+        "path": run.get("path"),
+    }
+    if observed != expected:
+        raise ValueError("live candidate is not bound to exact protected main CI")
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", candidate, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if ancestry.returncode != 0:
+        raise ValueError("live candidate is not an ancestor of the publishing revision")
+    return candidate
 
 
 class PublicCodexDocsTest(unittest.TestCase):
@@ -96,15 +151,7 @@ class PublicCodexDocsTest(unittest.TestCase):
         self, runbook, manifest, require_current_candidate=REQUIRE_CURRENT_CANDIDATE
     ):
         """Bind retained live proof; require exact current bytes only for release."""
-        marker_match = re.search(
-            r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
-            runbook,
-        )
-        self.assertIsNotNone(
-            marker_match,
-            "the current Codex live baseline has no machine-readable metadata",
-        )
-        marker = json.loads(marker_match.group("meta"))
+        marker = live_baseline_marker(runbook)
         self.assertEqual(2, marker["schema_version"])
         self.assertEqual("ca-codex", marker["adapter"])
         recorded = self._candidate_package_contract(marker.get("candidate_commit"))
@@ -130,6 +177,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "release preflight requires live proof for the exact current candidate package",
             )
         self.assertRegex(marker["verified_on"], r"^\d{4}-\d{2}-\d{2}$")
+        self.assertIsInstance(marker.get("candidate_ci_run_id"), int)
+        self.assertGreater(marker["candidate_ci_run_id"], 0)
         self.assertTrue(marker["host"])
         self.assertTrue(marker["proof"])
 
@@ -256,6 +305,7 @@ class PublicCodexDocsTest(unittest.TestCase):
             "candidate_package_sha256": (
                 "05ef5eac8711204ad0179468af6c690a1fb90e9e19b1eaa65a46a1fad61a5c90"
             ),
+            "candidate_ci_run_id": 35210216630,
             "host": "Codex CLI 0.145.0 on Windows",
             "verified_on": "2026-09-14",
             "proof": "fixture of the retained live H-03 checkpoint",
@@ -281,6 +331,51 @@ class PublicCodexDocsTest(unittest.TestCase):
             "--require-current-candidate",
             codex_row,
         )
+        release = (ROOT / ".github" / "workflows" / "release.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Validate Codex live candidate CI", release)
+        self.assertIn("--print-live-candidate", release)
+        self.assertIn("actions: read", release)
+
+    def test_codex_live_candidate_ci_binding_fails_closed(self):
+        """Only the exact successful protected-main CI run can carry live proof."""
+        marker = live_baseline_marker(
+            (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        )
+        valid = {
+            "id": marker["candidate_ci_run_id"],
+            "head_sha": marker["candidate_commit"],
+            "status": "completed",
+            "conclusion": "success",
+            "event": "push",
+            "head_branch": "main",
+            "head_repository": {"full_name": "arbiterForge/codeArbiter"},
+            "path": ".github/workflows/ci.yml",
+        }
+        self.assertEqual(marker["candidate_commit"], validate_live_candidate_run(marker, valid))
+        corruptions = {
+            "id": 1,
+            "head_sha": "0" * 40,
+            "status": "in_progress",
+            "conclusion": "failure",
+            "event": "pull_request",
+            "head_branch": "feature",
+            "head_repository": {"full_name": "fork/codeArbiter"},
+            "path": ".github/workflows/other.yml",
+        }
+        for field, value in corruptions.items():
+            with self.subTest(field=field):
+                altered = copy.deepcopy(valid)
+                altered[field] = value
+                with self.assertRaisesRegex(ValueError, "protected main CI"):
+                    validate_live_candidate_run(marker, altered)
+        unrelated = copy.deepcopy(marker)
+        unrelated["candidate_commit"] = "f" * 40
+        unrelated_run = copy.deepcopy(valid)
+        unrelated_run["head_sha"] = unrelated["candidate_commit"]
+        with self.assertRaisesRegex(ValueError, "not an ancestor"):
+            validate_live_candidate_run(unrelated, unrelated_run)
 
     def test_readme_announces_all_hosts_and_shared_parity(self):
         """The README presents one product and all supported host adapters."""
@@ -557,4 +652,23 @@ class PublicCodexDocsTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    if VALIDATE_LIVE_CANDIDATE_RUN:
+        marker = live_baseline_marker(
+            (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        )
+        try:
+            print(validate_live_candidate_run(marker, json.load(sys.stdin)))
+        except (KeyError, TypeError, ValueError) as exc:
+            print(str(exc), file=sys.stderr)
+            raise SystemExit(1) from exc
+    elif PRINT_LIVE_CANDIDATE:
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(
+            encoding="utf-8"
+        )
+        marker = live_baseline_marker(runbook)
+        print(json.dumps({
+            "candidate_commit": marker["candidate_commit"],
+            "candidate_ci_run_id": marker["candidate_ci_run_id"],
+        }, separators=(",", ":")))
+    else:
+        unittest.main()
