@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.3] - 2026-09-18
+
+### Fixed
+
+- Default new full-lane feature and sprint work to qualified typed HTML
+  specifications and plans while preserving exact-format legacy pairs and
+  keeping HTML farm dispatch disabled.
+
 ## [0.14.2] - 2026-09-18
 
 ### Fixed
@@ -15,10 +23,6 @@ All notable changes to `ca-pi` are documented in this file.
   preserve helper records as LF, reject ambiguous committed release notes
   before tag mutation, and bind hosted assets and automatic publication to the
   exact qualified changelog commit and manifest blobs.
-- Default new full-lane feature and sprint work to qualified typed HTML
-  specifications and plans while preserving exact-format legacy pairs and
-  keeping HTML farm dispatch disabled.
-
 ## [0.14.1] - 2026-09-18
 
 ### Fixed
