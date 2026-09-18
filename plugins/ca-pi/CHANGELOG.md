@@ -4,13 +4,10 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.14.1] - 2026-09-18
+## [0.14.2] - 2026-09-18
 
 ### Fixed
 
-- Require a merged default-branch commit and green hosted exact-head evidence
-  before release tag composition, and establish one POSIX shell before the
-  portable workflow runs on Windows.
 - Preserve payload pathspec argument boundaries, validate Cargo manifests,
   establish first-release and zero-tag behavior before classification, and
   derive provenance identities from one remote ref snapshot. Run package
@@ -18,6 +15,14 @@ All notable changes to `ca-pi` are documented in this file.
   preserve helper records as LF, reject ambiguous committed release notes
   before tag mutation, and bind hosted assets and automatic publication to the
   exact qualified changelog commit and manifest blobs.
+
+## [0.14.1] - 2026-09-18
+
+### Fixed
+
+- Require a merged default-branch commit and green hosted exact-head evidence
+  before release tag composition, and establish one POSIX shell before the
+  portable workflow runs on Windows.
 
 ## [0.14.0] - 2026-09-17
 
