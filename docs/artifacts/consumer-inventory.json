@@ -4,8 +4,8 @@
   "baseline_revision": "4c1fe026d2eb26ea842308d312f7f1250d835a51",
   "evidence_boundary": "This inventory and its independent-search gate establish complete ordinary default-path consumer accounting. Runtime, authority, package, browser, pilot, exact-head CI, release, and farm qualification remain separate evidence boundaries.",
   "rollout": {
-    "legacy_markdown_default": true,
-    "typed_html_default_enabled": false,
+    "legacy_markdown_default": false,
+    "typed_html_default_enabled": true,
     "typed_html_farm_enabled": false
   },
   "public_surface_baseline": {
@@ -83,6 +83,13 @@
       "\\bplan_file_operation\\b"
     ],
     "external_gitlinks": ["academy-source"]
+  },
+  "ephemeral_generated_outputs": {
+    "path_prefixes": ["site/src/content/docs/reference/"],
+    "paths": ["site/src/content/docs/changelog.md"],
+    "generator": "site/scripts/gen.ts",
+    "source_root": "plugins/ca",
+    "workflow": ".github/workflows/docs.yml"
   },
   "consumers": [
     {
@@ -246,7 +253,7 @@
         "plugins/ca-codex/includes/artifacts.md",
         "plugins/ca-pi/includes/artifacts.md"
       ],
-      "reason": "The complete artifact contract is loaded only after an existing workflow selects the pilot; it is absent from startup context."
+      "reason": "The complete artifact contract is loaded only after an existing workflow selects an HTML route; it is absent from startup context."
     },
     {
       "id": "artifact-binary-bridge",
@@ -480,7 +487,7 @@
         "plugins/ca-codex/skills/INDEX.md",
         "plugins/ca-pi/SKILLS.md"
       ],
-      "reason": "Current docs state the disabled rollout honestly; full format, migration and recovery runbooks plus pilot evidence remain incomplete."
+      "reason": "Current docs state the enabled full-lane HTML default and disabled farm boundary honestly; complete migration, recovery, and release runbooks remain separate work."
     },
     {
       "id": "decomposition-plans",

@@ -10,19 +10,18 @@ The single permitted entry to implementation work. No feature code is written be
 
 ## Structured-artifact boundary
 
-For an existing `.html` spec/plan match, or when the user explicitly requests
-the typed-HTML pilot, load
+For new full-lane work or an existing `.html` spec/plan match, load
 [includes/artifacts.md](../../includes/artifacts.md) before resume classification or artifact
 I/O. After lane classification, call
 `_select_authoring_route` with the trusted project root, slug, `workflow: feature`,
-the selected lane, and `html_requested: true` only for that explicit pilot.
-Use only its returned mode, format, and paths. For a selected HTML route it
+and the selected lane. Use only its returned mode, format, and paths. For a
+selected HTML route it
 checks the installed capability before writing; a missing or invalid helper is
 a STOP and the workflow must not fall back to Markdown.
 Its validated identity, authority, binding and task-state operations replace this
 command's `.md`, approval-label and status-cell assumptions for that pipeline.
-New full-lane work remains Markdown by default during this rollout. An existing
-`.md` pair remains on the legacy path. Discovery requires a
+New full-lane specs use the installed structured-artifact engine and default to
+canonical `.html`. An existing `.md` pair remains on the legacy path. Discovery requires a
 complete same-extension spec/plan pair: select that exact pair as authoritative. A
 mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format,
 and the next plan must use the same extension. The workflow must not create, rename, or convert its counterpart to repair ambiguity. HTML `--farm` dispatch stays
@@ -94,9 +93,9 @@ Route through the pipeline in order; each step gates the next:
 
 1. **`brainstorming`** ([routines/brainstorming/SKILL.md](../../routines/brainstorming/SKILL.md)) — refine `$ARGUMENTS` into a concrete spec by Socratic questioning: challenge
    vague language, surface hidden complexity, force trade-offs. Writes the spec to
-   route-selected spec path. The disabled default writes
-   `<project-root>/.codearbiter/specs/<slug>.md`; an explicit qualified pilot
-   writes `.html` through the installed engine. **Hard gate: no plan and no code until the
+   route-selected spec path. New full-lane work writes
+   `<project-root>/.codearbiter/specs/<slug>.html` through the installed engine.
+   **Hard gate: no plan and no code until the
    user approves the spec.** Genuinely-unresolved unknowns become `[CONFIRM-NN]` in
    `open-questions.md`, never guesses.
 2. **`writing-plans`** ([routines/writing-plans/SKILL.md](../../routines/writing-plans/SKILL.md)) — decompose the approved spec into small tasks, each with an exact path and a

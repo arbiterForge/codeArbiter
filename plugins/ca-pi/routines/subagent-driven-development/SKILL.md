@@ -8,8 +8,8 @@ disable-model-invocation: true
 
 ## Structured-artifact format boundary
 
-Default rollout remains disabled. Existing HTML pairs and explicitly requested
-typed-HTML pilots use the installed engine. Load
+New full-lane workflows default to HTML through the installed engine. Existing
+HTML pairs use the same path. Load
 `<plugin-root>/includes/artifacts.md` before HTML artifact I/O;
 its typed identity, binding, receipt, contextual-read, and scope-state rules
 replace rendered-document parsing and direct status-cell edits. Existing

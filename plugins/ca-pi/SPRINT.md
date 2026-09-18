@@ -9,12 +9,10 @@ that is not a true hard gate. Every auto-decision is logged. Hard gates are real
 
 ## Structured-artifact boundary
 
-For an existing `.html` spec/plan match, or when the user explicitly requests
-the typed-HTML pilot, load
+For new sprint work or an existing `.html` spec/plan match, load
 `<plugin-root>/includes/artifacts.md` before resume classification or artifact
 I/O. Call `_select_authoring_route` with the trusted project root, slug,
-`workflow: sprint`, `lane: full`, and `html_requested: true` only for that
-explicit pilot; use only its returned format and paths. For a selected HTML
+`workflow: sprint`, and `lane: full`; use only its returned format and paths. For a selected HTML
 route it checks the installed capability before writing; a missing or invalid
 helper is a STOP and the workflow must not fall back to Markdown.
 Its validated identity, authority, binding and task-state operations replace the
@@ -23,8 +21,9 @@ pair remains on the legacy path. Discovery requires a
 complete same-extension spec/plan pair: select that exact pair as authoritative. A
 mixed-extension or duplicate match is a STOP. A lone spec resumes in its exact format, and the
 next plan must use the same extension. The workflow must not create, rename, or
-convert its counterpart to repair ambiguity. New full-lane work remains Markdown
-by default during this rollout. The HTML path must block `--farm` before canary
+convert its counterpart to repair ambiguity. New full-lane sprint specs use the
+installed structured-artifact engine and default to canonical `.html`. The HTML
+path must block `--farm` before canary
 or dispatch; do not project it into legacy farm JSON.
 
 ## Execution backend: premium (default) vs. `--farm`
@@ -64,8 +63,8 @@ Route to `brainstorming` (`<plugin-root>/routines/brainstorming/SKILL.md`), scop
 goal), not a single feature. Drive it to a concrete sprint spec at the
 route-selected spec path, then to `writing-plans`
 (`<plugin-root>/routines/writing-plans/SKILL.md`) for the task breakdown at the
-matching route-selected plan path. The disabled default uses `.md`; an explicit
-qualified pilot uses `.html` through the installed engine.
+matching route-selected plan path. New sprint work uses `.html` through the
+installed engine.
 
 This is the ONE interactive gate, and it is load-bearing: the thoroughness of the spec is what makes
 hard-gate stops rare later. Capture the user's intent, priorities, risk tolerance, and any

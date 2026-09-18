@@ -68,7 +68,11 @@ Each acceptance criterion in the approved spec becomes exactly one obligation in
 
 With an approved spec, the [writing-plans skill](/reference/skills/writing-plans/) decomposes it into tasks, each 2 to 5 minutes of work. Every task carries the exact file path it touches and a concrete verification step that maps to a tdd obligation.
 
-The plan is written to `.codearbiter/plans/<slug>.md`. Execution does not start until every task has a file path, a verification step, and the full task set covers every acceptance criterion.
+For new full-lane work, the spec and plan are written as
+`.codearbiter/specs/<slug>.html` and `.codearbiter/plans/<slug>.html` through the
+installed typed-artifact engine. Existing Markdown pairs stay on their exact
+legacy path. Execution does not start until every task has a file path, a
+verification step, and the full task set covers every acceptance criterion.
 
 ## Implement Test-First, Batch by Batch
 

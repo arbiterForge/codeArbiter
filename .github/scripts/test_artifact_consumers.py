@@ -93,6 +93,13 @@ ALLOWED_TREE_PATHS = {
     "docs/reports",
 }
 ALLOWED_EXTERNAL_GITLINKS = {"academy-source"}
+EXPECTED_EPHEMERAL_OUTPUTS = {
+    "path_prefixes": ["site/src/content/docs/reference/"],
+    "paths": ["site/src/content/docs/changelog.md"],
+    "generator": "site/scripts/gen.ts",
+    "source_root": "plugins/ca",
+    "workflow": ".github/workflows/docs.yml",
+}
 
 
 def load_inventory() -> dict:
@@ -109,6 +116,13 @@ def inventory_paths(inventory: dict) -> tuple[set[str], set[str]]:
         exact.update(consumer.get("optional_paths", []))
         trees.update(consumer.get("tree_paths", []))
     return exact, trees
+
+
+def is_ephemeral_output(path: str, inventory: dict) -> bool:
+    declaration = inventory["ephemeral_generated_outputs"]
+    return path in declaration["paths"] or any(
+        path.startswith(prefix) for prefix in declaration["path_prefixes"]
+    )
 
 
 def discovered_paths() -> set[str]:
@@ -166,6 +180,10 @@ class ArtifactConsumerClosureTest(unittest.TestCase):
         self.assertEqual(
             set(self.inventory["independent_search"]["external_gitlinks"]),
             ALLOWED_EXTERNAL_GITLINKS,
+        )
+        self.assertEqual(
+            self.inventory["ephemeral_generated_outputs"],
+            EXPECTED_EPHEMERAL_OUTPUTS,
         )
         gitlinks = subprocess.run(
             ["git", "config", "-f", ".gitmodules", "--get-regexp", "^submodule\\..*\\.path$"],
@@ -252,16 +270,59 @@ class ArtifactConsumerClosureTest(unittest.TestCase):
             for path in consumer.get("optional_paths", [])
         }
         for path in sorted(exact - optional):
+            if is_ephemeral_output(path, self.inventory):
+                continue
             self.assertTrue((ROOT / path).exists(), path)
         for path in sorted(optional):
             self.assertTrue((ROOT / path).parent.exists(), path)
         for path in sorted(trees):
             self.assertTrue((ROOT / path).is_dir(), path)
 
-    def test_rollout_remains_disabled(self) -> None:
+    def test_ephemeral_site_outputs_have_generator_and_ci_ownership(self) -> None:
+        declaration = self.inventory["ephemeral_generated_outputs"]
+        generator_path = ROOT / declaration["generator"]
+        workflow_path = ROOT / declaration["workflow"]
+        self.assertTrue(generator_path.is_file())
+        self.assertTrue(workflow_path.is_file())
+
+        ignored_probes = list(declaration["paths"]) + [
+            f"{prefix}__inventory_probe__.md"
+            for prefix in declaration["path_prefixes"]
+        ]
+        for path in ignored_probes:
+            ignored = subprocess.run(
+                ["git", "check-ignore", "--quiet", "--", path],
+                cwd=ROOT,
+                check=False,
+            )
+            self.assertEqual(ignored.returncode, 0, path)
+            self.assertEqual(
+                subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", "--", path],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                ).returncode,
+                1,
+                path,
+            )
+
+        generator = generator_path.read_text(encoding="utf-8")
+        self.assertIn('const srcDir = join(repoRoot, "plugins", "ca");', generator)
+        self.assertIn('"src", "content", "docs", "reference"', generator)
+        self.assertIn('"src", "content", "docs", "changelog.md"', generator)
+
+        workflow = workflow_path.read_text(encoding="utf-8")
+        self.assertGreaterEqual(workflow.count('- "plugins/ca/**"'), 2)
+        self.assertIn("run: npm run gen", workflow)
+        self.assertIn("run: npm test", workflow)
+        self.assertIn("run: npm run build", workflow)
+
+    def test_default_rollout_is_enabled_but_farm_remains_disabled(self) -> None:
         rollout = self.inventory["rollout"]
-        self.assertTrue(rollout["legacy_markdown_default"])
-        self.assertFalse(rollout["typed_html_default_enabled"])
+        self.assertFalse(rollout["legacy_markdown_default"])
+        self.assertTrue(rollout["typed_html_default_enabled"])
         self.assertFalse(rollout["typed_html_farm_enabled"])
 
     def test_historical_records_are_explicitly_excluded(self) -> None:

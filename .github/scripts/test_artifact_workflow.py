@@ -317,20 +317,17 @@ class ArtifactWorkflowResolverTest(unittest.TestCase):
         self.assertIn("cooperative same-user attestation model", source)
         self.assertFalse(hasattr(_artifactlib.ArtifactClient, "capture_workflow_event"))
 
-    def test_execution_surfaces_share_the_disabled_default_format_contract(self) -> None:
+    def test_execution_surfaces_share_the_enabled_default_format_contract(self) -> None:
         sources = tuple(
             " ".join(path.read_text(encoding="utf-8").split())
             for path in (EXECUTING_SKILL, SUBAGENT_SKILL)
         )
         for source in sources:
-            self.assertIn("Default rollout remains disabled", source)
-            self.assertIn("explicitly requested typed-HTML pilot", source)
+            self.assertIn("New full-lane workflows default to HTML", source)
             self.assertIn("Existing authoritative Markdown pairs", source)
             self.assertIn("fail closed", source)
             self.assertIn("HTML `--farm` dispatch remains disabled", source)
-            self.assertNotIn(
-                "new full feature and sprint workflows use HTML by default", source
-            )
+            self.assertNotIn("pilot", source.lower())
 
     def test_execution_consumers_define_process_recreation_resume(self) -> None:
         executing = " ".join(EXECUTING_SKILL.read_text(encoding="utf-8").split())
