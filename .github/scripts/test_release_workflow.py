@@ -368,9 +368,19 @@ git() {
     printf 'object %s\ntype commit\ntag %s\ntagger Test <test@example.invalid> 0 +0000\n\n' "$GITHUB_SHA" "$TAG"
     cat tagmsg.txt
   fi
-  if [ "$1" = "hash-object" ]; then cat >/dev/null; printf '%s' "$STUB_TAG_OBJECT"; return 0; fi
+  if [ "$1" = "hash-object" ]; then
+    if [ "${2:-}" = "-t" ]; then cat >/dev/null; printf '%s' "$STUB_TAG_OBJECT"; else printf '%s' "${STUB_SURFACE_BLOB:-dddddddddddddddddddddddddddddddddddddddd}"; fi
+    return 0
+  fi
   if [ "$1" = "rev-parse" ] && [ -n "${TAG:-}" ] && [ "${2:-}" = "${TAG}^{tag}" ]; then printf '%s' "$STUB_TAG_OBJECT"; return 0; fi
   if [ "$1" = "rev-parse" ] && [ "${2:-}" = "HEAD" ]; then printf '%s' "${STUB_HEAD:-$GITHUB_SHA}"; fi
+  if [ "$1" = "rev-parse" ] && printf '%s' "${2:-}" | grep -q ':'; then
+    if [ "${STUB_CANDIDATE_MISSING:-}" = "1" ]; then return 1; fi
+    printf '%s' "${STUB_CANDIDATE_BLOB:-dddddddddddddddddddddddddddddddddddddddd}"
+  fi
+  if [ "$1" = "log" ] && [ "${2:-}" = "--first-parent" ]; then
+    printf '%s' "${STUB_SURFACE_SHA:-$GITHUB_SHA}"
+  fi
   return 0
 }
 gh() {
@@ -658,6 +668,31 @@ class PreflightExecutionTest(_ShellHarness):
                     self.assertEqual(out, "")
                     self.assertIn("serialized hosted CI cohort", proc.stdout)
 
+    def test_manual_sandbox_refuses_a_stale_candidate_commit(self):
+        env = {name: "" for name in self.DISPATCH_INPUTS}
+        env.update({"SANDBOX_CONFIRM": "0.1.5",
+                    "STUB_SURFACE_SHA": self.OTHER})
+        proc, _, out = self._run(self.target_step, env=env)
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("was not advanced by", proc.stdout)
+        self.assertEqual(out, "")
+
+    def test_manual_sandbox_refuses_missing_or_substituted_candidate_blobs(self):
+        cases = (
+            {"STUB_CANDIDATE_MISSING": "1"},
+            {"STUB_CANDIDATE_BLOB": "c" * 40,
+             "STUB_SURFACE_BLOB": "d" * 40},
+        )
+        for overrides in cases:
+            with self.subTest(overrides=overrides):
+                env = {name: "" for name in self.DISPATCH_INPUTS}
+                env["SANDBOX_CONFIRM"] = "0.1.5"
+                env.update(overrides)
+                proc, _, out = self._run(self.target_step, env=env)
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertRegex(proc.stdout, "absent from|differs from")
+                self.assertEqual(out, "")
+
     def test_no_input_refuses(self):
         proc, _, out = self._select()
         self.assertNotEqual(proc.returncode, 0)
@@ -707,6 +742,56 @@ class PreflightExecutionTest(_ShellHarness):
                                checks=self._check_run(head=self.OTHER))
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("sha_mismatch", proc.stdout + proc.stderr)
+
+
+@POSIX_ONLY
+class HostedNotesExecutionTest(unittest.TestCase):
+    """Execute the hosted notes gate against ambiguous committed history."""
+
+    def test_duplicate_matching_sections_abort_before_publication(self):
+        with tempfile.TemporaryDirectory(prefix="ca-release-notes-") as tmp:
+            root = Path(tmp)
+            scripts = root / ".github" / "scripts"
+            core = root / "core" / "pysrc"
+            scripts.mkdir(parents=True)
+            core.mkdir(parents=True)
+            shutil.copy(HERE / "_releaselib.py", scripts / "_releaselib.py")
+            shutil.copy(REPO_ROOT / "core" / "pysrc" / "_releaselib.py",
+                        core / "_releaselib.py")
+            shutil.copy(REPO_ROOT / "core" / "pysrc" / "_gitexec.py",
+                        core / "_gitexec.py")
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "test"],
+                           check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email",
+                            "test@example.invalid"], check=True)
+            (root / "CHANGELOG.md").write_text(
+                "## [1.2.3] - 2026-09-18\n\n- first\n\n"
+                "## [1.2.4] - 2026-09-18\n\n- later\n\n"
+                "## [1.2.3] - 2026-09-18\n\n- duplicate\n",
+                encoding="utf-8", newline="\n")
+            subprocess.run(["git", "-C", str(root), "add", "CHANGELOG.md"], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm", "notes"],
+                           check=True)
+            sha = subprocess.check_output(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+            run_file = root / "run-notes.sh"
+            run_file.write_text(
+                'python3() { "$TEST_PYTHON" "$@"; }\n'
+                + _action_step("Extract the CHANGELOG section as release notes"),
+                encoding="utf-8", newline="\n")
+            env = {**os.environ,
+                   "TEST_PYTHON": sys.executable.replace("\\", "/"),
+                   "GITHUB_WORKSPACE": str(root), "GITHUB_SHA": sha,
+                   "VER": "1.2.3", "TAG": "v1.2.3",
+                   "CHANGELOG": "CHANGELOG.md", "VERSION_POLICY": "semver",
+                   "INITIAL_VERSION": ""}
+            proc = subprocess.run([BASH, str(run_file)], cwd=root, env=env,
+                                  capture_output=True, text=True)
+            self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertIn("duplicate", proc.stderr.lower())
+            self.assertEqual(subprocess.check_output(
+                ["git", "-C", str(root), "tag", "-l"], text=True), "")
 
 
 @POSIX_ONLY
@@ -1651,6 +1736,20 @@ class AutoTagLaneTest(unittest.TestCase):
             with self.subTest(job=job):
                 self.assertIn("github.event.workflow_run.head_sha", jobs[job])
 
+    def test_auto_preflight_binds_every_eligible_release_surface_to_this_cohort(self):
+        block = _jobs()[AUTO_PREFLIGHT_JOB]
+        self.assertIn('git log --first-parent -1 --format=%H -- "$CHANGELOG"', block)
+        self.assertNotIn('git log --first-parent -1 --format=%H -- "$SURFACE"', block)
+        self.assertNotIn('git log --first-parent -1 --format=%H -- "$COMPANION"', block)
+        self.assertIn('"$MANIFEST" "$CHANGELOG"', block)
+        self.assertIn('git rev-parse "$GITHUB_SHA:$SURFACE"', block)
+        self.assertIn('git hash-object "$SURFACE"', block)
+        self.assertIn('git rev-parse "$GITHUB_SHA:$COMPANION"', block)
+        self.assertIn('git hash-object "$COMPANION"', block)
+        self.assertIn('was not advanced by $GITHUB_SHA', block)
+        self.assertLess(block.index("auto-eligible"),
+                        block.index('git log --first-parent -1 --format=%H -- "$CHANGELOG"'))
+
     def test_auto_eligible_first_introduction_and_advance_are_true(self):
         # The CLI subcommand the preflight's own shell calls, executed
         # directly: a series with no tag yet, or a manifest strictly ahead
@@ -2043,12 +2142,132 @@ class RegistrationTest(unittest.TestCase):
             "the exact-SHA run must assemble the release package cohort",
         )
 
+    def test_release_agent_proof_starts_a_complete_push_run(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        agent_proof = ".codearbiter/reports/agent-lane-proof.json"
+        self.assertIn(
+            agent_proof,
+            push_trigger_paths(ci),
+            "a release-proof refresh on main must start the exact-SHA CI run "
+            "that authorizes the automatic release cohort",
+        )
+        self.assertIn(
+            agent_proof,
+            paths_filter(ci, "hooks"),
+            "the exact-SHA run must validate release-proof freshness",
+        )
+        self.assertIn(
+            agent_proof,
+            paths_filter(ci, "artifacts"),
+            "the exact-SHA run must assemble the release package cohort",
+        )
+
     def test_auto_noop_empty_cohort_is_portable_to_bash_3(self):
         workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn(
             'OUTPUTS+=("cohort-targets=${COHORT_TARGETS[*]-}")',
             workflow,
         )
+
+    def test_first_parent_candidate_binding_on_a_real_merge_graph(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            git = ["git", "-c", "commit.gpgsign=false", "-c", "core.hooksPath="]
+
+            def run(*args):
+                return subprocess.run(
+                    [*git, *args], cwd=repo, check=True,
+                    capture_output=True, text=True).stdout.strip()
+
+            run("init", "--quiet")
+            run("config", "user.name", "release fixture")
+            run("config", "user.email", "release-fixture@example.invalid")
+            (repo / "manifest.json").write_text(
+                '{"version":"1.2.3"}\n', encoding="utf-8", newline="\n")
+            (repo / "CHANGELOG.md").write_text(
+                "# Changelog\n", encoding="utf-8", newline="\n")
+            run("add", ".")
+            run("commit", "--quiet", "-m", "baseline")
+            default_branch = run("branch", "--show-current")
+
+            run("switch", "--quiet", "-c", "release-candidate")
+            (repo / "CHANGELOG.md").write_text(
+                "# Changelog\n\n## [1.2.3] - 2026-09-18\n",
+                encoding="utf-8", newline="\n")
+            run("add", "CHANGELOG.md")
+            run("commit", "--quiet", "-m", "release notes")
+
+            run("switch", "--quiet", default_branch)
+            (repo / "unrelated.txt").write_text(
+                "main work\n", encoding="utf-8", newline="\n")
+            run("add", "unrelated.txt")
+            run("commit", "--quiet", "-m", "unrelated main work")
+            run("merge", "--quiet", "--no-ff", "release-candidate", "-m", "merge release")
+
+            authorized = run("rev-parse", "HEAD")
+            self.assertEqual(
+                run("log", "--first-parent", "-1", "--format=%H", "--", "CHANGELOG.md"),
+                authorized)
+            self.assertNotEqual(
+                run("log", "--first-parent", "-1", "--format=%H", "--", "manifest.json"),
+                authorized)
+            self.assertEqual(
+                run("rev-parse", f"{authorized}:manifest.json"),
+                run("hash-object", "manifest.json"))
+
+            (repo / "later.txt").write_text(
+                "later\n", encoding="utf-8", newline="\n")
+            run("add", "later.txt")
+            run("commit", "--quiet", "-m", "later green commit")
+            later = run("rev-parse", "HEAD")
+            self.assertNotEqual(
+                run("log", "--first-parent", "-1", "--format=%H", "--", "CHANGELOG.md"),
+                later)
+
+    def test_shallow_history_can_false_authorize_a_stale_changelog(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            shallow = root / "shallow"
+            source.mkdir()
+
+            def git(repo, *args):
+                return subprocess.run(
+                    ["git", "-c", "commit.gpgsign=false",
+                     "-c", "core.hooksPath=", *args],
+                    cwd=repo, check=True, capture_output=True,
+                    text=True).stdout.strip()
+
+            git(source, "init", "--quiet")
+            git(source, "config", "user.name", "release fixture")
+            git(source, "config", "user.email", "release-fixture@example.invalid")
+            (source / "CHANGELOG.md").write_text(
+                "# Changelog\n", encoding="utf-8", newline="\n")
+            git(source, "add", "CHANGELOG.md")
+            git(source, "commit", "--quiet", "-m", "release candidate")
+            candidate = git(source, "rev-parse", "HEAD")
+            (source / "later.txt").write_text(
+                "later\n", encoding="utf-8", newline="\n")
+            git(source, "add", "later.txt")
+            git(source, "commit", "--quiet", "-m", "later green commit")
+            later = git(source, "rev-parse", "HEAD")
+
+            subprocess.run(
+                ["git", "clone", "--quiet", "--depth", "1",
+                 source.resolve().as_uri(), str(shallow)],
+                check=True, capture_output=True, text=True)
+            self.assertEqual(
+                git(shallow, "log", "--first-parent", "-1", "--format=%H",
+                    "--", "CHANGELOG.md"),
+                later,
+                "depth-one history falsely attributes the old changelog to the shallow root")
+
+            git(shallow, "fetch", "--quiet", "--unshallow", "origin")
+            self.assertEqual(
+                git(shallow, "log", "--first-parent", "-1", "--format=%H",
+                    "--", "CHANGELOG.md"),
+                candidate)
+            self.assertNotEqual(candidate, later)
 
     def test_the_publish_action_starts_a_push_run(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -2386,6 +2605,35 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
                          "ca-pi=true\nca-pi-version=9.9.9\n"
                          "cohort-targets=ca-codex,ca-pi\n")
 
+    def test_later_green_commit_cannot_consume_an_earlier_release_candidate(self):
+        self.commands = {"ca": ['"$PY" check.py forbidden-later']}
+        proc, _, out = self._authorize(
+            "auto-preflight", target="ca",
+            overrides={"STUB_SURFACE_SHA": self.OTHER})
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("was not advanced by", proc.stdout)
+        self.assertNotIn("CHECKED:forbidden-later", proc.stdout)
+        self.assertEqual(out, "")
+
+    def test_candidate_accepts_unchanged_exact_manifest_blobs(self):
+        self.commands = {"ca": ['$PY check.py exact-manifest']}
+        proc, _, out = self._authorize("auto-preflight", target="ca")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("CHECKED:exact-manifest", proc.stdout)
+        self.assertIn("surface=plugins/ca/.claude-plugin/plugin.json blob=", proc.stdout)
+        self.assertIn("ca=true", out)
+
+    def test_candidate_rejects_a_manifest_that_differs_from_exact_head(self):
+        self.commands = {"ca": ['$PY check.py forbidden-substitution']}
+        proc, _, out = self._authorize(
+            "auto-preflight", target="ca",
+            overrides={"STUB_CANDIDATE_BLOB": "c" * 40,
+                       "STUB_SURFACE_BLOB": "d" * 40})
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("differs from", proc.stdout)
+        self.assertNotIn("CHECKED:forbidden-substitution", proc.stdout)
+        self.assertEqual(out, "")
+
     def test_auto_malformed_declaration_fails_closed_before_authorization(self):
         self.commands = {}
         self.malformed = True
@@ -2400,6 +2648,7 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
                 checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
                                      r"(?=^      - |\Z)", block).group(0)
                 self.assertIn("persist-credentials: false", checkout)
+                self.assertIn("fetch-depth: 0", checkout)
                 self.assertNotIn("contents: write", block)
 
     def test_auto_rejects_untrusted_upstream_before_executing_checks(self):
@@ -2472,6 +2721,9 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
         resolver = _extract_run(_release(), "Resolve exactly one release target", 6, "release")
         self.assertIn('if [ "$TARGET" != "ca-sandbox" ]', resolver)
         self.assertIn("independent manual publication is prohibited", resolver)
+        self.assertIn('git log --first-parent -1 --format=%H -- "$CHANGELOG"', resolver)
+        self.assertIn('git rev-parse "$GITHUB_SHA:$SURFACE"', resolver)
+        self.assertIn('git hash-object "$SURFACE"', resolver)
 
     def test_hosted_cohort_is_serialized_and_sandbox_remains_independent(self):
         workflow = _release()
@@ -2566,9 +2818,15 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
         text = PUBLISH_ACTION.read_text(encoding="utf-8")
         notes = _action_step("Extract the CHANGELOG section as release notes")
         publish = _action_step("Create the tag and GitHub Release")
-        self.assertIn('git show "$GITHUB_SHA:$CHANGELOG"', notes)
+        self.assertIn("core/pysrc/_releaselib.py changelog-section", notes)
+        self.assertIn('"$GITHUB_WORKSPACE" "$GITHUB_SHA" "$CHANGELOG" "$VER"', notes)
+        self.assertNotIn("awk -v", notes)
+        self.assertIn('"$VERSION_POLICY" "$INITIAL_VERSION"', notes)
+        self.assertIn("core/pysrc/_releaselib.py notes-match", notes)
         self.assertIn("core/pysrc/_releaselib.py dates-match", notes)
         self.assertNotIn("date +", notes)
+        self.assertLess(text.index("core/pysrc/_releaselib.py changelog-section"),
+                        text.index('git tag -a "$TAG"'))
         self.assertIn('GIT_COMMITTER_DATE="$TAGGER_DATE" git tag -a "$TAG" -F tagmsg.txt --cleanup=verbatim "$GITHUB_SHA"',
                       publish)
         self.assertIn('TAGGER_DATE="$RELEASE_DATE 00:00:00 +0000"', publish)

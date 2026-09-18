@@ -12,6 +12,22 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.2] - 2026-09-18
+
+### Fixed
+
+- Make the portable release lane preserve space-containing payload pathspecs,
+  verify back-filled Cargo manifests, floor first-release history before
+  classification, tolerate the expected zero-tag state under `pipefail`, and
+  bind provenance object and commit identities to one remote snapshot. Use the
+  portable Python command in the `ca-pi` generation declaration, force helper
+  record output to LF on Windows, qualify hosted-owned asset cohorts without
+  executing their local sentinels, reject duplicate committed release-note
+  sections before tag mutation, and bind automatic publication to the exact
+  changelog commit plus the candidate's exact manifest blobs.
+- Ensure a release-proof-only correction selects both proof validation and the
+  exact-head package cohort needed by automatic publication.
+
 ## [2.21.1] - 2026-09-18
 
 ### Fixed

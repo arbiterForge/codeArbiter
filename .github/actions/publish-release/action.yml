@@ -52,6 +52,14 @@ inputs:
   changelog:
     description: "Path to the CHANGELOG holding this version's section"
     required: true
+  version-policy:
+    description: "Declared version policy used to parse the changelog heading"
+    required: false
+    default: "semver"
+  initial-version:
+    description: "Declared initial version for policies that require one"
+    required: false
+    default: ""
   tag-prefix:
     description: "Tag namespace, e.g. `v` for ca or `ca-pi-v` for ca-pi"
     required: true
@@ -223,20 +231,19 @@ runs:
         VER: ${{ steps.v.outputs.version }}
         TAG: ${{ steps.v.outputs.tag }}
         CHANGELOG: ${{ inputs.changelog }}
+        VERSION_POLICY: ${{ inputs.version-policy }}
+        INITIAL_VERSION: ${{ inputs.initial-version }}
       run: |
         set -euo pipefail
-        # Capture from "## [VER]" up to (not including) the next "## [" section heading.
-        git show "$GITHUB_SHA:$CHANGELOG" \
-          | awk -v v="## [$VER]" 'index($0,v)==1{f=1;print;next} f&&/^## \[/{exit} f{print}' > notes.md
-        # Trim a trailing Keep-a-Changelog "---" separator and blank lines.
-        python3 - <<'PY'
-        import re
-        t = open("notes.md").read().rstrip()
-        open("notes.md", "w").write(re.sub(r"\n+---$", "", t).rstrip() + "\n")
-        PY
-        test -s notes.md || { echo "::error::no CHANGELOG section found for $VER in $CHANGELOG"; exit 1; }
-        # The notes' first heading must match the tag (the same guard /ca:release Phase 3 runs).
-        python3 .github/scripts/_releaselib.py notes-match "$TAG" notes.md
+        # Use the same policy-aware, duplicate-rejecting extraction as the
+        # interactive release contract. A first-match awk extractor can accept
+        # ambiguous notes and push an immutable tag before the duplicate is
+        # noticed anywhere else.
+        python3 core/pysrc/_releaselib.py changelog-section \
+          "$GITHUB_WORKSPACE" "$GITHUB_SHA" "$CHANGELOG" "$VER" \
+          "$VERSION_POLICY" "$INITIAL_VERSION" > notes.md
+        python3 core/pysrc/_releaselib.py notes-match \
+          "$TAG" notes.md "$VERSION_POLICY" "$INITIAL_VERSION"
         RELEASE_DATE=$(python3 - <<'PY'
         import re
         heading=open("notes.md",encoding="utf-8").readline().rstrip("\n")
@@ -246,7 +253,8 @@ runs:
         PY
         )
         printf '%s\nReleased-at: %s\n' "$(cat notes.md)" "$RELEASE_DATE" > tagmsg.txt
-        python3 core/pysrc/_releaselib.py dates-match notes.md tagmsg.txt
+        python3 core/pysrc/_releaselib.py dates-match \
+          notes.md tagmsg.txt "$VERSION_POLICY" "$INITIAL_VERSION"
         echo "---- notes.md ----"; head -1 notes.md
 
     - name: Create exact immutable cohort-start marker

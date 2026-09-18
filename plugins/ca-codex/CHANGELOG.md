@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.2] - 2026-09-18
+
+### Fixed
+
+- Preserve payload pathspec argument boundaries, validate Cargo manifests,
+  establish first-release and zero-tag behavior before classification, and
+  derive provenance identities from one remote ref snapshot. Preserve helper
+  records as LF on Windows, reject ambiguous committed release notes before tag
+  mutation, and bind hosted assets and automatic publication to the exact
+  qualified changelog commit and manifest blobs.
+
 ## [0.13.1] - 2026-09-18
 
 ### Fixed

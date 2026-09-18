@@ -88,7 +88,7 @@ prefix: ca-pi-v
 manifest: plugins/ca-pi/package.json
 manifest: package.json
 generated-manifest: package.json
-generate: python3 tools/build-host-packages.py
+generate: "$PY" tools/build-host-packages.py
 changelog: plugins/ca-pi/CHANGELOG.md
 payload: plugins/ca-pi/
 payload-exclude: plugins/ca-pi/tools/
