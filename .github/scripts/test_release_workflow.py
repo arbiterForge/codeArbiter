@@ -384,6 +384,35 @@ git() {
   if [ "$1" = "diff" ] && [ "${2:-}" = "--name-only" ]; then
     printf '%s' "${STUB_DIFF:-}"
   fi
+  if [ "$1" = "diff" ] && [ "${2:-}" = "--quiet" ]; then
+    while IFS= read -r changed; do
+      [ -n "$changed" ] || continue
+      after_separator=false
+      for pathspec in "$@"; do
+        if [ "$after_separator" = true ]; then
+          implicit_prefix=
+          case "$pathspec" in
+            ':(top,icase)README*') implicit_prefix=readme ;;
+            ':(top,icase)COPYING*') implicit_prefix=copying ;;
+            ':(top,icase)LICENSE*') implicit_prefix=license ;;
+            ':(top,icase)LICENCE*') implicit_prefix=licence ;;
+          esac
+          if [ -n "$implicit_prefix" ] && [ "$changed" = "${changed#*/}" ]; then
+            lower_changed=$(printf '%s' "$changed" | tr '[:upper:]' '[:lower:]')
+            case "$lower_changed" in "$implicit_prefix"*) return 1 ;; esac
+          fi
+          case "$changed" in
+            "$pathspec"|"$pathspec"/*) return 1 ;;
+          esac
+        elif [ "$pathspec" = "--" ]; then
+          after_separator=true
+        fi
+      done
+    done <<EOF
+${STUB_DIFF:-}
+EOF
+    return 0
+  fi
   return 0
 }
 gh() {
@@ -1750,9 +1779,21 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn('git rev-parse "$GITHUB_SHA:$COMPANION"', block)
         self.assertIn('git hash-object "$COMPANION"', block)
         self.assertIn('was not advanced by this exact candidate', block)
-        self.assertIn('git diff --name-only "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA"', block)
+        self.assertIn('git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" --', block)
+        guard_start = block.index(
+            'git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" --')
+        guard_end = block.index("; then", guard_start)
+        payload_guard = " ".join(
+            block[guard_start:guard_end].replace("\\", "").split())
+        guarded_paths = payload_guard.split(" -- ", 1)[1].split()
+        self.assertEqual(guarded_paths, [
+            "CHANGELOG.md", "package.json", "':(top,icase)README*'",
+            "':(top,icase)COPYING*'", "':(top,icase)LICENSE*'",
+            "':(top,icase)LICENCE*'", "plugins/ca", "plugins/ca-codex",
+            "plugins/ca-pi", "plugins/ca-sandbox",
+        ])
         self.assertNotIn("mapfile", block)
-        self.assertIn('[ "$PROOF_DIFF" = docs/codex-parity-testing.md ]', block)
+        self.assertNotIn('git diff --name-only "$LIVE_CANDIDATE_SHA"', block)
         self.assertLess(block.index("auto-eligible"),
                         block.index('git log --first-parent -1 --format=%H -- "$CHANGELOG"'))
 
@@ -2635,17 +2676,53 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         self.assertIn("CHECKED:proof-continuation", proc.stdout)
         self.assertIn("ca=true", out)
 
-    def test_live_proof_continuation_rejects_any_second_path(self):
-        self.commands = {"ca": ['$PY check.py forbidden-broad-continuation']}
+    def test_live_proof_continuation_accepts_non_payload_release_repair(self):
+        self.commands = {"ca": ['$PY check.py release-repair-continuation']}
         proc, _, out = self._authorize(
             "auto-preflight", target="ca",
             overrides={
                 "LIVE_CANDIDATE_SHA": self.OTHER,
                 "STUB_SURFACE_SHA": self.OTHER,
-                "STUB_DIFF": "docs/codex-parity-testing.md\nREADME.md\n",
+                "STUB_DIFF": (
+                    ".codearbiter/.provenance/code-map.json\n"
+                    ".github/scripts/_npm_publishlib.py\n"
+                    ".github/scripts/test_ci_impact.py\n"
+                    ".github/scripts/test_pi_package.py\n"
+                    ".github/workflows/ci.yml\n"
+                    ".github/workflows/release.yml\n"
+                    ".github/scripts/test_release_workflow.py\n"
+                    "docs/codex-parity-testing.md\n"
+                ),
+            })
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("release continuation is limited", proc.stdout)
+        self.assertIn("CHECKED:release-repair-continuation", proc.stdout)
+        self.assertIn("ca=true", out)
+
+    def test_live_proof_continuation_rejects_release_payload_drift(self):
+        self.commands = {"ca": ['$PY check.py forbidden-payload-drift']}
+        proc, _, out = self._authorize(
+            "auto-preflight", target="ca",
+            overrides={
+                "LIVE_CANDIDATE_SHA": self.OTHER,
+                "STUB_SURFACE_SHA": self.OTHER,
+                "STUB_DIFF": "docs/codex-parity-testing.md\nplugins/ca/skills/fix/SKILL.md\n",
             })
         self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertNotIn("CHECKED:forbidden-broad-continuation", proc.stdout)
+        self.assertNotIn("CHECKED:forbidden-payload-drift", proc.stdout)
+        self.assertEqual(out, "")
+
+    def test_live_proof_continuation_rejects_new_npm_implicit_root_file(self):
+        self.commands = {"ca": ['$PY check.py forbidden-implicit-root']}
+        proc, _, out = self._authorize(
+            "auto-preflight", target="ca",
+            overrides={
+                "LIVE_CANDIDATE_SHA": self.OTHER,
+                "STUB_SURFACE_SHA": self.OTHER,
+                "STUB_DIFF": "COPYING\n",
+            })
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertNotIn("CHECKED:forbidden-implicit-root", proc.stdout)
         self.assertEqual(out, "")
 
     def test_candidate_accepts_unchanged_exact_manifest_blobs(self):

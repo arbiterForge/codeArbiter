@@ -67,14 +67,7 @@ that names every member, never an implied yes.
    accumulate on the board; they are already excluded from the in-flight count.
    List dated done items strictly more than 14 calendar days old
    (`ARCHIVE_CUTOFF_DAYS`), then ask about **each one
-   separately** and archive only the ones the user says yes to:
-   `"$PY" "{{PLUGIN_ROOT}}/hooks/taskwrite.py" archive <id>`.
-
-   One confirmation per item, one helper call per item — the two map 1:1 on
-   purpose. A batched "archive all 12?" turns twelve decisions into one, and the
-   helper's own per-item ordering (append to `done-tasks.md` first, then remove
-   from `open-tasks.md`) is what makes an interrupted sweep recoverable; a batch
-   loop that answered once would throw that away.
+   separately**, noting which ones the user says yes to.
 
    An item marked `[x]` with **no `(done YYYY-MM-DD)` stamp** cannot be aged, so
    it is never in the proposed set. Offer it only if the user asks, and only with
@@ -84,6 +77,41 @@ that names every member, never an implied yes.
 
    Declining is always available and costs nothing: an unarchived task stays
    exactly where it is. Never archive without a yes.
+
+   **If at least one item was confirmed:** an archive is calendar-driven hygiene,
+   not a consequence of any in-flight work, so it never rides another commit.
+   Before creating the archive branch, require a **clean working tree and index**
+   (`git status --porcelain` emits nothing); otherwise STOP before mutating the
+   board. Then switch to the configured default branch, fetch it and fast-forward
+   it with step 1's `--ff-only` pull, and STOP on checkout, fetch, divergence, or
+   pull failure. Verify that HEAD is the fetched default tip. Only then create and
+   switch to a fresh dedicated branch with non-overwriting `git switch -c`, e.g.
+   `chore/board-archive-<YYYY-MM-DD>-<HHMMSSZ>`. Branch creation MUST fail closed
+   if the branch name already exists; never reuse or reset an earlier sweep's
+   branch. Verify the new branch is current and still points at the fetched
+   default tip before the first archive helper call.
+
+   This ordered isolation is what makes the sweep committable at all: writing
+   straight to disk on whatever branch happens to be current would either land
+   on `main` (refused outright) or mix into an unrelated feature branch's staged
+   work (a type split under commit-gate Phase 3) — see #573. One fresh branch per
+   sweep, never reused across sessions.
+
+   On that branch, archive each confirmed item, still one at a time:
+   `"$PY" "{{PLUGIN_ROOT}}/hooks/taskwrite.py" archive <id>`.
+
+   One confirmation per item, one helper call per item — the two map 1:1 on
+   purpose. A batched "archive all 12?" turns twelve decisions into one, and the
+   helper's own per-item ordering (append to `done-tasks.md` first, then remove
+   from `open-tasks.md`) is what makes an interrupted sweep recoverable; a batch
+   loop that answered once would throw that away.
+
+   Once every confirmed item is archived, stage `.codearbiter/open-tasks.md` and
+   `.codearbiter/done-tasks.md` — the very first archive ever run creates
+   `done-tasks.md`; that new file is expected here, not scope creep — and hand
+   off to `{{CMD:chore}} docs`, which exits through `commit-gate` (classification
+   `docs`) and `finishing-a-development-branch` as usual. `.codearbiter/` prose
+   is already a listed `docs` chore type.
 
 Present a one-line summary of what was done and what was declined.
 
