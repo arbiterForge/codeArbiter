@@ -33,20 +33,24 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.2","candidate_commit":"3622633981f9f07fe36292825081979ff62d3621","candidate_package_sha256":"2b4da9e81d8cc37d3f789a4c06e7b04f3319d6134a9d5fb0a64474fb0a22c6fa","candidate_ci_run_id":35401216919,"host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-18","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.2**, Windows, 2026-09-18.
-Fresh ephemeral Codex CLI tasks using the supported `gpt-5.5` model selected the exact 0.13.2
-package installed from merge commit `3622633981f9f07fe36292825081979ff62d3621`'s CI-assembled
-release archive. Its canonical tracked candidate content has digest
-`sha256:2b4da9e81d8cc37d3f789a4c06e7b04f3319d6134a9d5fb0a64474fb0a22c6fa`. The tasks received the
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.3","candidate_commit":"defaf325b047afd5e3ddd20419609e5902ad21d5","candidate_package_sha256":"77263ad68e6cc29a0da52dd7497ccd82bb7b9dcbe9ac5d56b8d0060a11cc3d09","candidate_ci_run_id":35429401061,"host":"Codex CLI 0.155.1 on Windows","verified_on":"2026-09-19","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
+Current verified checkpoint: **Codex CLI 0.155.1**, `ca-codex` **0.13.3**, Windows, 2026-09-19.
+Fresh ephemeral Codex CLI tasks using the current `gpt-6-astra` model selected the exact 0.13.3
+package installed from merge commit `defaf325b047afd5e3ddd20419609e5902ad21d5`'s protected-main
+CI-assembled release archive. Its canonical tracked candidate content has digest
+`sha256:77263ad68e6cc29a0da52dd7497ccd82bb7b9dcbe9ac5d56b8d0060a11cc3d09`. The tasks received the
 repository startup state through SessionStart context, including `host: codex`. With `PLUGIN_ROOT`
-resolved from the installed 0.13.2 `$ca-doctor` skill path, the doctor reported 13 OK, 0 WARN, and
+resolved from the installed 0.13.3 `$ca-doctor` skill path, the doctor reported 13 OK, 0 WARN, and
 0 FAIL, including the packaged Windows/AMD64 artifact capability and live Git-hook backstop. The
 prescribed staging dry-run was denied exactly once with `[H-03]` before execution. The isolated
 qualification used Codex's explicit automation trust bypass only after selecting the CI-vetted
 archive; it did not modify persistent hook trust. This refreshes assembled package selection,
-SessionStart delivery, doctor health, native payload availability, and the live H-03 boundary. It
-does not claim that the full scenario matrices below were rerun.
+SessionStart delivery, current-model doctor health, native payload availability, and the live H-03
+boundary. It does not claim that the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.2**, Windows,
+2026-09-18. Its exact assembled-package run reported 13 OK, 0 WARN, and 0 FAIL and received the
+same pre-execution H-03 denial using the then-supported `gpt-5.5` model.
 
 The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.1**, Windows,
 2026-09-18. Its exact assembled-package run reported 12 OK, 1 WARN, and 0 FAIL and received the
