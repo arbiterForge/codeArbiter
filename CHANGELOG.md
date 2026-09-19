@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.3] - 2026-09-18
+
+### Fixed
+
+- Default new full-lane feature and sprint work to qualified typed HTML
+  specifications and plans while preserving exact-format legacy pairs and
+  keeping HTML farm dispatch disabled.
+- Accept a manually exercised Codex candidate as current release proof only
+  when its canonical package bytes still match and its exact same-repository CI
+  run completed successfully.
+
 ## [2.21.2] - 2026-09-18
 
 ### Fixed

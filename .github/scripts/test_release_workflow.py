@@ -381,6 +381,9 @@ git() {
   if [ "$1" = "log" ] && [ "${2:-}" = "--first-parent" ]; then
     printf '%s' "${STUB_SURFACE_SHA:-$GITHUB_SHA}"
   fi
+  if [ "$1" = "diff" ] && [ "${2:-}" = "--name-only" ]; then
+    printf '%s' "${STUB_DIFF:-}"
+  fi
   return 0
 }
 gh() {
@@ -1746,7 +1749,10 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn('git hash-object "$SURFACE"', block)
         self.assertIn('git rev-parse "$GITHUB_SHA:$COMPANION"', block)
         self.assertIn('git hash-object "$COMPANION"', block)
-        self.assertIn('was not advanced by $GITHUB_SHA', block)
+        self.assertIn('was not advanced by this exact candidate', block)
+        self.assertIn('git diff --name-only "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA"', block)
+        self.assertNotIn("mapfile", block)
+        self.assertIn('[ "$PROOF_DIFF" = docs/codex-parity-testing.md ]', block)
         self.assertLess(block.index("auto-eligible"),
                         block.index('git log --first-parent -1 --format=%H -- "$CHANGELOG"'))
 
@@ -2613,6 +2619,33 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("was not advanced by", proc.stdout)
         self.assertNotIn("CHECKED:forbidden-later", proc.stdout)
+        self.assertEqual(out, "")
+
+    def test_live_proof_only_commit_can_release_unchanged_candidate(self):
+        self.commands = {"ca": ['$PY check.py proof-continuation']}
+        proc, _, out = self._authorize(
+            "auto-preflight", target="ca",
+            overrides={
+                "LIVE_CANDIDATE_SHA": self.OTHER,
+                "STUB_SURFACE_SHA": self.OTHER,
+                "STUB_DIFF": "docs/codex-parity-testing.md\n",
+            })
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("release continuation is limited", proc.stdout)
+        self.assertIn("CHECKED:proof-continuation", proc.stdout)
+        self.assertIn("ca=true", out)
+
+    def test_live_proof_continuation_rejects_any_second_path(self):
+        self.commands = {"ca": ['$PY check.py forbidden-broad-continuation']}
+        proc, _, out = self._authorize(
+            "auto-preflight", target="ca",
+            overrides={
+                "LIVE_CANDIDATE_SHA": self.OTHER,
+                "STUB_SURFACE_SHA": self.OTHER,
+                "STUB_DIFF": "docs/codex-parity-testing.md\nREADME.md\n",
+            })
+        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertNotIn("CHECKED:forbidden-broad-continuation", proc.stdout)
         self.assertEqual(out, "")
 
     def test_candidate_accepts_unchanged_exact_manifest_blobs(self):

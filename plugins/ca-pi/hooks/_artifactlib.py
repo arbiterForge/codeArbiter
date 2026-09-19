@@ -247,13 +247,23 @@ def _resolve_workflow_pair(root: str | Path, slug: str) -> dict[str, object]:
 def _require_authoring_capability(client: "ArtifactClient") -> None:
     """Fail one default-HTML route with a bounded repair diagnostic."""
     try:
-        client.call("capabilities")
+        capabilities = client.call("capabilities")
     except ArtifactError as exc:
         raise ArtifactError(
             "CAPABILITY_MISSING",
             f"repair or reinstall the pinned artifact payload ({exc.code}); "
             "new HTML work cannot fall back to Markdown",
         ) from exc
+    if (
+        not isinstance(capabilities, dict)
+        or capabilities.get("repository_operations_available") is not True
+        or capabilities.get("host_default_enabled") is not True
+    ):
+        raise ArtifactError(
+            "CAPABILITY_MISSING",
+            "repair or reinstall the qualified default-on artifact payload; "
+            "new HTML work cannot fall back to Markdown",
+        )
 
 
 def _select_authoring_route(

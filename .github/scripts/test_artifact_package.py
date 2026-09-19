@@ -228,7 +228,7 @@ class PackageTests(unittest.TestCase):
         installed = INSTALLER.install_payload(consumer, "plugin", INSTALLATION)
         caps = ArtifactClient(repository, installed).call("capabilities")
         self.assertTrue(caps["repository_operations_available"])
-        self.assertFalse(caps["host_default_enabled"])
+        self.assertTrue(caps["host_default_enabled"])
 
     def test_capability_upgrade_does_not_reinterpret_legacy_pair(self):
         slug = "reaudit-ra03-read-only-review-aggregation"
@@ -380,7 +380,7 @@ class PackageTests(unittest.TestCase):
             with mock.patch.dict(os.environ, {"PATH": str(empty_path)}):
                 capabilities = client.call("capabilities")
             self.assertTrue(capabilities["repository_operations_available"])
-            self.assertFalse(capabilities["host_default_enabled"])
+            self.assertTrue(capabilities["host_default_enabled"])
 
     def test_final_normal_packages_bind_exact_source_and_promoted_bytes(self):
         source_commit = subprocess.check_output(
@@ -1323,7 +1323,7 @@ class PackageTests(unittest.TestCase):
                 mock.patch.object(PACKAGER.subprocess, "Popen", side_effect=AssertionError("child process")):
             result = self.stage(output=self.base / "offline-stage",
                                 required_platforms=[native_platform])
-        self.assertFalse(result["host_default_enabled"])
+        self.assertTrue(result["host_default_enabled"])
 
     def test_linked_ancestor_with_missing_descendant_cannot_mutate_external_tree(self):
         external = self.base / "external"
