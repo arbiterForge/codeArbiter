@@ -344,6 +344,21 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
                     self._select("sprint", "full", client)
                 self.assertEqual(self._snapshot(), before)
 
+    def test_disabled_or_read_only_capability_fails_before_authoring_writes(self) -> None:
+        client = ArtifactClient(self.root, self.installation)
+        cases = (
+            {"repository_operations_available": False, "host_default_enabled": True},
+            {"repository_operations_available": True, "host_default_enabled": False},
+        )
+        for capabilities in cases:
+            with self.subTest(capabilities=capabilities):
+                before = self._snapshot()
+                with mock.patch.object(client, "call", return_value=capabilities):
+                    with self.assertRaises(ArtifactError) as caught:
+                        self._select("sprint", "full", client)
+                self.assertEqual(caught.exception.code, "CAPABILITY_MISSING")
+                self.assertEqual(self._snapshot(), before)
+
     def test_selection_rechecks_namespace_after_capability_probe(self) -> None:
         shadow = self.root / ".codearbiter/specs/flow.md"
         installation = self.root / "synthetic-installation"
@@ -354,7 +369,11 @@ class AuthoringRouteSelectionTest(unittest.TestCase):
             self.assertEqual(operation, "capabilities")
             shadow.parent.mkdir(parents=True, exist_ok=True)
             shadow.write_text("# adversarial legacy shadow\n", encoding="utf-8")
-            return {"protocol": "codearbiter.artifact-api/0.1.0"}
+            return {
+                "protocol": "codearbiter.artifact-api/0.1.0",
+                "repository_operations_available": True,
+                "host_default_enabled": True,
+            }
 
         with mock.patch.object(client, "call", side_effect=inject):
             with self.assertRaises(ArtifactError) as caught:

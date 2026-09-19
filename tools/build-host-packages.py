@@ -541,7 +541,7 @@ def stage_artifact_host_payloads(*, candidates: list[Path],
         "workflow_run": trusted_workflow_run,
         "promotion_receipt": str(output / "artifact-promotion.json"),
         "promotion_receipt_sha256": hashlib.sha256(promotion_bytes).hexdigest(),
-        "host_default_enabled": False,
+        "host_default_enabled": True,
     }
 
 

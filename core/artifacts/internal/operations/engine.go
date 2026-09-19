@@ -37,7 +37,7 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	if op == "capabilities" {
-		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": false, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
+		return object{"binary": "ca-artifact", "version": "0.1.0", "protocol": Protocol, "schema_version": model.SchemaVersion, "renderer": render.Version, "operations": Names(), "storage_backend": store.Backend, "repository_operations_available": store.NativeWrites, "platform": runtime.GOOS + "/" + runtime.GOARCH, "public_registrations_added": int64(0), "host_default_enabled": true, "runtime_downloads": false, "threat_model": "cooperating workflow; not a sandbox against unrestricted same-user writes"}, nil
 	}
 	if op == "schema" {
 		switch model.S(r["name"]) {
