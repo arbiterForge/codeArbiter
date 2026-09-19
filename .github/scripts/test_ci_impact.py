@@ -1004,6 +1004,17 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("needs.changes.outputs.impact == 'true'", ci)
         self.assertIn("needs.changes.outputs.ca-pi == 'true'", ci)
 
+    def test_npm_publishlib_is_gated_on_the_ca_pi_impact_filter(self):
+        """A PR touching only .github/scripts/_npm_publishlib.py must trigger the
+        job that runs test_pi_package.py — its own regression tests. Absent
+        this, an edit to the release-time cold-execution-receipt verifier
+        could merge without its own test suite ever executing (the coverage
+        gap that let 4b437153 silently break every release from main)."""
+        ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        ca_pi_filter = paths_filter(ci, "ca-pi")
+        self.assertIn(".github/scripts/_npm_publishlib.py", ca_pi_filter)
+        self.assertIn(".github/scripts/test_pi_package.py", ca_pi_filter)
+
     def test_ci_uses_the_typed_check_name_schema_for_every_owned_job(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         expected = (
