@@ -79,6 +79,14 @@ def test_commit_gate_phase6_board_edit_exemption():
         ),
         "commit-gate SKILL.md Phase 6: must state that a clean transition board edit is retained / not scope creep",
     )
+    check(
+        "own phase 3 classification" in phase6.lower(),
+        "commit-gate SKILL.md Phase 6: must state that a commit whose own Phase "
+        "3 classification IS the board change (e.g. an archival-sweep docs "
+        "chore) is in-scope by that classification directly, without needing "
+        "classify_board_diff to recognize a fourth transition (#573) -- a "
+        "partial revert dropping just this paragraph must fail this test",
+    )
 
 
 # ---- AC-05: commit-gate Phase 7 stages the board edit by explicit path (T-07) --
@@ -255,6 +263,85 @@ def test_decompose_intent_only():
     )
 
 
+# ---- Issue #573: standup step 6 routes the archival sweep through a chore branch --
+def test_standup_archival_sweep_routes_through_chore():
+    """#573: the archival sweep must not write straight to open-tasks.md /
+    done-tasks.md on whatever branch happens to be current -- that produces an
+    uncommittable diff (STOPped by commit-gate Phase 2 on `main`, or flagged as
+    scope creep riding an unrelated feature commit under Phase 3). The sweep
+    must establish its own dedicated branch before archiving anything, and hand
+    off to a chore commit afterward so the removal + done-tasks.md append land
+    as a single in-scope docs commit -- no classify_board_diff change, no
+    ADR-0008 amendment needed.
+
+    Checked across all 4 rendered copies (host token substitution means the
+    chore/task command name itself varies -- `{{CMD:chore}}` / `/ca:chore` /
+    `$ca-chore` / `/ca-chore` -- so assertions key on host-neutral substrings),
+    matching the multi-copy pattern `test_debug_uses_helper` and
+    `test_context_creation_board_route` already use in this file.
+
+    Also asserts the superseded direct-write instruction ("archive only the
+    ones the user says yes to", followed immediately by the helper call with
+    no branch step) is gone -- per this repo's mutation-testing convention, a
+    partial revert that restores the old in-place archive alongside the new
+    branch/chore prose must fail this test, not pass it.
+    """
+    copies = [
+        "core/surface/commands/standup.md",
+        "plugins/ca/commands/standup.md",
+        "plugins/ca-codex/skills/ca-standup/SKILL.md",
+        "plugins/ca-pi/skills/ca-standup/SKILL.md",
+    ]
+    seen = 0
+    for relative in copies:
+        if not (ROOT / relative).exists():
+            continue
+        seen += 1
+        full = read_repo(relative)
+        t = full.lower()
+        step6_start = t.find("6. **archival sweep")
+        if step6_start == -1:
+            check(False, f"{relative}: step 6 (archival sweep) heading not found")
+            continue
+        next_section = t.find("\n## when not to use", step6_start)
+        step6 = full[step6_start:next_section] if next_section != -1 else full[step6_start:]
+        step6_lower = step6.lower()
+
+        check(
+            "dedicated branch" in step6_lower,
+            f"{relative}: step 6 must create a dedicated branch before archiving, "
+            "or the sweep writes on whatever branch is current (#573)",
+        )
+        check(
+            "chore" in step6_lower and "commit-gate" in step6_lower,
+            f"{relative}: step 6 must hand off to the chore lane, which exits "
+            "through commit-gate, so the archive lands as a single in-scope "
+            "docs commit (#573)",
+        )
+        check(
+            "never batched" in step6_lower,
+            f"{relative}: step 6 must still archive per item, never batched -- "
+            "the branch/chore handoff must not regress this existing invariant",
+        )
+        check(
+            "done-tasks.md" in step6,
+            f"{relative}: step 6 must name done-tasks.md so the first-ever "
+            "archive's new file is understood as expected, not scope creep (#573)",
+        )
+        check(
+            "noting which ones the user says yes to" in step6_lower,
+            f"{relative}: step 6 must defer archiving until after the branch is "
+            "established, not act on each yes immediately (#573)",
+        )
+        check(
+            "archive only the ones the user says yes to" not in step6_lower,
+            f"{relative}: step 6 still carries the superseded direct-write "
+            "instruction (archive immediately, no branch step) -- a partial "
+            "revert would restore the pre-#573 uncommittable sweep",
+        )
+    check(seen >= 4, f"expected at least 4 rendered standup copies, found {seen}")
+
+
 # --- APPEND NEW test_* FUNCTIONS ABOVE THIS LINE --------------------------------
 # Each new function must also be added to TESTS and (if it reads a new file)
 # to REQUIRED_FILES below.
@@ -407,6 +494,7 @@ TESTS = [
     test_harvest_md_commit_gate_pre_commit,
     test_standup_advisory_board_sweep,
     test_decompose_intent_only,
+    test_standup_archival_sweep_routes_through_chore,
 ]
 # ---------------------------------------------------------------------------
 
