@@ -200,6 +200,7 @@ jobs:
               - 'plugins/ca/tools/redactor.ts'
               - 'package.json'
               - 'tools/build-host-packages.py'
+              - '.github/scripts/_npm_publishlib.py'
               - '.github/scripts/test_pi_package.py'
               - '.github/scripts/pi_host_locks.py'
               - '.github/scripts/test_pi_host_locks.py'
