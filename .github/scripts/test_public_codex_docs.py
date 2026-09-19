@@ -283,6 +283,8 @@ class PublicCodexDocsTest(unittest.TestCase):
             "doctor reported 12 OK, 1 WARN, and",
             "0 FAIL, including",
             "stale `ca` and `ca-pi` drop-in registry entries",
+            "the fresher\nregistered sibling was active",
+            "the stale entries were skipped rather than allowed to\nfalse-block",
             "denied exactly once with `[H-03]` before execution",
             "does not claim that the full scenario matrices below were rerun",
         ):
