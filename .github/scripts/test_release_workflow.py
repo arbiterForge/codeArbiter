@@ -1751,7 +1751,8 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn('git hash-object "$COMPANION"', block)
         self.assertIn('was not advanced by this exact candidate', block)
         self.assertIn('git diff --name-only "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA"', block)
-        self.assertIn('[ "${PROOF_DIFF[0]}" = docs/codex-parity-testing.md ]', block)
+        self.assertNotIn("mapfile", block)
+        self.assertIn('[ "$PROOF_DIFF" = docs/codex-parity-testing.md ]', block)
         self.assertLess(block.index("auto-eligible"),
                         block.index('git log --first-parent -1 --format=%H -- "$CHANGELOG"'))
 
