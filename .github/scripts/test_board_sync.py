@@ -255,6 +255,50 @@ def test_decompose_intent_only():
     )
 
 
+# ---- Issue #573: standup step 6 routes the archival sweep through a chore branch --
+def test_standup_archival_sweep_routes_through_chore():
+    """#573: the archival sweep must not write straight to open-tasks.md /
+    done-tasks.md on whatever branch happens to be current -- that produces an
+    uncommittable diff (STOPped by commit-gate Phase 2 on `main`, or flagged as
+    scope creep riding an unrelated feature commit under Phase 3). The sweep
+    must establish its own dedicated branch before archiving anything, and hand
+    off to `/ca:chore` afterward so the removal + done-tasks.md append land as
+    a single in-scope docs commit -- no classify_board_diff change, no ADR-0008
+    amendment needed.
+    """
+    full = read_repo("plugins/ca/commands/standup.md")
+    t = full.lower()
+    step6_start = t.find("6. **archival sweep")
+    if step6_start == -1:
+        check(False, "standup.md: step 6 (archival sweep) heading not found")
+        return
+    next_section = t.find("\n## when not to use", step6_start)
+    step6 = full[step6_start:next_section] if next_section != -1 else full[step6_start:]
+    step6_lower = step6.lower()
+
+    check(
+        any(phrase in step6_lower
+            for phrase in ["dedicated branch", "create a branch", "new branch", "own branch"]),
+        "standup.md step 6: must create a dedicated branch before archiving, "
+        "or the sweep writes on whatever branch is current (#573)",
+    )
+    check(
+        "/ca:chore" in step6,
+        "standup.md step 6: must hand off to /ca:chore so the archive lands "
+        "as a single in-scope docs commit (#573)",
+    )
+    check(
+        "never batched" in step6_lower or "never bundle" in step6_lower,
+        "standup.md step 6: must still archive per item, never batched -- "
+        "the branch/chore handoff must not regress this existing invariant",
+    )
+    check(
+        "done-tasks.md" in step6,
+        "standup.md step 6: must name done-tasks.md so the first-ever "
+        "archive's new file is understood as expected, not scope creep (#573)",
+    )
+
+
 # --- APPEND NEW test_* FUNCTIONS ABOVE THIS LINE --------------------------------
 # Each new function must also be added to TESTS and (if it reads a new file)
 # to REQUIRED_FILES below.
@@ -407,6 +451,7 @@ TESTS = [
     test_harvest_md_commit_gate_pre_commit,
     test_standup_advisory_board_sweep,
     test_decompose_intent_only,
+    test_standup_archival_sweep_routes_through_chore,
 ]
 # ---------------------------------------------------------------------------
 
