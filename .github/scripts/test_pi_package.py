@@ -746,6 +746,11 @@ def load_build_host_packages():
     return module
 
 
+def _producer_ast() -> ast.Module:
+    source = (REPO / "tools" / "build-host-packages.py").read_text(encoding="utf-8")
+    return ast.parse(source)
+
+
 def producer_cold_receipt_keys() -> set[str]:
     """Statically extract the field names the real cold_execute_artifact_host_payload
     receipt literal assigns, without driving its cold process/subprocess execution.
@@ -754,23 +759,48 @@ def producer_cold_receipt_keys() -> set[str]:
     receipt in tools/build-host-packages.py makes this drift-detectable instead
     of silently outrunning the release-time consumer's COLD_FIELDS allowlist
     (as happened in 4b437153, which broke every release from main)."""
-    source = (REPO / "tools" / "build-host-packages.py").read_text(encoding="utf-8")
-    tree = ast.parse(source)
-    for node in ast.walk(tree):
+    matches = [
+        node for node in ast.walk(_producer_ast())
         if (
             isinstance(node, ast.Assign)
             and len(node.targets) == 1
             and isinstance(node.targets[0], ast.Name)
             and node.targets[0].id == "cold_receipt"
             and isinstance(node.value, ast.Dict)
-        ):
-            keys = set()
-            for key in node.value.keys:
-                if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
-                    raise AssertionError("cold_receipt literal has a non-literal-string key")
-                keys.add(key.value)
-            return keys
-    raise AssertionError("could not locate the cold_receipt dict literal in build-host-packages.py")
+        )
+    ]
+    if not matches:
+        raise AssertionError("could not locate the cold_receipt dict literal in build-host-packages.py")
+    if len(matches) > 1:
+        raise AssertionError("build-host-packages.py has more than one cold_receipt dict literal")
+    keys = set()
+    for key in matches[0].value.keys:
+        if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
+            raise AssertionError("cold_receipt literal has a non-literal-string key")
+        keys.add(key.value)
+    return keys
+
+
+def producer_installed_workflow_format() -> str:
+    """Statically extract the installed-host-workflow format string the real
+    producer compares workflow_result["format"] against, independent of the
+    consumer's own INSTALLED_WORKFLOW_FORMAT constant.
+
+    A test that only compared the consumer's constant to itself would not
+    catch a typo in that constant while the producer emits a different real
+    value — the same class of drift COLD_FIELDS silently outran in 4b437153."""
+    pattern = re.compile(r"\Acodearbiter\.installed-host-workflow/\d+\.\d+\.\d+\Z")
+    found = {
+        node.value for node in ast.walk(_producer_ast())
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+        and pattern.fullmatch(node.value)
+    }
+    if len(found) != 1:
+        raise AssertionError(
+            f"expected exactly one installed-host-workflow format literal in "
+            f"build-host-packages.py, found {sorted(found)}"
+        )
+    return next(iter(found))
 
 
 def distributable_violations(root: Path, files: list[Path]) -> list[str]:
@@ -3359,6 +3389,7 @@ class NpmPublishContractTest(unittest.TestCase):
         failed the release-time exact-schema check and broke every release."""
         helper = self._helper()
         self.assertEqual(producer_cold_receipt_keys(), helper.COLD_FIELDS)
+        self.assertEqual(producer_installed_workflow_format(), helper.INSTALLED_WORKFLOW_FORMAT)
 
     def test_exact_cold_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
         helper = self._helper()
@@ -3436,8 +3467,8 @@ class NpmPublishContractTest(unittest.TestCase):
                 ({**original, "markdown_shadow_count": 1}, "not bound to the exact cohort"),
                 ({**original, "markdown_shadow_count": False}, "not bound to the exact cohort"),
                 ({**original, "installed_workflow_format": "wrong"}, "not bound to the exact cohort"),
-                ({**original, "installed_workflow_response_sha256": "not-hex"}, "not bound to the exact cohort"),
-                ({**original, "installed_bridge_sha256": "not-hex"}, "not bound to the exact cohort"),
+                ({**original, "installed_workflow_response_sha256": "e" * 65}, "not bound to the exact cohort"),
+                ({**original, "installed_bridge_sha256": "E" * 64}, "not bound to the exact cohort"),
             ):
                 first.write_text(json.dumps(mutation))
                 with self.subTest(message=message), mock.patch.object(
