@@ -273,6 +273,32 @@ class PublicCodexDocsTest(unittest.TestCase):
 
         self._assert_live_baseline_marker(runbook, manifest)
 
+    def test_codex_live_checkpoint_retains_observed_and_historical_evidence(self):
+        """The release record keeps current observations and prior immutable bindings."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        current = runbook.split("Current verified checkpoint:", 1)[1]
+        current = current.split("The earlier verified checkpoint remains", 1)[0]
+        for claim in (
+            "repository startup state through SessionStart context, including `host: codex`",
+            "doctor reported 12 OK, 1 WARN, and",
+            "0 FAIL, including",
+            "stale `ca` and `ca-pi` drop-in registry entries",
+            "the fresher\nregistered sibling was active",
+            "the stale entries were skipped rather than allowed to\nfalse-block",
+            "denied exactly once with `[H-03]` before execution",
+            "does not claim that the full scenario matrices below were rerun",
+        ):
+            self.assertIn(claim, current)
+
+        prior = runbook.split("`ca-codex` **0.13.3**", 1)[1]
+        prior = prior.split("The earlier verified checkpoint remains", 1)[0]
+        for binding in (
+            "defaf325b047afd5e3ddd20419609e5902ad21d5",
+            "77263ad68e6cc29a0da52dd7497ccd82bb7b9dcbe9ac5d56b8d0060a11cc3d09",
+            "35429401061",
+        ):
+            self.assertIn(binding, prior)
+
     def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
         """A recorded-candidate package-byte change invalidates retained live proof."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
