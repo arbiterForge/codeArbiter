@@ -87,6 +87,24 @@ def test_commit_gate_phase6_board_edit_exemption():
         "classify_board_diff to recognize a fourth transition (#573) -- a "
         "partial revert dropping just this paragraph must fail this test",
     )
+    carveout_start = phase6.lower().find("this does not cover a commit")
+    carveout_end = phase6.lower().find("\n\n**provenance", carveout_start)
+    archival_carveout = (
+        phase6[carveout_start:carveout_end]
+        if carveout_start != -1 and carveout_end != -1
+        else ""
+    ).lower()
+    check(
+        "in-scope by that classification directly" in archival_carveout,
+        "commit-gate SKILL.md Phase 6: the archival carve-out must state that "
+        "the board change is in-scope by its own Phase 3 classification directly",
+    )
+    check(
+        "classify_board_diff" in archival_carveout
+        and "is not consulted" in archival_carveout,
+        "commit-gate SKILL.md Phase 6: the archival carve-out must state that "
+        "classify_board_diff is not consulted",
+    )
 
 
 # ---- AC-05: commit-gate Phase 7 stages the board edit by explicit path (T-07) --
@@ -306,6 +324,40 @@ def test_standup_archival_sweep_routes_through_chore():
         next_section = t.find("\n## when not to use", step6_start)
         step6 = full[step6_start:next_section] if next_section != -1 else full[step6_start:]
         step6_lower = step6.lower()
+        step6_normalized = " ".join(step6_lower.split())
+
+        clean_index = step6_normalized.find("clean working tree and index")
+        switch_default = step6_normalized.find("switch to the configured default branch")
+        fetch_default = step6_normalized.find("fetch", switch_default)
+        ff_only = step6_normalized.find("--ff-only", fetch_default)
+        create_switch = step6_normalized.find("create and switch to a fresh")
+        archive_helpers = []
+        search_from = 0
+        while True:
+            helper_at = step6_normalized.find("taskwrite.py", search_from)
+            if helper_at == -1:
+                break
+            archive_helpers.append(helper_at)
+            search_from = helper_at + 1
+
+        check(
+            -1 not in [clean_index, switch_default, fetch_default, ff_only, create_switch]
+            and clean_index < switch_default < fetch_default < ff_only < create_switch,
+            f"{relative}: step 6 must require, in order, a clean working tree "
+            "and index, switching to the configured default branch, fetching it, "
+            "its --ff-only update, and creating/switching to the fresh archive branch",
+        )
+        check(
+            archive_helpers and all(create_switch < helper for helper in archive_helpers),
+            f"{relative}: every taskwrite.py archive invocation must follow the "
+            "complete archive-branch isolation sequence",
+        )
+        check(
+            "<yyyy-mm-dd>-<hhmmssz>" in step6_normalized
+            and "fail closed if the branch name already exists" in step6_normalized,
+            f"{relative}: the archive branch name must be unique per sweep and "
+            "branch-name collisions must fail closed",
+        )
 
         check(
             "dedicated branch" in step6_lower,

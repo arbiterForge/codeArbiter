@@ -552,12 +552,18 @@ jobs:
           TAGS=$(git tag -l)
           PYTHON=$(python3 -c 'import sys; print(sys.executable)')
           LIVE_CANDIDATE_SHA=${LIVE_CANDIDATE_SHA:-$GITHUB_SHA}
-          PROOF_ONLY=false
-          PROOF_DIFF=$(git diff --name-only "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA")
+          UNCHANGED_RELEASE_PAYLOAD=false
+          # A green exact-head repair may continue an older authorized
+          # candidate only while every shipped payload, user-visible release
+          # surface, and npm implicit root file is byte-identical in Git.
           if [ "$LIVE_CANDIDATE_SHA" != "$GITHUB_SHA" ] && \
-             [ "$PROOF_DIFF" = docs/codex-parity-testing.md ]; then
-            PROOF_ONLY=true
-            echo "release continuation is limited to the Codex live-proof record"
+             git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" -- \
+               CHANGELOG.md package.json \
+               ':(top,icase)README*' ':(top,icase)COPYING*' \
+               ':(top,icase)LICENSE*' ':(top,icase)LICENCE*' \
+               plugins/ca plugins/ca-codex plugins/ca-pi plugins/ca-sandbox; then
+            UNCHANGED_RELEASE_PAYLOAD=true
+            echo "release continuation is limited to unchanged release payloads"
           fi
           OUTPUTS=()
           COHORT_TARGETS=()
@@ -583,7 +589,7 @@ jobs:
               # meaningless rewrite of unchanged JSON.
               CHANGELOG_COMMIT=$(git log --first-parent -1 --format=%H -- "$CHANGELOG")
               if [ "$CHANGELOG_COMMIT" != "$GITHUB_SHA" ] && \
-                 { [ "$PROOF_ONLY" != true ] || [ "$CHANGELOG_COMMIT" != "$LIVE_CANDIDATE_SHA" ]; }; then
+                 { [ "$UNCHANGED_RELEASE_PAYLOAD" != true ] || [ "$CHANGELOG_COMMIT" != "$LIVE_CANDIDATE_SHA" ]; }; then
                 echo "::error::$TARGET release surface $CHANGELOG was not advanced by this exact candidate"
                 exit 1
               fi

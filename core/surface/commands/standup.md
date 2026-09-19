@@ -79,13 +79,23 @@ that names every member, never an implied yes.
    exactly where it is. Never archive without a yes.
 
    **If at least one item was confirmed:** an archive is calendar-driven hygiene,
-   not a consequence of any in-flight work, so it never rides another commit — it
-   gets its own dedicated branch, created off an up-to-date default (reusing step
-   1's fetch/ff-pull), e.g. `chore/board-archive-<date>`. This is what makes the
-   sweep committable at all: writing straight to disk on whatever branch happens
-   to be current would either land on `main` (refused outright) or mix into an
-   unrelated feature branch's staged work (a type split under commit-gate Phase
-   3) — see #573. One branch per sweep, never reused across sessions.
+   not a consequence of any in-flight work, so it never rides another commit.
+   Before creating the archive branch, require a **clean working tree and index**
+   (`git status --porcelain` emits nothing); otherwise STOP before mutating the
+   board. Then switch to the configured default branch, fetch it and fast-forward
+   it with step 1's `--ff-only` pull, and STOP on checkout, fetch, divergence, or
+   pull failure. Verify that HEAD is the fetched default tip. Only then create and
+   switch to a fresh dedicated branch with non-overwriting `git switch -c`, e.g.
+   `chore/board-archive-<YYYY-MM-DD>-<HHMMSSZ>`. Branch creation MUST fail closed
+   if the branch name already exists; never reuse or reset an earlier sweep's
+   branch. Verify the new branch is current and still points at the fetched
+   default tip before the first archive helper call.
+
+   This ordered isolation is what makes the sweep committable at all: writing
+   straight to disk on whatever branch happens to be current would either land
+   on `main` (refused outright) or mix into an unrelated feature branch's staged
+   work (a type split under commit-gate Phase 3) — see #573. One fresh branch per
+   sweep, never reused across sessions.
 
    On that branch, archive each confirmed item, still one at a time:
    `"$PY" "{{PLUGIN_ROOT}}/hooks/taskwrite.py" archive <id>`.

@@ -419,7 +419,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "0c40218ebc1b718c2a065a15068db2e1ae541d61",
+      "hash": "fe231aec7ab06874a9c1c3aa385ada2c77056f8f",
       "path": ".github/workflows/release.yml"
     }
   ],
