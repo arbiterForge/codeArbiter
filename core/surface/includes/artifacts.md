@@ -55,11 +55,29 @@ command, result, approval or reviewer to satisfy a required field.
 
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved
-content-addressed authority-source store. The artifact adapter does not expose an
-event-authoring helper: it receives only that existing source's exact locator and
-digest and passes those two fields to `capture`. Never call `capture` with
-request-authored `authority_kind`, verdict, actor, or source-text labels, and
-never create an authority source merely to satisfy an artifact transition.
+content-addressed authority-source store. For interactive user approval, arm the
+exact current artifact immediately before asking the approval question:
+
+```sh
+python "{{PLUGIN_ROOT}}/hooks/_approvallib.py" arm --root "{{PROJECT_DIR}}" --artifact-id <artifact-id>
+```
+
+Present the returned `reply` value verbatim and require that exact reply. The
+`UserPromptSubmit` hook rechecks the armed identity, records the host-observed
+prompt as the policy-owned source, captures its receipt, and applies approval.
+An ordinary `yes`, a changed artifact, a wrong token, or a model-authored event
+does not confer authority. On the next turn, verify `validate` at the `approved`
+gate before continuing. If the user declines or the artifact changes, cancel the
+exact pending request before arming another one:
+
+```sh
+python "{{PLUGIN_ROOT}}/hooks/_approvallib.py" cancel --root "{{PROJECT_DIR}}" --artifact-id <artifact-id>
+```
+
+Cancellation records no authority. Other workflow authorities must use their
+corresponding host-owned adapters; never call `capture` with request-authored
+`authority_kind`, verdict, actor, or source-text labels, and never create an
+authority source merely to satisfy an artifact transition.
 `capture` does not change approval state. `approve` checks the resulting receipt
 against current ready content. A missing or changed receipt, captured event, or
 still-present policy source returns `AUTHORITY_UNVERIFIED`. Receipt format 0.1.0

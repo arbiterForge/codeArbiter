@@ -258,19 +258,25 @@
     {
       "id": "artifact-binary-bridge",
       "area": "context-capability",
-      "owner": "shared Python host bridge",
+      "owner": "shared Python host bridges",
       "live": true,
       "default_path": true,
       "treatment": "html-capable",
       "closure": "closed-installed-payload-bridge",
-      "task_refs": ["T-012", "T-021"],
-      "canonical_paths": ["core/pysrc/_artifactlib.py"],
+      "task_refs": ["T-012", "T-013", "T-021"],
+      "canonical_paths": [
+        "core/pysrc/_artifactlib.py",
+        "core/pysrc/_approvallib.py"
+      ],
       "generated_paths": [
         "plugins/ca/hooks/_artifactlib.py",
+        "plugins/ca/hooks/_approvallib.py",
         "plugins/ca-codex/hooks/_artifactlib.py",
-        "plugins/ca-pi/hooks/_artifactlib.py"
+        "plugins/ca-codex/hooks/_approvallib.py",
+        "plugins/ca-pi/hooks/_artifactlib.py",
+        "plugins/ca-pi/hooks/_approvallib.py"
       ],
-      "reason": "The bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. Publication read-back remains a separate post-merge release gate."
+      "reason": "The binary bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. The approval bridge binds a host-observed exact prompt to current artifact identity before capture and approval. Publication read-back and non-user authority adapters remain separate gates."
     },
     {
       "id": "governing-spec-discovery",

@@ -109,7 +109,7 @@ The current evidence does not cover:
 
 - hosted exact-head Windows, Linux and macOS results for the committed pilot revision;
 - actual Claude, Codex and Pi release-channel installation and provenance;
-- production authority-adapter captures or full real-host feature/sprint traces;
+- production SMARTS/reviewer/verification authority-adapter captures or full real-host feature/sprint traces;
 - physical power interruption or remote/network filesystem guarantees; or
 - native multi-browser and full accessibility qualification; or
 - current frontier/low-tier HTML farm performance.

@@ -368,6 +368,7 @@ jobs:
               - 'tools/generate-artifact-types.py'
               - 'tools/create-artifact-examples.py'
               - '.github/scripts/test_artifact_bridge.py'
+              - '.github/scripts/test_artifact_approval_adapter.py'
               - '.github/scripts/test_artifact_authoring.py'
               - '.github/scripts/test_artifact_installed_host.py'
               - '.github/scripts/test_artifact_consumers.py'
@@ -491,6 +492,10 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_artifact_bridge.py
+      - name: Test host-owned artifact approval capture
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_approval_adapter.py
       - name: Test canonical spec and plan authoring behavior
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate

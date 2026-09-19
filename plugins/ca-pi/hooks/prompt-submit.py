@@ -64,6 +64,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hostapi  # noqa: E402 — host seam (ADR-0011)
+import _approvallib  # noqa: E402 — host-owned artifact approval capture
 import _hooklib  # noqa: E402
 import _modelib  # noqa: E402 — mode plane core (T-06..T-16, Lane A)
 import _readinjectlib  # noqa: E402 — marker_path(prefix=) (T-30)
@@ -366,38 +367,47 @@ def _codex_allow_envelope(additional_context):
 # Injection (job 2), host-neutral core + per-host output
 # ---------------------------------------------------------------------------
 
-def _inject_claude(payload, host, root, session_id):
+def _inject_claude(payload, host, root, session_id, approval_context=""):
     mode, diag = _effective_mode(root, session_id, payload)
     if diag:
         sys.stderr.write("codeArbiter: " + diag + "\n")
     generation = _read_compaction_generation(root, session_id)
     if _already_injected(root, session_id, mode, generation):
+        if approval_context:
+            print(approval_context)
         return
     safety, body = _persona_for_mode(host.plugin_root(), mode)
     if _persona_unavailable(safety, body):
         sys.stderr.write("codeArbiter: persona sources incomplete for mode '{}' — "
                          "injecting nothing this turn rather than a body without its "
                          "safety floor.\n".format(mode))
+        if approval_context:
+            print(approval_context)
         return
     composed, _truncated = _compose_persona(safety, body)
-    print(composed)
+    print("\n\n".join(value for value in (approval_context, composed) if value))
     _record_injected(root, session_id, mode, generation)
 
 
-def _inject_codex(payload, host, root, session_id):
+def _inject_codex(payload, host, root, session_id, approval_context=""):
     mode, diag = _effective_mode(root, session_id, payload)
     generation = _read_compaction_generation(root, session_id)
     if _already_injected(root, session_id, mode, generation):
+        if approval_context:
+            print(json.dumps(_codex_allow_envelope(approval_context)))
         return
     safety, body = _persona_for_mode(host.plugin_root(), mode)
     if _persona_unavailable(safety, body):
         sys.stderr.write("codeArbiter: persona sources incomplete for mode '{}' — "
                          "injecting nothing this turn rather than a body without its "
                          "safety floor.\n".format(mode))
+        if approval_context:
+            print(json.dumps(_codex_allow_envelope(approval_context)))
         return
     composed, _truncated = _compose_persona(
         safety, body, limit_tokens=CODEX_ADDITIONAL_CONTEXT_LIMIT)
-    print(json.dumps(_codex_allow_envelope(composed)))
+    context = "\n\n".join(value for value in (approval_context, composed) if value)
+    print(json.dumps(_codex_allow_envelope(context)))
     _record_injected(root, session_id, mode, generation)
 
 
@@ -405,7 +415,7 @@ def _inject_codex(payload, host, root, session_id):
 # UserPromptSubmit dispatch (jobs 1 + 2)
 # ---------------------------------------------------------------------------
 
-def _handle_claude(payload, host, root, session_id, token):
+def _handle_claude(payload, host, root, session_id, token, approval_context=""):
     if token == _modelib.MODE_TOKEN_REPORT:
         mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
         sys.stderr.write(_report_stderr_line(mode, diag) + "\n")
@@ -415,11 +425,11 @@ def _handle_claude(payload, host, root, session_id, token):
                                 host_name=host.name)
         sys.stderr.write(_flip_stderr_line(token, result) + "\n")
         return 2
-    _inject_claude(payload, host, root, session_id)
+    _inject_claude(payload, host, root, session_id, approval_context)
     return 0
 
 
-def _handle_codex(payload, host, root, session_id, token):
+def _handle_codex(payload, host, root, session_id, token, approval_context=""):
     if token == _modelib.MODE_TOKEN_REPORT:
         mode, diag = _modelib.current_mode(session_id, root=root, payload=payload)
         msg = _report_stderr_line(mode, diag)
@@ -431,7 +441,7 @@ def _handle_codex(payload, host, root, session_id, token):
         msg = _flip_stderr_line(token, result)
         print(json.dumps(_codex_block_envelope(msg, msg)))
         return 0
-    _inject_codex(payload, host, root, session_id)
+    _inject_codex(payload, host, root, session_id, approval_context)
     return 0
 
 
@@ -444,9 +454,22 @@ def _handle_user_prompt_submit(payload, host):
     prompt = payload.get("prompt")
     prompt = prompt if isinstance(prompt, str) else ""
     token = _modelib.match_mode_token(prompt)
+    approval_context = ""
+    if token is None:
+        approval_context = _approvallib.consume_from_hook(
+            root=root,
+            plugin_root=host.plugin_root(),
+            prompt=prompt,
+            host=host.name,
+            session_id=session_id,
+        )
     if host.name == "codex":
-        return _handle_codex(payload, host, state_root, session_id, token)
-    return _handle_claude(payload, host, state_root, session_id, token)
+        return _handle_codex(
+            payload, host, state_root, session_id, token, approval_context
+        )
+    return _handle_claude(
+        payload, host, state_root, session_id, token, approval_context
+    )
 
 
 def _handle_precompact(payload, host):

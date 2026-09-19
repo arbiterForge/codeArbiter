@@ -301,11 +301,14 @@ def load_bridge(plugin_root: Path):
 
 
 class Workflow:
-    def __init__(self, bridge, root: Path, installation: Path, phase: str):
+    def __init__(self, bridge, root: Path, installation: Path, phase: str,
+                 host: str, plugin_root: Path):
         self.bridge = bridge
         self.root = root
         self.client = bridge.ArtifactClient(root, installation)
         self.phase = phase
+        self.host = host
+        self.plugin_root = plugin_root
         self.sequence = 0
 
     def operation_id(self, purpose: str) -> str:
@@ -330,8 +333,68 @@ class Workflow:
         return self.client.call("capture", {"source_ref": source_ref, "source_sha256": digest})["receipt"]
 
     def approve(self, artifact_id: str) -> None:
-        receipt = self.stage_policy_event(artifact_id, artifact_id, "approval", "user_workflow", "approved", {})
-        self.mutate("approve", artifact_id, receipt=receipt)
+        adapter = self.plugin_root / "hooks" / "_approvallib.py"
+        prompt_submit = self.plugin_root / "hooks" / "prompt-submit.py"
+        if not adapter.is_file() or not prompt_submit.is_file():
+            raise AssertionError("installed host omits the approval prompt seam")
+        armed_process = subprocess.run(
+            [
+                sys.executable,
+                str(adapter),
+                "arm",
+                "--root",
+                str(self.root),
+                "--artifact-id",
+                artifact_id,
+            ],
+            cwd=self.root,
+            env=dict(os.environ),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=30,
+            check=False,
+        )
+        if armed_process.returncode != 0:
+            raise AssertionError(
+                "installed approval CLI could not arm the artifact: "
+                + armed_process.stderr
+            )
+        armed = json.loads(armed_process.stdout)
+        payload = {
+            "hook_event_name": "UserPromptSubmit",
+            "prompt": armed["reply"],
+            "session_id": f"installed-{self.phase}",
+            "cwd": str(self.root),
+            "transcript_path": "",
+        }
+        prompt_environment = dict(os.environ)
+        if self.host == "codex":
+            prompt_environment["PLUGIN_ROOT"] = str(self.plugin_root)
+        elif self.host == "claude":
+            prompt_environment["CLAUDE_PLUGIN_ROOT"] = str(self.plugin_root)
+        prompt_process = subprocess.run(
+            [sys.executable, str(prompt_submit)],
+            cwd=self.root,
+            env=prompt_environment,
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=30,
+            check=False,
+        )
+        if prompt_process.returncode != 0 or (
+            f"workflow approval recorded for {artifact_id}"
+            not in prompt_process.stdout
+        ):
+            raise AssertionError(
+                "installed prompt seam did not capture interactive approval: "
+                + prompt_process.stderr
+            )
+        identity = self.client.call("identity", {"artifact_id": artifact_id})
+        if identity.get("authority", {}).get("state") != "approved":
+            raise AssertionError("installed prompt seam did not approve the artifact")
 
     def ticket(self) -> str:
         return list(self.client.contextual_pages("PLAN-FLOW", "T-001", 65536))[-1]["context_ticket"]
@@ -360,7 +423,9 @@ class Workflow:
 
 
 def phase_run(args, bridge, installation: Path) -> dict[str, object]:
-    workflow = Workflow(bridge, args.repository, installation, args.phase)
+    workflow = Workflow(
+        bridge, args.repository, installation, args.phase, args.host, args.plugin_root
+    )
     if args.phase == "author-dispatch":
         spec = spec_normative()
         workflow.client.call("create", {"operation_id": workflow.operation_id("create-spec"), "artifact_id": "SPEC-FLOW", "kind": "spec", "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
@@ -419,6 +484,13 @@ def assert_packaged_consumers(plugin_root: Path) -> None:
 
 def orchestrate(args, installation: Path) -> dict[str, object]:
     assert_packaged_consumers(args.plugin_root)
+    state = args.repository / ".codearbiter"
+    state.mkdir()
+    (state / "CONTEXT.md").write_text(
+        "---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n"
+        "# Installed-host workflow fixture\n",
+        encoding="utf-8",
+    )
     first = child(args, "author-dispatch")
     resumed = child(args, "reconcile-review")
     if resumed["ticket"] == first["ticket"]:
@@ -430,7 +502,13 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
         raise AssertionError("installed workflow did not reach current atomic acceptance")
     if commit["plan_sha256"] != first["plan_sha256"] or finalization["plan_sha256"] != first["plan_sha256"]:
         raise AssertionError("installed workflow changed normative plan identity")
-    if list((args.repository / ".codearbiter").rglob("*.md")):
+    markdown_shadows = [
+        path
+        for directory in (state / "specs", state / "plans")
+        if directory.is_dir()
+        for path in directory.rglob("*.md")
+    ]
+    if markdown_shadows:
         raise AssertionError("installed HTML workflow created a Markdown shadow")
     return {"format": "codearbiter.installed-host-workflow/0.1.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": first["plan_sha256"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
 
