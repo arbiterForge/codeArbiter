@@ -1023,6 +1023,7 @@ class PiPackageTests(unittest.TestCase):
             data["files"],
             [
                 "plugins/ca-pi/*.md",
+                "plugins/ca-pi/package.json",
                 "plugins/ca-pi/agents/",
                 "plugins/ca-pi/extensions/",
                 "plugins/ca-pi/generated/",
@@ -2312,6 +2313,7 @@ class NpmPublishContractTest(unittest.TestCase):
             "package.json",
             "LICENSE",
             "plugins/ca-pi/SKILLS.md",
+            "plugins/ca-pi/package.json",
             "plugins/ca-pi/extensions/codearbiter.js",
             "plugins/ca-pi/helpers/windows-supervisor.js",
         ):

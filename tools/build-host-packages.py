@@ -1477,6 +1477,7 @@ def render_package(
         "publishConfig": {"access": "public", "provenance": True},
         "files": [
             f"{host.plugin_dir}/*.md",
+            f"{host.plugin_dir}/package.json",
             f"{host.plugin_dir}/agents/",
             f"{host.plugin_dir}/extensions/",
             f"{host.plugin_dir}/generated/",

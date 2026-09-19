@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import argparse
 import ast
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -337,30 +339,41 @@ class Workflow:
         prompt_submit = self.plugin_root / "hooks" / "prompt-submit.py"
         if not adapter.is_file() or not prompt_submit.is_file():
             raise AssertionError("installed host omits the approval prompt seam")
-        armed_process = subprocess.run(
-            [
-                sys.executable,
-                str(adapter),
-                "arm",
-                "--root",
-                str(self.root),
-                "--artifact-id",
-                artifact_id,
-            ],
-            cwd=self.root,
-            env=dict(os.environ),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=30,
-            check=False,
-        )
-        if armed_process.returncode != 0:
-            raise AssertionError(
-                "installed approval CLI could not arm the artifact: "
-                + armed_process.stderr
+        hooks = str(adapter.parent)
+        sys.path.insert(0, hooks)
+        try:
+            approval_spec = importlib.util.spec_from_file_location(
+                "_approvallib", adapter
             )
-        armed = json.loads(armed_process.stdout)
+            if approval_spec is None or approval_spec.loader is None:
+                raise AssertionError("installed approval CLI cannot be loaded")
+            approval_adapter = importlib.util.module_from_spec(approval_spec)
+            sys.modules["_approvallib"] = approval_adapter
+            approval_spec.loader.exec_module(approval_adapter)
+            arm_output = io.StringIO()
+            with contextlib.redirect_stdout(arm_output):
+                arm_result = approval_adapter.main(
+                    [
+                        "arm",
+                        "--root",
+                        str(self.root),
+                        "--artifact-id",
+                        artifact_id,
+                    ]
+                )
+            if arm_result != 0:
+                raise AssertionError("installed approval CLI could not arm the artifact")
+            armed = json.loads(arm_output.getvalue())
+
+            prompt_spec = importlib.util.spec_from_file_location(
+                "cold_installed_prompt_submit", prompt_submit
+            )
+            if prompt_spec is None or prompt_spec.loader is None:
+                raise AssertionError("installed prompt seam cannot be loaded")
+            prompt_module = importlib.util.module_from_spec(prompt_spec)
+            prompt_spec.loader.exec_module(prompt_module)
+        finally:
+            sys.path.remove(hooks)
         payload = {
             "hook_event_name": "UserPromptSubmit",
             "prompt": armed["reply"],
@@ -373,24 +386,28 @@ class Workflow:
             prompt_environment["PLUGIN_ROOT"] = str(self.plugin_root)
         elif self.host == "claude":
             prompt_environment["CLAUDE_PLUGIN_ROOT"] = str(self.plugin_root)
-        prompt_process = subprocess.run(
-            [sys.executable, str(prompt_submit)],
-            cwd=self.root,
-            env=prompt_environment,
-            input=json.dumps(payload),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            timeout=30,
-            check=False,
-        )
-        if prompt_process.returncode != 0 or (
-            f"workflow approval recorded for {artifact_id}"
-            not in prompt_process.stdout
+        prior_environment = dict(os.environ)
+        prior_stdin = sys.stdin
+        prompt_output = io.StringIO()
+        prompt_error = io.StringIO()
+        try:
+            os.environ.clear()
+            os.environ.update(prompt_environment)
+            sys.stdin = io.StringIO(json.dumps(payload))
+            with contextlib.redirect_stdout(prompt_output), contextlib.redirect_stderr(
+                prompt_error
+            ):
+                prompt_result = prompt_module.run(prompt_module.hostapi.load_host())
+        finally:
+            sys.stdin = prior_stdin
+            os.environ.clear()
+            os.environ.update(prior_environment)
+        if prompt_result != 0 or (
+            f"workflow approval recorded for {artifact_id}" not in prompt_output.getvalue()
         ):
             raise AssertionError(
                 "installed prompt seam did not capture interactive approval: "
-                + prompt_process.stderr
+                + prompt_error.getvalue()
             )
         identity = self.client.call("identity", {"artifact_id": artifact_id})
         if identity.get("authority", {}).get("state") != "approved":
