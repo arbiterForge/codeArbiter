@@ -27,12 +27,23 @@ if VALIDATE_LIVE_CANDIDATE_RUN:
 
 def live_baseline_marker(runbook):
     """Return the single machine-readable live-proof marker."""
-    marker_match = re.search(
-        r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
+    marker_declarations = re.findall(
+        r"<!--\s*CODEX-LIVE-BASELINE-META\b[^\n]*?-->",
         runbook,
     )
+    if len(marker_declarations) != 1:
+        raise ValueError(
+            "the current Codex live baseline must have exactly one "
+            "machine-readable metadata marker"
+        )
+    marker_match = re.fullmatch(
+        r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
+        marker_declarations[0],
+    )
     if marker_match is None:
-        raise ValueError("the current Codex live baseline has no machine-readable metadata")
+        raise ValueError(
+            "the current Codex live baseline metadata marker is malformed"
+        )
     return json.loads(marker_match.group("meta"))
 
 
@@ -284,6 +295,24 @@ class PublicCodexDocsTest(unittest.TestCase):
         )
         with self.assertRaisesRegex(AssertionError, "exact recorded candidate package"):
             self._assert_live_baseline_marker(corrupted_runbook, manifest)
+
+    def test_codex_live_baseline_rejects_duplicate_metadata_markers(self):
+        """Release proof is ambiguous unless the runbook has exactly one marker."""
+        runbook = (
+            '<!-- CODEX-LIVE-BASELINE-META {"candidate_commit":"first"} -->\n'
+            '<!-- CODEX-LIVE-BASELINE-META {"candidate_commit":"second"} -->\n'
+        )
+        with self.assertRaisesRegex(ValueError, "exactly one"):
+            live_baseline_marker(runbook)
+
+    def test_codex_live_baseline_rejects_duplicate_marker_when_one_is_malformed(self):
+        """A malformed second declaration cannot hide behind one valid marker."""
+        runbook = (
+            '<!-- CODEX-LIVE-BASELINE-META {"candidate_commit":"valid"} -->\n'
+            '<!-- CODEX-LIVE-BASELINE-META malformed -->\n'
+        )
+        with self.assertRaisesRegex(ValueError, "exactly one"):
+            live_baseline_marker(runbook)
 
     def test_codex_live_baseline_may_lag_the_development_candidate(self):
         """Ordinary CI preserves truthful prior proof while the next version develops."""

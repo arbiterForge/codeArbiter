@@ -16,8 +16,11 @@ Extending this harness (later tasks T-18..T-21):
 Run: python .github/scripts/test_provenance_wiring.py
 Run (filtered): python .github/scripts/test_provenance_wiring.py commit_gate_heal
 """
-from pathlib import Path
+import json
+import re
+import subprocess
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -33,6 +36,13 @@ _failures = []
 def check(cond, msg):
     if not cond:
         _failures.append(msg)
+
+
+def claim_names_version(claim, claim_prefix, version):
+    """Return whether a provenance claim names the expected manifest version."""
+    return re.match(
+        rf"^{re.escape(claim_prefix)} \(v{re.escape(version)}(?:\)|,)", claim
+    ) is not None
 
 
 # ---- AC-14: commit-gate Phase 5.5 provenance auto-heal (T-17) -----------------
@@ -363,6 +373,50 @@ def test_context_creation_scout_isolation():
     )
 
 
+def test_code_map_installable_manifest_claims_are_current():
+    """The code-map provenance must describe and hash the current host manifests."""
+    record = json.loads(read_repo(".codearbiter/.provenance/code-map.json"))
+    entries = {entry["path"]: entry for entry in record["entries"]}
+    manifests = {
+        "plugins/ca/.claude-plugin/plugin.json": "Claude Code plugin manifest for ca",
+        "plugins/ca-codex/.codex-plugin/plugin.json": (
+            "Codex CLI plugin manifest for ca-codex"
+        ),
+        "plugins/ca-pi/package.json": "npm package manifest for ca-pi",
+    }
+    for path, claim_prefix in manifests.items():
+        manifest = json.loads(read_repo(path))
+        entry = entries[path]
+        claims = [claim.get("claim", "") for claim in entry["claims"]]
+        check(
+            any(
+                claim_names_version(claim, claim_prefix, manifest["version"])
+                for claim in claims
+            ),
+            f"code-map provenance claim for {path} must name v{manifest['version']}",
+        )
+        expected_hash = subprocess.run(
+            ["git", "hash-object", "--", path],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout.strip()
+        check(
+            entry["hash"] == expected_hash,
+            f"code-map provenance hash for {path} must match {expected_hash}",
+        )
+
+
+def test_code_map_manifest_claim_rejects_version_prefix_collision():
+    """A longer version cannot satisfy the exact manifest-version contract."""
+    claim = "npm package manifest for ca-pi (v0.14.30, @arbiterforge/ca-pi)"
+    check(
+        not claim_names_version(claim, "npm package manifest for ca-pi", "0.14.3"),
+        "code-map provenance version matching must reject longer prefix collisions",
+    )
+
+
 # --- APPEND NEW test_* FUNCTIONS ABOVE THIS LINE --------------------------------
 # Each new function must also be added to TESTS and (if it reads a new file)
 # to REQUIRED_FILES below.
@@ -385,6 +439,10 @@ REQUIRED_FILES = [
     "plugins/ca/hooks/session-start.py",
     "plugins/ca/skills/context-check/SKILL.md",
     "plugins/ca/commands/context-check.md",
+    ".codearbiter/.provenance/code-map.json",
+    "plugins/ca/.claude-plugin/plugin.json",
+    "plugins/ca-codex/.codex-plugin/plugin.json",
+    "plugins/ca-pi/package.json",
 ]
 
 TESTS = [
@@ -395,6 +453,8 @@ TESTS = [
     test_decompose_provenance_stub,
     test_code_map_read_on_demand,
     test_context_check_command,
+    test_code_map_installable_manifest_claims_are_current,
+    test_code_map_manifest_claim_rejects_version_prefix_collision,
 ]
 # ---------------------------------------------------------------------------
 
