@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import base64
 import copy
 import importlib.util
@@ -743,6 +744,33 @@ def load_build_host_packages():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def producer_cold_receipt_keys() -> set[str]:
+    """Statically extract the field names the real cold_execute_artifact_host_payload
+    receipt literal assigns, without driving its cold process/subprocess execution.
+
+    Sourced from the writer rather than retyped, so a future field added to the
+    receipt in tools/build-host-packages.py makes this drift-detectable instead
+    of silently outrunning the release-time consumer's COLD_FIELDS allowlist
+    (as happened in 4b437153, which broke every release from main)."""
+    source = (REPO / "tools" / "build-host-packages.py").read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+            and node.targets[0].id == "cold_receipt"
+            and isinstance(node.value, ast.Dict)
+        ):
+            keys = set()
+            for key in node.value.keys:
+                if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
+                    raise AssertionError("cold_receipt literal has a non-literal-string key")
+                keys.add(key.value)
+            return keys
+    raise AssertionError("could not locate the cold_receipt dict literal in build-host-packages.py")
 
 
 def distributable_violations(root: Path, files: list[Path]) -> list[str]:
@@ -3324,6 +3352,14 @@ class NpmPublishContractTest(unittest.TestCase):
             complete_receipts, current=later, markers=complete_markers),
             {"mode": "complete", "cohort_targets": [], "repair_targets": []})
 
+    def test_cold_receipt_schema_matches_real_producer_field_set(self):
+        """COLD_FIELDS must track every field the real cold-execution receipt
+        writer emits. 4b437153 added 9 fields to the writer's receipt without
+        updating this allowlist, so every real receipt CI produced afterward
+        failed the release-time exact-schema check and broke every release."""
+        helper = self._helper()
+        self.assertEqual(producer_cold_receipt_keys(), helper.COLD_FIELDS)
+
     def test_exact_cold_matrix_rejects_schema_duplicate_and_member_digest_drift(self):
         helper = self._helper()
         with tempfile.TemporaryDirectory() as tmp:
@@ -3367,6 +3403,12 @@ class NpmPublishContractTest(unittest.TestCase):
                         "binary_sha256": binary_sha, "response_sha256": "d" * 64,
                         "operation": "capabilities", "repository_operations_available": True,
                         "runtime_downloads": False,
+                        "installed_workflow_response_sha256": "e" * 64,
+                        "installed_bridge_sha256": "f" * 64,
+                        "installed_workflow_format": helper.INSTALLED_WORKFLOW_FORMAT,
+                        "interruption_reconciled": True, "redispatched": True,
+                        "commit_proof": True, "finalization_proof": True,
+                        "all_accepted_and_current": True, "markdown_shadow_count": 0,
                     }
                     (cell / "artifact-package-cold.json").write_text(json.dumps(receipt))
             (packages / "artifact-package-cohort.json").write_text(json.dumps(cohort))
@@ -3386,6 +3428,15 @@ class NpmPublishContractTest(unittest.TestCase):
             for mutation, message in (
                 ({**original, "extra": True}, "schema is not exact"),
                 ({**original, "binary_sha256": "e" * 64}, "do not link"),
+                ({**original, "interruption_reconciled": False}, "not bound to the exact cohort"),
+                ({**original, "redispatched": False}, "not bound to the exact cohort"),
+                ({**original, "commit_proof": False}, "not bound to the exact cohort"),
+                ({**original, "finalization_proof": False}, "not bound to the exact cohort"),
+                ({**original, "all_accepted_and_current": False}, "not bound to the exact cohort"),
+                ({**original, "markdown_shadow_count": 1}, "not bound to the exact cohort"),
+                ({**original, "installed_workflow_format": "wrong"}, "not bound to the exact cohort"),
+                ({**original, "installed_workflow_response_sha256": "not-hex"}, "not bound to the exact cohort"),
+                ({**original, "installed_bridge_sha256": "not-hex"}, "not bound to the exact cohort"),
             ):
                 first.write_text(json.dumps(mutation))
                 with self.subTest(message=message), mock.patch.object(

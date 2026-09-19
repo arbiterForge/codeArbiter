@@ -59,7 +59,12 @@ COLD_FIELDS = {
     "promotion_receipt_sha256", "package_sha256", "manifest_sha256",
     "binary_sha256", "response_sha256", "operation",
     "repository_operations_available", "runtime_downloads",
+    "installed_workflow_response_sha256", "installed_bridge_sha256",
+    "installed_workflow_format", "interruption_reconciled", "redispatched",
+    "commit_proof", "finalization_proof", "all_accepted_and_current",
+    "markdown_shadow_count",
 }
+INSTALLED_WORKFLOW_FORMAT = "codearbiter.installed-host-workflow/0.1.0"
 COLD_PLATFORMS = {
     "darwin/amd64", "darwin/arm64", "linux/amd64", "linux/arm64",
     "windows/amd64", "windows/arm64",
@@ -234,6 +239,15 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
             cold["repository_operations_available"] is True,
             cold["runtime_downloads"] is False,
             re.fullmatch(r"[0-9a-f]{64}", cold["response_sha256"]) is not None,
+            re.fullmatch(r"[0-9a-f]{64}", cold["installed_workflow_response_sha256"]) is not None,
+            re.fullmatch(r"[0-9a-f]{64}", cold["installed_bridge_sha256"]) is not None,
+            cold["installed_workflow_format"] == INSTALLED_WORKFLOW_FORMAT,
+            cold["interruption_reconciled"] is True,
+            cold["redispatched"] is True,
+            cold["commit_proof"] is True,
+            cold["finalization_proof"] is True,
+            cold["all_accepted_and_current"] is True,
+            cold["markdown_shadow_count"] == 0,
         )):
             raise ValueError("cold-execution receipt is not bound to the exact cohort")
         prefix = prefixes[cold["host"]]
