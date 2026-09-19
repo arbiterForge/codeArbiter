@@ -60,6 +60,7 @@ EXPECTED_SUITES = {
         "test_forged_client_is_rejected_before_authoring_capability_call",
         "test_full_feature_and_sprint_default_to_html_after_capability_probe",
         "test_html_is_the_full_lane_default_without_markdown_fallback",
+        "test_disabled_or_read_only_capability_fails_before_authoring_writes",
         "test_missing_or_invalid_capability_fails_before_authoring_writes",
         "test_plan_creation_uses_engine_and_binds_the_approved_html_spec",
         "test_plan_preflight_rechecks_namespace_after_identity_or_validation",
