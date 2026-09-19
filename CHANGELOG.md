@@ -12,6 +12,19 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.4] - 2026-09-19
+
+### Fixed
+
+- `/ca:standup`'s archival sweep now creates its own dedicated chore branch
+  before archiving anything and hands off to `/ca:chore docs`, instead of
+  writing directly to `open-tasks.md`/`done-tasks.md` on whatever branch was
+  current with no commit path at all (#573).
+- `commit-gate`'s Phase 6 board-edit exemption no longer over-attributes an
+  unconditional "any deleted entry is scope creep" rule to ADR-0008; a docs
+  chore whose own Phase 3 classification is the board change is in-scope by
+  that classification directly.
+
 ## [2.21.3] - 2026-09-18
 
 ### Fixed

@@ -89,12 +89,13 @@ that names every member, never an implied yes.
    3) — see #573. One branch per sweep, never reused across sessions.
 
    On that branch, archive each confirmed item, still one at a time:
-   `"$PY" "${PLUGIN_ROOT}/hooks/taskwrite.py" archive <id>`. One confirmation per
-   item, one helper call per item — the two map 1:1 on purpose. A batched
-   "archive all 12?" turns twelve decisions into one, and the helper's own
-   per-item ordering (append to `done-tasks.md` first, then remove from
-   `open-tasks.md`) is what makes an interrupted sweep recoverable; a batch loop
-   that answered once would throw that away.
+   `"$PY" "${PLUGIN_ROOT}/hooks/taskwrite.py" archive <id>`.
+
+   One confirmation per item, one helper call per item — the two map 1:1 on
+   purpose. A batched "archive all 12?" turns twelve decisions into one, and the
+   helper's own per-item ordering (append to `done-tasks.md` first, then remove
+   from `open-tasks.md`) is what makes an interrupted sweep recoverable; a batch
+   loop that answered once would throw that away.
 
    Once every confirmed item is archived, stage `.codearbiter/open-tasks.md` and
    `.codearbiter/done-tasks.md` — the very first archive ever run creates
