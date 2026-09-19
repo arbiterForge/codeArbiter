@@ -247,7 +247,7 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
             cold["commit_proof"] is True,
             cold["finalization_proof"] is True,
             cold["all_accepted_and_current"] is True,
-            cold["markdown_shadow_count"] == 0,
+            cold["markdown_shadow_count"] == 0 and not isinstance(cold["markdown_shadow_count"], bool),
         )):
             raise ValueError("cold-execution receipt is not bound to the exact cohort")
         prefix = prefixes[cold["host"]]

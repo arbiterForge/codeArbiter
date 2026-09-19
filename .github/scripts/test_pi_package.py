@@ -3434,6 +3434,7 @@ class NpmPublishContractTest(unittest.TestCase):
                 ({**original, "finalization_proof": False}, "not bound to the exact cohort"),
                 ({**original, "all_accepted_and_current": False}, "not bound to the exact cohort"),
                 ({**original, "markdown_shadow_count": 1}, "not bound to the exact cohort"),
+                ({**original, "markdown_shadow_count": False}, "not bound to the exact cohort"),
                 ({**original, "installed_workflow_format": "wrong"}, "not bound to the exact cohort"),
                 ({**original, "installed_workflow_response_sha256": "not-hex"}, "not bound to the exact cohort"),
                 ({**original, "installed_bridge_sha256": "not-hex"}, "not bound to the exact cohort"),
