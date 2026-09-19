@@ -38,6 +38,7 @@ predate the plugin rewrite and are grouped by date.
   changelog commit plus the candidate's exact manifest blobs.
 - Ensure a release-proof-only correction selects both proof validation and the
   exact-head package cohort needed by automatic publication.
+
 ## [2.21.1] - 2026-09-18
 
 ### Fixed

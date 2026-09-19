@@ -23,6 +23,7 @@ All notable changes to `ca-pi` are documented in this file.
   preserve helper records as LF, reject ambiguous committed release notes
   before tag mutation, and bind hosted assets and automatic publication to the
   exact qualified changelog commit and manifest blobs.
+
 ## [0.14.1] - 2026-09-18
 
 ### Fixed
