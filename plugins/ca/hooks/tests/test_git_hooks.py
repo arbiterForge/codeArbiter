@@ -1361,6 +1361,10 @@ class TestCrossHostPathFormResolution(_GitFixture):
 
     # ---- Python-layer resolver ----
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_wsl_spelling_of_a_real_file_resolves_via_python(self):
         target = os.path.join(self.root, "real-target.txt")
         self._write(target, "x")
@@ -1372,6 +1376,10 @@ class TestCrossHostPathFormResolution(_GitFixture):
         self.assertIsNotNone(resolved, "a WSL-spelled path to a real file must resolve")
         self.assertEqual(os.path.realpath(resolved), os.path.realpath(target))
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_gitbash_spelling_of_a_real_file_resolves_via_python(self):
         target = os.path.join(self.root, "real-target2.txt")
         self._write(target, "x")
@@ -1383,8 +1391,28 @@ class TestCrossHostPathFormResolution(_GitFixture):
     def test_unresolvable_spelling_resolves_to_none(self):
         self.assertIsNone(_githooks._resolve_live("/mnt/z/nowhere/git-enforce.py"))
 
+    def test_a_plain_native_path_with_no_drive_letter_resolves_via_python(self):
+        # Cross-platform counterpart to the Windows-only spelling tests above:
+        # a path that matches none of the three known grammars (e.g. a plain
+        # POSIX path on a host with no drive letters at all) is its own sole
+        # candidate (ADR-0038 -- "left as its own sole candidate, not a
+        # general host-layout search") and must still resolve directly.
+        target = os.path.join(self.root, "plain-target.txt")
+        self._write(target, "x")
+        resolved = _githooks._resolve_live(os.path.abspath(target))
+        self.assertIsNotNone(resolved, "a plain existing path must still resolve")
+        self.assertEqual(os.path.realpath(resolved), os.path.realpath(target))
+
+    def test_a_plain_nonexistent_native_path_fails_closed(self):
+        missing = os.path.join(self.root, "does-not-exist.txt")
+        self.assertIsNone(_githooks._resolve_live(os.path.abspath(missing)))
+
     # ---- real generated shim, executed by this host's real sh ----
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_wsl_spelled_registry_entry_runs_through_the_real_shim(self):
         _githooks.install(self.root)
         dropin = _githooks._dropin_dir(self.root)
@@ -1399,6 +1427,10 @@ class TestCrossHostPathFormResolution(_GitFixture):
                         "a WSL-spelled registry entry for a real file must still "
                         "run through the shim, not fail closed")
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_gitbash_spelled_registry_entry_runs_through_the_real_shim(self):
         _githooks.install(self.root)
         dropin = _githooks._dropin_dir(self.root)
@@ -1448,6 +1480,10 @@ class TestCrossHostPathFormResolution(_GitFixture):
 
     # ---- trusted-executables.identity (H5/#684) ----
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_wsl_spelled_identity_resolves_through_the_real_shim(self):
         real_python = _githooks._shell_path(sys.executable)
         real_git = _githooks._shell_path(os.path.realpath(shutil.which("git")))
@@ -1558,6 +1594,10 @@ class TestInstallDoesNotChurnAcrossEquivalentHostSpellings(_GitFixture):
     alternating SessionStart between two hosts was previously an unconditional
     reinstall."""
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_a_validly_different_sibling_spelling_is_not_treated_as_stale(self):
         _githooks.install(self.root)
         hd = os.path.join(self.root, ".git", "hooks")

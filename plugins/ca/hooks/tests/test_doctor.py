@@ -765,6 +765,10 @@ class TestCheckGitHookBackstop(unittest.TestCase):
             f"a green live-fire result must be scoped to THIS host, not imply "
             f"cross-host durability (B3/#684): {ok_lines}")
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
     def test_wsl_spelled_registry_entry_for_a_real_enforcer_is_recognized_live(self):
         # ADR-0038: doctor must agree with the real shim -- a foreign-spelled
         # but resolvable registry entry is LIVE, not a false "no live enforcer".
