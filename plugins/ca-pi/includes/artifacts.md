@@ -109,6 +109,50 @@ delivery receipts. They are not authentication secrets and do not claim
 resistance to an unrestricted same-user filesystem writer. A digest without its
 corresponding engine-written receipt is rejected.
 
+Before task selection, inspect the plan's exact prerequisite records. If one is
+unsatisfied, collect and present the facts needed to judge its requirement; a
+verification runner may supply facts but cannot confer prerequisite authority.
+On Claude Code or Codex, arm a genuine user-workflow decision for the exact
+current approved plan and prerequisite:
+
+```sh
+python "<plugin-root>/hooks/_prerequisitelib.py" arm --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
+```
+
+Show the returned title, requirement, and review-packet digest, then require the
+returned `satisfy-prerequisite ...` reply verbatim. The `UserPromptSubmit` hook
+durably records that observed decision before publishing its authority source,
+captures a prerequisite receipt, and applies the existing prerequisite CAS
+operation. Its final nonce is non-secret freshness/correlation data, not a
+credential: possession alone confers no authority, and only the exact prompt
+observed at the trusted host boundary while the reviewed plan remains current
+can satisfy the prerequisite. Wrong nonces or records, stale plan content or
+approval, and expired requests confer no authority. A retry after confirmation reuses the same event,
+receipt, operation ID, and mutation request; it never reconstructs a decision.
+Only an unconfirmed request can be cancelled:
+
+```sh
+python "<plugin-root>/hooks/_prerequisitelib.py" cancel --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
+```
+
+If the plan changes after confirmation, recover the obsolete request instead of
+deleting its marker. `supersede` first proves the current identity differs. For
+a captured request it also retries the exact operation ID: a committed replay is
+accepted, while only an engine `REVISION_CONFLICT` proves the obsolete mutation
+did not commit and permits the marker to clear. Published source and receipt
+files remain as evidence:
+
+```sh
+python "<plugin-root>/hooks/_prerequisitelib.py" supersede --root "<project-root>" --artifact-id <artifact-id> --prerequisite-id <prerequisite-id>
+```
+
+The adapter fixes `authority_kind: user_workflow` and `verdict: satisfied`;
+there is no caller-selected authority or bulk-satisfaction path. SMARTS remains
+unsupported until a real policy-owned SMARTS decision producer exists. Pi has no
+qualified pre-model prompt seam and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
+rerun `eligible`, and resolve each remaining record independently against the
+new current plan identity.
+
 `eligible` is authoritative for task selection on the HTML path.
 `task-start` checks current spec/plan approval, binding, prerequisites, source
 snapshot, dependency evidence and the complete context ticket. Within a checkpoint,

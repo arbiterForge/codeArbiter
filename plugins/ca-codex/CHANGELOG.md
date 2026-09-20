@@ -6,6 +6,13 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.6] - 2026-09-20
+
+### Fixed
+
+- Add exact host-observed prerequisite confirmations for approved structured
+  plans, including stale-state rejection and idempotent partial-failure recovery.
+
 ## [0.13.5] - 2026-09-19
 
 ### Fixed

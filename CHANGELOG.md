@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.6] - 2026-09-20
+
+### Fixed
+
+- Add a host-owned structured-plan prerequisite adapter that binds exact user
+  confirmations to current prerequisite records and recovers idempotently
+  across capture or mutation failures without widening receipt authority.
+
 ## [2.21.5] - 2026-09-19
 
 ### Fixed

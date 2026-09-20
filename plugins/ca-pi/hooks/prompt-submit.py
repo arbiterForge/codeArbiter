@@ -67,6 +67,7 @@ import hostapi  # noqa: E402 — host seam (ADR-0011)
 import _approvallib  # noqa: E402 — host-owned artifact approval capture
 import _hooklib  # noqa: E402
 import _modelib  # noqa: E402 — mode plane core (T-06..T-16, Lane A)
+import _prerequisitelib  # noqa: E402 — host-owned prerequisite capture
 import _readinjectlib  # noqa: E402 — marker_path(prefix=) (T-30)
 
 
@@ -456,13 +457,26 @@ def _handle_user_prompt_submit(payload, host):
     token = _modelib.match_mode_token(prompt)
     approval_context = ""
     if token is None:
-        approval_context = _approvallib.consume_from_hook(
+        contexts = []
+        approval = _approvallib.consume_from_hook(
             root=root,
             plugin_root=host.plugin_root(),
             prompt=prompt,
             host=host.name,
             session_id=session_id,
         )
+        if approval:
+            contexts.append(approval)
+        prerequisite = _prerequisitelib.consume_from_hook(
+            root=root,
+            plugin_root=host.plugin_root(),
+            prompt=prompt,
+            host=host.name,
+            session_id=session_id,
+        )
+        if prerequisite:
+            contexts.append(prerequisite)
+        approval_context = "\n".join(contexts)
     if host.name == "codex":
         return _handle_codex(
             payload, host, state_root, session_id, token, approval_context
