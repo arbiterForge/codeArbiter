@@ -1834,7 +1834,9 @@ jobs:
         run: python .github/scripts/test_pi_security.py --sarif codeql-results
 
   hooks:
-    name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }}>"
+    name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
+    # Windows runs independent command groups on fresh runners. Linux/macOS
+    # retain their original order. No existing command is removed or repeated.
     # MR-10: proves host-specific interpreter fallback on every OS - REAL (no
     # double execution), STUB (preferred interpreter fails), PY2 (`python`
     # exists but is not Python 3; ca must fall back and preserve exit-2 blocks),
@@ -1849,7 +1851,22 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        partition: [all]
+        exclude:
+          - os: windows-latest
+            partition: all
+        include:
+          - os: windows-latest
+            partition: contracts
+          - os: windows-latest
+            partition: functional
+          - os: windows-latest
+            partition: isolation
     runs-on: ${{ matrix.os }}
+    # Bounded above the isolation slice's internal 15-minute child timeout so
+    # a wedged runner cannot turn one actionable failure into another 30-minute
+    # feedback loop.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -1872,7 +1889,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.x"
+      - name: Validate hook partition coverage
+        run: python .github/scripts/test_hook_ci_partition.py
       - name: Sync-core drift gate (ADR-0011 M1)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # core/pysrc/ is the canonical copy of every host-neutral hook file;
         # plugins/ca/hooks/ and plugins/ca-codex/hooks/ each vendor a
         # byte-identical copy (tools/sync-core.py). A vendored copy that
@@ -1880,29 +1900,34 @@ jobs:
         # two hosts - fail the build before that ships.
         run: python tools/sync-core.py --check
       - name: Run sync-core tool unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # FINDING 2 (2026-07 review): sync/--check pass-fail matrix (in-sync,
         # drifted, missing), write-mode drift repair, and the hardened
         # non-zero/clear-message error paths for an unreadable source file,
         # an unwritable destination, and an empty/missing core dir.
         run: python .github/scripts/test_sync_core.py
       - name: Run codex-parity-fixture tool unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # FINDING 4 (2026-07 review): normal + --bare fixture creation,
         # existing-target rejection, and every git/filesystem failure path
         # exiting non-zero with a clear stderr message (no swallowed
         # subprocess return codes, no raw traceback on a creation failure).
         run: python .github/scripts/test_codex_parity_fixture.py
       - name: Run surface-generator unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # codex-support M3: determinism/idempotence of tools/build-surface.py,
         # token inversion (Claude render inverts extraction byte-exactly),
         # host conditionals, Codex path rewrites + frontmatter synthesis, and
         # --check drift detection in both directions against synthetic trees.
         run: python .github/scripts/test_build_surface.py
       - name: Run read-only review funnel contract
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # RA-03: working-diff and inbound-PR review both terminate at the
         # read-only verdict aggregator, leave repository bytes unchanged, and
         # keep checkpoint persistence as a separate non-overwriting writer.
         run: python .github/scripts/test_review_funnel.py
       - name: Run §6 routing + post-merge-cleanup surface contract
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Issue #308 / ADR-0022. Both halves of #308 are prose contracts
         # projected into three host surfaces, so what silently regresses is a
         # paragraph reverting, or landing on one host and not the others. This
@@ -1913,12 +1938,14 @@ jobs:
         # gates - on every generated projection.
         run: python .github/scripts/test_routing_and_cleanup_surface.py
       - name: Enforce authoritative destructive-operation registry parity
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # ADR-0026, narrowed by ADR-0030 and bound by ADR-0033: the routing
         # table owns the current four-item set while arbiter §6 retains the
         # pre-load resident copy. The suite above carries the seeded mismatch;
         # this command checks all four live canonical/generated surface pairs.
         run: python .github/scripts/check_destructive_registry.py
       - name: Run mode-plane core contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. The mode plane's own library: whole-prompt token matching (a
         # substring match would let a pasted diff containing the token flip the
         # mode), marker_root resolution, the asymmetric fail direction, no-op
@@ -1927,6 +1954,7 @@ jobs:
         # to _modelib.MODES, so a docs-only rename fails here.
         run: python .github/scripts/test_modelib.py
       - name: Run composed-persona contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. safety-core.md + the active mode body IS the injected persona,
         # so this pins the anchors that must survive every mode (the conflict
         # ladder, diagnose-don't-bypass, the irreversible set, the secrets
@@ -1935,23 +1963,27 @@ jobs:
         # resolves in all three modes.
         run: python .github/scripts/test_persona_composition.py
       - name: Run prompt-seam interceptor contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. The flip must produce NO model turn, and the Codex envelope is
         # additionalProperties:false with exactly seven keys - a shape borrowed
         # from any other event is rejected outright.
         run: python .github/scripts/test_prompt_submit.py
       - name: Run startup-emitter contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. SessionStart no longer injects the persona, and the block is
         # eight composable emitters. The arbiter set is pinned against a golden
         # fixture whose regeneration takes an explicit flag - a bare run refuses
         # rather than silently rewriting the thing it is supposed to prove.
         run: python .github/scripts/test_startup_emitters.py
       - name: Run mode-reader contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. The statusline, arbiter state, and staleness flow read the mode
         # plane. The staleness half is a WARN, not a gate, so a matcher that
         # stops matching fails NOTHING and goes permanently silent - both arms
         # are pinned (warns for a stale non-arbiter mode, never for arbiter).
         run: python .github/scripts/test_mode_readers.py
       - name: Run mode compaction-seam contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. SessionStart fires on compact and nothing reads the event's
         # source field, so a compaction could clear a live mode out from under
         # a session. Pins both directions: the mode survives a compaction, and
@@ -1959,11 +1991,13 @@ jobs:
         # than retaining a gates-off posture on state we cannot vouch for.
         run: python .github/scripts/test_mode_compaction.py
       - name: Run mode-surface and docs-coverage contract (ADR-0030)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. site/src/curated/ is hand-written and merged by the generator,
         # and no other gate compares it to the surface it documents - a removed
         # command can otherwise live on in published docs indefinitely.
         run: python .github/scripts/test_mode_surface.py
       - name: Run recorded-intent surface contract (ADR-0025)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # ADR-0025. The recorded-intent check is a prose contract projected
         # into three host surfaces. This pins Step 0's SCOPING (applies to
         # /sprint scoring + brainstorming; decision-variance, grader, and
@@ -1976,6 +2010,7 @@ jobs:
         # each surface (ca-codex ships no agents/, an explicit exemption).
         run: python .github/scripts/test_recorded_intent_surface.py
       - name: Run INDEX/routing-surface parity gate (#592)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Issue #592. The skills/agents INDEX.md one-liners and
         # includes/routing-table.md are the orchestrator's routing surface,
         # not passive docs -- a stale row can send it to a skill that no
@@ -1989,20 +2024,25 @@ jobs:
         # (core/surface, ca, ca-codex, ca-pi).
         run: python .github/scripts/check_routing_index_parity.py
       - name: Run INDEX/routing-surface parity gate unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_check_routing_index_parity.py
       - name: Run cold-install interpreter matrix
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_hooks_cold_install.py
       - name: Run ca-codex host-adapter parity suite
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # ADR-0011 M2: Codex payload normalization, apply_patch envelope
         # parsing, project_root resolution, and cross-host blocked-verdict
         # parity (H-05/H-11/H-18/H-19/H-20/H-21) via real subprocess
         # invocations of each plugin's vendored pre-write.py/pre-bash.py.
         run: python .github/scripts/test_codex_adapter.py
       - name: Validate public Codex documentation
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Public claims stay pinned to the verified host/version evidence,
         # installation status, command spellings, and canonical support page.
         run: python .github/scripts/test_public_codex_docs.py
       - name: Validate public Pi documentation
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The Codex gate above has run since it was written; its PI SIBLING was
         # wired into no workflow at all, so the Pi public-docs contract had
         # never executed on a merge gate. It drifted exactly as an unrun gate
@@ -2012,61 +2052,73 @@ jobs:
         # gate, it is a file.
         run: python .github/scripts/test_public_pi_docs.py
       - name: Run dual-host shared-store contract
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # ADR-0012: sequential initialization shares one store; concurrency is
         # asserted only for append-only gate events, never RMW state or the
         # repo-global dev marker.
         run: python .github/scripts/test_dual_host_store.py
       - name: Run guard-logic matrix
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The cold-install matrix proves the interpreter plumbing; this proves
         # the guard decisions themselves - every blocked spelling of
         # H-01/02/03/05/11/09b blocks, every legitimate spelling still allows.
         run: python .github/scripts/test_hook_guards.py
       - name: Run repository-qualified cleanup proof evaluator tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The evaluator is deliberately not wired into a live cleanup route yet,
         # but its repository/target/content proof contract must still execute in
         # required CI rather than existing as an orphaned test file.
         run: python .github/scripts/test_cleanuplib.py
       - name: Run /ca:preview helper unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Unit tests for the /ca:preview diff-collection + secret-scan helpers
         # (_previewlib): collect_diff over the three change kinds it unions and
         # the redacting secret scan, including the no-raise edges.
         run: python .github/scripts/test_preview_lib.py
       - name: Run UX-conversion-trio structural copy tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Content-presence/absence assertions for the #82/#84/#83 prose changes:
         # the Receipt close, stakes lines on substantive finding-blocks, the
         # register split, and the negatives (no saves-ledger/statusline segment).
         run: python .github/scripts/test_ux_conversion.py
       - name: Run cold-miss nudge unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # O1-O11: nudge_decision pure helper, advisory builder, idle extraction,
         # hook_run integration (armed->2/stderr, resubmit->0, flag-off->today's
         # behavior), and docs gate (prune.md references CODEARBITER_PRUNE_NUDGE).
         run: python .github/scripts/test_prune_nudge.py
       - name: Run H-14 migration backstop tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # OB-01..11 + OB-C1/OB-S1 (#77): is_migration_path detection (defaults +
         # security-controls.md extend/exclude), migration-pass.py content-digest
         # marker, and pre-bash.py H-14 block/admit/edit-reblock/dormant/-a.
         run: python .github/scripts/test_migration_backstop.py
       - name: Run /ca:metrics helper unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-01..AC-07: window tiling, 3-metric collection, empty-source safety,
         # and read-only enforcement (_metricslib).
         run: python .github/scripts/test_metrics_lib.py
       - name: Run task-board lifecycle helper unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-01..AC-10: in-flight count (excludes done), dotted-ID grammar,
         # field parsing, stale-in-progress nudge, oversize degradation, and the
         # session-start/statusline readers routing through _taskboardlib.
         run: python .github/scripts/test_taskboardlib.py
       - name: Run task-board writer + harvest unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-01..AC-11: next_seq, add_entry (ID-less + mint), set_state (dated
         # start/done + assign-on-pickup), dedup, the 3 harvest extractors, and
         # promote routing/modes (work->board, decision->questions).
         run: python .github/scripts/test_taskwriter.py
       - name: Run release-skill hardening helper unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-1..AC-6 of release-skill-hardening: last_tag_select (ca-only,
         # pre-release-excluded baseline), notes_heading_matches, release_dates_
         # consistent, classify_publish_state, the CLI dispatch, and the SKILL.md
         # structural wiring (_releaselib).
         run: python .github/scripts/test_release_lib.py
       - name: Run hosted release-workflow contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #378/#380/#385: release.yml holds `contents: write` and publishes
         # public, irreversible tags and Releases. This parses the SHIPPED
         # workflow, so deleting the exactly-one-target preflight, the
@@ -2074,6 +2126,7 @@ jobs:
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
       - name: Run the A-1.11 release resolution-trace suite
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
         # the portable-mechanism split (core/pysrc/_releaselib.py plus a
         # declared release-targets.md) reproduces the pinned pre-change
@@ -2086,6 +2139,7 @@ jobs:
         # loudly, never silently, if either is ever missing.
         run: python .github/scripts/test_release_trace.py
       - name: Run the T-73a/T-73b/T-79 consumer-portability smoke suite
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, AC-6.6/AC-6.8: proves the portable release skill in a
         # scratch consumer repo built by `git archive HEAD -- plugins/ca` --
         # never an in-repo CLAUDE_PLUGIN_ROOT pointer, never a recursive
@@ -2100,6 +2154,7 @@ jobs:
         # needing a change there.
         run: python .github/scripts/test_consumer_smoke.py
       - name: Run the T-79 skill-proof-freshness guard's own unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, AC-6.8: check_skill_proof_fresh.py is the pre-tag
         # freshness gate this campaign's completion bar depends on so the
         # T-78 agent-judgment exercise cannot silently rot behind a later
@@ -2111,6 +2166,7 @@ jobs:
         # own currently-stale artifact failing for exactly that reason.
         run: python .github/scripts/test_check_skill_proof_fresh.py
       - name: Run the unit tests for CI's own machinery
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # These suites existed and ran on NOTHING. Each one guards a script
         # that CI itself depends on, which is what makes the gap matter rather
         # than merely being untidy:
@@ -2135,10 +2191,12 @@ jobs:
           python .github/scripts/test_planfilelib.py
           python .github/scripts/test_spike_findings_contract.py
       - name: Run provenance-store helper unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-01: write_provenance/read_provenance round-trip, on-disk JSON shape
         # with schema/doc/created/interview_derived/entries[] (_provenancelib).
         run: python .github/scripts/test_provenancelib.py
       - name: Run shipped-skill portability guard
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # A-6.1: a skill under core/surface/skills/** renders into every
         # plugin and ships to consumers who do not have THIS repository, so
         # a line naming `.github/scripts/x.py` or `tools/farm.js` is an
@@ -2148,68 +2206,81 @@ jobs:
         # conditional CI references.
         run: python .github/scripts/check_skill_portability.py
       - name: Run shipped-skill portability guard unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The guard's own matching rule, both directions: a bare repo path
         # is flagged, a resolved prefix and a scan-target list are not, and
         # a synthetic offending tree still fails - so the guard is shown
         # able to fail rather than only ever passing.
         run: python .github/scripts/test_skill_portability.py
       - name: Run README badge-consistency unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The guard's own logic: version-badge parse, count-badge parse, prose
         # counts, table-row slugs, and each drift kind (version/count/prose/
         # catalog/missing-row) failing - plus the live HEAD-is-consistent check.
         run: python .github/scripts/test_badge_consistency.py
       - name: Run shared hook-helper unit tests (_hooklib)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # CRYPTO_RE / SECRET_RE branch coverage + the path/frontmatter/marker/
         # digest helpers every enforcement hook routes through. Ran nowhere in CI
         # before (checkpoint 2026-06-22 gap); the ~18 CRYPTO_RE branches now have
         # direct assertions.
         run: python .github/scripts/test_hooklib.py
       - name: Run cleanup integration-proof evaluator unit tests (T-04)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-07/AC-08/AC-10: ancestry targets the authorized ref, repository-
         # qualified PR delivery proof, protect required source identity. Orphaned
         # in CI since #800 merged (the #693 gap - this filter already covers
         # core/** and .github/scripts/**, but nothing invoked the suite).
         run: python .github/scripts/test_cleanuplib.py
       - name: Run cleanup operation journal + guarded executor unit tests (T-05)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-06/AC-09/AC-14/AC-19: revalidate-before-mutation, protected/occupied
         # refs never deleted, one guarded executor, per-item journaling with
         # state-based reconciliation. Branch-deletion slice only.
         run: python .github/scripts/test_cleanuplib_mutation.py
       - name: Run cleanup authoritative branch/worktree inventory unit tests (T-03)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-05/AC-07/AC-09/AC-11/AC-13/AC-26: pure for-each-ref/worktree-porcelain
         # parsers, occupancy binding, worktree-loss classification, and the
         # exact-allowlist filesystem-path guard. Must not repeat the #693/#800
         # orphaned-suite gap the T-04/T-05 steps above already had to close.
         run: python .github/scripts/test_cleanuplib_inventory.py
       - name: Run cleanup shared decision/interaction contract tests (T-02)
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-01/AC-02/AC-03/AC-04/AC-05/AC-12/AC-26: the pure prompt-budget
         # and scope-coverage classifiers T-06's live routing will consume.
         run: python .github/scripts/test_cleanup_contract.py
       - name: Run commit-gate board-sync structural tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-04..07 (ADR-0008): Phase 6 board-edit exemption names the classifier,
         # retains a clean transition, still flags arbitrary edits; task.md and
         # future prose checks enforce the co-location contract.
         run: python .github/scripts/test_board_sync.py
       - name: Run commit-gate provenance auto-heal wiring tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-14 (T-17): Phase 5.5 heal_worklist, incremental re-scout scoped to
         # those paths only, re-baseline rides work commit, claim-changed routes to
         # Phase 6 diff-review; Phase 6/7 provenance exemption + staging wiring.
         run: python .github/scripts/test_provenance_wiring.py
       - name: Run file-scoped-context-injection lib unit tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-03/09/10/12 (_readinjectlib): allow_output hookSpecificOutput shape,
         # four-tier context map/budget/dedup/index assembly, cache round-trip.
         run: python .github/scripts/test_readinjectlib.py
       - name: Run pre-read hook entry-point integration tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # AC-03/09/10/12 (pre-read.py): governed-file injection, dedup (same
         # session+file -> first injects, second silent), .codearbiter/ self-read
         # silent allow, fail-open on malformed stdin, miss, and dormant-repo paths.
         run: python .github/scripts/test_pre_read.py
       - name: Run the hooks/tests unittest suite
+        if: matrix.partition == 'all' || matrix.partition == 'functional'
         # plugins/ca/hooks/tests/ - the hook enforcement + helper logic. Ran only
         # locally per CONTRIBUTING; wired here so the guards are mechanically
         # enforced. Stdlib-only, cross-platform (discovered on every matrix OS).
         run: python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"
       - name: Enforce suite hermeticity (issues #442, #462)
+        if: matrix.partition == 'all' || matrix.partition == 'isolation'
         # The suite used to mutate the DEVELOPER'S REAL HOME - rewriting
         # ~/.claude/settings.json and littering ~/.codearbiter/ - and to leak
         # file handles and child processes, which on Windows turns a later
@@ -2224,22 +2295,26 @@ jobs:
         # itself rather than in place of it.
         run: python .github/scripts/test_suite_hermeticity.py
       - name: Run ADR identity + supersession contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #416: two ADRs share the number 0014, so a bare `supersedes: 0014`
         # named two documents at once. The identifier is the filename STEM;
         # this pins both hook-side indexers to that derivation and proves an
         # ambiguous bare number errors instead of resolving arbitrarily.
         run: python .github/scripts/test_adr_identity.py
       - name: Run ADR acceptance/delivery lifecycle contract tests
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # ADR-0033: accepted is Accepted/Planned; exact acceptance bindings,
         # sealed obligations, evidence ordering, input freshness, and
         # verified-only repository exports are separate machine contracts.
         run: python .github/scripts/test_adr_lifecycle.py
       - name: Enforce append-only ADR lifecycle bindings on the live record
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # Resolve the exact base from the checked-in event payload and compare
         # committed Git blobs on both sides. This avoids checkout line-ending
         # conversion weakening the append-only prefix check.
         run: python .github/scripts/check_adr_lifecycle.py --github-event --current-ref HEAD
       - name: Enforce the ADR identity contract on the live decision record
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # The contract applied to .codearbiter/decisions/ itself: stems unique,
         # no NEW file on an already-used number (the 0014 pair is grandfathered
         # by stem, so a third one still fails), and every supersedes: resolving
