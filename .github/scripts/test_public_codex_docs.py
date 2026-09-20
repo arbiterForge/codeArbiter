@@ -47,11 +47,113 @@ def live_baseline_marker(runbook):
     return json.loads(marker_match.group("meta"))
 
 
-def validate_live_candidate_run(marker, run):
-    """Bind live proof to protected main CI for an ancestor candidate."""
+def _require_sha(value, label):
+    if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{40}", value) is None:
+        raise ValueError(f"{label} is malformed")
+    return value
+
+
+def _successful_jobs(jobs, exact_name=None, prefix=None):
+    matches = []
+    for job in jobs.get("jobs", []):
+        name = job.get("name", "")
+        if (exact_name is not None and name == exact_name) or (
+            prefix is not None and name.startswith(prefix)
+        ):
+            matches.append(job)
+    if any(job.get("status") != "completed" or job.get("conclusion") != "success"
+           for job in matches):
+        raise ValueError("live candidate qualification contains a non-successful required job")
+    return matches
+
+
+def validate_live_candidate_run(marker, evidence):
+    """Bind live proof to its exact protected-main or qualified-preview origin."""
     candidate = marker.get("candidate_commit")
-    if not isinstance(candidate, str) or re.fullmatch(r"[0-9a-f]{40}", candidate) is None:
-        raise ValueError("live candidate commit is malformed")
+    _require_sha(candidate, "live candidate commit")
+    if marker.get("schema_version") == 3:
+        run = evidence.get("run", {})
+        jobs = evidence.get("jobs", {})
+        artifact = evidence.get("artifact", {})
+        expected_run = {
+            "id": marker.get("candidate_ci_run_id"),
+            "run_attempt": marker.get("candidate_ci_run_attempt"),
+            "head_sha": marker.get("run_head_sha"),
+            "status": "completed",
+            "event": "pull_request",
+            "head_branch": marker.get("pr_head_ref"),
+            "repository_id": 1233366728,
+            "repository": "arbiterForge/codeArbiter",
+            "path": ".github/workflows/ci.yml",
+        }
+        observed_run = {
+            "id": run.get("id"),
+            "run_attempt": run.get("run_attempt"),
+            "head_sha": run.get("head_sha"),
+            "status": run.get("status"),
+            "event": run.get("event"),
+            "head_branch": run.get("head_branch"),
+            "repository_id": (run.get("head_repository") or {}).get("id"),
+            "repository": (run.get("head_repository") or {}).get("full_name"),
+            "path": run.get("path"),
+        }
+        if observed_run != expected_run:
+            raise ValueError("live candidate is not bound to the exact approved preview run")
+        pulls = run.get("pull_requests") or []
+        if len(pulls) != 1:
+            raise ValueError("live candidate preview run is not bound to exactly one pull request")
+        pull = pulls[0]
+        if marker.get("pr_head_sha") != marker.get("run_head_sha"):
+            raise ValueError("live candidate preview head is not the exact run head")
+        expected_pull = {
+            "number": marker.get("pr_number"),
+            "head_ref": marker.get("pr_head_ref"),
+            "base": marker.get("pr_base_sha"),
+            "base_ref": "main",
+            "head_repo": 1233366728,
+            "base_repo": 1233366728,
+        }
+        observed_pull = {
+            "number": pull.get("number"),
+            "head_ref": (pull.get("head") or {}).get("ref"),
+            "base": (pull.get("base") or {}).get("sha"),
+            "base_ref": (pull.get("base") or {}).get("ref"),
+            "head_repo": ((pull.get("head") or {}).get("repo") or {}).get("id"),
+            "base_repo": ((pull.get("base") or {}).get("repo") or {}).get("id"),
+        }
+        if observed_pull != expected_pull:
+            raise ValueError("live candidate preview run pull-request identity drifted")
+        expected_artifact = {
+            "id": marker.get("candidate_artifact_id"),
+            "name": f"artifact-release-packages-{candidate}",
+            "digest": f"sha256:{marker.get('candidate_artifact_sha256')}",
+            "expired": False,
+            "run_id": marker.get("candidate_ci_run_id"),
+        }
+        observed_artifact = {
+            "id": artifact.get("id"),
+            "name": artifact.get("name"),
+            "digest": artifact.get("digest"),
+            "expired": artifact.get("expired"),
+            "run_id": (artifact.get("workflow_run") or {}).get("id"),
+        }
+        if observed_artifact != expected_artifact:
+            raise ValueError("live candidate artifact identity drifted")
+        if len(_successful_jobs(jobs, exact_name=(
+            "[CHECK] | [CORE] | Structured artifact package assembly"
+        ))) != 1:
+            raise ValueError("live candidate has no exact successful package assembly job")
+        if len(_successful_jobs(jobs, prefix=(
+            "[CHECK] | [CORE] | Structured artifact  <"
+        ))) != 6:
+            raise ValueError("live candidate does not have six successful native qualifications")
+        if len(_successful_jobs(jobs, prefix=(
+            "[CHECK] | [CORE] | Structured artifact cold package  <"
+        ))) != 18:
+            raise ValueError("live candidate does not have eighteen successful cold qualifications")
+        return candidate
+
+    run = evidence
     expected = {
         "id": marker.get("candidate_ci_run_id"),
         "head_sha": candidate,
@@ -163,19 +265,35 @@ class PublicCodexDocsTest(unittest.TestCase):
     ):
         """Bind retained live proof; require exact current bytes only for release."""
         marker = live_baseline_marker(runbook)
-        self.assertEqual(2, marker["schema_version"])
+        self.assertIn(marker["schema_version"], (2, 3))
         self.assertEqual("ca-codex", marker["adapter"])
-        recorded = self._candidate_package_contract(marker.get("candidate_commit"))
-        self.assertEqual(
-            recorded["plugin_version"],
-            marker["adapter_version"],
-            "the Codex live baseline version does not match its recorded candidate commit",
-        )
-        self.assertEqual(
-            recorded["package_sha256"],
-            marker.get("candidate_package_sha256"),
-            "the Codex live baseline is stale for the exact recorded candidate package",
-        )
+        if marker["schema_version"] == 2:
+            recorded = self._candidate_package_contract(marker.get("candidate_commit"))
+            self.assertEqual(
+                recorded["plugin_version"],
+                marker["adapter_version"],
+                "the Codex live baseline version does not match its recorded candidate commit",
+            )
+            self.assertEqual(
+                recorded["package_sha256"],
+                marker.get("candidate_package_sha256"),
+                "the Codex live baseline is stale for the exact recorded candidate package",
+            )
+        else:
+            for field in (
+                "candidate_commit", "candidate_source_tree", "run_head_sha",
+                "pr_head_sha", "pr_base_sha",
+            ):
+                self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{40}$")
+            for field in (
+                "candidate_package_sha256", "candidate_artifact_sha256",
+                "candidate_archive_sha256",
+            ):
+                self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
+            self.assertEqual(828, marker.get("pr_number"))
+            self.assertEqual("codex/fix-release-premerge-canary", marker.get("pr_head_ref"))
+            self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
+            self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:
             self.assertEqual(
                 manifest["version"],
@@ -265,10 +383,10 @@ class PublicCodexDocsTest(unittest.TestCase):
             "release' has nothing to point at")
         baseline = runbook.split("<!-- CODEX-LIVE-BASELINE -->", 1)[1]
         self.assertRegex(
-            baseline[:700], r"Codex CLI \d+\.\d+\.\d+",
+            baseline[:2000], r"Codex CLI \d+\.\d+\.\d+",
             "the recorded baseline names no Codex version")
         self.assertRegex(
-            baseline[:700], r"ca-codex[^0-9]{0,12}\d+\.\d+\.\d+",
+            baseline[:2000], r"ca-codex[^0-9]{0,12}\d+\.\d+\.\d+",
             "the recorded baseline names no ca-codex version, so staleness cannot be judged")
 
         self._assert_live_baseline_marker(runbook, manifest)
@@ -280,13 +398,10 @@ class PublicCodexDocsTest(unittest.TestCase):
         current = current.split("The earlier verified checkpoint remains", 1)[0]
         for claim in (
             "repository startup state through SessionStart context, including `host: codex`",
-            "doctor reported 12 OK, 1 WARN, and",
-            "0 FAIL, including",
-            "stale `ca` and `ca-pi` drop-in registry entries",
-            "the fresher\nregistered sibling was active",
-            "the stale entries were skipped rather than allowed to\nfalse-block",
+            "doctor reported 13 OK, 0 WARN, and 0 FAIL",
+            "Windows/AMD64 artifact capability",
             "denied exactly once with `[H-03]` before execution",
-            "does not claim that the full scenario matrices below were rerun",
+            "does not\nclaim that the full scenario matrices below were rerun",
         ):
             self.assertIn(claim, current)
 
@@ -300,7 +415,7 @@ class PublicCodexDocsTest(unittest.TestCase):
             self.assertIn(binding, prior)
 
     def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
-        """A recorded-candidate package-byte change invalidates retained live proof."""
+        """A current-candidate package-byte change invalidates release proof."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
         manifest = json.loads(
             (ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json")
@@ -319,8 +434,10 @@ class PublicCodexDocsTest(unittest.TestCase):
             json.dumps(corrupted, separators=(",", ":")),
             1,
         )
-        with self.assertRaisesRegex(AssertionError, "exact recorded candidate package"):
-            self._assert_live_baseline_marker(corrupted_runbook, manifest)
+        with self.assertRaisesRegex(AssertionError, "exact current candidate package"):
+            self._assert_live_baseline_marker(
+                corrupted_runbook, manifest, require_current_candidate=True
+            )
 
     def test_codex_live_baseline_rejects_duplicate_metadata_markers(self):
         """Release proof is ambiguous unless the runbook has exactly one marker."""
@@ -394,10 +511,12 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIn("actions: read", release)
 
     def test_codex_live_candidate_ci_binding_fails_closed(self):
-        """Only the exact successful protected-main CI run can carry live proof."""
-        marker = live_baseline_marker(
-            (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
-        )
+        """Legacy proof accepts only an exact successful protected-main CI run."""
+        marker = {
+            "schema_version": 2,
+            "candidate_commit": "b68a77b83db89a165f5481cb848932ae316583e6",
+            "candidate_ci_run_id": 35468553909,
+        }
         valid = {
             "id": marker["candidate_ci_run_id"],
             "head_sha": marker["candidate_commit"],
@@ -431,6 +550,73 @@ class PublicCodexDocsTest(unittest.TestCase):
         unrelated_run["head_sha"] = unrelated["candidate_commit"]
         with self.assertRaisesRegex(ValueError, "not an ancestor"):
             validate_live_candidate_run(unrelated, unrelated_run)
+
+    def test_codex_preview_live_proof_binds_run_pull_artifact_and_required_jobs(self):
+        """Schema 3 proof is content-bound without pretending a future squash exists."""
+        candidate = "a" * 40
+        head = "b" * 40
+        base = "c" * 40
+        marker = {
+            "schema_version": 3,
+            "candidate_commit": candidate,
+            "candidate_ci_run_id": 123,
+            "candidate_ci_run_attempt": 2,
+            "candidate_artifact_id": 456,
+            "candidate_artifact_sha256": "d" * 64,
+            "run_head_sha": head,
+            "pr_number": 828,
+            "pr_head_sha": head,
+            "pr_head_ref": "codex/fix-release-premerge-canary",
+            "pr_base_sha": base,
+        }
+        run = {
+            "id": 123,
+            "run_attempt": 2,
+            "head_sha": head,
+            "status": "completed",
+            "conclusion": "failure",
+            "event": "pull_request",
+            "head_branch": marker["pr_head_ref"],
+            "head_repository": {"id": 1233366728, "full_name": "arbiterForge/codeArbiter"},
+            "path": ".github/workflows/ci.yml",
+            "pull_requests": [{
+                "number": 828,
+                "head": {"sha": head, "ref": marker["pr_head_ref"],
+                         "repo": {"id": 1233366728}},
+                "base": {"sha": base, "ref": "main", "repo": {"id": 1233366728}},
+            }],
+        }
+        jobs = {"jobs": [
+            {"name": "[CHECK] | [CORE] | Structured artifact package assembly",
+             "status": "completed", "conclusion": "success"},
+            *[{"name": f"[CHECK] | [CORE] | Structured artifact  <native-{i}>",
+               "status": "completed", "conclusion": "success"} for i in range(6)],
+            *[{"name": f"[CHECK] | [CORE] | Structured artifact cold package  <cold-{i}>",
+               "status": "completed", "conclusion": "success"} for i in range(18)],
+        ]}
+        artifact = {
+            "id": 456,
+            "name": f"artifact-release-packages-{candidate}",
+            "digest": f"sha256:{'d' * 64}",
+            "expired": False,
+            "workflow_run": {"id": 123},
+        }
+        evidence = {"run": run, "jobs": jobs, "artifact": artifact}
+        self.assertEqual(candidate, validate_live_candidate_run(marker, evidence))
+
+        for area, field, value in (
+            ("run", "head_sha", "e" * 40),
+            ("artifact", "digest", f"sha256:{'e' * 64}"),
+        ):
+            with self.subTest(area=area, field=field):
+                corrupted = copy.deepcopy(evidence)
+                corrupted[area][field] = value
+                with self.assertRaises(ValueError):
+                    validate_live_candidate_run(marker, corrupted)
+        missing_cold = copy.deepcopy(evidence)
+        missing_cold["jobs"]["jobs"].pop()
+        with self.assertRaisesRegex(ValueError, "eighteen"):
+            validate_live_candidate_run(marker, missing_cold)
 
     def test_readme_announces_all_hosts_and_shared_parity(self):
         """The README presents one product and all supported host adapters."""
@@ -724,6 +910,8 @@ if __name__ == "__main__":
         print(json.dumps({
             "candidate_commit": marker["candidate_commit"],
             "candidate_ci_run_id": marker["candidate_ci_run_id"],
+            "candidate_ci_run_attempt": marker.get("candidate_ci_run_attempt", 1),
+            "candidate_artifact_id": marker.get("candidate_artifact_id"),
         }, separators=(",", ":")))
     else:
         unittest.main()

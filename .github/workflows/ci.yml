@@ -2913,6 +2913,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      actions: read
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -2987,6 +2988,22 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
+      - name: Validate the exact live-proof producer and qualification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
+          RUN_ID=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_id"])')
+          RUN_ATTEMPT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_attempt"])')
+          ARTIFACT_ID=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_artifact_id"])')
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" > live-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT/jobs?per_page=100" > live-jobs.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID" > live-artifact.json
+          jq -n --slurpfile run live-run.json --slurpfile jobs live-jobs.json \
+            --slurpfile artifact live-artifact.json \
+            '{run:$run[0],jobs:$jobs[0],artifact:$artifact[0]}' \
+            | python3 .github/scripts/test_public_codex_docs.py --validate-live-candidate-run
       - name: Reject a projected merge that automatic release would reject
         run: |
           set -euo pipefail
