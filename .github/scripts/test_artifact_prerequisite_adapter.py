@@ -454,7 +454,8 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.installation_owner.cleanup()
+        if cls.installation_owner is not None:
+            cls.installation_owner.cleanup()
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="ca-prerequisite-production-")
@@ -635,6 +636,20 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
 
         eligible = self.workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["tasks"])
+
+
+class ExternalInstallationLifecycleTest(unittest.TestCase):
+    def test_production_boundary_teardown_leaves_external_installation_owned_by_caller(self):
+        original_owner = getattr(PrerequisiteProductionBoundaryTest, "installation_owner", None)
+        self.addCleanup(
+            setattr,
+            PrerequisiteProductionBoundaryTest,
+            "installation_owner",
+            original_owner,
+        )
+        PrerequisiteProductionBoundaryTest.installation_owner = None
+
+        PrerequisiteProductionBoundaryTest.tearDownClass()
 
 
 if __name__ == "__main__":
