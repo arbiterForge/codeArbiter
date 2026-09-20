@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "0fb44942c01b4bf2b9b1c949344bbaf6118f4a21",
+      "hash": "f3f3b95677780c65de44a58641c7037680c1cfa7",
       "path": ".github/workflows/ci.yml"
     },
     {
