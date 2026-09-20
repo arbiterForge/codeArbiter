@@ -19,6 +19,12 @@ POLICY_STARTUP_FIXTURES = (
     "core/surface/arbiter.md",
     "core/pysrc/session-start.py",
 )
+ARTIFACT_GUIDANCE_PATHS = (
+    "core/surface/includes/artifacts.md",
+    "plugins/ca/includes/artifacts.md",
+    "plugins/ca-codex/includes/artifacts.md",
+    "plugins/ca-pi/includes/artifacts.md",
+)
 
 
 def load_inventory() -> dict:
@@ -159,6 +165,16 @@ class ArtifactSurfaceTest(unittest.TestCase):
             surface_delta(historical, surface_at_revision()),
             [],
         )
+
+    def test_pi_prompt_approval_is_explicitly_unsupported(self) -> None:
+        warning = (
+            "Pi 0.84.1 exposes no\n"
+            "pre-model event carrying the user's exact prompt, so under Pi do not arm this\n"
+            "adapter"
+        )
+        for relative in ARTIFACT_GUIDANCE_PATHS:
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertIn(warning, text, relative)
 
     def test_policy_baseline_is_in_candidate_history(self) -> None:
         result = subprocess.run(

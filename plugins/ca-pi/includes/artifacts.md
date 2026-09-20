@@ -55,8 +55,12 @@ command, result, approval or reviewer to satisfy a required field.
 
 The existing user, SMARTS, reviewer, or verification boundary must first persist
 its actual policy-owned workflow event as canonical JSON in the reserved
-content-addressed authority-source store. For interactive user approval, arm the
-exact current artifact immediately before asking the approval question:
+content-addressed authority-source store. Interactive prompt approval currently
+has production host seams in Claude Code and Codex. Pi 0.84.1 exposes no
+pre-model event carrying the user's exact prompt, so under Pi do not arm this
+adapter; the workflow remains blocked until a Pi-native authority adapter is
+implemented. On Claude Code or Codex, arm the exact current artifact immediately
+before asking the approval question:
 
 ```sh
 python "<plugin-root>/hooks/_approvallib.py" arm --root "<project-root>" --artifact-id <artifact-id>

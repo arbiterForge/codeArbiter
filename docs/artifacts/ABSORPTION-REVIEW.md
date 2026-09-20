@@ -130,7 +130,7 @@ packaging, release or rollout condition remains open.
 | T-010 | Three-host pass | Descriptor/root-handle containment, no-follow rejection and locked CAS pass in exact-head Linux, Windows and macOS CI. |
 | T-011 | Three-host pass | Native replace/journal/process-death recovery passes in exact-head Linux, Windows and macOS CI. |
 | T-012 | Local pass | Closed bounded CLI protocol and inert mutation operations exist without a public registration. |
-| T-013 | Partial | Approval/rebind checks and interactive-user host capture exist; SMARTS, reviewer and verification capture mappings remain incomplete. |
+| T-013 | Partial | Approval/rebind checks and interactive-user host capture exist for Claude Code and Codex; Pi prompt authority plus SMARTS, reviewer and verification capture mappings remain incomplete. |
 | T-014 | Partial | Task/evidence/resume state exists; real host checkpoint orchestration is incomplete. |
 | T-015 | Hosted pass | Canonical producer guidance and bridge calls create/read real HTML pairs, preserve incomplete drafts and fail closed without the payload; exact-head generated-host and package matrices pass. |
 | T-016 | Hosted pass | Native-candidate and installed-host fixtures cover dispatch, stale blocking, interrupted REVIEW resume, redispatch and atomic scope acceptance through feature/sprint entry paths. |

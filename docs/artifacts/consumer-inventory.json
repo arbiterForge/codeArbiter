@@ -276,7 +276,7 @@
         "plugins/ca-pi/hooks/_artifactlib.py",
         "plugins/ca-pi/hooks/_approvallib.py"
       ],
-      "reason": "The binary bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. The approval bridge binds a host-observed exact prompt to current artifact identity before capture and approval. Publication read-back and non-user authority adapters remain separate gates."
+      "reason": "The binary bridge pins the package-owned payload and manifest, performs exact-format routing and typed operations without PATH or network fallback, and normal host packages now carry the qualified candidate payload. On Claude Code and Codex, the approval bridge binds a host-observed exact prompt to current artifact identity before capture and approval. Pi prompt authority, publication read-back and non-user authority adapters remain separate gates."
     },
     {
       "id": "governing-spec-discovery",

@@ -209,7 +209,7 @@
       "original_statement": "When recording approval, the workflow shall bind its existing authority source to the exact normative content and reject ordinary edits that attempt that transition.",
       "disposition": "partial_or_locally_exercised",
       "formal_acceptance": "not_recorded",
-      "implementation_notes_and_gaps": "The host-owned prompt adapter binds an exact token reply to current content and drives capture plus approval in the installed-host workflow. SMARTS, reviewer and verification adapters remain unintegrated; test prompts are not production approval.",
+      "implementation_notes_and_gaps": "The host-owned prompt adapter binds an exact token reply to current content and drives capture plus approval through installed Claude Code and Codex packages. Pi prompt authority plus SMARTS, reviewer and verification adapters remain unintegrated; test prompts are not production approval.",
       "local_test_references": [
         {
           "name": "TestGenericMutationCannotApprove",

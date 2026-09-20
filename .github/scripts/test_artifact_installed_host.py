@@ -335,6 +335,20 @@ class Workflow:
         return self.client.call("capture", {"source_ref": source_ref, "source_sha256": digest})["receipt"]
 
     def approve(self, artifact_id: str) -> None:
+        if self.host == "pi":
+            # Pi 0.84.1 exposes no pre-model event carrying the user's exact
+            # prompt. Keep its cold lifecycle proof synthetic and fail closed
+            # rather than manufacturing host-observed approval authority.
+            receipt = self.stage_policy_event(
+                artifact_id,
+                artifact_id,
+                "approval",
+                "user_workflow",
+                "approved",
+                {},
+            )
+            self.mutate("approve", artifact_id, receipt=receipt)
+            return
         adapter = self.plugin_root / "hooks" / "_approvallib.py"
         prompt_submit = self.plugin_root / "hooks" / "prompt-submit.py"
         if not adapter.is_file() or not prompt_submit.is_file():
