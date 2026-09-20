@@ -62,6 +62,13 @@ COHORT_MARKER_FIELDS = {
     "release_notes_sha256",
 }
 QUALIFIED_TARGET_HOSTS = {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}
+QUALIFIED_TAG_PATTERNS = {
+    "ca": re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z"),
+    "ca-codex": re.compile(
+        r"ca-codex-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z"
+    ),
+    "ca-pi": TAG_RE,
+}
 COLD_FIELDS = {
     "format", "source_commit", "workflow", "run_id", "job", "host", "platform",
     "promotion_receipt_sha256", "package_sha256", "manifest_sha256",
@@ -395,6 +402,42 @@ def _validate_cohort_marker(marker: dict) -> tuple:
             marker["cohort_sha256"])
 
 
+def _cohort_tags_strictly_newer(new_tags: dict, old_tags: dict,
+                                targets: set[str]) -> bool:
+    """Require every superseding target to advance its stable SemVer tag."""
+    for target in targets:
+        pattern = QUALIFIED_TAG_PATTERNS[target]
+        new_match = pattern.fullmatch(new_tags.get(target, ""))
+        old_match = pattern.fullmatch(old_tags.get(target, ""))
+        if new_match is None or old_match is None:
+            raise ValueError("durable cohort tag map is not canonical")
+        if tuple(map(int, new_match.groups())) <= tuple(map(int, old_match.groups())):
+            return False
+    return True
+
+
+def _active_incomplete_cohort_keys(incomplete: list[tuple],
+                                   marker_groups: dict[tuple, dict[str, dict]],
+                                   current_tags: dict) -> list[tuple]:
+    """Drop only old cohorts fully claimed by a strictly newer marker group."""
+    current_owners = [
+        key for key, marked in marker_groups.items()
+        if json.loads(key[0]) == current_tags and set(marked) == set(key[1])
+    ]
+    active = []
+    for key in incomplete:
+        tags = json.loads(key[0])
+        intended = set(key[1])
+        superseded = tags != current_tags and any(
+            intended <= set(owner[1])
+            and _cohort_tags_strictly_newer(current_tags, tags, intended)
+            for owner in current_owners
+        )
+        if not superseded:
+            active.append(key)
+    return active
+
+
 def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
                                     current_tags: dict, eligible_targets: list[str],
                                     markers: list[dict], receipts: list[dict],
@@ -459,10 +502,17 @@ def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
         if (set(marked) != intended or set(received) != intended
                 or any((key, target) in draft_pairs for target in intended)):
             incomplete.append(key)
-    if len(incomplete) > 1:
+    # An older partial cohort is no longer publishable once a strictly newer
+    # marker group has durably claimed every one of its targets. Keep the old
+    # draft as evidence, but do not let it compete with the newer unfinished
+    # cohort. Partial or non-monotonic successor groups never supersede it.
+    active_incomplete = _active_incomplete_cohort_keys(
+        incomplete, marker_groups, current_tags
+    )
+    if len(active_incomplete) > 1:
         raise ValueError("multiple unresolved historical publication cohorts exist")
-    if incomplete:
-        key = incomplete[0]
+    if active_incomplete:
+        key = active_incomplete[0]
         tags = json.loads(key[0])
         if tags != current_tags:
             raise ValueError("unresolved historical cohort versions differ from current manifests")
@@ -732,6 +782,10 @@ def reconcile_durable_cohort(receipts: list[dict], *, current: dict,
                               separators=(",", ":"))
     current_identity = (current["source_commit"], current["source_tree"],
                         current["ci_run_id"], current["cohort_sha256"])
+    active_keys = set(_active_incomplete_cohort_keys(
+        [entry[0] for entry in incomplete], marker_groups, current["cohort_tags"]
+    ))
+    incomplete = [entry for entry in incomplete if entry[0] in active_keys]
     if incomplete:
         if len(incomplete) != 1:
             raise ValueError("multiple unresolved historical publication cohorts exist")
