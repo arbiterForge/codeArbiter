@@ -35,7 +35,7 @@ from _releaselib import SEMVER, semver_greater, semver_key  # noqa: E402,F401
 ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0"
 ARTIFACT_QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 ARTIFACT_PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
-ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.2.0"
+ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.3.0"
 ARTIFACT_PACKAGE_FORMAT = "codearbiter.artifact-package-cohort/0.1.0"
 NPM_PACKER_NAME = "npm"
 NPM_PACKER_VERSION = "11.19.1"
@@ -1399,6 +1399,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
             "format", "host", "bridge_sha256", "binary_sha256",
             "spec_artifact_id", "spec_normative_sha256", "plan_artifact_id",
             "plan_normative_sha256", "approval_evidence_mode",
+            "prerequisite_evidence_mode",
             "interruption_reconciled", "redispatched",
             "commit_proof", "finalization_proof", "all_accepted_and_current",
             "markdown_shadow_count",
@@ -1407,10 +1408,16 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
             not isinstance(workflow_result, dict)
             or set(workflow_result) != expected_workflow_fields
             or workflow_result.get("format")
-            != "codearbiter.installed-host-workflow/0.1.0"
+            != "codearbiter.installed-host-workflow/0.2.0"
             or workflow_result.get("host") != host
             or workflow_result.get("binary_sha256") != entry["sha256"]
             or workflow_result.get("approval_evidence_mode")
+            != (
+                "synthetic-policy-event"
+                if host == "pi"
+                else "host-observed-prompt"
+            )
+            or workflow_result.get("prerequisite_evidence_mode")
             != (
                 "synthetic-policy-event"
                 if host == "pi"
@@ -1449,6 +1456,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         "installed_bridge_sha256": workflow_result["bridge_sha256"],
         "installed_workflow_format": workflow_result["format"],
         "approval_evidence_mode": workflow_result["approval_evidence_mode"],
+        "prerequisite_evidence_mode": workflow_result["prerequisite_evidence_mode"],
         "interruption_reconciled": True,
         "redispatched": True,
         "commit_proof": True,

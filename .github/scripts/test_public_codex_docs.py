@@ -292,8 +292,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "candidate_archive_sha256",
             ):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
-            self.assertEqual(828, marker.get("pr_number"))
-            self.assertEqual("codex/fix-release-premerge-canary", marker.get("pr_head_ref"))
+            self.assertEqual(829, marker.get("pr_number"))
+            self.assertEqual("codex/prerequisite-adapter", marker.get("pr_head_ref"))
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:

@@ -23,9 +23,9 @@ subprocess whose home is a PRISTINE temp directory, seeded with a plausible
 stale-but-real `~/.claude/settings.json`, and asserts that directory comes back
 BYTE-IDENTICAL: nothing created, nothing modified, nothing deleted.
 
-That is strictly stronger. It proves the suite touches no user-global path at
-all, rather than proving it happened not to touch one machine's. And it is safe
-to run anywhere, including on the machine that was being damaged.
+This detects persistent changes under the redirected home. It is not an OS
+sandbox: hard-coded paths, write-then-restore activity, and other global
+locations require separate controls.
 
 The seeded `settings.json` matters: `heal_statusline_wiring` returns early when
 no settings file exists, so an EMPTY fake home would hide exactly the write this
@@ -151,10 +151,6 @@ class TestSuitesStayInsideTheirTempDirs(unittest.TestCase):
             f"  created:  {created}\n  removed:  {removed}\n  modified: {modified}",
         )
 
-    def test_ca_hook_suite_leaves_the_user_home_byte_identical(self):
-        name, command = SUITES[0]
-        self.assert_home_untouched(name, command)
-
     def test_github_script_suites_leave_the_user_home_byte_identical(self):
         for name, command in SUITES[1:]:
             with self.subTest(suite=name):
@@ -200,15 +196,42 @@ class TestTheSuiteLeaksNoHandlesOrProcesses(unittest.TestCase):
 
     ADVICE = "Enable tracemalloc"
 
-    def test_the_ca_hook_suite_emits_no_resource_warnings(self):
+    @classmethod
+    def setUpClass(cls):
+        # One child execution supplies both observations. Class fixtures are
+        # recreated on each unittest suite run; no module-level result cache.
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             seeded_home(home)
-            result = run_suite(
+            cls.before = snapshot(home)
+            cls.result = run_suite(
                 [sys.executable, "-W", "always::ResourceWarning", "-m", "unittest",
                  "discover", "-s", "plugins/ca/hooks/tests", "-p", "test_*.py", "-t", "."],
                 home,
             )
+            cls.after = snapshot(home)
+
+    def test_ca_hook_suite_leaves_the_user_home_byte_identical(self):
+        result, before, after = self.result, self.before, self.after
+        self.assertEqual(
+            result.returncode,
+            0,
+            result.stdout[-4000:] + result.stderr[-4000:],
+        )
+        created = sorted(set(after) - set(before))
+        removed = sorted(set(before) - set(after))
+        modified = sorted(
+            key for key in set(before) & set(after) if before[key] != after[key]
+        )
+        self.assertEqual(
+            (created, removed, modified),
+            ([], [], []),
+            "ca hook suite mutated redirected HOME: "
+            f"created={created}, removed={removed}, modified={modified}",
+        )
+
+    def test_the_ca_hook_suite_emits_no_resource_warnings(self):
+        result = self.result
         self.assertEqual(result.returncode, 0, result.stderr[-4000:])
         warnings = [
             line.strip()

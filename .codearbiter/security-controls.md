@@ -72,12 +72,16 @@ binds the registry-served SLSA subject digest, repository, main ref, workflow,
 protected-main source commit, and GitHub-hosted builder to the expected release.
 
 The publish job also receives GitHub's short-lived OIDC identity solely for npm
-OIDC provenance. GitHub's ephemeral `github.token` has read-only repository
-permissions and is scoped to checkout and Release evidence lookup; credentials
-are not persisted by checkout. Neither token is logged, written to an output, or
-retained after the job. Credential rotation or revocation of `NPMJS_TOKEN` occurs in the
-organization Actions secret store; no repository change or fallback credential
-is permitted.
+OIDC provenance. GitHub's ephemeral `github.token` has `actions: read` and
+`contents: write`; the reusable workflow's caller grants the same permissions.
+The write-capable contents scope is a narrow exception required because GitHub
+hides draft Releases from tokens without push-equivalent access. The workflow
+uses that token only for trusted checkout and artifact-download actions plus
+read-only Release evidence lookups; it does not create, update, or delete a Git
+ref or GitHub Release. Checkout sets `persist-credentials: false`. Neither token
+is logged, written to an output, or retained after the job. Credential rotation
+or revocation of `NPMJS_TOKEN` occurs in the organization Actions secret store;
+no repository change or fallback credential is permitted.
 
 A second secret exists in the `ca-sandbox` plugin (ADR-0007): the
 `CLAUDE_CODE_OAUTH_TOKEN` used by `--with-claude` to authenticate Claude Code

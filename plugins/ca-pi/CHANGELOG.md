@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.7] - 2026-09-20
+
+### Fixed
+
+- Package the shared prerequisite adapter while keeping prompt-backed
+  prerequisite authority explicitly unavailable on Pi until a native prompt
+  boundary exists.
+
 ## [0.14.6] - 2026-09-20
 
 ### Fixed

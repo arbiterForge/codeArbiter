@@ -373,6 +373,7 @@ jobs:
               - 'tools/create-artifact-examples.py'
               - '.github/scripts/test_artifact_bridge.py'
               - '.github/scripts/test_artifact_approval_adapter.py'
+              - '.github/scripts/test_artifact_prerequisite_adapter.py'
               - '.github/scripts/test_artifact_authoring.py'
               - '.github/scripts/test_artifact_installed_host.py'
               - '.github/scripts/test_artifact_consumers.py'
@@ -504,6 +505,10 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_artifact_approval_adapter.py
+      - name: Test host-owned artifact prerequisite capture
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_prerequisite_adapter.py
       - name: Test canonical spec and plan authoring behavior
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
@@ -1895,6 +1900,9 @@ jobs:
           python-version: "3.x"
       - name: Validate hook partition coverage
         run: python .github/scripts/test_hook_ci_partition.py
+      - name: Validate shared suite observation
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_suite_observation.py
       - name: Sync-core drift gate (ADR-0011 M1)
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # core/pysrc/ is the canonical copy of every host-neutral hook file;
@@ -2294,9 +2302,9 @@ jobs:
         #
         # This runs each suite under a PRISTINE redirected home seeded with a
         # stale-but-real settings.json, and asserts that home comes back
-        # byte-identical and the run emits no ResourceWarning. It re-runs the
-        # hook suite twice over, so it is deliberately placed after the suite
-        # itself rather than in place of it.
+        # byte-identical and the run emits no ResourceWarning. It runs the hook
+        # suite once with warning capture plus before/after home snapshots. The
+        # independent direct discovery invocation remains in its own slice.
         run: python .github/scripts/test_suite_hermeticity.py
       - name: Run ADR identity + supersession contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'

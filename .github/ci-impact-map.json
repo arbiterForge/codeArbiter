@@ -120,6 +120,10 @@
       "checks": ["artifact-engine"]
     },
     {
+      "glob": ".github/scripts/test_artifact_prerequisite_adapter.py",
+      "checks": ["artifact-engine"]
+    },
+    {
       "glob": ".github/scripts/test_artifact_authoring.py",
       "checks": ["artifact-engine"]
     },
