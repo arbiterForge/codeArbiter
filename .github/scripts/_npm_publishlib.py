@@ -35,6 +35,7 @@ PROVENANCE_PREDICATE = "https://slsa.dev/provenance/v1"
 REGISTRY_TIMEOUT_SECONDS = 30
 REGISTRY_READBACK_ATTEMPTS = 120
 REGISTRY_READBACK_DELAY_SECONDS = 5.0
+REGISTRY_READBACK_SECONDS = 10 * 60.0
 ATTESTATION_MAX_BYTES = 2 * 1024 * 1024
 SOURCE_REPOSITORY = "https://github.com/arbiterForge/codeArbiter"
 SOURCE_REF = "refs/heads/main"
@@ -1175,7 +1176,12 @@ def parse_pack_report(stdout: str) -> tuple[str, str]:
     return filename, integrity
 
 
-def registry_lookup(npm: str, version: str) -> subprocess.CompletedProcess[str]:
+def registry_lookup(
+    npm: str,
+    version: str,
+    *,
+    timeout: float = REGISTRY_TIMEOUT_SECONDS,
+) -> subprocess.CompletedProcess[str]:
     try:
         return subprocess.run(
             [
@@ -1191,7 +1197,7 @@ def registry_lookup(npm: str, version: str) -> subprocess.CompletedProcess[str]:
             text=True,
             capture_output=True,
             check=False,
-            timeout=REGISTRY_TIMEOUT_SECONDS,
+            timeout=timeout,
         )
     except subprocess.TimeoutExpired as exc:
         raise RegistryUnavailable("npm registry lookup timed out") from exc
@@ -1286,9 +1292,22 @@ def verify(args: argparse.Namespace) -> int:
         trusted_repo, trusted_repo, args.expected_sha, args.trusted_sha,
         allow_continuation=getattr(args, "allow_continuation", False),
     )
+    readback_seconds = getattr(args, "readback_seconds", REGISTRY_READBACK_SECONDS)
+    if args.attempts < 1 or args.delay_seconds < 0 or readback_seconds <= 0:
+        raise ValueError("npm publication readback bounds are invalid")
+    deadline = time.monotonic() + readback_seconds
+    last_unavailable: RegistryUnavailable | None = None
+    state = "absent"
     for attempt in range(args.attempts):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
         try:
-            lookup = registry_lookup(args.npm, version)
+            lookup = registry_lookup(
+                args.npm,
+                version,
+                timeout=min(REGISTRY_TIMEOUT_SECONDS, remaining),
+            )
             state = classify_registry_lookup(
                 lookup.returncode,
                 lookup.stdout,
@@ -1296,7 +1315,8 @@ def verify(args: argparse.Namespace) -> int:
                 version,
                 args.integrity,
             )
-        except RegistryUnavailable:
+        except RegistryUnavailable as exc:
+            last_unavailable = exc
             if attempt + 1 >= args.attempts:
                 raise
             state = "unavailable"
@@ -1313,8 +1333,11 @@ def verify(args: argparse.Namespace) -> int:
             )
             print(f"verified {PACKAGE}@{version} integrity and provenance")
             return 0
-        if attempt + 1 < args.attempts:
-            time.sleep(args.delay_seconds)
+        remaining = deadline - time.monotonic()
+        if attempt + 1 < args.attempts and remaining > 0:
+            time.sleep(min(args.delay_seconds, remaining))
+    if last_unavailable is not None and state == "unavailable":
+        raise last_unavailable
     raise ValueError("npm publication did not become observable before the evidence deadline")
 
 
@@ -1350,6 +1373,9 @@ def parser() -> argparse.ArgumentParser:
     )
     verify_parser.add_argument(
         "--delay-seconds", type=float, default=REGISTRY_READBACK_DELAY_SECONDS
+    )
+    verify_parser.add_argument(
+        "--readback-seconds", type=float, default=REGISTRY_READBACK_SECONDS
     )
     cohort_parser = sub.add_parser("verify-cohort")
     cohort_parser.add_argument("--package-root", required=True)

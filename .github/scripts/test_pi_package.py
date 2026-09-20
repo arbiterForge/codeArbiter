@@ -2690,6 +2690,7 @@ class NpmPublishContractTest(unittest.TestCase):
         )
         self.assertEqual(parsed.attempts, 120)
         self.assertEqual(parsed.delay_seconds, 5.0)
+        self.assertEqual(parsed.readback_seconds, 10 * 60.0)
         self.assertGreaterEqual(
             (parsed.attempts - 1) * parsed.delay_seconds,
             9 * 60,
@@ -2704,6 +2705,7 @@ class NpmPublishContractTest(unittest.TestCase):
             with self.assertRaisesRegex(helper.RegistryUnavailable, "timed out"):
                 helper.registry_lookup("npm", "0.10.0")
         self.assertIn(helper.SCOPED_REGISTRY_OPTION, run.call_args.args[0])
+        self.assertEqual(run.call_args.kwargs["timeout"], 30)
         absent = subprocess.CompletedProcess(
             ["npm"],
             1,
@@ -2725,6 +2727,18 @@ class NpmPublishContractTest(unittest.TestCase):
                 mock.patch.object(helper, "registry_lookup", return_value=absent):
             with self.assertRaisesRegex(ValueError, "evidence deadline"):
                 helper.verify(args)
+
+        deadline_args = argparse.Namespace(**vars(args), readback_seconds=10.0)
+        with mock.patch.object(helper, "validate_release_source_binding"), \
+                mock.patch.object(
+                    helper.time, "monotonic", side_effect=(100.0, 109.0, 111.0, 112.0)
+                ), \
+                mock.patch.object(helper.time, "sleep") as sleep, \
+                mock.patch.object(helper, "registry_lookup", return_value=absent) as lookup:
+            with self.assertRaisesRegex(ValueError, "evidence deadline"):
+                helper.verify(deadline_args)
+        self.assertEqual(lookup.call_args.kwargs["timeout"], 1.0)
+        sleep.assert_not_called()
 
     def test_registry_transport_failures_retry_but_evidence_mismatches_fail_fast(self):
         helper = self._helper()
