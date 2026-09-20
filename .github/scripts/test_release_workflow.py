@@ -2140,7 +2140,14 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn(f"uses: {NPM_PUBLISH_WORKFLOW_REF}", block)
         self.assertIn("tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}", block)
         self.assertIn(
-            "expected_sha: ${{ github.event.workflow_run.head_sha }}", block
+            "expected_sha: ${{ needs.auto-cohort-reconciliation.outputs.source-commit }}", block
+        )
+        self.assertIn(
+            "ci_run_id: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}", block
+        )
+        self.assertIn(
+            "continuation: ${{ needs.auto-cohort-reconciliation.outputs.continuation == 'true' }}",
+            block,
         )
         self.assertIn("contents: read", block)
         self.assertIn("id-token: write", block)
@@ -3104,6 +3111,25 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
         self.assertIn('packages = cohort.get("packages")', reconciliation)
         self.assertIn('"claude": "ca"', reconciliation)
         self.assertNotIn('open("plugins/ca/', reconciliation)
+
+    def test_repair_only_release_resolves_durable_identity_before_artifact_download(self):
+        reconciliation = _jobs()[AUTO_COHORT_RECONCILIATION]
+        resolver = reconciliation.index("Resolve current or unfinished durable cohort identity")
+        download = reconciliation.index("Download exact retained package cohort identity")
+        self.assertLess(resolver, download)
+        self.assertIn("resolve_durable_cohort_identity", reconciliation)
+        self.assertIn("multiple unresolved historical publication cohorts exist",
+                      (REPO_ROOT / ".github/scripts/_npm_publishlib.py").read_text(encoding="utf-8"))
+        self.assertIn("if: steps.resolve.outputs.requires-cohort == 'true'", reconciliation)
+        self.assertIn("artifact-release-packages-${{ steps.resolve.outputs.source-commit }}",
+                      reconciliation)
+        self.assertIn("run-id: ${{ steps.resolve.outputs.ci-run-id }}", reconciliation)
+        self.assertIn("head_sha", reconciliation)
+        self.assertIn('run.get("path") != ".github/workflows/ci.yml"', reconciliation)
+        self.assertIn("validate_continuation_revision", reconciliation)
+        self.assertIn(".github/published-tags.json", reconciliation)
+        self.assertIn("--expected-object", reconciliation)
+        self.assertIn("Report a release run with no publication obligation", reconciliation)
 
     def test_shared_publisher_reverifies_attaches_and_reads_back_exact_asset(self):
         text = PUBLISH_ACTION.read_text(encoding="utf-8")

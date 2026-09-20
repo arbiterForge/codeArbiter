@@ -2171,7 +2171,7 @@ class NpmPublishContractTest(unittest.TestCase):
         workflow_prefix = text.split("    steps:\n", 1)[0] + "    steps:\n"
         self.assertEqual(
             hashlib.sha256(workflow_prefix.encode("utf-8")).hexdigest(),
-            "8d8bb42b34aab673af1020cb6990b3bda8b66c6132ecb6417a471895550b6e3e",
+            "f2eff3456fdf202b6581abe4f5e42f5acd155537f6f4da72af2a1bad04030ee2",
             "the privileged workflow prelude drifted",
         )
         permissions = text.split("permissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
@@ -2188,7 +2188,12 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertEqual(
             job_header,
             '    name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"\n'
-            "    if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'\n"
+            "    # Reusable workflows inherit the caller's event context. A call from the\n"
+            "    # automatic release workflow therefore still reports `workflow_run`, and a\n"
+            "    # call from its manual lane reports `workflow_dispatch`; neither reports\n"
+            "    # `workflow_call`. The caller jobs already require the exact release route,\n"
+            "    # while this boundary independently keeps publication on protected main.\n"
+            "    if: github.ref == 'refs/heads/main'\n"
             "    runs-on: ubuntu-latest\n"
             "    timeout-minutes: 10\n",
         )
@@ -2252,7 +2257,7 @@ class NpmPublishContractTest(unittest.TestCase):
             step_contract,
             [
                 ("- name: Check out the trusted default-branch verifier", "e5f2364f9cd674ffb2154ccfa5731f2bafc85406538d0154d409c28dbe216f97"),
-                ("- name: Validate untrusted release inputs before use", "fd21e6f82c6dac0b24da721059d653135a44289b46c541cdd4f9eb999e1101c9"),
+                ("- name: Validate untrusted release inputs before use", "69772fd4dfe6dfcb48d3f30c3eece2c592edfa50b0e6f66719562cd0ddd78cdc"),
                 ("- name: Download exact promoted host payloads", "d9d89c456edb713a79b7de9ffd3953315599e0f02dd8e32841d9f14b6a106869"),
                 ("- name: Download exact normal release package cohort", "0937dba9b0aa2812e4b14d2fcb9e1bb148f2c9be229170d869e2ed5c53242e71"),
                 ("- name: Download exact cold-execution receipt matrix", "8a0a09aae2c3f52186da9f05269a9e22f1eb0e8ea9e10122309307a9d05248b6"),
@@ -2267,13 +2272,13 @@ class NpmPublishContractTest(unittest.TestCase):
                     "eb31d3327ddc305329e5639d95fa6abeb2d2df463f0837c713b7da2d6c9a3730",
                 ),
                 ("- name: Capture draft-inclusive GitHub Release evidence", "d1453085ae5dede76e863387e84d5ad236184236d591c71bfe5174c02c28519f"),
-                ("- name: Reverify the exact retained package cohort", "a160ee94d7060c8b693be86d08f2e2cdfc3a8b1d87f37fa5453532ad1d4c4c9c"),
+                ("- name: Reverify the exact retained package cohort", "4bd5c2f4763821cc0b1b0339332f9e6bb2b69782aca99312279b75d82e80c54b"),
                 ("- name: Verify exact draft cohort-start marker before npm mutation", "f70ebba615690509cef78d9abe440a337fc661fd5b211a9eab50ae7054faeb29"),
-                ("- name: Validate identity, select prebuilt tarball, and classify exact registry state", "5fef60bd55d82145a1e554ca7ecb2e4f079359306769fc04049d98a268f1e06e"),
+                ("- name: Validate identity, select prebuilt tarball, and classify exact registry state", "45ca1c100ddb6680840fe93521756f7a5db43a652442c94ecc865b9776bc2fcc"),
                 ("- name: Require exact annotated tag object before npm mutation", "2018ffe36b25c717cfb3698e814ef04d865786bb664f5cf49fc57c1290155820"),
                 ("- name: Re-fetch exact empty marker-owned draft immediately before npm publish", "b5a07c1faced20dea8566ab36ebffdf26b28a8bc805ddea3fdb5f8d53d4c9c43"),
                 ("- name: Publish with provenance", "c3beb4d9d68652884af4c9ab7532d0a8cc2df7052baa5efee27ada23f5a05c32"),
-                ("- name: Verify exact registry publication evidence", "2ddcad576019ac148c3fac1a02bc960eb73a157c27b215b16079c491a0833f8c"),
+                ("- name: Verify exact registry publication evidence", "6b12ead24bf6d987e3d080eed40713268f40f05ff3fb5e47ddc8d094bf062344"),
                 ("- name: Create immutable durable cohort receipt", "50e65e49ba2c4beaaef31bc5a80b4bd0ca3b4569fab4d9f1f29b1180493aa0ba"),
                 ("- name: Stage durable Pi cohort receipt for publisher-isolated retention", "339c472a2d4bd0368353b39a817dd12a7019e3ea6d2da7b11fbb91e8476c72e2"),
                 ("- name: Capture npm package publication disposition", "e714059551391922498475735e2f36a9e9188b8c8f05af62cccc383e61214bad"),
@@ -2464,8 +2469,8 @@ class NpmPublishContractTest(unittest.TestCase):
             text.replace("runs-on: ubuntu-latest", "runs-on: self-hosted", 1),
             text.replace("  id-token: write", "  id-token: write\n  actions: write", 1),
             text.replace(
-                "if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'",
-                "if: github.event_name == 'workflow_call' && (github.ref == 'refs/heads/main' || github.actor == github.actor)",
+                "if: github.ref == 'refs/heads/main'",
+                "if: github.ref == 'refs/heads/main' || github.actor == github.actor",
                 1,
             ),
             text.replace("curl --disable", "curl --location", 1),
@@ -2511,7 +2516,9 @@ class NpmPublishContractTest(unittest.TestCase):
 
     def test_publisher_executes_only_trusted_verifier_against_tagged_candidate_data(self):
         text = self.WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'", text)
+        self.assertIn("if: github.ref == 'refs/heads/main'", text)
+        dispatch = text.split("  workflow_dispatch:\n", 1)[1].split("\npermissions:\n", 1)[0]
+        self.assertNotIn("continuation:", dispatch)
         self.assertIn("ref: ${{ github.sha }}", text)
         self.assertNotIn("ref: refs/heads/main", text)
         self.assertIn("path: trusted", text)
@@ -3235,6 +3242,82 @@ class NpmPublishContractTest(unittest.TestCase):
             helper.validate_release_source_binding(
                 Path("trusted"), Path("candidate"), "a" * 40, "b" * 40
             )
+
+    def test_release_source_binding_allows_only_explicit_ancestor_continuation(self):
+        helper = self._helper()
+        completed = subprocess.CompletedProcess([], 0, "", "")
+        def git_result(repo, *args):
+            if args == ("rev-parse", "HEAD"):
+                return subprocess.CompletedProcess([], 0,
+                    (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
+            if args == ("merge-base", "--is-ancestor", "a" * 40, "b" * 40):
+                return completed
+            if args == ("diff", "--name-status", "a" * 40, "b" * 40):
+                return completed
+            return subprocess.CompletedProcess([], 1, "", "")
+        with mock.patch.object(helper, "_git", side_effect=git_result):
+            helper.validate_release_source_binding(
+                Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
+                allow_continuation=True,
+            )
+        with mock.patch.object(helper, "_git", side_effect=lambda repo, *args: (
+                subprocess.CompletedProcess([], 0,
+                    (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
+                if args == ("rev-parse", "HEAD") else
+                subprocess.CompletedProcess([], 1, "", ""))):
+            with self.assertRaisesRegex(ValueError, "not an ancestor"):
+                helper.validate_release_source_binding(
+                    Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
+                    allow_continuation=True,
+                )
+        with mock.patch.object(helper, "_git", side_effect=lambda repo, *args: (
+                subprocess.CompletedProcess([], 0,
+                    (("b" if str(repo).endswith("trusted") else "a") * 40) + "\n", "")
+                if args == ("rev-parse", "HEAD") else
+                subprocess.CompletedProcess([], 0, "M\tplugins/ca-pi/package.json\n", "")
+                if args == ("diff", "--name-status", "a" * 40, "b" * 40) else
+                completed)):
+            with self.assertRaisesRegex(ValueError, "outside the repair allowlist"):
+                helper.validate_release_source_binding(
+                    Path("trusted"), Path("candidate"), "a" * 40, "b" * 40,
+                    allow_continuation=True,
+                )
+
+    def test_repair_only_commit_selects_the_single_durable_original_cohort(self):
+        helper = self._helper()
+        tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
+                "ca-pi": "ca-pi-v1.0.0"}
+        marker = {
+            "format": "codearbiter.cohort-start/0.1.0", "target": "ca-pi",
+            "host": "pi", "tag": tags["ca-pi"], "source_commit": "a" * 40,
+            "source_tree": "c" * 40, "workflow": ".github/workflows/ci.yml",
+            "ci_run_id": "123", "cohort_sha256": "d" * 64,
+            "release_notes_sha256": "e" * 64, "cohort_tags": tags,
+            "cohort_targets": ["ca", "ca-codex", "ca-pi"],
+        }
+        selected = helper.resolve_durable_cohort_identity(
+            current_source="b" * 40, current_run_id="456", current_tags=tags,
+            eligible_targets=[], markers=[marker], receipts=[], draft_markers=[marker])
+        self.assertEqual(selected["source_commit"], "a" * 40)
+        self.assertEqual(selected["ci_run_id"], "123")
+        self.assertTrue(selected["requires_cohort"])
+        self.assertTrue(selected["continuation"])
+        idle = helper.resolve_durable_cohort_identity(
+            current_source="b" * 40, current_run_id="456", current_tags=tags,
+            eligible_targets=[], markers=[], receipts=[], draft_markers=[])
+        self.assertFalse(idle["requires_cohort"])
+        changed = {**tags, "ca-pi": "ca-pi-v1.0.1"}
+        with self.assertRaisesRegex(ValueError, "versions differ"):
+            helper.resolve_durable_cohort_identity(
+                current_source="b" * 40, current_run_id="456", current_tags=changed,
+                eligible_targets=[], markers=[marker], receipts=[], draft_markers=[marker])
+        other = {**marker, "source_commit": "f" * 40, "source_tree": "1" * 40,
+                 "ci_run_id": "789", "cohort_sha256": "2" * 64}
+        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
+            helper.resolve_durable_cohort_identity(
+                current_source="b" * 40, current_run_id="456", current_tags=tags,
+                eligible_targets=[], markers=[marker, other], receipts=[],
+                draft_markers=[marker, other])
 
     def test_durable_cross_run_cohort_stops_source_mixing_and_allows_exact_resume(self):
         helper = self._helper()
