@@ -683,7 +683,10 @@ jobs:
     if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main'
     permissions:
       actions: read
-      contents: read
+      # Draft Releases are visible only to tokens with push access. This gate
+      # remains read-only in its commands, but needs contents:write authority
+      # to discover and authenticate an unfinished marker-owned draft.
+      contents: write
     outputs:
       mode: ${{ steps.durable.outputs.mode || steps.no-cohort.outputs.mode }}
       cohort-targets: ${{ steps.durable.outputs.cohort-targets || steps.no-cohort.outputs.cohort-targets }}
