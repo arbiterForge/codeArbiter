@@ -270,6 +270,115 @@ def _shell_path(path):
     return path.replace("\\", "/")
 
 
+# ADR-0038: a bounded, finite translator between the three known spellings of
+# an absolute path on a Windows drive letter -- Windows-native (`C:/...`),
+# Git-Bash/MSYS (`/c/...`), and WSL drvfs (`/mnt/c/...`). This is the ONE
+# place cross-host path-form resolution happens; every caller (the Python
+# registry checks below, and the shell text `_CX_RESOLVE_SH` embedded into
+# the generated shim) must implement this SAME grammar, never re-derive it.
+# Scope is deliberately closed: a path matching none of the three patterns
+# (e.g. a WSL-native /home/... path with no Windows-drive equivalent) is left
+# as its own sole candidate -- this is not a general host-layout search.
+_WIN_DRIVE = re.compile(r'^([A-Za-z]):[/\\](.*)$')
+_GITBASH_DRIVE = re.compile(r'^/([A-Za-z])/(.*)$')
+_WSL_DRIVE = re.compile(r'^/mnt/([A-Za-z])/(.*)$')
+
+
+def _path_form_candidates(path):
+    """Every spelling of `path` worth testing for existence (ADR-0038): the
+    input itself (forward-slash normalized) first, then the translated forms
+    for the other two grammars when `path` matches exactly one of the three
+    known Windows-drive spellings. Pure -- no filesystem access."""
+    normalized = _shell_path(path)
+    candidates = [normalized]
+    m = _WSL_DRIVE.match(normalized)
+    if m:
+        drive, rest = m.group(1).lower(), m.group(2)
+        candidates.append(f"/{drive}/{rest}")
+        candidates.append(f"{drive.upper()}:/{rest}")
+        return candidates
+    m = _GITBASH_DRIVE.match(normalized)
+    if m:
+        drive, rest = m.group(1).lower(), m.group(2)
+        candidates.append(f"/mnt/{drive}/{rest}")
+        candidates.append(f"{drive.upper()}:/{rest}")
+        return candidates
+    m = _WIN_DRIVE.match(normalized)
+    if m:
+        drive, rest = m.group(1).lower(), m.group(2)
+        candidates.append(f"/{drive}/{rest}")
+        candidates.append(f"/mnt/{drive}/{rest}")
+        return candidates
+    return candidates
+
+
+def _resolve_live(path):
+    """The first candidate spelling of `path` (ADR-0038) naming an existing
+    regular file, or None if none does. The ONE Python-side entry point for
+    cross-host file resolution -- callers must never re-derive candidates."""
+    for candidate in _path_form_candidates(path):
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def _resolve_live_dir(path):
+    """Directory analogue of `_resolve_live` (ADR-0038) -- used to recognize
+    that a sibling host's differently-spelled drop-in-dir string names the
+    SAME real directory this host resolves, so a shim differing only in that
+    spelling is not treated as stale (B3/#684 churn)."""
+    for candidate in _path_form_candidates(path):
+        if os.path.isdir(candidate):
+            return candidate
+    return None
+
+
+# The bounded, finite shell-side translator (ADR-0038), mirroring
+# `_path_form_candidates`/`_resolve_live` exactly -- embedded verbatim into
+# every generated shim so the REAL git-hook execution path (not just Python
+# diagnostics) resolves a foreign-but-translatable spelling instead of
+# failing closed on it. Pure POSIX sh (`case`, `cut`, `tr`, parameter
+# expansion) -- no extra process spawn beyond the cheap utilities already
+# used elsewhere in this shim. Prints the resolved path and returns 0 on the
+# first candidate that exists; returns 1 with nothing printed when NONE of
+# the (as-is, plus up to two translated) candidates resolves -- callers must
+# treat that as "does not exist," preserving ADR-0014's fail-closed contract.
+_CX_RESOLVE_SH = (
+    "_cx_resolve() {\n"
+    "  P=$1\n"
+    '  [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    '  case "$P" in\n'
+    "    /mnt/[A-Za-z]/*)\n"
+    '      REST=${P#/mnt/?/}\n'
+    '      DR=$(printf \'%s\' "$P" | cut -c6)\n'
+    '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
+    '      DRU=$(printf \'%s\' "$DR" | tr \'a-z\' \'A-Z\')\n'
+    '      A1="/$DRL/$REST"; A2="$DRU:/$REST"\n'
+    "      ;;\n"
+    "    /[A-Za-z]/*)\n"
+    '      REST=${P#/?/}\n'
+    '      DR=$(printf \'%s\' "$P" | cut -c2)\n'
+    '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
+    '      DRU=$(printf \'%s\' "$DR" | tr \'a-z\' \'A-Z\')\n'
+    '      A1="/mnt/$DRL/$REST"; A2="$DRU:/$REST"\n'
+    "      ;;\n"
+    "    [A-Za-z]:/*)\n"
+    '      DR=$(printf \'%s\' "$P" | cut -c1 | tr \'A-Z\' \'a-z\')\n'
+    '      REST=${P#??:}\n'
+    '      REST=${REST#/}\n'
+    '      A1="/$DR/$REST"; A2="/mnt/$DR/$REST"\n'
+    "      ;;\n"
+    "    *)\n"
+    "      return 1\n"
+    "      ;;\n"
+    "  esac\n"
+    '  [ -f "$A1" ] && { printf \'%s\' "$A1"; return 0; }\n'
+    '  [ -f "$A2" ] && { printf \'%s\' "$A2"; return 0; }\n'
+    "  return 1\n"
+    "}\n"
+)
+
+
 def _path_entry_current(dropin_dir, plugin, enforcer):
     """True iff this plugin's own drop-in entry already names `enforcer`."""
     existing = _read(_path_entry_file(dropin_dir, plugin))
@@ -478,7 +587,7 @@ def live_registered_plugins(dropin_dir):
         if legacy.fullmatch(plugin):
             continue
         path_val = _read(os.path.join(dropin_dir, name))
-        if path_val and os.path.isfile(path_val.strip()):
+        if path_val and _resolve_live(path_val.strip()):
             live.append(plugin)
     return live
 
@@ -498,9 +607,11 @@ def _read_trusted_identity(dropin_dir):
     if len(lines) != 3 or not lines[2]:
         return None
     python_path, git_path, owner = lines
-    if not os.path.isfile(python_path) or not os.path.isfile(git_path):
+    resolved_python = _resolve_live(python_path)
+    resolved_git = _resolve_live(git_path)
+    if not resolved_python or not resolved_git:
         return None
-    return python_path, git_path, owner
+    return resolved_python, resolved_git, owner
 
 
 def _refresh_trusted_identity(dropin_dir, plugin):
@@ -583,17 +694,28 @@ def _shim(dropin_dir, phase):
         "#!/bin/sh\n"
         f"{SENTINEL}\n"
         f"{SHIM_NOTICE}\n"
+        f"{_CX_RESOLVE_SH}"
         f"D={quote(_shell_path(dropin_dir))}\n"
         f'if [ -e "$D/{_TRUSTED_IDENTITY_FILE}" ] || [ -L "$D/{_TRUSTED_IDENTITY_FILE}" ]; then\n'
         f'  [ -f "$D/{_TRUSTED_IDENTITY_FILE}" ] || exit 1\n'
         f'  exec 3< "$D/{_TRUSTED_IDENTITY_FILE}" || exit 1\n'
-        '  IFS= read -r PY <&3 || exit 1\n'
-        '  IFS= read -r G <&3 || exit 1\n'
+        '  IFS= read -r PY_RAW <&3 || exit 1\n'
+        '  IFS= read -r G_RAW <&3 || exit 1\n'
         '  IFS= read -r IDENTITY_OWNER <&3 || exit 1\n'
         "  IDENTITY_EXTRA=''\n"
         '  if IFS= read -r IDENTITY_EXTRA <&3 || [ -n "$IDENTITY_EXTRA" ]; then exit 1; fi\n'
         '  exec 3<&-\n'
-        '  [ -n "$IDENTITY_OWNER" ] && [ -f "$PY" ] && [ -f "$G" ] || exit 1\n'
+        '  [ -n "$IDENTITY_OWNER" ] || exit 1\n'
+        '  PY=$(_cx_resolve "$PY_RAW") || {\n'
+        '    echo "codeArbiter: trusted python executable \\"$PY_RAW\\" could not be '
+        'resolved (tried cross-host path-form candidates, ADR-0038) -- failing CLOSED." >&2\n'
+        "    exit 1\n"
+        "  }\n"
+        '  G=$(_cx_resolve "$G_RAW") || {\n'
+        '    echo "codeArbiter: trusted git executable \\"$G_RAW\\" could not be '
+        'resolved (tried cross-host path-form candidates, ADR-0038) -- failing CLOSED." >&2\n'
+        "    exit 1\n"
+        "  }\n"
         '  export CODEARBITER_GIT_EXECUTABLE="$G"\n'
         '  export CODEARBITER_PYTHON_EXECUTABLE="$PY"\n'
         "else\n"
@@ -619,7 +741,7 @@ def _shim(dropin_dir, phase):
         '  case "$N" in [0-9]*.[0-9]*.[0-9]*.path) continue ;; esac\n'
         '  case " $SKIP " in *" ${N%.path} "*) continue ;; esac\n'
         '  IFS= read -r E < "$c" || continue\n'
-        '  [ -f "$E" ] || continue\n'
+        '  E=$(_cx_resolve "$E") || continue\n'
         '  SEEN=1\n'
         f'  {invoke}'
         '  RC=$?\n'
@@ -786,12 +908,76 @@ def _hooks_current(hd, dropin_dir):
     plugin's own enforcer path. So a plugin-version bump that only changes
     `_enforcer_path()` does NOT make this return False; install() refreshes
     the plugin's OWN drop-in `.path` entry unconditionally every call,
-    independent of whether this check short-circuits the shim-file rewrite."""
+    independent of whether this check short-circuits the shim-file rewrite.
+
+    B3/#684 (ADR-0038): the embedded `D=` line is host-LOCAL by necessity —
+    each host's shell needs a spelling IT can actually glob the drop-in dir
+    with, so two hosts sharing one repo legitimately compute two different
+    (but equally correct) `D=` strings for the very same directory. A raw
+    whole-body string compare therefore always disagreed across alternating
+    SessionStarts, reinstalling every time. When the bodies differ ONLY in
+    that one line, a resolved-directory comparison (`_same_dropin_dir`)
+    decides instead — a shim a sibling host wrote for the SAME directory is
+    still current; one that names a genuinely different directory is not."""
     for phase in PHASES:
         existing = _read(os.path.join(hd, phase))
-        if existing is None or existing != _shim(dropin_dir, phase):
+        if existing is None:
+            return False
+        desired = _shim(dropin_dir, phase)
+        if existing == desired:
+            continue
+        if (_shim_body_without_dropin_line(existing)
+                != _shim_body_without_dropin_line(desired)):
+            return False
+        if not _same_dropin_dir(_extract_dropin_line_value(existing), dropin_dir):
             return False
     return True
+
+
+_DROPIN_LINE_PREFIX = "D="
+
+
+def _shim_body_without_dropin_line(text):
+    """`text` with its `D=...` line replaced by a fixed placeholder, so two
+    shim bodies differing ONLY in that line's host-local spelling compare
+    equal (B3/#684)."""
+    out = []
+    for line in text.splitlines(keepends=True):
+        if line.startswith(_DROPIN_LINE_PREFIX):
+            out.append(f"{_DROPIN_LINE_PREFIX}<dropin>\n")
+        else:
+            out.append(line)
+    return "".join(out)
+
+
+def _extract_dropin_line_value(text):
+    """The shell-single-quoted value a shim's `D=` line embeds, or None."""
+    for line in text.splitlines():
+        if not line.startswith(_DROPIN_LINE_PREFIX):
+            continue
+        inner = line[len(_DROPIN_LINE_PREFIX):]
+        if inner.startswith("'") and inner.endswith("'"):
+            return inner[1:-1].replace("'\"'\"'", "'")
+        return None
+    return None
+
+
+def _same_dropin_dir(existing_value, dropin_dir):
+    """True iff `existing_value` (a `D=` string a shim already embeds,
+    possibly written by a SIBLING host in its own spelling) names the SAME
+    directory as `dropin_dir` (this host's own resolution) — tried as-is and
+    via the bounded cross-host path-form candidates (ADR-0038)."""
+    if existing_value is None:
+        return False
+    target = _shell_path(dropin_dir)
+    if existing_value == target:
+        return True
+    if not os.path.isdir(dropin_dir):
+        return False
+    resolved = _resolve_live_dir(existing_value)
+    if resolved is None:
+        return False
+    return os.path.realpath(resolved) == os.path.realpath(dropin_dir)
 
 
 def _default_hooks_dir(root):
@@ -857,16 +1043,27 @@ def install(root):
         _warn(f"could not create hooks dir {hd}; skipping git-hook install")
         return []
     actions = []
+    # B1/#686: pre-commit and pre-push are written as a PAIR. Two concurrent
+    # install() calls (typically two different hosts' SessionStarts racing
+    # each other) can otherwise interleave their writes, and even a single
+    # process's own mid-loop failure (disk full, AV scan, a locked drvfs
+    # file) can leave one phase upgraded and its sibling not — either way a
+    # permanently split, mutually-inconsistent pair until a later lone
+    # session happens to reinstall both together. A cross-process lock
+    # serializes concurrent installers; a plan-then-write-then-rollback
+    # sequence ensures a failure partway through this call restores the
+    # PRIOR consistent pair rather than leaving a new/old split.
+    plan = []
     for phase in PHASES:
         dest = os.path.join(hd, phase)
         desired = _shim(dropin_dir, phase)
-        if os.path.exists(dest):
-            existing = _read(dest)
-            lines = existing.splitlines() if existing is not None else []
+        existing = _read(dest) if os.path.exists(dest) else None
+        if existing is not None:
+            lines = existing.splitlines()
             managed = len(lines) >= 2 and lines[0] == "#!/bin/sh" and (
                 lines[1] == SENTINEL or lines[1].startswith(f"{SENTINEL} — ")
             )
-            if existing is not None and not managed:
+            if not managed:
                 _warn(f"an existing {phase} hook is not codeArbiter-managed — leaving it "
                       f"untouched. For git-level enforcement, call "
                       f"'{os.path.basename(enforcer)} {phase}' from it (see includes docs).")
@@ -874,19 +1071,50 @@ def install(root):
                 continue
             if existing == desired:
                 continue  # already current — no churn
-        try:
-            # reliability-010: atomic sibling-temp + os.replace (mirrors
-            # write_provenance/save_state). A crash mid-write with a plain
-            # open('w') could leave a sentinel-less partial shim that the
-            # foreign-hook guard above then preserves forever; os.replace
-            # guarantees `dest` is either the complete new shim or the prior
-            # (sentinel-bearing, or absent) file — never a torn write.
-            _hooklib.write_text_atomic(dest, desired, newline="\n")
-            st = os.stat(dest)
-            os.chmod(dest, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-            actions.append(f"{phase}: installed")
-        except Exception as e:  # noqa: BLE001
-            _warn(f"could not write {dest}: {e}")
+        plan.append((phase, dest, desired, existing))
+
+    if plan:
+        lock_handle = _hooklib.acquire_lock(os.path.join(dropin_dir, "install"))
+        if lock_handle is None:
+            _warn("could not acquire the shared install lock (B1/#686); leaving the "
+                  "existing pre-commit/pre-push pair untouched this session — a later "
+                  "session will retry rather than risk writing an unlocked, possibly "
+                  "split pair")
+        else:
+            try:
+                written = []
+                failure = None
+                for phase, dest, desired, prior in plan:
+                    try:
+                        # reliability-010: atomic sibling-temp + os.replace (mirrors
+                        # write_provenance/save_state) — os.replace guarantees `dest`
+                        # is either the complete new shim or the prior file, never a
+                        # torn write.
+                        _hooklib.write_text_atomic(dest, desired, newline="\n")
+                        st = os.stat(dest)
+                        os.chmod(dest, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                        written.append((phase, dest, prior))
+                    except Exception as e:  # noqa: BLE001
+                        failure = (dest, e)
+                        break
+                if failure is None:
+                    for phase, _dest, _prior in written:
+                        actions.append(f"{phase}: installed")
+                else:
+                    for _phase, dest, prior in written:
+                        try:
+                            if prior is None:
+                                os.remove(dest)
+                            else:
+                                _hooklib.write_text_atomic(dest, prior, newline="\n")
+                        except Exception:  # noqa: BLE001 — rollback is best-effort
+                            pass
+                    fail_dest, fail_exc = failure
+                    _warn(f"could not write {fail_dest}: {fail_exc} — rolled back "
+                          f"{len(written)} already-written phase(s) to avoid a split "
+                          f"pre-commit/pre-push pair (B1/#686)")
+            finally:
+                _hooklib.release_lock(lock_handle)
     # Cache the resolved location so the NEXT call can skip the git-config/
     # rev-parse re-probe entirely (performance-002) — best-effort, never fatal.
     _write_hooks_dir_cache(root, hd)
