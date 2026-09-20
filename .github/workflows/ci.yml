@@ -379,6 +379,10 @@ jobs:
               - '.github/scripts/test_artifact_workflow.py'
               - '.github/requirements/artifact-conformance.in'
               - '.github/requirements/artifact-conformance-py314.lock'
+              # Auto-release consumes this exact-head package cohort. A
+              # release workflow repair must therefore build it even when no
+              # plugin payload path changed in the same commit.
+              - '.github/workflows/release.yml'
               - '.github/workflows/ci.yml'
       - name: Write impact receipt
         id: impact
