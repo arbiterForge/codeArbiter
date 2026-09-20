@@ -54,7 +54,9 @@ on:
 
 permissions:
   actions: read
-  contents: read
+  # The publisher validates an existing draft immediately before mutation.
+  # GitHub hides draft Releases from tokens without push-equivalent access.
+  contents: write
   id-token: write
 
 concurrency:

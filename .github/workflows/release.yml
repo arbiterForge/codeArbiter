@@ -462,7 +462,8 @@ jobs:
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
     permissions:
       actions: read
-      contents: read
+      # The called workflow must observe the draft created by release-pi.
+      contents: write
       id-token: write
     uses: ./.github/workflows/npm-publish.yml
     with:
@@ -1244,7 +1245,8 @@ jobs:
     if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-cohort-gate.result == 'success' && needs.auto-release-pi.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
     permissions:
       actions: read
-      contents: read
+      # The called workflow must observe the reconciled marker-owned draft.
+      contents: write
       id-token: write
     uses: ./.github/workflows/npm-publish.yml
     with:
