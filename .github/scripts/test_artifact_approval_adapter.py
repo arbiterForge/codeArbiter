@@ -247,6 +247,49 @@ class ApprovalAdapterTest(unittest.TestCase):
         )
         self.assertTrue((self.root / self.adapter.PENDING).exists())
 
+    def test_write_new_removes_partial_file_after_io_failure(self):
+        real_close = self.adapter.os.close
+
+        def close_then_fail(fd):
+            real_close(fd)
+            raise OSError("close failed")
+
+        failures = (
+            (
+                "write",
+                mock.patch.object(
+                    self.adapter.os, "write", side_effect=OSError("write failed")
+                ),
+            ),
+            (
+                "fsync",
+                mock.patch.object(
+                    self.adapter.os, "fsync", side_effect=OSError("fsync failed")
+                ),
+            ),
+            (
+                "close",
+                mock.patch.object(
+                    self.adapter.os, "close", side_effect=close_then_fail
+                ),
+            ),
+        )
+        for operation, failure in failures:
+            with self.subTest(operation=operation):
+                relative = (
+                    Path(".codearbiter")
+                    / ".markers"
+                    / f"write-new-{operation}-test.json"
+                )
+                path = self.root / relative
+                with failure, self.assertRaisesRegex(OSError, f"{operation} failed"):
+                    self.adapter._write_new(self.root, relative, b"partial")
+
+                self.assertFalse(path.exists())
+                self.adapter._write_new(self.root, relative, b"retry")
+                self.assertEqual(path.read_bytes(), b"retry")
+                path.unlink()
+
 
 if __name__ == "__main__":
     unittest.main()

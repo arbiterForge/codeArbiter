@@ -97,6 +97,7 @@ def _write_new(root: Path, relative: Path, data: bytes) -> None:
     if hasattr(os, "O_BINARY"):
         flags |= os.O_BINARY
     fd = os.open(path, flags, 0o600)
+    completed = False
     try:
         view = memoryview(data)
         while view:
@@ -105,8 +106,20 @@ def _write_new(root: Path, relative: Path, data: bytes) -> None:
                 raise OSError("short write")
             view = view[written:]
         os.fsync(fd)
-    finally:
         os.close(fd)
+        fd = None
+        completed = True
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        if not completed:
+            try:
+                path.unlink()
+            except OSError:
+                pass
 
 
 def arm_user_approval(
