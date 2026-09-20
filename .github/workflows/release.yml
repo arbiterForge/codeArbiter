@@ -535,12 +535,16 @@ jobs:
           CANDIDATE_RUN=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_id"])')
           CANDIDATE_ATTEMPT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_attempt"])')
           CANDIDATE_ARTIFACT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_artifact_id"])')
+          CANDIDATE_PR=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["pr_number"])')
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" > live-run.json
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN/attempts/$CANDIDATE_ATTEMPT/jobs?per_page=100" > live-jobs.json
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$CANDIDATE_ARTIFACT" > live-artifact.json
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$CANDIDATE_PR" > live-pull.json
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$CANDIDATE_PR/commits?per_page=100" --slurp > live-pull-commit-pages.json
           jq -n --slurpfile run live-run.json --slurpfile jobs live-jobs.json \
-            --slurpfile artifact live-artifact.json \
-            '{run:$run[0],jobs:$jobs[0],artifact:$artifact[0]}' \
+            --slurpfile artifact live-artifact.json --slurpfile pull live-pull.json \
+            --slurpfile commit_pages live-pull-commit-pages.json \
+            '{run:$run[0],jobs:$jobs[0],artifact:$artifact[0],pull:$pull[0],pull_commits:($commit_pages[0] | add)}' \
             | python3 .github/scripts/test_public_codex_docs.py --validate-live-candidate-run
           echo "candidate-sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
           echo "ca-codex: live candidate=$CANDIDATE_SHA ci-run=$CANDIDATE_RUN"

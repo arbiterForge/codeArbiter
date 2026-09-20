@@ -99,10 +99,8 @@ def validate_live_candidate_run(marker, evidence):
         }
         if observed_run != expected_run:
             raise ValueError("live candidate is not bound to the exact approved preview run")
-        pulls = run.get("pull_requests") or []
-        if len(pulls) != 1:
-            raise ValueError("live candidate preview run is not bound to exactly one pull request")
-        pull = pulls[0]
+        pull = evidence.get("pull", {})
+        pull_commits = evidence.get("pull_commits", [])
         if marker.get("pr_head_sha") != marker.get("run_head_sha"):
             raise ValueError("live candidate preview head is not the exact run head")
         expected_pull = {
@@ -122,7 +120,11 @@ def validate_live_candidate_run(marker, evidence):
             "base_repo": ((pull.get("base") or {}).get("repo") or {}).get("id"),
         }
         if observed_pull != expected_pull:
-            raise ValueError("live candidate preview run pull-request identity drifted")
+            raise ValueError("live candidate preview pull-request identity drifted")
+        if not isinstance(pull_commits, list) or marker.get("run_head_sha") not in {
+            commit.get("sha") for commit in pull_commits if isinstance(commit, dict)
+        }:
+            raise ValueError("live candidate run head is absent from the pull-request history")
         expected_artifact = {
             "id": marker.get("candidate_artifact_id"),
             "name": f"artifact-release-packages-{candidate}",
@@ -579,12 +581,12 @@ class PublicCodexDocsTest(unittest.TestCase):
             "head_branch": marker["pr_head_ref"],
             "head_repository": {"id": 1233366728, "full_name": "arbiterForge/codeArbiter"},
             "path": ".github/workflows/ci.yml",
-            "pull_requests": [{
-                "number": 828,
-                "head": {"sha": head, "ref": marker["pr_head_ref"],
-                         "repo": {"id": 1233366728}},
-                "base": {"sha": base, "ref": "main", "repo": {"id": 1233366728}},
-            }],
+        }
+        pull = {
+            "number": 828,
+            "head": {"sha": "e" * 40, "ref": marker["pr_head_ref"],
+                     "repo": {"id": 1233366728}},
+            "base": {"sha": base, "ref": "main", "repo": {"id": 1233366728}},
         }
         jobs = {"jobs": [
             {"name": "[CHECK] | [CORE] | Structured artifact package assembly",
@@ -601,7 +603,13 @@ class PublicCodexDocsTest(unittest.TestCase):
             "expired": False,
             "workflow_run": {"id": 123},
         }
-        evidence = {"run": run, "jobs": jobs, "artifact": artifact}
+        evidence = {
+            "run": run,
+            "jobs": jobs,
+            "artifact": artifact,
+            "pull": pull,
+            "pull_commits": [{"sha": head}, {"sha": "e" * 40}],
+        }
         self.assertEqual(candidate, validate_live_candidate_run(marker, evidence))
 
         for area, field, value in (
@@ -617,6 +625,10 @@ class PublicCodexDocsTest(unittest.TestCase):
         missing_cold["jobs"]["jobs"].pop()
         with self.assertRaisesRegex(ValueError, "eighteen"):
             validate_live_candidate_run(marker, missing_cold)
+        missing_head = copy.deepcopy(evidence)
+        missing_head["pull_commits"] = [{"sha": "e" * 40}]
+        with self.assertRaisesRegex(ValueError, "absent from the pull-request history"):
+            validate_live_candidate_run(marker, missing_head)
 
     def test_readme_announces_all_hosts_and_shared_parity(self):
         """The README presents one product and all supported host adapters."""
@@ -912,6 +924,7 @@ if __name__ == "__main__":
             "candidate_ci_run_id": marker["candidate_ci_run_id"],
             "candidate_ci_run_attempt": marker.get("candidate_ci_run_attempt", 1),
             "candidate_artifact_id": marker.get("candidate_artifact_id"),
+            "pr_number": marker.get("pr_number"),
         }, separators=(",", ":")))
     else:
         unittest.main()
