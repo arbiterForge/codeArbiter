@@ -421,12 +421,26 @@ runs:
           esac
 
           # The marker-owned draft must be durably readable and exact before
-          # the first qualified tag mutation. A failure after this check leaves
-          # a recoverable draft-without-tag state for exact-A retry.
-          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
-            > "$RELEASE_RESPONSE"
-          python3 .github/scripts/_npm_publishlib.py qualified-draft \
-            --releases "$RELEASE_RESPONSE" --tag "$TAG" --marker cohort-marker.json >/dev/null
+          # the first qualified tag mutation. GitHub may not expose a freshly
+          # created draft in the paginated inventory immediately, so repeat the
+          # same strict validation for a bounded interval without accepting any
+          # weaker state.
+          DRAFT_VISIBLE=false
+          for delay in 0 1 2 4 8; do
+            [ "$delay" -eq 0 ] || sleep "$delay"
+            if gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+                 > "$RELEASE_RESPONSE" \
+                && python3 .github/scripts/_npm_publishlib.py qualified-draft \
+                     --releases "$RELEASE_RESPONSE" --tag "$TAG" \
+                     --marker cohort-marker.json >/dev/null; then
+              DRAFT_VISIBLE=true
+              break
+            fi
+          done
+          [ "$DRAFT_VISIBLE" = true ] || {
+            echo "::error::qualified Release did not become durably readable and exact"
+            exit 1
+          }
           TAG_SHA=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" \
             | python3 .github/scripts/_releaselib.py peel-tag "$TAG")
           if [ -z "$TAG_SHA" ]; then
@@ -597,12 +611,14 @@ runs:
         }
         read -r RELEASE_ID ASSET_URL < <(require_exact_draft)
         if [ "$ASSET_URL" = missing ]; then
-          # Close the listing-to-upload window: a concurrent early publish is
-          # observed here and makes the package mutation fail closed.
+          # Narrow the listing-to-upload window: an early publish observed by
+          # this fresh check fails closed. GitHub has no atomic draft-only
+          # upload primitive, so a later external/manual publish can only be
+          # detected by the strict post-upload re-fetch below.
           read -r RELEASE_ID ASSET_URL < <(require_exact_draft)
           if [ "$ASSET_URL" = missing ]; then
             gh api --method POST -H "Content-Type: application/gzip" --input "$ASSET_PATH" \
-              "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$ASSET_FILE" >/dev/null
+              "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=$ASSET_FILE" >/dev/null
           fi
         fi
         # Re-fetch immediately before either new-upload or reuse readback.
@@ -666,11 +682,14 @@ runs:
         }
         read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
         if [ "$RECEIPT_URL" = missing ]; then
-          # Re-observe the exact draft immediately before the irreversible upload.
+          # Re-observe the exact draft immediately before the irreversible
+          # upload. As above, a later external/manual publish is detected by
+          # the strict post-upload re-fetch; GitHub offers no atomic draft-only
+          # upload primitive.
           read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
           if [ "$RECEIPT_URL" = missing ]; then
             gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
-              "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-cohort-publication-v1.json" >/dev/null
+              "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-cohort-publication-v1.json" >/dev/null
           fi
         fi
         # Re-fetch immediately before either new-upload or reuse readback.

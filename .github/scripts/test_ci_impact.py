@@ -3212,6 +3212,12 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             r"        with:$",
         )
         self.assertIn("artifacts: ${{ steps.filter.outputs.artifacts }}", changes)
+        self.assertIn(
+            ".github/workflows/release.yml",
+            paths_filter(ci, "artifacts"),
+            "release workflow changes must build the exact-head package cohort "
+            "consumed by auto-release",
+        )
         for path in (
             "core/artifacts/**",
             "core/pysrc/**",

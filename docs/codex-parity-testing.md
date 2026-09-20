@@ -33,20 +33,29 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.3","candidate_commit":"defaf325b047afd5e3ddd20419609e5902ad21d5","candidate_package_sha256":"77263ad68e6cc29a0da52dd7497ccd82bb7b9dcbe9ac5d56b8d0060a11cc3d09","candidate_ci_run_id":35429401061,"host":"Codex CLI 0.155.1 on Windows","verified_on":"2026-09-19","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
-Current verified checkpoint: **Codex CLI 0.155.1**, `ca-codex` **0.13.3**, Windows, 2026-09-19.
-Fresh ephemeral Codex CLI tasks using the current `gpt-6-astra` model selected the exact 0.13.3
-package installed from merge commit `defaf325b047afd5e3ddd20419609e5902ad21d5`'s protected-main
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":2,"adapter":"ca-codex","adapter_version":"0.13.4","candidate_commit":"b68a77b83db89a165f5481cb848932ae316583e6","candidate_package_sha256":"370aaf7ac38e34b08117c906b529726229eb182d268a19f741d22c0e0ab9aa58","candidate_ci_run_id":35468553909,"host":"Codex CLI 0.155.0-alpha.9.2 on Windows","verified_on":"2026-09-19","proof":"exact assembled release-package install, SessionStart delivery, native-capable ca-doctor health, and live H-03 denial"} -->
+Current verified checkpoint: **Codex CLI 0.155.0-alpha.9.2**, `ca-codex` **0.13.4**, Windows,
+2026-09-19. A fresh ephemeral Codex CLI task using the current `gpt-6-astra` model selected the exact
+0.13.4 package installed from merge commit `b68a77b83db89a165f5481cb848932ae316583e6`'s protected-main
 CI-assembled release archive. Its canonical tracked candidate content has digest
-`sha256:77263ad68e6cc29a0da52dd7497ccd82bb7b9dcbe9ac5d56b8d0060a11cc3d09`. The tasks received the
+`sha256:370aaf7ac38e34b08117c906b529726229eb182d268a19f741d22c0e0ab9aa58`. The task received the
 repository startup state through SessionStart context, including `host: codex`. With `PLUGIN_ROOT`
-resolved from the installed 0.13.3 `$ca-doctor` skill path, the doctor reported 13 OK, 0 WARN, and
+resolved from the installed 0.13.4 `$ca-doctor` skill path, the doctor reported 12 OK, 1 WARN, and
 0 FAIL, including the packaged Windows/AMD64 artifact capability and live Git-hook backstop. The
-prescribed staging dry-run was denied exactly once with `[H-03]` before execution. The isolated
+warning reported stale `ca` and `ca-pi` drop-in registry entries and confirmed that the fresher
+registered sibling was active while the stale entries were skipped rather than allowed to
+false-block. The prescribed staging dry-run was denied exactly once with `[H-03]` before execution. The isolated
 qualification used Codex's explicit automation trust bypass only after selecting the CI-vetted
 archive; it did not modify persistent hook trust. This refreshes assembled package selection,
 SessionStart delivery, current-model doctor health, native payload availability, and the live H-03
 boundary. It does not claim that the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.155.1**, `ca-codex` **0.13.3**, Windows,
+2026-09-19. Its exact assembled-package run bound commit
+`defaf325b047afd5e3ddd20419609e5902ad21d5`, canonical digest
+`sha256:77263ad68e6cc29a0da52dd7497ccd82bb7b9dcbe9ac5d56b8d0060a11cc3d09`, and protected-main CI
+run `35429401061`; it reported 13 OK, 0 WARN, and 0 FAIL and received the same pre-execution H-03
+denial using the current `gpt-6-astra` model.
 
 The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.2**, Windows,
 2026-09-18. Its exact assembled-package run reported 13 OK, 0 WARN, and 0 FAIL and received the
