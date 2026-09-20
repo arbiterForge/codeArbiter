@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
@@ -214,6 +215,37 @@ class ApprovalAdapterTest(unittest.TestCase):
         )
         self.assertTrue(result["approved"])
         self.assertFalse(pending.exists())
+
+    def test_hook_contains_oserror_without_hiding_an_explicit_approval_failure(self):
+        armed = self.adapter.arm_user_approval(
+            self.root, self.client, "SPEC-EXAMPLE"
+        )
+        with mock.patch.object(
+            self.adapter._artifactlib,
+            "ArtifactClient",
+            side_effect=OSError("helper startup failed"),
+        ):
+            unrelated = self.adapter.consume_from_hook(
+                root=self.root,
+                plugin_root=self.root,
+                prompt="continue with unrelated work",
+                host="codex",
+                session_id="session-1",
+            )
+            result = self.adapter.consume_from_hook(
+                root=self.root,
+                plugin_root=self.root,
+                prompt=armed["reply"],
+                host="codex",
+                session_id="session-1",
+            )
+
+        self.assertEqual(unrelated, "")
+        self.assertEqual(
+            result,
+            "codeArbiter: approval capture failed: helper startup failed",
+        )
+        self.assertTrue((self.root / self.adapter.PENDING).exists())
 
 
 if __name__ == "__main__":

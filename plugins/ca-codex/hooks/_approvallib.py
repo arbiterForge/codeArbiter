@@ -302,7 +302,7 @@ def consume_from_hook(*, root: str | Path, plugin_root: str | Path, prompt: str,
         result = consume_user_approval(
             root, client, prompt, host=host, session_id=session_id
         )
-    except (ApprovalError, _artifactlib.ArtifactError) as exc:
+    except (ApprovalError, _artifactlib.ArtifactError, OSError) as exc:
         if isinstance(prompt, str) and prompt.startswith("approve "):
             return f"codeArbiter: approval capture failed: {exc}"
         return ""
