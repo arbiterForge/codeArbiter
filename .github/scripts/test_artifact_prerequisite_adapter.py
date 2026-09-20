@@ -5,6 +5,7 @@ import importlib.util
 import json
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 
@@ -307,6 +308,61 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.assertTrue(result["satisfied"])
         self.assertFalse(pending.exists())
 
+    def test_concurrent_confirmation_serializes_the_complete_transition(self):
+        class BlockingCaptureClient(_FakeClient):
+            def __init__(self):
+                super().__init__()
+                self.capture_entered = threading.Event()
+                self.release_capture = threading.Event()
+                self.capture_count = 0
+                self.capture_count_lock = threading.Lock()
+
+            def call(self, operation, request=None, **kwargs):
+                if operation == "capture":
+                    with self.capture_count_lock:
+                        self.capture_count += 1
+                        first_capture = self.capture_count == 1
+                    if first_capture:
+                        self.capture_entered.set()
+                        if not self.release_capture.wait(timeout=5):
+                            raise RuntimeError("timed out waiting to release capture")
+                return super().call(operation, request, **kwargs)
+
+        self.client = BlockingCaptureClient()
+        armed = self.arm()
+        first_result = []
+        first_error = []
+
+        def consume_first():
+            try:
+                first_result.append(self.consume(armed["reply"]))
+            except Exception as exc:  # pragma: no cover - asserted below
+                first_error.append(exc)
+
+        thread = threading.Thread(target=consume_first)
+        thread.start()
+        self.assertTrue(self.client.capture_entered.wait(timeout=5))
+        try:
+            with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
+                self.adapter.consume_user_prerequisite(
+                    self.root,
+                    self.client,
+                    armed["reply"],
+                    host="codex",
+                    session_id="session-2",
+                    now=1001,
+                )
+        finally:
+            self.client.release_capture.set()
+            thread.join(timeout=5)
+
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(first_error, [])
+        self.assertTrue(first_result[0]["satisfied"])
+        operations = [name for name, _ in self.client.calls]
+        self.assertEqual(operations.count("capture"), 1)
+        self.assertEqual(operations.count("prerequisite"), 1)
+
     def test_capture_failure_keeps_confirmed_event_stable_for_retry(self):
         armed = self.arm()
         self.client.failure = "capture"
@@ -429,6 +485,22 @@ class PrerequisiteAdapterTest(unittest.TestCase):
             "cancelled": True,
         })
         self.assertFalse((self.root / armed["pending"]).exists())
+
+    def test_cancel_and_supersede_share_the_transition_lock(self):
+        self.arm()
+
+        with self.adapter._pending_transition_lock(self.root, "PLAN-EXAMPLE"):
+            with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
+                self.adapter.cancel_user_prerequisite(
+                    self.root, "PLAN-EXAMPLE", "GATE-APPROVAL"
+                )
+            with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
+                self.adapter.supersede_user_prerequisite(
+                    self.root,
+                    self.client,
+                    "PLAN-EXAMPLE",
+                    "GATE-APPROVAL",
+                )
 
 
 class PrerequisiteSurfaceTest(unittest.TestCase):

@@ -24,6 +24,7 @@ the decision evidence; nonce unpredictability is not a security boundary.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -32,10 +33,12 @@ import re
 import secrets
 import stat
 import sys
+import tempfile
 import time
 from typing import Any
 
 import _artifactlib
+from _hooklib import acquire_lock, release_lock
 
 
 PENDING_DIR = Path(".codearbiter/.markers/pending-prerequisites")
@@ -87,6 +90,29 @@ def _digest(data: bytes) -> str:
 
 def _pending_relative(artifact_id: str) -> Path:
     return PENDING_DIR / f"{_digest(artifact_id.encode('utf-8'))}.json"
+
+
+@contextmanager
+def _pending_transition_lock(root: Path, artifact_id: str):
+    """Serialize one artifact's load-to-cleanup prerequisite transition."""
+    # Keep the live OS lock outside the repository. Verification snapshots
+    # recursively read ordinary marker files, and Windows denies that read
+    # while acquire_lock holds its byte-range lock. The resolved repository
+    # identity separates repositories in the shared temp namespace while the
+    # artifact digest provides per-artifact granularity.
+    repository_key = os.path.normcase(str(root)).encode("utf-8")
+    lock_name = _digest(repository_key + b"\0" + artifact_id.encode("utf-8"))
+    lock_root = Path(tempfile.gettempdir()) / "codearbiter-prerequisite-locks"
+    handle = acquire_lock(lock_root / lock_name)
+    if handle is None:
+        raise PrerequisiteError(
+            "PREREQUISITE_BUSY",
+            "another session is resolving this plan's prerequisite request",
+        )
+    try:
+        yield
+    finally:
+        release_lock(handle)
 
 
 def _safe_directory(root: Path, relative: Path, *, create: bool) -> Path:
@@ -648,91 +674,99 @@ def consume_user_prerequisite(
     if match is None:
         return {"matched": False, "satisfied": False}
     artifact_id, prerequisite_id, confirmation_nonce = match
-    pending = _load_pending(root, artifact_id)
-    if pending is None or pending["prerequisite_id"] != prerequisite_id:
+    if not (root / _pending_relative(artifact_id)).exists():
         return {"matched": False, "satisfied": False}
-    if not secrets.compare_digest(
-        _digest(confirmation_nonce.encode("ascii")), pending["confirmation_sha256"]
-    ):
-        return {"matched": False, "satisfied": False}
-    observed_at = int(time.time()) if now is None else now
-    if type(observed_at) is not int or observed_at < 0:
-        raise PrerequisiteError("INVALID_TIME", "prerequisite confirmation time is invalid")
-    if pending["state"] == "ARMED":
-        pending = _confirm(
-            root,
-            client,
-            pending,
-            prompt,
-            host=host,
-            session_id=session_id,
-            now=observed_at,
-        )
-    source_ref, source_sha256 = _publish_event(root, pending)
-    if pending["state"] == "CONFIRMED":
-        captured = client.call(
-            "capture",
-            {"source_ref": source_ref, "source_sha256": source_sha256},
-        )
-        receipt = captured.get("receipt")
-        if not isinstance(receipt, str) or RECEIPT_RE.fullmatch(receipt) is None:
-            raise PrerequisiteError("INVALID_RECEIPT", "capture returned no valid receipt")
-        operation_suffix = _digest(pending["request_id"].encode("ascii"))[:24]
-        mutation_request = {
-            "artifact_id": pending["artifact_id"],
-            "operation_id": f"host-user-prerequisite-{operation_suffix}",
-            "expected": {
-                "revision": pending["revision"],
-                "model_sha256": pending["model_sha256"],
-            },
-            "prerequisite": pending["prerequisite_id"],
-            "receipt": receipt,
+    with _pending_transition_lock(root, artifact_id):
+        pending = _load_pending(root, artifact_id)
+        if pending is None or pending["prerequisite_id"] != prerequisite_id:
+            return {"matched": False, "satisfied": False}
+        if not secrets.compare_digest(
+            _digest(confirmation_nonce.encode("ascii")), pending["confirmation_sha256"]
+        ):
+            return {"matched": False, "satisfied": False}
+        observed_at = int(time.time()) if now is None else now
+        if type(observed_at) is not int or observed_at < 0:
+            raise PrerequisiteError("INVALID_TIME", "prerequisite confirmation time is invalid")
+        if pending["state"] == "ARMED":
+            pending = _confirm(
+                root,
+                client,
+                pending,
+                prompt,
+                host=host,
+                session_id=session_id,
+                now=observed_at,
+            )
+        source_ref, source_sha256 = _publish_event(root, pending)
+        if pending["state"] == "CONFIRMED":
+            captured = client.call(
+                "capture",
+                {"source_ref": source_ref, "source_sha256": source_sha256},
+            )
+            receipt = captured.get("receipt")
+            if not isinstance(receipt, str) or RECEIPT_RE.fullmatch(receipt) is None:
+                raise PrerequisiteError("INVALID_RECEIPT", "capture returned no valid receipt")
+            operation_suffix = _digest(pending["request_id"].encode("ascii"))[:24]
+            mutation_request = {
+                "artifact_id": pending["artifact_id"],
+                "operation_id": f"host-user-prerequisite-{operation_suffix}",
+                "expected": {
+                    "revision": pending["revision"],
+                    "model_sha256": pending["model_sha256"],
+                },
+                "prerequisite": pending["prerequisite_id"],
+                "receipt": receipt,
+            }
+            captured_state = dict(pending)
+            captured_state.update(
+                state="CAPTURED", receipt=receipt, mutation_request=mutation_request
+            )
+            _replace_state(root, _pending_relative(artifact_id), captured_state)
+            pending = captured_state
+        result = client.call("prerequisite", pending["mutation_request"])
+        (root / _pending_relative(artifact_id)).unlink()
+        return {
+            "matched": True,
+            "satisfied": True,
+            "artifact_id": artifact_id,
+            "prerequisite_id": prerequisite_id,
+            "authority_source": source_ref,
+            "receipt": pending["receipt"],
+            "revision": result.get("revision"),
+            "replayed": bool((result.get("transaction") or {}).get("replayed")),
         }
-        captured_state = dict(pending)
-        captured_state.update(
-            state="CAPTURED", receipt=receipt, mutation_request=mutation_request
-        )
-        _replace_state(root, _pending_relative(artifact_id), captured_state)
-        pending = captured_state
-    result = client.call("prerequisite", pending["mutation_request"])
-    (root / _pending_relative(artifact_id)).unlink()
-    return {
-        "matched": True,
-        "satisfied": True,
-        "artifact_id": artifact_id,
-        "prerequisite_id": prerequisite_id,
-        "authority_source": source_ref,
-        "receipt": pending["receipt"],
-        "revision": result.get("revision"),
-        "replayed": bool((result.get("transaction") or {}).get("replayed")),
-    }
 
 
 def cancel_user_prerequisite(
     root: str | Path, artifact_id: str, prerequisite_id: str
 ) -> dict[str, Any]:
     root = Path(root).resolve(strict=True)
-    pending = _load_pending(root, artifact_id)
-    if pending is None:
+    if not (root / _pending_relative(artifact_id)).exists():
         raise PrerequisiteError(
             "NO_PENDING_PREREQUISITE", "there is no prerequisite request to cancel"
         )
-    if pending["prerequisite_id"] != prerequisite_id:
-        raise PrerequisiteError(
-            "PENDING_PREREQUISITE_MISMATCH",
-            "the pending request belongs to another prerequisite",
-        )
-    if pending["state"] != "ARMED":
-        raise PrerequisiteError(
-            "PREREQUISITE_RECOVERY_REQUIRED",
-            "a confirmed prerequisite decision must be recovered, not cancelled",
-        )
-    (root / _pending_relative(artifact_id)).unlink()
-    return {
-        "artifact_id": artifact_id,
-        "prerequisite_id": prerequisite_id,
-        "cancelled": True,
-    }
+    with _pending_transition_lock(root, artifact_id):
+        pending = _load_pending(root, artifact_id)
+        if pending is None:
+            raise PrerequisiteError(
+                "NO_PENDING_PREREQUISITE", "there is no prerequisite request to cancel"
+            )
+        if pending["prerequisite_id"] != prerequisite_id:
+            raise PrerequisiteError(
+                "PENDING_PREREQUISITE_MISMATCH",
+                "the pending request belongs to another prerequisite",
+            )
+        if pending["state"] != "ARMED":
+            raise PrerequisiteError(
+                "PREREQUISITE_RECOVERY_REQUIRED",
+                "a confirmed prerequisite decision must be recovered, not cancelled",
+            )
+        (root / _pending_relative(artifact_id)).unlink()
+        return {
+            "artifact_id": artifact_id,
+            "prerequisite_id": prerequisite_id,
+            "cancelled": True,
+        }
 
 
 def supersede_user_prerequisite(
@@ -743,55 +777,60 @@ def supersede_user_prerequisite(
 ) -> dict[str, Any]:
     """Clear a confirmed stale request after excluding a committed replay."""
     root = Path(root).resolve(strict=True)
-    pending = _load_pending(root, artifact_id)
-    if pending is None:
+    if not (root / _pending_relative(artifact_id)).exists():
         raise PrerequisiteError(
             "NO_PENDING_PREREQUISITE", "there is no prerequisite request to supersede"
         )
-    if pending["prerequisite_id"] != prerequisite_id:
-        raise PrerequisiteError(
-            "PENDING_PREREQUISITE_MISMATCH",
-            "the pending request belongs to another prerequisite",
-        )
-    if pending["state"] == "ARMED":
-        raise PrerequisiteError(
-            "PREREQUISITE_NOT_CONFIRMED",
-            "an unconfirmed request should be cancelled, not superseded",
-        )
-    current = _identity(client, artifact_id)
-    if all(current[field] == pending[field] for field in (
-        "kind", "revision", "model_sha256", "normative_sha256"
-    )):
-        raise PrerequisiteError(
-            "PREREQUISITE_STILL_CURRENT",
-            "the confirmed request still matches the current plan identity",
-        )
-    if pending["state"] == "CAPTURED":
-        try:
-            result = client.call("prerequisite", pending["mutation_request"])
-        except _artifactlib.ArtifactError as exc:
-            if exc.code != "REVISION_CONFLICT":
-                raise
-        else:
-            (root / _pending_relative(artifact_id)).unlink()
-            return {
-                "artifact_id": artifact_id,
-                "prerequisite_id": prerequisite_id,
-                "superseded": False,
-                "satisfied": True,
-                "receipt": pending["receipt"],
-                "revision": result.get("revision"),
-                "replayed": bool((result.get("transaction") or {}).get("replayed")),
-            }
-    (root / _pending_relative(artifact_id)).unlink()
-    return {
-        "artifact_id": artifact_id,
-        "prerequisite_id": prerequisite_id,
-        "superseded": True,
-        "satisfied": False,
-        "authority_source": pending["authority_source"],
-        "receipt": pending["receipt"],
-    }
+    with _pending_transition_lock(root, artifact_id):
+        pending = _load_pending(root, artifact_id)
+        if pending is None:
+            raise PrerequisiteError(
+                "NO_PENDING_PREREQUISITE", "there is no prerequisite request to supersede"
+            )
+        if pending["prerequisite_id"] != prerequisite_id:
+            raise PrerequisiteError(
+                "PENDING_PREREQUISITE_MISMATCH",
+                "the pending request belongs to another prerequisite",
+            )
+        if pending["state"] == "ARMED":
+            raise PrerequisiteError(
+                "PREREQUISITE_NOT_CONFIRMED",
+                "an unconfirmed request should be cancelled, not superseded",
+            )
+        current = _identity(client, artifact_id)
+        if all(current[field] == pending[field] for field in (
+            "kind", "revision", "model_sha256", "normative_sha256"
+        )):
+            raise PrerequisiteError(
+                "PREREQUISITE_STILL_CURRENT",
+                "the confirmed request still matches the current plan identity",
+            )
+        if pending["state"] == "CAPTURED":
+            try:
+                result = client.call("prerequisite", pending["mutation_request"])
+            except _artifactlib.ArtifactError as exc:
+                if exc.code != "REVISION_CONFLICT":
+                    raise
+            else:
+                (root / _pending_relative(artifact_id)).unlink()
+                return {
+                    "artifact_id": artifact_id,
+                    "prerequisite_id": prerequisite_id,
+                    "superseded": False,
+                    "satisfied": True,
+                    "receipt": pending["receipt"],
+                    "revision": result.get("revision"),
+                    "replayed": bool((result.get("transaction") or {}).get("replayed")),
+                }
+        (root / _pending_relative(artifact_id)).unlink()
+        return {
+            "artifact_id": artifact_id,
+            "prerequisite_id": prerequisite_id,
+            "superseded": True,
+            "satisfied": False,
+            "authority_source": pending["authority_source"],
+            "receipt": pending["receipt"],
+        }
 
 
 def consume_from_hook(
