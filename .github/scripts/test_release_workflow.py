@@ -1399,13 +1399,14 @@ class DispatchExclusivityTest(unittest.TestCase):
         self.assertRegex(header, r"(?m)^permissions:\n  contents: read$",
                          "top-level permissions must be `contents: read`")
 
-    def test_only_the_publish_jobs_carry_a_write_token(self):
+    def test_only_publishers_and_draft_observer_carry_a_write_token(self):
         writers = sorted(job for job, block in _jobs().items()
                          if re.search(r"(?m)^      contents: write$", block))
         self.assertEqual(writers, sorted(PUBLISH_JOBS + AUTO_PUBLISH_JOBS +
-                                         (AUTO_PI_RECEIPT_JOB,)),
-                         "exactly the declared publishers (manual + auto-tag) "
-                         "may declare `contents: write`")
+                                         (AUTO_PI_RECEIPT_JOB,
+                                          AUTO_COHORT_RECONCILIATION)),
+                         "only declared publishers and the read-only draft "
+                         "Release observer may declare `contents: write`")
 
     def test_preflight_holds_no_write_permission(self):
         block = _jobs()[PREFLIGHT_JOB]
@@ -3089,6 +3090,11 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
                 self.assertIn("needs.auto-cohort-reconciliation.result == 'success'",
                               jobs[job])
         reconciliation = jobs[AUTO_COHORT_RECONCILIATION]
+        self.assertRegex(
+            reconciliation,
+            r"(?m)^    permissions:\n      actions: read\n(?:      #.*\n)*      contents: write$",
+            "durable reconciliation must have push-equivalent visibility for draft Releases",
+        )
         self.assertIn("codearbiter-cohort-publication-v1.json", reconciliation)
         self.assertIn("reconcile-state", reconciliation)
         self.assertIn("draft_markers.append(marker)", reconciliation)
