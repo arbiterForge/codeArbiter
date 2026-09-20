@@ -419,16 +419,21 @@ class PublicCodexDocsTest(unittest.TestCase):
     def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
         """A current-candidate package-byte change invalidates release proof."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
-        manifest = json.loads(
-            (ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json")
-            .read_text(encoding="utf-8")
-        )
         marker_match = re.search(
             r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
             runbook,
         )
         self.assertIsNotNone(marker_match)
         marker = json.loads(marker_match.group("meta"))
+        # Pin the control manifest's version to the marker's own recorded
+        # version rather than reading the live (possibly since-advanced)
+        # plugin.json -- this test's subject is digest-corruption rejection,
+        # not version-currency, which test_codex_live_baseline_may_lag_the_
+        # development_candidate already covers. Without this pin, an
+        # ordinary version bump between releases trips the version check
+        # before the digest check ever runs, for a reason unrelated to what
+        # this test claims to prove.
+        manifest = {"version": marker["adapter_version"]}
         corrupted = dict(marker)
         corrupted["candidate_package_sha256"] = "0" * 64
         corrupted_runbook = runbook.replace(
