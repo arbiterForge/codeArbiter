@@ -1398,7 +1398,8 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         expected_workflow_fields = {
             "format", "host", "bridge_sha256", "binary_sha256",
             "spec_artifact_id", "spec_normative_sha256", "plan_artifact_id",
-            "plan_normative_sha256", "interruption_reconciled", "redispatched",
+            "plan_normative_sha256", "approval_evidence_mode",
+            "interruption_reconciled", "redispatched",
             "commit_proof", "finalization_proof", "all_accepted_and_current",
             "markdown_shadow_count",
         }
@@ -1409,6 +1410,12 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
             != "codearbiter.installed-host-workflow/0.1.0"
             or workflow_result.get("host") != host
             or workflow_result.get("binary_sha256") != entry["sha256"]
+            or workflow_result.get("approval_evidence_mode")
+            != (
+                "synthetic-policy-event"
+                if host == "pi"
+                else "host-observed-prompt"
+            )
             or any(
                 workflow_result.get(field) is not True
                 for field in (

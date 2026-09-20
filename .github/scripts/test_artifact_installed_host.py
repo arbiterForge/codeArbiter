@@ -334,7 +334,7 @@ class Workflow:
             stream.write(raw)
         return self.client.call("capture", {"source_ref": source_ref, "source_sha256": digest})["receipt"]
 
-    def approve(self, artifact_id: str) -> None:
+    def approve(self, artifact_id: str) -> str:
         if self.host == "pi":
             # Pi 0.84.1 exposes no pre-model event carrying the user's exact
             # prompt. Keep its cold lifecycle proof synthetic and fail closed
@@ -348,7 +348,7 @@ class Workflow:
                 {},
             )
             self.mutate("approve", artifact_id, receipt=receipt)
-            return
+            return "synthetic-policy-event"
         adapter = self.plugin_root / "hooks" / "_approvallib.py"
         prompt_submit = self.plugin_root / "hooks" / "prompt-submit.py"
         if not adapter.is_file() or not prompt_submit.is_file():
@@ -426,6 +426,7 @@ class Workflow:
         identity = self.client.call("identity", {"artifact_id": artifact_id})
         if identity.get("authority", {}).get("state") != "approved":
             raise AssertionError("installed prompt seam did not approve the artifact")
+        return "host-observed-prompt"
 
     def ticket(self) -> str:
         return list(self.client.contextual_pages("PLAN-FLOW", "T-001", 65536))[-1]["context_ticket"]
@@ -462,18 +463,20 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
         workflow.client.call("create", {"operation_id": workflow.operation_id("create-spec"), "artifact_id": "SPEC-FLOW", "kind": "spec", "slug": "flow", "title": spec["title"], "summary": spec["summary"], "normative": spec})
         if workflow.client.call("validate", {"artifact_id": "SPEC-FLOW", "gate": "ready"}, permit_invalid=True)["valid"] is not True:
             raise AssertionError("installed host did not create a ready spec")
-        workflow.approve("SPEC-FLOW")
+        spec_approval_mode = workflow.approve("SPEC-FLOW")
         spec_identity = workflow.client.call("identity", {"artifact_id": "SPEC-FLOW"})
         route = bridge._select_authoring_route(args.repository, "flow", workflow="feature", lane="full", client=workflow.client)
         bridge._preflight_plan_authoring(route, workflow.client, spec_artifact_id="SPEC-FLOW", spec_normative_sha256=spec_identity["normative_sha256"])
         plan = plan_normative(spec_identity["normative_sha256"])
         workflow.client.call("create", {"operation_id": workflow.operation_id("create-plan"), "artifact_id": "PLAN-FLOW", "kind": "plan", "slug": "flow", "title": plan["title"], "summary": plan["summary"], "spec_id": "SPEC-FLOW", "normative": plan})
         workflow.mutate("plan-bind", "PLAN-FLOW", spec_id="SPEC-FLOW")
-        workflow.approve("PLAN-FLOW")
+        plan_approval_mode = workflow.approve("PLAN-FLOW")
+        if plan_approval_mode != spec_approval_mode:
+            raise AssertionError("installed approvals used inconsistent authority modes")
         plan_identity = workflow.client.call("identity", {"artifact_id": "PLAN-FLOW"})
         ticket = workflow.ticket()
         workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket)
-        return {"spec_sha256": spec_identity["normative_sha256"], "plan_sha256": plan_identity["normative_sha256"], "ticket": ticket}
+        return {"spec_sha256": spec_identity["normative_sha256"], "plan_sha256": plan_identity["normative_sha256"], "ticket": ticket, "approval_evidence_mode": spec_approval_mode}
     if args.phase == "reconcile-review":
         interrupted = workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         if interrupted["tasks"][0]["state"] != "IN_PROGRESS":
@@ -541,7 +544,7 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
     ]
     if markdown_shadows:
         raise AssertionError("installed HTML workflow created a Markdown shadow")
-    return {"format": "codearbiter.installed-host-workflow/0.1.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": first["plan_sha256"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
+    return {"format": "codearbiter.installed-host-workflow/0.1.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": first["plan_sha256"], "approval_evidence_mode": first["approval_evidence_mode"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
 
 
 def main() -> int:
