@@ -993,7 +993,9 @@ class WorkflowContractTest(unittest.TestCase):
     def test_ci_runs_impact_planner_without_replacing_existing_job_conditions(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn(
-            "ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}",
+            "ci-${{ github.workflow }}-${{ github.event_name }}-"
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.number || github.run_id }}",
             ci,
         )
         self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", ci)
@@ -2349,10 +2351,20 @@ class WorkflowContractTest(unittest.TestCase):
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - auto-release-candidate\n", aggregate)
         self.assertIn("${{ needs['auto-release-candidate'].result }}", aggregate)
+        self.assertIn(
+            'if [ "$release_candidate_result" != success ]; then', aggregate
+        )
+        self.assertIn("release candidate readiness did not succeed", aggregate)
 
     def test_a_new_push_cannot_cancel_the_main_run_that_triggers_release(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         concurrency = ci.split("\nconcurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
+        self.assertIn(
+            "group: ci-${{ github.workflow }}-${{ github.event_name }}-"
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.number || github.run_id }}",
+            concurrency,
+        )
         self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", concurrency)
         self.assertNotIn("cancel-in-progress: true", concurrency)
 

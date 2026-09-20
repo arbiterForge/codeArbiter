@@ -1819,24 +1819,22 @@ class AutoTagLaneTest(unittest.TestCase):
 
     def test_auto_preflight_binds_every_eligible_release_surface_to_this_cohort(self):
         block = _jobs()[AUTO_PREFLIGHT_JOB]
-        self.assertIn('git log --first-parent -1 --format=%H -- "$CHANGELOG"', block)
         self.assertIn('"$MANIFEST" "$CHANGELOG"', block)
-        self.assertIn('git rev-parse "$GITHUB_SHA:$SURFACE"', block)
+        self.assertIn('git rev-parse "$SOURCE_SHA:$SURFACE"', block)
         self.assertIn('git hash-object "$SURFACE"', block)
-        self.assertIn('git rev-parse "$GITHUB_SHA:$COMPANION"', block)
+        self.assertIn('git rev-parse "$SOURCE_SHA:$COMPANION"', block)
         self.assertIn('git hash-object "$COMPANION"', block)
-        self.assertIn('was not advanced by this exact candidate', block)
-        self.assertIn('git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" --', block)
+        self.assertIn("check_auto_release_candidate.py", block)
         self.assertNotIn("mapfile", block)
-        self.assertNotIn('git diff --name-only "$LIVE_CANDIDATE_SHA"', block)
-        self.assertLess(block.index("auto-eligible"),
-                        block.index('git log --first-parent -1 --format=%H -- "$CHANGELOG"'))
+        self.assertNotIn("LIVE_CANDIDATE_SHA", block)
+        self.assertLess(block.index("check_auto_release_candidate.py"),
+                        block.index("auto-eligible"))
 
     def test_auto_preflight_runs_the_same_candidate_validator_as_required_ci(self):
         block = _jobs()[AUTO_PREFLIGHT_JOB]
         self.assertIn("check_auto_release_candidate.py", block)
-        self.assertIn('--candidate "$GITHUB_SHA"', block)
-        self.assertIn('--live-candidate "$LIVE_CANDIDATE_SHA"', block)
+        self.assertIn('--candidate "$SOURCE_SHA"', block)
+        self.assertNotIn('--live-candidate', block)
 
     def test_auto_eligible_first_introduction_and_advance_are_true(self):
         # The CLI subcommand the preflight's own shell calls, executed
@@ -2849,7 +2847,8 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
                     "GITHUB_TOKEN": "DUMMY-read-token", "NPMJS_TOKEN": "DUMMY-token"})
         env.update({"UPSTREAM_EVENT": "push", "UPSTREAM_CONCLUSION": "success",
                     "UPSTREAM_BRANCH": "main", "UPSTREAM_REPOSITORY": "arbiterForge/codeArbiter",
-                    "GITHUB_REPOSITORY": "arbiterForge/codeArbiter", "UPSTREAM_SHA": self.HEAD})
+                    "GITHUB_REPOSITORY": "arbiterForge/codeArbiter", "UPSTREAM_SHA": self.HEAD,
+                    "GITHUB_SHA": self.HEAD, "SOURCE_SHA": self.HEAD})
         env.update(overrides or {})
         step = ("Resolve exactly one release target" if lane == "preflight"
                 else "Determine which targets have untagged work")
@@ -2925,78 +2924,14 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
                          "ca-pi=true\nca-pi-version=9.9.9\n"
                          "cohort-targets=ca-codex,ca-pi\n")
 
-    def test_later_green_commit_cannot_consume_an_earlier_release_candidate(self):
-        self.commands = {"ca": ['"$PY" check.py forbidden-later']}
-        proc, _, out = self._authorize(
-            "auto-preflight", target="ca",
-            overrides={"STUB_SURFACE_SHA": self.OTHER})
-        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertIn("was not advanced by", proc.stdout)
-        self.assertNotIn("CHECKED:forbidden-later", proc.stdout)
-        self.assertEqual(out, "")
-
-    def test_live_proof_only_commit_can_release_unchanged_candidate(self):
-        self.commands = {"ca": ['$PY check.py proof-continuation']}
-        proc, _, out = self._authorize(
-            "auto-preflight", target="ca",
-            overrides={
-                "LIVE_CANDIDATE_SHA": self.OTHER,
-                "STUB_SURFACE_SHA": self.OTHER,
-                "STUB_DIFF": "docs/codex-parity-testing.md\n",
-            })
-        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertIn("release continuation is limited", proc.stdout)
-        self.assertIn("CHECKED:proof-continuation", proc.stdout)
-        self.assertIn("ca=true", out)
-
-    def test_live_proof_continuation_accepts_non_payload_release_repair(self):
-        self.commands = {"ca": ['$PY check.py release-repair-continuation']}
-        proc, _, out = self._authorize(
-            "auto-preflight", target="ca",
-            overrides={
-                "LIVE_CANDIDATE_SHA": self.OTHER,
-                "STUB_SURFACE_SHA": self.OTHER,
-                "STUB_DIFF": (
-                    ".codearbiter/.provenance/code-map.json\n"
-                    ".github/scripts/_npm_publishlib.py\n"
-                    ".github/scripts/test_ci_impact.py\n"
-                    ".github/scripts/test_pi_package.py\n"
-                    ".github/workflows/ci.yml\n"
-                    ".github/workflows/release.yml\n"
-                    ".github/scripts/test_release_workflow.py\n"
-                    "docs/codex-parity-testing.md\n"
-                ),
-            })
-        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertIn("release continuation is limited", proc.stdout)
-        self.assertIn("CHECKED:release-repair-continuation", proc.stdout)
-        self.assertIn("ca=true", out)
-
-    def test_live_proof_continuation_rejects_release_payload_drift(self):
-        self.commands = {"ca": ['$PY check.py forbidden-payload-drift']}
-        proc, _, out = self._authorize(
-            "auto-preflight", target="ca",
-            overrides={
-                "LIVE_CANDIDATE_SHA": self.OTHER,
-                "STUB_SURFACE_SHA": self.OTHER,
-                "STUB_DIFF": "docs/codex-parity-testing.md\nplugins/ca/skills/fix/SKILL.md\n",
-            })
-        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertNotIn("CHECKED:forbidden-payload-drift", proc.stdout)
-        self.assertEqual(out, "")
-
-    def test_live_proof_continuation_rejects_new_npm_implicit_root_file(self):
-        self.commands = {"ca": ['$PY check.py forbidden-implicit-root']}
-        proc, _, out = self._authorize(
-            "auto-preflight", target="ca",
-            overrides={
-                "LIVE_CANDIDATE_SHA": self.OTHER,
-                "STUB_SURFACE_SHA": self.OTHER,
-                "STUB_DIFF": "COPYING\n",
-            })
-        self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertNotIn("CHECKED:forbidden-implicit-root", proc.stdout)
-        self.assertEqual(out, "")
+    def test_release_intent_is_not_anchored_to_codex_live_proof_identity(self):
+        candidate_step = _jobs()[AUTO_PREFLIGHT_JOB].split(
+            "- name: Validate automatic release candidate", 1
+        )[1].split("- name: Determine which targets", 1)[0]
+        self.assertNotIn("LIVE_CANDIDATE_SHA", candidate_step)
+        self.assertNotIn("--live-candidate", candidate_step)
+        self.assertIn('--candidate "$SOURCE_SHA"', candidate_step)
+        self.assertTrue((HERE / "test_auto_release_candidate.py").is_file())
 
     def test_candidate_accepts_unchanged_exact_manifest_blobs(self):
         self.commands = {"ca": ['$PY check.py exact-manifest']}
@@ -3052,8 +2987,8 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         block = _jobs()["auto-preflight"]
         checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
                              r"(?=^      - |\Z)", block).group(0)
-        self.assertIn("ref: ${{ github.sha }}", checkout)
-        self.assertNotIn("github.event.workflow_run.head_sha", checkout)
+        self.assertIn("ref: ${{ github.event.workflow_run.head_sha }}", checkout)
+        self.assertNotIn("ref: ${{ github.sha }}", checkout)
 
     def test_auto_trust_inputs_are_bound_to_upstream_event_fields(self):
         block = _jobs()["auto-preflight"].split("id: eligible", 1)[1].split("run: |", 1)[0]

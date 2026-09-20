@@ -124,7 +124,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
   # A main push is the release workflow's immutable source event. Cancelling
   # it when a later PR lands strands the earlier release candidate before its
   # workflow_run trigger can exist (observed for 58f02aa in run 35485606810).
@@ -2991,10 +2991,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 .github/scripts/test_auto_release_candidate.py
-          LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
-          LIVE_CANDIDATE_SHA=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_commit"])')
           python3 .github/scripts/check_auto_release_candidate.py \
-            --candidate "$GITHUB_SHA" --live-candidate "$LIVE_CANDIDATE_SHA"
+            --candidate "$GITHUB_SHA" --run-pre-tag
 
   ci-passed:
     name: "[GATE ] | [REPO] | Merge readiness"
@@ -3052,8 +3050,13 @@ jobs:
         run: |
           required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
+          release_candidate_result="${{ needs['auto-release-candidate'].result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"
+          if [ "$release_candidate_result" != success ]; then
+            echo "::error::release candidate readiness did not succeed: $release_candidate_result"
+            exit 1
+          fi
           for r in $required_results; do
             case "$r" in
               success|skipped) ;;

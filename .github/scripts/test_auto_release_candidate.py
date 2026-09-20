@@ -57,22 +57,36 @@ class CandidateCheckTest(unittest.TestCase):
         return self.git("rev-parse", "HEAD")
 
     def test_exact_candidate_is_authorized(self):
-        results = candidate_check.evaluate_candidate(self.repo, self.live, self.live)
+        results = candidate_check.evaluate_candidate(self.repo, self.live)
         self.assertTrue(results[0].eligible)
 
     def test_later_payload_commit_cannot_consume_an_older_changelog(self):
         later = self.commit("payload drift", "plugins/ca/new.txt", "changed\n")
-        with self.assertRaisesRegex(candidate_check.CandidateError, "not advanced"):
-            candidate_check.evaluate_candidate(self.repo, later, self.live)
+        with self.assertRaisesRegex(candidate_check.CandidateError, "does not bind"):
+            candidate_check.evaluate_candidate(self.repo, later)
 
     def test_unchanged_payload_continuation_is_authorized(self):
         later = self.commit("ci-only correction", ".github-note", "fixed\n")
-        results = candidate_check.evaluate_candidate(self.repo, later, self.live)
+        results = candidate_check.evaluate_candidate(self.repo, later)
         self.assertTrue(results[0].eligible)
 
     def test_a_new_candidate_must_advance_the_changelog(self):
         later = self.commit("new candidate", "CHANGELOG.md", "# 1.0.0\n- fix\n")
-        results = candidate_check.evaluate_candidate(self.repo, later, self.live)
+        results = candidate_check.evaluate_candidate(self.repo, later)
+        self.assertTrue(results[0].eligible)
+
+    def test_manifest_drift_cannot_reuse_old_release_intent(self):
+        self.write_version("1.0.1")
+        self.git("add", ".")
+        self.git("commit", "-m", "manifest drift")
+        with self.assertRaisesRegex(candidate_check.CandidateError, "does not bind"):
+            candidate_check.evaluate_candidate(self.repo, "HEAD")
+
+    def test_unrelated_live_proof_commit_is_not_the_release_intent_anchor(self):
+        unrelated = self.commit("historical proof", "proof.txt", "old proof\n")
+        later = self.commit("policy-only continuation", ".github-note", "fixed\n")
+        self.assertNotEqual(unrelated, self.live)
+        results = candidate_check.evaluate_candidate(self.repo, later)
         self.assertTrue(results[0].eligible)
 
 

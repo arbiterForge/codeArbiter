@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -18,20 +19,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASELIB_PATH = Path(__file__).with_name("_releaselib.py")
-RELEASE_PAYLOAD = (
-    "CHANGELOG.md",
-    "package.json",
-    ":(top,icase)README*",
-    ":(top,icase)COPYING*",
-    ":(top,icase)LICENSE*",
-    ":(top,icase)LICENCE*",
-    "plugins/ca",
-    "plugins/ca-codex",
-    "plugins/ca-pi",
-    "plugins/ca-sandbox",
-)
-
-
 def _load_release_lib():
     spec = importlib.util.spec_from_file_location("candidate_release_lib", RELEASELIB_PATH)
     if spec is None or spec.loader is None:
@@ -97,24 +84,47 @@ def _as_list(value) -> list[str]:
     return [value] if isinstance(value, str) and value else []
 
 
+def _intent_paths(row) -> list[str]:
+    """Return the declared, target-specific release-intent surface."""
+    paths: list[str] = []
+    for field in ("manifest", "generated-manifest", "changelog", "payload", "artifacts"):
+        for path in _as_list(row.get(field)):
+            if path not in paths:
+                paths.append(path)
+    for path in _as_list(row.get("payload-exclude")):
+        paths.append(f":(exclude){path}")
+    return paths
+
+
+def _run_pre_tag(repo: Path, targets: list[TargetResult]) -> None:
+    python = sys.executable
+    environment = {"PATH": os.environ.get("PATH", ""), "PY": python}
+    if os.environ.get("SYSTEMROOT"):
+        environment["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
+    for result in targets:
+        if not result.eligible:
+            continue
+        completed = subprocess.run(
+            [python, "core/pysrc/_releaselib.py", "run-pre-tag", result.target],
+            cwd=repo,
+            env=environment,
+            timeout=600,
+        )
+        if completed.returncode != 0:
+            raise CandidateError(
+                f"{result.target} declared pre-tag checks failed with exit "
+                f"{completed.returncode}"
+            )
+
+
 def evaluate_candidate(
     repo: Path,
     candidate: str,
-    live_candidate: str,
     targets_path: Path | None = None,
 ) -> list[TargetResult]:
     """Return target eligibility or raise CandidateError on predictable rejection."""
     repo = repo.resolve()
     candidate = _commit(repo, candidate)
-    live_candidate = _commit(repo, live_candidate)
-    ancestor = _git(repo, "merge-base", "--is-ancestor", live_candidate, candidate, check=False)
-    if ancestor.returncode != 0:
-        raise CandidateError(f"live candidate {live_candidate} is not an ancestor of {candidate}")
-
-    unchanged = _git(
-        repo, "diff", "--quiet", live_candidate, candidate, "--", *RELEASE_PAYLOAD,
-        check=False,
-    ).returncode == 0
     target_file = targets_path or repo / ".codearbiter" / "release-targets.md"
     rows = RELEASELIB.load_targets(str(target_file))
     tags = _git(repo, "tag", "-l").stdout.split()
@@ -144,9 +154,23 @@ def evaluate_candidate(
         changed_at = _git(
             repo, "log", "--first-parent", "-1", "--format=%H", candidate, "--", changelog
         ).stdout.strip()
-        if changed_at != candidate and not (unchanged and changed_at == live_candidate):
+        if not changed_at:
+            raise CandidateError(f"{target} release surface {changelog} has no intent commit")
+        intent_version = _manifest_version(repo, changed_at, manifests[0])
+        unchanged_intent = _git(
+            repo,
+            "diff",
+            "--quiet",
+            changed_at,
+            candidate,
+            "--",
+            *_intent_paths(row),
+            check=False,
+        ).returncode == 0
+        if intent_version != version or not unchanged_intent:
             raise CandidateError(
-                f"{target} release surface {changelog} was not advanced by this exact candidate"
+                f"{target} release intent at {changed_at} does not bind the current "
+                f"{version} payload"
             )
         for surface in (*manifests, changelog):
             _value_at(repo, candidate, surface)
@@ -158,10 +182,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=REPO_ROOT)
     parser.add_argument("--candidate", default="HEAD")
-    parser.add_argument("--live-candidate", required=True)
+    parser.add_argument("--run-pre-tag", action="store_true")
     args = parser.parse_args(argv)
     try:
-        evaluate_candidate(args.repo, args.candidate, args.live_candidate)
+        results = evaluate_candidate(args.repo, args.candidate)
+        if args.run_pre_tag:
+            _run_pre_tag(args.repo.resolve(), results)
     except (CandidateError, RELEASELIB.ReleaseTargetsError) as exc:
         print(f"::error::{exc}", file=sys.stderr)
         return 1
