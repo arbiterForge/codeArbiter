@@ -33,22 +33,21 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.7","candidate_commit":"c8fc6bbdd804eb2d396859e681d0a7f944ea94fd","candidate_source_tree":"64a8b0249056e59d1610e5ccb5a3f26d395656fa","candidate_package_sha256":"c16f80252382185b785dcac7a08222e9ddb3f393678d0195a99ab10b7815ad16","candidate_ci_run_id":35519199028,"candidate_ci_run_attempt":1,"candidate_artifact_id":10608087454,"candidate_artifact_sha256":"522b1887465f879cbb10dae88abef3190ae438c411ce9f7613765c905adcb7de","candidate_archive_sha256":"03f1b11c204b3b4cc1ca99e7e0837f7454569e6ba0075c27260c33fed86e7542","run_head_sha":"61ff6740711cd0260f6b2f1a8373e77e36001c79","pr_number":829,"pr_head_sha":"61ff6740711cd0260f6b2f1a8373e77e36001c79","pr_head_ref":"codex/prerequisite-adapter","pr_base_sha":"a3e7cbf887f0c933416e0609e231a946c501eae7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-20","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.7","candidate_commit":"2b6548b4bf5952a6ba164c8b95d866a42658d136","candidate_source_tree":"f58245f302591b29e92ec191ba6fbf51b5520b8a","candidate_package_sha256":"9104936aedb5175fd347f00b9f66467e9649c4367aaac771d91627867c328dba","candidate_ci_run_id":35522249322,"candidate_ci_run_attempt":1,"candidate_artifact_id":10608287888,"candidate_artifact_sha256":"37c6144d62ee7c69a4663e9b860c2a62a2c0336c8436278f992d994a67a54c95","candidate_archive_sha256":"6c93f41aa9bd1b3ad2d7db0eea4f0bc89111b3b4aec755f3b0966923108ba31e","run_head_sha":"c7db68f89d64b43933dd2d5ec50ecb69476ba4fd","pr_number":829,"pr_head_sha":"c7db68f89d64b43933dd2d5ec50ecb69476ba4fd","pr_head_ref":"codex/prerequisite-adapter","pr_base_sha":"a3e7cbf887f0c933416e0609e231a946c501eae7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-20","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.7**, Windows,
 2026-09-20. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with high reasoning selected the
-exact 0.13.7 package from pull-request qualification run `35519199028`, attempt 1, artifact
-`10608087454`. The producer checkout was `c8fc6bbdd804eb2d396859e681d0a7f944ea94fd`, with source tree
-`64a8b0249056e59d1610e5ccb5a3f26d395656fa`; the PR head and base are recorded separately so this
+exact 0.13.7 package from pull-request qualification run `35522249322`, attempt 1, artifact
+`10608287888`. The producer checkout was `2b6548b4bf5952a6ba164c8b95d866a42658d136`, with source tree
+`f58245f302591b29e92ec191ba6fbf51b5520b8a`; the PR head and base are recorded separately so this
 preview proof does not pretend that a future squash commit already exists. The release archive has
-digest `sha256:03f1b11c204b3b4cc1ca99e7e0837f7454569e6ba0075c27260c33fed86e7542`, and its canonical
+digest `sha256:6c93f41aa9bd1b3ad2d7db0eea4f0bc89111b3b4aec755f3b0966923108ba31e`, and its canonical
 tracked candidate content has digest
-`sha256:c16f80252382185b785dcac7a08222e9ddb3f393678d0195a99ab10b7815ad16`. The isolated install
-matched all 226 packaged source files byte-for-byte. The task received the
+`sha256:9104936aedb5175fd347f00b9f66467e9649c4367aaac771d91627867c328dba`. The isolated install
+matched all 226 packaged source files byte-for-byte. In a fresh disposable checkout of exact PR head
+`c7db68f89d64b43933dd2d5ec50ecb69476ba4fd`, the task received the
 repository startup state through SessionStart context, including `host: codex`. With `PLUGIN_ROOT` resolved from the installed
 0.13.7 `$ca-doctor` skill path, the doctor reported 13 OK, 0 WARN, and 0 FAIL, including the packaged
-Windows/AMD64 artifact capability and live Git-hook backstop. An initial direct doctor invocation
-omitted `PLUGIN_ROOT` and failed closed before producing a report or changing state; the task then
-supplied the exact installed root and completed the prescribed mechanical report. The broad-staging
+Windows/AMD64 artifact capability and live Git-hook backstop. The broad-staging
 dry-run was denied exactly once with `[H-03]` before execution, explicit-file staging was not
 attempted, and the final index check was clean. The isolated qualification used Codex's explicit
 automation trust bypass only after selecting the CI-vetted archive; it did not modify persistent hook
