@@ -1404,7 +1404,9 @@ class DispatchExclusivityTest(unittest.TestCase):
                          if re.search(r"(?m)^      contents: write$", block))
         self.assertEqual(writers, sorted(PUBLISH_JOBS + AUTO_PUBLISH_JOBS +
                                          (AUTO_PI_RECEIPT_JOB,
-                                          AUTO_COHORT_RECONCILIATION)),
+                                          AUTO_COHORT_RECONCILIATION,
+                                          MANUAL_PI_NPM_JOB,
+                                          AUTO_PI_NPM_JOB)),
                          "only declared publishers and the read-only draft "
                          "Release observer may declare `contents: write`")
 
@@ -1707,7 +1709,7 @@ class LaneIsolationTest(unittest.TestCase):
         self.assertIn(f"uses: {NPM_PUBLISH_WORKFLOW_REF}", block)
         self.assertIn("tag: ca-pi-v${{ github.event.inputs.pi_confirm }}", block)
         self.assertIn("expected_sha: ${{ github.sha }}", block)
-        self.assertIn("contents: read", block)
+        self.assertIn("contents: write", block)
         self.assertIn("id-token: write", block)
         self.assertNotIn("secrets: inherit", block)
         self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)
@@ -2150,7 +2152,7 @@ class AutoTagLaneTest(unittest.TestCase):
             "continuation: ${{ needs.auto-cohort-reconciliation.outputs.continuation == 'true' }}",
             block,
         )
-        self.assertIn("contents: read", block)
+        self.assertIn("contents: write", block)
         self.assertIn("id-token: write", block)
         self.assertNotIn("secrets: inherit", block)
         self.assertIn("NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}", block)

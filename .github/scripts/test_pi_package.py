@@ -2171,11 +2171,18 @@ class NpmPublishContractTest(unittest.TestCase):
         workflow_prefix = text.split("    steps:\n", 1)[0] + "    steps:\n"
         self.assertEqual(
             hashlib.sha256(workflow_prefix.encode("utf-8")).hexdigest(),
-            "f2eff3456fdf202b6581abe4f5e42f5acd155537f6f4da72af2a1bad04030ee2",
+            "f9ff21704abfcea2aadc589d33a1d2373209afbbff3ccffa52dce586d5e7f155",
             "the privileged workflow prelude drifted",
         )
         permissions = text.split("permissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
-        self.assertEqual(permissions, "  actions: read\n  contents: read\n  id-token: write\n")
+        self.assertEqual(
+            permissions,
+            "  actions: read\n"
+            "  # The publisher validates an existing draft immediately before mutation.\n"
+            "  # GitHub hides draft Releases from tokens without push-equivalent access.\n"
+            "  contents: write\n"
+            "  id-token: write\n",
+        )
         concurrency = text.split("concurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
         self.assertEqual(
             concurrency,
@@ -2370,7 +2377,11 @@ class NpmPublishContractTest(unittest.TestCase):
             text,
             r"(?ms)^    secrets:\n      NPMJS_TOKEN:\n        required: true$",
         )
-        self.assertRegex(text, r"(?ms)^permissions:\n\s+actions: read\n\s+contents: read\n\s+id-token: write\n")
+        self.assertRegex(
+            text,
+            r"(?ms)^permissions:\n\s+actions: read\n"
+            r"(?:\s+#.*\n)*\s+contents: write\n\s+id-token: write\n",
+        )
         self.assertIn("timeout-minutes: 10", text)
         self.assertIn("format('refs/tags/{0}', inputs.tag)", text)
         # Re-runs are serialized per tag and become no-ops once the exact
