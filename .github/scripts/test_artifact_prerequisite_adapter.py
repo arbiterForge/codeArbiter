@@ -378,6 +378,21 @@ with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
                 self.assertEqual(info.st_uid, os.getuid())
                 self.assertEqual(stat.S_IMODE(info.st_mode) & 0o077, 0)
 
+    @unittest.skipIf(hasattr(os, "getuid"), "Windows fallback check")
+    def test_transition_lock_root_does_not_require_profile_environment(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with (
+                mock.patch.object(
+                    self.adapter.tempfile, "gettempdir", return_value=temporary
+                ),
+                mock.patch.object(
+                    Path, "home", side_effect=RuntimeError("profile unavailable")
+                ),
+            ):
+                lock_root = self.adapter._pending_lock_root()
+
+        self.assertRegex(lock_root.name, r"^codearbiter-prerequisite-locks-temp-")
+
     def test_transition_lock_rejects_precreated_non_directory_root(self):
         with tempfile.TemporaryDirectory() as temporary:
             with mock.patch.object(

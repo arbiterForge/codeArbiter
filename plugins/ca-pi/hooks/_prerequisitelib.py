@@ -114,12 +114,16 @@ def _repository_lock_key(root: Path) -> bytes:
     return b"path:" + os.path.normcase(resolved).casefold().encode("utf-8")
 
 
-def _pending_lock_directory_name() -> str:
+def _pending_lock_directory_name(temporary: Path | None = None) -> str:
     if hasattr(os, "getuid"):
         namespace = f"uid-{os.getuid()}"
     else:
-        home = os.path.normcase(str(Path.home().resolve())).casefold().encode("utf-8")
-        namespace = f"home-{_digest(home)[:24]}"
+        if temporary is None:
+            temporary = Path(tempfile.gettempdir()).resolve(strict=True)
+        temp_identity = (
+            os.path.normcase(str(temporary)).casefold().encode("utf-8")
+        )
+        namespace = f"temp-{_digest(temp_identity)[:24]}"
     return f"codearbiter-prerequisite-locks-{namespace}"
 
 
@@ -127,7 +131,7 @@ def _pending_lock_root() -> Path:
     """Create and validate the private cross-process lock namespace."""
     try:
         temporary = Path(tempfile.gettempdir()).resolve(strict=True)
-        lock_root = temporary / _pending_lock_directory_name()
+        lock_root = temporary / _pending_lock_directory_name(temporary)
         lock_root.mkdir(mode=0o700, exist_ok=True)
         info = lock_root.lstat()
         reparse = getattr(info, "st_file_attributes", 0) & 0x400
