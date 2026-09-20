@@ -33,6 +33,8 @@ TAG_RE = re.compile(r"ca-pi-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z
 SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
 PROVENANCE_PREDICATE = "https://slsa.dev/provenance/v1"
 REGISTRY_TIMEOUT_SECONDS = 30
+REGISTRY_READBACK_ATTEMPTS = 120
+REGISTRY_READBACK_DELAY_SECONDS = 5.0
 ATTESTATION_MAX_BYTES = 2 * 1024 * 1024
 SOURCE_REPOSITORY = "https://github.com/arbiterForge/codeArbiter"
 SOURCE_REF = "refs/heads/main"
@@ -1343,8 +1345,12 @@ def parser() -> argparse.ArgumentParser:
     verify_parser.add_argument(
         "--publication-mode", required=True, choices=("new", "existing")
     )
-    verify_parser.add_argument("--attempts", type=int, default=12)
-    verify_parser.add_argument("--delay-seconds", type=float, default=5.0)
+    verify_parser.add_argument(
+        "--attempts", type=int, default=REGISTRY_READBACK_ATTEMPTS
+    )
+    verify_parser.add_argument(
+        "--delay-seconds", type=float, default=REGISTRY_READBACK_DELAY_SECONDS
+    )
     cohort_parser = sub.add_parser("verify-cohort")
     cohort_parser.add_argument("--package-root", required=True)
     cohort_parser.add_argument("--stage-root", required=True)

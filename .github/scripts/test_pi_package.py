@@ -2171,7 +2171,7 @@ class NpmPublishContractTest(unittest.TestCase):
         workflow_prefix = text.split("    steps:\n", 1)[0] + "    steps:\n"
         self.assertEqual(
             hashlib.sha256(workflow_prefix.encode("utf-8")).hexdigest(),
-            "f9ff21704abfcea2aadc589d33a1d2373209afbbff3ccffa52dce586d5e7f155",
+            "42b5c137ac570042994de04f559e1f5b1a85f67c69d273644beb7d7a74fa574b",
             "the privileged workflow prelude drifted",
         )
         permissions = text.split("permissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
@@ -2202,7 +2202,7 @@ class NpmPublishContractTest(unittest.TestCase):
             "    # while this boundary independently keeps publication on protected main.\n"
             "    if: github.ref == 'refs/heads/main'\n"
             "    runs-on: ubuntu-latest\n"
-            "    timeout-minutes: 10\n",
+            "    timeout-minutes: 15\n",
         )
         workflow_call = text.split("  workflow_call:\n", 1)[1].split(
             "  workflow_dispatch:\n", 1
@@ -2382,7 +2382,7 @@ class NpmPublishContractTest(unittest.TestCase):
             r"(?ms)^permissions:\n\s+actions: read\n"
             r"(?:\s+#.*\n)*\s+contents: write\n\s+id-token: write\n",
         )
-        self.assertIn("timeout-minutes: 10", text)
+        self.assertIn("timeout-minutes: 15", text)
         self.assertIn("format('refs/tags/{0}', inputs.tag)", text)
         # Re-runs are serialized per tag and become no-ops once the exact
         # artifact and provenance are proven on the registry.
@@ -2678,6 +2678,24 @@ class NpmPublishContractTest(unittest.TestCase):
 
     def test_registry_lookup_and_readback_are_time_bounded(self):
         helper = self._helper()
+        parsed = helper.parser().parse_args(
+            [
+                "verify",
+                "--tag", "ca-pi-v0.10.0",
+                "--expected-sha", "a" * 40,
+                "--trusted-sha", "a" * 40,
+                "--integrity", "sha512-expected",
+                "--publication-mode", "new",
+            ]
+        )
+        self.assertEqual(parsed.attempts, 120)
+        self.assertEqual(parsed.delay_seconds, 5.0)
+        self.assertGreaterEqual(
+            (parsed.attempts - 1) * parsed.delay_seconds,
+            9 * 60,
+            "a successful npm publish needs a bounded multi-minute processing window",
+        )
+
         with mock.patch.object(
             helper.subprocess,
             "run",
