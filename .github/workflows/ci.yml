@@ -125,7 +125,11 @@ permissions:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # A main push is the release workflow's immutable source event. Cancelling
+  # it when a later PR lands strands the earlier release candidate before its
+  # workflow_run trigger can exist (observed for 58f02aa in run 35485606810).
+  # PR feedback remains safely supersedable.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   changes:
@@ -2124,7 +2128,9 @@ jobs:
         # workflow, so deleting the exactly-one-target preflight, the
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
-        run: python .github/scripts/test_release_workflow.py
+        run: |
+          python .github/scripts/test_release_workflow.py
+          python .github/scripts/test_auto_release_candidate.py
       - name: Run the A-1.11 release resolution-trace suite
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
@@ -2971,6 +2977,26 @@ jobs:
         # live protection document.
         run: python .github/scripts/test_branch_protection.py
 
+  auto-release-candidate:
+    name: "[GATE ] | [RELEASE] | Candidate readiness"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+      - name: Reject a projected merge that automatic release would reject
+        run: |
+          set -euo pipefail
+          LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
+          LIVE_CANDIDATE_SHA=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_commit"])')
+          python3 .github/scripts/check_auto_release_candidate.py \
+            --candidate "$GITHUB_SHA" --live-candidate "$LIVE_CANDIDATE_SHA"
+
   ci-passed:
     name: "[GATE ] | [REPO] | Merge readiness"
     # REGISTRATION CONTRACT (issue #390): this gate enforces a job through TWO
@@ -2984,6 +3010,7 @@ jobs:
     if: always()
     needs:
       - documentation-contract
+      - auto-release-candidate
       - branch-protection
       - tag-immutability
       - changes
@@ -3024,7 +3051,7 @@ jobs:
     steps:
       - name: Require every required job to have succeeded or been skipped
         run: |
-          required_results="${{ needs['documentation-contract'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
+          required_results="${{ needs['documentation-contract'].result }} ${{ needs['auto-release-candidate'].result }} ${{ needs['branch-protection'].result }} ${{ needs['tag-immutability'].result }} ${{ needs.changes.result }} ${{ needs['artifact-engine'].result }} ${{ needs['artifact-browser'].result }} ${{ needs['artifact-package-assembly'].result }} ${{ needs['artifact-package-cold'].result }} ${{ needs['host-descriptors'].result }} ${{ needs['ci-impact'].result }} ${{ needs['codex-resource-contract'].result }} ${{ needs['codex-candidate-provenance'].result }} ${{ needs.tools.result }} ${{ needs['ca-sandbox-tools'].result }} ${{ needs['ca-pi-checks'].result }} ${{ needs['ca-pi-tools'].result }} ${{ needs['ca-pi-codeql'].result }} ${{ needs.hooks.result }} ${{ needs['version-bump'].result }} ${{ needs['version-bump-sandbox'].result }} ${{ needs['version-bump-codex'].result }} ${{ needs['codex-host'].result }} ${{ needs['version-bump-pi'].result }} ${{ needs.prose.result }} ${{ needs['badge-consistency'].result }} ${{ needs['prose-sandbox'].result }} ${{ needs.manifests.result }} ${{ needs['license-consistency'].result }} ${{ needs.surface.result }} ${{ needs['prose-codex'].result }} ${{ needs['secret-scan'].result }}"
           canary_result="${{ needs.ca-pi-latest.result }}"
           echo "upstream required results: $required_results"
           echo "advisory Pi canary result: $canary_result"

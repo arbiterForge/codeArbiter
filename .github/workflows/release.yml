@@ -523,6 +523,13 @@ jobs:
           echo "candidate-sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
           echo "ca-codex: live candidate=$CANDIDATE_SHA ci-run=$CANDIDATE_RUN"
 
+      - name: Validate automatic release candidate
+        env:
+          LIVE_CANDIDATE_SHA: ${{ steps.live-proof.outputs.candidate-sha }}
+        run: >-
+          python3 .github/scripts/check_auto_release_candidate.py
+          --candidate "$GITHUB_SHA" --live-candidate "$LIVE_CANDIDATE_SHA"
+
       - name: Determine which targets have untagged work
         id: eligible
         env:
@@ -553,9 +560,8 @@ jobs:
           PYTHON=$(python3 -c 'import sys; print(sys.executable)')
           LIVE_CANDIDATE_SHA=${LIVE_CANDIDATE_SHA:-$GITHUB_SHA}
           UNCHANGED_RELEASE_PAYLOAD=false
-          # A green exact-head repair may continue an older authorized
-          # candidate only while every shipped payload, user-visible release
-          # surface, and npm implicit root file is byte-identical in Git.
+          # Defense in depth around the publication-authority outputs below.
+          # The shared validator above is also run by required pre-merge CI.
           if [ "$LIVE_CANDIDATE_SHA" != "$GITHUB_SHA" ] && \
              git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" -- \
                CHANGELOG.md package.json \
@@ -581,12 +587,6 @@ jobs:
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             if [ "$ELIGIBLE" = "true" ]; then
-              # The changelog is the candidate-authorization surface. Bind it
-              # to this exact first-parent commit so a later green main commit
-              # cannot consume an older unpublished version. Manifests may
-              # already contain that version from an earlier correction; bind
-              # their exact blobs to this candidate instead of requiring a
-              # meaningless rewrite of unchanged JSON.
               CHANGELOG_COMMIT=$(git log --first-parent -1 --format=%H -- "$CHANGELOG")
               if [ "$CHANGELOG_COMMIT" != "$GITHUB_SHA" ] && \
                  { [ "$UNCHANGED_RELEASE_PAYLOAD" != true ] || [ "$CHANGELOG_COMMIT" != "$LIVE_CANDIDATE_SHA" ]; }; then

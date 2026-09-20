@@ -1820,8 +1820,6 @@ class AutoTagLaneTest(unittest.TestCase):
     def test_auto_preflight_binds_every_eligible_release_surface_to_this_cohort(self):
         block = _jobs()[AUTO_PREFLIGHT_JOB]
         self.assertIn('git log --first-parent -1 --format=%H -- "$CHANGELOG"', block)
-        self.assertNotIn('git log --first-parent -1 --format=%H -- "$SURFACE"', block)
-        self.assertNotIn('git log --first-parent -1 --format=%H -- "$COMPANION"', block)
         self.assertIn('"$MANIFEST" "$CHANGELOG"', block)
         self.assertIn('git rev-parse "$GITHUB_SHA:$SURFACE"', block)
         self.assertIn('git hash-object "$SURFACE"', block)
@@ -1829,22 +1827,16 @@ class AutoTagLaneTest(unittest.TestCase):
         self.assertIn('git hash-object "$COMPANION"', block)
         self.assertIn('was not advanced by this exact candidate', block)
         self.assertIn('git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" --', block)
-        guard_start = block.index(
-            'git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" --')
-        guard_end = block.index("; then", guard_start)
-        payload_guard = " ".join(
-            block[guard_start:guard_end].replace("\\", "").split())
-        guarded_paths = payload_guard.split(" -- ", 1)[1].split()
-        self.assertEqual(guarded_paths, [
-            "CHANGELOG.md", "package.json", "':(top,icase)README*'",
-            "':(top,icase)COPYING*'", "':(top,icase)LICENSE*'",
-            "':(top,icase)LICENCE*'", "plugins/ca", "plugins/ca-codex",
-            "plugins/ca-pi", "plugins/ca-sandbox",
-        ])
         self.assertNotIn("mapfile", block)
         self.assertNotIn('git diff --name-only "$LIVE_CANDIDATE_SHA"', block)
         self.assertLess(block.index("auto-eligible"),
                         block.index('git log --first-parent -1 --format=%H -- "$CHANGELOG"'))
+
+    def test_auto_preflight_runs_the_same_candidate_validator_as_required_ci(self):
+        block = _jobs()[AUTO_PREFLIGHT_JOB]
+        self.assertIn("check_auto_release_candidate.py", block)
+        self.assertIn('--candidate "$GITHUB_SHA"', block)
+        self.assertIn('--live-candidate "$LIVE_CANDIDATE_SHA"', block)
 
     def test_auto_eligible_first_introduction_and_advance_are_true(self):
         # The CLI subcommand the preflight's own shell calls, executed

@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Reject projected merges that would strand an eligible ca-pi version, and
+  preserve the exact main CI run that supplies its release trigger and package.
 - Preserve structured-artifact approval evidence in packaged receipts and fail
   closed for prompt-backed approvals because Pi has no supported prompt adapter.
 

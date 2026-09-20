@@ -996,7 +996,7 @@ class WorkflowContractTest(unittest.TestCase):
             "ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}",
             ci,
         )
-        self.assertIn("cancel-in-progress: true", ci)
+        self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", ci)
         self.assertIn("id: impact", ci)
         self.assertIn("python tools/ci-impact.py", ci)
         self.assertIn("list-files: shell", ci)
@@ -2328,6 +2328,33 @@ class WorkflowContractTest(unittest.TestCase):
         aggregate = ci.split("  ci-passed:\n", 1)[1]
         self.assertIn("      - documentation-contract\n", aggregate)
         self.assertIn("${{ needs['documentation-contract'].result }}", aggregate)
+
+    def test_auto_release_candidate_is_checked_before_merge_and_required(self):
+        """A merge-ready tree must also be a viable automatic release candidate.
+
+        This is intentionally a live repository-state check, not another parser
+        assertion about release.yml: run 35487972575 proved that all existing
+        contract tests could pass while the automatic release preflight rejected
+        the exact same commit immediately after merge.
+        """
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(ci)
+        job = jobs["auto-release-candidate"]
+        self.assertIn('name: "[GATE ] | [RELEASE] | Candidate readiness"', job)
+        self.assertIn("fetch-depth: 0", job)
+        self.assertIn("fetch-tags: true", job)
+        self.assertIn("check_auto_release_candidate.py", job)
+        self.assertNotRegex(job, r"(?m)^    if:", "release readiness became optional")
+        self.assertIn("auto-release-candidate", aggregate_required_results(ci))
+        aggregate = ci.split("  ci-passed:\n", 1)[1]
+        self.assertIn("      - auto-release-candidate\n", aggregate)
+        self.assertIn("${{ needs['auto-release-candidate'].result }}", aggregate)
+
+    def test_a_new_push_cannot_cancel_the_main_run_that_triggers_release(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        concurrency = ci.split("\nconcurrency:\n", 1)[1].split("\njobs:\n", 1)[0]
+        self.assertIn("cancel-in-progress: ${{ github.event_name == 'pull_request' }}", concurrency)
+        self.assertNotIn("cancel-in-progress: true", concurrency)
 
     def test_ci_reports_under_the_merge_group_event_that_tests_the_real_base(self):
         # Issue #383.  main's ONLY required context is this workflow's

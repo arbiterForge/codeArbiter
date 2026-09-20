@@ -10,6 +10,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Reject projected merges that would strand an eligible ca-codex version, and
+  preserve the exact main CI run that supplies its release trigger and package.
 - Route structured-artifact approval through host-owned prompts, issue one-shot
   receipts only after explicit user approval, and preserve the
   approval-evidence mode in packaged receipts.

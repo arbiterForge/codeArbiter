@@ -16,6 +16,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Make merge readiness execute the same automatic-release candidate check as
+  release preflight, and preserve main CI runs until their release trigger can
+  be emitted instead of cancelling them when a later merge lands.
 - Route structured-artifact approval through host-owned prompts, issue one-shot
   receipts only after explicit user approval, preserve the approval-evidence
   mode in packaged receipts, and fail closed where Pi cannot prompt.
