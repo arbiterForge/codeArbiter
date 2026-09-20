@@ -1744,7 +1744,12 @@ class AutoTagLaneTest(unittest.TestCase):
     def test_auto_preflight_gates_on_a_successful_ci_run_on_main(self):
         condition = _job_if(_jobs()[AUTO_PREFLIGHT_JOB])
         self.assertIn("github.event.workflow_run.conclusion == 'success'", condition)
+        self.assertIn("github.event.workflow_run.event == 'push'", condition)
         self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
+        self.assertIn(
+            "github.event.workflow_run.head_repository.full_name == github.repository",
+            condition,
+        )
         self.assertIn("github.event_name == 'workflow_run'", condition)
 
     def test_every_auto_lane_depends_on_the_auto_preflight(self):
