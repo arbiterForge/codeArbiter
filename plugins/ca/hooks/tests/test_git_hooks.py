@@ -1424,6 +1424,28 @@ class TestCrossHostPathFormResolution(_GitFixture):
                            "a spelling resolving to nothing real must still fail closed")
         self.assertIn("failing CLOSED", result.stderr + result.stdout)
 
+    def test_windows_native_case_branch_strips_exactly_the_drive_prefix(self):
+        # Security-review regression: `${P#??:}` (two wildcards, literal ':')
+        # never matches a drive-letter path like "C:/..." -- its 3rd
+        # character is '/', not ':' -- so REST was left completely
+        # unstripped, producing unresolvable candidates ("/c/C:/...",
+        # "/mnt/c/C:/...") for exactly the direction ADR-0038 names as the
+        # motivating case (a WSL-hosted shell, which cannot resolve a
+        # Windows-native path directly, reading a Windows-native-spelled
+        # registry/identity entry). White-box by necessity: on THIS host,
+        # Git-Bash aliases "C:/..." and "/c/..." to the identical file, so a
+        # black-box shim-execution test can never distinguish a correct
+        # strip from a broken one here -- `sh -x` tracing observes the
+        # ACTUAL shipped `_CX_RESOLVE_SH` text's internal REST assignment
+        # directly, independent of file resolution or host aliasing.
+        script = _githooks._CX_RESOLVE_SH + '_cx_resolve "C:/Users/foo/bar"\n'
+        result = _sh(["sh", "-x", "-c", script], self.root)
+        trace = result.stderr
+        self.assertIn(
+            "REST=Users/foo/bar", trace,
+            f"the Windows-native case branch must strip exactly the 'C:/' "
+            f"prefix (regression for REST=${{P#??:}}); xtrace:\n{trace}")
+
     # ---- trusted-executables.identity (H5/#684) ----
 
     def test_wsl_spelled_identity_resolves_through_the_real_shim(self):
