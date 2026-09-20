@@ -1027,7 +1027,7 @@ class WorkflowContractTest(unittest.TestCase):
             "[CHECK] | [PI  ] | Adapter contract  <os: ${{ matrix.os }} · runtime: Pi ${{ matrix.pi-version }}>",
             "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
             "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
-            "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }}>",
+            "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>",
             "[GATE ] | [CA  ] | Payload version",
             "[GATE ] | [SBX ] | Payload version",
             "[GATE ] | [CDX ] | Payload version",
