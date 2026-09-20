@@ -33,18 +33,18 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.7","candidate_commit":"2b6548b4bf5952a6ba164c8b95d866a42658d136","candidate_source_tree":"f58245f302591b29e92ec191ba6fbf51b5520b8a","candidate_package_sha256":"9104936aedb5175fd347f00b9f66467e9649c4367aaac771d91627867c328dba","candidate_ci_run_id":35522249322,"candidate_ci_run_attempt":1,"candidate_artifact_id":10608287888,"candidate_artifact_sha256":"37c6144d62ee7c69a4663e9b860c2a62a2c0336c8436278f992d994a67a54c95","candidate_archive_sha256":"6c93f41aa9bd1b3ad2d7db0eea4f0bc89111b3b4aec755f3b0966923108ba31e","run_head_sha":"c7db68f89d64b43933dd2d5ec50ecb69476ba4fd","pr_number":829,"pr_head_sha":"c7db68f89d64b43933dd2d5ec50ecb69476ba4fd","pr_head_ref":"codex/prerequisite-adapter","pr_base_sha":"a3e7cbf887f0c933416e0609e231a946c501eae7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-20","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.7","candidate_commit":"ce837afa001c68200bea4b121796d26af92f42fb","candidate_source_tree":"b5ab24f20b5e29ec4033647f2d7e57bc77e5dd06","candidate_package_sha256":"2a83f0c40fe10517977930bbcd73a79ed723dbd61167a8a8ec4a9c392fe1046b","candidate_ci_run_id":35525299189,"candidate_ci_run_attempt":1,"candidate_artifact_id":10609921069,"candidate_artifact_sha256":"216b5b919f08a4ca91f04c933c027f3153815cbc48dc962cba4d448846b79884","candidate_archive_sha256":"26c3d4a963d0ca5be4a6e6e55271f2ac9191d7c0f738d550b268d4bb4d23ffed","run_head_sha":"a3499430f0a83a9baafac1d6c95cc06783854a55","pr_number":829,"pr_head_sha":"a3499430f0a83a9baafac1d6c95cc06783854a55","pr_head_ref":"codex/prerequisite-adapter","pr_base_sha":"a3e7cbf887f0c933416e0609e231a946c501eae7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-20","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.7**, Windows,
 2026-09-20. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with high reasoning selected the
-exact 0.13.7 package from pull-request qualification run `35522249322`, attempt 1, artifact
-`10608287888`. The producer checkout was `2b6548b4bf5952a6ba164c8b95d866a42658d136`, with source tree
-`f58245f302591b29e92ec191ba6fbf51b5520b8a`; the PR head and base are recorded separately so this
+exact 0.13.7 package from pull-request qualification run `35525299189`, attempt 1, artifact
+`10609921069`. The producer checkout was `ce837afa001c68200bea4b121796d26af92f42fb`, with source tree
+`b5ab24f20b5e29ec4033647f2d7e57bc77e5dd06`; the PR head and base are recorded separately so this
 preview proof does not pretend that a future squash commit already exists. The release archive has
-digest `sha256:6c93f41aa9bd1b3ad2d7db0eea4f0bc89111b3b4aec755f3b0966923108ba31e`, and its canonical
+digest `sha256:26c3d4a963d0ca5be4a6e6e55271f2ac9191d7c0f738d550b268d4bb4d23ffed`, and its canonical
 tracked candidate content has digest
-`sha256:9104936aedb5175fd347f00b9f66467e9649c4367aaac771d91627867c328dba`. The isolated install
+`sha256:2a83f0c40fe10517977930bbcd73a79ed723dbd61167a8a8ec4a9c392fe1046b`. The isolated install
 matched all 226 packaged source files byte-for-byte. In a fresh disposable checkout of exact PR head
-`c7db68f89d64b43933dd2d5ec50ecb69476ba4fd`, the task received the
+`a3499430f0a83a9baafac1d6c95cc06783854a55`, the task received the
 repository startup state through SessionStart context, including `host: codex`. With `PLUGIN_ROOT` resolved from the installed
 0.13.7 `$ca-doctor` skill path, the doctor reported 13 OK, 0 WARN, and 0 FAIL, including the packaged
 Windows/AMD64 artifact capability and live Git-hook backstop. The broad-staging
