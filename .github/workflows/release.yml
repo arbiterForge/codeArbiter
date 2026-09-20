@@ -100,8 +100,9 @@ on:
   # This trigger always resolves the workflow FILE as committed on the
   # default branch, regardless of which ref the upstream `ci` run analyzed —
   # the standard, safe shape for a downstream automation that holds a write
-  # token, and why `auto-preflight` below checks out `head_sha` explicitly
-  # rather than trusting an ambient ref.
+  # token. `auto-preflight` checks out the protected main ref, then refuses
+  # unless its resolved commit is the exact completed upstream run commit;
+  # no workflow_run-controlled revision is executed by the privileged job.
   workflow_run:
     workflows: ["ci"]
     types: [completed]
@@ -506,10 +507,22 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: refs/heads/main
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
+
+      - name: Bind the trusted checkout to the qualified upstream commit
+        env:
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          CHECKED_OUT_SHA=$(git rev-parse HEAD)
+          if [ "$CHECKED_OUT_SHA" != "$UPSTREAM_SHA" ]; then
+            echo "::error::qualified upstream commit is no longer the protected main tip"
+            echo "expected=$UPSTREAM_SHA actual=$CHECKED_OUT_SHA"
+            exit 1
+          fi
 
       - name: Validate Codex live candidate CI
         id: live-proof

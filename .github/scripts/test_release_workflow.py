@@ -2992,8 +2992,13 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
         block = _jobs()["auto-preflight"]
         checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
                              r"(?=^      - |\Z)", block).group(0)
-        self.assertIn("ref: ${{ github.event.workflow_run.head_sha }}", checkout)
-        self.assertNotIn("ref: ${{ github.sha }}", checkout)
+        self.assertIn("ref: refs/heads/main", checkout)
+        self.assertNotIn("github.event.workflow_run.head_sha", checkout)
+        self.assertIn(
+            "Bind the trusted checkout to the qualified upstream commit", block
+        )
+        self.assertIn('CHECKED_OUT_SHA=$(git rev-parse HEAD)', block)
+        self.assertIn('if [ "$CHECKED_OUT_SHA" != "$UPSTREAM_SHA" ]', block)
 
     def test_auto_trust_inputs_are_bound_to_upstream_event_fields(self):
         block = _jobs()["auto-preflight"].split("id: eligible", 1)[1].split("run: |", 1)[0]
