@@ -259,6 +259,11 @@ def _gated_triggers(job: str, jobs: dict, chain: tuple = ()) -> set:
             AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
             AUTO_CLAUDE_COHORT_GATE,
             AUTO_CODEX_COHORT_GATE,
+            AUTO_CODEX_PROVENANCE_JOB,
+            "auto-release-codex",
+            "auto-release-pi",
+            AUTO_PI_NPM_JOB,
+            AUTO_PI_RECEIPT_JOB,
         },
     )
     parents = _job_needs(jobs[job])
@@ -1885,11 +1890,243 @@ class AutoTagLaneTest(unittest.TestCase):
             },
         )
         condition = _job_if(block)
-        self.assertIn("always()", condition)
+        self.assertIn("!cancelled()", condition)
         self.assertIn("github.event_name == 'workflow_run'", condition)
         self.assertIn("github.event.workflow_run.head_branch == 'main'", condition)
         self.assertIn("needs.auto-preflight.result == 'success'", condition)
-        self.assertIn("needs.auto-retain-pi-cohort-receipt.result == 'success'", condition)
+        self.assertIn("needs.auto-retain-pi-cohort-receipt.result", block)
+
+    def test_optional_publishers_do_not_skip_the_later_required_cohort(self):
+        """Run 35483297516: CA ineligible must not strand Codex and Pi."""
+        jobs = _jobs()
+        required_successes = {
+            AUTO_CODEX_PROVENANCE_JOB: (
+                AUTO_PREFLIGHT_JOB,
+                AUTO_COHORT_RECONCILIATION,
+                AUTO_CLAUDE_COHORT_GATE,
+            ),
+            "auto-release-codex": (
+                AUTO_PREFLIGHT_JOB,
+                AUTO_COHORT_RECONCILIATION,
+                AUTO_CODEX_PROVENANCE_JOB,
+            ),
+            "auto-release-pi": (
+                AUTO_PREFLIGHT_JOB,
+                AUTO_COHORT_RECONCILIATION,
+                AUTO_CODEX_COHORT_GATE,
+            ),
+            AUTO_PI_NPM_JOB: (
+                AUTO_PREFLIGHT_JOB,
+                AUTO_COHORT_RECONCILIATION,
+                AUTO_CODEX_COHORT_GATE,
+                "auto-release-pi",
+            ),
+            AUTO_PI_RECEIPT_JOB: (
+                AUTO_PREFLIGHT_JOB,
+                AUTO_COHORT_RECONCILIATION,
+                AUTO_PI_NPM_JOB,
+            ),
+        }
+        for job, prerequisites in required_successes.items():
+            with self.subTest(job=job):
+                condition = _job_if(jobs[job])
+                self.assertIn(
+                    "!cancelled()",
+                    condition,
+                    f"{job} is vulnerable to an intentionally skipped ancestor",
+                )
+                for prerequisite in prerequisites:
+                    self.assertIn(
+                        f"needs.{prerequisite}.result == 'success'",
+                        condition,
+                        f"{job} must keep {prerequisite} as an explicit authorizer",
+                    )
+
+    def test_completion_gates_run_and_fail_closed_on_unmet_publication(self):
+        jobs = _jobs()
+        expectations = {
+            AUTO_CLAUDE_COHORT_GATE: (
+                "Require Claude publication completion",
+                "needs.auto-release.result",
+            ),
+            AUTO_CODEX_COHORT_GATE: (
+                "Require Codex publication completion",
+                "needs.auto-release-codex.result",
+            ),
+            AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB: (
+                "Require automatic publication completion",
+                "needs.auto-retain-pi-cohort-receipt.result",
+            ),
+        }
+        for job, (step_name, result_ref) in expectations.items():
+            with self.subTest(job=job):
+                condition = _job_if(jobs[job])
+                self.assertIn("!cancelled()", condition)
+                self.assertNotIn(
+                    result_ref,
+                    condition,
+                    "a required-but-skipped publisher must start the assertion job, "
+                    "not suppress it",
+                )
+                step = _named_step(jobs[job], step_name)
+                self.assertIn(result_ref, step)
+                self.assertIn("publication was required but concluded", step)
+
+    def test_completion_assertions_reject_malformed_eligibility_outputs(self):
+        jobs = _jobs()
+        for job, step_name in (
+            (AUTO_CLAUDE_COHORT_GATE, "Require Claude publication completion"),
+            (AUTO_CODEX_COHORT_GATE, "Require Codex publication completion"),
+            (AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
+             "Require automatic publication completion"),
+        ):
+            with self.subTest(job=job):
+                step = _named_step(jobs[job], step_name)
+                self.assertIn("eligibility output is malformed", step)
+                self.assertIn("repair output is malformed", step)
+
+    @POSIX_ONLY
+    def test_intermediate_completion_assertions_execute_every_result_branch(self):
+        for job, step_name, target in (
+            (AUTO_CLAUDE_COHORT_GATE,
+             "Require Claude publication completion", "ca"),
+            (AUTO_CODEX_COHORT_GATE,
+             "Require Codex publication completion", "ca-codex"),
+        ):
+            script = _step_run(job, step_name)
+            passing = (
+                {"ELIGIBLE": "true", "REPAIR": "false",
+                 "PUBLICATION_RESULT": "success"},
+                {"ELIGIBLE": "false", "REPAIR": "false",
+                 "PUBLICATION_RESULT": "skipped"},
+                {"ELIGIBLE": "false", "REPAIR": "true",
+                 "PUBLICATION_RESULT": "success"},
+            )
+            for env_delta in passing:
+                with self.subTest(job=job, passing=env_delta):
+                    proc = subprocess.run(
+                        [BASH, "-c", script], env={**os.environ, **env_delta},
+                        capture_output=True, text=True)
+                    self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+            for conclusion in ("skipped", "failure"):
+                with self.subTest(job=job, required=conclusion):
+                    proc = subprocess.run(
+                        [BASH, "-c", script], env={
+                            **os.environ,
+                            "ELIGIBLE": "true", "REPAIR": "false",
+                            "PUBLICATION_RESULT": conclusion,
+                        }, capture_output=True, text=True)
+                    self.assertNotEqual(proc.returncode, 0)
+                    self.assertIn(
+                        f"{target} publication was required but concluded {conclusion}",
+                        proc.stdout + proc.stderr,
+                    )
+
+            for variable in ("ELIGIBLE", "REPAIR"):
+                with self.subTest(job=job, malformed=variable):
+                    env_delta = {
+                        "ELIGIBLE": "false", "REPAIR": "false",
+                        "PUBLICATION_RESULT": "skipped",
+                    }
+                    env_delta[variable] = ""
+                    proc = subprocess.run(
+                        [BASH, "-c", script], env={**os.environ, **env_delta},
+                        capture_output=True, text=True)
+                    self.assertNotEqual(proc.returncode, 0)
+                    self.assertIn("output is malformed", proc.stdout + proc.stderr)
+
+            for conclusion in ("success", "failure"):
+                with self.subTest(job=job, ineligible=conclusion):
+                    proc = subprocess.run(
+                        [BASH, "-c", script], env={
+                            **os.environ,
+                            "ELIGIBLE": "false", "REPAIR": "false",
+                            "PUBLICATION_RESULT": conclusion,
+                        }, capture_output=True, text=True)
+                    self.assertNotEqual(proc.returncode, 0)
+                    self.assertIn(
+                        f"{target} publication was ineligible but concluded {conclusion}",
+                        proc.stdout + proc.stderr,
+                    )
+
+    @POSIX_ONLY
+    def test_final_completion_assertion_executes_the_publication_matrix(self):
+        script = _step_run(
+            AUTO_COMMAND_ROUTE_RELEASE_AUDIT_JOB,
+            "Require automatic publication completion",
+        )
+        baseline = {
+            "CA_ELIGIBLE": "false", "CA_REPAIR": "false", "CA_RESULT": "skipped",
+            "CODEX_ELIGIBLE": "false", "CODEX_REPAIR": "false",
+            "CODEX_RESULT": "skipped",
+            "PI_ELIGIBLE": "false", "PI_REPAIR": "false", "PI_RESULT": "skipped",
+        }
+
+        passing = {
+            "all-ineligible": {},
+            "ca-ineligible-codex-and-pi-eligible": {
+                "CODEX_ELIGIBLE": "true", "CODEX_RESULT": "success",
+                "PI_ELIGIBLE": "true", "PI_RESULT": "success",
+            },
+            "pi-only": {"PI_ELIGIBLE": "true", "PI_RESULT": "success"},
+            "repair-only": {
+                "CA_REPAIR": "true", "CA_RESULT": "success",
+                "CODEX_REPAIR": "true", "CODEX_RESULT": "success",
+                "PI_REPAIR": "true", "PI_RESULT": "success",
+            },
+        }
+        for case, overrides in passing.items():
+            with self.subTest(case=case):
+                env = {**os.environ, **baseline, **overrides}
+                proc = subprocess.run(
+                    [BASH, "-c", script], env=env, capture_output=True, text=True)
+                self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+        for target, eligible, result in (
+            ("ca", "CA_ELIGIBLE", "CA_RESULT"),
+            ("ca-codex", "CODEX_ELIGIBLE", "CODEX_RESULT"),
+            ("ca-pi", "PI_ELIGIBLE", "PI_RESULT"),
+        ):
+            for conclusion in ("skipped", "failure"):
+                with self.subTest(target=target, conclusion=conclusion):
+                    env = dict(os.environ, **baseline)
+                    env[eligible] = "true"
+                    env[result] = conclusion
+                    proc = subprocess.run(
+                        [BASH, "-c", script], env=env,
+                        capture_output=True, text=True)
+                    self.assertNotEqual(proc.returncode, 0)
+                    self.assertIn(
+                        f"{target} publication was required but concluded {conclusion}",
+                        proc.stdout + proc.stderr,
+                    )
+
+        for variable in ("CA_ELIGIBLE", "CODEX_REPAIR", "PI_ELIGIBLE"):
+            with self.subTest(malformed=variable):
+                env = dict(os.environ, **baseline)
+                env[variable] = ""
+                proc = subprocess.run(
+                    [BASH, "-c", script], env=env, capture_output=True, text=True)
+                self.assertNotEqual(proc.returncode, 0)
+                self.assertIn("output is malformed", proc.stdout + proc.stderr)
+
+        for target, result in (
+            ("ca", "CA_RESULT"),
+            ("ca-codex", "CODEX_RESULT"),
+            ("ca-pi", "PI_RESULT"),
+        ):
+            for conclusion in ("success", "failure"):
+                with self.subTest(target=target, ineligible=conclusion):
+                    env = {**os.environ, **baseline, result: conclusion}
+                    proc = subprocess.run(
+                        [BASH, "-c", script], env=env,
+                        capture_output=True, text=True)
+                    self.assertNotEqual(proc.returncode, 0)
+                    self.assertIn(
+                        f"{target} publication was ineligible but concluded {conclusion}",
+                        proc.stdout + proc.stderr,
+                    )
 
     def test_auto_pi_release_synchronously_requires_the_exact_npm_publisher(self):
         jobs = _jobs()
