@@ -82,13 +82,17 @@ class CandidateCheckTest(unittest.TestCase):
         with self.assertRaisesRegex(candidate_check.CandidateError, "does not bind"):
             candidate_check.evaluate_candidate(self.repo, "HEAD")
 
+    def test_manifest_rollback_below_a_published_tag_is_not_a_green_noop(self):
+        self.git("tag", "v1.1.0")
+        with self.assertRaisesRegex(candidate_check.CandidateError, "behind published tag"):
+            candidate_check.evaluate_candidate(self.repo, self.live)
+
     def test_unrelated_live_proof_commit_is_not_the_release_intent_anchor(self):
         unrelated = self.commit("historical proof", "proof.txt", "old proof\n")
         later = self.commit("policy-only continuation", ".github-note", "fixed\n")
         self.assertNotEqual(unrelated, self.live)
         results = candidate_check.evaluate_candidate(self.repo, later)
         self.assertTrue(results[0].eligible)
-
 
 if __name__ == "__main__":
     unittest.main()

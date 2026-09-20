@@ -2,7 +2,7 @@
 """Fail closed when a commit would be rejected by auto-release preflight.
 
 This is the shared, read-only candidate-authorization check used by required
-CI and release.yml.  It deliberately performs no API calls and no mutation.
+CI and release.yml. It deliberately performs no API calls and no mutation.
 """
 
 from __future__ import annotations
@@ -19,6 +19,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASELIB_PATH = Path(__file__).with_name("_releaselib.py")
+
+
 def _load_release_lib():
     spec = importlib.util.spec_from_file_location("candidate_release_lib", RELEASELIB_PATH)
     if spec is None or spec.loader is None:
@@ -142,6 +144,13 @@ def evaluate_candidate(
             raise CandidateError(f"{target} manifests disagree at {candidate}: {versions}")
         version = versions[0]
         last_tag = RELEASELIB.last_tag_select(tags, prefix)
+        if (last_tag != RELEASELIB.NONE_SENTINEL
+                and RELEASELIB.semver_greater(
+                    RELEASELIB._bare_version(last_tag), version
+                )):
+            raise CandidateError(
+                f"{target} manifest {version} is behind published tag {last_tag}"
+            )
         eligible = (
             last_tag == RELEASELIB.NONE_SENTINEL
             or RELEASELIB.semver_greater(version, RELEASELIB._bare_version(last_tag))

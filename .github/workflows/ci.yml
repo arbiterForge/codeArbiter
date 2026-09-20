@@ -94,6 +94,9 @@ on:
       # workflow's dispatch-exclusivity, merge-readiness, and tag-integrity
       # gates. A push that weakens only release.yml must still start a run.
       - ".github/workflows/release.yml"
+      - ".github/workflows/npm-publish.yml"
+      - ".codearbiter/release-targets.md"
+      - "CHANGELOG.md"
       # The automatic release cohort starts only after this workflow succeeds
       # on main and consumes this run's exact-head package artifacts. A
       # live-proof-only correction must therefore start CI rather than leave
@@ -241,6 +244,9 @@ jobs:
               # test_release_workflow.py runs in the hooks job and is the only
               # guard on the release workflow's publish gates (#378/#380/#385).
               - '.github/workflows/release.yml'
+              - '.github/workflows/npm-publish.yml'
+              - '.codearbiter/release-targets.md'
+              - 'CHANGELOG.md'
               # This job validates the release-critical live-proof marker.
               - 'docs/codex-parity-testing.md'
               # Pre-tag validates this release-skill proof against shipped bytes.
@@ -342,6 +348,15 @@ jobs:
               - '**/*.json'
               - '.github/workflows/ci.yml'
             artifacts:
+              # Fresh automatic publication requires an exact-head package
+              # cohort even when the change is only release intent/version.
+              - 'plugins/ca/.claude-plugin/plugin.json'
+              - 'CHANGELOG.md'
+              - 'plugins/ca-codex/.codex-plugin/plugin.json'
+              - 'plugins/ca-codex/CHANGELOG.md'
+              - 'plugins/ca-pi/package.json'
+              - 'plugins/ca-pi/CHANGELOG.md'
+              - 'package.json'
               - 'core/artifacts/**'
               - 'core/pysrc/**'
               - 'core/surface/**'
@@ -389,6 +404,8 @@ jobs:
               # release workflow repair must therefore build it even when no
               # plugin payload path changed in the same commit.
               - '.github/workflows/release.yml'
+              - '.github/workflows/npm-publish.yml'
+              - '.codearbiter/release-targets.md'
               - '.github/workflows/ci.yml'
       - name: Write impact receipt
         id: impact
