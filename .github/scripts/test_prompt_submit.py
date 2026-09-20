@@ -29,6 +29,7 @@ sys.path.insert(0, CORE_PYSRC)
 import hostapi  # noqa: E402
 import _hooklib  # noqa: E402
 import _modelib  # noqa: E402
+import _approvallib  # noqa: E402
 
 
 def _load(path, name):
@@ -350,6 +351,20 @@ class TestFallbackPairIdempotent(_Fixture):
 # --------------------------------------------------------------------- T-38/39 (Codex)
 
 class TestCodexEnvelope(_Fixture):
+    def test_captured_approval_context_is_returned_in_codex_envelope(self):
+        original = _approvallib.consume_from_hook
+        _approvallib.consume_from_hook = lambda **_kwargs: "approval recorded: SPEC-EXAMPLE"
+        try:
+            rc, out, _err = self.invoke(
+                _ups("approve SPEC-EXAMPLE fixed-token-1"), host=_CodexHost()
+            )
+        finally:
+            _approvallib.consume_from_hook = original
+        self.assertEqual(rc, 0)
+        env = json.loads(out)
+        context = env["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("approval recorded: SPEC-EXAMPLE", context)
+
     def test_flip_emits_exactly_the_seven_schema_keys_no_permission_decision(self):
         rc, out, err = self.invoke(_ups("mode --dangerous"), host=_CodexHost())
         self.assertEqual(rc, 0)  # Codex signals block via the JSON body, not exit code

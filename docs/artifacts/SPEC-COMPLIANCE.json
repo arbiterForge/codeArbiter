@@ -209,7 +209,7 @@
       "original_statement": "When recording approval, the workflow shall bind its existing authority source to the exact normative content and reject ordinary edits that attempt that transition.",
       "disposition": "partial_or_locally_exercised",
       "formal_acceptance": "not_recorded",
-      "implementation_notes_and_gaps": "Cooperative receipt checks are implemented; actual user/SMARTS/reviewer event capture is not fully integrated. Synthetic tests are not production approval.",
+      "implementation_notes_and_gaps": "The host-owned prompt adapter binds an exact token reply to current content and drives capture plus approval through installed Claude Code and Codex packages. Pi prompt authority plus SMARTS, reviewer and verification adapters remain unintegrated; test prompts are not production approval.",
       "local_test_references": [
         {
           "name": "TestGenericMutationCannotApprove",
@@ -222,6 +222,10 @@
         {
           "name": "TestCaptureIsIdempotentNotApproval",
           "path": "core/artifacts/internal/operations/migration_test.go"
+        },
+        {
+          "name": "ApprovalAdapterTest",
+          "path": ".github/scripts/test_artifact_approval_adapter.py"
         }
       ]
     },

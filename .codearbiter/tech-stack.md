@@ -125,6 +125,7 @@ python .github/scripts/test_coverage_union.py
 # Structured-artifact discovery, producer/workflow behavior, and consumer closure
 python .github/scripts/test_artifact_surface.py
 python .github/scripts/test_artifact_consumers.py
+python .github/scripts/test_artifact_approval_adapter.py
 python .github/scripts/test_artifact_authoring.py
 python .github/scripts/test_artifact_workflow.py
 python .github/scripts/test_artifact_farm.py

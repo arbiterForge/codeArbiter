@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.5] - 2026-09-19
+
+### Fixed
+
+- Preserve structured-artifact approval evidence in packaged receipts and fail
+  closed for prompt-backed approvals because Pi has no supported prompt adapter.
+
 ## [0.14.4] - 2026-09-19
 
 ### Fixed
