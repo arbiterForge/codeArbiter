@@ -3349,6 +3349,16 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
         self.assertNotIn('"$NPM_CLI" pack', npm)
         self.assertNotIn('npm pack --', npm)
 
+    def test_reusable_pi_publisher_accepts_the_callers_inherited_event_context(self):
+        npm_jobs = workflow_jobs(NPM_WORKFLOW.read_text(encoding="utf-8"))
+        condition = _job_if(npm_jobs["publish"])
+        self.assertEqual(condition, "github.ref == 'refs/heads/main'")
+        self.assertNotIn(
+            "workflow_call", condition,
+            "a reusable workflow preserves its caller's workflow_run or "
+            "workflow_dispatch event name; requiring workflow_call skips every publisher",
+        )
+
     def test_failed_publication_records_partial_disposition(self):
         action = PUBLISH_ACTION.read_text(encoding="utf-8")
         npm = (REPO_ROOT / ".github" / "workflows" / "npm-publish.yml").read_text(

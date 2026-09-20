@@ -60,7 +60,12 @@ concurrency:
 jobs:
   publish:
     name: "[SHIP ] | [PI  ] | Publish @arbiterforge/ca-pi"
-    if: github.event_name == 'workflow_call' && github.ref == 'refs/heads/main'
+    # Reusable workflows inherit the caller's event context. A call from the
+    # automatic release workflow therefore still reports `workflow_run`, and a
+    # call from its manual lane reports `workflow_dispatch`; neither reports
+    # `workflow_call`. The caller jobs already require the exact release route,
+    # while this boundary independently keeps publication on protected main.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
