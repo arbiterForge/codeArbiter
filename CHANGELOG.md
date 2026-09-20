@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.6] - 2026-09-20
+
+### Fixed
+
+- Make merge readiness execute the same automatic-release candidate check as
+  release preflight, and preserve main CI runs until their release trigger can
+  be emitted instead of cancelling them when a later merge lands.
+
 ## [2.21.5] - 2026-09-19
 
 ### Fixed

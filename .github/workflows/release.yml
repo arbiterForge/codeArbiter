@@ -100,8 +100,9 @@ on:
   # This trigger always resolves the workflow FILE as committed on the
   # default branch, regardless of which ref the upstream `ci` run analyzed —
   # the standard, safe shape for a downstream automation that holds a write
-  # token, and why `auto-preflight` below checks out `head_sha` explicitly
-  # rather than trusting an ambient ref.
+  # token. `auto-preflight` checks out the protected main ref, then refuses
+  # unless its resolved commit is the exact completed upstream run commit;
+  # no workflow_run-controlled revision is executed by the privileged job.
   workflow_run:
     workflows: ["ci"]
     types: [completed]
@@ -487,12 +488,14 @@ jobs:
 
   auto-preflight:
     name: "[GATE ] | [RELEASE] | Auto-tag preflight"
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       actions: read
       contents: read
+    env:
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
     outputs:
       ca: ${{ steps.eligible.outputs.ca }}
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
@@ -504,10 +507,22 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          ref: refs/heads/main
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
+
+      - name: Bind the trusted checkout to the qualified upstream commit
+        env:
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          CHECKED_OUT_SHA=$(git rev-parse HEAD)
+          if [ "$CHECKED_OUT_SHA" != "$UPSTREAM_SHA" ]; then
+            echo "::error::qualified upstream commit is no longer the protected main tip"
+            echo "expected=$UPSTREAM_SHA actual=$CHECKED_OUT_SHA"
+            exit 1
+          fi
 
       - name: Validate Codex live candidate CI
         id: live-proof
@@ -518,10 +533,22 @@ jobs:
           LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
           CANDIDATE_SHA=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_commit"])')
           CANDIDATE_RUN=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_id"])')
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" \
+          CANDIDATE_ATTEMPT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_attempt"])')
+          CANDIDATE_ARTIFACT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_artifact_id"])')
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" > live-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN/attempts/$CANDIDATE_ATTEMPT/jobs?per_page=100" > live-jobs.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$CANDIDATE_ARTIFACT" > live-artifact.json
+          jq -n --slurpfile run live-run.json --slurpfile jobs live-jobs.json \
+            --slurpfile artifact live-artifact.json \
+            '{run:$run[0],jobs:$jobs[0],artifact:$artifact[0]}' \
             | python3 .github/scripts/test_public_codex_docs.py --validate-live-candidate-run
           echo "candidate-sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
           echo "ca-codex: live candidate=$CANDIDATE_SHA ci-run=$CANDIDATE_RUN"
+
+      - name: Validate automatic release candidate
+        run: >-
+          python3 .github/scripts/check_auto_release_candidate.py
+          --candidate "$SOURCE_SHA"
 
       - name: Determine which targets have untagged work
         id: eligible
@@ -532,15 +559,15 @@ jobs:
           UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
           UPSTREAM_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
           UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
-          LIVE_CANDIDATE_SHA: ${{ steps.live-proof.outputs.candidate-sha }}
         run: |
           set -euo pipefail
+          SOURCE_SHA=${SOURCE_SHA:-$GITHUB_SHA}
           # Execute only the independently selected trusted workflow tree.
           # An older or foreign event candidate remains inert, even when its
           # branch is named main or it reports a successful CI conclusion.
           if [ "$UPSTREAM_EVENT" != push ] || [ "$UPSTREAM_CONCLUSION" != success ] || \
              [ "$UPSTREAM_BRANCH" != main ] || [ "$UPSTREAM_REPOSITORY" != "$GITHUB_REPOSITORY" ] || \
-             [ "$UPSTREAM_SHA" != "$GITHUB_SHA" ] || [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+             [ "$UPSTREAM_SHA" != "$SOURCE_SHA" ] || [ "$(git rev-parse HEAD)" != "$SOURCE_SHA" ]; then
             echo "::error::upstream is not a same-repository main push at the trusted workflow revision"
             exit 1
           fi
@@ -551,20 +578,8 @@ jobs:
           # push is silently skipped — not an error, just nothing to do.
           TAGS=$(git tag -l)
           PYTHON=$(python3 -c 'import sys; print(sys.executable)')
-          LIVE_CANDIDATE_SHA=${LIVE_CANDIDATE_SHA:-$GITHUB_SHA}
-          UNCHANGED_RELEASE_PAYLOAD=false
-          # A green exact-head repair may continue an older authorized
-          # candidate only while every shipped payload, user-visible release
-          # surface, and npm implicit root file is byte-identical in Git.
-          if [ "$LIVE_CANDIDATE_SHA" != "$GITHUB_SHA" ] && \
-             git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" -- \
-               CHANGELOG.md package.json \
-               ':(top,icase)README*' ':(top,icase)COPYING*' \
-               ':(top,icase)LICENSE*' ':(top,icase)LICENCE*' \
-               plugins/ca plugins/ca-codex plugins/ca-pi plugins/ca-sandbox; then
-            UNCHANGED_RELEASE_PAYLOAD=true
-            echo "release continuation is limited to unchanged release payloads"
-          fi
+          # Defense in depth around the publication-authority outputs below.
+          # The shared validator above is also run by required pre-merge CI.
           OUTPUTS=()
           COHORT_TARGETS=()
           ANY_ELIGIBLE=false
@@ -581,39 +596,27 @@ jobs:
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             if [ "$ELIGIBLE" = "true" ]; then
-              # The changelog is the candidate-authorization surface. Bind it
-              # to this exact first-parent commit so a later green main commit
-              # cannot consume an older unpublished version. Manifests may
-              # already contain that version from an earlier correction; bind
-              # their exact blobs to this candidate instead of requiring a
-              # meaningless rewrite of unchanged JSON.
-              CHANGELOG_COMMIT=$(git log --first-parent -1 --format=%H -- "$CHANGELOG")
-              if [ "$CHANGELOG_COMMIT" != "$GITHUB_SHA" ] && \
-                 { [ "$UNCHANGED_RELEASE_PAYLOAD" != true ] || [ "$CHANGELOG_COMMIT" != "$LIVE_CANDIDATE_SHA" ]; }; then
-                echo "::error::$TARGET release surface $CHANGELOG was not advanced by this exact candidate"
-                exit 1
-              fi
               for SURFACE in "$MANIFEST" "$CHANGELOG"; do
-                CANDIDATE_BLOB=$(git rev-parse "$GITHUB_SHA:$SURFACE") || {
-                  echo "::error::$TARGET release surface $SURFACE is absent from $GITHUB_SHA"
+                CANDIDATE_BLOB=$(git rev-parse "$SOURCE_SHA:$SURFACE") || {
+                  echo "::error::$TARGET release surface $SURFACE is absent from $SOURCE_SHA"
                   exit 1
                 }
                 test "$(git hash-object "$SURFACE")" = "$CANDIDATE_BLOB" || {
-                  echo "::error::$TARGET release surface $SURFACE differs from $GITHUB_SHA"
+                  echo "::error::$TARGET release surface $SURFACE differs from $SOURCE_SHA"
                   exit 1
                 }
-                echo "$TARGET: candidate=$GITHUB_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
+                echo "$TARGET: candidate=$SOURCE_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
               done
               if [ "$COMPANION" != "-" ]; then
-                COMPANION_BLOB=$(git rev-parse "$GITHUB_SHA:$COMPANION") || {
-                  echo "::error::$TARGET companion manifest $COMPANION is absent from $GITHUB_SHA"
+                COMPANION_BLOB=$(git rev-parse "$SOURCE_SHA:$COMPANION") || {
+                  echo "::error::$TARGET companion manifest $COMPANION is absent from $SOURCE_SHA"
                   exit 1
                 }
                 test "$(git hash-object "$COMPANION")" = "$COMPANION_BLOB" || {
-                  echo "::error::$TARGET companion manifest $COMPANION differs from $GITHUB_SHA"
+                  echo "::error::$TARGET companion manifest $COMPANION differs from $SOURCE_SHA"
                   exit 1
                 }
-                echo "$TARGET: candidate=$GITHUB_SHA companion=$COMPANION blob=$COMPANION_BLOB"
+                echo "$TARGET: candidate=$SOURCE_SHA companion=$COMPANION blob=$COMPANION_BLOB"
               fi
               ANY_ELIGIBLE=true
               if [ "$TARGET" != "ca-sandbox" ]; then COHORT_TARGETS+=("$TARGET"); fi

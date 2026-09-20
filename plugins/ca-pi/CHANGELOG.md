@@ -4,6 +4,13 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.6] - 2026-09-20
+
+### Fixed
+
+- Reject projected merges that would strand an eligible ca-pi version, and
+  preserve the exact main CI run that supplies its release trigger and package.
+
 ## [0.14.5] - 2026-09-19
 
 ### Fixed
