@@ -843,16 +843,33 @@ jobs:
   auto-claude-cohort-gate:
     name: "[GATE ] | [COHORT] | Claude publication complete"
     needs: [auto-preflight, auto-cohort-reconciliation, auto-release]
-    if: always() && github.event_name == 'workflow_run' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && ((needs.auto-preflight.outputs.ca != 'true' && needs.auto-cohort-reconciliation.outputs.repair-ca != 'true') || needs.auto-release.result == 'success')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' }}
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - run: echo "Claude cohort stage is complete or ineligible"
+      - name: Require Claude publication completion
+        env:
+          ELIGIBLE: ${{ needs.auto-preflight.outputs.ca }}
+          REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca }}
+          PUBLICATION_RESULT: ${{ needs.auto-release.result }}
+        run: |
+          set -euo pipefail
+          case "$ELIGIBLE" in true|false) ;; *) echo "::error::ca eligibility output is malformed"; exit 1 ;; esac
+          case "$REPAIR" in true|false) ;; *) echo "::error::ca repair output is malformed"; exit 1 ;; esac
+          if [ "$ELIGIBLE" = true ] || [ "$REPAIR" = true ]; then
+            if [ "$PUBLICATION_RESULT" != success ]; then
+              echo "::error::ca publication was required but concluded $PUBLICATION_RESULT"
+              exit 1
+            fi
+          elif [ "$PUBLICATION_RESULT" != skipped ]; then
+            echo "::error::ca publication was ineligible but concluded $PUBLICATION_RESULT"
+            exit 1
+          fi
 
   auto-codex-provenance:
     name: "[GATE ] | [CDX ] | Auto-tag candidate provenance"
     needs: [auto-preflight, auto-cohort-reconciliation, auto-claude-cohort-gate]
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-cohort-reconciliation.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-claude-cohort-gate.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true') }}
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -891,7 +908,7 @@ jobs:
   auto-release-codex:
     name: CA-Codex | [Auto-tag]
     needs: [auto-preflight, auto-cohort-reconciliation, auto-codex-provenance]
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-cohort-reconciliation.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-provenance.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true') }}
     permissions:
       actions: read
       contents: write
@@ -925,11 +942,28 @@ jobs:
   auto-codex-cohort-gate:
     name: "[GATE ] | [COHORT] | Codex publication complete"
     needs: [auto-preflight, auto-cohort-reconciliation, auto-claude-cohort-gate, auto-release-codex]
-    if: always() && github.event_name == 'workflow_run' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-claude-cohort-gate.result == 'success' && ((needs.auto-preflight.outputs.ca-codex != 'true' && needs.auto-cohort-reconciliation.outputs.repair-ca-codex != 'true') || needs.auto-release-codex.result == 'success')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-claude-cohort-gate.result == 'success' }}
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - run: echo "Codex cohort stage is complete or ineligible"
+      - name: Require Codex publication completion
+        env:
+          ELIGIBLE: ${{ needs.auto-preflight.outputs.ca-codex }}
+          REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca-codex }}
+          PUBLICATION_RESULT: ${{ needs.auto-release-codex.result }}
+        run: |
+          set -euo pipefail
+          case "$ELIGIBLE" in true|false) ;; *) echo "::error::ca-codex eligibility output is malformed"; exit 1 ;; esac
+          case "$REPAIR" in true|false) ;; *) echo "::error::ca-codex repair output is malformed"; exit 1 ;; esac
+          if [ "$ELIGIBLE" = true ] || [ "$REPAIR" = true ]; then
+            if [ "$PUBLICATION_RESULT" != success ]; then
+              echo "::error::ca-codex publication was required but concluded $PUBLICATION_RESULT"
+              exit 1
+            fi
+          elif [ "$PUBLICATION_RESULT" != skipped ]; then
+            echo "::error::ca-codex publication was ineligible but concluded $PUBLICATION_RESULT"
+            exit 1
+          fi
 
   auto-release-sandbox:
     name: CA-Sandbox | [Auto-tag]
@@ -963,7 +997,7 @@ jobs:
   auto-release-pi:
     name: CA-Pi | [Auto-tag]
     needs: [auto-preflight, auto-cohort-reconciliation, auto-codex-cohort-gate]
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-cohort-reconciliation.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-cohort-gate.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
     permissions:
       actions: read
       contents: write
@@ -1003,7 +1037,7 @@ jobs:
   auto-publish-pi-npm:
     name: CA-Pi | [Auto-publish npm]
     needs: [auto-preflight, auto-cohort-reconciliation, auto-codex-cohort-gate, auto-release-pi]
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-cohort-reconciliation.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-cohort-gate.result == 'success' && needs.auto-release-pi.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
     permissions:
       actions: read
       contents: read
@@ -1021,7 +1055,7 @@ jobs:
   auto-retain-pi-cohort-receipt:
     name: CA-Pi | [Auto-publish receipt]
     needs: [auto-preflight, auto-cohort-reconciliation, auto-publish-pi-npm]
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-cohort-reconciliation.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true')
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-publish-pi-npm.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
     permissions:
       actions: read
       contents: write
@@ -1170,17 +1204,45 @@ jobs:
   auto-command-route-release-audit:
     name: "[GATE ] | [RELEASE] | Command-route publication"
     needs: [auto-preflight, auto-cohort-reconciliation, auto-claude-cohort-gate, auto-codex-cohort-gate, auto-release, auto-release-codex, auto-release-pi, auto-publish-pi-npm, auto-retain-pi-cohort-receipt]
-    # `always()` is required because an ineligible publisher is skipped. This
-    # read-only success receipt runs after every required RA-11 publisher has
-    # succeeded or been proven ineligible. An eligible npm failure suppresses
-    # this receipt while the npm publisher itself remains independently red.
-    # Every declared first-containing Release must also read back below.
-    if: always() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && ((needs.auto-preflight.outputs.ca-pi != 'true' && needs.auto-cohort-reconciliation.outputs.repair-ca-pi != 'true') || needs.auto-retain-pi-cohort-receipt.result == 'success')
+    # Run after intentional skips and failures so incomplete required
+    # publication becomes a red assertion instead of another skipped job.
+    if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' }}
     permissions:
       contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Require automatic publication completion
+        env:
+          CA_ELIGIBLE: ${{ needs.auto-preflight.outputs.ca }}
+          CA_REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca }}
+          CA_RESULT: ${{ needs.auto-release.result }}
+          CODEX_ELIGIBLE: ${{ needs.auto-preflight.outputs.ca-codex }}
+          CODEX_REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca-codex }}
+          CODEX_RESULT: ${{ needs.auto-release-codex.result }}
+          PI_ELIGIBLE: ${{ needs.auto-preflight.outputs.ca-pi }}
+          PI_REPAIR: ${{ needs.auto-cohort-reconciliation.outputs.repair-ca-pi }}
+          PI_RESULT: ${{ needs.auto-retain-pi-cohort-receipt.result }}
+        run: |
+          set -euo pipefail
+          require_completion() {
+            target="$1" eligible="$2" repair="$3" result="$4"
+            case "$eligible" in true|false) ;; *) echo "::error::$target eligibility output is malformed"; exit 1 ;; esac
+            case "$repair" in true|false) ;; *) echo "::error::$target repair output is malformed"; exit 1 ;; esac
+            if [ "$eligible" = true ] || [ "$repair" = true ]; then
+              if [ "$result" != success ]; then
+                echo "::error::$target publication was required but concluded $result"
+                exit 1
+              fi
+            elif [ "$result" != skipped ]; then
+              echo "::error::$target publication was ineligible but concluded $result"
+              exit 1
+            fi
+          }
+          require_completion ca "$CA_ELIGIBLE" "$CA_REPAIR" "$CA_RESULT"
+          require_completion ca-codex "$CODEX_ELIGIBLE" "$CODEX_REPAIR" "$CODEX_RESULT"
+          require_completion ca-pi "$PI_ELIGIBLE" "$PI_REPAIR" "$PI_RESULT"
+
       - name: Check out the trusted default-branch release auditor
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
