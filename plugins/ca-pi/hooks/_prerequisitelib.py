@@ -100,7 +100,7 @@ def _pending_transition_lock(root: Path, artifact_id: str):
     # while acquire_lock holds its byte-range lock. The resolved repository
     # identity separates repositories in the shared temp namespace while the
     # artifact digest provides per-artifact granularity.
-    repository_key = os.path.normcase(str(root)).encode("utf-8")
+    repository_key = os.path.normcase(str(root.resolve(strict=True))).encode("utf-8")
     lock_name = _digest(repository_key + b"\0" + artifact_id.encode("utf-8"))
     lock_root = Path(tempfile.gettempdir()) / "codearbiter-prerequisite-locks"
     handle = acquire_lock(lock_root / lock_name)
