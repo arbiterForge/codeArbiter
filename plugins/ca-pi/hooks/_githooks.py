@@ -288,28 +288,42 @@ def _path_form_candidates(path):
     """Every spelling of `path` worth testing for existence (ADR-0038): the
     input itself (forward-slash normalized) first, then the translated forms
     for the other two grammars when `path` matches exactly one of the three
-    known Windows-drive spellings. Pure -- no filesystem access."""
+    known Windows-drive spellings. Pure -- no filesystem access.
+
+    A native Windows-drive spelling ("C:/...") is only ever offered as a
+    checkable candidate when this interpreter is itself native Windows
+    (`os.name == "nt"`): on a genuine POSIX interpreter (real WSL, Linux) that
+    spelling is not absolute at all and a caller testing it with
+    `os.path.isfile` would have it silently reinterpreted as relative to the
+    current directory -- a foreign-spelled entry could then resolve to an
+    unrelated, attacker-plantable relative path instead of correctly falling
+    through to the POSIX-absolute translated forms. Git-Bash resolves the
+    same file via its own "/<drive>/..." candidate below regardless, so
+    nothing is lost by withholding the native spelling there."""
     normalized = _shell_path(path)
-    candidates = [normalized]
+    on_windows = os.name == "nt"
     m = _WSL_DRIVE.match(normalized)
     if m:
         drive, rest = m.group(1).lower(), m.group(2)
-        candidates.append(f"/{drive}/{rest}")
-        candidates.append(f"{drive.upper()}:/{rest}")
+        candidates = [normalized, f"/{drive}/{rest}"]
+        if on_windows:
+            candidates.append(f"{drive.upper()}:/{rest}")
         return candidates
     m = _GITBASH_DRIVE.match(normalized)
     if m:
         drive, rest = m.group(1).lower(), m.group(2)
-        candidates.append(f"/mnt/{drive}/{rest}")
-        candidates.append(f"{drive.upper()}:/{rest}")
+        candidates = [normalized, f"/mnt/{drive}/{rest}"]
+        if on_windows:
+            candidates.append(f"{drive.upper()}:/{rest}")
         return candidates
     m = _WIN_DRIVE.match(normalized)
     if m:
         drive, rest = m.group(1).lower(), m.group(2)
-        candidates.append(f"/{drive}/{rest}")
-        candidates.append(f"/mnt/{drive}/{rest}")
+        candidates = [f"/{drive}/{rest}", f"/mnt/{drive}/{rest}"]
+        if on_windows:
+            candidates.insert(0, normalized)
         return candidates
-    return candidates
+    return [normalized]
 
 
 def _resolve_live(path):
@@ -346,9 +360,9 @@ def _resolve_live_dir(path):
 _CX_RESOLVE_SH = (
     "_cx_resolve() {\n"
     "  P=$1\n"
-    '  [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '  case "$P" in\n'
     "    /mnt/[A-Za-z]/*)\n"
+    '      [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '      REST=${P#/mnt/?/}\n'
     '      DR=$(printf \'%s\' "$P" | cut -c6)\n'
     '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
@@ -356,6 +370,7 @@ _CX_RESOLVE_SH = (
     '      A1="/$DRL/$REST"; A2="$DRU:/$REST"\n'
     "      ;;\n"
     "    /[A-Za-z]/*)\n"
+    '      [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '      REST=${P#/?/}\n'
     '      DR=$(printf \'%s\' "$P" | cut -c2)\n'
     '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
@@ -363,6 +378,15 @@ _CX_RESOLVE_SH = (
     '      A1="/mnt/$DRL/$REST"; A2="$DRU:/$REST"\n'
     "      ;;\n"
     "    [A-Za-z]:/*)\n"
+    "      # Deliberately do NOT test \"$P\" as-is here (unlike the two\n"
+    "      # branches above): on a genuine POSIX sh (real WSL, Linux), a\n"
+    "      # drive-letter-native spelling like \"C:/...\" is not absolute at\n"
+    "      # all -- it is silently reinterpreted as relative to CWD, which\n"
+    "      # could select an attacker-plantable file at ./C:/... instead of\n"
+    "      # correctly falling through to the translated candidates below.\n"
+    "      # Git-Bash resolves this same spelling too, but via A1 (\"/<drive>/\n"
+    "      # ...\"), which Git-Bash ALSO resolves -- so nothing is lost by\n"
+    "      # withholding the raw as-is test for this one grammar.\n"
     '      DR=$(printf \'%s\' "$P" | cut -c1 | tr \'A-Z\' \'a-z\')\n'
     "      # ??: (two wildcards, literal colon) never matches a drive-letter\n"
     "      # path like C:/... (its 3rd char is / , not the required literal\n"
@@ -375,6 +399,7 @@ _CX_RESOLVE_SH = (
     '      A1="/$DR/$REST"; A2="/mnt/$DR/$REST"\n'
     "      ;;\n"
     "    *)\n"
+    '      [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     "      return 1\n"
     "      ;;\n"
     "  esac\n"
@@ -504,6 +529,37 @@ _FRESHNESS_PY = (
     "except OSError:\n"
     "    names = []\n"
     "legacy = re.compile(r'^[0-9]+\\.[0-9]+\\.[0-9]+$')\n"
+    # ADR-0038: mirrors `_path_form_candidates`/`_resolve_live` exactly (a
+    # foreign-spelled but resolvable entry must not be treated as absent
+    # here, or a stale sibling would go unmarked). A native Windows-drive
+    # spelling ("C:/...") is only offered as a checkable candidate when this
+    # interpreter itself is native Windows -- on a genuine POSIX shell/
+    # interpreter that spelling is not absolute and would otherwise be
+    # silently reinterpreted as relative to CWD.
+    "def _resolve(p):\n"
+    "    p = p.replace('\\\\', '/')\n"
+    "    m = re.match(r'^/mnt/([A-Za-z])/(.*)$', p)\n"
+    "    if m:\n"
+    "        dr, rest = m.group(1).lower(), m.group(2)\n"
+    "        cands = [p, '/' + dr + '/' + rest]\n"
+    "        if os.name == 'nt':\n"
+    "            cands.append(dr.upper() + ':/' + rest)\n"
+    "        return any(os.path.isfile(c) for c in cands)\n"
+    "    m = re.match(r'^/([A-Za-z])/(.*)$', p)\n"
+    "    if m:\n"
+    "        dr, rest = m.group(1).lower(), m.group(2)\n"
+    "        cands = [p, '/mnt/' + dr + '/' + rest]\n"
+    "        if os.name == 'nt':\n"
+    "            cands.append(dr.upper() + ':/' + rest)\n"
+    "        return any(os.path.isfile(c) for c in cands)\n"
+    "    m = re.match(r'^([A-Za-z]):[/\\\\](.*)$', p)\n"
+    "    if m:\n"
+    "        dr, rest = m.group(1).lower(), m.group(2)\n"
+    "        cands = ['/' + dr + '/' + rest, '/mnt/' + dr + '/' + rest]\n"
+    "        if os.name == 'nt':\n"
+    "            cands.insert(0, p)\n"
+    "        return any(os.path.isfile(c) for c in cands)\n"
+    "    return os.path.isfile(p)\n"
     "def _rd(p):\n"
     "    try:\n"
     "        with open(p, encoding='utf-8', errors='replace') as f:\n"
@@ -518,7 +574,7 @@ _FRESHNESS_PY = (
     "    if legacy.fullmatch(plugin):\n"
     "        continue\n"
     "    path_val = _rd(os.path.join(d, n))\n"
-    "    if not path_val or not os.path.isfile(path_val):\n"
+    "    if not path_val or not _resolve(path_val.strip()):\n"
     "        continue\n"
     "    seen_file = os.path.join(d, plugin + '.seen')\n"
     # `.seen` only counts as a confirmation of what's registered RIGHT NOW when
@@ -1067,68 +1123,90 @@ def install(root):
     # This requires two independent write failures in one call, versus zero
     # rollback at all before this fix (any single failure could split the
     # pair) — narrower, not eliminated.
-    plan = []
-    for phase in PHASES:
-        dest = os.path.join(hd, phase)
-        desired = _shim(dropin_dir, phase)
-        existing = _read(dest) if os.path.exists(dest) else None
-        if existing is not None:
-            lines = existing.splitlines()
-            managed = len(lines) >= 2 and lines[0] == "#!/bin/sh" and (
-                lines[1] == SENTINEL or lines[1].startswith(f"{SENTINEL} — ")
-            )
-            if not managed:
-                _warn(f"an existing {phase} hook is not codeArbiter-managed — leaving it "
-                      f"untouched. For git-level enforcement, call "
-                      f"'{os.path.basename(enforcer)} {phase}' from it (see includes docs).")
-                actions.append(f"{phase}: foreign hook preserved (not installed)")
-                continue
-            if existing == desired:
-                continue  # already current — no churn
-        plan.append((phase, dest, desired, existing))
+    #
+    # The lock is acquired BEFORE reading the existing hooks or computing the
+    # plan, not just around the writes: reading "existing" outside the lock
+    # would let a concurrent installer's write land between this read and
+    # this call's own write, so the "already current" skip and the rollback
+    # `prior` snapshot could both be stale relative to what is actually on
+    # disk the moment this call writes — reintroducing exactly the split-pair
+    # and churn failures this lock exists to prevent (security review).
+    lock_handle = _hooklib.acquire_lock(os.path.join(dropin_dir, "install"))
+    if lock_handle is None:
+        _warn("could not acquire the shared install lock (B1/#686); leaving the "
+              "existing pre-commit/pre-push pair untouched this session — a later "
+              "session will retry rather than risk writing an unlocked, possibly "
+              "split pair")
+    else:
+        try:
+            plan = []
+            for phase in PHASES:
+                dest = os.path.join(hd, phase)
+                desired = _shim(dropin_dir, phase)
+                existing = _read(dest) if os.path.exists(dest) else None
+                if existing is not None:
+                    lines = existing.splitlines()
+                    managed = len(lines) >= 2 and lines[0] == "#!/bin/sh" and (
+                        lines[1] == SENTINEL or lines[1].startswith(f"{SENTINEL} — ")
+                    )
+                    if not managed:
+                        _warn(f"an existing {phase} hook is not codeArbiter-managed — leaving "
+                              f"it untouched. For git-level enforcement, call "
+                              f"'{os.path.basename(enforcer)} {phase}' from it (see includes "
+                              f"docs).")
+                        actions.append(f"{phase}: foreign hook preserved (not installed)")
+                        continue
+                    if existing == desired:
+                        continue  # already current — no churn
+                plan.append((phase, dest, desired, existing))
 
-    if plan:
-        lock_handle = _hooklib.acquire_lock(os.path.join(dropin_dir, "install"))
-        if lock_handle is None:
-            _warn("could not acquire the shared install lock (B1/#686); leaving the "
-                  "existing pre-commit/pre-push pair untouched this session — a later "
-                  "session will retry rather than risk writing an unlocked, possibly "
-                  "split pair")
-        else:
-            try:
+            if plan:
                 written = []
                 failure = None
                 for phase, dest, desired, prior in plan:
+                    # Capture the destination's CURRENT mode before replacing it —
+                    # rollback restores this exact mode, not just "executable",
+                    # so a foreign hook's own permission bits survive a rollback
+                    # (security review).
+                    prior_mode = (
+                        stat.S_IMODE(os.stat(dest).st_mode) if os.path.exists(dest) else None
+                    )
                     try:
                         # reliability-010: atomic sibling-temp + os.replace (mirrors
                         # write_provenance/save_state) — os.replace guarantees `dest`
                         # is either the complete new shim or the prior file, never a
                         # torn write.
                         _hooklib.write_text_atomic(dest, desired, newline="\n")
+                        # Recorded as soon as the content write lands — a chmod
+                        # failure just below must still roll this phase back
+                        # (security review): before this fix a chmod-only failure
+                        # left the new content in place, untracked for rollback.
+                        written.append((phase, dest, prior, prior_mode))
                         st = os.stat(dest)
                         os.chmod(dest, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-                        written.append((phase, dest, prior))
                     except Exception as e:  # noqa: BLE001
                         failure = (dest, e)
                         break
                 if failure is None:
-                    for phase, _dest, _prior in written:
+                    for phase, _dest, _prior, _prior_mode in written:
                         actions.append(f"{phase}: installed")
                 else:
-                    for _phase, dest, prior in written:
+                    for _phase, dest, prior, prior_mode in written:
                         try:
                             if prior is None:
                                 os.remove(dest)
                             else:
                                 _hooklib.write_text_atomic(dest, prior, newline="\n")
+                                if prior_mode is not None:
+                                    os.chmod(dest, prior_mode)
                         except Exception:  # noqa: BLE001 — rollback is best-effort
                             pass
                     fail_dest, fail_exc = failure
                     _warn(f"could not write {fail_dest}: {fail_exc} — rolled back "
                           f"{len(written)} already-written phase(s) to avoid a split "
                           f"pre-commit/pre-push pair (B1/#686)")
-            finally:
-                _hooklib.release_lock(lock_handle)
+        finally:
+            _hooklib.release_lock(lock_handle)
     # Cache the resolved location so the NEXT call can skip the git-config/
     # rev-parse re-probe entirely (performance-002) — best-effort, never fatal.
     _write_hooks_dir_cache(root, hd)

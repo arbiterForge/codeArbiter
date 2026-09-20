@@ -20,6 +20,7 @@ import importlib.util as _ilu
 import io
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -1522,6 +1523,61 @@ class TestCrossHostPathFormResolution(_GitFixture):
                         "an unresolvable trusted identity must produce a diagnostic, "
                         "not a bare silent exit (H5/#684)")
 
+    # ---- POSIX drive-letter safety (CodeRabbit review) ----
+
+    def test_native_drive_letter_candidate_is_withheld_on_posix(self):
+        # A raw "C:/..." string is not absolute on a genuine POSIX
+        # interpreter -- os.path.isfile would silently treat it as CWD-
+        # relative, which could match an attacker-plantable file instead of
+        # correctly falling through to the POSIX-absolute translated forms.
+        with mock.patch.object(_githooks.os, "name", "posix"):
+            wsl = _githooks._path_form_candidates("/mnt/c/Users/foo/bar")
+            gitbash = _githooks._path_form_candidates("/c/Users/foo/bar")
+            native = _githooks._path_form_candidates("C:/Users/foo/bar")
+        self.assertNotIn("C:/Users/foo/bar", wsl)
+        self.assertNotIn("C:/Users/foo/bar", gitbash)
+        self.assertEqual(native, ["/c/Users/foo/bar", "/mnt/c/Users/foo/bar"])
+
+    def test_native_drive_letter_candidate_is_offered_on_windows(self):
+        with mock.patch.object(_githooks.os, "name", "nt"):
+            wsl = _githooks._path_form_candidates("/mnt/c/Users/foo/bar")
+            gitbash = _githooks._path_form_candidates("/c/Users/foo/bar")
+            native = _githooks._path_form_candidates("C:/Users/foo/bar")
+        self.assertIn("C:/Users/foo/bar", wsl)
+        self.assertIn("C:/Users/foo/bar", gitbash)
+        self.assertEqual(
+            native, ["C:/Users/foo/bar", "/c/Users/foo/bar", "/mnt/c/Users/foo/bar"])
+
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on a host "
+        "that actually has a drive-letter filesystem")
+    def test_freshness_probe_resolves_a_foreign_spelled_newest_entry(self):
+        # Before this fix, _FRESHNESS_PY discarded a foreign-spelled entry
+        # through a raw os.path.isfile(path_val) -- the shim itself can
+        # resolve that same entry via _cx_resolve. If the foreign entry has
+        # the newest heartbeat, the OLD probe silently omitted it entirely
+        # (never entered `entries`), so no sibling was ever marked stale
+        # against it.
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        older_seen = _githooks._seen_marker_file(dropin, "ca")
+        os.utime(older_seen, (100, 100))
+
+        target = os.path.join(self.root, "codex-real-target.txt")
+        self._write(target, "x")
+        native = os.path.abspath(target)
+        wsl_form = wslify(native)
+        self._write_entry(dropin, "ca-codex", wsl_form)
+        self._write(os.path.join(dropin, "ca-codex.seen"), wsl_form + "\n")
+        os.utime(os.path.join(dropin, "ca-codex.seen"), (200, 200))
+
+        stale = _githooks.stale_registered_plugins(dropin)
+        self.assertEqual(
+            stale, ["ca"],
+            "a resolvable foreign-spelled entry with the newest heartbeat "
+            "must be recognized and mark the older sibling stale")
+
 
 class TestInstallTwoPhaseWriteAtomicity(_GitFixture):
     """#686: pre-commit/pre-push must never be left split between two
@@ -1586,6 +1642,92 @@ class TestInstallTwoPhaseWriteAtomicity(_GitFixture):
                          "a contended install() must not write pre-commit alone (#686)")
         self.assertEqual(pre_push_after, pre_push_before,
                          "a contended install() must not write pre-push alone (#686)")
+
+    def test_plan_reads_current_state_after_acquiring_the_lock(self):
+        # Security review: reading "existing" hook content and computing the
+        # plan BEFORE acquiring the lock let a concurrent installer's write
+        # land between this call's read and its own write, so the "prior"
+        # rollback snapshot could be stale relative to what was actually on
+        # disk the moment the lock was granted.
+        first = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", first)
+        pre_commit_path = os.path.join(self._hooks_dir(), "pre-commit")
+        baseline = _githooks._read(pre_commit_path)
+
+        orig_acquire = _hooklib.acquire_lock
+        orig_write = _hooklib.write_text_atomic
+        state = {}
+
+        def acquire_and_race(*args, **kwargs):
+            handle = orig_acquire(*args, **kwargs)
+            if handle is not None and "racer" not in state:
+                # A concurrent writer landing exactly as the lock is granted
+                # -- a plan computed BEFORE acquiring the lock would never
+                # observe this write.
+                state["racer"] = baseline + "# concurrent-writer-at-lock-time\n"
+                orig_write(pre_commit_path, state["racer"], newline="\n")
+            return handle
+
+        calls = {"n": 0}
+
+        def flaky_write(path, text, newline=None):
+            calls["n"] += 1
+            if calls["n"] == 2:
+                raise OSError("simulated failure on the second phase write")
+            return orig_write(path, text, newline=newline)
+
+        with self._force_shim_change(), \
+                mock.patch.object(_hooklib, "acquire_lock", side_effect=acquire_and_race), \
+                mock.patch.object(_hooklib, "write_text_atomic", side_effect=flaky_write):
+            _githooks.install(self.root)
+
+        pre_commit_after = _githooks._read(pre_commit_path)
+        self.assertEqual(
+            pre_commit_after, state["racer"],
+            "the rolled-back state must reflect what was on disk when the "
+            "lock was granted, not a stale read taken before acquiring it")
+
+    @unittest.skipIf(
+        os.name == "nt",
+        "Windows/NTFS chmod does not distinguish POSIX executable bits, so "
+        "this fix has no observable effect there")
+    def test_rollback_restores_the_prior_file_mode_not_just_executable(self):
+        # Security review: rollback restored PRIOR CONTENT but not the
+        # prior file MODE -- only the fresh write's own chmod ever ran, so a
+        # rolled-back hook silently lost whatever permission bits it had
+        # before, up to and including its executable bit.
+        _githooks.install(self.root)
+        pre_commit_path = os.path.join(self._hooks_dir(), "pre-commit")
+
+        # Strip a bit install() itself would always set on a fresh write --
+        # a rollback that merely re-applies that same default (rather than
+        # the exact captured prior mode) would be indistinguishable from a
+        # correct one without this specific, deliberately-absent bit.
+        current_mode = stat.S_IMODE(os.stat(pre_commit_path).st_mode)
+        prior_mode = current_mode & ~stat.S_IXOTH
+        os.chmod(pre_commit_path, prior_mode)
+        pre_commit_before = _githooks._read(pre_commit_path)
+
+        orig_write = _hooklib.write_text_atomic
+        calls = {"n": 0}
+
+        def flaky_write(path, text, newline=None):
+            calls["n"] += 1
+            if calls["n"] == 2:
+                raise OSError("simulated failure on the second phase write")
+            return orig_write(path, text, newline=newline)
+
+        with self._force_shim_change(), \
+                mock.patch.object(_hooklib, "write_text_atomic", side_effect=flaky_write):
+            _githooks.install(self.root)
+
+        pre_commit_after = _githooks._read(pre_commit_path)
+        mode_after = stat.S_IMODE(os.stat(pre_commit_path).st_mode)
+        self.assertEqual(pre_commit_after, pre_commit_before)
+        self.assertEqual(
+            mode_after, prior_mode,
+            "a rolled-back hook must recover its EXACT prior permission "
+            "mode, not just some executable default")
 
 
 class TestInstallDoesNotChurnAcrossEquivalentHostSpellings(_GitFixture):
