@@ -100,8 +100,9 @@ on:
   # This trigger always resolves the workflow FILE as committed on the
   # default branch, regardless of which ref the upstream `ci` run analyzed —
   # the standard, safe shape for a downstream automation that holds a write
-  # token, and why `auto-preflight` below checks out `head_sha` explicitly
-  # rather than trusting an ambient ref.
+  # token. `auto-preflight` checks out the protected main ref, then refuses
+  # unless its resolved commit is the exact completed upstream run commit;
+  # no workflow_run-controlled revision is executed by the privileged job.
   workflow_run:
     workflows: ["ci"]
     types: [completed]
@@ -461,7 +462,8 @@ jobs:
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-pi'
     permissions:
       actions: read
-      contents: read
+      # The called workflow must observe the draft created by release-pi.
+      contents: write
       id-token: write
     uses: ./.github/workflows/npm-publish.yml
     with:
@@ -487,12 +489,14 @@ jobs:
 
   auto-preflight:
     name: "[GATE ] | [RELEASE] | Auto-tag preflight"
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       actions: read
       contents: read
+    env:
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
     outputs:
       ca: ${{ steps.eligible.outputs.ca }}
       ca-codex: ${{ steps.eligible.outputs.ca-codex }}
@@ -504,10 +508,22 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.sha }}
+          ref: refs/heads/main
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
+
+      - name: Bind the trusted checkout to the qualified upstream commit
+        env:
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          CHECKED_OUT_SHA=$(git rev-parse HEAD)
+          if [ "$CHECKED_OUT_SHA" != "$UPSTREAM_SHA" ]; then
+            echo "::error::qualified upstream commit is no longer the protected main tip"
+            echo "expected=$UPSTREAM_SHA actual=$CHECKED_OUT_SHA"
+            exit 1
+          fi
 
       - name: Validate Codex live candidate CI
         id: live-proof
@@ -518,10 +534,26 @@ jobs:
           LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
           CANDIDATE_SHA=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_commit"])')
           CANDIDATE_RUN=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_id"])')
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" \
+          CANDIDATE_ATTEMPT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_attempt"])')
+          CANDIDATE_ARTIFACT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_artifact_id"])')
+          CANDIDATE_PR=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["pr_number"])')
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN" > live-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN/attempts/$CANDIDATE_ATTEMPT/jobs?per_page=100" > live-jobs.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$CANDIDATE_ARTIFACT" > live-artifact.json
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$CANDIDATE_PR" > live-pull.json
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$CANDIDATE_PR/commits?per_page=100" --slurp > live-pull-commit-pages.json
+          jq -n --slurpfile run live-run.json --slurpfile jobs live-jobs.json \
+            --slurpfile artifact live-artifact.json --slurpfile pull live-pull.json \
+            --slurpfile commit_pages live-pull-commit-pages.json \
+            '{run:$run[0],jobs:$jobs[0],artifact:$artifact[0],pull:$pull[0],pull_commits:($commit_pages[0] | add)}' \
             | python3 .github/scripts/test_public_codex_docs.py --validate-live-candidate-run
           echo "candidate-sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
           echo "ca-codex: live candidate=$CANDIDATE_SHA ci-run=$CANDIDATE_RUN"
+
+      - name: Validate automatic release candidate
+        run: >-
+          python3 .github/scripts/check_auto_release_candidate.py
+          --candidate "$SOURCE_SHA"
 
       - name: Determine which targets have untagged work
         id: eligible
@@ -532,15 +564,15 @@ jobs:
           UPSTREAM_BRANCH: ${{ github.event.workflow_run.head_branch }}
           UPSTREAM_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
           UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
-          LIVE_CANDIDATE_SHA: ${{ steps.live-proof.outputs.candidate-sha }}
         run: |
           set -euo pipefail
+          SOURCE_SHA=${SOURCE_SHA:-$GITHUB_SHA}
           # Execute only the independently selected trusted workflow tree.
           # An older or foreign event candidate remains inert, even when its
           # branch is named main or it reports a successful CI conclusion.
           if [ "$UPSTREAM_EVENT" != push ] || [ "$UPSTREAM_CONCLUSION" != success ] || \
              [ "$UPSTREAM_BRANCH" != main ] || [ "$UPSTREAM_REPOSITORY" != "$GITHUB_REPOSITORY" ] || \
-             [ "$UPSTREAM_SHA" != "$GITHUB_SHA" ] || [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+             [ "$UPSTREAM_SHA" != "$SOURCE_SHA" ] || [ "$(git rev-parse HEAD)" != "$SOURCE_SHA" ]; then
             echo "::error::upstream is not a same-repository main push at the trusted workflow revision"
             exit 1
           fi
@@ -551,20 +583,8 @@ jobs:
           # push is silently skipped — not an error, just nothing to do.
           TAGS=$(git tag -l)
           PYTHON=$(python3 -c 'import sys; print(sys.executable)')
-          LIVE_CANDIDATE_SHA=${LIVE_CANDIDATE_SHA:-$GITHUB_SHA}
-          UNCHANGED_RELEASE_PAYLOAD=false
-          # A green exact-head repair may continue an older authorized
-          # candidate only while every shipped payload, user-visible release
-          # surface, and npm implicit root file is byte-identical in Git.
-          if [ "$LIVE_CANDIDATE_SHA" != "$GITHUB_SHA" ] && \
-             git diff --quiet "$LIVE_CANDIDATE_SHA" "$GITHUB_SHA" -- \
-               CHANGELOG.md package.json \
-               ':(top,icase)README*' ':(top,icase)COPYING*' \
-               ':(top,icase)LICENSE*' ':(top,icase)LICENCE*' \
-               plugins/ca plugins/ca-codex plugins/ca-pi plugins/ca-sandbox; then
-            UNCHANGED_RELEASE_PAYLOAD=true
-            echo "release continuation is limited to unchanged release payloads"
-          fi
+          # Defense in depth around the publication-authority outputs below.
+          # The shared validator above is also run by required pre-merge CI.
           OUTPUTS=()
           COHORT_TARGETS=()
           ANY_ELIGIBLE=false
@@ -581,39 +601,27 @@ jobs:
               | python3 .github/scripts/_releaselib.py auto-eligible "$VERSION" "$PREFIX")
             echo "$TARGET: manifest=$VERSION eligible=$ELIGIBLE"
             if [ "$ELIGIBLE" = "true" ]; then
-              # The changelog is the candidate-authorization surface. Bind it
-              # to this exact first-parent commit so a later green main commit
-              # cannot consume an older unpublished version. Manifests may
-              # already contain that version from an earlier correction; bind
-              # their exact blobs to this candidate instead of requiring a
-              # meaningless rewrite of unchanged JSON.
-              CHANGELOG_COMMIT=$(git log --first-parent -1 --format=%H -- "$CHANGELOG")
-              if [ "$CHANGELOG_COMMIT" != "$GITHUB_SHA" ] && \
-                 { [ "$UNCHANGED_RELEASE_PAYLOAD" != true ] || [ "$CHANGELOG_COMMIT" != "$LIVE_CANDIDATE_SHA" ]; }; then
-                echo "::error::$TARGET release surface $CHANGELOG was not advanced by this exact candidate"
-                exit 1
-              fi
               for SURFACE in "$MANIFEST" "$CHANGELOG"; do
-                CANDIDATE_BLOB=$(git rev-parse "$GITHUB_SHA:$SURFACE") || {
-                  echo "::error::$TARGET release surface $SURFACE is absent from $GITHUB_SHA"
+                CANDIDATE_BLOB=$(git rev-parse "$SOURCE_SHA:$SURFACE") || {
+                  echo "::error::$TARGET release surface $SURFACE is absent from $SOURCE_SHA"
                   exit 1
                 }
                 test "$(git hash-object "$SURFACE")" = "$CANDIDATE_BLOB" || {
-                  echo "::error::$TARGET release surface $SURFACE differs from $GITHUB_SHA"
+                  echo "::error::$TARGET release surface $SURFACE differs from $SOURCE_SHA"
                   exit 1
                 }
-                echo "$TARGET: candidate=$GITHUB_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
+                echo "$TARGET: candidate=$SOURCE_SHA surface=$SURFACE blob=$CANDIDATE_BLOB"
               done
               if [ "$COMPANION" != "-" ]; then
-                COMPANION_BLOB=$(git rev-parse "$GITHUB_SHA:$COMPANION") || {
-                  echo "::error::$TARGET companion manifest $COMPANION is absent from $GITHUB_SHA"
+                COMPANION_BLOB=$(git rev-parse "$SOURCE_SHA:$COMPANION") || {
+                  echo "::error::$TARGET companion manifest $COMPANION is absent from $SOURCE_SHA"
                   exit 1
                 }
                 test "$(git hash-object "$COMPANION")" = "$COMPANION_BLOB" || {
-                  echo "::error::$TARGET companion manifest $COMPANION differs from $GITHUB_SHA"
+                  echo "::error::$TARGET companion manifest $COMPANION differs from $SOURCE_SHA"
                   exit 1
                 }
-                echo "$TARGET: candidate=$GITHUB_SHA companion=$COMPANION blob=$COMPANION_BLOB"
+                echo "$TARGET: candidate=$SOURCE_SHA companion=$COMPANION blob=$COMPANION_BLOB"
               fi
               ANY_ELIGIBLE=true
               if [ "$TARGET" != "ca-sandbox" ]; then COHORT_TARGETS+=("$TARGET"); fi
@@ -676,18 +684,24 @@ jobs:
     if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main'
     permissions:
       actions: read
-      contents: read
+      # Draft Releases are visible only to tokens with push access. This gate
+      # remains read-only in its commands, but needs contents:write authority
+      # to discover and authenticate an unfinished marker-owned draft.
+      contents: write
     outputs:
-      mode: ${{ steps.durable.outputs.mode }}
-      cohort-targets: ${{ steps.durable.outputs.cohort-targets }}
-      repair-ca: ${{ steps.durable.outputs.repair-ca }}
-      repair-ca-codex: ${{ steps.durable.outputs.repair-ca-codex }}
-      repair-ca-pi: ${{ steps.durable.outputs.repair-ca-pi }}
+      mode: ${{ steps.durable.outputs.mode || steps.no-cohort.outputs.mode }}
+      cohort-targets: ${{ steps.durable.outputs.cohort-targets || steps.no-cohort.outputs.cohort-targets }}
+      repair-ca: ${{ steps.durable.outputs.repair-ca || steps.no-cohort.outputs.repair-ca }}
+      repair-ca-codex: ${{ steps.durable.outputs.repair-ca-codex || steps.no-cohort.outputs.repair-ca-codex }}
+      repair-ca-pi: ${{ steps.durable.outputs.repair-ca-pi || steps.no-cohort.outputs.repair-ca-pi }}
+      source-commit: ${{ steps.resolve.outputs.source-commit }}
+      ci-run-id: ${{ steps.resolve.outputs.ci-run-id }}
+      continuation: ${{ steps.resolve.outputs.continuation }}
+      tag-object-sha: ${{ steps.durable.outputs.tag-object-sha }}
+      pi-release-id: ${{ steps.resolve.outputs.pi-release-id }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      SOURCE_COMMIT: ${{ github.event.workflow_run.head_sha }}
-      CI_RUN_ID: ${{ needs.auto-preflight.outputs.cohort-run-id }}
       GH_TOKEN: ${{ github.token }}
       ELIGIBLE_CA: ${{ needs.auto-preflight.outputs.ca }}
       ELIGIBLE_CODEX: ${{ needs.auto-preflight.outputs.ca-codex }}
@@ -701,15 +715,170 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Resolve current or unfinished durable cohort identity
+        id: resolve
+        env:
+          CURRENT_SOURCE: ${{ github.event.workflow_run.head_sha }}
+          CURRENT_CI_RUN_ID: ${{ needs.auto-preflight.outputs.cohort-run-id }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, json, os, pathlib, re, subprocess, sys
+          sys.path.insert(0, ".github/scripts")
+          from _npm_publishlib import (_validate_qualified_release_body,
+                                       resolve_durable_cohort_identity,
+                                       validate_continuation_revision)
+          root = pathlib.Path(os.environ["RUNNER_TEMP"])
+          pages = json.loads(subprocess.run(
+              ["gh", "api", "--paginate", "--slurp",
+               f"repos/{os.environ['GITHUB_REPOSITORY']}/releases?per_page=100"],
+              text=True, capture_output=True, check=True).stdout)
+          releases = [release for page in pages for release in page]
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result: raise SystemExit(f"duplicate durable marker field: {key}")
+                  result[key] = value
+              return result
+          markers, receipts, drafts = [], [], []
+          for release in releases:
+              body = release.get("body") or ""
+              match = re.fullmatch(
+                  r"(?s)(.*\n)\n<!-- codearbiter-cohort-start-v1:([A-Za-z0-9_-]+) -->\n",
+                  body)
+              mentions = body.count("codearbiter-cohort-start-v1:")
+              if match is None and mentions == 0: continue
+              if match is None or mentions != 1:
+                  raise SystemExit("durable Release marker is malformed or duplicate")
+              marker_bytes = base64.urlsafe_b64decode(
+                  match.group(2) + "=" * (-len(match.group(2)) % 4))
+              marker = json.loads(marker_bytes, object_pairs_hook=unique)
+              _validate_qualified_release_body(body, release.get("tag_name"), marker_bytes)
+              if marker.get("tag") != release.get("tag_name"):
+                  raise SystemExit("durable marker is attached to the wrong Release")
+              markers.append(marker)
+              if release.get("draft") is True: drafts.append(marker)
+              assets = release.get("assets", [])
+              durable = [asset for asset in assets if isinstance(asset.get("name"), str)
+                         and asset["name"].startswith("codearbiter-cohort-publication")]
+              if not durable:
+                  if release.get("draft") is not True:
+                      raise SystemExit("marker-owned Release was published without its durable receipt")
+                  continue
+              if len(durable) != 1 or durable[0]["name"] != "codearbiter-cohort-publication-v1.json":
+                  raise SystemExit("durable Release receipt inventory is ambiguous")
+              response = subprocess.run(
+                  ["gh", "api", "-H", "Accept: application/octet-stream", durable[0]["url"]],
+                  capture_output=True, check=True)
+              receipt = json.loads(response.stdout.decode("utf-8"), object_pairs_hook=unique)
+              if receipt.get("tag") != release.get("tag_name"):
+                  raise SystemExit("durable receipt is attached to the wrong Release")
+              package_assets = [asset for asset in assets
+                                if asset.get("name") == receipt.get("package_file")]
+              if receipt.get("host") != "pi":
+                  if len(package_assets) != 1:
+                      raise SystemExit("historical durable receipt is missing its exact package asset")
+                  package_bytes = subprocess.run(
+                      ["gh", "api", "-H", "Accept: application/octet-stream",
+                       package_assets[0]["url"]], capture_output=True, check=True).stdout
+                  if hashlib.sha256(package_bytes).hexdigest() != receipt.get("package_sha256"):
+                      raise SystemExit("historical durable package asset digest mismatch")
+              receipts.append(receipt)
+          def trusted_version(path):
+              raw = subprocess.run(["git", "show", os.environ["GITHUB_SHA"] + ":" + path],
+                                   text=True, capture_output=True, check=True).stdout
+              return json.loads(raw)["version"]
+          versions = {
+              "ca": trusted_version("plugins/ca/.claude-plugin/plugin.json"),
+              "ca-codex": trusted_version("plugins/ca-codex/.codex-plugin/plugin.json"),
+              "ca-pi": trusted_version("plugins/ca-pi/package.json"),
+          }
+          tags = {"ca": "v" + versions["ca"],
+                  "ca-codex": "ca-codex-v" + versions["ca-codex"],
+                  "ca-pi": "ca-pi-v" + versions["ca-pi"]}
+          eligible = sorted(target for target, name in (
+              ("ca", "ELIGIBLE_CA"), ("ca-codex", "ELIGIBLE_CODEX"),
+              ("ca-pi", "ELIGIBLE_PI")) if os.environ[name] == "true")
+          result = resolve_durable_cohort_identity(
+              current_source=os.environ["CURRENT_SOURCE"],
+              current_run_id=os.environ["CURRENT_CI_RUN_ID"], current_tags=tags,
+              eligible_targets=eligible, markers=markers, receipts=receipts,
+              draft_markers=drafts)
+          if result["requires_cohort"]:
+              source = result["source_commit"]
+              subprocess.run(["git", "cat-file", "-e", source + "^{commit}"], check=True)
+              validate_continuation_revision(
+                  pathlib.Path("."), source, os.environ["GITHUB_SHA"])
+              tree = subprocess.run(["git", "rev-parse", source + "^{tree}"], text=True,
+                                    capture_output=True, check=True).stdout.strip()
+              if result["source_tree"] and tree != result["source_tree"]:
+                  raise SystemExit("durable marker source tree does not match Git")
+              run = json.loads(subprocess.run(
+                  ["gh", "api", f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{result['ci_run_id']}"],
+                  text=True, capture_output=True, check=True).stdout)
+              if (run.get("head_sha") != source or run.get("head_branch") != "main"
+                      or run.get("path") != ".github/workflows/ci.yml"
+                      or run.get("event") != "push" or run.get("conclusion") != "success"
+                      or (run.get("repository") or {}).get("full_name") != os.environ["GITHUB_REPOSITORY"]):
+                  raise SystemExit("selected cohort CI run is not an exact successful protected-main run")
+              artifact_pages = json.loads(subprocess.run(
+                  ["gh", "api", "--paginate", "--slurp",
+                   f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{result['ci_run_id']}/artifacts?per_page=100"],
+                  text=True, capture_output=True, check=True).stdout)
+              artifacts = [artifact for page in artifact_pages
+                           for artifact in page.get("artifacts", [])]
+              required_names = {
+                  "artifact-release-packages-" + source,
+                  "artifact-host-payloads-" + source,
+              }
+              selected = [artifact for artifact in artifacts
+                          if artifact.get("name") in required_names]
+              if ({artifact.get("name") for artifact in selected} != required_names
+                      or len(selected) != len(required_names)
+                      or any(artifact.get("expired") is not False
+                             or re.fullmatch(r"sha256:[0-9a-f]{64}", artifact.get("digest", "")) is None
+                             or (artifact.get("workflow_run") or {}).get("id") != int(result["ci_run_id"])
+                             or (artifact.get("workflow_run") or {}).get("head_sha") != source
+                             for artifact in selected)):
+                  raise SystemExit("selected cohort artifacts are missing, expired, duplicate, or cross-run")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              for key in ("requires_cohort", "continuation"):
+                  stream.write(f"{key.replace('_','-')}={'true' if result[key] else 'false'}\n")
+              stream.write(f"source-commit={result['source_commit']}\n")
+              stream.write(f"ci-run-id={result['ci_run_id']}\n")
+              if result["continuation"]:
+                  pi_tag = result["cohort_tags"]["ca-pi"]
+                  matched = [release for release in releases
+                             if release.get("tag_name") == pi_tag and release.get("draft") is True]
+                  if len(matched) != 1 or not isinstance(matched[0].get("id"), int):
+                      raise SystemExit("Pi continuation requires exactly one existing marker-owned draft")
+                  stream.write(f"pi-release-id={matched[0]['id']}\n")
+          PY
       - name: Download exact retained package cohort identity
+        if: steps.resolve.outputs.requires-cohort == 'true'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: artifact-release-packages-${{ github.event.workflow_run.head_sha }}
+          name: artifact-release-packages-${{ steps.resolve.outputs.source-commit }}
           path: ${{ runner.temp }}/artifact-publication-packages
-          run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
+          run-id: ${{ steps.resolve.outputs.ci-run-id }}
           github-token: ${{ github.token }}
+      - name: Report a release run with no publication obligation
+        if: steps.resolve.outputs.requires-cohort != 'true'
+        id: no-cohort
+        run: |
+          echo "mode=none" >> "$GITHUB_OUTPUT"
+          echo "cohort-targets=" >> "$GITHUB_OUTPUT"
+          echo "repair-ca=false" >> "$GITHUB_OUTPUT"
+          echo "repair-ca-codex=false" >> "$GITHUB_OUTPUT"
+          echo "repair-ca-pi=false" >> "$GITHUB_OUTPUT"
       - name: Refuse cross-run cohort mixing before publication
+        if: steps.resolve.outputs.requires-cohort == 'true'
         id: durable
+        env:
+          SOURCE_COMMIT: ${{ steps.resolve.outputs.source-commit }}
+          CI_RUN_ID: ${{ steps.resolve.outputs.ci-run-id }}
+          CONTINUATION: ${{ steps.resolve.outputs.continuation }}
+          PI_RELEASE_ID: ${{ steps.resolve.outputs.pi-release-id }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -763,6 +932,11 @@ jobs:
               text=True, capture_output=True, check=True).stdout)
           releases = [release for page in pages for release in page]
           by_tag = {release.get("tag_name"): release for release in releases}
+          if os.environ["CONTINUATION"] == "true":
+              expected_tag = "ca-pi-v" + versions["ca-pi"]
+              if (not os.environ["PI_RELEASE_ID"].isdigit()
+                      or (by_tag.get(expected_tag) or {}).get("id") != int(os.environ["PI_RELEASE_ID"])):
+                  raise SystemExit("Pi continuation Release identity changed during qualification")
           receipts = []
           markers = []
           draft_markers = []
@@ -839,6 +1013,25 @@ jobs:
           python3 .github/scripts/_npm_publishlib.py reconcile-state \
             --current "$RUNNER_TEMP/current-cohort.json" --state "$RUNNER_TEMP/durable-state.json" \
             --output "$GITHUB_OUTPUT"
+          if [ "$CONTINUATION" = true ]; then
+            tag=$(python3 -c 'import json,os; print(json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"current-cohort.json")))["cohort_tags"]["ca-pi"])')
+            expected_object=$(python3 - "$tag" "$SOURCE_COMMIT" <<'PY'
+          import json,re,sys
+          ledger=json.load(open(".github/published-tags.json",encoding="utf-8"))
+          entry=(ledger.get("tags") or {}).get(sys.argv[1])
+          if (not isinstance(entry,dict) or entry.get("object_type")!="tag"
+                  or entry.get("commit_sha")!=sys.argv[2]
+                  or re.fullmatch(r"[0-9a-f]{40}",entry.get("object_sha", "")) is None):
+              raise SystemExit("Pi continuation tag is absent from the immutable receipt ledger")
+          print(entry["object_sha"])
+          PY
+            )
+            git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" > "$RUNNER_TEMP/pi-repair-tag.txt"
+            object=$(python3 .github/scripts/_npm_publishlib.py tag-identity \
+              --remote "$RUNNER_TEMP/pi-repair-tag.txt" --tag "$tag" --source "$SOURCE_COMMIT" \
+              --expected-object "$expected_object")
+            echo "tag-object-sha=$object" >> "$GITHUB_OUTPUT"
+          fi
 
   auto-claude-cohort-gate:
     name: "[GATE ] | [COHORT] | Claude publication complete"
@@ -1004,7 +1197,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
-      tag-object-sha: ${{ steps.release.outputs.tag-object-sha }}
+      tag-object-sha: ${{ steps.release.outputs.tag-object-sha || steps.repair.outputs.tag-object-sha }}
     env:
       GITHUB_SHA: ${{ github.event.workflow_run.head_sha }}
     steps:
@@ -1033,6 +1226,18 @@ jobs:
           cohort-targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
           github-token: ${{ github.token }}
         id: release
+        if: needs.auto-cohort-reconciliation.outputs.continuation != 'true'
+      - name: Reuse the reconciled immutable Pi tag during continuation
+        if: needs.auto-cohort-reconciliation.outputs.continuation == 'true'
+        id: repair
+        env:
+          TAG_OBJECT_SHA: ${{ needs.auto-cohort-reconciliation.outputs.tag-object-sha }}
+        run: |
+          case "$TAG_OBJECT_SHA" in ""|*[!0-9a-f]*)
+            echo "::error::reconciled Pi tag object SHA is malformed"; exit 1 ;; esac
+          [ "${#TAG_OBJECT_SHA}" -eq 40 ] || {
+            echo "::error::reconciled Pi tag object SHA is malformed"; exit 1; }
+          echo "tag-object-sha=$TAG_OBJECT_SHA" >> "$GITHUB_OUTPUT"
 
   auto-publish-pi-npm:
     name: CA-Pi | [Auto-publish npm]
@@ -1040,15 +1245,17 @@ jobs:
     if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-cohort-gate.result == 'success' && needs.auto-release-pi.result == 'success' && (needs.auto-preflight.outputs.ca-pi == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-pi == 'true') }}
     permissions:
       actions: read
-      contents: read
+      # The called workflow must observe the reconciled marker-owned draft.
+      contents: write
       id-token: write
     uses: ./.github/workflows/npm-publish.yml
     with:
       tag: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}
-      expected_sha: ${{ github.event.workflow_run.head_sha }}
-      ci_run_id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
+      expected_sha: ${{ needs.auto-cohort-reconciliation.outputs.source-commit }}
+      ci_run_id: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}
       cohort_targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
       expected_tag_object_sha: ${{ needs.auto-release-pi.outputs.tag-object-sha }}
+      continuation: ${{ needs.auto-cohort-reconciliation.outputs.continuation == 'true' }}
     secrets:
       NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
 
@@ -1064,15 +1271,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Download exact retained Pi package cohort
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: artifact-release-packages-${{ github.event.workflow_run.head_sha }}
+          name: artifact-release-packages-${{ needs.auto-cohort-reconciliation.outputs.source-commit }}
           path: ${{ runner.temp }}/artifact-publication-packages
-          run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
+          run-id: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}
           github-token: ${{ github.token }}
       - name: Acquire reviewed npm@11.19.1 CLI for final readback
         id: npm-cli
@@ -1107,8 +1314,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ca-pi-v${{ needs.auto-preflight.outputs.ca-pi-version }}
-          SOURCE_COMMIT: ${{ github.event.workflow_run.head_sha }}
-          CI_RUN_ID: ${{ needs.auto-preflight.outputs.cohort-run-id }}
+          SOURCE_COMMIT: ${{ needs.auto-cohort-reconciliation.outputs.source-commit }}
+          CI_RUN_ID: ${{ needs.auto-cohort-reconciliation.outputs.ci-run-id }}
+          TRUSTED_SHA: ${{ github.sha }}
+          CONTINUATION: ${{ needs.auto-cohort-reconciliation.outputs.continuation }}
           NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
         run: |
           set -euo pipefail
@@ -1171,9 +1380,12 @@ jobs:
           print(path, "sha512-"+base64.b64encode(hashlib.sha512(data).digest()).decode())
           PY
           )
+          extra=()
+          if [ "$CONTINUATION" = true ]; then extra+=(--allow-continuation); fi
           python3 .github/scripts/_npm_publishlib.py verify --repo . \
-            --tag "$RELEASE_TAG" --expected-sha "$SOURCE_COMMIT" --trusted-sha "$SOURCE_COMMIT" \
-            --integrity "$INTEGRITY" --npm "$NPM_CLI" --publication-mode existing
+            --tag "$RELEASE_TAG" --expected-sha "$SOURCE_COMMIT" --trusted-sha "$TRUSTED_SHA" \
+            --integrity "$INTEGRITY" --npm "$NPM_CLI" --publication-mode existing \
+            "${extra[@]}"
           TAG_OBJECT_SHA=$(python3 - "$RUNNER_TEMP/pi-final-receipt.json" <<'PY'
           import json,sys
           print(json.load(open(sys.argv[1],encoding="utf-8"))["tag_object_sha"])

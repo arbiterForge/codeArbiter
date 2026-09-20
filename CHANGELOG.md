@@ -12,13 +12,21 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.6] - 2026-09-20
+## [2.21.7] - 2026-09-20
 
 ### Fixed
 
 - Add a host-owned structured-plan prerequisite adapter that binds exact user
   confirmations to current prerequisite records and recovers idempotently
   across capture or mutation failures without widening receipt authority.
+
+## [2.21.6] - 2026-09-20
+
+### Fixed
+
+- Make merge readiness execute the same automatic-release candidate check as
+  release preflight, and preserve main CI runs until their release trigger can
+  be emitted instead of cancelling them when a later merge lands.
 
 ## [2.21.5] - 2026-09-19
 

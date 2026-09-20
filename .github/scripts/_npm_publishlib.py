@@ -33,12 +33,23 @@ TAG_RE = re.compile(r"ca-pi-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z
 SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
 PROVENANCE_PREDICATE = "https://slsa.dev/provenance/v1"
 REGISTRY_TIMEOUT_SECONDS = 30
+REGISTRY_READBACK_ATTEMPTS = 120
+REGISTRY_READBACK_DELAY_SECONDS = 5.0
+REGISTRY_READBACK_SECONDS = 10 * 60.0
 ATTESTATION_MAX_BYTES = 2 * 1024 * 1024
 SOURCE_REPOSITORY = "https://github.com/arbiterForge/codeArbiter"
 SOURCE_REF = "refs/heads/main"
 SOURCE_WORKFLOWS = {
     ".github/workflows/release.yml",
     ".github/workflows/npm-publish.yml",
+}
+CONTINUATION_CHANGE_ALLOWLIST = {
+    ".github/published-tags.json",
+    ".github/scripts/_npm_publishlib.py",
+    ".github/scripts/test_pi_package.py",
+    ".github/scripts/test_release_workflow.py",
+    ".github/workflows/npm-publish.yml",
+    ".github/workflows/release.yml",
 }
 NPM_PACKER_INTEGRITY = "sha512-ztsxKxt/kkIaAs+2i0GU6I+DRmUdrNasxTZKJe9TCdSjKxlhah/4r/hl5ygMD6XAg1qZ9c2TNomR4qgOydp10g=="
 DURABLE_RECEIPT_NAME = "codearbiter-cohort-publication-v1.json"
@@ -54,6 +65,13 @@ COHORT_MARKER_FIELDS = {
     "release_notes_sha256",
 }
 QUALIFIED_TARGET_HOSTS = {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}
+QUALIFIED_TAG_PATTERNS = {
+    "ca": re.compile(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z"),
+    "ca-codex": re.compile(
+        r"ca-codex-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z"
+    ),
+    "ca-pi": TAG_RE,
+}
 COLD_FIELDS = {
     "format", "source_commit", "workflow", "run_id", "job", "host", "platform",
     "promotion_receipt_sha256", "package_sha256", "manifest_sha256",
@@ -163,16 +181,39 @@ def validate_main_commit(repo: Path, commit: str, main_ref: str = "origin/main")
 
 
 def validate_release_source_binding(trusted_repo: Path, source_repo: Path,
-                                    expected_sha: str, trusted_sha: str) -> None:
-    """Require workflow, trusted verifier, and release source to be one commit."""
+                                    expected_sha: str, trusted_sha: str, *,
+                                    allow_continuation: bool = False) -> None:
+    """Bind trusted workflow code and release source, with an explicit repair lane."""
     validate_sha(expected_sha, "expected SHA")
     validate_sha(trusted_sha, "trusted workflow SHA")
-    if expected_sha != trusted_sha:
+    if not allow_continuation and expected_sha != trusted_sha:
         raise ValueError("workflow, trusted verifier, and release source SHA must be identical")
-    for repo, label in ((trusted_repo, "trusted verifier"), (source_repo, "release source")):
-        head = _git(repo, "rev-parse", "HEAD")
-        if head.returncode != 0 or head.stdout.strip() != expected_sha:
-            raise ValueError(f"{label} checkout does not equal the exact release source")
+    trusted_head = _git(trusted_repo, "rev-parse", "HEAD")
+    if trusted_head.returncode != 0 or trusted_head.stdout.strip() != trusted_sha:
+        raise ValueError("trusted verifier checkout does not equal the trusted workflow SHA")
+    source_head = _git(source_repo, "rev-parse", "HEAD")
+    same_checkout = trusted_repo.resolve() == source_repo.resolve()
+    required_source_head = trusted_sha if allow_continuation and same_checkout else expected_sha
+    if source_head.returncode != 0 or source_head.stdout.strip() != required_source_head:
+        raise ValueError("release source checkout does not equal the required release identity")
+    if allow_continuation:
+        validate_continuation_revision(trusted_repo, expected_sha, trusted_sha)
+
+
+def validate_continuation_revision(repo: Path, source_sha: str, revision_sha: str) -> None:
+    validate_sha(source_sha, "continued release source")
+    validate_sha(revision_sha, "continuation revision")
+    ancestor = _git(repo, "merge-base", "--is-ancestor", source_sha, revision_sha)
+    if ancestor.returncode != 0:
+        raise ValueError("continued release source is not an ancestor of the trusted workflow")
+    changed = _git(repo, "diff", "--name-status", source_sha, revision_sha)
+    if changed.returncode != 0:
+        raise ValueError("continued release payload comparison failed")
+    for line in changed.stdout.splitlines():
+        fields = line.split("\t")
+        if (len(fields) != 2 or fields[0] != "M"
+                or fields[1] not in CONTINUATION_CHANGE_ALLOWLIST):
+            raise ValueError("continued release payload changed outside the repair allowlist")
 
 
 def _archive_member_bytes(archive: Path, name: str) -> bytes:
@@ -189,10 +230,11 @@ def _archive_member_bytes(archive: Path, name: str) -> bytes:
 def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Path,
                           source_repo: Path, source_commit: str, ci_run_id: str,
                           npm_executable: Path, trusted_repo: Path,
-                          workflow_sha: str) -> dict:
+                          workflow_sha: str, allow_continuation: bool = False) -> dict:
     """One fail-closed verifier for every qualified host before publication."""
     validate_release_source_binding(
-        trusted_repo, source_repo, source_commit, workflow_sha
+        trusted_repo, source_repo, source_commit, workflow_sha,
+        allow_continuation=allow_continuation,
     )
     packager_path = trusted_repo / "tools" / "build-host-packages.py"
     spec = importlib.util.spec_from_file_location("release_packager", packager_path)
@@ -367,6 +409,142 @@ def _validate_cohort_marker(marker: dict) -> tuple:
     return (json.dumps(tags, sort_keys=True, separators=(",", ":")), tuple(targets),
             marker["source_commit"], marker["source_tree"], marker["ci_run_id"],
             marker["cohort_sha256"])
+
+
+def _cohort_tags_strictly_newer(new_tags: dict, old_tags: dict,
+                                targets: set[str]) -> bool:
+    """Require every superseding target to advance its stable SemVer tag."""
+    for target in targets:
+        pattern = QUALIFIED_TAG_PATTERNS[target]
+        new_match = pattern.fullmatch(new_tags.get(target, ""))
+        old_match = pattern.fullmatch(old_tags.get(target, ""))
+        if new_match is None or old_match is None:
+            raise ValueError("durable cohort tag map is not canonical")
+        if tuple(map(int, new_match.groups())) <= tuple(map(int, old_match.groups())):
+            return False
+    return True
+
+
+def _active_incomplete_cohort_keys(incomplete: list[tuple],
+                                   marker_groups: dict[tuple, dict[str, dict]],
+                                   current_tags: dict) -> list[tuple]:
+    """Drop only old cohorts fully claimed by a strictly newer marker group."""
+    current_owners = [
+        key for key, marked in marker_groups.items()
+        if json.loads(key[0]) == current_tags and set(marked) == set(key[1])
+    ]
+    active = []
+    for key in incomplete:
+        tags = json.loads(key[0])
+        intended = set(key[1])
+        superseded = tags != current_tags and any(
+            intended <= set(owner[1])
+            and _cohort_tags_strictly_newer(current_tags, tags, intended)
+            for owner in current_owners
+        )
+        if not superseded:
+            active.append(key)
+    return active
+
+
+def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
+                                    current_tags: dict, eligible_targets: list[str],
+                                    markers: list[dict], receipts: list[dict],
+                                    draft_markers: list[dict]) -> dict:
+    """Choose the current CI cohort or one unfinished durable cohort.
+
+    A repair-only commit commonly has no package artifacts of its own.  Durable
+    draft markers are therefore resolved before artifact download.  Selection
+    is deliberately narrow: at most one historical cohort may be unfinished,
+    and its version map must still be the repository's current release map.
+    """
+    validate_sha(current_source, "current release source")
+    if not isinstance(current_run_id, str) or not current_run_id.isdigit():
+        raise ValueError("current CI run identity is invalid")
+    if (not isinstance(current_tags, dict)
+            or set(current_tags) != set(QUALIFIED_TARGET_HOSTS)
+            or any(not isinstance(value, str) or not value for value in current_tags.values())):
+        raise ValueError("current cohort tag map is invalid")
+    if (not isinstance(eligible_targets, list)
+            or eligible_targets != sorted(set(eligible_targets))
+            or not set(eligible_targets) <= set(QUALIFIED_TARGET_HOSTS)
+            or not isinstance(markers, list)
+            or not isinstance(receipts, list)
+            or not isinstance(draft_markers, list)):
+        raise ValueError("current cohort selection is invalid")
+
+    marker_groups: dict[tuple, dict[str, dict]] = {}
+    for marker in markers:
+        key = _validate_cohort_marker(marker)
+        group = marker_groups.setdefault(key, {})
+        target = marker["target"]
+        if target in group:
+            raise ValueError("cohort-start marker group contains duplicate target markers")
+        group[target] = marker
+    receipt_groups: dict[tuple, dict[str, dict]] = {}
+    for receipt in receipts:
+        key = _validate_discovered_durable_receipt(receipt)
+        group = receipt_groups.setdefault(key, {})
+        if receipt["target"] in group:
+            raise ValueError("durable publication cohort contains duplicate target receipts")
+        group[receipt["target"]] = receipt
+    if set(receipt_groups) - set(marker_groups):
+        raise ValueError("durable receipt has no matching cohort-start marker")
+    draft_pairs = set()
+    for marker in draft_markers:
+        key = _validate_cohort_marker(marker)
+        pair = (key, marker["target"])
+        if pair in draft_pairs or marker_groups.get(key, {}).get(marker["target"]) != marker:
+            raise ValueError("draft cohort-start marker is duplicate or undiscovered")
+        draft_pairs.add(pair)
+    incomplete = []
+    for key, marked in marker_groups.items():
+        received = receipt_groups.get(key, {})
+        intended = set(key[1])
+        if not set(marked) <= intended or not set(received) <= intended:
+            raise ValueError("durable publication cohort contains an unexpected target")
+        for target in set(marked) & set(received):
+            validate_durable_receipt_with_marker(received[target], marked[target])
+        for target in marked:
+            if target not in received and (key, target) not in draft_pairs:
+                raise ValueError("marker-owned Release was published without its durable receipt")
+        if (set(marked) != intended or set(received) != intended
+                or any((key, target) in draft_pairs for target in intended)):
+            incomplete.append(key)
+    # An older partial cohort is no longer publishable once a strictly newer
+    # marker group has durably claimed every one of its targets. Keep the old
+    # draft as evidence, but do not let it compete with the newer unfinished
+    # cohort. Partial or non-monotonic successor groups never supersede it.
+    active_incomplete = _active_incomplete_cohort_keys(
+        incomplete, marker_groups, current_tags
+    )
+    if len(active_incomplete) > 1:
+        raise ValueError("multiple unresolved historical publication cohorts exist")
+    if active_incomplete:
+        key = active_incomplete[0]
+        tags = json.loads(key[0])
+        if tags != current_tags:
+            raise ValueError("unresolved historical cohort versions differ from current manifests")
+        return {
+            "requires_cohort": True,
+            "continuation": key[2] != current_source,
+            "source_commit": key[2],
+            "source_tree": key[3],
+            "ci_run_id": key[4],
+            "cohort_sha256": key[5],
+            "cohort_tags": tags,
+            "cohort_targets": list(key[1]),
+        }
+    return {
+        "requires_cohort": bool(eligible_targets),
+        "continuation": False,
+        "source_commit": current_source,
+        "source_tree": "",
+        "ci_run_id": current_run_id,
+        "cohort_sha256": "",
+        "cohort_tags": current_tags,
+        "cohort_targets": eligible_targets,
+    }
 
 
 def _validate_qualified_release_body(body: object, tag: str,
@@ -613,6 +791,10 @@ def reconcile_durable_cohort(receipts: list[dict], *, current: dict,
                               separators=(",", ":"))
     current_identity = (current["source_commit"], current["source_tree"],
                         current["ci_run_id"], current["cohort_sha256"])
+    active_keys = set(_active_incomplete_cohort_keys(
+        [entry[0] for entry in incomplete], marker_groups, current["cohort_tags"]
+    ))
+    incomplete = [entry for entry in incomplete if entry[0] in active_keys]
     if incomplete:
         if len(incomplete) != 1:
             raise ValueError("multiple unresolved historical publication cohorts exist")
@@ -815,6 +997,24 @@ def validate_attestation_document(
     return source_sha
 
 
+def validate_publication_attestation(document: dict, version: str, integrity: str,
+                                     *, release_source_sha: str,
+                                     trusted_sha: str, trusted_repo: Path,
+                                     allow_continuation: bool) -> str:
+    """Bind npm provenance to this run or a prior authorized continuation run."""
+    attested = validate_attestation_document(
+        document, version, integrity, None if allow_continuation else trusted_sha
+    )
+    if allow_continuation:
+        validate_continuation_revision(trusted_repo, release_source_sha, attested)
+        tail = _git(trusted_repo, "merge-base", "--is-ancestor", attested, trusted_sha)
+        if tail.returncode != 0:
+            raise ValueError("attested continuation is not contained in the trusted workflow history")
+    elif attested != trusted_sha:
+        raise ValueError("npm provenance does not bind the trusted workflow commit")
+    return attested
+
+
 def _signature_failure_detail(evidence: object) -> str:
     """Expose only fixed categories, never registry text or npm stderr."""
     if not isinstance(evidence, dict):
@@ -982,7 +1182,12 @@ def parse_pack_report(stdout: str) -> tuple[str, str]:
     return filename, integrity
 
 
-def registry_lookup(npm: str, version: str) -> subprocess.CompletedProcess[str]:
+def registry_lookup(
+    npm: str,
+    version: str,
+    *,
+    timeout: float = REGISTRY_TIMEOUT_SECONDS,
+) -> subprocess.CompletedProcess[str]:
     try:
         return subprocess.run(
             [
@@ -998,7 +1203,7 @@ def registry_lookup(npm: str, version: str) -> subprocess.CompletedProcess[str]:
             text=True,
             capture_output=True,
             check=False,
-            timeout=REGISTRY_TIMEOUT_SECONDS,
+            timeout=timeout,
         )
     except subprocess.TimeoutExpired as exc:
         raise RegistryUnavailable("npm registry lookup timed out") from exc
@@ -1047,7 +1252,10 @@ def prepare(args: argparse.Namespace) -> int:
     repo = Path(args.repo).resolve()
     trusted_repo = Path(args.trusted_repo).resolve()
     version = validate_inputs(args.tag, args.expected_sha)
-    validate_release_source_binding(trusted_repo, repo, args.expected_sha, args.trusted_sha)
+    validate_release_source_binding(
+        trusted_repo, repo, args.expected_sha, args.trusted_sha,
+        allow_continuation=getattr(args, "allow_continuation", False),
+    )
     validate_git_identity(repo, args.tag, args.expected_sha)
     validate_project_registry(repo)
     root = json.loads((repo / args.root_manifest).read_text(encoding="utf-8"))
@@ -1067,8 +1275,11 @@ def prepare(args: argparse.Namespace) -> int:
     )
     if state == "present":
         verified_document = verify_registry_authenticity(args.npm, version)
-        source_sha = validate_attestation_document(
-            verified_document, version, integrity, args.expected_sha
+        source_sha = validate_publication_attestation(
+            verified_document, version, integrity,
+            release_source_sha=args.expected_sha, trusted_sha=args.trusted_sha,
+            trusted_repo=trusted_repo,
+            allow_continuation=getattr(args, "allow_continuation", False),
         )
     output = Path(args.output)
     with output.open("a", encoding="utf-8", newline="\n") as stream:
@@ -1084,11 +1295,25 @@ def verify(args: argparse.Namespace) -> int:
     version = validate_inputs(args.tag, args.expected_sha)
     trusted_repo = Path(args.repo).resolve()
     validate_release_source_binding(
-        trusted_repo, trusted_repo, args.expected_sha, args.trusted_sha
+        trusted_repo, trusted_repo, args.expected_sha, args.trusted_sha,
+        allow_continuation=getattr(args, "allow_continuation", False),
     )
+    readback_seconds = getattr(args, "readback_seconds", REGISTRY_READBACK_SECONDS)
+    if args.attempts < 1 or args.delay_seconds < 0 or readback_seconds <= 0:
+        raise ValueError("npm publication readback bounds are invalid")
+    deadline = time.monotonic() + readback_seconds
+    last_unavailable: RegistryUnavailable | None = None
+    state = "absent"
     for attempt in range(args.attempts):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
         try:
-            lookup = registry_lookup(args.npm, version)
+            lookup = registry_lookup(
+                args.npm,
+                version,
+                timeout=min(REGISTRY_TIMEOUT_SECONDS, remaining),
+            )
             state = classify_registry_lookup(
                 lookup.returncode,
                 lookup.stdout,
@@ -1096,24 +1321,29 @@ def verify(args: argparse.Namespace) -> int:
                 version,
                 args.integrity,
             )
-        except RegistryUnavailable:
+        except RegistryUnavailable as exc:
+            last_unavailable = exc
             if attempt + 1 >= args.attempts:
                 raise
             state = "unavailable"
         if state == "present":
             verified_document = verify_registry_authenticity(args.npm, version)
-            source_sha = validate_attestation_document(
+            source_sha = validate_publication_attestation(
                 verified_document,
                 version,
                 args.integrity,
-                args.expected_sha,
+                release_source_sha=args.expected_sha,
+                trusted_sha=args.trusted_sha,
+                trusted_repo=trusted_repo,
+                allow_continuation=getattr(args, "allow_continuation", False),
             )
-            if source_sha != args.expected_sha:
-                raise ValueError("npm provenance does not bind the exact release source")
             print(f"verified {PACKAGE}@{version} integrity and provenance")
             return 0
-        if attempt + 1 < args.attempts:
-            time.sleep(args.delay_seconds)
+        remaining = deadline - time.monotonic()
+        if attempt + 1 < args.attempts and remaining > 0:
+            time.sleep(min(args.delay_seconds, remaining))
+    if last_unavailable is not None and state == "unavailable":
+        raise last_unavailable
     raise ValueError("npm publication did not become observable before the evidence deadline")
 
 
@@ -1125,6 +1355,7 @@ def parser() -> argparse.ArgumentParser:
     common.add_argument("--expected-sha", required=True)
     common.add_argument("--trusted-sha", required=True)
     common.add_argument("--npm", default="npm")
+    common.add_argument("--allow-continuation", action="store_true")
     sub.add_parser("validate", parents=[common])
     prepare_parser = sub.add_parser("prepare", parents=[common])
     prepare_parser.add_argument("--repo", default=".")
@@ -1143,8 +1374,15 @@ def parser() -> argparse.ArgumentParser:
     verify_parser.add_argument(
         "--publication-mode", required=True, choices=("new", "existing")
     )
-    verify_parser.add_argument("--attempts", type=int, default=12)
-    verify_parser.add_argument("--delay-seconds", type=float, default=5.0)
+    verify_parser.add_argument(
+        "--attempts", type=int, default=REGISTRY_READBACK_ATTEMPTS
+    )
+    verify_parser.add_argument(
+        "--delay-seconds", type=float, default=REGISTRY_READBACK_DELAY_SECONDS
+    )
+    verify_parser.add_argument(
+        "--readback-seconds", type=float, default=REGISTRY_READBACK_SECONDS
+    )
     cohort_parser = sub.add_parser("verify-cohort")
     cohort_parser.add_argument("--package-root", required=True)
     cohort_parser.add_argument("--stage-root", required=True)
@@ -1157,6 +1395,7 @@ def parser() -> argparse.ArgumentParser:
     cohort_parser.add_argument("--trusted-repo", default=".")
     cohort_parser.add_argument("--host", required=True, choices=("claude", "codex", "pi"))
     cohort_parser.add_argument("--output", required=True)
+    cohort_parser.add_argument("--allow-continuation", action="store_true")
     reconcile_parser = sub.add_parser("reconcile-state")
     reconcile_parser.add_argument("--current", required=True)
     reconcile_parser.add_argument("--state", required=True)
@@ -1189,7 +1428,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "validate":
             validate_inputs(args.tag, args.expected_sha)
             validate_sha(args.trusted_sha, "trusted workflow SHA")
-            if args.expected_sha != args.trusted_sha:
+            if not args.allow_continuation and args.expected_sha != args.trusted_sha:
                 raise ValueError("workflow, trusted verifier, and release source SHA must be identical")
             return 0
         if args.command == "verify-cohort":
@@ -1200,6 +1439,7 @@ def main(argv: list[str] | None = None) -> int:
                 source_commit=args.source_commit, ci_run_id=args.ci_run_id,
                 npm_executable=Path(args.npm), trusted_repo=Path(args.trusted_repo),
                 workflow_sha=args.workflow_sha,
+                allow_continuation=args.allow_continuation,
             )
             package = receipt["packages"][args.host]
             cohort_path = root / "artifact-package-cohort.json"

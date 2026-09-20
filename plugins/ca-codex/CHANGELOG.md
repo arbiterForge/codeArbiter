@@ -6,12 +6,19 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.6] - 2026-09-20
+## [0.13.7] - 2026-09-20
 
 ### Fixed
 
 - Add exact host-observed prerequisite confirmations for approved structured
   plans, including stale-state rejection and idempotent partial-failure recovery.
+
+## [0.13.6] - 2026-09-20
+
+### Fixed
+
+- Reject projected merges that would strand an eligible ca-codex version, and
+  preserve the exact main CI run that supplies its release trigger and package.
 
 ## [0.13.5] - 2026-09-19
 
