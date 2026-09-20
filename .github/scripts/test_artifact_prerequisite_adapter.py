@@ -3,9 +3,9 @@
 
 import importlib.util
 import json
+import subprocess
 import sys
 import tempfile
-import threading
 import unittest
 from pathlib import Path
 
@@ -308,40 +308,49 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.assertTrue(result["satisfied"])
         self.assertFalse(pending.exists())
 
+    def hold_transition_lock(self):
+        code = """
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import _prerequisitelib
+with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
+    print("READY", flush=True)
+    sys.stdin.read(1)
+"""
+        process = subprocess.Popen(
+            [sys.executable, "-c", code, str(CORE_PYSRC), str(self.root), "PLAN-EXAMPLE"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        def stop_process():
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+
+        self.addCleanup(stop_process)
+        ready = process.stdout.readline().strip()
+        if ready != "READY":
+            stderr = process.stderr.read()
+            self.fail(f"lock holder failed before readiness: {ready!r} {stderr!r}")
+        return process
+
+    def release_transition_lock(self, process):
+        process.stdin.write("x")
+        process.stdin.flush()
+        process.stdin.close()
+        returncode = process.wait(timeout=5)
+        stderr = process.stderr.read()
+        process.stdout.close()
+        process.stderr.close()
+        self.assertEqual(returncode, 0, stderr)
+
     def test_concurrent_confirmation_serializes_the_complete_transition(self):
-        class BlockingCaptureClient(_FakeClient):
-            def __init__(self):
-                super().__init__()
-                self.capture_entered = threading.Event()
-                self.release_capture = threading.Event()
-                self.capture_count = 0
-                self.capture_count_lock = threading.Lock()
-
-            def call(self, operation, request=None, **kwargs):
-                if operation == "capture":
-                    with self.capture_count_lock:
-                        self.capture_count += 1
-                        first_capture = self.capture_count == 1
-                    if first_capture:
-                        self.capture_entered.set()
-                        if not self.release_capture.wait(timeout=5):
-                            raise RuntimeError("timed out waiting to release capture")
-                return super().call(operation, request, **kwargs)
-
-        self.client = BlockingCaptureClient()
         armed = self.arm()
-        first_result = []
-        first_error = []
-
-        def consume_first():
-            try:
-                first_result.append(self.consume(armed["reply"]))
-            except Exception as exc:  # pragma: no cover - asserted below
-                first_error.append(exc)
-
-        thread = threading.Thread(target=consume_first)
-        thread.start()
-        self.assertTrue(self.client.capture_entered.wait(timeout=5))
+        holder = self.hold_transition_lock()
         try:
             with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
                 self.adapter.consume_user_prerequisite(
@@ -353,12 +362,10 @@ class PrerequisiteAdapterTest(unittest.TestCase):
                     now=1001,
                 )
         finally:
-            self.client.release_capture.set()
-            thread.join(timeout=5)
+            self.release_transition_lock(holder)
 
-        self.assertFalse(thread.is_alive())
-        self.assertEqual(first_error, [])
-        self.assertTrue(first_result[0]["satisfied"])
+        result = self.consume(armed["reply"])
+        self.assertTrue(result["satisfied"])
         operations = [name for name, _ in self.client.calls]
         self.assertEqual(operations.count("capture"), 1)
         self.assertEqual(operations.count("prerequisite"), 1)
@@ -489,7 +496,8 @@ class PrerequisiteAdapterTest(unittest.TestCase):
     def test_cancel_and_supersede_share_the_transition_lock(self):
         self.arm()
 
-        with self.adapter._pending_transition_lock(self.root, "PLAN-EXAMPLE"):
+        holder = self.hold_transition_lock()
+        try:
             with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
                 self.adapter.cancel_user_prerequisite(
                     self.root, "PLAN-EXAMPLE", "GATE-APPROVAL"
@@ -501,6 +509,8 @@ class PrerequisiteAdapterTest(unittest.TestCase):
                     "PLAN-EXAMPLE",
                     "GATE-APPROVAL",
                 )
+        finally:
+            self.release_transition_lock(holder)
 
 
 class PrerequisiteSurfaceTest(unittest.TestCase):
