@@ -24,6 +24,7 @@ sys.path.insert(
 # tuples. We import doctor and reset that list between tests to isolate them.
 import doctor  # noqa: E402
 import _hooklib  # noqa: E402
+from _helpers import wslify  # noqa: E402
 
 
 def _reset():
@@ -749,6 +750,35 @@ class TestCheckGitHookBackstop(unittest.TestCase):
         self.assertTrue(
             any(level == "OK" and "live-fire" in line
                 for level, line in doctor.results), doctor.results)
+
+    def test_live_fire_ok_message_is_scoped_to_this_host_not_a_durability_claim(self):
+        # B3/#684: a green live-fire result must say it proved THIS host's
+        # Git can run the shim, not imply that proves anything for a sibling
+        # host sharing the same registry.
+        self._install_live_backstop()
+        doctor.check_git_hook_freshness(self.root)
+        ok_lines = [line for level, line in doctor.results
+                    if level == "OK" and "live-fire" in line]
+        self.assertTrue(ok_lines)
+        self.assertTrue(
+            any("this host" in line.lower() for line in ok_lines),
+            f"a green live-fire result must be scoped to THIS host, not imply "
+            f"cross-host durability (B3/#684): {ok_lines}")
+
+    def test_wsl_spelled_registry_entry_for_a_real_enforcer_is_recognized_live(self):
+        # ADR-0038: doctor must agree with the real shim -- a foreign-spelled
+        # but resolvable registry entry is LIVE, not a false "no live enforcer".
+        _, dropin = self._install_live_backstop()
+        entry = doctor._githooks._path_entry_file(dropin, "ca")
+        with open(entry, encoding="utf-8") as f:
+            native = f.read().strip()
+        with open(entry, "w", encoding="utf-8", newline="\n") as f:
+            f.write(wslify(native) + "\n")
+
+        doctor.check_git_hook_freshness(self.root)
+
+        self.assertFalse(
+            any(level == "FAIL" for level, _ in doctor.results), doctor.results)
 
 
 class TestRunHostDISeam(unittest.TestCase):

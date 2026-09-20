@@ -32,7 +32,7 @@ ENFORCE = os.path.join(HOOKS, "git-enforce.py")
 sys.path.insert(0, HOOKS)
 import _githooks  # noqa: E402
 import _hooklib  # noqa: E402
-from _helpers import durable_plugin_copy  # noqa: E402
+from _helpers import durable_plugin_copy, gitbashify, wslify  # noqa: E402
 
 
 def _load_git_enforce():
@@ -1333,6 +1333,241 @@ class TestFreshnessGuardPreventsStaleFalseBlock(_GitFixture):
         res = _sh(["sh", "-c", "git commit -m x"], self.root)
         self.assertEqual(res.returncode, 0, res.stderr)
         self.assertNotIn("H-09b", res.stderr + res.stdout)
+
+
+class TestCrossHostPathFormResolution(_GitFixture):
+    """ADR-0038 (ties H1, #684/#683): a registry or trusted-identity entry
+    written in ONE of the three known path-form spellings of the SAME
+    Windows-drive-hosted file (Windows-native, Git-Bash/MSYS `/x/...`, WSL
+    drvfs `/mnt/x/...`) must resolve regardless of which spelling wrote it --
+    verified at the Python layer (_resolve_live) and through the REAL
+    generated shim executed by this host's actual `sh`. A spelling that
+    resolves to nothing real under any candidate must still fail closed
+    (ADR-0014's contract is unchanged, only widened)."""
+
+    def _write_entry(self, dropin, name, target):
+        os.makedirs(dropin, exist_ok=True)
+        with open(os.path.join(dropin, f"{name}.path"), "w",
+                  encoding="utf-8", newline="\n") as f:
+            f.write(target + "\n")
+
+    def _probe_enforcer(self, name, marker, returncode=0):
+        path = os.path.join(self.root, name)
+        source = ("import pathlib, sys\n"
+                   f"pathlib.Path({marker!r}).write_text('ran', encoding='utf-8')\n"
+                   f"raise SystemExit({returncode})\n")
+        self._write(path, source)
+        return os.path.abspath(path)
+
+    # ---- Python-layer resolver ----
+
+    def test_wsl_spelling_of_a_real_file_resolves_via_python(self):
+        target = os.path.join(self.root, "real-target.txt")
+        self._write(target, "x")
+        wsl_form = wslify(os.path.abspath(target))
+        self.assertFalse(os.path.isfile(wsl_form),
+                         "fixture invalid: the untranslated WSL spelling must not "
+                         "already resolve directly on this host")
+        resolved = _githooks._resolve_live(wsl_form)
+        self.assertIsNotNone(resolved, "a WSL-spelled path to a real file must resolve")
+        self.assertEqual(os.path.realpath(resolved), os.path.realpath(target))
+
+    def test_gitbash_spelling_of_a_real_file_resolves_via_python(self):
+        target = os.path.join(self.root, "real-target2.txt")
+        self._write(target, "x")
+        gb_form = gitbashify(os.path.abspath(target))
+        resolved = _githooks._resolve_live(gb_form)
+        self.assertIsNotNone(resolved, "a Git-Bash-spelled path to a real file must resolve")
+        self.assertEqual(os.path.realpath(resolved), os.path.realpath(target))
+
+    def test_unresolvable_spelling_resolves_to_none(self):
+        self.assertIsNone(_githooks._resolve_live("/mnt/z/nowhere/git-enforce.py"))
+
+    # ---- real generated shim, executed by this host's real sh ----
+
+    def test_wsl_spelled_registry_entry_runs_through_the_real_shim(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        os.remove(os.path.join(dropin, "ca.path"))
+        marker = os.path.join(self.root, "wsl-ran.marker")
+        native = self._probe_enforcer("wsl-enforcer.py", marker)
+        self._write_entry(dropin, "ca", wslify(native))
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(os.path.isfile(marker),
+                        "a WSL-spelled registry entry for a real file must still "
+                        "run through the shim, not fail closed")
+
+    def test_gitbash_spelled_registry_entry_runs_through_the_real_shim(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        os.remove(os.path.join(dropin, "ca.path"))
+        marker = os.path.join(self.root, "gitbash-ran.marker")
+        native = self._probe_enforcer("gitbash-enforcer.py", marker)
+        self._write_entry(dropin, "ca", gitbashify(native))
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(os.path.isfile(marker),
+                        "a Git-Bash-spelled registry entry for a real file must still "
+                        "run through the shim, not fail closed")
+
+    def test_unresolvable_spelling_still_fails_closed(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        os.remove(os.path.join(dropin, "ca.path"))
+        self._write_entry(dropin, "ca", "/mnt/z/nowhere/git-enforce.py")
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertNotEqual(result.returncode, 0,
+                           "a spelling resolving to nothing real must still fail closed")
+        self.assertIn("failing CLOSED", result.stderr + result.stdout)
+
+    # ---- trusted-executables.identity (H5/#684) ----
+
+    def test_wsl_spelled_identity_resolves_through_the_real_shim(self):
+        real_python = _githooks._shell_path(sys.executable)
+        real_git = _githooks._shell_path(os.path.realpath(shutil.which("git")))
+        with mock.patch.object(_githooks, "trusted_git_executable", return_value=None), \
+                mock.patch.object(_githooks, "trusted_python_executable", return_value=None):
+            _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        identity = "\n".join((wslify(real_python), wslify(real_git), "ca-pi")) + "\n"
+        with open(_githooks._identity_file(dropin), "w", encoding="utf-8", newline="\n") as f:
+            f.write(identity)
+        marker = os.path.join(self.root, "identity-ran.marker")
+        self._write_entry(dropin, "ca", self._probe_enforcer("identity-check.py", marker))
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(os.path.isfile(marker))
+
+    def test_foreign_unresolvable_identity_produces_a_diagnostic_not_silence(self):
+        # H5: before this fix, an identity the current host cannot resolve
+        # dies at a bare `exit 1` with NO stderr message at all.
+        with mock.patch.object(_githooks, "trusted_git_executable", return_value=None), \
+                mock.patch.object(_githooks, "trusted_python_executable", return_value=None):
+            _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        identity = "\n".join((
+            "/mnt/q/does/not/exist/python3",
+            "/mnt/q/does/not/exist/git",
+            "ca-pi",
+        )) + "\n"
+        with open(_githooks._identity_file(dropin), "w", encoding="utf-8", newline="\n") as f:
+            f.write(identity)
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        result = _sh(["sh", hook], self.root)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertTrue((result.stderr or "").strip(),
+                        "an unresolvable trusted identity must produce a diagnostic, "
+                        "not a bare silent exit (H5/#684)")
+
+
+class TestInstallTwoPhaseWriteAtomicity(_GitFixture):
+    """#686: pre-commit/pre-push must never be left split between two
+    mutually-inconsistent bodies -- neither by a mid-loop exception within a
+    single install() call, nor by a concurrent install() contending the
+    shared cross-process lock."""
+
+    def _hooks_dir(self):
+        return os.path.join(self.root, ".git", "hooks")
+
+    def _force_shim_change(self):
+        orig_shim = _githooks._shim
+
+        def different_shim(dropin_dir, phase):
+            return orig_shim(dropin_dir, phase) + f"# forced-change {phase}\n"
+        return mock.patch.object(_githooks, "_shim", side_effect=different_shim)
+
+    def test_single_process_partial_write_failure_rolls_back_both_phases(self):
+        first = _githooks.install(self.root)
+        self.assertIn("pre-commit: installed", first)
+        pre_commit_before = _githooks._read(os.path.join(self._hooks_dir(), "pre-commit"))
+        pre_push_before = _githooks._read(os.path.join(self._hooks_dir(), "pre-push"))
+
+        orig_write = _hooklib.write_text_atomic
+        calls = {"n": 0}
+
+        def flaky_write(path, text, newline=None):
+            calls["n"] += 1
+            if calls["n"] == 2:
+                raise OSError("simulated failure on the second phase write")
+            return orig_write(path, text, newline=newline)
+
+        with self._force_shim_change(), \
+                mock.patch.object(_hooklib, "write_text_atomic", side_effect=flaky_write):
+            _githooks.install(self.root)
+
+        pre_commit_after = _githooks._read(os.path.join(self._hooks_dir(), "pre-commit"))
+        pre_push_after = _githooks._read(os.path.join(self._hooks_dir(), "pre-push"))
+        self.assertEqual(pre_commit_after, pre_commit_before,
+                         "a failed sibling write must roll the first phase back -- "
+                         "never leave the pair split (#686)")
+        self.assertEqual(pre_push_after, pre_push_before)
+
+    def test_lock_contention_defers_rather_than_writing_a_split_pair(self):
+        _githooks.install(self.root)
+        pre_commit_before = _githooks._read(os.path.join(self._hooks_dir(), "pre-commit"))
+        pre_push_before = _githooks._read(os.path.join(self._hooks_dir(), "pre-push"))
+        dropin = _githooks._dropin_dir(self.root)
+        lock_path = os.path.join(dropin, "install")
+        held = _hooklib.acquire_lock(lock_path)
+        self.assertIsNotNone(held, "fixture invalid: could not acquire the install lock")
+        try:
+            with self._force_shim_change(), \
+                    mock.patch.object(_hooklib, "LOCK_WAIT", 0.05):
+                _githooks.install(self.root)
+        finally:
+            _hooklib.release_lock(held)
+
+        pre_commit_after = _githooks._read(os.path.join(self._hooks_dir(), "pre-commit"))
+        pre_push_after = _githooks._read(os.path.join(self._hooks_dir(), "pre-push"))
+        self.assertEqual(pre_commit_after, pre_commit_before,
+                         "a contended install() must not write pre-commit alone (#686)")
+        self.assertEqual(pre_push_after, pre_push_before,
+                         "a contended install() must not write pre-push alone (#686)")
+
+
+class TestInstallDoesNotChurnAcrossEquivalentHostSpellings(_GitFixture):
+    """B3/#684: a sibling host's validly-different-but-equivalent D= spelling
+    for the SAME drop-in directory must not be treated as stale -- every
+    alternating SessionStart between two hosts was previously an unconditional
+    reinstall."""
+
+    def test_a_validly_different_sibling_spelling_is_not_treated_as_stale(self):
+        _githooks.install(self.root)
+        hd = os.path.join(self.root, ".git", "hooks")
+        dropin = _githooks._dropin_dir(self.root)
+
+        wsl_dropin = wslify(dropin)
+        for phase in _githooks.PHASES:
+            with open(os.path.join(hd, phase), "w", encoding="utf-8", newline="\n") as f:
+                f.write(_githooks._shim(wsl_dropin, phase))
+
+        actions = _githooks.install(self.root)
+        self.assertEqual(actions, [],
+                         "a sibling host's validly-different D= spelling for the SAME "
+                         "directory must not be treated as stale (B3/#684 churn)")
+
+    def test_a_genuinely_different_directory_is_still_treated_as_stale(self):
+        # Discriminator: the new comparison must not become so lax that ANY
+        # differing D= is waved through -- only one resolving to the SAME
+        # real directory.
+        _githooks.install(self.root)
+        hd = os.path.join(self.root, ".git", "hooks")
+        dropin = _githooks._dropin_dir(self.root)
+        unrelated = os.path.join(os.path.dirname(dropin), "not-the-real-dropin-dir")
+
+        for phase in _githooks.PHASES:
+            with open(os.path.join(hd, phase), "w", encoding="utf-8", newline="\n") as f:
+                f.write(_githooks._shim(unrelated, phase))
+
+        actions = _githooks.install(self.root)
+        self.assertNotEqual(actions, [],
+                            "a shim pointed at an unrelated directory must still be "
+                            "treated as stale and reinstalled")
 
 
 if __name__ == "__main__":
