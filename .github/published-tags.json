@@ -765,6 +765,11 @@
       "object_sha": "81f13743c2843634a48f31e2a7050057489e4297",
       "object_type": "tag",
       "commit_sha": "d6900d96f0b61f66d420b6a424fddfd89ac0f71e"
+    },
+    "v2.21.4": {
+      "commit_sha": "38968bddd23109a26dd3526f526d461b9b1941cd",
+      "object_sha": "36460176bba478271a946e9d7eab23d967ef7ba5",
+      "object_type": "tag"
     }
   }
 }

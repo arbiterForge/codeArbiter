@@ -352,6 +352,9 @@ def _lane_inputs(job: str) -> dict:
 # --------------------------------------------------------------------------- #
 
 _STUB_PRELUDE = """
+sleep() {
+  echo "sleep $*" >> "$STUB_LOG"
+}
 git() {
   echo "git $*" >> "$STUB_LOG"
   if [ "$1" = "ls-remote" ]; then
@@ -422,6 +425,20 @@ gh() {
       *"/releases?per_page=100"*)
         CURRENT_RELEASE="$STUB_RELEASE"
         if [ -s "$STUB_RELEASE_STATE" ]; then CURRENT_RELEASE=$(cat "$STUB_RELEASE_STATE"); fi
+        if [ "$CURRENT_RELEASE" = "draft" ] && [ "${STUB_RELEASE_LAG:-0}" -gt 0 ]; then
+          OBSERVATION=0
+          if [ -s "$STUB_RELEASE_OBSERVATIONS" ]; then
+            OBSERVATION=$(cat "$STUB_RELEASE_OBSERVATIONS")
+          fi
+          OBSERVATION=$((OBSERVATION + 1))
+          printf '%s\n' "$OBSERVATION" > "$STUB_RELEASE_OBSERVATIONS"
+          if [ "$OBSERVATION" -le "$STUB_RELEASE_LAG" ]; then
+            echo "release inventory observation $OBSERVATION: missing" >> "$STUB_LOG"
+            printf '[[]]\n'
+            return 0
+          fi
+          echo "release inventory observation $OBSERVATION: exact draft" >> "$STUB_LOG"
+        fi
         case "$CURRENT_RELEASE" in
           unavailable)
             echo "simulated Release API failure" >&2
@@ -582,6 +599,8 @@ class _ShellHarness(unittest.TestCase):
             "STUB_CHECKS": str(root / "stub-checks.json"),
             "STUB_RELEASE": release,
             "STUB_RELEASE_STATE": str(root / "release-state.txt"),
+            "STUB_RELEASE_OBSERVATIONS": str(root / "release-observations.txt"),
+            "STUB_RELEASE_LAG": "0",
             "STUB_TAGNAME": tagname,
             "STUB_MANIFEST_VERSION": manifest_version,
             "STUB_ROOT_VERSION": (manifest_version if root_version is None
@@ -847,7 +866,7 @@ class PublishExecutionTest(_ShellHarness):
     def _publish(self, tag, version="9.9.9", *, tag_at=None, release="none",
                   mark_latest="false", summary="", title_prefix="codeArbiter",
                   create_release="true", package_host="", fail_tag=False,
-                  tag_object=None):
+                  tag_object=None, release_lag=0):
         ls_remote = ""
         if tag_at:
             direct = tag_object or ("4" * 40 if package_host else "9" + "0" * 39)
@@ -859,6 +878,7 @@ class PublishExecutionTest(_ShellHarness):
                                "MARK_LATEST": mark_latest,
                                "CREATE_RELEASE": create_release,
                                "PACKAGE_HOST": package_host,
+                               "STUB_RELEASE_LAG": str(release_lag),
                                "STUB_FAIL_TAG": "1" if fail_tag else "0"},
                          ls_remote=ls_remote, release=release, tagname=tag)
 
@@ -921,6 +941,30 @@ class PublishExecutionTest(_ShellHarness):
             "v9.9.9", tag_at=self.OTHER, release="draft", package_host="claude")
         self.assertNotEqual(wrong.returncode, 0)
         self.assertNotIn("git tag -a", wrong_log)
+
+    def test_fresh_qualified_draft_visibility_lag_recovers_before_tagging(self):
+        proc, log, _ = self._publish(
+            "v9.9.9", package_host="claude", release_lag=2)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(log.count("release inventory observation"), 3)
+        self.assertIn("release inventory observation 1: missing", log)
+        self.assertIn("release inventory observation 2: missing", log)
+        exact = log.index("release inventory observation 3: exact draft")
+        self.assertLess(exact, log.index("git tag -a v9.9.9"))
+        self.assertIn("sleep 1", log)
+        self.assertIn("sleep 2", log)
+
+    def test_fresh_qualified_draft_visibility_exhaustion_never_tags(self):
+        proc, log, _ = self._publish(
+            "v9.9.9", package_host="claude", release_lag=99)
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn(
+            "qualified Release did not become durably readable and exact",
+            proc.stdout + proc.stderr)
+        self.assertEqual(log.count("release inventory observation"), 5)
+        self.assertIn("sleep 8", log)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("git push", log)
 
     def test_qualified_markerless_current_tag_refuses(self):
         markerless, retry_log, _ = self._publish(
@@ -3038,6 +3082,33 @@ class StructuredArtifactPublicationTest(unittest.TestCase):
         helper = (REPO_ROOT / ".github" / "scripts" / "_npm_publishlib.py").read_text(
             encoding="utf-8")
         self.assertIn("must remain draft", helper)
+
+    def test_qualified_assets_use_the_release_upload_endpoint(self):
+        package = _action_step("Upload and read back exact draft package asset")
+        receipt = _action_step("Retain immutable durable cohort receipt")
+        pi = _step_run(
+            "auto-retain-pi-cohort-receipt",
+            "Retain and read back immutable Pi receipt on the Release")
+        upload_endpoint = (
+            'https://uploads.github.com/repos/$GITHUB_REPOSITORY/'
+            'releases/$RELEASE_ID/assets?name='
+        )
+        self.assertIn(f'"{upload_endpoint}$ASSET_FILE"', package)
+        self.assertIn(
+            f'"{upload_endpoint}codearbiter-cohort-publication-v1.json"', receipt)
+        self.assertIn(
+            f'"{upload_endpoint}codearbiter-cohort-publication-v1.json"', pi)
+
+    def test_qualified_release_readback_retries_strict_validation_before_tagging(self):
+        publish = _action_step("Create the tag and GitHub Release")
+        retry = "for delay in 0 1 2 4 8; do"
+        self.assertIn(retry, publish)
+        retry_start = publish.index(retry)
+        retry_end = publish.index("done", retry_start)
+        self.assertIn("qualified-draft", publish[retry_start:retry_end])
+        self.assertIn('sleep "$delay"', publish[retry_start:retry_end])
+        self.assertLess(publish.index("--method POST"), retry_start)
+        self.assertLess(retry_end, publish.index('git tag -a "$TAG"'))
 
     def test_every_host_finalization_revalidates_exact_release_and_publication_evidence(self):
         finalize = _action_step("Publish qualified Release only after receipt readback")

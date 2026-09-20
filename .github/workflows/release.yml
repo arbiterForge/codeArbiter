@@ -1107,7 +1107,7 @@ jobs:
             read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
             if [ "$RECEIPT_URL" = missing ]; then
               gh api --method POST -H "Content-Type: application/json" --input "$receipt" \
-                "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-cohort-publication-v1.json" >/dev/null
+                "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=codearbiter-cohort-publication-v1.json" >/dev/null
             fi
           fi
           read -r RELEASE_ID RECEIPT_URL < <(require_exact_draft)
