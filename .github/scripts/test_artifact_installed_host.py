@@ -285,7 +285,14 @@ def plan_normative(spec_hash: str) -> dict:
         "title": "Configuration precedence implementation", "summary": "Implement and verify the approved precedence contract.",
         "baseline": {"repository": None, "commit": None, "observed_date": "2026-09-16"}, "sections": [], "sources": [], "retired_symbols": [],
         "spec_ref": {"artifact_id": "SPEC-FLOW", "normative_sha256": spec_hash, "binding_mode": "draft_preview"}, "tasks": [task],
-        "checkpoints": [{"id": "CP-01", "title": "Complete implementation", "tasks": ["T-001"], "exit": "The combined scope is verified and reviewed.", "depends_on": []}], "prerequisites": [], "criterion_dispositions": [],
+        "checkpoints": [{"id": "CP-01", "title": "Complete implementation", "tasks": ["T-001"], "exit": "The combined scope is verified and reviewed.", "depends_on": []}],
+        "prerequisites": [{
+            "id": "GATE-APPROVAL",
+            "title": "Owner execution approval",
+            "requirement": "The owner explicitly authorizes execution of this approved plan.",
+            "source_refs": [],
+        }],
+        "criterion_dispositions": [],
     }
 
 
@@ -428,6 +435,101 @@ class Workflow:
             raise AssertionError("installed prompt seam did not approve the artifact")
         return "host-observed-prompt"
 
+    def satisfy_prerequisite(self, artifact_id: str, prerequisite_id: str) -> str:
+        if self.host == "pi":
+            receipt = self.stage_policy_event(
+                artifact_id,
+                prerequisite_id,
+                "prerequisite",
+                "user_workflow",
+                "satisfied",
+                {},
+            )
+            self.mutate(
+                "prerequisite",
+                artifact_id,
+                prerequisite=prerequisite_id,
+                receipt=receipt,
+            )
+            return "synthetic-policy-event"
+        adapter = self.plugin_root / "hooks" / "_prerequisitelib.py"
+        prompt_submit = self.plugin_root / "hooks" / "prompt-submit.py"
+        if not adapter.is_file() or not prompt_submit.is_file():
+            raise AssertionError("installed host omits the prerequisite prompt seam")
+        hooks = str(adapter.parent)
+        sys.path.insert(0, hooks)
+        try:
+            adapter_spec = importlib.util.spec_from_file_location(
+                "_prerequisitelib", adapter
+            )
+            if adapter_spec is None or adapter_spec.loader is None:
+                raise AssertionError("installed prerequisite CLI cannot be loaded")
+            prerequisite_adapter = importlib.util.module_from_spec(adapter_spec)
+            sys.modules["_prerequisitelib"] = prerequisite_adapter
+            adapter_spec.loader.exec_module(prerequisite_adapter)
+            arm_output = io.StringIO()
+            with contextlib.redirect_stdout(arm_output):
+                arm_result = prerequisite_adapter.main(
+                    [
+                        "arm",
+                        "--root",
+                        str(self.root),
+                        "--artifact-id",
+                        artifact_id,
+                        "--prerequisite-id",
+                        prerequisite_id,
+                    ]
+                )
+            if arm_result != 0:
+                raise AssertionError("installed prerequisite CLI could not arm the plan")
+            armed = json.loads(arm_output.getvalue())
+            prompt_spec = importlib.util.spec_from_file_location(
+                "cold_installed_prerequisite_prompt_submit", prompt_submit
+            )
+            if prompt_spec is None or prompt_spec.loader is None:
+                raise AssertionError("installed prerequisite prompt seam cannot be loaded")
+            prompt_module = importlib.util.module_from_spec(prompt_spec)
+            prompt_spec.loader.exec_module(prompt_module)
+        finally:
+            sys.path.remove(hooks)
+        payload = {
+            "hook_event_name": "UserPromptSubmit",
+            "prompt": armed["reply"],
+            "session_id": f"installed-prerequisite-{self.phase}",
+            "cwd": str(self.root),
+            "transcript_path": "",
+        }
+        prompt_environment = dict(os.environ)
+        if self.host == "codex":
+            prompt_environment["PLUGIN_ROOT"] = str(self.plugin_root)
+        elif self.host == "claude":
+            prompt_environment["CLAUDE_PLUGIN_ROOT"] = str(self.plugin_root)
+        prior_environment = dict(os.environ)
+        prior_stdin = sys.stdin
+        prompt_output = io.StringIO()
+        prompt_error = io.StringIO()
+        try:
+            os.environ.clear()
+            os.environ.update(prompt_environment)
+            sys.stdin = io.StringIO(json.dumps(payload))
+            with contextlib.redirect_stdout(prompt_output), contextlib.redirect_stderr(
+                prompt_error
+            ):
+                prompt_result = prompt_module.run(prompt_module.hostapi.load_host())
+        finally:
+            sys.stdin = prior_stdin
+            os.environ.clear()
+            os.environ.update(prior_environment)
+        if prompt_result != 0 or (
+            f"workflow prerequisite recorded for {artifact_id}#{prerequisite_id}"
+            not in prompt_output.getvalue()
+        ):
+            raise AssertionError(
+                "installed prompt seam did not capture prerequisite authority: "
+                + prompt_error.getvalue()
+            )
+        return "host-observed-prompt"
+
     def ticket(self) -> str:
         return list(self.client.contextual_pages("PLAN-FLOW", "T-001", 65536))[-1]["context_ticket"]
 
@@ -473,10 +575,17 @@ def phase_run(args, bridge, installation: Path) -> dict[str, object]:
         plan_approval_mode = workflow.approve("PLAN-FLOW")
         if plan_approval_mode != spec_approval_mode:
             raise AssertionError("installed approvals used inconsistent authority modes")
+        prerequisite_evidence_mode = workflow.satisfy_prerequisite(
+            "PLAN-FLOW", "GATE-APPROVAL"
+        )
+        if prerequisite_evidence_mode != plan_approval_mode:
+            raise AssertionError(
+                "installed prerequisites used inconsistent authority modes"
+            )
         plan_identity = workflow.client.call("identity", {"artifact_id": "PLAN-FLOW"})
         ticket = workflow.ticket()
         workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=ticket)
-        return {"spec_sha256": spec_identity["normative_sha256"], "plan_sha256": plan_identity["normative_sha256"], "ticket": ticket, "approval_evidence_mode": spec_approval_mode}
+        return {"spec_sha256": spec_identity["normative_sha256"], "plan_sha256": plan_identity["normative_sha256"], "ticket": ticket, "approval_evidence_mode": spec_approval_mode, "prerequisite_evidence_mode": prerequisite_evidence_mode}
     if args.phase == "reconcile-review":
         interrupted = workflow.client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         if interrupted["tasks"][0]["state"] != "IN_PROGRESS":
@@ -508,6 +617,8 @@ def child(args, phase: str) -> dict[str, object]:
 
 
 def assert_packaged_consumers(plugin_root: Path) -> None:
+    if not (plugin_root / "hooks" / "_prerequisitelib.py").is_file():
+        raise AssertionError("packaged host omits the prerequisite authority adapter")
     routines = plugin_root / ("skills" if (plugin_root / "skills" / "commit-gate").is_dir() else "routines")
     for name in ("commit-gate", "finishing-a-development-branch"):
         if "_preflight_current_acceptance" not in (routines / name / "SKILL.md").read_text(encoding="utf-8"):
@@ -544,7 +655,7 @@ def orchestrate(args, installation: Path) -> dict[str, object]:
     ]
     if markdown_shadows:
         raise AssertionError("installed HTML workflow created a Markdown shadow")
-    return {"format": "codearbiter.installed-host-workflow/0.1.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": first["plan_sha256"], "approval_evidence_mode": first["approval_evidence_mode"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
+    return {"format": "codearbiter.installed-host-workflow/0.2.0", "host": args.host, "bridge_sha256": hashlib.sha256((args.plugin_root / "hooks" / "_artifactlib.py").read_bytes()).hexdigest(), "binary_sha256": args.expected_binary_sha256, "spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": first["spec_sha256"], "plan_artifact_id": "PLAN-FLOW", "plan_normative_sha256": first["plan_sha256"], "approval_evidence_mode": first["approval_evidence_mode"], "prerequisite_evidence_mode": first["prerequisite_evidence_mode"], "interruption_reconciled": True, "redispatched": True, "commit_proof": True, "finalization_proof": True, "all_accepted_and_current": True, "markdown_shadow_count": 0}
 
 
 def main() -> int:

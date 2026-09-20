@@ -30,6 +30,7 @@ import hostapi  # noqa: E402
 import _hooklib  # noqa: E402
 import _modelib  # noqa: E402
 import _approvallib  # noqa: E402
+import _prerequisitelib  # noqa: E402
 
 
 def _load(path, name):
@@ -364,6 +365,29 @@ class TestCodexEnvelope(_Fixture):
         env = json.loads(out)
         context = env["hookSpecificOutput"]["additionalContext"]
         self.assertIn("approval recorded: SPEC-EXAMPLE", context)
+
+    def test_captured_prerequisite_context_is_returned_in_codex_envelope(self):
+        original_approval = _approvallib.consume_from_hook
+        original_prerequisite = _prerequisitelib.consume_from_hook
+        _approvallib.consume_from_hook = lambda **_kwargs: ""
+        _prerequisitelib.consume_from_hook = (
+            lambda **_kwargs: "prerequisite recorded: PLAN-EXAMPLE#GATE-APPROVAL"
+        )
+        try:
+            rc, out, _err = self.invoke(
+                _ups(
+                    "satisfy-prerequisite PLAN-EXAMPLE GATE-APPROVAL "
+                    "fixed-prerequisite-nonce"
+                ),
+                host=_CodexHost(),
+            )
+        finally:
+            _approvallib.consume_from_hook = original_approval
+            _prerequisitelib.consume_from_hook = original_prerequisite
+        self.assertEqual(rc, 0)
+        env = json.loads(out)
+        context = env["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("prerequisite recorded: PLAN-EXAMPLE#GATE-APPROVAL", context)
 
     def test_flip_emits_exactly_the_seven_schema_keys_no_permission_decision(self):
         rc, out, err = self.invoke(_ups("mode --dangerous"), host=_CodexHost())

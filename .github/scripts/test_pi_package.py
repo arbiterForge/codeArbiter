@@ -3625,7 +3625,7 @@ class NpmPublishContractTest(unittest.TestCase):
                     cell = cold_root / f"{host}-{platform.replace('/', '-')}"
                     cell.mkdir()
                     receipt = {
-                        "format": "codearbiter.artifact-cold-execution/0.2.0",
+                        "format": "codearbiter.artifact-cold-execution/0.3.0",
                         "source_commit": "a" * 40, "workflow": ".github/workflows/ci.yml",
                         "run_id": "123", "job": "artifact-package-cold", "host": host,
                         "platform": platform, "promotion_receipt_sha256": "c" * 64,
@@ -3637,6 +3637,11 @@ class NpmPublishContractTest(unittest.TestCase):
                         "installed_bridge_sha256": "f" * 64,
                         "installed_workflow_format": helper.INSTALLED_WORKFLOW_FORMAT,
                         "approval_evidence_mode": (
+                            "synthetic-policy-event"
+                            if host == "pi"
+                            else "host-observed-prompt"
+                        ),
+                        "prerequisite_evidence_mode": (
                             "synthetic-policy-event"
                             if host == "pi"
                             else "host-observed-prompt"
@@ -3672,6 +3677,7 @@ class NpmPublishContractTest(unittest.TestCase):
                 ({**original, "markdown_shadow_count": False}, "not bound to the exact cohort"),
                 ({**original, "installed_workflow_format": "wrong"}, "not bound to the exact cohort"),
                 ({**original, "approval_evidence_mode": "wrong"}, "not bound to the exact cohort"),
+                ({**original, "prerequisite_evidence_mode": "wrong"}, "not bound to the exact cohort"),
                 ({**original, "installed_workflow_response_sha256": "e" * 65}, "not bound to the exact cohort"),
                 ({**original, "installed_bridge_sha256": "E" * 64}, "not bound to the exact cohort"),
             ):
