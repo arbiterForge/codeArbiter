@@ -3319,6 +3319,50 @@ class NpmPublishContractTest(unittest.TestCase):
                 eligible_targets=[], markers=[marker, other], receipts=[],
                 draft_markers=[marker, other])
 
+    def test_strictly_newer_complete_marker_group_supersedes_older_partial_cohort(self):
+        helper = self._helper()
+        old_tags = {"ca": "v2.21.4", "ca-codex": "ca-codex-v0.13.4",
+                    "ca-pi": "ca-pi-v0.14.4"}
+        new_tags = {"ca": "v2.21.6", "ca-codex": "ca-codex-v0.13.6",
+                    "ca-pi": "ca-pi-v0.14.6"}
+
+        def markers(tags, source, run_id, targets):
+            return [{
+                "format": "codearbiter.cohort-start/0.1.0", "target": target,
+                "host": {"ca": "claude", "ca-codex": "codex", "ca-pi": "pi"}[target],
+                "tag": tags[target], "source_commit": source,
+                "source_tree": ("c" if source.startswith("a") else "d") * 40,
+                "workflow": ".github/workflows/ci.yml", "ci_run_id": run_id,
+                "cohort_sha256": ("e" if source.startswith("a") else "f") * 64,
+                "release_notes_sha256": "1" * 64, "cohort_tags": tags,
+                "cohort_targets": ["ca", "ca-codex", "ca-pi"],
+            } for target in targets]
+
+        old = markers(old_tags, "a" * 40, "123", ["ca"])
+        new = markers(new_tags, "b" * 40, "456", ["ca", "ca-codex", "ca-pi"])
+        selected = helper.resolve_durable_cohort_identity(
+            current_source="c" * 40, current_run_id="789", current_tags=new_tags,
+            eligible_targets=[], markers=old + new, receipts=[],
+            draft_markers=old + new)
+        self.assertEqual(selected["source_commit"], "b" * 40)
+        self.assertEqual(selected["cohort_tags"], new_tags)
+
+        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
+            helper.resolve_durable_cohort_identity(
+                current_source="c" * 40, current_run_id="789", current_tags=new_tags,
+                eligible_targets=[], markers=old + new[:-1], receipts=[],
+                draft_markers=old + new[:-1])
+
+        non_monotonic = {**new_tags, "ca": old_tags["ca"]}
+        non_monotonic_new = markers(
+            non_monotonic, "b" * 40, "456", ["ca", "ca-codex", "ca-pi"])
+        with self.assertRaisesRegex(ValueError, "multiple unresolved"):
+            helper.resolve_durable_cohort_identity(
+                current_source="c" * 40, current_run_id="789",
+                current_tags=non_monotonic, eligible_targets=[],
+                markers=old + non_monotonic_new, receipts=[],
+                draft_markers=old + non_monotonic_new)
+
     def test_durable_cross_run_cohort_stops_source_mixing_and_allows_exact_resume(self):
         helper = self._helper()
         cohort_tags = {"ca": "v1.0.0", "ca-codex": "ca-codex-v1.0.0",
