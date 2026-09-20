@@ -416,6 +416,28 @@ def _cohort_tags_strictly_newer(new_tags: dict, old_tags: dict,
     return True
 
 
+def _active_incomplete_cohort_keys(incomplete: list[tuple],
+                                   marker_groups: dict[tuple, dict[str, dict]],
+                                   current_tags: dict) -> list[tuple]:
+    """Drop only old cohorts fully claimed by a strictly newer marker group."""
+    current_owners = [
+        key for key, marked in marker_groups.items()
+        if json.loads(key[0]) == current_tags and set(marked) == set(key[1])
+    ]
+    active = []
+    for key in incomplete:
+        tags = json.loads(key[0])
+        intended = set(key[1])
+        superseded = tags != current_tags and any(
+            intended <= set(owner[1])
+            and _cohort_tags_strictly_newer(current_tags, tags, intended)
+            for owner in current_owners
+        )
+        if not superseded:
+            active.append(key)
+    return active
+
+
 def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
                                     current_tags: dict, eligible_targets: list[str],
                                     markers: list[dict], receipts: list[dict],
@@ -484,21 +506,9 @@ def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
     # marker group has durably claimed every one of its targets. Keep the old
     # draft as evidence, but do not let it compete with the newer unfinished
     # cohort. Partial or non-monotonic successor groups never supersede it.
-    current_owners = [
-        key for key, marked in marker_groups.items()
-        if json.loads(key[0]) == current_tags and set(marked) == set(key[1])
-    ]
-    active_incomplete = []
-    for key in incomplete:
-        tags = json.loads(key[0])
-        intended = set(key[1])
-        superseded = tags != current_tags and any(
-            intended <= set(owner[1])
-            and _cohort_tags_strictly_newer(current_tags, tags, intended)
-            for owner in current_owners
-        )
-        if not superseded:
-            active_incomplete.append(key)
+    active_incomplete = _active_incomplete_cohort_keys(
+        incomplete, marker_groups, current_tags
+    )
     if len(active_incomplete) > 1:
         raise ValueError("multiple unresolved historical publication cohorts exist")
     if active_incomplete:
@@ -772,6 +782,10 @@ def reconcile_durable_cohort(receipts: list[dict], *, current: dict,
                               separators=(",", ":"))
     current_identity = (current["source_commit"], current["source_tree"],
                         current["ci_run_id"], current["cohort_sha256"])
+    active_keys = set(_active_incomplete_cohort_keys(
+        [entry[0] for entry in incomplete], marker_groups, current["cohort_tags"]
+    ))
+    incomplete = [entry for entry in incomplete if entry[0] in active_keys]
     if incomplete:
         if len(incomplete) != 1:
             raise ValueError("multiple unresolved historical publication cohorts exist")

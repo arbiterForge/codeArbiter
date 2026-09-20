@@ -3347,6 +3347,33 @@ class NpmPublishContractTest(unittest.TestCase):
         self.assertEqual(selected["source_commit"], "b" * 40)
         self.assertEqual(selected["cohort_tags"], new_tags)
 
+        def receipt(marker):
+            return {
+                "format": "codearbiter.cohort-publication/0.1.0",
+                "target": marker["target"], "host": marker["host"],
+                "tag": marker["tag"], "source_commit": marker["source_commit"],
+                "source_tree": marker["source_tree"], "ci_run_id": marker["ci_run_id"],
+                "cohort_sha256": marker["cohort_sha256"],
+                "release_notes_sha256": marker["release_notes_sha256"],
+                "package_file": marker["target"] + ".tgz", "package_sha256": "2" * 64,
+                "tag_object_sha": "3" * 40, "cohort_tags": marker["cohort_tags"],
+                "cohort_targets": marker["cohort_targets"], "readback": "verified",
+                "disposition": "published-and-read-back",
+            }
+
+        reconciled = helper.reconcile_durable_cohort(
+            [receipt(new[0]), receipt(new[1])],
+            current={"source_commit": "b" * 40, "source_tree": "d" * 40,
+                     "workflow": ".github/workflows/ci.yml", "ci_run_id": "456",
+                     "cohort_sha256": "f" * 64, "cohort_tags": new_tags,
+                     "eligible_targets": []},
+            markers=old + new, draft_markers=old + [new[2]],
+            missing_current=["ca-pi"])
+        self.assertEqual(reconciled, {
+            "mode": "resume", "cohort_targets": ["ca", "ca-codex", "ca-pi"],
+            "repair_targets": ["ca-pi"],
+        })
+
         with self.assertRaisesRegex(ValueError, "multiple unresolved"):
             helper.resolve_durable_cohort_identity(
                 current_source="c" * 40, current_run_id="789", current_tags=new_tags,
