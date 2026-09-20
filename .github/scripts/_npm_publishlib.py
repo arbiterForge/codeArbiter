@@ -60,7 +60,8 @@ COLD_FIELDS = {
     "binary_sha256", "response_sha256", "operation",
     "repository_operations_available", "runtime_downloads",
     "installed_workflow_response_sha256", "installed_bridge_sha256",
-    "installed_workflow_format", "interruption_reconciled", "redispatched",
+    "installed_workflow_format", "approval_evidence_mode",
+    "interruption_reconciled", "redispatched",
     "commit_proof", "finalization_proof", "all_accepted_and_current",
     "markdown_shadow_count",
 }
@@ -228,7 +229,7 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
             raise ValueError("cold-execution receipt matrix is duplicate or unexpected")
         package = receipt["packages"][cold["host"]]
         if not all((
-            cold["format"] == "codearbiter.artifact-cold-execution/0.1.0",
+            cold["format"] == "codearbiter.artifact-cold-execution/0.2.0",
             cold["source_commit"] == source_commit,
             cold["workflow"] == ".github/workflows/ci.yml",
             cold["run_id"] == ci_run_id,
@@ -242,6 +243,11 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
             re.fullmatch(r"[0-9a-f]{64}", cold["installed_workflow_response_sha256"]) is not None,
             re.fullmatch(r"[0-9a-f]{64}", cold["installed_bridge_sha256"]) is not None,
             cold["installed_workflow_format"] == INSTALLED_WORKFLOW_FORMAT,
+            cold["approval_evidence_mode"] == (
+                "synthetic-policy-event"
+                if cold["host"] == "pi"
+                else "host-observed-prompt"
+            ),
             cold["interruption_reconciled"] is True,
             cold["redispatched"] is True,
             cold["commit_proof"] is True,

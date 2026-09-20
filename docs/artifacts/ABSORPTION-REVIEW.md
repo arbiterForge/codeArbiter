@@ -97,7 +97,7 @@ packaging, release or rollout condition remains open.
 | AC-008 | Local pass; permission integration open | Typed closed operations keep artifact content inert; every host's actual governed execution boundary is not wired. |
 | AC-009 | Three-host pass; physical-fault qualification open | CAS, replay, native locking and recovery pass in exact-head Linux, Windows and macOS CI. Network-filesystem and physical-power-loss guarantees remain absent. |
 | AC-010 | Three-host pass; distribution open | Rooted paths and manifest-verified installed-payload selection pass on Linux, Windows and macOS; release-channel host packages do not yet ship the payload. |
-| AC-011 | Partial | Receipt and transition checks plus host-owned exact-prompt user approval pass the installed-host workflow. SMARTS, reviewer and verification authority adapters remain. |
+| AC-011 | Partial | Receipt and transition checks plus host-owned exact-prompt user approval pass through installed Claude Code and Codex packages. Pi prompt authority plus SMARTS, reviewer and verification authority adapters remain. |
 | AC-012 | Engine pass; workflow partial | Stale normative bindings are rejected; every resume/dispatch caller has not been converted and exercised. |
 | AC-013 | Partial | Named-test and evidence-input checks exist; real runner adapters and complete environment/input closure remain. |
 | AC-014 | Engine pass; orchestrator partial | Scope state, reconciliation, stale evidence, interrupted REVIEW resume and atomic acceptance pass against the native candidate; real callers are not qualified. |

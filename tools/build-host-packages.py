@@ -35,7 +35,7 @@ from _releaselib import SEMVER, semver_greater, semver_key  # noqa: E402,F401
 ARTIFACT_RELEASE_FORMAT = "codearbiter.artifact-release/0.1.0"
 ARTIFACT_QUALIFICATION_FORMAT = "codearbiter.artifact-qualification/0.1.0"
 ARTIFACT_PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
-ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.1.0"
+ARTIFACT_COLD_EXECUTION_FORMAT = "codearbiter.artifact-cold-execution/0.2.0"
 ARTIFACT_PACKAGE_FORMAT = "codearbiter.artifact-package-cohort/0.1.0"
 NPM_PACKER_NAME = "npm"
 NPM_PACKER_VERSION = "11.19.1"
@@ -1448,6 +1448,7 @@ def cold_execute_artifact_host_payload(*, stage: Path, package_root: Path,
         ).hexdigest(),
         "installed_bridge_sha256": workflow_result["bridge_sha256"],
         "installed_workflow_format": workflow_result["format"],
+        "approval_evidence_mode": workflow_result["approval_evidence_mode"],
         "interruption_reconciled": True,
         "redispatched": True,
         "commit_proof": True,
