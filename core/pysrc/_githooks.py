@@ -364,7 +364,13 @@ _CX_RESOLVE_SH = (
     "      ;;\n"
     "    [A-Za-z]:/*)\n"
     '      DR=$(printf \'%s\' "$P" | cut -c1 | tr \'A-Z\' \'a-z\')\n'
-    '      REST=${P#??:}\n'
+    "      # ??: (two wildcards, literal colon) never matches a drive-letter\n"
+    "      # path like C:/... (its 3rd char is / , not the required literal\n"
+    "      # ':'), so it left REST completely unstripped -- a confirmed\n"
+    "      # security-review regression (fixed before merge, never released).\n"
+    "      # ?:/ (one wildcard drive letter, literal ':', literal '/') is the\n"
+    "      # correct 3-char match for this branch's own case pattern.\n"
+    '      REST=${P#?:/}\n'
     '      REST=${REST#/}\n'
     '      A1="/$DR/$REST"; A2="/mnt/$DR/$REST"\n'
     "      ;;\n"
@@ -1053,6 +1059,14 @@ def install(root):
     # serializes concurrent installers; a plan-then-write-then-rollback
     # sequence ensures a failure partway through this call restores the
     # PRIOR consistent pair rather than leaving a new/old split.
+    #
+    # Documented residual (accepted, security-review-noted): the rollback
+    # write below is itself best-effort. If the SAME failure mode that broke
+    # the original write (disk full, an AV lock) also blocks the rollback
+    # write for an already-written phase, the pair can still end up split.
+    # This requires two independent write failures in one call, versus zero
+    # rollback at all before this fix (any single failure could split the
+    # pair) — narrower, not eliminated.
     plan = []
     for phase in PHASES:
         dest = os.path.join(hd, phase)
