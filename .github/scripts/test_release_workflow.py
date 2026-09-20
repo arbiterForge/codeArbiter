@@ -2455,6 +2455,26 @@ class RegistrationTest(unittest.TestCase):
         self.assertIn(".github/workflows/release.yml", push_trigger_paths(ci),
                       "a push touching only release.yml must still start CI")
 
+    def test_every_release_control_surface_reaches_contracts_and_exact_head_packages(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        for path in (".github/workflows/npm-publish.yml",
+                     ".codearbiter/release-targets.md", "CHANGELOG.md"):
+            with self.subTest(path=path):
+                self.assertIn(path, push_trigger_paths(ci))
+                self.assertIn(path, paths_filter(ci, "hooks"))
+                self.assertIn(path, paths_filter(ci, "artifacts"))
+
+    def test_every_automatic_release_intent_surface_builds_exact_head_packages(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        for path in (
+            "plugins/ca/.claude-plugin/plugin.json", "CHANGELOG.md",
+            "plugins/ca-codex/.codex-plugin/plugin.json",
+            "plugins/ca-codex/CHANGELOG.md", "plugins/ca-pi/package.json",
+            "plugins/ca-pi/CHANGELOG.md", "package.json",
+        ):
+            with self.subTest(path=path):
+                self.assertIn(path, paths_filter(ci, "artifacts"))
+
     def test_live_codex_baseline_starts_a_push_run(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         live_baseline = "docs/codex-parity-testing.md"

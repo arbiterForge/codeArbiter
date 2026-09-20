@@ -426,22 +426,26 @@ def _cohort_tags_strictly_newer(new_tags: dict, old_tags: dict,
 
 
 def _active_incomplete_cohort_keys(incomplete: list[tuple],
-                                   marker_groups: dict[tuple, dict[str, dict]],
-                                   current_tags: dict) -> list[tuple]:
-    """Drop only old cohorts fully claimed by a strictly newer marker group."""
-    current_owners = [
-        key for key, marked in marker_groups.items()
-        if json.loads(key[0]) == current_tags and set(marked) == set(key[1])
-    ]
+                                   completed: list[tuple], *,
+                                   replacement_tags: dict | None = None,
+                                   replacement_targets: list[str] | None = None
+                                   ) -> list[tuple]:
+    """Drop old cohorts only for a completed or full newer replacement."""
+    replacements = [(json.loads(key[0]), set(key[1])) for key in completed]
+    if replacement_tags is not None:
+        replacements.append((replacement_tags, set(replacement_targets or [])))
     active = []
     for key in incomplete:
         tags = json.loads(key[0])
         intended = set(key[1])
-        superseded = tags != current_tags and any(
-            intended <= set(owner[1])
-            and _cohort_tags_strictly_newer(current_tags, tags, intended)
-            for owner in current_owners
-        )
+        superseded = False
+        for owner_tags, owner_targets in replacements:
+            if not intended <= owner_targets:
+                continue
+            if not _cohort_tags_strictly_newer(owner_tags, tags, intended):
+                continue
+            superseded = True
+            break
         if not superseded:
             active.append(key)
     return active
@@ -498,6 +502,7 @@ def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
             raise ValueError("draft cohort-start marker is duplicate or undiscovered")
         draft_pairs.add(pair)
     incomplete = []
+    completed = []
     for key, marked in marker_groups.items():
         received = receipt_groups.get(key, {})
         intended = set(key[1])
@@ -511,12 +516,16 @@ def resolve_durable_cohort_identity(*, current_source: str, current_run_id: str,
         if (set(marked) != intended or set(received) != intended
                 or any((key, target) in draft_pairs for target in intended)):
             incomplete.append(key)
-    # An older partial cohort is no longer publishable once a strictly newer
-    # marker group has durably claimed every one of its targets. Keep the old
-    # draft as evidence, but do not let it compete with the newer unfinished
-    # cohort. Partial or non-monotonic successor groups never supersede it.
+        else:
+            completed.append(key)
+    # A strictly newer full-target obligation can replace an older partial
+    # cohort. Completed cohorts prove historical replacement; the current
+    # eligible target set prevents a partial old run from deadlocking the next
+    # full release before its markers exist. Partial or non-monotonic
+    # replacements never supersede the old obligation.
     active_incomplete = _active_incomplete_cohort_keys(
-        incomplete, marker_groups, current_tags
+        incomplete, completed, replacement_tags=current_tags,
+        replacement_targets=eligible_targets,
     )
     if len(active_incomplete) > 1:
         raise ValueError("multiple unresolved historical publication cohorts exist")
@@ -706,7 +715,7 @@ def reconcile_durable_cohort(receipts: list[dict], *, current: dict,
                              missing_current: list[str] | None = None,
                              markers: list[dict] | None = None,
                              draft_markers: list[dict] | None = None) -> dict:
-    """Reconcile every discovered cohort, allowing only an exact-source repair."""
+    """Reconcile every cohort into an exact repair or full newer replacement."""
     required = {"source_commit", "source_tree", "workflow", "ci_run_id", "cohort_sha256",
                 "cohort_tags", "eligible_targets"}
     if not isinstance(current, dict) or set(current) != required:
@@ -769,6 +778,7 @@ def reconcile_durable_cohort(receipts: list[dict], *, current: dict,
                 draft_keys.add((key, target))
 
     incomplete = []
+    completed = []
     for key, markers_by_target in marker_groups.items():
         group = groups.get(key, {})
         intended = set(key[1])
@@ -786,13 +796,16 @@ def reconcile_durable_cohort(receipts: list[dict], *, current: dict,
         if (set(group) != intended or set(markers_by_target) != intended
                 or any((key, target) in draft_keys for target in intended)):
             incomplete.append((key, group, markers_by_target))
+        else:
+            completed.append(key)
 
     current_tags = json.dumps(current["cohort_tags"], sort_keys=True,
                               separators=(",", ":"))
     current_identity = (current["source_commit"], current["source_tree"],
                         current["ci_run_id"], current["cohort_sha256"])
     active_keys = set(_active_incomplete_cohort_keys(
-        [entry[0] for entry in incomplete], marker_groups, current["cohort_tags"]
+        [entry[0] for entry in incomplete], completed,
+        replacement_tags=current["cohort_tags"], replacement_targets=eligible,
     ))
     incomplete = [entry for entry in incomplete if entry[0] in active_keys]
     if incomplete:
