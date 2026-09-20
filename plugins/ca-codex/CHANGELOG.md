@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.5] - 2026-09-19
+
+### Fixed
+
+- Route structured-artifact approval through host-owned prompts, issue one-shot
+  receipts only after explicit user approval, and preserve the
+  approval-evidence mode in packaged receipts.
+
 ## [0.13.4] - 2026-09-19
 
 ### Fixed

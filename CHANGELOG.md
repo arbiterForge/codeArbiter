@@ -12,6 +12,14 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.5] - 2026-09-19
+
+### Fixed
+
+- Route structured-artifact approval through host-owned prompts, issue one-shot
+  receipts only after explicit user approval, preserve the approval-evidence
+  mode in packaged receipts, and fail closed where Pi cannot prompt.
+
 ## [2.21.4] - 2026-09-19
 
 ### Fixed
