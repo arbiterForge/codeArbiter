@@ -2128,9 +2128,7 @@ jobs:
         # workflow, so deleting the exactly-one-target preflight, the
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
-        run: |
-          python .github/scripts/test_release_workflow.py
-          python .github/scripts/test_auto_release_candidate.py
+        run: python .github/scripts/test_release_workflow.py
       - name: Run the A-1.11 release resolution-trace suite
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
@@ -2992,6 +2990,7 @@ jobs:
       - name: Reject a projected merge that automatic release would reject
         run: |
           set -euo pipefail
+          python3 .github/scripts/test_auto_release_candidate.py
           LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
           LIVE_CANDIDATE_SHA=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_commit"])')
           python3 .github/scripts/check_auto_release_candidate.py \
