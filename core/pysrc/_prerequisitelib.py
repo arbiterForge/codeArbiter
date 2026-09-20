@@ -92,23 +92,74 @@ def _pending_relative(artifact_id: str) -> Path:
     return PENDING_DIR / f"{_digest(artifact_id.encode('utf-8'))}.json"
 
 
+def _prerequisite_busy() -> PrerequisiteError:
+    return PrerequisiteError(
+        "PREREQUISITE_BUSY",
+        "another session is resolving this plan's prerequisite request",
+    )
+
+
+def _repository_lock_key(root: Path) -> bytes:
+    """Return one key for every path alias to the same repository directory."""
+    info = os.stat(root)
+    device = int(getattr(info, "st_dev", 0))
+    inode = int(getattr(info, "st_ino", 0))
+    if device or inode:
+        return f"stat:{device}:{inode}".encode("ascii")
+
+    # Some Windows filesystems report no stable inode. Their path comparison is
+    # case-insensitive, so casefold closes aliases that normcase alone may miss
+    # on a non-native test host.
+    resolved = str(root.resolve(strict=True))
+    return b"path:" + os.path.normcase(resolved).casefold().encode("utf-8")
+
+
+def _pending_lock_directory_name() -> str:
+    if hasattr(os, "getuid"):
+        namespace = f"uid-{os.getuid()}"
+    else:
+        home = os.path.normcase(str(Path.home().resolve())).casefold().encode("utf-8")
+        namespace = f"home-{_digest(home)[:24]}"
+    return f"codearbiter-prerequisite-locks-{namespace}"
+
+
+def _pending_lock_root() -> Path:
+    """Create and validate the private cross-process lock namespace."""
+    try:
+        temporary = Path(tempfile.gettempdir()).resolve(strict=True)
+        lock_root = temporary / _pending_lock_directory_name()
+        lock_root.mkdir(mode=0o700, exist_ok=True)
+        info = lock_root.lstat()
+        reparse = getattr(info, "st_file_attributes", 0) & 0x400
+        if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISDIR(info.st_mode):
+            raise OSError("prerequisite lock root is not a real directory")
+        if hasattr(os, "getuid"):
+            if info.st_uid != os.getuid():
+                raise OSError("prerequisite lock root has the wrong owner")
+            os.chmod(lock_root, 0o700)
+            info = lock_root.lstat()
+            if info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) & 0o077:
+                raise OSError("prerequisite lock root is not private")
+        return lock_root
+    except OSError as error:
+        raise _prerequisite_busy() from error
+
+
 @contextmanager
 def _pending_transition_lock(root: Path, artifact_id: str):
     """Serialize one artifact's load-to-cleanup prerequisite transition."""
     # Keep the live OS lock outside the repository. Verification snapshots
     # recursively read ordinary marker files, and Windows denies that read
     # while acquire_lock holds its byte-range lock. The resolved repository
-    # identity separates repositories in the shared temp namespace while the
-    # artifact digest provides per-artifact granularity.
-    repository_key = os.path.normcase(str(root.resolve(strict=True))).encode("utf-8")
+    # filesystem identity makes path aliases share a key, while the private
+    # per-user namespace prevents another local account from redirecting or
+    # pre-seeding the lock sidecar.
+    repository_key = _repository_lock_key(root)
     lock_name = _digest(repository_key + b"\0" + artifact_id.encode("utf-8"))
-    lock_root = Path(tempfile.gettempdir()) / "codearbiter-prerequisite-locks"
+    lock_root = _pending_lock_root()
     handle = acquire_lock(lock_root / lock_name)
     if handle is None:
-        raise PrerequisiteError(
-            "PREREQUISITE_BUSY",
-            "another session is resolving this plan's prerequisite request",
-        )
+        raise _prerequisite_busy()
     try:
         yield
     finally:

@@ -3,11 +3,15 @@
 
 import importlib.util
 import json
+import os
+import stat
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 from test_artifact_authoring import (
     WorkflowHarness,
@@ -347,6 +351,81 @@ with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
         process.stdout.close()
         process.stderr.close()
         self.assertEqual(returncode, 0, stderr)
+
+    def test_transition_lock_key_uses_filesystem_identity_for_case_aliases(self):
+        identity = SimpleNamespace(st_dev=41, st_ino=73)
+        with mock.patch.object(self.adapter.os, "stat", return_value=identity):
+            mixed_case = self.adapter._repository_lock_key(Path("/Users/example/Repo"))
+            lower_case = self.adapter._repository_lock_key(Path("/Users/example/repo"))
+
+        self.assertEqual(mixed_case, lower_case)
+        self.assertEqual(mixed_case, b"stat:41:73")
+
+    def test_transition_lock_root_is_per_user_real_and_private(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with mock.patch.object(
+                self.adapter.tempfile, "gettempdir", return_value=temporary
+            ):
+                lock_root = self.adapter._pending_lock_root()
+
+            self.assertEqual(lock_root.parent, Path(temporary).resolve())
+            self.assertRegex(lock_root.name, r"^codearbiter-prerequisite-locks-")
+            info = lock_root.lstat()
+            self.assertTrue(stat.S_ISDIR(info.st_mode))
+            self.assertFalse(stat.S_ISLNK(info.st_mode))
+            self.assertFalse(getattr(info, "st_file_attributes", 0) & 0x400)
+            if hasattr(os, "getuid"):
+                self.assertEqual(info.st_uid, os.getuid())
+                self.assertEqual(stat.S_IMODE(info.st_mode) & 0o077, 0)
+
+    def test_transition_lock_rejects_precreated_non_directory_root(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with mock.patch.object(
+                self.adapter.tempfile, "gettempdir", return_value=temporary
+            ):
+                lock_root = (
+                    Path(temporary).resolve()
+                    / self.adapter._pending_lock_directory_name()
+                )
+                lock_root.write_text("hostile", encoding="utf-8")
+                with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
+                    with self.adapter._pending_transition_lock(
+                        self.root, "PLAN-EXAMPLE"
+                    ):
+                        self.fail("unsafe lock root was accepted")
+
+    def test_transition_lock_rejects_symlink_lock_root(self):
+        fake = SimpleNamespace(
+            st_mode=stat.S_IFLNK | 0o777,
+            st_uid=os.getuid() if hasattr(os, "getuid") else 0,
+            st_file_attributes=0,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            with (
+                mock.patch.object(
+                    self.adapter.tempfile, "gettempdir", return_value=temporary
+                ),
+                mock.patch.object(Path, "lstat", return_value=fake),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
+                    self.adapter._pending_lock_root()
+
+    @unittest.skipUnless(hasattr(os, "getuid"), "POSIX ownership check")
+    def test_transition_lock_rejects_foreign_owner(self):
+        fake = SimpleNamespace(
+            st_mode=stat.S_IFDIR | 0o700,
+            st_uid=os.getuid() + 1,
+            st_file_attributes=0,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            with (
+                mock.patch.object(
+                    self.adapter.tempfile, "gettempdir", return_value=temporary
+                ),
+                mock.patch.object(Path, "lstat", return_value=fake),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "PREREQUISITE_BUSY"):
+                    self.adapter._pending_lock_root()
 
     def test_concurrent_confirmation_serializes_the_complete_transition(self):
         armed = self.arm()
