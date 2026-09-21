@@ -186,28 +186,27 @@ def apply_changes() -> None:
     replace(artifact_test, 'ARTIFACT_GUIDANCE_PATHS = (',
             '# Historical artifact-policy baseline is immutable. PR843 separately reviewed\n'
             '# the resident routing body; do not freeze all future policy to the pilot.\n'
-            'STARTUP_CONTENT_REVISIONS = {\n'
-            '    "core/surface/arbiter.md": "cb8d6247807091c39dc92c96c2a8cb1bfbc587d1",\n'
+            'STARTUP_CONTENT_SHA256 = {\n'
+            '    "core/surface/arbiter.md": "4bbe2beb49d1026271025d2553709728af1b300a9fdabd7c9d80978925faeb14",\n'
             '}\n\nARTIFACT_GUIDANCE_PATHS = (')
     replace(artifact_test,
             '            self.assertEqual(digest, fixture["sha256"], fixture["path"])',
-            '            revision = STARTUP_CONTENT_REVISIONS.get(fixture["path"], POLICY_BASELINE_REVISION)\n'
-            '            expected_digest = hashlib.sha256(git_bytes(revision, fixture["path"])).hexdigest()\n'
+            '            expected_digest = STARTUP_CONTENT_SHA256.get(fixture["path"], fixture["sha256"])\n'
             '            self.assertEqual(digest, expected_digest, fixture["path"])')
-    extra = '''    def test_reviewed_startup_revision_is_narrow_and_reachable(self) -> None:
-        self.assertEqual(set(STARTUP_CONTENT_REVISIONS), {"core/surface/arbiter.md"})
-        for path, revision in STARTUP_CONTENT_REVISIONS.items():
+    extra = '''    def test_reviewed_startup_digest_is_narrow_and_history_independent(self) -> None:
+        # A golden content digest survives a squash merge; a feature-branch
+        # commit object or ancestry requirement would not. Historical baseline
+        # provenance is still checked separately by test_startup_fixtures_match_baseline.
+        self.assertEqual(set(STARTUP_CONTENT_SHA256), {"core/surface/arbiter.md"})
+        for path, expected in STARTUP_CONTENT_SHA256.items():
             self.assertIn(path, POLICY_STARTUP_FIXTURES)
-            self.assertRegex(revision, r"^[0-9a-f]{40}$")
-            result = subprocess.run(["git", "merge-base", "--is-ancestor", revision, "HEAD"],
-                                    cwd=ROOT, capture_output=True, check=False)
-            self.assertEqual(result.returncode, 0)
+            self.assertRegex(expected, r"^[0-9a-f]{64}$")
+            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected)
 
     def test_reviewed_startup_content_still_rejects_drift_and_eager_schema(self) -> None:
-        for path, revision in STARTUP_CONTENT_REVISIONS.items():
-            approved = git_bytes(revision, path)
-            self.assertNotEqual(hashlib.sha256(approved + b"\\n").hexdigest(),
-                                hashlib.sha256(approved).hexdigest())
+        for path, expected in STARTUP_CONTENT_SHA256.items():
+            approved = (ROOT / path).read_bytes()
+            self.assertNotEqual(hashlib.sha256(approved + b"\\n").hexdigest(), expected)
             forbidden = self.baseline["forbidden_startup_markers"]
             self.assertTrue(forbidden)
             seeded = approved.decode() + "\\n" + forbidden[0] + "\\n"
@@ -223,7 +222,7 @@ def apply_changes() -> None:
 A failed TDD, coverage, lint, or fresh-verification result blocks acceptance, not authorized repair.
 This section applies only after initial spec-and-plan approval and only inside that approved scope.
 Classify the failure before acting: an implementation defect or stale proof takes the owning repair
-or reconciliation path; a real authority or security block takes the hard-gate path below.
+or reconciliation path; a real authority or security block takes the named Hard gates path.
 
 Read the diagnostics and current state, give the author a corrective brief containing the failed
 obligation and relevant evidence, and rerun the original gate plus every invalidated review.
@@ -245,7 +244,7 @@ specific missing fact or authority when that is the blocker; do not report the i
 
 A `commit-gate` refusal returns to its named repair/reconciliation prerequisite. Recovery does not
 grant commit, provider, spending, disclosure, or publication authority. Security CRITICAL findings,
-unresolved `[CONFIRM-NN]` decisions, irreversible operations, and the hard gates below remain stops.
+unresolved `[CONFIRM-NN]` decisions, irreversible operations, and all named Hard gates remain stops.
 HTML farm remains disabled. This recovery path does not change farm-only intent or authorize a
 silent premium fallback, another provider, or more spending after a farm circuit-breaker abort.
 
@@ -337,7 +336,7 @@ silent premium fallback, another provider, or more spending after a farm circuit
             'alt="version 2.21.8" src="https://img.shields.io/badge/version-2.21.8-')
 
     review = 'docs/reviews/2026-09-21-autonomy-routing-integration.md'
-    write(review, read(review) + '''\n## Second slice: CI repair and bounded sprint recovery\n\nThe failed first-slice run was 35653563527 at cb8d6247807091c39dc92c96c2a8cb1bfbc587d1.\nThe official generator and original routing suite passed; broader composition tests\nexposed the stale decision-authority anchor and missing ops-mode link. Artifact\nstartup checks still pinned the pre-review resident persona. That historical\nbaseline is retained, with a separate exact reviewed revision for the changed\npersona; registration parity and eager-artifact checks remain enforced.\n\nOrdinary quality failures now return through the same original gate and invalidated\nreviews under an approved sprint. Initial spec/plan approval, real authority/security\nblocks, immutable records, and HTML farm restrictions remain unchanged. Typed\neligibility overrides the legacy ACCEPTED-dependency sentence explicitly. This does\nnot resolve initial approval choreography, all farm recovery, or commit delegation.\n\nThe three missing publication-ledger entries were recovered from the original\nsuccessful release run 35537578654, attempt 1, workflow/source commit\n5c876dd885598c248fa777e951dac4e628688d73. Independently acquired artifacts:\n\n| Tag | Original receipt artifact | Verified archive SHA-256 |\n|---|---|---|\n| v2.21.7 | 10613213900 | 55aeb520adb4ae6054455baf4b819eebb0d53e336ba994365e56c18dfa6e2b47 |\n| ca-codex-v0.13.7 | 10613189302 | 4dc5adc7dda8729d20a3302992e23d8690867a075f7a3fdc256f0958c6c9c90d |\n| ca-pi-v0.14.7 | 10612799631 | a9b77decc6036bc7ab044514061082bb54e344d251b3fa05cf17560adbb211d1 |\n\nThe existing reconcile_tag_receipt helper validates the append-only candidate. No\nold identity is replaced, no legacy entry is promoted, and no tag is moved. The\nnext patch versions and their notes are candidate metadata, not publication proof.\n\nA temporary branch-only preparation job uses a complete checkout and official\ngenerators. It never updates a ref; the candidate removes its two helper files.\nIts result must be inspected before the connector fast-forwards this PR branch.\nProduct tests, generated parity, installed-host behavior and live-model routing\nremain distinct evidence layers. Exact executed commands/results are retained in\nthe preparation artifact and the PR update, not inferred from this document.\n''')
+    write(review, read(review) + '''\n## Second slice: CI repair and bounded sprint recovery\n\nThe failed first-slice run was 35653563527 at cb8d6247807091c39dc92c96c2a8cb1bfbc587d1.\nThe official generator and original routing suite passed; broader composition tests\nexposed the stale decision-authority anchor and missing ops-mode link. Artifact\nstartup checks still pinned the pre-review resident persona. That historical\nbaseline is retained, with a separate exact reviewed content digest for the changed\npersona; registration parity and eager-artifact checks remain enforced.\n\nOrdinary quality failures now return through the same original gate and invalidated\nreviews under an approved sprint. Initial spec/plan approval, real authority/security\nblocks, immutable records, and HTML farm restrictions remain unchanged. Typed\neligibility overrides the legacy ACCEPTED-dependency sentence explicitly. This does\nnot resolve initial approval choreography, all farm recovery, or commit delegation.\n\nThe three missing publication-ledger entries were recovered from the original\nsuccessful release run 35537578654, attempt 1, workflow/source commit\n5c876dd885598c248fa777e951dac4e628688d73. Independently acquired artifacts:\n\n| Tag | Original receipt artifact | Verified archive SHA-256 |\n|---|---|---|\n| v2.21.7 | 10613213900 | 55aeb520adb4ae6054455baf4b819eebb0d53e336ba994365e56c18dfa6e2b47 |\n| ca-codex-v0.13.7 | 10613189302 | 4dc5adc7dda8729d20a3302992e23d8690867a075f7a3fdc256f0958c6c9c90d |\n| ca-pi-v0.14.7 | 10612799631 | a9b77decc6036bc7ab044514061082bb54e344d251b3fa05cf17560adbb211d1 |\n\nThe existing reconcile_tag_receipt helper validates the append-only candidate. No\nold identity is replaced, no legacy entry is promoted, and no tag is moved. The\nnext patch versions and their notes are candidate metadata, not publication proof.\n\nA temporary branch-only preparation job uses a complete checkout and official\ngenerators. It never updates a ref; the candidate removes its two helper files.\nIts result must be inspected before the connector fast-forwards this PR branch.\nProduct tests, generated parity, installed-host behavior and live-model routing\nremain distinct evidence layers. Exact executed commands/results are retained in\nthe preparation artifact and the PR update, not inferred from this document.\n''')
     (OUT / 'apply-complete.json').write_text(json.dumps({'head': git('rev-parse', 'HEAD'), 'source': SOURCE}))
 
 
