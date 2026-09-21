@@ -1,0 +1,48 @@
+name: PR843 preparation (temporary)
+
+on:
+  push:
+    branches: [codex/autonomy-routing-integration]
+    paths:
+      - .github/workflows/pr843-prepare.yml
+      - .github/scripts/pr843_prepare.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr843-preparation
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/autonomy-routing-integration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+      - name: Prepare bounded changes with no credential in child environment
+        run: python .github/scripts/pr843_prepare.py apply
+      - name: Run official generators and regression checks
+        run: python .github/scripts/pr843_prepare.py validate
+      - name: Create candidate objects only; never update a ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python .github/scripts/pr843_prepare.py upload
+      - name: Retain candidate and exact results for connector review
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr843-preparation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pr843-prepared/
+          if-no-files-found: error
+          retention-days: 3
