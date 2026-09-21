@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 
@@ -417,29 +418,31 @@ class PublicCodexDocsTest(unittest.TestCase):
             self.assertIn(binding, prior)
 
     def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
-        """A current-candidate package-byte change invalidates release proof."""
+        """Isolate the digest guard from an independently stale manifest version."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
-        manifest = json.loads(
-            (ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json")
-            .read_text(encoding="utf-8")
-        )
-        marker_match = re.search(
-            r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
-            runbook,
-        )
-        self.assertIsNotNone(marker_match)
-        marker = json.loads(marker_match.group("meta"))
-        corrupted = dict(marker)
-        corrupted["candidate_package_sha256"] = "0" * 64
-        corrupted_runbook = runbook.replace(
-            marker_match.group("meta"),
-            json.dumps(corrupted, separators=(",", ":")),
-            1,
-        )
-        with self.assertRaisesRegex(AssertionError, "exact current candidate package"):
-            self._assert_live_baseline_marker(
-                corrupted_runbook, manifest, require_current_candidate=True
-            )
+        marker = live_baseline_marker(runbook)
+        # A retained live baseline is allowed to lag development. Match the
+        # fixture version, then corrupt only the simulated CURRENT bytes. Do
+        # not rewrite the retained marker or publish this fixture as evidence.
+        fixture_manifest = {"version": marker["adapter_version"]}
+        with mock.patch.object(self, "_tracked_candidate_package_sha256", return_value="0" * 64) as current_digest:
+            with self.assertRaisesRegex(AssertionError, "exact current candidate package"):
+                self._assert_live_baseline_marker(
+                    runbook, fixture_manifest, require_current_candidate=True
+                )
+            current_digest.assert_called_once_with()
+
+    def test_codex_release_rejects_stale_version_before_digest(self):
+        """A version mismatch remains a release refusal, not a skipped check."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        marker = live_baseline_marker(runbook)
+        fixture_manifest = {"version": marker["adapter_version"] + "-different"}
+        with mock.patch.object(self, "_tracked_candidate_package_sha256") as current_digest:
+            with self.assertRaisesRegex(AssertionError, "current package manifest"):
+                self._assert_live_baseline_marker(
+                    runbook, fixture_manifest, require_current_candidate=True
+                )
+            current_digest.assert_not_called()
 
     def test_codex_live_baseline_rejects_duplicate_metadata_markers(self):
         """Release proof is ambiguous unless the runbook has exactly one marker."""
