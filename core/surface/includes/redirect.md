@@ -43,7 +43,7 @@ an ungoverned procedure, resolve a `[CONFIRM-NN]`, or broaden scope merely to av
 
 ## Exception — local runtime work
 
-The existing `mode --ops` contract owns local runtime work that leaves tracked files and Git
-history unchanged. In `arbiter` mode, a runtime operation without an owner remains a routing gap;
+The existing `mode --ops` contract in `{{PLUGIN_ROOT}}/includes/ops-mode.md` owns local runtime
+work that leaves tracked files and Git history unchanged. In `arbiter` mode, a runtime operation without an owner remains a routing gap;
 this clarification card does not select or activate another mode. Tracked-file, index, Git-history,
 and published-state mutations still require their ordinary governing workflow, `ops` or not.

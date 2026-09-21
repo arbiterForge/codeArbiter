@@ -134,7 +134,9 @@ NEVER auto-decided. Halt and surface to the user:
 - Anything in `security-controls.md`; auth, crypto, secrets, or a trust-boundary change.
 - An irreversible operation — data loss, a destructive migration, anything that cannot be rolled back.
 - `/override` or hotfix territory — a gate bypass is never taken autonomously.
-- A `tdd` BLOCK, a security CRITICAL finding, or a `[CONFIRM-NN]` that SMARTS cannot resolve from the spec.
+- A security CRITICAL finding, or a `[CONFIRM-NN]` that requires a missing user decision.
+  An ordinary failing TDD/verification result instead takes Recovery within the approved sprint;
+  it remains blocked from acceptance until the original gate and required reviews pass.
 - An auto-decision that would contradict an accepted ADR or a recorded deferral rationale
   (ADR-0025). The valve, none of it auto-decided: a collision pre-ruled at the Phase 1 gate cites
   the ruling and proceeds (that ruling was a user decision); a deferral whose recorded
@@ -146,6 +148,36 @@ NEVER auto-decided. Halt and surface to the user:
 Hard gates are rare BY DESIGN. If they trip repeatedly in one sprint, that is a signal the spec was
 too thin, confidence was misplaced, or the record itself is stale — route a repeatedly-tripping
 ADR to supersession in the summary; surface it, do not silently grind through.
+
+## Recovery within the approved sprint
+
+A failed TDD, coverage, lint, or fresh-verification result blocks acceptance, not authorized repair.
+This section applies only after initial spec-and-plan approval and only inside that approved scope.
+Classify the failure before acting: an implementation defect or stale proof takes the owning repair
+or reconciliation path; a real authority or security block takes the named Hard gates path.
+
+Read the diagnostics and current state, give the author a corrective brief containing the failed
+obligation and relevant evidence, and rerun the original gate plus every invalidated review.
+Never redispatch merely to evade a failing gate. Do not weaken tests, invent an exemption, broaden
+scope, or accept a self-reported pass to continue. Use SMARTS and the existing sprint log for material
+method choices, not another approval interview for an already-authorized correction.
+
+For HTML, load `<plugin-root>/includes/artifacts.md` and use the exact current identity,
+`eligible`, and applicable `task-reconcile` or `scope-reconcile` operations before redispatch.
+Obtain a fresh complete context ticket and capture real policy events for every required receipt.
+Never manufacture an approval or a receipt, edit execution cells, or create a shadow ledger.
+An invalidated proof needs the appropriate fresh verification/review, not automatic reimplementation.
+
+Unchanged failure plus unchanged inputs is not progress. After two consecutive corrective attempts
+with the same failure and no new evidence, stop that retry strategy. Choose a different authorized
+approach supported by a new diagnosis, or preserve a bounded blocked-task report and continue
+independently eligible work. This is not automatically another user checkpoint. Ask only for the
+specific missing fact or authority when that is the blocker; do not report the incomplete plan as accepted.
+
+A `commit-gate` refusal returns to its named repair/reconciliation prerequisite. Recovery does not grant commit, provider, spending, disclosure, or publication authority. Security CRITICAL findings,
+unresolved `[CONFIRM-NN]` decisions, irreversible operations, and all named Hard gates remain stops.
+HTML farm remains disabled. This recovery path does not change farm-only intent or authorize a
+silent premium fallback, another provider, or more spending after a farm circuit-breaker abort.
 
 ## Phase 3 — Land & summarize · gate: BLOCK
 
@@ -169,4 +201,6 @@ never on a no-op run.
 - MUST NOT merge to the default branch or discard autonomously — auto-select open-PR only.
 - MUST NOT inherit `decision-variance`'s Rule 1 — `/sprint` decides as the user, reusing only the SMARTS scoring.
 - MUST surface a repeated hard-gate-trip pattern as a planning/confidence signal, not grind past it.
+- MUST diagnose and repair ordinary in-scope quality failures through Recovery within the approved sprint;
+  never auto-pass a gate or treat recovery as additional authority.
 - MUST, at sprint close, run the follow-up harvest (`<plugin-root>/includes/harvest.md`) in autonomous mode — auto-promote `confidence: low` `sprint-log.md` decisions and any open `[NEEDS-TRIAGE]` to `open-tasks.md` (work) / `open-questions.md` (decisions), each promotion SMARTS-scored and logged. A blocking decision is never auto-promoted — it escalates.

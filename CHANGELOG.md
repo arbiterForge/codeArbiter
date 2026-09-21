@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.8] - 2026-09-21
+
+### Fixed
+
+- Route understood requests to the existing workflow without compulsory
+  command syntax; keep questions and draft-only requests non-mutating.
+- Recover ordinary quality failures inside an approved sprint through
+  the original gates and current typed evidence, without adding routine
+  user checkpoints or expanding authority. HTML farm remains disabled.
+
 ## [2.21.7] - 2026-09-20
 
 ### Fixed

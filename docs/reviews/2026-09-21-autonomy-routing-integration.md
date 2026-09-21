@@ -96,3 +96,39 @@ Record each touched audit item as confirmed, modified, refuted, already resolved
 Review on the dedicated branch. Do not merge, publish releases, force-push, or delete unrelated work as part of this integration. A rollback should revert the isolated change and its generated projections together, not edit accepted ADR history or create an alternate artifact authority.
 
 The PR description must state the implemented slice, exact commit, tests actually run, remaining work, and policy decisions still requiring review. Project-source and public-surface claims are not updated automatically by this document.
+
+## Second slice: CI repair and bounded sprint recovery
+
+The failed first-slice run was 35653563527 at cb8d6247807091c39dc92c96c2a8cb1bfbc587d1.
+The official generator and original routing suite passed; broader composition tests
+exposed the stale decision-authority anchor and missing ops-mode link. Artifact
+startup checks still pinned the pre-review resident persona. That historical
+baseline is retained, with a separate exact reviewed content digest for the changed
+persona; registration parity and eager-artifact checks remain enforced.
+
+Ordinary quality failures now return through the same original gate and invalidated
+reviews under an approved sprint. Initial spec/plan approval, real authority/security
+blocks, immutable records, and HTML farm restrictions remain unchanged. Typed
+eligibility overrides the legacy ACCEPTED-dependency sentence explicitly. This does
+not resolve initial approval choreography, all farm recovery, or commit delegation.
+
+The three missing publication-ledger entries were recovered from the original
+successful release run 35537578654, attempt 1, workflow/source commit
+5c876dd885598c248fa777e951dac4e628688d73. Independently acquired artifacts:
+
+| Tag | Original receipt artifact | Verified archive SHA-256 |
+|---|---|---|
+| v2.21.7 | 10613213900 | 55aeb520adb4ae6054455baf4b819eebb0d53e336ba994365e56c18dfa6e2b47 |
+| ca-codex-v0.13.7 | 10613189302 | 4dc5adc7dda8729d20a3302992e23d8690867a075f7a3fdc256f0958c6c9c90d |
+| ca-pi-v0.14.7 | 10612799631 | a9b77decc6036bc7ab044514061082bb54e344d251b3fa05cf17560adbb211d1 |
+
+The existing reconcile_tag_receipt helper validates the append-only candidate. No
+old identity is replaced, no legacy entry is promoted, and no tag is moved. The
+next patch versions and their notes are candidate metadata, not publication proof.
+
+A temporary branch-only preparation job uses a complete checkout and official
+generators. It never updates a ref; the candidate removes its two helper files.
+Its result must be inspected before the connector fast-forwards this PR branch.
+Product tests, generated parity, installed-host behavior and live-model routing
+remain distinct evidence layers. Exact executed commands/results are retained in
+the preparation artifact and the PR update, not inferred from this document.

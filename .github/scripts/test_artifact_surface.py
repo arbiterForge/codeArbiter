@@ -19,6 +19,12 @@ POLICY_STARTUP_FIXTURES = (
     "core/surface/arbiter.md",
     "core/pysrc/session-start.py",
 )
+# Historical artifact-policy baseline is immutable. PR843 separately reviewed
+# the resident routing body; do not freeze all future policy to the pilot.
+STARTUP_CONTENT_SHA256 = {
+    "core/surface/arbiter.md": "4bbe2beb49d1026271025d2553709728af1b300a9fdabd7c9d80978925faeb14",
+}
+
 ARTIFACT_GUIDANCE_PATHS = (
     "core/surface/includes/artifacts.md",
     "plugins/ca/includes/artifacts.md",
@@ -237,7 +243,27 @@ class ArtifactSurfaceTest(unittest.TestCase):
             ).hexdigest()
             self.assertEqual(fixture["sha256"], historical_digest, fixture["path"])
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
-            self.assertEqual(digest, fixture["sha256"], fixture["path"])
+            expected_digest = STARTUP_CONTENT_SHA256.get(fixture["path"], fixture["sha256"])
+            self.assertEqual(digest, expected_digest, fixture["path"])
+
+    def test_reviewed_startup_digest_is_narrow_and_history_independent(self) -> None:
+        # A golden content digest survives a squash merge; a feature-branch
+        # commit object or ancestry requirement would not. Historical baseline
+        # provenance is still checked separately by test_startup_fixtures_match_baseline.
+        self.assertEqual(set(STARTUP_CONTENT_SHA256), {"core/surface/arbiter.md"})
+        for path, expected in STARTUP_CONTENT_SHA256.items():
+            self.assertIn(path, POLICY_STARTUP_FIXTURES)
+            self.assertRegex(expected, r"^[0-9a-f]{64}$")
+            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected)
+
+    def test_reviewed_startup_content_still_rejects_drift_and_eager_schema(self) -> None:
+        for path, expected in STARTUP_CONTENT_SHA256.items():
+            approved = (ROOT / path).read_bytes()
+            self.assertNotEqual(hashlib.sha256(approved + b"\n").hexdigest(), expected)
+            forbidden = self.baseline["forbidden_startup_markers"]
+            self.assertTrue(forbidden)
+            seeded = approved.decode() + "\n" + forbidden[0] + "\n"
+            self.assertTrue(eager_markers(seeded, forbidden))
 
     def test_startup_fixtures_do_not_eager_load_artifact_content(self) -> None:
         forbidden = self.baseline["forbidden_startup_markers"]

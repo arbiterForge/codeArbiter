@@ -459,5 +459,75 @@ class TestIntentRoutingAndDelegatedMethods(unittest.TestCase):
                 self.assertIn("--match-head-commit", text)
 
 
+
+class TestSprintRecoveryAndLimits(unittest.TestCase):
+    """PR843: repair permission is not acceptance, scope, or publication authority."""
+
+    def sprint_surfaces(self):
+        yield "core/surface/SPRINT.md", read("core/surface/SPRINT.md")
+        for plugin, _, _, _ in HOSTS:
+            rel = f"{plugin}/SPRINT.md"
+            yield rel, read(rel)
+
+    def engine_surfaces(self):
+        yield "core/surface/skills/subagent-driven-development/SKILL.md", read("core/surface/skills/subagent-driven-development/SKILL.md")
+        for plugin, skilldir, _, _ in HOSTS:
+            rel = f"{plugin}/{skilldir}/subagent-driven-development/SKILL.md"
+            yield rel, read(rel)
+
+    def test_failed_quality_blocks_acceptance_not_authorized_repair(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("blocks acceptance, not authorized repair", text)
+                self.assertIn("only after initial spec-and-plan approval", text)
+                self.assertIn("every invalidated review", text)
+
+    def test_recovery_reuses_current_typed_authority(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                for token in ("task-reconcile", "scope-reconcile", "context ticket", "real policy events"):
+                    self.assertIn(token, text)
+                self.assertIn("Never manufacture an approval or a receipt", text)
+                self.assertIn("HTML farm remains disabled", text)
+
+    def test_identical_failure_changes_strategy_not_user_interview(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("stop that retry strategy", text)
+                self.assertIn("independently eligible work", text)
+                self.assertIn("not automatically another user checkpoint", text)
+                self.assertIn("do not report the incomplete plan as accepted", text)
+
+    def test_real_hard_stops_and_commit_permission_survive(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("security CRITICAL", text)
+                self.assertIn("does not grant commit, provider, spending, disclosure, or publication authority", text)
+                self.assertIn("MUST NOT merge to the default branch or discard autonomously", text)
+                self.assertIn("STOP for explicit user approval of the sprint spec AND the", text)
+
+    def test_child_calls_parent_recovery_without_auto_passing_gate(self):
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("Recovery within the approved sprint", text)
+                self.assertIn("Never redispatch merely to evade a failing gate", text)
+                self.assertNotIn("A `tdd` BLOCK halts the loop; do not", text)
+                self.assertNotIn("even under `/sprint`. These never auto-proceed", text)
+
+    def test_legacy_dependency_sentence_does_not_override_typed_eligibility(self):
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("For Markdown, confirm every dependency task is `ACCEPTED`", text)
+                self.assertIn("For HTML, use the engine's eligibility and current evidence", text)
+                self.assertIn("do not replace its same-checkpoint `REVIEW` rule", text)
+
+    def test_scoped_continuation_and_full_plan_proof_remain(self):
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("Do NOT hand to `commit-gate`; the caller owns that decision", text)
+                self.assertIn("_preflight_current_acceptance", text)
+                self.assertIn("real authority or security block", text)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2 if "-v" in sys.argv else 1)
