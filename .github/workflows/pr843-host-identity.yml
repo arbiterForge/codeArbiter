@@ -21,19 +21,20 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.14'
-      - name: Apply identity-only changes and run every existing hook contract
+      - name: Prepare synchronized identities and execute existing contract inventory
         shell: bash
         run: |
           python - <<'PY'
-          import ast, hashlib, importlib.util, json, os, pathlib, shlex, subprocess, sys, zipfile
+          import ast, hashlib, importlib.util, json, os, pathlib, re, shlex, subprocess, sys, zipfile
           root=pathlib.Path.cwd()
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr843-host-identity'
           out.mkdir()
           assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
           assert os.environ['GITHUB_REF']=='refs/heads/codex/autonomy-routing-integration'
-          subprocess.run(['git','merge-base','--is-ancestor','596520733979a0ad8ea37842c211d9e6aa5e3ad3','HEAD'],check=True)
+          subprocess.run(['git','merge-base','--is-ancestor','6b91eab7784d5fbf5f1783d5917f05179b259bc7','HEAD'],check=True)
           def oid(data):
               return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          subprocess.run(['git','archive','--format=zip','--output='+str(out/'source-head.zip'),'HEAD'],check=True)
           versions=[
               ('core/pysrc/hostapi.py','2.21.7','2.21.8','599314fac17c597d0c766c14b3cddb6f024d5fe3'),
               ('plugins/ca/hooks/_host.py','2.21.7','2.21.8','0b27047316f2f63405154981a5526944b140a96d'),
@@ -93,25 +94,59 @@ jobs:
               assert text.count(before)==1,path
               file.write_text(text.replace(before,after,1),encoding='utf-8',newline='\n')
           subprocess.run([sys.executable,'tools/sync-core.py'],check=True)
+          provenance=root/'.codearbiter/.provenance/code-map.json'
+          assert oid(provenance.read_bytes())=='138b0fa3b5e571351dbcb7a6eb22ee44cc50827e'
+          doc=json.loads(provenance.read_text())
+          preserved=json.loads(json.dumps(doc))
+          claims={
+              'plugins/ca/.claude-plugin/plugin.json':('2.21.7','2.21.8'),
+              'plugins/ca-codex/.codex-plugin/plugin.json':('0.13.7','0.13.8'),
+              'plugins/ca-pi/package.json':('0.14.7','0.14.8'),
+          }
+          changed_claims=[]
+          for entry in doc['entries']:
+              if entry['path'] not in claims:
+                  continue
+              old,new=claims[entry['path']]
+              data=(root/entry['path']).read_bytes()
+              assert json.loads(data)['version']==new
+              replaced=0
+              for claim in entry['claims']:
+                  claim['claim'],n=re.subn(r'(?<![0-9A-Za-z])v'+re.escape(old)+r'(?![0-9A-Za-z.])','v'+new,claim['claim'])
+                  replaced+=n
+              assert replaced==1,entry['path']
+              entry['hash']=oid(data)
+              changed_claims.append(entry['path'])
+          assert set(changed_claims)==set(claims)
+          assert [e for e in doc['entries'] if e['path'] not in claims]==[e for e in preserved['entries'] if e['path'] not in claims]
+          assert {k:v for k,v in doc.items() if k!='entries'}=={k:v for k,v in preserved.items() if k!='entries'}
+          provenance.write_text(json.dumps(doc,indent=2,sort_keys=True)+'\n',encoding='utf-8',newline='\n')
           spec=importlib.util.spec_from_file_location('partition',root/'.github/scripts/test_hook_ci_partition.py')
           module=importlib.util.module_from_spec(spec)
           spec.loader.exec_module(module)
-          block=module.job_block((root/'.github/workflows/ci.yml').read_text(),'hooks')
+          workflow=(root/'.github/workflows/ci.yml').read_text()
+          module.validate(workflow)
+          block=module.job_block(workflow,'hooks')
           commands=[]
           for step in module.step_blocks(block):
               command=module.command(step)
-              if command and command not in {module.DIRECT,module.ISOLATION,module.GUARD}:
-                  args=shlex.split(command)
-                  assert args[0]=='python'
-                  commands.append([sys.executable,*args[1:]])
+              if command:
+                  for line in command.splitlines():
+                      if not line.strip():
+                          continue
+                      args=shlex.split(line)
+                      assert args[0]=='python' and 'python' not in args[1:],line
+                      assert not any(a in {';','&&','||','|'} for a in args),line
+                      commands.append([sys.executable,*args[1:]])
           commands.extend([[sys.executable,'.github/scripts/test_host_descriptors.py'],
                            [sys.executable,'tools/build-surface.py','--check'],
                            [sys.executable,'tools/build-host-packages.py','--check']])
+          assert len(commands)==65,len(commands)
           results=[]
           for index,args in enumerate(commands):
               name=f'{index:02d}-'+pathlib.Path(args[1]).stem+'.log'
               try:
-                  result=subprocess.run(args,capture_output=True,text=True,timeout=180)
+                  result=subprocess.run(args,capture_output=True,text=True,timeout=480)
                   content=result.stdout+result.stderr
                   code=result.returncode
               except subprocess.TimeoutExpired:
@@ -123,8 +158,8 @@ jobs:
           (out/'tests.json').write_text(json.dumps(results,indent=2))
           subprocess.run(['git','diff','--check'],check=True)
           changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
-          expected={p for p,*_ in versions}|{'.github/scripts/test_host_descriptors.py'}|{'plugins/'+h+'/hooks/hostapi.py' for h in ('ca','ca-codex','ca-pi')}
-          assert set(changed)==expected
+          expected={p for p,*_ in versions}|{'.github/scripts/test_host_descriptors.py','.codearbiter/.provenance/code-map.json'}|{'plugins/'+h+'/hooks/hostapi.py' for h in ('ca','ca-codex','ca-pi')}
+          assert set(changed)==expected,(changed,expected)
           with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as archive:
               for path in changed:
                   archive.write(root/path,path)
@@ -164,7 +199,7 @@ jobs:
           env={k:v for k,v in os.environ.items() if k not in {'GH_TOKEN','GITHUB_TOKEN'}}
           base=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True,env=env).strip()
           tree=api('POST','/git/trees',{'base_tree':base,'tree':entries})['sha']
-          commit=api('POST','/git/commits',{'message':'fix: synchronize runtime adapter identities with candidate manifests\n\nRetain strict matching-only root validation, regenerate shared hostapi\ncopies, and add a fast identity-closure regression before cold startup.\n\nCHANGELOG: Fixed candidate startup identity consistency.','tree':tree,'parents':[head]})['sha']
+          commit=api('POST','/git/commits',{'message':'fix: synchronize candidate adapter and provenance identities\n\nPreserve matching-only root validation; regenerate shared copies and\nadd a fast identity-closure regression. Refresh only manifest claims.\nAll 65 existing hook/generation commands were executed.\n\nCHANGELOG: Fixed candidate startup identity consistency.','tree':tree,'parents':[head]})['sha']
           (out/'candidate.json').write_text(json.dumps({'commit':commit,'tree':tree,'parent':head,'branch_updated':False},indent=2))
           PY
       - name: Retain exact source, test failures and candidate identities
