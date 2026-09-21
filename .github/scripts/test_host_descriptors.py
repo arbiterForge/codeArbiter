@@ -7,6 +7,7 @@ PI-AC-01..04 cover the canonical three-host registry, strict schema,
 idempotent generation, byte-identical shared Python, canonical role charters,
 and the absence of a handwritten Pi governance surface.
 """
+import ast
 import copy
 import hashlib
 import importlib.util
@@ -965,6 +966,36 @@ class GenerationContractTest(unittest.TestCase):
         mutated[target] += "\nPi-only hardcoded governance paragraph.\n"
         with self.assertRaisesRegex(AssertionError, re.escape(target)):
             _assert_pi_policy_matches_core(mutated, expected)
+
+
+
+class AdapterVersionIdentityTest(unittest.TestCase):
+    def test_packaged_adapter_versions_match_manifests(self):
+        # Manifest identity and the matching-only root validator must advance
+        # together. Read literals without importing or executing adapter code.
+        pairs = (
+            ("core/pysrc/hostapi.py", "Host", "plugins/ca/.claude-plugin/plugin.json"),
+            ("plugins/ca/hooks/_host.py", "ClaudeHost", "plugins/ca/.claude-plugin/plugin.json"),
+            ("plugins/ca-codex/hooks/_host.py", "CodexHost", "plugins/ca-codex/.codex-plugin/plugin.json"),
+            ("plugins/ca-pi/hooks/_host.py", "PiHost", "plugins/ca-pi/package.json"),
+        )
+        for source_path, class_name, manifest_path in pairs:
+            with self.subTest(source=source_path):
+                module = ast.parse((REPO / source_path).read_text(encoding="utf-8"))
+                classes = [node for node in module.body
+                           if isinstance(node, ast.ClassDef) and node.name == class_name]
+                self.assertEqual(len(classes), 1)
+                assignments = [node.value for node in classes[0].body
+                               if isinstance(node, ast.Assign)
+                               and any(isinstance(target, ast.Name) and target.id == "adapter_version"
+                                       for target in node.targets)]
+                self.assertEqual(len(assignments), 1)
+                self.assertIsInstance(assignments[0], ast.Constant)
+                declared = assignments[0].value
+                expected = json.loads((REPO / manifest_path).read_text(encoding="utf-8"))["version"]
+                self.assertIsInstance(declared, str)
+                self.assertEqual(declared, expected,
+                                 "Update adapter identity with its manifest; never weaken root validation")
 
 
 if __name__ == "__main__":
