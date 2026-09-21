@@ -1,0 +1,177 @@
+name: PR843 host-identity preparation (temporary)
+on:
+  push:
+    branches: [codex/autonomy-routing-integration]
+    paths: [.github/workflows/pr843-host-identity.yml]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/autonomy-routing-integration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Apply identity-only changes and run every existing hook contract
+        shell: bash
+        run: |
+          python - <<'PY'
+          import ast, hashlib, importlib.util, json, os, pathlib, shlex, subprocess, sys, zipfile
+          root=pathlib.Path.cwd()
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr843-host-identity'
+          out.mkdir()
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/autonomy-routing-integration'
+          subprocess.run(['git','merge-base','--is-ancestor','596520733979a0ad8ea37842c211d9e6aa5e3ad3','HEAD'],check=True)
+          def oid(data):
+              return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          versions=[
+              ('core/pysrc/hostapi.py','2.21.7','2.21.8','599314fac17c597d0c766c14b3cddb6f024d5fe3'),
+              ('plugins/ca/hooks/_host.py','2.21.7','2.21.8','0b27047316f2f63405154981a5526944b140a96d'),
+              ('plugins/ca-codex/hooks/_host.py','0.13.7','0.13.8','d7738e690797ba3b256d3e2e4915ba654230656d'),
+              ('plugins/ca-pi/hooks/_host.py','0.14.7','0.14.8','2b1949a35fe8ef1c6b2c2806cc889401bcead689'),
+          ]
+          for path,old,new,digest in versions:
+              assert oid((root/path).read_bytes())==digest,path
+          test=root/'.github/scripts/test_host_descriptors.py'
+          assert oid(test.read_bytes())=='97fdfa1330490e5f8a5bcf00f35be92def35e43d'
+          addition='''
+          
+          class AdapterVersionIdentityTest(unittest.TestCase):
+              def test_packaged_adapter_versions_match_manifests(self):
+                  # Manifest identity and the matching-only root validator must advance
+                  # together. Read literals without importing or executing adapter code.
+                  pairs = (
+                      ("core/pysrc/hostapi.py", "Host", "plugins/ca/.claude-plugin/plugin.json"),
+                      ("plugins/ca/hooks/_host.py", "ClaudeHost", "plugins/ca/.claude-plugin/plugin.json"),
+                      ("plugins/ca-codex/hooks/_host.py", "CodexHost", "plugins/ca-codex/.codex-plugin/plugin.json"),
+                      ("plugins/ca-pi/hooks/_host.py", "PiHost", "plugins/ca-pi/package.json"),
+                  )
+                  for source_path, class_name, manifest_path in pairs:
+                      with self.subTest(source=source_path):
+                          module = ast.parse((REPO / source_path).read_text(encoding="utf-8"))
+                          classes = [node for node in module.body
+                                     if isinstance(node, ast.ClassDef) and node.name == class_name]
+                          self.assertEqual(len(classes), 1)
+                          assignments = [node.value for node in classes[0].body
+                                         if isinstance(node, ast.Assign)
+                                         and any(isinstance(target, ast.Name) and target.id == "adapter_version"
+                                                 for target in node.targets)]
+                          self.assertEqual(len(assignments), 1)
+                          self.assertIsInstance(assignments[0], ast.Constant)
+                          declared = assignments[0].value
+                          expected = json.loads((REPO / manifest_path).read_text(encoding="utf-8"))["version"]
+                          self.assertIsInstance(declared, str)
+                          self.assertEqual(declared, expected,
+                                           "Update adapter identity with its manifest; never weaken root validation")
+          '''
+          text=test.read_text()
+          assert text.count('import copy\n')==1
+          text=text.replace('import copy\n','import ast\nimport copy\n',1)
+          assert text.count('\nif __name__ == "__main__":')==1
+          text=text.replace('\nif __name__ == "__main__":',addition+'\n\nif __name__ == "__main__":',1)
+          compile(text,str(test),'exec')
+          test.write_text(text,encoding='utf-8',newline='\n')
+          assert oid(test.read_bytes())=='c6f710be84f26e7b36084a1355aa4fcd6700ebe8'
+          red=subprocess.run([sys.executable,str(test),'AdapterVersionIdentityTest'],capture_output=True,text=True,timeout=90)
+          (out/'identity-red.log').write_text(red.stdout+red.stderr)
+          assert red.returncode==1 and 'failures=4' in red.stderr and 'ERROR:' not in red.stderr
+          for path,old,new,digest in versions:
+              file=root/path
+              before='    adapter_version = "'+old+'"'
+              after='    adapter_version = "'+new+'"'
+              text=file.read_text()
+              assert text.count(before)==1,path
+              file.write_text(text.replace(before,after,1),encoding='utf-8',newline='\n')
+          subprocess.run([sys.executable,'tools/sync-core.py'],check=True)
+          spec=importlib.util.spec_from_file_location('partition',root/'.github/scripts/test_hook_ci_partition.py')
+          module=importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          block=module.job_block((root/'.github/workflows/ci.yml').read_text(),'hooks')
+          commands=[]
+          for step in module.step_blocks(block):
+              command=module.command(step)
+              if command and command not in {module.DIRECT,module.ISOLATION,module.GUARD}:
+                  args=shlex.split(command)
+                  assert args[0]=='python'
+                  commands.append([sys.executable,*args[1:]])
+          commands.extend([[sys.executable,'.github/scripts/test_host_descriptors.py'],
+                           [sys.executable,'tools/build-surface.py','--check'],
+                           [sys.executable,'tools/build-host-packages.py','--check']])
+          results=[]
+          for index,args in enumerate(commands):
+              name=f'{index:02d}-'+pathlib.Path(args[1]).stem+'.log'
+              try:
+                  result=subprocess.run(args,capture_output=True,text=True,timeout=180)
+                  content=result.stdout+result.stderr
+                  code=result.returncode
+              except subprocess.TimeoutExpired:
+                  content='Command timed out; not a passing result.\n'
+                  code=124
+              (out/name).write_text(content)
+              print(code,' '.join(args),flush=True)
+              results.append({'command':args,'exit_code':code,'log':name})
+          (out/'tests.json').write_text(json.dumps(results,indent=2))
+          subprocess.run(['git','diff','--check'],check=True)
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          expected={p for p,*_ in versions}|{'.github/scripts/test_host_descriptors.py'}|{'plugins/'+h+'/hooks/hostapi.py' for h in ('ca','ca-codex','ca-pi')}
+          assert set(changed)==expected
+          with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as archive:
+              for path in changed:
+                  archive.write(root/path,path)
+          (out/'candidate.diff').write_text(subprocess.check_output(['git','diff','--no-ext-diff'],text=True))
+          inventory=[{'path':p,'mode':subprocess.check_output(['git','ls-tree','HEAD','--',p],text=True).split()[0],'sha':oid((root/p).read_bytes())} for p in changed]
+          (out/'manifest.json').write_text(json.dumps({'head':os.environ['GITHUB_SHA'],'files':inventory,'all_commands_passed':all(r['exit_code']==0 for r in results)},indent=2))
+          assert all(r['exit_code']==0 for r in results),'Failing checks: inspect artifact; no candidate objects uploaded.'
+          PY
+      - name: Upload preserving candidate objects without changing the branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr843-host-identity'
+          report=json.loads((out/'manifest.json').read_text())
+          assert report['all_commands_passed']
+          head=os.environ['GITHUB_SHA']
+          assert head==report['head']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/autonomy-routing-integration'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
+          def api(method,path,payload=None):
+              request=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(payload).encode() if payload is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              with urllib.request.build_opener(NoRedirect).open(request,timeout=45) as response: return json.load(response)
+          assert api('GET','/git/ref/heads/codex/autonomy-routing-integration')['object']['sha']==head
+          entries=[]
+          for row in report['files']:
+              data=pathlib.Path(row['path']).read_bytes()
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              blob=api('POST','/git/blobs',{'content':data.decode(),'encoding':'utf-8'})['sha']
+              assert blob==row['sha']
+              entries.append({'path':row['path'],'mode':row['mode'],'type':'blob','sha':blob})
+          entries.append({'path':'.github/workflows/pr843-host-identity.yml','mode':'100644','type':'blob','sha':None})
+          env={k:v for k,v in os.environ.items() if k not in {'GH_TOKEN','GITHUB_TOKEN'}}
+          base=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True,env=env).strip()
+          tree=api('POST','/git/trees',{'base_tree':base,'tree':entries})['sha']
+          commit=api('POST','/git/commits',{'message':'fix: synchronize runtime adapter identities with candidate manifests\n\nRetain strict matching-only root validation, regenerate shared hostapi\ncopies, and add a fast identity-closure regression before cold startup.\n\nCHANGELOG: Fixed candidate startup identity consistency.','tree':tree,'parents':[head]})['sha']
+          (out/'candidate.json').write_text(json.dumps({'commit':commit,'tree':tree,'parent':head,'branch_updated':False},indent=2))
+          PY
+      - name: Retain exact source, test failures and candidate identities
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr843-host-identity-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr843-host-identity/
+          if-no-files-found: error
+          retention-days: 3
