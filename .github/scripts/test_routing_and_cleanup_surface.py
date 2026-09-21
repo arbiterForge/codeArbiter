@@ -357,5 +357,107 @@ class TestEphemeralToolCarveOut(unittest.TestCase):
         self.assertRegex(adr, r"(?i)new command projected to all three hosts")
 
 
+class TestIntentRoutingAndDelegatedMethods(unittest.TestCase):
+    """Routing refinement without extra public surface or weaker authority.
+
+    These are cross-host prose-contract checks, not proof of live model routing
+    or token savings. Existing ADR, cleanup and destructive-registry tests above
+    remain intact; a method choice is not a new user goal or authorization.
+    """
+
+    def surfaces(self, relative):
+        for prefix in ("core/surface", *(host[0] for host in HOSTS)):
+            rel = f"{prefix}/{relative}"
+            yield rel, " ".join(read(rel).split())
+
+    def test_explicit_commands_are_optional_not_required_input(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Explicit commands are optional entry points", text)
+                self.assertNotIn("Every user intent flows through", text)
+                self.assertNotIn("All intent flows through", text)
+                self.assertIn("not a prerequisite for asking", text)
+
+    def test_methods_do_not_create_another_approval_question(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Multiple reasonable internal methods are not ambiguous user intent", text)
+                self.assertIn("A second plausible route alone is not a reason to ask", text)
+                self.assertIn("requested outcome or required authority is missing", text)
+                self.assertNotIn("an argument you would have to invent, or a second plausible command", text)
+
+    def test_question_and_draft_only_boundaries_are_resident(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Questions are not mutation authority", text)
+                self.assertIn("Explain a commit without creating one", text)
+                self.assertIn("without staging or committing when asked to draft only", text)
+                self.assertIn("read-only evidence gathering", text)
+                self.assertIn("do not select a procedure's writing close", text)
+
+    def test_action_questions_are_not_classified_by_punctuation(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn('"can you commit these changes?" can request an action', text)
+                self.assertIn("classify the intended outcome and explicit restrictions, not punctuation alone", text)
+
+    def test_direct_handoffs_preserve_wrapper_owned_behavior(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("arguments, modes, prerequisites, and gates are preserved", text)
+                self.assertIn("If the wrapper owns distinct behavior, load it too", text)
+                self.assertIn("A description is a discovery hint, never the complete procedure", text)
+                self.assertIn("Keep private procedures path-loaded and avoid bulk context reads", text)
+
+    def test_continuation_respects_the_active_call_extent(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("return a scoped result, forward a completed authorized stage", text)
+                self.assertIn("branch for an allowed prerequisite", text)
+                self.assertIn("Neither universal return-to-caller nor unconditional commit-to-PR is correct", text)
+
+    def test_reversible_choice_cannot_grant_its_own_authority(self):
+        for rel, text in self.surfaces("includes/safety-core.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Within already-authorized scope, choose reversible implementation parameters", text)
+                self.assertIn("record material choices where the workflow requires", text)
+                self.assertNotIn("has one sensible answer", text)
+                self.assertIn("does not grant initial scope approval", text)
+                self.assertIn("`[CONFIRM-NN]`", text)
+                self.assertIn("expand provider, spending, data-disclosure, or publication authority", text)
+                self.assertIn("irreversible-action confirmations above remain mandatory", text)
+
+    def test_redirect_is_not_a_repeat_menu_or_bypass_offer(self):
+        for rel, text in self.surfaces("includes/redirect.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Do not repeat a command catalog", text)
+                self.assertIn("lack of slash syntax is not itself uncertainty", text)
+                self.assertIn("A generic approval of a route is not authority", text)
+                self.assertIn("never steer the user toward", text)
+                self.assertNotIn("Or pick a channel", text)
+                self.assertNotIn("Still need a channel", text)
+                self.assertNotIn("to proceed anyway", text)
+                self.assertIn("this clarification card does not select or activate another mode", text)
+
+    def test_routing_cues_are_not_syntax_or_permission(self):
+        for rel, text in self.surfaces("includes/routing-table.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Invocation cues are examples, not required user syntax", text)
+                self.assertIn("routing never authorizes a bypass", text)
+                self.assertIn("Informational requests use read-only behavior, not a writing close", text)
+
+    def test_safety_section_numbers_and_surviving_controls(self):
+        for rel, text in self.surfaces("includes/safety-core.md"):
+            with self.subTest(rel=rel):
+                self.assertEqual(re.findall(r"## §(\d+) —", text), ["2", "3", "5", "6", "7"])
+                self.assertIn("MUST NOT store a raw secret", text)
+                self.assertIn("MUST NOT write directly to the default branch or force-push", text)
+                self.assertIn("MUST NOT author an ADR except via", text)
+                self.assertIn("audit logs", text)
+                self.assertIn("are append-only", text)
+                self.assertIn("A gate that looks wrong is diagnosed, not bypassed", text)
+                self.assertIn("--match-head-commit", text)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2 if "-v" in sys.argv else 1)
