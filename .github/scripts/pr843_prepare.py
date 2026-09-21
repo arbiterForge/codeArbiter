@@ -287,6 +287,29 @@ silent premium fallback, another provider, or more spending after a farm circuit
             '  under an approved sprint take Recovery within the approved sprint in `{{PLUGIN_ROOT}}/SPRINT.md`.\n'
             '  A failed gate never auto-passes, and recovery never grants missing commit authority.')
 
+    replace('core/surface/skills/INDEX.md',
+            'Hard-stops on `tdd` BLOCK, security CRITICAL, `[CONFIRM-NN]`.',
+            'A quality failure blocks acceptance; approved sprint recovery owns correction. '
+            'Security CRITICAL and unresolved `[CONFIRM-NN]` remain stops.')
+    catalog_test = """    def test_private_engine_index_matches_recovery_contract(self):
+        paths = ["core/surface/skills/INDEX.md", "plugins/ca/skills/INDEX.md",
+                 "plugins/ca-codex/routines/INDEX.md", "plugins/ca-pi/routines/INDEX.md"]
+        for path in paths:
+            with self.subTest(path=path):
+                rows = [line for line in (REPO_ROOT / path).read_text(encoding="utf-8").splitlines()
+                        if line.startswith("| [subagent-driven-development](")]
+                self.assertEqual(len(rows), 1)
+                self.assertIn("quality failure blocks acceptance", rows[0])
+                self.assertIn("approved sprint recovery", rows[0])
+                self.assertIn("Security CRITICAL", rows[0])
+                self.assertIn("unresolved `[CONFIRM-NN]` remain stops", rows[0])
+                self.assertNotIn("Hard-stops on `tdd` BLOCK", rows[0])
+
+"""
+    replace('.github/scripts/test_command_catalog.py',
+            '    def test_live_generated_catalog_is_exact(self):',
+            catalog_test + '    def test_live_generated_catalog_is_exact(self):')
+
     # Reconcile only the three independently acquired original-run receipts. Do
     # not edit old tag identities or extend the closed legacy ledger.
     sys.path.insert(0, str(ROOT / '.github/scripts'))
@@ -349,6 +372,7 @@ TEST_COMMANDS = [
     ['.github/scripts/test_recorded_intent_surface.py'],
     ['.github/scripts/test_mode_surface.py'],
     ['.github/scripts/test_build_surface.py'],
+    ['.github/scripts/test_command_catalog.py'],
     ['.github/scripts/check_destructive_registry.py'],
     ['.github/scripts/check_routing_index_parity.py'],
     ['.github/scripts/check_docs_contract.py'],
@@ -412,6 +436,7 @@ def upload() -> None:
         raise RuntimeError('Branch moved; do not construct a stale candidate')
     permitted = {
         'core/surface/includes/redirect.md', 'core/surface/SPRINT.md',
+        'core/surface/skills/INDEX.md', '.github/scripts/test_command_catalog.py',
         'core/surface/skills/subagent-driven-development/SKILL.md',
         '.github/scripts/test_artifact_surface.py', '.github/scripts/test_persona_composition.py',
         '.github/scripts/test_routing_and_cleanup_surface.py', '.github/published-tags.json',
@@ -422,6 +447,7 @@ def upload() -> None:
     }
     for plugin, directory in [('ca','skills'),('ca-codex','routines'),('ca-pi','routines')]:
         permitted.update({f'plugins/{plugin}/SPRINT.md', f'plugins/{plugin}/includes/redirect.md',
+                          f'plugins/{plugin}/{directory}/INDEX.md',
                           f'plugins/{plugin}/{directory}/subagent-driven-development/SKILL.md'})
     changed = git('diff', '--name-only').splitlines()
     if changed != evidence['changed'] or set(changed) - permitted:
