@@ -430,6 +430,12 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIsNotNone(marker_match)
         marker = json.loads(marker_match.group("meta"))
         corrupted = dict(marker)
+        # Ordinary development may legitimately advance the manifest beyond
+        # the retained live baseline. Bind this mutation fixture to the
+        # current manifest so the assertion reaches the package-digest arm it
+        # is specifically meant to prove, rather than stopping one check
+        # earlier on the unrelated version-lag guard.
+        corrupted["adapter_version"] = manifest["version"]
         corrupted["candidate_package_sha256"] = "0" * 64
         corrupted_runbook = runbook.replace(
             marker_match.group("meta"),
