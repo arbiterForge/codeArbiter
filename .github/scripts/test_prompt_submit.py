@@ -230,6 +230,18 @@ class TestDormancy(_Fixture):
         self.assertEqual(rc, 0)
         self.assertEqual(out, "")
 
+    def test_dormant_invocation_repo_still_routes_exact_external_approval(self):
+        original = _approvallib.consume_from_hook
+        _approvallib.consume_from_hook = lambda **_kwargs: "approval recorded elsewhere"
+        try:
+            rc, out, _err = self.invoke(
+                _ups("approve SPEC-ELSEWHERE fixed-token-route"), host=_CodexHost()
+            )
+        finally:
+            _approvallib.consume_from_hook = original
+        self.assertEqual(rc, 0)
+        self.assertIn("approval recorded elsewhere", json.loads(out)["hookSpecificOutput"]["additionalContext"])
+
 
 # --------------------------------------------------------------------- T-31/32/33/35
 

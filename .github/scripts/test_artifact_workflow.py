@@ -21,6 +21,7 @@ from test_artifact_authoring import (
     spec_normative,
 )
 import _artifactlib
+import _artifactauthoritylib
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -462,7 +463,7 @@ class ArtifactProductionPilotTest(unittest.TestCase):
             },
         )
         self.assertEqual(evidence["format"], "codearbiter.default-rollout-pilot/0.1.0")
-        self.assertRegex(evidence["observed_at_utc"], r"^2026-09-18T\d{2}:\d{2}:\d{2}Z$")
+        self.assertRegex(evidence["observed_at_utc"], r"^2026-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
         self.assertEqual(evidence["status"], "local_candidate_pass_hosted_exact_head_pending")
         self.assertEqual(
             evidence["scope"],
@@ -1080,7 +1081,7 @@ class ArtifactWorkflowTest(unittest.TestCase):
         for kind, authority_kind, verdict in cases:
             with self.subTest(kind=kind, authority_kind=authority_kind):
                 before = self._snapshot()
-                with self.assertRaises(ArtifactError) as caught:
+                with self.assertRaises(_artifactauthoritylib.AuthorityError) as caught:
                     self.harness.capture(
                         "PLAN-FLOW",
                         "T-001",
@@ -1089,28 +1090,11 @@ class ArtifactWorkflowTest(unittest.TestCase):
                         verdict,
                         {},
                     )
-                self.assertEqual(caught.exception.code, "AUTHORITY_UNVERIFIED")
+                self.assertEqual(caught.exception.code, "INVALID_PROMPT_EVENT")
                 after = self._snapshot()
                 for path, contents in before.items():
                     self.assertEqual(after.get(path), contents, path)
-                added = set(after) - set(before)
-                self.assertTrue(added)
-                self.assertTrue(
-                    all(
-                        path.startswith(
-                            ".codearbiter/.artifacts/authority-sources/"
-                        )
-                        for path in added
-                    ),
-                    added,
-                )
-                self.assertFalse(
-                    any(
-                        path.startswith(".codearbiter/.artifacts/events/")
-                        or path.startswith(".codearbiter/.artifacts/receipts/")
-                        for path in added
-                    )
-                )
+                self.assertEqual(set(after), set(before))
 
     def test_approved_pair_dispatches_with_complete_context_and_resumes_in_progress(self) -> None:
         self.harness.approve_pair()

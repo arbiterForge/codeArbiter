@@ -6,6 +6,16 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.8] - 2026-09-22
+
+### Fixed
+
+- Produce verification and independent-review authority from supervised,
+  host-observed work instead of caller-selected success claims, including
+  durable interrupted-attempt recovery and explicit task reconciliation.
+- Bind ordinary marketplace installation to the same immutable assembled
+  payload qualified by the release archive.
+
 ## [0.13.7] - 2026-09-20
 
 ### Fixed

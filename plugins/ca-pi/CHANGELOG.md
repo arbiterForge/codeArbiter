@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.8] - 2026-09-22
+
+### Fixed
+
+- Package the shared closed artifact-authority and reconciliation kernel while
+  retaining fail-closed behavior for host observation seams that Pi does not
+  implement.
+
 ## [0.14.7] - 2026-09-20
 
 ### Fixed

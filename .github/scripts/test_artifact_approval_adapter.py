@@ -4,6 +4,7 @@
 import hashlib
 import importlib
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -17,7 +18,8 @@ sys.path.insert(0, str(CORE_PYSRC))
 
 
 class _FakeClient:
-    def __init__(self):
+    def __init__(self, root):
+        self.root = root
         self.identity = {
             "artifact_id": "SPEC-EXAMPLE",
             "kind": "spec",
@@ -49,7 +51,25 @@ class _FakeClient:
                     "authority_verified": False,
                 },
             }
-        if operation == "capture":
+        if operation == "evidence-context":
+            context = {
+                "format": "codearbiter.evidence-context/0.1.0",
+                "activity": "approval",
+                "subject": {"artifact_id": self.identity["artifact_id"], "normative_sha256": self.identity["normative_sha256"], "record_id": self.identity["artifact_id"]},
+                "input_sha256": self.identity["normative_sha256"],
+                "prompt_sha256": request["prompt_sha256"],
+                "record": dict(self.identity),
+            }
+            raw_record = json.dumps(context["record"], ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()
+            context["record_sha256"] = hashlib.sha256(raw_record).hexdigest()
+            raw = json.dumps(context, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()
+            digest = hashlib.sha256(raw).hexdigest()
+            relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+            return {"context_ref": relative.as_posix(), "context_sha256": digest}
+        if operation == "capture-observation":
             return dict(self.capture_result)
         if operation == "approve":
             return {"artifact_id": "SPEC-EXAMPLE", "revision": 8}
@@ -61,11 +81,53 @@ class ApprovalAdapterTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         (self.root / ".codearbiter").mkdir()
-        self.client = _FakeClient()
+        self.client = _FakeClient(self.root)
         self.adapter = importlib.import_module("_approvallib")
+        self.routes = importlib.import_module("_artifactpromptlib")
+        self.original_registry_parent = self.routes.REGISTRY_PARENT
+        self.routes.REGISTRY_PARENT = self.root
 
     def tearDown(self):
+        self.routes.REGISTRY_PARENT = self.original_registry_parent
         self.temp.cleanup()
+
+    def test_cross_repository_hook_routes_exact_prompt_and_ambiguity_fails_closed(self):
+        other = self.root / "other"
+        other.mkdir()
+        armed = self.adapter.arm_user_approval(
+            self.root, self.client, "SPEC-EXAMPLE", token="fixed-token-route"
+        )
+        with mock.patch.object(self.adapter._artifactlib, "ArtifactClient", return_value=self.client):
+            result = self.adapter.consume_from_hook(
+                root=other, plugin_root=self.root, prompt=armed["reply"],
+                host="codex", session_id="session-route",
+            )
+        self.assertIn("workflow approval recorded", result)
+        self.assertFalse((self.root / self.adapter.PENDING).exists())
+
+        first = self.root / "first"
+        second = self.root / "second"
+        first.mkdir()
+        second.mkdir()
+        prompt = "approve SPEC-COLLISION fixed-token-route"
+        self.routes.register(first, "approval", "SPEC-COLLISION", prompt)
+        self.routes.register(second, "approval", "SPEC-COLLISION", prompt)
+        with self.assertRaisesRegex(RuntimeError, "multiple repositories"):
+            self.routes.resolve("approval", prompt)
+
+    def test_native_linked_worktree_identity_is_routable(self):
+        repository = self.root / "repository"
+        linked = self.root / "linked"
+        subprocess.run(["git", "init", "--quiet", str(repository)], check=True)
+        subprocess.run(["git", "-C", str(repository), "config", "user.email", "test@example.invalid"], check=True)
+        subprocess.run(["git", "-C", str(repository), "config", "user.name", "Test"], check=True)
+        (repository / "tracked.txt").write_text("x", encoding="utf-8")
+        subprocess.run(["git", "-C", str(repository), "add", "tracked.txt"], check=True)
+        subprocess.run(["git", "-C", str(repository), "commit", "--quiet", "-m", "fixture"], check=True)
+        subprocess.run(["git", "-C", str(repository), "worktree", "add", "--quiet", "-b", "linked", str(linked)], check=True)
+        prompt = "approve SPEC-LINKED fixed-token-linked"
+        self.routes.register(linked, "approval", "SPEC-LINKED", prompt)
+        self.assertEqual(self.routes.resolve("approval", prompt), linked.resolve())
 
     def test_exact_host_prompt_captures_and_approves_current_identity(self):
         armed = self.adapter.arm_user_approval(
@@ -89,7 +151,7 @@ class ApprovalAdapterTest(unittest.TestCase):
         self.assertEqual(event["source_text"], armed["reply"])
         self.assertEqual(event["origin"], "codex:UserPromptSubmit:session-1")
         self.assertEqual(event["subject"]["normative_sha256"], "2" * 64)
-        self.assertEqual([name for name, _ in self.client.calls][-2:], ["capture", "approve"])
+        self.assertEqual([name for name, _ in self.client.calls][-2:], ["capture-observation", "approve"])
         self.assertFalse((self.root / ".codearbiter" / ".markers" / "pending-user-approval.json").exists())
 
     def test_plain_yes_wrong_token_and_unrelated_prompt_confer_no_authority(self):

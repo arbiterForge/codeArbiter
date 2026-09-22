@@ -78,7 +78,11 @@ def _validate_file_type(path):
 
 def _validate_existing(path, raw):
     _validate_file_type(path)
-    if raw.startswith(b"\xef\xbb\xbf") or b"\x00" in raw or b"\r" in raw:
+    # Historical audit bytes are immutable. A stray CR can exist in an older
+    # row without making a new O_APPEND write unsafe, so preserve it verbatim
+    # and require only that newly written rows use LF. Rewriting the file to
+    # normalize old bytes would violate the append-only contract.
+    if raw.startswith(b"\xef\xbb\xbf") or b"\x00" in raw:
         raise OverrideAppendError("overrides.log is not canonical UTF-8 LF text")
     try:
         raw.decode("utf-8", errors="strict")

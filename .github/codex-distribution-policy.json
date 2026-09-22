@@ -1,0 +1,31 @@
+{
+  "format": "codearbiter.codex-distribution-policy/0.1.0",
+  "marketplace_branch": "ca-codex-marketplace",
+  "distribution_tag_pattern": "ca-codex-dist-v*",
+  "publisher_workflow": ".github/workflows/release.yml",
+  "required_controls": {
+    "branch_deletion": false,
+    "branch_force_push": false,
+    "tag_deletion": false,
+    "tag_update": false,
+    "restricted_publisher": true,
+    "expected_head_lease": true
+  },
+  "rulesets": [
+    {
+      "name": "codeArbiter Codex marketplace publisher",
+      "target": "branch",
+      "include": ["refs/heads/ca-codex-marketplace"],
+      "rules": ["deletion", "non_fast_forward", "update"],
+      "publisher": {"actor_type": "Integration", "actor_id_source": "CODEX_DISTRIBUTION_APP_ID", "bypass_mode": "always"}
+    },
+    {
+      "name": "codeArbiter Codex distribution tags",
+      "target": "tag",
+      "include": ["refs/tags/ca-codex-dist-v*"],
+      "rules": ["creation", "deletion", "update"],
+      "publisher": {"actor_type": "Integration", "actor_id_source": "CODEX_DISTRIBUTION_APP_ID", "bypass_mode": "always"}
+    }
+  ],
+  "distribution_ledger": ".agents/plugins/codex-distribution-tags.json"
+}

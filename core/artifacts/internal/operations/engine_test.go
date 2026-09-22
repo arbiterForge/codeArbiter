@@ -67,6 +67,23 @@ func (h *harness) authoritySource(event object) object {
 		"source_sha256": digest,
 	}
 }
+
+func (h *harness) immutableJSON(subdir string, value object) (string, string) {
+	h.t.Helper()
+	b, err := canonical.Marshal(value)
+	if err != nil {
+		h.t.Fatal(err)
+	}
+	digest := canonical.BytesHash(b)
+	dir := filepath.Join(h.root, ".codearbiter", ".artifacts", subdir)
+	if err = os.MkdirAll(dir, 0700); err != nil {
+		h.t.Fatal(err)
+	}
+	if err = os.WriteFile(filepath.Join(dir, digest+".json"), b, 0600); err != nil {
+		h.t.Fatal(err)
+	}
+	return ".codearbiter/.artifacts/" + subdir + "/" + digest + ".json", digest
+}
 func (h *harness) doc(id string) *model.Document {
 	h.t.Helper()
 	f, e := store.Open(h.root)
@@ -118,39 +135,10 @@ func (h *harness) receipt(d *model.Document, record, kind string, payload object
 	case "reconciliation":
 		verdict = "reconciled"
 	}
-	subject := object{"artifact_id": d.ID(), "normative_sha256": d.NormHash(), "record_id": record}
-	event := object{"format": "codearbiter.workflow-event/0.1.0", "kind": kind, "authority_kind": ak, "subject": subject, "actor": "synthetic test fixture", "origin": "isolated test: " + h.next(), "verdict": verdict, "payload": payload, "source_text": "Synthetic workflow fixture, not an actual user or code-review approval."}
-	eb, e := canonical.Marshal(event)
-	if e != nil {
-		h.t.Fatal(e)
-	}
-	eh := canonical.BytesHash(eb)
-	sourcePath := authority.SourceRef(eh)
-	sourceDir := filepath.Join(h.root, filepath.FromSlash(filepath.Dir(sourcePath)))
-	if e = os.MkdirAll(sourceDir, 0700); e != nil {
-		h.t.Fatal(e)
-	}
-	if e = os.WriteFile(filepath.Join(h.root, filepath.FromSlash(sourcePath)), eb, 0600); e != nil {
-		h.t.Fatal(e)
-	}
-	receipt := object{"format": "codearbiter.receipt/0.2.0", "kind": kind, "authority_kind": ak, "subject": subject, "event_sha256": eh, "authority_source_ref": sourcePath, "authority_source_sha256": eh}
-	rb, e := canonical.Marshal(receipt)
-	if e != nil {
-		h.t.Fatal(e)
-	}
-	rh := canonical.BytesHash(rb)
-	f, e := store.Open(h.root)
-	if e != nil {
-		h.t.Fatal(e)
-	}
-	defer f.Close()
-	if e = f.PutEvent(eh, eb); e != nil {
-		h.t.Fatal(e)
-	}
-	if e = f.PutReceipt(rh+".json", rb); e != nil {
-		h.t.Fatal(e)
-	}
-	return authority.Ref(rh)
+	return captureObservedPromptFixture(
+		h.t, h.root, d.ID(), record, kind, ak, verdict,
+		"Synthetic workflow fixture, not an actual user or code-review approval: "+h.next(), payload,
+	)
 }
 
 func TestLegacyReceiptIsInspectableButCannotConferAuthority(t *testing.T) {
@@ -312,6 +300,86 @@ func TestLegacyReceiptIsInspectableButCannotConferAuthority(t *testing.T) {
 			t.Fatalf("legacy receipt was not preserved: %v", err)
 		}
 	}
+}
+
+func TestObservedCaptureBindsEngineContextObservationAndPayload(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	h.approvePair()
+	h.start("T-001")
+	contextResult := h.run("evidence-context", object{"artifact_id": "PLAN-EXAMPLE", "activity": "verification", "record_id": "T-001"})
+	contextRef, contextHash := model.S(contextResult["context_ref"]), model.S(contextResult["context_sha256"])
+	contextBytes, err := os.ReadFile(filepath.Join(h.root, filepath.FromSlash(contextRef)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	context, err := canonical.Object(contextBytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commands := empty()
+	for _, value := range model.A(context["commands"]) {
+		definition := model.M(value)
+		commands = append(commands, object{
+			"definition_sha256": definition["definition_sha256"], "exit": int64(0),
+			"tests":         []any{object{"name": "TestEnvironmentOverrides", "status": "pass"}},
+			"stdout_sha256": canonical.BytesHash(nil), "stderr_sha256": canonical.BytesHash(nil),
+		})
+	}
+	payload := object{"input_sha256": context["input_sha256"], "spec_sha256": context["spec_sha256"], "task_sha256": context["task_sha256"], "commands": commands}
+	payloadHash, _ := canonical.Hash(payload)
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	workspaceRoot := filepath.Dir(executable)
+	workspace := object{"root": workspaceRoot, "filesystem_id": "fixture:workspace", "git_common_dir": workspaceRoot, "git_common_filesystem_id": "fixture:git", "head": "fixture-head", "status_sha256": canonical.BytesHash([]byte("clean"))}
+	producerResult := object{
+		"environment_sha256": canonical.BytesHash([]byte("fixture environment")),
+		"command_bindings":   []any{object{"definition_sha256": model.M(model.A(context["commands"])[0])["definition_sha256"], "argv": []any{executable, "test", "./...", "-run", "TestEnvironmentOverrides"}, "cwd": workspaceRoot, "cwd_filesystem_id": "fixture:cwd", "workspace_root": workspaceRoot, "workspace_filesystem_id": "fixture:workspace", "git_common_dir": workspaceRoot, "git_common_filesystem_id": "fixture:git", "executable_sha256": canonical.BytesHash([]byte("fixture executable"))}},
+		"workspace_before":   []any{workspace}, "workspace_after": []any{workspace}, "commands": commands,
+	}
+	producerResultHash, _ := canonical.Hash(producerResult)
+	observed := object{
+		"format": "codearbiter.observation/0.2.0", "kind": "verification", "subject": context["subject"],
+		"context_ref": contextRef, "context_sha256": contextHash, "payload_sha256": payloadHash,
+		"producer_profile": "declared-command/0.1.0", "producer_run_id": "fixture-run-0001", "producer_result_sha256": producerResultHash, "producer_result": producerResult,
+	}
+	observationRef, observationHash := h.immutableJSON("observations", observed)
+	event := object{
+		"format": "codearbiter.workflow-event/0.2.0", "kind": "verification", "authority_kind": "verification_runner",
+		"subject": context["subject"], "actor": "qualified fixture producer", "origin": "fixture-run-0001", "verdict": "passed",
+		"payload": payload, "source_text": "Observed fixture command completion.",
+		"observation_ref": observationRef, "observation_sha256": observationHash,
+	}
+	source := h.authoritySource(event)
+	result := h.run("capture-observation", source)
+	if model.S(result["receipt"]) == "" {
+		t.Fatal("observed capture did not produce a receipt")
+	}
+	if _, err = h.request("capture", source); fault.Code(err) != "OBSERVATION_REQUIRED" {
+		t.Fatalf("observed event entered legacy capture path: %v", err)
+	}
+	legacyPayload := object{"input_sha256": context["input_sha256"], "spec_sha256": context["spec_sha256"], "task_sha256": context["task_sha256"], "commands": commands}
+	legacyRef := h.receipt(h.doc("PLAN-EXAMPLE"), "T-001", "verification", legacyPayload)
+	legacyReceipt, err := authority.Load(storeMustOpen(t, h.root), legacyRef)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacySource := object{"source_ref": legacyReceipt.Data["authority_source_ref"], "source_sha256": legacyReceipt.Data["authority_source_sha256"]}
+	if _, err = h.request("capture-observation", legacySource); fault.Code(err) != "OBSERVATION_REQUIRED" {
+		t.Fatalf("legacy synthetic event entered observed capture path: %v", err)
+	}
+}
+
+func storeMustOpen(t *testing.T, root string) *store.FS {
+	t.Helper()
+	f, err := store.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { f.Close() })
+	return f
 }
 func (h *harness) approvePair() {
 	h.t.Helper()

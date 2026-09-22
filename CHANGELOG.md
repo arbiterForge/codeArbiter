@@ -12,6 +12,16 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.8] - 2026-09-22
+
+### Fixed
+
+- Add closed, host-observed verification, independent-review, recovery, and
+  reconciliation authority for structured artifacts, with immutable evidence
+  bindings and fail-closed cross-repository routing.
+- Converge qualified Codex release archives and marketplace installs on one
+  content-addressed distribution identity with race-safe promotion records.
+
 ## [2.21.7] - 2026-09-20
 
 ### Fixed

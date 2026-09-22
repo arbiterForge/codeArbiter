@@ -114,6 +114,18 @@ inputs:
   github-token:
     description: "Token with `contents: write` for the tag and Release"
     required: true
+  codex-publisher-actor-id:
+    description: "Dedicated Codex distribution GitHub App actor ID"
+    required: false
+    default: ""
+  codex-ruleset-verifier-token:
+    description: "Token from a separate non-bypass App that can observe complete ruleset details"
+    required: false
+    default: ""
+  codex-ruleset-verifier-actor-id:
+    description: "Separate non-bypass Codex ruleset verifier GitHub App actor ID"
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -698,6 +710,53 @@ runs:
         gh api -H "Accept: application/octet-stream" "$RECEIPT_URL" > "$RUNNER_TEMP/receipt-readback.json"
         cmp "$receipt" "$RUNNER_TEMP/receipt-readback.json"
 
+    - name: Verify live Codex distribution rulesets
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.codex-ruleset-verifier-token }}
+      run: |
+        set -euo pipefail
+        python3 .github/scripts/verify_codex_distribution_rulesets.py \
+          --repository "$GITHUB_REPOSITORY" \
+          --publisher-actor-id "${{ inputs.codex-publisher-actor-id }}" \
+          --verifier-actor-id "${{ inputs.codex-ruleset-verifier-actor-id }}"
+
+    - name: Stage immutable qualified Codex distribution tag
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
+        VERSION: ${{ steps.v.outputs.version }}
+        PACKAGE_ROOT: ${{ runner.temp }}/artifact-publication-packages
+      run: |
+        set -euo pipefail
+        # This is intentionally after verify-cohort (which replays package/member
+        # and cold-install qualification) and durable receipt readback. A failed
+        # qualification therefore cannot create either public Git ref.
+        # Stage only the immutable tree/tag. The public marketplace channel is
+        # deliberately untouched until the GitHub Release is finalized.
+        gh auth setup-git
+        REMOTE_URL=$(git remote get-url origin)
+        case "$REMOTE_URL" in
+          "https://github.com/$GITHUB_REPOSITORY"|"https://github.com/$GITHUB_REPOSITORY.git"|"git@github.com:$GITHUB_REPOSITORY.git") ;;
+          *) echo "::error::origin does not name the release repository: $REMOTE_URL"; exit 1 ;;
+        esac
+        EXPECTED_MARKETPLACE_HEAD=$(git ls-remote "$REMOTE_URL" refs/heads/ca-codex-marketplace | awk '{print $1}')
+        printf '%s\n' "${EXPECTED_MARKETPLACE_HEAD:-absent}" > "$RUNNER_TEMP/codex-marketplace-expected-head"
+        python3 tools/promote-codex-marketplace.py \
+          --package-root "$PACKAGE_ROOT" \
+          --cohort-sha256 "$COHORT_SHA256" \
+          --source-repo . \
+          --source-commit "$SOURCE_COMMIT" \
+          --remote-url "$REMOTE_URL" \
+          --catalog-url "https://github.com/$GITHUB_REPOSITORY.git" \
+          --version "$VERSION" \
+          --work "$RUNNER_TEMP/codex-marketplace-promotion-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+          --push
+
     - name: Publish qualified Release only after receipt readback
       if: ${{ inputs.package-host != '' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
       shell: bash
@@ -751,6 +810,55 @@ runs:
         gh api --method PATCH -F draft=false -f make_latest="$MARK_LATEST" \
           "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" >/dev/null
         gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.draft == false' | grep -qx true
+
+    - name: Reverify live Codex distribution rulesets before channel advance
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.codex-ruleset-verifier-token }}
+      run: |
+        set -euo pipefail
+        # Release finalization can be a long boundary, so the pre-tag proof is
+        # not timeless authority. Keep this read-only credential in its own
+        # process boundary; the publisher token is not exposed here.
+        python3 .github/scripts/verify_codex_distribution_rulesets.py \
+          --repository "$GITHUB_REPOSITORY" \
+          --publisher-actor-id "${{ inputs.codex-publisher-actor-id }}" \
+          --verifier-actor-id "${{ inputs.codex-ruleset-verifier-actor-id }}"
+
+    - name: Advance protected Codex marketplace channel
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
+        VERSION: ${{ steps.v.outputs.version }}
+        PACKAGE_ROOT: ${{ runner.temp }}/artifact-publication-packages
+      run: |
+        set -euo pipefail
+        # Retry/recovery is explicit: rebuilding is deterministic, the immutable
+        # tag must read back first, and the protected channel advances only from
+        # the head captured before Release finalization.
+        gh auth setup-git
+        REMOTE_URL=$(git remote get-url origin)
+        case "$REMOTE_URL" in
+          "https://github.com/$GITHUB_REPOSITORY"|"https://github.com/$GITHUB_REPOSITORY.git"|"git@github.com:$GITHUB_REPOSITORY.git") ;;
+          *) echo "::error::origin does not name the release repository: $REMOTE_URL"; exit 1 ;;
+        esac
+        EXPECTED_MARKETPLACE_HEAD=$(cat "$RUNNER_TEMP/codex-marketplace-expected-head")
+        python3 tools/promote-codex-marketplace.py \
+          --package-root "$PACKAGE_ROOT" \
+          --cohort-sha256 "$COHORT_SHA256" \
+          --source-repo . \
+          --source-commit "$SOURCE_COMMIT" \
+          --remote-url "$REMOTE_URL" \
+          --catalog-url "https://github.com/$GITHUB_REPOSITORY.git" \
+          --version "$VERSION" \
+          --work "$RUNNER_TEMP/codex-marketplace-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+          --expected-marketplace-head "$EXPECTED_MARKETPLACE_HEAD" \
+          --advance-channel \
+          --push
 
     - name: Capture package publication disposition
       if: ${{ always() && inputs.package-host != '' && inputs.attach-package == 'true' }}

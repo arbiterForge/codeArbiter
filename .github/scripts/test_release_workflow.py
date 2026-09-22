@@ -1402,13 +1402,21 @@ class DispatchExclusivityTest(unittest.TestCase):
     def test_only_publishers_and_draft_observer_carry_a_write_token(self):
         writers = sorted(job for job, block in _jobs().items()
                          if re.search(r"(?m)^      contents: write$", block))
-        self.assertEqual(writers, sorted(PUBLISH_JOBS + AUTO_PUBLISH_JOBS +
+        app_publishers = {"release-codex", "auto-release-codex"}
+        expected_publishers = tuple(job for job in PUBLISH_JOBS + AUTO_PUBLISH_JOBS
+                                    if job not in app_publishers)
+        self.assertEqual(writers, sorted(expected_publishers +
                                          (AUTO_PI_RECEIPT_JOB,
                                           AUTO_COHORT_RECONCILIATION,
                                           MANUAL_PI_NPM_JOB,
                                           AUTO_PI_NPM_JOB)),
                          "only declared publishers and the read-only draft "
                          "Release observer may declare `contents: write`")
+        for job in app_publishers:
+            block = _jobs()[job]
+            self.assertIn("environment: codex-distribution", block)
+            self.assertIn("steps.codex-publisher.outputs.token", block)
+            self.assertNotIn("contents: write", block)
 
     def test_preflight_holds_no_write_permission(self):
         block = _jobs()[PREFLIGHT_JOB]

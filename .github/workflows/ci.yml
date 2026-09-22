@@ -388,7 +388,9 @@ jobs:
               - 'tools/create-artifact-examples.py'
               - '.github/scripts/test_artifact_bridge.py'
               - '.github/scripts/test_artifact_approval_adapter.py'
+              - '.github/scripts/test_artifact_authority_adapter.py'
               - '.github/scripts/test_artifact_prerequisite_adapter.py'
+              - '.github/scripts/test_artifact_reconciliation_adapter.py'
               - '.github/scripts/test_artifact_authoring.py'
               - '.github/scripts/test_artifact_installed_host.py'
               - '.github/scripts/test_artifact_consumers.py'
@@ -522,10 +524,18 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_artifact_approval_adapter.py
+      - name: Test production artifact authority adapters
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_authority_adapter.py
       - name: Test host-owned artifact prerequisite capture
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_artifact_prerequisite_adapter.py
+      - name: Test host-owned artifact reconciliation capture
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+        run: python .github/scripts/test_artifact_reconciliation_adapter.py
       - name: Test canonical spec and plan authoring behavior
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
@@ -2154,6 +2164,9 @@ jobs:
         # merge-readiness gate for GITHUB_SHA, or the peel-and-compare on an
         # existing tag turns CI red even while _releaselib stays green.
         run: python .github/scripts/test_release_workflow.py
+      - name: Run Codex immutable marketplace distribution contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        run: python .github/scripts/test_codex_marketplace_distribution.py
       - name: Run the A-1.11 release resolution-trace suite
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, .codearbiter/specs/release-portable-fixture.md: proves

@@ -664,6 +664,112 @@ def _codex_catalog(source: bytes, installer) -> bytes:
     return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
 
+def promoted_codex_catalog(source: bytes, *, distribution_url: str,
+                           distribution_ref: str,
+                           distribution_commit: str) -> bytes:
+    """Bind the public Codex entry to one immutable assembled Git tree.
+
+    The distribution commit is intentionally supplied only after the qualified
+    archive has been materialized as a Git tree.  Source checkouts therefore do
+    not masquerade as the installable payload, and the host receives both a
+    human-readable promotion ref and the exact commit it must resolve.
+    """
+    installer = _artifact_installer_module()
+    document = json.loads(source, object_pairs_hook=installer._pairs)
+    plugins = document.get("plugins") if isinstance(document, dict) else None
+    selected = [item for item in plugins or []
+                if isinstance(item, dict) and item.get("name") == "ca-codex"]
+    expected_source = {"source": "local", "path": "./plugins/ca-codex"}
+    if len(selected) != 1 or selected[0].get("source") != expected_source:
+        raise ValueError("source Codex marketplace does not identify one canonical ca-codex package")
+    if re.fullmatch(r"[0-9a-f]{40}", distribution_commit) is None:
+        raise ValueError("Codex distribution commit must be a full lowercase commit id")
+    if (not isinstance(distribution_url, str)
+            or not distribution_url.startswith("https://")
+            or not distribution_url.endswith(".git")):
+        raise ValueError("Codex distribution URL must be an explicit HTTPS Git URL")
+    if (not isinstance(distribution_ref, str) or not distribution_ref
+            or any(character.isspace() for character in distribution_ref)):
+        raise ValueError("Codex distribution ref must be a non-empty Git ref")
+    entry = dict(selected[0])
+    entry["source"] = {
+        "source": "git-subdir",
+        "url": distribution_url,
+        "path": "plugins/ca-codex",
+        "ref": distribution_ref,
+        "sha": distribution_commit,
+    }
+    output = {key: value for key, value in document.items() if key != "plugins"}
+    output["plugins"] = [entry]
+    return (json.dumps(output, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+
+
+def stage_codex_marketplace_distribution(*, package_root: Path,
+                                         package_cohort_sha256: str,
+                                         output: Path) -> dict[str, object]:
+    """Materialize the exact qualified Codex archive as a Git-ready tree.
+
+    Publication is deliberately separate.  This function consumes the cohort
+    receipt and archive as immutable inputs, rejects any member omission or
+    substitution, and creates a tree whose files are byte-for-byte the same
+    members already qualified by the release-package lane.
+    """
+    package_root = package_root.absolute()
+    if (package_root.is_symlink() or not package_root.is_dir()
+            or os.path.normcase(str(package_root.resolve(strict=True))) !=
+            os.path.normcase(str(package_root))):
+        raise ValueError("artifact package root must be a real directory")
+    installer = _artifact_installer_module()
+    receipt_bytes = installer.read_regular(
+        package_root / "artifact-package-cohort.json", 8 << 20
+    )
+    if (re.fullmatch(r"[0-9a-f]{64}", package_cohort_sha256) is None
+            or hashlib.sha256(receipt_bytes).hexdigest() != package_cohort_sha256):
+        raise ValueError("Codex distribution package cohort digest drifted")
+    receipt = json.loads(receipt_bytes, object_pairs_hook=installer._pairs)
+    packages = receipt.get("packages") if isinstance(receipt, dict) else None
+    package = packages.get("codex") if isinstance(packages, dict) else None
+    required = {"file", "version", "size", "sha256", "members"}
+    if (receipt.get("format") != ARTIFACT_PACKAGE_FORMAT
+            or not isinstance(package, dict) or set(package) != required
+            or not isinstance(package.get("file"), str)
+            or Path(package["file"]).name != package["file"]
+            or not isinstance(package.get("members"), dict)):
+        raise ValueError("Codex package cohort entry is malformed")
+    archive = package_root / package["file"]
+    archive_bytes = installer.read_regular(archive, 256 << 20)
+    if (package.get("size") != len(archive_bytes)
+            or package.get("sha256") != hashlib.sha256(archive_bytes).hexdigest()):
+        raise ValueError("Codex distribution archive digest or size drifted")
+    files = _read_archive(archive, expected_members=package["members"])
+    catalog_name = ".agents/plugins/marketplace.json"
+    plugin_manifest = "plugins/ca-codex/.codex-plugin/plugin.json"
+    release_manifest = "plugins/ca-codex/helpers/artifacts/release.json"
+    if (catalog_name not in files or plugin_manifest not in files
+            or release_manifest not in files
+            or not any(name.startswith("plugins/ca-codex/helpers/artifacts/ca-artifact-")
+                       for name in files)):
+        raise ValueError("Codex distribution omits required marketplace or artifact members")
+    # The qualified archive catalog remains locally installable when the exact
+    # tree is fetched directly; a separately promoted catalog may point to this
+    # tree by full commit using promoted_codex_catalog().
+    _codex_catalog(files[catalog_name][0], installer)
+    members = {
+        name: (data, mode, "qualified-package", name)
+        for name, (data, mode) in files.items()
+    }
+    with _pinned_artifact_stage(output.absolute()) as stage:
+        _write_member_tree(output.absolute(), members)
+        stage.verify()
+    return {
+        "archive": package["file"],
+        "archive_sha256": package["sha256"],
+        "catalog_sha256": hashlib.sha256(files[catalog_name][0]).hexdigest(),
+        "members": sorted(files),
+        "source_commit": receipt.get("source_commit"),
+    }
+
+
 def _write_member_tree(root: Path,
                        members: dict[str, tuple[bytes, int, str, str]]) -> None:
     for name, (data, mode, _origin, _source) in sorted(members.items()):
@@ -1661,7 +1767,39 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cold-platform")
     parser.add_argument("--cold-promotion-receipt-sha256")
     parser.add_argument("--cold-receipt", type=Path)
+    parser.add_argument("--codex-distribution-package-root", type=Path)
+    parser.add_argument("--codex-distribution-cohort-sha256")
+    parser.add_argument("--codex-distribution-output", type=Path)
     args = parser.parse_args(argv)
+    distribution_mode = any((
+        args.codex_distribution_package_root,
+        args.codex_distribution_cohort_sha256,
+        args.codex_distribution_output,
+    ))
+    if distribution_mode:
+        if (args.check or args.release_guard_base or args.artifact_candidate
+                or args.artifact_qualification or args.artifact_stage
+                or args.require_platform or args.trusted_source_commit
+                or args.trusted_workflow or args.trusted_workflow_run
+                or args.release_package_stage or args.release_package_output
+                or args.source_repo or args.npm_executable
+                or args.npm_package_integrity or args.promotion_receipt_sha256
+                or args.cold_package_root or args.cold_host or args.cold_platform
+                or args.cold_promotion_receipt_sha256 or args.cold_receipt):
+            parser.error("Codex distribution staging cannot be combined with other modes")
+        if (args.codex_distribution_package_root is None
+                or not args.codex_distribution_cohort_sha256
+                or args.codex_distribution_output is None):
+            parser.error(
+                "Codex distribution staging requires package root, cohort digest, and output"
+            )
+        result = stage_codex_marketplace_distribution(
+            package_root=args.codex_distribution_package_root,
+            package_cohort_sha256=args.codex_distribution_cohort_sha256,
+            output=args.codex_distribution_output,
+        )
+        print(json.dumps(result, indent=2))
+        return 0
     package_mode = args.release_package_output is not None
     if package_mode:
         if (args.check or args.release_guard_base or args.artifact_candidate

@@ -10,7 +10,7 @@ project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 2.21.7" src="https://img.shields.io/badge/version-2.21.7-2b7489">
+<img alt="version 2.21.8" src="https://img.shields.io/badge/version-2.21.8-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-18-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-23-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-19-555">
@@ -124,9 +124,14 @@ Current packaging and shared-core parity are continuously verified, while that h
 stays labeled rather than being promoted to evidence for a newer adapter:
 
 ```text
-codex plugin marketplace add arbiterForge/codeArbiter
+codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
 codex plugin add ca-codex@codearbiter
 ```
+
+The `ca-codex-marketplace` branch is the promoted catalog. Each entry pins the
+exact immutable Git commit assembled from the same qualified member set as the
+release archive; `main` remains the development source tree and is not a
+substitute for the promoted binary-bearing distribution.
 
 Open `/hooks`, review and trust the `ca-codex` handlers, then start a fresh task. Run `$ca-init` and
 `$ca-doctor`.

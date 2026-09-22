@@ -68,6 +68,7 @@ import _approvallib  # noqa: E402 — host-owned artifact approval capture
 import _hooklib  # noqa: E402
 import _modelib  # noqa: E402 — mode plane core (T-06..T-16, Lane A)
 import _prerequisitelib  # noqa: E402 — host-owned prerequisite capture
+import _reconciliationlib  # noqa: E402 — host-owned reconciliation capture
 import _readinjectlib  # noqa: E402 — marker_path(prefix=) (T-30)
 
 
@@ -449,9 +450,8 @@ def _handle_codex(payload, host, root, session_id, token, approval_context=""):
 def _handle_user_prompt_submit(payload, host):
     session_id = payload.get("session_id") or ""
     root = _hooklib.project_root(payload)
-    if not _hooklib.arbiter_active(root):
-        return 0  # dormant repo: no flip, no report, no injection
-    state_root = _hooklib.marker_root(payload)
+    active = _hooklib.arbiter_active(root)
+    state_root = _hooklib.marker_root(payload) if active else root
     prompt = payload.get("prompt")
     prompt = prompt if isinstance(prompt, str) else ""
     token = _modelib.match_mode_token(prompt)
@@ -476,7 +476,24 @@ def _handle_user_prompt_submit(payload, host):
         )
         if prerequisite:
             contexts.append(prerequisite)
+        reconciliation = _reconciliationlib.consume_from_hook(
+            root=root,
+            plugin_root=host.plugin_root(),
+            prompt=prompt,
+            host=host.name,
+            session_id=session_id,
+        )
+        if reconciliation:
+            contexts.append(reconciliation)
         approval_context = "\n".join(contexts)
+    if not active:
+        if not approval_context:
+            return 0
+        if host.name == "codex":
+            print(json.dumps(_codex_allow_envelope(approval_context)))
+        else:
+            print(approval_context)
+        return 0
     if host.name == "codex":
         return _handle_codex(
             payload, host, state_root, session_id, token, approval_context

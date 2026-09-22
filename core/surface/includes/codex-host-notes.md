@@ -50,6 +50,13 @@ bodies name *actions* — this file is where those actions map to this host.
   reports and MUST NOT run inline; it blocks if the host exposes no isolated
   subagents. For other workflows on an older host, perform the role inline; a
   review is never skipped because dispatch is unavailable.
+- **Structured-artifact authority uses native hook correlation** — production
+  review requests must dispatch the exact `launch_envelope` returned by
+  `artifact-authority.py`; do not rewrite its prompt, task name, or isolation
+  fields. Verification must run the exact plain wrapper command returned by the
+  workflow so Pre/PostToolUse can authorize and corroborate one request. Codex
+  `SubagentStart`/`SubagentStop` supply the child identity; transcript parsing is
+  not an authority source.
 - **No statusline** — governance state (stage, overrides-since-checkpoint,
   in-flight tasks) appears in the startup briefing instead.
 - **No transcript prune** — the prune engine is Claude-transcript-specific;

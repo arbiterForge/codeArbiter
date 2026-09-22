@@ -3051,7 +3051,10 @@ def _candidate_json(files: dict[str, bytes], path: str, label: str) -> object:
         raise ValueError(f"candidate {label} is invalid JSON") from error
 
 
-HOOK_EVENTS = frozenset(("SessionStart", "PreToolUse", "PostToolUse", "UserPromptSubmit"))
+HOOK_EVENTS = frozenset((
+    "SessionStart", "PreToolUse", "PostToolUse", "SubagentStart", "SubagentStop",
+    "UserPromptSubmit",
+))
 HOOK_GROUP_FIELDS = frozenset(("matcher", "hooks"))
 HOOK_ENTRY_FIELDS = frozenset((
     "type", "command", "commandWindows", "timeout", "statusMessage",
@@ -3066,7 +3069,7 @@ HOOK_COMMAND = {
     ),
 }
 EXPECTED_HOOK_MANIFEST_SHA256 = (
-    "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062"
+    "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47"
 )
 
 
