@@ -475,13 +475,17 @@ class Workflow:
 
     def satisfy_prerequisite(self, artifact_id: str, prerequisite_id: str) -> str:
         if self.host == "pi":
+            prerequisite = self.client.call(
+                "read",
+                {"artifact_id": artifact_id, "symbol": prerequisite_id, "mode": "exact"},
+            )["record"]
             receipt = self.stage_policy_event(
                 artifact_id,
                 prerequisite_id,
                 "prerequisite",
                 "user_workflow",
                 "satisfied",
-                {},
+                {"prerequisite": prerequisite},
             )
             self.mutate(
                 "prerequisite",
