@@ -748,8 +748,15 @@ _GLOB_DIR_REF_RE = re.compile(
 # post-pathspec-exclusion total so a future extractor regression cannot hide
 # behind the old post-T-41 value while still leaving room for legitimate
 # reference removal.
-_EXTRACTION_FLOOR = 14
+_EXTRACTION_FLOOR = 19
 _STABLE_ANCHOR_REF = "${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"
+
+# Exact pre-sprint tree used by AncestryOldVsNewBehaviorTest as its durable
+# OLD-behavior oracle. HEAD is intentionally not used: once the release-
+# contract fix is committed, HEAD is the NEW side of the comparison. The
+# consumer-smoke CI checkout is full-history specifically so this historical
+# tree remains available.
+_ANCESTRY_PRE_FIX_COMMIT = "5c876dd885598c248fa777e951dac4e628688d73"
 
 # T-73b payload list — one entry per shipped copy of the release skill.
 # (label, host, path relative to that host's materialized plugin root,
@@ -1096,9 +1103,8 @@ class ReferenceResolutionTest(unittest.TestCase):
 # makes it into what a consumer actually receives is exactly that class of
 # bug. Every phrase below is carried VERBATIM from the pre-T-17 single
 # paragraph into T-17's new named substeps, so it is present in the
-# currently-archived `HEAD` copy (still pre-split, since T-17/T-18 are
-# staged, not committed) today, and will remain present once T-17 through
-# T-19 land and HEAD picks up the split, mechanically regenerated payloads.
+# currently-archived `HEAD` copy and must remain present in every future
+# mechanically regenerated payload.
 # --------------------------------------------------------------------------- #
 
 _PHASE2_GAP_CLOSURE_PHRASES = {
@@ -3563,9 +3569,8 @@ class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
     `core/pysrc/_releaselib.py` -- never the archived-HEAD `_FIXTURE.
     plugin_root` snapshot, and never `_FIXTURE.codex_plugin_root`/
     `pi_plugin_root` either -- for the same reason `PrerequisiteRefusalTest`
-    does: this task's own diff lands in `core/` and `plugins/*/skills(or
-    routines)/release/SKILL.md`, and it is staged, not committed, so
-    `materialize_plugin`'s `git archive HEAD` would not see any of it."""
+    does: the canonical source is the immediate candidate under test, while
+    `materialize_plugin` intentionally sees only the last committed tree."""
 
     @classmethod
     def setUpClass(cls):
@@ -3631,10 +3636,9 @@ class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
             "own extracted invocation")
 
     def test_full_release_skill_payloads_carry_the_new_diagnostic(self):
-        # The WORKING-TREE plugin roots, never the archived-HEAD `_FIXTURE`
-        # snapshot -- this task's regenerated renders (`python tools/
-        # build-surface.py`) are staged, not committed, so `materialize_
-        # plugin`'s `git archive HEAD` would not see them.
+        # The working-tree plugin roots, never the archived-HEAD `_FIXTURE`
+        # snapshot: this assertion verifies regenerated candidate renders
+        # before the commit-bound archive fixture can see them.
         root_by_host = {
             "claude": os.path.join(REPO_ROOT, "plugins", "ca"),
             "codex": os.path.join(REPO_ROOT, "plugins", "ca-codex"),
@@ -3749,9 +3753,9 @@ class PrerequisiteRefusalTest(unittest.TestCase):
         # Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
         # `core/pysrc/_releaselib.py` -- never a vendored `plugins/*/hooks/`
         # copy or the archived `_FIXTURE.plugin_root` snapshot -- for the
-        # same reason `AncestryDocumentedFlowTest` does: this task's own
-        # diff landed in `core/`, and it is staged, not committed, so an
-        # archived-HEAD fixture would not see it at all.
+        # same reason `AncestryDocumentedFlowTest` does: the canonical source
+        # is the immediate candidate under test, while the archived fixture
+        # is deliberately commit-bound.
         cls.scratch = tempfile.mkdtemp(prefix="ca-prereq-refusal-")
         skill_path = os.path.join(
             REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
@@ -3870,9 +3874,9 @@ class BackfillBranchRefusalTest(unittest.TestCase):
     `core/pysrc/_releaselib.py` directly -- never a vendored `plugins/*/
     hooks/` copy or the archived `_FIXTURE.plugin_root` snapshot -- for the
     same reason `AncestryDocumentedFlowTest`/`PrerequisiteRefusalTest` do:
-    T-13's diff lands in `core/`, staged, not committed, so an archived-HEAD
-    fixture would not see it at all. `build_consumer_repo`'s own `_git`
-    helper pins `init.defaultBranch=main`, so a freshly built
+    the canonical source is the immediate candidate under test, while the
+    archived fixture is deliberately commit-bound. `build_consumer_repo`'s
+    own `_git` helper pins `init.defaultBranch=main`, so a freshly built
     `_BackfillFixture` is ALREADY on the protected branch this class
     exercises without any extra setup -- the feature-branch case is the one
     that needs an explicit checkout."""
@@ -3997,10 +4001,10 @@ class BackfillBranchRefusalTest(unittest.TestCase):
 #                                     BackfillBranchRefusalTest,
 #                                     AncestryDocumentedFlowTest) proves it
 #                                     in isolation only.
-#   AncestryOldVsNewBehaviorTest      the OLD (pre-sprint, committed HEAD)
+#   AncestryOldVsNewBehaviorTest      the OLD (pinned pre-sprint commit)
 #                                     lane run for real against the exact
 #                                     hazard #570 finding BODY-03 names,
-#                                     contrasted with the NEW (working-tree)
+#                                     contrasted with the NEW current tree
 #                                     lane on the identical fixture --
 #                                     proving the OLD lane had no mechanism
 #                                     to refuse at all, not merely that a
@@ -4041,13 +4045,10 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
 
     Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
     `core/pysrc/_releaselib.py`/`_gitexec.py` directly -- never the
-    archived `_FIXTURE.plugin_root` (pre-sprint `git archive HEAD` bytes;
-    see `AncestryOldVsNewBehaviorTest`'s docstring for why that snapshot is
-    the WRONG fixture for anything this sprint changed) -- for the same
+    archived `_FIXTURE.plugin_root` (`git archive HEAD` bytes) -- for the same
     reason `AncestryDocumentedFlowTest`/`PrerequisiteRefusalTest`/
-    `BackfillBranchRefusalTest` do: T-10 through T-15's diff lands in
-    `core/`, staged but not committed, so `git archive HEAD` cannot see
-    it."""
+    `BackfillBranchRefusalTest` do: the canonical source is the immediate
+    candidate under test, while the archived fixture is commit-bound."""
 
     @classmethod
     def setUpClass(cls):
@@ -4071,9 +4072,8 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
         # substituted to the `claude`-host spelling `${CLAUDE_PLUGIN_ROOT}`)
         # -- its own hardcoded `root_mapping` only knows that spelling. This
         # class instead needs the CANONICAL `core/surface/...` text for
-        # Stages 1-6 (T-10 through T-15's diff is staged, not committed, so
-        # only the canonical source carries it) -- so the one substring
-        # substitution `tools/build-surface.py`'s own `claude`-host
+        # Stages 1-6 so it can exercise the immediate candidate -- so the
+        # one substring substitution `tools/build-surface.py`'s own `claude`-host
         # rendering performs for this token is replicated here, once, for
         # Stage 7's reuse of the shared driver. No other token in the six
         # anchored invocations needs it (verified: none of them contain
@@ -4274,15 +4274,15 @@ class AncestryOldVsNewBehaviorTest(unittest.TestCase):
     `_FIXTURE.plugin_root` (and every other class in this module) reads
     `core/pysrc/_releaselib.py` and `core/surface/skills/release/SKILL.md`
     either from the CURRENT working tree directly, or from a `git archive
-    HEAD` snapshot -- and both of those are the WORKING-TREE (NEW) state:
-    T-10/T-11's diff is staged, not committed, so `HEAD` itself still
-    carries the OLD, pre-sprint bytes. That makes `git show HEAD:<path>` a
-    free, hermetic, exact-byte OLD-behavior oracle with no network and no
-    history rewriting -- confirmed directly: `HEAD`'s copy of
+    HEAD` snapshot -- and both of those are the NEW state after this sprint
+    is committed. The exact pre-sprint tree is therefore pinned by
+    `_ANCESTRY_PRE_FIX_COMMIT`; `git show <pinned>:<path>` is a hermetic,
+    exact-byte OLD-behavior oracle with no network and no history rewriting
+    and does not silently move when HEAD advances. The pinned copy of
     `core/pysrc/_releaselib.py` contains zero occurrences of
     `verify-tag-ancestor` (`test_old_bytes_have_no_ancestry_verification_at_all`
     proves this as a class-level precondition, not merely asserted in this
-    docstring), and `HEAD`'s copy of `SKILL.md` has no "Verify it
+    docstring), and the pinned copy of `SKILL.md` has no "Verify it
     immediately, before" step between LAST_TAG resolution and Phase 1 --
     the whole ancestry-verification step is new, not merely relocated.
 
@@ -4298,19 +4298,20 @@ class AncestryOldVsNewBehaviorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        old_ref = _ANCESTRY_PRE_FIX_COMMIT
         old_skill = subprocess.run(
-            ["git", "show", "HEAD:core/surface/skills/release/SKILL.md"],
+            ["git", "show", f"{old_ref}:core/surface/skills/release/SKILL.md"],
             cwd=REPO_ROOT, capture_output=True, encoding="utf-8",
             timeout=GIT_TIMEOUT)
         assert old_skill.returncode == 0, old_skill.stderr
         cls.old_skill_text = old_skill.stdout
         old_lib = subprocess.run(
-            ["git", "show", "HEAD:core/pysrc/_releaselib.py"],
+            ["git", "show", f"{old_ref}:core/pysrc/_releaselib.py"],
             cwd=REPO_ROOT, capture_output=True, encoding="utf-8",
             timeout=GIT_TIMEOUT)
         assert old_lib.returncode == 0, old_lib.stderr
         old_gitexec = subprocess.run(
-            ["git", "show", "HEAD:core/pysrc/_gitexec.py"],
+            ["git", "show", f"{old_ref}:core/pysrc/_gitexec.py"],
             cwd=REPO_ROOT, capture_output=True, encoding="utf-8",
             timeout=GIT_TIMEOUT)
         assert old_gitexec.returncode == 0, old_gitexec.stderr
