@@ -240,6 +240,35 @@ class PublicCodexDocsTest(unittest.TestCase):
                     capture_output=True,
                     check=True,
                 )
+                files = {}
+                with zipfile.ZipFile(candidate) as archive:
+                    for entry in archive.infolist():
+                        if entry.is_dir():
+                            continue
+                        self.assertTrue(
+                            entry.filename.startswith("plugins/ca-codex/"),
+                            "historical Codex candidate escaped its package root",
+                        )
+                        relative = entry.filename.removeprefix("plugins/ca-codex/")
+                        self.assertTrue(relative)
+                        self.assertNotIn(relative, files)
+                        files[relative] = archive.read(entry)
+                manifest = json.loads(
+                    files[".codex-plugin/plugin.json"]
+                )
+                package_manifest = {
+                    "files": [
+                        {"path": path, "sha256": hashlib.sha256(content).hexdigest()}
+                        for path, content in sorted(files.items())
+                    ]
+                }
+                return {
+                    "verdict": "PASS",
+                    "plugin_version": manifest["version"],
+                    "package_sha256": hashlib.sha256(json.dumps(
+                        package_manifest, sort_keys=True, separators=(",", ":"),
+                    ).encode("utf-8")).hexdigest(),
+                }
             result = subprocess.run(
                 [
                     sys.executable,
@@ -430,6 +459,7 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIsNotNone(marker_match)
         marker = json.loads(marker_match.group("meta"))
         corrupted = dict(marker)
+        corrupted["adapter_version"] = manifest["version"]
         corrupted["candidate_package_sha256"] = "0" * 64
         corrupted_runbook = runbook.replace(
             marker_match.group("meta"),
