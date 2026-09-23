@@ -77,7 +77,9 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        # macOS may spell the temporary root through /var -> /private/var.
+        # The packager intentionally requires a canonical, real package root.
+        self.root = Path(self.temporary.name).resolve(strict=True)
         self.package_root = self.root / "packages"
         self.package_root.mkdir()
         self.catalog = (

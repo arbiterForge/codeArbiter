@@ -270,9 +270,11 @@ class AuthorityAdapterTest(unittest.TestCase):
             self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
             request_nonce="request-root-alias",
         )
-        relative_alias = Path(os.path.relpath(self.root, Path.cwd()))
+        # Keep the alias on the same volume; Windows CI checks out on D: while
+        # its temporary repository lives on C:.
+        root_alias = self.root / ".." / self.root.name
         self.assertEqual(
-            self.adapter._load(relative_alias, armed["request_id"])["request_id"],
+            self.adapter._load(root_alias, armed["request_id"])["request_id"],
             armed["request_id"],
         )
 
