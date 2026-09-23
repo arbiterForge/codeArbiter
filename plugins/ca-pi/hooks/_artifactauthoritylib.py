@@ -180,6 +180,9 @@ def _request_path(request_id: str) -> Path:
 
 def _spool_root(root: Path) -> Path:
     try:
+        # Callers may supply an alias for the same repository (notably /var on
+        # macOS). Use the canonical root for both Git and the spool identity.
+        root = _real_root(root)
         result = subprocess.run(
             [git_executable(), "-C", str(root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8",
