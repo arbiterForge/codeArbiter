@@ -93,7 +93,7 @@ jobs:
           previous=subprocess.check_output(['git','show',base+':'+gate],text=True)
           current=(root/gate).read_text()
           assert previous[previous.index('## Pre-flight'):]==current[current.index('## Pre-flight'):]
-          for name in ['core/command-routes.json','core/hosts.json','core/surface/arbiter.md']:
+          for name in ['core/surface/command-routes.json','core/hosts.json','core/surface/arbiter.md']:
               assert (root/name).read_bytes()==subprocess.check_output(['git','show',base+':'+name])
           subprocess.run(['git','add','--',*sorted(expected)],check=True)
           subprocess.run(['git','rm','--',temporary],check=True)
