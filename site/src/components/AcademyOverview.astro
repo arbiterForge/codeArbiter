@@ -113,7 +113,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
                 </nav>
               )}
               {step.action.variants.length > 0 && (
-                <div class="academy-action__commands">
+                <div class="academy-action__commands" data-ca-layout="peers">
                   {step.action.variants.map((variant) => (
                     <section class="academy-command">
                       <p class="academy-command__label">{variantLabel(variant)}</p>
@@ -154,7 +154,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
     <p class="academy-overview__eyebrow">Curriculum</p>
     <h2 id="academy-curriculum-title">Progress from safe foundations to advanced operation.</h2>
 
-    <div class="academy-overview__tracks">
+    <div class="academy-overview__tracks" data-ca-layout="peers">
       {tracks.map((track) => {
         const [firstTrackLesson, ...remainingLessons] = track.lessons;
         return (
@@ -182,7 +182,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
             {remainingLessons.length > 0 && (
               <details class="academy-overview__more" id={`track-${track.id}-more`}>
                 <summary>Show {remainingLessons.length} more {track.label} lessons</summary>
-                <div class="academy-overview__lesson-list">
+                <div class="academy-overview__lesson-list" data-ca-layout="peers">
                   {remainingLessons.map((lesson) => (
                     <article class="academy-overview__lesson ca-panel" data-academy-lesson={lesson.id}>
                       <h4><a href={lessonHref(lesson.id)}>{lesson.guide.title}</a></h4>

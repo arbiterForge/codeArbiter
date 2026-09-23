@@ -8,7 +8,7 @@ const records = [
 ---
 <div class="ca-blueprint ca-exhibit" data-example="blueprint">
   <p class="ca-kicker">The project before the first feature</p>
-  <div class="ca-blueprint-grid">{records.map((record) => <article>
+  <div class="ca-blueprint-grid" data-ca-layout="peers">{records.map((record) => <article>
     <span class="ca-blueprint-number" aria-hidden="true">{record.number}</span>
     <h3>{record.name}</h3><p class="ca-connection">{record.question}</p><p>{record.content}</p>
     <a href={`${base}/examples/greenfield/${record.file}`}>Read {record.file}</a>

@@ -4,7 +4,7 @@ interface Props { label: string; labels: string[] }
 const { label, labels } = Astro.props;
 ---
 <ca-example-choices class="ca-example-choices">
-  <div class="ca-example-controls" role="group" aria-label={label} hidden>
+  <div class="ca-example-controls" data-ca-layout="peers" role="group" aria-label={label} hidden>
     {labels.map((text, index) => <button type="button" data-choice={index} aria-pressed={index === 0 ? 'true' : 'false'}>{text}</button>)}
   </div>
   <slot />

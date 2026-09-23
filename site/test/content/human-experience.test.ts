@@ -32,7 +32,7 @@ describe("human-operable product window", () => {
   });
 
   it("does not tell new HTML sprints to use the legacy farm", () => {
-    expect(read("src/content/docs/guides/autonomous-sprints.md")).toContain("HTML plans cannot use `--farm`");
+    expect(read("src/content/docs/guides/autonomous-sprints.mdx")).toContain("HTML plans cannot use `--farm`");
     expect(read("src/content/docs/codearbiter-directory.md")).not.toContain("a plan that referenced the missing spec\nstill runs");
   });
 
@@ -72,10 +72,10 @@ describe("human-operable product window", () => {
     expect(guide).toContain("| Claude Code | Host-observed prompt approval | Not supported");
     expect(guide).toContain("| Codex | Host-observed prompt approval | Codex-only");
     expect(guide).toContain("| Pi | Not supported | Not supported");
-    for (const path of ["guides/first-feature.mdx", "guides/feature-lane.md", "guides/autonomous-sprints.md", "concepts/artifacts.md"]) {
+    for (const path of ["guides/first-feature.mdx", "guides/feature-lane.mdx", "guides/autonomous-sprints.mdx", "concepts/artifacts.md"]) {
       expect(read(`src/content/docs/${path}`)).toContain("/guides/review-artifacts/#check-your-hosts-authority-capability");
     }
-    expect(read("src/content/docs/guides/feature-lane.md")).not.toContain("The persisted artifacts and gates are the same.");
+    expect(read("src/content/docs/guides/feature-lane.mdx")).not.toContain("The persisted artifacts and gates are the same.");
     expect(read("src/components/HostViews.astro")).toContain("verification and review authority are not supported");
   });
 
@@ -83,7 +83,7 @@ describe("human-operable product window", () => {
     const adapter = read("../core/pysrc/_approvallib.py");
     expect(adapter).toContain("PENDING_APPROVAL");
     expect(adapter).toContain('"reply": f"approve {artifact_id} {token}"');
-    const guide = read("src/content/docs/guides/autonomous-sprints.md");
+    const guide = read("src/content/docs/guides/autonomous-sprints.mdx");
     expect(guide).toContain("current typed adapter arms one artifact at a time");
     expect(guide).not.toContain("This is not two approvals.");
     expect(guide).not.toContain("record the accepted task state on disk");

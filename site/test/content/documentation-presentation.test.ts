@@ -207,7 +207,7 @@ describe("documentation presentation regressions", () => {
   });
 
   it("OBL-CONTENT-07 presents repository opt-in as a three-host contract", () => {
-    const optIn = readFileSync(join(docsRoot, "guides", "opt-in-a-repo.md"), "utf8");
+    const optIn = readFileSync(join(docsRoot, "guides", "opt-in-a-repo.mdx"), "utf8");
 
     expect(optIn).toMatch(/shared by Claude Code, Codex, and Pi/);
     expect(optIn).toContain("/ca-init");

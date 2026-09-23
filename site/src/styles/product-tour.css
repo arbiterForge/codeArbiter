@@ -38,8 +38,3 @@
 .ca-exhibit pre.ca-terminal { font-size:0.72rem; line-height:1.6; white-space:pre; overflow:auto; }
 .ca-terminal code,.ca-terminal span { font-family:var(--ca-font-mono); letter-spacing:0; }
 @media (forced-colors:active) { .ca-terminal span { color:CanvasText !important; background:Canvas !important; } }
-
-/* Markdown's adjacent-sibling margins must not stagger grid cards or selectors. */
-.ca-exhibit .ca-example-controls > button,
-.ca-exhibit .ca-proof-columns > *,
-.ca-exhibit .ca-blueprint-grid > article { margin-block-start:0; }

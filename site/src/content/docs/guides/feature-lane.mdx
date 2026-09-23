@@ -11,6 +11,8 @@ journey:
   proof: "You can locate each persisted artifact and name the gate that must clear before the next phase begins."
 ---
 
+import ReaderJourney from '../../../components/ReaderJourney.astro';
+
 `/ca:feature` is the one entry point for new implementation work. Run it with a one-line description of what you want built:
 
 ```text
@@ -26,9 +28,51 @@ journey:
 </div>
 
 The lane runs in order and gates at each transition. Nothing moves until the previous gate clears.
-Each piece loads only when the lane reaches it: the command you run, the skills it routes through,
-and the author and reviewer agents it dispatches on demand.
+Start with the artifacts and decisions below. The expandable implementation view names the
+commands, skills and agents behind the lane.
 
+<ReaderJourney
+  id={"feature-reading-map"}
+  title={"Intent → specification → plan → reviewed delivery"}
+  boundary={"Full-lane overview. New typed HTML work requires the applicable installed-host capabilities. Small-lane work and retained Markdown pairs follow the distinct paths below."}
+  steps={[
+  {
+    "actor": "You set the outcome",
+    "title": "Review the specification",
+    "artifact": "A specification with observable acceptance criteria, exclusions and verification oracles.",
+    "review": "Correct missing behavior, then approve the exact specification through the host prompt. Opening HTML is not approval.",
+    "href": "/guides/review-artifacts/",
+    "linkLabel": "Use the artifact review checklist"
+  },
+  {
+    "actor": "You review the approach",
+    "title": "Approve the linked plan",
+    "artifact": "Tasks with exact paths, dependencies and checks linked to the specification criteria.",
+    "review": "Confirm coverage and the approved-spec binding. Approve the current plan before execution.",
+    "href": "/reference/skills/writing-plans/",
+    "linkLabel": "Inspect the planning contract"
+  },
+  {
+    "actor": "codeArbiter works; you review batches",
+    "title": "Test, implement, review",
+    "artifact": "Observed failing then passing tests, reviewer findings and current task evidence.",
+    "review": "Resolve blocking findings and review each batch before continuing. A typed task in REVIEW is not yet accepted.",
+    "href": "/guides/first-feature/",
+    "linkLabel": "Follow the worked feature"
+  },
+  {
+    "actor": "You retain delivery authority",
+    "title": "Inspect the commit and PR",
+    "artifact": "A selectively staged commit and a pull request with fresh verification for the current source.",
+    "review": "Check accepted scope, criterion coverage and unresolved findings. A PR is not a merge or a deployment.",
+    "href": "/reference/commands/pr/",
+    "linkLabel": "Review the PR boundary"
+  }
+]}
+/>
+
+<details class="ca-implementation-view">
+  <summary>Implementation routing: commands, skills and agents</summary>
 <figure class="ca-diagram">
   <img
     src="/diagrams/lane-feature.svg"
@@ -39,6 +83,7 @@ and the author and reviewer agents it dispatches on demand.
   />
   <figcaption>The <code>/ca:feature</code> lane by piece type: commands (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
 </figure>
+</details>
 
 ## See one complete example
 

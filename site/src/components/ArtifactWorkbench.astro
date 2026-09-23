@@ -12,7 +12,7 @@ const url = `${base}/examples/saved-searches`;
   </header>
   <p>Choose a criterion to follow its connection into the plan. These are real native-rendered drafts, not a live coding session.</p>
   <ExampleChoices label="Choose an acceptance criterion" labels={example.criteria.map((criterion) => `${criterion.id} · ${criterion.title}`)}>
-    {example.criteria.map((criterion) => <section data-pane class="ca-proof-columns" aria-label={criterion.title}>
+    {example.criteria.map((criterion) => <section data-pane class="ca-proof-columns" data-ca-layout="peers" aria-label={criterion.title}>
       <div class="ca-record">
         <p class="ca-record-type">Specification <span>Draft</span></p>
         <h4>{criterion.id} · {criterion.title}</h4>

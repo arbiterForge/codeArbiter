@@ -136,3 +136,27 @@ Before merging changes to demonstrations, run the fixture integrity tests, actua
 checks, the existing site checks and the production-browser tests. Inspect desktop and narrow
 screens. Browser accessibility automation is not screen-reader or real-user certification. The
 human acceptance task is to perform the guide without the author supplying an omitted step.
+
+
+## Peer cards and reader-first workflow maps
+
+Opt a component's peer list or grid into `data-ca-layout="peers"` when its `gap`
+owns sibling spacing. The shared rule removes direct-child block margins only.
+Do not apply Markdown's adjacent-sibling spacing as well: it offsets later cards
+and reduces their stretched border-box height while the first fills the row.
+Keep equal column widths and aligned card boundaries within a row. In a single
+column, different amounts of content may produce different heights. Do not hide
+content, truncate warnings, or impose fixed heights merely to make cards equal.
+Intentional split layouts and prose spacing are not peer-card defects.
+
+Workflow guides introduce what readers receive, what they must inspect or decide,
+and what evidence permits continuation before exposing implementation routing.
+Use `ReaderJourney` for a static, ordered four-step map; label its lane and host
+boundary. It is an explanatory sequence, never live status, an execution trace,
+or evidence that any step has completed. Keep the detailed implementation diagram
+in a native disclosure and retain the full operating procedure below it.
+
+Verify peer geometry from computed browser styles at desktop, tablet and narrow
+widths, including expanded Academy lists and every selectable exhibit state.
+Check reading order, keyboard disclosure, no-script access, forced colors, print,
+and non-root links. Inspect actual captures, not only a green overflow test.
