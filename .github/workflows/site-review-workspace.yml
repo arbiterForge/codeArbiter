@@ -1,6 +1,6 @@
 name: Temporary site review workspace
 
-# Branch-only source/dependency transfer for the requested documentation PR.
+# Branch-only fixture preparation for the requested documentation PR.
 # No write token, deployment, tag, release, or branch update is performed.
 on:
   pull_request:
@@ -20,24 +20,28 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          node-version: 22
-      - name: Install exact existing site dependency lock
-        working-directory: site
-        run: npm ci
-      - name: Export source, Git objects and locked dependencies without credentials
+          go-version: '1.27.1'
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Prepare exact source renderer for documentation fixtures
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/site-review-export"
-          git bundle create "$RUNNER_TEMP/site-review-export/source.bundle" --all
-          git rev-parse HEAD > "$RUNNER_TEMP/site-review-export/source-commit.txt"
-          tar --exclude='./.git' --exclude='./academy-source/.git' -czf "$RUNNER_TEMP/site-review-export/workspace.tgz" .
-          cd "$RUNNER_TEMP/site-review-export"
-          sha256sum source.bundle workspace.tgz > SHA256SUMS
+          mkdir -p "$RUNNER_TEMP/site-review-native"
+          test "$(go env GOVERSION)" = go1.27.1
+          git -C academy-source bundle create "$RUNNER_TEMP/site-review-native/academy.bundle" --all
+          git -C academy-source rev-parse HEAD > "$RUNNER_TEMP/site-review-native/academy-commit.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/site-review-native/source-commit.txt"
+          go version > "$RUNNER_TEMP/site-review-native/toolchain.txt"
+          cd core/artifacts
+          go build -trimpath -o "$RUNNER_TEMP/site-review-native/ca-artifact" ./cmd/ca-artifact
+          cd "$RUNNER_TEMP/site-review-native"
+          sha256sum academy.bundle ca-artifact > SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: site-review-workspace
-          path: ${{ runner.temp }}/site-review-export/
+          name: site-review-native-context
+          path: ${{ runner.temp }}/site-review-native/
           retention-days: 1
