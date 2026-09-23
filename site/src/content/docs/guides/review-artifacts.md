@@ -19,7 +19,7 @@ native-rendered draft pair without installing or approving anything.
 
 | Work | Expected form | Important boundary |
 |---|---|---|
-| Greenfield project planning | Three exact named Markdown documents under `plans/` | Architecture, roadmap and project backlog, not feature execution artifacts |
+| Greenfield project planning | Three exact named Markdown documents under `.codearbiter/plans/` | Architecture, roadmap and project backlog, not feature execution artifacts |
 | New full-lane feature or sprint | `specs/<slug>.html` and `plans/<slug>.html` under `.codearbiter/` | Requires the installed adapter's qualified native artifact capability |
 | An existing Markdown feature pair | Its existing matching `.md` specification and plan | Remains authoritative on that exact legacy path; no implicit conversion |
 | A small-lane change | Confirmed inline mini-spec and triage record | Does not require a new full HTML pair solely for consistency |

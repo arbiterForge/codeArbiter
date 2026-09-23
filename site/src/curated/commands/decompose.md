@@ -9,8 +9,8 @@ gates:
     when: throughout the interview
     effect: each of the six layers writes to disk as it's answered, so closing the session mid-interview loses nothing
   - gate: initialization lock
-    when: at the end of the interview
-    effect: the completion marker is written only once every required doc is present and non-empty
+    when: after explicit approval and project-state population
+    effect: the completion marker is written only after all three planning documents are approved and every required populated doc is present and non-empty
 ---
 
 ## What it does
@@ -20,9 +20,9 @@ architecture, it runs a long, structured interview — six layers covering purpo
 vocabulary, and constraints — pushing back on vague answers and naming the complexity a quick answer
 tends to hide. Because a real interview like this can span multiple sessions, every layer is saved as
 it's completed rather than held in memory until the end, so a context reset or a closed terminal
-doesn't cost you the earlier answers. Once all six layers are solid, the surviving documents get
-written to the project's state directory and the project is marked initialized — only then does
-normal operation resume.
+doesn't cost you the earlier answers. Once all six layers are solid, all three planning documents are written, reviewed, and explicitly approved
+before project-state population and the initialization lock. Completing the interview alone
+does not mark the project initialized.
 
 ## What you receive and approve
 

@@ -102,6 +102,17 @@ describe("human-operable product window", () => {
     expect(read("src/components/RecoveryExplorer.astro")).toContain("AUTHORITY_UNVERIFIED");
   });
 
+  it("keeps curated review guidance aligned with the producer contract", () => {
+    const decompose = read("src/curated/commands/decompose.md");
+    expect(decompose).toContain("all three planning documents are written, reviewed, and explicitly approved");
+    expect(read("../core/surface/skills/decompose/SKILL.md")).toContain("the user explicitly approves all three");
+    expect(read("src/curated/skills/brainstorming.md")).not.toContain("single test");
+    expect(read("src/curated/skills/brainstorming.md")).toContain("one or more named tests");
+    expect(read("../core/surface/skills/brainstorming/SKILL.md")).toContain("one or more focused tests");
+    expect(read("src/content/docs/guides/review-artifacts.md")).toContain("Three exact named Markdown documents under `.codearbiter/plans/`");
+    expect(read("examples/README.md")).toContain("capabilities, create, identity, validate and eligible");
+  });
+
   it("loads a real, draft-only native-rendered pair with complete criterion coverage", () => {
     const example = loadProductExample();
     expect(example.spec.governance.state).toBe("draft");

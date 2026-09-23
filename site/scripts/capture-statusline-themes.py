@@ -18,13 +18,27 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE_COMMIT = 'b41d9803eacb3acf4b93c8bec81e1aa2f086aec7'
 HOOKS = ROOT / 'plugins/ca/hooks'
+def pinned_source(path):
+    relative = path.relative_to(ROOT).as_posix()
+    pinned = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{SOURCE_COMMIT}:{relative}'])
+    if path.read_bytes() != pinned:
+        raise RuntimeError(f'Renderer dependency changed: {relative}; review the source pin before recapture')
+    return hashlib.sha256(pinned).hexdigest()
+
+
+# Bind the entry point before executing it, not only its imported dependencies.
+renderer = HOOKS / 'statusline.py'
+source_files = {renderer.relative_to(ROOT).as_posix(): pinned_source(renderer)}
 sys.path.insert(0, str(HOOKS))
-spec = importlib.util.spec_from_file_location('ca_site_statusline', HOOKS / 'statusline.py')
+spec = importlib.util.spec_from_file_location('ca_site_statusline', renderer)
+if spec is None or spec.loader is None:
+    raise RuntimeError('Unable to load the pinned statusline renderer')
 sl = importlib.util.module_from_spec(spec)
+# Match normal import semantics, including dataclass/annotation module lookup.
+sys.modules[spec.name] = sl
 spec.loader.exec_module(sl)
 
 # Refuse to attach the pinned source identity to different renderer dependencies.
-source_files = {}
 for module in list(sys.modules.values()):
     filename = getattr(module, '__file__', None)
     if not filename:
@@ -32,11 +46,7 @@ for module in list(sys.modules.values()):
     path = Path(filename).resolve()
     if not path.is_relative_to(HOOKS) or path.suffix != '.py':
         continue
-    relative = path.relative_to(ROOT).as_posix()
-    pinned = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{SOURCE_COMMIT}:{relative}'])
-    if path.read_bytes() != pinned:
-        raise RuntimeError(f'Renderer dependency changed: {relative}; review the source pin before recapture')
-    source_files[relative] = hashlib.sha256(pinned).hexdigest()
+    source_files[path.relative_to(ROOT).as_posix()] = pinned_source(path)
 
 payload = {'session_id': 'documentation-fixture', 'cwd': '/example/saved-searches',
            'workspace': {'current_dir': '/example/saved-searches', 'repo': {'owner': 'example', 'name': 'saved-searches'}},

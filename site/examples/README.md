@@ -13,12 +13,14 @@ The saved-search example separates three kinds of evidence:
 only in temporary repositories. It refuses a binary that differs from the recorded hosted build.
 To update that build, review its source tree and provenance and intentionally update the pin;
 this documentation helper must never become the installed product's binary-resolution mechanism.
-The script invokes create, identity, validate and eligible. It never invokes approve, capture,
+The script invokes capabilities, create, identity, validate and eligible. It never invokes approve, capture,
 accept-scope, a model provider, or a product commit/release lane.
 
 `python site/scripts/capture-statusline-themes.py` calls the existing statusline renderer with
 isolated mocked project/session/accounting reads. It emits ANSI capture data for five actual
-palettes, not live usage. The site decodes a bounded SGR subset into escaped text spans.
+palettes, not live usage. The renderer itself and every loaded hook dependency must match the
+recorded source commit before capture proceeds; a different checkout fails rather than being
+mislabelled. The site decodes a bounded SGR subset into escaped text spans.
 
 The greenfield Markdown documents are authored examples, not generated interview evidence. They
 intentionally expose unresolved questions and must not be presented as approved initialization.
