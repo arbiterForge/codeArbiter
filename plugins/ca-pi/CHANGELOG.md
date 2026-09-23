@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.14.8] - 2026-09-22
+## [0.14.9] - 2026-09-22
 
 ### Fixed
 
@@ -13,6 +13,11 @@ All notable changes to `ca-pi` are documented in this file.
 - Recover ordinary quality failures inside an approved sprint through
   the original gates and current typed evidence, without adding routine
   user checkpoints or expanding authority. HTML farm remains disabled.
+
+## [0.14.8] - 2026-09-22
+
+### Fixed
+
 - Bound the internal release-tree Git status probe with a timeout so it
   reports an actionable failure instead of hanging or being mistaken for a
   mutation (#627).

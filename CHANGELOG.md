@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.8] - 2026-09-22
+## [2.21.9] - 2026-09-22
 
 ### Fixed
 
@@ -21,6 +21,11 @@ predate the plugin rewrite and are grouped by date.
 - Recover ordinary quality failures inside an approved sprint through
   the original gates and current typed evidence, without adding routine
   user checkpoints or expanding authority. HTML farm remains disabled.
+
+## [2.21.8] - 2026-09-22
+
+### Fixed
+
 - Bound the internal release-tree Git status probe with a timeout so it
   reports an actionable failure instead of hanging or being mistaken for a
   mutation (#627).
