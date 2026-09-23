@@ -39,9 +39,13 @@ HOOK_COMMAND = {
         r'^python "\$\{PLUGIN_ROOT\}/hooks/([A-Za-z0-9._-]+\.py)"$'
     ),
 }
-EXPECTED_HOOK_MANIFEST_SHA256 = (
-    "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47"
-)
+# Keep the currently published inventory valid while preauthorizing the exact
+# reviewed authority-hook inventory for its follow-up PR. No structural
+# superset is accepted: every candidate must match one complete known digest.
+APPROVED_HOOK_MANIFEST_SHA256 = frozenset((
+    "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
+    "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
+))
 
 
 class _DuplicateJsonMember(ValueError):
@@ -213,7 +217,7 @@ def _candidate_hook_targets(hooks: object) -> list[str]:
                         )
                     targets.append(f"hooks/{match.group(1)}")
     canonical = json.dumps(hooks, separators=(",", ":"), sort_keys=True)
-    if _sha256_text(canonical) != EXPECTED_HOOK_MANIFEST_SHA256:
+    if _sha256_text(canonical) not in APPROVED_HOOK_MANIFEST_SHA256:
         raise ValueError("candidate hook inventory does not match the approved contract")
     return targets
 

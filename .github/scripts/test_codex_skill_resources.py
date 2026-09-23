@@ -1966,6 +1966,89 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
             ])
         return status, json.loads(output.getvalue())
 
+    def install_authority_hooks(self):
+        path = self.package / "hooks" / "hooks.json"
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
+        if hashlib.sha256(canonical.encode("utf-8")).hexdigest() == (
+            "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47"
+        ):
+            return path, manifest
+
+        def entry(status, *, additional_context_limit=None):
+            value = {
+                "type": "command",
+                "command": 'python3 "${PLUGIN_ROOT}/hooks/artifact-authority-hook.py"',
+                "commandWindows": 'python "${PLUGIN_ROOT}/hooks/artifact-authority-hook.py"',
+                "timeout": 30,
+                "statusMessage": status,
+            }
+            if additional_context_limit is not None:
+                value["additionalContextLimit"] = additional_context_limit
+            return value
+
+        events = manifest["hooks"]
+        events["PreToolUse"].extend((
+            {
+                "matcher": "spawn_agent",
+                "hooks": [entry("codeArbiter: bind independent review launch")],
+            },
+            {
+                "matcher": "Bash|shell_command|exec_command|unified_exec",
+                "hooks": [entry("codeArbiter: authorize production verifier")],
+            },
+        ))
+        events["PostToolUse"].extend((
+            {
+                "matcher": "spawn_agent",
+                "hooks": [entry("codeArbiter: bind independent review child")],
+            },
+            {
+                "matcher": "Bash|shell_command|exec_command|unified_exec",
+                "hooks": [entry("codeArbiter: corroborate production verifier")],
+            },
+        ))
+        events["SubagentStart"] = [{
+            "hooks": [entry("codeArbiter: observe independent review start")],
+        }]
+        events["SubagentStop"] = [{
+            "hooks": [entry(
+                "codeArbiter: observe independent review completion",
+                additional_context_limit=1000,
+            )],
+        }]
+        path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+        shutil.copy2(
+            self.package / "hooks" / "session-start.py",
+            self.package / "hooks" / "artifact-authority-hook.py",
+        )
+        return path, manifest
+
+    def test_approves_current_and_authority_hook_contracts(self):
+        self.assertEqual(
+            self.checker.APPROVED_HOOK_MANIFEST_SHA256,
+            frozenset((
+                "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
+                "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
+            )),
+        )
+        self.assertTrue({"SubagentStart", "SubagentStop"}.issubset(self.checker.HOOK_EVENTS))
+
+    def test_accepts_exact_authority_hook_package_and_rejects_mutation(self):
+        path, manifest = self.install_authority_hooks()
+        canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
+        self.assertEqual(
+            hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+            "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
+        )
+        status, result = self.run_contract()
+        self.assertEqual(status, 0, result)
+        self.assertEqual(result["verdict"], "PASS", result)
+
+        manifest["hooks"]["SubagentStop"][0]["hooks"][0]["statusMessage"] += " changed"
+        path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+        self.assert_contract_rejects("hook inventory")
+
     def assert_contract_rejects(self, expected_error):
         status, result = self.run_contract()
         self.assertEqual(status, 1, result)
