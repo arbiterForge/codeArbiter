@@ -33,8 +33,31 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.8","candidate_commit":"6ee16b65990570b0de65031839eba61e138432af","candidate_source_tree":"2886a80aef4374d455148032564f19e72f2366be","candidate_package_sha256":"bd1a59b8be937b017df9b583bc30bfa88bf93bb88b55e06fca748a5b59cc806b","candidate_ci_run_id":35803430179,"candidate_ci_run_attempt":1,"candidate_artifact_id":10727031394,"candidate_artifact_sha256":"f7e16d4531ebedb29cac7961645a0f3ea2d36a91cc08e8ff34246f295bf493bc","candidate_archive_sha256":"7bdc81636330b2e94e2e918187a3592fca88e38a6746a050161ab9b353e80b45","run_head_sha":"42a2f1ce479b06e4d8002148a34bc0281d55a527","pr_number":845,"pr_head_sha":"42a2f1ce479b06e4d8002148a34bc0281d55a527","pr_head_ref":"worktree-release-contract-closure","pr_base_sha":"7352de3703deba1e56981b49af7de37f5fb86028","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.8**, Windows,
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.9","candidate_commit":"dd36450b195091f212dc9c64a29d974ecd59cf38","candidate_source_tree":"e779b819691bdd2319ccc3bdd92bc7c65f460573","candidate_package_sha256":"8bbb400b2044b2a3c70df0f4c255fbf855bcdf17fc623410d053801f63e05e3e","candidate_ci_run_id":35812293356,"candidate_ci_run_attempt":1,"candidate_artifact_id":10731005860,"candidate_artifact_sha256":"83a5c08fdce2edc361ca18046ed5831e15b3e5ca50825739f96a12a11b60d737","candidate_archive_sha256":"d57b29df79ecf83e700f9e05e8bbb79fbdeb7cc4e34bcae7a3e5c6ff75cbc79d","run_head_sha":"e18952d4f6f721c186e21adcca1dc89c0f5d7d6f","pr_number":844,"pr_head_sha":"e18952d4f6f721c186e21adcca1dc89c0f5d7d6f","pr_head_ref":"codex/artifact-production-authority","pr_base_sha":"32e3496ae2d7ab3b2373ee669871def3228dedc4","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
+2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
+exact 0.13.9 package from pull-request qualification run `35812293356`, attempt 1, artifact
+`10731005860`. All six native qualifications and 18 cold-package cells passed. The producer checkout
+was `dd36450b195091f212dc9c64a29d974ecd59cf38`, with source tree
+`e779b819691bdd2319ccc3bdd92bc7c65f460573`; the PR head and base are recorded separately so this
+preview proof does not imply a future merge commit exists. The release archive has digest
+`sha256:d57b29df79ecf83e700f9e05e8bbb79fbdeb7cc4e34bcae7a3e5c6ff75cbc79d`, and its canonical
+tracked candidate content has digest
+`sha256:8bbb400b2044b2a3c70df0f4c255fbf855bcdf17fc623410d053801f63e05e3e`. The artifact cohort
+receipt matched all 233 package members, including 225 source-origin members matched to the exact
+synthetic candidate checkout. All 232 installed plugin members matched the verified archive. The
+isolated task received repository startup state through SessionStart context, including `host: codex`.
+The doctor reported 13 OK, 0 WARN, and 0 FAIL, including the Windows/AMD64 artifact capability and live Git-hook
+backstop. The broad-staging dry-run was denied exactly once with `[H-03]` before execution, the index
+remained clean, and the only checkout delta was the expected append-only H-03 audit line. An initial
+noninteractive attempt was denied by Codex tool policy before diagnostics; it is not counted as proof.
+The successful retry used Codex's explicit automation approval and hook-trust bypass in the disposable
+checkout only, after verifying the CI archive; it did not change persistent desktop hook trust. This
+refreshes assembled-package selection, SessionStart delivery, current-model doctor health, native
+payload availability, and the live H-03 boundary. It does not
+claim that the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.8**, Windows,
 2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
 exact 0.13.8 package from pull-request qualification run `35803430179`, attempt 1, artifact
 `10727031394`. The producer checkout was `6ee16b65990570b0de65031839eba61e138432af`, with source tree
