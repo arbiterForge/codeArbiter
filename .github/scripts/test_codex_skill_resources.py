@@ -1966,6 +1966,16 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
             ])
         return status, json.loads(output.getvalue())
 
+    def test_approves_current_and_authority_hook_contracts(self):
+        self.assertEqual(
+            self.checker.APPROVED_HOOK_MANIFEST_SHA256,
+            frozenset((
+                "1a6f938ca91046b9e525e58de6afcfb543fa512e4a541e87b400e74575a7b062",
+                "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47",
+            )),
+        )
+        self.assertTrue({"SubagentStart", "SubagentStop"}.issubset(self.checker.HOOK_EVENTS))
+
     def assert_contract_rejects(self, expected_error):
         status, result = self.run_contract()
         self.assertEqual(status, 1, result)
