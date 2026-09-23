@@ -542,8 +542,8 @@ class CodexMappingTest(_RepoCase):
         self.assertIn("do not translate Claude `haiku`/`sonnet`", index)
         self.assertIn(
             "<!-- codearbiter-codex-agent-route-contract: "
-            "literal_route_lines=19 literal_route_occurrences=20 "
-            "generic_route_lines=6 generic_route_occurrences=6 -->",
+            "literal_route_lines=21 literal_route_occurrences=22 "
+            "generic_route_lines=8 generic_route_occurrences=8 -->",
             index,
         )
         self.assertNotIn("\nmodel:", index)
@@ -1304,6 +1304,10 @@ class VerificationBoundaryContractTest(unittest.TestCase):
         )
         for path in paths:
             text = self.read(path)
+            if path.startswith("core/surface/commands/"):
+                text = B._compose_skill_entry(
+                    text, path, str(REPO_ROOT / "core/surface"), {}
+                )
             with self.subTest(path=path):
                 for phrase in obsolete:
                     self.assertNotIn(phrase, text)
@@ -1367,6 +1371,227 @@ class VerificationBoundaryContractTest(unittest.TestCase):
                 self.assertIn("verification-boundary", finishing)
                 self.assertIn("merge-readiness aggregate", finishing)
                 self.assertIn("current exact-head", finishing)
+
+
+
+class SkillEntryCompositionTest(_RepoCase):
+    """A build-time declaration exposes one full owner without another runtime hop."""
+
+    def setUp(self):
+        super().setUp()
+        self.owner = (
+            '---\nname: commit-gate\ndescription: Create the authorized commit.\n'
+            'argument-hint: (none)\n---\n\n'
+            '# commit-gate\n\n## Pre-flight\n\n'
+            'Read `{{PLUGIN_ROOT}}/skills/tdd/SKILL.md`.\n'
+            '## Phase 1 — Permission · gate: BLOCK\n\n'
+            'An explicit instruction is required. Gate: actual permission.\n\n'
+            '## Hard rules\n\nNever imply a PR or push.\n'
+        )
+        _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md', self.owner)
+        _write(self.repo, 'core/surface/commands/init.md', '{{SKILL_ENTRY:commit-gate}}\n')
+
+    def test_complete_owner_exposed_with_one_discoverable_description(self):
+        """Public invocation receives every phase, not the wrapper plus a reload."""
+        for host, entry, private in (
+            ('claude', 'commands/init.md', 'skills/commit-gate/SKILL.md'),
+            ('codex', 'skills/ca-init/SKILL.md', 'routines/commit-gate/SKILL.md'),
+            ('pi', 'skills/ca-init/SKILL.md', 'routines/commit-gate/SKILL.md'),
+        ):
+            with self.subTest(host=host):
+                out = self.render(host)
+                public = out[entry].decode()
+                resource = out[private].decode()
+                self.assertIn('## Phase 1 — Permission', public)
+                self.assertIn('Never imply a PR or push.', public)
+                self.assertNotIn('SKILL_ENTRY', public)
+                self.assertEqual('disable-model-invocation: true' in _frontmatter(public),
+                                 host == 'claude')
+                self.assertNotIn('name: commit-gate', _frontmatter(public))
+                self.assertNotIn('disable-model-invocation', _frontmatter(resource))
+                self.assertIn('argument-hint: (none)', _frontmatter(public))
+                catalog = json.loads(out['generated/command-catalog.json'])
+                self.assertEqual(catalog['commands']['init']['description'],
+                                 'Create the authorized commit.')
+                self.assertNotIn('commit-gate', catalog['commands'])
+                if host != 'claude':
+                    self.assertEqual(_frontmatter(public).count('name:'), 1)
+                    self.assertIn('name: ca-init', _frontmatter(public))
+                else:
+                    self.assertNotIn('name:', _frontmatter(public))
+
+    def test_codex_links_are_rendered_from_entry_location(self):
+        """Copied procedure resources resolve from the new public entry's directory."""
+        out = self.render('codex')
+        self.assertIn('[routines/tdd/SKILL.md](../../routines/tdd/SKILL.md)',
+                      out['skills/ca-init/SKILL.md'].decode())
+        self.assertIn('[routines/tdd/SKILL.md](../tdd/SKILL.md)',
+                      out['routines/commit-gate/SKILL.md'].decode())
+
+    def test_owner_edit_updates_entry_and_private_resource(self):
+        """No copied policy or second description can remain stale after regeneration."""
+        changed = self.owner.replace('Never imply a PR or push.', 'New negative-intent guard.')
+        _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md', changed)
+        out = self.render('claude')
+        for path in ('commands/init.md', 'skills/commit-gate/SKILL.md'):
+            self.assertIn('New negative-intent guard.', out[path].decode())
+        B.write_all(self.repo)
+        self.assertEqual(B.check_all(self.repo), [])
+
+    def test_single_declaration_cannot_add_wrapper_policy(self):
+        """An entry declaration cannot accumulate a second independently owned body."""
+        for extra in ('\nBypass the gate.\n', '\n{{SKILL_ENTRY:commit-gate}}\n'):
+            with self.subTest(extra=extra):
+                _write(self.repo, 'core/surface/commands/init.md',
+                       '{{SKILL_ENTRY:commit-gate}}\n' + extra)
+                with self.assertRaisesRegex(B.SurfaceError, 'entire command'):
+                    self.render('claude')
+
+    def test_missing_owner_rejected_before_outputs_change(self):
+        """No partial generated output is published when an owner disappears."""
+        B.write_all(self.repo)
+        output = Path(self.repo) / 'plugins/ca/commands/init.md'
+        before = output.read_bytes()
+        (Path(self.repo) / 'core/surface/skills/commit-gate/SKILL.md').unlink()
+        with self.assertRaisesRegex(B.SurfaceError, 'owner'):
+            B.write_all(self.repo)
+        self.assertEqual(output.read_bytes(), before)
+
+    def test_unsafe_or_nested_owner_rejected(self):
+        """Composition is a bounded local lookup, not a general include mechanism."""
+        for slug in ('../commit-gate', '/tmp/owner', 'x/y', 'commit-gate:extra'):
+            with self.subTest(slug=slug):
+                _write(self.repo, 'core/surface/commands/init.md',
+                       '{{SKILL_ENTRY:' + slug + '}}\n')
+                with self.assertRaises(B.SurfaceError):
+                    self.render('claude')
+        _write(self.repo, 'core/surface/commands/init.md', '{{SKILL_ENTRY:commit-gate}}\n')
+        _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md',
+               self.owner + '\n{{SKILL_ENTRY:commit-gate}}\n')
+        with self.assertRaisesRegex(B.SurfaceError, 'nested'):
+            self.render('claude')
+
+    def test_hidden_or_misnamed_owner_rejected(self):
+        """The actual skill owner remains discoverable on command-native hosts."""
+        for replacement in (
+            self.owner.replace('name: commit-gate', 'name: different'),
+            self.owner.replace('name: commit-gate',
+                               'name: commit-gate\ndisable-model-invocation: true'),
+            self.owner.replace('name: commit-gate',
+                               'name: commit-gate\ndisable-model-invocation: "true"'),
+        ):
+            with self.subTest(replacement=replacement[:90]):
+                _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md', replacement)
+                with self.assertRaisesRegex(B.SurfaceError, 'owner'):
+                    self.render('claude')
+
+    def test_duplicate_entry_owner_rejected(self):
+        """Two public registrations cannot accidentally advertise the same owner."""
+        _write(self.repo, 'core/surface/commands/status.md', '{{SKILL_ENTRY:commit-gate}}\n')
+        with self.assertRaisesRegex(B.SurfaceError, 'already'):
+            self.render('claude')
+
+    def test_privilege_frontmatter_not_silently_discarded(self):
+        """Unsupported metadata cannot lose or expand an owner's execution policy."""
+        for field in ('allowed-tools: Bash', 'context: fork', 'model: expensive',
+                      'description: Duplicate', 'argument-hint: |', 'extra: value'):
+            with self.subTest(field=field):
+                _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md',
+                       self.owner.replace('\n---\n\n#', '\n' + field + '\n---\n\n#'))
+                with self.assertRaises(B.SurfaceError):
+                    self.render('claude')
+
+    def test_relative_support_link_requires_rooted_owner_reference(self):
+        """Changing entry location must not silently strand supporting files."""
+        _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md',
+               self.owner + '\nRead [support](references/support.md).\n')
+        with self.assertRaisesRegex(B.SurfaceError, 'root'):
+            self.render('claude')
+
+    @unittest.skipIf(os.name == 'nt', 'Symlink creation may require Windows privilege')
+    def test_symlink_owner_cannot_escape_source_tree(self):
+        """A source declaration cannot read a hidden external procedure through a link."""
+        owner = Path(self.repo) / 'core/surface/skills/commit-gate/SKILL.md'
+        outside = Path(self._td.name).parent / (Path(self._td.name).name + '-outside.md')
+        outside.write_text(self.owner)
+        self.addCleanup(lambda: outside.unlink(missing_ok=True))
+        owner.unlink()
+        owner.symlink_to(outside)
+        with self.assertRaisesRegex(B.SurfaceError, 'owner'):
+            self.render('claude')
+
+
+
+class ActualConsolidatedOwnersTest(unittest.TestCase):
+    """Pin the two adopted owners, host boundaries and gate-preserving composition."""
+
+    def test_selected_wrappers_have_no_separately_authored_policy(self):
+        """Only the skill owns its description, arguments and execution procedure."""
+        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+            with self.subTest(command=command):
+                declaration = (REPO_ROOT / f'core/surface/commands/{command}.md').read_text()
+                self.assertEqual(declaration, '{{SKILL_ENTRY:' + owner + '}}\n')
+                skill = (REPO_ROOT / f'core/surface/skills/{owner}/SKILL.md').read_text()
+                self.assertNotIn('disable-model-invocation', _frontmatter(skill))
+                self.assertIn('argument-hint:', _frontmatter(skill))
+
+    def test_claude_explicit_entries_preserve_complete_owner_bodies(self):
+        """ADR-0028 owners stay discoverable; explicit spellings remain available."""
+        out = B.render_all(REPO_ROOT, 'claude')
+        for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+            with self.subTest(command=command):
+                entry = out[f'commands/{command}.md'].decode()
+                skill = out[f'skills/{owner}/SKILL.md'].decode()
+                self.assertEqual(entry.split('\n---\n', 1)[1],
+                                 skill.split('\n---\n', 1)[1])
+                self.assertIn('disable-model-invocation: true', _frontmatter(entry))
+                self.assertNotIn('user-invocable:', entry)
+                self.assertNotIn('disable-model-invocation:', _frontmatter(skill))
+                self.assertNotIn('allowed-tools:', _frontmatter(entry))
+                self.assertNotIn('model:', _frontmatter(entry))
+
+    def test_codex_pi_entry_names_and_discovery_remain_compatible(self):
+        """Routine owners are private resources, so synthesized entries stay visible."""
+        for host in ('codex', 'pi'):
+            out = B.render_all(REPO_ROOT, host)
+            for command, owner in (('commit', 'commit-gate'), ('new-skill', 'skill-author')):
+                with self.subTest(host=host, command=command):
+                    entry = out[f'skills/ca-{command}/SKILL.md'].decode()
+                    self.assertIn(f'name: ca-{command}', _frontmatter(entry))
+                    self.assertNotIn('disable-model-invocation', _frontmatter(entry))
+                    self.assertIn(f'routines/{owner}/SKILL.md', out)
+                    self.assertNotIn(f'skills/{owner}/SKILL.md', out)
+                    self.assertIn('## Pre-flight', entry)
+                    self.assertIn('## Hard rules', entry)
+
+    def test_commit_gate_authority_and_acceptance_are_not_entry_metadata(self):
+        """Every full entry still carries the actual mutation and typed-proof gates."""
+        for host, path in (('claude', 'commands/commit.md'),
+                           ('codex', 'skills/ca-commit/SKILL.md'),
+                           ('pi', 'skills/ca-commit/SKILL.md')):
+            with self.subTest(host=host):
+                entry = B.render_all(REPO_ROOT, host)[path].decode()
+                for obligation in ('Confirm the user explicitly authorized this commit.',
+                                   '_preflight_current_acceptance',
+                                   'all_accepted_and_current: true',
+                                   'verification-boundary', '## Phase 7', '## Phase 9',
+                                   'postponing a commit', 'never implies a push or PR'):
+                    self.assertIn(obligation, entry)
+
+    def test_no_discovery_or_startup_registration_was_added(self):
+        """Catalog visibility and compatibility inventory are unchanged on each host."""
+        registry = json.loads((REPO_ROOT / 'core/surface/command-routes.json').read_text())
+        descriptors = B.load_host_descriptors(REPO_ROOT)
+        for descriptor in descriptors:
+            out = B.render_all(REPO_ROOT, descriptor.name)
+            catalog = json.loads(out['generated/command-catalog.json'])['commands']
+            expected = {name for name in registry['commands']
+                        if B._output_rel(f'commands/{name}.md', descriptor)[0] is not None}
+            self.assertEqual(set(catalog), expected)
+            for name, record in catalog.items():
+                for key in ('visibility', 'workflow', 'canonical', 'replacement', 'legacyRoutes'):
+                    self.assertEqual(record.get(key), registry['commands'][name].get(key))
+            self.assertNotIn('SKILL_ENTRY', out['arbiter.md'].decode())
 
 
 if __name__ == "__main__":

@@ -8,7 +8,9 @@
 #
 # Template grammar uses {{PLUGIN_ROOT}}, {{PROJECT_DIR}}, {{CMD:name}}, and
 # single-level {{IF:<descriptor-name>}} / {{ELSE}} / {{END}} regions. Unknown
-# tags and unresolved tokens are hard errors. Descriptor output patterns expand
+# A whole command template may be {{SKILL_ENTRY:name}}: build-time composition
+# from one private skill owner, never a runtime router or recursive include.
+# Unknown tags and unresolved tokens are hard errors. Descriptor output patterns expand
 # {relative}, {stem}, and {name}; the first matching surface rule wins.
 #
 # Rendered outputs carry NO provenance header: the Claude tree must stay
@@ -46,6 +48,7 @@ CMD_FORM = {item.name: item.command_form for item in _ROOT_DESCRIPTORS}
 _MARKER = re.compile(r"\{\{(IF:([a-z][a-z0-9-]*)|ELSE|END)\}\}")
 _CMD = re.compile(r"\{\{CMD:([a-z][a-z0-9-]*)\}\}")
 _TOKEN = re.compile(r"\{\{(PLUGIN_ROOT|EXECUTABLE_PLUGIN_ROOT|PROJECT_DIR)\}\}")
+_SKILL_ENTRY = re.compile(r"\{\{SKILL_ENTRY:([a-z][a-z0-9-]*)\}\}\n?\Z")
 _CMD_LITERAL = re.compile(r"/ca:([a-z][a-z0-9-]*)")
 _COMMAND_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/commands/([a-z0-9-]+)\.md")
 _SKILLS_PATH = re.compile(r"\{\{PLUGIN_ROOT\}\}/skills/(?!ca-)")
@@ -884,6 +887,80 @@ def _output_rel(rel, descriptor):
     return None, None
 
 
+def _compose_skill_entry(text, where, surface, owners, *, suppress_model=False):
+    """Resolve one complete entry declaration from a bounded, private skill owner.
+
+    Keep the existing command filename/catalog/host projection, but author its
+    description, arguments and complete procedure only in the named SKILL.md.
+    On command-native hosts the skill stays discoverable (ADR-0028); the
+    explicit command alias suppresses only its redundant model description.
+    No source text is executed; no general includes, discovery or registry are
+    introduced. Rooted references render later from each actual output path.
+    """
+    if "{{SKILL_ENTRY:" not in text:
+        return text
+    match = _SKILL_ENTRY.fullmatch(text)
+    if (not where.startswith("core/surface/commands/") or not match):
+        raise SurfaceError(f"{where}: SKILL_ENTRY must be the entire command template")
+    name = match.group(1)
+    if name in owners:
+        raise SurfaceError(f"{where}: owner {name!r} already exposed by {owners[name]}")
+    path = os.path.join(surface, "skills", name, "SKILL.md")
+    # Reject symlinks both at the directory and file: following one would make
+    # composition's identity/authority depend on an undeclared external file.
+    if any(os.path.islink(p) for p in (os.path.join(surface, "skills"),
+                                      os.path.dirname(path), path)):
+        raise SurfaceError(f"{where}: owner must be a regular in-tree skill")
+    try:
+        owner = _read_template(path, f"{where}: owner {name}")
+    except OSError as error:
+        raise SurfaceError(f"{where}: missing owner skills/{name}/SKILL.md") from error
+    if "{{SKILL_ENTRY:" in owner:
+        raise SurfaceError(f"{where}: nested SKILL_ENTRY in owner is not permitted")
+    end = owner.find("\n---\n", 4)
+    if not owner.startswith("---\n") or end < 0:
+        raise SurfaceError(f"{where}: owner has no complete frontmatter")
+    fields = {}
+    allowed = {"name", "description", "argument-hint", "disable-model-invocation"}
+    for line in owner[4:end].splitlines():
+        field = re.fullmatch(r"([a-z][a-z-]*): (.+)", line)
+        if not field or field.group(1) not in allowed or field.group(1) in fields:
+            raise SurfaceError(f"{where}: unsupported or duplicate owner frontmatter: {line!r}")
+        key, value = field.groups()
+        if value in ("|", ">", "|-", ">-", "|+", ">+") or value.startswith("'"):
+            raise SurfaceError(f"{where}: owner {key} requires a simple or JSON-quoted scalar")
+        if value.startswith('"'):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError as error:
+                raise SurfaceError(f"{where}: invalid owner scalar {key}") from error
+        if not isinstance(value, str) or not value.strip() or "\n" in value or "\r" in value:
+            raise SurfaceError(f"{where}: invalid owner scalar {key}")
+        fields[key] = value
+    if fields.get("name") != name or "disable-model-invocation" in fields:
+        raise SurfaceError(f"{where}: owner must match its name and remain discoverable")
+    if not fields.get("description") or not fields.get("argument-hint"):
+        raise SurfaceError(f"{where}: owner requires description and argument-hint")
+    body = owner[end + len("\n---\n"):]
+    # Relative support links would point somewhere else in the public copy.
+    # Require the existing rooted syntax, whose closure is checked after render;
+    # do not try to become a Markdown parser or silently rewrite arbitrary text.
+    for link in _MARKDOWN_LINK_TARGET.findall(body):
+        if not (link.startswith(("{{PLUGIN_ROOT}}/", "{{PROJECT_DIR}}/", "#"))
+                or re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", link)):
+            raise SurfaceError(f"{where}: owner support links must use rooted resource references: {link!r}")
+    owners[name] = where
+    # Preserve the owner's stable identity and complete gates. On command-native
+    # hosts it remains the discoverable skill; the explicit alias loses only its
+    # redundant model listing. Hosts exposing commands as skills need the entry
+    # discoverable because their owner copy lives outside discovery (routines/).
+    header = "---\n" + "\n".join(
+        f"{key}: {_yaml_safe_scalar(fields[key])}"
+        for key in ("description", "argument-hint")
+    ) + ("\ndisable-model-invocation: true" if suppress_model else "") + "\n---\n"
+    return header + body
+
+
 def render_all(repo, host, descriptors=None):
     """Render every template for `host` -> {plugin-relative path: bytes}."""
     descriptors = tuple(descriptors or load_host_descriptors(repo))
@@ -895,6 +972,18 @@ def render_all(repo, host, descriptors=None):
     rels = _surface_files(repo, descriptors)
     cmd_names = _command_names(rels)
     registry = _load_command_registry(repo, cmd_names, descriptors)
+    # Validate/expand the entire canonical source set before rendering or writing
+    # any host. An excluded entry still cannot conceal a bad/duplicate owner.
+    owners = {}
+    templates = {}
+    for rel in rels:
+        where = f"core/surface/{rel}"
+        text = _read_template(os.path.join(surface, rel.replace("/", os.sep)), where)
+        _dst, rule = _output_rel(rel, descriptor)
+        templates[rel] = _compose_skill_entry(
+            text, where, surface, owners,
+            suppress_model=rule is not None and not rule.add_skill_frontmatter,
+        )
     resource_paths = set()
     for rel in rels:
         dst, _rule = _output_rel(rel, descriptor)
@@ -919,7 +1008,7 @@ def render_all(repo, host, descriptors=None):
         if dst is None:
             continue
         where = f"core/surface/{rel}"
-        text = _read_template(os.path.join(surface, rel.replace("/", os.sep)), where)
+        text = templates[rel]
         rendered = render_text(
             text, host, cmd_names, where, repo=repo,
             descriptor=descriptor, host_names=host_names, output_path=dst,

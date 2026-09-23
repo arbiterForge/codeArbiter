@@ -1,11 +1,17 @@
 ---
 name: commit-gate
-description: The only path to a commit. Routed to when the user invokes /commit or otherwise instructs codeArbiter to persist staged changes. Nine gated phases — permission, branch, classification, verification (test/lint/secrets), behavioral proof, diff review, selective stage, message, commit. Nothing reaches version control without clearing every gate; "it looks good" is not authorization.
+description: Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR.
+argument-hint: (none)
 ---
 
 # commit-gate
 
 The only permitted path to a commit. Bypassing it is a hard-rule violation. Routed to when the user invokes `/commit` or any equivalent instruction to persist staged changes.
+
+No command arguments are required; inspect current Git state. Test-only requests use the
+recorded invocation in `tech-stack.md` without entering this committing procedure. PR
+readiness belongs to the existing PR workflow; an informational or message-only request
+must not reach staging, commit, or this procedure's writing close.
 
 ## Pre-flight
 

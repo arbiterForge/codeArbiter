@@ -8,6 +8,8 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Generate commit and new-skill public entries from the complete owning
+  procedures, retaining their private routine paths and exact gates.
 - Preserve the caller's coherent sprint scope and required spec-to-plan
   continuation without manufacturing method-selection approval questions.
 - Distinguish initial artifact approval from existing delegation and require

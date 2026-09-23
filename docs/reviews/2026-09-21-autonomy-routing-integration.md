@@ -214,3 +214,63 @@ proof-freshness behavior remain separately testable. Revert the isolated correct
 and generated projections together if rejected, preserving accepted decisions and
 authenticated publication history. Project Sources and public maturity claims are
 not changed. Temporary preparation files must be absent from the final PR tree.
+
+
+## 2026-09-23: command-backed owner consolidation (PR #850)
+
+Baseline: `arbiterForge/codeArbiter@f361d039d329a8a2932bd9dc14ec42d7b32d4ca3`.
+The user requested adding this slice to the existing PR, not opening a second one.
+
+D01 (`commit` / `commit-gate`) and D02 (`new-skill` / `skill-author`) now use a
+whole-file SKILL_ENTRY declaration in the existing command source. The existing
+surface generator composes the complete public entry from the owning skill's
+single description, argument hint and body. It is not a runtime include mechanism.
+No source schema registry, agent, command name, installed helper or permission was added.
+
+The source review found an important approved exception: ADR-0028 retains the
+owning commit skill for plain-language discovery. That decision is preserved.
+Claude keeps `commit-gate` and `skill-author` discoverable, while only their
+redundant command descriptions are model-disabled. Explicit command spellings and
+manual skill compatibility names remain usable. Codex/Pi need their generated entry
+skills discoverable because internal owners reside outside their discovery roots.
+The generator derives this distinction from the existing host projection rule.
+No `user-invocable` control or user-settings override was added.
+
+Every generated entry contains the complete owner, so the model need not load a
+wrapper and then reload the identical procedure. Existing explicit internal resource
+paths remain valid and caller-owned return/forward/branch behavior is unchanged.
+The commit owner's entire Pre-flight-through-Hard-rules suffix is byte-identical
+to the baseline: actual permission, current HTML acceptance, selective staging,
+verification, secrets, security reviewers and terminal commit receipt are preserved.
+
+The compiler fails on non-whole declarations, missing or symlinked owners, duplicate
+public ownership, nested composition, unsupported or repeated metadata, hidden owners
+and unrooted supporting links. Validation happens before any generated files are written.
+The existing independent host-descriptor oracle now understands this small grammar
+without calling the production composition parser. It still detects independently
+mutated generated content. The Codex agent-reference corpus counts increase only
+because two full generated entries now contain the owner's existing references;
+no new agent type, dispatch behavior or native registration was added.
+
+The skill-author owner documents the same single-source convention and permits
+supporting information cards without fabricating skill frontmatter or discovery
+entries. Curated command/skill documentation describes ownership and negative intent
+rather than copying another gate procedure. The resident persona, startup emitters,
+canonical command registry, host descriptors, accepted ADR bodies, core gate code,
+versions and release proof are unchanged by this slice.
+
+Verification must separately cover synthetic compiler negatives, real full-entry
+body equality and gate presence, public entry names and discovery flags, generated
+resources/catalogs, current hook and artifact regressions, and installed-host
+qualification. Byte/file reductions and suppression flags are source observations,
+not measured model tokens or a model-backed routing improvement. The historical
+Claude reserved-name/budget behavior in ADR-0028 means static counts alone cannot
+establish a runtime context saving.
+
+Remaining candidates are not silently migrated: same-named debug/refactor/release,
+initialization/drift aliases, decision modes, cleanup and PR/finishing have meaningful
+side-effect, mode or authority distinctions requiring their own current caller review.
+HTML farm remains disabled. New `.12` package bytes still require genuine final-candidate
+live proof under the existing release gate; no prior receipt can certify this slice.
+Rollback the owner/declaration/compiler changes and generated derivatives together,
+without changing stored artifacts, published-tag history or unrelated PR work.

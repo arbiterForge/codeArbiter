@@ -2,7 +2,10 @@
 
 Skill bodies load on routing only. This index is the surface scan; never bulk-read
 `skills/*/SKILL.md`. Each skill is an orchestrator routine with gated phases, routed to, never
-"triggered." This index lists what each skill OWNS; to decide WHERE a trigger routes, load
+"triggered." Command-backed owners `commit-gate` and `skill-author` supply their
+complete public entries at build time. Claude keeps the owner discoverable and the
+command explicit-only; Codex/Pi expose the entry and keep the routine private. Read a needed owner directly or use the complete public body,
+not both merely to repeat the same procedure. This index lists what each skill OWNS; to decide WHERE a trigger routes, load
 `${CLAUDE_PLUGIN_ROOT}/includes/routing-table.md` (the authoritative trigger→route surface).
 
 | Skill | Routed to by | Owns |

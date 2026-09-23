@@ -16,6 +16,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Generate commit and new-skill command entries from their owning skills,
+  preserving plain-language skill discovery and explicit command compatibility
+  without independently maintained wrapper policies.
 - Preserve the caller's coherent sprint scope and required spec-to-plan
   continuation without manufacturing method-selection approval questions.
 - Distinguish initial artifact approval from existing delegation and require
