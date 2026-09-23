@@ -16,6 +16,11 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
 CORE_PYSRC = REPO / "core" / "pysrc"
 sys.path.insert(0, str(CORE_PYSRC))
+from _gitexec import root_bound_git_env  # noqa: E402
+
+
+def git_run(argv, **kwargs):
+    return subprocess.run(argv, env=root_bound_git_env(), **kwargs)
 
 
 class FakeClient:
@@ -67,12 +72,12 @@ class AuthorityAdapterTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         (self.root / ".codearbiter").mkdir()
-        subprocess.run(["git", "init", "--quiet", str(self.root)], check=True)
-        subprocess.run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
-        subprocess.run(["git", "-C", str(self.root), "config", "user.name", "Test"], check=True)
+        git_run(["git", "init", "--quiet", str(self.root)], check=True)
+        git_run(["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"], check=True)
+        git_run(["git", "-C", str(self.root), "config", "user.name", "Test"], check=True)
         (self.root / "fixture.txt").write_text("fixture", encoding="utf-8")
-        subprocess.run(["git", "-C", str(self.root), "add", "fixture.txt"], check=True)
-        subprocess.run(["git", "-C", str(self.root), "commit", "--quiet", "-m", "fixture"], check=True)
+        git_run(["git", "-C", str(self.root), "add", "fixture.txt"], check=True)
+        git_run(["git", "-C", str(self.root), "commit", "--quiet", "-m", "fixture"], check=True)
         self.candidate = self.root / "candidate"
         self.candidate.mkdir()
         self.client = FakeClient(self.root)
@@ -83,9 +88,24 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     def tearDown(self):
         if self.linked is not None and self.linked.exists():
-            subprocess.run(["git", "-C", str(self.root), "worktree", "remove", "--force", str(self.linked)], check=False)
+            git_run(["git", "-C", str(self.root), "worktree", "remove", "--force", str(self.linked)], check=False)
         self.adapter.REGISTRY_PARENT = self.original_registry_parent
         self.temp.cleanup()
+
+    def test_fixture_git_commands_ignore_inherited_repository_location(self):
+        environment = dict(os.environ)
+        environment["GIT_DIR"] = str(self.root / "unrelated.git")
+        environment["GIT_WORK_TREE"] = str(self.root)
+        environment["GIT_INDEX_FILE"] = str(self.root / "unrelated.index")
+        result = subprocess.run(
+            [sys.executable, __file__,
+             "AuthorityAdapterTest.test_fixture_repository_is_under_its_own_root"],
+            env=environment, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_fixture_repository_is_under_its_own_root(self):
+        self.assertTrue((self.root / ".git").exists())
 
     def _authorize(self, armed, suffix="1"):
         command = (
@@ -235,6 +255,175 @@ class AuthorityAdapterTest(unittest.TestCase):
         )
         self.assertEqual(corroborated["state"], "CORROBORATED")
 
+    def test_codex_string_posttool_result_corroborates_only_the_completed_wrapper(self):
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-nonce-codex-output",
+        )
+        base = self._authorize(armed)
+        with mock.patch.object(
+            self.adapter, "_run_contained",
+            return_value=subprocess.CompletedProcess(
+                [], 0, b"test_environment_overrides ... ok\n", b""
+            ),
+        ):
+            self.adapter.run_verification(self.root, self.client, armed["request_id"])
+        for output in ("", "command failed", "{\"request_id\":\"other\",\"state\":\"COMPLETED\"}"):
+            with self.subTest(output=output), self.assertRaisesRegex(RuntimeError, "FAILED_VERIFICATION"):
+                self.adapter.observe_verifier_hook(
+                    self.candidate,
+                    {**base, "hook_event_name": "PostToolUse", "tool_response": output},
+                )
+        result = self.adapter.observe_verifier_hook(
+            self.candidate,
+            {**base, "hook_event_name": "PostToolUse", "tool_response": json.dumps({
+                "request_id": armed["request_id"], "state": "COMPLETED",
+            })},
+        )
+        self.assertEqual(result["state"], "CORROBORATED")
+
+    def test_ordinary_compound_commands_can_mention_artifact_authority(self):
+        for command in (
+            "rg -n artifact-authority core/pysrc | head",
+            "git diff | grep artifact-authority",
+            "echo artifact-authority; git status --short",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.adapter._verification_selector({
+                    "tool_name": "exec_command", "tool_input": {"cmd": command},
+                }))
+
+    def test_terminal_authority_requests_leave_no_global_registry_pointer(self):
+        for state in ("CAPTURED", "REJECTED", "FAILED", "ABANDONED"):
+            with self.subTest(state=state):
+                armed = self.adapter.arm_request(
+                    self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+                    request_nonce="terminal-pointer-" + state.lower(),
+                )
+                pointer = self.adapter._registry_root() / (armed["request_id"] + ".json")
+                self.assertTrue(pointer.exists())
+                request = self.adapter._load(self.root, armed["request_id"])
+                request["state"] = state
+                self.adapter._save(self.root, request)
+                self.assertFalse(pointer.exists(), "terminal request remains in hook-wide registry")
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], state)
+
+    def test_legacy_terminal_pointer_is_pruned_when_discovered(self):
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="legacy-terminal-pointer",
+        )
+        request = self.adapter._load(self.root, armed["request_id"])
+        request["state"] = "ABANDONED"
+        self.adapter._save(self.root, request)
+        self.adapter._register_request(self.root, request)
+        pointer = self.adapter._registry_root() / (armed["request_id"] + ".json")
+        self.assertTrue(pointer.exists())
+        self.assertNotIn(armed["request_id"], [
+            item["request_id"] for _, item in self.adapter._registered_requests()
+        ])
+        self.assertFalse(pointer.exists())
+
+    def test_workspace_snapshot_records_an_unstaged_tracked_deletion(self):
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="snapshot-deleted-file",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        before = self.adapter._workspace_snapshots(binding)
+        (self.root / "fixture.txt").unlink()
+        after = self.adapter._workspace_snapshots(binding)
+        self.assertNotEqual(before[0]["content_sha256"], after[0]["content_sha256"])
+
+    def test_workspace_snapshot_records_clean_tracked_gitlink(self):
+        nested = self.root / "nested-repo"
+        git_run(["git", "init", "--quiet", str(nested)], check=True)
+        git_run(["git", "-C", str(nested), "config", "user.email", "test@example.invalid"], check=True)
+        git_run(["git", "-C", str(nested), "config", "user.name", "Test"], check=True)
+        (nested / "nested.txt").write_text("fixture", encoding="utf-8")
+        git_run(["git", "-C", str(nested), "add", "nested.txt"], check=True)
+        git_run(["git", "-C", str(nested), "commit", "--quiet", "-m", "nested"], check=True)
+        git_run(["git", "-C", str(self.root), "add", "nested-repo"], check=True, capture_output=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="snapshot-gitlink",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        self.assertRegex(self.adapter._workspace_snapshots(binding)[0]["content_sha256"], r"^[0-9a-f]{64}$")
+        (nested / "nested.txt").write_text("changed without commit", encoding="utf-8")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "WORKSPACE_DRIFT"):
+            self.adapter._workspace_snapshots(binding)
+
+    def test_workspace_snapshot_records_a_tracked_symlink_without_following_it(self):
+        link = self.root / "fixture-link.txt"
+        try:
+            link.symlink_to("fixture.txt")
+        except OSError as exc:
+            self.skipTest(f"host cannot create a symlink: {exc}")
+        git_run(["git", "-C", str(self.root), "add", "fixture-link.txt"], check=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="snapshot-symlink",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        before = self.adapter._workspace_snapshots(binding)[0]["content_sha256"]
+        self.assertRegex(before, r"^[0-9a-f]{64}$")
+        link.unlink()
+        link.symlink_to("other-internal-target.txt")
+        self.assertNotEqual(before, self.adapter._workspace_snapshots(binding)[0]["content_sha256"])
+        link.unlink()
+        link.symlink_to(str(self.root.parent / "external-target.txt"))
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "WORKSPACE_DRIFT"):
+            self.adapter._workspace_snapshots(binding)
+
+    def test_workspace_snapshot_records_a_materialized_git_symlink_on_windows(self):
+        link = self.root / "materialized-link.txt"
+        git_run(["git", "-C", str(self.root), "config", "core.symlinks", "false"], check=True)
+        blob = git_run(
+            ["git", "-C", str(self.root), "hash-object", "-w", "--stdin"],
+            input=b"fixture.txt", capture_output=True, check=True,
+        ).stdout.decode().strip()
+        git_run(["git", "-C", str(self.root), "update-index", "--add", "--cacheinfo", f"120000,{blob},materialized-link.txt"], check=True)
+        link.write_text("fixture.txt", encoding="utf-8")
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="materialized-git-link",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        before = self.adapter._workspace_snapshots(binding)[0]["content_sha256"]
+        link.write_text("changed.txt", encoding="utf-8")
+        self.assertNotEqual(before, self.adapter._workspace_snapshots(binding)[0]["content_sha256"])
+
+    def test_immutable_authority_collision_rejects_a_symlink_target(self):
+        relative = Path(".codearbiter/.artifacts/authority-sources/collision.json")
+        target = self.root / relative
+        target.parent.mkdir(parents=True)
+        try:
+            target.symlink_to(self.root / "fixture.txt")
+        except OSError as exc:
+            self.skipTest(f"host cannot create a symlink: {exc}")
+        with self.assertRaisesRegex(self.adapter.AuthorityError, "UNSAFE_AUTHORITY_PATH"):
+            self.adapter._publish_immutable(self.root, relative, b"fixture")
+
+    def test_symlink_target_ignored_by_git_still_changes_workspace_digest(self):
+        ignored = self.root / "ignored-target.txt"
+        (self.root / ".gitignore").write_text("ignored-target.txt\n", encoding="utf-8")
+        ignored.write_text("before", encoding="utf-8")
+        link = self.root / "ignored-link.txt"
+        try:
+            link.symlink_to("ignored-target.txt")
+        except OSError as exc:
+            self.skipTest(f"host cannot create a symlink: {exc}")
+        git_run(["git", "-C", str(self.root), "add", "ignored-link.txt", ".gitignore"], check=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="ignored-target-symlink",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        before = self.adapter._workspace_snapshots(binding)[0]["content_sha256"]
+        ignored.write_text("after", encoding="utf-8")
+        self.assertNotEqual(before, self.adapter._workspace_snapshots(binding)[0]["content_sha256"])
+
     def test_production_verifier_binds_internal_worktree_and_executable(self):
         armed = self.adapter.arm_request(
             self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
@@ -247,7 +436,7 @@ class AuthorityAdapterTest(unittest.TestCase):
         self.assertRegex(binding["executable_sha256"], r"^[0-9a-f]{64}$")
         linked = self.root.parent / (self.root.name + "-linked")
         self.linked = linked
-        subprocess.run([
+        git_run([
             "git", "-C", str(self.root), "worktree", "add", "--quiet", "-b",
             "authority-linked", str(linked),
         ], check=True)

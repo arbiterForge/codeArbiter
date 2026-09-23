@@ -245,7 +245,7 @@ func TestCanaryPreflightRequiresExactBaseBytes(t *testing.T) {
 	}
 }
 
-func TestFarmBindingRevalidatesCompleteAuthorizationReceipt(t *testing.T) {
+func TestFarmAuthorizationRejectsLegacyObservationLaundering(t *testing.T) {
 	h := newFarmHarness(t)
 	h.createPair()
 	plan := h.doc("PLAN-EXAMPLE")
@@ -256,7 +256,7 @@ func TestFarmBindingRevalidatesCompleteAuthorizationReceipt(t *testing.T) {
 	}
 	digest := canonical.BytesHash(bytes)
 	writeFixture(t, h.root, filepath.Join(".codearbiter", ".artifacts", "authority-sources", digest+".json"), bytes)
-	_, err = h.request("capture", object{"source_ref": ".codearbiter/.artifacts/authority-sources/" + digest + ".json", "source_sha256": digest})
+	_, err = h.request("capture-observation", object{"source_ref": ".codearbiter/.artifacts/authority-sources/" + digest + ".json", "source_sha256": digest})
 	if fault.Code(err) != "OBSERVATION_REQUIRED" {
 		t.Fatalf("legacy event laundering was not rejected: %v", err)
 	}

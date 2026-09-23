@@ -53,8 +53,9 @@ bodies name *actions* — this file is where those actions map to this host.
 - **Structured-artifact authority uses native hook correlation** — production
   review requests must dispatch the exact `launch_envelope` returned by
   `artifact-authority.py`; do not rewrite its prompt, task name, or isolation
-  fields. Verification must run the exact plain wrapper command returned by the
-  workflow so Pre/PostToolUse can authorize and corroborate one request. Codex
+  fields. Verification must run the exact plain `verify` command shown in `artifacts.md`,
+  using the request ID returned by `arm`, so Pre/PostToolUse can authorize and
+  corroborate one request. Codex
   `SubagentStart`/`SubagentStop` supply the child identity; transcript parsing is
   not an authority source.
 - **No statusline** — governance state (stage, overrides-since-checkpoint,

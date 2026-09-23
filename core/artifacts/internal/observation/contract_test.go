@@ -131,6 +131,13 @@ func verificationContext() map[string]any {
 	}
 }
 
+func verificationPayload(context map[string]any) map[string]any {
+	return map[string]any{
+		"input_sha256": context["input_sha256"], "spec_sha256": context["spec_sha256"],
+		"task_sha256": context["task_sha256"], "commands": []any{commandResult()},
+	}
+}
+
 func TestContextAndObservationSchemasAreClosed(t *testing.T) {
 	context := verificationContext()
 	if es := schema.ValidateWith(ContextSchema(), context); len(es) != 0 {
@@ -156,7 +163,7 @@ func TestValidateLinkRejectsEveryMutatedBinding(t *testing.T) {
 	context := verificationContext()
 	contextBytes, _ := canonical.Marshal(context)
 	contextHash := canonical.BytesHash(contextBytes)
-	payload := map[string]any{"commands": []any{commandResult()}}
+	payload := verificationPayload(context)
 	payloadHash, _ := canonical.Hash(payload)
 	base := currentVerificationObservation(contextHash, payloadHash)
 	event := map[string]any{"kind": "verification", "subject": subject(), "payload": payload}
@@ -192,7 +199,7 @@ func TestVerificationProducerResultSemanticMutationsAreRejected(t *testing.T) {
 	context := verificationContext()
 	contextBytes, _ := canonical.Marshal(context)
 	contextHash := canonical.BytesHash(contextBytes)
-	payload := map[string]any{"commands": []any{commandResult()}}
+	payload := verificationPayload(context)
 	payloadHash, _ := canonical.Hash(payload)
 	base := currentVerificationObservation(contextHash, payloadHash)
 	event := map[string]any{"kind": "verification", "subject": subject(), "payload": payload}
@@ -223,11 +230,29 @@ func TestVerificationProducerResultSemanticMutationsAreRejected(t *testing.T) {
 	}
 }
 
+func TestValidateLinkRejectsVerificationPayloadFromAnotherContext(t *testing.T) {
+	context := verificationContext()
+	contextBytes, _ := canonical.Marshal(context)
+	contextHash := canonical.BytesHash(contextBytes)
+	for _, field := range []string{"input_sha256", "spec_sha256", "task_sha256"} {
+		t.Run(field, func(t *testing.T) {
+			payload := verificationPayload(context)
+			payload[field] = testDigest("other-" + field)
+			payloadHash, _ := canonical.Hash(payload)
+			observed := currentVerificationObservation(contextHash, payloadHash)
+			event := map[string]any{"kind": "verification", "subject": subject(), "payload": payload}
+			if err := ValidateLink(event, observed, context, ContextRef(contextHash), contextHash); fault.Code(err) != "OBSERVATION_UNVERIFIED" {
+				t.Fatalf("verification %s from another context was accepted: %v", field, err)
+			}
+		})
+	}
+}
+
 func TestVerificationProducerCannotForgeFrozenExitOrRequiredTests(t *testing.T) {
 	context := verificationContext()
 	contextBytes, _ := canonical.Marshal(context)
 	contextHash := canonical.BytesHash(contextBytes)
-	basePayload := map[string]any{"commands": []any{commandResult()}}
+	basePayload := verificationPayload(context)
 	basePayloadHash, _ := canonical.Hash(basePayload)
 	base := currentVerificationObservation(contextHash, basePayloadHash)
 	for name, mutate := range map[string]func(map[string]any){
@@ -241,7 +266,8 @@ func TestVerificationProducerCannotForgeFrozenExitOrRequiredTests(t *testing.T) 
 			candidate, _ := canonical.Clone(base)
 			result := model.M(candidate["producer_result"])
 			mutate(model.M(model.A(result["commands"])[0]))
-			payload := map[string]any{"commands": result["commands"]}
+			payload := verificationPayload(context)
+			payload["commands"] = result["commands"]
 			payloadHash, _ := canonical.Hash(payload)
 			resultHash, _ := canonical.Hash(result)
 			candidate["payload_sha256"] = payloadHash

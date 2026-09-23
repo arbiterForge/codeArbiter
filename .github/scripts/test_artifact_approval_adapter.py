@@ -115,6 +115,14 @@ class ApprovalAdapterTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "multiple repositories"):
             self.routes.resolve("approval", prompt)
 
+    def test_new_pending_prompt_replaces_stale_route_for_the_same_artifact(self):
+        stale = "approve SPEC-EXAMPLE stale-token"
+        current = "approve SPEC-EXAMPLE current-token"
+        self.routes.register(self.root, "approval", "SPEC-EXAMPLE", stale)
+        self.routes.register(self.root, "approval", "SPEC-EXAMPLE", current)
+        self.assertIsNone(self.routes.resolve("approval", stale))
+        self.assertEqual(self.routes.resolve("approval", current), self.root.resolve())
+
     def test_native_linked_worktree_identity_is_routable(self):
         repository = self.root / "repository"
         linked = self.root / "linked"

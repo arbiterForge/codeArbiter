@@ -47,6 +47,7 @@ STATES = frozenset({
     "ARMED", "LAUNCHING", "LAUNCHED", "RUNNING", "COMPLETED", "REJECTED",
     "FAILED", "ABANDONED", "CAPTURED",
 })
+TERMINAL_STATES = frozenset({"REJECTED", "FAILED", "ABANDONED", "CAPTURED"})
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 ID_RE = re.compile(r"[A-Z][A-Z0-9_-]{0,127}")
 REQUEST_RE = re.compile(r"[0-9a-f]{64}")
@@ -162,7 +163,25 @@ def _publish_immutable(root: Path, relative: Path, data: bytes) -> None:
         try:
             os.link(temporary, target)
         except FileExistsError:
-            existing = target.read_bytes()
+            try:
+                info = target.lstat()
+                reparse = getattr(info, "st_file_attributes", 0) & 0x400
+                if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISREG(info.st_mode) or info.st_size != len(data):
+                    raise OSError("unsafe immutable authority target")
+                flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+                with os.fdopen(os.open(target, flags), "rb") as existing_file:
+                    opened = os.fstat(existing_file.fileno())
+                    if (
+                        not stat.S_ISREG(opened.st_mode) or opened.st_size != len(data)
+                        or (opened.st_dev, opened.st_ino) != (info.st_dev, info.st_ino)
+                    ):
+                        raise OSError("immutable authority target changed during read")
+                    existing = existing_file.read(len(data) + 1)
+                after = target.lstat()
+                if (after.st_dev, after.st_ino) != (info.st_dev, info.st_ino):
+                    raise OSError("immutable authority target changed during read")
+            except OSError as exc:
+                raise AuthorityError("UNSAFE_AUTHORITY_PATH", "immutable authority target is unsafe") from exc
             if existing != data:
                 raise AuthorityError("AUTHORITY_COLLISION", "content-addressed bytes differ")
     finally:
@@ -212,6 +231,8 @@ def _save(root: Path, value: dict[str, Any]) -> None:
     value = dict(value)
     value["integrity_sha256"] = _integrity(value)
     _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
+    if value["state"] in TERMINAL_STATES:
+        (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
 
 
 def _load(root: Path, request_id: str) -> dict[str, Any]:
@@ -430,7 +451,11 @@ def _registered_requests() -> list[tuple[Path, dict[str, Any]]]:
             root = _real_root(repository.get("path"))
             if _repository_identity(root) != repository:
                 continue
-            results.append((root, _load(root, path.stem)))
+            request = _load(root, path.stem)
+            if request["state"] in TERMINAL_STATES:
+                path.unlink(missing_ok=True)
+                continue
+            results.append((root, request))
         except (AuthorityError, OSError, UnicodeError, ValueError):
             continue
     return results
@@ -488,7 +513,8 @@ def _git_text(directory: Path, *args: str) -> str:
         raise AuthorityError("UNSUPPORTED_WORKSPACE", "git workspace identity is unavailable") from exc
     if result.returncode != 0:
         raise AuthorityError("UNSUPPORTED_WORKSPACE", "git workspace identity is unavailable")
-    return result.stdout.decode("utf-8", "strict").strip()
+    decoded = result.stdout.decode("utf-8", "strict")
+    return decoded if "-z" in args else decoded.strip()
 
 
 def _path_identity(path: Path) -> str:
@@ -589,21 +615,79 @@ def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]
         ):
             raise AuthorityError("WORKSPACE_DRIFT", "workspace or executable identity changed")
         status = _git_text(root, "status", "--porcelain=v2", "-z", "--untracked-files=all")
-        listed = _git_text(root, "ls-files", "-z", "--cached", "--others", "--exclude-standard")
+        index = _git_text(root, "ls-files", "--stage", "-z")
+        untracked = _git_text(root, "ls-files", "--others", "--exclude-standard", "-z")
+        entries: dict[str, str] = {}
+        for record in (part for part in index.split("\0") if part):
+            try:
+                metadata, relative = record.split("\t", 1)
+                mode, _object_id, stage = metadata.split(" ")
+            except ValueError as exc:
+                raise AuthorityError("WORKSPACE_DRIFT", "git index entry cannot be frozen") from exc
+            if stage != "0" or mode not in {"100644", "100755", "120000", "160000"} or relative in entries:
+                raise AuthorityError("WORKSPACE_DRIFT", "git index entry cannot be frozen")
+            entries[relative] = mode
+        for relative in (part for part in untracked.split("\0") if part):
+            if relative in entries:
+                raise AuthorityError("WORKSPACE_DRIFT", "git workspace entry cannot be frozen")
+            entries[relative] = "untracked"
         content = hashlib.sha256()
-        for relative in sorted(item for item in listed.split("\0") if item):
+        for relative in sorted(entries):
             encoded = relative.encode("utf-8")
             candidate = root / relative
             try:
-                info = candidate.lstat()
-                reparse = getattr(info, "st_file_attributes", 0) & 0x400
-                if stat.S_ISLNK(info.st_mode) or reparse or not stat.S_ISREG(info.st_mode):
-                    raise OSError("workspace member is not a real regular file")
-                data = candidate.read_bytes()
-            except OSError as exc:
+                if not candidate.parent.resolve(strict=True).is_relative_to(root):
+                    raise OSError("workspace member escapes the worktree")
+                mode = entries[relative]
+                try:
+                    info = candidate.lstat()
+                except FileNotFoundError:
+                    if mode == "untracked":
+                        raise
+                    kind, data = "deleted", b""
+                else:
+                    reparse = getattr(info, "st_file_attributes", 0) & 0x400
+                    if stat.S_ISLNK(info.st_mode):
+                        if mode not in {"120000", "untracked"}:
+                            raise OSError("regular workspace member became a symlink")
+                        resolved = candidate.resolve(strict=False)
+                        if not resolved.is_relative_to(root):
+                            raise OSError("workspace symlink escapes the worktree")
+                        target = os.fsencode(os.readlink(candidate))
+                        resolved_path = resolved.relative_to(root).as_posix().encode("utf-8")
+                        try:
+                            target_info = resolved.lstat()
+                        except FileNotFoundError:
+                            kind, data = "dangling-symlink", target + b"\0" + resolved_path
+                        else:
+                            target_reparse = getattr(target_info, "st_file_attributes", 0) & 0x400
+                            if target_reparse or not stat.S_ISREG(target_info.st_mode):
+                                raise OSError("workspace symlink target has unsupported type")
+                            kind, data = "symlink", target + b"\0" + resolved_path + b"\0" + resolved.read_bytes()
+                    elif reparse:
+                        raise OSError("workspace member is replaceable indirection")
+                    elif stat.S_ISREG(info.st_mode) and mode != "160000":
+                        kind = "materialized-symlink" if mode == "120000" else "file"
+                        data = candidate.read_bytes()
+                    elif stat.S_ISDIR(info.st_mode) and mode == "160000":
+                        nested_top = _git_text(candidate, "rev-parse", "--show-toplevel")
+                        if _real_root(nested_top) != candidate:
+                            if any(candidate.iterdir()):
+                                raise OSError("uninitialized gitlink has unexpected content")
+                            kind, data = "uninitialized-gitlink", b""
+                        else:
+                            if _git_text(candidate, "status", "--porcelain", "--untracked-files=all"):
+                                raise OSError("dirty gitlink cannot be frozen")
+                            kind, data = "gitlink", _git_text(candidate, "rev-parse", "HEAD").encode("ascii")
+                    else:
+                        raise OSError("workspace member has unsupported type")
+            except (OSError, RuntimeError, AuthorityError) as exc:
                 raise AuthorityError("WORKSPACE_DRIFT", "workspace content cannot be frozen") from exc
             content.update(len(encoded).to_bytes(8, "big"))
             content.update(encoded)
+            typed = f"{mode}:{kind}".encode("ascii")
+            content.update(len(typed).to_bytes(8, "big"))
+            content.update(typed)
             content.update(len(data).to_bytes(8, "big"))
             content.update(data)
         unique[str(root)] = {
@@ -1193,14 +1277,23 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path] | None:
     command = tool_input.get("command", tool_input.get("cmd"))
     if not isinstance(command, str):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "exec command is absent")
-    if any(marker in command for marker in ("\n", "\r", ";", "&&", "||", "|", ">", "<", "`")):
-        if "artifact-authority" in command:
-            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is compound")
-        return None
+    compound = any(marker in command for marker in ("\n", "\r", ";", "&&", "||", "|", ">", "<", "`"))
     try:
         tokens = [token.strip('"') for token in shlex.split(command, posix=False)]
     except ValueError as exc:
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is malformed") from exc
+    wrapper_start = (
+        len(tokens) >= 3
+        and Path(tokens[0]).name.lower() in {
+            "python", "python.exe", "python3", "python3.exe", "py", "py.exe",
+        }
+        and Path(tokens[1]).name.lower() == "artifact-authority.py"
+        and tokens[2] == "verify"
+    )
+    if compound:
+        if wrapper_start:
+            raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier wrapper command is compound")
+        return None
     if len(tokens) != 7:
         return None
     if (
@@ -1265,8 +1358,22 @@ def observe_verifier_hook(
     ):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "verifier completion is not correlated")
     response = event.get("tool_response")
-    if not isinstance(response, dict) or response.get("exit_code") != 0:
-        raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper did not report exit 0")
+    if isinstance(response, dict):
+        if response.get("exit_code") != 0:
+            raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper did not report exit 0")
+    elif isinstance(response, str):
+        try:
+            completed = json.loads(response) if len(response.encode("utf-8")) <= MAX_OUTPUT else None
+        except ValueError:
+            completed = None
+        if (
+            not isinstance(completed, dict)
+            or completed.get("request_id") != request_id
+            or completed.get("state") != "COMPLETED"
+        ):
+            raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper output did not corroborate completion")
+    else:
+        raise AuthorityError("FAILED_VERIFICATION", "verifier wrapper result is unavailable")
     wrapper["state"] = "CORROBORATED"
     _save(root, request)
     return {"request_id": request_id, "state": "CORROBORATED"}

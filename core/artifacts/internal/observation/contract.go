@@ -273,6 +273,11 @@ func validatePrompt(observed, event, context map[string]any) bool {
 func same(a, b any) bool { x, _ := canonical.Hash(a); y, _ := canonical.Hash(b); return x == y }
 func validateVerification(observed, event, context map[string]any) bool {
 	result, payload := model.M(observed["producer_result"]), model.M(event["payload"])
+	for _, field := range []string{"input_sha256", "spec_sha256", "task_sha256"} {
+		if model.S(payload[field]) != model.S(context[field]) {
+			return false
+		}
+	}
 	commands, bindings, definitions := model.A(result["commands"]), model.A(result["command_bindings"]), model.A(context["commands"])
 	if !same(commands, payload["commands"]) || len(commands) != len(bindings) || len(commands) != len(definitions) {
 		return false

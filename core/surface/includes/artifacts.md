@@ -164,6 +164,10 @@ scope evidence. Provisional progress never counts as completion.
 The orchestrator executes the declared verification through its existing governed
 execution tool through the installed production authority adapter; it never
 constructs a successful workflow event itself. Arm an exact task request first.
+Verification and review authority below is currently Codex-only. On Claude or
+Pi, stop at this boundary rather than treating model-authored results as
+authority; their installed prompt approval seams do not imply verification or
+review support.
 Every distinct `cwd` label in the engine context must be mapped once to an exact
 linked Git worktree root. Mapped worktrees must share the artifact repository's
 Git common directory, and the adapter freezes their filesystem identity, HEAD,
@@ -176,7 +180,7 @@ python "{{PLUGIN_ROOT}}/hooks/artifact-authority.py" arm --root "{{PROJECT_DIR}}
 Use only the mappings actually named by that task; missing or extra labels fail
 closed. Run the returned request through one plain governed exec invocation (no
 compound shell expression), then publish only after the host's matching
-`PostToolUse` has corroborated exit 0:
+`PostToolUse` has corroborated the wrapper's completed request-bound result:
 
 ```sh
 python "{{PLUGIN_ROOT}}/hooks/artifact-authority.py" verify --root "{{PROJECT_DIR}}" --request-id <request-id>
@@ -212,6 +216,14 @@ python "{{PLUGIN_ROOT}}/hooks/artifact-reconcile.py" --root "{{PROJECT_DIR}}" --
 Ambiguous armed requests, changed identities, stale inputs, wrong replies, or a
 foreign Git repository all fail closed. Re-run `eligible` after reconciliation;
 the prompt reply itself is not proof that the lifecycle mutation committed.
+If a mutation response is lost, submit the same exact reply again: the adapter
+replays its durable operation ID and receipt without recapturing authority. A
+request that has not reached mutation can be cancelled with
+`artifact-reconcile.py --root "{{PROJECT_DIR}}" --artifact-id <plan-id> --cancel --prompt "<exact returned reply>"`.
+If a crash left a complete pending request before its prompt route was
+registered, use `--cancel-orphan` with the same root and artifact ID instead;
+it refuses an active route or any in-flight mutation. Re-arm only after one of
+these cancellations succeeds.
 
 `IN_PROGRESS` after interruption requires reconciliation, not automatic completion.
 `REVIEW` requires fresh evidence. Source changes stale proof; state/branding updates

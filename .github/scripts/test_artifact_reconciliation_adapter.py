@@ -2,12 +2,17 @@
 """Regression tests for exact-prompt task/scope reconciliation authority."""
 
 import importlib
+import importlib.util
 import hashlib
+import io
 import json
+from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 import sys
 import tempfile
+import threading
 import unittest
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent.parent / "core" / "pysrc"))
@@ -23,6 +28,8 @@ class FakeClient:
         }
         self.record = {"id": "T-001", "title": "Task", "state": "IN_PROGRESS"}
         self.snapshot_sha = "3" * 64
+        self.fail_after_reconciliation = False
+        self.reconciled_requests = {}
 
     def call(self, operation, request=None, **_kwargs):
         self.calls.append((operation, dict(request or {})))
@@ -52,6 +59,16 @@ class FakeClient:
         if operation == "capture-observation":
             return {"receipt": ".codearbiter/.artifacts/receipts/" + "4" * 64 + ".json"}
         if operation in {"task-reconcile", "scope-reconcile"}:
+            operation_id = request["operation_id"]
+            previous = self.reconciled_requests.get(operation_id)
+            if previous is not None:
+                assert previous == request
+                return {"revision": 4, "replay": True}
+            self.reconciled_requests[operation_id] = dict(request)
+            self.identity["revision"] = 4
+            if self.fail_after_reconciliation:
+                self.fail_after_reconciliation = False
+                raise OSError("response lost after commit")
             return {"revision": 4}
         raise AssertionError(operation)
 
@@ -184,6 +201,188 @@ class ReconciliationTest(unittest.TestCase):
                     self.adapter.consume_reconciliation(
                         self.root, self.client, armed["reply"], host="codex", session_id="bound-session"
                     )
+
+    def test_lost_response_retries_exact_mutation_without_new_capture(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="retry-reconcile-token",
+        )
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        captures = len([name for name, _ in self.client.calls if name == "capture-observation"])
+        self.assertEqual(captures, 1)
+        result = self.adapter.consume_reconciliation(
+            self.root, self.client, armed["reply"], host="codex", session_id="second-session"
+        )
+        self.assertTrue(result["reconciled"])
+        self.assertEqual(len(self.client.reconciled_requests), 1)
+        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+
+    def test_pending_request_can_be_cancelled_and_rearmed_before_mutation(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="cancel-reconcile-token",
+        )
+        self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+        replacement = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="BLOCKED", reason="New assessment.", assessment="Reassessed.",
+            token="replacement-token",
+        )
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+        self.assertEqual(self.root.resolve(), self.routes.resolve("reconciliation", replacement["reply"]))
+
+    def test_uncertain_mutation_cannot_be_cancelled(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="uncertain-reconcile-token",
+        )
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="session-1"
+            )
+        with self.assertRaisesRegex(RuntimeError, "in-flight"):
+            self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+
+    def test_failed_attempt_publication_leaves_no_partial_record_and_can_cancel(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="atomic-attempt-token",
+        )
+        with mock.patch.object(
+            self.adapter._artifactauthoritylib, "capture_user_prompt",
+            return_value={"receipt": ".codearbiter/.artifacts/receipts/" + "4" * 64 + ".json"},
+        ):
+            with mock.patch("os.link", side_effect=OSError("link unavailable")):
+                with self.assertRaisesRegex(OSError, "link unavailable"):
+                    self.adapter.consume_reconciliation(
+                        self.root, self.client, armed["reply"], host="codex", session_id="session-1"
+                    )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        self.assertFalse((self.root / self.adapter._attempt(pending)).exists())
+        self.assertTrue(self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])["cancelled"])
+
+    def test_cancel_cannot_revoke_a_concurrently_dispatched_mutation(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="concurrent-reconcile-token",
+        )
+        captured = threading.Event()
+        release = threading.Event()
+        cancel_started = threading.Event()
+        cancel_done = threading.Event()
+        outcomes = {}
+
+        def capture(*_args, **_kwargs):
+            captured.set()
+            if not release.wait(5):
+                raise AssertionError("test capture was never released")
+            return {"receipt": ".codearbiter/.artifacts/receipts/" + "4" * 64 + ".json"}
+
+        def consume():
+            try:
+                outcomes["consume"] = self.adapter.consume_reconciliation(
+                    self.root, self.client, armed["reply"], host="codex", session_id="session-1"
+                )
+            except Exception as exc:
+                outcomes["consume_error"] = exc
+
+        def cancel():
+            cancel_started.set()
+            try:
+                outcomes["cancel"] = self.adapter.cancel_reconciliation(
+                    self.root, "PLAN-EXAMPLE", armed["reply"]
+                )
+            except Exception as exc:
+                outcomes["cancel_error"] = exc
+            finally:
+                cancel_done.set()
+
+        with mock.patch.object(self.adapter._artifactauthoritylib, "capture_user_prompt", side_effect=capture):
+            consumer = threading.Thread(target=consume)
+            canceller = threading.Thread(target=cancel)
+            consumer.start()
+            self.assertTrue(captured.wait(5))
+            canceller.start()
+            self.assertTrue(cancel_started.wait(5))
+            self.assertFalse(cancel_done.wait(0.1), "cancellation overtook mutation dispatch")
+            release.set()
+            consumer.join(5)
+            canceller.join(5)
+        self.assertFalse(consumer.is_alive())
+        self.assertFalse(canceller.is_alive())
+        self.assertTrue(outcomes["consume"]["reconciled"])
+        self.assertNotIn("cancel", outcomes)
+        self.assertIsInstance(outcomes.get("cancel_error"), RuntimeError)
+
+    def test_orphaned_pending_request_can_be_cancelled_without_a_route(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="orphan-reconcile-token",
+        )
+        self.routes.unregister(self.root, "reconciliation", "PLAN-EXAMPLE")
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+        specification = importlib.util.spec_from_file_location(
+            "artifact_reconcile_orphan_cli", HERE.parent.parent / "core/pysrc/artifact-reconcile.py"
+        )
+        cli = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(cli)
+        with redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(cli.main([
+                "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE", "--cancel-orphan",
+            ]), 0)
+        self.assertTrue(json.loads(output.getvalue())["cancelled"])
+        replacement = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="BLOCKED", reason="Reassessed.", assessment="Fresh review.",
+            token="replacement-orphan-token",
+        )
+        self.assertEqual(self.root.resolve(), self.routes.resolve("reconciliation", replacement["reply"]))
+
+    def test_failed_pending_publication_leaves_no_final_marker(self):
+        with mock.patch("os.link", side_effect=OSError("pending link unavailable")):
+            with self.assertRaisesRegex(OSError, "pending link unavailable"):
+                self.adapter.arm_reconciliation(
+                    self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+                    target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+                    token="pending-atomic-token",
+                )
+        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+
+    def test_cancel_cli_requires_exact_prompt_and_rejects_arming_fields(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="cli-cancel-token",
+        )
+        specification = importlib.util.spec_from_file_location(
+            "artifact_reconcile_cli", HERE.parent.parent / "core/pysrc/artifact-reconcile.py"
+        )
+        cli = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(cli)
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as exit_status:
+                cli.main([
+                    "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE",
+                    "--cancel", "--prompt", armed["reply"], "--target-id", "T-001",
+                ])
+        self.assertEqual(exit_status.exception.code, 2)
+        with redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(cli.main([
+                "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE",
+                "--cancel", "--prompt", armed["reply"],
+            ]), 0)
+        self.assertTrue(json.loads(output.getvalue())["cancelled"])
 
 
 if __name__ == "__main__":

@@ -80,27 +80,30 @@ def register(root: str | Path, route: str, artifact_id: str, prompt: str,
     if binding_sha256 is not None:
         value["binding_sha256"] = binding_sha256
     value["integrity_sha256"] = _digest(_canonical(value))
-    path = _registry() / f"{_key(route, artifact_id, repository)}.json"
+    registry = _registry()
+    key = _key(route, artifact_id, repository)
+    path = registry / f"{key}.json"
     data = _canonical(value)
+    # Each caller owns an exclusively created pending marker before registering.
+    # A prior route at this key therefore belongs to an interrupted request.
+    fd, temporary = tempfile.mkstemp(prefix=f".{key}.", suffix=".tmp", dir=registry)
     try:
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-        if hasattr(os, "O_BINARY"):
-            flags |= os.O_BINARY
-        fd = os.open(path, flags, 0o600)
-    except FileExistsError:
-        if path.read_bytes() != data:
-            raise PromptRouteError("artifact prompt route collides with different bytes")
-        return
-    try:
-        view = memoryview(data)
-        while view:
-            written = os.write(fd, view)
-            if written <= 0:
-                raise OSError("short prompt-route write")
-            view = view[written:]
-        os.fsync(fd)
+        try:
+            view = memoryview(data)
+            while view:
+                written = os.write(fd, view)
+                if written <= 0:
+                    raise OSError("short prompt-route write")
+                view = view[written:]
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        os.replace(temporary, path)
     finally:
-        os.close(fd)
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
 
 
 def resolve(route: str, prompt: str) -> Path | None:
