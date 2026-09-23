@@ -25,6 +25,7 @@ TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{12,128}")
 PENDING_DIR = Path(".codearbiter/.markers/reconciliations")
 ATTEMPT_DIR = Path(".codearbiter/.markers/reconciliation-attempts")
 SOURCE_DIR = Path(".codearbiter/.artifacts/authority-sources")
+PROVEN_UNCOMMITTED = frozenset({"REVISION_CONFLICT", "OPERATION_ROLLED_BACK"})
 
 
 class ReconciliationError(RuntimeError):
@@ -347,6 +348,39 @@ def cancel_orphaned_reconciliation(root: str | Path, artifact_id: str) -> dict[s
         if binding is not None:
             _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
         return {"artifact_id": artifact_id, "cancelled": True, "orphaned": True}
+
+
+def recover_reconciliation(root: str | Path, client: Any, artifact_id: str) -> dict[str, Any]:
+    """Replay a durable attempt; clear it only after a proven commit or non-commit."""
+    root = Path(root).resolve(strict=True)
+    with _reconciliation_lock(root, artifact_id):
+        pending = _load(root, artifact_id)
+        request = _load_attempt(root, pending)
+        if request is None:
+            raise ReconciliationError("no in-flight reconciliation to recover")
+        try:
+            result = client.call(pending["operation"], request)
+            transaction = result.get("transaction") if isinstance(result, dict) else None
+            if not isinstance(result, dict) or not (
+                type(result.get("revision")) is int or result.get("refresh_required") is True
+            ) or not isinstance(transaction, dict) or (
+                transaction.get("operation_id") != request["operation_id"]
+                or transaction.get("state") != "committed"
+            ):
+                raise ReconciliationError("reconciliation replay response is malformed")
+            committed = True
+        except _artifactlib.ArtifactError as exc:
+            if exc.code not in PROVEN_UNCOMMITTED:
+                raise
+            result = None
+            committed = False
+        (root / _pending(artifact_id)).unlink()
+        _artifactpromptlib.unregister(root, "reconciliation", artifact_id)
+        (root / _attempt(pending)).unlink()
+        return {
+            "artifact_id": artifact_id, "committed": committed,
+            "revision": result.get("revision") if committed else None,
+        }
 
 
 def consume_reconciliation(

@@ -29,6 +29,7 @@ class FakeClient:
         self.record = {"id": "T-001", "title": "Task", "state": "IN_PROGRESS"}
         self.snapshot_sha = "3" * 64
         self.fail_after_reconciliation = False
+        self.reconciliation_failure_code = None
         self.reconciled_requests = {}
 
     def call(self, operation, request=None, **_kwargs):
@@ -59,17 +60,20 @@ class FakeClient:
         if operation == "capture-observation":
             return {"receipt": ".codearbiter/.artifacts/receipts/" + "4" * 64 + ".json"}
         if operation in {"task-reconcile", "scope-reconcile"}:
+            if self.reconciliation_failure_code:
+                from _artifactlib import ArtifactError
+                raise ArtifactError(self.reconciliation_failure_code, "fixture mutation did not commit")
             operation_id = request["operation_id"]
             previous = self.reconciled_requests.get(operation_id)
             if previous is not None:
                 assert previous == request
-                return {"revision": 4, "replay": True}
+                return {"revision": 4, "transaction": {"operation_id": operation_id, "state": "committed", "replay": True}}
             self.reconciled_requests[operation_id] = dict(request)
             self.identity["revision"] = 4
             if self.fail_after_reconciliation:
                 self.fail_after_reconciliation = False
                 raise OSError("response lost after commit")
-            return {"revision": 4}
+            return {"revision": 4, "transaction": {"operation_id": operation_id, "state": "committed", "replay": False}}
         raise AssertionError(operation)
 
 
@@ -87,6 +91,13 @@ class ReconciliationTest(unittest.TestCase):
     def tearDown(self):
         self.routes.REGISTRY_PARENT = self.old_registry
         self.temp.cleanup()
+
+    def test_documented_recovery_commands_are_directly_runnable(self):
+        source = (HERE.parent.parent / "core/surface/includes/artifacts.md").read_text(encoding="utf-8")
+        command = 'python "{{PLUGIN_ROOT}}/hooks/artifact-reconcile.py" --root "{{PROJECT_DIR}}" --artifact-id <plan-id>'
+        self.assertIn(command + ' --cancel --prompt "<exact returned reply>"', source)
+        self.assertIn(command + " --cancel-orphan", source)
+        self.assertIn(command + " --recover", source)
 
     def test_exact_observed_prompt_captures_and_applies_task_reconciliation(self):
         armed = self.adapter.arm_reconciliation(
@@ -250,6 +261,174 @@ class ReconciliationTest(unittest.TestCase):
             )
         with self.assertRaisesRegex(RuntimeError, "in-flight"):
             self.adapter.cancel_reconciliation(self.root, "PLAN-EXAMPLE", armed["reply"])
+
+    def test_recovery_clears_only_a_proven_uncommitted_attempt(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="failed-reconcile-token",
+        )
+        self.client.reconciliation_failure_code = "REVISION_CONFLICT"
+        with self.assertRaisesRegex(RuntimeError, "REVISION_CONFLICT"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        self.assertTrue((self.root / self.adapter._attempt(pending)).exists())
+        result = self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertFalse(result["committed"])
+        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+        self.assertFalse((self.root / self.adapter._attempt(pending)).exists())
+        self.assertIsNone(self.routes.resolve("reconciliation", armed["reply"]))
+        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+        self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="BLOCKED", reason="Reassessed.", assessment="Reviewed again.",
+            token="replacement-reconcile-token",
+        )
+
+    def test_recovery_accepts_committed_replay_after_lost_response(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="lost-recovery-token",
+        )
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        result = self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertTrue(result["committed"])
+        self.assertEqual(result["revision"], 4)
+        self.assertEqual(len(self.client.reconciled_requests), 1)
+        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+
+    def test_scope_recovery_replays_after_prompt_route_is_lost(self):
+        self.client.record = {"id": "CP-01", "title": "Scope", "tasks": ["T-001"]}
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "CP-01", "scope-reconcile",
+            assessment="Reviewed scope baseline.", token="orphaned-scope-token",
+        )
+        self.client.fail_after_reconciliation = True
+        with self.assertRaisesRegex(OSError, "response lost"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        self.routes.unregister(self.root, "reconciliation", "PLAN-EXAMPLE")
+        result = self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertTrue(result["committed"])
+        mutations = [request for name, request in self.client.calls if name == "scope-reconcile"]
+        self.assertEqual(len(mutations), 2)
+        self.assertEqual(mutations[0], mutations[1])
+        self.assertEqual(len(self.client.reconciled_requests), 1)
+        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+        self.assertFalse((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+        self.assertFalse((self.root / self.adapter._attempt(pending)).exists())
+
+    def test_recovery_preserves_attempt_on_unclassified_engine_error(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="unknown-recovery-token",
+        )
+        self.client.reconciliation_failure_code = "RECOVERY_REQUIRED"
+        with self.assertRaisesRegex(RuntimeError, "RECOVERY_REQUIRED"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        with self.assertRaisesRegex(RuntimeError, "RECOVERY_REQUIRED"):
+            self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertTrue((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+        self.assertTrue((self.root / self.adapter._attempt(pending)).exists())
+
+    def test_recovery_preserves_attempt_on_malformed_success_response(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="malformed-recovery-token",
+        )
+        self.client.reconciliation_failure_code = "REVISION_CONFLICT"
+        with self.assertRaisesRegex(RuntimeError, "REVISION_CONFLICT"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        pending = self.adapter._load(self.root, "PLAN-EXAMPLE")
+        for response in (
+            None,
+            {"revision": 4},
+            {"revision": 4, "transaction": {"operation_id": "wrong-operation", "state": "committed"}},
+            {"revision": 4, "transaction": {"operation_id": self.adapter._operation_id(pending), "state": "rolled_back"}},
+        ):
+            with self.subTest(response=response):
+                with mock.patch.object(self.client, "call", return_value=response):
+                    with self.assertRaisesRegex(RuntimeError, "malformed"):
+                        self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+                self.assertTrue((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
+                self.assertTrue((self.root / self.adapter._attempt(pending)).exists())
+
+    def test_recovery_rejects_armed_request_without_attempt(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="unattempted-recovery-token",
+        )
+        with self.assertRaisesRegex(RuntimeError, "no in-flight"):
+            self.adapter.recover_reconciliation(self.root, self.client, "PLAN-EXAMPLE")
+        self.assertEqual(self.root.resolve(), self.routes.resolve("reconciliation", armed["reply"]))
+
+    def test_recovery_cli_replays_the_exact_stored_request(self):
+        armed = self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="cli-recovery-token",
+        )
+        self.client.reconciliation_failure_code = "OPERATION_ROLLED_BACK"
+        with self.assertRaisesRegex(RuntimeError, "OPERATION_ROLLED_BACK"):
+            self.adapter.consume_reconciliation(
+                self.root, self.client, armed["reply"], host="codex", session_id="first-session"
+            )
+        specification = importlib.util.spec_from_file_location(
+            "artifact_reconcile_recovery_cli", HERE.parent.parent / "core/pysrc/artifact-reconcile.py"
+        )
+        cli = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(cli)
+        with mock.patch.object(cli._artifactlib, "ArtifactClient", return_value=self.client):
+            with redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(cli.main([
+                    "--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE", "--recover",
+                ]), 0)
+        self.assertFalse(json.loads(output.getvalue())["committed"])
+        mutations = [request for name, request in self.client.calls if name == "task-reconcile"]
+        self.assertEqual(len(mutations), 2)
+        self.assertEqual(mutations[0], mutations[1])
+        self.assertEqual(len([name for name, _ in self.client.calls if name == "capture-observation"]), 1)
+
+    def test_recovery_cli_rejects_cancellation_and_arming_fields(self):
+        self.adapter.arm_reconciliation(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "task-reconcile",
+            target_state="PENDING", reason="Interrupted.", assessment="Reviewed.",
+            token="reject-mixed-recovery-token",
+        )
+        specification = importlib.util.spec_from_file_location(
+            "artifact_reconcile_recovery_args", HERE.parent.parent / "core/pysrc/artifact-reconcile.py"
+        )
+        cli = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(cli)
+        for extra in (
+            ["--cancel", "--prompt", "arbitrary"],
+            ["--cancel-orphan"],
+            ["--target-id", "T-001"],
+            ["--operation", "task-reconcile"],
+        ):
+            with self.subTest(extra=extra), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as exit_status:
+                    cli.main(["--root", str(self.root), "--artifact-id", "PLAN-EXAMPLE", "--recover", *extra])
+                self.assertEqual(exit_status.exception.code, 2)
+        self.assertTrue((self.root / self.adapter._pending("PLAN-EXAMPLE")).exists())
 
     def test_failed_attempt_publication_leaves_no_partial_record_and_can_cancel(self):
         armed = self.adapter.arm_reconciliation(

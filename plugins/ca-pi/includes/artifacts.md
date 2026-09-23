@@ -218,12 +218,31 @@ foreign Git repository all fail closed. Re-run `eligible` after reconciliation;
 the prompt reply itself is not proof that the lifecycle mutation committed.
 If a mutation response is lost, submit the same exact reply again: the adapter
 replays its durable operation ID and receipt without recapturing authority. A
-request that has not reached mutation can be cancelled with
-`artifact-reconcile.py --root "<project-root>" --artifact-id <plan-id> --cancel --prompt "<exact returned reply>"`.
+request that has not reached mutation can be cancelled with:
+
+```sh
+python "<plugin-root>/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --cancel --prompt "<exact returned reply>"
+```
+
 If a crash left a complete pending request before its prompt route was
-registered, use `--cancel-orphan` with the same root and artifact ID instead;
-it refuses an active route or any in-flight mutation. Re-arm only after one of
-these cancellations succeeds.
+registered, use this command instead. It refuses an active route or any
+in-flight mutation:
+
+```sh
+python "<plugin-root>/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --cancel-orphan
+```
+
+If a durable mutation attempt exists, neither cancellation path can clear it.
+Replay the exact stored operation and receipt under the reconciliation lock:
+
+```sh
+python "<plugin-root>/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --recover
+```
+
+Recovery clears the request only on a committed replay or a closed-set engine
+result proving no commit (`REVISION_CONFLICT` or `OPERATION_ROLLED_BACK`). Other
+errors retain it for investigation. Re-arm only after cancellation or recovery
+succeeds; a committed recovery is not permission to repeat the mutation.
 
 `IN_PROGRESS` after interruption requires reconciliation, not automatic completion.
 `REVIEW` requires fresh evidence. Source changes stale proof; state/branding updates

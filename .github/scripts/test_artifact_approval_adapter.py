@@ -4,6 +4,7 @@
 import hashlib
 import importlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,11 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent
 CORE_PYSRC = REPO / "core" / "pysrc"
 sys.path.insert(0, str(CORE_PYSRC))
+from _gitexec import root_bound_git_env  # noqa: E402
+
+
+def git_run(argv, **kwargs):
+    return subprocess.run(argv, env=root_bound_git_env(), **kwargs)
 
 
 class _FakeClient:
@@ -126,16 +132,25 @@ class ApprovalAdapterTest(unittest.TestCase):
     def test_native_linked_worktree_identity_is_routable(self):
         repository = self.root / "repository"
         linked = self.root / "linked"
-        subprocess.run(["git", "init", "--quiet", str(repository)], check=True)
-        subprocess.run(["git", "-C", str(repository), "config", "user.email", "test@example.invalid"], check=True)
-        subprocess.run(["git", "-C", str(repository), "config", "user.name", "Test"], check=True)
+        git_run(["git", "init", "--quiet", str(repository)], check=True)
+        git_run(["git", "-C", str(repository), "config", "user.email", "test@example.invalid"], check=True)
+        git_run(["git", "-C", str(repository), "config", "user.name", "Test"], check=True)
         (repository / "tracked.txt").write_text("x", encoding="utf-8")
-        subprocess.run(["git", "-C", str(repository), "add", "tracked.txt"], check=True)
-        subprocess.run(["git", "-C", str(repository), "commit", "--quiet", "-m", "fixture"], check=True)
-        subprocess.run(["git", "-C", str(repository), "worktree", "add", "--quiet", "-b", "linked", str(linked)], check=True)
+        git_run(["git", "-C", str(repository), "add", "tracked.txt"], check=True)
+        git_run(["git", "-C", str(repository), "commit", "--quiet", "-m", "fixture"], check=True)
+        git_run(["git", "-C", str(repository), "worktree", "add", "--quiet", "-b", "linked", str(linked)], check=True)
         prompt = "approve SPEC-LINKED fixed-token-linked"
         self.routes.register(linked, "approval", "SPEC-LINKED", prompt)
         self.assertEqual(self.routes.resolve("approval", prompt), linked.resolve())
+
+    def test_linked_worktree_fixture_ignores_inherited_git_location(self):
+        ambient = {
+            "GIT_DIR": str(self.root / "ambient.git"),
+            "GIT_WORK_TREE": str(self.root / "ambient-worktree"),
+            "GIT_INDEX_FILE": str(self.root / "ambient-index"),
+        }
+        with mock.patch.dict(os.environ, ambient):
+            self.test_native_linked_worktree_identity_is_routable()
 
     def test_exact_host_prompt_captures_and_approves_current_identity(self):
         armed = self.adapter.arm_user_approval(

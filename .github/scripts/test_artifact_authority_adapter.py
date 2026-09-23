@@ -335,6 +335,42 @@ class AuthorityAdapterTest(unittest.TestCase):
         after = self.adapter._workspace_snapshots(binding)
         self.assertNotEqual(before[0]["content_sha256"], after[0]["content_sha256"])
 
+    def test_workspace_snapshot_records_an_unstaged_deleted_tracked_directory(self):
+        nested = self.root / "tracked-directory"
+        nested.mkdir()
+        (nested / "fixture.txt").write_text("fixture", encoding="utf-8")
+        git_run(["git", "-C", str(self.root), "add", "tracked-directory/fixture.txt"], check=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="snapshot-deleted-directory",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        before = self.adapter._workspace_snapshots(binding)
+        (nested / "fixture.txt").unlink()
+        nested.rmdir()
+        after = self.adapter._workspace_snapshots(binding)
+        self.assertNotEqual(before[0]["content_sha256"], after[0]["content_sha256"])
+
+    def test_deleted_tracked_parent_replaced_by_external_symlink_is_rejected(self):
+        nested = self.root / "tracked-directory"
+        nested.mkdir()
+        (nested / "fixture.txt").write_text("fixture", encoding="utf-8")
+        git_run(["git", "-C", str(self.root), "add", "tracked-directory/fixture.txt"], check=True)
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="snapshot-escaped-directory",
+        )
+        binding = self.adapter._load(self.root, armed["request_id"])["command_bindings"]
+        (nested / "fixture.txt").unlink()
+        nested.rmdir()
+        with tempfile.TemporaryDirectory() as outside:
+            try:
+                nested.symlink_to(outside, target_is_directory=True)
+            except OSError as exc:
+                self.skipTest(f"host cannot create a directory symlink: {exc}")
+            with self.assertRaisesRegex(self.adapter.AuthorityError, "WORKSPACE_DRIFT"):
+                self.adapter._workspace_snapshots(binding)
+
     def test_workspace_snapshot_records_clean_tracked_gitlink(self):
         nested = self.root / "nested-repo"
         git_run(["git", "init", "--quiet", str(nested)], check=True)

@@ -636,7 +636,7 @@ def _workspace_snapshots(bindings: list[dict[str, Any]]) -> list[dict[str, str]]
             encoded = relative.encode("utf-8")
             candidate = root / relative
             try:
-                if not candidate.parent.resolve(strict=True).is_relative_to(root):
+                if not candidate.parent.resolve(strict=False).is_relative_to(root):
                     raise OSError("workspace member escapes the worktree")
                 mode = entries[relative]
                 try:
