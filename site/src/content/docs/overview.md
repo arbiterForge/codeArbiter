@@ -58,15 +58,26 @@ to learn every internal skill before starting.
 
 ## One Core, Three Host Adapters
 
-The governance adapters are `ca` for Claude Code, `ca-codex` for Codex, and `ca-pi` for Pi.
+codeArbiter is one governance product with three host adapters: `ca` for Claude Code,
+`ca-codex` for Codex, and `ca-pi` for Pi.
 They share the policy core and repository-owned `.codearbiter/` records, while entry spelling,
 trust, role execution and supported environments differ. Pi remains a Feature Forge `preview`.
-The separate `ca-sandbox` plugin is infrastructure, not a fourth governance host.
+The Claude Code marketplace also carries `ca-sandbox`, an infrastructure plugin, not a fourth
+governance host. The Codex marketplace carries `ca-codex`; Pi uses npm as its convenience channel
+and pinned Git tags as its reproducible channel.
 
-Claude Code dispatches plugin agents. Codex uses host-provided agent threads with packaged role
-instructions. An inline fallback is allowed only where the owning workflow permits it and isolation
-is not mandatory. Pi launches hardened child processes through its trusted parent. These mechanisms
-are not interchangeable guarantees; the host-specific evidence below states their qualified limits.
+Claude Code dispatches plugin agents. Published releases from 0.7.5 include the complete packaged
+resource charter set for that release for Codex host-provided agent threads, with static-package
+and route-closure checks at release. A bounded 0.9.4 receipt records one exact installed-charter
+review. A bounded inline fallback is allowed only where the canonical workflow explicitly permits
+it and isolation is not mandatory. Pi launches hardened child processes through its trusted parent.
+These mechanisms are not interchangeable guarantees; the host-specific evidence below states
+their qualified limits.
+
+For typed HTML, native engine support and host authority are separate capabilities. The current
+verification and review authority adapters are Codex-only; Claude Code and Pi stop at unsupported
+boundaries. Check the [typed-artifact authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability)
+for the exact scope rather than treating shared files or commands as end-to-end parity.
 
 The [compatibility matrix](/getting-started/compatibility/) and the dated
 [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) own exact support details.
