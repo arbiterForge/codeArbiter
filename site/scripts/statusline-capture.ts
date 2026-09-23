@@ -3,11 +3,13 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 export interface TerminalToken { text: string; foreground: string; background: string; bold: boolean }
+/** Parse bounded terminal style escapes into display-safe text and colors. */
 export function terminalTokens(value: string): TerminalToken[] {
   if (value.length > 100_000) throw new Error('Statusline capture exceeds the reviewed bound');
   const tokens: TerminalToken[] = [];
   let foreground = 'inherit', background = 'transparent', bold = false, offset = 0;
   const expression = /\u001b\[([0-9;]*)m/g;
+  /** Append the plain-text segment preceding the next escape sequence. */
   function text(end: number) {
     const plain = value.slice(offset, end);
     if (/[\u0000-\u0008\u000b-\u001f\u007f]/.test(plain)) throw new Error('Unsupported terminal control');
@@ -37,6 +39,7 @@ export function terminalTokens(value: string): TerminalToken[] {
   text(value.length);
   return tokens;
 }
+/** Check the theme inventory and digests before rendering captured statuslines. */
 export function loadThemeCaptures() {
   const file = JSON.parse(readFileSync(resolve(process.cwd(), 'public/examples/statusline-themes.json'), 'utf8')) as {
     boundary: string; source_commit: string; renderer: string; renderer_sha256: string;

@@ -9,9 +9,12 @@ export const primaryNavigation = [
   { label: 'Reference', slug: 'reference' },
   { label: 'Trust', slug: 'trust' },
 ] as const;
+/** Create a reader-facing sidebar destination. */
 const link = (label: string, slug: string): Link => ({ label, slug });
+/** Group destinations under a collapsible journey heading. */
 const group = (label: string, items: Array<Group | Link>, collapsed = true): Group => ({ label, items, collapsed });
 
+/** Order reader journeys while retaining the generated Academy and reference inventories. */
 export function buildJourneySidebar(reference: Group[], academy: Group[]): Group[] {
   return [
     group('Get started', [

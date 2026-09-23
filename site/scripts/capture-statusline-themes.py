@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE_COMMIT = 'b41d9803eacb3acf4b93c8bec81e1aa2f086aec7'
 HOOKS = ROOT / 'plugins/ca/hooks'
 def pinned_source(path):
+    """Verify a renderer dependency against the reviewed source commit."""
     relative = path.relative_to(ROOT).as_posix()
     pinned = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{SOURCE_COMMIT}:{relative}'])
     if path.read_bytes() != pinned:

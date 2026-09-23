@@ -146,8 +146,10 @@ function renderIndex(source: AcademySource): string {
   ].join("\n");
 }
 
+/** Render a lesson with authored next-lab links and curriculum reading position. */
 function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknown, guides: ParsedGuide[]): string {
   const place = buildAcademyWayfinding(guides).find(item => item.id === guide.id)!;
+  /** Produce frontmatter pagination without inventing a successor for the final lesson. */
   const pagination = (direction: "prev" | "next", id: string | null) => id === null
     ? [`${direction}: false`]
     : [direction + ":", `  link: ${yamlString(`../${id.toLowerCase()}/`)}`, `  label: ${yamlString(guides.find(item => item.id === id)!.title)}`];
@@ -226,6 +228,7 @@ function renderTypedContent(source: AcademySource, guides: ParsedGuide[]): strin
     `export const academyLessons = academyContent.lessons;\n`;
 }
 
+/** Generate source-backed Academy lessons, track overviews, and sidebar entries. */
 export function generateAcademy(
   source: AcademySource,
   docsRoot: string,

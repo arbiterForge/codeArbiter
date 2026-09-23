@@ -9,17 +9,20 @@ import { loadThemeCaptures, terminalTokens } from '../../scripts/statusline-capt
 
 const temporary: string[] = [];
 afterEach(() => { for (const path of temporary.splice(0)) rmSync(path, { recursive: true, force: true }); });
+/** Copy the captured example so integrity tests cannot mutate checked-in files. */
 function copy() {
   const root = mkdtempSync(join(tmpdir(), 'ca-product-fixture-'));
   temporary.push(root);
   cpSync('public/examples/saved-searches', root, { recursive: true });
   return root;
 }
+/** Update a scratch manifest to test a changed file beyond its digest check. */
 function repin(root: string, path: string) {
   const manifest = JSON.parse(readFileSync(join(root, 'provenance.json'), 'utf8'));
   manifest.files[path] = createHash('sha256').update(readFileSync(join(root, path))).digest('hex');
   writeFileSync(join(root, 'provenance.json'), JSON.stringify(manifest));
 }
+/** Create an isolated renderer and matching Git source pin for capture tests. */
 function rendererFixture() {
   const root = mkdtempSync(join(tmpdir(), 'ca-renderer-pin-')); temporary.push(root);
   const hooks = join(root, 'plugins/ca/hooks'); mkdirSync(hooks, { recursive: true });
@@ -40,6 +43,7 @@ def persist_sess_start(*args):
     'subagent_dir', 'read_subagents'].map((name) => `def ${name}(*args): return None\n`).join('');
   writeFileSync(renderer, source);
   // The fixture repository has no external remote, hooks, credentials, or network step.
+  /** Execute a local Git command without hooks or external credentials. */
   function git(args: string[]) {
     const result = spawnSync('git', ['-c', 'core.hooksPath=/dev/null', '-c', 'commit.gpgsign=false', ...args],
       { cwd: root, encoding: 'utf8', timeout: 10_000,

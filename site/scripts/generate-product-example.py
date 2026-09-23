@@ -23,15 +23,18 @@ SOURCE_COMMIT = 'b41d9803eacb3acf4b93c8bec81e1aa2f086aec7'
 
 
 def digest(path):
+    """Return the SHA-256 of a captured fixture file."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def write_json(path, value):
+    """Write a deterministic JSON capture, creating its directory if needed."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
 
 
 def generate(engine):
+    """Build and capture an unapproved native artifact pair in disposable repositories."""
     if not engine.is_file():
         raise ValueError('Supply an existing native engine built from the declared source.')
     if digest(engine) != EXPECTED_ENGINE_SHA256:
@@ -42,6 +45,7 @@ def generate(engine):
         subprocess.run(['git', 'init', '-q', str(work)], check=True)
 
         def call(operation, request, expect_ok=True):
+            """Invoke the pinned native engine against the temporary fixture repo."""
             result = subprocess.run([str(engine), operation, '--root', str(work), '--request', '-'],
                                     input=json.dumps({'protocol': PROTOCOL, **request}), text=True,
                                     capture_output=True, timeout=30)

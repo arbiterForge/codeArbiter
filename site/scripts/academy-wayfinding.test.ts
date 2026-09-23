@@ -8,6 +8,7 @@ const lessons = [
   { id: 'U01-last', track: 'power-user', title: 'Last', prerequisites: ['Read the local evidence first'], nextLab: null },
 ] as const;
 const context = { release: 'preview-0.32', commit: 'a'.repeat(40), base: '/docs/', lessonIds: lessons.map(l => l.id) };
+/** Provide isolated browser storage without sharing state between test cases. */
 function memory() {
   const values = new Map<string, string>();
   return { values, getItem: (k: string) => values.get(k) ?? null, setItem: (k: string, v: string) => { values.set(k, v); }, removeItem: (k: string) => { values.delete(k); } };

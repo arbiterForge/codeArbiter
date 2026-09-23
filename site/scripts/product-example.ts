@@ -35,9 +35,12 @@ export interface Provenance {
 const defaultRoot = resolve(process.cwd(), 'public/examples/saved-searches');
 const required = ['baseline.py', 'completed.py', 'test_export_csv.py', 'spec.request.json', 'plan.request.json',
   'specs/saved-searches.html', 'plans/saved-searches.html', 'test-runs.json', 'native-validation.json'];
+/** Reject a fixture that no longer satisfies the documented example contract. */
 const fail = (why: string): never => { throw new Error(`Product example: ${why}`); };
 
+/** Verify the captured fixture's integrity and project its reviewable artifacts. */
 export function loadProductExample(root = defaultRoot) {
+  /** Read only regular files beneath the supplied fixture root. */
   const read = (path: string): Buffer => {
     const absolute = join(root, path);
     if (!lstatSync(absolute).isFile()) fail(`not a regular file: ${path}`);
@@ -51,6 +54,7 @@ export function loadProductExample(root = defaultRoot) {
     const actual = createHash('sha256').update(read(path)).digest('hex');
     if (actual !== provenance.files[path]) fail(`capture digest mismatch: ${path}`);
   }
+  /** Extract the inert JSON model from a pinned native-rendered artifact. */
   function model(path: string): unknown {
     const html = read(path).toString();
     // This is a fixed native-renderer fixture, not an arbitrary HTML sanitizer.
