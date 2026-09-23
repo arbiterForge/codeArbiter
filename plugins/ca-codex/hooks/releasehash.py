@@ -40,11 +40,24 @@
 #
 # CLI:
 #   releasehash.py digest <target>    print the executable-command digest
-#   releasehash.py check <target>     exit 0 confirmed, 1 changed, 2 never
-#                                     confirmed, 3/4 declared-file states
+#   releasehash.py check <target>     print the confirmation state
 #   releasehash.py record <target>    mint the confirmation (the sanctioned
 #                                     producer; run only after an operator has
 #                                     actually READ the commands)
+#
+# Exit codes (T-05, spec P3 / AC-04, AC-05 -- disambiguated from a single
+# overloaded 2 that used to mean three unrelated things):
+#   64  malformed CLI usage (wrong arg count, or an unrecognised subcommand)
+#       -- never reaches target resolution, writes no marker
+#   65  unknown release target (no declared row of that name) -- writes no
+#       marker
+#   3/4 the declared-targets file itself could not be read/parsed for
+#       `<target>`; see `_releaselib._targets_error_exit_code` (3 genuinely
+#       absent, 4 every other declared-file error) -- unchanged by this split
+#   0/1/2 `check`'s three valid-check outcomes, unchanged by this split:
+#       0 confirmed or no-commands, 1 changed since last confirmation,
+#       2 never confirmed -- NOW 2's sole remaining meaning
+#   0   `digest`/`record` succeed once the target and declared file resolve
 
 from __future__ import annotations
 
@@ -182,7 +195,7 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if len(argv) != 2 or argv[0] not in ("digest", "check", "record"):
         sys.stderr.write("usage: releasehash.py {digest|check|record} <target>\n")
-        return 2
+        return 64
     command, target = argv
     root = os.path.dirname(os.path.dirname(_releaselib.default_targets_path()))
 
@@ -193,7 +206,7 @@ def main(argv=None):
         return _releaselib._targets_error_exit_code(error)
     if executable_inputs is None:
         sys.stderr.write(f"unknown release target: {target}\n")
-        return 2
+        return 65
     commands, release_build = executable_inputs
 
     if command == "digest":

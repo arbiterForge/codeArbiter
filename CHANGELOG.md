@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.8] - 2026-09-22
+## [2.21.9] - 2026-09-22
 
 ### Fixed
 
@@ -21,6 +21,34 @@ predate the plugin rewrite and are grouped by date.
   bindings and fail-closed cross-repository routing.
 - Converge qualified Codex release archives and marketplace installs on one
   content-addressed distribution identity with race-safe promotion records.
+
+## [2.21.8] - 2026-09-22
+
+### Fixed
+
+- Bound the internal release-tree Git status probe with a timeout so it
+  reports an actionable failure instead of hanging or being mistaken for a
+  mutation (#627).
+- Disambiguate `releasehash`'s overloaded exit code so malformed usage and an
+  unknown target each report their own outcome instead of both reading as
+  "never confirmed" (#627).
+- Refuse a release baseline that does not resolve as a verified ancestor of
+  the candidate's history, before any release edit, closing a silent
+  version-retargeting gap (#570).
+- Fail before any back-fill or release tracked-file write when the routed
+  commit-gate's prerequisites or branch restrictions are unmet, and correct
+  back-fill's "never again" claim to be checkout/file-scoped rather than
+  project-global (#570).
+- Make Back-fill declare and publish an operator-authored exact-SHA changelog
+  reconciliation ledger before first-release re-entry, so published
+  pre-footer history can release without rewriting commits or weakening the
+  footer gate (#570).
+- Surface `feat!`, `feat(scope)!`, and `BREAKING CHANGE:` commits with an
+  explicit Breaking marker in composed release notes, and prefer the first
+  breaking entry for a major-bump headline (#570).
+- Restructure the release skill's monolithic Phase-2 procedure into named,
+  ordered, behavior-preserving substeps with an invariant-to-test
+  traceability map (#623).
 
 ## [2.21.7] - 2026-09-20
 
