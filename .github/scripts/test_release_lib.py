@@ -1289,6 +1289,154 @@ class ReleaselibShimTest(unittest.TestCase):
         self.assertEqual(ctx.exception.code, 2)
 
 
+class ShimDocumentedApiTest(unittest.TestCase):
+    """AC-06 / T-07 (issue #626 finding 1, spec P4): the shim's header
+    'Public API' comment used to document `select_release_target_by_name
+    (pairs) -> str` as though it were a locally-defined, importable
+    module-level function, matching the shape of its genuine siblings on
+    the same list (`last_tag_select`, `select_release_target`,
+    `classify_merge_readiness`, all defined in THIS file). No such function
+    is defined here -- the only call site is inside `main()`'s CLI dispatch
+    (`select-target-named`), which reaches the imported `_mechanism` module
+    directly (`_mechanism.select_release_target_by_name(...)`). P4 is
+    explicit: correct the doc only; do not add the missing wrapper."""
+
+    _SHIM_PATH = os.path.join(HERE, "_releaselib.py")
+
+    # Matches a `name(args) -> type` call-signature entry, applied to ONE
+    # paren-balanced logical entry at a time (see
+    # `_documented_call_signature_names` below) -- never to raw multi-entry
+    # text -- so it cannot bleed across an unrelated bullet or a later
+    # arrow that happens to follow, elsewhere, a name this entry never
+    # actually calls. Anchored (`re.match`, not `re.search`): a name
+    # merely MENTIONED mid-prose (e.g. this task's own new explanatory text
+    # naming `_mechanism.select_release_target_by_name(...)` as what a CLI
+    # route reaches THROUGH) is not "documented as a call signature of this
+    # entry" unless the entry itself STARTS with `name(`.
+    _SIGNATURE_RE = re.compile(r"\s*([A-Za-z_][A-Za-z0-9_]*)\(.*?\)\s*->", re.S)
+
+    def _header_text(self):
+        # The 'Public API' comment block lives entirely before the first
+        # import statement. Slicing to just that block keeps this test from
+        # matching the real CLI dispatch code below it, which legitimately
+        # contains the string "select_release_target_by_name" as a call
+        # THROUGH the imported mechanism -- not a claim about this shim's
+        # own surface.
+        with open(self._SHIM_PATH, encoding="utf-8") as fh:
+            text = fh.read()
+        marker = "\nimport importlib.util\n"
+        idx = text.index(marker)
+        return text[:idx]
+
+    def _public_api_block(self):
+        # Narrower than the full header: starts at the first "Public API"
+        # comment block, excluding the module's earlier design-rationale
+        # prose (which is full of unrelated parentheses and would otherwise
+        # make paren-balance joining sprawl across unrelated sentences).
+        header = self._header_text()
+        return header[header.index("# Public API (re-exported"):]
+
+    def _documented_call_signature_names(self, text):
+        # Joins only lines whose accumulated, un-stripped parenthesis count
+        # is still positive (an entry's signature wrapped onto a deeper-
+        # indented continuation comment line, e.g. classify_publish_state's
+        # two-line entry) -- a line with BALANCED parens (like this task's
+        # own new prose, which opens and closes its parentheticals within
+        # each line) never merges with its neighbor, so a mid-paragraph
+        # mention several lines later cannot join back onto an earlier
+        # bullet's name. Each resulting logical entry is then matched
+        # independently and anchored at its own start.
+        entries, pending, depth = [], "", 0
+        for raw in text.splitlines():
+            stripped = raw.lstrip("#")
+            joined = (pending + "\n" + stripped) if pending else stripped
+            depth += stripped.count("(") - stripped.count(")")
+            if depth > 0:
+                pending = joined
+                continue
+            entries.append(joined)
+            pending, depth = "", 0
+        if pending:
+            entries.append(pending)
+        names = []
+        for entry in entries:
+            m = self._SIGNATURE_RE.match(entry)
+            if m:
+                names.append(m.group(1))
+        return names
+
+    def test_every_documented_call_signature_resolves_as_a_real_attribute(self):
+        # Derived, not hand-restated -- the same reasoning
+        # ShimReexportCompletenessTest applies to a CONSUMER's imports,
+        # applied here to the header's own claims about ITSELF. A
+        # hand-restated name list would keep passing if the header were
+        # later reworded to claim a DIFFERENT, still-false signature for a
+        # name that still does not exist (e.g.
+        # `select_release_target_by_name(pairs, targets) -> str`); this scan
+        # does not care what the signature SAYS, only what NAME it
+        # documents, so it catches that mutant too. This is the check that
+        # would have caught T-07's own originating defect (#626 finding 1)
+        # unaided.
+        names = sorted(set(
+            self._documented_call_signature_names(self._public_api_block())))
+        self.assertGreaterEqual(
+            len(names), 10,
+            "the signature scan found almost nothing, so the completeness "
+            "check below would pass without measuring anything: %r" % (names,))
+        missing = [n for n in names if not hasattr(_releaselib, n)]
+        self.assertEqual(
+            missing, [],
+            "the header documents a call signature for a name that is not "
+            "actually an attribute of this shim module: %r" % (missing,))
+
+    def test_header_no_longer_claims_an_importable_wrapper(self):
+        header = self._header_text()
+        self.assertNotIn(
+            "select_release_target_by_name(pairs) -> str", header,
+            "the header still documents select_release_target_by_name as an "
+            "importable module-level function; this shim defines no such "
+            "wrapper")
+
+    def test_no_wrapper_was_actually_added(self):
+        # P4: this is a documentation-only fix. A future caller genuinely
+        # needing importable access is a plan amendment, not something this
+        # task adds speculatively.
+        self.assertFalse(
+            hasattr(_releaselib, "select_release_target_by_name"),
+            "a select_release_target_by_name wrapper now exists on the shim; "
+            "P4 authorizes correcting the doc only, not adding this API")
+
+    def test_header_documents_the_real_cli_route(self):
+        header = self._header_text()
+        self.assertIn(
+            "select-target-named", header,
+            "the header does not name the real CLI route "
+            "(select-target-named) that reaches this functionality")
+
+    def test_main_docstring_lists_select_target_named(self):
+        # The header now POINTS a reader at "the real CLI route" -- that
+        # pointer is only honest if main()'s own dispatch docstring (the
+        # CLI's actual usage reference) lists the subcommand it names.
+        # Without this, AC-06's "documents the real select-target-named CLI
+        # route instead" would be true of the header alone while the file's
+        # other documented-API surface (the CLI's own docstring) still
+        # didn't acknowledge the route existed.
+        import _releaselib as shim_module
+        self.assertIn("select-target-named", shim_module.main.__doc__,
+                      "main()'s dispatch docstring does not list the "
+                      "select-target-named subcommand")
+
+    def test_named_selection_cli_still_works_unchanged(self):
+        # Existing exports and named-selection behavior are unchanged by
+        # this doc-only fix: the real route the corrected doc now points at
+        # must still function exactly as before.
+        result = subprocess.run(
+            [sys.executable, self._SHIM_PATH, "select-target-named",
+             "ca=1.2.3"],
+            capture_output=True, text=True, timeout=30)
+        self.assertEqual((result.returncode, result.stdout.strip()), (0, "ca"))
+
+
 class DenylistTest(unittest.TestCase):
     """A-1.2: the portable mechanism (core/pysrc/_releaselib.py) must carry no
     literal from this repository's namespace or CI vocabulary. `.github/
@@ -1964,6 +2112,1097 @@ class NumericSequenceParserTest(unittest.TestCase):
         self.assertEqual(
             core_releaselib.governance_scratch_exclusions(row),
             [".codearbiter/.markers"])
+
+
+class ReleaseTreeStatusTimeoutTest(unittest.TestCase):
+    """AC-02/#627 Finding 1 — `release_tree_status()`'s internal
+    `git status --porcelain` probe must bound its `subprocess.run` call with
+    `timeout=30` (matching every other of this module's 12 internal Git-probe
+    call sites) and convert a hang into a failed synthetic probe rather than
+    letting `subprocess.TimeoutExpired` escape uncaught. Reuses the fix design
+    and regression-test idiom from issue #627's 2026-09-17 comment verbatim."""
+
+    def test_a_hung_probe_returns_a_failed_result_not_an_exception(self):
+        hang = subprocess.TimeoutExpired(
+            cmd=["git", "status", "--porcelain"], timeout=30)
+        with mock.patch.object(
+                core_releaselib.subprocess, "run", side_effect=hang):
+            probe = core_releaselib.release_tree_status({}, ".")
+        self.assertNotEqual(probe.returncode, 0)
+        self.assertIn("timed out", probe.stderr.lower())
+
+    def test_a_normal_git_status_is_unaffected(self):
+        # Sanity check against the real repository: an ordinary, fast probe
+        # still succeeds and still returns porcelain-shaped output, proving
+        # the timeout/exception-handling addition does not change the
+        # non-hanging path.
+        probe = core_releaselib.release_tree_status({}, REPO_ROOT)
+        self.assertEqual(probe.returncode, 0)
+        self.assertIsInstance(probe.stdout, str)
+
+
+def _hermetic_pretag_fixture(test, tmp, commands=()):
+    """A minimal, hermetic single-target consumer fixture shared by the
+    T-03 AC-03 characterization classes below (`TreeStatusReturnCodeContractTest`,
+    `RunPreTagProbeFailurePathTest`, `RunPreTagOperatorCommandTimeoutTest`).
+    Mirrors `CoreCLITest._pretag_repo`'s hermetic git-identity/config
+    sandbox in miniature -- duplicated here rather than reached into, since
+    `CoreCLITest` is an unrelated, standalone giant class and this module's
+    existing convention is a per-class-cluster fixture, not a shared
+    top-level one."""
+    root = os.path.join(tmp, "consumer")
+    os.makedirs(os.path.join(root, ".codearbiter"))
+    with open(os.path.join(root, "package.json"), "w") as fh:
+        fh.write('{"version": "1.0.0"}\n')
+    with open(os.path.join(root, "CHANGELOG.md"), "w") as fh:
+        fh.write("# Changelog\n")
+    with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+              "w") as fh:
+        fh.write("<!-- release-targets -->\n[app]\nprefix: v\n"
+                 "changelog: CHANGELOG.md\npayload: .\n"
+                 + "".join(f"pre-tag: {c}\n" for c in commands)
+                 + "<!-- /release-targets -->\n")
+    env = dict(os.environ,
+               GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_SYSTEM=os.devnull,
+               GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t",
+               GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
+    base = ["git", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=",
+            "-c", "init.defaultBranch=main"]
+    for argv in (["init", "-q"],
+                 ["add", "package.json", "CHANGELOG.md",
+                  ".codearbiter/release-targets.md"],
+                 ["commit", "-q", "-m", "init", "--no-verify"]):
+        proc = subprocess.run(base + argv, cwd=root, env=env,
+                              capture_output=True, text=True)
+        test.assertEqual(
+            proc.returncode, 0,
+            f"fixture git {argv[0]} failed: {proc.stderr.strip()}")
+    return root
+
+
+def _argv_text(call_args):
+    """First-positional-arg text of a recorded `subprocess.run` call, for
+    probe/dispatch discrimination in the spy-based tests below. Handles both
+    dispatch shapes this module uses: a single command string (`shell=True`)
+    and an argv list (`[posix_shell, "-c", command]` on Windows)."""
+    if not call_args:
+        return ""
+    first = call_args[0]
+    if isinstance(first, str):
+        return first
+    try:
+        return " ".join(str(item) for item in first)
+    except TypeError:
+        return str(first)
+
+
+class TreeStatusReturnCodeContractTest(unittest.TestCase):
+    """AC-03 (T-03) -- `clean-tree-status` (the CLI route to
+    `release_tree_status()`, `core/pysrc/_releaselib.py`) returns
+    `probe.returncode` directly and never reinterprets porcelain CONTENT
+    into an exit code. A clean tree and a dirty tree must BOTH exit 0 --
+    only the porcelain STDOUT distinguishes them, never the return code --
+    and a genuine probe failure (including the exact
+    `subprocess.TimeoutExpired` case T-02 added a catch for) must reach this
+    CLI route as a nonzero exit, never a false 0. The clean/dirty cases run
+    the real CLI dispatch against a real, hermetic git fixture; the timeout
+    case reuses T-02's own `side_effect` idiom
+    (`ReleaseTreeStatusTimeoutTest` above), because a real 30-second hang
+    cannot be exercised in a unit-test time budget."""
+
+    def _clean_tree_status(self, root):
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                contextlib.redirect_stdout(out), \
+                contextlib.redirect_stderr(err):
+            exit_code = core_releaselib.main(["clean-tree-status", "app"])
+        return exit_code, out.getvalue(), err.getvalue()
+
+    def test_a_clean_tree_returns_zero_with_empty_porcelain_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _hermetic_pretag_fixture(self, tmp)
+            exit_code, stdout, stderr = self._clean_tree_status(root)
+        self.assertEqual(exit_code, 0, stderr)
+        self.assertEqual(stdout.strip(), "")
+
+    def test_a_dirty_tree_also_returns_zero_only_output_differs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _hermetic_pretag_fixture(self, tmp)
+            with open(os.path.join(root, "package.json"), "w") as fh:
+                fh.write('{"version": "1.1.0"}\n')
+            exit_code, stdout, stderr = self._clean_tree_status(root)
+        self.assertEqual(exit_code, 0, stderr)
+        self.assertIn("package.json", stdout)
+
+    def test_a_probe_timeout_reaches_clean_tree_status_as_a_nonzero_exit(self):
+        # The ONLY `subprocess.run` call on this route is
+        # `release_tree_status()`'s own probe (`load_targets` is a pure
+        # text parser), so an unconditional `TimeoutExpired` side_effect
+        # exercises exactly the T-02 catch path without touching an
+        # unrelated call.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _hermetic_pretag_fixture(self, tmp)
+            hang = subprocess.TimeoutExpired(
+                cmd=["git", "status", "--porcelain"], timeout=30)
+            out, err = io.StringIO(), io.StringIO()
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch.object(core_releaselib.subprocess, "run",
+                                       side_effect=hang), \
+                    contextlib.redirect_stdout(out), \
+                    contextlib.redirect_stderr(err):
+                exit_code = core_releaselib.main(["clean-tree-status", "app"])
+        self.assertNotEqual(exit_code, 0)
+        self.assertIn("timed out", err.getvalue().lower())
+
+
+class RunPreTagProbeFailurePathTest(unittest.TestCase):
+    """AC-03 (T-03) -- a Git-probe FAILURE (nonzero returncode), specifically
+    including the T-02 `subprocess.TimeoutExpired` catch, must reach
+    `run-pre-tag`'s `_tree_state()` through the PROBE-FAILURE path (exit 8,
+    "the tree-state PROBE itself failed") and never through the
+    MUTATION-DETECTED path (exit 6, "MUTATED the tree") or a false success
+    (exit 0). These are two distinct branches in `run-pre-tag`'s dispatch
+    (`core/pysrc/_releaselib.py`): `_tree_state()` returns `(None, failure)`
+    on any `probe.returncode != 0` BEFORE any content digest is ever
+    computed, so a probe failure can never fall through into the
+    digest-comparison branch that produces exit 6. `_tree_state()` has TWO
+    call sites with independently reachable failure branches -- the
+    baseline call (line ~3417, before any declared command runs) and the
+    post-command call (line ~3514, immediately beside the exit-6 mutation
+    comparison it feeds) -- so both are exercised separately below, not
+    just the baseline. The pre-existing
+    `CoreCLITest.test_run_pre_tag_exits_8_when_the_tree_state_probe_fails`
+    already proves the baseline site for an UNRELATED failure cause (a
+    directory that was never `git init`ed); this class proves both sites
+    for the exact TIMEOUT cause T-02 introduced, which that pre-existing
+    test does not exercise."""
+
+    def test_a_timed_out_baseline_probe_takes_the_probe_failure_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _hermetic_pretag_fixture(self, tmp)
+            hang = subprocess.TimeoutExpired(
+                cmd=["git", "status", "--porcelain"], timeout=30)
+            err = io.StringIO()
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch.object(core_releaselib.subprocess, "run",
+                                       side_effect=hang), \
+                    contextlib.redirect_stderr(err):
+                exit_code = core_releaselib.main(["run-pre-tag", "app"])
+        self.assertEqual(exit_code, 8, err.getvalue())
+        self.assertIn("PROBE itself failed", err.getvalue())
+        self.assertIn("timed out", err.getvalue().lower())
+        self.assertNotIn("MUTATED", err.getvalue())
+
+    def test_a_timed_out_post_command_probe_also_takes_the_probe_failure_path(self):
+        # The baseline probe must succeed FOR REAL here (a real git status
+        # over the real fixture, not mocked), so the run reaches the
+        # post-command `_tree_state()` call -- the one sitting immediately
+        # beside the exit-6 mutation-comparison branch -- and the timeout is
+        # injected ONLY on the second probe call. If a future change ever
+        # folded "probe failed after a command ran" into the mutation
+        # branch instead of keeping it a distinct exit-8 outcome, this is
+        # the test that would catch it; the baseline-only test above cannot.
+        command = f'"{sys.executable}" -c "pass"'
+        real_run = core_releaselib.subprocess.run
+        probe_calls = {"count": 0}
+
+        def spy(*args, **kwargs):
+            if "status" in _argv_text(args):
+                probe_calls["count"] += 1
+                if probe_calls["count"] == 2:
+                    raise subprocess.TimeoutExpired(cmd=args[0], timeout=30)
+            return real_run(*args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _hermetic_pretag_fixture(self, tmp, [command])
+            err = io.StringIO()
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch.object(core_releaselib.subprocess, "run",
+                                       side_effect=spy), \
+                    contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(err):
+                exit_code = core_releaselib.main(["run-pre-tag", "app"])
+        self.assertEqual(exit_code, 8, err.getvalue())
+        self.assertIn("PROBE itself failed after", err.getvalue())
+        self.assertIn("timed out", err.getvalue().lower())
+        self.assertNotIn("MUTATED", err.getvalue())
+
+
+class RunPreTagOperatorCommandTimeoutTest(unittest.TestCase):
+    """AC-03/P2 (T-03) -- the internal `timeout=30` T-02 added to
+    `release_tree_status()`'s OWN `subprocess.run` call must not leak onto
+    operator-declared `pre-tag` commands, dispatched through a SEPARATE
+    `subprocess.run` call site (`run-pre-tag`'s command-dispatch loop,
+    `core/pysrc/_releaselib.py`), which keeps its existing, untimed
+    behavior -- required by the spec's P2 ("does not apply to
+    operator-declared `pre-tag` commands"). Proven by spying on every real
+    `subprocess.run` call made while `run-pre-tag` actually executes --
+    nothing about the dispatch itself is faked, only observed -- and
+    asserting that every call carrying `timeout=30` is the internal probe
+    (its argv names `status`), while the call that actually runs the
+    declared command carries no `timeout` kwarg at all.
+
+    Platform note: this module dispatches a declared command through ONE of
+    two branches depending on host (`core/pysrc/_releaselib.py`,
+    `run-pre-tag`) -- `subprocess.run([posix_shell, "-c", command],
+    shell=False, ...)` when a POSIX-compatible shell was resolved (always
+    true off Windows; true on Windows only when Git for Windows' `bash.exe`
+    resolves), or `subprocess.run(command, shell=True, ...)` otherwise. A
+    single CI host only ever exercises one of the two branches per run, so
+    full coverage of BOTH dispatch call sites is a union across this
+    suite's Windows and POSIX CI legs, not a property any one host's run
+    proves alone -- the same platform-fork shape `tech-stack.md` documents
+    for `exec.ts`'s `awaitTaskkill`."""
+
+    def test_declared_command_dispatch_carries_no_timeout(self):
+        command = f'"{sys.executable}" -c "pass"'
+        calls = []
+        real_run = core_releaselib.subprocess.run
+
+        def spy(*args, **kwargs):
+            calls.append((args, kwargs))
+            return real_run(*args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _hermetic_pretag_fixture(self, tmp, [command])
+            out = io.StringIO()
+            with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": root}), \
+                    mock.patch.object(core_releaselib.subprocess, "run",
+                                       side_effect=spy), \
+                    contextlib.redirect_stdout(out):
+                exit_code = core_releaselib.main(["run-pre-tag", "app"])
+
+        self.assertEqual(exit_code, 0, out.getvalue())
+
+        timed_calls = [(a, kw) for a, kw in calls if "timeout" in kw]
+        self.assertTrue(
+            timed_calls, "expected the internal tree-state probe to appear")
+        for call_args, kwargs in timed_calls:
+            self.assertEqual(kwargs["timeout"], 30)
+            self.assertIn("status", _argv_text(call_args))
+
+        untimed_calls = [(a, kw) for a, kw in calls if "timeout" not in kw]
+        declared_dispatch = [
+            c for c in untimed_calls if command in _argv_text(c[0])]
+        self.assertTrue(
+            declared_dispatch,
+            "expected the declared pre-tag command's own subprocess.run "
+            "call, which must carry no `timeout` kwarg at all")
+
+
+class AncestryRefusalTest(unittest.TestCase):
+    """T-10, AC-09/#570 finding BODY-03: `last_tag_select`/`last_tag_select_
+    for_policy` choose a series' highest tag by VALUE alone (pure functions,
+    no git access, per this module's design invariants) -- they cannot know
+    whether that tag's commit is actually in HEAD's own history. A sibling
+    branch that diverged before the newest tag, an abandoned branch's stray
+    push, or an unrelated orphan history sharing the series' prefix can
+    still win the scan even though HEAD never descends from it, silently
+    corrupting the derived `$BASE_VERSION`. `verify_tag_ancestor` /
+    `verify-tag-ancestor` close this: confirm the SELECTED tag resolves to a
+    commit reachable from HEAD before it is used for anything, refuse with
+    the tag and the cause when it is not, and leave both the zero-tag
+    first-release path and a genuine ancestor's behavior completely
+    unaffected (P5 -- detects ambiguity, never chooses a different baseline,
+    never implements maintenance-branch allocation policy).
+
+    Exercises BOTH the direct function (`core_releaselib.verify_tag_
+    ancestor`) and the CLI route (`core_releaselib.main(["verify-tag-
+    ancestor", ...])`) against REAL disposable git repositories -- the
+    ancestry graphs below are exactly the shapes #570's own comment names:
+    a sibling branch, an unrelated/orphan history, a tag reachable only
+    through a merge commit, and both annotated and lightweight tag forms."""
+
+    def _git(self, repo, *args, check=True):
+        environment = dict(
+            os.environ,
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CONFIG_SYSTEM=os.devnull,
+            GIT_AUTHOR_NAME="ancestry-fixture",
+            GIT_AUTHOR_EMAIL="ancestry@example.invalid",
+            GIT_COMMITTER_NAME="ancestry-fixture",
+            GIT_COMMITTER_EMAIL="ancestry@example.invalid",
+        )
+        return subprocess.run(
+            [core_releaselib.git_executable(),
+             "-c", "commit.gpgsign=false", "-c", "tag.gpgSign=false",
+             "-c", "core.hooksPath=", "-c", "init.defaultBranch=main",
+             *args],
+            cwd=repo, env=environment, capture_output=True, text=True,
+            timeout=30, check=check)
+
+    def _init_repo(self, root):
+        os.makedirs(root, exist_ok=True)
+        self._git(root, "init", "--quiet")
+        with open(os.path.join(root, "seed.txt"), "w", encoding="utf-8") as fh:
+            fh.write("seed\n")
+        self._git(root, "add", "seed.txt")
+        self._git(root, "commit", "--quiet", "-m", "chore: seed")
+        return root
+
+    def _commit(self, root, name, message):
+        with open(os.path.join(root, name), "w", encoding="utf-8") as fh:
+            fh.write(f"{name}\n")
+        self._git(root, "add", name)
+        self._git(root, "commit", "--quiet", "-m", message)
+
+    # -- the direct function, `verify_tag_ancestor` -------------------- #
+
+    def test_zero_tag_sentinel_skips_the_check_entirely(self):
+        # The zero-tag first-release path is a DISTINCT code path from tag
+        # selection (P5) -- it must never even attempt a git probe, proven
+        # here by pointing `project_root` at a directory that is not a git
+        # repository at all and confirming no failure results.
+        with tempfile.TemporaryDirectory() as tmp:
+            verdict = core_releaselib.verify_tag_ancestor(
+                core_releaselib.NONE_SENTINEL, tmp)
+        self.assertEqual(verdict, "zero-tag")
+
+    def test_a_genuine_ancestor_tag_is_confirmed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "v1.0.0")
+            self._commit(root, "later.txt", "feat: later work")
+            verdict = core_releaselib.verify_tag_ancestor("v1.0.0", root)
+        self.assertEqual(verdict, "ancestor")
+
+    def test_an_annotated_ancestor_tag_is_confirmed_identically(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "-a", "v1.0.0", "-m", "release v1.0.0")
+            self._commit(root, "later.txt", "feat: later work")
+            verdict = core_releaselib.verify_tag_ancestor("v1.0.0", root)
+        self.assertEqual(verdict, "ancestor")
+
+    def test_ancestor_reached_only_through_a_merge_commit_is_confirmed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "checkout", "-q", "-b", "feature")
+            self._commit(root, "feature.txt", "feat: feature work")
+            self._git(root, "tag", "v1.0.0")
+            self._git(root, "checkout", "-q", "main")
+            self._git(root, "merge", "--no-ff", "-q", "-m",
+                      "merge: bring in feature", "feature")
+            verdict = core_releaselib.verify_tag_ancestor("v1.0.0", root)
+        self.assertEqual(verdict, "ancestor")
+
+    def test_a_sibling_branch_tag_that_diverged_before_head_is_refused(self):
+        # The exact shape #570 finding BODY-03 names: a series tag pushed
+        # from a sibling branch that diverged from HEAD before the tag was
+        # made. Numerically it may still be the highest tag in the series,
+        # but HEAD never descends from it.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "checkout", "-q", "-b", "sibling")
+            self._commit(root, "sibling.txt", "feat: sibling work")
+            self._git(root, "tag", "v9.9.9")
+            self._git(root, "checkout", "-q", "main")
+            self._commit(root, "mainline.txt", "feat: mainline work")
+            verdict = core_releaselib.verify_tag_ancestor("v9.9.9", root)
+        self.assertEqual(verdict, "not-ancestor")
+
+    def test_a_tag_on_an_unrelated_orphan_history_is_refused(self):
+        # A completely disjoint root (no common ancestor at all) -- distinct
+        # from the sibling-branch case above (which shares a root but
+        # diverged), and independently confirmed to return the same
+        # not-ancestor verdict rather than an error.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "checkout", "-q", "--orphan", "orphan-history")
+            self._git(root, "commit", "--quiet", "--allow-empty",
+                      "-m", "chore: unrelated orphan root")
+            self._git(root, "tag", "v9.9.9")
+            self._git(root, "checkout", "-q", "main")
+            verdict = core_releaselib.verify_tag_ancestor("v9.9.9", root)
+        self.assertEqual(verdict, "not-ancestor")
+
+    def test_an_unresolvable_tag_name_is_refused_as_unresolvable_not_not_ancestor(self):
+        # A tag that does not exist at all must be classified distinctly
+        # from a tag that exists but fails the reachability check -- no
+        # verdict about reachability was ever reached for a ref that never
+        # resolved.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            verdict = core_releaselib.verify_tag_ancestor(
+                "v404.0.0-does-not-exist", root)
+        self.assertEqual(verdict, "unresolvable")
+
+    def test_a_probe_that_cannot_run_is_unresolvable_not_an_exception(self):
+        # Mirrors the T-02 idiom (`ReleaseTreeStatusTimeoutTest`): a hang or
+        # OSError from the underlying git probe must degrade to a
+        # classification, never escape as an uncaught exception.
+        hang = subprocess.TimeoutExpired(cmd=["git", "merge-base"], timeout=30)
+        with mock.patch.object(
+                core_releaselib.subprocess, "run", side_effect=hang):
+            verdict = core_releaselib.verify_tag_ancestor("v1.0.0", ".")
+        self.assertEqual(verdict, "unresolvable")
+
+    # -- the CLI route, `verify-tag-ancestor` --------------------------- #
+
+    def _run_cli(self, tag, project_root):
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.dict(os.environ, {"CLAUDE_PROJECT_DIR": project_root}), \
+                contextlib.redirect_stdout(out), \
+                contextlib.redirect_stderr(err):
+            rc = core_releaselib.main(["verify-tag-ancestor", tag])
+        return rc, out.getvalue(), err.getvalue()
+
+    def test_cli_zero_tag_sentinel_exits_0_unaffected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            rc, _out, err = self._run_cli(core_releaselib.NONE_SENTINEL, tmp)
+        self.assertEqual(rc, 0, err)
+
+    def test_cli_ancestor_exits_0_today_s_behavior_is_unchanged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "v1.0.0")
+            self._commit(root, "later.txt", "feat: later work")
+            rc, _out, err = self._run_cli("v1.0.0", root)
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(err, "")
+
+    def test_cli_refuses_a_non_ancestor_tag_naming_the_tag_and_the_cause(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "checkout", "-q", "-b", "sibling")
+            self._commit(root, "sibling.txt", "feat: sibling work")
+            self._git(root, "tag", "v9.9.9")
+            self._git(root, "checkout", "-q", "main")
+            self._commit(root, "mainline.txt", "feat: mainline work")
+            rc, _out, err = self._run_cli("v9.9.9", root)
+        self.assertEqual(rc, 1)
+        self.assertIn("v9.9.9", err)
+        self.assertIn("not", err.lower())
+        self.assertNotIn("fall back to an older tag", err)  # never says it WILL
+
+    def test_cli_refuses_an_unresolvable_tag_naming_the_tag_and_the_cause(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            rc, _out, err = self._run_cli("v404.0.0-does-not-exist", root)
+        self.assertEqual(rc, 2)
+        self.assertIn("v404.0.0-does-not-exist", err)
+        self.assertIn("resolve", err.lower())
+
+    def test_cli_never_prints_a_replacement_tag_on_refusal(self):
+        # AC-09's own wording: "never a silent fallback to an older tag".
+        # Stdout must stay empty on every refusal path -- a caller piping
+        # stdout into `$LAST_TAG` (as Pre-flight's own prose does for the
+        # SELECTION step) must never receive a substitute value from this
+        # verification step.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "checkout", "-q", "-b", "sibling")
+            self._commit(root, "sibling.txt", "feat: sibling work")
+            self._git(root, "tag", "v9.9.9")
+            self._git(root, "checkout", "-q", "main")
+            self._commit(root, "mainline.txt", "feat: mainline work")
+            rc_bad, out_bad, _err = self._run_cli("v9.9.9", root)
+            rc_missing, out_missing, _err2 = self._run_cli(
+                "v404.0.0-does-not-exist", root)
+        self.assertEqual((rc_bad, out_bad), (1, ""))
+        self.assertEqual((rc_missing, out_missing), (2, ""))
+
+    def test_end_to_end_selection_then_verification_on_a_genuine_ancestor(self):
+        # The full Pre-flight sequence: select LAST_TAG via the existing,
+        # UNCHANGED `last-tag-for-policy` command, then verify it via the
+        # new command -- proving the two compose exactly as the skill's
+        # prose now wires them, with neither step's own behavior altered.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "v1.0.0")
+            self._commit(root, "later.txt", "feat: later work")
+            tags_out = self._git(root, "tag", "-l").stdout
+            select_out = io.StringIO()
+            old_stdin = sys.stdin
+            sys.stdin = io.StringIO(tags_out)
+            try:
+                with contextlib.redirect_stdout(select_out):
+                    select_rc = core_releaselib.main(
+                        ["last-tag-for-policy", "v", "semver", ""])
+            finally:
+                sys.stdin = old_stdin
+            selected_tag = select_out.getvalue().strip()
+            self.assertEqual(select_rc, 0)
+            self.assertEqual(selected_tag, "v1.0.0")
+            verify_rc, _out, verify_err = self._run_cli(selected_tag, root)
+        self.assertEqual(verify_rc, 0, verify_err)
+
+
+class VerifyTagAncestorArgvGuardTest(unittest.TestCase):
+    """R-01, Scope-C security-review finding 1 (MEDIUM): `verify_tag_ancestor`
+    validated `tag` only with `not isinstance(tag, str) or not tag` before
+    placing it as a bare argv element in `git merge-base --is-ancestor <tag>
+    <candidate>`, with no end-of-options `--` separator -- unlike this
+    module's established precedent for the identical input class at
+    `_committed_changelog_text`, which explicitly rejects a leading `-` and
+    an embedded NUL before a revision reaches git. `verify_tag_ancestor` now
+    mirrors that same predicate (`startswith("-")` / `"\\0" in`) for BOTH
+    `tag` and `candidate` -- both reach the identical argv position -- and
+    additionally inserts `--` before the two revisions, matching this
+    module's own `--` precedent (lines ~984, ~2096, ~2565).
+
+    Every rejection case asserts `subprocess.run` is never even called --
+    not merely that the verdict happens to read `"unresolvable"`, which a
+    dash-prefixed tag could also reach today via git's own option-parse
+    failure (exit 129) without the guard existing at all. That weaker
+    assertion would pass against the unpatched function and prove nothing."""
+
+    def test_leading_dash_tag_is_refused_before_the_subprocess_call(self):
+        with mock.patch.object(core_releaselib.subprocess, "run") as run:
+            verdict = core_releaselib.verify_tag_ancestor("-v1.0.0", ".")
+        self.assertEqual(verdict, "unresolvable")
+        run.assert_not_called()
+
+    def test_nul_containing_tag_is_refused_before_the_subprocess_call(self):
+        with mock.patch.object(core_releaselib.subprocess, "run") as run:
+            verdict = core_releaselib.verify_tag_ancestor("v1.0\x000", ".")
+        self.assertEqual(verdict, "unresolvable")
+        run.assert_not_called()
+
+    def test_leading_dash_candidate_is_refused_before_the_subprocess_call(self):
+        with mock.patch.object(core_releaselib.subprocess, "run") as run:
+            verdict = core_releaselib.verify_tag_ancestor(
+                "v1.0.0", ".", candidate="--upload-pack=evil")
+        self.assertEqual(verdict, "unresolvable")
+        run.assert_not_called()
+
+    def test_nul_containing_candidate_is_refused_before_the_subprocess_call(self):
+        with mock.patch.object(core_releaselib.subprocess, "run") as run:
+            verdict = core_releaselib.verify_tag_ancestor(
+                "v1.0.0", ".", candidate="HEAD\x00")
+        self.assertEqual(verdict, "unresolvable")
+        run.assert_not_called()
+
+    def test_non_string_and_empty_tag_still_refused_pre_existing_leg_unchanged(self):
+        with mock.patch.object(core_releaselib.subprocess, "run") as run:
+            verdict_none = core_releaselib.verify_tag_ancestor(None, ".")
+            verdict_empty = core_releaselib.verify_tag_ancestor("", ".")
+        self.assertEqual(verdict_none, "unresolvable")
+        self.assertEqual(verdict_empty, "unresolvable")
+        run.assert_not_called()
+
+    def test_zero_tag_sentinel_wins_even_with_a_dash_like_candidate(self):
+        # NONE_SENTINEL must keep short-circuiting ahead of the new guard --
+        # the zero-tag first-release path stays a completely distinct code
+        # path (P5), never touching the subprocess boundary at all.
+        with mock.patch.object(core_releaselib.subprocess, "run") as run:
+            verdict = core_releaselib.verify_tag_ancestor(
+                core_releaselib.NONE_SENTINEL, ".", candidate="-evil")
+        self.assertEqual(verdict, "zero-tag")
+        run.assert_not_called()
+
+    def test_an_ordinary_tag_reaches_the_probe_with_the_end_of_options_separator(self):
+        # The guard must not over-reject ordinary input, and the `--`
+        # insertion itself must be proven, not merely assumed: the captured
+        # argv must place `--` immediately before the two revisions, in
+        # order, not merely appear somewhere in the argument list.
+        completed = subprocess.CompletedProcess(args=[], returncode=0)
+        with mock.patch.object(
+                core_releaselib.subprocess, "run",
+                return_value=completed) as run:
+            verdict = core_releaselib.verify_tag_ancestor("v1.0.0", ".")
+        self.assertEqual(verdict, "ancestor")
+        run.assert_called_once()
+        argv = run.call_args.args[0]
+        self.assertEqual(argv[-4:], ["--is-ancestor", "--", "v1.0.0", "HEAD"])
+
+
+class AncestryGraphsTest(unittest.TestCase):
+    """T-11, AC-09/AC-16 (#570 finding BODY-03): proves the END-TO-END
+    SKILL.md-documented Pre-flight flow -- `last-tag-for-policy` (stdin =
+    `git tag -l`'s output) piped into `verify-tag-ancestor` on the SELECTED
+    tag, then `$BASE_VERSION` derived from the result -- against REAL
+    disposable git repositories with more elaborate graph shapes than
+    `AncestryRefusalTest` (T-10) needed.
+
+    T-10's suite proves `verify_tag_ancestor`/`verify-tag-ancestor` in
+    ISOLATION: it hands the function (or the CLI) an already-known tag name
+    directly. This class never does that -- every test here starts from
+    `git tag -l` and lets `last-tag-for-policy` do the SELECTING, exactly as
+    Pre-flight's prose wires the two commands (`core/surface/skills/release/
+    SKILL.md`, "Resolve `LAST_TAG`..." immediately followed by "Verify
+    `LAST_TAG` is actually reachable..."), so a defect in how the two
+    compose -- not either one alone -- has somewhere to surface. Both stages
+    run as REAL subprocess calls against the actual CLI entry point
+    (`_CORE_RELEASELIB_PATH`), chained by captured stdout, never `shell=True`
+    and never `core_releaselib.main()` called in-process -- a hermeticity or
+    argv-shape defect at the real subprocess boundary is exactly what an
+    in-process call cannot catch."""
+
+    def _git(self, repo, *args, check=True):
+        environment = dict(
+            os.environ,
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CONFIG_SYSTEM=os.devnull,
+            GIT_AUTHOR_NAME="ancestry-graph-fixture",
+            GIT_AUTHOR_EMAIL="ancestry-graph@example.invalid",
+            GIT_COMMITTER_NAME="ancestry-graph-fixture",
+            GIT_COMMITTER_EMAIL="ancestry-graph@example.invalid",
+        )
+        return subprocess.run(
+            [core_releaselib.git_executable(),
+             "-c", "commit.gpgsign=false", "-c", "tag.gpgSign=false",
+             "-c", "core.hooksPath=", "-c", "init.defaultBranch=main",
+             *args],
+            cwd=repo, env=environment, capture_output=True, text=True,
+            timeout=30, check=check)
+
+    def _init_repo(self, root):
+        os.makedirs(root, exist_ok=True)
+        self._git(root, "init", "--quiet")
+        with open(os.path.join(root, "seed.txt"), "w", encoding="utf-8") as fh:
+            fh.write("seed\n")
+        self._git(root, "add", "seed.txt")
+        self._git(root, "commit", "--quiet", "-m", "chore: seed")
+        return root
+
+    def _commit(self, root, name, message):
+        with open(os.path.join(root, name), "w", encoding="utf-8") as fh:
+            fh.write(f"{name}\n")
+        self._git(root, "add", name)
+        self._git(root, "commit", "--quiet", "-m", message)
+
+    def _run_last_tag_for_policy(self, tags_text, prefix, policy, initial, cwd):
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH,
+             "last-tag-for-policy", prefix, policy, initial or ""],
+            input=tags_text, capture_output=True, text=True, cwd=cwd,
+            timeout=30)
+
+    def _run_verify_ancestor(self, tag, project_root):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=project_root)
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "verify-tag-ancestor", tag],
+            capture_output=True, text=True, cwd=project_root, env=env,
+            timeout=30)
+
+    def _repo_fingerprint(self, root):
+        # `git status --porcelain` (working-tree/index mutation) and `git
+        # for-each-ref` (every ref -- tags, branches, HEAD -- and the exact
+        # object each one names) together are the "refusal precedes any
+        # mutation" proof surface: a written file, a moved ref, or a newly
+        # created tag would change one or the other.
+        status = self._git(root, "status", "--porcelain").stdout
+        refs = self._git(root, "for-each-ref").stdout
+        return status, refs
+
+    def _full_flow(self, root, prefix, policy="semver", initial=""):
+        """Run the exact documented two-stage Pre-flight pipeline for real:
+        `git tag -l` -> `last-tag-for-policy` -> `verify-tag-ancestor`.
+        Returns `(last_tag, verify_rc, verify_stdout, verify_stderr)`."""
+        tags_text = self._git(root, "tag", "-l").stdout
+        select = self._run_last_tag_for_policy(
+            tags_text, prefix, policy, initial, root)
+        self.assertEqual(select.returncode, 0, select.stderr)
+        last_tag = select.stdout.strip()
+        verify = self._run_verify_ancestor(last_tag, root)
+        return last_tag, verify.returncode, verify.stdout, verify.stderr
+
+    def _base_version(self, last_tag, policy="semver", initial=None):
+        # Mirrors Pre-flight's own `$BASE_VERSION` rule with no declared
+        # manifest in play: the bare `LAST_TAG` version, or the policy's
+        # first-release floor (`0.0.0` for semver, `$INITIAL_VERSION` for
+        # numeric-sequence) when `LAST_TAG` is the `<none>` sentinel.
+        if last_tag == core_releaselib.NONE_SENTINEL:
+            return initial if policy == "numeric-sequence" else "0.0.0"
+        return core_releaselib._bare_version(last_tag, policy, initial)
+
+    def test_sibling_branch_diverged_before_tag_full_flow_refuses_and_mutates_nothing(self):
+        # The exact shape #570 finding BODY-03 names, run through the FULL
+        # documented flow (selection THEN verification) rather than handing
+        # `verify-tag-ancestor` an already-known tag directly.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "checkout", "-q", "-b", "sibling")
+            self._commit(root, "sibling.txt", "feat: sibling work")
+            self._git(root, "tag", "v9.9.9")
+            self._git(root, "checkout", "-q", "main")
+            self._commit(root, "mainline.txt", "feat: mainline work")
+
+            before = self._repo_fingerprint(root)
+            last_tag, rc, out, err = self._full_flow(root, "v")
+            after = self._repo_fingerprint(root)
+
+        self.assertEqual(
+            last_tag, "v9.9.9",
+            "the sibling tag is genuinely the numeric-highest in the "
+            "series -- selection alone cannot and must not catch this")
+        self.assertEqual(rc, 1)
+        self.assertEqual(out, "", "a refusal must never print a substitute "
+                          "tag on stdout -- a caller piping this into "
+                          "$LAST_TAG must never receive one")
+        self.assertIn("v9.9.9", err)
+        self.assertEqual(
+            before, after,
+            "the full refusal flow must not write a file, move a ref, or "
+            "create a tag -- refusal precedes any mutation")
+
+    def test_decoy_sibling_series_prefix_scoping_plus_ancestry_produce_correct_pass(self):
+        # A DIFFERENT target's tag series ("docs-v99.0.0") numerically
+        # outranks EVERY tag in this target's own "v" series and sits on a
+        # branch this target's HEAD never descends from. A regex anchored
+        # on "^v" would never even match "docs-v99.0.0" regardless of the
+        # graph shape, so a decoy excluded on prefix ALONE would leave this
+        # test true for a reason that has nothing to do with the graph --
+        # this fixture also declares a GENUINE, same-prefix, REACHABLE
+        # higher tag ("v2.0.0") so last-tag-for-policy must still do real
+        # selection work among "v"-series candidates while ignoring the
+        # differently-prefixed decoy, not merely default to the one
+        # pre-decoy tag because nothing else matched. If prefix scoping in
+        # `last-tag-for-policy` ever leaked the decoy into this target's
+        # selection, ancestry verification would independently refuse it
+        # too (proven below by calling `verify-tag-ancestor` on the decoy
+        # directly) -- but the CORRECT behavior is that scoping excludes it
+        # FIRST and correctly picks "v2.0.0" over both "v1.0.0" and the
+        # decoy, so verification runs against this target's own genuine
+        # ancestor tag and the full flow PASSES. Neither mechanism alone
+        # proves this composed outcome: a scoping-only test cannot show the
+        # flow still passes end-to-end, and an ancestry-only test cannot
+        # show the decoy never reaches selection in the first place.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "v1.0.0")
+            self._git(root, "checkout", "-q", "-b", "docs-series")
+            self._commit(root, "docs.txt", "docs: unrelated docs series")
+            self._git(root, "tag", "docs-v99.0.0")
+            self._git(root, "checkout", "-q", "main")
+            self._commit(root, "mainline.txt", "feat: mainline work")
+            self._git(root, "tag", "v2.0.0")
+            self._commit(root, "mainline2.txt", "feat: further mainline work")
+
+            last_tag, rc, out, err = self._full_flow(root, "v")
+            # What WOULD have happened had the decoy leaked past scoping --
+            # confirms the "or the ancestry check" half of the composed
+            # claim, not merely that scoping happened to exclude it.
+            decoy_verify = self._run_verify_ancestor("docs-v99.0.0", root)
+
+        self.assertEqual(
+            last_tag, "v2.0.0",
+            "must select the genuine highest REACHABLE same-prefix tag -- "
+            "neither the older real tag nor the numerically-higher decoy "
+            "from a DIFFERENT declared series")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(out, "")
+        self.assertEqual(
+            decoy_verify.returncode, 1,
+            "the decoy tag, checked directly, is independently confirmed "
+            "NOT an ancestor -- scoping and ancestry agree, they do not "
+            "merely happen not to collide")
+        self.assertEqual(self._base_version(last_tag), "2.0.0")
+
+    def test_annotated_tag_survives_the_full_documented_command_chain(self):
+        # T-10's `AncestryRefusalTest.test_an_annotated_ancestor_tag_is_
+        # confirmed_identically` proves `verify_tag_ancestor` itself does
+        # not care whether a tag is annotated or lightweight. This proves
+        # the SAME fact survives the FULL two-stage CLI chain -- `git tag
+        # -l` listing the annotated tag's NAME (not its own tag-object
+        # SHA), `last-tag-for-policy` selecting that name from stdin, and
+        # `verify-tag-ancestor` transparently peeling the annotated tag
+        # object down to its target commit the way `git merge-base
+        # --is-ancestor` does internally -- and that the value stays the
+        # tag's NAME throughout, never silently resolved to a commit or
+        # tag-object SHA, which would corrupt every later step that reuses
+        # `$LAST_TAG` as a string (deriving `$RELEASE_TAG`, comparing
+        # against the changelog heading).
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "-a", "v1.0.0", "-m", "release v1.0.0")
+            self._commit(root, "later.txt", "feat: later work")
+
+            tag_object_sha = self._git(root, "rev-parse", "v1.0.0").stdout.strip()
+            tag_commit_sha = self._git(
+                root, "rev-parse", "v1.0.0^{commit}").stdout.strip()
+            self.assertNotEqual(
+                tag_object_sha, tag_commit_sha,
+                "fixture premise check -- this must be a real annotated "
+                "tag OBJECT distinct from the commit it points at, or "
+                "the rest of this test proves nothing about peeling")
+
+            last_tag, rc, out, err = self._full_flow(root, "v")
+
+        self.assertEqual(last_tag, "v1.0.0")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(out, "")
+        self.assertEqual(self._base_version(last_tag), "1.0.0")
+
+    def test_zero_tag_path_through_full_flow_computes_base_version_correctly(self):
+        # A fresh repository, no tags at all -- `git tag -l` prints
+        # nothing, `last-tag-for-policy` prints the `<none>` sentinel, and
+        # `verify-tag-ancestor` must treat that sentinel as its own
+        # distinct, unaffected code path (never attempting a git probe
+        # against a nonexistent ref) -- proven here through the actual CLI
+        # chain, not by calling the function with the sentinel directly as
+        # T-10's suite already does.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+
+            before = self._repo_fingerprint(root)
+            last_tag, rc, out, err = self._full_flow(root, "v")
+            after = self._repo_fingerprint(root)
+
+        self.assertEqual(last_tag, core_releaselib.NONE_SENTINEL)
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(out, "")
+        self.assertEqual(
+            before, after,
+            "the zero-tag pass-through must not write a file, move a "
+            "ref, or create a tag either")
+        self.assertEqual(self._base_version(last_tag), "0.0.0")
+        # Policy-aware, not a hardcoded "0.0.0" -- the zero-tag path's
+        # $BASE_VERSION floor is $INITIAL_VERSION under numeric-sequence.
+        self.assertEqual(
+            self._base_version(last_tag, "numeric-sequence", "0.30"), "0.30")
+
+
+class AncestryRepoRootBindingTest(unittest.TestCase):
+    """R-02, Scope-C security review finding 2 (MEDIUM): `verify_tag_
+    ancestor`/`verify-tag-ancestor` already resolved their own `project_
+    root` from `CLAUDE_PROJECT_DIR` (env-first, `os.getcwd()` fallback,
+    T-10/R-01) -- but the bare `git tag -l` / `git fetch --tags origin` /
+    `git fetch origin "$DEFAULT_BRANCH"` / `git branch --show-current`
+    commands immediately adjacent to it in SKILL.md's Pre-flight sequence
+    had no such pinning and resolved against whatever the invoking shell's
+    OWN cwd happened to be. When `CLAUDE_PROJECT_DIR` and the shell's
+    actual cwd name two different checkouts of the SAME repository (this
+    repository's own linked-worktree session today is exactly that shape),
+    the tag SELECTED from one checkout's tag list could be ancestry-
+    VERIFIED against a DIFFERENT checkout's `HEAD`.
+
+    The fix has TWO parts, both proven here against the real CLI at
+    `_CORE_RELEASELIB_PATH`, never `core_releaselib.main()` called
+    in-process:
+
+      1. Every bare `git` command in the sequence is pinned via `-C
+         "$PROJECT_ROOT"` to ONE value resolved once, up front.
+      2. `verify-tag-ancestor` now accepts `$PROJECT_ROOT` as an explicit
+         SECOND argument, which is used VERBATIM -- no environment read
+         happens at all when it is given. Without this second half, the
+         shell's `$PROJECT_ROOT` and this CLI's OWN internal `CLAUDE_
+         PROJECT_DIR`-or-`os.getcwd()` resolution are still two
+         INDEPENDENT reads that merely happen to agree whenever the
+         environment variable is set and unchanged since -- never a
+         guarantee, and on a host with no such variable at all (or any
+         session where it is unset), both legs silently fall back to
+         "current directory" read at two different MOMENTS, which can
+         diverge with no error of any kind.
+
+    `test_pinned_project_root_keeps_selection_and_verification_bound_to_
+    the_same_checkout` proves part 1 (the pre-R-02 split, and the `-C`
+    fix). `test_explicit_second_argument_closes_the_gap_even_with_no_
+    environment_variable_at_all` proves part 2 in isolation: it never
+    sets `CLAUDE_PROJECT_DIR` at all, so the CLI's OWN internal resolution
+    (if it were still relied on) would silently read `os.getcwd()` --
+    whatever the subprocess's own cwd happens to be -- and could disagree
+    with the SAME `project_root` the caller already resolved and is
+    passing explicitly."""
+
+    def _git(self, repo, *args, check=True):
+        environment = dict(
+            os.environ,
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CONFIG_SYSTEM=os.devnull,
+            GIT_AUTHOR_NAME="repo-root-binding-fixture",
+            GIT_AUTHOR_EMAIL="repo-root-binding@example.invalid",
+            GIT_COMMITTER_NAME="repo-root-binding-fixture",
+            GIT_COMMITTER_EMAIL="repo-root-binding@example.invalid",
+        )
+        return subprocess.run(
+            [core_releaselib.git_executable(),
+             "-c", "commit.gpgsign=false", "-c", "tag.gpgSign=false",
+             "-c", "core.hooksPath=", "-c", "init.defaultBranch=main",
+             *args],
+            cwd=repo, env=environment, capture_output=True, text=True,
+            timeout=30, check=check)
+
+    def _init_repo(self, root):
+        os.makedirs(root, exist_ok=True)
+        self._git(root, "init", "--quiet")
+        with open(os.path.join(root, "seed.txt"), "w", encoding="utf-8") as fh:
+            fh.write("seed\n")
+        self._git(root, "add", "seed.txt")
+        self._git(root, "commit", "--quiet", "-m", "chore: seed")
+        return root
+
+    def _commit(self, root, name, message):
+        with open(os.path.join(root, name), "w", encoding="utf-8") as fh:
+            fh.write(f"{name}\n")
+        self._git(root, "add", name)
+        self._git(root, "commit", "--quiet", "-m", message)
+
+    def _clone(self, src, dest):
+        self._git(os.path.dirname(dest) or ".", "clone", "--quiet", src, dest)
+
+    def _select_last_tag(self, tag_list_root):
+        """Runs the real CLI chain `git tag -l` (against `tag_list_root`)
+        piped into `last-tag-for-policy` -- mirrors SKILL.md's `git -C
+        "$PROJECT_ROOT" tag -l | ... last-tag-for-policy ...` with
+        `tag_list_root` standing in for whatever root the (possibly
+        unpinned) `git tag -l` actually resolved against."""
+        tags_text = self._git(tag_list_root, "tag", "-l").stdout
+        select = subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH,
+             "last-tag-for-policy", "v", "semver", ""],
+            input=tags_text, capture_output=True, text=True,
+            cwd=tag_list_root, timeout=30)
+        self.assertEqual(select.returncode, 0, select.stderr)
+        return select.stdout.strip()
+
+    def _verify_ancestor(self, tag, project_root, *, subprocess_cwd=None):
+        """The R-02-fixed call shape: `project_root` is passed as the
+        explicit SECOND CLI argument, never via `CLAUDE_PROJECT_DIR` --
+        `subprocess_cwd` (defaulting to `project_root` itself when
+        omitted) is deliberately allowed to be a DIFFERENT directory, and
+        `CLAUDE_PROJECT_DIR` is deliberately POPPED from the environment
+        entirely, to prove this call never depends on either."""
+        env = dict(os.environ)
+        env.pop("CLAUDE_PROJECT_DIR", None)
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH,
+             "verify-tag-ancestor", tag, project_root],
+            capture_output=True, text=True,
+            cwd=subprocess_cwd or project_root, env=env, timeout=30)
+
+    def test_pinned_project_root_keeps_selection_and_verification_bound_to_the_same_checkout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            origin = self._init_repo(os.path.join(tmp, "origin"))
+            self._git(origin, "tag", "v1.0.0")
+            self._commit(origin, "mainline2.txt", "feat: mainline work")
+
+            project_root = os.path.join(tmp, "project-checkout")
+            self._clone(origin, project_root)
+
+            # A SEPARATE checkout of the same repo -- e.g. a stray linked
+            # worktree or an operator's old clone -- carrying its own
+            # LOCAL, never-fetched-into-project_root tag. This is the
+            # concrete instance of "an abandoned branch's stray push" the
+            # ancestry check's own docstring names, here applied across
+            # TWO checkouts rather than two branches of one checkout.
+            shell_cwd = os.path.join(tmp, "stray-checkout")
+            self._clone(origin, shell_cwd)
+            self._commit(shell_cwd, "stray.txt", "feat: stray local work")
+            self._git(shell_cwd, "tag", "v9.9.9")
+
+            # -- (1) PRE-R-02: `git tag -l` unpinned, resolving against
+            #    shell_cwd -- exactly what a bare command with no `-C`
+            #    does when the shell physically sits there.
+            old_last_tag = self._select_last_tag(shell_cwd)
+            self.assertEqual(
+                old_last_tag, "v9.9.9",
+                "the decoy from the stray checkout must genuinely win an "
+                "unpinned selection, or this fixture proves nothing about "
+                "the split")
+            old_verify = self._verify_ancestor(old_last_tag, project_root)
+            self.assertEqual(
+                old_verify.returncode, 2,
+                "verifying a tag SELECTED from a DIFFERENT checkout than "
+                "the one it is VERIFIED against must produce a spurious "
+                "refusal -- project_root has never even fetched a tag "
+                "named v9.9.9, even though project_root's OWN v1.0.0 "
+                "baseline is a perfectly genuine, unambiguous ancestor")
+
+            # -- (2) R-02 FIX: `git tag -l` pinned to project_root via
+            #    `-C "$PROJECT_ROOT"`, regardless of where the shell
+            #    physically sits.
+            new_last_tag = self._select_last_tag(project_root)
+            self.assertEqual(
+                new_last_tag, "v1.0.0",
+                "pinned to project_root, selection must see ONLY "
+                "project_root's own genuine tag -- the stray checkout's "
+                "decoy must never even be a candidate")
+            new_verify = self._verify_ancestor(new_last_tag, project_root)
+            self.assertEqual(
+                new_verify.returncode, 0,
+                f"{new_verify.stderr} -- selection and verification are "
+                "now bound to the IDENTICAL resolved root, so the genuine "
+                "ancestor is confirmed cleanly -- the split this test "
+                "proves closed")
+
+    def test_explicit_second_argument_closes_the_gap_even_with_no_environment_variable_at_all(self):
+        # Isolates part 2 of the fix from part 1: `CLAUDE_PROJECT_DIR` is
+        # never set at all (proven by `_verify_ancestor` popping it), and
+        # the subprocess's OWN cwd is deliberately pointed at the WRONG
+        # checkout (`shell_cwd`) -- if this CLI still relied on its legacy
+        # internal env-or-cwd resolution for a caller that happens to omit
+        # the second argument, it would silently resolve against
+        # `shell_cwd` here. Passing `project_root` EXPLICITLY as the
+        # second argument must resolve against `project_root` regardless.
+        with tempfile.TemporaryDirectory() as tmp:
+            origin = self._init_repo(os.path.join(tmp, "origin"))
+            self._git(origin, "tag", "v1.0.0")
+            self._commit(origin, "mainline2.txt", "feat: mainline work")
+
+            project_root = os.path.join(tmp, "project-checkout")
+            self._clone(origin, project_root)
+
+            # shell_cwd never even fetched v1.0.0 -- if the explicit
+            # argument were ignored and this call fell back to resolving
+            # against the subprocess's own cwd, `git merge-base` would
+            # fail to resolve v1.0.0 there at all.
+            shell_cwd = self._init_repo(os.path.join(tmp, "unrelated-repo"))
+
+            verify = self._verify_ancestor(
+                "v1.0.0", project_root, subprocess_cwd=shell_cwd)
+            self.assertEqual(
+                verify.returncode, 0,
+                f"{verify.stderr} -- the explicit second argument must "
+                "bind ancestry verification to project_root, never to "
+                "the subprocess's own cwd, with or without "
+                "CLAUDE_PROJECT_DIR set")
+
+    def test_legacy_one_argument_form_is_unchanged_for_backward_compatibility(self):
+        # The 1-argument form (env-first, `os.getcwd()` fallback) is kept
+        # for any OTHER caller of this CLI -- `AncestryRefusalTest`/
+        # `AncestryGraphsTest` (T-10/T-11) already exercise it extensively;
+        # this confirms the WIDENED dispatch guard (`len(rest) in (1, 2)`)
+        # did not silently change its behavior.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._init_repo(os.path.join(tmp, "repo"))
+            self._git(root, "tag", "v1.0.0")
+            self._commit(root, "later.txt", "feat: later work")
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=root)
+            proc = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH,
+                 "verify-tag-ancestor", "v1.0.0"],
+                capture_output=True, text=True, cwd=root, env=env, timeout=30)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_skillmd_pins_every_bare_preflight_command_to_project_root(self):
+        # Structural companion to the behavioral proofs above: the
+        # INSTALLED prose must actually spell the `-C "$PROJECT_ROOT"`
+        # pinning on all four named commands, and thread `$PROJECT_ROOT`
+        # explicitly into `verify-tag-ancestor`, not just describe the
+        # concept. `test_consumer_smoke.AncestryRepoRootBindingTest` runs
+        # the LITERAL extracted text for the two ancestry-adjacent
+        # commands; this covers the two this task's own verification
+        # command does not otherwise exercise end-to-end
+        # (`git fetch --tags origin` / `git fetch origin "$DEFAULT_BRANCH"`
+        # never mutate a real remote in a unit test).
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+        preflight = text[text.index("## Pre-flight"):text.index("## Phase 1")]
+        # Host-conditional resolution (`{{IF:claude}}`/`{{ELSE}}`/`{{END}}`,
+        # per `core/hosts.json`'s per-host token grammar): the Claude-only
+        # env-var name must never leak into the unconditional prose a
+        # Codex/Pi render would also carry verbatim.
+        self.assertIn("{{IF:claude}}", preflight)
+        self.assertIn(
+            'PROJECT_ROOT=${CLAUDE_PROJECT_DIR:-$(pwd)}', preflight)
+        self.assertIn("{{ELSE}}", preflight)
+        self.assertIn('PROJECT_ROOT=$(pwd)', preflight)
+        self.assertIn("{{END}}", preflight)
+        self.assertIn('git -C "$PROJECT_ROOT" branch --show-current', preflight)
+        self.assertIn('git -C "$PROJECT_ROOT" fetch --tags origin', preflight)
+        self.assertIn(
+            'git -C "$PROJECT_ROOT" fetch origin "$DEFAULT_BRANCH"', preflight)
+        self.assertIn('git -C "$PROJECT_ROOT" tag -l', preflight)
+        # `verify-tag-ancestor` takes $PROJECT_ROOT as an explicit SECOND
+        # argument -- never merely relying on its own internal environment
+        # read to happen to match.
+        self.assertIn(
+            '"$PY" "{{PLUGIN_ROOT}}/hooks/_releaselib.py" '
+            'verify-tag-ancestor "$LAST_TAG" "$PROJECT_ROOT"', preflight)
 
 
 class NumericSequenceVersionPolicyTest(unittest.TestCase):
@@ -6072,6 +7311,1132 @@ changelog-reconciliations: .codearbiter/reconciliations.json
         self.assertEqual(result.stdout.strip(), "v")
 
 
+class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
+    """R-05, AC-18 (T-23 round-1 finding HIGH-T23-1): Back-fill's own
+    canonical first-release path resolves `$ADOPTED` to the `chore:
+    declare release targets` commit it just committed in Back-fill step 3.
+    That row's canonical shape always sets `payload-exclude: .codearbiter/`,
+    so the declaration commit never itself carries payload content -- and
+    being the newest commit in the repository at that moment, it makes
+    `${ADOPTED}^..HEAD` a single-commit, payload-scoped-EMPTY range. Phase 1
+    step 1's mandatory non-empty check then STOPs as "nothing to release" on
+    the project's genuine first release, discarding its entire pre-existing
+    feature history by default -- not a corner case, since Back-fill's own
+    step 3 always ends by committing that declaration file immediately
+    before Pre-flight re-enters.
+
+    Reproduced here with real disposable git repositories, the same way
+    T-23 did (never mocked): a fresh repo, one footer-complete pre-existing
+    `feat` commit, then a synthetic Back-fill declaration commit touching
+    ONLY `.codearbiter/release-targets.md`. Chosen fix shape: (b)+(c) --
+    when step 1's payload-scoped check finds this exact shape empty, the
+    DOCUMENTED DEFAULT it applies is `EFFECTIVE_WINDOW=HEAD` (the plan's
+    own R-05 verification text: "the escape-hatch behavior... becomes the
+    documented default for this exact shape, not an undocumented
+    accident") -- but that default is still PRESENTED at the pre-existing
+    confirm-or-replace gate, never applied silently, so an operator
+    adopting deep into a long pre-existing history can still replace it
+    with an explicit earlier SHA rather than pull the whole thing into
+    step 3's footer-completeness check (the 500-commit-block failure
+    `adoption-commit`'s own module docstring already guards against).
+    `_releaselib.py` itself is untouched, and `$ADOPTED` still resolves
+    to the payload-excluded declaration commit exactly as before -- this
+    fix does NOT satisfy R-05's opening clause literally ("no longer
+    resolves `$ADOPTED` to its own declaration commit"); it satisfies the
+    row's second clause and intent instead (the full-history window
+    becomes the documented default), deliberately keeping `adoption-
+    commit`/`first_release_baseline` pure-over-text per this module's own
+    stated design invariant and keeping the boundary's reported identity
+    honest, and changes the WINDOW default at the point of use rather
+    than the resolution. Non-regression for every non-Back-fill case is
+    `test_zero_tag_manifest_adoption_window_derives_first_release_above_manifest`
+    above, unmodified by this task: there, the adoption commit ALSO
+    touches the payload (`manifest.json` lands in the same commit as
+    `.codearbiter/`), so `$ADOPTED != HEAD`, the narrow `${ADOPTED}^..HEAD`
+    window is already non-empty, and it still derives `0.2.0` -- this
+    task's new default never engages on that path at all. This class's
+    first three tests are pure mechanism reproductions of the underlying
+    `adoption-commit`/`classify-window` CLI facts the prose fix reasons
+    about; the remaining tests pin the new prose itself, prove it is not
+    vacuously true, prove it is reachable BEFORE the STOP verdict it
+    corrects (not a dead paragraph after it), prove `$ADOPTED` is never
+    dereferenced unbound on a path where it was never assigned, and
+    prove the pre-existing #570 root-commit / never-narrow-silently
+    wording is untouched."""
+
+    @staticmethod
+    def _build_fixture(tmp):
+        repo = Path(tmp) / "repo"
+        subprocess.run(
+            ["git", "init", "-q", "-b", "trunk", str(repo)], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "config", "user.name", "test"], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "config", "user.email", "test@example.invalid"],
+            check=True)
+        (repo / "index.js").write_text(
+            "module.exports = {};\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(repo), "add", "index.js"], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "commit", "-qm", "feat: add index",
+             "-m", "CHANGELOG: add index entrypoint"], check=True)
+
+        state = repo / ".codearbiter"
+        state.mkdir()
+        (state / "release-targets.md").write_text(
+            "<!-- release-targets -->\n"
+            "[app]\n"
+            "prefix: v\n"
+            "manifest: package.json\n"
+            "changelog: CHANGELOG.md\n"
+            "payload: .\n"
+            "payload-exclude: .codearbiter/\n"
+            "<!-- /release-targets -->\n",
+            encoding="utf-8")
+        subprocess.run(
+            ["git", "-C", str(repo), "add", ".codearbiter/release-targets.md"],
+            check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "commit", "-qm",
+             "chore: declare release targets"], check=True)
+        return repo
+
+    @staticmethod
+    def _adoption_commit(repo):
+        additions = subprocess.check_output(
+            ["git", "-C", str(repo), "log", "--diff-filter=A", "--format=%H", "--",
+             ".codearbiter/CONTEXT.md", ".codearbiter/release-targets.md"],
+            text=True)
+        return subprocess.run(
+            [sys.executable, _CORE_RELEASELIB_PATH, "adoption-commit"],
+            input=additions, capture_output=True, text=True, check=True).stdout.strip()
+
+    # ---- mechanism reproduction (real disposable git, never mocked) ----
+
+    def test_adopted_resolves_to_the_just_committed_declaration_commit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._build_fixture(tmp)
+            self.assertEqual(subprocess.check_output(
+                ["git", "-C", str(repo), "tag", "-l"], text=True), "")
+            adopted = self._adoption_commit(repo)
+            head = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+            self.assertEqual(
+                adopted, head,
+                "the adoption boundary must resolve to Back-fill's own "
+                "just-committed declaration commit on this canonical "
+                "shape -- if this fails, the fixture no longer matches "
+                "HIGH-T23-1's precondition")
+
+    def test_declaration_commits_own_payload_scoped_window_is_empty(self):
+        # The mechanical bug itself: `${ADOPTED}^..HEAD`, payload-scoped,
+        # prints nothing -- Phase 1 step 1's "nothing to release" STOP
+        # fires here on the project's genuine first release.
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._build_fixture(tmp)
+            adopted = self._adoption_commit(repo)
+            window = f"{adopted}^..HEAD"
+            log = subprocess.check_output(
+                ["git", "-C", str(repo), "log", window, "--format=%H", "--", ".",
+                 ":(exclude).codearbiter/"], text=True)
+            self.assertEqual(
+                log, "",
+                "HIGH-T23-1 did not reproduce: the payload-scoped window "
+                "rooted at the declaration commit is expected to be empty")
+
+    def test_documented_remedy_effective_window_head_recovers_full_history(self):
+        # Step 0's now-documented DEFAULT for this exact shape --
+        # `EFFECTIVE_WINDOW=HEAD` (the SAME value the pre-existing
+        # root-commit branch already uses) -- extracted from the prose
+        # itself (never hand-chosen) and run end-to-end, closing the gap
+        # T-23's own report named (it verified the two halves of this
+        # fact separately -- root-commit-has-no-parent, and a standalone
+        # `classify-window` run -- but never composed them into one
+        # command the way an operator actually would).
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+        idx = text.index("documented default is to propose")
+        window = text[idx: idx + 60]
+        self.assertIn("EFFECTIVE_WINDOW=HEAD", window)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._build_fixture(tmp)
+            log = subprocess.check_output(
+                ["git", "-C", str(repo), "log", "HEAD",
+                 "--pretty=format:%H%n%s%n%b%n----", "--", ".",
+                 ":(exclude).codearbiter/"], text=True)
+            self.assertNotEqual(log.strip(), "")
+            classified = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "classify-window"],
+                input=log, capture_output=True, text=True)
+            self.assertEqual(classified.returncode, 0, classified.stderr)
+            self.assertEqual(classified.stdout.splitlines()[0], "minor")
+
+    def test_backfill_route_reconciles_real_pre_footer_published_history(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            subprocess.run(
+                ["git", "init", "-q", "-b", "trunk", str(repo)], check=True)
+            subprocess.run(
+                ["git", "-C", str(repo), "config", "user.name", "test"],
+                check=True)
+            subprocess.run(
+                ["git", "-C", str(repo), "config", "user.email",
+                 "test@example.invalid"], check=True)
+            (repo / "package.json").write_text(
+                '{"name":"legacy","version":"0.1.0"}\n', encoding="utf-8")
+            (repo / "CHANGELOG.md").write_text(
+                "# Changelog\n", encoding="utf-8")
+            (repo / "index.js").write_text("legacy();\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+            subprocess.run(
+                ["git", "-C", str(repo), "commit", "-qm",
+                 "feat: legacy published feature"], check=True)
+            legacy_sha = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"],
+                text=True).strip()
+
+            state = repo / ".codearbiter"
+            state.mkdir()
+            row = core_releaselib.detect_candidate_target(
+                ["package.json"], ["CHANGELOG.md"])
+            (state / "release-targets.md").write_text(
+                core_releaselib.format_release_targets_block(row),
+                encoding="utf-8")
+            ledger = {
+                "schema_version": 1,
+                "entries": [{
+                    "target": "app",
+                    "commit_sha": legacy_sha,
+                    "changelog": "Document the legacy published feature.",
+                    "reason": "The commit predates the changelog-footer policy.",
+                    "authorization": "Maintainer approved during Back-fill.",
+                }],
+            }
+            (state / "release-changelog-reconciliations.json").write_text(
+                json.dumps(ledger) + "\n", encoding="utf-8")
+            subprocess.run(
+                ["git", "-C", str(repo), "add", ".codearbiter"], check=True)
+            subprocess.run(
+                ["git", "-C", str(repo), "commit", "-qm",
+                 "chore: declare release targets and changelog reconciliation"],
+                check=True)
+            published = subprocess.check_output(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"],
+                text=True).strip()
+            subprocess.run(
+                ["git", "-C", str(repo), "update-ref",
+                 "refs/remotes/origin/trunk", published], check=True)
+            log = subprocess.check_output(
+                ["git", "-C", str(repo), "log", "HEAD",
+                 "--pretty=format:%H%n%s%n%b%n----", "--", ".",
+                 ":(exclude).codearbiter/"], text=True)
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=str(repo))
+            classified = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH, "classify-window",
+                 "app", "trunk"], input=log, capture_output=True, text=True,
+                env=env)
+            self.assertEqual(classified.returncode, 0, classified.stderr)
+            self.assertIn("[RECONCILED]", classified.stdout)
+            self.assertNotIn("[NEEDS-TRIAGE]", classified.stdout)
+
+    # ---- SKILL.md prose: the documented default this task adds ----
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+        cls.phase1 = cls.text[
+            cls.text.index("## Phase 1"): cls.text.index("## Phase 2")]
+
+    def test_step_0_names_the_backfill_canonical_shape_and_its_cause(self):
+        idx = self.phase1.index(
+            "On Back-fill's own canonical first-release path")
+        window = self.phase1[idx:idx + 1500]
+        self.assertIn("chore: declare release targets", window)
+        self.assertIn("payload-exclude: .codearbiter/", window)
+        self.assertIn("ORDINARY outcome", window)
+        self.assertIn("not a corner case", window)
+
+    def test_step_0_makes_the_widen_the_documented_default_but_still_confirmed(self):
+        # The plan's own R-05 verification text: the escape-hatch behavior
+        # "becomes the documented default for this exact shape" -- but
+        # `never applied silently` (per "never narrow silently"'s own
+        # sibling discipline): it is PRESENTED at the pre-existing
+        # confirm-or-replace gate, guarding against the 500-commit-block
+        # failure `adoption-commit`'s own module docstring already names.
+        idx = self.phase1.index(
+            "On Back-fill's own canonical first-release path")
+        window = self.phase1[idx:idx + 1500]
+        self.assertIn("documented default is to propose", window)
+        self.assertIn("EFFECTIVE_WINDOW=HEAD", window)
+        self.assertIn(
+            "presented for the operator's confirm-or-replace choice", window)
+        self.assertIn("never applied silently", window)
+        self.assertIn("500-line", window)
+
+    def test_step_1_checks_the_default_shape_BEFORE_the_stop_verdict(self):
+        # AC-13's own discipline ("no competing executable correction
+        # paragraph exists afterward") applies here too, even though
+        # Phase2StructureTest only pins it for Phase 2: a literal
+        # top-to-bottom executor must reach the shape check before it can
+        # ever reach the STOP verdict, not the other way around.
+        idx = self.phase1.index(
+            "Before treating empty output here as a genuine STOP")
+        window = self.phase1[idx:idx + 1000]
+        self.assertIn("${ADOPTED:-}", window)
+        self.assertIn("$(git rev-parse HEAD)", window)
+        self.assertIn("$LAST_TAG", window)
+        self.assertIn("EFFECTIVE_WINDOW=HEAD", window)
+        check_idx = self.phase1.index(
+            "Before treating empty output here as a genuine STOP")
+        verdict_idx = self.phase1.index(
+            "STOPs as nothing to release for `$TARGET`", check_idx)
+        self.assertLess(
+            check_idx, verdict_idx,
+            "the shape check must precede the STOP verdict it corrects, "
+            "not follow it")
+
+    def test_step_1_guards_ADOPTED_against_unbound_variable_on_non_backfill_paths(self):
+        # HIGH-class non-regression: `$ADOPTED` is only ever assigned
+        # inside step 0's first-release branch. An ordinary tagged
+        # release's genuinely-empty-payload STOP (the normal, correct
+        # case) must not dereference an unset `$ADOPTED` under the hosted
+        # `set -euo pipefail` contract (memory: the run-24 HIGH at line
+        # 358's own "Zero-tag correction" note lives under this same
+        # contract) -- `${ADOPTED:-}`, never a bare `$ADOPTED`, and gated
+        # on `$LAST_TAG` being `<none>` so the check never even evaluates
+        # on a tagged release.
+        idx = self.phase1.index(
+            "Before treating empty output here as a genuine STOP")
+        window = self.phase1[idx:idx + 400]
+        self.assertIn("${ADOPTED:-}", window)
+        self.assertNotIn("$ADOPTED equals", window)
+        self.assertIn("$LAST_TAG` is `<none>`", window)
+
+    def test_step_1_shape_check_executes_under_pipefail_with_ADOPTED_unset(self):
+        # The literal shell shape step 1's new sentence describes, run for
+        # REAL under `set -euo pipefail` (mirrors `ReleaseSurfaceTest.
+        # test_guarded_zero_tag_probe_executes_under_pipefail`'s own
+        # established pattern for proving a prose conditional against the
+        # hosted Bash contract, not merely reading the words). Two
+        # sub-cases, both with `$ADOPTED` never assigned at all: (1) an
+        # ordinary tagged release (`$LAST_TAG` != `<none>`) -- the
+        # `$LAST_TAG` guard must short-circuit before `${ADOPTED:-}` is
+        # ever needed; (2) a zero-tag, never-adopted project (`$LAST_TAG`
+        # = `<none>`, `adoption-commit` found nothing) -- `${ADOPTED:-}`
+        # must expand to empty rather than raise `unbound variable`.
+        # Neither sub-case may abort with a nonzero exit for that reason;
+        # both must reach the ordinary STOP branch untouched.
+        bash = (core_releaselib._resolve_posix_shell()
+                if os.name == "nt" else working_bash())
+        if bash is None:
+            self.skipTest("no working POSIX shell")
+        script = r'''
+set -euo pipefail
+LAST_TAG="$1"
+HEAD_SHA=$(git -C "$2" rev-parse HEAD)
+REACHED_STOP=0
+if [ "$LAST_TAG" = "<none>" ] && [ "${ADOPTED:-}" = "$HEAD_SHA" ]; then
+  echo "widened"
+else
+  REACHED_STOP=1
+fi
+test "$REACHED_STOP" -eq 1
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            subprocess.run(["git", "init", "-q", "-b", "trunk", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.name", "test"],
+                            check=True)
+            subprocess.run(["git", "-C", str(repo), "config", "user.email",
+                             "test@example.invalid"], check=True)
+            (repo / "f.txt").write_text("x\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "f.txt"], check=True)
+            subprocess.run(["git", "-C", str(repo), "commit", "-qm", "chore: seed"],
+                            check=True)
+
+            for last_tag in ("v1.2.3", "<none>"):
+                with self.subTest(last_tag=last_tag):
+                    result = subprocess.run(
+                        [bash, "-s", "--", last_tag, Path(repo).as_posix()],
+                        input=script.encode(), capture_output=True, timeout=60)
+                    self.assertEqual(
+                        result.returncode, 0,
+                        (result.stdout + result.stderr).decode(errors="replace"))
+
+    def test_a_mutated_copy_missing_the_new_default_is_detected(self):
+        # Mutation-kill: deleting the new sentence must make the prose
+        # tests above fail, proving they are not vacuously true.
+        idx = self.phase1.index(
+            "On Back-fill's own canonical first-release path")
+        end = self.phase1.index(
+            "This one value is then used consistently", idx)
+        mutant = self.phase1[:idx] + self.phase1[end:]
+        self.assertNotIn("ORDINARY outcome", mutant)
+        self.assertNotIn("documented default is to propose", mutant)
+
+    def test_step_3_names_the_step_1_widen_as_its_sole_sanctioned_exception(self):
+        # Step 3's own pre-existing sentence ("step 0 has already proposed
+        # and confirmed the adoption floor before classification; do not
+        # classify the raw full-history $WINDOW first and then try to
+        # narrow it here") reads as a contradiction once step 1 can
+        # legitimately substitute a full-HEAD window AFTER step 0 ran --
+        # a literal executor could read step 3 as forbidding exactly the
+        # shape this task's fix introduces. One reconciling clause closes
+        # that gap: the step-1 substitution is a CONFIRMED widen at its
+        # own documented point of use, not an unconfirmed narrowing
+        # performed at step 3 -- the thing step 3's original sentence
+        # actually guards against.
+        idx = self.phase1.index(
+            "do not classify the raw full-history `$WINDOW` first and "
+            "then try to narrow it here.")
+        window = self.phase1[idx:idx + 500]
+        self.assertIn("sole sanctioned exception", window)
+        self.assertIn("Back-fill's own canonical first-release shape", window)
+        self.assertIn("confirm-or-replace gate", window)
+        self.assertIn("not an unconfirmed narrowing performed HERE", window)
+        # The pre-existing sentence itself survives byte-for-byte --
+        # reconciled by ADDING a clause, never by rewriting the original.
+        self.assertIn(
+            "On a first release, step 0 has already proposed and "
+            "confirmed the adoption floor before classification; do not "
+            "classify the raw full-history `$WINDOW` first and then try "
+            "to narrow it here.", self.phase1)
+
+    def test_root_commit_escape_hatch_wording_is_unchanged(self):
+        # Non-regression: the pre-existing #570 root-commit rule this fix
+        # sits next to survives byte-for-byte.
+        self.assertIn(
+            "when `$ADOPTED` is the root commit and has no parent, use "
+            "`EFFECTIVE_WINDOW=HEAD`.", self.phase1)
+
+    def test_never_narrow_silently_and_confirmation_gate_wording_is_unchanged(self):
+        self.assertIn("never narrow silently", self.phase1)
+        self.assertIn(
+            "present `$ADOPTED` as the proposed baseline and require the "
+            "user's confirmation or explicit replacement", self.phase1)
+
+
+class BreakingClassificationTest(unittest.TestCase):
+    """T-14, AC-12 (spec P7). `classify_commit`/`classify_window` already
+    COMPUTE breaking status -- the `!` bang (both spellings) and a
+    `BREAKING CHANGE:`/`BREAKING-CHANGE:` footer -- as part of their
+    existing Conventional-Commits classification (core/pysrc/_releaselib.py
+    lines 1400-1490). This class proves that data is correct and reusable
+    as-is; it adds no production code and no second parser. T-15's
+    composition step depends on exactly what this class pins: the
+    per-commit `breaking` flag surviving unchanged into `classify_window`'s
+    `commits` rows, in window order, so a "prefer the first breaking entry"
+    scan (`next(r for r in commits if r["breaking"])`) is possible without
+    re-deriving anything, and the aggregate `bump` is unaffected by
+    surfacing that flag.
+    """
+
+    def test_bang_without_a_scope_is_breaking(self):
+        verdict = core_releaselib.classify_commit(
+            "feat!: drop the legacy endpoint")
+        self.assertTrue(verdict["breaking"])
+        self.assertEqual(verdict["bump"], "major")
+
+    def test_bang_after_a_scope_is_breaking(self):
+        verdict = core_releaselib.classify_commit(
+            "feat(api)!: drop the legacy endpoint")
+        self.assertTrue(verdict["breaking"])
+        self.assertEqual(verdict["bump"], "major")
+
+    def test_bare_breaking_change_footer_is_breaking_regardless_of_type(self):
+        # No `!` anywhere -- the footer alone must set breaking=True, on
+        # any Conventional-Commits type, including one with no configured
+        # bump of its own (docs/chore).
+        for subject, body in (
+                ("docs: prose", "BREAKING CHANGE: config moved"),
+                ("chore: routine", "BREAKING CHANGE: config moved"),
+                # hyphenated spelling: _BREAKING_FOOTER_RE's own comment
+                # (core/pysrc/_releaselib.py:1195) calls it spec-permitted.
+                ("fix: patch", "BREAKING-CHANGE: config moved"),
+        ):
+            with self.subTest(subject=subject, body=body):
+                verdict = core_releaselib.classify_commit(subject, body)
+                self.assertTrue(verdict["breaking"])
+                self.assertEqual(verdict["bump"], "major")
+
+    def test_footer_must_start_a_line_not_merely_appear_in_prose(self):
+        verdict = core_releaselib.classify_commit(
+            "docs: prose", "this mentions a BREAKING CHANGE: inline")
+        self.assertFalse(verdict["breaking"])
+        self.assertEqual(verdict["bump"], "none")
+
+    def test_ordinary_commits_are_not_breaking(self):
+        for subject in ("feat(api): add a thing", "fix: a bug",
+                         "perf: faster", "docs: prose", "chore: routine"):
+            with self.subTest(subject=subject):
+                verdict = core_releaselib.classify_commit(subject)
+                self.assertFalse(verdict["breaking"])
+
+    def test_window_rows_carry_the_same_per_commit_breaking_flag(self):
+        # The exact seam T-15's composition step depends on: classify_window
+        # must not drop or recompute `breaking` when it builds each row.
+        commits = [
+            {"sha": "a" * 40, "subject": "feat!: drop it", "body": ""},
+            {"sha": "b" * 40, "subject": "fix: patch", "body": ""},
+        ]
+        window = core_releaselib.classify_window(commits)
+        rows_by_sha = {row["sha"]: row for row in window["commits"]}
+        self.assertTrue(rows_by_sha["a" * 40]["breaking"])
+        self.assertFalse(rows_by_sha["b" * 40]["breaking"])
+
+    def test_window_preserves_input_order_so_first_breaking_entry_is_findable(self):
+        # T-15's headline rule is "prefer the FIRST breaking entry" -- this
+        # only works if classify_window never reorders `commits`.
+        commits = [
+            {"sha": "1" * 40, "subject": "fix: a", "body": ""},
+            {"sha": "2" * 40, "subject": "feat!: first breaking", "body": ""},
+            {"sha": "3" * 40, "subject": "feat(api)!: second breaking",
+             "body": ""},
+        ]
+        window = core_releaselib.classify_window(commits)
+        first_breaking = next(
+            (row for row in window["commits"] if row["breaking"]), None)
+        self.assertIsNotNone(first_breaking)
+        self.assertEqual(first_breaking["sha"], "2" * 40)
+
+    def test_aggregate_window_bump_is_unaffected_by_breaking_visibility(self):
+        # AC-12 / this task: exposing `breaking` must not change the
+        # aggregate bump classify_window already computed correctly.
+        major_window = core_releaselib.classify_window([
+            {"sha": "a" * 40, "subject": "fix: a", "body": ""},
+            {"sha": "b" * 40, "subject": "feat!: b", "body": ""},
+        ])
+        self.assertEqual(major_window["bump"], "major")
+
+        minor_window = core_releaselib.classify_window([
+            {"sha": "a" * 40, "subject": "feat: a", "body": ""},
+            {"sha": "b" * 40, "subject": "fix: b", "body": ""},
+        ])
+        self.assertEqual(minor_window["bump"], "minor")
+        # a breaking sibling elsewhere in the window must not relabel this
+        # row's own non-breaking bump/breaking values
+        self.assertEqual(minor_window["commits"][0]["bump"], "minor")
+        self.assertFalse(minor_window["commits"][0]["breaking"])
+        self.assertEqual(minor_window["commits"][1]["bump"], "patch")
+        self.assertFalse(minor_window["commits"][1]["breaking"])
+
+        none_window = core_releaselib.classify_window([
+            {"sha": "a" * 40, "subject": "docs: a", "body": ""},
+            {"sha": "b" * 40, "subject": "chore: b", "body": ""},
+        ])
+        self.assertEqual(none_window["bump"], "none")
+
+
+def _prose_select_headline_commit(rows, bump):
+    """Test-only mirror of SKILL.md's `<summary>` derivation rule (Phase 3
+    step 2's title-convention paragraph), used only to PROVE the documented
+    selection is correct against `classify_window` fixtures -- it consumes
+    the `breaking`/`type` fields `classify_window` already computes and
+    detects nothing itself. Not production code; T-15's actual change is
+    the SKILL.md prose this function is a literal transcription of.
+    """
+    if bump == "major":
+        return next((r for r in rows if r["breaking"]), None)
+    if bump == "minor":
+        return next((r for r in rows if r["type"] == "feat"), None)
+    return next((r for r in rows if r["type"] == "fix"), None)
+
+
+class BreakingHeadlineTest(unittest.TestCase):
+    """T-15, AC-12 (spec P7). Two obligations:
+
+    1. Composed release notes (changelog section / tag message / Release
+       notes -- one composed text reused across all three, per SKILL.md's
+       own step-5 cross-boundary rule) group a breaking commit under an
+       explicit `### Breaking` heading instead of its ordinary type group,
+       reusing `classify_window`'s existing `breaking` field.
+    2. The `<summary>` title rule gets an explicit `major` branch: a
+       major-bump window's title is the first BREAKING entry, not the
+       first `Added` entry the old minor-branch fallback would wrongly
+       reach via `else`.
+
+    This class proves both against the actual rendered `core/surface/
+    skills/release/SKILL.md` prose (structural) and against real
+    `classify_window` output (fixture, via `_prose_select_headline_commit`,
+    a literal transcription of that prose -- never a second breaking
+    parser). No production compose function exists in this lane: grouping
+    and title selection are agent-executed SKILL.md steps, the same as
+    every other `SkillPortabilityTest`/`SkillProseTest` obligation in this
+    file, which is why the proving tests here are structural + fixture
+    rather than a direct unit test of new library code.
+    """
+
+    # -- structural: the composed-notes prose ------------------------------
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+
+    def test_step5_names_an_explicit_breaking_group(self):
+        idx = self.text.index("grouped Added (`feat`) / Fixed (`fix`)")
+        window = self.text[idx:idx + 1400]
+        self.assertIn("### Breaking", window)
+        # Keyed on the classification flag, not on a type spelling -- a
+        # `chore!:` (no type group of its own) must still be named as
+        # getting a group, proving this isn't "feat! is special Added".
+        self.assertIn("`breaking` true", window)
+        self.assertIn("chore!", window)
+        self.assertIn("classify-window", window)
+
+    def test_step5_breaking_group_never_duplicates_into_the_type_group(self):
+        idx = self.text.index("### Breaking` group instead of its type group")
+        window = self.text[idx:idx + 500]
+        self.assertIn("never also duplicated into its type group", window)
+        self.assertIn("never placed in `### Breaking`", window)
+
+    def test_step5_breaking_group_is_the_one_composed_text_all_three_surfaces_reuse(self):
+        idx = self.text.index("### Breaking` group instead of its type group")
+        window = self.text[idx:idx + 700]
+        self.assertIn("<message-file>", window)
+        self.assertIn("<Phase-1 section file>", window)
+
+    # -- structural: the <summary> title rule -------------------------------
+
+    def test_summary_rule_has_an_explicit_major_branch(self):
+        self.assertIn(
+            "the first bullet under `### Breaking` if the window bumped "
+            "major, the first bullet under `### Added` if the window "
+            "bumped minor, otherwise the first bullet under `### Fixed`, "
+            "else the first bullet of the first non-empty group",
+            self.text,
+            "the major branch must sit ahead of the untouched minor/else "
+            "fallback, byte-identical past the new clause")
+
+    def test_summary_rule_title_convention_phrase_is_unchanged(self):
+        # M-1's own pinned assertion (SkillPortabilityTest) must still hold
+        # -- this task must not touch the title-convention sentence itself.
+        self.assertIn(
+            "The title convention is `<$DISPLAY_NAME> ${VERSION}: "
+            "<summary>`", self.text)
+
+    # -- fixture: a real major-bump window picks the first breaking entry --
+
+    def test_major_window_headline_is_the_first_breaking_entry(self):
+        window = core_releaselib.classify_window([
+            {"sha": "1" * 40, "subject": "fix: a small bug", "body": ""},
+            {"sha": "2" * 40, "subject": "feat!: drop the legacy endpoint",
+             "body": ""},
+            {"sha": "3" * 40, "subject": "feat(api)!: remove old flag",
+             "body": ""},
+        ])
+        self.assertEqual(window["bump"], "major")
+        headline = _prose_select_headline_commit(window["commits"], window["bump"])
+        self.assertIsNotNone(headline)
+        self.assertEqual(headline["sha"], "2" * 40)
+        # authored text is unchanged -- the same subject text classify_commit
+        # was given comes back verbatim, never reworded by this selection.
+        self.assertEqual(headline["subject"], "feat!: drop the legacy endpoint")
+
+    def test_breaking_chore_with_no_type_group_still_wins_the_major_headline(self):
+        # A breaking chore has no `### Added`/`### Fixed` group of its own
+        # -- the major branch must still find it via `breaking`, not type.
+        window = core_releaselib.classify_window([
+            {"sha": "1" * 40, "subject": "chore!: drop legacy config path",
+             "body": ""},
+        ])
+        self.assertEqual(window["bump"], "major")
+        headline = _prose_select_headline_commit(window["commits"], window["bump"])
+        self.assertIsNotNone(headline)
+        self.assertEqual(headline["sha"], "1" * 40)
+        self.assertTrue(headline["breaking"])
+
+    def test_footer_only_breaking_change_also_wins_the_major_headline(self):
+        window = core_releaselib.classify_window([
+            {"sha": "1" * 40, "subject": "feat: add a thing", "body": ""},
+            {"sha": "2" * 40, "subject": "fix: patch",
+             "body": "BREAKING CHANGE: config moved"},
+        ])
+        self.assertEqual(window["bump"], "major")
+        headline = _prose_select_headline_commit(window["commits"], window["bump"])
+        self.assertEqual(headline["sha"], "2" * 40)
+
+    # -- fixture: minor/patch fallback stays intact, never mislabeled ------
+
+    def test_minor_window_is_unaffected_and_has_no_breaking_commit_at_all(self):
+        # Obligation: ordinary nonbreaking changes are never mislabeled
+        # breaking. By construction a breaking commit always bumps major
+        # (classify_commit), so a genuine minor window can contain no
+        # breaking commit -- the major branch can never spuriously fire and
+        # steal the minor fallback's headline.
+        window = core_releaselib.classify_window([
+            {"sha": "1" * 40, "subject": "feat: add a thing", "body": ""},
+            {"sha": "2" * 40, "subject": "fix: patch a bug", "body": ""},
+        ])
+        self.assertEqual(window["bump"], "minor")
+        self.assertFalse(any(r["breaking"] for r in window["commits"]))
+        headline = _prose_select_headline_commit(window["commits"], window["bump"])
+        self.assertEqual(headline["sha"], "1" * 40)
+        self.assertFalse(headline["breaking"])
+
+    def test_patch_window_fallback_is_also_unaffected(self):
+        window = core_releaselib.classify_window([
+            {"sha": "1" * 40, "subject": "fix: patch a bug", "body": ""},
+            {"sha": "2" * 40, "subject": "perf: faster path", "body": ""},
+        ])
+        self.assertEqual(window["bump"], "patch")
+        self.assertFalse(any(r["breaking"] for r in window["commits"]))
+        headline = _prose_select_headline_commit(window["commits"], window["bump"])
+        self.assertEqual(headline["sha"], "1" * 40)
+
+
+class BreakingFooterCompletenessTest(unittest.TestCase):
+    """R-03, AC-12 (Scope-C security review finding 3, MEDIUM).
+
+    `classify_window`'s `missing_footer` set (T-14, unchanged here) already
+    keys on a row's own `bump != "none"`, never a fixed type list -- and
+    `classify_commit` already sets `bump="major"` for ANY type carrying the
+    breaking bang or a `BREAKING CHANGE:`/`BREAKING-CHANGE:` footer. So an
+    unfootered `chore!:`/`docs!:`/`test!:`/`ci!:` was ALREADY reported in
+    `missing_footer` and ALREADY causes `classify-window`'s exit 1 (step 2's
+    BLOCK) before step 5's changelog composition is ever reached -- a
+    footer-incomplete window cannot produce an empty `### Breaking` group,
+    because it never gets past step 3.
+
+    The finding this task closes is the DOCUMENTATION gap, not a missing
+    mechanism: step 3's own prose read as scoped to `feat`/`fix`/`perf`/
+    `refactor` only ("every `feat`/`fix`/`perf`/`refactor` commit ... MUST
+    carry a `CHANGELOG:` footer"), silently underselling what the helper it
+    describes actually enforces. A reader who trusted that sentence over the
+    helper's own behavior could read an unfootered breaking `chore!:` as
+    something the rule does not reach. This class pins the corrected,
+    explicit step 3 prose (structural) and re-proves, under this task's own
+    verification name, that `classify_window` already implements the wider
+    rule end to end (fixture) -- for BOTH new breaking non-listed types and
+    the pre-existing `feat`/`fix`/`perf`/`refactor` obligation, which this
+    task must leave completely unchanged. No production code changes:
+    `classify_commit`/`classify_window` are untouched (R-03 scope
+    discipline) -- there is no second breaking-detection mechanism here.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+
+    # -- structural: step 3's prose states the widened rule explicitly -----
+
+    def test_step3_names_the_breaking_regardless_of_type_rule(self):
+        idx = self.text.index(
+            "Verify footer completeness for the already-established")
+        window = self.text[idx:idx + 2600]
+        self.assertIn("regardless of type", window)
+        self.assertIn("`breaking`", window)
+        self.assertIn("chore!", window)
+
+    def test_step3_ties_the_rule_to_classify_window_missing_footer(self):
+        idx = self.text.index(
+            "Verify footer completeness for the already-established")
+        window = self.text[idx:idx + 2600]
+        # The rule must be tied back to the exact mechanism that enforces
+        # it, not restated as a second, independent description an agent
+        # could implement by hand and get wrong (the hand-rolled-parse
+        # failure mode this file already documents at length elsewhere).
+        self.assertIn("missing_footer", window)
+        self.assertIn('bump != "none"', window)
+
+    def test_step3_original_four_type_sentence_is_preserved_verbatim(self):
+        # This task WIDENS the rule; it must not reword or replace the
+        # pre-existing feat/fix/perf/refactor obligation.
+        self.assertIn(
+            "every `feat`/`fix`/`perf`/`refactor` commit (the full "
+            "harvested set step 5 rolls into the changelog, not just "
+            "`feat`/`fix`)",
+            self.text)
+
+    # -- fixture: classify_window already implements the widened rule ------
+
+    def test_unfootered_breaking_non_listed_types_are_in_missing_footer(self):
+        for subject in ("chore!: rip out the vendored copy",
+                         "docs!: rewrite the config contract",
+                         "test!: change the harness contract",
+                         "ci!: change the trigger contract"):
+            with self.subTest(subject=subject):
+                window = core_releaselib.classify_window(
+                    [{"sha": "a" * 40, "subject": subject, "body": ""}])
+                self.assertEqual(window["bump"], "major")
+                self.assertEqual(len(window["missing_footer"]), 1)
+                self.assertTrue(window["missing_footer"][0]["breaking"])
+
+    def test_footered_breaking_non_listed_type_clears_the_gate(self):
+        window = core_releaselib.classify_window([
+            {"sha": "a" * 40, "subject": "chore!: rip out the vendored copy",
+             "body": "CHANGELOG: Remove the vendored copy."}])
+        self.assertEqual(window["bump"], "major")
+        self.assertEqual(window["missing_footer"], [])
+
+    def test_footer_only_breaking_change_on_a_non_listed_type_is_also_caught(self):
+        # No `!` at all -- the footer-only breaking-change spelling on a
+        # type with no bump of its own must be caught the same way.
+        window = core_releaselib.classify_window([
+            {"sha": "a" * 40, "subject": "docs: prose",
+             "body": "BREAKING CHANGE: config moved"}])
+        self.assertEqual(window["bump"], "major")
+        self.assertEqual(len(window["missing_footer"]), 1)
+
+    def test_original_four_types_footer_requirement_is_unchanged(self):
+        # feat/fix/perf/refactor missing a footer are still caught -- this
+        # task must not narrow or otherwise alter that pre-existing rule.
+        for subject in ("feat: add a thing", "fix: patch a bug",
+                         "perf: make it faster", "refactor: split a module"):
+            with self.subTest(subject=subject):
+                window = core_releaselib.classify_window(
+                    [{"sha": "b" * 40, "subject": subject, "body": ""}])
+                self.assertEqual(len(window["missing_footer"]), 1)
+
+    def test_ordinary_nonbreaking_non_listed_types_stay_footer_optional(self):
+        # An ordinary (non-breaking) chore/docs/test/ci is still not
+        # REQUIRED to carry a footer -- only harvested by step 5 if it
+        # happens to have one. This task widens the rule to breaking
+        # commits only; it must not widen it further.
+        for subject in ("chore: routine cleanup", "docs: update readme",
+                         "test: add coverage", "ci: tweak the pipeline"):
+            with self.subTest(subject=subject):
+                window = core_releaselib.classify_window(
+                    [{"sha": "c" * 40, "subject": subject, "body": ""}])
+                self.assertEqual(window["bump"], "none")
+                self.assertEqual(window["missing_footer"], [])
+
+
+_RELEASEHASH_PATH = os.path.join(REPO_ROOT, "core", "pysrc", "releasehash.py")
+
+
+class ReleasehashExitCodesTest(unittest.TestCase):
+    """T-05, AC-04/AC-05 (spec P3): `releasehash.py`'s exit code 2 used to
+    mean three distinct things -- malformed CLI usage, an unknown declared
+    target, and the `NEVER_CONFIRMED` state. This splits the first two out:
+    64 for malformed usage, 65 for an unknown target, while `check`'s
+    never-confirmed outcome keeps 2 as its SOLE remaining meaning. The
+    already-distinct outcomes 0 (confirmed/no-commands), 1 (changed), and
+    3/4 (declared-file states from `_releaselib._targets_error_exit_code`)
+    are proven unchanged here too, so a regression in any of the five
+    can't hide behind only testing the two new codes. AC-05 requires
+    confirmation authority (digest construction, markers, read-before-
+    record) stay byte-identical -- proven here by asserting NO marker file
+    is ever created by a malformed-usage or unknown-target invocation, and
+    by a positive control proving `record` on a VALID target still creates
+    one (so the negative assertions aren't vacuously true because `record`
+    itself is broken).
+
+    Invoked via REAL SUBPROCESS, not an in-process `importlib` load: this
+    module's own `import _releaselib` (bare, sibling-relative) would
+    otherwise resolve to this test file's already-cached CI-shim
+    `_releaselib` module in `sys.modules` (the exact collision the shim's
+    own module docstring calls out as M-6), which has no
+    `default_targets_path` and crashes before `main()` even reaches the
+    exit-code logic under test. A subprocess starts with an empty module
+    cache, matching how every real caller (the release skill, a human
+    operator) actually invokes this CLI."""
+
+    APP_NO_COMMANDS_BLOCK = (
+        "<!-- release-targets -->\n"
+        "[app]\n"
+        "prefix: v\n"
+        "changelog: CHANGELOG.md\n"
+        "payload: .\n"
+        "<!-- /release-targets -->\n"
+    )
+
+    APP_WITH_PRE_TAG_BLOCK = (
+        "<!-- release-targets -->\n"
+        "[app]\n"
+        "prefix: v\n"
+        "changelog: CHANGELOG.md\n"
+        "payload: .\n"
+        "pre-tag: python3 checks/a.py\n"
+        "<!-- /release-targets -->\n"
+    )
+
+    def _releasehash(self):
+        # In-process load, used ONLY for the pure digest/marker helpers
+        # (pre_tag_digest, record_confirmation, confirmation_path), which
+        # never touch `_releaselib` and so never hit the collision above.
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_rh_exitcodes_under_test", _RELEASEHASH_PATH)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def _run_cli(self, argv, root):
+        env = dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                    PYTHONDONTWRITEBYTECODE="1")
+        return subprocess.run(
+            [sys.executable, _RELEASEHASH_PATH, *argv],
+            cwd=tempfile.gettempdir(), env=env, capture_output=True,
+            text=True, timeout=30)
+
+    def _write_declared_file(self, root, block):
+        os.makedirs(os.path.join(root, ".codearbiter"), exist_ok=True)
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                   "w", encoding="utf-8") as fh:
+            fh.write(block)
+
+    def _markers(self, root):
+        markers_dir = os.path.join(root, ".codearbiter", ".markers")
+        if not os.path.isdir(markers_dir):
+            return []
+        return os.listdir(markers_dir)
+
+    def test_malformed_usage_exits_64_with_no_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for bad_argv in ([], ["nonsense"], ["check"],
+                              ["digest", "app", "extra"],
+                              ["badcmd", "app"]):
+                proc = self._run_cli(bad_argv, tmp)
+                self.assertEqual(proc.returncode, 64,
+                                  f"argv={bad_argv!r}: {proc.stderr}")
+                self.assertIn("usage", proc.stderr)
+                self.assertEqual(self._markers(tmp), [],
+                                  f"argv={bad_argv!r} must write no marker")
+
+    def test_unknown_target_exits_65_with_no_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_NO_COMMANDS_BLOCK)
+            for bad_argv in (["check", "doesnotexist"],
+                              ["digest", "doesnotexist"],
+                              ["record", "doesnotexist"]):
+                proc = self._run_cli(bad_argv, tmp)
+                self.assertEqual(proc.returncode, 65,
+                                  f"argv={bad_argv!r}: {proc.stderr}")
+                self.assertIn("unknown release target", proc.stderr)
+                self.assertEqual(self._markers(tmp), [],
+                                  f"argv={bad_argv!r} must write no marker")
+
+    def test_never_confirmed_keeps_exit_2(self):
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            proc = self._run_cli(["check", "app"], tmp)
+            self.assertEqual(proc.returncode, 2, proc.stderr)
+            self.assertIn(rh.NEVER, proc.stdout)
+            self.assertIn("never been", proc.stderr)
+            self.assertEqual(self._markers(tmp), [],
+                              "a bare check must never write a marker")
+
+    def test_confirmed_and_no_commands_still_exit_0(self):
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            digest = rh.pre_tag_digest(["python3 checks/a.py"])
+            rh.record_confirmation(tmp, "app", digest)
+            proc = self._run_cli(["check", "app"], tmp)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn(rh.CONFIRMED, proc.stdout)
+
+        with tempfile.TemporaryDirectory() as tmp2:
+            self._write_declared_file(tmp2, self.APP_NO_COMMANDS_BLOCK)
+            proc = self._run_cli(["check", "app"], tmp2)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn(rh.NO_COMMANDS, proc.stdout)
+
+    def test_changed_still_exits_1(self):
+        rh = self._releasehash()
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            rh.record_confirmation(tmp, "app", rh.pre_tag_digest(["stale command"]))
+            proc = self._run_cli(["check", "app"], tmp)
+            self.assertEqual(proc.returncode, 1, proc.stderr)
+            self.assertIn(rh.CHANGED, proc.stdout)
+            self.assertIn("CHANGED", proc.stderr)
+            self.assertEqual(
+                self._markers(tmp),
+                [os.path.basename(rh.confirmation_path(tmp, "app"))],
+                "a bare check must not overwrite or add a marker")
+
+    def test_absent_declared_file_still_exits_3(self):
+        # AbsentBlockError -- the targets file itself is genuinely absent,
+        # never written at all (distinct from existing-but-broken, exit 4).
+        with tempfile.TemporaryDirectory() as tmp:
+            os.makedirs(os.path.join(tmp, ".codearbiter"), exist_ok=True)
+            proc = self._run_cli(["check", "app"], tmp)
+            self.assertEqual(proc.returncode, 3, proc.stderr)
+            self.assertEqual(self._markers(tmp), [])
+
+    def test_malformed_declared_file_still_exits_4(self):
+        # MalformedBlockError -- the file exists but its content violates
+        # the declared-file grammar (an unbracketed line before any header).
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, "not a valid declaration line\n")
+            proc = self._run_cli(["check", "app"], tmp)
+            self.assertEqual(proc.returncode, 4, proc.stderr)
+            self.assertEqual(self._markers(tmp), [])
+
+    def test_record_on_a_valid_target_still_writes_a_marker(self):
+        # Positive control: proves the "no marker written" assertions above
+        # are not vacuous because `record` itself is broken.
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            proc = self._run_cli(["record", "app"], tmp)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("recorded executable-command confirmation", proc.stdout)
+            self.assertEqual(len(self._markers(tmp)), 1)
+
+
+_RELEASE_SKILL_PATH = os.path.join(
+    REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+
+
+class ReleasehashCallersTest(unittest.TestCase):
+    """T-06, AC-04/AC-05 (spec P3): proves the release skill's actual
+    CALLERS of `releasehash.py check $TARGET` -- SKILL.md step 6c and the
+    `resume_publish` asset-recovery lane (the sole production callers, per
+    T-05's caller inventory) -- never mistake a T-05 usage/configuration
+    failure (64 malformed usage, 65 unknown target) for the
+    record-confirmation path, and that a legitimate first confirmation
+    (record, then check) still succeeds exactly as it did before T-05.
+
+    Both call sites share ONE literal invocation shape,
+    `"$PY" ".../releasehash.py" check $TARGET` (SKILL.md step 6c and the
+    resume_publish lane, `$TARGET` deliberately UNQUOTED as actually written
+    in the skill), gated the same way throughout this skill: the caller
+    proceeds only on exit 0, and STOPs on any non-zero exit. This exercises
+    that literal shape through a REAL POSIX shell (house rule: dry-run the
+    real caller's path, not a mock of the seam) mirroring
+    `test_guarded_zero_tag_probe_executes_under_pipefail`'s
+    positional-argument pattern, and skips only when no usable shell
+    resolves -- never a silent pass.
+
+    A malformed invocation is produced the same way the real unquoted
+    `$TARGET` spelling would actually produce one: a target value containing
+    whitespace word-splits into extra positional arguments at the unquoted
+    `check $TARGET` call site, landing on wrong-arg-count usage (64) -- not a
+    synthetic argv rigged only for this test."""
+
+    APP_WITH_PRE_TAG_BLOCK = (
+        "<!-- release-targets -->\n"
+        "[app]\n"
+        "prefix: v\n"
+        "changelog: CHANGELOG.md\n"
+        "payload: .\n"
+        "pre-tag: python3 checks/a.py\n"
+        "<!-- /release-targets -->\n"
+    )
+
+    CALLER_SHAPE_SCRIPT = (
+        'export CLAUDE_PROJECT_DIR="$1"\n'
+        'export PYTHONDONTWRITEBYTECODE=1\n'
+        'PY="$2"\n'
+        'HELPER="$3"\n'
+        'TARGET="$4"\n'
+        'if "$PY" "$HELPER" check $TARGET; then\n'
+        '  echo CA_CALLER_BRANCH=CONFIRMED\n'
+        'else\n'
+        '  echo CA_CALLER_BRANCH=STOP\n'
+        'fi\n'
+    )
+
+    def _write_declared_file(self, root, block):
+        os.makedirs(os.path.join(root, ".codearbiter"), exist_ok=True)
+        with open(os.path.join(root, ".codearbiter", "release-targets.md"),
+                   "w", encoding="utf-8") as fh:
+            fh.write(block)
+
+    def _markers(self, root):
+        markers_dir = os.path.join(root, ".codearbiter", ".markers")
+        if not os.path.isdir(markers_dir):
+            return []
+        return os.listdir(markers_dir)
+
+    def _run_caller_shape(self, root, target_literal):
+        """Runs the exact `if check $TARGET; then ... else ... fi` shape
+        both real SKILL.md callers use, and reports which branch ran."""
+        bash = (core_releaselib._resolve_posix_shell()
+                if os.name == "nt" else working_bash())
+        if bash is None:
+            self.skipTest("no working POSIX shell")
+        result = subprocess.run(
+            [bash, "-s", "--", Path(root).as_posix(),
+             Path(sys.executable).as_posix(),
+             Path(_RELEASEHASH_PATH).as_posix(), target_literal],
+            input=self.CALLER_SHAPE_SCRIPT.encode("utf-8"),
+            capture_output=True, timeout=60)
+        return result
+
+    def test_malformed_usage_from_the_real_unquoted_target_shape_never_reaches_the_confirmed_branch(self):
+        # A target value with a space -- `$TARGET` unquoted at the real call
+        # site word-splits it into two positional args -- reproduces
+        # malformed usage (64) the same way the literal skill spelling
+        # would, without rigging a synthetic argv.
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            result = self._run_caller_shape(tmp, "app extra")
+            stdout = result.stdout.decode("utf-8", "replace")
+            stderr = result.stderr.decode("utf-8", "replace")
+            self.assertIn("CA_CALLER_BRANCH=STOP", stdout, stderr)
+            self.assertNotIn("CA_CALLER_BRANCH=CONFIRMED", stdout)
+            self.assertEqual(self._markers(tmp), [])
+
+    def test_unknown_target_never_reaches_the_confirmed_branch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            result = self._run_caller_shape(tmp, "doesnotexist")
+            stdout = result.stdout.decode("utf-8", "replace")
+            stderr = result.stderr.decode("utf-8", "replace")
+            self.assertIn("CA_CALLER_BRANCH=STOP", stdout, stderr)
+            self.assertNotIn("CA_CALLER_BRANCH=CONFIRMED", stdout)
+            self.assertEqual(self._markers(tmp), [])
+
+    def test_legitimate_first_confirmation_still_succeeds_exactly_as_before(self):
+        # `record`, then `check` -- the exact remedy step 6c prescribes for
+        # `never-confirmed` (2) -- must still land in the CONFIRMED branch,
+        # unaffected by the 64/65 split: T-05 only carved two NEW failure
+        # codes out of the old overloaded 2, it did not touch 0/1/2 or the
+        # record path.
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_declared_file(tmp, self.APP_WITH_PRE_TAG_BLOCK)
+            record = subprocess.run(
+                [sys.executable, _RELEASEHASH_PATH, "record", "app"],
+                cwd=tempfile.gettempdir(),
+                env=dict(os.environ, CLAUDE_PROJECT_DIR=tmp,
+                          PYTHONDONTWRITEBYTECODE="1"),
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(record.returncode, 0, record.stderr)
+            self.assertEqual(len(self._markers(tmp)), 1)
+
+            result = self._run_caller_shape(tmp, "app")
+            stdout = result.stdout.decode("utf-8", "replace")
+            stderr = result.stderr.decode("utf-8", "replace")
+            self.assertIn("CA_CALLER_BRANCH=CONFIRMED", stdout, stderr)
+            self.assertNotIn("CA_CALLER_BRANCH=STOP", stdout)
+            self.assertEqual(len(self._markers(tmp)), 1,
+                              "a bare check must not write a second marker")
+
+    def test_skill_step_6c_documents_the_new_exit_codes_as_distinct_from_confirmation_states(self):
+        with open(_RELEASE_SKILL_PATH, encoding="utf-8") as fh:
+            skill = fh.read()
+        self.assertIn("Exit 64", skill)
+        self.assertIn("exit 65", skill)
+        self.assertIn("configuration failures, not confirmation states", skill)
+        self.assertIn("read-then-record remedy above does not apply", skill)
+
+    def test_resume_publish_lane_cites_the_same_exit_code_meaning(self):
+        with open(_RELEASE_SKILL_PATH, encoding="utf-8") as fh:
+            skill = fh.read()
+        asset_recovery = skill.split(
+            "### Asset recovery for `resume_publish`", 1)[1]
+        asset_recovery = asset_recovery.split(
+            "## Recovering from a bad release", 1)[0]
+        self.assertIn("64/65", asset_recovery)
+        self.assertIn("step 6c", asset_recovery)
+        self.assertIn("never a confirmation", asset_recovery)
+
+
 class ResolvePosixShellTest(unittest.TestCase):
     """#602: `_resolve_posix_shell()`'s resolution ALGORITHM, exercised with
     controlled inputs -- each branch pinned individually. This class proves
@@ -6627,7 +8992,20 @@ _GOVERNANCE_RULES = {
         "mechanically, never by assumption", "list-targets"),
     "MEDIUM (re-run): manifest bump is stated once (step 6), not twice": (
         "one action described two ways",),
-    "MEDIUM (re-run): last_tag_select's ancestry-blind residual is documented": (
+    # T-10 (#570 finding BODY-03, 2026-09-21): the residual this rule used
+    # to guard ("documented rather than silently accepted") is now CLOSED --
+    # `verify-tag-ancestor` confirms reachability and refuses an
+    # unreachable baseline instead of leaving the gap only described in
+    # prose. Same two tokens as before this fix (deliberately unchanged):
+    # both remain literally present in the rewritten source paragraph,
+    # describing the OLD design the fix replaced, and BOTH also still
+    # occur, unmodified, in the three generated host payloads
+    # `GovernanceSurvivalTest` checks -- those payloads regenerate in T-19,
+    # not here (T-10's scope excludes generated host copies), so a token
+    # only the new source paragraph carries (e.g. `verify-tag-ancestor`
+    # itself) would falsely report this rule MISSING against every
+    # not-yet-regenerated payload before T-19 lands.
+    "MEDIUM (re-run), closed by #570 BODY-03: last_tag_select's ancestry gap is now verified, not merely documented": (
         "abandoned permanently", "no ancestry awareness"),
     "MEDIUM (re-run): NEEDS-TRIAGE has a defined shape, destination, and plural form": (
         "EVERY offending commit", "own `[NEEDS-TRIAGE]` line"),
@@ -6717,6 +9095,101 @@ _GOVERNANCE_RULES = {
         "Stop there, before step 5",),
     "#565: dry-run lists pre-tag checks but never runs them": (
         "listed, never executed",),
+    # T-17 (issue #623, AC-13/AC-14): closing the three highest-priority gaps
+    # the T-16 invariant map found with no proving test
+    # (.codearbiter/reports/release-closure-invariant-map.md, section 4).
+    # G2, G4-G8, G10-G12 remain open, deliberately left for T-18.
+    #
+    # G1 (obligation 1-E): the hosted/local execution boundary itself had no
+    # guard distinct from the surrounding "STOPs before tag composition"
+    # sentence (1-D, already tested). Anchored on the boundary rule plus the
+    # lead-in that names what the interactive agent MAY do, so a rewrite that
+    # keeps one half but drops the other is still caught.
+    "G1 (T-17): the interactive agent must not execute tag composition locally": (
+        "interactive agent may authorize, dispatch, or",
+        "MUST NOT execute the tag-composition commands below locally"),
+    # G3 (obligation 1-K): the Phase-2-side half of the Phase-2/Phase-3
+    # publication boundary -- distinct from Phase 3's own STOP gate, which
+    # other rules already cover. Two tokens so a partial deletion (e.g. only
+    # the "MUST NOT push" clause surviving with the routing sentence gone)
+    # is still caught.
+    "G3 (T-17): Phase 2 must not push the tag or create the Release": (
+        "MUST NOT push the tag or create the GitHub Release here",
+        "Publication is Phase 3, a separate step the user authorizes after reading the report"),
+    # G9 (obligation 2-17): a `gh` failure for any reason other than a
+    # genuinely absent Release (no remote, no network, unauthenticated) must
+    # STOP rather than silently guessing `<release_nondraft>` -- previously
+    # unguarded, so a prose regression here could not be caught.
+    "G9 (T-17): a gh failure other than absent-Release STOPs, never guesses": (
+        "STOP and surface it rather than passing a guessed value",
+        "genuinely absent Release"),
+    # T-18 (issue #623, AC-13/AC-14): closing the remaining gaps the T-16
+    # invariant map flagged and T-17 deliberately left open
+    # (.codearbiter/reports/release-closure-invariant-map.md, section 4).
+    # Every token pair below was verified byte-identical, and unique
+    # (count == 1), in BOTH the new split source AND all three
+    # not-yet-regenerated rendered host payloads before being added here
+    # (T-19 regenerates those payloads; this sprint's own
+    # `verification-boundary` note in T-17's diff explains why a rule
+    # anchored on T-17's NEW substep-only prose -- a `### 2.x` heading, a
+    # "per 2.6 below" cross-reference -- would report MISSING against the
+    # three stale payloads and go red before T-19 lands. None of the tokens
+    # below are new prose; each is carried verbatim from the pre-split
+    # paragraph into its new substep, so all four texts already agree.
+    #
+    # G2 (obligation 1-J): the Phase-2 report's content list was untested.
+    "G2 (T-18): the Phase-2 report lists all six obligations": (
+        "$TARGET`, version, bump rationale, the per-commit classification",
+        "the per-commit classification, the changelog section, and the tag SHA."),
+    # G4 (obligation 1-L): the Phase 2 closing gate sentence was untested.
+    "G4 (T-18): the Phase-2 closing gate says nothing is published yet": (
+        "the hosted publisher has composed the annotated tag in its "
+        "isolated checkout and delivered the report",
+        "Nothing is published."),
+    # G5 (obligation 2-03): "classify first, then tag" ordering rule had no
+    # pinned-phrase guard of its own (the underlying code fact was true by
+    # construction, but nothing pinned the PROSE against regressing to
+    # writing the ref before classification).
+    "G5 (T-18): classification precedes tagging, stated as an ordering rule": (
+        "Do not run `git tag` yet", "classify first, then tag"),
+    # G6 (obligation 2-07): the lead sentence introducing the four sourced
+    # `classify` arguments had no guard distinct from its four sub-clauses.
+    "G6 (T-18): the classify-arguments lead sentence names its own scope": (
+        "Source the other four arguments explicitly",
+        "none of them is yours to invent"),
+    # G7 (obligations 2-09, 2-14): `<tag_version>` is carried verbatim, and
+    # the carried-vs-re-read contrast with `<manifest_version>`, had no
+    # dedicated anchor (only 2-13's re-read half was pinned).
+    "G7 (T-18): tag_version is carried verbatim, manifest_version is re-read": (
+        "reused verbatim and never re-parsed from a tag or a file",
+        "the two arguments are sourced differently on purpose"),
+    # G8 (obligation 2-16): "pass the bare literal true/false, not the raw
+    # --json object" is a distinct, stronger rule than 2-15's inversion
+    # rule (it guards a different failure mode: silent falsey coercion).
+    "G8 (T-18): release_nondraft is passed as a bare literal, not raw JSON": (
+        "Pass the bare literal `true` or `false` and nothing else",
+        "silently renders `already_published` unreachable"),
+    # G10 (obligation 2-19, partial): the command FORM was already pinned
+    # (run 4's rule); "sole tag-creation point" and "never -m" were not.
+    "G10 (T-18): git tag -a is the sole tag-creation point, never -m": (
+        "never `-m` for multi-line content, never an interactive editor",
+        "sole point in the whole lane at which a tag is created"),
+    # G11 (obligation 2-23): "notes-match takes a path, not a pipe" had no
+    # guard of its own.
+    "G11 (T-18): notes-match takes a path so the check is Windows-portable": (
+        "`notes-match` takes a path",
+        "would not survive the move to a Windows consumer"),
+    # G12 (obligation 3-E, weak/shared anchor): the Zero-tag-correction
+    # paragraph's own closing warning shared its anchor with 2-04's rule
+    # (both spell `git rev-parse ${TAG_PREFIX}${VERSION}`), so deleting 3-E
+    # alone could not turn anything red. T-17's split kept 2-04 and 3-E
+    # adjacent within the SAME substep (2.2) rather than separating them,
+    # so the shared-anchor risk is unchanged from the invariant map's
+    # finding -- this rule closes it with tokens unique to 3-E's own
+    # sentence, distinct from the existing "HIGH-1 (re-run)" rule's tokens.
+    "G12 (T-18): the deprecated rev-parse warning has its own unique anchor": (
+        "Never revive the deprecated local-object spelling",
+        "it returns the annotated tag object rather than the commit"),
 }
 
 # Rules whose every anchor token also occurs elsewhere in the skill, so the
@@ -6863,6 +9336,92 @@ class GovernanceSurvivalTest(unittest.TestCase):
                     "a deletion of load-bearing doctrine slipped through "
                     "(adversarial review 2026-07-31, the mutation campaign "
                     "this class exists to close)")
+
+
+class ProjectRootConditionalPerHostTest(unittest.TestCase):
+    """R-04 (Scope-D security review finding, MEDIUM) — regression-proofs
+    R-02's repo-root binding fix at the GENERATED-PAYLOAD level, not the
+    unconditional template.
+
+    `core/surface/skills/release/SKILL.md` carries `PROJECT_ROOT=` inside a
+    `{{IF:claude}}` / `{{ELSE}}` conditional, so BOTH branch strings —
+    `${CLAUDE_PROJECT_DIR:-$(pwd)}` and the plain `$(pwd)` fallback — exist
+    simultaneously as literal substrings in the source regardless of host.
+    A source-only test (e.g. `GovernanceSurvivalTest`, which asserts rule
+    PRESENCE, never per-branch EXCLUSION) cannot detect a future template
+    edit that wrongly reintroduces a `CLAUDE_PROJECT_DIR` reference into the
+    Codex/Pi `{{ELSE}}` branch — that reference would still resolve, once
+    rendered, only into the claude payload, while the source text itself
+    would report both hosts' branches present either way. Only reading the
+    three REAL rendered payloads and asserting a negative (zero occurrences
+    of the literal `CLAUDE_PROJECT_DIR` outside the claude payload) closes
+    that gap, because Codex has no such env leg at all (`security-controls.md`,
+    "Repo resolution") and a leaked reference there would defeat the same
+    repo-root binding R-02 exists to guarantee.
+
+    Reuses `GovernanceSurvivalTest`'s own payload-loading mechanism
+    (`build_surface.load_host_descriptors` + `build_surface._output_rel`)
+    rather than a hand-maintained path list or a fresh loading approach, and
+    keys the result by `descriptor.name` (the host id: "claude"/"codex"/
+    "pi"), not the plugin directory string.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = REPO_ROOT
+        cls.texts = {}
+        descriptors = build_surface.load_host_descriptors(cls.repo)
+        for descriptor in descriptors:
+            dst, _rule = build_surface._output_rel(
+                "skills/release/SKILL.md", descriptor)
+            if dst is None:
+                continue
+            path = os.path.join(cls.repo, descriptor.plugin_dir, dst)
+            with open(path, encoding="utf-8") as fh:
+                cls.texts[descriptor.name] = fh.read()
+
+    def test_the_three_governance_hosts_are_all_covered(self):
+        # Same vacuous-scope floor as GovernanceSurvivalTest's own sanity
+        # check: if `_output_rel` ever returned nothing for one of the three
+        # governance hosts, this class would silently stop checking it.
+        self.assertEqual(
+            set(self.texts), {"claude", "codex", "pi"},
+            "expected exactly the three governance hosts' rendered "
+            "skills/release/SKILL.md payloads")
+
+    def test_claude_resolves_project_root_from_claude_project_dir(self):
+        self.assertIn(
+            "PROJECT_ROOT=${CLAUDE_PROJECT_DIR:-$(pwd)}",
+            self.texts["claude"])
+
+    def test_codex_resolves_project_root_from_pwd(self):
+        self.assertIn("PROJECT_ROOT=$(pwd)", self.texts["codex"])
+
+    def test_codex_never_references_claude_project_dir(self):
+        # Split from the presence assertion above so a future regression
+        # that leaks CLAUDE_PROJECT_DIR into the codex payload elsewhere in
+        # the file (not necessarily on the PROJECT_ROOT= line itself) is
+        # independently reportable, and can never be masked by the other
+        # assertion failing (or passing) first -- unittest stops a method at
+        # its first failed assertion, so two checks folded into one method
+        # can hide one another.
+        text = self.texts["codex"]
+        self.assertEqual(
+            text.count("CLAUDE_PROJECT_DIR"), 0,
+            "ca-codex's rendered release SKILL.md must never reference "
+            "CLAUDE_PROJECT_DIR -- Codex has no such env leg (R-02, "
+            "security-controls.md \"Repo resolution\")")
+
+    def test_pi_resolves_project_root_from_pwd(self):
+        self.assertIn("PROJECT_ROOT=$(pwd)", self.texts["pi"])
+
+    def test_pi_never_references_claude_project_dir(self):
+        text = self.texts["pi"]
+        self.assertEqual(
+            text.count("CLAUDE_PROJECT_DIR"), 0,
+            "ca-pi's rendered release SKILL.md must never reference "
+            "CLAUDE_PROJECT_DIR -- Pi has no such env leg (R-02, "
+            "security-controls.md \"Repo resolution\")")
 
 
 # --------------------------------------------------------------------------- #
@@ -7051,6 +9610,8 @@ class BackfillDetectionTest(unittest.TestCase):
         self.assertEqual(row, {
             "target": "app", "prefix": "v",
             "manifest": ["package.json"], "changelog": "CHANGELOG.md",
+            "changelog_reconciliations":
+                ".codearbiter/release-changelog-reconciliations.json",
             "payload": ".",
             "payload_exclude": [".codearbiter/"],
             "latest_eligible": True,
@@ -7136,6 +9697,9 @@ class BackfillDetectionTest(unittest.TestCase):
         self.assertEqual(rows[0]["prefix"], "v")
         self.assertEqual(rows[0]["manifest"], ["package.json"])
         self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+        self.assertEqual(
+            rows[0]["changelog_reconciliations"],
+            ".codearbiter/release-changelog-reconciliations.json")
         self.assertEqual(rows[0]["payload"], ".")
         self.assertEqual(rows[0]["payload_exclude"], [".codearbiter/"])
         # HIGH-2 (adversarial review 2026-07-31): the emitted
@@ -7197,6 +9761,9 @@ class BackfillCLITest(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["manifest"], ["package.json"])
             self.assertEqual(rows[0]["changelog"], "CHANGELOG.md")
+            self.assertEqual(
+                rows[0]["changelog_reconciliations"],
+                ".codearbiter/release-changelog-reconciliations.json")
             self.assertEqual(rows[0]["payload_exclude"], [".codearbiter/"])
             # HIGH-2 (adversarial review 2026-07-31): the full CLI path
             # (`backfill-detect` -> printed text -> real parser) must also
@@ -7295,6 +9862,120 @@ class BackfillCLITest(unittest.TestCase):
             self.assertIn("Cargo.toml", out.getvalue())
             self.assertIn("CHANGES.md", out.getvalue())
 
+    def test_validate_reconciliations_checks_the_authored_ledger_before_commit(self):
+        ledger = {
+            "schema_version": 1,
+            "entries": [{
+                "target": "app",
+                "commit_sha": "a" * 40,
+                "changelog": "Describe the published feature.",
+                "reason": "The commit predates the changelog-footer policy.",
+                "authorization": "Maintainer approved during Back-fill.",
+            }],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "reconciliations.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                json.dump(ledger, fh)
+            self.assertEqual(
+                core_releaselib.main(
+                    ["validate-reconciliations", "app", path]),
+                0)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write('{"schema_version":1,"entries":[{}]}')
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(
+                    core_releaselib.main(
+                        ["validate-reconciliations", "app", path]),
+                    4)
+
+    def test_validate_reconciliations_fails_closed_at_every_file_boundary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cases = []
+            missing = os.path.join(tmp, "missing.json")
+            cases.append(("missing", missing, "regular file"))
+
+            directory = os.path.join(tmp, "directory.json")
+            os.mkdir(directory)
+            cases.append(("directory", directory, "regular file"))
+
+            oversized = os.path.join(tmp, "oversized.json")
+            with open(oversized, "wb") as fh:
+                fh.write(b"x" * (1024 * 1024 + 1))
+            cases.append(("oversized", oversized, "1 MiB"))
+
+            non_utf8 = os.path.join(tmp, "non-utf8.json")
+            with open(non_utf8, "wb") as fh:
+                fh.write(b"\xff")
+            cases.append(("non-utf8", non_utf8, "not UTF-8"))
+
+            malformed = os.path.join(tmp, "malformed.json")
+            with open(malformed, "w", encoding="utf-8") as fh:
+                fh.write("{")
+            cases.append(("malformed", malformed, "invalid JSON"))
+
+            for label, path, diagnostic in cases:
+                with self.subTest(label=label):
+                    err = io.StringIO()
+                    with contextlib.redirect_stderr(err):
+                        rc = core_releaselib.main(
+                            ["validate-reconciliations", "app", path])
+                    self.assertEqual(rc, 4)
+                    self.assertIn(diagnostic, err.getvalue())
+
+    def test_validate_reconciliations_rejects_a_symlink_before_reading(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "ledger.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write('{"schema_version":1,"entries":[]}')
+            with mock.patch.object(
+                    core_releaselib.os.path, "islink", return_value=True):
+                err = io.StringIO()
+                with contextlib.redirect_stderr(err):
+                    rc = core_releaselib.main(
+                        ["validate-reconciliations", "app", path])
+            self.assertEqual(rc, 4)
+            self.assertIn("regular file", err.getvalue())
+
+    def test_validate_reconciliations_reports_size_and_read_errors(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "ledger.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write('{"schema_version":1,"entries":[]}')
+            probes = (
+                (mock.patch.object(
+                    core_releaselib.os.path, "getsize",
+                    side_effect=OSError("size probe failed")),
+                 "size probe failed"),
+                (mock.patch("builtins.open",
+                            side_effect=OSError("read failed")),
+                 "read failed"),
+            )
+            for patcher, diagnostic in probes:
+                with self.subTest(diagnostic=diagnostic), patcher:
+                    err = io.StringIO()
+                    with contextlib.redirect_stderr(err):
+                        rc = core_releaselib.main(
+                            ["validate-reconciliations", "app", path])
+                    self.assertEqual(rc, 4)
+                    self.assertIn(diagnostic, err.getvalue())
+
+    def test_validate_reconciliations_rechecks_size_after_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "ledger.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write('{"schema_version":1,"entries":[]}')
+            growing = mock.mock_open(read_data=b"x" * (1024 * 1024 + 1))
+            with mock.patch.object(
+                    core_releaselib.os.path, "getsize", return_value=1), \
+                    mock.patch("builtins.open", growing):
+                err = io.StringIO()
+                with contextlib.redirect_stderr(err):
+                    rc = core_releaselib.main(
+                        ["validate-reconciliations", "app", path])
+            self.assertEqual(rc, 4)
+            self.assertIn("1 MiB", err.getvalue())
+
     def test_root_resolves_via_claude_project_dir_env_regardless_of_cwd(self):
         # T-41f's own defect class, re-applied here: a subprocess is not
         # guaranteed to start with the project directory as its cwd. Run
@@ -7374,9 +10055,15 @@ class BackfillSkillProseTest(unittest.TestCase):
         # On confirmation the file is actually written...
         self.assertIn("Write the confirmed block", self.section)
         self.assertIn("release-targets.md", self.section)
-        # ...and a second run reads rather than re-detecting.
+        # ...and a second run reads rather than re-detecting, scoped to
+        # THIS checkout/branch (AC-11, T-13) -- never claimed as an
+        # irreversible project-wide fact. `release-targets.md` is a normal
+        # tracked file: a branch cut before the declaration commit, or any
+        # other clone/worktree that has not fetched or merged it, still
+        # finds the file absent and correctly re-enters this lane.
         self.assertIn("does not re-detect", self.section)
-        self.assertIn("never runs again for this project", self.section)
+        self.assertIn("does not run again in this exact checkout", self.section)
+        self.assertNotIn("never runs again for this project", self.section)
 
     def test_backfill_fires_only_on_a_genuinely_absent_file(self):
         # The distinct failure mode this whole lane must not step on: an
@@ -7392,6 +10079,137 @@ class BackfillSkillProseTest(unittest.TestCase):
     def test_backfill_invokes_the_detection_cli(self):
         self.assertIn("backfill-detect", self.section)
         self.assertIn("{{PLUGIN_ROOT}}/hooks/_releaselib.py", self.section)
+
+    def test_backfill_declares_and_authors_the_reconciliation_ledger(self):
+        self.assertIn("changelog-reconciliations", self.section)
+        self.assertIn(
+            ".codearbiter/release-changelog-reconciliations.json",
+            self.section)
+        for field in ("commit_sha", "changelog", "reason", "authorization"):
+            with self.subTest(field=field):
+                self.assertIn(field, self.section)
+        self.assertIn("never invent", self.section.lower())
+        self.assertIn("full SHA", self.section)
+        self.assertIn("validate-reconciliations", self.section)
+
+    def test_backfill_lands_declaration_before_release_reentry(self):
+        self.assertIn("default branch", self.section)
+        self.assertIn("published", self.section)
+        self.assertIn("fresh non-default release branch", self.section)
+        self.assertNotIn("then re-enter Pre-flight", self.section)
+
+
+class BackfillOrderingTest(unittest.TestCase):
+    """T-13, AC-11 (#570 R4-06/R4-07/R6-06, cross-referenced in
+    .codearbiter/reports/release-closure-triage.md): two distinct fixes.
+
+    (1) Branch-refusal ordering -- Back-fill used to sit before Pre-flight's
+    non-default-branch check in file/step order, so an operator on `main`
+    with no declared file was told to write the confirmed block and commit
+    it there, and was refused only afterward (R4-06's finding; R6-06's
+    sharpened restatement of the same conflict: step 3 told you to commit on
+    a branch Pre-flight would then forbid). The fix composes with T-12's own
+    prerequisite check rather than replacing it -- both now precede the
+    marker mint and the write, in the same relative order commit-gate's own
+    Pre-flight-then-Phase-2 sequence uses (prerequisite, then branch).
+
+    (2) 'Never again' claim scoping -- `release-targets.md` is a normal
+    TRACKED file, checkout/branch-scoped, not a project-global fact: a
+    branch cut before the declaration commit, or any clone/worktree that
+    has not fetched or merged it, still finds the file absent and correctly
+    re-enters this lane. The prior 'never runs again for this project'
+    wording overclaimed permanence; this asserts both the overclaim's
+    removal (mutation-kill: a regression restoring the literal string must
+    fail here) and the corrected, checkout-scoped wording, since
+    `-k BackfillOrdering` does not select `BackfillSkillProseTest`."""
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.text = fh.read()
+        cls.backfill = cls.text[
+            cls.text.index("## Back-fill"): cls.text.index("## Pre-flight")]
+
+    # -- (1) ordering: branch refusal composes with T-12, ahead of the write
+
+    def test_branch_refusal_follows_the_prerequisite_check_and_precedes_the_write(self):
+        existence_check = self.backfill.index("re-check existence")
+        tech_stack_check = self.backfill.index(".codearbiter/tech-stack.md")
+        branch_check = self.backfill.index("current branch is not `main`")
+        marker_mint = self.backfill.index("mkdir -p")
+        write = self.backfill.index("Write the confirmed block verbatim")
+        # T-12's own checks are untouched and still precede the new one.
+        self.assertLess(existence_check, tech_stack_check)
+        # The new branch refusal composes after T-12's prerequisite check,
+        # and both precede the marker mint and the write -- never after.
+        self.assertLess(tech_stack_check, branch_check)
+        self.assertLess(branch_check, marker_mint)
+        self.assertLess(branch_check, write)
+
+    def test_branch_refusal_names_the_literal_protected_branches_and_stops(self):
+        idx = self.backfill.index("current branch is not `main`")
+        window = self.backfill[idx:idx + 1600]
+        self.assertIn("`main`", window)
+        self.assertIn("`master`", window)
+        self.assertIn("git branch --show-current", window)
+        self.assertIn("STOP", window)
+        self.assertIn("feature branch", window)
+
+    def test_branch_refusal_does_not_invent_a_second_resolution_rule(self):
+        # Mirrors T-12's own `test_never_invents_a_verification_command`:
+        # the default-branch determination is the SAME mechanism Pre-flight
+        # states below, not a freshly invented third rule.
+        idx = self.backfill.index("current branch is not `main`")
+        window = self.backfill[idx:idx + 1600]
+        self.assertIn(
+            "the same restriction Pre-flight's own branch check states "
+            "below, resolved the same way", window)
+        self.assertIn("git symbolic-ref refs/remotes/origin/HEAD", window)
+
+    def test_branch_refusal_does_not_replace_preflights_own_check(self):
+        idx = self.backfill.index("current branch is not `main`")
+        window = self.backfill[idx:idx + 1600]
+        self.assertIn("does not replace Pre-flight's own branch check", window)
+        preflight_idx = self.text.index("## Pre-flight")
+        preflight = self.text[preflight_idx:self.text.index("## Phase 1")]
+        self.assertIn(
+            "The current branch MUST NOT be `main`, `master`, or the "
+            "default branch.", preflight)
+
+    def test_commit_sentence_confirms_the_branch_was_already_checked(self):
+        # 570-R6-06's exact quoted defect -- step 3 telling the operator to
+        # commit "on the current branch" with no acknowledgement that branch
+        # was ever verified safe. The bare phrase must not survive alone.
+        idx = self.backfill.index("Commit it through `commit-gate` on the current branch")
+        window = self.backfill[idx:idx + 200]
+        self.assertIn("already confirmed above", window)
+
+    # -- (2) wording: no project-wide "never again" overclaim survives
+
+    def test_never_again_overclaim_is_gone(self):
+        self.assertNotIn("never runs again for this project", self.text)
+
+    def test_second_invocation_wording_is_checkout_branch_scoped(self):
+        idx = self.backfill.index("A second invocation reads")
+        window = self.backfill[idx:idx + 900]
+        self.assertIn("this checkout", window)
+        self.assertIn("this branch", window)
+        self.assertIn("not an irreversible project-wide fact", window)
+        self.assertIn("fetched or merged", window)
+        self.assertNotIn("never runs again for this project", window)
+
+    def test_existing_and_malformed_file_refusal_still_preceded_detection_untouched(self):
+        # Preserved unchanged (task's own "existing-file/malformed-file
+        # refusal preserved" verification clause) -- carried here since
+        # `-k BackfillOrdering` does not select `BackfillSkillProseTest`.
+        self.assertIn("AbsentBlockError", self.backfill)
+        self.assertIn("however broken", self.backfill)
+        targets_idx = self.text.index("## Targets")
+        targets_section = self.text[targets_idx:self.text.index("## Back-fill")]
+        self.assertIn("unparseable declared file", targets_section)
+        self.assertIn("STOP and surface the parse error", targets_section)
 
 
 class ContextCreationBackfillTest(unittest.TestCase):
@@ -7822,7 +10640,13 @@ class ReleaseSurfaceTest(unittest.TestCase):
     def test_reconciliation_route_binds_target_and_fresh_published_ref(self):
         self.assertIn(
             'classify-window "$TARGET" "$DEFAULT_BRANCH"', self.skill)
-        self.assertIn('git fetch origin "$DEFAULT_BRANCH"', self.skill)
+        # R-02 (Scope-C security review finding 2, MEDIUM) pinned this bare
+        # command to the same resolved `$PROJECT_ROOT` every other bare git
+        # command in this Pre-flight sequence now uses -- see
+        # `AncestryRepoRootBindingTest` for the behavioral proof.
+        self.assertIn(
+            'git -C "$PROJECT_ROOT" fetch origin "$DEFAULT_BRANCH"',
+            self.skill)
         self.assertIn("A failed fetch STOPs", self.skill)
         self.assertIn("exact lowercase 40-character commit SHA", self.skill)
         self.assertIn("MUST NOT be added to the ledger", self.skill)
@@ -7953,10 +10777,18 @@ test -z "$TAG_SHA"
         self.assertNotIn("git rev-parse ${TAG_PREFIX}", step5)
 
     def test_phase2_reconstructs_the_section_after_the_pr_boundary(self):
+        # T-17 (issue #623) named this "### 2.3 Compose the tag message and
+        # verify its date" as a stable substep heading; re-anchored here
+        # (T-18) onto that heading rather than the old "1. Compose the
+        # annotated tag message" numbered-list marker, which survived the
+        # split as a leftover artifact of the former monolithic
+        # single-paragraph list and is now cosmetically stray under a
+        # section that has real substep numbers of its own.
         phase2 = self.skill[
             self.skill.index("## Phase 2") : self.skill.index("## Phase 3")]
         reconstruction = phase2.index("PHASE2_SECTION_FILE")
-        composition = phase2.index("1. Compose the annotated tag message")
+        composition = phase2.index(
+            "### 2.3 Compose the tag message and verify its date")
         self.assertLess(reconstruction, composition)
         self.assertIn("changelog-section", phase2[reconstruction:composition])
         self.assertIn("notes-match", phase2[reconstruction:composition])
@@ -8097,6 +10929,245 @@ test -z "$TAG_SHA"
         self.assertIn("only after both metadata and inventory read-back pass",
                       phase3)
         self.assertIn("preserve the directory and scratch files", phase3)
+
+
+# --------------------------------------------------------------------------- #
+# T-18 (issue #623, AC-13/AC-14): source-only structural proof for T-17's
+# twelve named Phase-2 substeps. `ReleaseSurfaceTest`/`GovernanceSurvivalTest`
+# prove individual obligations SURVIVE (content); this proves the substep
+# SKELETON itself is complete and correctly ordered. Deliberately scoped to
+# `core/surface/skills/release/SKILL.md` alone, never the three rendered host
+# payloads under `plugins/*` -- those are regenerated by T-19, not this task,
+# and until then they still carry the OLD, unsplit single-paragraph form with
+# none of these `### 2.x` headings. A rule or check anchored on this new
+# substep-only prose would report every rendered payload as missing it and go
+# red for a reason that is not an actual regression -- see the invariant
+# map's own note on this at .codearbiter/reports/release-closure-invariant-
+# map.md and T-17's diff comment on `_GOVERNANCE_RULES`.
+#
+# Each check below is factored as a pure module-level predicate over an
+# arbitrary `text` argument (mirroring `_missing_governance_rules_for`'s
+# pattern) precisely so it can be mutation-checked against a SCRATCH COPY of
+# the real Phase-2 text without ever editing SKILL.md itself.
+# --------------------------------------------------------------------------- #
+
+_PHASE2_SUBSTEP_HEADINGS = (
+    "### 2.0 Bind the hosted candidate to the release-surface commit",
+    "### 2.1 Reconstruct Phase 1's section in the hosted checkout",
+    "### 2.2 Resolve `<tag_exists>` and `<tag_sha>` from the guarded ref snapshot",
+    "### 2.3 Compose the tag message and verify its date",
+    "### 2.4 Classification precedes tagging (ordering rule)",
+    "### 2.5 Source the remaining `classify` arguments",
+    "### 2.6 Read `<manifest_version>` in its declared format",
+    "### 2.7 Derive `<release_nondraft>` from the Release, never guessed",
+    "### 2.8 Invoke `classify` with all six sourced arguments",
+    "### 2.9 `publish_fresh`: create the tag — the sole tag-creation point",
+    "### 2.10 Verify the stored tag round-tripped",
+    "### 2.11 Handle the remaining classification outcomes",
+)
+
+
+def _phase2_substep_order_violations(text):
+    """`(missing, out_of_order)` for `_PHASE2_SUBSTEP_HEADINGS` against
+    `text`: `missing` lists any heading absent outright; `out_of_order` is
+    True when every heading is present but not in the declared fixed
+    sequence. A pure function of `text` -- never reads a file itself -- so
+    it can be exercised against a real skill slice AND a synthetic or
+    mutated fixture, the same discipline `_missing_governance_rules_for`
+    uses for the pinned-phrase rules above."""
+    positions = []
+    missing = []
+    for heading in _PHASE2_SUBSTEP_HEADINGS:
+        idx = text.find(heading)
+        if idx == -1:
+            missing.append(heading)
+        else:
+            positions.append(idx)
+    out_of_order = bool(positions) and positions != sorted(positions)
+    return missing, out_of_order
+
+
+class Phase2StructureTest(unittest.TestCase):
+    """T-18 (AC-13, "no competing executable correction paragraph exists
+    afterward"; AC-14, invariant-to-evidence traceability for the substep
+    SKELETON itself, not only its individual obligations)."""
+
+    @classmethod
+    def setUpClass(cls):
+        path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(path, encoding="utf-8") as fh:
+            cls.skill = fh.read()
+        cls.phase2 = cls.skill[
+            cls.skill.index("## Phase 2") : cls.skill.index("## Phase 3")]
+
+    def test_all_twelve_substeps_present_in_fixed_order(self):
+        missing, out_of_order = _phase2_substep_order_violations(self.phase2)
+        self.assertEqual(missing, [])
+        self.assertFalse(
+            out_of_order,
+            "Phase 2's named substeps are present but not in their "
+            "declared 2.0..2.11 order")
+
+    def test_a_mutated_copy_missing_one_substep_is_detected(self):
+        # Mutation-check, run against a SCRATCH COPY, never SKILL.md
+        # itself: delete one heading (standing in for a future edit that
+        # silently drops a substep) and confirm the same predicate this
+        # class trusts actually reports it missing -- proving the check is
+        # not vacuously true.
+        target = _PHASE2_SUBSTEP_HEADINGS[5]
+        self.assertEqual(self.phase2.count(target), 1)
+        mutant = self.phase2.replace(target, "", 1)
+        missing, _ = _phase2_substep_order_violations(mutant)
+        self.assertEqual(missing, [target])
+
+    def test_a_mutated_copy_with_swapped_substep_order_is_detected(self):
+        # Swap "2.4 Classification precedes tagging" and "2.9 ... create
+        # the tag" -- a mutation that keeps every heading present but
+        # silently inverts the exact ordering rule G5 (T-18) pins in prose
+        # ("classify first, then tag"). Confirms the predicate catches
+        # reordering, not only outright deletion.
+        a, b = _PHASE2_SUBSTEP_HEADINGS[4], _PHASE2_SUBSTEP_HEADINGS[9]
+        self.assertEqual(self.phase2.count(a), 1)
+        self.assertEqual(self.phase2.count(b), 1)
+        placeholder = "\0PHASE2_SWAP_PLACEHOLDER\0"
+        mutant = (self.phase2.replace(a, placeholder)
+                  .replace(b, a).replace(placeholder, b))
+        missing, out_of_order = _phase2_substep_order_violations(mutant)
+        self.assertEqual(missing, [])
+        self.assertTrue(out_of_order)
+
+    def test_report_authorization_handoff_and_gate_close_phase2_in_fixed_order(self):
+        last_substep = self.phase2.rindex(_PHASE2_SUBSTEP_HEADINGS[-1])
+        report = self.phase2.index("**Report.**")
+        handoff = self.phase2.index("**Authorization handoff.**")
+        gate = self.phase2.index(
+            "Gate: the hosted publisher has composed the annotated tag")
+        self.assertLess(last_substep, report)
+        self.assertLess(report, handoff)
+        self.assertLess(handoff, gate)
+
+    def test_split_replaces_rather_than_duplicates_the_old_monolithic_item(self):
+        # AC-13: "no competing executable correction paragraph exists
+        # afterward." Source-only (T-17's own new lead sentence, not
+        # carried into the stale rendered payloads -- see this section's
+        # header comment), so this belongs here, not in
+        # `_GOVERNANCE_RULES`.
+        self.assertIn(
+            "the former 9,324-character single item is replaced, not "
+            "duplicated alongside these", self.phase2)
+        # The removed monolithic paragraph no longer exists as a single
+        # unbroken block: no run of non-newline characters in Phase 2
+        # approaches its former length. A generous ceiling well under the
+        # old 9,324 chars, so this only fires if a future edit actually
+        # re-collapses several substeps back into one giant paragraph.
+        longest_line = max((len(line) for line in self.phase2.splitlines()),
+                            default=0)
+        self.assertLess(longest_line, 4000)
+
+
+class PrerequisiteRefusalSurfaceTest(unittest.TestCase):
+    """T-12, AC-10/P6 (#570 R4-08/R8-05/R8-06/R10-08, cross-referenced in
+    .codearbiter/reports/release-closure-triage.md): the actual routed
+    `commit-gate`'s prerequisites are checked, and are checkable to fail,
+    BEFORE either lane writes a single tracked file -- never after a
+    changelog roll, a manifest bump, or a declared-target write already
+    committed the lane to a state `commit-gate` would then refuse deep
+    inside Phase 1 step 7 or Back-fill's own commit. `commit-gate`'s own
+    SKILL.md Pre-flight is the source of truth for what "prerequisite"
+    concretely means here -- a readable `.codearbiter/tech-stack.md`
+    ("Stop if missing; do not guess") and a resolvable git repository --
+    never an invented check, and never a replacement for `commit-gate`
+    itself."""
+
+    @classmethod
+    def setUpClass(cls):
+        def read(*parts):
+            with open(os.path.join(REPO_ROOT, *parts), encoding="utf-8") as fh:
+                return fh.read()
+
+        cls.skill = read("core", "surface", "skills", "release", "SKILL.md")
+        cls.command = read("core", "surface", "commands", "release.md")
+        cls.gate = read("core", "surface", "skills", "commit-gate", "SKILL.md")
+        cls.backfill = cls.skill[
+            cls.skill.index("## Back-fill"): cls.skill.index("## Pre-flight")]
+        cls.preflight = cls.skill[
+            cls.skill.index("## Pre-flight"): cls.skill.index("## Phase 1")]
+
+    def test_prerequisite_derives_from_commit_gates_own_preflight(self):
+        # Never an invented verification command: the exact prerequisite
+        # this skill checks for must be the one `commit-gate` itself states.
+        self.assertIn("Stop if missing; do not guess.", self.gate)
+        self.assertIn(".codearbiter/tech-stack.md", self.gate)
+
+    def test_backfill_checks_tech_stack_before_minting_the_marker_or_writing(self):
+        check = self.backfill.index(".codearbiter/tech-stack.md")
+        marker_mint = self.backfill.index("mkdir -p")
+        write = self.backfill.index("Write the confirmed block verbatim")
+        self.assertLess(check, marker_mint)
+        self.assertLess(check, write)
+        window = self.backfill[check:marker_mint]
+        self.assertIn("context-creation", window)
+        self.assertIn("STOP", window)
+        self.assertIn("commit-gate", window)
+
+    def test_preflight_checks_tech_stack_before_any_write(self):
+        check = self.preflight.index(".codearbiter/tech-stack.md")
+        rebuild = self.preflight.index('eval "$REBUILD"')
+        self.assertLess(check, rebuild)
+        window = self.preflight[check:check + 900]
+        self.assertIn("context-creation", window)
+        self.assertIn("STOP", window)
+        self.assertIn("commit-gate", window)
+        # And every Phase 1 write (the manifest bump, the changelog roll)
+        # lives entirely after Pre-flight closes, so the check above also
+        # precedes those.
+        phase1 = self.skill[self.skill.index("## Phase 1"):]
+        self.assertGreater(
+            phase1.index("Set every path in `$MANIFEST` to the derived version"),
+            0)
+
+    def test_step7_cross_references_the_preflight_check_rather_than_repeating_it(self):
+        step7 = self.skill[
+            self.skill.index("7. **Commit the release edits"):
+            self.skill.index("8. **Resolve declared publication assets")]
+        self.assertIn("Pre-flight above already confirmed", step7)
+        self.assertNotIn(".codearbiter/tech-stack.md", step7)
+
+    def test_never_invents_a_verification_command(self):
+        for lane in (self.backfill, self.preflight):
+            idx = lane.index(".codearbiter/tech-stack.md")
+            snippet = lane[idx:idx + 400]
+            self.assertIn('[ -f "', snippet)
+
+    def test_diagnostic_names_a_real_next_action_not_a_silent_onboarding(self):
+        for lane in (self.backfill, self.preflight):
+            idx = lane.index(".codearbiter/tech-stack.md")
+            snippet = lane[idx:idx + 900]
+            self.assertIn("context-creation", snippet)
+            self.assertNotIn("automatically run", snippet)
+            self.assertNotIn("silently", snippet)
+
+    def test_check_never_claims_to_bypass_or_replace_commit_gate(self):
+        for lane in (self.backfill, self.preflight):
+            idx = lane.index(".codearbiter/tech-stack.md")
+            snippet = lane[idx:idx + 900]
+            self.assertNotIn("skip commit-gate", snippet)
+            self.assertNotIn("bypass commit-gate", snippet)
+            self.assertIn("commit-gate", snippet)
+
+    def test_honesty_wording_scopes_the_skip_onboarding_claim(self):
+        self.assertIn("not a guarantee that no other", self.preflight)
+        self.assertNotIn(
+            "that lane's entire purpose is letting a release-only consumer "
+            "skip full onboarding, so its absence here is not itself a STOP",
+            self.preflight)
+
+    def test_never_described_as_a_fully_onboarding_free_release(self):
+        for lane in (self.backfill, self.preflight):
+            idx = lane.index(".codearbiter/tech-stack.md")
+            snippet = lane[idx:idx + 900]
+            self.assertIn("not a new onboarding-free", snippet)
 
 
 if __name__ == "__main__":

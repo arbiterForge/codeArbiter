@@ -1446,6 +1446,21 @@ class TestCrossHostPathFormResolution(_GitFixture):
                         "a Git-Bash-spelled registry entry for a real file must still "
                         "run through the shim, not fail closed")
 
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows host can execute the WSL-spelled sibling shim with Git Bash")
+    def test_wsl_spelled_dropin_directory_runs_through_the_real_shim(self):
+        _githooks.install(self.root)
+        dropin = _githooks._dropin_dir(self.root)
+        marker = os.path.join(self.root, "foreign-dropin-ran.marker")
+        self._write_entry(dropin, "ca", self._probe_enforcer("foreign-dropin.py", marker))
+        hook = os.path.join(self.root, ".git", "hooks", "pre-commit")
+        self._write(hook, _githooks._shim(wslify(dropin), "pre-commit"))
+        result = _sh(["sh", hook], self.root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(os.path.isfile(marker),
+                        "a sibling host's D= must resolve before the registry glob")
+
     def test_unresolvable_spelling_still_fails_closed(self):
         _githooks.install(self.root)
         dropin = _githooks._dropin_dir(self.root)
@@ -1543,8 +1558,10 @@ class TestCrossHostPathFormResolution(_GitFixture):
             wsl = _githooks._path_form_candidates("/mnt/c/Users/foo/bar")
             gitbash = _githooks._path_form_candidates("/c/Users/foo/bar")
             native = _githooks._path_form_candidates("C:/Users/foo/bar")
-        self.assertIn("C:/Users/foo/bar", wsl)
-        self.assertIn("C:/Users/foo/bar", gitbash)
+        self.assertEqual(
+            wsl, ["C:/Users/foo/bar", "/mnt/c/Users/foo/bar", "/c/Users/foo/bar"])
+        self.assertEqual(
+            gitbash, ["C:/Users/foo/bar", "/c/Users/foo/bar", "/mnt/c/Users/foo/bar"])
         self.assertEqual(
             native, ["C:/Users/foo/bar", "/c/Users/foo/bar", "/mnt/c/Users/foo/bar"])
 
@@ -1620,6 +1637,70 @@ class TestInstallTwoPhaseWriteAtomicity(_GitFixture):
                          "a failed sibling write must roll the first phase back -- "
                          "never leave the pair split (#686)")
         self.assertEqual(pre_push_after, pre_push_before)
+
+    def test_second_phase_mode_read_failure_rolls_back_first_phase(self):
+        _githooks.install(self.root)
+        pre_commit = os.path.join(self._hooks_dir(), "pre-commit")
+        pre_push = os.path.join(self._hooks_dir(), "pre-push")
+        before = (_githooks._read(pre_commit), _githooks._read(pre_push))
+        original_stat = _githooks.os.stat
+        original_write = _hooklib.write_text_atomic
+        state = {"first_written": False, "injected": False}
+
+        def mark_first_write(path, text, newline=None):
+            result = original_write(path, text, newline=newline)
+            if os.path.normcase(os.path.normpath(path)) == os.path.normcase(pre_commit):
+                state["first_written"] = True
+            return result
+
+        def fail_second_mode_read(path, *args, **kwargs):
+            if (os.path.normcase(os.path.normpath(path)) == os.path.normcase(pre_push)
+                    and state["first_written"]
+                    and not state["injected"] and not args and not kwargs):
+                state["injected"] = True
+                raise OSError("simulated second-phase mode read failure")
+            return original_stat(path, *args, **kwargs)
+
+        with self._force_shim_change(), \
+                mock.patch.object(_hooklib, "write_text_atomic", side_effect=mark_first_write), \
+                mock.patch.object(_githooks.os, "stat", side_effect=fail_second_mode_read):
+            _githooks.install(self.root)
+
+        self.assertTrue(state["injected"], "fixture must fail the second phase after phase one")
+        self.assertEqual((_githooks._read(pre_commit), _githooks._read(pre_push)), before,
+                         "a metadata read failure must not leave the hook pair split")
+
+    def test_post_write_mode_read_failure_rolls_back_current_phase(self):
+        _githooks.install(self.root)
+        pre_commit = os.path.join(self._hooks_dir(), "pre-commit")
+        pre_push = os.path.join(self._hooks_dir(), "pre-push")
+        before = (_githooks._read(pre_commit), _githooks._read(pre_push))
+        original_stat = _githooks.os.stat
+        original_write = _hooklib.write_text_atomic
+        state = {"written": False, "injected": False}
+
+        def mark_write(path, text, newline=None):
+            result = original_write(path, text, newline=newline)
+            if os.path.normcase(os.path.normpath(path)) == os.path.normcase(pre_commit):
+                state["written"] = True
+            return result
+
+        def fail_post_write_stat(path, *args, **kwargs):
+            if (os.path.normcase(os.path.normpath(path)) == os.path.normcase(pre_commit)
+                    and state["written"] and not state["injected"]
+                    and not args and not kwargs):
+                state["injected"] = True
+                raise OSError("simulated post-write mode read failure")
+            return original_stat(path, *args, **kwargs)
+
+        with self._force_shim_change(), \
+                mock.patch.object(_hooklib, "write_text_atomic", side_effect=mark_write), \
+                mock.patch.object(_githooks.os, "stat", side_effect=fail_post_write_stat):
+            _githooks.install(self.root)
+
+        self.assertTrue(state["injected"], "fixture must fail after the first replacement")
+        self.assertEqual((_githooks._read(pre_commit), _githooks._read(pre_push)), before,
+                         "a post-write metadata failure must restore the replaced phase")
 
     def test_lock_contention_defers_rather_than_writing_a_split_pair(self):
         _githooks.install(self.root)
@@ -1754,6 +1835,24 @@ class TestInstallDoesNotChurnAcrossEquivalentHostSpellings(_GitFixture):
         self.assertEqual(actions, [],
                          "a sibling host's validly-different D= spelling for the SAME "
                          "directory must not be treated as stale (B3/#684 churn)")
+
+    @unittest.skipUnless(
+        os.name == "nt",
+        "a Windows-drive-letter spelling only exists to translate on Windows")
+    def test_full_plan_preserves_equivalent_sibling_spelling(self):
+        _githooks.install(self.root)
+        hd = os.path.join(self.root, ".git", "hooks")
+        dropin = _githooks._dropin_dir(self.root)
+        sibling = {phase: _githooks._shim(wslify(dropin), phase)
+                   for phase in _githooks.PHASES}
+        for phase, body in sibling.items():
+            self._write(os.path.join(hd, phase), body)
+        cache = os.path.join(self.root, ".git", _githooks._HOOKSDIR_CACHE_NAME)
+        os.remove(cache)
+        actions = _githooks.install(self.root)
+        self.assertEqual(actions, [], "the full plan must not churn equivalent D= spellings")
+        for phase, body in sibling.items():
+            self.assertEqual(_githooks._read(os.path.join(hd, phase)), body)
 
     def test_a_genuinely_different_directory_is_still_treated_as_stale(self):
         # Discriminator: the new comparison must not become so lax that ANY

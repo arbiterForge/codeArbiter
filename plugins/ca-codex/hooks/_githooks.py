@@ -286,9 +286,9 @@ _WSL_DRIVE = re.compile(r'^/mnt/([A-Za-z])/(.*)$')
 
 def _path_form_candidates(path):
     """Every spelling of `path` worth testing for existence (ADR-0038): the
-    input itself (forward-slash normalized) first, then the translated forms
-    for the other two grammars when `path` matches exactly one of the three
-    known Windows-drive spellings. Pure -- no filesystem access.
+    host-native absolute form first, then the other translated forms when
+    `path` matches one of the three known Windows-drive spellings. Pure -- no
+    filesystem access.
 
     A native Windows-drive spelling ("C:/...") is only ever offered as a
     checkable candidate when this interpreter is itself native Windows
@@ -305,17 +305,15 @@ def _path_form_candidates(path):
     m = _WSL_DRIVE.match(normalized)
     if m:
         drive, rest = m.group(1).lower(), m.group(2)
-        candidates = [normalized, f"/{drive}/{rest}"]
         if on_windows:
-            candidates.append(f"{drive.upper()}:/{rest}")
-        return candidates
+            return [f"{drive.upper()}:/{rest}", normalized, f"/{drive}/{rest}"]
+        return [normalized, f"/{drive}/{rest}"]
     m = _GITBASH_DRIVE.match(normalized)
     if m:
         drive, rest = m.group(1).lower(), m.group(2)
-        candidates = [normalized, f"/mnt/{drive}/{rest}"]
         if on_windows:
-            candidates.append(f"{drive.upper()}:/{rest}")
-        return candidates
+            return [f"{drive.upper()}:/{rest}", normalized, f"/mnt/{drive}/{rest}"]
+        return [normalized, f"/mnt/{drive}/{rest}"]
     m = _WIN_DRIVE.match(normalized)
     if m:
         drive, rest = m.group(1).lower(), m.group(2)
@@ -347,8 +345,8 @@ def _resolve_live_dir(path):
     return None
 
 
-# The bounded, finite shell-side translator (ADR-0038), mirroring
-# `_path_form_candidates`/`_resolve_live` exactly -- embedded verbatim into
+# The bounded, finite shell-side translator (ADR-0038), using POSIX path
+# semantics like `_path_form_candidates` on POSIX -- embedded verbatim into
 # every generated shim so the REAL git-hook execution path (not just Python
 # diagnostics) resolves a foreign-but-translatable spelling instead of
 # failing closed on it. Pure POSIX sh (`case`, `cut`, `tr`, parameter
@@ -360,9 +358,11 @@ def _resolve_live_dir(path):
 _CX_RESOLVE_SH = (
     "_cx_resolve() {\n"
     "  P=$1\n"
+    "  K=-f\n"
+    '  [ "${2:-}" = dir ] && K=-d\n'
     '  case "$P" in\n'
     "    /mnt/[A-Za-z]/*)\n"
-    '      [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '      REST=${P#/mnt/?/}\n'
     '      DR=$(printf \'%s\' "$P" | cut -c6)\n'
     '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
@@ -370,7 +370,7 @@ _CX_RESOLVE_SH = (
     '      A1="/$DRL/$REST"; A2="$DRU:/$REST"\n'
     "      ;;\n"
     "    /[A-Za-z]/*)\n"
-    '      [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     '      REST=${P#/?/}\n'
     '      DR=$(printf \'%s\' "$P" | cut -c2)\n'
     '      DRL=$(printf \'%s\' "$DR" | tr \'A-Z\' \'a-z\')\n'
@@ -399,12 +399,12 @@ _CX_RESOLVE_SH = (
     '      A1="/$DR/$REST"; A2="/mnt/$DR/$REST"\n'
     "      ;;\n"
     "    *)\n"
-    '      [ -f "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
+    '      [ "$K" "$P" ] && { printf \'%s\' "$P"; return 0; }\n'
     "      return 1\n"
     "      ;;\n"
     "  esac\n"
-    '  [ -f "$A1" ] && { printf \'%s\' "$A1"; return 0; }\n'
-    '  [ -f "$A2" ] && { printf \'%s\' "$A2"; return 0; }\n'
+    '  [ "$K" "$A1" ] && { printf \'%s\' "$A1"; return 0; }\n'
+    '  [ "$K" "$A2" ] && { printf \'%s\' "$A2"; return 0; }\n'
     "  return 1\n"
     "}\n"
 )
@@ -758,6 +758,11 @@ def _shim(dropin_dir, phase):
         f"{SHIM_NOTICE}\n"
         f"{_CX_RESOLVE_SH}"
         f"D={quote(_shell_path(dropin_dir))}\n"
+        'D=$(_cx_resolve "$D" dir) || {\n'
+        '  echo "codeArbiter: hook registry directory could not be resolved '
+        'across host path forms -- failing CLOSED." >&2\n'
+        '  exit 1\n'
+        '}\n'
         f'if [ -e "$D/{_TRUSTED_IDENTITY_FILE}" ] || [ -L "$D/{_TRUSTED_IDENTITY_FILE}" ]; then\n'
         f'  [ -f "$D/{_TRUSTED_IDENTITY_FILE}" ] || exit 1\n'
         f'  exec 3< "$D/{_TRUSTED_IDENTITY_FILE}" || exit 1\n'
@@ -986,12 +991,7 @@ def _hooks_current(hd, dropin_dir):
         if existing is None:
             return False
         desired = _shim(dropin_dir, phase)
-        if existing == desired:
-            continue
-        if (_shim_body_without_dropin_line(existing)
-                != _shim_body_without_dropin_line(desired)):
-            return False
-        if not _same_dropin_dir(_extract_dropin_line_value(existing), dropin_dir):
+        if not _shim_matches(existing, desired, dropin_dir):
             return False
     return True
 
@@ -1040,6 +1040,15 @@ def _same_dropin_dir(existing_value, dropin_dir):
     if resolved is None:
         return False
     return os.path.realpath(resolved) == os.path.realpath(dropin_dir)
+
+
+def _shim_matches(existing, desired, dropin_dir):
+    """Accept only an identical shim or a sibling-host D= for this same dir."""
+    return existing == desired or (
+        _shim_body_without_dropin_line(existing)
+        == _shim_body_without_dropin_line(desired)
+        and _same_dropin_dir(_extract_dropin_line_value(existing), dropin_dir)
+    )
 
 
 def _default_hooks_dir(root):
@@ -1156,7 +1165,7 @@ def install(root):
                               f"docs).")
                         actions.append(f"{phase}: foreign hook preserved (not installed)")
                         continue
-                    if existing == desired:
+                    if _shim_matches(existing, desired, dropin_dir):
                         continue  # already current — no churn
                 plan.append((phase, dest, desired, existing))
 
@@ -1168,10 +1177,10 @@ def install(root):
                     # rollback restores this exact mode, not just "executable",
                     # so a foreign hook's own permission bits survive a rollback
                     # (security review).
-                    prior_mode = (
-                        stat.S_IMODE(os.stat(dest).st_mode) if os.path.exists(dest) else None
-                    )
                     try:
+                        prior_mode = (
+                            stat.S_IMODE(os.stat(dest).st_mode) if prior is not None else None
+                        )
                         # reliability-010: atomic sibling-temp + os.replace (mirrors
                         # write_provenance/save_state) — os.replace guarantees `dest`
                         # is either the complete new shim or the prior file, never a

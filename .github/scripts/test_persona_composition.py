@@ -99,8 +99,7 @@ ANCHOR_STATE_IS_READ = (
     "State is read, not remembered — a claim about now uses an instrument run now."
 )
 ANCHOR_DECISION_AUTHORITY = norm(
-    "A parameter is yours to decide only when it is reversible, has one sensible answer, "
-    "and is recorded where the user will review it"
+    'Within already-authorized scope, choose reversible implementation parameters among reasonable\napproaches and record material choices where the workflow requires. Multiple reasonable methods\nalone do not require a user decision. This does not grant initial scope approval, resolve a\n`[CONFIRM-NN]`, invent a product requirement, or expand provider, spending, data-disclosure, or\npublication authority. When an unresolved choice changes the authorized outcome or requires\nadditional authority, ask. The irreversible-action confirmations above remain mandatory.'
 )
 ANCHOR_SURFACE_DONT_RECONCILE = "MUST NOT silently reconcile a conflict — invoke `/conflict`."
 
@@ -535,7 +534,23 @@ def test_no_mode_body_contradicts_safety_core():
                 )
 
 
+
+def test_decision_authority_negative_controls():
+    """A reviewed wording update must not erase the scope/authority boundary."""
+    current = norm(read(SAFETY_CORE))
+    for before, after in (
+        ("Within already-authorized scope", "Outside authorized scope"),
+        ("This does not grant initial scope approval", "This grants initial scope approval"),
+        ("confirmations above remain mandatory", "confirmations above are optional"),
+    ):
+        check(before in current, "missing authority mutation target: " + before)
+        seeded = current.replace(before, after, 1)
+        check(ANCHOR_DECISION_AUTHORITY not in seeded,
+              "authority anchor accepted a weakened scope/confirmation boundary")
+
+
 TESTS = [
+    test_decision_authority_negative_controls,
     test_safety_core_anchors,
     test_safety_core_ordering,
     test_safety_core_precedence,
