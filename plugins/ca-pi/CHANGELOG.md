@@ -11,6 +11,8 @@ All notable changes to `ca-pi` are documented in this file.
 - Package the shared closed artifact-authority and reconciliation kernel while
   retaining fail-closed behavior for host observation seams that Pi does not
   implement.
+- Preserve typed workspace identity and durable reconciliation retry/cancel
+  behavior in the shared kernel without claiming unsupported Pi host authority.
 
 ## [0.14.8] - 2026-09-22
 

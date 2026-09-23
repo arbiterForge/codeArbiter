@@ -15,6 +15,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
   durable interrupted-attempt recovery and explicit task reconciliation.
 - Bind ordinary marketplace installation to the same immutable assembled
   payload qualified by the release archive.
+- Corroborate real Codex verifier completions, freeze all supported workspace
+  entry types, and recover interrupted reconciliation without duplicate writes.
+- Use the dedicated publisher credential for protected distribution tag pushes.
 
 ## [0.13.8] - 2026-09-22
 

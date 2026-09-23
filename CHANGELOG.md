@@ -21,6 +21,10 @@ predate the plugin rewrite and are grouped by date.
   bindings and fail-closed cross-repository routing.
 - Converge qualified Codex release archives and marketplace installs on one
   content-addressed distribution identity with race-safe promotion records.
+- Bind workspace snapshots to tracked deletions, gitlinks, symlinks, and ignored
+  targets; reject mismatched verification digests and unsafe authority paths.
+- Recover interrupted user reconciliation with durable idempotent retries and
+  exact pre-mutation cancellation instead of leaving an unresolvable prompt.
 
 ## [2.21.8] - 2026-09-22
 
