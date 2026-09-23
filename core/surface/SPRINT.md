@@ -73,6 +73,23 @@ explicit "decide it this way" steers here. STOP for explicit user approval of th
 plan before autonomy begins. A blocking `[CONFIRM-NN]` is resolved here, with the user — never carried
 into autonomous execution unresolved.
 
+### Initial HTML approval sequence
+
+The one interactive planning phase is not a new approval protocol. The installed adapter in
+`{{PLUGIN_ROOT}}/includes/artifacts.md` approves one artifact at a time:
+
+1. Review the sprint scope and findings, then arm the spec at its current identity. Require the
+   exact returned reply and verify the spec's `approved` gate after the host observes it.
+2. Pass that identity through `writing-plans`' approved-spec preflight, create and bind the plan,
+   and review its task breakdown within this same planning phase.
+3. Separately arm the plan, require its exact returned reply, and verify current spec and plan
+   approval and binding. No execution before both approvals; one generic reply does not approve both.
+
+Use the existing qualified host producer, never a model-authored event or SMARTS score in its place.
+Keep this one scope review with no per-feature interviews, and do not add attended execution checkpoints.
+Existing Markdown approval remains on its legacy path. Within a previously approved sprint, only a
+supported producer can authorize a typed amendment; the delegation does not create an absent adapter.
+
 **Recorded-intent read — BEFORE spec approval, fail-soft (ADR-0025):** consult
 `decisions/decision-log.md`, the accepted-ADR index, the `plans/` artifacts' section headings, and
 `open-questions.md`'s deferred sections — index-first, bodies only when the index names them

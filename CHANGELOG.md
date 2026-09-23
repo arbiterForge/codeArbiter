@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.12] - 2026-09-23
+
+### Fixed
+
+- Preserve the caller's coherent sprint scope and required spec-to-plan
+  continuation without manufacturing method-selection approval questions.
+- Distinguish initial artifact approval from existing delegation and require
+  the current qualified host-owned authority path; no new host support is implied.
+- Keep complete authored HTML checkpoint membership across resume and review,
+  without adding attended execution pauses to autonomous sprint work.
+
 ## [2.21.11] - 2026-09-23
 
 ### Fixed

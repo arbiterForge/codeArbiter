@@ -132,3 +132,85 @@ Its result must be inspected before the connector fast-forwards this PR branch.
 Product tests, generated parity, installed-host behavior and live-model routing
 remain distinct evidence layers. Exact executed commands/results are retained in
 the preparation artifact and the PR update, not inferred from this document.
+
+
+## 2026-09-23 revalidation: caller continuation and typed checkpoint scope
+
+This follow-up inspected `arbiterForge/codeArbiter@d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f`.
+PR #843 is merged, including its later durable blocked-state correction and live
+candidate qualification. The earlier unpublished conformance patch was not applied:
+brainstorming still used blob `1667edf9e220016f27705f89c706345c0d9d9f86` and the
+attended executor still used `284b08805b10fe6ae4027e7b2f1c116e8609c08d`.
+The former permitted initial sprint SMARTS approval and unconditional TDD handoff;
+the latter constructed task-count batches without the authored HTML checkpoint partition.
+
+The new correction is deliberately rebased, not a replay of the old patch. Main now
+includes the production authority pipeline from #844. Its exact prompt approval,
+Codex-only verification/review, qualified producer requirements, and supported
+reconciliation mechanisms remain authoritative and are not relaxed here.
+
+| Requirement | Current correction | Owning source |
+|---|---|---|
+| Preserve one coherent sprint rather than force repeated feature interviews | Caller scope explicitly distinguishes a feature from a coherent sprint; unrelated work is excluded | `core/surface/skills/brainstorming/SKILL.md` |
+| Do not make the user select reversible internal methods | Remove the single-answer rule and indiscriminate later/confirmation instructions; retain actual user-owned decisions | same |
+| No self-delegation or skipped planning | Initial spec approval precedes planning; full-lane continuation returns or forwards to writing-plans, not unconditionally TDD | same |
+| Make the existing HTML approval sequence executable | Arm exact spec, observe exact reply and validate approval, create/bind plan, then separately arm and approve it before execution | `core/surface/SPRINT.md` |
+| Keep actual authority distinct from scoring | A score/log is not a receipt; absent production producer is not granted by delegation | brainstorming and SPRINT |
+| Preserve typed checkpoint membership across resume | Keep full task-ID membership including REVIEW and BLOCKED; eligible chooses work, not membership | `core/surface/skills/executing-plans/SKILL.md` |
+| Preserve autonomy versus attended execution | Feature retains its acknowledgments; sprint still goes directly to subagent-driven-development without attended pauses | same |
+| Do not enlarge discovery | Extend existing private procedures/index and generate existing host copies; no new command, skill, agent or persistent tool | `core/surface/skills/INDEX.md`, host projections |
+
+The initial HTML instructions describe the already-implemented single-artifact
+approval adapter, not a new combined authorization protocol. Two exact replies
+within the initial planning phase do not become per-feature interviews or execution
+checkpoints. The user may separately choose a redesigned combined approval experience;
+this change does not invent one. A missing supported authority producer remains a
+real boundary; no event, signature, user prompt or verdict may be fabricated.
+
+### Verification scope
+
+Thirteen additional methods in the existing routing suite pin the operative
+caller, approval, selected-format and checkpoint contracts on core and all three
+host projections. The original nine new methods failed in 36 host subtests against
+unmodified main; four additional current-authority tests failed in 16 host subtests
+before their corrections. The final routing suite has 53 tests. These are prose
+contract regressions, not an authenticated model-driven sprint.
+
+Current local authoring/workflow tests use the authentic Linux native engine from
+producer run 35821596966, attempt 1, artifact 10734185200. Its `core/artifacts` source
+subtree `2d36d8ec5ae04a72f39b14d92d446f5fa04cf5f5` is identical to the inspected main;
+the artifact archive and selected native members were hash-verified. This establishes
+only the native fixture basis, not equality of all host package bytes or live authority.
+Local process-containment coverage hit an absent descendant PID file at the fixture's
+0.5-second deadline; retain that failure and test the unchanged suite on the hosted
+runner rather than weakening its timeout/containment obligation. Exact commands and
+hosted results belong in the follow-up PR evidence, not an unconditional claim here.
+
+### Candidate identity and original publication record
+
+All changed payloads advance from the spent mainline .11 coordinates to candidates
+ca 2.21.12, ca-codex 0.13.12 and ca-pi 0.14.12. Manifests, adapter-version literals,
+generated shared copies, root Pi metadata, notes, badge and the three manifest
+provenance claims advance together. These candidates are not published and the old
+live Codex proof is not relabeled: exact final .12 bytes still require authentic
+live qualification before release readiness.
+
+The missing `v2.21.11` ledger entry is appended through the existing reconciliation
+helper from the original publication artifact 10734983732 of run 35825602367,
+attempt 1. ZIP SHA-256: `89f175f857af88a16a4d9f00b60bdd04c975c4e40eecfa13e3a87c89cca215ad`.
+The successful original CA publisher job is 107066725601; the independently observed
+tag object is `d0a6353cb0716c70fb6b2b627db4a9020645505e`, peeling to the inspected
+main commit. Every prior ledger entry and top-level field is preserved. That release
+run failed later at Codex publisher-token creation, so the successful CA publication
+is not evidence of full cohort completion. No tag, publisher permission or release
+execution is changed by recording its authentic receipt.
+
+### Remaining boundaries
+
+This does not enable HTML farm, implement a SMARTS authority producer, fix the farm
+scheduler/canary runtime, remove public compatibility names, expand host support, or
+complete every historical audit item. General decomposition completeness and
+proof-freshness behavior remain separately testable. Revert the isolated correction
+and generated projections together if rejected, preserving accepted decisions and
+authenticated publication history. Project Sources and public maturity claims are
+not changed. Temporary preparation files must be absent from the final PR tree.

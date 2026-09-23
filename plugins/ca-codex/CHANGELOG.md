@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.12] - 2026-09-23
+
+### Fixed
+
+- Preserve the caller's coherent sprint scope and required spec-to-plan
+  continuation without manufacturing method-selection approval questions.
+- Distinguish initial artifact approval from existing delegation and require
+  the current qualified host-owned authority path; no new host support is implied.
+- Keep complete authored HTML checkpoint membership across resume and review,
+  without adding attended execution pauses to autonomous sprint work.
+
 ## [0.13.11] - 2026-09-23
 
 ### Fixed

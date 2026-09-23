@@ -851,6 +851,11 @@
       "object_type": "tag",
       "object_sha": "eb713082d9d057a84659190be2d2d3a424bbe868",
       "commit_sha": "3e3286362847f54c87dd49f792e2eeccec69b501"
+    },
+    "v2.21.11": {
+      "object_type": "tag",
+      "commit_sha": "d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f",
+      "object_sha": "d0a6353cb0716c70fb6b2b627db4a9020645505e"
     }
   }
 }
