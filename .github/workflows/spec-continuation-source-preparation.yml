@@ -1,0 +1,37 @@
+name: Spec continuation source preparation (temporary)
+on:
+  push:
+    branches: [codex/spec-continuation-checkpoint-remediation]
+    paths: [.github/workflows/spec-continuation-source-preparation.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/spec-continuation-checkpoint-remediation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture committed source without executing product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f
+          OUT="$RUNNER_TEMP/spec-continuation-source"
+          mkdir "$OUT"
+          git archive --format=zip --output="$OUT/source.zip" HEAD
+          git bundle create "$OUT/source.bundle" HEAD
+          git rev-parse HEAD > "$OUT/commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
+          cd "$OUT"
+          sha256sum source.zip source.bundle > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: spec-continuation-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/spec-continuation-source/
+          if-no-files-found: error
+          retention-days: 3
