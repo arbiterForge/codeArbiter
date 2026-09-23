@@ -4,6 +4,16 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.9] - 2026-09-22
+
+### Fixed
+
+- Route understood requests to the existing workflow without compulsory
+  command syntax; keep questions and draft-only requests non-mutating.
+- Recover ordinary quality failures inside an approved sprint through
+  the original gates and current typed evidence, without adding routine
+  user checkpoints or expanding authority. HTML farm remains disabled.
+
 ## [0.14.8] - 2026-09-22
 
 ### Fixed

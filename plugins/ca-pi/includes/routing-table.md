@@ -1,10 +1,12 @@
 # Routing table
 
-Loaded on a scope-touch or `/command`, not every turn. This table is the authoritative trigger→route
-surface and destructive-operation registry: it answers *what to invoke or route given a trigger* and
-*which operations always require tier-2 confirmation*; for *what doc to read before touching a scope*,
-use `reference-map.md`. Follow the primary route; the gate is a hard stop, not a suggestion. A command
-is **invoked**; the orchestrator **routes** to a skill; a skill **dispatches** an agent.
+Loaded when a scope-touch or route needs it, not every turn. This table is the authoritative
+intent-to-owner surface and destructive-operation registry. Invocation cues are examples, not
+required user syntax. For the governing document on a scope-touch, use `reference-map.md`.
+Select the existing owner and preserve its prerequisites, modes, and gates; a direct resource
+reference does not discard behavior owned by its command wrapper. A gate blocks advancement until
+its exit condition is satisfied; routing never authorizes a bypass. Informational requests use
+read-only behavior, not a writing close. The orchestrator routes; a skill dispatches an agent.
 Routing to a skill means loading its body from `<plugin-root>/routines/<name>/SKILL.md` — a route
 cell names the skill; this path convention locates it. That resolution never depends on the host's
 skill registry: a chain-internal skill hidden from the registry (`disable-model-invocation`) is

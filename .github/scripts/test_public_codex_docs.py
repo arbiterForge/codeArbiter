@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 
@@ -292,8 +293,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "candidate_archive_sha256",
             ):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
-            self.assertEqual(845, marker.get("pr_number"))
-            self.assertEqual("worktree-release-contract-closure", marker.get("pr_head_ref"))
+            self.assertEqual(843, marker.get("pr_number"))
+            self.assertEqual("codex/autonomy-routing-integration", marker.get("pr_head_ref"))
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:
@@ -415,6 +416,33 @@ class PublicCodexDocsTest(unittest.TestCase):
             "35429401061",
         ):
             self.assertIn(binding, prior)
+
+    def test_codex_live_baseline_rejects_current_candidate_digest_corruption(self):
+        """Isolate the digest guard from an independently stale manifest version."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        marker = live_baseline_marker(runbook)
+        # A retained live baseline is allowed to lag development. Match the
+        # fixture version, then corrupt only the simulated CURRENT bytes. Do
+        # not rewrite the retained marker or publish this fixture as evidence.
+        fixture_manifest = {"version": marker["adapter_version"]}
+        with mock.patch.object(self, "_tracked_candidate_package_sha256", return_value="0" * 64) as current_digest:
+            with self.assertRaisesRegex(AssertionError, "exact current candidate package"):
+                self._assert_live_baseline_marker(
+                    runbook, fixture_manifest, require_current_candidate=True
+                )
+            current_digest.assert_called_once_with()
+
+    def test_codex_release_rejects_stale_version_before_digest(self):
+        """A version mismatch remains a release refusal, not a skipped check."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        marker = live_baseline_marker(runbook)
+        fixture_manifest = {"version": marker["adapter_version"] + "-different"}
+        with mock.patch.object(self, "_tracked_candidate_package_sha256") as current_digest:
+            with self.assertRaisesRegex(AssertionError, "current package manifest"):
+                self._assert_live_baseline_marker(
+                    runbook, fixture_manifest, require_current_candidate=True
+                )
+            current_digest.assert_not_called()
 
     def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
         """A current-candidate package-byte change invalidates release proof."""

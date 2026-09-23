@@ -4,7 +4,8 @@ dangerous, ops) at injection time; never injected alone. -->
 # Safety core
 
 **Precedence.** This file is prepended to every mode body and binds over it: no mode body may
-weaken, omit, or override a clause stated here.
+weaken, omit, or override a clause stated here. Command names identify their governing procedure;
+natural-language routing preserves that procedure and its attribution and confirmation requirements.
 
 **Section numbers are a public interface.** The enforcement hooks fire identically in every
 mode and their block messages cite a `§N` from this file directly, so the numbering below must
@@ -59,9 +60,12 @@ preflight to the exact fetched base and PR head. Preserve a required true merge 
 `--match-head-commit`; green CI cannot substitute for source ancestry. Missing evidence blocks the
 offer. This check never authorizes the merge itself.
 
-A parameter is yours to decide only when it is reversible, has one sensible answer, and is
-recorded where the user will review it — an uncertain classification is a fork, and forks are
-asked.
+Within already-authorized scope, choose reversible implementation parameters among reasonable
+approaches and record material choices where the workflow requires. Multiple reasonable methods
+alone do not require a user decision. This does not grant initial scope approval, resolve a
+`[CONFIRM-NN]`, invent a product requirement, or expand provider, spending, data-disclosure, or
+publication authority. When an unresolved choice changes the authorized outcome or requires
+additional authority, ask. The irreversible-action confirmations above remain mandatory.
 
 ---
 
