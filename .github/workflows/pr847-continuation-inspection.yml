@@ -1,0 +1,50 @@
+name: PR 847 continuation inspection
+on:
+  push:
+    branches: [docs/human-experience-artifact-window]
+    paths: [.github/workflows/pr847-continuation-inspection.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 20437a96b4dd9914d7e4a3b506030f911c25e194
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture exact source history without executing repository code
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/pr847-inspection"
+          mkdir -p "$OUT"
+          git cat-file -e d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f^{commit}
+          git update-ref refs/heads/captured-pr847 20437a96b4dd9914d7e4a3b506030f911c25e194
+          git update-ref refs/heads/captured-main d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f
+          git bundle create "$OUT/continuation.bundle" refs/heads/captured-pr847 refs/heads/captured-main ^b41d9803eacb3acf4b93c8bec81e1aa2f086aec7
+          printf '%s\n' 'pr=20437a96b4dd9914d7e4a3b506030f911c25e194' 'main=d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f' 'prerequisite=b41d9803eacb3acf4b93c8bec81e1aa2f086aec7' > "$OUT/source-identities.txt"
+      - name: Capture existing CI and publication metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/pr847-inspection"
+          gh api 'repos/arbiterForge/codeArbiter/actions/runs/35821479637/jobs?per_page=100' > "$OUT/pr-ci-jobs.json"
+          gh api repos/arbiterForge/codeArbiter/actions/jobs/107054151462/logs > "$OUT/pr-tag-check.log"
+          gh api 'repos/arbiterForge/codeArbiter/actions/runs?head_sha=d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f&per_page=100' > "$OUT/main-runs.json"
+          gh api repos/arbiterForge/codeArbiter/pulls/847 > "$OUT/pr.json"
+          gh api 'repos/arbiterForge/codeArbiter/releases?per_page=100' > "$OUT/releases.json"
+          cd "$OUT"
+          sha256sum continuation.bundle source-identities.txt pr-ci-jobs.json pr-tag-check.log main-runs.json pr.json releases.json > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr847-continuation-inspection
+          path: ${{ runner.temp }}/pr847-inspection/
+          if-no-files-found: error
+          retention-days: 3
