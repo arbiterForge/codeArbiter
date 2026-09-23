@@ -481,8 +481,16 @@ older live sibling.
 
 This path contract is same-runtime. Windows with Git for Windows and its bundled
 hook shell, native Linux, and native macOS are supported cells. WSL is not a
-separately verified named cell, and sharing one physical repository or `.git`
-between Windows Git and WSL Git is unsupported. Foreign linked-worktree pointer
+separately verified named cell for general use — nothing here qualifies a
+WSL-hosted Git as a certified runtime. Narrower and measured (ADR-0038,
+closing #684/#686/#683): the drop-in registry and its generated shim translate
+between the three known spellings of an absolute path on a Windows drive
+letter (Windows-native, Git-Bash/MSYS, WSL drvfs), so a repository or linked
+worktree shared between Windows Git and a WSL-hosted process resolves a
+registered enforcer or trusted-identity entry regardless of which of the two
+wrote it — a bounded, finite grammar translation, not a general host-layout
+search, and the fail-closed contract is unchanged: an entry resolving under
+none of the three known forms still blocks. Foreign linked-worktree pointer
 dialects are rejected rather than translated or treated as relative marker
 roots. The selected Git binary must accept the worktree and return absolute,
 distinct admin and common directories before marker-root escalation. Native

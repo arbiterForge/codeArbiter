@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.10] - 2026-09-22
+
+### Fixed
+
+- Resolve cross-host git-hook path-form races: the shared registry and its
+  generated pre-commit/pre-push shim now translate between Windows-native,
+  Git-Bash/MSYS, and WSL drvfs path spellings (ADR-0038), the installer's
+  two-phase shim write is lock-serialized and rolls back on a partial
+  failure, a foreign-spelled trusted identity now produces a diagnostic
+  instead of a silent exit, and a sibling host's differently-spelled
+  drop-in directory is no longer treated as stale on every SessionStart.
+
 ## [2.21.9] - 2026-09-22
 
 ### Fixed

@@ -6,6 +6,17 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.10] - 2026-09-22
+
+### Fixed
+
+- Resolve cross-host git-hook path-form races (ADR-0038): the shared registry
+  and its generated pre-commit/pre-push shim now translate between
+  Windows-native, Git-Bash/MSYS, and WSL drvfs path spellings; the installer's
+  two-phase shim write is lock-serialized and rolls back on a partial
+  failure; a foreign-spelled trusted identity now produces a diagnostic
+  instead of a silent exit.
+
 ## [0.13.9] - 2026-09-22
 
 ### Fixed
