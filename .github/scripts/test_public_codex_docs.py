@@ -321,8 +321,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "candidate_archive_sha256",
             ):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
-            self.assertEqual(829, marker.get("pr_number"))
-            self.assertEqual("codex/prerequisite-adapter", marker.get("pr_head_ref"))
+            self.assertEqual(844, marker.get("pr_number"))
+            self.assertEqual("codex/artifact-production-authority", marker.get("pr_head_ref"))
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:
@@ -428,11 +428,13 @@ class PublicCodexDocsTest(unittest.TestCase):
         current = runbook.split("Current verified checkpoint:", 1)[1]
         current = current.split("The earlier verified checkpoint remains", 1)[0]
         for claim in (
-            "repository startup state through SessionStart context, including `host: codex`",
-            "doctor reported 13 OK, 0 WARN, and 0 FAIL",
-            "Windows/AMD64 artifact capability",
-            "denied exactly once with `[H-03]` before execution",
-            "does not\nclaim that the full scenario matrices below were rerun",
+            "Codex received the SessionStart state with `host: codex`",
+            "execution policy refused to launch\nthe pinned doctor script inside that task",
+            "therefore run directly with `PLUGIN_ROOT` resolved from its installed skill path: 12 OK,",
+            "1 WARN, 0 FAIL, including Windows/AMD64 schema 0.3.1 artifact capability",
+            "denied one broad-staging dry run with `[H-03]` before Git executed",
+            "index stayed clean",
+            "does not claim in-CLI doctor execution\nor a rerun of the full parity matrix",
         ):
             self.assertIn(claim, current)
 

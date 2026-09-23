@@ -33,8 +33,34 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.7","candidate_commit":"ce837afa001c68200bea4b121796d26af92f42fb","candidate_source_tree":"b5ab24f20b5e29ec4033647f2d7e57bc77e5dd06","candidate_package_sha256":"2a83f0c40fe10517977930bbcd73a79ed723dbd61167a8a8ec4a9c392fe1046b","candidate_ci_run_id":35525299189,"candidate_ci_run_attempt":1,"candidate_artifact_id":10609921069,"candidate_artifact_sha256":"216b5b919f08a4ca91f04c933c027f3153815cbc48dc962cba4d448846b79884","candidate_archive_sha256":"26c3d4a963d0ca5be4a6e6e55271f2ac9191d7c0f738d550b268d4bb4d23ffed","run_head_sha":"a3499430f0a83a9baafac1d6c95cc06783854a55","pr_number":829,"pr_head_sha":"a3499430f0a83a9baafac1d6c95cc06783854a55","pr_head_ref":"codex/prerequisite-adapter","pr_base_sha":"a3e7cbf887f0c933416e0609e231a946c501eae7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-20","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.7**, Windows,
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.8","candidate_commit":"261d18f875d31b8324b1488ee8dbd9fea777951a","candidate_source_tree":"e1c8160b7905e52546ab8a8857b7a0b6f4a4d759","candidate_package_sha256":"208a243ddc7d82204dba0d54a3a50b39f4bd2ba4f418375c12e6489f261d6bb5","candidate_ci_run_id":35804776643,"candidate_ci_run_attempt":1,"candidate_artifact_id":10727613313,"candidate_artifact_sha256":"a7492f577607faed0a318c9c1dddb6490e46f19ae4f51dc678a4f114c1f5bf4c","candidate_archive_sha256":"0f75bc128974b6f6258444dda9355f3e2e90c4931a6422fab6b85b7d80384519","run_head_sha":"3ee9e0b3591c94bf2fdb75e9d05f01d094897864","pr_number":844,"pr_head_sha":"3ee9e0b3591c94bf2fdb75e9d05f01d094897864","pr_head_ref":"codex/artifact-production-authority","pr_base_sha":"7352de3703deba1e56981b49af7de37f5fb86028","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-23","proof":"exact CI preview package install and 232-file byte match; live SessionStart and H-03 block; pinned doctor run directly after CLI policy denied launch: 12 OK, 1 WARN, 0 FAIL, windows/amd64 artifact capable; index clean"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.8**, Windows,
+2026-09-23 UTC. A fresh ephemeral CLI task using `gpt-5.6-sol` with high reasoning selected
+the exact 0.13.8 archive from pull-request qualification run `35804776643`, attempt 1,
+artifact `10727613313`. The CI producer was merge-result commit
+`261d18f875d31b8324b1488ee8dbd9fea777951a` with source tree
+`e1c8160b7905e52546ab8a8857b7a0b6f4a4d759`; PR head
+`3ee9e0b3591c94bf2fdb75e9d05f01d094897864` and base
+`7352de3703deba1e56981b49af7de37f5fb86028` are recorded separately. The archive's
+SHA-256 is `0f75bc128974b6f6258444dda9355f3e2e90c4931a6422fab6b85b7d80384519`;
+the canonical tracked plugin digest is
+`208a243ddc7d82204dba0d54a3a50b39f4bd2ba4f418375c12e6489f261d6bb5`.
+All 232 installed plugin files matched the assembled archive byte-for-byte. In a disposable
+checkout of the exact PR head, Codex received the SessionStart state with `host: codex`.
+Its PreToolUse hook denied one broad-staging dry run with `[H-03]` before Git executed;
+the index stayed clean, while the hook appended its expected block record to the
+disposable checkout's `gate-events.log`. Codex CLI's execution policy refused to launch
+the pinned doctor script inside that task, even when invoked with a workspace-write
+sandbox request (the host reported read-only). The same installed `doctor.py` was
+therefore run directly with `PLUGIN_ROOT` resolved from its installed skill path: 12 OK,
+1 WARN, 0 FAIL, including Windows/AMD64 schema 0.3.1 artifact capability and a live
+Git-hook backstop. The warning was for stale `ca`/`ca-pi` sibling registry entries,
+which the managed shim skips. This checkpoint does not claim in-CLI doctor execution
+or a rerun of the full parity matrix. The isolated CLI invocation used an explicit
+automation trust bypass only after vetting the CI archive; persistent hook trust was
+not changed.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.7**, Windows,
 2026-09-20. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with high reasoning selected the
 exact 0.13.7 package from pull-request qualification run `35525299189`, attempt 1, artifact
 `10609921069`. The producer checkout was `ce837afa001c68200bea4b121796d26af92f42fb`, with source tree
