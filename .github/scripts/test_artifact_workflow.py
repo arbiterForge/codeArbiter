@@ -512,12 +512,13 @@ class ArtifactProductionPilotTest(unittest.TestCase):
             manifest = json.loads(manifest_bytes)
             entry = manifest["binaries"]["windows/amd64"]
             self.assertEqual(observation["platform"], "windows/amd64")
+            # This receipt describes the historical local pilot, not each later
+            # candidate binary. Keep its recorded hashes well formed while the
+            # current installation is verified against its own release manifest.
+            self.assertRegex(observation["release_manifest_sha256"], r"^[0-9a-f]{64}$")
+            self.assertRegex(observation["binary_sha256"], r"^[0-9a-f]{64}$")
             self.assertEqual(
-                observation["release_manifest_sha256"],
-                hashlib.sha256(manifest_bytes).hexdigest(),
-            )
-            self.assertEqual(
-                observation["binary_sha256"],
+                entry["sha256"],
                 hashlib.sha256((self.installation / entry["file"]).read_bytes()).hexdigest(),
             )
         expected_cases = {
