@@ -1,47 +1,125 @@
-name: Temporary site review workspace
+name: Temporary site review candidate
 
-# Branch-only fixture preparation for the requested documentation PR.
-# No write token, deployment, tag, release, or branch update is performed.
+# Transfer only the hash-bound, locally reviewed documentation patch.
+# Creates unreferenced Git objects; never updates a ref, deploys or releases.
 on:
   pull_request:
     paths:
       - .github/workflows/site-review-workspace.yml
+      - .github/site-review/**
 permissions:
   contents: read
 jobs:
-  export:
+  prepare:
     if: github.head_ref == 'docs/human-experience-artifact-window' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-          submodules: recursive
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version: '1.27.1'
-          check-latest: false
-          cache: false
-          go-download-base-url: https://go.dev/dl
-      - name: Prepare exact source renderer for documentation fixtures
-        shell: bash
+      - name: Verify and prepare exact documentation tree
+        env:
+          EXPECTED_PARENT: ${{ github.event.pull_request.head.sha }}
         run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/site-review-native"
-          test "$(go env GOVERSION)" = go1.27.1
-          git -C academy-source bundle create "$RUNNER_TEMP/site-review-native/academy.bundle" --all
-          git -C academy-source rev-parse HEAD > "$RUNNER_TEMP/site-review-native/academy-commit.txt"
-          git rev-parse HEAD > "$RUNNER_TEMP/site-review-native/source-commit.txt"
-          go version > "$RUNNER_TEMP/site-review-native/toolchain.txt"
-          cd core/artifacts
-          go build -trimpath -o "$RUNNER_TEMP/site-review-native/ca-artifact" ./cmd/ca-artifact
-          cd "$RUNNER_TEMP/site-review-native"
-          sha256sum academy.bundle ca-artifact > SHA256SUMS
+          python - <<'PY'
+          import base64, hashlib, json, lzma, os, pathlib, subprocess
+          base = 'b41d9803eacb3acf4b93c8bec81e1aa2f086aec7'
+          expected = '71127a4b73c7002c69c99e104812cd6aa9235eaa'
+          def git(*args):
+              return subprocess.check_output(['git', *args])
+          assert git('rev-parse', 'HEAD').decode().strip() == os.environ['EXPECTED_PARENT']
+          manifest = json.loads(pathlib.Path('.github/site-review/manifest.json').read_text())
+          assert manifest['repository'] == 'arbiterForge/codeArbiter'
+          assert manifest['branch'] == 'docs/human-experience-artifact-window'
+          assert manifest['base_commit'] == base and manifest['expected_tree'] == expected
+          assert manifest['patch_sha256'] == 'c0f21843c33b935cff876b422bf89055175c1e87ae82254ddc7330ea6ca23742'
+          assert manifest['patch_size'] == 371056
+          assert [part['name'] for part in manifest['parts']] == [f'{i:02d}.b64' for i in range(9)]
+          chunks = []
+          for part in manifest['parts']:
+              data = pathlib.Path('.github/site-review', part['name']).read_bytes()
+              assert len(data) <= 12000 and hashlib.sha256(data).hexdigest() == part['sha256']
+              chunks.append(data)
+          compressed = base64.b64decode(b''.join(chunks), validate=True)
+          decoder = lzma.LZMADecompressor(memlimit=268435456)
+          patch = decoder.decompress(compressed, max_length=371057)
+          assert decoder.eof and not decoder.unused_data and len(patch) == 371056
+          assert hashlib.sha256(patch).hexdigest() == manifest['patch_sha256']
+          paths = manifest['paths']
+          assert len(paths) == len(set(paths)) == 73
+          for path in paths:
+              parsed = pathlib.PurePosixPath(path)
+              assert not parsed.is_absolute() and '..' not in parsed.parts
+              assert path.startswith('site/') or path == '.github/workflows/docs.yml'
+          subprocess.run(['git', 'apply', '--check', '--index', '-'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '--index', '-'], input=patch, check=True)
+          subprocess.run(['git', 'rm', '-r', '--', '.github/site-review', '.github/workflows/site-review-workspace.yml'], check=True)
+          actual = git('write-tree').decode().strip()
+          assert actual == expected, (actual, expected)
+          changed = git('diff', '--cached', '--name-only', '-z', base).decode().strip('\0').split('\0')
+          assert sorted(changed) == sorted(paths)
+          subprocess.run(['git', 'diff', '--cached', '--check', base], check=True)
+          entries = []
+          for path in paths:
+              record = git('ls-files', '--stage', '--', path).decode().strip()
+              mode, sha, rest = record.split(' ', 2)
+              assert mode == '100644' and rest == '0\t' + path
+              data = git('show', ':' + path)
+              assert len(data) <= 300000
+              assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == sha
+              entries.append({'path': path, 'mode': mode, 'type': 'blob', 'sha': sha, 'size': len(data)})
+          root = pathlib.Path(os.environ['RUNNER_TEMP'], 'site-review-candidate')
+          root.mkdir()
+          (root / 'verified-tree.json').write_text(json.dumps({'base': base, 'tree': actual, 'parent': os.environ['EXPECTED_PARENT'], 'entries': entries}, indent=2))
+          PY
+      - name: Store verified candidate as unreferenced Git objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64, json, os, pathlib, subprocess, time, urllib.error, urllib.request
+          repo = 'arbiterForge/codeArbiter'
+          root = pathlib.Path(os.environ['RUNNER_TEMP'], 'site-review-candidate')
+          candidate = json.loads((root / 'verified-tree.json').read_text())
+          expected = '71127a4b73c7002c69c99e104812cd6aa9235eaa'
+          assert candidate['tree'] == expected
+          assert subprocess.check_output(['git', 'write-tree']).decode().strip() == expected
+          def post(resource, payload):
+              assert resource in {'blobs', 'trees', 'commits'}
+              request = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/' + resource,
+                  data=json.dumps(payload).encode(), method='POST', headers={
+                  'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json',
+                  'Content-Type': 'application/json', 'User-Agent': 'codeArbiter-site-review-transfer'})
+              for attempt in range(3):
+                  try:
+                      with urllib.request.urlopen(request, timeout=45) as response:
+                          return json.load(response)
+                  except urllib.error.HTTPError as error:
+                      if error.code not in (429, 500, 502, 503, 504) or attempt == 2:
+                          raise RuntimeError('Git object request failed with HTTP ' + str(error.code)) from None
+                      time.sleep(2 ** attempt)
+          tree_entries = []
+          for entry in candidate['entries']:
+              data = subprocess.check_output(['git', 'show', ':' + entry['path']])
+              result = post('blobs', {'content': base64.b64encode(data).decode(), 'encoding': 'base64'})
+              assert result['sha'] == entry['sha']
+              tree_entries.append({key: entry[key] for key in ('path', 'mode', 'type', 'sha')})
+          tree = post('trees', {'base_tree': 'b9e24d08458a15b9d2c7c3d2c58b92f56e751f48', 'tree': tree_entries})
+          assert tree['sha'] == expected
+          commit = post('commits', {'message': 'docs: implement the human-centered artifact product window\n\nCorrect guide contracts, add operator journeys, and connect real unapproved\nartifact fixtures and test evidence to accessible product demonstrations.\nPreserve runtime, Academy, release and compatibility boundaries. Remove the\ntemporary transfer workflow and data from the final tree.\n\nCHANGELOG: Improve codearbiter.dev guides, navigation and artifact examples.',
+              'tree': expected, 'parents': [candidate['parent']]})
+          candidate['commit'] = commit['sha']
+          candidate['ref_updated'] = False
+          (root / 'candidate.json').write_text(json.dumps(candidate, indent=2))
+          print('Unreferenced candidate:', commit['sha'], 'tree:', expected)
+          PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: site-review-native-context
-          path: ${{ runner.temp }}/site-review-native/
+          name: site-review-candidate
+          path: ${{ runner.temp }}/site-review-candidate/
           retention-days: 1
