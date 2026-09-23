@@ -498,6 +498,21 @@ class TestSprintRecoveryAndLimits(unittest.TestCase):
                 self.assertIn("not automatically another user checkpoint", text)
                 self.assertIn("do not report the incomplete plan as accepted", text)
 
+    def test_stopped_strategy_is_persisted_and_excluded_from_selection(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("persist the stop before continuing", text)
+                self.assertIn("`task-block`", text)
+                self.assertIn("rerun `eligible`", text)
+                self.assertIn("status to `BLOCKED`", text)
+                self.assertIn("select only dependency-clean `PENDING` tasks", text)
+                self.assertIn("must not be redispatched", text)
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("For Markdown, select only a task whose status is `PENDING`", text)
+                self.assertIn("`BLOCKED` tasks are not selectable", text)
+                self.assertIn("For HTML, accept only tasks returned by `eligible`", text)
+
     def test_real_hard_stops_and_commit_permission_survive(self):
         for rel, text in self.sprint_surfaces():
             with self.subTest(rel=rel):

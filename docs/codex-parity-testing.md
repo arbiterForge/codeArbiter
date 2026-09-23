@@ -37,7 +37,11 @@ and neither check rewrites evidence.
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
 2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
 exact 0.13.9 package from pull-request qualification run `35807834405`, attempt 1, artifact
-`10728537520`. The producer checkout was `551e92b68815c15d4ac43e76237da622177bd766`, with source tree
+`10728537520`. That run's overall conclusion was failure only because Candidate readiness and its
+downstream Merge readiness consumer rejected the then-absent 0.13.9 marker; all 65 other jobs
+succeeded, including the complete native, package-assembly, and cold-package qualification set that
+the preview-proof validator requires. The producer checkout was
+`551e92b68815c15d4ac43e76237da622177bd766`, with source tree
 `44da71710006ec83aac3ab2fc3b3feb5307e48b9`; the PR head and base are recorded separately so this
 preview proof does not pretend that a future squash commit already exists. The release archive has
 digest `sha256:f95bf5e26d60edfc2aba665af6e7dd835727a84f25790355790000c6137def04`, and its canonical

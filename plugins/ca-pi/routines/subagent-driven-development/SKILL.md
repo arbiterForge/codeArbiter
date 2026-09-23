@@ -47,8 +47,11 @@ loop processes only those tasks (in their internal dependency order). When `scop
 ## Phase 1 — Task selection · gate: BLOCK
 
 Pull the next unblocked task from the plan in dependency order. When a `scope` was passed, restrict
-selection to tasks in that list. A task is one verifiable unit of work with a path set, a spec
-obligation, and a verification command.
+selection to tasks in that list. For Markdown, select only a task whose status is `PENDING` and whose
+dependencies are `ACCEPTED`; `BLOCKED` tasks are not selectable until the owning plan workflow
+records a supported transition. For HTML, accept only tasks returned by `eligible` for the exact
+selected plan identity. A task is one verifiable unit of work with a path set, a spec obligation,
+and a verification command.
 
 For HTML, select only a task returned as eligible for the exact selected plan
 identity. Follow contextual `read` pages to completion, retain their context

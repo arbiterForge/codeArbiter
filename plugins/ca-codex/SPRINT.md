@@ -54,10 +54,11 @@ installed engine `identity`, `index`, and symbol-scoped `read` operations. For a
 Markdown pair, use the existing Markdown status ledger. Resume either exact format
 without creating or consulting a shadow artifact; the workflow must not create,
 rename, or convert its counterpart. Do not re-brainstorm — confirm the resume
-with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan with non-`ACCEPTED`
-tasks → straight to Phase 2, executing only the remaining tasks; the legacy plan's
-`status` column or the typed engine's execution ledger is authoritative for its
-own format). An interrupted sprint is re-entered, never restarted.
+with the user and re-enter per `/feature`'s Resume ladder (approved spec + plan with remaining
+dependency-clean `PENDING` tasks → straight to Phase 2, executing only those tasks; the legacy
+plan's `status` column or the typed engine's execution ledger is authoritative for its own format).
+`BLOCKED` tasks remain non-selectable until their owning reconciliation path records a supported
+transition. An interrupted sprint is re-entered, never restarted.
 
 Route to `brainstorming` ([routines/brainstorming/SKILL.md](routines/brainstorming/SKILL.md)), scoped to a **sprint** — a coherent chunk of work (several features or one
 goal), not a single feature. Drive it to a concrete sprint spec at the
@@ -170,9 +171,14 @@ An invalidated proof needs the appropriate fresh verification/review, not automa
 
 Unchanged failure plus unchanged inputs is not progress. After two consecutive corrective attempts
 with the same failure and no new evidence, stop that retry strategy. Choose a different authorized
-approach supported by a new diagnosis, or preserve a bounded blocked-task report and continue
-independently eligible work. This is not automatically another user checkpoint. Ask only for the
-specific missing fact or authority when that is the blocker; do not report the incomplete plan as accepted.
+approach supported by a new diagnosis, or persist the stop before continuing independently eligible work.
+For HTML, apply `task-block` with the exact current revision and model hash, then rerun `eligible`;
+the blocked task and invalidated dependents must not be redispatched. For Markdown,
+record the bounded blocked-task report in the authoritative plan and change that task's status to `BLOCKED`;
+select only dependency-clean `PENDING` tasks whose dependencies are `ACCEPTED`.
+`BLOCKED` tasks must not be redispatched until the owning plan/reconciliation workflow records a
+supported transition. This is not automatically another user checkpoint. Ask only for the specific
+missing fact or authority when that is the blocker; do not report the incomplete plan as accepted.
 
 A `commit-gate` refusal returns to its named repair/reconciliation prerequisite. Recovery does not grant commit, provider, spending, disclosure, or publication authority. Security CRITICAL findings,
 unresolved `[CONFIRM-NN]` decisions, irreversible operations, and all named Hard gates remain stops.
