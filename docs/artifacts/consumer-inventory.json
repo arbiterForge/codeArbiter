@@ -483,6 +483,12 @@
         "docs/artifacts/ABSORPTION-REVIEW.md",
         "site/src/content/docs/codearbiter-directory.md",
         "site/src/content/docs/guides/feature-lane.md",
+        "site/src/content/docs/guides/autonomous-sprints.md",
+        "site/src/content/docs/guides/review-artifacts.md",
+        "site/src/content/docs/concepts/artifacts.md",
+        "site/src/content/docs/guides/first-feature.mdx",
+        "site/src/content/docs/guides/resume-and-recover.mdx",
+        "site/src/content/docs/product-tour.mdx",
         "site/src/content/docs/guides/uninstalling.md",
         "site/src/curated/commands/sprint.md",
         "tools/create-artifact-examples.py",
@@ -507,7 +513,10 @@
       "canonical_paths": [
         "core/surface/skills/decompose/SKILL.md",
         "core/surface/skills/decision-variance/SKILL.md",
-        "core/surface/commands/reconcile.md"
+        "core/surface/commands/reconcile.md",
+        "site/src/content/docs/guides/plan-a-new-project.mdx",
+        "site/src/curated/commands/decompose.md",
+        "site/src/curated/skills/decompose.md"
       ],
       "generated_paths": [
         "plugins/ca/skills/decompose/SKILL.md",
@@ -520,6 +529,7 @@
         "plugins/ca-pi/routines/decision-variance/SKILL.md",
         "plugins/ca-pi/skills/ca-reconcile/SKILL.md",
         "site/src/content/docs/reference/commands/reconcile.md",
+        "site/src/content/docs/reference/commands/decompose.md",
         "site/src/content/docs/reference/skills/decision-variance.md",
         "site/src/content/docs/reference/skills/decompose.md"
       ],
