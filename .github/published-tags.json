@@ -788,8 +788,8 @@
     },
     "v2.21.7": {
       "object_sha": "1fd5d6caaef147e7dfb8e1d40a8b11d20b3d1d26",
-      "commit_sha": "5c876dd885598c248fa777e951dac4e628688d73",
-      "object_type": "tag"
+      "object_type": "tag",
+      "commit_sha": "5c876dd885598c248fa777e951dac4e628688d73"
     },
     "ca-codex-v0.13.7": {
       "object_sha": "2a19e150aeedb6f75ab1575eb9a9cd2bd12fb87d",

@@ -84,7 +84,12 @@
 #   RELEASE_TARGETS, MERGE_READINESS_CHECK
 #   last_tag_select(tags, prefix="v") -> str
 #   select_release_target(*confirmations) -> str   (declared order)
-#   select_release_target_by_name(pairs) -> str    (A-4.2, order-independent)
+#   select-target-named CLI subcommand (A-4.2, order-independent) -- NOT an
+#     importable name on this module. `main()`'s dispatch calls the imported
+#     mechanism directly (`_mechanism.select_release_target_by_name(pairs,
+#     targets)`); this shim defines no local wrapper around it. Reach this
+#     functionality via `python .github/scripts/_releaselib.py
+#     select-target-named <name>=<value> ...`, never an import.
 #   classify_merge_readiness(check_runs, head_sha, check_name=MERGE_READINESS_CHECK) -> str
 #
 # The last three back `.github/workflows/release.yml`'s read-only preflight and
@@ -304,6 +309,10 @@ def main(argv):
       select-target <ca> <ca-codex> <ca-sandbox> <ca-pi>
                                                prints one of RELEASE_TARGETS,
                                                or none | multiple | arity
+      select-target-named <name>=<value> ...   order-independent form of
+                                               select-target (A-4.2); prints
+                                               one of RELEASE_TARGETS, or
+                                               none | multiple | unknown
       merge-readiness <head_sha> <checks_json> prints green | missing | pending |
                                                sha_mismatch | not_successful
       peel-tag <tag>                           stdin=`git ls-remote --tags` -> commit sha / ""

@@ -50,11 +50,29 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _releaselib import load_targets, semver_greater, semver_key  # noqa: E402
+from _releaselib import (  # noqa: E402
+    ReleaseTargetsError, load_targets, semver_greater, semver_key,
+)
 import payload_scope  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DECLARED_TARGETS = REPO / ".codearbiter" / "release-targets.md"
+
+
+class BasenameCollisionError(Exception):
+    """Two declared release-target payload directories share one basename
+    (issue #626, finding 2a).
+
+    `tag_prefixes()` keys its map on `payload.rsplit("/", 1)[-1]` because
+    that is what its caller has — a directory it is walking, not a declared
+    target name (see that function's docstring). A plain dict assignment
+    would let a second row landing on the same basename silently OVERWRITE
+    the first entry, with no diagnostic, gating the wrong plugin under the
+    wrong tag namespace. This is raised the moment a collision is detected,
+    before any overwrite happens — whether or not the two rows happen to
+    share the same prefix, since the collision itself is the defect, not
+    its value. `gate()` catches it and reports a FAIL naming both
+    conflicting declarations."""
 
 
 def tag_prefixes(targets_path: Path = DECLARED_TARGETS) -> dict[str, str]:
@@ -76,13 +94,32 @@ def tag_prefixes(targets_path: Path = DECLARED_TARGETS) -> dict[str, str]:
     is not a single directory (a consumer's `payload: .`) contributes no
     entry — this gate is a codeArbiter-repo check over `plugins/*`, and a
     whole-repo payload has no basename to key on.
+
+    Raises `BasenameCollisionError` — before writing the second entry, not
+    after — when two declared rows reduce to the same basename, whether
+    their prefixes agree or differ (#626 finding 2a). A collision is a
+    declaration defect the gate cannot resolve on its own, not a value to
+    silently pick a winner for.
     """
     prefixes: dict[str, str] = {}
+    sources: dict[str, str] = {}
     for row in load_targets(str(targets_path)):
         payload = (row.get("payload") or "").strip().strip("/")
         if not payload or payload == ".":
             continue
-        prefixes[payload.rsplit("/", 1)[-1]] = row["prefix"]
+        basename = payload.rsplit("/", 1)[-1]
+        if basename in prefixes:
+            raise BasenameCollisionError(
+                f"two declared release-target payload directories share the basename "
+                f"{basename!r}: {sources[basename]!r} (prefix {prefixes[basename]!r}) and "
+                f"{payload!r} (prefix {row['prefix']!r}). This gate keys its tag-namespace "
+                f"map on basename, so the second declaration would silently overwrite the "
+                f"first and gate the wrong plugin under the wrong tag namespace. Rename one "
+                f"payload directory, or otherwise disambiguate the two rows in "
+                f"{targets_path}, before this can resolve."
+            )
+        prefixes[basename] = row["prefix"]
+        sources[basename] = payload
     return prefixes
 
 # Each gated plugin's manifest, relative to the repo root. `ca-codex` is a Codex
@@ -192,7 +229,25 @@ def gate(base: str, plugin: str, root: Path = REPO) -> tuple[int, str]:
             f"version published (issue #530). Advance the version."
         )
 
-    namespaces = tag_prefixes()
+    try:
+        namespaces = tag_prefixes()
+    except BasenameCollisionError as exc:
+        return FAIL, f"{annotate}{exc}"
+    except ReleaseTargetsError as exc:
+        # Issue #626 finding 2b: `tag_prefixes()` -> `load_targets()` raises a
+        # `ReleaseTargetsError` subclass (`AbsentBlockError`,
+        # `FileExistsNoBlockError`, `UnreadableTargetsFileError`,
+        # `MalformedBlockError`, ...) for a missing, malformed, or unreadable
+        # DECLARED_TARGETS file. Without this branch that propagated as an
+        # uncaught traceback with Python's default exit code instead of this
+        # gate's normal (FAIL, message) shape. Catching the shared base
+        # class - not each subclass - means a future declared-file error kind
+        # is covered automatically rather than silently falling through.
+        return FAIL, (
+            f"{annotate}{DECLARED_TARGETS} is missing, malformed, or otherwise "
+            f"unreadable as a declared release-targets file "
+            f"({type(exc).__name__}): {exc}"
+        )
     name = Path(plugin).name
     if name not in namespaces:
         return FAIL, (

@@ -293,8 +293,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "candidate_archive_sha256",
             ):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
-            self.assertEqual(829, marker.get("pr_number"))
-            self.assertEqual("codex/prerequisite-adapter", marker.get("pr_head_ref"))
+            self.assertEqual(845, marker.get("pr_number"))
+            self.assertEqual("worktree-release-contract-closure", marker.get("pr_head_ref"))
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:
@@ -417,7 +417,7 @@ class PublicCodexDocsTest(unittest.TestCase):
         ):
             self.assertIn(binding, prior)
 
-    def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
+    def test_codex_live_baseline_rejects_current_candidate_digest_corruption(self):
         """Isolate the digest guard from an independently stale manifest version."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
         marker = live_baseline_marker(runbook)
@@ -443,6 +443,37 @@ class PublicCodexDocsTest(unittest.TestCase):
                     runbook, fixture_manifest, require_current_candidate=True
                 )
             current_digest.assert_not_called()
+
+    def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
+        """A current-candidate package-byte change invalidates release proof."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        manifest = json.loads(
+            (ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json")
+            .read_text(encoding="utf-8")
+        )
+        marker_match = re.search(
+            r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
+            runbook,
+        )
+        self.assertIsNotNone(marker_match)
+        marker = json.loads(marker_match.group("meta"))
+        corrupted = dict(marker)
+        # Ordinary development may legitimately advance the manifest beyond
+        # the retained live baseline. Bind this mutation fixture to the
+        # current manifest so the assertion reaches the package-digest arm it
+        # is specifically meant to prove, rather than stopping one check
+        # earlier on the unrelated version-lag guard.
+        corrupted["adapter_version"] = manifest["version"]
+        corrupted["candidate_package_sha256"] = "0" * 64
+        corrupted_runbook = runbook.replace(
+            marker_match.group("meta"),
+            json.dumps(corrupted, separators=(",", ":")),
+            1,
+        )
+        with self.assertRaisesRegex(AssertionError, "exact current candidate package"):
+            self._assert_live_baseline_marker(
+                corrupted_runbook, manifest, require_current_candidate=True
+            )
 
     def test_codex_live_baseline_rejects_duplicate_metadata_markers(self):
         """Release proof is ambiguous unless the runbook has exactly one marker."""

@@ -736,6 +736,110 @@ def last_tag_select_for_policy(tags, prefix, policy="semver", initial_version=No
     return best[1] if best else NONE_SENTINEL
 
 
+_ANCESTRY_ZERO_TAG = "zero-tag"
+_ANCESTRY_ANCESTOR = "ancestor"
+_ANCESTRY_NOT_ANCESTOR = "not-ancestor"
+_ANCESTRY_UNRESOLVABLE = "unresolvable"
+
+
+def verify_tag_ancestor(tag, project_root, candidate="HEAD"):
+    """Classify whether `tag` resolves to a commit reachable from `candidate`
+    (issue #570, finding BODY-03).
+
+    `last_tag_select`/`last_tag_select_for_policy` choose a series' highest
+    SemVer (or `numeric-sequence`) tag by VALUE alone -- pure functions with
+    no git access, per this module's design invariants -- so neither can
+    know whether that tag's commit is even in `candidate`'s own commit-graph
+    history. A tag pushed once from a sibling branch that diverged from
+    `candidate` before the newest tag, an abandoned branch's stray push, or
+    an unrelated orphan history that happens to carry a same-prefixed tag
+    can still win the highest-SemVer scan even though `candidate` never
+    descends from it -- silently anchoring `$BASE_VERSION` (and everything
+    derived from it) to history this release does not actually contain.
+
+    Returns one of four labels, never raises:
+      `"zero-tag"`     -- `tag` is `NONE_SENTINEL`. There is nothing to
+                          verify; the zero-tag first-release path is a
+                          DISTINCT code path from tag selection and stays
+                          completely unaffected by this check (P5).
+      `"ancestor"`     -- `git merge-base --is-ancestor <tag> <candidate>`
+                          resolved both revisions and confirmed reachability
+                          -- today's behavior for every genuine ancestor,
+                          unchanged, including one reached only through a
+                          merge commit and both annotated and lightweight
+                          tag forms (git peels either transparently).
+      `"not-ancestor"` -- both revisions resolved, but `tag` is NOT an
+                          ancestor of `candidate` -- the exact gap this
+                          function exists to catch (a sibling/decoy/orphan
+                          tag that numerically outranks every real release).
+      `"unresolvable"` -- `tag` or `candidate` does not resolve to a commit
+                          at all, the probe could not run (`OSError`), or it
+                          exceeded this module's standard `timeout=30`
+                          (#627 precedent) -- distinct from `"not-ancestor"`
+                          because no verdict about reachability was actually
+                          reached.
+
+    Bounded with `timeout=30`, matching this module's other internal
+    Git-probe call sites. This function only classifies; it never chooses a
+    different (older) tag, never implements maintenance-branch allocation,
+    and never mutates anything -- refusal is the caller's job (P5).
+
+    Both `tag` and `candidate` are validated with the same
+    `startswith("-")` / `"\\0" in` predicate `_committed_changelog_text`
+    already applies to a revision reaching this module's own argv, before
+    either reaches `git` as a bare argv element -- a name beginning with
+    `-` could otherwise be parsed as an option by the downstream `git
+    merge-base` subcommand. An explicit end-of-options `--` is also placed
+    ahead of the two revisions as defense-in-depth, matching this module's
+    existing `--` precedent elsewhere.
+
+    **Caller contract -- repo-root binding (R-02, Scope-C security review
+    finding 2, MEDIUM).** `project_root` is trusted verbatim; this function
+    does not independently discover a project directory. Whatever OTHER
+    command a caller used to SELECT `tag` (this module's own
+    `last_tag_select`/`last_tag_select_for_policy`, or SKILL.md's `git tag
+    -l`) MUST resolve against the IDENTICAL root passed here -- never
+    merely "whatever the invoking shell's cwd happens to be" -- or a tag
+    selected from one checkout's history can be verified against a
+    completely different checkout's `HEAD`. A linked worktree, or any
+    other checkout whose actual shell cwd diverges from the harness-
+    designated project root, is a real, constructible instance of this,
+    not a hypothetical one. `main`'s `verify-tag-ancestor` CLI dispatch
+    keeps its legacy 1-argument env-first-else-cwd resolution
+    (`CLAUDE_PROJECT_DIR` first, falling back to `os.getcwd()` -- the
+    identical precedence `default_targets_path`/`default_backfill_root`
+    apply) for backward compatibility only; SKILL.md's Pre-flight
+    sequence instead resolves ONE `$PROJECT_ROOT` value up front and
+    threads it explicitly -- both as the optional SECOND CLI argument
+    here (so this function's own `project_root` is never re-derived by a
+    second, independent environment read) and via `-C` on its own bare
+    `git tag -l`/`git fetch --tags origin`/`git fetch origin
+    "$DEFAULT_BRANCH"`/`git branch --show-current` calls -- so every
+    consumer of "the project root" in that sequence reads the SAME
+    resolved value, never two reads that merely usually agree."""
+    if tag == NONE_SENTINEL:
+        return _ANCESTRY_ZERO_TAG
+    if (not isinstance(tag, str) or not tag
+            or tag.startswith("-") or "\0" in tag):
+        return _ANCESTRY_UNRESOLVABLE
+    if (not isinstance(candidate, str) or not candidate
+            or candidate.startswith("-") or "\0" in candidate):
+        return _ANCESTRY_UNRESOLVABLE
+    try:
+        probe = subprocess.run(
+            [git_executable(), "merge-base", "--is-ancestor", "--",
+             tag, candidate],
+            cwd=project_root, capture_output=True, text=True, timeout=30,
+            env=_sanitized_git_environment())
+    except (OSError, subprocess.TimeoutExpired):
+        return _ANCESTRY_UNRESOLVABLE
+    if probe.returncode == 0:
+        return _ANCESTRY_ANCESTOR
+    if probe.returncode == 1:
+        return _ANCESTRY_NOT_ANCESTOR
+    return _ANCESTRY_UNRESOLVABLE
+
+
 def notes_heading_matches(notes_text, tag, policy="semver", initial_version=None):
     """True iff the FIRST changelog heading names `tag` under `policy`.
 
@@ -1389,6 +1493,14 @@ def classify_window(commits, reconciliations=None, published_shas=None):
     list.  ``reconciliations`` may supply exact-SHA changelog text only for
     SHAs independently present in ``published_shas``.  It never changes the
     commit classification or bump.
+
+    Each row in `commits` carries `classify_commit`'s full per-commit
+    verdict -- including `breaking` -- unchanged and in the input list's
+    own order (never reordered or recomputed here). SKILL.md's Phase 1
+    step 5 changelog composition and its `<summary>` headline rule rely on
+    exactly that: reusing `breaking` to route a commit into its own
+    `### Breaking` group, and scanning `commits` in this same order to find
+    the first breaking entry for a major-bump title.
     """
     rows = []
     reconciliations = reconciliations if isinstance(reconciliations, dict) else {}
@@ -2004,16 +2116,32 @@ def governance_scratch_exclusions(row):
 
 
 def release_tree_status(row, project_root):
-    """Run the target-aware repository-wide clean-tree probe."""
+    """Run the target-aware repository-wide clean-tree probe.
+
+    Bounded with `timeout=30`, matching every other internal Git-probe call
+    site in this module (#627 Finding 1). A hang (index lock, network-mounted
+    repo, credential-helper prompt) must not hang the release lane forever
+    with no diagnostic: `subprocess.TimeoutExpired` is caught and converted
+    into a synthetic failed `CompletedProcess`, which every existing caller
+    already treats as a probe failure (`clean-tree-status` returns
+    `probe.returncode` directly; `run-pre-tag`'s `_tree_state()` treats a
+    nonzero returncode as "the probe itself failed", never as a detected
+    mutation) — no caller-side change is required.
+    """
     scratch_pathspecs = [
         f":(exclude,top){path}"
         for path in governance_scratch_exclusions(row)
     ]
-    return subprocess.run(
-        [git_executable(), "status", "--porcelain", "--", ":/",
-         *scratch_pathspecs],
-        capture_output=True, text=True, cwd=project_root,
-        env=_sanitized_git_environment())
+    args = [git_executable(), "status", "--porcelain", "--", ":/",
+            *scratch_pathspecs]
+    try:
+        return subprocess.run(
+            args, capture_output=True, text=True, cwd=project_root,
+            timeout=30, env=_sanitized_git_environment())
+    except subprocess.TimeoutExpired:
+        return subprocess.CompletedProcess(
+            args, 1, "",
+            "git status probe timed out after 30 seconds")
 
 
 def parse_release_targets(text):
@@ -2305,8 +2433,9 @@ def detect_candidate_target(manifest_candidates, changelog_candidates,
     (`scan_backfill_candidates` is the one filesystem reader, kept separate
     per this module's read-isolation convention). Returns a row dict shaped
     like one `load_targets` entry (`target`, `prefix`, `manifest`,
-    `changelog`, `payload`, `payload_exclude`, `latest_eligible`) ONLY when exactly one manifest
-    candidate and exactly one changelog candidate were found. Raises
+    `changelog`, `changelog_reconciliations`, `payload`, `payload_exclude`,
+    `latest_eligible`) ONLY when exactly one manifest candidate and exactly
+    one changelog candidate were found. Raises
     `BackfillAmbiguousError` for every other case — zero or multiple of
     either — naming which side was ambiguous and what was found, so a caller
     surfacing the error has something concrete to show the user.
@@ -2356,6 +2485,13 @@ def detect_candidate_target(manifest_candidates, changelog_candidates,
         "prefix": prefix,
         "manifest": [manifest_candidates[0]],
         "changelog": changelog_candidates[0],
+        # A first release may have real, already-published history from
+        # before CHANGELOG footers were required. Back-fill must declare the
+        # existing exact-SHA reconciliation mechanism up front so that the
+        # adoption commit can land the operator-authored ledger on the
+        # default branch before the release lane widens its first window.
+        "changelog_reconciliations":
+            ".codearbiter/release-changelog-reconciliations.json",
         "payload": ".",
         # Back-fill is the release-only adoption lane. Its own hooks create
         # governance scratch under .codearbiter/, so a root payload without
@@ -2374,7 +2510,8 @@ def format_release_targets_block(row):
     back-fill lane persists, so a caller never hand-assembles the delimiter
     grammar itself.
 
-    Emits a `latest-eligible` line when `row` declares one (HIGH-2,
+    Emits a `changelog-reconciliations` line when `row` declares one, and a
+    `latest-eligible` line when `row` declares one (HIGH-2,
     adversarial review 2026-07-31) — `detect_candidate_target` always does,
     since it can only ever propose a single-target row — rendered as the
     grammar's own `true`/`false` literal, never a bare Python truthiness
@@ -2385,6 +2522,10 @@ def format_release_targets_block(row):
     for manifest in row.get("manifest", []):
         lines.append(f"manifest: {manifest}")
     lines.append(f"changelog: {row['changelog']}")
+    if row.get("changelog_reconciliations") is not None:
+        lines.append(
+            "changelog-reconciliations: "
+            f"{row['changelog_reconciliations']}")
     lines.append(f"payload: {row['payload']}")
     for excluded in row.get("payload_exclude", []):
         lines.append(f"payload-exclude: {excluded}")
@@ -2577,6 +2718,45 @@ def main(argv):
                                   more than one).
       last-tag <prefix>          stdin = tags (whitespace/newline separated)
                                   -> prints the selected tag or <none>.
+      last-tag-for-policy <prefix> <policy> <initial_version>
+                                  stdin = tags -> prints the selected tag or
+                                  <none>, under a declared version policy
+                                  (`semver` or `numeric-sequence`).
+      verify-tag-ancestor <tag> [<project_root>]
+                                  refuses an ambiguous release baseline
+                                  before it is used for anything (#570
+                                  finding BODY-03). `last-tag`/`last-tag-
+                                  for-policy` select the highest tag by
+                                  VALUE alone, with no git access; this
+                                  confirms the SELECTED tag actually
+                                  resolves to a commit reachable from HEAD.
+                                  `<project_root>`, when given, is used
+                                  VERBATIM and no environment read happens
+                                  at all -- the caller's own single already-
+                                  resolved root, threaded through explicitly
+                                  rather than re-derived here a second time
+                                  (R-02, Scope-C security review finding 2,
+                                  MEDIUM: two independent env-first-else-cwd
+                                  reads, taken at two different times, are
+                                  "usually agree", never a guarantee).
+                                  Omitted, this falls back to the prior
+                                  1-argument behavior -- `CLAUDE_PROJECT_DIR`
+                                  first, else this process's own cwd --
+                                  unchanged, for backward compatibility.
+                                  exit 0 -- `<tag>` is `<none>` (the
+                                  zero-tag first-release path, unaffected)
+                                  or a confirmed ancestor of HEAD -- 1 --
+                                  `<tag>` resolves but is NOT an ancestor of
+                                  HEAD, printing the tag and the cause; the
+                                  caller MUST stop, never silently fall
+                                  back to an older tag, reuse the tag
+                                  namespace, or move/delete the tag -- 2 --
+                                  `<tag>` or HEAD could not be resolved at
+                                  all (an unresolvable ref, a probe error,
+                                  or a `timeout=30` expiry). Never chooses a
+                                  different baseline and never implements
+                                  maintenance-branch allocation policy; it
+                                  only detects and refuses ambiguity (P5).
       notes-match <tag> <notes_file>
                                   exit 0 iff the notes file's first heading
                                   names the same version as `tag`.
@@ -2711,7 +2891,14 @@ def main(argv):
                                   prints the exact `release-targets.md`
                                   block text and exits 0; on zero or multiple
                                   of either, writes the ambiguity to stderr
-                                  and exits 1 — it never prints a guess.
+                                   and exits 1 — it never prints a guess.
+      validate-reconciliations <target> <ledger-file>
+                                  validates a Back-fill ledger with the same
+                                  strict parser the published release path
+                                  uses. exit 0 valid - 4 missing, unreadable,
+                                  non-UTF-8, oversized, or malformed. It does
+                                  not claim the file is published; the later
+                                  `classify-window` ancestry proof owns that.
       show-row <target> [--field NAME]
                                   prints every field the row declares, one
                                   `name: value` line each (multi-valued
@@ -2751,12 +2938,13 @@ def main(argv):
     if not argv:
         sys.stderr.write(
             "usage: _releaselib.py {tag-prefix|list-targets|show-row|"
-            "payload-pathspec|clean-tree-status|last-tag|last-tag-for-policy|notes-match|"
+            "payload-pathspec|clean-tree-status|last-tag|last-tag-for-policy|"
+            "verify-tag-ancestor|notes-match|"
             "changelog-section|dates-match|semver-greater|version-greater|"
             "apply-bump|derive-version|render-release-assets|"
             "verify-release-assets|classify|peel-tag|"
             "run-pre-tag|adoption-commit|classify-window|check-manifests|"
-            "backfill-detect} ...\n")
+            "backfill-detect|validate-reconciliations} ...\n")
         return 2
 
     cmd, rest = argv[0], list(argv[1:])
@@ -2953,6 +3141,53 @@ def main(argv):
         print(last_tag_select_for_policy(
             sys.stdin.read().split(), prefix, policy, initial))
         return 0
+
+    if cmd == "verify-tag-ancestor" and len(rest) in (1, 2):
+        tag = rest[0]
+        # R-02 (Scope-C security review finding 2, MEDIUM): an explicit
+        # SECOND argument, when given, is the caller's own already-resolved
+        # project root and wins outright -- no environment read happens at
+        # all. Without this, this dispatch's own env-first-else-cwd
+        # resolution and SKILL.md's shell-side `$PROJECT_ROOT` resolution
+        # are two INDEPENDENT reads of "the project root", taken at two
+        # different times (the shell's at bullet-time, this process's at
+        # invocation-time) -- they agree only when `CLAUDE_PROJECT_DIR` is
+        # set (trusted-harness input under Claude Code) and neither call's
+        # own cwd has moved since. On a host with no such env var at all
+        # (Codex, Pi) or in any degraded case, both legs independently fall
+        # back to `os.getcwd()`/`$(pwd)`, which is "usually agree", not a
+        # guarantee. Passing the value explicitly collapses this to ONE
+        # resolution, computed once, consumed everywhere -- the 1-argument
+        # form is kept for backward compatibility (any other caller of this
+        # CLI, and this module's own test suite) and still resolves exactly
+        # as before.
+        if len(rest) == 2:
+            project_root = rest[1]
+        else:
+            project_root = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+        verdict = verify_tag_ancestor(tag, project_root)
+        if verdict in (_ANCESTRY_ZERO_TAG, _ANCESTRY_ANCESTOR):
+            return 0
+        if verdict == _ANCESTRY_NOT_ANCESTOR:
+            sys.stderr.write(
+                f"verify-tag-ancestor: refusing {tag!r} as the release "
+                "baseline -- it does not resolve to a commit reachable "
+                "from HEAD. A sibling branch that diverged before this "
+                "tag, an abandoned branch's stray push, or an unrelated "
+                "orphan history sharing this series' prefix can still win "
+                "the highest-SemVer scan even though this release's own "
+                "history never contains it. This is never resolved by "
+                "silently falling back to an older tag, reusing the tag "
+                "namespace, or moving/deleting the tag -- remove the "
+                "stray tag by hand (never retarget or delete a PUBLISHED "
+                "one; see \"Recovering from a bad release\") or confirm "
+                "the correct baseline before re-entering Pre-flight.\n")
+            return 1
+        sys.stderr.write(
+            f"verify-tag-ancestor: could not resolve {tag!r} or HEAD to "
+            "verify ancestry -- refusing rather than trusting an "
+            "unverified baseline.\n")
+        return 2
 
     if cmd == "notes-match" and len(rest) in (2, 4):
         tag, notes_path = rest[:2]
@@ -3716,6 +3951,33 @@ def main(argv):
             sys.stderr.write(f"{exc}\n")
             return 1
         sys.stdout.write(format_release_targets_block(row))
+        return 0
+
+    if cmd == "validate-reconciliations" and len(rest) == 2:
+        target, ledger_path = rest
+        try:
+            if os.path.islink(ledger_path) or not os.path.isfile(ledger_path):
+                raise ChangelogReconciliationError(
+                    "ledger must be one regular file")
+            if os.path.getsize(ledger_path) > 1024 * 1024:
+                raise ChangelogReconciliationError(
+                    "ledger exceeds the 1 MiB limit")
+            with open(ledger_path, "rb") as handle:
+                raw = handle.read(1024 * 1024 + 1)
+            if len(raw) > 1024 * 1024:
+                raise ChangelogReconciliationError(
+                    "ledger exceeds the 1 MiB limit")
+            try:
+                text = raw.decode("utf-8")
+            except UnicodeError as exc:
+                raise ChangelogReconciliationError(
+                    f"ledger is not UTF-8: {exc}") from None
+            parse_changelog_reconciliations(text, target)
+        except (OSError, ChangelogReconciliationError) as exc:
+            sys.stderr.write(
+                f"ChangelogReconciliationError: could not validate "
+                f"{ledger_path!r}: {exc}\n")
+            return 4
         return 0
 
     sys.stderr.write(f"_releaselib.py: bad invocation: {' '.join(argv)}\n")
