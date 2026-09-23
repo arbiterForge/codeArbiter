@@ -38,3 +38,16 @@ licensing, or removal belong in their owning source first; this route should con
 them rather than restating their claims.
 
 If a linked source changes, prefer that source over this navigation map.
+
+## Academy reading preferences on this website
+
+Academy command examples can retain your operating-system and host selections in this browser.
+The optional **Save this lesson in this browser** control stores one lesson ID and its exact
+Academy curriculum identity, scoped to this site's base path. Visiting a lesson does not save a
+place automatically. Use **Remove saved place** to remove only that bookmark; your command
+preferences remain.
+
+The bookmark is a reading aid, not verified progress. It does not read your repository, import
+checkpoint results, or send learning progress to a server. A changed curriculum snapshot requires
+you to choose a place again rather than silently treating old progress as current. Browser storage
+restrictions may prevent saving; ordinary lesson, track, and setup links still work.

@@ -66,7 +66,27 @@ try {
     throw new Error("expected the Learning Path chooser to link to /docs/academy/");
   }
 
-  process.stdout.write("Academy non-root base build: 19 lesson links and both learning routes remain beneath /docs/.\n");
+  for (const [track, count] of [["foundations", 4], ["practitioner", 8], ["power-user", 7]]) {
+    const html = readFileSync(join(outputRoot, "academy", "tracks", track, "index.html"), "utf8");
+    if ((html.match(/data-academy-track-lesson=/g) ?? []).length !== count ||
+        !html.includes('data-base="/docs"') || !html.includes('href="/docs/academy/#setup"')) {
+      throw new Error(`Academy ${track} track lost its source inventory or base path`);
+    }
+  }
+  for (const [id, href] of expectedLessonLinks) {
+    const html = readFileSync(join(outputRoot, "academy", id.toLowerCase(), "index.html"), "utf8");
+    if (!html.includes('data-base="/docs"') || !html.includes('href="/docs/academy/#academy-curriculum"')) {
+      throw new Error(`Academy ${id} wayfinding lost its base path`);
+    }
+    for (const match of html.matchAll(/href="([^"]+)" rel="(?:prev|next)"/g)) {
+      const destination = new URL(match[1], `https://example.invalid${href}`);
+      if (!expectedLessonLinks.some(([, expected]) => destination.pathname === expected)) {
+        throw new Error(`Academy ${id} pagination escaped its published curriculum: ${destination.pathname}`);
+      }
+    }
+  }
+
+  process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }

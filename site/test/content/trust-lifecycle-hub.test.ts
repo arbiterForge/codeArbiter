@@ -41,8 +41,16 @@ describe("trust and lifecycle hub", () => {
     expect(hub.match(/^## .+$/gm)).toEqual([
       "## Before installation",
       "## While operating or removing codeArbiter",
+      "## Academy reading preferences on this website",
     ]);
     expect(hub).not.toMatch(/```|\bH-\d+\b|arbiter_active\(|(?:claude|codex) plugin (?:add|install|uninstall)/i);
+  });
+
+  it("documents optional website-only bookmarks without changing the plugin policy", () => {
+    const preferences = section(hub, "Academy reading preferences on this website");
+    for (const requirement of ["one lesson ID", "exact", "base path", "does not save", "Remove saved place", "not verified progress", "does not read your repository", "changed curriculum snapshot"]) {
+      expect(preferences).toContain(requirement);
+    }
   });
 
   it("OBL-TRUST-03 exposes the hub first in primary Trust navigation", () => {
