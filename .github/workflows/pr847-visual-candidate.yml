@@ -31,7 +31,18 @@ jobs:
           raw = pathlib.Path('.github/pr847-visual-candidate.patch.gz.b64').read_bytes()
           (root / 'transfer.b64').write_bytes(raw)
           (root / 'input.json').write_text(json.dumps({'workflow_head': os.environ['GITHUB_SHA'], 'source': source, 'expected_tree': expected_tree, 'expected_patch_sha256': expected_patch, 'transfer_sha256': hashlib.sha256(raw).hexdigest()}, indent=2))
-          patch = gzip.decompress(base64.b64decode(raw, validate=False))
+          # These three transport typos were identified from the downloaded failed
+          # input. Both the original local patch digest and candidate tree remain
+          # unchanged; no product instruction or verification gate is relaxed.
+          assert hashlib.sha256(raw).hexdigest() == 'a5f03d8e597ae873fc9d43052bb8a63f0a04c3ce45dde76be1fd73fa8c7f214a'
+          for old, new in [
+              (b'FM/Wk5SNPXJiqjcYcvQoivpfkT/cUQYN6', b'FM/Wk5SNPXJiqjcYyvQoivpfkT/cUQYN6'),
+              (b'ulT5GCB8IdWzzULZaqHos4FhumpkEz3XR', b'ulT5GCB8IdWzzULZqHos4FhumpkEz3XR'),
+              (b'wlnP2DNbQ1sGt/d3b9l9YtPv7z9qV2I0cZ', b'wlnP2DNbQ1sGt/d3l9YtPv7z9qV2I0cZ'),
+          ]:
+              assert raw.count(old) == 1
+              raw = raw.replace(old, new)
+          patch = gzip.decompress(base64.b64decode(raw.strip(), validate=True))
           assert hashlib.sha256(patch).hexdigest() == expected_patch, 'Transferred patch does not match the checked local patch'
           subprocess.run(['git', 'checkout', '--detach', source], check=True)
           subprocess.run(['git', 'apply', '--check', '--index', '--binary', '-'], input=patch, check=True)
