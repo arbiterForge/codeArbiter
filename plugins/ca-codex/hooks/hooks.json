@@ -37,6 +37,30 @@
             "statusMessage": "codeArbiter: write gate"
           }
         ]
+      },
+      {
+        "matcher": "spawn_agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: bind independent review launch"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|shell_command|exec_command|unified_exec",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: authorize production verifier"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -49,6 +73,57 @@
             "commandWindows": "python \"${PLUGIN_ROOT}/hooks/post-write-edit.py\"",
             "timeout": 30,
             "statusMessage": "codeArbiter: scope-touch review"
+          }
+        ]
+      },
+      {
+        "matcher": "spawn_agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: bind independent review child"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|shell_command|exec_command|unified_exec",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: corroborate production verifier"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: observe independent review start"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "commandWindows": "python \"${PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"",
+            "timeout": 30,
+            "statusMessage": "codeArbiter: observe independent review completion",
+            "additionalContextLimit": 1000
           }
         ]
       }

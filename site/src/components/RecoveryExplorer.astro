@@ -1,5 +1,6 @@
 ---
 const states = [
+  { state:'AUTHORITY_UNVERIFIED', why:'A required authority record is absent, stale or inspection-only after upgrade.', action:'Use the applicable current host-owned approval or evidence boundary. Preserve old receipts; do not relabel them or manufacture a successful event. An unsupported host adapter remains a stop.' },
   { state:'DRAFT_BINDING', why:'A plan is still bound to a draft specification.', action:'Return to the existing approval and plan-binding workflow. Do not edit a JSON flag to make the plan executable.' },
   { state:'IN_PROGRESS', why:'An interrupted task may have changed files without finishing its review.', action:'Inspect those files and the recorded task state. Reconcile through the owning workflow before redispatch.' },
   { state:'REVIEW', why:'Implementation is awaiting current review and evidence.', action:'Collect the required fresh evidence and scope review. The label alone is not acceptance.' },

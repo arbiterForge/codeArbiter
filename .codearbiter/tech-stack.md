@@ -73,10 +73,28 @@ this file is the stale one; fix it here.
   linked worktree through a localhost UNC share after one-shot `safe.directory`
   trust, while the untrusted form failed closed. This does not promote every
   remote SMB server or ownership policy to a supported cell.
-- WSL is not a separately verified named cell. Alternating Windows Git and WSL
-  Git over one physical repository or shared `.git`, including consuming a
-  linked worktree created by the other runtime, is unsupported. Git Bash is the
-  Windows hook shell and is not equivalent to WSL.
+- WSL is not a separately verified named cell for general use — a WSL-hosted
+  Git operating a repository or linked worktree is not part of the CI matrix,
+  and nothing here claims WSL Git itself is qualified. Narrower and measured
+  (ADR-0038, closing #684/#686/#683): the git-level hook registry
+  (`.git/codearbiter-hooksd/`) and its generated pre-commit/pre-push shim now
+  translate between the three known spellings of an absolute path on a
+  Windows drive letter — Windows-native, Git-Bash/MSYS, and WSL drvfs — so a
+  registry or trusted-identity entry written by one of Windows Git, Git Bash,
+  or a WSL-hosted process resolves regardless of which of those three then
+  reads it, both at the Python diagnostic layer and in the real generated
+  shim. This is a bounded, finite grammar translation, not a general
+  host-layout search, and it does not weaken ADR-0014's fail-closed contract:
+  a spelling that resolves under none of the three known forms still blocks.
+  Test evidence: `plugins/ca/hooks/tests/test_git_hooks.py`
+  (`TestCrossHostPathFormResolution`, `TestInstallTwoPhaseWriteAtomicity`,
+  `TestInstallDoesNotChurnAcrossEquivalentHostSpellings`) and
+  `plugins/ca/hooks/tests/test_doctor.py` (`TestCheckGitHookBackstop`'s
+  WSL-spelling and host-scoping cases), on Windows with Git for Windows'
+  bundled Git-Bash shell — not a live WSL runtime. Git Bash remains the
+  Windows hook shell and is not equivalent to WSL; this translation is what
+  lets the two interoperate over one shared registry, not a claim that they
+  are the same shell.
 
 ## Pi adapter
 

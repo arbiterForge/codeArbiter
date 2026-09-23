@@ -7,6 +7,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
@@ -22,7 +23,7 @@ import (
 // source text proves a human identity or executes the claimed tests. Immutable
 // objects are independently verifiable; retry completes a missing receipt after
 // an interrupted event write without modifying an artifact.
-func (e *Engine) capture(r object) (any, error) {
+func (e *Engine) capture(r object, observedRequired bool) (any, error) {
 	ev, eb, err := authority.LoadSource(e.FS, model.S(r["source_ref"]), model.S(r["source_sha256"]))
 	if err != nil {
 		return nil, err
@@ -43,9 +44,46 @@ func (e *Engine) capture(r object) (any, error) {
 		}
 	}
 	kind := model.S(ev["kind"])
+	observed := model.S(ev["format"]) == "codearbiter.workflow-event/0.2.0"
+	if observedRequired && !observed {
+		return nil, fault.New("OBSERVATION_REQUIRED", "production evidence capture requires an observed workflow event")
+	}
+	if !observedRequired && !observed {
+		return nil, fault.New("OBSERVATION_REQUIRED", "legacy workflow events are inspection-only and cannot be captured as current authority")
+	}
+	if !observedRequired && observed {
+		return nil, fault.New("OBSERVATION_REQUIRED", "observed workflow events require capture-observation")
+	}
 	if kind == "verification" || kind == "spec_review" || kind == "quality_review" {
 		if es := schema.ValidateWith(evidence.PayloadSchema(kind), ev["payload"]); len(es) > 0 {
 			return nil, &es[0]
+		}
+	}
+	if observed {
+		obs, _, loadErr := observation.Load(e.FS, model.S(ev["observation_ref"]), model.S(ev["observation_sha256"]))
+		if loadErr != nil {
+			return nil, loadErr
+		}
+		contextRef, contextHash := model.S(obs["context_ref"]), model.S(obs["context_sha256"])
+		context, _, contextErr := observation.LoadContext(e.FS, contextRef, contextHash)
+		if contextErr != nil {
+			return nil, contextErr
+		}
+		if linkErr := observation.ValidateLink(ev, obs, context, contextRef, contextHash); linkErr != nil {
+			return nil, linkErr
+		}
+		var fresh object
+		if kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization" {
+			fresh, contextErr = e.buildPromptContext(d, kind, sid, model.S(context["prompt_sha256"]))
+		} else {
+			fresh, contextErr = e.buildEvidenceContext(d, kind, sid)
+		}
+		if contextErr != nil {
+			return nil, contextErr
+		}
+		freshBytes, _ := canonical.Marshal(fresh)
+		if canonical.BytesHash(freshBytes) != contextHash {
+			return nil, fault.New("STALE_EVIDENCE", "observed evidence context is no longer current")
 		}
 	}
 	eh := canonical.BytesHash(eb)

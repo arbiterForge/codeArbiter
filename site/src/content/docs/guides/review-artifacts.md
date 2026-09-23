@@ -29,6 +29,26 @@ See [Plan a new project](/guides/plan-a-new-project/) for the first row and
 An unavailable native capability is a capability error for new HTML work, not permission to
 quietly substitute Markdown or an arbitrary executable.
 
+## Check your host's authority capability
+
+A native artifact engine and a host authority adapter do different jobs. The engine validates
+content and transitions; the host adapter records an actual user prompt, verification run or
+review event. Installing the engine alone does not provide every authority adapter.
+
+The [current source contract](https://github.com/arbiterForge/codeArbiter/blob/d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f/core/surface/includes/artifacts.md)
+distinguishes these implemented boundaries. This is not a release-to-release support guarantee:
+check your exact installed adapter and its qualification evidence before execution.
+
+| Host | Typed spec/plan approval | Typed verification and review authority |
+|---|---|---|
+| Claude Code | Host-observed prompt approval | Not supported; stop at this boundary |
+| Codex | Host-observed prompt approval | Codex-only production adapters; exact installed capability still required |
+| Pi | Not supported | Not supported; do not arm the prompt adapter |
+
+These limits concern the typed HTML path, not every operation on those hosts. Existing Markdown
+pairs retain their legacy workflow, and small-lane work remains inline. Do not change the lane
+classification or replace a new HTML pair with Markdown to evade an unsupported boundary.
+
 ## Open the actual files
 
 Ask codeArbiter to report the repository root, existing slug, exact file paths, format and current
@@ -76,13 +96,19 @@ execute are different checks. A plan's `draft_preview` relationship does not aut
 
 ## Understand what your decision authorizes
 
-Use the approval boundary presented by the owning workflow. In a feature lane, follow its spec
-and plan review gates. A sprint presents the linked specification and plan as one interactive
-approval package. Academy lessons have their own declared review and verifier contract; do not
-substitute a different ceremony into a pinned lesson.
+Use the approval boundary presented by the owning workflow. A feature has spec and plan review
+gates; a sprint reviews the linked pair as one package. For typed HTML, the current adapter arms
+one artifact at a time. Review the named artifact, return the exact reply supplied by the host,
+and require a fresh approved-gate check before the next transition. A generic “yes” or a reply
+for another artifact does not approve this one. After spec approval, the plan must bind to that
+approved definition and obtain its own current approval. One review package is not a promise of
+one prompt or a receipt covering both documents.
 
-The coordinator binds an actual workflow decision to exact content. Generic editing cannot make
-an artifact approved. A displayed approval is not proof of authenticated actor identity, and a
+Academy lessons have their own declared review and verifier contract; do not substitute a
+different ceremony into a pinned lesson.
+
+The trusted host observes the decision and binds it to exact content. The coordinator must not
+manufacture a successful event or receipt. Generic editing cannot make an artifact approved. A displayed approval is not proof of authenticated actor identity, and a
 hash is integrity evidence, not an identity check. Changing the normative definition can stale
 its approval and downstream bindings; re-review the actual changed definition.
 

@@ -182,6 +182,15 @@ class ArtifactSurfaceTest(unittest.TestCase):
             text = (ROOT / relative).read_text(encoding="utf-8")
             self.assertIn(warning, text, relative)
 
+    def test_authority_guidance_names_the_codex_only_production_seam(self) -> None:
+        for relative in ARTIFACT_GUIDANCE_PATHS:
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertIn("Verification and review authority below is currently Codex-only", text, relative)
+            self.assertNotIn("corroborated exit 0", text, relative)
+        host_notes = (ROOT / "core/surface/includes/codex-host-notes.md").read_text(encoding="utf-8")
+        self.assertIn("`verify` command shown in `artifacts.md`", host_notes)
+        self.assertNotIn("wrapper command returned by the", host_notes)
+
     def test_policy_baseline_is_in_candidate_history(self) -> None:
         result = subprocess.run(
             [

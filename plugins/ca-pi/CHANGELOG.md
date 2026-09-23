@@ -4,6 +4,29 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.11] - 2026-09-23
+
+### Fixed
+
+- Package the shared closed artifact-authority and reconciliation kernel while
+  retaining fail-closed behavior for host observation seams that Pi does not
+  implement.
+- Preserve typed workspace identity and durable reconciliation retry/cancel
+  behavior in the shared kernel without claiming unsupported Pi host authority.
+- Reject unproven partial-commit and changed-parent recovery in the shared
+  kernel without claiming unsupported Pi host authority.
+
+## [0.14.10] - 2026-09-22
+
+### Fixed
+
+- Resolve cross-host git-hook path-form races (ADR-0038): the shared registry
+  and its generated pre-commit/pre-push shim now translate between
+  Windows-native, Git-Bash/MSYS, and WSL drvfs path spellings; the installer's
+  two-phase shim write is lock-serialized and rolls back on a partial
+  failure; a foreign-spelled trusted identity now produces a diagnostic
+  instead of a silent exit.
+
 ## [0.14.9] - 2026-09-22
 
 ### Fixed

@@ -329,17 +329,55 @@ class Workflow:
         return self.client.call(operation, {"artifact_id": artifact_id, "operation_id": self.operation_id(operation), "expected": {"revision": identity["revision"], "model_sha256": identity["model_sha256"]}, **request})
 
     def stage_policy_event(self, artifact_id: str, record_id: str, kind: str, authority_kind: str, verdict: str, payload: dict) -> str:
-        """Test-only stand-in for a pre-existing host policy receipt producer."""
+        """Test-only current observation; never a claim of production host authority."""
         identity = self.client.call("identity", {"artifact_id": artifact_id})
-        event = {"format": "codearbiter.workflow-event/0.1.0", "kind": kind, "authority_kind": authority_kind, "subject": {"artifact_id": artifact_id, "normative_sha256": identity["normative_sha256"], "record_id": record_id}, "actor": "synthetic installed-host verifier", "origin": f"cold package {self.operation_id('policy-event')}", "verdict": verdict, "payload": payload, "source_text": "Synthetic CI policy event; not production authority."}
-        raw = json.dumps(event, sort_keys=True, separators=(",", ":")).encode("ascii")
+        source_text = f"Synthetic CI observed event; not production authority: {self.operation_id('policy-event')}"
+        event = {"kind": kind, "authority_kind": authority_kind, "subject": {"artifact_id": artifact_id, "normative_sha256": identity["normative_sha256"], "record_id": record_id}, "actor": "synthetic installed-host verifier", "origin": "test:UserPromptSubmit:cold-fixture", "verdict": verdict, "payload": payload, "source_text": source_text}
+        hooks = self.plugin_root / "hooks"
+        sys.path.insert(0, str(hooks))
+        try:
+            import _artifactauthoritylib as authority_adapter
+            if kind in {"approval", "prerequisite", "reconciliation", "farm_authorization"} and authority_kind == "user_workflow":
+                return authority_adapter.capture_user_prompt(
+                    self.root, self.client, event, host="test", session_id="cold-fixture"
+                )["receipt"]
+        finally:
+            sys.path.pop(0)
+        context_result = self.client.call("evidence-context", {"artifact_id": artifact_id, "record_id": record_id, "activity": kind})
+        context = json.loads((self.root / context_result["context_ref"]).read_text("utf-8"))
+        canonical = lambda value: json.dumps(value, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode("ascii")
+        if kind == "verification":
+            executable = str(Path(sys.executable).resolve())
+            executable_sha = hashlib.sha256(Path(executable).read_bytes()).hexdigest()
+            bindings = [{"definition_sha256": row["definition_sha256"], "argv": [executable, *row["definition"]["argv"][1:]], "cwd": str(self.root), "cwd_filesystem_id": "fixture:cwd", "workspace_root": str(self.root), "workspace_filesystem_id": "fixture:root", "git_common_dir": str(self.root), "git_common_filesystem_id": "fixture:git", "executable_sha256": executable_sha} for row in context["commands"]]
+            workspace = {"root": str(self.root), "filesystem_id": "fixture:root", "git_common_dir": str(self.root), "git_common_filesystem_id": "fixture:git", "head": "fixture", "status_sha256": hashlib.sha256(b"").hexdigest(), "content_sha256": hashlib.sha256(b"").hexdigest()}
+            profile, run_id = "declared-command/0.1.0", "cold-verifier"
+            producer = {"environment_sha256": hashlib.sha256(b"cold fixture").hexdigest(), "command_bindings": bindings, "workspace_before": [workspace], "workspace_after": [workspace], "commands": payload["commands"]}
+        else:
+            sys.path.insert(0, str(hooks))
+            try:
+                import _artifactauthoritylib as authority_adapter
+                contract_sha, coverage = authority_adapter._review_binding(context)
+            finally:
+                sys.path.pop(0)
+            profile, run_id = "codex-review/0.1.0", "cold-reviewer"
+            producer = {"launch": {"parent_session_id": "cold-parent", "parent_turn_id": "cold-turn", "tool_use_id": "cold-tool", "post_confirmed": True, "agent_id": run_id, "agent_type": "default", "task_name": "cold-authority", "fork_turns": "none"}, "decision": {"format": "codearbiter.review-decision/0.1.0", "request_id": hashlib.sha256(b"cold request").hexdigest(), "target_sha256": context["input_sha256"], "contract_sha256": contract_sha, "decision": "pass", "coverage": coverage, "findings": [], "assessment": payload["assessment"]}}
+        observation = {"format": "codearbiter.observation/0.2.0", "kind": kind, "subject": event["subject"], "context_ref": context_result["context_ref"], "context_sha256": context_result["context_sha256"], "payload_sha256": hashlib.sha256(canonical(payload)).hexdigest(), "producer_profile": profile, "producer_run_id": run_id, "producer_result": producer, "producer_result_sha256": hashlib.sha256(canonical(producer)).hexdigest()}
+        observation_raw = canonical(observation)
+        observation_sha = hashlib.sha256(observation_raw).hexdigest()
+        observation_ref = f".codearbiter/.artifacts/observations/{observation_sha}.json"
+        observation_target = self.root / observation_ref
+        observation_target.parent.mkdir(parents=True, exist_ok=True)
+        observation_target.write_bytes(observation_raw)
+        event.update(format="codearbiter.workflow-event/0.2.0", observation_ref=observation_ref, observation_sha256=observation_sha)
+        raw = canonical(event)
         digest = hashlib.sha256(raw).hexdigest()
         source_ref = f".codearbiter/.artifacts/authority-sources/{digest}.json"
         target = self.root / source_ref
         target.parent.mkdir(parents=True, exist_ok=True)
         with target.open("xb") as stream:
             stream.write(raw)
-        return self.client.call("capture", {"source_ref": source_ref, "source_sha256": digest})["receipt"]
+        return self.client.call("capture-observation", {"source_ref": source_ref, "source_sha256": digest})["receipt"]
 
     def approve(self, artifact_id: str) -> str:
         if self.host == "pi":
@@ -437,13 +475,17 @@ class Workflow:
 
     def satisfy_prerequisite(self, artifact_id: str, prerequisite_id: str) -> str:
         if self.host == "pi":
+            prerequisite = self.client.call(
+                "read",
+                {"artifact_id": artifact_id, "symbol": prerequisite_id, "mode": "exact"},
+            )["record"]
             receipt = self.stage_policy_event(
                 artifact_id,
                 prerequisite_id,
                 "prerequisite",
                 "user_workflow",
                 "satisfied",
-                {},
+                {"prerequisite": prerequisite},
             )
             self.mutate(
                 "prerequisite",
@@ -625,6 +667,37 @@ def assert_packaged_consumers(plugin_root: Path) -> None:
             raise AssertionError(f"packaged {name} omits current acceptance proof")
     if "task-reconcile" not in (routines / "executing-plans" / "SKILL.md").read_text(encoding="utf-8"):
         raise AssertionError("packaged execution workflow omits interruption reconciliation")
+    hooks = (plugin_root / "hooks").resolve(strict=True)
+    sys.path.insert(0, str(hooks))
+    try:
+        loaded = {}
+        for name in ("_artifactauthoritylib", "_reconciliationlib"):
+            sys.modules.pop(name, None)
+            path = hooks / f"{name}.py"
+            spec = importlib.util.spec_from_file_location(name, path)
+            if spec is None or spec.loader is None:
+                raise AssertionError(f"installed authority module cannot be loaded: {name}")
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[name] = module
+            spec.loader.exec_module(module)
+            if not Path(module.__file__).resolve(strict=True).is_relative_to(plugin_root):
+                raise AssertionError(f"installed authority module escaped package root: {name}")
+            loaded[name] = module
+        if loaded["_artifactauthoritylib"]._canonical({"cold": True}) != b'{"cold":true}':
+            raise AssertionError("installed authority canonicalizer is not executable")
+        if loaded["_reconciliationlib"]._pending("PLAN-COLD").as_posix() != ".codearbiter/.markers/reconciliations/PLAN-COLD.json":
+            raise AssertionError("installed reconciliation adapter is not executable")
+        for filename in ("artifact-authority.py", "artifact-authority-hook.py", "artifact-reconcile.py"):
+            path = hooks / filename
+            spec = importlib.util.spec_from_file_location("cold_" + filename.replace("-", "_").replace(".", "_"), path)
+            if spec is None or spec.loader is None:
+                raise AssertionError(f"installed authority entry point cannot be loaded: {filename}")
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            if not Path(module.__file__).resolve(strict=True).is_relative_to(plugin_root):
+                raise AssertionError(f"installed authority entry point escaped package root: {filename}")
+    finally:
+        sys.path.remove(str(hooks))
 
 
 def orchestrate(args, installation: Path) -> dict[str, object]:

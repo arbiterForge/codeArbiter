@@ -71,7 +71,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "1acf66a2db46269f1cc8f9f26ab9279dc5448344",
+      "hash": "26144810c452b2f1c556176e4831636d4363ef46",
       "path": "tools/build-host-packages.py"
     },
     {
@@ -137,37 +137,37 @@
     {
       "claims": [
         {
-          "claim": "Claude Code plugin manifest for ca (v2.21.9)",
+          "claim": "Claude Code plugin manifest for ca (v2.21.11)",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "7b7b23292dd133b9742689d9266f8585fb723184",
+      "hash": "9c8c9b50a2b600533b0e8373ec84fd66030489a7",
       "path": "plugins/ca/.claude-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.9), generated kernel",
+          "claim": "Codex CLI plugin manifest for ca-codex (v0.13.11), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": false,
-      "hash": "39cedd6b3f60dc0cc76443f2b51bf8407288f5d2",
+      "hash": "faa9e47d6e18824ab09d7cf9c1ec32cc0f01fda6",
       "path": "plugins/ca-codex/.codex-plugin/plugin.json"
     },
     {
       "claims": [
         {
-          "claim": "npm package manifest for ca-pi (v0.14.9, @arbiterforge/ca-pi), generated kernel",
+          "claim": "npm package manifest for ca-pi (v0.14.11, @arbiterforge/ca-pi), generated kernel",
           "confidence": "strong",
           "lines": "1-end"
         }
       ],
       "drift_trigger": true,
-      "hash": "e50ed04d34dc20dd051126d85b871964065dd4d8",
+      "hash": "bdacd2be45211994a6f1bb4fa44a52fd24cf6f7e",
       "path": "plugins/ca-pi/package.json"
     },
     {
@@ -359,7 +359,7 @@
         }
       ],
       "drift_trigger": false,
-      "hash": "91f084254166d190b857585bc4918894052b0e32",
+      "hash": "ecf51a4007856ef3eae15f715af41e3f31424425",
       "path": ".codearbiter/security-controls.md"
     },
     {
@@ -407,7 +407,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "e0f4a4784c331d9b08e4d4e3d576dc8048f557e0",
+      "hash": "a3d6dd9a0b61456cfa9271dd4a41248a9c5b59cd",
       "path": ".github/workflows/ci.yml"
     },
     {
@@ -419,7 +419,7 @@
         }
       ],
       "drift_trigger": true,
-      "hash": "2a0b7aa99a45c2afe10d7cba03b77e76425e095e",
+      "hash": "dfe2f790a7e61875da520a755e77d09e560dc9b4",
       "path": ".github/workflows/release.yml"
     }
   ],

@@ -20,7 +20,9 @@ journey:
 <div class="ca-callout ca-callout--host">
   <p class="ca-callout__label">Host syntax</p>
   Claude Code uses <code>/ca:feature "…"</code>; Codex uses <code>$ca-feature "…"</code>;
-  Pi uses <code>/ca-feature "…"</code>. The persisted artifacts and gates are the same.
+  Pi uses <code>/ca-feature "…"</code>. Shared artifact formats do not imply identical host authority.
+  Check the <a href="/guides/review-artifacts/#check-your-hosts-authority-capability">typed-artifact host boundary</a>
+  before attempting the full HTML path.
 </div>
 
 The lane runs in order and gates at each transition. Nothing moves until the previous gate clears.
@@ -73,7 +75,7 @@ The [brainstorming skill](/reference/skills/brainstorming/) runs first. It takes
 
 The skill asks focused clarifying questions, one area at a time. You answer and steer. When the scope is clear, the spec is written to disk and you approve it. No source file is touched until you do.
 
-Each acceptance criterion in the approved spec becomes exactly one obligation in the tdd cycle. The spec is the binding definition of done for every task that follows.
+The tdd cycle derives obligations from the approved criteria. One criterion may require several named tests; the spec remains the binding definition of done for every task that follows.
 
 ## Break the Spec Into a Plan
 

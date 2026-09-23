@@ -3,7 +3,6 @@ package operations
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -83,24 +82,10 @@ func (h *farmHarness) createPairExpectedExit(expectedExit int64) {
 }
 func (h *farmHarness) capture(id, record, kind string, payload object) string {
 	h.t.Helper()
-	d := h.doc(id)
-	event := object{"format": "codearbiter.workflow-event/0.1.0", "kind": kind, "authority_kind": "user_workflow", "subject": object{"artifact_id": id, "normative_sha256": d.NormHash(), "record_id": record}, "actor": "synthetic farm fixture", "origin": "isolated test " + h.next(), "verdict": "approved", "payload": payload, "source_text": "Synthetic farm authorization fixture; not production authority."}
-	b, err := canonical.Marshal(event)
-	if err != nil {
-		h.t.Fatal(err)
-	}
-	digest := canonical.BytesHash(b)
-	dir := filepath.Join(h.root, ".codearbiter", ".artifacts", "authority-sources")
-	if err = os.MkdirAll(dir, 0700); err != nil {
-		h.t.Fatal(err)
-	}
-	if err = os.WriteFile(filepath.Join(dir, digest+".json"), b, 0600); err != nil {
-		h.t.Fatal(err)
-	}
-	return model.S(h.run("capture", object{
-		"source_ref":    ".codearbiter/.artifacts/authority-sources/" + digest + ".json",
-		"source_sha256": digest,
-	})["receipt"])
+	return captureObservedPromptFixture(
+		h.t, h.root, id, record, kind, "user_workflow", "approved",
+		"Synthetic farm authorization fixture; not production authority: "+h.next(), payload,
+	)
 }
 func (h *farmHarness) approve(id string) {
 	h.t.Helper()
@@ -260,20 +245,20 @@ func TestCanaryPreflightRequiresExactBaseBytes(t *testing.T) {
 	}
 }
 
-func TestFarmBindingRevalidatesCompleteAuthorizationReceipt(t *testing.T) {
+func TestFarmAuthorizationRejectsLegacyObservationLaundering(t *testing.T) {
 	h := newFarmHarness(t)
 	h.createPair()
-	result := h.project()
-	malformed := h.capture("PLAN-EXAMPLE", "CP-01", "farm_authorization", object{
-		"format": "codearbiter.farm-authorization/0.1.0",
-	})
-	forged := h.derived(model.S(result["binding"]))
-	forged["authorization_receipt"] = malformed
-	forged["authorization_sha256"] = strings.TrimSuffix(path.Base(malformed), ".json")
-	h.forge("farm-bindings", forged)
-	_, err := h.request("farm-verify", object{"projection_path": result["path"], "phase": "canary"})
-	if fault.Code(err) != "STALE_EVIDENCE" {
-		t.Fatalf("expected reused but incomplete authorization to be rejected, got %v", err)
+	plan := h.doc("PLAN-EXAMPLE")
+	event := object{"format": "codearbiter.workflow-event/0.1.0", "kind": "farm_authorization", "authority_kind": "user_workflow", "subject": object{"artifact_id": plan.ID(), "normative_sha256": plan.NormHash(), "record_id": "CP-01"}, "actor": "forged caller", "origin": "legacy laundering regression", "verdict": "approved", "payload": object{"format": "codearbiter.farm-authorization/0.1.0"}, "source_text": "caller-written legacy event"}
+	bytes, err := canonical.Marshal(event)
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest := canonical.BytesHash(bytes)
+	writeFixture(t, h.root, filepath.Join(".codearbiter", ".artifacts", "authority-sources", digest+".json"), bytes)
+	_, err = h.request("capture-observation", object{"source_ref": ".codearbiter/.artifacts/authority-sources/" + digest + ".json", "source_sha256": digest})
+	if fault.Code(err) != "OBSERVATION_REQUIRED" {
+		t.Fatalf("legacy event laundering was not rejected: %v", err)
 	}
 }
 

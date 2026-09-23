@@ -1313,6 +1313,24 @@ class TestCodexHooksJson(unittest.TestCase):
                             and "post-write-edit.py" in h["command"]
                             for m, h in entries))
 
+    def test_independent_review_authority_hooks_are_registered(self):
+        for event in ("PreToolUse", "PostToolUse"):
+            self.assertTrue(any(
+                matcher == "spawn_agent"
+                and "artifact-authority-hook.py" in hook["command"]
+                for matcher, hook in self._entries(event)
+            ), f"{event} must bind spawn_agent review provenance")
+        for event in ("SubagentStart", "SubagentStop"):
+            entries = self._entries(event)
+            self.assertEqual(len(entries), 1)
+            self.assertIn("artifact-authority-hook.py", entries[0][1]["command"])
+        for event in ("PreToolUse", "PostToolUse"):
+            self.assertTrue(any(
+                matcher == "Bash|shell_command|exec_command|unified_exec"
+                and "artifact-authority-hook.py" in hook["command"]
+                for matcher, hook in self._entries(event)
+            ), f"{event} must observe the governed verifier wrapper")
+
     def test_ledgered_out_surfaces_not_registered(self):
         text = json.dumps(self.cfg)
         self.assertNotIn("pre-read.py", text)       # no read tool on Codex

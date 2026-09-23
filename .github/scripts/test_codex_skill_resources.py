@@ -1969,6 +1969,11 @@ class StaticCandidatePackageContractTest(CheckerPresentMixin, unittest.TestCase)
     def install_authority_hooks(self):
         path = self.package / "hooks" / "hooks.json"
         manifest = json.loads(path.read_text(encoding="utf-8"))
+        canonical = json.dumps(manifest, separators=(",", ":"), sort_keys=True)
+        if hashlib.sha256(canonical.encode("utf-8")).hexdigest() == (
+            "3864eb9bdab86044f2b2ee4b4e0eb90f484fd5f1b49ce2321fc5ad26e4db1b47"
+        ):
+            return path, manifest
 
         def entry(status, *, additional_context_limit=None):
             value = {

@@ -127,6 +127,34 @@ self-hosted runner, UAC, Hyper-V, ADK, VM, network mutation, screenshot, or
 synthetic receipt. The retired desktop boundary remains only in immutable
 historical ADRs, plans, reports, and audit records.
 
+### Protected ca-codex distribution credentials
+
+The `codex-distribution` GitHub Actions environment is the approved store for
+six named values belonging to two repository-scoped GitHub Apps:
+`CODEX_DISTRIBUTION_APP_ID`, `CODEX_DISTRIBUTION_APP_INSTALLATION_ID`,
+`CODEX_DISTRIBUTION_APP_PRIVATE_KEY`, `CODEX_RULESET_VERIFIER_APP_ID`,
+`CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID`, and
+`CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY`. No repository, organization, shell,
+or file-backed fallback is permitted.
+
+The publisher App has Actions read, Contents read/write, and Metadata read. It
+is the sole ruleset bypass actor but has no Administration permission. The
+separate verifier App has Administration read/write and Metadata read so GitHub
+returns the complete `bypass_actors` contract, but it has no Contents write and
+must not be a bypass actor. Both live checks fail closed unless their numeric App
+IDs are positive, are not the general Actions integration, and are distinct.
+
+Each publisher job receives the six values only through named protected-
+environment secrets. It writes each private key to a mode-0600 runner-temporary
+file, uses OpenSSL SHA-256 signing only to exchange a bounded JWT for a
+short-lived installation token over GitHub's TLS-verified API, and removes the
+file through an exit trap. GitHub's masked step-output file is the sole approved
+ephemeral handoff for each installation token; the token exists only for that
+job and is never printed unmasked, placed in an artifact, sent to an LLM, or
+stored in repository state. The verifier token and publisher token are exposed
+to separate composite steps and never share a process environment. The job's
+ordinary `GITHUB_TOKEN` remains read-only.
+
 Pi host authentication is an external trusted-runtime boundary. **No provider
 credential enters an isolated child in any form** (ADR-0019, superseding the
 credential-projection clause of ADR-0016). ADR-0016 permitted projecting the
@@ -481,8 +509,16 @@ older live sibling.
 
 This path contract is same-runtime. Windows with Git for Windows and its bundled
 hook shell, native Linux, and native macOS are supported cells. WSL is not a
-separately verified named cell, and sharing one physical repository or `.git`
-between Windows Git and WSL Git is unsupported. Foreign linked-worktree pointer
+separately verified named cell for general use — nothing here qualifies a
+WSL-hosted Git as a certified runtime. Narrower and measured (ADR-0038,
+closing #684/#686/#683): the drop-in registry and its generated shim translate
+between the three known spellings of an absolute path on a Windows drive
+letter (Windows-native, Git-Bash/MSYS, WSL drvfs), so a repository or linked
+worktree shared between Windows Git and a WSL-hosted process resolves a
+registered enforcer or trusted-identity entry regardless of which of the two
+wrote it — a bounded, finite grammar translation, not a general host-layout
+search, and the fail-closed contract is unchanged: an entry resolving under
+none of the three known forms still blocks. Foreign linked-worktree pointer
 dialects are rejected rather than translated or treated as relative marker
 roots. The selected Git binary must accept the worktree and return absolute,
 distinct admin and common directories before marker-root escalation. Native

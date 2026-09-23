@@ -8,27 +8,33 @@ journey:
   prerequisites:
     - Comfortable with the feature lane
     - A scoped sprint goal
-  proof: "You can identify the one interactive approval, every persisted restart artifact, and every condition that still stops for the user."
+  proof: "You can identify the combined review package, its actual authority prompts, every persisted restart artifact, and every condition that still stops for the user."
 ---
 
 Use an autonomous sprint when you can describe a substantial outcome and want codeArbiter to carry
 the approved work through implementation, review, commits, and a pull request without stopping
-between task batches. The sprint is autonomous after one interactive approval package; it is never
-authorized to merge.
+between task batches. Autonomy begins only after the review package has current spec and plan
+approvals and the required host capabilities. A sprint is never authorized to merge.
 
 <figure class="ca-diagram">
   <img
     src="/diagrams/lane-sprint.svg"
-    alt="The autonomous sprint lane from one combined spec and plan approval through small implementation cells, SMARTS-logged decisions, review, verification, commit, and pull request."
+    alt="The autonomous sprint lane from a combined spec and plan review package and its required approvals through small implementation cells, SMARTS-logged decisions, review, verification, commit, and pull request."
     loading="lazy"
   />
-  <figcaption>One interactive approval opens the autonomous lane; durable plan and log state make each later cell resumable.</figcaption>
+  <figcaption>The combined review package opens the autonomous lane only after its actual authority gates clear; durable plan and log state make later cells resumable.</figcaption>
 </figure>
 
 <div class="ca-host-syntax">
   <strong>Host syntax:</strong> Claude Code uses <code>/ca:sprint</code>; Codex uses
   <code>$ca-sprint</code>; Pi uses <code>/ca-sprint</code>. Examples below use Claude Code syntax.
 </div>
+
+For new HTML work, prompt approval alone is not end-to-end capability. Verification and review
+authority are currently Codex-only; Claude Code and Pi must stop at unsupported typed boundaries.
+Check the [host authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability)
+against your exact installed package. The syntax examples do not guarantee that every host can
+finish a new HTML sprint.
 
 ## Before you begin
 
@@ -43,7 +49,7 @@ Invoke the sprint with the outcome, not a list of implementation guesses:
 /ca:sprint "Add an export flow for saved searches, including empty-state behavior, audit records, and user documentation"
 ```
 
-## The one interactive approval
+## The combined review package
 
 codeArbiter investigates the repository and prepares two linked artifacts:
 
@@ -51,11 +57,16 @@ codeArbiter investigates the repository and prepares two linked artifacts:
 2. **Implementation plan:** exact tasks, files, tests, dependencies, ordering, and verification
    mapped back to every acceptance criterion.
 
-It presents the spec and plan together at one STOP. Approve the package, request changes, or decline.
-Implementation does not begin until both artifacts are approved in that one decision.
+The sprint procedure calls for one combined review gate. Review the spec and plan together,
+request changes, or decline. If the plan exposes a weakness in the spec, revise the package
+before implementation rather than treating the two definitions independently.
 
-This is not two approvals. If the plan exposes a weakness in the spec, codeArbiter revises the
-package and presents the combined result again.
+**Typed HTML limitation:** the current typed adapter arms one artifact at a time. Follow each
+exact host-provided reply and approved-gate check: approve the spec, bind the plan to that
+approved spec, then approve the current plan. A generic reply does not approve both documents.
+The combined review package is not a one-prompt implementation guarantee, and this guide does
+not replace missing authority with a SMARTS decision. These content-bound prompts are distinct
+from an attended feature's per-batch checkpoints.
 
 ## Inspect the durable package
 
@@ -78,8 +89,12 @@ The sprint executes the plan in resumable task cells:
 2. observe the new tests fail for the intended reason;
 3. implement the smallest change that satisfies them;
 4. run the task's verification and reviewer checks;
-5. record the accepted task state on disk; and
-6. continue to the next independent cell.
+5. record the task's review-stage evidence; and
+6. continue only to tasks that the current eligibility check permits.
+
+For typed HTML, a task in `REVIEW` is not accepted. Reverify the current source snapshot and
+complete the combined quality review before accepting the checkpoint scope together. Do not
+accept tasks individually or count provisional dependency progress as completion.
 
 An interrupted session re-enters through the existing spec, plan, task states and sprint log.
 It does not automatically accept unfinished work. Typed `IN_PROGRESS` requires reconciliation;
@@ -97,6 +112,11 @@ The options, lens verdicts, decision, and confidence are appended to
 Low-confidence decisions are called out in the pull request so you can review the places where the
 evidence was genuinely close. Spending outside your stated limit is not treated as an ordinary
 SMARTS choice.
+
+On the typed path, SMARTS reasoning is not itself a receipt producer. SMARTS prerequisite authority is not supported
+by the current adapter; an unsatisfied prerequisite requires its genuine host-observed user
+workflow decision. A passing verification command cannot confer prerequisite authority either.
+Autonomy must stop where an actual authority producer is missing.
 
 ## Stops that remain yours
 

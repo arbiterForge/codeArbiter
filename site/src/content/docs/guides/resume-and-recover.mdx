@@ -60,6 +60,15 @@ or set a PATH/environment override to bypass the installation-owned manifest.
 
 `DRAFT_BINDING` and `AUTHORITY_UNVERIFIED` concern authority, not a broken installation.
 Return to the existing approval or evidence-capture boundary. Do not fabricate a receipt.
+The [host authority matrix](/guides/review-artifacts/#check-your-hosts-authority-capability) distinguishes
+an unavailable adapter from a missing current decision. Reinstalling the engine does not create
+a host adapter that is not implemented.
+
+After an upgrade, receipt format `0.1.0` remains inspection-only in the current source contract.
+Further authority-bearing transitions require a fresh `0.2.0` attestation from the applicable
+policy-owned boundary. These are receipt formats, not plugin versions. Preserve the old evidence;
+do not relabel a receipt, replay a pasted decision as new authority, or infer approval from chat.
+
 `REVISION_CONFLICT` or `STALE_CURSOR` means a read no longer describes the current definition or
 a contributing record. Reread, reconsider the intended change, and obtain fresh contextual
 reads. Never force the previous write through.
@@ -70,6 +79,11 @@ reads. Never force the previous write through.
 using its operation ID. Preserve that ID and the original failure. Ask the owning workflow to
 inspect recovery status before retrying. Starting another write with a new operation ID can
 make an uncertain outcome worse. `LOCK_BUSY` is not permission to delete lock files.
+
+For an interrupted host-owned reconciliation, let the adapter recover the exact stored operation
+and receipt. A lost mutation response can require replay of the same durable operation, not a new
+approval event. Cancellation must not clear an in-flight mutation. Verify the committed outcome
+and rerun eligibility before continuing; an observed prompt is not proof the mutation committed.
 
 ### Unsupported formats
 

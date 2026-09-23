@@ -7,6 +7,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	reads "github.com/arbiterForge/codeArbiter/core/artifacts/internal/read"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
@@ -47,6 +48,10 @@ func Run(root, op string, input object) (any, error) {
 			return authority.ReceiptSchema(), nil
 		case "event":
 			return authority.EventSchema(), nil
+		case "evidence_context":
+			return observation.ContextSchema(), nil
+		case "observation":
+			return observation.Schema(), nil
 		case "verification", "spec_review", "quality_review":
 			return evidence.PayloadSchema(model.S(r["name"])), nil
 		default:
@@ -101,8 +106,8 @@ func Run(root, op string, input object) (any, error) {
 		return nil, e
 	}
 	engine.Catalog = c
-	if op == "capture" {
-		return engine.capture(r)
+	if op == "capture" || op == "capture-observation" {
+		return engine.capture(r, op == "capture-observation")
 	}
 	if op == "migration-preview" || op == "migration-apply" {
 		return engine.migrate(op, r)
@@ -155,6 +160,8 @@ func Run(root, op string, input object) (any, error) {
 		}
 	}
 	switch op {
+	case "evidence-context":
+		return engine.evidenceContext(r, entry)
 	case "export":
 		return engine.export(r, entry)
 	case "identity":

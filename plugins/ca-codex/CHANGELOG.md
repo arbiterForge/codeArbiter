@@ -6,6 +6,32 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.11] - 2026-09-23
+
+### Fixed
+
+- Produce verification and independent-review authority from supervised,
+  host-observed work instead of caller-selected success claims, including
+  durable interrupted-attempt recovery and explicit task reconciliation.
+- Bind ordinary marketplace installation to the same immutable assembled
+  payload qualified by the release archive.
+- Corroborate real Codex verifier completions, freeze all supported workspace
+  entry types, and recover interrupted reconciliation without duplicate writes.
+- Use the dedicated publisher credential for protected distribution tag pushes.
+- Reject recovery from partial commits or changed workspace parents, and keep
+  interrupted retry instructions tied to the original request.
+
+## [0.13.10] - 2026-09-22
+
+### Fixed
+
+- Resolve cross-host git-hook path-form races (ADR-0038): the shared registry
+  and its generated pre-commit/pre-push shim now translate between
+  Windows-native, Git-Bash/MSYS, and WSL drvfs path spellings; the installer's
+  two-phase shim write is lock-serialized and rolls back on a partial
+  failure; a foreign-spelled trusted identity now produces a diagnostic
+  instead of a silent exit.
+
 ## [0.13.9] - 2026-09-22
 
 ### Fixed

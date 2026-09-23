@@ -492,14 +492,16 @@
         "site/src/content/docs/guides/uninstalling.md",
         "site/src/curated/commands/sprint.md",
         "tools/create-artifact-examples.py",
-        "core/surface/skills/INDEX.md"
+        "core/surface/skills/INDEX.md",
+        "core/surface/includes/codex-host-notes.md"
       ],
       "generated_paths": [
         "plugins/ca/skills/INDEX.md",
         "plugins/ca-codex/skills/INDEX.md",
-        "plugins/ca-pi/SKILLS.md"
+        "plugins/ca-pi/SKILLS.md",
+        "plugins/ca-codex/includes/codex-host-notes.md"
       ],
-      "reason": "Current docs state the enabled full-lane HTML default and disabled farm boundary honestly; complete migration, recovery, and release runbooks remain separate work."
+      "reason": "Current docs state the enabled full-lane HTML default, disabled farm boundary, and Codex-only authority-backed verification and review honestly; complete migration, recovery, and release runbooks remain separate work."
     },
     {
       "id": "decomposition-plans",

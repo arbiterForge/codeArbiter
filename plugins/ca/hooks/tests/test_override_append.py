@@ -86,8 +86,20 @@ class LockedOverrideAppendTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(self.log.read_bytes(), before)
 
+    def test_historical_carriage_return_is_preserved_while_new_row_is_appended(self):
+        historical = b"first row\nlegacy row with stray CR\rinside\n"
+        self.log.write_bytes(historical)
+
+        result = self.run_helper("--gate", "H-05", "--reason", "specific justification")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        raw = self.log.read_bytes()
+        self.assertTrue(raw.startswith(historical))
+        self.assertEqual(raw[:len(historical)], historical)
+        self.assertIn(b"BY: fixture@example.test | GATE: H-05", raw[len(historical):])
+
     def test_malformed_existing_log_variants_refuse_without_mutation(self):
-        for raw in (b"\xef\xbb\xbfseed\n", b"seed\r\n", b"seed\x00\n", b"\xff\n", b"unterminated"):
+        for raw in (b"\xef\xbb\xbfseed\n", b"seed\x00\n", b"\xff\n", b"unterminated"):
             with self.subTest(raw=raw):
                 self.log.write_bytes(raw)
                 result = self.run_helper("--gate", "H-05", "--reason", "specific")

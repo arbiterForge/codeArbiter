@@ -363,13 +363,49 @@ jobs:
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.target == 'ca-codex'
     permissions:
       actions: read
-      contents: write
+      contents: read
+    environment: codex-distribution
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Mint dedicated Codex distribution publisher token
+        id: codex-publisher
+        shell: bash
+        env:
+          APP_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
+          INSTALLATION_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_INSTALLATION_ID }}
+          PRIVATE_KEY: ${{ secrets.CODEX_DISTRIBUTION_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          key="$RUNNER_TEMP/codex-distribution-app.pem"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$PRIVATE_KEY" > "$key"
+          chmod 600 "$key"
+          python3 .github/scripts/create_codex_distribution_token.py \
+            --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
+
+      - name: Mint separate Codex ruleset verifier token
+        id: codex-ruleset-verifier
+        shell: bash
+        env:
+          APP_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
+          INSTALLATION_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID }}
+          PRIVATE_KEY: ${{ secrets.CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          key="$RUNNER_TEMP/codex-ruleset-verifier-app.pem"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$PRIVATE_KEY" > "$key"
+          chmod 600 "$key"
+          python3 .github/scripts/create_codex_distribution_token.py \
+            --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
 
       - uses: ./.github/actions/publish-release
         with:
@@ -384,7 +420,10 @@ jobs:
           package-host: codex
           ci-run-id: ${{ needs.preflight.outputs.cohort-run-id }}
           source-commit: ${{ github.sha }}
-          github-token: ${{ github.token }}
+          github-token: ${{ steps.codex-publisher.outputs.token }}
+          codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
+          codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}
+          codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
 
   release-sandbox:
     name: CA-Sandbox | [Release] - Publish
@@ -1104,7 +1143,8 @@ jobs:
     if: ${{ !cancelled() && github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && needs.auto-preflight.result == 'success' && needs.auto-cohort-reconciliation.result == 'success' && needs.auto-codex-provenance.result == 'success' && (needs.auto-preflight.outputs.ca-codex == 'true' || needs.auto-cohort-reconciliation.outputs.repair-ca-codex == 'true') }}
     permissions:
       actions: read
-      contents: write
+      contents: read
+    environment: codex-distribution
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -1114,6 +1154,41 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Mint dedicated Codex distribution publisher token
+        id: codex-publisher
+        shell: bash
+        env:
+          APP_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
+          INSTALLATION_ID: ${{ secrets.CODEX_DISTRIBUTION_APP_INSTALLATION_ID }}
+          PRIVATE_KEY: ${{ secrets.CODEX_DISTRIBUTION_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          key="$RUNNER_TEMP/codex-distribution-app.pem"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$PRIVATE_KEY" > "$key"
+          chmod 600 "$key"
+          python3 .github/scripts/create_codex_distribution_token.py \
+            --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
+
+      - name: Mint separate Codex ruleset verifier token
+        id: codex-ruleset-verifier
+        shell: bash
+        env:
+          APP_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
+          INSTALLATION_ID: ${{ secrets.CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID }}
+          PRIVATE_KEY: ${{ secrets.CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          key="$RUNNER_TEMP/codex-ruleset-verifier-app.pem"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$PRIVATE_KEY" > "$key"
+          chmod 600 "$key"
+          python3 .github/scripts/create_codex_distribution_token.py \
+            --app-id "$APP_ID" --installation-id "$INSTALLATION_ID" --private-key "$key"
 
       - uses: ./.github/actions/publish-release
         with:
@@ -1130,7 +1205,10 @@ jobs:
           ci-run-id: ${{ needs.auto-preflight.outputs.cohort-run-id }}
           source-commit: ${{ github.event.workflow_run.head_sha }}
           cohort-targets: ${{ needs.auto-cohort-reconciliation.outputs.cohort-targets }}
-          github-token: ${{ github.token }}
+          github-token: ${{ steps.codex-publisher.outputs.token }}
+          codex-publisher-actor-id: ${{ secrets.CODEX_DISTRIBUTION_APP_ID }}
+          codex-ruleset-verifier-token: ${{ steps.codex-ruleset-verifier.outputs.token }}
+          codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}
 
   auto-codex-cohort-gate:
     name: "[GATE ] | [COHORT] | Codex publication complete"

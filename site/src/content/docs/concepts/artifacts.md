@@ -43,6 +43,10 @@ native capability. Existing Markdown pairs stay authoritative in their own forma
 work remains inline with a triage record. The [review guide](/guides/review-artifacts/) explains
 how to inspect each without creating a second authority.
 
+The native engine is not a substitute for a host authority adapter. Prompt approval, verification
+and review have different [per-host capability boundaries](/guides/review-artifacts/#check-your-hosts-authority-capability).
+Shared files and entry syntax do not establish that a host can complete the whole typed workflow.
+
 The typed model is authoritative; the visible HTML is its generated view. Stable criterion IDs
 belong to the specification and are referenced by the plan. A browser view, matching hash, valid
 schema, approval record, passing test and completed PR establish different things. None should

@@ -63,6 +63,45 @@ describe("human-operable product window", () => {
     }
   });
 
+  it("bounds typed authority by host rather than equating entry syntax with capability", () => {
+    const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    expect(source).toContain("Verification and review authority below is currently Codex-only");
+    expect(source).toContain("Pi has no qualified pre-model prompt seam and must remain blocked");
+    const guide = read("src/content/docs/guides/review-artifacts.md");
+    expect(guide).toContain("## Check your host's authority capability");
+    expect(guide).toContain("| Claude Code | Host-observed prompt approval | Not supported");
+    expect(guide).toContain("| Codex | Host-observed prompt approval | Codex-only");
+    expect(guide).toContain("| Pi | Not supported | Not supported");
+    for (const path of ["guides/first-feature.mdx", "guides/feature-lane.md", "guides/autonomous-sprints.md", "concepts/artifacts.md"]) {
+      expect(read(`src/content/docs/${path}`)).toContain("/guides/review-artifacts/#check-your-hosts-authority-capability");
+    }
+    expect(read("src/content/docs/guides/feature-lane.md")).not.toContain("The persisted artifacts and gates are the same.");
+    expect(read("src/components/HostViews.astro")).toContain("verification and review authority are not supported");
+  });
+
+  it("separates the sprint review package from per-artifact approval and scope acceptance", () => {
+    const adapter = read("../core/pysrc/_approvallib.py");
+    expect(adapter).toContain("PENDING_APPROVAL");
+    expect(adapter).toContain('"reply": f"approve {artifact_id} {token}"');
+    const guide = read("src/content/docs/guides/autonomous-sprints.md");
+    expect(guide).toContain("current typed adapter arms one artifact at a time");
+    expect(guide).not.toContain("This is not two approvals.");
+    expect(guide).not.toContain("record the accepted task state on disk");
+    expect(guide).toContain("checkpoint scope together");
+    expect(guide).toContain("SMARTS prerequisite authority is not supported");
+  });
+
+  it("keeps old authority receipts inspection-only rather than relabelling them after upgrade", () => {
+    const source = read("../core/surface/includes/artifacts.md").replace(/\s+/g, " ");
+    expect(source).toContain("Receipt format 0.1.0 remains readable for inspection after upgrade but is not authority-bearing");
+    const guide = read("src/content/docs/guides/resume-and-recover.mdx");
+    expect(guide).toContain("0.1.0");
+    expect(guide).toContain("inspection-only");
+    expect(guide).toContain("0.2.0");
+    expect(guide).toContain("exact stored operation");
+    expect(read("src/components/RecoveryExplorer.astro")).toContain("AUTHORITY_UNVERIFIED");
+  });
+
   it("loads a real, draft-only native-rendered pair with complete criterion coverage", () => {
     const example = loadProductExample();
     expect(example.spec.governance.state).toBe("draft");

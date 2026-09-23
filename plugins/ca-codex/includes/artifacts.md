@@ -79,10 +79,11 @@ python "${PLUGIN_ROOT}/hooks/_approvallib.py" cancel --root "<project-root>" --a
 ```
 
 Cancellation records no authority. Other workflow authorities must use their
-corresponding host-owned adapters; never call `capture` with request-authored
-`authority_kind`, verdict, actor, or source-text labels, and never create an
-authority source merely to satisfy an artifact transition.
-`capture` does not change approval state. `approve` checks the resulting receipt
+corresponding host-owned adapters. Legacy `capture` events remain readable for
+inventory but are inspection-only: the engine refuses to wrap them in a current
+receipt. Current authority requires `capture-observation` over a closed producer
+profile and engine-issued evidence context; never create an authority source
+merely to satisfy an artifact transition. `approve` checks the resulting receipt
 against current ready content. A missing or changed receipt, captured event, or
 still-present policy source returns `AUTHORITY_UNVERIFIED`. Receipt format 0.1.0
 remains readable for inspection after upgrade but is not authority-bearing; the
@@ -161,10 +162,87 @@ verification and spec review. Across checkpoints, dependencies require accepted
 scope evidence. Provisional progress never counts as completion.
 
 The orchestrator executes the declared verification through its existing governed
-execution tool, captures actual named-test outcomes and output hashes, and obtains
-a separate spec review. `task-review` records those receipts. After every task in
-the scope reaches `REVIEW`, reverify against one current source snapshot, review
-the combined scope, and use `accept-scope` once. Do not accept tasks individually.
+execution tool through the installed production authority adapter; it never
+constructs a successful workflow event itself. Arm an exact task request first.
+Verification and review authority below is currently Codex-only. On Claude or
+Pi, stop at this boundary rather than treating model-authored results as
+authority; their installed prompt approval seams do not imply verification or
+review support.
+Every distinct `cwd` label in the engine context must be mapped once to an exact
+linked Git worktree root. Mapped worktrees must share the artifact repository's
+Git common directory, and the adapter freezes their filesystem identity, HEAD,
+status digest, effective argv, and executable bytes:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-authority.py" arm --root "<project-root>" --artifact-id <plan-id> --record-id <task-id> --activity verification --workspace "candidate worktree=<absolute-worktree>" --workspace "baseline-evidence worktree=<absolute-worktree>"
+```
+
+Use only the mappings actually named by that task; missing or extra labels fail
+closed. Run the returned request through one plain governed exec invocation (no
+compound shell expression), then publish only after the host's matching
+`PostToolUse` has corroborated the wrapper's completed request-bound result:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-authority.py" verify --root "<project-root>" --request-id <request-id>
+python "${PLUGIN_ROOT}/hooks/artifact-authority.py" publish --root "<project-root>" --request-id <request-id>
+```
+
+The verifier launches exact engine-declared argv without a shell, supervises the
+whole process tree, bounds output, requires exact named outcomes, and rejects
+workspace or executable drift. If an attempt is interrupted, use the adapter's
+`recover` operation to retain it as failed or abandoned; never rerun an uncertain
+attempt under the same request.
+
+For `spec_review` or `quality_review`, arm the corresponding activity without
+workspace mappings and dispatch the returned `launch_envelope` unchanged to one
+fresh host subagent. The Codex hooks bind the exact spawn call, child start and
+child stop; a pasted or coordinator-authored decision is not review authority.
+Publish the completed request through the same `publish` command. `task-review`
+records the separate verification and spec-review receipts. After every task in
+the scope reaches `REVIEW`, reverify against one current source snapshot, run the
+combined quality review, and use `accept-scope` once. Do not accept tasks
+individually.
+
+An interrupted or `BLOCKED` HTML task never resumes by editing its status. Arm
+the installed reconciliation adapter for the exact task or scope, present its
+returned reply verbatim, and let `UserPromptSubmit` capture and apply the observed
+user decision across repositories:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --target-id <task-id> --operation task-reconcile --target-state PENDING --reason "<reviewed reason>" --assessment "<reviewed assessment>"
+python "${PLUGIN_ROOT}/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --target-id <checkpoint-id> --operation scope-reconcile --assessment "<reviewed assessment>"
+```
+
+Ambiguous armed requests, changed identities, stale inputs, wrong replies, or a
+foreign Git repository all fail closed. Re-run `eligible` after reconciliation;
+the prompt reply itself is not proof that the lifecycle mutation committed.
+If a mutation response is lost, submit the same exact reply again: the adapter
+replays its durable operation ID and receipt without recapturing authority. A
+request that has not reached mutation can be cancelled with:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --cancel --prompt "<exact returned reply>"
+```
+
+If a crash left a complete pending request before its prompt route was
+registered, use this command instead. It refuses an active route or any
+in-flight mutation:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --cancel-orphan
+```
+
+If a durable mutation attempt exists, neither cancellation path can clear it.
+Replay the exact stored operation and receipt under the reconciliation lock:
+
+```sh
+python "${PLUGIN_ROOT}/hooks/artifact-reconcile.py" --root "<project-root>" --artifact-id <plan-id> --recover
+```
+
+Recovery clears the request only on a committed replay or a closed-set engine
+result proving no commit (`REVISION_CONFLICT` or `OPERATION_ROLLED_BACK`). Other
+errors retain it for investigation. Re-arm only after cancellation or recovery
+succeeds; a committed recovery is not permission to repeat the mutation.
 
 `IN_PROGRESS` after interruption requires reconciliation, not automatic completion.
 `REVIEW` requires fresh evidence. Source changes stale proof; state/branding updates

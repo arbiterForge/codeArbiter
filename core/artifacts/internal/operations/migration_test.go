@@ -89,7 +89,7 @@ func TestMigrationStalePreview(t *testing.T) {
 		t.Fatal("stale preview mutated files")
 	}
 }
-func TestCaptureIsIdempotentNotApproval(t *testing.T) {
+func TestLegacyCaptureCannotConferApproval(t *testing.T) {
 	h := newHarness(t)
 	h.createPair()
 	s := h.doc("SPEC-EXAMPLE")
@@ -98,15 +98,12 @@ func TestCaptureIsIdempotentNotApproval(t *testing.T) {
 		t.Fatalf("inline caller event was accepted: %v", e)
 	}
 	source := h.authoritySource(ev)
-	a := h.run("capture", source)
-	b := h.run("capture", source)
-	if a["receipt"] != b["receipt"] {
-		t.Fatal("capture not idempotent")
+	if _, e := h.request("capture", source); fault.Code(e) != "OBSERVATION_REQUIRED" {
+		t.Fatalf("legacy workflow event conferred authority: %v", e)
 	}
 	if h.doc(s.ID()).Hash() != s.Hash() {
 		t.Fatal("capture mutated artifact")
 	}
-	h.mut("approve", s.ID(), object{"receipt": a["receipt"]})
 	// A kind/verdict mismatch must fail before saving any event bytes.
 	ev["authority_kind"] = "verification_runner"
 	raw, _ := canonical.Marshal(ev)

@@ -83,6 +83,29 @@ def fixture(name):
         return f.read()
 
 
+def _drive_split(native_path):
+    import re
+    p = native_path.replace("\\", "/")
+    m = re.match(r"^([A-Za-z]):/(.*)$", p)
+    assert m, f"not a drive-letter absolute path: {native_path}"
+    return m.group(1).lower(), m.group(2)
+
+
+def wslify(native_path):
+    """The WSL drvfs spelling (`/mnt/c/...`) of a Windows-drive absolute
+    path — a raw STRING transform, no filesystem access (ADR-0038 test
+    fixture: simulates what a WSL-hosted process would have written)."""
+    drive, rest = _drive_split(native_path)
+    return f"/mnt/{drive}/{rest}"
+
+
+def gitbashify(native_path):
+    """The Git-Bash/MSYS spelling (`/c/...`) of a Windows-drive absolute
+    path — a raw STRING transform, no filesystem access (ADR-0038)."""
+    drive, rest = _drive_split(native_path)
+    return f"/{drive}/{rest}"
+
+
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
