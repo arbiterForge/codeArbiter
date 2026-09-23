@@ -33,8 +33,31 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.9","candidate_commit":"178ca1487fb16c2ee0b796370d72fb8ee982eebe","candidate_source_tree":"24c20db68662630cb8f344804ad4918490b00c01","candidate_package_sha256":"27dfb25752ae8da1d559e70fadf6452dbf5d500173b8d4630f6fe3daff9131b4","candidate_ci_run_id":35811348939,"candidate_ci_run_attempt":1,"candidate_artifact_id":10730305519,"candidate_artifact_sha256":"a0c719911b6f15039d8e14c277e362de2426fb9d834374cf47c03f25dd5f44b8","candidate_archive_sha256":"f1b5c5c151b368712336a3e83d0b0bf7158edbc61b7008f5f3cb98fe021e7df3","run_head_sha":"2a353ed83e311c258708d1bcef7d6b69c7208565","pr_number":843,"pr_head_sha":"2a353ed83e311c258708d1bcef7d6b69c7208565","pr_head_ref":"codex/autonomy-routing-integration","pr_base_sha":"32e3496ae2d7ab3b2373ee669871def3228dedc4","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.10","candidate_commit":"a658cbd9d42137e50fc8d277c523384a3d19fba9","candidate_source_tree":"7eaf73d98992abf23c7b26fe9bb20d53fd09e326","candidate_package_sha256":"fc521ba86d9bcc1282676c0a3977bd5325f943bdb9add061ee4727472914736a","candidate_ci_run_id":35816975131,"candidate_ci_run_attempt":1,"candidate_artifact_id":10732077434,"candidate_artifact_sha256":"346fa79d897af45160b2e415a69ddac136053b88fa0f4e3801a7a2a68c99c2a0","candidate_archive_sha256":"345ddbe5f014ed21edb8c86a548a73702e2a308952c22258307b1356947d66e5","run_head_sha":"bb46e4d4c48df1017438f1f21f1055831ae89ae4","pr_number":838,"pr_head_sha":"bb46e4d4c48df1017438f1f21f1055831ae89ae4","pr_head_ref":"fix/hooks-wsl-path-races","pr_base_sha":"b41d9803eacb3acf4b93c8bec81e1aa2f086aec7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-23","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.10**, Windows,
+2026-09-23. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
+exact 0.13.10 package from pull-request qualification run `35816975131`, attempt 1, artifact
+`10732077434`. The run's only failed jobs were Candidate readiness and its downstream Merge
+readiness consumer, both waiting for this marker; all six native builds, package assembly, and all
+18 cold-package checks succeeded. GitHub's artifact digest
+`sha256:346fa79d897af45160b2e415a69ddac136053b88fa0f4e3801a7a2a68c99c2a0` matched the
+downloaded archive. The cohort receipt names synthetic candidate commit
+`a658cbd9d42137e50fc8d277c523384a3d19fba9`, source tree
+`7eaf73d98992abf23c7b26fe9bb20d53fd09e326`, and a 227-member Codex package with 219
+source-origin members. The Codex release archive matched its cohort digest
+`sha256:345ddbe5f014ed21edb8c86a548a73702e2a308952c22258307b1356947d66e5`; the canonical
+tracked candidate content digest is
+`sha256:fc521ba86d9bcc1282676c0a3977bd5325f943bdb9add061ee4727472914736a`. The PR head
+and base are recorded separately; this preview proof does not claim the future merge commit.
+The exact archive was installed in an isolated Codex home. SessionStart delivered the startup
+banner with `host: codex`; the installation-pinned `$ca-doctor` reported 13 OK, 0 WARN, and 0 FAIL,
+including Windows/AMD64 artifact capability and a live Git-hook backstop. The broad-staging dry
+run was denied before execution with `[H-03]`, explicit-file staging was not attempted, and the
+fixture index remained clean. The temporary authentication copy used for this isolated task was
+removed afterward. This refreshes the package, startup, doctor, native payload, and H-03 boundary;
+it does not claim that the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
 2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
 exact 0.13.9 package from pull-request qualification run `35811348939`, attempt 1, artifact
 `10730305519`. That run's overall conclusion was failure only because Candidate readiness and its
