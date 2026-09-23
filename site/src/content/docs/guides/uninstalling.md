@@ -164,14 +164,34 @@ repository where it was active. This removes only that host's registry entry and
 trusted-identity record. It deliberately leaves the shared shims because another installed host may
 still depend on them.
 
-From a codeArbiter checkout, run the command for each host you are removing. Replace
-`C:\path\to\repo` with the target repository:
+A marketplace or npm installation does not require a development checkout. First discover the
+**installed** helper and confirm its ownership:
 
-```powershell
-python plugins/ca/hooks/_githooks.py uninstall C:\path\to\repo
-python plugins/ca-codex/hooks/_githooks.py uninstall C:\path\to\repo
-python plugins/ca-pi/hooks/_githooks.py uninstall C:\path\to\repo
+1. Run the host's doctor report while the adapter is still installed and note its active package
+   location. For Pi, also inspect `pi list` for the exact installed source.
+2. Inside the affected repository, run `git rev-parse --git-common-dir`. Resolve a relative result
+   from that repository and inspect `codearbiter-hooksd/<plugin>.path` beneath it. The selected
+   entry points to that installation's `git-enforce.py`.
+3. Compare that path with the active package reported by the host. The sibling `_githooks.py`
+   should be present in the same installed `hooks` directory. Inspect it before execution; a
+   repository-local registry entry alone is not sufficient reason to execute an arbitrary path.
+4. Use the interpreter appropriate to that installed host and run the confirmed absolute helper
+   path with `uninstall` and the verified repository root.
+
+For example, after replacing both placeholders with confirmed absolute paths:
+
+```text
+python "<installed-hooks-directory>/_githooks.py" uninstall "<repository-root>"
 ```
+
+`python` here means the interpreter verified for that installation, not a promise that this
+spelling resolves on every OS. Quote paths with spaces. Remove only the selected host's
+registration, then confirm it is absent while other installed hosts' entries remain.
+
+If the package was already removed, or the registry points to missing/mismatched files, stop and
+reconcile the installation identity. Do not clone current `main` and run a potentially different
+helper against old registrations. Restore the matching qualified package when necessary, then
+remove its registration before uninstalling it again.
 
 Run only the rows for hosts that were installed. The commands are safe to repeat: a host with no
 entry reports no change. Run `git rev-parse --git-common-dir` inside the target repository and append
@@ -293,7 +313,7 @@ Start a fresh session after the chosen exit:
 - for one-host removal, confirm that host no longer lists the plugin and that another installed host
   can still read the retained `.codearbiter/` state;
 - for full removal, confirm Claude's optional statusline no longer points into the plugin cache,
-  Codex no longer lists or trusts the adapter, Pi no longer lists the Git source, and inspect
+  Codex no longer lists or trusts the adapter, Pi no longer lists the removed npm or Git source, and inspect
   `pre-commit` and `pre-push` before removing only files with the codeArbiter sentinel.
 
 The proof is a fresh-session observation plus an intentional decision about retained repository

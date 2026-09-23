@@ -173,6 +173,15 @@ header.header {
   line-height: 1.78;
 }
 
+/* Explicit component layouts own spacing through gap, not Markdown sibling
+ * margins. Otherwise later cards lose border-box height while the first card
+ * stretches to the entire grid row. Only opted-in direct children are reset;
+ * paragraphs, lists and headings inside cards retain their authored rhythm. */
+[data-ca-layout="peers"] > * {
+  margin-block: 0;
+  min-inline-size: 0;
+}
+
 .sl-markdown-content > p:first-of-type {
   color: var(--ca-ink-soft);
   font-size: var(--ca-text-lg);
@@ -868,4 +877,24 @@ details.ca-source pre {
   .ca-button {
     transition: none;
   }
+}
+
+/* Native disclosure retains implementation detail without making it the first
+ * mental model. It remains operable without JavaScript and expands in print. */
+.ca-implementation-view {
+  margin-block: var(--ca-space-5);
+  padding: var(--ca-space-4);
+  border: 1px solid var(--ca-line-strong);
+  border-radius: var(--ca-radius-md);
+}
+.ca-implementation-view > summary {
+  min-block-size: 2.75rem;
+  align-content: center;
+  color: var(--ca-ink);
+  cursor: pointer;
+  font-weight: 650;
+}
+.ca-implementation-view .ca-diagram { margin-block-end: 0; }
+@media print {
+  .ca-implementation-view::details-content { display: block; content-visibility: visible; }
 }

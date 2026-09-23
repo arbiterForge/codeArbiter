@@ -55,13 +55,15 @@ The reason must name the gate and justify the action. A vague reason such as "ju
 Codex uses `$ca-override "reason"`; Claude Code uses `/ca:override "reason"`; Pi uses
 `/ca-override "reason"`.
 
+The command and receipt below are one illustrative design-review exception, not a captured production override.
+
 ## What Happens
 
 1. codeArbiter reads your identity from `git config user.email`. If that value is unset, it asks once. No second prompt.
 2. One line is appended to `.codearbiter/overrides.log`:
 
    ```text
-   [2026-06-27T14:30:00Z] | BY: you@example.com | GATE: H-03 wildcard staging | REASON: generated migration file omitted from explicit list; reviewed the staged diff, this commit only
+   [2026-06-27T14:30:00Z] | BY: you@example.com | GATE: design review | REASON: retain the deprecated v2 compatibility selector until the documented v3 removal release; supported v2 clients still depend on it, this commit only
    ```
 
 3. The blocked action proceeds. The response confirms that the override is logged.

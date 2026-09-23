@@ -5,6 +5,7 @@ import { unified } from "@astrojs/markdown-remark";
 import { readFileSync } from "node:fs";
 import { rehypeBaseLinks } from "./scripts/rehype-base-links.ts";
 import { rehypeTableShell } from "./scripts/rehype-table-shell.ts";
+import { buildJourneySidebar } from "./scripts/journey-navigation.ts";
 import { buildReferenceSidebar } from "./scripts/reference-sidebar.ts";
 
 // Served from https://codearbiter.dev/ — shared by the `base` option below and
@@ -146,6 +147,7 @@ export default defineConfig({
         ThemeSelect: "./src/components/ThemeSelect.astro",
         // SPA-like navigation via Astro view transitions
         Head: "./src/components/Head.astro",
+        Header: "./src/components/Header.astro",
         // suppress the duplicate auto-<h1> on the bespoke landing hero
         PageTitle: "./src/components/PageTitle.astro",
         // position-based scroll-spy so the last "On this page" item highlights
@@ -163,6 +165,7 @@ export default defineConfig({
         "./src/styles/callouts.css",
         "./src/styles/landing.css",
         "./src/styles/academy.css",
+        "./src/styles/product-tour.css",
       ],
       // Starlight 0.33+ takes an array of link items, not an object.
       social: [
@@ -172,96 +175,7 @@ export default defineConfig({
           href: "https://github.com/arbiterForge/codeArbiter",
         },
       ],
-      sidebar: [
-        {
-          label: "Start",
-          collapsed: false,
-          items: [
-            { label: "What Is codeArbiter", slug: "overview" },
-            { label: "Learning Path", slug: "learn" },
-            { label: "Choose Your Host", slug: "getting-started/choose-your-host" },
-            { label: "Install", slug: "getting-started/install" },
-            { label: "Protect Your First Repository", slug: "getting-started/quickstart" },
-            { label: "Claude Code + Codex", slug: "getting-started/claude-code-and-codex" },
-            { label: "Pi", slug: "getting-started/pi" },
-            { label: "Compatibility", slug: "getting-started/compatibility" },
-            { label: "Trust & Lifecycle", slug: "trust" },
-            { label: "FAQ", slug: "faq" },
-          ],
-        },
-        {
-          label: "Workflows",
-          collapsed: true,
-          items: [
-            { label: "Opt a Repository In", slug: "guides/opt-in-a-repo" },
-            { label: "Build a Feature End to End", slug: "guides/feature-lane" },
-            { label: "Run an Autonomous Sprint", slug: "guides/autonomous-sprints" },
-            { label: "Record an Architecture Decision", slug: "guides/recording-adrs" },
-            { label: "Add a Dependency Safely", slug: "guides/adding-a-dependency" },
-            { label: "Cut a Release", slug: "guides/releasing-a-version" },
-          ],
-        },
-        {
-          label: "Operate",
-          collapsed: true,
-          items: [
-            { label: "Set Up the Statusline", slug: "guides/the-statusline" },
-            { label: "Override a Gate Safely", slug: "guides/overriding-a-gate" },
-            { label: "Troubleshooting", slug: "guides/troubleshooting" },
-            { label: "Uninstall & Disable", slug: "guides/uninstalling" },
-            { label: "Explore Untrusted Code", slug: "guides/ca-sandbox" },
-          ],
-        },
-        {
-          label: "Understand",
-          collapsed: true,
-          items: [
-            { label: "Concept Map", slug: "concepts" },
-            { label: "The Gated-Lane Model", slug: "concepts/gated-lanes" },
-            { label: "SMARTS", slug: "concepts/smarts" },
-            { label: "Enforcement & Security", slug: "enforcement" },
-            { label: "Provenance and Context Drift", slug: "concepts/provenance-drift" },
-            { label: "ADRs and the Decision Log", slug: "concepts/adrs" },
-            { label: "Just-in-Time Context Injection", slug: "concepts/jit-context-injection" },
-            { label: "Checkpoints", slug: "concepts/checkpoints" },
-            { label: "The Persona-Register Split", slug: "concepts/persona-and-context" },
-            { label: "The Evidence Behind the Persona", slug: "concepts/persona-research-basis" },
-            { label: "Auditability", slug: "concepts/auditability" },
-            { label: "Selected Hardening Notes", slug: "concepts/hardening-history" },
-          ],
-        },
-        {
-          label: "Reference",
-          collapsed: true,
-          items: [
-            { label: "The .codearbiter/ Directory", slug: "codearbiter-directory" },
-            { label: "Configuration", slug: "reference/configuration" },
-            { label: "Glossary", slug: "glossary" },
-            { label: "All Reference", slug: "reference" },
-            { label: "Hooks Reference", slug: "hooks" },
-            { label: "Hook Gates", slug: "reference/hooks-gates" },
-            { label: "Changelog", slug: "changelog" },
-            ...referenceGroups,
-          ],
-        },
-        {
-          label: "Feature Forge",
-          collapsed: true,
-          items: [
-            { label: "What Is the Feature Forge", slug: "feature-forge/overview" },
-            { label: "What's in the Forge", slug: "feature-forge/whats-in-the-forge" },
-            { label: "Use a Preview Feature", slug: "feature-forge/using-preview-features" },
-          ],
-        },
-        {
-          label: "Arbiter Academy",
-          collapsed: true,
-          items: [
-            { label: "Academy Overview", slug: "academy" },
-            ...academySidebarItems,
-          ],
-        },
-      ],
+      sidebar: buildJourneySidebar(referenceGroups, academySidebarItems),
     }),
   ],
 });

@@ -109,3 +109,54 @@ Before documentation changes ship:
 4. Inspect the landing, one page from each hand-authored category, and one page from each generated
    collection at desktop and mobile widths.
 5. Test keyboard focus, search, reduced motion, and horizontal overflow.
+
+## Human-operable guides and product demonstrations
+
+A guide is complete when a reader can identify the inputs, permission and repository state needed
+to begin; the actor and surface for each important action; the resulting artifacts; the facts to
+review; observable completion; safe recovery; and the next useful step. This is an editorial and
+reader-task contract, not a requirement to repeat eight headings in every reference entry.
+
+Keep project-level greenfield planning distinct from typed feature/sprint pairs, preserved legacy
+Markdown pairs and inline small-lane work. Use the owning implementation for exact names and
+boundaries. Compatibility aliases remain addressable; primary navigation follows reader journeys.
+
+The product tour uses one scenario and explicitly distinguishes native-generated draft artifacts,
+actual local fixture test results, illustrative conversations, and installed-host evidence. No tour
+control grants authority or mutates project state. Real artifacts are immutable capture outputs;
+curated projections never replace native validation or make a digest an authentication claim.
+
+Demonstrations must have a static reading path, keyboard-operable controls, no compulsory autoplay,
+no remote font or analytics requests, reduced-motion and forced-colors support, and constrained
+horizontal scrolling for code. Reuse the site's tokens while preserving product-specific exceptions,
+including the statusline's violet default. The six header destinations and sidebar order share
+`site/scripts/journey-navigation.ts`; generated reference classification still owns reference groups.
+
+Before merging changes to demonstrations, run the fixture integrity tests, actual Python example
+checks, the existing site checks and the production-browser tests. Inspect desktop and narrow
+screens. Browser accessibility automation is not screen-reader or real-user certification. The
+human acceptance task is to perform the guide without the author supplying an omitted step.
+
+
+## Peer cards and reader-first workflow maps
+
+Opt a component's peer list or grid into `data-ca-layout="peers"` when its `gap`
+owns sibling spacing. The shared rule removes direct-child block margins only.
+Do not apply Markdown's adjacent-sibling spacing as well: it offsets later cards
+and reduces their stretched border-box height while the first fills the row.
+Keep equal column widths and aligned card boundaries within a row. In a single
+column, different amounts of content may produce different heights. Do not hide
+content, truncate warnings, or impose fixed heights merely to make cards equal.
+Intentional split layouts and prose spacing are not peer-card defects.
+
+Workflow guides introduce what readers receive, what they must inspect or decide,
+and what evidence permits continuation before exposing implementation routing.
+Use `ReaderJourney` for a static, ordered four-step map; label its lane and host
+boundary. It is an explanatory sequence, never live status, an execution trace,
+or evidence that any step has completed. Keep the detailed implementation diagram
+in a native disclosure and retain the full operating procedure below it.
+
+Verify peer geometry from computed browser styles at desktop, tablet and narrow
+widths, including expanded Academy lists and every selectable exhibit state.
+Check reading order, keyboard disclosure, no-script access, forced colors, print,
+and non-root links. Inspect actual captures, not only a green overflow test.

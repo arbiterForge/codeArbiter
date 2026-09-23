@@ -1,0 +1,22 @@
+---
+import { academyLessons } from '../generated/academy-content';
+import { buildAcademyWayfinding } from '../../scripts/academy-wayfinding';
+import AcademyBookmark from './AcademyBookmark.astro';
+interface Props { labId: string; }
+const { labId } = Astro.props;
+const place = buildAcademyWayfinding(academyLessons.map(lesson => lesson.guide)).find(lesson => lesson.id === labId);
+if (!place) throw new Error(`Unknown Academy navigation lesson: ${labId}`);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<aside class="academy-wayfinding" aria-label="Your place in the curriculum">
+  <p class="academy-overview__eyebrow">{labId.split('-')[0]} · {place.track.label}</p>
+  <p><strong>Lesson {place.position} of {place.total}</strong> in the curriculum. Lesson {place.trackPosition} of {place.trackTotal} in this track.</p>
+  <nav class="academy-wayfinding__links" aria-label="Academy lesson context">
+    <a href={`${base}/academy/tracks/${place.track.id}/`}>View {place.track.label} track</a>
+    <a href={`${base}/academy/#academy-curriculum`}>All lessons</a>
+    <a href={`${base}/academy/#setup`}>Setup and Doctor</a>
+  </nav>
+  {place.prerequisites.length > 0 && <p><strong>Published prerequisites:</strong>{' '}{place.prerequisites.map((item, index) => <>{index > 0 && ' · '}{item.lessonId ? <a href={`${base}/academy/${item.lessonId.toLowerCase()}/`}>{item.label}</a> : item.label}</>)}</p>}
+  <p class="academy-wayfinding__note">These numbers show reading order, not verified progress. Follow the lesson's checkpoint and recovery instructions before proceeding.</p>
+  <AcademyBookmark labId={labId} />
+</aside>

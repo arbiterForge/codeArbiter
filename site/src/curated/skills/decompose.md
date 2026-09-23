@@ -22,6 +22,17 @@ technical shape, integrations, and risks — persisting every layer to disk as i
 session never erases the earlier work, then turns the finished interview into the project's
 foundational documents.
 
+## Deliverables and their continuing role
+
+The synthesis phase creates `01-architecture-breakdown.md`, `02-phased-build-plan.md` and
+`03-task-backlog.md` under `.codearbiter/plans/`. They define the component architecture,
+phased outcomes and project-level backlog respectively. You explicitly review all three before
+population. Reconcile later reads those exact filenames; they are not feature HTML plans.
+[Plan a new project](/guides/plan-a-new-project/) explains what to inspect in each document.
+
+Completed interview layers persist before the next layer starts. This is not a guarantee that
+every unfinished answer is already on disk.
+
 ## Phases
 
 1. Adopt the interview persona and state its rules of engagement.

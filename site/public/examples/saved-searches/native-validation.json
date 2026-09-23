@@ -1,0 +1,157 @@
+{
+  "specs_structural": {
+    "ok": true,
+    "operation": "validate",
+    "protocol": "codearbiter.artifact-api/0.1.0",
+    "result": {
+      "artifact_id": "SPEC-SAVED-SEARCHES",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "structural",
+      "kind": "spec",
+      "model_sha256": "3c06ee0ab734eff731846fc8d827c99c22b2b7c3fe6a6adbddc7cbdc957eb103",
+      "normative_sha256": "1ba211018ee0c346afeabbd44366c6d119cc9724a9d71f0b505be94e290bc3d1",
+      "path": ".codearbiter/specs/saved-searches.html",
+      "revision": 1,
+      "symbol_count": 13,
+      "valid": true
+    }
+  },
+  "specs_ready": {
+    "ok": true,
+    "operation": "validate",
+    "protocol": "codearbiter.artifact-api/0.1.0",
+    "result": {
+      "artifact_id": "SPEC-SAVED-SEARCHES",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "ready",
+      "kind": "spec",
+      "model_sha256": "3c06ee0ab734eff731846fc8d827c99c22b2b7c3fe6a6adbddc7cbdc957eb103",
+      "normative_sha256": "1ba211018ee0c346afeabbd44366c6d119cc9724a9d71f0b505be94e290bc3d1",
+      "path": ".codearbiter/specs/saved-searches.html",
+      "revision": 1,
+      "symbol_count": 13,
+      "valid": true
+    }
+  },
+  "specs_approved": {
+    "ok": true,
+    "operation": "validate",
+    "protocol": "codearbiter.artifact-api/0.1.0",
+    "result": {
+      "artifact_id": "SPEC-SAVED-SEARCHES",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "authority_diagnostic": {
+        "code": "AUTHORITY_UNVERIFIED",
+        "message": "artifact has not been approved by its workflow"
+      },
+      "diagnostics": null,
+      "gate": "approved",
+      "kind": "spec",
+      "model_sha256": "3c06ee0ab734eff731846fc8d827c99c22b2b7c3fe6a6adbddc7cbdc957eb103",
+      "normative_sha256": "1ba211018ee0c346afeabbd44366c6d119cc9724a9d71f0b505be94e290bc3d1",
+      "path": ".codearbiter/specs/saved-searches.html",
+      "revision": 1,
+      "symbol_count": 13,
+      "valid": false
+    }
+  },
+  "plans_structural": {
+    "ok": true,
+    "operation": "validate",
+    "protocol": "codearbiter.artifact-api/0.1.0",
+    "result": {
+      "artifact_id": "PLAN-SAVED-SEARCHES",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "structural",
+      "kind": "plan",
+      "model_sha256": "44814e4c4d2e3411900d1335144de3ad9631b303b25a492561da2ef7cad790e0",
+      "normative_sha256": "e60d58cf82c0993df76463d4ff54a4de08da6354cde6ef1fce46598c46a6c9f7",
+      "path": ".codearbiter/plans/saved-searches.html",
+      "revision": 1,
+      "symbol_count": 4,
+      "valid": true
+    }
+  },
+  "plans_ready": {
+    "ok": true,
+    "operation": "validate",
+    "protocol": "codearbiter.artifact-api/0.1.0",
+    "result": {
+      "artifact_id": "PLAN-SAVED-SEARCHES",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "diagnostics": null,
+      "gate": "ready",
+      "kind": "plan",
+      "model_sha256": "44814e4c4d2e3411900d1335144de3ad9631b303b25a492561da2ef7cad790e0",
+      "normative_sha256": "e60d58cf82c0993df76463d4ff54a4de08da6354cde6ef1fce46598c46a6c9f7",
+      "path": ".codearbiter/plans/saved-searches.html",
+      "revision": 1,
+      "symbol_count": 4,
+      "valid": true
+    }
+  },
+  "plans_approved": {
+    "ok": true,
+    "operation": "validate",
+    "protocol": "codearbiter.artifact-api/0.1.0",
+    "result": {
+      "artifact_id": "PLAN-SAVED-SEARCHES",
+      "authority": {
+        "authority_verified": false,
+        "diagnostic": "AUTHORITY_UNVERIFIED",
+        "state": "draft",
+        "trust_model": "cooperative workflow attestation"
+      },
+      "authority_diagnostic": {
+        "code": "DRAFT_BINDING",
+        "message": "plan must be explicitly rebound to an approved source"
+      },
+      "diagnostics": null,
+      "gate": "approved",
+      "kind": "plan",
+      "model_sha256": "44814e4c4d2e3411900d1335144de3ad9631b303b25a492561da2ef7cad790e0",
+      "normative_sha256": "e60d58cf82c0993df76463d4ff54a4de08da6354cde6ef1fce46598c46a6c9f7",
+      "path": ".codearbiter/plans/saved-searches.html",
+      "revision": 1,
+      "symbol_count": 4,
+      "valid": false
+    }
+  },
+  "draft_eligibility": {
+    "error": {
+      "code": "DRAFT_BINDING",
+      "message": "plan must be explicitly rebound to an approved source"
+    },
+    "ok": false,
+    "operation": "eligible",
+    "protocol": "codearbiter.artifact-api/0.1.0"
+  }
+}

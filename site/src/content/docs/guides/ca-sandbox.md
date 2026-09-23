@@ -16,9 +16,13 @@ and `ca-pi`, it is not a governance host. It carries no gates, no `.codearbiter/
 no relationship to the test-first/review/commit-gate pipeline the rest of this site documents. It is
 an **infrastructure** plugin with one job: run code you do not trust without exposing your machine.
 
-Give it a repo URL and it clones the code into a Docker named volume (never onto your host
-filesystem), builds a dependency-cached image with [nixpacks](https://nixpacks.com/), and starts a
-container you can explore, run, and tear down.
+Give it a repo URL and it clones into a Docker named volume, builds an image, and starts an
+execution container. These are different boundaries: acquisition and builds can use the network;
+build preparation copies source into a host temporary directory named `ca-sbx-checkout-*` and
+attempts cleanup afterward. Failed cleanup can leave that copy on the host. The execution
+container's no-bind-mount/offline policy does not mean source never reaches the host or that
+acquisition was offline. Review the [privacy policy](https://github.com/arbiterForge/codeArbiter/blob/main/PRIVACY.md)
+for storage, credentials and retention before handling sensitive or untrusted material.
 
 ## Status
 
@@ -37,8 +41,9 @@ The isolation holds by construction, not by trust:
 - No `/var/run/docker.sock` mount; never `--privileged`.
 - `--cap-drop ALL`, `--security-opt no-new-privileges`, read-only root filesystem, non-root user,
   resource caps.
-- Getting work back out is host-initiated only (`sandbox cp`, a `docker cp` pull): the container is
-  never given a path back into the host.
+- Explicit execution-output export is host-initiated (`sandbox cp`, a `docker cp` pull); the
+  execution container has no bind-mounted export directory. This is separate from the host
+  temporary source copy used during build preparation.
 - Network defaults to **offline** (`--network none`); `clone-then-cut` allows egress for the
   clone/build only, then severs it; an experimental `allowlist` mode exists but is not the recommended
   posture.

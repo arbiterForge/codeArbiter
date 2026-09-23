@@ -62,7 +62,7 @@ const variantLabel = (variant: AcademyCommandVariant) => {
     )
   }
 
-  <ol class="academy-actions">
+  <ol class="academy-actions" data-ca-layout="peers">
     {
       actions.map((action) => (
         <li class="academy-action" id={`action-${action.id}`}>
@@ -94,7 +94,7 @@ const variantLabel = (variant: AcademyCommandVariant) => {
 
             {
               action.variants.length > 0 && (
-                <div class="academy-action__commands" data-academy-command-group>
+                <div class="academy-action__commands" data-ca-layout="peers" data-academy-command-group>
                   {action.variants.map((variant) => {
                     const commandId = `academy-command-${action.id}-${variant.id}`;
                     const label = variantLabel(variant);

@@ -1,0 +1,99 @@
+---
+title: See the Product in Action
+description: "Inspect real draft specifications, linked plans, executable fixture tests, greenfield documents, and the boundaries of codeArbiter's evidence."
+journey:
+  level: Foundation
+  time: "Self-paced product tour"
+  outcome: "Understand the records codeArbiter produces, what you review, and which evidence remains unproven."
+  prerequisites: []
+  proof: "You can trace one criterion into a plan and test without confusing draft structure, approval, and completed delivery."
+---
+
+import ArtifactWorkbench from '../../components/ArtifactWorkbench.astro';
+import ProjectBlueprint from '../../components/ProjectBlueprint.astro';
+import DeliveryStory from '../../components/DeliveryStory.astro';
+import HostViews from '../../components/HostViews.astro';
+import RecoveryExplorer from '../../components/RecoveryExplorer.astro';
+import StatuslineGallery from '../../components/StatuslineGallery.astro';
+
+codeArbiter is easier to understand when you can inspect what it produces. This tour follows a
+saved-search application from project-level planning to a focused CSV export. The documents are
+readable outside a chat, and the example tests can be rerun without a model account.
+
+**Evidence boundary:** the specification and plan below were created and validated by the native
+artifact engine at the recorded source identity. They remain unapproved drafts. The Python RED
+and GREEN results are actual local fixture runs. The project blueprint, conversation, host
+comparison, review, and delivery story are explanatory examples, not captured host executions.
+Nothing on this page approves work, changes your repository, or proves an installed release.
+
+## From an idea to a project
+
+Before a greenfield project has source, its architecture, delivery phases, and backlog need
+separate explanations. Decompose creates three named Markdown documents and asks you to review
+all three. A roadmap does not become an executable feature plan simply because both contain tasks.
+The examples retain unresolved questions so you can see where your decision is still needed.
+
+<ProjectBlueprint />
+
+Use [Plan a new project](/guides/plan-a-new-project/) for the actual interview and its approval
+boundary. Existing source takes a different path: [Understand an existing project](/guides/understand-an-existing-project/).
+
+## From a requirement to an inspectable plan
+
+For a qualified new full-lane workflow, the specification owns stable acceptance-criterion IDs.
+The plan references them instead of creating a competing requirements list. Choose a criterion
+below to see that connection. Open either native document to inspect its complete readable view.
+The files need no JavaScript or network access when opened offline.
+
+<ArtifactWorkbench />
+
+A structural pass means the document's shape and references satisfy that validator. It does not
+establish that a requirement is true, that a person approved it, or that implementation passed its
+review. [Review specifications and plans](/guides/review-artifacts/) explains what you must inspect.
+
+## Follow the delivery story
+
+Use the stage controls to move at your own pace. With JavaScript unavailable, every stage remains
+readable in document order. The fixture's two failing baseline assertions and three passing final
+checks demonstrate one pure-function contract, not a complete application release.
+
+<DeliveryStory />
+
+The [complete feature walkthrough](/guides/first-feature/) connects the same request, criteria,
+files, tests, human review and actual PR responsibilities. It distinguishes the small-lane case
+from the full-lane artifact example rather than forcing extra ceremony onto tiny changes.
+
+## Keep project state when you change hosts
+
+Command spelling and integrations differ by host. The shared repository records remain the place
+to inspect your project. These panels compare documented entry points; they are not screenshots
+of real sessions and do not qualify concurrent use or unsupported host versions.
+
+<HostViews />
+
+## Understand a stop before retrying
+
+A stopped task is not necessarily a broken installation. It may need an approval, a fresh read,
+review evidence, or reconciliation of an interrupted operation. The explanations below preserve
+those differences. An error is not permission to edit a hidden flag or manufacture a receipt.
+
+<RecoveryExplorer />
+
+Follow [Resume and recover](/guides/resume-and-recover/) with the actual diagnostic and operation
+identity from your repository. For installation problems, begin with [Troubleshooting](/guides/troubleshooting/).
+
+## Statusline themes
+
+These captures use the real Claude Code statusline renderer with deterministic, mocked project
+and accounting inputs. Theme selection changes presentation, not enforcement or task state.
+The violet default is intentionally distinct from this site's gate-gold treatment.
+
+<StatuslineGallery />
+
+## Choose the next step
+
+To evaluate the workflow, open the example documents and inspect their capture identities. To
+use codeArbiter, [choose your host](/getting-started/choose-your-host/), install and trust the
+adapter, and [prove a real block](/getting-started/quickstart/) in a disposable repository.
+For guided, verifier-backed practice, use [Arbiter Academy](/academy/) in its published order.
+The tour does not create an account, import progress, or store completion state.

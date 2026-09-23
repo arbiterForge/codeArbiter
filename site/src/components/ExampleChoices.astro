@@ -1,0 +1,57 @@
+---
+/** Progressive enhancement: every pane is readable when scripting is absent. */
+interface Props { label: string; labels: string[] }
+const { label, labels } = Astro.props;
+---
+<ca-example-choices class="ca-example-choices">
+  <div class="ca-example-controls" data-ca-layout="peers" role="group" aria-label={label} hidden>
+    {labels.map((text, index) => <button type="button" data-choice={index} aria-pressed={index === 0 ? 'true' : 'false'}>{text}</button>)}
+  </div>
+  <slot />
+</ca-example-choices>
+<script>
+  class ExampleChoices extends HTMLElement {
+    private cleanup?: () => void;
+    connectedCallback() {
+      if (this.cleanup) return;
+      const controls = this.querySelector<HTMLElement>(':scope > .ca-example-controls');
+      const buttons = [...this.querySelectorAll<HTMLButtonElement>(':scope > .ca-example-controls > button')];
+      const panes = [...this.querySelectorAll<HTMLElement>(':scope > [data-pane]')];
+      if (!controls || !buttons.length || panes.length !== buttons.length) return;
+      const select = (index: number) => {
+        panes.forEach((pane, at) => { pane.hidden = at !== index; });
+        buttons.forEach((button, at) => button.setAttribute('aria-pressed', String(at === index)));
+      };
+      const click = (event: MouseEvent) => {
+        const button = (event.target as Element).closest<HTMLButtonElement>('button[data-choice]');
+        const index = button ? buttons.indexOf(button) : -1;
+        if (index >= 0) select(index);
+      };
+      // Native Tab/Enter behavior remains available; arrows provide convenient
+      // selection within this labelled button group without inventing tab roles.
+      const keydown = (event: KeyboardEvent) => {
+        const index = buttons.indexOf(event.target as HTMLButtonElement);
+        if (index < 0) return;
+        let next: number;
+        if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = buttons.length - 1;
+        else if (event.key === 'ArrowRight') next = (index + 1) % buttons.length;
+        else if (event.key === 'ArrowLeft') next = (index + buttons.length - 1) % buttons.length;
+        else return;
+        event.preventDefault();
+        select(next);
+        buttons[next].focus();
+      };
+      controls.addEventListener('click', click);
+      controls.addEventListener('keydown', keydown);
+      this.cleanup = () => {
+        controls.removeEventListener('click', click);
+        controls.removeEventListener('keydown', keydown);
+      };
+      select(0);
+      controls.hidden = false;
+    }
+    disconnectedCallback() { this.cleanup?.(); this.cleanup = undefined; }
+  }
+  if (!customElements.get('ca-example-choices')) customElements.define('ca-example-choices', ExampleChoices);
+</script>

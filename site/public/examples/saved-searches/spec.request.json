@@ -1,0 +1,172 @@
+{
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "operation_id": "doc-spec-create-01",
+  "artifact_id": "SPEC-SAVED-SEARCHES",
+  "kind": "spec",
+  "slug": "saved-searches",
+  "title": "Export saved searches",
+  "summary": "Documentation fixture: export saved-search names and queries as CSV; no export is produced for an empty collection.",
+  "normative": {
+    "title": "Export saved searches",
+    "summary": "Documentation fixture: export saved-search names and queries as CSV; no export is produced for an empty collection.",
+    "baseline": {
+      "repository": null,
+      "commit": null,
+      "observed_date": "2026-09-22"
+    },
+    "sections": [],
+    "sources": [],
+    "retired_symbols": [],
+    "intent": {
+      "id": "INTENT-01",
+      "problem": "Saved searches cannot be transferred into a spreadsheet.",
+      "caller": "A person with saved searches.",
+      "outcome": "Obtain a correctly quoted CSV export or an explicit empty result.",
+      "source_refs": []
+    },
+    "approach": {
+      "id": "APPROACH-01",
+      "choice": "Use the Python standard-library CSV writer.",
+      "tradeoff": "CSV preserves the two text fields but does not preserve application metadata.",
+      "binding_decision_refs": []
+    },
+    "constraints": [],
+    "scope": [
+      {
+        "id": "SCOPE-01",
+        "statement": "Export the provided ordered name/query records through one pure function."
+      }
+    ],
+    "non_goals": [
+      {
+        "id": "NON-GOAL-01",
+        "statement": "No authentication, filesystem write, browser download, or live application integration."
+      }
+    ],
+    "decisions": [],
+    "criteria": [
+      {
+        "id": "AC-001",
+        "title": "Preserve fields and order",
+        "kind": "behavior",
+        "obligation": "must",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "statement": "Parsed CSV has name/query headers and one row for each record in input order.",
+        "preconditions": [
+          "Two saved searches with plain text fields."
+        ],
+        "trigger": "Export the collection.",
+        "guarantees": [
+          "Parsed CSV has name/query headers and one row for each record in input order."
+        ],
+        "scenarios": [
+          {
+            "id": "SCN-AC-001",
+            "given": "Two saved searches with plain text fields.",
+            "when": "Export the collection.",
+            "then": "Parsed CSV has name/query headers and one row for each record in input order."
+          }
+        ],
+        "verification": {
+          "id": "VER-AC-001",
+          "method": "automated",
+          "planned_target": "TestExport.test_rows",
+          "oracle": "Parsed CSV has name/query headers and one row for each record in input order.",
+          "negative_control": "An implementation returning None for every input fails the export checks.",
+          "evidence_state": "planned"
+        },
+        "source_refs": [],
+        "constraint_refs": [],
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "Two saved searches with plain text fields."
+        }
+      },
+      {
+        "id": "AC-002",
+        "title": "Round-trip special characters",
+        "kind": "behavior",
+        "obligation": "must",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "statement": "Every field equals the original text after CSV round-trip.",
+        "preconditions": [
+          "A record containing commas, quotes, newlines and Unicode."
+        ],
+        "trigger": "Export and parse using the standard CSV reader.",
+        "guarantees": [
+          "Every field equals the original text after CSV round-trip."
+        ],
+        "scenarios": [
+          {
+            "id": "SCN-AC-002",
+            "given": "A record containing commas, quotes, newlines and Unicode.",
+            "when": "Export and parse using the standard CSV reader.",
+            "then": "Every field equals the original text after CSV round-trip."
+          }
+        ],
+        "verification": {
+          "id": "VER-AC-002",
+          "method": "automated",
+          "planned_target": "TestExport.test_round_trip",
+          "oracle": "Every field equals the original text after CSV round-trip.",
+          "negative_control": "An implementation returning None for every input fails the export checks.",
+          "evidence_state": "planned"
+        },
+        "source_refs": [],
+        "constraint_refs": [],
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "A record containing commas, quotes, newlines and Unicode."
+        }
+      },
+      {
+        "id": "AC-003",
+        "title": "Keep an empty result explicit",
+        "kind": "behavior",
+        "obligation": "must",
+        "intent_refs": [
+          "SCOPE-01"
+        ],
+        "statement": "The function returns None, not a header-only export.",
+        "preconditions": [
+          "The input collection is empty."
+        ],
+        "trigger": "Request an export.",
+        "guarantees": [
+          "The function returns None, not a header-only export."
+        ],
+        "scenarios": [
+          {
+            "id": "SCN-AC-003",
+            "given": "The input collection is empty.",
+            "when": "Request an export.",
+            "then": "The function returns None, not a header-only export."
+          }
+        ],
+        "verification": {
+          "id": "VER-AC-003",
+          "method": "automated",
+          "planned_target": "TestExport.test_empty",
+          "oracle": "The function returns None, not a header-only export.",
+          "negative_control": "An implementation emitting headers for empty input fails the empty check.",
+          "evidence_state": "planned"
+        },
+        "source_refs": [],
+        "constraint_refs": [],
+        "applicability": {
+          "mode": "conditional",
+          "rationale": "The input collection is empty."
+        }
+      }
+    ],
+    "governs": [
+      "export_csv.py",
+      "test_export_csv.py"
+    ],
+    "open_decisions": []
+  }
+}

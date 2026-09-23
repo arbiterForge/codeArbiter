@@ -12,6 +12,10 @@ journey:
   proof: "A fresh session shows the startup briefing, and doctor completes its harmless live-fire probe."
 ---
 
+import ReaderJourney from '../../../components/ReaderJourney.astro';
+
+export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 The repository opt-in is shared by Claude Code, Codex, and Pi. Run `/ca:init` in Claude Code,
 `$ca-init` in Codex, or `/ca-init` in Pi; all three create or observe the same `.codearbiter/`
 directory. See the [Claude Code + Codex evidence](/getting-started/claude-code-and-codex/) for a
@@ -21,9 +25,51 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
 
 **You will need:** Python 3 on your `PATH`, `git config user.email` set, and the plugin installed.
 
+<ReaderJourney
+  id={"init-reading-map"}
+  title={"From an installed adapter to a verified repository"}
+  boundary={"Repository initialization. Existing code and a new project take different context-building paths; neither an installed adapter nor an activation flag proves enforcement."}
+  steps={[
+  {
+    "actor": "You + codeArbiter",
+    "title": "Choose the repository",
+    "artifact": "A repository-owned .codearbiter/ state directory, or the existing state for inspection.",
+    "review": "Use the intended repository and host. Do not overwrite existing project context.",
+    "href": "/reference/commands/init/",
+    "linkLabel": "Inspect the init contract"
+  },
+  {
+    "actor": "You review the project facts",
+    "title": "Build the context",
+    "artifact": "For a new project: architecture breakdown, phased build plan and task backlog. For existing code: source-backed context and identified gaps.",
+    "review": "Approve the three greenfield documents before population. In brownfield, resolve or explicitly defer the gaps the source cannot answer.",
+    "href": "/guides/plan-a-new-project/",
+    "linkLabel": "Understand the three project documents"
+  },
+  {
+    "actor": "You inspect the result",
+    "title": "Check the populated state",
+    "artifact": "Project context and the repository opt-in in .codearbiter/CONTEXT.md.",
+    "review": "Check actual project facts and initialized state. An enabled flag on a stub is not a completed context build.",
+    "href": "/guides/understand-an-existing-project/",
+    "linkLabel": "Review source-backed context"
+  },
+  {
+    "actor": "Your installed host + you",
+    "title": "Prove the boundary",
+    "artifact": "A fresh-session briefing and the documented Doctor probe result.",
+    "review": "The harmless H-03 probe should be blocked. Stop and diagnose an absent briefing or a probe that executes.",
+    "href": "/guides/troubleshooting/",
+    "linkLabel": "Diagnose a failed probe"
+  }
+]}
+/>
+
+<details class="ca-implementation-view">
+  <summary>Implementation routing: commands, skills and agents</summary>
 <figure class="ca-diagram">
   <img
-    src="/diagrams/lane-opt-in.svg"
+    src={`${baseUrl}/diagrams/lane-opt-in.svg`}
     alt="The /ca:init lane in two rows: Commands (/ca:init, which forks to /ca:create-context for existing code or /ca:decompose for a new project) and Skills (create-context backs the first path, decompose the second). Two connectors fork from /ca:init, one to each path."
     loading="lazy"
     width="920"
@@ -31,6 +77,20 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
   />
   <figcaption>The <code>/ca:init</code> lane by piece type: commands (gold) and the skills behind them (violet). Init forks to one context-builder path: create-context for existing code, decompose for a new project.</figcaption>
 </figure>
+</details>
+
+## Know what completion means
+
+**Installed** means the host has the adapter. **Activated** means the repository carries the
+recognized opt-in. **Initialized** means its context has been populated and the body marker is
+present. **Verified** means the appropriate host probe produced its documented evidence. None
+of the first three substitutes for the fourth, and the probe does not judge whether your project
+requirements are good.
+
+Choose the context-building path before starting. [Plan a new project](/guides/plan-a-new-project/)
+explains the substantial greenfield interview and its three documents. [Understand an existing
+project](/guides/understand-an-existing-project/) explains scout extraction, source evidence and
+the gap interview. Brownfield extraction does not invent the greenfield plan set.
 
 ## 1. Scaffold the State Store
 
@@ -53,7 +113,11 @@ Open the target repository in one supported host and invoke its native command:
 | Existing codebase | `/ca:create-context` | Scouts the source and back-fills `.codearbiter/` |
 | New project, no code yet | `/ca:decompose` | A layered interview that builds `.codearbiter/` from scratch |
 
-Let the routed command finish before moving on. It populates the context files the enforcement gates read at commit time.
+Review the routed procedure's outputs before moving on. Greenfield writes the architecture
+breakdown, phased build plan and task backlog for your explicit approval before population.
+Brownfield derives context from scout reports and asks you to resolve or explicitly defer gaps.
+The resulting context files supply later planning, review and enforcement with project facts.
+Do not mark a stub initialized just because the activation flag exists.
 
 ## 3. Confirm the Activation Flag
 

@@ -1,0 +1,41 @@
+---
+import { loadProductExample } from '../../scripts/product-example';
+import ExampleChoices from './ExampleChoices.astro';
+const example = loadProductExample();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = `${base}/examples/saved-searches`;
+---
+<div class="ca-workbench ca-exhibit" data-example="artifacts">
+  <header class="ca-exhibit-heading">
+    <div><p class="ca-kicker">One goal. Connected records.</p><h3>Export saved searches</h3></div>
+    <span class="ca-example-badge">Unapproved fixture</span>
+  </header>
+  <p>Choose a criterion to follow its connection into the plan. These are real native-rendered drafts, not a live coding session.</p>
+  <ExampleChoices label="Choose an acceptance criterion" labels={example.criteria.map((criterion) => `${criterion.id} · ${criterion.title}`)}>
+    {example.criteria.map((criterion) => <section data-pane class="ca-proof-columns" data-ca-layout="peers" aria-label={criterion.title}>
+      <div class="ca-record">
+        <p class="ca-record-type">Specification <span>Draft</span></p>
+        <h4>{criterion.id} · {criterion.title}</h4>
+        <p>{criterion.statement}</p>
+        <dl><dt>Given</dt><dd>{criterion.preconditions.join(' ')}</dd><dt>When</dt><dd>{criterion.trigger}</dd><dt>Observe</dt><dd>{criterion.verification.oracle}</dd></dl>
+        <a href={`${url}/specs/saved-searches.html#${criterion.id}`}>Open the native specification</a>
+      </div>
+      <div class="ca-record">
+        <p class="ca-record-type">Implementation plan <span>Pending</span></p>
+        {criterion.tasks.map((task) => <div>
+          <h4>{task.id} · {task.title}</h4>
+          <p class="ca-connection">References <code>{criterion.id}</code></p>
+          <p>{task.paths.map((path) => path.path).join(' + ')}</p>
+          <pre tabindex="0"><code>{task.verification[0].argv.join(' ')}</code></pre>
+          <p><strong>Required check:</strong> {criterion.verification.planned_target}</p>
+        </div>)}
+        <a href={`${url}/plans/saved-searches.html`}>Open the native plan</a>
+      </div>
+    </section>)}
+  </ExampleChoices>
+  <footer class="ca-exhibit-footnote">
+    <p>Structural checks passed. Approval checks did not. Task eligibility was refused with <code>DRAFT_BINDING</code>. The local Python tests shown in the tour do not approve or accept these drafts.</p>
+    <a href={`${url}/native-validation.json`}>Inspect validation results</a><span aria-hidden="true"> · </span><a href={`${url}/provenance.json`}>Source and capture identities</a>
+    <details><summary>Inspect the structured criterion</summary><pre tabindex="0"><code>{JSON.stringify(example.spec.normative.criteria[0], null, 2)}</code></pre></details>
+  </footer>
+</div>

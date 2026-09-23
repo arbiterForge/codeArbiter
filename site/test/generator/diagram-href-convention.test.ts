@@ -3,17 +3,18 @@
  * Centralises the diagram-image href convention so the five references can't
  * drift back into four bespoke forms. The sanctioned forms are:
  *
- *   - In .md / .mdx pages (which cannot import an Astro component or read
+ *   - In .md pages (which cannot import an Astro component or read
  *     import.meta.env): the root-absolute, base-safe literal
  *       src="<BASE>/diagrams/<name>.svg"
  *     The base is owned by astro.config.mjs and imported here, so this adds no
  *     coupling the config doesn't already carry. On the apex domain BASE is ""
  *     and the sanctioned form is simply "/diagrams/<name>.svg".
  *
- *   - In .astro components: import.meta.env.BASE_URL, the base-safe form for
+ *   - In .mdx pages and .astro components: import.meta.env.BASE_URL, the base-safe form for
  *     that context, e.g. src={`${baseUrl}/diagrams/<name>.svg`} — the config's
  *     documented pattern for component href props.
  *
+ * MDX expression forms must bind baseUrl to import.meta.env.BASE_URL.
  * Any other diagram <img src=...> form (bare "diagrams/x.svg", relative
  * "../diagrams/x.svg", a different hardcoded base) fails the guard.
  */
@@ -40,11 +41,11 @@ function pageFiles(dir: string): string[] {
 // Matches any <img ... src=VALUE ...> where VALUE points at a /diagrams/*.svg,
 // across both quoted ("...") and expression ({`...`}) attribute forms.
 const DIAGRAM_IMG_SRC =
-  /<img\b[^>]*?\bsrc\s*=\s*(?:"([^"]*diagrams\/[^"]*\.svg)"|\{`([^`]*diagrams\/[^`]*\.svg)`\})/gi;
+  /<img\b[^>]*?\bsrc\s*=\s*(?:"([^"]*diagrams\/[^\"]*\.svg)"|\{`([^`]*diagrams\/[^`]*\.svg)`\})/gi;
 
 /** Sanctioned forms, keyed by file extension. */
 function isSanctioned(value: string, ext: string): boolean {
-  if (ext === ".astro") {
+  if (ext === ".astro" || (ext === ".mdx" && value.startsWith("${baseUrl}"))) {
     // import.meta.env.BASE_URL form: `${baseUrl}/diagrams/<name>.svg`
     return /^\$\{baseUrl\}\/diagrams\/[\w.-]+\.svg$/.test(value);
   }
@@ -73,7 +74,9 @@ describe("diagram <img src> convention (Task 21)", () => {
     DIAGRAM_IMG_SRC.lastIndex = 0;
     while ((m = DIAGRAM_IMG_SRC.exec(src)) !== null) {
       const value = m[1] ?? m[2] ?? "";
-      if (!isSanctioned(value, ext)) {
+      const mdxBaseBound = ext !== ".mdx" || !value.startsWith("${baseUrl}") ||
+        /export const baseUrl = import\.meta\.env\.BASE_URL\.replace\(\/\\\/\$\/, ['"]{2}\);/.test(src);
+      if (!isSanctioned(value, ext) || !mdxBaseBound) {
         offenders.push(`${file.replace(SRC_DIR, "src")}  ->  src=${JSON.stringify(value)}`);
       }
     }

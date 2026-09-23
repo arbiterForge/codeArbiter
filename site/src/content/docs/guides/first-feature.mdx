@@ -1,0 +1,139 @@
+---
+title: Complete One Feature
+description: "Follow one saved-search export example from a precise request through review, linked artifacts, named tests, recovery, and your own pull request."
+journey:
+  level: Practitioner
+  time: "Worked example; implementation time depends on scope"
+  outcome: "Review an observable export contract and follow its requirements into implementation, verification, and a governed PR."
+  prerequisites:
+    - A disposable initialized repository with a healthy adapter
+    - Python 3 in the native terminal used for the fixture
+    - Permission to make the intended change
+  proof: "You can trace every criterion to a named passing check and distinguish fixture tests from actual workflow approval and PR evidence."
+---
+
+import ArtifactWorkbench from '../../../components/ArtifactWorkbench.astro';
+import DeliveryStory from '../../../components/DeliveryStory.astro';
+
+This example has one continuous subject: exporting saved-search names and queries as CSV.
+The requirement, documents, files and tests all refer to that subject. The bundled implementation
+is a deliberately small serialization boundary, not a complete web application.
+
+**Do not copy the demonstration documents into a project and call them approved.** They are real
+native-rendered drafts created for this guide. The workflow must classify your actual request,
+collect your decisions and establish its own current approvals and evidence.
+
+Reading these drafts and running the standalone Python exercise needs no host authority. Completing
+new full-lane HTML work is different: the current production verification and review adapters are
+Codex-only. Claude Code's prompt approval does not supply those later adapters, and Pi has no
+qualified prompt-approval seam. Stop at an unsupported boundary rather than substituting a chat
+claim or a Markdown pair. Check the [typed-artifact host boundary](/guides/review-artifacts/#check-your-hosts-authority-capability)
+for your exact installation before attempting the end-to-end lane.
+
+## 1. Establish the repository and scope
+
+Use a disposable repository, not production. Confirm the repository open in the host matches
+`git rev-parse --show-toplevel` in your native terminal. Inspect `git status --short`; preserve
+unrelated changes. Run the host's doctor and resolve failed checks before starting.
+
+State the requirement to your host:
+
+> Add a saved-search CSV export. Export names and queries in their existing order. Preserve commas,
+> quotes, newlines and Unicode through CSV round-trip. Return no export for an empty collection.
+> Keep authentication, file writes, and browser download delivery outside this serializer change.
+
+An explicit Claude Code entry is `/ca:feature "add the saved-search CSV export contract"`.
+Codex uses `$ca-feature`; Pi uses `/ca-feature`. Understood intent can route without command syntax.
+
+Let the classifier explain full lane, small lane, or resume. A new public application interface
+can require the full lane; a two-file serializer repair may meet the small-lane limits. **The
+existence of a full-lane demonstration here does not force your tiny fixture into that lane.**
+Do not invent extra scope to obtain an HTML pair. Small work keeps its confirmed mini-spec and
+triage record; existing Markdown authority retains its exact format.
+
+## 2. Review behavior before implementation
+
+The specification should make these three observations explicit:
+
+| Criterion | Observable result | Named fixture check |
+|---|---|---|
+| AC-001 | A parsed export has `name,query` headers and one row per input record in order. | `TestExport.test_rows` |
+| AC-002 | Quoted commas, quotes, newlines and Unicode round-trip without changing field values. | `TestExport.test_round_trip` |
+| AC-003 | Empty input returns `None`, rather than a header-only export. | `TestExport.test_empty` |
+
+Replace “handle special characters correctly” with the AC-002 observation above. Check that
+“no export” really means `None` at this function boundary, not a UI message or an empty file.
+Those are different interfaces and would require different acceptance criteria.
+
+Request corrections before proceeding. For example: “Keep the existing search order; do not
+sort by name. Make the empty return value explicit.” The example artifacts are drafts even though
+their structure validates. Your actual feature or sprint owns its approval ceremony; viewing an
+HTML file never grants that approval. See [Review artifacts](/guides/review-artifacts/).
+
+## 3. Inspect the plan's coverage
+
+In a qualified full-lane run, locate `.codearbiter/specs/<slug>.html` and its same-slug plan.
+The plan should refer to the specification's criterion IDs and name the files, dependencies and
+checks needed to deliver them. A draft preview can exist before it is ready or authorized to run.
+The following workbench projects those relationships from the real demonstration drafts.
+
+<ArtifactWorkbench />
+
+The example plan maps `T-001`, `T-002` and `T-003` to the three criteria and to the same
+`export_csv.py` and `test_export_csv.py` files. The shared files are a reason to respect ordering,
+not dispatch all tasks concurrently. Task entries are not separate proof that the whole scope is
+accepted; typed scope acceptance belongs to the existing review/evidence workflow.
+
+## 4. Reproduce the bounded fixture without a model
+
+For a plain Python exercise, save the linked [baseline](/examples/saved-searches/baseline.py) as
+`export_csv.py` and the [tests](/examples/saved-searches/test_export_csv.py) as `test_export_csv.py`
+in a separate disposable folder. These native-terminal steps do not prove that codeArbiter's
+host hooks or workflow ran.
+
+From that folder, run the interpreter that resolves on your system:
+
+```sh
+python -m unittest -v test_export_csv
+```
+
+The incomplete baseline returns `None` for every input. Expect three tests, with two assertion
+failures and the empty-input test passing. An import error, missing file or missing Python is
+not the intended RED result. Fix the setup before treating a failure as behavioral evidence.
+
+In your actual governed feature, let the host perform its approved implementation and review
+rather than copying an answer to bypass the lane. In the standalone exercise only, replace
+`export_csv.py` with the [completed serializer](/examples/saved-searches/completed.py) and rerun
+the same command. Expect all three tests to pass. Both observed local runs are preserved in the
+[capture envelope](/examples/saved-searches/test-runs.json), including implementation and test digests.
+
+## 5. Review the result and handle interruption
+
+The serializer uses Python's CSV writer rather than joining fields with commas. Inspect the
+actual diff: it must not add persistence, authentication, dependencies or unrelated formatting.
+Run your repository's required verification in addition to the focused tests. Check reviewer
+findings and ensure their dispositions refer to the current work, not a stale version.
+
+If a real task is interrupted, resume the same pipeline. Inspect uncommitted changes and the
+recorded state. Reconcile `IN_PROGRESS` before redispatch; collect fresh evidence for `REVIEW`;
+resolve the reason for `BLOCKED`. Do not set a status in the HTML yourself. Use
+[Resume and recover](/guides/resume-and-recover/) for the exact diagnostic.
+
+<DeliveryStory />
+
+## 6. Complete your own commit and PR
+
+Use the normal governed commit and PR flow for the repository you are changing. Explicit entries
+are `/ca:commit` and `/ca:pr` on Claude Code, with the documented host-native equivalents on
+Codex and Pi. Inspect the staged paths and diff, require current verification, and authorize the
+actual actions. A command transcript or sample green result is not authorization.
+
+Before calling the work complete, inspect the approved definition, criterion coverage, current
+verification, reviewer findings, commit and PR. Confirm hosted checks on the exact PR head before
+merging; you retain the merge decision. **This documentation fixture creates no application PR and
+provides no commit-gate receipt.** Its local tests do not establish that a user approved the work,
+a host dispatched it, or a complete application was delivered.
+
+Keep your resulting branch and records. Use [Return to a project](/guides/return-to-a-project/)
+for the next session, or [Arbiter Academy P01](/academy/p01-feature-through-plan/) after completing
+its published prerequisites for a separately verified practice environment.

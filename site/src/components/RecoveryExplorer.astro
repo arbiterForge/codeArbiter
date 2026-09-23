@@ -1,0 +1,17 @@
+---
+const states = [
+  { state:'AUTHORITY_UNVERIFIED', why:'A required authority record is absent, stale or inspection-only after upgrade.', action:'Use the applicable current host-owned approval or evidence boundary. Preserve old receipts; do not relabel them or manufacture a successful event. An unsupported host adapter remains a stop.' },
+  { state:'DRAFT_BINDING', why:'A plan is still bound to a draft specification.', action:'Return to the existing approval and plan-binding workflow. Do not edit a JSON flag to make the plan executable.' },
+  { state:'IN_PROGRESS', why:'An interrupted task may have changed files without finishing its review.', action:'Inspect those files and the recorded task state. Reconcile through the owning workflow before redispatch.' },
+  { state:'REVIEW', why:'Implementation is awaiting current review and evidence.', action:'Collect the required fresh evidence and scope review. The label alone is not acceptance.' },
+  { state:'BLOCKED', why:'A hard boundary or exhausted recovery strategy stopped this task.', action:'Resolve its specific reason. Preserve the failed strategy and attempt record; continue only independent authorized work.' },
+  { state:'STALE_CURSOR', why:'A contributing specification, plan or authority record changed after the read.', action:'Read the current context again and reconsider the action. Never force the old cursor.' },
+  { state:'RECOVERY_REQUIRED', why:'A transaction needs inspection before its outcome is known.', action:'Use the recorded operation ID and the recovery path. Do not replay the write with a new ID or remove its journal.' },
+];
+---
+<div class="ca-recovery ca-exhibit" data-example="recovery">
+  <p class="ca-kicker">Read the reason before retrying</p>
+  <p>These are explanations of task states and diagnostic codes, not live state from your repository.</p>
+  {states.map((entry) => <details><summary><code>{entry.state}</code><span>{entry.why}</span></summary><p><strong>Next safe action:</strong> {entry.action}</p></details>)}
+  <p class="ca-exhibit-footnote">An accepted label also needs current bindings and evidence. Expanding these explanations never changes a task or grants permission.</p>
+</div>

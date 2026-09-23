@@ -1,0 +1,40 @@
+/* Product demonstrations reuse the site tokens; no external assets or runtime APIs. */
+.ca-exhibit { margin-block:var(--ca-space-7); padding:clamp(1rem,3vw,2rem); border:1px solid var(--ca-line-strong); border-radius:var(--ca-radius-lg); background:var(--ca-bg-panel); overflow-wrap:anywhere; min-width:0; }
+.ca-exhibit-heading { display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; align-items:center; }
+.ca-exhibit-heading h3 { margin:0.4rem 0 0; font-size:var(--ca-text-xl); }
+.ca-example-badge { display:inline-block; padding:0.45rem 0.7rem; border:1px solid var(--ca-line-strong); border-radius:var(--ca-radius-pill); color:var(--ca-ink-soft); font:600 var(--ca-text-xs)/1.4 var(--ca-font-mono); }
+.ca-example-choices { display:block; min-width:0; }
+.ca-example-controls { display:flex; flex-wrap:wrap; gap:0.55rem; margin-block:1.4rem; }
+.ca-example-controls[hidden], .ca-exhibit [hidden] { display:none !important; }
+.ca-example-controls button { flex:1 1 9rem; min-height:2.8rem; padding:0.65rem 0.8rem; border:1px solid var(--ca-line-strong); border-radius:var(--ca-radius-sm); color:var(--ca-ink-soft); background:var(--ca-bg-raised); font:650 var(--ca-text-sm)/1.4 var(--ca-font-sans); cursor:pointer; }
+.ca-example-controls button[aria-pressed="true"] { color:var(--ca-brand-bright); border-color:var(--ca-brand); box-shadow:inset 0 -3px 0 var(--ca-brand); }
+.ca-exhibit :is(button,a,summary,pre):focus-visible { outline:2px solid var(--ca-brand-bright); outline-offset:4px; }
+.ca-proof-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.3rem; margin-block:1rem; }
+.ca-proof-columns > * { min-width:0; }
+.ca-record { padding:clamp(0.9rem,2vw,1.5rem); border:1px solid var(--ca-line); border-block-start:3px solid var(--ca-brand); background:var(--ca-bg-raised); min-width:0; }
+.ca-record-type { display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font:650 var(--ca-text-xs)/1.5 var(--ca-font-mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--ca-ink-muted); }
+.ca-record-type span { color:var(--ca-brand-bright); }
+.ca-record h4 { margin-block:1.2rem 0.75rem; font-size:var(--ca-text-lg); }
+.ca-record dt { color:var(--ca-ink); font-weight:700; }
+.ca-record dd { margin:0.2rem 0 0.8rem; color:var(--ca-ink-soft); }
+.ca-exhibit pre { max-width:100%; overflow:auto; padding:1rem; background:var(--ca-bg); border:1px solid var(--ca-line); border-radius:var(--ca-radius-sm); font-size:var(--ca-text-xs); line-height:1.6; }
+.ca-exhibit pre code { background:transparent; }
+.ca-exhibit-footnote { margin-block-start:1.4rem; padding-block-start:1rem; border-block-start:1px solid var(--ca-line); color:var(--ca-ink-muted); font-size:var(--ca-text-sm); }
+.ca-exhibit details { border-block-start:1px solid var(--ca-line); padding-block:0.9rem; }
+.ca-exhibit details summary { cursor:pointer; min-height:2.75rem; align-content:center; font-weight:650; color:var(--ca-ink); }
+.ca-connection { color:var(--ca-brand-bright); font-size:var(--ca-text-sm); }
+.ca-blueprint-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
+.ca-blueprint-grid article { padding-block:1rem; min-width:0; }
+.ca-blueprint-number { font:650 3rem/1 var(--ca-font-mono); letter-spacing:-0.06em; color:var(--ca-brand-bright); }
+.ca-blueprint-grid h3 { font-size:var(--ca-text-lg); }
+.ca-blueprint-grid a { display:inline-block; font-family:var(--ca-font-mono); font-size:var(--ca-text-xs); }
+.ca-recovery summary span { display:block; font-size:var(--ca-text-sm); font-weight:400; margin-block-start:0.5rem; }
+.ca-theme-capture { width:100%; height:auto; display:block; border:1px solid var(--ca-line); }
+.ca-example-actions { display:flex; flex-wrap:wrap; gap:1rem; margin-block:1.5rem; }
+@media (max-width:55rem) { .ca-proof-columns,.ca-blueprint-grid { grid-template-columns:1fr; } }
+@media (prefers-reduced-motion:reduce) { .ca-exhibit * { scroll-behavior:auto; transition:none; animation:none; } }
+@media (forced-colors:active) { .ca-exhibit,.ca-record,.ca-example-controls button { border-color:CanvasText; } .ca-example-controls button[aria-pressed="true"] { outline:2px solid Highlight; } }
+@media print { .ca-example-controls { display:none; } .ca-exhibit [data-pane][hidden] { display:block !important; } .ca-exhibit { break-inside:avoid; } }
+.ca-exhibit pre.ca-terminal { font-size:0.72rem; line-height:1.6; white-space:pre; overflow:auto; }
+.ca-terminal code,.ca-terminal span { font-family:var(--ca-font-mono); letter-spacing:0; }
+@media (forced-colors:active) { .ca-terminal span { color:CanvasText !important; background:Canvas !important; } }

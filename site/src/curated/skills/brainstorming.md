@@ -7,7 +7,7 @@ gates:
     effect: the one-line idea must resolve to a stated problem, caller, and out-of-scope boundary — and to exactly one feature, with bundles split — before any refinement begins
   - gate: spec approval
     when: after the spec is drafted and self-reviewed
-    effect: hard stop until you (or, under an autonomous sprint, a logged auto-approval) sign off on a spec presented with its own adversarial findings; no code and no handoff to test-first work happens before that
+    effect: hard stop until the owning workflow establishes current approval of the spec with its adversarial findings; typed HTML requires the applicable host-observed decision, not a logged auto-approval
 ---
 
 ## What it does
@@ -16,8 +16,8 @@ This is where a feature starts before any code exists. `/feature` opens here, an
 planning stage runs the same interview. Given a one-line idea, it drives a Socratic
 back-and-forth until the idea is concrete enough to build from: a named problem, a named
 caller, an explicit boundary of what the feature does not do, a chosen approach with its
-trade-off stated, and a set of acceptance criteria specific enough that each one maps to a
-single test. Routine parameter choices are decided for you and recorded in the spec where you
+trade-off stated, and acceptance criteria covered by one or more named tests each. Coverage
+can be many-to-many; a single criterion can need several checks. Routine parameter choices are decided for you and recorded in the spec where you
 review them; genuine forks are asked in full, with a recommendation, and batched where the
 answers are independent — you decide the forks, not the ceremony. Anything genuinely
 unresolved becomes a numbered open question on record rather than a guess.
@@ -35,15 +35,17 @@ unresolved becomes a numbered open question on record rather than a guess.
 4. The agreed spec — problem, approach, scope, decided parameters, testable acceptance
    criteria, open questions — is written to disk.
 5. The spec is self-reviewed mechanically, challenged adversarially (the strongest case
-   against the design travels with it), and then approved — by you directly, or by a logged
-   automatic approval under an autonomous sprint — before anything moves on to test-first
-   implementation.
+   against the design travels with it), then obtains current approval through the owning workflow
+   before planning and execution continue. Typed HTML requires an applicable host-observed
+   decision; a logged SMARTS choice is not a replacement authority producer.
 
 ## Exits
 
-Approval hands the spec to the test-first gate, where each acceptance criterion becomes one
-obligation to prove. A spec carrying an unresolved blocking question never reaches that handoff —
-it stops for your decision instead.
+Approval permits the owning feature or sprint coordinator to continue through its planning and
+execution gates. It is not a direct bypass from brainstorming to implementation. In typed work,
+the specification owns stable criterion IDs and the plan references them; draft existence,
+readiness, approval and execution are separate boundaries. A blocking question remains a stop.
+See [Review specifications and plans](/guides/review-artifacts/) for what to inspect.
 
 The research each of this skill's design choices rests on — with citations — is documented in
 [The Evidence Behind the Persona](/concepts/persona-research-basis/).

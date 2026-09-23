@@ -12,6 +12,8 @@ import PageContext from './PageContext.astro';
 const { id, entry } = Astro.locals.starlightRoute;
 const isHome = id === '' || id === 'index';
 const hasBespokeTitle = isHome || id === 'academy';
+// Track landing content already supplies orientation; do not repeat it above the lesson list.
+const isAcademyTrack = id.startsWith('academy/tracks/');
 const isGeneratedEntity = /^reference\/(?:commands|skills|agents)\//.test(id);
 const explicitJourney = entry.data.journey;
 const inferred = id.startsWith('reference/') || id === 'reference' || id === 'hooks' || id === 'glossary' || id === 'changelog'
@@ -32,7 +34,7 @@ const journey = explicitJourney ?? inferred;
   !hasBespokeTitle && (
     <>
       <Default><slot /></Default>
-      {!isGeneratedEntity && <PageContext {...journey} />}
+      {!isAcademyTrack && !isGeneratedEntity && <PageContext {...journey} />}
     </>
   )
 }

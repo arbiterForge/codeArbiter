@@ -42,6 +42,21 @@ an accepted ADR's globs feed tier 2 of the JIT read-injection priority map (see
 Some questions in a draft ADR can only be answered by the user. Those are marked with a
 `[CONFIRM-NN]` placeholder and never resolved by guessing.
 
+## Accepted, implemented and verified are different claims
+
+Acceptance records a decision. It does not prove that code implements the choice, that tests
+passed, or that a release contains it. Inspect the corresponding implementation and verification
+evidence before making those claims. Git email supplies the recorded attribution; it is not
+cryptographic authentication of the person who made the decision.
+
+For example, an accepted decision to store workflow state in the repository can govern
+`src/state/**`. An implementation may still be missing, or its recovery tests may still fail.
+Keep the accepted intent while reporting those implementation/evidence gaps honestly. Do not
+rewrite an old ADR to pretend they were already resolved.
+
+The [ADR guide](/guides/recording-adrs/#inspect-a-complete-example) shows a labelled example and
+how to review its scope.
+
 ## Enforcement, not convention
 
 "ADRs only get written through `/ca:adr`" is not a house rule that relies on discipline.

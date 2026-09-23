@@ -1,178 +1,151 @@
 ---
 title: Cut a Release
-description: "Release one codeArbiter plugin through its own tag series, manifests, changelog, built artifacts, and verified GitHub Release."
+description: "Preview and release your project's declared target without guessing its version, modifying published tags, or publishing without authorization."
 journey:
-  level: "Power user"
-  time: "15 minutes"
-  outcome: "Cut one target-specific release with consistent versions, artifacts, tag, and hosted checks."
+  level: Power user
+  time: "15 min reading; qualification depends on the target"
+  outcome: "A target-specific release whose version, source, declared artifacts and publication evidence agree."
   prerequisites:
-    - "Maintainer access"
-    - "A clean release branch with the target's changes committed"
-  proof: "Manifest, changelog, tag, release artifacts, and hosted verification all name the same target version."
+    - Authority to prepare a release of the target project
+    - A clean non-default branch and current verification
+  proof: "The declared target, derived version, exact tag, artifact inventory and published read-back identify the same release."
 ---
 
-codeArbiter ships four independently-versioned plugins. The release lane selects one target and
-keeps every version input and output inside that plugin's row. Use it only when the target's work is
-already landed on a clean release branch and its verification is green.
+The release lane belongs to **your project**, not only to codeArbiter maintainers. It reads
+`.codearbiter/release-targets.md` for target names, tag prefixes, version policy, manifests,
+changelog, payload and optional qualification/build declarations. It does not contain an
+implicit list of codeArbiter plugins that every consumer must use.
+
+| Host | Example explicit entry |
+|---|---|
+| Claude Code | `/ca:release --dry-run app` |
+| Codex | `$ca-release --dry-run app` |
+| Pi | `/ca-release --dry-run app` |
+
+`app` is an illustrative target name. Use your declaration's actual name. You can also describe
+the release intent naturally; the same target and authorization requirements apply.
 
 <figure class="ca-diagram">
-  <img
-    src="/diagrams/lane-release.svg"
-    alt="The release lane from selecting one plugin target through derived semantic version, changelog and manifest updates, verification, annotated tag, and explicitly authorized publication."
-    loading="lazy"
-  />
-  <figcaption>Each release is scoped to one plugin target; publication remains a separate explicit decision.</figcaption>
+  <img src="/diagrams/lane-release.svg" alt="Release work selects a declared target, derives a version, prepares verified artifacts and stops for publication authorization." loading="lazy" />
+  <figcaption>The release lane is configured by your project's declared target, not by codeArbiter's own plugin names.</figcaption>
 </figure>
-
-<div class="ca-host-syntax">
-  <strong>Host syntax:</strong> Claude Code uses <code>/ca:release</code>; Codex uses
-  <code>$ca-release</code>; Pi uses <code>/ca-release</code>. Examples below use Claude Code syntax.
-</div>
 
 ## Where the targets come from
 
-The release lane holds no knowledge of any particular project. Every fact it
-needs (the tag prefix, which manifests carry the version, which changelog to
-roll into, what the payload scope is, and any checks to run before tagging) is
-read from a file the project declares at `.codearbiter/release-targets.md`.
-
-That means **the table below is codeArbiter's own configuration, not the lane's
-behaviour.** Your project's table is whatever its own declared file says: one
-row for a single-artifact repository, several for a monorepo. If you have no
-declared file yet, the first `/ca:release` proposes one from what it can detect
-and writes nothing until you confirm it.
-
-Read the rest of this guide with that split in mind: the steps are general, the
-four rows are ours.
-
-## codeArbiter's own declared targets
-
-| Target | Tag | Manifest(s) | Changelog | Built artifacts |
-|---|---|---|---|---|
-| `ca` | `vX.Y.Z` | `plugins/ca/.claude-plugin/plugin.json` | `CHANGELOG.md` | `plugins/ca/tools/farm.js` |
-| `ca-codex` | `ca-codex-vX.Y.Z` | `plugins/ca-codex/.codex-plugin/plugin.json` | `plugins/ca-codex/CHANGELOG.md` | none |
-| `ca-sandbox` | `ca-sandbox-vX.Y.Z` | `plugins/ca-sandbox/.claude-plugin/plugin.json` | `plugins/ca-sandbox/CHANGELOG.md` | sandbox and Claude-inside bundles |
-| `ca-pi` | `ca-pi-vX.Y.Z` | `plugins/ca-pi/package.json` and generated root `package.json` | `plugins/ca-pi/CHANGELOG.md` | parent and child extension bundles |
-
-A bare `/ca:release` means `ca`. Prefer the explicit target in maintainer work:
+A single-application repository might have this declaration, **only when these files and this
+payload really describe that repository**:
 
 ```text
-/ca:release ca-codex
+<!-- release-targets -->
+[app]
+prefix: v
+manifest: package.json
+changelog: CHANGELOG.md
+payload: .
+latest-eligible: true
+<!-- /release-targets -->
 ```
 
-The command accepts a target, not a version. SemVer is derived from the selected payload's commit
-history.
+Do not paste the example into a different package manager or monorepo. Context creation can derive
+a declaration from sufficient source evidence. If no declaration exists, the release lane's
+back-fill proposes one and waits for explicit confirmation before writing. Ambiguity is a question,
+not a guessed row. Greenfield decomposition records release intent before manifests exist; it
+does not invent a release-target row in advance.
+
+With exactly one target, a bare release selects that target. With multiple targets, name one.
+An unknown or ambiguous target stops rather than selecting `ca` or the nearest Git tag.
 
 ## Prerequisites
 
-Before invoking the lane:
+Confirm the current repository root, non-default branch and clean working tree. Inspect the
+selected target's payload changes since its own last compatible release, current verification,
+unresolved questions and required `CHANGELOG:` footers. Use the declared version policy rather
+than assigning a desired version by hand. Publication additionally needs the relevant remote
+permissions and explicit authorization.
 
-- check out a non-default release branch;
-- leave the working tree clean;
-- confirm the target has new commits in its payload since its own latest stable tag;
-- confirm the last applicable suite was green;
-- make sure every `feat` and `fix` commit carries a `CHANGELOG:` footer; add one to `perf` when the
-  performance change should appear in user-facing release notes; and
-- authenticate `gh` if you expect to authorize publication later.
-
-Do not run release as a readiness query. It is a mutating lane that may update manifests, changelog,
-generated surfaces, and a local tag.
+Do not change commit history merely to silence a footer or version error. Preserve the failure
+and correct it through the project's governed development procedure.
 
 ## 1. Target-scoped pre-flight
 
-The release skill resolves the target through the shared release register. It does not use bare
-`git describe`, because the nearest tag in a multi-plugin repository may belong to a sibling.
+Start with a read-only preview:
 
-It then verifies:
+```text
+/ca:release --dry-run app
+```
 
-1. the last tag belongs to the target's tag series;
-2. the commit window contains only changes under the target payload;
-3. the window contains a SemVer-earning change;
-4. the target manifest version can move to the derived version;
-5. every committed bundle rebuilds without a diff; and
-6. target-specific generated surfaces agree.
+The dry run performs full pre-flight and read-only version derivation, including target resolution,
+commit classification and required footer checks. It reports the selected row, derived version,
+rationale and blockers. It does **not** edit manifests or changelog, commit, tag, execute `pre-tag`
+checks, run `release-build`, create assets or publish. Those declarations are listed, not run.
+A clean dry run is not proof that the later build or publication will succeed.
 
-For `ca-pi`, the root `package.json` is generated install metadata and must equal the plugin
-manifest. For `ca`, README badges, catalog counts, and command tables are synchronized from the
-repository rather than incremented by hand.
+Review the report: is the target correct, does the payload exclude siblings, and does the version
+change follow the declared policy? For example, a `feat` change in a SemVer target can justify a
+minor increment; this illustrative classification is not a version to force onto your project.
 
 ## 2. Derive the version and changelog
 
-The highest-precedence change in the target payload decides the bump:
+When the preview and prerequisites are satisfactory, invoke the same target without `--dry-run`:
 
-| Commit evidence | Bump |
-|---|---|
-| `BREAKING CHANGE:` or a Conventional-Commit `!` | major |
-| `feat` | minor |
-| `fix`, `perf`, or `refactor` | patch |
-| only `test`, `docs`, `chore`, or `ci` | no release; stop |
-
-The same window supplies the changelog entries. Every `feat` and `fix` requires a `CHANGELOG:`
-footer because release notes must not omit a user-visible change or invent one after the fact.
-A `perf` footer is rolled when present. A `refactor` earns a patch version but does not require or
-synthesize a user-facing changelog entry.
-
-The selected changelog receives:
-
-```markdown
-## [X.Y.Z] — YYYY-MM-DD
-
-### Added
-
-- ...
+```text
+/ca:release app
 ```
 
-Any manifest, changelog, or generated-surface update lands through the normal commit gate before
-tagging.
+This is a mutating lane. It derives the version from the target's declared policy, compatible tags,
+manifest values and scoped commit history. It updates the declared manifests and changelog and
+runs the declared pre-tag checks at the appropriate post-update state. Required release notes
+must come from actual commit evidence; missing footers are not invented.
+
+Inspect the resulting diff and checks. Changes pass through the normal commit gate. The absence
+of a sibling's change from this target's changelog is deliberate when that sibling is outside the
+selected payload.
 
 ## 3. Compose the local tag
 
-The skill writes a multi-line annotated tag in the selected namespace and reports:
+The lane prepares the annotated tag in the selected namespace. Declared assets are qualified by
+the protected publisher, either through the declared build or a reviewed retained exact-head
+cohort with provenance-bound packages. Arbitrary build failures, changed tracked files, mismatched
+provenance and unexpected inventory are stops.
 
-- target and payload window;
-- previous and next version;
-- per-commit classification;
-- changelog section;
-- rebuilt artifact status; and
-- local tag SHA.
-
-If the tag already exists at HEAD with the matching manifest version but has no GitHub Release, the
-lane classifies that as a resumable publish rather than composing another tag.
+A local tag is not publication. A matching tag that has not completed publication can be a resume
+case; do not create another identity merely because an earlier session ended.
 
 ## 4. Review and authorize publication
 
-Nothing leaves the repository until you explicitly authorize publishing. On authorization, the
-lane:
+Read the selected target, derived version, tag identity, exact changelog section, verified asset
+inventory and intended destination. Explicitly authorize the publication action. Requirements
+approval or sprint autonomy is not a blanket grant to publish a release.
 
-1. pushes the selected tag;
-2. verifies the release-notes heading matches that tag;
-3. creates the GitHub Release from the exact changelog section;
-4. passes `--latest=false` for every sibling series;
-5. reads the release back and requires a non-draft result on the expected tag; and
-6. records the remote tag SHA and dereferenced commit in `.github/published-tags.json`.
-
-Only a `ca` release may take GitHub's single repo-wide Latest badge, and only when it is actually
-the newest release across all four series.
+After publication, inspect the remote tag and dereferenced commit, non-draft release metadata,
+asset names and available provenance. Require the published inventory to match the declared,
+qualified inventory. The target's `latest-eligible` policy controls eligibility for the
+repository-wide Latest label; do not infer it from which tag was created most recently.
 
 ## Common stops
 
-| Stop | Meaning | Recovery |
+| Stop | What to inspect | Next safe action |
 |---|---|---|
-| Unknown target | No release row exists | Invoke one of the four exact target names |
-| Empty or non-bumping window | This payload has nothing releasable | Land a bump-earning change or do not release |
-| Manifest mismatch | The tag would advertise a version the payload does not report | Update the target surfaces through commit-gate |
-| Bundle diff after rebuild | The repository would ship stale generated code | Commit the rebuilt artifact, verify, then re-run |
-| Missing required `CHANGELOG:` footer on `feat` or `fix` | Release notes would silently omit a user-visible change | Correct the commit history through the governed path |
-| Publish read-back fails | Tag/Release may be partially published | Keep the exact state and resume the missing step |
+| Unknown or ambiguous target | Your declared target rows | Select the exact intended row or complete the confirmed back-fill |
+| No version-earning change | The selected payload window and declared policy | Do not manufacture a release just to obtain a tag |
+| Version or footer mismatch | Actual manifests, compatible tags and commit evidence | Correct the source through the governed path, then rerun the preview |
+| Qualification or inventory mismatch | Exact-head build/provenance and declared names | Preserve the failure; do not upload an arbitrary local substitute |
+| Partial publication | Existing local/remote tag, release and assets | Read back exact state and resume the missing step without replacing published identities |
 
 ## Recover from a bad published release
 
-Never move, retarget, or delete a published tag. Consumers can pin exact tags; changing the object
-behind a published version makes verification history describe different code.
+Preserve published tag identity. Fix the defect through a new reviewed change and publish the next
+policy-derived version. Explain which release supersedes the bad one through the normal release
+metadata process. Never move, retarget or delete a published tag to make old evidence describe new
+bytes.
 
-Fix the defect through a normal PR, invoke `/ca:release <target>` again, and publish the next
-version. Mark the bad GitHub Release as a prerelease and add a note naming the superseding version.
-The old tag remains the immutable identity of what shipped.
+## codeArbiter's own declared targets
 
-For the exact target register and every hard rule, read the
-[`release` command](/reference/commands/release/) and [`release` skill](/reference/skills/release/).
+codeArbiter itself is a multi-target example. Its
+[declared target file](https://github.com/arbiterForge/codeArbiter/blob/main/.codearbiter/release-targets.md)
+is maintainer configuration, not a universal target list. Keep consumer guidance separate from
+those plugin-specific packaging and publication recipes.
+
+The exact [release command](/reference/commands/release/) and
+[release skill](/reference/skills/release/) own the detailed contract. Confirm that your installed
+adapter supports the documented source capability before relying on it.
