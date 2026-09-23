@@ -1,0 +1,32 @@
+name: PR 847 visual slice inputs
+on:
+  push:
+    branches: [docs/human-experience-artifact-window]
+    paths: [.github/workflows/pr847-visual-slice-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture exact already-reviewed source without execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 19e89edfd7bd561ac29f296dc3b86c303ada1ee4
+          mkdir -p "$RUNNER_TEMP/pr847-inputs"
+          git branch captured-pr847-visual HEAD
+          git bundle create "$RUNNER_TEMP/pr847-inputs/source.bundle" captured-pr847-visual ^e1da12e8b1a9c82eebeb800c98f5fbf111010c08
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/pr847-inputs/identity.txt"
+          cd "$RUNNER_TEMP/pr847-inputs"
+          sha256sum source.bundle identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr847-visual-slice-inputs
+          path: ${{ runner.temp }}/pr847-inputs/
+          retention-days: 1
+          if-no-files-found: error
