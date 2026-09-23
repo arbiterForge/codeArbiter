@@ -539,14 +539,19 @@ class PublicCodexDocsTest(unittest.TestCase):
             ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json"
         ).read_text(encoding="utf-8"))
         original = live_baseline_marker(runbook)
-        later = dict(original, pr_number=844, pr_head_ref="codex/artifact-production-authority")
+        later = dict(
+            original,
+            pr_number=original["pr_number"] + 1,
+            pr_head_ref="codex/next-qualified-preview",
+        )
         revised = runbook.replace(
             json.dumps(original, separators=(",", ":")),
             json.dumps(later, separators=(",", ":")),
             1,
         )
         self.assertNotEqual(revised, runbook)
-        self.assertEqual(live_baseline_marker(revised)["pr_number"], 844)
+        self.assertEqual(live_baseline_marker(revised)["pr_number"], later["pr_number"])
+        self.assertEqual(live_baseline_marker(revised)["pr_head_ref"], later["pr_head_ref"])
         self._assert_live_baseline_marker(revised, manifest, require_current_candidate=False)
 
     def test_ca_codex_release_preflight_enforces_live_baseline_freshness(self):
