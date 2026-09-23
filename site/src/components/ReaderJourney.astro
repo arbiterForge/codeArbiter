@@ -62,8 +62,8 @@ for (const step of steps) {
   .ca-reader-journey__steps { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ca-space-4); padding: 0; list-style: none; }
   .ca-reader-journey__step { display: flex; flex-direction: column; gap: var(--ca-space-3); padding: var(--ca-space-5); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-md); background: var(--ca-bg-panel); }
   .ca-reader-journey__identity { display: flex; gap: var(--ca-space-3); align-items: center; }
-  .ca-reader-journey__number { color: var(--ca-brand-bright); font: 650 2.5rem/1 var(--ca-font-mono); letter-spacing: -.06em; }
-  .ca-reader-journey__actor { color: var(--ca-ink-muted); font: 650 var(--ca-text-xs)/1.5 var(--ca-font-mono); }
+  .ca-reader-journey__number { flex-shrink: 0; white-space: nowrap; color: var(--ca-brand-bright); font: 650 2.5rem/1 var(--ca-font-mono); letter-spacing: -.06em; }
+  .ca-reader-journey__actor { min-inline-size: 0; color: var(--ca-ink-muted); font: 650 var(--ca-text-xs)/1.5 var(--ca-font-mono); }
   .ca-reader-journey h3 { font-size: var(--ca-text-lg); line-height: 1.35; }
   .ca-reader-journey dt { color: var(--ca-ink); font-size: var(--ca-text-sm); font-weight: 700; }
   .ca-reader-journey dd { margin: var(--ca-space-1) 0 var(--ca-space-3); color: var(--ca-ink-soft); font-size: var(--ca-text-sm); line-height: 1.65; }
