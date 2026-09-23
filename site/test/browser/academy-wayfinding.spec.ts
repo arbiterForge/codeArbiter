@@ -91,6 +91,7 @@ test('track pages and lesson wayfinding are usable without JavaScript', async ({
     const page = await context.newPage();
     await page.goto('/academy/tracks/practitioner/');
     await expect(page.locator('[data-academy-track-lesson]')).toHaveCount(8);
+    await expect(page.locator('.ca-page-context')).toHaveCount(0);
     await expect(page.locator('[data-bookmark-controls]')).toBeHidden();
     await page.locator('[data-academy-track-lesson="P01-feature-through-plan"] h2 a').click();
     await expect(page).toHaveURL(new RegExp(practitioner));
