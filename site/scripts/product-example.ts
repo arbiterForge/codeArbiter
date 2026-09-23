@@ -53,9 +53,15 @@ export function loadProductExample(root = defaultRoot) {
   }
   function model(path: string): unknown {
     const html = read(path).toString();
-    const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
-    if (scripts.length !== 1 || scripts[0][1] !== ' id="ca-artifact-model" type="application/json"') fail('unexpected script surface');
-    return JSON.parse(scripts[0][2]);
+    // This is a fixed native-renderer fixture, not an arbitrary HTML sanitizer.
+    // Require its exact inert model tag and reject any additional opening or
+    // closing script token, including whitespace/mixed-case and unclosed forms.
+    const opening = '<script id="ca-artifact-model" type="application/json">';
+    const start = html.indexOf(opening);
+    const end = html.indexOf('</script>', start + opening.length);
+    const lower = html.toLowerCase();
+    if (start < 0 || end < 0 || lower.split('<script').length !== 2 || lower.split('</script').length !== 2) fail('unexpected script surface');
+    return JSON.parse(html.slice(start + opening.length, end));
   }
   const spec = model('specs/saved-searches.html') as Spec;
   const plan = model('plans/saved-searches.html') as Plan;

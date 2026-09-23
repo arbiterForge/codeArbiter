@@ -40,9 +40,21 @@ describe('honest product demonstrations', () => {
     writeFileSync(join(root, path), readFileSync(join(root, path), 'utf8').replace('<title>', '<title>Altered '));
     expect(() => loadProductExample(root)).toThrow('capture digest mismatch');
   });
-  it('rejects extra script content even if the capture manifest is updated', () => {
+  it.each([
+    '<script>alert(1)</script>',
+    '<script>alert(1)</script >',
+    '<ScRiPt>alert(1)</sCrIpT\t>',
+    '<script>alert(1)',
+    '<script/src=example.js>',
+  ])('rejects extra script tokens even after repinning: %s', (extra) => {
     const root = copy(), path = 'plans/saved-searches.html';
-    writeFileSync(join(root, path), readFileSync(join(root, path), 'utf8') + '<script>alert(1)</script>');
+    writeFileSync(join(root, path), readFileSync(join(root, path), 'utf8') + extra);
+    repin(root, path);
+    expect(() => loadProductExample(root)).toThrow('unexpected script');
+  });
+  it('requires the exact native-renderer model delimiter', () => {
+    const root = copy(), path = 'specs/saved-searches.html';
+    writeFileSync(join(root, path), readFileSync(join(root, path), 'utf8').replace('</script>', '</script >'));
     repin(root, path);
     expect(() => loadProductExample(root)).toThrow('unexpected script');
   });
