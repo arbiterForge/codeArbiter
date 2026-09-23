@@ -11,22 +11,71 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: 19e89edfd7bd561ac29f296dc3b86c303ada1ee4
           fetch-depth: 0
+          submodules: recursive
           persist-credentials: false
-      - name: Capture exact already-reviewed source without execution
-        shell: bash
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Build the exact pre-slice website
+        working-directory: site
+        run: npm ci && npm run build
+      - name: Observe card geometry and capture baseline visuals
+        working-directory: site
+        env:
+          ASTRO_PREVIEW_BACKGROUND: '1'
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = 19e89edfd7bd561ac29f296dc3b86c303ada1ee4
-          mkdir -p "$RUNNER_TEMP/pr847-inputs"
-          git branch captured-pr847-visual HEAD
-          git bundle create "$RUNNER_TEMP/pr847-inputs/source.bundle" captured-pr847-visual ^e1da12e8b1a9c82eebeb800c98f5fbf111010c08
-          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/pr847-inputs/identity.txt"
-          cd "$RUNNER_TEMP/pr847-inputs"
-          sha256sum source.bundle identity.txt > SHA256SUMS
+          npm run preview -- --host 127.0.0.1 --port 4322 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill "$PREVIEW_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4322/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node --input-type=module <<'JS'
+          import { chromium } from '@playwright/test';
+          import { mkdirSync, writeFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const out = `${process.env.RUNNER_TEMP}/visual-baseline`;
+          mkdirSync(out, { recursive: true });
+          const browser = await chromium.launch({ channel: 'chrome' });
+          const context = await browser.newContext();
+          const page = await context.newPage();
+          const results = [];
+          const routes = ['/', '/concepts/', '/academy/', '/getting-started/choose-your-host/', '/product-tour/', '/learn/', '/reference/', '/guides/feature-lane/'];
+          try {
+            for (const width of [1440, 1024, 768, 390, 320]) {
+              await page.setViewportSize({ width, height: 1000 });
+              for (const route of routes) {
+                await page.goto(`http://127.0.0.1:4322${route}`);
+                await page.evaluate(() => document.fonts.ready);
+                const grids = await page.locator('main').evaluate(main => [...main.querySelectorAll('*')].flatMap(el => {
+                  const style = getComputedStyle(el);
+                  if (!['grid', 'flex'].includes(style.display)) return [];
+                  const children = [...el.children].filter(child => child.getBoundingClientRect().width && child.getBoundingClientRect().height);
+                  if (children.length < 2) return [];
+                  return [{ tag: el.tagName, class: el.className, display: style.display, columns: style.gridTemplateColumns, gap: style.gap, children: children.map(child => {
+                    const rect = child.getBoundingClientRect(), css = getComputedStyle(child);
+                    return { tag: child.tagName, class: child.className, text: child.textContent.trim().slice(0, 60), x: rect.x, y: rect.y, width: rect.width, height: rect.height, margin: css.margin, padding: css.padding, boxSizing: css.boxSizing, alignSelf: css.alignSelf };
+                  }) }];
+                }));
+                results.push({ route, width, grids });
+                if ([1440, 390].includes(width)) {
+                  const slug = route.replaceAll('/', '-').replace(/^-|-$/g, '') || 'home';
+                  await page.screenshot({ path: `${out}/${slug}-${width}.png`, fullPage: true });
+                }
+              }
+            }
+            writeFileSync(`${out}/geometry.json`, JSON.stringify({ source: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), browser: browser.version(), results }, null, 2));
+          } finally { await browser.close(); }
+          JS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: pr847-visual-slice-inputs
-          path: ${{ runner.temp }}/pr847-inputs/
-          retention-days: 1
+          name: pr847-visual-baseline
+          path: ${{ runner.temp }}/visual-baseline/
+          retention-days: 3
           if-no-files-found: error
