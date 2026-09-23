@@ -1,4 +1,4 @@
-name: Spec continuation source preparation (temporary)
+name: Spec continuation validation (temporary)
 on:
   push:
     branches: [codex/spec-continuation-checkpoint-remediation]
@@ -6,32 +6,183 @@ on:
 permissions:
   contents: read
 jobs:
-  capture:
+  validate:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/spec-continuation-checkpoint-remediation'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Capture committed source without executing product code
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.1'
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Acquire exact reviewed patch as inert data
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f
-          OUT="$RUNNER_TEMP/spec-continuation-source"
-          mkdir "$OUT"
-          git archive --format=zip --output="$OUT/source.zip" HEAD
-          git bundle create "$OUT/source.bundle" HEAD
-          git rev-parse HEAD > "$OUT/commit.txt"
-          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
-          cd "$OUT"
-          sha256sum source.zip source.bundle > SHA256SUMS
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+          python - <<'PY'
+          import base64,hashlib,json,lzma,os,pathlib,urllib.request
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/spec-continuation-checkpoint-remediation'
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'spec-continuation-validation'
+          out.mkdir()
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
+          request=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/fe991962e626722c97555cdfd500ff636cdc6294',headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+          with urllib.request.build_opener(NoRedirect).open(request,timeout=45) as response: record=json.load(response)
+          assert record['sha']=='fe991962e626722c97555cdfd500ff636cdc6294' and record['encoding']=='base64'
+          data=base64.b64decode(record['content'])
+          assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==record['sha']
+          patch=lzma.decompress(data)
+          assert len(patch)==51685
+          assert hashlib.sha256(patch).hexdigest()=='13e6fcc251accfb1186542d52d5ba41e8096d88e20c1acb86bafa9f3f04736e2'
+          (out/'reviewed.patch').write_bytes(patch)
+          PY
+      - name: Apply owning-source changes and run complete-checkout regressions
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,sys,time,zipfile
+          root=pathlib.Path.cwd();out=pathlib.Path(os.environ['RUNNER_TEMP'])/'spec-continuation-validation'
+          base='d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f'
+          head=os.environ['GITHUB_SHA']
+          temporary='.github/workflows/spec-continuation-source-preparation.yml'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==head
+          assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip()=='go1.27.1'
+          subprocess.run(['git','merge-base','--is-ancestor',base,head],check=True)
+          assert subprocess.check_output(['git','diff','--name-only',base,head],text=True).splitlines()==[temporary]
+          expected={
+            '.codearbiter/.provenance/code-map.json':'74d2d1216919bf97aae634ceb958e0b216c98f99',
+            '.github/published-tags.json':'0283bd4942b9566c09af4a36af87c15af906f777',
+            '.github/scripts/test_routing_and_cleanup_surface.py':'8292afa91c3db3835e8e9fbf5a3a7bde88a483f1',
+            'CHANGELOG.md':'bc12112be0c9f49e44098f51470ca4ac3c788ff4',
+            'README.md':'9fee56f550899aa3abbfbd27b1ceb2f3061ca5ab',
+            'core/pysrc/hostapi.py':'a3a2ea319e044db4d53f5e3cc32f97429ba47dba',
+            'core/surface/SPRINT.md':'64333f9e7d2a601367c548de65ff2e1f7978a4dd',
+            'core/surface/skills/INDEX.md':'f4fc156e0355c6c7c1ca317d06293b93ae5194f6',
+            'core/surface/skills/brainstorming/SKILL.md':'763c78e9e1389d02ea6fb1a07be50142bb3c380e',
+            'core/surface/skills/executing-plans/SKILL.md':'90ec987df9690e4d3c7569a7b260e954901fccfd',
+            'docs/reviews/2026-09-21-autonomy-routing-integration.md':'7257e01431966e140b31d2b2f0defd319a32c92f',
+            'package.json':'317017d38b95bcc786f4cf9378d91e9d92fc48bd',
+            'plugins/ca-codex/.codex-plugin/plugin.json':'a22c16574d76ab72e05ac9c1d780e6d648f9aaec',
+            'plugins/ca-codex/CHANGELOG.md':'cb541ac836863cbd9f845c2bfa576db693f100a4',
+            'plugins/ca-codex/SPRINT.md':'bf18b3f127e127294e6dfa1aa4b148a397e016b6',
+            'plugins/ca-codex/hooks/_host.py':'8d4ade0bb0f411ad608e0fd2196fa96c2b93740b',
+            'plugins/ca-codex/hooks/hostapi.py':'a3a2ea319e044db4d53f5e3cc32f97429ba47dba',
+            'plugins/ca-codex/routines/INDEX.md':'39373fc339ed80c651d23592d14f742cb14c27ef',
+            'plugins/ca-codex/routines/brainstorming/SKILL.md':'ea904f9b2b56ea6cbc4016449dca0df9e20ff694',
+            'plugins/ca-codex/routines/executing-plans/SKILL.md':'aa3a8a7ef1767d820f3400d8d985c1a5b151bc65',
+            'plugins/ca-pi/CHANGELOG.md':'3a11d511031ea7dfad8206d7a0a76ae91e6331d2',
+            'plugins/ca-pi/SPRINT.md':'32492777f4861525cf891c8f7dfb381f866ea488',
+            'plugins/ca-pi/hooks/_host.py':'d4c61613812cf8bdadae2ae58fdf2f90ae2db49e',
+            'plugins/ca-pi/hooks/hostapi.py':'a3a2ea319e044db4d53f5e3cc32f97429ba47dba',
+            'plugins/ca-pi/package.json':'570235b048150875f53a91f680cc27ccdb505226',
+            'plugins/ca-pi/routines/INDEX.md':'96e9f9079482b417e01bc274ccb57e382aac5b18',
+            'plugins/ca-pi/routines/brainstorming/SKILL.md':'f2b8e1949d63f75ef7c2de64cfcb53dd44e9aed6',
+            'plugins/ca-pi/routines/executing-plans/SKILL.md':'69f688995395a2704783f9f0cce6ccc3ec9f7d4a',
+            'plugins/ca/.claude-plugin/plugin.json':'8845840ba9e9a21572651dab5466bd6d83875a78',
+            'plugins/ca/SPRINT.md':'3ae08d9c7dcc2415c5ba142bf8f8ac72d974f5f5',
+            'plugins/ca/hooks/_host.py':'74715fa8611a95380a796febd49f451080cd8d61',
+            'plugins/ca/hooks/hostapi.py':'a3a2ea319e044db4d53f5e3cc32f97429ba47dba',
+            'plugins/ca/skills/INDEX.md':'d5cbdbb0095b42509a9f19063d19bc579d596ad6',
+            'plugins/ca/skills/brainstorming/SKILL.md':'daeab3606fc981d635df58ea979051f670563bca',
+            'plugins/ca/skills/executing-plans/SKILL.md':'e23bed13bb4c7be0b1ae602dbff0f44f7955cc22'
+          }
+          def oid(path):
+              bits=(root/path).read_bytes()
+              return hashlib.sha1(b'blob '+str(len(bits)).encode()+b'\0'+bits).hexdigest()
+          subprocess.run(['git','apply','--check','--index','--unidiff-zero',str(out/'reviewed.patch')],check=True)
+          subprocess.run(['git','apply','--index','--unidiff-zero',str(out/'reviewed.patch')],check=True)
+          for script in ['tools/sync-core.py','tools/build-surface.py','tools/build-host-packages.py']:
+              subprocess.run([sys.executable,script],check=True)
+          for path,digest in expected.items(): assert oid(path)==digest,path
+          changed=set(subprocess.check_output(['git','diff','HEAD','--name-only'],text=True).splitlines())
+          assert changed==set(expected),(changed-set(expected),set(expected)-changed)
+          subprocess.run(['git','add','--',*sorted(expected)],check=True)
+          subprocess.run(['git','rm','--',temporary],check=True)
+          subprocess.run(['git','diff','--cached','--check'],check=True)
+          tree=subprocess.check_output(['git','write-tree'],text=True).strip()
+          message='fix: preserve caller-aware specifications and typed checkpoint scope\n\nRequire actual initial approval before full-lane planning and execution;\nretain complete checkpoint membership without adding sprint interviews.\nRegenerate hosts and synchronize candidate identities.\n\nCHANGELOG: Correct specification continuation and typed checkpoint scope.\n'
+          local_env=dict(os.environ,GIT_AUTHOR_NAME='Validation fixture',GIT_AUTHOR_EMAIL='validation@example.invalid',GIT_COMMITTER_NAME='Validation fixture',GIT_COMMITTER_EMAIL='validation@example.invalid')
+          fixture=subprocess.check_output(['git','commit-tree',tree,'-p',head],input=message,text=True,env=local_env).strip()
+          subprocess.run(['git','checkout','--detach',fixture],check=True)
+          suites=['test_routing_and_cleanup_surface','test_recorded_intent_surface','test_persona_composition','test_host_descriptors','test_build_surface','test_artifact_authoring','test_artifact_workflow','test_artifact_consumers','test_artifact_approval_adapter','test_artifact_prerequisite_adapter','test_artifact_reconciliation_adapter','test_artifact_authority_adapter','test_artifact_surface','test_provenance_wiring','test_public_codex_docs','test_payload_version_gate','test_reconcile_tag_receipt','test_ux_conversion']
+          commands=[[sys.executable,'.github/scripts/'+name+'.py'] for name in suites]
+          commands += [[sys.executable,'tools/build-surface.py','--check'],[sys.executable,'tools/sync-core.py','--check'],[sys.executable,'tools/build-host-packages.py','--check'],[sys.executable,'.github/scripts/check_destructive_registry.py'],[sys.executable,'.github/scripts/check_routing_index_parity.py']]
+          commands += [[sys.executable,'.github/scripts/check-plugin-refs.py',host] for host in ['ca','ca-codex','ca-pi']]
+          commands += [[sys.executable,'.github/scripts/payload_version_gate.py','--plugin',host,'--base',base] for host in ['plugins/ca','plugins/ca-codex']]
+          commands += [[sys.executable,'tools/build-host-packages.py','--release-guard-base',base],[sys.executable,'.github/scripts/check_docs_contract.py']]
+          results=[]
+          env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
+          for index,args in enumerate(commands):
+              log=f'{index:02d}-'+pathlib.Path(args[1]).stem+'.log';start=time.monotonic()
+              try:
+                  done=subprocess.run(args,capture_output=True,text=True,timeout=240,env=env)
+                  code=done.returncode;output=done.stdout+done.stderr
+              except subprocess.TimeoutExpired:
+                  code=124;output='Timed out; not a passing check.\n'
+              (out/log).write_text(output)
+              results.append({'command':args,'exit_code':code,'seconds':round(time.monotonic()-start,3),'log':log})
+              (out/'tests.json').write_text(json.dumps(results,indent=2))
+              print(code,' '.join(args),flush=True)
+          for path,digest in expected.items(): assert oid(path)==digest,path
+          assert not subprocess.check_output(['git','diff','--name-only'],text=True).strip()
+          (out/'candidate.diff').write_bytes(subprocess.check_output(['git','diff','--binary','--full-index',base,fixture]))
+          with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as archive:
+              for path in sorted(expected): archive.write(root/path,path)
+          files=[{'path':path,'sha':digest,'mode':subprocess.check_output(['git','ls-tree','HEAD','--',path],text=True).split()[0]} for path,digest in sorted(expected.items())]
+          (out/'manifest.json').write_text(json.dumps({'base':base,'parent':head,'tree':tree,'local_validation_commit':fixture,'files':files,'message':message,'all_tests_passed':all(item['exit_code']==0 for item in results)},indent=2))
+          assert all(item['exit_code']==0 for item in results),'Required validation failed: inspect logs; no candidate commit uploaded.'
+          PY
+      - name: Create preserving candidate objects without moving any ref
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'spec-continuation-validation'
+          report=json.loads((out/'manifest.json').read_text())
+          assert report['all_tests_passed'] and report['parent']==os.environ['GITHUB_SHA']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/spec-continuation-checkpoint-remediation'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
+          def api(method,path,payload=None):
+              request=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(payload).encode() if payload is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Content-Type':'application/json','Accept':'application/vnd.github+json'})
+              with urllib.request.build_opener(NoRedirect).open(request,timeout=45) as response: return json.load(response)
+          assert api('GET','/git/ref/heads/codex/spec-continuation-checkpoint-remediation')['object']['sha']==report['parent']
+          entries=[]
+          for row in report['files']:
+              data=pathlib.Path(row['path']).read_bytes()
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              uploaded=api('POST','/git/blobs',{'content':data.decode(),'encoding':'utf-8'})['sha']
+              assert uploaded==row['sha']
+              entries.append({'path':row['path'],'type':'blob','mode':row['mode'],'sha':uploaded})
+          entries.append({'path':'.github/workflows/spec-continuation-source-preparation.yml','type':'blob','mode':'100644','sha':None})
+          base_tree=api('GET','/git/commits/'+report['parent'])['tree']['sha']
+          tree=api('POST','/git/trees',{'base_tree':base_tree,'tree':entries})['sha']
+          assert tree==report['tree']
+          commit=api('POST','/git/commits',{'message':report['message'],'tree':tree,'parents':[report['parent']]})['sha']
+          (out/'candidate.json').write_text(json.dumps({'commit':commit,'tree':tree,'parent':report['parent'],'branch_updated':False},indent=2))
+          PY
+      - name: Retain actual logs and candidate identities
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: spec-continuation-source-${{ github.run_id }}
-          path: ${{ runner.temp }}/spec-continuation-source/
+          name: spec-continuation-validation-${{ github.run_id }}
+          path: ${{ runner.temp }}/spec-continuation-validation/
           if-no-files-found: error
           retention-days: 3
