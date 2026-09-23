@@ -33,20 +33,20 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.9","candidate_commit":"551e92b68815c15d4ac43e76237da622177bd766","candidate_source_tree":"44da71710006ec83aac3ab2fc3b3feb5307e48b9","candidate_package_sha256":"568a5dcfd54305062a759e10f52cac39e5626bffb65f0436021b8315bde96c02","candidate_ci_run_id":35807834405,"candidate_ci_run_attempt":1,"candidate_artifact_id":10728537520,"candidate_artifact_sha256":"484b34d00dd3f5d4b7d8499fa76ff994724d6ef1a65db8291af544483daebfb7","candidate_archive_sha256":"f95bf5e26d60edfc2aba665af6e7dd835727a84f25790355790000c6137def04","run_head_sha":"337311af15a158880c8a52e9780e7962b5ab09c4","pr_number":843,"pr_head_sha":"337311af15a158880c8a52e9780e7962b5ab09c4","pr_head_ref":"codex/autonomy-routing-integration","pr_base_sha":"32e3496ae2d7ab3b2373ee669871def3228dedc4","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.9","candidate_commit":"178ca1487fb16c2ee0b796370d72fb8ee982eebe","candidate_source_tree":"24c20db68662630cb8f344804ad4918490b00c01","candidate_package_sha256":"27dfb25752ae8da1d559e70fadf6452dbf5d500173b8d4630f6fe3daff9131b4","candidate_ci_run_id":35811348939,"candidate_ci_run_attempt":1,"candidate_artifact_id":10730305519,"candidate_artifact_sha256":"a0c719911b6f15039d8e14c277e362de2426fb9d834374cf47c03f25dd5f44b8","candidate_archive_sha256":"f1b5c5c151b368712336a3e83d0b0bf7158edbc61b7008f5f3cb98fe021e7df3","run_head_sha":"2a353ed83e311c258708d1bcef7d6b69c7208565","pr_number":843,"pr_head_sha":"2a353ed83e311c258708d1bcef7d6b69c7208565","pr_head_ref":"codex/autonomy-routing-integration","pr_base_sha":"32e3496ae2d7ab3b2373ee669871def3228dedc4","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
 2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
-exact 0.13.9 package from pull-request qualification run `35807834405`, attempt 1, artifact
-`10728537520`. That run's overall conclusion was failure only because Candidate readiness and its
+exact 0.13.9 package from pull-request qualification run `35811348939`, attempt 1, artifact
+`10730305519`. That run's overall conclusion was failure only because Candidate readiness and its
 downstream Merge readiness consumer rejected the then-absent 0.13.9 marker; all 65 other jobs
 succeeded, including the complete native, package-assembly, and cold-package qualification set that
 the preview-proof validator requires. The producer checkout was
-`551e92b68815c15d4ac43e76237da622177bd766`, with source tree
-`44da71710006ec83aac3ab2fc3b3feb5307e48b9`; the PR head and base are recorded separately so this
+`178ca1487fb16c2ee0b796370d72fb8ee982eebe`, with source tree
+`24c20db68662630cb8f344804ad4918490b00c01`; the PR head and base are recorded separately so this
 preview proof does not pretend that a future squash commit already exists. The release archive has
-digest `sha256:f95bf5e26d60edfc2aba665af6e7dd835727a84f25790355790000c6137def04`, and its canonical
+digest `sha256:f1b5c5c151b368712336a3e83d0b0bf7158edbc61b7008f5f3cb98fe021e7df3`, and its canonical
 tracked candidate content has digest
-`sha256:568a5dcfd54305062a759e10f52cac39e5626bffb65f0436021b8315bde96c02`. The artifact cohort
+`sha256:27dfb25752ae8da1d559e70fadf6452dbf5d500173b8d4630f6fe3daff9131b4`. The artifact cohort
 receipt matched all 227 package members, including 219 source-origin members matched to the
 synthetic candidate checkout. The package was installed in an isolated Codex home, and the task
 received the repository startup state through SessionStart context, including `host: codex`. With
