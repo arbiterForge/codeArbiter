@@ -25,10 +25,19 @@ test('criterion selection works with keyboard, remains draft, and reconnects aft
   await expect(workbench.getByRole('button', { name: /AC-002/ })).toHaveAttribute('aria-pressed', 'true');
   await expect(workbench).toContainText('Unapproved fixture');
   await page.getByRole('link', { name: 'complete feature walkthrough', exact: true }).click();
+  await expect(page).toHaveURL(/\/guides\/first-feature\/$/);
+  await expect(page.locator('h1')).toHaveCount(1);
   await page.goBack();
+  await expect(page).toHaveURL(/\/product-tour\/$/);
   workbench = page.locator('[data-example="artifacts"]');
   await workbench.getByRole('button', { name: /AC-003/ }).click();
   await expect(workbench.locator('[data-pane]:visible')).toContainText('TestExport.test_empty');
+  await page.keyboard.press('Home');
+  await expect(workbench.getByRole('button', { name: /AC-001/ })).toBeFocused();
+  await expect(workbench.locator('[data-pane]:visible')).toContainText('TestExport.test_rows');
+  await page.keyboard.press('ArrowRight');
+  await expect(workbench.getByRole('button', { name: /AC-002/ })).toBeFocused();
+  await expect(workbench.locator('[data-pane]:visible')).toContainText('TestExport.test_round_trip');
 });
 
 test('all demonstrations have a complete no-script reading path', async ({ browser }) => {
@@ -102,7 +111,9 @@ test('capture representative product-window layouts for review', async ({ page }
     await page.setViewportSize({ width, height });
     await page.goto('/');
     await page.screenshot({ path: join(root, `home-${name}.png`) });
-    await page.locator('[data-example="artifacts"]').screenshot({ path: join(root, `workbench-${name}.png`) });
+    // A full-page capture avoids a fixed header obscuring a tall element during
+    // Playwright's automatic scroll-to-center for element screenshots.
+    await page.screenshot({ path: join(root, `home-full-${name}.png`), fullPage: true });
     await page.goto('/product-tour/');
     await page.screenshot({ path: join(root, `tour-${name}.png`), fullPage: true });
     captures.push({ name, width, height });

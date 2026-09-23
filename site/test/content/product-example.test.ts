@@ -21,6 +21,20 @@ function repin(root: string, path: string) {
   writeFileSync(join(root, 'provenance.json'), JSON.stringify(manifest));
 }
 describe('honest product demonstrations', () => {
+  it('binds the secret-scanner exception to one exact public source digest', () => {
+    const source = 'plugins/ca/hooks/hostapi.py';
+    const digest = 'c6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be';
+    const capture = JSON.parse(readFileSync('public/examples/statusline-themes.json', 'utf8'));
+    const result = spawnSync('git', ['show', `${capture.source_commit}:${source}`], { encoding: 'utf8', timeout: 10_000 });
+    expect(result.error).toBeUndefined();
+    expect(result.status).toBe(0);
+    expect(createHash('sha256').update(result.stdout).digest('hex')).toBe(digest);
+    expect(capture.source_files[source]).toBe(digest);
+    const config = readFileSync('../.gitleaks.toml', 'utf8');
+    expect(config).toContain(`regexes = ['\\A${digest}\\z']`);
+    const exception = config.slice(config.lastIndexOf('[[allowlists]]'));
+    expect(exception).not.toMatch(/^(?:paths|commits|stopwords|regexTarget)\s*=/m);
+  });
   it('rejects a changed rendered view even when the embedded model is intact', () => {
     const root = copy(), path = 'specs/saved-searches.html';
     writeFileSync(join(root, path), readFileSync(join(root, path), 'utf8').replace('<title>', '<title>Altered '));
