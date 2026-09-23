@@ -33,12 +33,12 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.8","candidate_commit":"0f2e1e2d230f04db88d4650b8a4e412634b8359b","candidate_source_tree":"6a9de5e35bf7dea1feee1387be7da6031136d552","candidate_package_sha256":"bd1a59b8be937b017df9b583bc30bfa88bf93bb88b55e06fca748a5b59cc806b","candidate_ci_run_id":35800723588,"candidate_ci_run_attempt":1,"candidate_artifact_id":10725654923,"candidate_artifact_sha256":"4d4559b5a61da9cd531512924df92077c21f4650092ae8f24482a73e64c00112","candidate_archive_sha256":"7bdc81636330b2e94e2e918187a3592fca88e38a6746a050161ab9b353e80b45","run_head_sha":"15f722aad2bd4b40e31663336d824e46c481a156","pr_number":845,"pr_head_sha":"15f722aad2bd4b40e31663336d824e46c481a156","pr_head_ref":"worktree-release-contract-closure","pr_base_sha":"5c876dd885598c248fa777e951dac4e628688d73","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.8","candidate_commit":"6ee16b65990570b0de65031839eba61e138432af","candidate_source_tree":"2886a80aef4374d455148032564f19e72f2366be","candidate_package_sha256":"bd1a59b8be937b017df9b583bc30bfa88bf93bb88b55e06fca748a5b59cc806b","candidate_ci_run_id":35803430179,"candidate_ci_run_attempt":1,"candidate_artifact_id":10727031394,"candidate_artifact_sha256":"f7e16d4531ebedb29cac7961645a0f3ea2d36a91cc08e8ff34246f295bf493bc","candidate_archive_sha256":"7bdc81636330b2e94e2e918187a3592fca88e38a6746a050161ab9b353e80b45","run_head_sha":"42a2f1ce479b06e4d8002148a34bc0281d55a527","pr_number":845,"pr_head_sha":"42a2f1ce479b06e4d8002148a34bc0281d55a527","pr_head_ref":"worktree-release-contract-closure","pr_base_sha":"7352de3703deba1e56981b49af7de37f5fb86028","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-22","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
 Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.8**, Windows,
 2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
-exact 0.13.8 package from pull-request qualification run `35800723588`, attempt 1, artifact
-`10725654923`. The producer checkout was `0f2e1e2d230f04db88d4650b8a4e412634b8359b`, with source tree
-`6a9de5e35bf7dea1feee1387be7da6031136d552`; the PR head and base are recorded separately so this
+exact 0.13.8 package from pull-request qualification run `35803430179`, attempt 1, artifact
+`10727031394`. The producer checkout was `6ee16b65990570b0de65031839eba61e138432af`, with source tree
+`2886a80aef4374d455148032564f19e72f2366be`; the PR head and base are recorded separately so this
 preview proof does not pretend that a future squash commit already exists. The release archive has
 digest `sha256:7bdc81636330b2e94e2e918187a3592fca88e38a6746a050161ab9b353e80b45`, and its canonical
 tracked candidate content has digest
