@@ -44,13 +44,28 @@ func currentVerificationObservation(contextHash, payloadHash string) map[string]
 	}
 }
 
-func TestLoadRejectsMutatedContentAddressedObservation(t *testing.T) {
-	root := t.TempDir()
+func testStore(t *testing.T) (*store.FS, string) {
+	t.Helper()
+	root, err := os.MkdirTemp(".", ".observation-test-*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, err = filepath.Abs(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.RemoveAll(root) })
 	f, err := store.Open(root)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer f.Close()
+	t.Cleanup(func() { f.Close() })
+	return f, root
+}
+
+func TestLoadRejectsMutatedContentAddressedObservation(t *testing.T) {
+	f, root := testStore(t)
+	var err error
 	context := verificationContext()
 	contextBytes, _ := canonical.Marshal(context)
 	contextHash := canonical.BytesHash(contextBytes)
@@ -79,12 +94,8 @@ func TestLoadRejectsMutatedContentAddressedObservation(t *testing.T) {
 }
 
 func TestLegacyObservationIsInspectableButCannotConferAuthority(t *testing.T) {
-	root := t.TempDir()
-	f, err := store.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
+	f, root := testStore(t)
+	var err error
 	contextBytes, _ := canonical.Marshal(verificationContext())
 	contextHash := canonical.BytesHash(contextBytes)
 	legacy := currentVerificationObservation(contextHash, testDigest("payload"))

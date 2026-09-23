@@ -333,7 +333,7 @@ func TestObservedCaptureBindsEngineContextObservationAndPayload(t *testing.T) {
 		t.Fatal(err)
 	}
 	workspaceRoot := filepath.Dir(executable)
-	workspace := object{"root": workspaceRoot, "filesystem_id": "fixture:workspace", "git_common_dir": workspaceRoot, "git_common_filesystem_id": "fixture:git", "head": "fixture-head", "status_sha256": canonical.BytesHash([]byte("clean"))}
+	workspace := object{"root": workspaceRoot, "filesystem_id": "fixture:workspace", "git_common_dir": workspaceRoot, "git_common_filesystem_id": "fixture:git", "head": "fixture-head", "status_sha256": canonical.BytesHash([]byte("clean")), "content_sha256": canonical.BytesHash([]byte("content"))}
 	producerResult := object{
 		"environment_sha256": canonical.BytesHash([]byte("fixture environment")),
 		"command_bindings":   []any{object{"definition_sha256": model.M(model.A(context["commands"])[0])["definition_sha256"], "argv": []any{executable, "test", "./...", "-run", "TestEnvironmentOverrides"}, "cwd": workspaceRoot, "cwd_filesystem_id": "fixture:cwd", "workspace_root": workspaceRoot, "workspace_filesystem_id": "fixture:workspace", "git_common_dir": workspaceRoot, "git_common_filesystem_id": "fixture:git", "executable_sha256": canonical.BytesHash([]byte("fixture executable"))}},
@@ -356,6 +356,10 @@ func TestObservedCaptureBindsEngineContextObservationAndPayload(t *testing.T) {
 	result := h.run("capture-observation", source)
 	if model.S(result["receipt"]) == "" {
 		t.Fatal("observed capture did not produce a receipt")
+	}
+	replayed := h.run("capture-observation", source)
+	if replayed["receipt"] != result["receipt"] {
+		t.Fatal("observed capture is not idempotent")
 	}
 	if _, err = h.request("capture", source); fault.Code(err) != "OBSERVATION_REQUIRED" {
 		t.Fatalf("observed event entered legacy capture path: %v", err)
