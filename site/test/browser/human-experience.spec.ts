@@ -102,7 +102,7 @@ test('native documents require no script or off-origin request', async ({ browse
 });
 
 // Captures are review evidence, not pixel-baseline approval. The workflow retains
-// them even on failure so a reviewer can inspect the actual hosted render.
+// successful-run captures so a reviewer can inspect the actual hosted render.
 test('capture representative product-window layouts for review', async ({ page }) => {
   const root = join(process.cwd(), '.astro/browser-evidence');
   mkdirSync(root, { recursive: true });
