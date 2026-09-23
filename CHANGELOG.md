@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.10] - 2026-09-22
+## [2.21.11] - 2026-09-23
 
 ### Fixed
 
@@ -27,6 +27,11 @@ predate the plugin rewrite and are grouped by date.
   exact pre-mutation cancellation instead of leaving an unresolvable prompt.
 - Reject unproven recovery attempts, including partial commits and deleted
   workspace parents, while preserving exact retries and cancellation guidance.
+
+## [2.21.10] - 2026-09-22
+
+### Fixed
+
 - Resolve cross-host git-hook path-form races: the shared registry and its
   generated pre-commit/pre-push shim now translate between Windows-native,
   Git-Bash/MSYS, and WSL drvfs path spellings (ADR-0038), the installer's
