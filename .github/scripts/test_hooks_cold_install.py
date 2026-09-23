@@ -830,6 +830,25 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
                               bash_in("ls -la", enabled)),
                           stub_ok=stub_ok)
 
+    # The production authority bridge is registered on tool and subagent
+    # events. With no armed request, each native event must remain inert.
+    authority_events = (
+        bash_in("ls -la", enabled),
+        {"hook_event_name": "PostToolUse", "tool_name": "Bash", "cwd": enabled,
+         "tool_input": {"command": "ls -la"}},
+        {"hook_event_name": "SubagentStart", "cwd": enabled,
+         "session_id": "cold-session", "turn_id": "cold-turn", "agent_id": "cold-agent"},
+        {"hook_event_name": "SubagentStop", "cwd": enabled,
+         "session_id": "cold-session", "turn_id": "cold-turn", "agent_id": "cold-agent"},
+    )
+    for event in authority_events:
+        for fixture in (enabled, dormant):
+            for scen, kind, stub_ok in pretool_allow_pairs():
+                assert_noop_allow(run("artifact-authority-hook.py", kind, scen,
+                                      fixture, {**event, "cwd": fixture}), stub_ok=stub_ok)
+            assert_loud_failure(run("artifact-authority-hook.py", "primary", "NONE",
+                                    fixture, {**event, "cwd": fixture}))
+
     # ---- 5. pre-write H-05 (audit log overwrite via apply_patch), enabled
     p = run("pre-tool-adapter.py", "primary", "REAL", enabled,
             patch_in(AUDIT_PATCH, enabled))
@@ -923,6 +942,7 @@ def run_ca_codex_campaign(hooks, paths, stub_log, enabled, dormant):
         py2_inputs = {
             "session-start.py": session_in(),
             "pre-tool-adapter.py": bash_in("git status", enabled),
+            "artifact-authority-hook.py": bash_in("git status", enabled),
             "post-write-edit.py": patch_in(ORDINARY_PATCH, enabled),
             "prune-transcript.py": PRUNE_IN,
         }
@@ -938,6 +958,7 @@ CA_EXPECTED = {"session-start.py", "pre-bash.py", "pre-write.py",
                "pre-edit.py", "post-write-edit.py", "prune-transcript.py",
                "pre-read.py", "prompt-submit.py"}
 CODEX_EXPECTED = {"session-start.py", "pre-tool-adapter.py",
+                   "artifact-authority-hook.py",
                    "post-write-edit.py", "prune-transcript.py",
                    "prompt-submit.py"}
 
@@ -986,7 +1007,7 @@ def main():
                                   CODEX_EXPECTED, "ca-codex", "${PLUGIN_ROOT}",
                                   "${CLAUDE_PLUGIN_ROOT}",
                                   {"SessionStart", "PreToolUse", "PostToolUse",
-                                   "UserPromptSubmit"})
+                                   "SubagentStart", "SubagentStop", "UserPromptSubmit"})
 
     base = tempfile.mkdtemp(prefix="ca-coldinstall-")
     try:

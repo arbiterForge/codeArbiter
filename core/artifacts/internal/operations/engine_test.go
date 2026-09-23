@@ -365,26 +365,17 @@ func TestObservedCaptureBindsEngineContextObservationAndPayload(t *testing.T) {
 		t.Fatalf("observed event entered legacy capture path: %v", err)
 	}
 	legacyPayload := object{"input_sha256": context["input_sha256"], "spec_sha256": context["spec_sha256"], "task_sha256": context["task_sha256"], "commands": commands}
-	legacyRef := h.receipt(h.doc("PLAN-EXAMPLE"), "T-001", "verification", legacyPayload)
-	legacyReceipt, err := authority.Load(storeMustOpen(t, h.root), legacyRef)
-	if err != nil {
-		t.Fatal(err)
+	legacyEvent := object{
+		"format": "codearbiter.workflow-event/0.1.0", "kind": "verification", "authority_kind": "verification_runner",
+		"subject": context["subject"], "actor": "synthetic legacy fixture", "origin": "fixture-run-legacy", "verdict": "passed",
+		"payload": legacyPayload, "source_text": "Legacy fixture command completion.",
 	}
-	legacySource := object{"source_ref": legacyReceipt.Data["authority_source_ref"], "source_sha256": legacyReceipt.Data["authority_source_sha256"]}
+	legacySource := h.authoritySource(legacyEvent)
 	if _, err = h.request("capture-observation", legacySource); fault.Code(err) != "OBSERVATION_REQUIRED" {
 		t.Fatalf("legacy synthetic event entered observed capture path: %v", err)
 	}
 }
 
-func storeMustOpen(t *testing.T, root string) *store.FS {
-	t.Helper()
-	f, err := store.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { f.Close() })
-	return f
-}
 func (h *harness) approvePair() {
 	h.t.Helper()
 	s := h.doc("SPEC-EXAMPLE")

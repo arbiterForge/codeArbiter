@@ -265,6 +265,17 @@ class AuthorityAdapterTest(unittest.TestCase):
                 workspace_roots={"candidate worktree": self.candidate},
             )
 
+    def test_authority_spool_uses_canonical_repository_for_aliases(self):
+        armed = self.adapter.arm_request(
+            self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
+            request_nonce="request-root-alias",
+        )
+        relative_alias = Path(os.path.relpath(self.root, Path.cwd()))
+        self.assertEqual(
+            self.adapter._load(relative_alias, armed["request_id"])["request_id"],
+            armed["request_id"],
+        )
+
     def test_workspace_snapshot_binds_dirty_tracked_and_untracked_bytes(self):
         armed = self.adapter.arm_request(
             self.root, self.client, "PLAN-EXAMPLE", "T-001", "verification",
