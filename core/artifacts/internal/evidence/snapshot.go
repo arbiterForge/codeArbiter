@@ -7,6 +7,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
@@ -54,7 +55,7 @@ func internalOutputs(f *store.FS) (map[string]bool, error) {
 		switch d.Name() {
 		case "transactions", "history":
 			continue
-		case "authority-sources", "events", "receipts", "context-tokens", "farm-bindings", "farm-seals", "farm-markers":
+		case "authority-sources", "events", "receipts", "context-tokens", "evidence-contexts", "observations", "farm-bindings", "farm-seals", "farm-markers":
 		default:
 			return nil, fault.New("UNRECOGNIZED_OUTPUT", "unrecognized reserved output directory")
 		}
@@ -67,7 +68,7 @@ func internalOutputs(f *store.FS) (map[string]bool, error) {
 			if entry.IsDir() {
 				return nil, fault.New("UNRECOGNIZED_OUTPUT", "nested reserved output directory")
 			}
-			b, e := f.Read(p, 1<<20)
+			b, e := f.Read(p, canonical.MaxBytes)
 			if e != nil {
 				return nil, e
 			}
@@ -94,6 +95,18 @@ func internalOutputs(f *store.FS) (map[string]bool, error) {
 				v, e := canonical.Object(b)
 				if e != nil || model.S(v["format"]) != "codearbiter.context-token/0.1.0" {
 					return nil, fault.New("INVALID_OUTPUT", "invalid generated context receipt")
+				}
+			} else if d.Name() == "evidence-contexts" || d.Name() == "observations" {
+				v, e := canonical.Object(b)
+				if e != nil {
+					return nil, fault.New("INVALID_OUTPUT", "invalid generated evidence object")
+				}
+				contract := observation.ContextSchema()
+				if d.Name() == "observations" {
+					contract = observation.InspectionSchema()
+				}
+				if es := schema.ValidateWith(contract, v); len(es) > 0 {
+					return nil, &es[0]
 				}
 			} else {
 				v, e := canonical.Object(b)

@@ -85,11 +85,11 @@ func (f *FS) PutContextToken(sha string, b []byte) error {
 	return f.createOrCompare(meta+"/context-tokens/"+sha+".json", b, 0600)
 }
 
-// PutDerived records immutable, content-addressed execution metadata. It is
-// deliberately limited to the two farm receipt classes; canonical planning
-// authority remains in the HTML pair.
+// PutDerived records immutable, content-addressed execution metadata. Its
+// allowlist is closed: farm receipts and engine-owned evidence contexts only;
+// canonical planning authority remains in the HTML pair.
 func (f *FS) PutDerived(kind, sha string, b []byte) error {
-	if (kind != "farm-bindings" && kind != "farm-seals" && kind != "farm-markers") || !digest(sha) || canonical.BytesHash(b) != sha || len(b) > 1<<20 {
+	if (kind != "farm-bindings" && kind != "farm-seals" && kind != "farm-markers" && kind != "evidence-contexts") || !digest(sha) || canonical.BytesHash(b) != sha || len(b) > canonical.MaxBytes {
 		return fault.New("INVALID_OUTPUT", "invalid content-addressed derived receipt")
 	}
 	return f.createOrCompare(meta+"/"+kind+"/"+sha+".json", b, 0600)

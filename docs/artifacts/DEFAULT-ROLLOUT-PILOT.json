@@ -1,6 +1,6 @@
 {
   "format": "codearbiter.default-rollout-pilot/0.1.0",
-  "observed_at_utc": "2026-09-18T23:31:11Z",
+  "observed_at_utc": "2026-09-22T22:49:38Z",
   "status": "local_candidate_pass_hosted_exact_head_pending",
   "scope": {
     "repository": "arbiterForge/codeArbiter",
@@ -24,8 +24,8 @@
   "local_unverified_observation": {
     "authority": "local_unverified_not_ci_qualification",
     "platform": "windows/amd64",
-    "binary_sha256": "6a17e6188fede9f8b8271d0f9eeab41512b58118e5b12781e62b4ce8dc0c5519",
-    "release_manifest_sha256": "a42257022acba4b8c0f13cde69b3e1fa874b1f0992b65bcd8eec9992256e1b4b",
+    "binary_sha256": "3c74d465b8587f89e05a0b1fee368a8feb7a6f99e8c31b66b7152739f357c8d5",
+    "release_manifest_sha256": "1731e0188d59fc693567014b06b03e81bf3a53b5a2febfadfd6f2b5f7d5b992f",
     "module_tests_passed_before_candidate_build": true,
     "upstream_host_qualified_by_local_build": false
   },

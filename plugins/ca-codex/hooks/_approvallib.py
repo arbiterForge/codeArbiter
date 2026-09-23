@@ -15,6 +15,8 @@ import sys
 from typing import Any
 
 import _artifactlib
+import _artifactauthoritylib
+import _artifactpromptlib
 
 
 PENDING = Path(".codearbiter/.markers/pending-user-approval.json")
@@ -150,6 +152,13 @@ def arm_user_approval(
         raise ApprovalError(
             "PENDING_APPROVAL", "resolve or clear the existing approval request first"
         ) from exc
+    try:
+        _artifactpromptlib.register(
+            root, "approval", artifact_id, f"approve {artifact_id} {token}"
+        )
+    except _artifactpromptlib.PromptRouteError:
+        (root / PENDING).unlink()
+        raise
     return {
         "artifact_id": artifact_id,
         "reply": f"approve {artifact_id} {token}",
@@ -217,6 +226,7 @@ def cancel_user_approval(root: str | Path, artifact_id: str) -> dict[str, Any]:
             "the pending approval request belongs to another artifact",
         )
     (root / PENDING).unlink()
+    _artifactpromptlib.unregister(root, "approval", artifact_id)
     return {"artifact_id": artifact_id, "cancelled": True}
 
 
@@ -250,7 +260,6 @@ def consume_user_approval(
     _ready(client, current)
 
     event = {
-        "format": "codearbiter.workflow-event/0.1.0",
         "kind": "approval",
         "authority_kind": "user_workflow",
         "subject": {
@@ -264,20 +273,12 @@ def consume_user_approval(
         "payload": {},
         "source_text": prompt,
     }
-    event_bytes = _canonical(event)
-    digest = hashlib.sha256(event_bytes).hexdigest()
-    source_rel = SOURCE_DIR / f"{digest}.json"
-    source = root / source_rel
     try:
-        _write_new(root, source_rel, event_bytes)
-    except FileExistsError:
-        if source.read_bytes() != event_bytes:
-            raise ApprovalError("INVALID_AUTHORITY_SOURCE", "content-addressed source differs")
-
-    captured = client.call(
-        "capture",
-        {"source_ref": source_rel.as_posix(), "source_sha256": digest},
-    )
+        captured = _artifactauthoritylib.capture_user_prompt(
+            root, client, event, host=host, session_id=session_id,
+        )
+    except _artifactauthoritylib.AuthorityError as exc:
+        raise ApprovalError("INVALID_AUTHORITY_SOURCE", str(exc)) from exc
     receipt = captured.get("receipt")
     if not isinstance(receipt, str) or not receipt:
         raise ApprovalError("INVALID_RECEIPT", "capture returned no receipt")
@@ -285,7 +286,7 @@ def consume_user_approval(
         "approve",
         {
             "artifact_id": current["artifact_id"],
-            "operation_id": f"host-user-approval-{digest[:24]}",
+            "operation_id": f"host-user-approval-{hashlib.sha256(_canonical(event)).hexdigest()[:24]}",
             "expected": {
                 "revision": current["revision"],
                 "model_sha256": current["model_sha256"],
@@ -294,11 +295,12 @@ def consume_user_approval(
         },
     )
     (root / PENDING).unlink()
+    _artifactpromptlib.unregister(root, "approval", current["artifact_id"])
     return {
         "matched": True,
         "approved": True,
         "artifact_id": current["artifact_id"],
-        "authority_source": source_rel.as_posix(),
+        "authority_source": captured["authority_source"],
         "receipt": receipt,
         "revision": approved.get("revision"),
     }
@@ -306,16 +308,19 @@ def consume_user_approval(
 
 def consume_from_hook(*, root: str | Path, plugin_root: str | Path, prompt: str,
                       host: str, session_id: str) -> str:
-    if not (Path(root) / PENDING).exists():
-        return ""
     try:
+        routed = _artifactpromptlib.resolve("approval", prompt)
+        root = routed or Path(root)
+        if not (Path(root) / PENDING).exists():
+            return ""
         client = _artifactlib.ArtifactClient(
             root, Path(plugin_root) / "helpers" / "artifacts"
         )
         result = consume_user_approval(
             root, client, prompt, host=host, session_id=session_id
         )
-    except (ApprovalError, _artifactlib.ArtifactError, OSError) as exc:
+    except (ApprovalError, _artifactlib.ArtifactError,
+            _artifactpromptlib.PromptRouteError, OSError) as exc:
         if isinstance(prompt, str) and prompt.startswith("approve "):
             return f"codeArbiter: approval capture failed: {exc}"
         return ""
@@ -350,6 +355,7 @@ def main(argv: list[str] | None = None) -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (ApprovalError, _artifactlib.ArtifactError) as exc:
+    except (ApprovalError, _artifactlib.ArtifactError,
+            _artifactpromptlib.PromptRouteError) as exc:
         sys.stderr.write(str(exc) + "\n")
         raise SystemExit(1)

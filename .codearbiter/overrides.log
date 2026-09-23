@@ -58,3 +58,4 @@
 [2026-09-16T16:38:31Z] | BY: session-mode | HOST: codex | SESSION: 01a0aa96-0ced-7113-8bbd-f38d61b2f1d2 | MODE: arbiter enter | NOTE: —
 [2026-09-17T16:22:33Z] | BY: session-mode | HOST: claude | SESSION: c58c63fd-0d1b-4d09-a707-2a67dd37f441 | MODE: dangerous enter | NOTE: —
 [2026-09-17T16:25:15Z] | BY: session-mode | HOST: claude | SESSION: c58c63fd-0d1b-4d09-a707-2a67dd37f441 | MODE: arbiter enter | NOTE: —
+[2026-09-20T17:17:44.6758738-04:00] | BY: SUaDtL@users.noreply.github.com | GATE: HTML approval capture and structured artifact planning/execution gates | REASON: Owner explicitly directed bootstrap implementation outside the broken HTML lifecycle because this task is repairing the missing cross-worktree Codex authority producers and distribution path that prevent the lifecycle from certifying its own fix; preserve the reviewed spec requirements as the implementation contract without fabricating receipts or weakening production validation.

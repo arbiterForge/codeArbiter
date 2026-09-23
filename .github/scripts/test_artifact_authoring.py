@@ -22,6 +22,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "core" / "pysrc"))
 
 import _artifactlib  # noqa: E402
+import _artifactauthoritylib  # noqa: E402
 from _artifactlib import ArtifactClient, ArtifactError  # noqa: E402
 
 
@@ -617,8 +618,8 @@ class WorkflowHarness:
         payload: dict,
     ) -> str:
         identity = self.client.call("identity", {"artifact_id": artifact_id})
+        source_text = f"Synthetic event for boundary testing; not production authority: {self.operation_id('event')}"
         event = {
-                "format": "codearbiter.workflow-event/0.1.0",
                 "kind": kind,
                 "authority_kind": authority_kind,
                 "subject": {
@@ -627,11 +628,60 @@ class WorkflowHarness:
                     "record_id": record_id,
                 },
                 "actor": "synthetic behavioral fixture",
-                "origin": f"isolated test {self.operation_id('event')}",
+                "origin": "isolated observed fixture",
                 "verdict": verdict,
                 "payload": payload,
-                "source_text": "Synthetic event for boundary testing; not production authority.",
+                "source_text": source_text,
             }
+        if kind in {"approval", "prerequisite", "reconciliation", "farm_authorization"}:
+            return _artifactauthoritylib.capture_user_prompt(
+                self.root, self.client, event, host="test", session_id="fixture"
+            )["receipt"]
+        context_result = self.client.call("evidence-context", {
+            "artifact_id": artifact_id, "record_id": record_id, "activity": kind,
+        })
+        context_raw = (self.root / context_result["context_ref"]).read_bytes()
+        context = json.loads(context_raw)
+        if kind == "verification":
+            bindings = []
+            executable = str(Path(sys.executable).resolve())
+            executable_sha = hashlib.sha256(Path(executable).read_bytes()).hexdigest()
+            for row in context["commands"]:
+                bindings.append({
+                    "definition_sha256": row["definition_sha256"],
+                    "argv": [executable, *row["definition"]["argv"][1:]],
+                    "cwd": str(self.root), "cwd_filesystem_id": "fixture:cwd",
+                    "workspace_root": str(self.root), "workspace_filesystem_id": "fixture:root",
+                    "git_common_dir": str(self.root), "git_common_filesystem_id": "fixture:git",
+                    "executable_sha256": executable_sha,
+                })
+            workspace = {"root": str(self.root), "filesystem_id": "fixture:root", "git_common_dir": str(self.root), "git_common_filesystem_id": "fixture:git", "head": "fixture", "status_sha256": hashlib.sha256(b"").hexdigest(), "content_sha256": hashlib.sha256(b"").hexdigest()}
+            profile, run_id = "declared-command/0.1.0", "fixture-verifier"
+            producer = {"environment_sha256": hashlib.sha256(b"fixture environment").hexdigest(), "command_bindings": bindings, "workspace_before": [workspace], "workspace_after": [workspace], "commands": payload["commands"]}
+        else:
+            profile, run_id = "codex-review/0.1.0", "fixture-reviewer"
+            contract_sha, coverage = _artifactauthoritylib._review_binding(context)
+            producer = {
+                "launch": {"parent_session_id": "fixture-parent", "parent_turn_id": "fixture-turn", "tool_use_id": "fixture-tool", "post_confirmed": True, "agent_id": run_id, "agent_type": "default", "task_name": "fixture-authority", "fork_turns": "none"},
+                "decision": {"format": "codearbiter.review-decision/0.1.0", "request_id": hashlib.sha256(b"fixture request").hexdigest(), "target_sha256": context["input_sha256"], "contract_sha256": contract_sha, "decision": "pass", "coverage": coverage, "findings": [], "assessment": payload["assessment"]},
+            }
+        canonical = lambda value: json.dumps(value, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode("ascii")
+        observation = {
+            "format": "codearbiter.observation/0.2.0", "kind": kind,
+            "subject": event["subject"], "context_ref": context_result["context_ref"],
+            "context_sha256": context_result["context_sha256"],
+            "payload_sha256": hashlib.sha256(canonical(payload)).hexdigest(),
+            "producer_profile": profile, "producer_run_id": run_id,
+            "producer_result": producer,
+            "producer_result_sha256": hashlib.sha256(canonical(producer)).hexdigest(),
+        }
+        observation_raw = canonical(observation)
+        observation_sha = hashlib.sha256(observation_raw).hexdigest()
+        observation_ref = f".codearbiter/.artifacts/observations/{observation_sha}.json"
+        observation_target = self.root / observation_ref
+        observation_target.parent.mkdir(parents=True, exist_ok=True)
+        observation_target.write_bytes(observation_raw)
+        event.update(format="codearbiter.workflow-event/0.2.0", observation_ref=observation_ref, observation_sha256=observation_sha)
         raw = json.dumps(
             event,
             ensure_ascii=True,
@@ -650,7 +700,7 @@ class WorkflowHarness:
             if target.read_bytes() != raw:
                 raise AssertionError("fixture authority-source digest collision")
         result = self.client.call(
-            "capture",
+            "capture-observation",
             {"source_ref": source_ref, "source_sha256": digest},
         )
         return result["receipt"]

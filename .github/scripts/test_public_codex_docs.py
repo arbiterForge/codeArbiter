@@ -241,6 +241,35 @@ class PublicCodexDocsTest(unittest.TestCase):
                     capture_output=True,
                     check=True,
                 )
+                files = {}
+                with zipfile.ZipFile(candidate) as archive:
+                    for entry in archive.infolist():
+                        if entry.is_dir():
+                            continue
+                        self.assertTrue(
+                            entry.filename.startswith("plugins/ca-codex/"),
+                            "historical Codex candidate escaped its package root",
+                        )
+                        relative = entry.filename.removeprefix("plugins/ca-codex/")
+                        self.assertTrue(relative)
+                        self.assertNotIn(relative, files)
+                        files[relative] = archive.read(entry)
+                manifest = json.loads(
+                    files[".codex-plugin/plugin.json"]
+                )
+                package_manifest = {
+                    "files": [
+                        {"path": path, "sha256": hashlib.sha256(content).hexdigest()}
+                        for path, content in sorted(files.items())
+                    ]
+                }
+                return {
+                    "verdict": "PASS",
+                    "plugin_version": manifest["version"],
+                    "package_sha256": hashlib.sha256(json.dumps(
+                        package_manifest, sort_keys=True, separators=(",", ":"),
+                    ).encode("utf-8")).hexdigest(),
+                }
             result = subprocess.run(
                 [
                     sys.executable,
@@ -293,10 +322,11 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "candidate_archive_sha256",
             ):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
-            self.assertIsInstance(marker.get("pr_number"), int)
+            self.assertIs(type(marker.get("pr_number")), int)
             self.assertGreater(marker["pr_number"], 0)
             self.assertRegex(marker.get("pr_head_ref", ""), r"^[A-Za-z0-9][A-Za-z0-9._/-]+$")
             self.assertNotEqual("main", marker["pr_head_ref"])
+            self.assertEqual(marker["pr_head_sha"], marker["run_head_sha"])
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:
@@ -534,6 +564,28 @@ class PublicCodexDocsTest(unittest.TestCase):
         self._assert_live_baseline_marker(
             historical_runbook, manifest, require_current_candidate=False
         )
+
+    def test_live_preview_metadata_accepts_the_recorded_pr_identity(self):
+        """A later qualified preview is not tied to one historical PR number."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
+        manifest = json.loads((
+            ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json"
+        ).read_text(encoding="utf-8"))
+        original = live_baseline_marker(runbook)
+        later = dict(
+            original,
+            pr_number=original["pr_number"] + 1,
+            pr_head_ref="codex/next-qualified-preview",
+        )
+        revised = runbook.replace(
+            json.dumps(original, separators=(",", ":")),
+            json.dumps(later, separators=(",", ":")),
+            1,
+        )
+        self.assertNotEqual(revised, runbook)
+        self.assertEqual(live_baseline_marker(revised)["pr_number"], later["pr_number"])
+        self.assertEqual(live_baseline_marker(revised)["pr_head_ref"], later["pr_head_ref"])
+        self._assert_live_baseline_marker(revised, manifest, require_current_candidate=False)
 
     def test_ca_codex_release_preflight_enforces_live_baseline_freshness(self):
         """The ca-codex release row runs the public proof contract check-only."""

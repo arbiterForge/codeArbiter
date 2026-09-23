@@ -12,6 +12,22 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.11] - 2026-09-23
+
+### Fixed
+
+- Add closed, host-observed verification, independent-review, recovery, and
+  reconciliation authority for structured artifacts, with immutable evidence
+  bindings and fail-closed cross-repository routing.
+- Converge qualified Codex release archives and marketplace installs on one
+  content-addressed distribution identity with race-safe promotion records.
+- Bind workspace snapshots to tracked deletions, gitlinks, symlinks, and ignored
+  targets; reject mismatched verification digests and unsafe authority paths.
+- Recover interrupted user reconciliation with durable idempotent retries and
+  exact pre-mutation cancellation instead of leaving an unresolvable prompt.
+- Reject unproven recovery attempts, including partial commits and deleted
+  workspace parents, while preserving exact retries and cancellation guidance.
+
 ## [2.21.10] - 2026-09-22
 
 ### Fixed

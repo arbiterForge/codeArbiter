@@ -33,8 +33,109 @@ that marker's version and digest to match the exact current candidate; a mismatc
 and neither check rewrites evidence.
 
 <!-- CODEX-LIVE-BASELINE -->
-<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.10","candidate_commit":"a658cbd9d42137e50fc8d277c523384a3d19fba9","candidate_source_tree":"7eaf73d98992abf23c7b26fe9bb20d53fd09e326","candidate_package_sha256":"fc521ba86d9bcc1282676c0a3977bd5325f943bdb9add061ee4727472914736a","candidate_ci_run_id":35816975131,"candidate_ci_run_attempt":1,"candidate_artifact_id":10732077434,"candidate_artifact_sha256":"346fa79d897af45160b2e415a69ddac136053b88fa0f4e3801a7a2a68c99c2a0","candidate_archive_sha256":"345ddbe5f014ed21edb8c86a548a73702e2a308952c22258307b1356947d66e5","run_head_sha":"bb46e4d4c48df1017438f1f21f1055831ae89ae4","pr_number":838,"pr_head_sha":"bb46e4d4c48df1017438f1f21f1055831ae89ae4","pr_head_ref":"fix/hooks-wsl-path-races","pr_base_sha":"b41d9803eacb3acf4b93c8bec81e1aa2f086aec7","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-23","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
-Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.10**, Windows,
+<!-- CODEX-LIVE-BASELINE-META {"schema_version":3,"adapter":"ca-codex","adapter_version":"0.13.11","candidate_commit":"5fd28f7f6d38b6229293aaddcb065b2b3abea3c6","candidate_source_tree":"37b719bd7147a5ce15cae23826fc280f59254bca","candidate_package_sha256":"76343d02afc461d7e8e47056cf0b09ca04649df12ca072cd2e8a98a754343c04","candidate_ci_run_id":35821596966,"candidate_ci_run_attempt":1,"candidate_artifact_id":10734185200,"candidate_artifact_sha256":"9df36884ece143d740cd793f2e5132de6528268754fc531fc2c5993b6f8afacb","candidate_archive_sha256":"cb66f438de4b776953376c640de920fbf4b873b93a49ffd9137015d338797c05","run_head_sha":"1ce1cdb13d1c75ab215dd0af557c115c7232dd1e","pr_number":844,"pr_head_sha":"1ce1cdb13d1c75ab215dd0af557c115c7232dd1e","pr_head_ref":"codex/artifact-production-authority","pr_base_sha":"3e3286362847f54c87dd49f792e2eeccec69b501","host":"Codex CLI 0.145.0 on Windows","verified_on":"2026-09-23","proof":"exact CI-assembled preview package install, SessionStart delivery, 13/0/0 native-capable ca-doctor health, and live H-03 broad-staging denial"} -->
+Current verified checkpoint: **Codex CLI 0.145.0**, `ca-codex` **0.13.11**, Windows,
+2026-09-23. After integration with the published 0.13.10 main baseline, pull-request run
+`35821596966`, attempt 1, qualified all six native builds, package assembly, and all 18
+cold-package cells. Candidate readiness rejected the previous version's live marker, and its
+dependent Merge readiness gate also failed; no other CI job failed. The exact synthetic producer
+checkout was `5fd28f7f6d38b6229293aaddcb065b2b3abea3c6`, with source tree
+`37b719bd7147a5ce15cae23826fc280f59254bca`. GitHub artifact `10734185200` had digest
+`sha256:9df36884ece143d740cd793f2e5132de6528268754fc531fc2c5993b6f8afacb`.
+The Codex release archive had digest
+`sha256:cb66f438de4b776953376c640de920fbf4b873b93a49ffd9137015d338797c05`;
+the canonical tracked candidate package had digest
+`sha256:76343d02afc461d7e8e47056cf0b09ca04649df12ca072cd2e8a98a754343c04`.
+The cohort bound all 233 members (225 source, seven promotion, one generated catalog), and
+all 232 isolated installed plugin files matched the verified distribution byte-for-byte.
+
+An ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning received SessionStart
+state with `host: codex`, `mode: arbiter`, and stage 2. The installation-pinned doctor
+reported 13 OK, 0 WARN, and 0 FAIL, including Windows/AMD64 artifact capability,
+schema 0.3.1, and the live Git-hook backstop. The prescribed broad-staging dry run was
+denied exactly once before execution with `[H-03]`. The index remained clean; the only
+checkout delta was one append-only H-03 audit line. The canary used an isolated Codex home
+with explicit automation hook-trust and approval bypasses only after CI qualification;
+it did not change persistent desktop trust, and its temporary authentication copy was
+removed. This refreshes installed-package selection, SessionStart delivery, doctor health,
+native payload availability, and the live H-03 boundary. It does not claim that the full
+scenario matrices below were rerun.
+
+The earlier verified checkpoint from PR #844 remains **Codex CLI 0.145.0**, `ca-codex` **0.13.10**, Windows,
+2026-09-23. The correction for stranded reconciliation attempts and deleted-directory snapshots
+was qualified by pull-request run `35818458859`, attempt 1. All six native qualifications,
+package assembly, and 18 cold-package cells passed. The only failures were Candidate readiness,
+which correctly rejected the prior package marker, and its dependent Merge readiness gate.
+The exact producer checkout was `70a32183ba3f31d92ee09a7719d7c295d153091b`, with source
+tree `6163305420c421287ba9420d5a76337f282f333a`; the corresponding PR head and base are
+recorded separately. GitHub artifact `10732950858` supplied the exact release archive with digest
+`sha256:eaecb2d689fa12d2b2a925c4785d3823efe92dd90203f35ec3f5249419929ff5`, while the
+canonical tracked candidate content has digest
+`sha256:ebf5a514eb6b06fed48e01f84a90aa45b980810bf64af474d9803cf822337736`.
+The cohort bound all 233 archive members: 225 source, seven promotion, and one generated catalog.
+All 232 installed plugin files matched the verified distribution tree byte-for-byte.
+
+A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning received SessionStart
+state (`host: codex`, `mode: arbiter`, stage 2). The installed doctor reported 13 OK, 0 WARN,
+and 0 FAIL, including Windows/AMD64 artifact capability, schema 0.3.1, and the live Git-hook
+backstop. Exactly one broad-staging dry-run was denied before execution by PreToolUse `[H-03]`.
+The index stayed clean; the only checkout delta was one append-only H-03 audit line. The canary
+used an isolated Codex home and explicit automation hook-trust and approval bypasses only after
+CI qualification, without changing persistent desktop trust. Its temporary authentication copy
+was removed after the run. This refreshes installed-package selection, SessionStart delivery,
+current-model doctor health, native payload availability, and the live H-03 boundary, not the
+full scenario matrices below.
+
+The earlier verified checkpoint from PR #844 remains **Codex CLI 0.145.0**, `ca-codex` **0.13.10**, Windows,
+2026-09-23. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
+exact 0.13.10 package from pull-request qualification run `35815692045`, attempt 1, artifact
+`10732046284`. All six native qualifications, package assembly, and 18 cold-package cells passed.
+That run's only failures were Candidate readiness, which correctly rejected the previous 0.13.9
+marker, and its downstream Merge readiness consumer. The producer checkout was
+`d0d042e6efc31ed11db8fe6135ed066a615768a3`, with source tree
+`14202c5f1f1ed3470076af71a79b641de439b990`; PR head and base are recorded separately.
+The release archive has digest
+`sha256:604de28c26a1d900b3ab70e7f2f9162a6ac90c4fb4b8aaa687d6620b4e79c740`, and its canonical
+tracked candidate content has digest
+`sha256:7f9d7aa61df139dccf2623560185967876fab979c74fbfe3c99526de4105612a`.
+The cohort bound all 233 archive members, including 225 source-origin members; the installed
+plugin's 232 files matched the verified distribution tree byte-for-byte. The isolated task
+received repository startup state through SessionStart with `host: codex`. Its installed
+doctor reported 13 OK, 0 WARN, and 0 FAIL, including Windows/AMD64 artifact capability,
+schema 0.3.1, and a live Git-hook backstop. One broad-staging dry-run was denied before
+execution by PreToolUse `[H-03]`; the index stayed clean and the only checkout delta was
+the expected append-only H-03 audit line. An initial doctor invocation did not export the
+already-derived plugin root and failed before producing a report; the retry exported that
+exact installed root and passed. The successful CLI run used an isolated Codex home and
+explicit automation hook-trust and approval bypasses only after CI qualification; it did
+not change persistent desktop trust. This refreshes installed-package selection,
+SessionStart delivery, current-model doctor health, native payload availability, and the
+live H-03 boundary, not the full scenario matrices below.
+
+The earlier verified checkpoint from PR #844 remains **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
+2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
+exact 0.13.9 package from pull-request qualification run `35812293356`, attempt 1, artifact
+`10731005860`. All six native qualifications and 18 cold-package cells passed. The producer checkout
+was `dd36450b195091f212dc9c64a29d974ecd59cf38`, with source tree
+`e779b819691bdd2319ccc3bdd92bc7c65f460573`; the PR head and base are recorded separately so this
+preview proof does not imply a future merge commit exists. The release archive has digest
+`sha256:d57b29df79ecf83e700f9e05e8bbb79fbdeb7cc4e34bcae7a3e5c6ff75cbc79d`, and its canonical
+tracked candidate content has digest
+`sha256:8bbb400b2044b2a3c70df0f4c255fbf855bcdf17fc623410d053801f63e05e3e`. The artifact cohort
+receipt matched all 233 package members, including 225 source-origin members matched to the exact
+synthetic candidate checkout. All 232 installed plugin members matched the verified archive. The
+isolated task received repository startup state through SessionStart context, including `host: codex`.
+The doctor reported 13 OK, 0 WARN, and 0 FAIL, including the Windows/AMD64 artifact capability and live Git-hook
+backstop. The broad-staging dry-run was denied exactly once with `[H-03]` before execution, the index
+remained clean, and the only checkout delta was the expected append-only H-03 audit line. An initial
+noninteractive attempt was denied by Codex tool policy before diagnostics; it is not counted as proof.
+The successful retry used Codex's explicit automation approval and hook-trust bypass in the disposable
+checkout only, after verifying the CI archive; it did not change persistent desktop hook trust. This
+refreshes assembled-package selection, SessionStart delivery, current-model doctor health, native
+payload availability, and the live H-03 boundary. It does not
+claim that the full scenario matrices below were rerun.
+
+The independent PR #838 checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.10**, Windows,
 2026-09-23. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
 exact 0.13.10 package from pull-request qualification run `35816975131`, attempt 1, artifact
 `10732077434`. The run's only failed jobs were Candidate readiness and its downstream Merge
@@ -57,7 +158,7 @@ fixture index remained clean. The temporary authentication copy used for this is
 removed afterward. This refreshes the package, startup, doctor, native payload, and H-03 boundary;
 it does not claim that the full scenario matrices below were rerun.
 
-The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
+The earlier verified checkpoint from PR #843 remains **Codex CLI 0.145.0**, `ca-codex` **0.13.9**, Windows,
 2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
 exact 0.13.9 package from pull-request qualification run `35811348939`, attempt 1, artifact
 `10730305519`. That run's overall conclusion was failure only because Candidate readiness and its
@@ -74,6 +175,30 @@ receipt matched all 227 package members, including 219 source-origin members mat
 synthetic candidate checkout. The package was installed in an isolated Codex home, and the task
 received the repository startup state through SessionStart context, including `host: codex`. With
 `PLUGIN_ROOT` resolved from the installed 0.13.9 `$ca-doctor` skill path, the
+doctor reported 13 OK, 0 WARN, and 0 FAIL,
+including the packaged Windows/AMD64 artifact capability and live Git-hook backstop. The broad-staging
+dry-run was denied exactly once with `[H-03]` before execution,
+explicit-file staging was not attempted, and the final index check was clean. The only disposable
+checkout worktree delta was the hook's expected append-only H-03 audit event. The isolated
+qualification used Codex's explicit automation trust bypass only after selecting the CI-vetted
+archive; it did not modify persistent hook trust. This refreshes assembled package selection,
+SessionStart delivery, current-model doctor health, native payload availability, and the live H-03
+boundary. It does not
+claim that the full scenario matrices below were rerun.
+
+The earlier verified checkpoint remains **Codex CLI 0.145.0**, `ca-codex` **0.13.8**, Windows,
+2026-09-22. A fresh ephemeral Codex CLI task using `gpt-5.6-sol` with low reasoning selected the
+exact 0.13.8 package from pull-request qualification run `35803430179`, attempt 1, artifact
+`10727031394`. The producer checkout was `6ee16b65990570b0de65031839eba61e138432af`, with source tree
+`2886a80aef4374d455148032564f19e72f2366be`; the PR head and base are recorded separately so this
+preview proof does not pretend that a future squash commit already exists. The release archive has
+digest `sha256:7bdc81636330b2e94e2e918187a3592fca88e38a6746a050161ab9b353e80b45`, and its canonical
+tracked candidate content has digest
+`sha256:bd1a59b8be937b017df9b583bc30bfa88bf93bb88b55e06fca748a5b59cc806b`. The artifact cohort
+receipt matched all 227 package members, including 219 source-origin members matched to the
+synthetic candidate checkout. The package was installed in an isolated Codex home, and the task
+received the repository startup state through SessionStart context, including `host: codex`. With
+`PLUGIN_ROOT` resolved from the installed 0.13.8 `$ca-doctor` skill path, the
 doctor reported 13 OK, 0 WARN, and 0 FAIL,
 including the packaged Windows/AMD64 artifact capability and live Git-hook backstop. The broad-staging
 dry-run was denied exactly once with `[H-03]` before execution,

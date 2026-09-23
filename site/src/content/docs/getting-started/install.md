@@ -82,7 +82,7 @@ The first end-to-end public-install record remains as dated historical evidence:
 verified release `v2.8.13` with `ca-codex 0.2.4`.
 
 ```text
-codex plugin marketplace add arbiterForge/codeArbiter
+codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
 codex plugin add ca-codex@codearbiter
 ```
 

@@ -38,6 +38,8 @@ import time
 from typing import Any
 
 import _artifactlib
+import _artifactauthoritylib
+import _artifactpromptlib
 from _hooklib import acquire_lock, release_lock
 
 
@@ -393,7 +395,7 @@ def _validate_record(value: Any, prerequisite_id: str) -> bool:
     )
 
 
-def _validate_confirmed_state(value: dict[str, Any]) -> None:
+def _validate_confirmed_state(value: dict[str, Any], *, check_source: bool = True) -> None:
     event = value["event"]
     expected_subject = {
         "artifact_id": value["artifact_id"],
@@ -444,7 +446,7 @@ def _validate_confirmed_state(value: dict[str, Any]) -> None:
     expected_source = (
         SOURCE_DIR / f"{_digest(_canonical(event))}.json"
     ).as_posix()
-    if value["authority_source"] != expected_source:
+    if check_source and value["authority_source"] != expected_source:
         raise PrerequisiteError(
             "INVALID_PENDING_PREREQUISITE",
             "confirmed authority source does not match the event",
@@ -535,7 +537,7 @@ def _load_pending(root: Path, artifact_id: str) -> dict[str, Any] | None:
             "INVALID_PENDING_PREREQUISITE", "captured state is incomplete"
         )
     else:
-        _validate_confirmed_state(value)
+        _validate_confirmed_state(value, check_source=False)
         if value["mutation_request"] != _expected_mutation_request(value):
             raise PrerequisiteError(
                 "INVALID_PENDING_PREREQUISITE",
@@ -601,16 +603,22 @@ def arm_user_prerequisite(
             "PENDING_PREREQUISITE",
             "resolve or cancel this plan's existing prerequisite request first",
         ) from exc
+    reply = (
+        f"satisfy-prerequisite {artifact_id} {prerequisite_id} "
+        f"{confirmation_nonce}"
+    )
+    try:
+        _artifactpromptlib.register(root, "prerequisite", artifact_id, reply)
+    except _artifactpromptlib.PromptRouteError:
+        (root / relative).unlink()
+        raise
     return {
         "artifact_id": artifact_id,
         "prerequisite_id": prerequisite_id,
         "title": record["title"],
         "requirement": record["requirement"],
         "review_packet_sha256": packet_sha256,
-        "reply": (
-            f"satisfy-prerequisite {artifact_id} {prerequisite_id} "
-            f"{confirmation_nonce}"
-        ),
+        "reply": reply,
         "pending": relative.as_posix(),
     }
 
@@ -752,12 +760,17 @@ def consume_user_prerequisite(
                 session_id=session_id,
                 now=observed_at,
             )
-        source_ref, source_sha256 = _publish_event(root, pending)
         if pending["state"] == "CONFIRMED":
-            captured = client.call(
-                "capture",
-                {"source_ref": source_ref, "source_sha256": source_sha256},
-            )
+            observed_host, separator, observed_session = pending["event"]["origin"].partition(":UserPromptSubmit:")
+            if not separator:
+                raise PrerequisiteError("INVALID_PENDING_PREREQUISITE", "confirmed prompt origin is malformed")
+            try:
+                captured = _artifactauthoritylib.capture_user_prompt(
+                    root, client, pending["event"], host=observed_host,
+                    session_id=observed_session,
+                )
+            except _artifactauthoritylib.AuthorityError as exc:
+                raise PrerequisiteError("INVALID_AUTHORITY_SOURCE", str(exc)) from exc
             receipt = captured.get("receipt")
             if not isinstance(receipt, str) or RECEIPT_RE.fullmatch(receipt) is None:
                 raise PrerequisiteError("INVALID_RECEIPT", "capture returned no valid receipt")
@@ -774,18 +787,20 @@ def consume_user_prerequisite(
             }
             captured_state = dict(pending)
             captured_state.update(
-                state="CAPTURED", receipt=receipt, mutation_request=mutation_request
+                state="CAPTURED", receipt=receipt, mutation_request=mutation_request,
+                authority_source=captured["authority_source"],
             )
             _replace_state(root, _pending_relative(artifact_id), captured_state)
             pending = captured_state
         result = client.call("prerequisite", pending["mutation_request"])
         (root / _pending_relative(artifact_id)).unlink()
+        _artifactpromptlib.unregister(root, "prerequisite", artifact_id)
         return {
             "matched": True,
             "satisfied": True,
             "artifact_id": artifact_id,
             "prerequisite_id": prerequisite_id,
-            "authority_source": source_ref,
+            "authority_source": pending["authority_source"],
             "receipt": pending["receipt"],
             "revision": result.get("revision"),
             "replayed": bool((result.get("transaction") or {}).get("replayed")),
@@ -817,6 +832,7 @@ def cancel_user_prerequisite(
                 "a confirmed prerequisite decision must be recovered, not cancelled",
             )
         (root / _pending_relative(artifact_id)).unlink()
+        _artifactpromptlib.unregister(root, "prerequisite", artifact_id)
         return {
             "artifact_id": artifact_id,
             "prerequisite_id": prerequisite_id,
@@ -868,6 +884,7 @@ def supersede_user_prerequisite(
                     raise
             else:
                 (root / _pending_relative(artifact_id)).unlink()
+                _artifactpromptlib.unregister(root, "prerequisite", artifact_id)
                 return {
                     "artifact_id": artifact_id,
                     "prerequisite_id": prerequisite_id,
@@ -878,6 +895,7 @@ def supersede_user_prerequisite(
                     "replayed": bool((result.get("transaction") or {}).get("replayed")),
                 }
         (root / _pending_relative(artifact_id)).unlink()
+        _artifactpromptlib.unregister(root, "prerequisite", artifact_id)
         return {
             "artifact_id": artifact_id,
             "prerequisite_id": prerequisite_id,
@@ -904,20 +922,23 @@ def consume_from_hook(
             if attempted
             else ""
         )
-    if not (Path(root) / _pending_relative(match[0])).exists():
-        return (
-            "codeArbiter: prerequisite capture failed: no matching armed request"
-            if attempted
-            else ""
-        )
     try:
+        routed = _artifactpromptlib.resolve("prerequisite", prompt)
+        root = routed or Path(root)
+        if not (Path(root) / _pending_relative(match[0])).exists():
+            return (
+                "codeArbiter: prerequisite capture failed: no matching armed request"
+                if attempted
+                else ""
+            )
         client = _artifactlib.ArtifactClient(
             root, Path(plugin_root) / "helpers" / "artifacts"
         )
         result = consume_user_prerequisite(
             root, client, prompt, host=host, session_id=session_id
         )
-    except (PrerequisiteError, _artifactlib.ArtifactError, OSError) as exc:
+    except (PrerequisiteError, _artifactlib.ArtifactError,
+            _artifactpromptlib.PromptRouteError, OSError) as exc:
         return f"codeArbiter: prerequisite capture failed: {exc}"
     if not result.get("satisfied"):
         return "codeArbiter: prerequisite capture failed: confirmation did not match"
@@ -966,6 +987,7 @@ def main(argv: list[str] | None = None) -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (PrerequisiteError, _artifactlib.ArtifactError) as exc:
+    except (PrerequisiteError, _artifactlib.ArtifactError,
+            _artifactpromptlib.PromptRouteError) as exc:
         sys.stderr.write(str(exc) + "\n")
         raise SystemExit(1)

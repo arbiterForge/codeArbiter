@@ -35,7 +35,7 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "outline", "validate", "index", "identity", "snapshot", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
@@ -66,9 +66,14 @@ func RequestSchema(op string) (object, error) {
 		add("budget", object{"type": "integer", "minimum": int64(4096), "maximum": int64(65536)}, false)
 	}
 	switch op {
-	case "capture":
+	case "capture", "capture-observation":
 		add("source_ref", text(), true)
 		add("source_sha256", digestType(), true)
+	case "evidence-context":
+		artifact()
+		add("activity", enum("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization"), true)
+		add("record_id", idType(), true)
+		add("prompt_sha256", digestType(), false)
 	case "migration-preview", "migration-apply":
 		mapping := closed(object{"start_line": object{"type": "integer", "minimum": int64(1)}, "end_line": object{"type": "integer", "minimum": int64(1)}, "target": idType(), "disposition": enum("mapped", "historical", "out_of_scope"), "reason": text()}, "start_line", "end_line", "target", "disposition", "reason")
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")
@@ -87,7 +92,7 @@ func RequestSchema(op string) (object, error) {
 	case "capabilities":
 	case "schema":
 		schemaNames := append([]string{"common"}, kind.Names()...)
-		schemaNames = append(schemaNames, "operation", "receipt", "event", "verification", "spec_review", "quality_review")
+		schemaNames = append(schemaNames, "operation", "receipt", "event", "evidence_context", "observation", "verification", "spec_review", "quality_review")
 		add("name", enum(schemaNames...), true)
 		add("fragment", text(), false)
 		add("operation", text(), false)

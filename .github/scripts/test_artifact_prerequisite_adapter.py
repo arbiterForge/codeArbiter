@@ -2,6 +2,7 @@
 """Regression tests for host-owned structured-artifact prerequisite capture."""
 
 import importlib.util
+import hashlib
 import json
 import os
 import stat
@@ -29,7 +30,8 @@ from _artifactlib import ArtifactError  # noqa: E402
 
 
 class _FakeClient:
-    def __init__(self, artifact_id="PLAN-EXAMPLE"):
+    def __init__(self, root, artifact_id="PLAN-EXAMPLE"):
+        self.root = root
         self.identity = {
             "artifact_id": artifact_id,
             "kind": "plan",
@@ -77,7 +79,23 @@ class _FakeClient:
                 "context_complete": False,
                 "record": dict(self.record),
             }
-        if operation == "capture":
+        if operation == "evidence-context":
+            context = {
+                "format": "codearbiter.evidence-context/0.1.0", "activity": "prerequisite",
+                "subject": {"artifact_id": self.identity["artifact_id"], "normative_sha256": self.identity["normative_sha256"], "record_id": request["record_id"]},
+                "input_sha256": "9" * 64, "prompt_sha256": request["prompt_sha256"],
+                "record": dict(self.record),
+            }
+            packed = lambda value: json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()
+            context["record_sha256"] = hashlib.sha256(packed(context["record"])).hexdigest()
+            raw = packed(context)
+            digest = hashlib.sha256(raw).hexdigest()
+            relative = Path(".codearbiter/.artifacts/evidence-contexts") / f"{digest}.json"
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+            return {"context_ref": relative.as_posix(), "context_sha256": digest}
+        if operation == "capture-observation":
             return dict(self.capture_result)
         if operation == "prerequisite":
             if self.lose_prerequisite_response_once and not self._lost_response:
@@ -109,7 +127,7 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         (self.root / ".codearbiter").mkdir()
-        self.client = _FakeClient()
+        self.client = _FakeClient(self.root)
 
     def tearDown(self):
         self.temp.cleanup()
@@ -159,7 +177,7 @@ class PrerequisiteAdapterTest(unittest.TestCase):
         self.assertEqual(event["origin"], "codex:UserPromptSubmit:session-1")
         self.assertEqual(
             [name for name, _ in self.client.calls][-2:],
-            ["capture", "prerequisite"],
+            ["capture-observation", "prerequisite"],
         )
         self.assertFalse((self.root / armed["pending"]).exists())
 
@@ -189,7 +207,7 @@ class PrerequisiteAdapterTest(unittest.TestCase):
     def test_nonce_length_boundaries_are_exact(self):
         for length in (12, 128):
             with self.subTest(length=length):
-                client = _FakeClient(f"PLAN-NONCE-{length}")
+                client = _FakeClient(self.root, f"PLAN-NONCE-{length}")
                 armed = self.adapter.arm_user_prerequisite(
                     self.root,
                     client,
@@ -209,7 +227,7 @@ class PrerequisiteAdapterTest(unittest.TestCase):
                 self.assertTrue(result["satisfied"])
         for nonce in ("a" * 11, "a" * 129, "invalid.token"):
             with self.subTest(nonce=nonce):
-                client = _FakeClient("PLAN-INVALID-NONCE")
+                client = _FakeClient(self.root, "PLAN-INVALID-NONCE")
                 with self.assertRaisesRegex(RuntimeError, "INVALID_CONFIRMATION"):
                     self.adapter.arm_user_prerequisite(
                         self.root,
@@ -266,7 +284,7 @@ class PrerequisiteAdapterTest(unittest.TestCase):
 
     def test_multiple_plans_keep_independent_pending_requests(self):
         first = self.arm(confirmation_nonce="first-prerequisite-nonce")
-        other = _FakeClient("PLAN-OTHER")
+        other = _FakeClient(self.root, "PLAN-OTHER")
         other.record["id"] = "GATE-BASELINE"
         second = self.adapter.arm_user_prerequisite(
             self.root,
@@ -461,21 +479,20 @@ with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
         result = self.consume(armed["reply"])
         self.assertTrue(result["satisfied"])
         operations = [name for name, _ in self.client.calls]
-        self.assertEqual(operations.count("capture"), 1)
+        self.assertEqual(operations.count("capture-observation"), 1)
         self.assertEqual(operations.count("prerequisite"), 1)
 
     def test_capture_failure_keeps_confirmed_event_stable_for_retry(self):
         armed = self.arm()
-        self.client.failure = "capture"
-        with self.assertRaisesRegex(RuntimeError, "capture failed"):
+        self.client.failure = "capture-observation"
+        with self.assertRaisesRegex(RuntimeError, "capture-observation failed"):
             self.consume(armed["reply"])
         pending = self.root / armed["pending"]
         confirmed = pending.read_bytes()
         confirmed_value = json.loads(confirmed)
-        source = self.root / confirmed_value["authority_source"]
-        source_bytes = source.read_bytes()
+        event_bytes = self.adapter._canonical(confirmed_value["event"])
         first_capture = [
-            request for name, request in self.client.calls if name == "capture"
+            request for name, request in self.client.calls if name == "capture-observation"
         ]
 
         self.client.failure = None
@@ -491,53 +508,51 @@ with _prerequisitelib._pending_transition_lock(Path(sys.argv[2]), sys.argv[3]):
         event = json.loads((self.root / result["authority_source"]).read_text("utf-8"))
         self.assertEqual(event["origin"], "codex:UserPromptSubmit:session-1")
         capture_requests = [
-            request for name, request in self.client.calls if name == "capture"
+            request for name, request in self.client.calls if name == "capture-observation"
         ]
         self.assertEqual(capture_requests, first_capture * 2)
-        self.assertEqual(source.read_bytes(), source_bytes)
+        self.assertEqual(self.adapter._canonical(confirmed_value["event"]), event_bytes)
         self.assertEqual(result["receipt"], self.client.capture_result["receipt"])
 
     def test_partial_temporary_publication_never_poisons_digest_path(self):
         armed = self.arm()
-        original_write = self.adapter._write_new
+        original_write = self.adapter._artifactauthoritylib._publish_immutable
         interrupted = False
 
         def fail_source_temporary(root, relative, data):
             nonlocal interrupted
             if (
                 not interrupted
-                and relative.parent == self.adapter.SOURCE_DIR
-                and relative.name.startswith(".")
+                and relative.parent == self.adapter._artifactauthoritylib.SOURCE_DIR
             ):
                 interrupted = True
                 target = root / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(b"{")
+                target.with_name("." + target.name + ".partial").write_bytes(b"{")
                 raise OSError("simulated interruption before atomic publication")
             return original_write(root, relative, data)
 
-        self.adapter._write_new = fail_source_temporary
+        self.adapter._artifactauthoritylib._publish_immutable = fail_source_temporary
         try:
             with self.assertRaisesRegex(OSError, "simulated interruption"):
                 self.consume(armed["reply"])
         finally:
-            self.adapter._write_new = original_write
+            self.adapter._artifactauthoritylib._publish_immutable = original_write
 
         pending = json.loads((self.root / armed["pending"]).read_text("utf-8"))
-        digest_path = self.root / pending["authority_source"]
-        self.assertFalse(digest_path.exists())
+        self.assertEqual(pending["state"], "CONFIRMED")
 
         result = self.consume(armed["reply"])
         self.assertTrue(result["satisfied"])
         self.assertEqual(
-            json.loads(digest_path.read_text("utf-8"))["source_text"],
+            json.loads((self.root / result["authority_source"]).read_text("utf-8"))["source_text"],
             armed["reply"],
         )
 
     def test_tampered_confirmed_event_cannot_widen_authority(self):
         armed = self.arm()
-        self.client.failure = "capture"
-        with self.assertRaisesRegex(RuntimeError, "capture failed"):
+        self.client.failure = "capture-observation"
+        with self.assertRaisesRegex(RuntimeError, "capture-observation failed"):
             self.consume(armed["reply"])
         pending_path = self.root / armed["pending"]
         pending = json.loads(pending_path.read_text("utf-8"))
@@ -732,7 +747,7 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
                 return self.client.call(operation, request, **kwargs)
 
         for interrupted_operation, expected_state in (
-            ("capture", "CONFIRMED"),
+            ("capture-observation", "CONFIRMED"),
             ("prerequisite", "CAPTURED"),
         ):
             with self.subTest(state=expected_state):
@@ -764,7 +779,7 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
                 pending = json.loads(pending_path.read_text("utf-8"))
                 self.assertEqual(pending["state"], expected_state)
                 authority_source = root / pending["authority_source"]
-                self.assertTrue(authority_source.is_file())
+                self.assertEqual(authority_source.is_file(), expected_state == "CAPTURED")
                 if pending["receipt"] is not None:
                     self.assertTrue((root / pending["receipt"]).is_file())
 
@@ -783,7 +798,7 @@ class PrerequisiteProductionBoundaryTest(unittest.TestCase):
                 self.assertTrue(result["superseded"])
                 self.assertFalse(result["satisfied"])
                 self.assertFalse(pending_path.exists())
-                self.assertTrue(authority_source.is_file())
+                self.assertEqual(authority_source.is_file(), expected_state == "CAPTURED")
                 if result["receipt"] is not None:
                     self.assertTrue((root / result["receipt"]).is_file())
 

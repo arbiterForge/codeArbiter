@@ -107,7 +107,7 @@ work inside one session; it applies equally to two *people* sharing one tree.
 The public GitHub-slug Codex commands are **available now**:
 
 ```text
-codex plugin marketplace add arbiterForge/codeArbiter
+codex plugin marketplace add arbiterForge/codeArbiter --ref ca-codex-marketplace
 codex plugin add ca-codex@codearbiter
 ```
 

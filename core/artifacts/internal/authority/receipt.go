@@ -9,6 +9,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"path"
@@ -37,7 +38,24 @@ func legacyReceiptSchema() map[string]any {
 	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.receipt/0.1.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "event_sha256": digestSchema()}, "format", "kind", "authority_kind", "subject", "event_sha256")
 }
 func EventSchema() map[string]any {
-	return obj(map[string]any{"format": map[string]any{"const": "codearbiter.workflow-event/0.1.0"}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "actor": str(), "origin": str(), "verdict": map[string]any{"enum": model.List("approved", "passed", "satisfied", "reconciled")}, "payload": map[string]any{"type": "object"}, "source_text": str()}, "format", "kind", "authority_kind", "subject", "actor", "origin", "verdict", "payload", "source_text")
+	base := map[string]any{"kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}, "authority_kind": map[string]any{"enum": model.List("user_workflow", "smarts_workflow", "review_workflow", "verification_runner")}, "subject": subjectSchema(), "actor": str(), "origin": str(), "verdict": map[string]any{"enum": model.List("approved", "passed", "satisfied", "reconciled")}, "payload": map[string]any{"type": "object"}, "source_text": str()}
+	legacy := map[string]any{}
+	for k, v := range base {
+		legacy[k] = v
+	}
+	legacy["format"] = map[string]any{"const": "codearbiter.workflow-event/0.1.0"}
+	observed := map[string]any{}
+	for k, v := range base {
+		observed[k] = v
+	}
+	observed["format"] = map[string]any{"const": "codearbiter.workflow-event/0.2.0"}
+	observed["kind"] = map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")}
+	observed["observation_ref"] = str()
+	observed["observation_sha256"] = digestSchema()
+	return map[string]any{"oneOf": []any{
+		obj(legacy, "format", "kind", "authority_kind", "subject", "actor", "origin", "verdict", "payload", "source_text"),
+		obj(observed, "format", "kind", "authority_kind", "subject", "actor", "origin", "verdict", "payload", "source_text", "observation_ref", "observation_sha256"),
+	}}
 }
 func first(es []fault.Error) error {
 	if len(es) > 0 {
@@ -141,6 +159,20 @@ func Inspect(f *store.FS, p string) (*Receipt, error) {
 	if e = ValidateEvent(ev); e != nil {
 		return nil, e
 	}
+	if model.S(ev["format"]) == "codearbiter.workflow-event/0.2.0" {
+		observed, _, observedErr := observation.Inspect(f, model.S(ev["observation_ref"]), model.S(ev["observation_sha256"]))
+		if observedErr != nil {
+			return nil, observedErr
+		}
+		contextRef, contextHash := model.S(observed["context_ref"]), model.S(observed["context_sha256"])
+		context, _, contextErr := observation.LoadContext(f, contextRef, contextHash)
+		if contextErr != nil {
+			return nil, contextErr
+		}
+		if linkErr := observation.ValidateLink(ev, observed, context, contextRef, contextHash); linkErr != nil {
+			return nil, linkErr
+		}
+	}
 	if receiptFormat == "codearbiter.receipt/0.2.0" {
 		_, sourceBytes, sourceErr := LoadSource(f, model.S(r["authority_source_ref"]), model.S(r["authority_source_sha256"]))
 		if sourceErr != nil || !bytes.Equal(sourceBytes, eb) || model.S(r["authority_source_sha256"]) != model.S(r["event_sha256"]) {
@@ -157,6 +189,15 @@ func Load(f *store.FS, p string) (*Receipt, error) {
 	}
 	if model.S(r.Data["format"]) == "codearbiter.receipt/0.1.0" {
 		return nil, fault.New("AUTHORITY_UNVERIFIED", "legacy receipt remains readable but requires a fresh policy-owned attestation")
+	}
+	if model.S(r.Event["format"]) != "codearbiter.workflow-event/0.2.0" {
+		return nil, fault.New("AUTHORITY_UNVERIFIED", "legacy workflow event remains readable but cannot confer current authority")
+	}
+	if model.S(r.Event["format"]) == "codearbiter.workflow-event/0.2.0" {
+		observed, _, observationErr := observation.Load(f, model.S(r.Event["observation_ref"]), model.S(r.Event["observation_sha256"]))
+		if observationErr != nil || model.S(observed["format"]) != "codearbiter.observation/0.2.0" {
+			return nil, fault.New("AUTHORITY_UNVERIFIED", "legacy observation remains inspectable but requires fresh production evidence")
+		}
 	}
 	return r, nil
 }
@@ -235,6 +276,15 @@ func Vector(f *store.FS, docs ...*model.Document) (map[string]any, error) {
 		}
 		out[p] = r.Hash
 		out[r.EventPath] = model.S(r.Data["event_sha256"])
+		if model.S(r.Event["format"]) == "codearbiter.workflow-event/0.2.0" {
+			observationRef := model.S(r.Event["observation_ref"])
+			out[observationRef] = model.S(r.Event["observation_sha256"])
+			observed, _, loadErr := observation.Inspect(f, observationRef, model.S(r.Event["observation_sha256"]))
+			if loadErr != nil {
+				return nil, loadErr
+			}
+			out[model.S(observed["context_ref"])] = model.S(observed["context_sha256"])
+		}
 		if model.S(r.Data["format"]) == "codearbiter.receipt/0.2.0" {
 			out[model.S(r.Data["authority_source_ref"])] = model.S(r.Data["authority_source_sha256"])
 		}
