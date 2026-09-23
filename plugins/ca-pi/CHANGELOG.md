@@ -4,7 +4,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
-## [0.14.9] - 2026-09-22
+## [0.14.10] - 2026-09-22
 
 ### Fixed
 
@@ -13,6 +13,11 @@ All notable changes to `ca-pi` are documented in this file.
   implement.
 - Preserve typed workspace identity and durable reconciliation retry/cancel
   behavior in the shared kernel without claiming unsupported Pi host authority.
+
+## [0.14.9] - 2026-09-22
+
+### Fixed
+
 - Route understood requests to the existing workflow without compulsory
   command syntax; keep questions and draft-only requests non-mutating.
 - Recover ordinary quality failures inside an approved sprint through

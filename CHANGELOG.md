@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.9] - 2026-09-22
+## [2.21.10] - 2026-09-22
 
 ### Fixed
 
@@ -25,6 +25,11 @@ predate the plugin rewrite and are grouped by date.
   targets; reject mismatched verification digests and unsafe authority paths.
 - Recover interrupted user reconciliation with durable idempotent retries and
   exact pre-mutation cancellation instead of leaving an unresolvable prompt.
+
+## [2.21.9] - 2026-09-22
+
+### Fixed
+
 - Route understood requests to the existing workflow without compulsory
   command syntax; keep questions and draft-only requests non-mutating.
 - Recover ordinary quality failures inside an approved sprint through

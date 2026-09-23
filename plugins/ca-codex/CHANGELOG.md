@@ -6,7 +6,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
-## [0.13.9] - 2026-09-22
+## [0.13.10] - 2026-09-22
 
 ### Fixed
 
@@ -18,6 +18,11 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Corroborate real Codex verifier completions, freeze all supported workspace
   entry types, and recover interrupted reconciliation without duplicate writes.
 - Use the dedicated publisher credential for protected distribution tag pushes.
+
+## [0.13.9] - 2026-09-22
+
+### Fixed
+
 - Route understood requests to the existing workflow without compulsory
   command syntax; keep questions and draft-only requests non-mutating.
 - Recover ordinary quality failures inside an approved sprint through
