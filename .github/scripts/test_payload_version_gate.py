@@ -234,6 +234,258 @@ class TestTheGateRefusesTheOtherDirections(_Repo):
         self.assertIn("no usable version string", message)
 
 
+class TestBasenameCollisionRefusal(unittest.TestCase):
+    """AC-07 / #626 finding 2a: two declared payload rows that reduce to the
+    same basename must be refused before the map silently loses one of them —
+    whether the two rows agree or disagree on prefix."""
+
+    def _write_targets(self, tmp, sections):
+        path = Path(tmp) / "release-targets.md"
+        lines = ["<!-- release-targets -->"]
+        for i, (name, prefix, payload) in enumerate(sections):
+            if i:
+                lines.append("")
+            lines.extend([
+                f"[{name}]",
+                f"prefix: {prefix}",
+                "changelog: CHANGELOG.md",
+                f"payload: {payload}",
+            ])
+        lines.append("<!-- /release-targets -->")
+        lines.append("")
+        path.write_text("\n".join(lines), encoding="utf-8")
+        return path
+
+    def test_equal_prefix_basename_collision_is_refused(self):
+        # Two rows, SAME prefix, same resulting basename. Even though the
+        # overwrite would today have produced an identical value, the
+        # collision itself — not its value — is the defect.
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._write_targets(tmp, [
+                ("foo", "foo-v", "plugins/foo/"),
+                ("foo-tool", "foo-v", "tools/foo/"),
+            ])
+            with self.assertRaises(gate.BasenameCollisionError) as ctx:
+                gate.tag_prefixes(declared)
+        message = str(ctx.exception)
+        self.assertIn("foo", message)
+        self.assertIn("plugins/foo", message)
+        self.assertIn("tools/foo", message)
+
+    def test_different_prefix_basename_collision_is_refused_before_overwrite(self):
+        # Two rows, DIFFERENT prefixes, same resulting basename — the shape
+        # that would gate the wrong plugin under the wrong tag namespace.
+        #
+        # The pairing in the message is what proves "before any overwrite":
+        # the diagnostic must attribute 'foo-v' to 'plugins/foo' and 'baz-v'
+        # to 'tools/foo' — the FIRST row's prefix against the FIRST row's
+        # payload. If the raise fired AFTER `prefixes[basename]` was
+        # reassigned to the second row's value, this exact pairing would
+        # break (both entries would read 'baz-v') even though an exception
+        # still got raised — merely asserting "raised" or "both strings
+        # appear somewhere" cannot tell the two orderings apart.
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._write_targets(tmp, [
+                ("foo", "foo-v", "plugins/foo/"),
+                ("baz", "baz-v", "tools/foo/"),
+            ])
+            with self.assertRaises(gate.BasenameCollisionError) as ctx:
+                gate.tag_prefixes(declared)
+        message = str(ctx.exception)
+        self.assertIn("'plugins/foo' (prefix 'foo-v')", message)
+        self.assertIn("'tools/foo' (prefix 'baz-v')", message)
+
+    def test_a_later_valid_row_does_not_mask_an_earlier_collision(self):
+        # A third, later, non-colliding row proves the function stops at the
+        # collision rather than continuing past it to build a partial map
+        # that happens to look complete.
+        with tempfile.TemporaryDirectory() as tmp:
+            declared = self._write_targets(tmp, [
+                ("foo", "foo-v", "plugins/foo/"),
+                ("baz", "baz-v", "tools/foo/"),
+                ("quux", "quux-v", "plugins/quux/"),
+            ])
+            with self.assertRaises(gate.BasenameCollisionError):
+                gate.tag_prefixes(declared)
+
+    def test_gate_surfaces_the_collision_as_a_clean_failure_not_a_traceback(self):
+        """The refusal must actually reach the operator through `gate()`."""
+        original = gate.tag_prefixes
+
+        def _colliding(*_a, **_k):
+            raise gate.BasenameCollisionError(
+                "two declared release-target payload directories share the basename "
+                "'foo': 'plugins/foo' (prefix 'foo-v') and 'tools/foo' (prefix 'baz-v')."
+            )
+
+        gate.tag_prefixes = _colliding
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp) / "repo"
+                root.mkdir()
+                git(["init", "-q", "-b", "main"], root)
+                git(["config", "user.email", "h@example.com"], root)
+                git(["config", "user.name", "harness"], root)
+                manifest = root / _Repo.MANIFEST
+                manifest.parent.mkdir(parents=True, exist_ok=True)
+                manifest.write_text(
+                    '{\n  "name": "ca",\n  "version": "2.8.13"\n}\n', encoding="utf-8")
+                payload = root / _Repo.PAYLOAD
+                payload.parent.mkdir(parents=True, exist_ok=True)
+                payload.write_text("AUDIT = ()\n", encoding="utf-8")
+                git(["add", "-A"], root)
+                git(["commit", "-qm", "release 2.8.13"], root)
+                git(["tag", "v2.8.13"], root)
+                base = git(["rev-parse", "HEAD"], root).stdout.strip()
+                payload.write_text("AUDIT = ('overrides.log',)\n", encoding="utf-8")
+                manifest.write_text(
+                    '{\n  "name": "ca",\n  "version": "2.9.1"\n}\n', encoding="utf-8")
+                git(["add", "-A"], root)
+                git(["commit", "-qm", "feat: ship on 2.9.1"], root)
+
+                code, message = gate.gate(base, "plugins/ca", root=root)
+        finally:
+            gate.tag_prefixes = original
+
+        self.assertEqual(code, gate.FAIL, message)
+        self.assertIn("foo", message)
+        self.assertIn("plugins/foo", message)
+        self.assertIn("tools/foo", message)
+
+    def test_todays_real_declared_targets_still_resolve_correctly(self):
+        """Existing non-colliding mapping is completely unaffected.
+
+        Against the REAL, current `.codearbiter/release-targets.md` — not a
+        synthetic fixture — every gated plugin must still resolve to a tag
+        namespace with no collision raised."""
+        namespaces = gate.tag_prefixes()
+        for plugin in gate.GATED_MANIFESTS:
+            with self.subTest(plugin=plugin):
+                self.assertIn(Path(plugin).name, namespaces)
+
+
+class TestDeclarationErrorReporting(unittest.TestCase):
+    """AC-08 / #626 finding 2b: `tag_prefixes()`'s `load_targets()` call can
+    raise any `ReleaseTargetsError` subclass (`AbsentBlockError`,
+    `FileExistsNoBlockError`, `UnreadableTargetsFileError`,
+    `MalformedBlockError`, ...) for a missing, malformed, or unreadable
+    `.codearbiter/release-targets.md`. Before this fix, `gate()` caught only
+    `BasenameCollisionError` around this exact call, so every one of those
+    cases propagated as an uncaught Python traceback with the interpreter's
+    default exit code instead of the gate's normal `(FAIL, message)` shape
+    every other failure path here produces."""
+
+    def test_absent_declaration_file_raises_a_declared_exception(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = Path(tmp) / "release-targets.md"
+            with self.assertRaises(gate.ReleaseTargetsError):
+                gate.tag_prefixes(missing)
+
+    def test_malformed_declaration_file_with_no_block_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            malformed = Path(tmp) / "release-targets.md"
+            malformed.write_text("not a declaration at all\n", encoding="utf-8")
+            with self.assertRaises(gate.ReleaseTargetsError):
+                gate.tag_prefixes(malformed)
+
+    def test_empty_declaration_file_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            empty = Path(tmp) / "release-targets.md"
+            empty.write_text("", encoding="utf-8")
+            with self.assertRaises(gate.ReleaseTargetsError):
+                gate.tag_prefixes(empty)
+
+    def test_unreadable_declaration_file_raises(self):
+        # Opening a DIRECTORY at the declared path is a portable way to
+        # exercise "present but unreadable" on every OS this repo supports:
+        # Windows raises PermissionError, POSIX raises IsADirectoryError —
+        # both are OSErrors whose errno is not ENOENT, which
+        # core/pysrc/_releaselib.py's load_targets() documents as exactly
+        # the UnreadableTargetsFileError case (never AbsentBlockError, per
+        # [[never-fold-unreadable-into-absent]]). No chmod fixture needed,
+        # so this is exercised for real rather than only via a mock.
+        with tempfile.TemporaryDirectory() as tmp:
+            unreadable = Path(tmp) / "release-targets.md"
+            unreadable.mkdir()
+            with self.assertRaises(gate.ReleaseTargetsError):
+                gate.tag_prefixes(unreadable)
+
+    def _committed_repo(self, tmp):
+        root = Path(tmp) / "repo"
+        root.mkdir()
+        git(["init", "-q", "-b", "main"], root)
+        git(["config", "user.email", "h@example.com"], root)
+        git(["config", "user.name", "harness"], root)
+        manifest = root / _Repo.MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text('{\n  "name": "ca",\n  "version": "2.8.13"\n}\n', encoding="utf-8")
+        payload = root / _Repo.PAYLOAD
+        payload.parent.mkdir(parents=True, exist_ok=True)
+        payload.write_text("AUDIT = ()\n", encoding="utf-8")
+        git(["add", "-A"], root)
+        git(["commit", "-qm", "release 2.8.13"], root)
+        git(["tag", "v2.8.13"], root)
+        base = git(["rev-parse", "HEAD"], root).stdout.strip()
+        payload.write_text("AUDIT = ('overrides.log',)\n", encoding="utf-8")
+        manifest.write_text('{\n  "name": "ca",\n  "version": "2.9.1"\n}\n', encoding="utf-8")
+        git(["add", "-A"], root)
+        git(["commit", "-qm", "feat: ship on 2.9.1"], root)
+        return root, base
+
+    def test_gate_reports_a_declaration_error_as_a_clean_FAIL_not_a_traceback(self):
+        """The refusal must reach `gate()` as (FAIL, message) with a
+        path-identifying, cause-naming diagnostic — never propagate as an
+        uncaught exception, and never a silently substituted empty map that
+        would let the gate fall through to 'no declared namespace'."""
+        original = gate.tag_prefixes
+
+        def _raise_absent(*_a, **_k):
+            raise gate.ReleaseTargetsError(
+                "could not read release-targets file "
+                f"{str(gate.DECLARED_TARGETS)!r}: [Errno 2] No such file or directory"
+            )
+
+        gate.tag_prefixes = _raise_absent
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                root, base = self._committed_repo(tmp)
+                code, message = gate.gate(base, "plugins/ca", root=root)
+        finally:
+            gate.tag_prefixes = original
+
+        self.assertEqual(code, gate.FAIL, message)
+        self.assertIn(str(gate.DECLARED_TARGETS), message)
+        self.assertIn("ReleaseTargetsError", message)
+        self.assertIn("No such file or directory", message)
+
+    def test_gate_does_not_confuse_a_declaration_error_with_no_declared_namespace(self):
+        """Before this fix, an uncaught exception here crashed the process —
+        it did NOT fall through to the existing 'declares no release target'
+        message. Pin that the new branch produces its OWN diagnostic, not
+        that unrelated one, so a future change cannot silently swap a crash
+        for a misleading pass-shaped message instead of a real fix."""
+        original = gate.tag_prefixes
+        gate.tag_prefixes = lambda *_a, **_k: (_ for _ in ()).throw(
+            gate.ReleaseTargetsError("synthetic malformed-block failure"))
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                root, base = self._committed_repo(tmp)
+                code, message = gate.gate(base, "plugins/ca", root=root)
+        finally:
+            gate.tag_prefixes = original
+
+        self.assertEqual(code, gate.FAIL, message)
+        self.assertNotIn("declares no release target", message)
+        self.assertIn("synthetic malformed-block failure", message)
+
+    def test_todays_real_declared_targets_file_never_trips_the_new_branch(self):
+        """No mock — the CURRENT declared file always resolves cleanly, so
+        this pins that the new `except ReleaseTargetsError` branch is
+        additive and never fires against a healthy repo."""
+        namespaces = gate.tag_prefixes()
+        self.assertIn("ca", namespaces)
+
+
 class TestTheGatedSetMatchesTheRepository(unittest.TestCase):
     """AC-3: every plugin is gated exactly once, under one shared rule."""
 

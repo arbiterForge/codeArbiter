@@ -292,8 +292,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 "candidate_archive_sha256",
             ):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
-            self.assertEqual(829, marker.get("pr_number"))
-            self.assertEqual("codex/prerequisite-adapter", marker.get("pr_head_ref"))
+            self.assertEqual(845, marker.get("pr_number"))
+            self.assertEqual("worktree-release-contract-closure", marker.get("pr_head_ref"))
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
         if require_current_candidate:
@@ -430,6 +430,12 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertIsNotNone(marker_match)
         marker = json.loads(marker_match.group("meta"))
         corrupted = dict(marker)
+        # Ordinary development may legitimately advance the manifest beyond
+        # the retained live baseline. Bind this mutation fixture to the
+        # current manifest so the assertion reaches the package-digest arm it
+        # is specifically meant to prove, rather than stopping one check
+        # earlier on the unrelated version-lag guard.
+        corrupted["adapter_version"] = manifest["version"]
         corrupted["candidate_package_sha256"] = "0" * 64
         corrupted_runbook = runbook.replace(
             marker_match.group("meta"),

@@ -748,8 +748,15 @@ _GLOB_DIR_REF_RE = re.compile(
 # post-pathspec-exclusion total so a future extractor regression cannot hide
 # behind the old post-T-41 value while still leaving room for legitimate
 # reference removal.
-_EXTRACTION_FLOOR = 14
+_EXTRACTION_FLOOR = 19
 _STABLE_ANCHOR_REF = "${CLAUDE_PLUGIN_ROOT}/includes/anti-slop-design/core.md"
+
+# Exact pre-sprint tree used by AncestryOldVsNewBehaviorTest as its durable
+# OLD-behavior oracle. HEAD is intentionally not used: once the release-
+# contract fix is committed, HEAD is the NEW side of the comparison. The
+# consumer-smoke CI checkout is full-history specifically so this historical
+# tree remains available.
+_ANCESTRY_PRE_FIX_COMMIT = "5c876dd885598c248fa777e951dac4e628688d73"
 
 # T-73b payload list — one entry per shipped copy of the release skill.
 # (label, host, path relative to that host's materialized plugin root,
@@ -1082,6 +1089,119 @@ class ReferenceResolutionTest(unittest.TestCase):
             f"  unresolved: {sorted(self.unresolved)}\n"
             "Remember: the fixture archives `HEAD`, not the working tree — "
             "commit the fix before re-running this test.")
+
+
+# --------------------------------------------------------------------------- #
+# T-18 (issue #623, AC-13/AC-14): the T-16 invariant map's remaining gaps
+# (.codearbiter/reports/release-closure-invariant-map.md, section 4),
+# reproved here against the DISTRIBUTION-FAITHFUL archived payload
+# (`git archive HEAD`, this file's own `_FIXTURE`) rather than merely the
+# working-tree source `GovernanceSurvivalTest` in `test_release_lib.py`
+# reads directly. This module exists precisely to catch a bug that only a
+# real consumer install would see (dev-repo-state-masks-consumer-bugs); a
+# governance phrase that only survives in the working-tree source but never
+# makes it into what a consumer actually receives is exactly that class of
+# bug. Every phrase below is carried VERBATIM from the pre-T-17 single
+# paragraph into T-17's new named substeps, so it is present in the
+# currently-archived `HEAD` copy and must remain present in every future
+# mechanically regenerated payload.
+# --------------------------------------------------------------------------- #
+
+_PHASE2_GAP_CLOSURE_PHRASES = {
+    "G2 (T-18): Phase-2 report lists all six obligations": (
+        "$TARGET`, version, bump rationale, the per-commit classification",
+        "the per-commit classification, the changelog section, and the tag SHA."),
+    "G4 (T-18): Phase-2 closing gate says nothing is published yet": (
+        "the hosted publisher has composed the annotated tag in its "
+        "isolated checkout and delivered the report",
+        "Nothing is published."),
+    "G5 (T-18): classify first, then tag": (
+        "Do not run `git tag` yet", "classify first, then tag"),
+    "G6 (T-18): classify-arguments lead sentence names its own scope": (
+        "Source the other four arguments explicitly",
+        "none of them is yours to invent"),
+    "G7 (T-18): tag_version carried verbatim, manifest_version re-read": (
+        "reused verbatim and never re-parsed from a tag or a file",
+        "the two arguments are sourced differently on purpose"),
+    "G8 (T-18): release_nondraft is a bare literal, never raw JSON": (
+        "Pass the bare literal `true` or `false` and nothing else",
+        "silently renders `already_published` unreachable"),
+    "G10 (T-18): git tag -a is the sole tag-creation point, never -m": (
+        "never `-m` for multi-line content, never an interactive editor",
+        "sole point in the whole lane at which a tag is created"),
+    "G11 (T-18): notes-match takes a path, Windows-portable": (
+        "`notes-match` takes a path",
+        "would not survive the move to a Windows consumer"),
+    "G12 (T-18): the deprecated rev-parse warning has its own anchor": (
+        "Never revive the deprecated local-object spelling",
+        "it returns the annotated tag object rather than the commit"),
+}
+
+
+def _missing_phase2_gap_phrases_for(text, phrases):
+    """The subset of `phrases` names whose token set is NOT fully present in
+    `text`. Mirrors `test_release_lib.py`'s `_missing_governance_rules_for`
+    pattern: a pure function of `text` so it can be exercised against both
+    a real archived payload and a synthetic/mutated fixture."""
+    missing = []
+    for name, tokens in phrases.items():
+        if not all(token in text for token in tokens):
+            missing.append(name)
+    return missing
+
+
+class Phase2GovernanceCarryTest(unittest.TestCase):
+    """T-18: the nine T-17-deferred invariant-map gaps this task closes,
+    reproved against the archived (`git archive HEAD`), distribution-
+    faithful copy of every full (non-stub) release-skill payload."""
+
+    @classmethod
+    def setUpClass(cls):
+        root_by_host = {
+            "claude": _FIXTURE.plugin_root,
+            "codex": _FIXTURE.codex_plugin_root,
+            "pi": _FIXTURE.pi_plugin_root,
+        }
+        cls.payloads = {}
+        for label, host, relpath, _anchor in _RELEASE_SKILL_PAYLOADS:
+            if label in _STUB_PAYLOAD_LABELS:
+                continue
+            skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.payloads[label] = fh.read()
+
+    def test_at_least_the_three_full_payloads_are_covered(self):
+        # Sanity floor on the fixture itself, same shape as
+        # `ReferenceResolutionTest`'s own floor checks: if the payload list
+        # ever collapsed to zero full copies, every assertion below would
+        # vacuously pass over an empty dict.
+        self.assertEqual(len(self.payloads), 3)
+
+    def test_gap_closure_phrases_survive_the_archived_payload(self):
+        for label, text in self.payloads.items():
+            with self.subTest(payload=label):
+                missing = _missing_phase2_gap_phrases_for(
+                    text, _PHASE2_GAP_CLOSURE_PHRASES)
+                self.assertEqual(
+                    missing, [],
+                    f"{label}: Phase-2 gap-closure phrase(s) missing from "
+                    f"the archived payload: {missing} -- either a genuine "
+                    "regression, or this payload has not yet been "
+                    "regenerated from the split source (T-19)")
+
+    def test_a_deleted_phrase_is_detected(self):
+        # Mutation-check: prove `_missing_phase2_gap_phrases_for` is not
+        # vacuously true by removing one rule's tokens from a copy of a
+        # real archived payload and confirming it reports exactly that
+        # rule missing.
+        label, text = next(iter(self.payloads.items()))
+        name, tokens = next(iter(_PHASE2_GAP_CLOSURE_PHRASES.items()))
+        mutant = text
+        for token in tokens:
+            mutant = mutant.replace(token, "")
+        missing = _missing_phase2_gap_phrases_for(
+            mutant, _PHASE2_GAP_CLOSURE_PHRASES)
+        self.assertEqual(missing, [name])
 
 
 class ResolverUnitTest(unittest.TestCase):
@@ -1893,7 +2013,19 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
         {**root_mapping,
          "$TAG_PREFIX": tag_prefix,
          "$VERSION_POLICY": version_policy,
-         "$INITIAL_VERSION": initial_version})
+         "$INITIAL_VERSION": initial_version,
+         # T-20: post-R-02 renderings of this bullet pin tag selection with
+         # `git -C "$PROJECT_ROOT" tag -l` (AncestryRepoRootBindingTest);
+         # the archived-HEAD pre-R-02 rendering this driver was originally
+         # written against has no such token at all, so this mapping entry
+         # is a no-op there (`_substitute_argv` only replaces a token that
+         # literally contains it) and only takes effect against the current
+         # working-tree SKILL.md text. Discovered by T-20's composed
+         # journey test, which is the first caller to run this shared
+         # driver against post-sprint prose rather than the archived
+         # snapshot — see release-closure-journeys.md's "gaps found"
+         # section.
+         "$PROJECT_ROOT": consumer_root})
     result["processes"]["window_last_tag"] = proc
     result["last_tag_lib"] = last_tag
     result["last_tag_oracle"] = _independent_last_tag(tags, tag_prefix)
@@ -2690,6 +2822,386 @@ class LaneDriverUnitTest(unittest.TestCase):
         self.assertEqual(substituted, ["git", "tag", "-a", "v1.3.0", "-F", windows_path])
 
 
+class AncestryDocumentedFlowTest(unittest.TestCase):
+    """T-11, AC-09/AC-16 (#570 finding BODY-03): the same four graph shapes
+    as `test_release_lib.AncestryGraphsTest`, but driven by EXTRACTING the
+    literal invocation strings from the installed `core/surface/skills/
+    release/SKILL.md` text (this module's own established drift-detection
+    idiom -- `_capture_invocation_after_anchor`) and running them for real,
+    rather than hand-typing the CLI argv the way `test_release_lib.py`
+    does. A change to the skill's PROSE that breaks the two commands'
+    actual spelling, ordering, or composition fails HERE even if
+    `test_release_lib.py`'s hand-typed version still passes unaffected --
+    the two files check genuinely different things, and both are required
+    by this task's own verification command.
+
+    Deliberately reads the CANONICAL `core/pysrc/_releaselib.py` bytes,
+    copied into a scratch `hooks/` directory substituted for
+    `{{PLUGIN_ROOT}}` -- never a vendored `plugins/*/hooks/_releaselib.py`
+    copy. T-10's mechanism has not yet been projected to the three
+    generated hosts (T-19, PENDING per the plan's own DAG note on
+    `core/pysrc/releasehash.py`'s vendored-copy drift): a vendored copy
+    does not carry `verify-tag-ancestor` yet, and testing against it would
+    fail every case below for a reason this task does not own. Testing the
+    CANONICAL source is also the correct target for AC-16 ("prove the
+    candidate that actually changed") -- T-10's actual diff landed there."""
+
+    @classmethod
+    def setUpClass(cls):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            cls.skill_text = fh.read()
+        cls.last_tag_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, "Resolve it through the tested helper:")
+        cls.verify_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, "Verify it immediately, before")
+
+    def setUp(self):
+        self.scratch = tempfile.mkdtemp(prefix="ca-ancestry-flow-")
+        self.addCleanup(_force_rmtree, self.scratch)
+        self.plugin_root = os.path.join(self.scratch, "plugin-root")
+        os.makedirs(os.path.join(self.plugin_root, "hooks"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+            os.path.join(self.plugin_root, "hooks", "_releaselib.py"))
+        # `git_executable()` resolves `_gitexec` as a sibling module at
+        # runtime (`core/pysrc/_releaselib.py`'s own docstring: "`_gitexec.py`
+        # sits beside this file wherever this file lives") -- copied
+        # alongside for the identical reason, never imported at module
+        # scope from this test.
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+            os.path.join(self.plugin_root, "hooks", "_gitexec.py"))
+        self.root_mapping = {"{{PLUGIN_ROOT}}": self.plugin_root}
+
+    def _init_repo(self, name="repo"):
+        root = os.path.join(self.scratch, name)
+        os.makedirs(root, exist_ok=True)
+        _git(["init", "-q"], root)
+        _write_text(os.path.join(root, "seed.txt"), "seed\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", "chore: seed"], root)
+        return root
+
+    def _commit(self, root, name, message):
+        _write_text(os.path.join(root, name), f"{name}\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", message], root)
+
+    def _fingerprint(self, root):
+        # `git status --porcelain` (working-tree/index mutation) and `git
+        # for-each-ref` (every ref -- tags, branches, HEAD -- and the exact
+        # object each names) together are the "refusal precedes any
+        # mutation" proof surface.
+        status = _git(["status", "--porcelain"], root).stdout
+        refs = _git(["for-each-ref"], root).stdout
+        return status, refs
+
+    def _run_flow(self, root, prefix, policy="semver", initial=""):
+        """Runs the LITERAL two commands SKILL.md's Pre-flight prose
+        spells, extracted from the installed text -- never hand-typed
+        here. Returns `(last_tag, last_tag_process, verify_process)`.
+
+        `$PROJECT_ROOT` substitutes to `root` -- the SAME root used for
+        both stages here, matching what a real session has when the
+        invoking shell's cwd and `CLAUDE_PROJECT_DIR` agree (the ordinary,
+        non-mismatched case this class's fixtures exercise; the mismatched
+        case -- where they do NOT agree -- is `AncestryRepoRootBindingTest`
+        below, R-02)."""
+        _, last_tag, last_tag_proc = _run_command_substitution(
+            self.last_tag_invocation, root,
+            {**self.root_mapping, "$TAG_PREFIX": prefix,
+             "$VERSION_POLICY": policy, "$INITIAL_VERSION": initial,
+             "$PROJECT_ROOT": root})
+        argv = _substitute_argv(
+            shlex.split(self.verify_invocation),
+            {**self.root_mapping, "$LAST_TAG": last_tag, "$PROJECT_ROOT": root})
+        verify_proc = _run_argv(argv, root)
+        return last_tag, last_tag_proc, verify_proc
+
+    def test_sibling_branch_diverged_before_tag_refuses_and_mutates_nothing(self):
+        # The exact shape #570 finding BODY-03 names, run through the
+        # LITERAL extracted prose rather than a hand-typed reproduction.
+        root = self._init_repo()
+        _git(["checkout", "-q", "-b", "sibling"], root)
+        self._commit(root, "sibling.txt", "feat: sibling work")
+        _git(["tag", "v9.9.9"], root)
+        _git(["checkout", "-q", "main"], root)
+        self._commit(root, "mainline.txt", "feat: mainline work")
+
+        before = self._fingerprint(root)
+        last_tag, last_tag_proc, verify_proc = self._run_flow(root, "v")
+        after = self._fingerprint(root)
+
+        self.assertEqual(last_tag_proc.returncode, 0, last_tag_proc.stderr)
+        self.assertEqual(
+            last_tag, "v9.9.9",
+            "the sibling tag is genuinely the numeric-highest in the "
+            "series -- selection alone cannot and must not catch this")
+        self.assertEqual(verify_proc.returncode, 1)
+        self.assertEqual(verify_proc.stdout, "")
+        self.assertIn("v9.9.9", verify_proc.stderr)
+        self.assertEqual(
+            before, after,
+            "the full refusal flow, run through the actual documented "
+            "prose, must not write a file, move a ref, or create a tag")
+
+    def test_decoy_sibling_series_prefix_scoping_plus_ancestry_produce_correct_pass(self):
+        # A DIFFERENT declared target's series ("docs-v99.0.0") numerically
+        # outranks EVERY tag in this target's own "v" series and sits on a
+        # branch this target's HEAD never descends from. A regex anchored
+        # on "^v" excludes "docs-v99.0.0" regardless of graph shape, so a
+        # fixture with only that decoy would prove nothing about the
+        # graph -- this one also declares a GENUINE, same-prefix,
+        # REACHABLE higher tag ("v2.0.0") so `last-tag-for-policy` must
+        # still do real selection work among "v"-series candidates while
+        # ignoring the differently-prefixed decoy. Anchored prefix scoping
+        # must exclude the decoy BEFORE ancestry ever runs and correctly
+        # pick "v2.0.0" over both "v1.0.0" and the decoy, so the composed
+        # flow still PASSES for this target.
+        root = self._init_repo()
+        _git(["tag", "v1.0.0"], root)
+        _git(["checkout", "-q", "-b", "docs-series"], root)
+        self._commit(root, "docs.txt", "docs: unrelated docs series")
+        _git(["tag", "docs-v99.0.0"], root)
+        _git(["checkout", "-q", "main"], root)
+        self._commit(root, "mainline.txt", "feat: mainline work")
+        _git(["tag", "v2.0.0"], root)
+        self._commit(root, "mainline2.txt", "feat: further mainline work")
+
+        last_tag, last_tag_proc, verify_proc = self._run_flow(root, "v")
+
+        self.assertEqual(last_tag_proc.returncode, 0, last_tag_proc.stderr)
+        self.assertEqual(
+            last_tag, "v2.0.0",
+            "must select the genuine highest REACHABLE same-prefix tag "
+            "-- neither the older real tag nor the numerically-higher "
+            "decoy from a DIFFERENT declared series")
+        self.assertEqual(verify_proc.returncode, 0, verify_proc.stderr)
+        self.assertEqual(verify_proc.stdout, "")
+
+    def test_annotated_tag_survives_the_full_documented_command_chain(self):
+        # Proves the peeling behavior survives the LITERAL two-command
+        # chain as SKILL.md actually spells it, complementing T-10's direct
+        # function-level proof and `test_release_lib.py`'s hand-typed one.
+        root = self._init_repo()
+        _git(["tag", "-a", "v1.0.0", "-m", "release v1.0.0"], root)
+        self._commit(root, "later.txt", "feat: later work")
+
+        tag_object_sha = _git(["rev-parse", "v1.0.0"], root).stdout.strip()
+        tag_commit_sha = _git(["rev-parse", "v1.0.0^{commit}"], root).stdout.strip()
+        self.assertNotEqual(
+            tag_object_sha, tag_commit_sha,
+            "fixture premise check -- this must be a real annotated tag "
+            "OBJECT distinct from the commit it points at")
+
+        last_tag, last_tag_proc, verify_proc = self._run_flow(root, "v")
+
+        self.assertEqual(last_tag_proc.returncode, 0, last_tag_proc.stderr)
+        self.assertEqual(last_tag, "v1.0.0")
+        self.assertEqual(verify_proc.returncode, 0, verify_proc.stderr)
+
+    def test_zero_tag_path_through_the_full_documented_flow(self):
+        # A fresh repository, no tags at all, run through the literal
+        # extracted two-command chain -- not the direct function call
+        # T-10's suite already exercises for this case.
+        root = self._init_repo()
+
+        before = self._fingerprint(root)
+        last_tag, last_tag_proc, verify_proc = self._run_flow(root, "v")
+        after = self._fingerprint(root)
+
+        self.assertEqual(last_tag_proc.returncode, 0, last_tag_proc.stderr)
+        self.assertEqual(last_tag, "<none>")
+        self.assertEqual(verify_proc.returncode, 0, verify_proc.stderr)
+        self.assertEqual(verify_proc.stdout, "")
+        self.assertEqual(
+            before, after,
+            "the zero-tag pass-through must not write a file, move a "
+            "ref, or create a tag either")
+
+
+class AncestryRepoRootBindingTest(unittest.TestCase):
+    """R-02, Scope-C security review finding 2 (MEDIUM): `verify-tag-
+    ancestor` already resolved its own project root from `CLAUDE_PROJECT_
+    DIR` internally (env-first, cwd fallback, T-10/R-01) -- but the bare
+    `git tag -l` command immediately adjacent to it in SKILL.md's Pre-
+    flight sequence had no such pinning and resolved against whatever the
+    invoking shell's OWN cwd happened to be. When `CLAUDE_PROJECT_DIR` and
+    the shell's actual cwd name two different checkouts of the SAME
+    repository (this repository's own linked-worktree session today is
+    exactly that shape), the tag SELECTED from one checkout's tag list
+    could be ancestry-VERIFIED against a DIFFERENT checkout's `HEAD`.
+
+    Drives the LITERAL installed `core/surface/skills/release/SKILL.md`
+    text -- same `_capture_invocation_after_anchor` extraction idiom as
+    `AncestryDocumentedFlowTest` -- but, unlike that class (which always
+    runs both stages against the SAME `root`), decouples the tag-selection
+    subprocess's cwd (`shell_cwd`) from the value substituted for
+    `$PROJECT_ROOT` (`project_root`), proving the ACTUAL installed prose,
+    not a hand-typed reproduction, keeps selection bound to `$PROJECT_ROOT`
+    regardless of where the invoking shell physically sits."""
+
+    @classmethod
+    def setUpClass(cls):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            cls.skill_text = fh.read()
+        cls.last_tag_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, "Resolve it through the tested helper:")
+        cls.verify_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, "Verify it immediately, before")
+
+    def setUp(self):
+        self.scratch = tempfile.mkdtemp(prefix="ca-ancestry-root-binding-")
+        self.addCleanup(_force_rmtree, self.scratch)
+        self.plugin_root = os.path.join(self.scratch, "plugin-root")
+        os.makedirs(os.path.join(self.plugin_root, "hooks"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+            os.path.join(self.plugin_root, "hooks", "_releaselib.py"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+            os.path.join(self.plugin_root, "hooks", "_gitexec.py"))
+
+    def _init_repo(self, name):
+        root = os.path.join(self.scratch, name)
+        os.makedirs(root, exist_ok=True)
+        _git(["init", "-q"], root)
+        _write_text(os.path.join(root, "seed.txt"), "seed\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", "chore: seed"], root)
+        return root
+
+    def _commit(self, root, name, message):
+        _write_text(os.path.join(root, name), f"{name}\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", message], root)
+
+    def _select_last_tag(self, project_root_value, shell_cwd):
+        """Runs the LITERAL extracted `LAST_TAG=$(...)` pipeline SKILL.md's
+        Pre-flight prose spells -- never hand-typed here -- with the
+        subprocess's own cwd pinned to `shell_cwd` (the interactive-shell
+        stand-in) while the `$PROJECT_ROOT` TOKEN substitutes to
+        `project_root_value`. Returns `(last_tag, last_process)`."""
+        match = _VAR_SUBSHELL_RE.match(self.last_tag_invocation)
+        self.assertIsNotNone(
+            match, "R-02's fix must keep the LAST_TAG bullet a single "
+            f"VAR=$(...) invocation: {self.last_tag_invocation!r}")
+        mapping = {
+            "{{PLUGIN_ROOT}}": self.plugin_root,
+            "$TAG_PREFIX": "v", "$VERSION_POLICY": "semver",
+            "$INITIAL_VERSION": "", "$PROJECT_ROOT": project_root_value,
+        }
+        stdin_text = None
+        proc = None
+        for stage in (s.strip() for s in match.group(2).split("|")):
+            argv = _substitute_argv(shlex.split(stage), mapping)
+            proc = _run_argv(argv, shell_cwd, input_text=stdin_text)
+            stdin_text = proc.stdout
+        return (proc.stdout or "").strip(), proc
+
+    def _verify_ancestor(self, tag, project_root_value, subprocess_cwd=None):
+        """Runs the LITERAL extracted `verify-tag-ancestor` invocation, now
+        `$PROJECT_ROOT` substituted as an explicit SECOND CLI argument
+        (R-02 part 2) -- never merely `CLAUDE_PROJECT_DIR`. `subprocess_cwd`
+        (defaulting to `project_root_value`) may deliberately be a
+        DIFFERENT directory: `_run_argv` also pins `CLAUDE_PROJECT_DIR` to
+        it for a python invocation, so passing a mismatched `subprocess_cwd`
+        proves the explicit argument wins over BOTH the subprocess's own
+        cwd and a misleading environment variable at once."""
+        argv = _substitute_argv(
+            shlex.split(self.verify_invocation),
+            {"{{PLUGIN_ROOT}}": self.plugin_root, "$LAST_TAG": tag,
+             "$PROJECT_ROOT": project_root_value})
+        return _run_argv(argv, subprocess_cwd or project_root_value)
+
+    def test_pinned_project_root_keeps_selection_and_verification_bound_to_the_same_checkout(self):
+        origin = self._init_repo("origin")
+        _git(["tag", "v1.0.0"], origin)
+        self._commit(origin, "mainline2.txt", "feat: mainline work")
+
+        project_root = os.path.join(self.scratch, "project-checkout")
+        _git(["clone", "-q", origin, project_root], self.scratch)
+
+        # A SEPARATE checkout of the same repo -- e.g. a stray linked
+        # worktree or an operator's old clone -- carrying its own LOCAL,
+        # never-fetched-into-project_root tag.
+        shell_cwd = os.path.join(self.scratch, "stray-checkout")
+        _git(["clone", "-q", origin, shell_cwd], self.scratch)
+        self._commit(shell_cwd, "stray.txt", "feat: stray local work")
+        _git(["tag", "v9.9.9"], shell_cwd)
+
+        # -- (1) PRE-R-02 shape: $PROJECT_ROOT substitutes to shell_cwd --
+        #    the bare, unpinned behavior a `git tag -l` with no `-C` has,
+        #    since the extracted command then resolves against wherever
+        #    the subprocess's own cwd (shell_cwd) points.
+        old_tag, old_proc = self._select_last_tag(shell_cwd, shell_cwd)
+        self.assertEqual(old_proc.returncode, 0, old_proc.stderr)
+        self.assertEqual(
+            old_tag, "v9.9.9",
+            "the decoy from the stray checkout must genuinely win an "
+            "unpinned selection, or this fixture proves nothing about "
+            "the split")
+        old_verify = self._verify_ancestor(old_tag, project_root)
+        self.assertEqual(
+            old_verify.returncode, 2,
+            "verifying a tag SELECTED from a DIFFERENT checkout than the "
+            "one it is VERIFIED against must produce a spurious refusal "
+            "-- project_root has never even fetched a tag named v9.9.9, "
+            "even though project_root's OWN v1.0.0 baseline is a "
+            "perfectly genuine, unambiguous ancestor")
+
+        # -- (2) R-02 fix: $PROJECT_ROOT substitutes to project_root
+        #    regardless of the subprocess's actual cwd (shell_cwd) --
+        #    exactly what the installed `-C "$PROJECT_ROOT"` pinning does.
+        new_tag, new_proc = self._select_last_tag(project_root, shell_cwd)
+        self.assertEqual(new_proc.returncode, 0, new_proc.stderr)
+        self.assertEqual(
+            new_tag, "v1.0.0",
+            'pinned via -C "$PROJECT_ROOT", selection must see ONLY '
+            "project_root's own tag list -- the stray checkout's decoy "
+            "must never even be a candidate, regardless of where the "
+            "invoking shell physically sits")
+        new_verify = self._verify_ancestor(new_tag, project_root)
+        self.assertEqual(
+            new_verify.returncode, 0,
+            f"{new_verify.stderr} -- selection and verification are now "
+            "bound to the IDENTICAL resolved root, so the genuine "
+            "ancestor is confirmed cleanly -- the split this test proves "
+            "closed")
+
+    def test_explicit_second_argument_wins_over_a_misleading_environment_and_cwd(self):
+        # Isolates R-02 part 2: runs the LITERAL extracted `verify-tag-
+        # ancestor "$LAST_TAG" "$PROJECT_ROOT"` invocation with the
+        # subprocess's own cwd -- and therefore `_run_argv`'s own forced
+        # `CLAUDE_PROJECT_DIR=<cwd>` -- pointed at an UNRELATED repo that
+        # has never even seen the tag being verified, while the explicit
+        # `$PROJECT_ROOT` argument names the real project_root. If the
+        # explicit argument were ignored in favor of either signal, this
+        # would resolve against the unrelated repo and fail to verify a
+        # tag that is, in project_root, a perfectly genuine ancestor.
+        origin = self._init_repo("origin")
+        _git(["tag", "v1.0.0"], origin)
+        self._commit(origin, "mainline2.txt", "feat: mainline work")
+
+        project_root = os.path.join(self.scratch, "project-checkout")
+        _git(["clone", "-q", origin, project_root], self.scratch)
+
+        unrelated = self._init_repo("unrelated-repo")
+
+        verify = self._verify_ancestor(
+            "v1.0.0", project_root, subprocess_cwd=unrelated)
+        self.assertEqual(
+            verify.returncode, 0,
+            f"{verify.stderr} -- the explicit second argument must bind "
+            "ancestry verification to project_root, never to the "
+            "subprocess's own cwd or a CLAUDE_PROJECT_DIR value derived "
+            "from it")
+
+
 class RealHistoryTagStrippingEvidenceTest(unittest.TestCase):
     """[NEEDS-TRIAGE] Corroborates `ConsumerEndToEndTest`'s discovery with
     REAL evidence rather than only the scratch fixture's synthetic proof:
@@ -2989,6 +3501,1110 @@ class BackfillTwoArmProofTest(unittest.TestCase):
             self.assertFalse(os.path.isfile(ambiguous_targets_path))
         finally:
             ambiguous.cleanup()
+
+
+_ADOPTION_BOUNDARY_ANCHOR = (
+    "floor the window at the adoption commit by resolving the boundary "
+    "from BOTH candidate files before the first")
+
+
+class _AdoptionBoundaryFixture:
+    """A fresh, disposable single-package consumer repo carrying HIGH-T23-
+    1's exact canonical first-release precondition: one footer-complete
+    pre-existing `feat` commit, then a synthetic Back-fill declaration
+    commit touching ONLY `.codearbiter/release-targets.md` (the row's
+    canonical `payload-exclude: .codearbiter/` shape). Built with real git
+    — never mocked — the same way `_BackfillFixture`/`build_consumer_repo`
+    are, but deliberately NOT reusing `build_consumer_repo`: that helper
+    seeds a `v1.2.3` tag, which would make `LAST_TAG != <none>` and never
+    exercise step 0's first-release adoption floor at all."""
+
+    def __init__(self, label):
+        self.scratch = tempfile.mkdtemp(prefix=f"ca-adoption-boundary-{label}-")
+        try:
+            self.consumer_root = os.path.join(self.scratch, "consumer")
+            os.makedirs(self.consumer_root, exist_ok=True)
+            _git(["init", "-q"], self.consumer_root)
+            _write_text(
+                os.path.join(self.consumer_root, "index.js"),
+                "module.exports = {};\n")
+            _git(["add", "-A"], self.consumer_root)
+            _git(["commit", "-q", "-m",
+                  "feat: add index\n\nCHANGELOG: add index entrypoint"],
+                 self.consumer_root)
+
+            state = os.path.join(self.consumer_root, ".codearbiter")
+            os.makedirs(state, exist_ok=True)
+            _write_text(
+                os.path.join(state, "release-targets.md"),
+                "<!-- release-targets -->\n"
+                "[app]\n"
+                "prefix: v\n"
+                "manifest: package.json\n"
+                "changelog: CHANGELOG.md\n"
+                "payload: .\n"
+                "payload-exclude: .codearbiter/\n"
+                "<!-- /release-targets -->\n")
+            _git(["add", "-A"], self.consumer_root)
+            _git(["commit", "-q", "-m", "chore: declare release targets"],
+                 self.consumer_root)
+        except Exception:
+            self.cleanup()
+            raise
+
+    def cleanup(self):
+        _force_rmtree(self.scratch)
+
+
+class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
+    """R-05, AC-18 (T-23 round-1 finding HIGH-T23-1). Reproduces the HIGH
+    through the invocation extracted from the CANONICAL `core/surface/
+    skills/release/SKILL.md` template (never a hand-copied command), run
+    against a real vendored copy of `core/pysrc/_releaselib.py`, then
+    confirms the new diagnostic prose this task adds ships identically to
+    all three rendered host payloads (`ca`, `ca-codex`, `ca-pi`) --
+    mirroring `BackfillTwoArmProofTest`'s own cross-payload discipline.
+
+    Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
+    `core/pysrc/_releaselib.py` -- never the archived-HEAD `_FIXTURE.
+    plugin_root` snapshot, and never `_FIXTURE.codex_plugin_root`/
+    `pi_plugin_root` either -- for the same reason `PrerequisiteRefusalTest`
+    does: the canonical source is the immediate candidate under test, while
+    `materialize_plugin` intentionally sees only the last committed tree."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.lane = _AdoptionBoundaryFixture("r05")
+        try:
+            skill_path = os.path.join(
+                REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+            with open(skill_path, encoding="utf-8") as fh:
+                cls.skill_text = fh.read()
+            cls.invocation = _capture_invocation_after_anchor(
+                cls.skill_text, _ADOPTION_BOUNDARY_ANCHOR)
+
+            cls.plugin_root = os.path.join(cls.lane.scratch, "plugin-root")
+            os.makedirs(os.path.join(cls.plugin_root, "hooks"))
+            shutil.copyfile(
+                os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+                os.path.join(cls.plugin_root, "hooks", "_releaselib.py"))
+            shutil.copyfile(
+                os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+                os.path.join(cls.plugin_root, "hooks", "_gitexec.py"))
+        except Exception:
+            cls.lane.cleanup()
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.lane.cleanup()
+
+    def _resolve_adopted(self):
+        mapping = {
+            "{{PROJECT_DIR}}": self.lane.consumer_root,
+            "{{PLUGIN_ROOT}}": self.plugin_root,
+        }
+        return _run_command_substitution(
+            self.invocation, self.lane.consumer_root, mapping)
+
+    def test_anchor_is_unique_and_extracts_a_real_adoption_commit_invocation(self):
+        self.assertEqual(self.skill_text.count(_ADOPTION_BOUNDARY_ANCHOR), 1)
+        self.assertTrue(self.invocation.startswith("ADOPTED=$("))
+        self.assertIn("adoption-commit", self.invocation)
+
+    def test_installed_invocation_resolves_adopted_to_the_declaration_commit(self):
+        _, adopted, proc = self._resolve_adopted()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        head = _git(["rev-parse", "HEAD"], self.lane.consumer_root).stdout.strip()
+        self.assertEqual(
+            adopted, head,
+            "the installed skill's own extracted invocation must resolve "
+            "$ADOPTED to Back-fill's own just-committed declaration "
+            "commit on this canonical shape -- otherwise the fixture no "
+            "longer matches HIGH-T23-1's precondition")
+
+    def test_resulting_payload_scoped_window_is_empty_reproducing_the_high(self):
+        _, adopted, proc = self._resolve_adopted()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        window = f"{adopted}^..HEAD"
+        log = _git(
+            ["log", window, "--format=%H", "--", ".", ":(exclude).codearbiter/"],
+            self.lane.consumer_root).stdout
+        self.assertEqual(
+            log, "",
+            "HIGH-T23-1 did not reproduce through the installed skill's "
+            "own extracted invocation")
+
+    def test_full_release_skill_payloads_carry_the_new_diagnostic(self):
+        # The working-tree plugin roots, never the archived-HEAD `_FIXTURE`
+        # snapshot: this assertion verifies regenerated candidate renders
+        # before the commit-bound archive fixture can see them.
+        root_by_host = {
+            "claude": os.path.join(REPO_ROOT, "plugins", "ca"),
+            "codex": os.path.join(REPO_ROOT, "plugins", "ca-codex"),
+            "pi": os.path.join(REPO_ROOT, "plugins", "ca-pi"),
+        }
+        full_payloads = [
+            (label, host, relpath) for label, host, relpath, _ in _RELEASE_SKILL_PAYLOADS
+            if label not in _STUB_PAYLOAD_LABELS
+        ]
+        self.assertEqual(len(full_payloads), 3)
+        for label, host, relpath in full_payloads:
+            skill_path = os.path.join(root_by_host[host], *relpath.split("/"))
+            with open(skill_path, encoding="utf-8") as fh:
+                text = fh.read()
+            with self.subTest(payload=label):
+                self.assertIn(
+                    "On Back-fill's own canonical first-release path", text)
+                self.assertIn("ORDINARY outcome", text)
+                self.assertIn("documented default is to propose", text)
+                self.assertIn(
+                    "presented for the operator's confirm-or-replace "
+                    "choice", text)
+                self.assertIn("never applied silently", text)
+                self.assertIn("500-line", text)
+                self.assertIn("$(git rev-parse HEAD)", text)
+                self.assertIn("${ADOPTED:-}", text)
+                self.assertIn("Before treating empty output here as a "
+                               "genuine STOP", text)
+                self.assertIn("check step 0's documented default shape", text)
+                # Ordering: the shape check must precede the STOP verdict
+                # it corrects (AC-13's "no competing correction paragraph
+                # exists afterward" discipline, applied to Phase 1 too).
+                check_idx = text.index(
+                    "Before treating empty output here as a genuine STOP")
+                verdict_idx = text.index(
+                    "STOPs as nothing to release for `$TARGET`", check_idx)
+                self.assertLess(check_idx, verdict_idx)
+                # Step 3's own sentence reconciled with the step-1 widen
+                # this task introduces (a confirmed exception, not an
+                # unconfirmed narrowing at step 3).
+                self.assertIn("sole sanctioned exception", text)
+                self.assertIn(
+                    "not an unconfirmed narrowing performed HERE", text)
+                # Non-regression: the pre-existing #570 wording this fix
+                # sits next to is unchanged in every payload.
+                self.assertIn(
+                    "when `$ADOPTED` is the root commit and has no "
+                    "parent, use `EFFECTIVE_WINDOW=HEAD`.", text)
+                self.assertIn("never narrow silently", text)
+
+
+_PROTECTED_BRANCH_LIST_RE = re.compile(
+    r"current branch is not `([^`]+)`, `([^`]+)`, or the project's default branch")
+
+
+def _extract_protected_branch_names(lane_text):
+    """The literal protected-branch names Back-fill's own branch-refusal
+    check names, extracted from the actual rendered text -- never
+    hardcoded, so a prose edit that drops or renames one of them fails the
+    tests that use this rather than silently passing against a stale
+    hand-typed literal."""
+    m = _PROTECTED_BRANCH_LIST_RE.search(lane_text)
+    if m is None:
+        raise RuntimeError(
+            "no \"current branch is not `X`, `Y`, or the project's "
+            "default branch\" phrase found -- the T-13 branch-refusal "
+            "check's own wording is missing or reworded")
+    return {m.group(1), m.group(2)}
+
+
+_PREREQUISITE_PATH_RE = re.compile(r'\{\{PROJECT_DIR\}\}/\.codearbiter/tech-stack\.md')
+
+
+def _extract_prerequisite_path(lane_text):
+    """The literal, project-relative `tech-stack.md` path template the
+    installed release skill's prerequisite-check prose names in
+    `lane_text` (a `## Back-fill` or `## Pre-flight` section slice) --
+    extracted from the actual rendered text via a direct literal-pattern
+    search, never hardcoded blindly and never via a generic single-
+    backtick-pairing scan: this section contains a fenced ```sh``` block
+    ahead of the checked bullet, and an unnested `` `([^`]+)` `` regex
+    mismatches code-span boundaries across a fence (the fence's own triple
+    backticks desynchronize backtick pairing for everything after them),
+    silently fusing or truncating unrelated inline-code spans. Anchoring on
+    the known literal path shape sidesteps that fence-parity trap
+    entirely, while still failing loudly if a prose edit renames or
+    removes the checked path."""
+    m = _PREREQUISITE_PATH_RE.search(lane_text)
+    if m is None:
+        raise RuntimeError(
+            "no {{PROJECT_DIR}}/.codearbiter/tech-stack.md path token "
+            "found in this lane's prose -- the T-12 prerequisite check's "
+            "own path is missing or reworded")
+    return m.group(0)
+
+
+class PrerequisiteRefusalTest(unittest.TestCase):
+    """T-12, AC-10/P6 (#570 R4-08/R8-05/R8-06/R10-08, cross-referenced in
+    .codearbiter/reports/release-closure-triage.md): proves the new
+    commit-gate-prerequisite check against REAL consumer trees, not prose
+    alone. `build_consumer_repo` (shared with `_BackfillFixture`, per
+    `test_consumer_smoke`'s own module docstring on why a throwaway tree
+    beats reading this repo's own hand-built `.codearbiter/` state) never
+    writes a `tech-stack.md` -- it IS the zero-state consumer #570 names.
+    A "prepared" variant adds exactly that one file and nothing else, and
+    the back-fill detection route it would otherwise take is re-run
+    against it to prove the check does not perturb an already-satisfied
+    lane."""
+
+    @classmethod
+    def setUpClass(cls):
+        # Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
+        # `core/pysrc/_releaselib.py` -- never a vendored `plugins/*/hooks/`
+        # copy or the archived `_FIXTURE.plugin_root` snapshot -- for the
+        # same reason `AncestryDocumentedFlowTest` does: the canonical source
+        # is the immediate candidate under test, while the archived fixture
+        # is deliberately commit-bound.
+        cls.scratch = tempfile.mkdtemp(prefix="ca-prereq-refusal-")
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            cls.skill_text = fh.read()
+        backfill = cls.skill_text[
+            cls.skill_text.index("## Back-fill"): cls.skill_text.index("## Pre-flight")]
+        preflight = cls.skill_text[
+            cls.skill_text.index("## Pre-flight"): cls.skill_text.index("## Phase 1")]
+        cls.backfill_path_template = _extract_prerequisite_path(backfill)
+        cls.preflight_path_template = _extract_prerequisite_path(preflight)
+
+        cls.plugin_root = os.path.join(cls.scratch, "plugin-root")
+        os.makedirs(os.path.join(cls.plugin_root, "hooks"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+            os.path.join(cls.plugin_root, "hooks", "_releaselib.py"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+            os.path.join(cls.plugin_root, "hooks", "_gitexec.py"))
+        cls.core_lane = _load_mechanism(
+            os.path.join(cls.plugin_root, "hooks", "_releaselib.py"),
+            "_prerequisite_refusal_core")
+        cls.invocation = _capture_invocation_after_anchor(
+            cls.skill_text, _BACKFILL_DETECT_ANCHOR)
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    def test_both_lanes_check_the_same_real_commit_gate_prerequisite(self):
+        self.assertEqual(self.backfill_path_template, self.preflight_path_template)
+        self.assertIn("{{PROJECT_DIR}}", self.backfill_path_template)
+        self.assertTrue(
+            self.backfill_path_template.endswith(".codearbiter/tech-stack.md"))
+
+    def test_zero_state_consumer_fails_the_check_before_any_tracked_write(self):
+        lane = _BackfillFixture("t12-zero-state")
+        try:
+            rendered = self.backfill_path_template.replace(
+                "{{PROJECT_DIR}}", lane.consumer_root)
+            self.assertFalse(
+                os.path.isfile(rendered),
+                "build_consumer_repo's own tree must carry no tech-stack.md "
+                "-- this IS the zero-state precondition #570 names")
+            # The write this check exists to gate -- Back-fill step 3's
+            # marker and its release-targets.md -- must not exist either;
+            # a refusal here is BEFORE any tracked-file write, not instead
+            # of eventually writing one anyway.
+            targets_path = os.path.join(
+                lane.consumer_root, ".codearbiter", "release-targets.md")
+            marker_path = os.path.join(
+                lane.consumer_root, ".codearbiter", ".markers",
+                "release-targets-authoring")
+            self.assertFalse(os.path.isfile(targets_path))
+            self.assertFalse(os.path.isfile(marker_path))
+            before = _git(["status", "--porcelain"], lane.consumer_root).stdout
+            self.assertEqual(before, "")
+        finally:
+            lane.cleanup()
+
+    def test_prepared_consumer_passes_the_check(self):
+        lane = _BackfillFixture("t12-prepared")
+        try:
+            _write_text(
+                os.path.join(lane.consumer_root, ".codearbiter", "tech-stack.md"),
+                "# Tech stack\n\ntest: npm test\nlint: npm run lint\n"
+                "secrets-scan: true\n")
+            rendered = self.preflight_path_template.replace(
+                "{{PROJECT_DIR}}", lane.consumer_root)
+            self.assertTrue(
+                os.path.isfile(rendered),
+                "adding exactly the declared tech-stack.md must satisfy "
+                "the extracted path the skill's own prose checks")
+        finally:
+            lane.cleanup()
+
+    def test_prepared_consumers_backfill_detection_route_is_unaffected(self):
+        # The same detection this class's sibling BackfillTwoArmProofTest
+        # proves for a zero-state consumer, re-run against a PREPARED one
+        # (tech-stack.md added, nothing else) -- proving the new
+        # prerequisite check changes nothing about the lane a project that
+        # already satisfies it takes.
+        lane = _BackfillFixture("t12-prepared-route")
+        try:
+            _write_text(
+                os.path.join(lane.consumer_root, ".codearbiter", "tech-stack.md"),
+                "# Tech stack\n\ntest: npm test\nlint: npm run lint\n"
+                "secrets-scan: true\n")
+            argv = _substitute_argv(
+                shlex.split(self.invocation), {"{{PLUGIN_ROOT}}": self.plugin_root})
+            proc = _run_argv(argv, lane.consumer_root)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("[app]", proc.stdout)
+            self.assertIn("manifest: package.json", proc.stdout)
+            self.assertIn("changelog: CHANGELOG.md", proc.stdout)
+        finally:
+            lane.cleanup()
+
+
+class BackfillBranchRefusalTest(unittest.TestCase):
+    """T-13, AC-11 (#570 R4-06/R6-06, cross-referenced in
+    .codearbiter/reports/release-closure-triage.md): proves the LITERAL
+    branch-determination command Back-fill's new refusal step names
+    (`git branch --show-current`) against REAL consumer repos in both
+    states it must distinguish -- a protected branch and an ordinary
+    feature branch -- and that detection itself (the step the branch
+    refusal now precedes, per `BackfillTwoArmProofTest`'s own arm-1 proof)
+    still only prints, regardless of which branch the repo is on. That
+    combination is what makes the ordering fix real: the write this check
+    gates is the ONLY thing between an operator and a landed commit on a
+    protected branch, and nothing here depends on `backfill-detect` itself
+    refusing (it never did, and still correctly does not).
+
+    Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
+    `core/pysrc/_releaselib.py` directly -- never a vendored `plugins/*/
+    hooks/` copy or the archived `_FIXTURE.plugin_root` snapshot -- for the
+    same reason `AncestryDocumentedFlowTest`/`PrerequisiteRefusalTest` do:
+    the canonical source is the immediate candidate under test, while the
+    archived fixture is deliberately commit-bound. `build_consumer_repo`'s
+    own `_git` helper pins `init.defaultBranch=main`, so a freshly built
+    `_BackfillFixture` is ALREADY on the protected branch this class
+    exercises without any extra setup -- the feature-branch case is the one
+    that needs an explicit checkout."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.scratch = tempfile.mkdtemp(prefix="ca-backfill-branch-")
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            cls.skill_text = fh.read()
+        cls.backfill = cls.skill_text[
+            cls.skill_text.index("## Back-fill"): cls.skill_text.index("## Pre-flight")]
+        cls.protected_branch_names = _extract_protected_branch_names(cls.backfill)
+        cls.invocation = _capture_invocation_after_anchor(
+            cls.skill_text, _BACKFILL_DETECT_ANCHOR)
+
+        cls.plugin_root = os.path.join(cls.scratch, "plugin-root")
+        os.makedirs(os.path.join(cls.plugin_root, "hooks"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+            os.path.join(cls.plugin_root, "hooks", "_releaselib.py"))
+        shutil.copyfile(
+            os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+            os.path.join(cls.plugin_root, "hooks", "_gitexec.py"))
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    def _run_detect(self, root):
+        argv = _substitute_argv(
+            shlex.split(self.invocation), {"{{PLUGIN_ROOT}}": self.plugin_root})
+        return _run_argv(argv, root)
+
+    def test_literal_branch_command_and_protected_names_appear_in_the_check(self):
+        # The check the two behavioral tests below exercise for real is the
+        # one actually written in the prose, not a hand-typed stand-in.
+        idx = self.backfill.index("current branch is not `main`")
+        window = self.backfill[idx:idx + 1600]
+        self.assertIn("`git branch --show-current`", window)
+        self.assertIn("`main`", window)
+        self.assertIn("`master`", window)
+
+    def test_a_freshly_built_consumer_is_already_on_a_named_protected_branch(self):
+        # `build_consumer_repo`'s `_git` pins `init.defaultBranch=main`
+        # (fixture-wide, not specific to this class) -- so the ordinary
+        # back-fill fixture IS the exact shape #570 R4-06 names: an
+        # operator on a protected branch with no declared file yet. The
+        # membership check is against the NAMES EXTRACTED from the prose
+        # (`self.protected_branch_names`), not a hardcoded "main" literal --
+        # a prose edit that drops or renames what the check protects fails
+        # this test rather than passing silently against a stale literal.
+        lane = _BackfillFixture("t13-protected")
+        try:
+            current = _git(["branch", "--show-current"], lane.consumer_root).stdout.strip()
+            self.assertIn(
+                current, self.protected_branch_names,
+                "fixture premise check -- a freshly built consumer repo "
+                "must land on one of the branches the installed prose "
+                "actually names as protected")
+        finally:
+            lane.cleanup()
+
+    def test_feature_branch_checkout_is_not_one_of_the_named_protected_branches(self):
+        lane = _BackfillFixture("t13-feature")
+        try:
+            _git(["checkout", "-q", "-b", "feat/declare-release-targets"],
+                 lane.consumer_root)
+            current = _git(["branch", "--show-current"], lane.consumer_root).stdout.strip()
+            self.assertNotIn(current, self.protected_branch_names)
+        finally:
+            lane.cleanup()
+
+    def test_detection_still_only_prints_on_the_protected_branch_the_write_it_precedes_is_gated_on(self):
+        # Detection (step 1) runs BEFORE the branch refusal (step 3) in
+        # file order and is unaffected by it -- proven already for the
+        # ordinary case by `BackfillTwoArmProofTest`'s arm-1 test; repeated
+        # here explicitly on the PROTECTED branch, since the ordering fix
+        # means the branch check gates the WRITE (step 3), never detection
+        # (step 1) itself.
+        lane = _BackfillFixture("t13-protected-detect")
+        try:
+            current = _git(["branch", "--show-current"], lane.consumer_root).stdout.strip()
+            self.assertIn(current, self.protected_branch_names)
+            proc = self._run_detect(lane.consumer_root)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("[app]", proc.stdout)
+            targets_path = os.path.join(
+                lane.consumer_root, ".codearbiter", "release-targets.md")
+            marker_path = os.path.join(
+                lane.consumer_root, ".codearbiter", ".markers",
+                "release-targets-authoring")
+            self.assertFalse(
+                os.path.isfile(targets_path),
+                "detection alone must never write the declared file, on "
+                "any branch")
+            self.assertFalse(os.path.isfile(marker_path))
+        finally:
+            lane.cleanup()
+
+
+# --------------------------------------------------------------------------- #
+# T-20 — cross-cutting integration proof (release-contract-closure, AC-09,
+# AC-10, AC-11, AC-12, AC-13, AC-15, AC-16). See
+# `.codearbiter/reports/release-closure-journeys.md` for the full scenario
+# matrix and the #570-vs-#623 disposition. Three new classes:
+#
+#   ComposedFixLaneJourneyTest       one real consumer repo, driven through
+#                                     THREE #570 fixes in the sequence an
+#                                     operator would actually hit them
+#                                     (prerequisite refusal T-12, branch-
+#                                     scoped back-fill refusal T-13, ancestry
+#                                     refusal T-10/T-11), ending in a genuine
+#                                     clean pass that creates a real
+#                                     annotated tag through the
+#                                     #623-restructured Phase 2. Nothing
+#                                     elsewhere in this module chains these
+#                                     arms against a SINGLE repo in sequence
+#                                     -- each fix's own class (
+#                                     PrerequisiteRefusalTest,
+#                                     BackfillBranchRefusalTest,
+#                                     AncestryDocumentedFlowTest) proves it
+#                                     in isolation only.
+#   AncestryOldVsNewBehaviorTest      the OLD (pinned pre-sprint commit)
+#                                     lane run for real against the exact
+#                                     hazard #570 finding BODY-03 names,
+#                                     contrasted with the NEW current tree
+#                                     lane on the identical fixture --
+#                                     proving the OLD lane had no mechanism
+#                                     to refuse at all, not merely that a
+#                                     refusal test happens to pass now.
+#   BreakingChangeRealHistoryClassificationTest  AC-12's classification half
+#                                     (`classify_window`) driven by a REAL
+#                                     git history rather than hand-typed
+#                                     commit dicts, through a throwaway
+#                                     repo -- the composed-notes half (the
+#                                     literal `### Breaking` Markdown
+#                                     heading) is agent-executed SKILL.md
+#                                     prose, not code, so it is NOT
+#                                     re-proven here; see the class
+#                                     docstring and the journeys report for
+#                                     the citation.
+# --------------------------------------------------------------------------- #
+
+
+class ComposedFixLaneJourneyTest(unittest.TestCase):
+    """T-20 (AC-09/AC-10/AC-11/AC-13): drives prerequisite refusal (T-12),
+    branch-scoped back-fill refusal (T-13), and ancestry refusal (T-10/
+    T-11) against ONE real consumer repository, in the order an actual
+    operator hits them, then a genuine clean pass that creates a real
+    annotated tag by re-running T-74/T-75's own `_execute_lane_sequence`
+    lane driver -- proving the #623-restructured Phase 2 still composes and
+    creates a tag at the end of this exact composed journey (cited, not a
+    second prose-structure check; `Phase2StructureTest`/T-17/T-18 already
+    hold the mutation-sensitive proof that the split is behavior-preserving
+    on its own).
+
+    This is the composition proof item 3 of T-20's task description asks
+    for: each individual fix already has its own isolated class in this
+    module, but nothing before this class chains them against a single
+    repo -- proving an EARLIER refusal's fingerprint-preserving no-op
+    leaves the repo in a state the NEXT fix can still correctly act on, and
+    that a consumer who clears every refusal in order eventually reaches a
+    genuine, correctly-derived release.
+
+    Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
+    `core/pysrc/_releaselib.py`/`_gitexec.py` directly -- never the
+    archived `_FIXTURE.plugin_root` (`git archive HEAD` bytes) -- for the same
+    reason `AncestryDocumentedFlowTest`/`PrerequisiteRefusalTest`/
+    `BackfillBranchRefusalTest` do: the canonical source is the immediate
+    candidate under test, while the archived fixture is commit-bound."""
+
+    @classmethod
+    def setUpClass(cls):
+        skill_path = os.path.join(
+            REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md")
+        with open(skill_path, encoding="utf-8") as fh:
+            cls.skill_text = fh.read()
+        backfill = cls.skill_text[
+            cls.skill_text.index("## Back-fill"): cls.skill_text.index("## Pre-flight")]
+        cls.prerequisite_path_template = _extract_prerequisite_path(backfill)
+        cls.protected_branch_names = _extract_protected_branch_names(backfill)
+        cls.backfill_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, _BACKFILL_DETECT_ANCHOR)
+        cls.last_tag_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, "Resolve it through the tested helper:")
+        cls.verify_invocation = _capture_invocation_after_anchor(
+            cls.skill_text, "Verify it immediately, before")
+        # `_execute_lane_sequence` (T-74/T-75) was authored only against an
+        # ALREADY-RENDERED host copy (`_FIXTURE.plugin_root`'s materialized
+        # skill, whose `{{PLUGIN_ROOT}}` template token is already
+        # substituted to the `claude`-host spelling `${CLAUDE_PLUGIN_ROOT}`)
+        # -- its own hardcoded `root_mapping` only knows that spelling. This
+        # class instead needs the CANONICAL `core/surface/...` text for
+        # Stages 1-6 so it can exercise the immediate candidate -- so the
+        # one substring substitution `tools/build-surface.py`'s own `claude`-host
+        # rendering performs for this token is replicated here, once, for
+        # Stage 7's reuse of the shared driver. No other token in the six
+        # anchored invocations needs it (verified: none of them contain
+        # `{{PROJECT_DIR}}`).
+        cls.claude_rendered_skill_text = cls.skill_text.replace(
+            "{{PLUGIN_ROOT}}", "${CLAUDE_PLUGIN_ROOT}")
+
+        cls.scratch = tempfile.mkdtemp(prefix="ca-composed-journey-")
+        try:
+            cls.plugin_root = os.path.join(cls.scratch, "plugin-root")
+            os.makedirs(os.path.join(cls.plugin_root, "hooks"))
+            shutil.copyfile(
+                os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+                os.path.join(cls.plugin_root, "hooks", "_releaselib.py"))
+            shutil.copyfile(
+                os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+                os.path.join(cls.plugin_root, "hooks", "_gitexec.py"))
+            cls.core_lane = _load_mechanism(
+                os.path.join(cls.plugin_root, "hooks", "_releaselib.py"),
+                "_composed_journey_core")
+            cls.consumer_root = os.path.join(cls.scratch, "consumer")
+            build_consumer_repo(cls.consumer_root)
+        except Exception:
+            _force_rmtree(cls.scratch)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    @staticmethod
+    def _fingerprint(root):
+        status = _git(["status", "--porcelain"], root).stdout
+        refs = _git(["for-each-ref"], root).stdout
+        return status, refs
+
+    def _run_ancestry_flow(self, root, prefix="v"):
+        _, last_tag, last_tag_proc = _run_command_substitution(
+            self.last_tag_invocation, root,
+            {"{{PLUGIN_ROOT}}": self.plugin_root, "$TAG_PREFIX": prefix,
+             "$VERSION_POLICY": "semver", "$INITIAL_VERSION": "",
+             "$PROJECT_ROOT": root})
+        argv = _substitute_argv(
+            shlex.split(self.verify_invocation),
+            {"{{PLUGIN_ROOT}}": self.plugin_root, "$LAST_TAG": last_tag,
+             "$PROJECT_ROOT": root})
+        verify_proc = _run_argv(argv, root)
+        return last_tag, last_tag_proc, verify_proc
+
+    def test_fixes_compose_in_sequence_ending_in_a_genuine_clean_release(self):
+        root = self.consumer_root
+        targets_path = os.path.join(root, ".codearbiter", "release-targets.md")
+
+        # --- Stage 1: zero-state consumer -- prerequisite refusal precondition
+        #     (T-12, AC-10). The check itself (a file-existence test the agent
+        #     performs, not a runnable CLI) is proven for real against a
+        #     zero-state consumer by PrerequisiteRefusalTest; this stage
+        #     confirms the SAME precondition holds on THIS repo before the
+        #     journey proceeds, and that nothing has been written yet.
+        rendered_tech_stack = self.prerequisite_path_template.replace(
+            "{{PROJECT_DIR}}", root)
+        self.assertFalse(
+            os.path.isfile(rendered_tech_stack),
+            "fixture premise: build_consumer_repo carries no tech-stack.md")
+        self.assertFalse(os.path.isfile(targets_path))
+        before = self._fingerprint(root)
+        after = self._fingerprint(root)
+        self.assertEqual(
+            before, after,
+            "the unresolved prerequisite must not have mutated the repo "
+            "merely by being checked")
+
+        # --- Stage 2: clear the prerequisite ---------------------------------
+        _write_text(
+            rendered_tech_stack,
+            "# Tech stack\n\ntest: npm test\nlint: npm run lint\n"
+            "secrets-scan: true\n")
+        self.assertTrue(os.path.isfile(rendered_tech_stack))
+
+        # --- Stage 3: still on the protected branch -- back-fill branch
+        #     refusal precondition (T-13, AC-11). Detection (step 1) still
+        #     only prints, re-confirmed here mid-journey rather than assumed
+        #     from BackfillBranchRefusalTest's isolated proof.
+        current_branch = _git(["branch", "--show-current"], root).stdout.strip()
+        self.assertIn(
+            current_branch, self.protected_branch_names,
+            "fixture premise: build_consumer_repo lands on the protected "
+            "default branch")
+        before = self._fingerprint(root)
+        argv = _substitute_argv(
+            shlex.split(self.backfill_invocation),
+            {"{{PLUGIN_ROOT}}": self.plugin_root})
+        detect_proc = _run_argv(argv, root)
+        self.assertEqual(detect_proc.returncode, 0, detect_proc.stderr)
+        self.assertIn("[app]", detect_proc.stdout)
+        self.assertFalse(
+            os.path.isfile(targets_path),
+            "detection alone must never write the declared file on the "
+            "protected branch")
+        after = self._fingerprint(root)
+        self.assertEqual(
+            before, after,
+            "the branch-refusal precondition must not mutate the repo it "
+            "protects, mid-journey")
+
+        # --- Stage 4: move to a feature branch (clearing T-13) and declare
+        #     the targets file, as back-fill's own persist step would -------
+        _git(["checkout", "-q", "-b", "feat/declare-release-targets"], root)
+        current_branch = _git(["branch", "--show-current"], root).stdout.strip()
+        self.assertNotIn(current_branch, self.protected_branch_names)
+        _write_text(targets_path, RELEASE_TARGETS_BLOCK)
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", "chore: declare release-targets.md"], root)
+
+        # --- Stage 5: an ancestry hazard on THIS SAME repo -- a release tag
+        #     minted on an unmerged side branch (T-10/T-11, AC-09). It is
+        #     numerically the highest "v"-series tag but NOT an ancestor of
+        #     the feature branch's HEAD (it is a DESCENDANT of it) -- exactly
+        #     the class #570 finding BODY-03 names.
+        _git(["checkout", "-q", "-b", "sibling-work"], root)
+        _write_text(os.path.join(root, "sibling.txt"), "sibling\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", "feat: sibling work"], root)
+        _git(["tag", "v9.9.9"], root)
+        _git(["checkout", "-q", "feat/declare-release-targets"], root)
+
+        before = self._fingerprint(root)
+        hazard_tag, hazard_tag_proc, hazard_verify_proc = self._run_ancestry_flow(root)
+        after = self._fingerprint(root)
+        self.assertEqual(hazard_tag_proc.returncode, 0, hazard_tag_proc.stderr)
+        self.assertEqual(
+            hazard_tag, "v9.9.9",
+            "the sibling-branch tag is genuinely numerically highest -- "
+            "selection alone cannot and must not catch this")
+        self.assertEqual(hazard_verify_proc.returncode, 1)
+        self.assertIn("v9.9.9", hazard_verify_proc.stderr)
+        self.assertEqual(
+            before, after,
+            "ancestry refusal must not write a file, move a ref, or "
+            "create a tag either, mid-journey")
+
+        # --- Stage 6: fix the graph -- merge the sibling branch so v9.9.9
+        #     becomes a genuine ancestor, then add real release content ----
+        _git(["merge", "-q", "--no-ff", "-m", "merge: bring sibling work in",
+              "sibling-work"], root)
+        _write_text(
+            os.path.join(root, "src", "widget.py"),
+            "def make_widget(count=1):\n"
+            "    return [{\"kind\": \"widget\", \"n\": i} for i in range(count)]\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m",
+              "feat: widget items carry an index\n\n"
+              "CHANGELOG: Widget items now carry an index."], root)
+
+        fixed_tag, fixed_tag_proc, fixed_verify_proc = self._run_ancestry_flow(root)
+        self.assertEqual(fixed_tag_proc.returncode, 0, fixed_tag_proc.stderr)
+        self.assertEqual(
+            fixed_tag, "v9.9.9",
+            "selection is unaffected by the fix -- still the correct, now-"
+            "reachable baseline (AC-09: 'existing version-policy selection'"
+            " is unaffected)")
+        self.assertEqual(
+            fixed_verify_proc.returncode, 0,
+            f"{fixed_verify_proc.stderr} -- the fixed graph must now pass "
+            "ancestry verification cleanly")
+
+        # --- Stage 7: clean pass -- the SAME six anchored invocations T-74/
+        #     T-75's own lane driver runs, proving the #623-restructured
+        #     Phase 2 still composes and creates a real annotated tag at the
+        #     tail of this exact composed journey ------------------------
+        result = _execute_lane_sequence(
+            self.claude_rendered_skill_text, self.core_lane, root)
+        self.assertEqual(result["last_tag_lib"], "v9.9.9")
+        self.assertEqual(
+            result["bump"], "minor",
+            "the merge commit itself carries no feat/fix/perf/refactor "
+            "type and must not itself drive the bump; only the trailing "
+            "real feat commit should")
+        self.assertEqual(result["next_version"], "9.10.0")
+        self.assertTrue(
+            self.core_lane.semver_greater(result["next_version"], "9.9.9"))
+        self.assertIn(f"## [{result['next_version']}]", result["rolled_full_text"])
+        self.assertIn("- Widget items now carry an index.", result["rolled_full_text"])
+        tag_obj_type = _git(
+            ["cat-file", "-t", result["tag_name"]], root).stdout.strip()
+        self.assertEqual(
+            tag_obj_type, "tag",
+            "the composed journey must end in a REAL annotated tag, "
+            "created by the restructured Phase 2's own tag-composition "
+            "invocation")
+
+
+class AncestryOldVsNewBehaviorTest(unittest.TestCase):
+    """T-20 (item 1 of the task description; AC-09): #570's OLD behavior,
+    run for real against the exact hazard finding BODY-03 names, contrasted
+    with the NEW behavior on the IDENTICAL fixture.
+
+    `_FIXTURE.plugin_root` (and every other class in this module) reads
+    `core/pysrc/_releaselib.py` and `core/surface/skills/release/SKILL.md`
+    either from the CURRENT working tree directly, or from a `git archive
+    HEAD` snapshot -- and both of those are the NEW state after this sprint
+    is committed. The exact pre-sprint tree is therefore pinned by
+    `_ANCESTRY_PRE_FIX_COMMIT`; `git show <pinned>:<path>` is a hermetic,
+    exact-byte OLD-behavior oracle with no network and no history rewriting
+    and does not silently move when HEAD advances. The pinned copy of
+    `core/pysrc/_releaselib.py` contains zero occurrences of
+    `verify-tag-ancestor` (`test_old_bytes_have_no_ancestry_verification_at_all`
+    proves this as a class-level precondition, not merely asserted in this
+    docstring), and the pinned copy of `SKILL.md` has no "Verify it
+    immediately, before" step between LAST_TAG resolution and Phase 1 --
+    the whole ancestry-verification step is new, not merely relocated.
+
+    Both arms run the SAME two-command Pre-flight sequence (only the
+    resolved LAST_TAG helper is genuinely re-derivable from OLD bytes,
+    since selection itself predates this sprint) against the SAME sibling-
+    tag hazard fixture (mirrors `AncestryDocumentedFlowTest`'s own
+    scenario): the OLD lane selects the hazardous tag and then has NO
+    subsequent step to catch it -- confirmed by attempting the literal
+    `verify-tag-ancestor` CLI dispatch against the OLD library and getting
+    an unrecognized-command usage error, not a refusal -- while the NEW
+    lane selects the identical tag and refuses it."""
+
+    @classmethod
+    def setUpClass(cls):
+        old_ref = _ANCESTRY_PRE_FIX_COMMIT
+        old_skill = subprocess.run(
+            ["git", "show", f"{old_ref}:core/surface/skills/release/SKILL.md"],
+            cwd=REPO_ROOT, capture_output=True, encoding="utf-8",
+            timeout=GIT_TIMEOUT)
+        assert old_skill.returncode == 0, old_skill.stderr
+        cls.old_skill_text = old_skill.stdout
+        old_lib = subprocess.run(
+            ["git", "show", f"{old_ref}:core/pysrc/_releaselib.py"],
+            cwd=REPO_ROOT, capture_output=True, encoding="utf-8",
+            timeout=GIT_TIMEOUT)
+        assert old_lib.returncode == 0, old_lib.stderr
+        old_gitexec = subprocess.run(
+            ["git", "show", f"{old_ref}:core/pysrc/_gitexec.py"],
+            cwd=REPO_ROOT, capture_output=True, encoding="utf-8",
+            timeout=GIT_TIMEOUT)
+        assert old_gitexec.returncode == 0, old_gitexec.stderr
+
+        with open(os.path.join(
+                REPO_ROOT, "core", "surface", "skills", "release", "SKILL.md"),
+                encoding="utf-8") as fh:
+            cls.new_skill_text = fh.read()
+        cls.new_last_tag_invocation = _capture_invocation_after_anchor(
+            cls.new_skill_text, "Resolve it through the tested helper:")
+        cls.new_verify_invocation = _capture_invocation_after_anchor(
+            cls.new_skill_text, "Verify it immediately, before")
+        cls.old_last_tag_invocation = _capture_invocation_after_anchor(
+            cls.old_skill_text, "Resolve it through the tested helper:")
+
+        cls.scratch = tempfile.mkdtemp(prefix="ca-ancestry-old-vs-new-")
+        try:
+            cls.old_plugin_root = os.path.join(cls.scratch, "old-plugin-root")
+            cls.new_plugin_root = os.path.join(cls.scratch, "new-plugin-root")
+            for root, lib_text in ((cls.old_plugin_root, old_lib.stdout),
+                                    (cls.new_plugin_root, None)):
+                os.makedirs(os.path.join(root, "hooks"))
+                if lib_text is None:
+                    shutil.copyfile(
+                        os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+                        os.path.join(root, "hooks", "_releaselib.py"))
+                    shutil.copyfile(
+                        os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+                        os.path.join(root, "hooks", "_gitexec.py"))
+                else:
+                    _write_text(os.path.join(root, "hooks", "_releaselib.py"), lib_text)
+                    _write_text(os.path.join(root, "hooks", "_gitexec.py"),
+                                old_gitexec.stdout)
+        except Exception:
+            _force_rmtree(cls.scratch)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    def setUp(self):
+        self.repo_scratch = tempfile.mkdtemp(prefix="ca-ancestry-old-vs-new-repo-")
+        self.addCleanup(_force_rmtree, self.repo_scratch)
+
+    def _init_repo(self):
+        root = os.path.join(self.repo_scratch, "repo")
+        os.makedirs(root, exist_ok=True)
+        _git(["init", "-q"], root)
+        _write_text(os.path.join(root, "seed.txt"), "seed\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", "chore: seed"], root)
+        return root
+
+    def _commit(self, root, name, message):
+        _write_text(os.path.join(root, name), f"{name}\n")
+        _git(["add", "-A"], root)
+        _git(["commit", "-q", "-m", message], root)
+
+    def _build_hazard_fixture(self):
+        # Identical shape to AncestryDocumentedFlowTest's own sibling-branch
+        # hazard: a tag on a branch that diverged BEFORE the tag, never
+        # merged back.
+        root = self._init_repo()
+        _git(["checkout", "-q", "-b", "sibling"], root)
+        self._commit(root, "sibling.txt", "feat: sibling work")
+        _git(["tag", "v9.9.9"], root)
+        _git(["checkout", "-q", "main"], root)
+        self._commit(root, "mainline.txt", "feat: mainline work")
+        return root
+
+    def test_old_bytes_have_no_ancestry_verification_at_all(self):
+        # The precondition this whole class depends on, proven directly
+        # rather than only asserted in the docstring.
+        self.assertNotIn("verify-tag-ancestor", self.old_skill_text)
+        self.assertNotIn("verify_tag_ancestor", self.old_skill_text)
+        with open(os.path.join(self.old_plugin_root, "hooks", "_releaselib.py"),
+                   encoding="utf-8") as fh:
+            old_lib_text = fh.read()
+        self.assertNotIn("verify-tag-ancestor", old_lib_text)
+        self.assertNotIn("def verify_tag_ancestor", old_lib_text)
+        # And the NEW bytes genuinely have it -- a sanity check that this
+        # class is actually comparing two DIFFERENT states, not the same
+        # file read twice under different names.
+        self.assertIn("verify-tag-ancestor", self.new_skill_text)
+        with open(os.path.join(self.new_plugin_root, "hooks", "_releaselib.py"),
+                   encoding="utf-8") as fh:
+            new_lib_text = fh.read()
+        self.assertIn("def verify_tag_ancestor", new_lib_text)
+
+    def test_old_lane_selects_the_hazard_and_has_no_step_left_to_catch_it(self):
+        root = self._build_hazard_fixture()
+        _, old_tag, old_proc = _run_command_substitution(
+            self.old_last_tag_invocation, root,
+            {"{{PLUGIN_ROOT}}": self.old_plugin_root, "$TAG_PREFIX": "v",
+             "$VERSION_POLICY": "semver", "$INITIAL_VERSION": "",
+             "$PROJECT_ROOT": root})
+        self.assertEqual(old_proc.returncode, 0, old_proc.stderr)
+        self.assertEqual(
+            old_tag, "v9.9.9",
+            "selection itself predates this sprint and must pick the same "
+            "hazardous tag old or new -- the defect is downstream of "
+            "selection, never in it")
+        # The OLD Pre-flight prose has no ancestry-verification step at all
+        # between LAST_TAG resolution and Phase 1 -- confirmed structurally
+        # (no "ancestor" mention in that span)...
+        last_tag_idx = self.old_skill_text.index("Resolve it through the tested helper:")
+        phase1_idx = self.old_skill_text.index("## Phase 1")
+        preflight_tail = self.old_skill_text[last_tag_idx:phase1_idx]
+        self.assertNotIn("ancestor", preflight_tail.lower())
+        # ...and confirmed EXECUTABLY: the OLD library's own CLI has no such
+        # subcommand at all -- attempting it is a usage error, never a
+        # refusal, proving there was no mechanism an operator following the
+        # OLD documented flow could have reached.
+        argv = [sys.executable,
+                os.path.join(self.old_plugin_root, "hooks", "_releaselib.py"),
+                "verify-tag-ancestor", old_tag, root]
+        old_attempt = subprocess.run(
+            argv, cwd=root, capture_output=True, encoding="utf-8",
+            timeout=GIT_TIMEOUT)
+        self.assertNotEqual(
+            old_attempt.returncode, 0,
+            "the OLD library must not happen to accept this subcommand")
+        self.assertIn("bad invocation", old_attempt.stderr)
+
+    def test_new_lane_selects_the_same_hazard_and_refuses_it(self):
+        root = self._build_hazard_fixture()
+        _, new_tag, new_tag_proc = _run_command_substitution(
+            self.new_last_tag_invocation, root,
+            {"{{PLUGIN_ROOT}}": self.new_plugin_root, "$TAG_PREFIX": "v",
+             "$VERSION_POLICY": "semver", "$INITIAL_VERSION": "",
+             "$PROJECT_ROOT": root})
+        self.assertEqual(new_tag_proc.returncode, 0, new_tag_proc.stderr)
+        self.assertEqual(new_tag, "v9.9.9")
+        argv = _substitute_argv(
+            shlex.split(self.new_verify_invocation),
+            {"{{PLUGIN_ROOT}}": self.new_plugin_root, "$LAST_TAG": new_tag,
+             "$PROJECT_ROOT": root})
+        new_verify_proc = _run_argv(argv, root)
+        self.assertEqual(new_verify_proc.returncode, 1)
+        self.assertIn("v9.9.9", new_verify_proc.stderr)
+
+
+def _select_headline_commit(rows, bump):
+    """Test-only mirror of SKILL.md's `<summary>` derivation rule, restated
+    here rather than imported across test files (this file's own
+    convention -- see `_classify_bump`/`_roll_changelog` above for why:
+    each test file's transcriptions are self-contained). Identical logic to
+    `test_release_lib.py`'s `_prose_select_headline_commit`; not production
+    code, "first" means first as `window["commits"]` lists it -- the
+    window's own order, never re-sorted."""
+    if bump == "major":
+        return next((r for r in rows if r["breaking"]), None)
+    if bump == "minor":
+        return next((r for r in rows if r["type"] == "feat"), None)
+    return next((r for r in rows if r["type"] == "fix"), None)
+
+
+class BreakingChangeRealHistoryClassificationTest(unittest.TestCase):
+    """T-20 (item 1 of the task description; AC-12): the classification
+    half of breaking-change visibility (`classify_window`) driven by a REAL
+    git history through a throwaway repo, extracted via the real `git log`
+    pretty-format this module's own lane driver uses (`_parse_window_log`)
+    -- never hand-typed commit dicts, complementing (not replacing)
+    `test_release_lib.py`'s `BreakingClassificationTest`/`BreakingHeadlineTest`
+    fixture-level proof.
+
+    **Composition is agent-executed prose, not code -- and this class does
+    not claim otherwise.** The literal `### Breaking` Markdown heading in a
+    composed changelog section/tag message/Release notes is written by the
+    release skill's own Phase 1 step 5 prose (SKILL.md), reusing the
+    `breaking` field `classify_window` computes; there is no production
+    "compose the notes" function in `_releaselib.py` for this journey suite
+    to drive end-to-end, exactly as `BreakingHeadlineTest`'s own docstring
+    states ("No production compose function exists in this lane"). This
+    class exercises the CODE half only -- the real classification and
+    real-order headline selection `classify_window` performs -- against a
+    real repository's commit history; the PROSE half (the `### Breaking`
+    heading, the major-branch `<summary>` rule) is proven structurally by
+    `test_release_lib.py`'s `BreakingHeadlineTest` against the installed
+    SKILL.md text, cited here rather than re-derived."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.scratch = tempfile.mkdtemp(prefix="ca-breaking-real-history-")
+        try:
+            cls.root = os.path.join(cls.scratch, "repo")
+            os.makedirs(cls.root, exist_ok=True)
+            _git(["init", "-q"], cls.root)
+            _write_text(os.path.join(cls.root, "seed.txt"), "seed\n")
+            _git(["add", "-A"], cls.root)
+            _git(["commit", "-q", "-m", "chore: seed"], cls.root)
+            _git(["tag", "v1.0.0"], cls.root)
+
+            # Ordinary, non-breaking fix -- the negative control: must
+            # never be classified breaking.
+            _write_text(os.path.join(cls.root, "bugfix.txt"), "fix\n")
+            _git(["add", "-A"], cls.root)
+            _git(["commit", "-q", "-m",
+                  "fix: correct unrelated bug\n\n"
+                  "CHANGELOG: Fixed an unrelated bug."], cls.root)
+            cls.fix_sha = _git(["rev-parse", "HEAD"], cls.root).stdout.strip()
+
+            # Breaking via the `!` bang form (feat(scope)!:).
+            _write_text(os.path.join(cls.root, "schema.txt"), "v2\n")
+            _git(["add", "-A"], cls.root)
+            _git(["commit", "-q", "-m",
+                  "feat(api)!: replace widget schema\n\n"
+                  "CHANGELOG: Replaced the widget schema; existing "
+                  "callers must migrate."], cls.root)
+            cls.bang_sha = _git(["rev-parse", "HEAD"], cls.root).stdout.strip()
+
+            # Breaking via a bare `BREAKING CHANGE:` footer on a type with
+            # no type group of its own (AC-12's third named form).
+            _write_text(os.path.join(cls.root, "internals.txt"), "v2\n")
+            _git(["add", "-A"], cls.root)
+            _git(["commit", "-q", "-m",
+                  "refactor: restructure internal widget API\n\n"
+                  "CHANGELOG: Restructured internals; breaking change for "
+                  "direct API callers.\n\n"
+                  "BREAKING CHANGE: callers must update to the new "
+                  "internal API."], cls.root)
+            cls.footer_sha = _git(["rev-parse", "HEAD"], cls.root).stdout.strip()
+
+            plugin_root = os.path.join(cls.scratch, "plugin-root")
+            os.makedirs(os.path.join(plugin_root, "hooks"))
+            shutil.copyfile(
+                os.path.join(REPO_ROOT, "core", "pysrc", "_releaselib.py"),
+                os.path.join(plugin_root, "hooks", "_releaselib.py"))
+            shutil.copyfile(
+                os.path.join(REPO_ROOT, "core", "pysrc", "_gitexec.py"),
+                os.path.join(plugin_root, "hooks", "_gitexec.py"))
+            cls.core_lane = _load_mechanism(
+                os.path.join(plugin_root, "hooks", "_releaselib.py"),
+                "_breaking_real_history_core")
+
+            log = _git(
+                ["log", "--pretty=format:%H%n%s%n%b%n----", "v1.0.0..HEAD"],
+                cls.root).stdout
+            cls.entries = _parse_window_log(log)
+        except Exception:
+            _force_rmtree(cls.scratch)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        _force_rmtree(cls.scratch)
+
+    def test_real_window_extracted_all_three_commits(self):
+        shas = {e["sha"] for e in self.entries}
+        self.assertEqual(shas, {self.fix_sha, self.bang_sha, self.footer_sha})
+
+    def test_real_window_bump_is_major(self):
+        window = self.core_lane.classify_window(self.entries)
+        self.assertEqual(window["bump"], "major")
+
+    def test_ordinary_fix_is_never_mislabeled_breaking(self):
+        window = self.core_lane.classify_window(self.entries)
+        by_sha = {row["sha"]: row for row in window["commits"]}
+        self.assertFalse(
+            by_sha[self.fix_sha]["breaking"],
+            "an ordinary, non-breaking fix commit from REAL history must "
+            "never be classified breaking")
+
+    def test_bang_form_and_footer_form_are_both_classified_breaking(self):
+        window = self.core_lane.classify_window(self.entries)
+        by_sha = {row["sha"]: row for row in window["commits"]}
+        self.assertTrue(
+            by_sha[self.bang_sha]["breaking"],
+            "feat(scope)!: must classify breaking, driven from real "
+            "git log output")
+        self.assertTrue(
+            by_sha[self.footer_sha]["breaking"],
+            "a bare BREAKING CHANGE: footer on a type with no type group "
+            "of its own (refactor) must classify breaking, driven from "
+            "real git log output")
+
+    def test_headline_selection_picks_the_first_breaking_entry_in_real_git_log_order(self):
+        # `git log` emits newest-first by default (`_parse_window_log`'s own
+        # docstring); `classify_window` preserves that order into
+        # `window["commits"]` (T-14, unchanged here). "First" means first
+        # AS THE REAL LOG LISTS IT -- so the newest breaking commit
+        # (footer_sha) must win, not the chronologically-earlier bang_sha.
+        window = self.core_lane.classify_window(self.entries)
+        shas_in_order = [row["sha"] for row in window["commits"]]
+        self.assertEqual(
+            shas_in_order[0], self.footer_sha,
+            "fixture premise: git log's own newest-first order must place "
+            "the footer commit ahead of the bang commit")
+        headline = _select_headline_commit(window["commits"], window["bump"])
+        self.assertIsNotNone(headline)
+        self.assertEqual(headline["sha"], self.footer_sha)
+        self.assertTrue(headline["breaking"])
 
 
 if __name__ == "__main__":
