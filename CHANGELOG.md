@@ -25,6 +25,11 @@ predate the plugin rewrite and are grouped by date.
   targets; reject mismatched verification digests and unsafe authority paths.
 - Recover interrupted user reconciliation with durable idempotent retries and
   exact pre-mutation cancellation instead of leaving an unresolvable prompt.
+- Route understood requests to the existing workflow without compulsory
+  command syntax; keep questions and draft-only requests non-mutating.
+- Recover ordinary quality failures inside an approved sprint through
+  the original gates and current typed evidence, without adding routine
+  user checkpoints or expanding authority. HTML farm remains disabled.
 
 ## [2.21.8] - 2026-09-22
 

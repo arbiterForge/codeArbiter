@@ -47,8 +47,11 @@ loop processes only those tasks (in their internal dependency order). When `scop
 ## Phase 1 — Task selection · gate: BLOCK
 
 Pull the next unblocked task from the plan in dependency order. When a `scope` was passed, restrict
-selection to tasks in that list. A task is one verifiable unit of work with a path set, a spec
-obligation, and a verification command.
+selection to tasks in that list. For Markdown, select only a task whose status is `PENDING` and whose
+dependencies are `ACCEPTED`; `BLOCKED` tasks are not selectable until the owning plan workflow
+records a supported transition. For HTML, accept only tasks returned by `eligible` for the exact
+selected plan identity. A task is one verifiable unit of work with a path set, a spec obligation,
+and a verification command.
 
 For HTML, select only a task returned as eligible for the exact selected plan
 identity. Follow contextual `read` pages to completion, retain their context
@@ -62,7 +65,9 @@ and a fresh complete context ticket. A task in `REVIEW` is not accepted on
 resume; obtain fresh evidence when required and finish the current combined
 scope review before `accept-scope`.
 
-- Confirm every dependency task is `ACCEPTED` before selecting.
+- For Markdown, confirm every dependency task is `ACCEPTED` before selecting.
+- For HTML, use the engine's eligibility and current evidence; do not replace its same-checkpoint `REVIEW` rule
+  with the legacy `ACCEPTED` sentence or infer eligibility from a displayed status.
 - Confirm no unresolved `[CONFIRM-NN]` blocks the task. One that does halts the loop — see Hard rules.
 
 Gate: exactly one task selected, dependency-clean, with its spec obligation and verification command in hand.
@@ -93,8 +98,10 @@ The subagent works test-first by routing through the `tdd` skill (`{{PLUGIN_ROOT
 `tdd` Phase 1. Brief it with the task's path set, its spec obligation, and its verification command.
 Nothing else from prior tasks leaks in.
 
-Gate: the subagent reports `tdd` complete — all six phases green. A `tdd` BLOCK halts the loop; do not
-re-dispatch around it.
+Gate: all six `tdd` phases must be green before acceptance. Never redispatch merely to evade a failing gate.
+Under an approved `/sprint`, an ordinary implementation/test failure routes to **Recovery within the approved sprint** in `{{PLUGIN_ROOT}}/SPRINT.md`; rerun the original gate after an evidence-led correction.
+An attended invocation returns the blocked prerequisite to its caller. A real authority or security block
+halts the affected work and is surfaced under the hard rules, in either mode.
 
 ## Phase 3 — Spec-compliance review · gate: BLOCK
 
@@ -137,7 +144,9 @@ plus `coverage-auditor` (already run in `tdd` Phase 4) — record that and proce
 - A security CRITICAL finding halts the loop — see Hard rules.
 - A HIGH finding returns the offending task(s) — attributed by file — to Phase 2; the scope's
   quality review re-runs over the corrected combined diff.
-- MEDIUM and LOW findings are recorded; the user decides whether they block.
+- MEDIUM and LOW findings are recorded; the active caller owns their disposition. Under an approved
+  `/sprint`, use its existing delegated decision rules rather than adding a per-finding user checkpoint.
+  In attended execution the user retains that decision; mandatory project policy still applies.
 
 Gate: no CRITICAL, no HIGH across the scope's combined diff. Nothing in the scope is `ACCEPTED`
 until this passes.
@@ -182,7 +191,10 @@ Gate: every task in the current scope `ACCEPTED`, the suite green, ready for the
 - MUST NOT write implementation code before the task's `tdd` Phase 1 completes.
 - MUST accept a task only when both reviews pass AND verification passes on a fresh run.
 - MUST NOT accept a task on a subagent's self-report — run the verification command and read its exit code.
-- MUST halt and surface to the user on a `tdd` BLOCK, a security CRITICAL finding, or an unresolved `[CONFIRM-NN]` inside the loop — and on a `commit-gate` failure at the finish handoff — even under `/sprint`. These never auto-proceed.
+- MUST halt and surface a real authority or security block, including security CRITICAL findings and
+  unresolved `[CONFIRM-NN]` decisions. Ordinary TDD/verification failures and finish-time stale proof
+  under an approved sprint take Recovery within the approved sprint in `{{PLUGIN_ROOT}}/SPRINT.md`.
+  A failed gate never auto-passes, and recovery never grants missing commit authority.
 - MUST NOT commit — hand the accepted branch to `commit-gate`.
 - MUST mark out-of-scope findings with an inline `[NEEDS-TRIAGE]` marker and never act on them inside the task.
 - MUST NOT invoke `farm.js` before writing `meta.model` into `plan.json` (or setting `FARM_MODEL`) — the dispatcher fails loudly otherwise.

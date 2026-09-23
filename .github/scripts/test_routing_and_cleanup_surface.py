@@ -357,5 +357,192 @@ class TestEphemeralToolCarveOut(unittest.TestCase):
         self.assertRegex(adr, r"(?i)new command projected to all three hosts")
 
 
+class TestIntentRoutingAndDelegatedMethods(unittest.TestCase):
+    """Routing refinement without extra public surface or weaker authority.
+
+    These are cross-host prose-contract checks, not proof of live model routing
+    or token savings. Existing ADR, cleanup and destructive-registry tests above
+    remain intact; a method choice is not a new user goal or authorization.
+    """
+
+    def surfaces(self, relative):
+        for prefix in ("core/surface", *(host[0] for host in HOSTS)):
+            rel = f"{prefix}/{relative}"
+            yield rel, " ".join(read(rel).split())
+
+    def test_explicit_commands_are_optional_not_required_input(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Explicit commands are optional entry points", text)
+                self.assertNotIn("Every user intent flows through", text)
+                self.assertNotIn("All intent flows through", text)
+                self.assertIn("not a prerequisite for asking", text)
+
+    def test_methods_do_not_create_another_approval_question(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Multiple reasonable internal methods are not ambiguous user intent", text)
+                self.assertIn("A second plausible route alone is not a reason to ask", text)
+                self.assertIn("requested outcome or required authority is missing", text)
+                self.assertNotIn("an argument you would have to invent, or a second plausible command", text)
+
+    def test_question_and_draft_only_boundaries_are_resident(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Questions are not mutation authority", text)
+                self.assertIn("Explain a commit without creating one", text)
+                self.assertIn("without staging or committing when asked to draft only", text)
+                self.assertIn("read-only evidence gathering", text)
+                self.assertIn("do not select a procedure's writing close", text)
+
+    def test_action_questions_are_not_classified_by_punctuation(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn('"can you commit these changes?" can request an action', text)
+                self.assertIn("classify the intended outcome and explicit restrictions, not punctuation alone", text)
+
+    def test_direct_handoffs_preserve_wrapper_owned_behavior(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("arguments, modes, prerequisites, and gates are preserved", text)
+                self.assertIn("If the wrapper owns distinct behavior, load it too", text)
+                self.assertIn("A description is a discovery hint, never the complete procedure", text)
+                self.assertIn("Keep private procedures path-loaded and avoid bulk context reads", text)
+
+    def test_continuation_respects_the_active_call_extent(self):
+        for rel, text in self.surfaces("arbiter.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("return a scoped result, forward a completed authorized stage", text)
+                self.assertIn("branch for an allowed prerequisite", text)
+                self.assertIn("Neither universal return-to-caller nor unconditional commit-to-PR is correct", text)
+
+    def test_reversible_choice_cannot_grant_its_own_authority(self):
+        for rel, text in self.surfaces("includes/safety-core.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Within already-authorized scope, choose reversible implementation parameters", text)
+                self.assertIn("record material choices where the workflow requires", text)
+                self.assertNotIn("has one sensible answer", text)
+                self.assertIn("does not grant initial scope approval", text)
+                self.assertIn("`[CONFIRM-NN]`", text)
+                self.assertIn("expand provider, spending, data-disclosure, or publication authority", text)
+                self.assertIn("irreversible-action confirmations above remain mandatory", text)
+
+    def test_redirect_is_not_a_repeat_menu_or_bypass_offer(self):
+        for rel, text in self.surfaces("includes/redirect.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Do not repeat a command catalog", text)
+                self.assertIn("lack of slash syntax is not itself uncertainty", text)
+                self.assertIn("A generic approval of a route is not authority", text)
+                self.assertIn("never steer the user toward", text)
+                self.assertNotIn("Or pick a channel", text)
+                self.assertNotIn("Still need a channel", text)
+                self.assertNotIn("to proceed anyway", text)
+                self.assertIn("this clarification card does not select or activate another mode", text)
+
+    def test_routing_cues_are_not_syntax_or_permission(self):
+        for rel, text in self.surfaces("includes/routing-table.md"):
+            with self.subTest(rel=rel):
+                self.assertIn("Invocation cues are examples, not required user syntax", text)
+                self.assertIn("routing never authorizes a bypass", text)
+                self.assertIn("Informational requests use read-only behavior, not a writing close", text)
+
+    def test_safety_section_numbers_and_surviving_controls(self):
+        for rel, text in self.surfaces("includes/safety-core.md"):
+            with self.subTest(rel=rel):
+                self.assertEqual(re.findall(r"## §(\d+) —", text), ["2", "3", "5", "6", "7"])
+                self.assertIn("MUST NOT store a raw secret", text)
+                self.assertIn("MUST NOT write directly to the default branch or force-push", text)
+                self.assertIn("MUST NOT author an ADR except via", text)
+                self.assertIn("audit logs", text)
+                self.assertIn("are append-only", text)
+                self.assertIn("A gate that looks wrong is diagnosed, not bypassed", text)
+                self.assertIn("--match-head-commit", text)
+
+
+
+class TestSprintRecoveryAndLimits(unittest.TestCase):
+    """PR843: repair permission is not acceptance, scope, or publication authority."""
+
+    def sprint_surfaces(self):
+        yield "core/surface/SPRINT.md", read("core/surface/SPRINT.md")
+        for plugin, _, _, _ in HOSTS:
+            rel = f"{plugin}/SPRINT.md"
+            yield rel, read(rel)
+
+    def engine_surfaces(self):
+        yield "core/surface/skills/subagent-driven-development/SKILL.md", read("core/surface/skills/subagent-driven-development/SKILL.md")
+        for plugin, skilldir, _, _ in HOSTS:
+            rel = f"{plugin}/{skilldir}/subagent-driven-development/SKILL.md"
+            yield rel, read(rel)
+
+    def test_failed_quality_blocks_acceptance_not_authorized_repair(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("blocks acceptance, not authorized repair", text)
+                self.assertIn("only after initial spec-and-plan approval", text)
+                self.assertIn("every invalidated review", text)
+
+    def test_recovery_reuses_current_typed_authority(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                for token in ("task-reconcile", "scope-reconcile", "context ticket", "real policy events"):
+                    self.assertIn(token, text)
+                self.assertIn("Never manufacture an approval or a receipt", text)
+                self.assertIn("HTML farm remains disabled", text)
+
+    def test_identical_failure_changes_strategy_not_user_interview(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("stop that retry strategy", text)
+                self.assertIn("independently eligible work", text)
+                self.assertIn("not automatically another user checkpoint", text)
+                self.assertIn("do not report the incomplete plan as accepted", text)
+
+    def test_stopped_strategy_is_persisted_and_excluded_from_selection(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("persist the stop before continuing", text)
+                self.assertIn("`task-block`", text)
+                self.assertIn("rerun `eligible`", text)
+                self.assertIn("status to `BLOCKED`", text)
+                self.assertIn("select only dependency-clean `PENDING` tasks", text)
+                self.assertIn("must not be redispatched", text)
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("For Markdown, select only a task whose status is `PENDING`", text)
+                self.assertIn("`BLOCKED` tasks are not selectable", text)
+                self.assertIn("For HTML, accept only tasks returned by `eligible`", text)
+
+    def test_real_hard_stops_and_commit_permission_survive(self):
+        for rel, text in self.sprint_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("security CRITICAL", text)
+                self.assertIn("does not grant commit, provider, spending, disclosure, or publication authority", text)
+                self.assertIn("MUST NOT merge to the default branch or discard autonomously", text)
+                self.assertIn("STOP for explicit user approval of the sprint spec AND the", text)
+
+    def test_child_calls_parent_recovery_without_auto_passing_gate(self):
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("Recovery within the approved sprint", text)
+                self.assertIn("Never redispatch merely to evade a failing gate", text)
+                self.assertNotIn("A `tdd` BLOCK halts the loop; do not", text)
+                self.assertNotIn("even under `/sprint`. These never auto-proceed", text)
+
+    def test_legacy_dependency_sentence_does_not_override_typed_eligibility(self):
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("For Markdown, confirm every dependency task is `ACCEPTED`", text)
+                self.assertIn("For HTML, use the engine's eligibility and current evidence", text)
+                self.assertIn("do not replace its same-checkpoint `REVIEW` rule", text)
+
+    def test_scoped_continuation_and_full_plan_proof_remain(self):
+        for rel, text in self.engine_surfaces():
+            with self.subTest(rel=rel):
+                self.assertIn("Do NOT hand to `commit-gate`; the caller owns that decision", text)
+                self.assertIn("_preflight_current_acceptance", text)
+                self.assertIn("real authority or security block", text)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2 if "-v" in sys.argv else 1)
