@@ -1,0 +1,95 @@
+name: PR 847 exact visual candidate
+on:
+  push:
+    branches: [docs/human-experience-artifact-window]
+    paths: [.github/workflows/pr847-visual-candidate.yml]
+permissions: {}
+jobs:
+  assemble:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/docs/human-experience-artifact-window'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate exact input and assemble Git objects only
+        env:
+          GH_OBJECT_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'pr847-assembly'
+          root.mkdir()
+          source = '19e89edfd7bd561ac29f296dc3b86c303ada1ee4'
+          base_tree = '066bf512101a63a35fb442d4da7a2fd5fc71e2d0'
+          expected_tree = 'ab5b5f5513bef47003a03284d1a3afe5ef129927'
+          expected_patch = '4a08fe95789e51e9ba099038620303fedcfa5e2d451485544c396dd0a9eec712'
+          raw = pathlib.Path('.github/pr847-visual-candidate.patch.gz.b64').read_bytes()
+          (root / 'transfer.b64').write_bytes(raw)
+          (root / 'input.json').write_text(json.dumps({'workflow_head': os.environ['GITHUB_SHA'], 'source': source, 'expected_tree': expected_tree, 'expected_patch_sha256': expected_patch, 'transfer_sha256': hashlib.sha256(raw).hexdigest()}, indent=2))
+          patch = gzip.decompress(base64.b64decode(raw, validate=False))
+          assert hashlib.sha256(patch).hexdigest() == expected_patch, 'Transferred patch does not match the checked local patch'
+          subprocess.run(['git', 'checkout', '--detach', source], check=True)
+          subprocess.run(['git', 'apply', '--check', '--index', '--binary', '-'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '--index', '--binary', '-'], input=patch, check=True)
+          subprocess.run(['git', 'diff', '--cached', '--check'], check=True)
+          git = lambda *args: subprocess.check_output(['git', *args], text=True).strip()
+          assert git('write-tree') == expected_tree, 'Refuse a candidate that differs from the locally tested tree'
+          allowed = set('''docs/artifacts/consumer-inventory.json
+          site/DESIGN-SYSTEM.md
+          site/src/components/AcademyLesson.astro
+          site/src/components/AcademyOverview.astro
+          site/src/components/ArtifactWorkbench.astro
+          site/src/components/DeliveryStory.astro
+          site/src/components/ExampleChoices.astro
+          site/src/components/ProjectBlueprint.astro
+          site/src/components/ReaderJourney.astro
+          site/src/components/TrustRow.astro
+          site/src/content/docs/guides/autonomous-sprints.md
+          site/src/content/docs/guides/autonomous-sprints.mdx
+          site/src/content/docs/guides/feature-lane.md
+          site/src/content/docs/guides/feature-lane.mdx
+          site/src/content/docs/guides/opt-in-a-repo.md
+          site/src/content/docs/guides/opt-in-a-repo.mdx
+          site/src/content/docs/index.mdx
+          site/src/styles/design-system.css
+          site/src/styles/product-tour.css
+          site/test/browser/peer-layout.spec.ts
+          site/test/content/codex-support.test.ts
+          site/test/content/documentation-presentation.test.ts
+          site/test/content/human-experience.test.ts
+          site/test/content/learning-contract.test.ts
+          site/test/content/reader-journey.test.ts'''.splitlines())
+          changes = [line.split('\t') for line in git('diff', '--cached', '--no-renames', '--name-status', source).splitlines()]
+          assert {path for status, path in changes} == allowed, 'Unexpected changed path'
+          def post(kind, data):
+              assert kind in ('blobs', 'trees')
+              request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/' + kind, data=json.dumps(data).encode(), method='POST', headers={'Authorization': 'Bearer ' + os.environ['GH_OBJECT_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  return json.load(response)
+          entries = []
+          for status, path in changes:
+              entry = {'path': path, 'mode': '100644', 'type': 'blob', 'sha': None}
+              if status != 'D':
+                  assert status in ('M', 'A')
+                  content = subprocess.check_output(['git', 'show', ':' + path])
+                  result = post('blobs', {'encoding': 'base64', 'content': base64.b64encode(content).decode()})
+                  assert result['sha'] == git('rev-parse', ':' + path), 'Uploaded blob mismatch'
+                  entry['sha'] = result['sha']
+              entries.append(entry)
+          result = post('trees', {'base_tree': base_tree, 'tree': entries})
+          assert result['sha'] == expected_tree, 'Uploaded tree mismatch'
+          (root / 'assembled.json').write_text(json.dumps({'source': source, 'tree': result['sha'], 'patch_sha256': expected_patch, 'workflow_head': os.environ['GITHUB_SHA'], 'entries': entries, 'refs_modified': False, 'product_code_executed': False}, indent=2))
+          print('Exact Git tree assembled:', result['sha'], '; no refs modified')
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr847-exact-tree-assembly
+          path: ${{ runner.temp }}/pr847-assembly/
+          retention-days: 1
+          if-no-files-found: error
