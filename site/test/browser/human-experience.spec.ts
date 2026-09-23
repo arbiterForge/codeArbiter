@@ -15,6 +15,22 @@ test('the primary destinations and learning order remain explicit', async ({ pag
   await expect(page.locator('h1')).toHaveCount(1);
 });
 
+test('host follow-up links remain separated and keyboard reachable on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/product-tour/');
+  const host = page.locator('[data-example="hosts"]');
+  // Astro may remove whitespace-only text between adjacent inline elements.
+  // Require readable connecting prose, not merely two accessible link nodes.
+  await expect(host).toContainText('Check typed-artifact authority by host and supported platform differences before execution.');
+  const authority = host.getByRole('link', { name: 'typed-artifact authority by host', exact: true });
+  const compatibility = host.getByRole('link', { name: 'supported platform differences', exact: true });
+  await authority.focus();
+  await page.keyboard.press('Tab');
+  await expect(compatibility).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/getting-started\/compatibility\/$/);
+});
+
 test('criterion selection works with keyboard, remains draft, and reconnects after navigation', async ({ page }) => {
   await page.goto('/product-tour/');
   let workbench = page.locator('[data-example="artifacts"]');
