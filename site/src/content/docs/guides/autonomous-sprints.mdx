@@ -13,6 +13,8 @@ journey:
 
 import ReaderJourney from '../../../components/ReaderJourney.astro';
 
+export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 Use an autonomous sprint when you can describe a substantial outcome and want codeArbiter to carry
 the approved work through implementation, review, commits, and a pull request without stopping
 between task batches. Autonomy begins only after the review package has current spec and plan
@@ -62,7 +64,7 @@ approvals and the required host capabilities. A sprint is never authorized to me
   <summary>Implementation routing: commands, skills and agents</summary>
 <figure class="ca-diagram">
   <img
-    src="/diagrams/lane-sprint.svg"
+    src={`${baseUrl}/diagrams/lane-sprint.svg`}
     alt="The autonomous sprint lane from a combined spec and plan review package and its required approvals through small implementation cells, SMARTS-logged decisions, review, verification, commit, and pull request."
     loading="lazy"
   />

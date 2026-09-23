@@ -13,6 +13,8 @@ journey:
 
 import ReaderJourney from '../../../components/ReaderJourney.astro';
 
+export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 `/ca:feature` is the one entry point for new implementation work. Run it with a one-line description of what you want built:
 
 ```text
@@ -23,7 +25,7 @@ import ReaderJourney from '../../../components/ReaderJourney.astro';
   <p class="ca-callout__label">Host syntax</p>
   Claude Code uses <code>/ca:feature "…"</code>; Codex uses <code>$ca-feature "…"</code>;
   Pi uses <code>/ca-feature "…"</code>. Shared artifact formats do not imply identical host authority.
-  Check the <a href="/guides/review-artifacts/#check-your-hosts-authority-capability">typed-artifact host boundary</a>
+  Check the <a href={`${baseUrl}/guides/review-artifacts/#check-your-hosts-authority-capability`}>typed-artifact host boundary</a>
   before attempting the full HTML path.
 </div>
 
@@ -75,7 +77,7 @@ commands, skills and agents behind the lane.
   <summary>Implementation routing: commands, skills and agents</summary>
 <figure class="ca-diagram">
   <img
-    src="/diagrams/lane-feature.svg"
+    src={`${baseUrl}/diagrams/lane-feature.svg`}
     alt="The /ca:feature lane in three rows: Commands (/ca:feature, /ca:commit, /ca:pr), Skills (brainstorming, writing-plans, tdd, commit-gate), and Agents (author agents, reviewer agents), with a connector weaving through them in execution order."
     loading="lazy"
     width="920"

@@ -86,6 +86,23 @@ try {
     }
   }
 
+  // These three guides use MDX HTML for retained diagrams and the authority link.
+  // Inspect built bytes so unit fixtures cannot mask a missing MDX transform.
+  for (const [slug, diagram] of [["opt-in-a-repo", "lane-opt-in"], ["feature-lane", "lane-feature"], ["autonomous-sprints", "lane-sprint"]]) {
+    const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");
+    const map = html.match(/<section[^>]*data-reader-journey=[\s\S]*?<\/section>/)?.[0];
+    const links = [...(map ?? "").matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+    if (links.length !== 4 || links.some(href => !href.startsWith("/docs/")) ||
+        !html.includes(`src="/docs/diagrams/${diagram}.svg"`)) {
+      throw new Error(`Reader map ${slug} lost a base-prefixed link or implementation diagram`);
+    }
+    readFileSync(join(outputRoot, "diagrams", `${diagram}.svg`));
+    if (slug === "feature-lane" && !html.includes('href="/docs/guides/review-artifacts/#check-your-hosts-authority-capability"')) {
+      throw new Error("The feature guide's raw MDX authority link escaped /docs/");
+    }
+  }
+  process.stdout.write("Reader maps: all twelve links and three retained diagrams remain beneath /docs/.\n");
+
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
