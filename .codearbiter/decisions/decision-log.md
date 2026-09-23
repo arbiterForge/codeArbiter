@@ -1905,3 +1905,28 @@ This is the explicit acceptance of the reviewed record, not a new architecture c
 Store ADR-0037 as Accepted/Planned, seal every normative clause against the exact accepted bytes, preserve source ancestry through delivery, and do not represent the engine or any artifact-kind rollout as Implemented or Verified without current lifecycle evidence.
 
 ---
+
+## DECISION-0065 — adr-0038-cross-host-path-translation — Revisit ADR-0014's rejected multi-candidate-path alternative for WSL/Windows-Git cross-host use
+
+**Date:** 2026-09-20
+**Status:** accepted
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly chose "Revisit ADR-0014, build the translator" over "Hold the line — stay unsupported" when asked directly.
+**Decision category:** architecture / security boundary
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0014's "Alternatives considered" section rejected multiple-candidate path embedding for the sibling-plugin enforcer-path problem, on unverified host-layout-guessing-search grounds.
+- **Scaffold position:** Three independently filed issues (#684, #686, #683) demonstrate the same fix shape is needed for a different, narrower, verified problem (WSL vs. Windows-Git path-form incompatibility on one physical repo), with real blast radius (blocked commits/pushes/releases) ADR-0014's original theoretical risk did not anticipate.
+- **Status type:** divergent
+
+### Decision
+Revisit and partially supersede ADR-0014's rejection: accept a bounded, finite 3-way path-form translator (Windows-native / Git-Bash-MSYS / WSL-drvfs) so a WSL-hosted process and Git for Windows can share one physical repository's git-hook registry, rather than holding WSL+Windows-Git mixed use formally unsupported.
+
+### SMARTS rationale
+Securable and Reliable drove the call: the translator's scope is closed and finite (one known grammar, not open-ended host-layout discovery), and it does not touch ADR-0014's fail-closed contract — nothing resolving still blocks. Maintainable weighed against a small, bounded, one-time complexity cost. The user weighed the now-demonstrated real-world impact (three filed issues, a blocked release) against that bounded risk and chose to close the gap.
+
+### Implementation implication
+Author ADR-0038 as proposed, recording the partial supersession of ADR-0014's "multiple-candidate path embedding" alternative for this specific grammar. Route the translator implementation to `/ca:fix`, test-first, per the regression-test obligations in `.codearbiter/specs/hooks-cross-host-path-races.md`. Update `.codearbiter/tech-stack.md`'s WSL-unsupported paragraph once the fix is proven.
+
+---

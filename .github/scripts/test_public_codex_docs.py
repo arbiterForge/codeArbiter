@@ -324,8 +324,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 self.assertRegex(marker.get(field, ""), r"^[0-9a-f]{64}$")
             self.assertIs(type(marker.get("pr_number")), int)
             self.assertGreater(marker["pr_number"], 0)
-            self.assertIsInstance(marker.get("pr_head_ref"), str)
-            self.assertTrue(marker["pr_head_ref"])
+            self.assertRegex(marker.get("pr_head_ref", ""), r"^[A-Za-z0-9][A-Za-z0-9._/-]+$")
+            self.assertNotEqual("main", marker["pr_head_ref"])
             self.assertEqual(marker["pr_head_sha"], marker["run_head_sha"])
             self.assertIsInstance(marker.get("candidate_ci_run_attempt"), int)
             self.assertIsInstance(marker.get("candidate_artifact_id"), int)
@@ -432,11 +432,11 @@ class PublicCodexDocsTest(unittest.TestCase):
         current = runbook.split("Current verified checkpoint:", 1)[1]
         current = current.split("The earlier verified checkpoint remains", 1)[0]
         for claim in (
-            "repository startup state through SessionStart context, including `host: codex`",
-            "doctor reported 13 OK, 0 WARN, and 0 FAIL",
+            "SessionStart delivered the startup\nbanner with `host: codex`",
+            "reported 13 OK, 0 WARN, and 0 FAIL",
             "Windows/AMD64 artifact capability",
-            "denied exactly once with `[H-03]` before execution",
-            "does not\nclaim that the full scenario matrices below were rerun",
+            "denied before execution with `[H-03]`",
+            "does not claim that the full scenario matrices below were rerun",
         ):
             self.assertIn(claim, current)
 
@@ -479,16 +479,21 @@ class PublicCodexDocsTest(unittest.TestCase):
     def test_codex_live_baseline_rejects_candidate_digest_corruption(self):
         """A current-candidate package-byte change invalidates release proof."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
-        manifest = json.loads(
-            (ROOT / "plugins" / "ca-codex" / ".codex-plugin" / "plugin.json")
-            .read_text(encoding="utf-8")
-        )
         marker_match = re.search(
             r"<!-- CODEX-LIVE-BASELINE-META (?P<meta>\{[^\n]+\}) -->",
             runbook,
         )
         self.assertIsNotNone(marker_match)
         marker = json.loads(marker_match.group("meta"))
+        # Pin the control manifest's version to the marker's own recorded
+        # version rather than reading the live (possibly since-advanced)
+        # plugin.json -- this test's subject is digest-corruption rejection,
+        # not version-currency, which test_codex_live_baseline_may_lag_the_
+        # development_candidate already covers. Without this pin, an
+        # ordinary version bump between releases trips the version check
+        # before the digest check ever runs, for a reason unrelated to what
+        # this test claims to prove.
+        manifest = {"version": marker["adapter_version"]}
         corrupted = dict(marker)
         # Ordinary development may legitimately advance the manifest beyond
         # the retained live baseline. Bind this mutation fixture to the

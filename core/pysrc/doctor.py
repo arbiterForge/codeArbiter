@@ -376,7 +376,9 @@ def check_git_hook_freshness(root):
     if "ignored because" in (probe.stderr or "").lower():
         fail(f"git-hook backstop live-fire was ignored by Git: {probe.stderr.strip()[:240]}")
         return
-    ok("git-hook backstop live-fire: selected Git executed the managed pre-push shim")
+    ok("git-hook backstop live-fire: this host's selected Git executed the managed "
+       "pre-push shim (proves THIS host only — a sibling host sharing the registry "
+       "is not covered by this result, B3/#684)")
     stale = _githooks.stale_registered_plugins(dropin_dir)
     if stale:
         names = ", ".join(sorted(stale))

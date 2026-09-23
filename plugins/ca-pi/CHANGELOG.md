@@ -15,6 +15,12 @@ All notable changes to `ca-pi` are documented in this file.
   behavior in the shared kernel without claiming unsupported Pi host authority.
 - Reject unproven partial-commit and changed-parent recovery in the shared
   kernel without claiming unsupported Pi host authority.
+- Resolve cross-host git-hook path-form races (ADR-0038): the shared registry
+  and its generated pre-commit/pre-push shim now translate between
+  Windows-native, Git-Bash/MSYS, and WSL drvfs path spellings; the installer's
+  two-phase shim write is lock-serialized and rolls back on a partial
+  failure; a foreign-spelled trusted identity now produces a diagnostic
+  instead of a silent exit.
 
 ## [0.14.9] - 2026-09-22
 
