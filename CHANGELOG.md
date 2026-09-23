@@ -25,6 +25,8 @@ predate the plugin rewrite and are grouped by date.
   targets; reject mismatched verification digests and unsafe authority paths.
 - Recover interrupted user reconciliation with durable idempotent retries and
   exact pre-mutation cancellation instead of leaving an unresolvable prompt.
+- Reject unproven recovery attempts, including partial commits and deleted
+  workspace parents, while preserving exact retries and cancellation guidance.
 
 ## [2.21.9] - 2026-09-22
 

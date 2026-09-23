@@ -13,6 +13,8 @@ All notable changes to `ca-pi` are documented in this file.
   implement.
 - Preserve typed workspace identity and durable reconciliation retry/cancel
   behavior in the shared kernel without claiming unsupported Pi host authority.
+- Reject unproven partial-commit and changed-parent recovery in the shared
+  kernel without claiming unsupported Pi host authority.
 
 ## [0.14.9] - 2026-09-22
 

@@ -18,6 +18,8 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 - Corroborate real Codex verifier completions, freeze all supported workspace
   entry types, and recover interrupted reconciliation without duplicate writes.
 - Use the dedicated publisher credential for protected distribution tag pushes.
+- Reject recovery from partial commits or changed workspace parents, and keep
+  interrupted retry instructions tied to the original request.
 
 ## [0.13.9] - 2026-09-22
 
