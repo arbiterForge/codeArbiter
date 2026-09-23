@@ -29,7 +29,10 @@
     "for the reconstruction commit.",
     "The three 2026-09-23 UTC .8 receipts came from successful hosted release run",
     "35806985218 attempt 1, tag-publication-auto-release[-codex|-pi] artifacts;",
-    "their identities matched independently read remote annotated refs."
+    "their identities matched independently read remote annotated refs.",
+    "The three 2026-09-23 UTC .9 receipts came from successful protected-main",
+    "release run 35814718330 attempt 1, tag-publication-auto-release[-codex|-pi]",
+    "artifacts; their identities matched independently read remote annotated refs."
   ],
   "namespaces": [
     "v*",
@@ -818,6 +821,21 @@
       "commit_sha": "32e3496ae2d7ab3b2373ee669871def3228dedc4",
       "object_sha": "3c33e9c443853f802c3283260169af4ba2f7e7fd",
       "object_type": "tag"
+    },
+    "v2.21.9": {
+      "object_sha": "b64159aeb9800c8da21cd18ecbce4ce03e0899cc",
+      "commit_sha": "b41d9803eacb3acf4b93c8bec81e1aa2f086aec7",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.13.9": {
+      "commit_sha": "b41d9803eacb3acf4b93c8bec81e1aa2f086aec7",
+      "object_sha": "0837c8430209979c8aaab43dcf64b27c43b734e2",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.14.9": {
+      "commit_sha": "b41d9803eacb3acf4b93c8bec81e1aa2f086aec7",
+      "object_type": "tag",
+      "object_sha": "075d536fd8328061169eaa4259243f3b8fae23e2"
     }
   }
 }
