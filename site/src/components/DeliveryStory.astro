@@ -1,0 +1,18 @@
+---
+import ExampleChoices from './ExampleChoices.astro';
+import { loadProductExample } from '../../scripts/product-example';
+const { runs } = loadProductExample();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = `${base}/examples/saved-searches`;
+---
+<div class="ca-delivery ca-exhibit" data-example="delivery">
+  <p class="ca-kicker">Follow one bounded change</p>
+  <p>This is an explanatory walkthrough. Only the native draft generation and the Python test runs are captured execution; conversation, review and PR steps below are illustrative.</p>
+  <ExampleChoices label="Choose a delivery stage" labels={['Request', 'Review the draft', 'Run the tests', 'Recover', 'Review and ship']}>
+    <section data-pane><h3>Start with the outcome</h3><blockquote>Export my saved-search names and queries as CSV, preserving their order and punctuation. Do not create an export when there are no searches.</blockquote><p>This fixture covers a pure serialization function. It does not implement a download UI, authenticate a user, or write a file.</p></section>
+    <section data-pane><h3>Make the ambiguous part testable</h3><p><del>Handle special characters correctly.</del></p><p><ins>After parsing the export with the CSV reader, names and queries containing commas, quotes, newlines and Unicode equal their original values.</ins></p><p>This is an illustrative review correction, not a recorded human approval. Inspect AC-002 in the workbench and request revisions through your own workflow.</p></section>
+    <section data-pane><h3>Observe actual local fixture tests</h3><div class="ca-proof-columns"><div><h4>Incomplete baseline · exit {runs.red.exit_code}</h4><pre tabindex="0"><code>{runs.red.output}</code></pre></div><div><h4>Completed serializer · exit {runs.green.exit_code}</h4><pre tabindex="0"><code>{runs.green.output}</code></pre></div></div><p>The empty-input check already passes in the baseline. The other two fail by assertion, not by import or fixture error. These results are not workflow acceptance receipts.</p><a href={`${url}/test-runs.json`}>Read the captured test envelope</a></section>
+    <section data-pane><h3>Do not turn an interruption into a new authority</h3><p>In a real interrupted run, inspect the persisted task and working changes. An IN_PROGRESS task requires reconciliation before redispatch; REVIEW requires fresh evidence. The demonstration documents remain draft throughout this tour.</p><a href={`${base}/guides/resume-and-recover/`}>Follow the recovery guide</a></section>
+    <section data-pane><h3>Check the complete delivery boundary</h3><p>A real finish includes current requirements, relevant tests, review findings and their dispositions, the authorized commit, and a PR. Passing the three serializer tests is not enough to claim that whole chain.</p><p>No PR for a saved-search application was created by this fixture. Use the complete feature guide to perform those actions in your own repository.</p><a href={`${base}/guides/first-feature/`}>Complete one feature</a></section>
+  </ExampleChoices>
+</div>

@@ -57,6 +57,19 @@ Implementation does not begin until both artifacts are approved in that one deci
 This is not two approvals. If the plan exposes a weakness in the spec, codeArbiter revises the
 package and presents the combined result again.
 
+## Inspect the durable package
+
+New full-lane work uses `.codearbiter/specs/<slug>.html` and
+`.codearbiter/plans/<slug>.html` when the installed adapter has the qualified native capability.
+Existing Markdown pairs remain on their exact legacy path. Open both files and inspect the
+criteria, exclusions, task coverage, dependencies and verification before approving the package.
+[Review specifications and plans](/guides/review-artifacts/) explains the distinction between a
+browser view, readiness, approval and authority to execute.
+
+For the [saved-search example](/guides/first-feature/), approving CSV export must not silently
+include account sharing, external spending or publication. Request revisions to the combined
+package if the plan reveals a missing requirement.
+
 ## What happens after approval
 
 The sprint executes the plan in resumable task cells:
@@ -68,8 +81,11 @@ The sprint executes the plan in resumable task cells:
 5. record the accepted task state on disk; and
 6. continue to the next independent cell.
 
-An interrupted session resumes from the approved spec, plan, task statuses, and sprint log. It does
-not re-interview you or discard accepted work.
+An interrupted session re-enters through the existing spec, plan, task states and sprint log.
+It does not automatically accept unfinished work. Typed `IN_PROGRESS` requires reconciliation;
+`REVIEW` requires fresh evidence. Bounded recovery may select another strategy inside existing
+authority, while a blocked or exhausted task remains excluded until its condition is resolved.
+See [Resume and recover](/guides/resume-and-recover/).
 
 ## How autonomous decisions work
 
@@ -112,7 +128,11 @@ against the exact current PR head before the work is treated as ready.
 
 ## Optional farm backend
 
-`--farm` replaces the normal premium-author execution with a configured OpenAI-compatible worker:
+**HTML plans cannot use `--farm` until the separate current-model qualification is complete.**
+The following example applies only to an existing authoritative legacy Markdown pair. Do not
+convert a new HTML plan to Markdown to make the flag work.
+
+For that existing legacy backend, `--farm` selects a configured OpenAI-compatible worker:
 
 ```text
 /ca:sprint "Normalize the public API error contract" --farm

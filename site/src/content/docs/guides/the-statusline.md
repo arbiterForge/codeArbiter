@@ -54,6 +54,25 @@ dependency-free (native font glyphs only, no Nerd Font) and renders on every ses
 
 **You will need:** the plugin installed (see [Install](/getting-started/install/)).
 
+## Wire It In
+
+Run `/ca:statusline` once in any Claude Code session to wire the bar. The command writes an absolute `statusLine.command` entry in `~/.claude/settings.json`, pointing at the renderer for your installed plugin version.
+
+```text
+/ca:statusline
+```
+
+If a `statusLine.command` already exists in your settings, the current value is backed up before being replaced. Uninstalling restores the backed-up value; if there was none, the key is removed. The command also writes codeArbiter's `spinnerVerbs` set and backs up any prior verbs, restored on uninstall.
+
+To inspect the current state without modifying settings, run `/ca:statusline status`. Output shows whether `settings.json` is present, the renderer path (with a found/MISSING indicator), the active `statusLine.command`, and whether it belongs to codeArbiter.
+
+## Verify before customizing
+
+Run `/ca:statusline status`, then open a fresh Claude Code session. Confirm that the reported
+codeArbiter-owned command resolves and a real render appears. The values belong to that session;
+a documentation screenshot is fixture data. Learn the segment meanings below before changing
+the palette. [The product tour](/product-tour/#statusline-themes) shows actual renderer fixtures.
+
 ## Choose a Color Theme
 
 The statusline defaults to its original violet palette. Set `CODEARBITER_THEME` in the
@@ -61,9 +80,21 @@ environment that launches Claude Code to select `violet`, `blue`, `green`, `ambe
 Names are case-insensitive. An unrecognized name falls back to `violet`, so a typo cannot break
 the renderer.
 
-```text
-CODEARBITER_THEME=blue
+For a POSIX shell, set the value in the process that launches Claude Code:
+
+```sh
+CODEARBITER_THEME=blue claude
 ```
+
+In PowerShell, set it for the current process before launch:
+
+```powershell
+$env:CODEARBITER_THEME = 'blue'
+claude
+```
+
+These examples affect that process and its children. They do not permanently rewrite your shell
+profile. Remove the process override to return to the default.
 
 For a custom palette, set `CODEARBITER_THEME=custom`. The renderer reads
 `~/.codearbiter/statusline-theme.json` unless `CODEARBITER_THEME_FILE` names another local file.
@@ -106,17 +137,9 @@ the same text, glyphs, spacing, and clipping.
 
 ### Built-in Theme Captures
 
-These deterministic, ANSI-free terminal captures show the same subagent row under every built-in
-theme. The `accent` annotation records the bright-accent RGB used for the model tag; text stays
-identical because theme selection changes color only.
-
-```text
-violet  accent #d08cff  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
-blue    accent #7dbeff  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
-green   accent #6fe7a9  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
-amber   accent #ffc768  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
-mono    accent #e2e2e8  | task:Review parser | model:sonnet-4-6 | in:1.2K out:340 age:8s |
-```
+[Compare the actual renderer output](/product-tour/#statusline-themes) for `violet`, `blue`,
+`green`, `amber` and `mono`. The gallery uses identical deterministic fixture data in every theme.
+It is not a live session or billing report. `NO_COLOR` still takes precedence over a theme choice.
 
 ## What the Bar Shows
 
@@ -150,18 +173,6 @@ These render only when the open repo carries `arbiter: enabled` in `.codearbiter
 | 5 | **overrides** | Override entries logged since the last `/ca:checkpoint` |
 
 A non-zero `questions` or `overrides` count renders in red. A non-zero `tasks` count renders in white. A green dot before the arbiter row confirms the repo is active.
-
-## Wire It In
-
-Run `/ca:statusline` once in any Claude Code session to wire the bar. The command writes an absolute `statusLine.command` entry in `~/.claude/settings.json`, pointing at the renderer for your installed plugin version.
-
-```text
-/ca:statusline
-```
-
-If a `statusLine.command` already exists in your settings, the current value is backed up before being replaced. Uninstalling restores the backed-up value; if there was none, the key is removed. The command also writes codeArbiter's `spinnerVerbs` set and backs up any prior verbs, restored on uninstall.
-
-To inspect the current state without modifying settings, run `/ca:statusline status`. Output shows whether `settings.json` is present, the renderer path (with a found/MISSING indicator), the active `statusLine.command`, and whether it belongs to codeArbiter.
 
 ## Remove the Statusline
 

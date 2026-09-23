@@ -32,6 +32,19 @@ The plugin installs once, globally. Enabling enforcement is a per-repo step you 
   <figcaption>The <code>/ca:init</code> lane by piece type: commands (gold) and the skills behind them (violet). Init forks to one context-builder path: create-context for existing code, decompose for a new project.</figcaption>
 </figure>
 
+## Know what completion means
+
+**Installed** means the host has the adapter. **Activated** means the repository carries the
+recognized opt-in. **Initialized** means its context has been populated and the body marker is
+present. **Verified** means the appropriate host probe produced its documented evidence. None
+of the first three substitutes for the fourth, and the probe does not judge whether your project
+requirements are good.
+
+Choose the context-building path before starting. [Plan a new project](/guides/plan-a-new-project/)
+explains the substantial greenfield interview and its three documents. [Understand an existing
+project](/guides/understand-an-existing-project/) explains scout extraction, source evidence and
+the gap interview. Brownfield extraction does not invent the greenfield plan set.
+
 ## 1. Scaffold the State Store
 
 Open the target repository in one supported host and invoke its native command:
@@ -53,7 +66,11 @@ Open the target repository in one supported host and invoke its native command:
 | Existing codebase | `/ca:create-context` | Scouts the source and back-fills `.codearbiter/` |
 | New project, no code yet | `/ca:decompose` | A layered interview that builds `.codearbiter/` from scratch |
 
-Let the routed command finish before moving on. It populates the context files the enforcement gates read at commit time.
+Review the routed procedure's outputs before moving on. Greenfield writes the architecture
+breakdown, phased build plan and task backlog for your explicit approval before population.
+Brownfield derives context from scout reports and asks you to resolve or explicitly defer gaps.
+The resulting context files supply later planning, review and enforcement with project facts.
+Do not mark a stub initialized just because the activation flag exists.
 
 ## 3. Confirm the Activation Flag
 

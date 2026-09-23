@@ -1,3 +1,4 @@
+import { buildJourneySidebar, primaryNavigation } from '../../scripts/journey-navigation';
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -5,7 +6,7 @@ import { describe, expect, it } from "vitest";
 const siteRoot = process.cwd();
 const hubPath = join(siteRoot, "src", "content", "docs", "trust.md");
 const hub = existsSync(hubPath) ? readFileSync(hubPath, "utf8") : "";
-const sidebar = readFileSync(join(siteRoot, "astro.config.mjs"), "utf8");
+const sidebar = buildJourneySidebar([], []);
 
 function section(source: string, heading: string): string {
   const start = source.indexOf(`## ${heading}`);
@@ -44,8 +45,8 @@ describe("trust and lifecycle hub", () => {
     expect(hub).not.toMatch(/```|\bH-\d+\b|arbiter_active\(|(?:claude|codex) plugin (?:add|install|uninstall)/i);
   });
 
-  it("OBL-TRUST-03 exposes the hub directly in Start navigation", () => {
-    expect(sidebar).toContain('{ label: "Trust & Lifecycle", slug: "trust" }');
-    expect(sidebar.indexOf('slug: "trust"')).toBeLessThan(sidebar.indexOf('slug: "faq"'));
+  it("OBL-TRUST-03 exposes the hub first in primary Trust navigation", () => {
+    expect(primaryNavigation.some((item) => item.label === 'Trust' && item.slug === 'trust')).toBe(true);
+    expect(sidebar.find((group) => group.label === 'Trust')?.items[0]).toEqual({ label: 'Trust & Lifecycle', slug: 'trust' });
   });
 });

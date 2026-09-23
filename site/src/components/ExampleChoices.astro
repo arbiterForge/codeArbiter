@@ -1,0 +1,38 @@
+---
+/** Progressive enhancement: every pane is readable when scripting is absent. */
+interface Props { label: string; labels: string[] }
+const { label, labels } = Astro.props;
+---
+<ca-example-choices class="ca-example-choices">
+  <div class="ca-example-controls" role="group" aria-label={label} hidden>
+    {labels.map((text, index) => <button type="button" data-choice={index} aria-pressed={index === 0 ? 'true' : 'false'}>{text}</button>)}
+  </div>
+  <slot />
+</ca-example-choices>
+<script>
+  class ExampleChoices extends HTMLElement {
+    private cleanup?: () => void;
+    connectedCallback() {
+      if (this.cleanup) return;
+      const controls = this.querySelector<HTMLElement>(':scope > .ca-example-controls');
+      const buttons = [...this.querySelectorAll<HTMLButtonElement>(':scope > .ca-example-controls > button')];
+      const panes = [...this.querySelectorAll<HTMLElement>(':scope > [data-pane]')];
+      if (!controls || !buttons.length || panes.length !== buttons.length) return;
+      const select = (index: number) => {
+        panes.forEach((pane, at) => { pane.hidden = at !== index; });
+        buttons.forEach((button, at) => button.setAttribute('aria-pressed', String(at === index)));
+      };
+      const click = (event: MouseEvent) => {
+        const button = (event.target as Element).closest<HTMLButtonElement>('button[data-choice]');
+        const index = button ? buttons.indexOf(button) : -1;
+        if (index >= 0) select(index);
+      };
+      controls.addEventListener('click', click);
+      this.cleanup = () => controls.removeEventListener('click', click);
+      select(0);
+      controls.hidden = false;
+    }
+    disconnectedCallback() { this.cleanup?.(); this.cleanup = undefined; }
+  }
+  if (!customElements.get('ca-example-choices')) customElements.define('ca-example-choices', ExampleChoices);
+</script>

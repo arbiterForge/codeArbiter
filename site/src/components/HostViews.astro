@@ -1,0 +1,19 @@
+---
+import ExampleChoices from './ExampleChoices.astro';
+const hosts = [
+  { name:'Claude Code', command:'/ca:feature "export saved searches"', description:'Plugin commands and agents, trusted hooks, and an optional settings-wired statusline.' },
+  { name:'Codex', command:'$ca-feature "export saved searches"', description:'Codex-native skills, trusted hook handlers, and the packaged role resources qualified for that adapter release.' },
+  { name:'Pi', command:'/ca-feature "export saved searches"', description:'Generated aliases, project trust, a rich footer, and child work mediated by the parent adapter.' },
+];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<div class="ca-host-views ca-exhibit" data-example="hosts">
+  <p class="ca-kicker">One repository. Native entry points.</p>
+  <ExampleChoices label="Compare host entry points" labels={hosts.map((host) => host.name)}>
+    {hosts.map((host) => <section data-pane><h3>{host.name}</h3><pre tabindex="0"><code>{host.command}</code></pre><p>{host.description}</p>
+      <p><strong>Shared project records:</strong> <code>.codearbiter/specs/</code>, <code>.codearbiter/plans/</code>, decisions, tasks and audit history.</p>
+    </section>)}
+  </ExampleChoices>
+  <p class="ca-exhibit-footnote">Syntax comparison, not captured host output or proof of identical capabilities. Understood intent can route without typing a command. Installed support, trust and artifact capability still apply; this does not demonstrate simultaneous editing.</p>
+  <a href={`${base}/getting-started/compatibility/`}>Inspect actual supported differences</a>
+</div>

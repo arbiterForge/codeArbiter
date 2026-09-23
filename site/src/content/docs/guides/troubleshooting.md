@@ -95,6 +95,26 @@ Doctor checks that the `statusLine.command` entry in `~/.claude/settings.json` p
 
 **To fix:** run `/ca:statusline` to re-wire explicitly, or open a new Claude Code session to trigger the automatic repair.
 
+## Typed specifications and plans
+
+Doctor now inspects the installation-pinned artifact capability and, when HTML authority exists,
+a bounded artifact catalog. Preserve its exact code and package identity before remediation.
+
+| Diagnostic | Meaning | Next action |
+|---|---|---|
+| `CAPABILITY_MISSING`, `INVALID_INSTALLATION`, `PACKAGE_INTEGRITY` | Missing or mismatched installed payload | Repair the qualified installed package; do not select a repository binary |
+| `UNVERIFIED_PLATFORM`, `UNSUPPORTED_PLATFORM` | The selected platform/storage cell is not qualified | Check supported environments; do not override the platform identity |
+| `DRAFT_BINDING`, `AUTHORITY_UNVERIFIED` | Content is not currently authorized | Return to the owning approval/evidence path, not reinstall |
+| `REVISION_CONFLICT`, `STALE_CURSOR` | The prior read is stale | Reread and reconsider; never force the old write |
+| `LOCK_BUSY` | Another bounded writer owns the lock | Preserve the conflict; do not delete lock files |
+| `RECOVERY_REQUIRED`, `COMMIT_OUTCOME_UNKNOWN` | Transaction outcome needs reconciliation | Keep the operation ID and inspect recovery before another write |
+| `UNSUPPORTED_VERSION`, `UNSUPPORTED_RENDERER` | Format/renderer compatibility is not established | Use a reviewed upgrade path, not raw HTML/JSON editing |
+
+[Resume and recover](/guides/resume-and-recover/) gives the operator procedure. Existing Markdown
+work remains on its exact legacy path; a failure on HTML is not permission to switch formats.
+A valid HTML rendering or passing schema check does not authenticate an approval or prove tests
+were run.
+
 ## Pi
 
 `ca-pi` currently ships as a Feature Forge `preview`. Real use and feedback are
@@ -127,7 +147,7 @@ Pi has several distinct silent-inactivity states that look alike but have differ
 | Orchestrator persona not loading | Repo not opted in; `SessionStart` finds no activation flag | Doctor's repo activation section; run `/ca:init` if the file is absent |
 | Stale behavior after a plugin update | Cached payload or statusline path is outdated | Doctor's stale-cache and statusline sections |
 | Statusline shows wrong stage or stale data | Statusline wired to previous `statusline.py` path | Doctor's statusline section; run `/ca:statusline` to re-wire |
-| Malformed-state error on session start | Frontmatter opens with `---` but never closes | Inspect `.codearbiter/CONTEXT.md` line 2 for the closing `---` |
+| Malformed-state error on session start | Frontmatter opens with `---` but never closes | Inspect the complete leading frontmatter for the missing closing `---`; line 2 may legitimately contain a field |
 | Merged PR but task still open on board | Merged-but-not-flipped task | Doctor runs a read-only reconciliation sweep and reports any such tasks |
 
 ## Related

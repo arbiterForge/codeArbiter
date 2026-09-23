@@ -1,3 +1,4 @@
+import { buildJourneySidebar } from '../../scripts/journey-navigation';
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -21,13 +22,13 @@ describe("approved naming policy", () => {
 
   it("defines Feature Forge as the public navigation label without changing preview maturity", () => {
     const voice = readSiteFile("VOICE.md");
-    const astroConfig = readSiteFile("astro.config.mjs");
+    const navigation = buildJourneySidebar([], []);
     const glossary = readSiteFile("src/content/docs/glossary.md");
 
     expect(voice).toMatch(/In navigation and\s+reader-facing copy it is labeled "Feature Forge"/);
     expect(voice).toMatch(/"preview" and "stable" are maturity\s+labels/);
     expect(voice).not.toContain('reader-facing copy it is labeled "Preview Features"');
-    expect(astroConfig).toContain('label: "Feature Forge"');
+    expect(navigation[1].items.some((item) => item.label === 'Feature Forge')).toBe(true);
     expect(glossary).toMatch(/^## Feature Forge$/m);
     expect(glossary).toContain('Reader-facing copy calls the system "Feature Forge"');
     expect(glossary).toMatch(/"preview" and "stable" are\s+maturity labels within it/);

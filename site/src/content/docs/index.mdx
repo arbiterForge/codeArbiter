@@ -8,6 +8,7 @@ prev: false
 next: false
 ---
 
+import ArtifactWorkbench from '../../components/ArtifactWorkbench.astro';
 import HookProof from '../../components/HookProof.astro';
 import TrustRow from '../../components/TrustRow.astro';
 import ArbiterIcon from '../../components/ArbiterIcon.astro';
@@ -26,7 +27,8 @@ import heroArt from '../../assets/hero-gates.webp';
     <p class="ca-splash__principle">You decide. codeArbiter enforces.</p>
     <div class="ca-actions">
       <a class="ca-button ca-button--primary" href="./getting-started/install/">Protect a repository</a>
-      <a class="ca-button" href="#proof">Watch a verified hook replay</a>
+      <a class="ca-button" href="./product-tour/">Inspect what you will build</a>
+      <a class="ca-text-link" href="#proof">Watch a verified hook replay</a>
     </div>
     <div class="ca-splash__hosts" aria-label="Supported governance hosts">
       <span class="ca-pill">Claude Code</span>
@@ -46,6 +48,16 @@ import heroArt from '../../assets/hero-gates.webp';
     <HookProof />
     <p class="ca-splash__proof-note">The exact stderr and audit effect from a direct invocation of <code>plugins/ca/hooks/pre-bash.py</code>, rendered as a faithful replay. The denied staging command never ran. This evidence verifies the shipped guard itself, not host discovery or registration; the quickstart's doctor probe verifies that end-to-end path.</p>
   </div>
+</section>
+
+<section class="ca-section" aria-labelledby="ca-artifact-window-title">
+  <div class="ca-section-heading">
+    <p class="ca-eyebrow">Work you can inspect</p>
+    <h2 id="ca-artifact-window-title">From a requirement to a testable plan.</h2>
+    <p>Follow one criterion through a real draft specification and its linked plan. See what needs your review before the work can run.</p>
+  </div>
+  <ArtifactWorkbench />
+  <a class="ca-text-link" href="./product-tour/">Open the complete product tour</a>
 </section>
 
 <section class="ca-proof-strip" aria-labelledby="ca-proof-strip-title">
@@ -109,21 +121,21 @@ import heroArt from '../../assets/hero-gates.webp';
   </div>
   <ol class="ca-flow__steps" role="list">
     <li class="ca-flow__step">
-      <span>1</span>
+      <span aria-hidden="true">1</span>
       <div>
         <h3>State the work</h3>
         <p>Feature, fix, sprint, dependency, decision, review, or release.</p>
       </div>
     </li>
     <li class="ca-flow__step">
-      <span>2</span>
+      <span aria-hidden="true">2</span>
       <div>
         <h3>Clear the lane</h3>
         <p>Specs, tests, reviewers, and security checks appear only when the change needs them.</p>
       </div>
     </li>
     <li class="ca-flow__step">
-      <span>3</span>
+      <span aria-hidden="true">3</span>
       <div>
         <h3>Ship through a PR</h3>
         <p>Commit evidence and review state travel with the branch. The default branch is never a direct write.</p>

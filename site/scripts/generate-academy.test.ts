@@ -327,7 +327,7 @@ describe("generateAcademy", () => {
         else if (disclosureStack.length > 0) disclosureStack.at(-1)!.label = token[2];
       }
       expect(disclosureStack).toEqual([
-        { label: "Arbiter Academy", open: true },
+        { label: "Academy", open: true },
         { label: trackLabel, open: true },
       ]);
       expect(lessonHtml).toContain(`href="/academy/${previousSlug}/" rel="prev"`);

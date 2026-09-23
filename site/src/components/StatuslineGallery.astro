@@ -1,0 +1,16 @@
+---
+import ExampleChoices from './ExampleChoices.astro';
+import { loadThemeCaptures } from '../../scripts/statusline-capture';
+const { captures, boundary } = loadThemeCaptures();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<div class="ca-statusline-gallery ca-exhibit" data-example="themes">
+  <p class="ca-kicker">One renderer. Five palettes.</p>
+  <ExampleChoices label="Choose a statusline theme" labels={captures.map((capture) => capture.theme)}>
+    {captures.map((capture) => <section data-pane><h3>{capture.theme}{capture.theme === 'violet' ? ' · default' : ''}</h3>
+      <pre class="ca-terminal" tabindex="0" aria-label={`${capture.theme} statusline with fixture data`}><code>{capture.tokens.map((token) => <span style={{ color:token.foreground, backgroundColor:token.background, fontWeight:token.bold ? 'bold' : 'normal' }}>{token.text}</span>)}</code></pre>
+    </section>)}
+  </ExampleChoices>
+  <p class="ca-exhibit-footnote">{boundary} The same text is rendered in each palette. Scroll the terminal horizontally on a narrow screen. The settings-wired statusline is for Claude Code; Pi's footer is a separate integration.</p>
+  <a href={`${base}/guides/the-statusline/`}>Install before customizing</a><span aria-hidden="true"> · </span><a href={`${base}/examples/statusline-themes.json`}>Inspect capture data</a>
+</div>

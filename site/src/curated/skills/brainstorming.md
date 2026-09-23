@@ -41,9 +41,11 @@ unresolved becomes a numbered open question on record rather than a guess.
 
 ## Exits
 
-Approval hands the spec to the test-first gate, where each acceptance criterion becomes one
-obligation to prove. A spec carrying an unresolved blocking question never reaches that handoff —
-it stops for your decision instead.
+Approval permits the owning feature or sprint coordinator to continue through its planning and
+execution gates. It is not a direct bypass from brainstorming to implementation. In typed work,
+the specification owns stable criterion IDs and the plan references them; draft existence,
+readiness, approval and execution are separate boundaries. A blocking question remains a stop.
+See [Review specifications and plans](/guides/review-artifacts/) for what to inspect.
 
 The research each of this skill's design choices rests on — with citations — is documented in
 [The Evidence Behind the Persona](/concepts/persona-research-basis/).

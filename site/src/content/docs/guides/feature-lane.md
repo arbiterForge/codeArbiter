@@ -38,6 +38,16 @@ and the author and reviewer agents it dispatches on demand.
   <figcaption>The <code>/ca:feature</code> lane by piece type: commands (gold), skills (violet), agents (green), each loaded in execution order.</figcaption>
 </figure>
 
+## See one complete example
+
+[Your first feature](/guides/first-feature/) follows the same saved-search CSV export from a
+request through a corrected criterion, linked plan, actual fixture tests, review and PR checklist.
+It distinguishes illustrative human dialogue from captured fixture evidence. This page is the
+lane reference for applying that pattern to your own work.
+
+You can state the outcome naturally; explicit commands select the same existing lane. A clear
+request does not replace the user decisions or permissions required by that lane.
+
 ## First: full lane, small lane, or resume
 
 The command classifies the request before it writes anything.
@@ -51,10 +61,11 @@ The command classifies the request before it writes anything.
 The small lane trims ceremony, not gates: it still starts with test obligations, clears review and
 commit-gate, and finishes through a PR. If the classifier is uncertain, the full lane wins.
 
-An interrupted run is never silently restarted. Invoke the feature command with the same description,
-or invoke it bare to list resumable pipelines. A plan with unfinished tasks resumes execution; a
-fully accepted plan resumes at commit-gate; an approved spec without a plan resumes planning; an
-unapproved spec returns to its approval gate.
+An interrupted run is not silently restarted. Name the same slug or ask for resumable work.
+The owning lane inspects the furthest valid checkpoint, not merely the latest filename. An
+approved spec without a plan returns to planning; an unapproved spec returns to review. Typed
+`IN_PROGRESS` work needs reconciliation and `REVIEW` needs fresh evidence before progress is
+claimed. [Resume and recover](/guides/resume-and-recover/) explains these boundaries.
 
 ## Refine the Idea Into a Spec
 
@@ -73,6 +84,18 @@ For new full-lane work, the spec and plan are written as
 installed typed-artifact engine. Existing Markdown pairs stay on their exact
 legacy path. Execution does not start until every task has a file path, a
 verification step, and the full task set covers every acceptance criterion.
+
+## Inspect the files before allowing execution
+
+Open the actual specification and plan. In the specification, inspect caller, trigger, observable
+behavior, exclusions and each verification oracle. In the plan, follow those stable criterion IDs
+to tasks, dependencies, paths and named checks. Ask for a scoped revision where the connection is
+missing. Opening HTML does not approve it, and hand-editing its embedded model is not a supported
+revision path. Use [Review specifications and plans](/guides/review-artifacts/) for the checklist.
+
+A typed plan can exist as a draft preview before it is ready or approved. Required coverage is
+many-to-many; the specification owns criterion identities. The native engine preserves revisions
+and authority bindings through the existing lane.
 
 ## Implement Test-First, Batch by Batch
 

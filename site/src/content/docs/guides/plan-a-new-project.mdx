@@ -1,0 +1,124 @@
+---
+title: Plan a New Project
+description: "Use the greenfield interview to create, review, and maintain an architecture breakdown, phased build plan, and task backlog."
+journey:
+  level: Foundation
+  time: "Guided interview; may span sessions"
+  outcome: "Three reviewed project-planning documents and initialized repository context, without inventing a codebase."
+  prerequisites:
+    - A supported adapter installed and trusted
+    - An intended Git repository with no meaningful source code
+    - Git identity configured
+  proof: "You can open the three exact planning documents, explain their different jobs, and identify the approval and initialization boundaries."
+---
+
+import ProjectBlueprint from '../../../components/ProjectBlueprint.astro';
+
+Greenfield means the project has no meaningful source to inspect yet. codeArbiter therefore starts
+from your intent, not a guessed architecture. The interview's central deliverable is a set of
+**three project-planning documents**. It also populates the context that later work reads.
+
+## The three planning documents
+
+<ProjectBlueprint />
+
+## Before entering the interview
+
+Open the intended repository in your coding host. In a separate native terminal, run
+`git rev-parse --show-toplevel` and `git status --short` to confirm its root and existing changes.
+Changing a terminal directory does not necessarily change the repository open in the host.
+Preserve any existing work. If there is meaningful source, use
+[Understand an existing project](/guides/understand-an-existing-project/) instead.
+
+Bring the problem, primary users, a concrete description of a useful first version, hard
+constraints, and the things you explicitly are not building. A sketch or requirements note is
+useful input, not something the agent should silently treat as approved truth. Do not supply
+production credentials or confidential examples that the configured provider must not receive.
+
+Describe the goal naturally, or use an explicit entry:
+
+| Host | Start the greenfield route |
+|---|---|
+| Claude Code | `/ca:init --greenfield` |
+| Codex | `$ca-init --greenfield` |
+| Pi | `/ca-init --greenfield` |
+
+`init` scaffolds the state store when needed and enters decomposition. The existing `decompose`
+command remains a compatibility entry for that same strategy. Do not run it again after the
+repository is successfully initialized. An initialized marker or existing-source mismatch stops
+this route; it is not permission to overwrite the project.
+
+## Work through six areas
+
+The interview covers vision and problem, users and flows, functional scope, technical shape,
+integrations and infrastructure, then risks and unknowns. It can be substantial: the owning
+skill describes roughly 60–110 questions, not a short installation dialog.
+
+Answer in observable terms. Instead of “make exports work well,” identify who exports, what is
+exported, the format, the empty case, and how a reviewer could tell whether it works.
+codeArbiter challenges vague answers and explains architectural trade-offs. You own material
+choices. A genuinely unresolved answer becomes an explicit `[CONFIRM-NN]`, not an invented fact.
+
+At each completed layer, the interview writes its record beneath
+`.codearbiter/.decompose-draft/` before starting the next layer. Architectural choices have
+immediate draft-ADR writes where the skill specifies them. **Do not assume every unfinished
+answer has already been saved.** Before leaving, ask which layer files were actually written.
+
+## Review the three deliverables
+
+After all six layers are complete, codeArbiter re-reads the saved records and writes:
+
+| File under `.codearbiter/plans/` | Purpose | Review it for |
+|---|---|---|
+| `01-architecture-breakdown.md` | Components, responsibilities, connections, system diagram, integrations and open architectural questions | Missing owners, incorrect boundaries, hidden integrations and designs that do not represent your intent |
+| `02-phased-build-plan.md` | MVP, v1 and v2 goals; included and deferred work; rationale, risks and measurable definitions of done | Whether the first phase is useful, deferrals are deliberate and each completion test is observable |
+| `03-task-backlog.md` | Prioritized, phase-grouped work with role assignments, dependencies and time-boxed spikes | Whether work is estimable, dependencies are sensible and uncertainty is investigated rather than concealed |
+
+Open **all three files** before approving. They are already on disk at this review boundary.
+For the [saved-search example](/product-tour/#project-blueprint), ask whether CSV export belongs
+in the first useful release, whether the export component owns formatting rather than storage,
+and whether the backlog leaves an investigation for any unresolved external integration.
+
+A useful revision request is: “The first phase must export existing saved searches, but must not
+add account sharing. Update all three documents consistently and return them for review.”
+Approval must cover all three documents without unresolved objections. It does not authorize
+arbitrary later scope expansion or a merge.
+
+## Understand the two planning scales
+
+The decomposition backlog is **project planning**. Its tasks can represent one-to-five-day pieces
+of work. A later feature's execution plan breaks a selected change into much smaller, verifiable
+tasks. They are not interchangeable even though both live under `plans/`.
+
+The three named greenfield documents remain Markdown. They are not legacy feature artifacts
+waiting for automatic HTML conversion. New full-lane feature and sprint work has a separate
+[typed specification-and-plan contract](/guides/review-artifacts/).
+
+## Confirm initialization, then choose work
+
+After approval, the populator derives `CONTEXT.md`, stack, coding standards, security controls,
+questions, tasks, decisions and supporting project records from the saved inputs. Inspect the
+reported file tree and resolved versus deferred questions. Successful completion writes the
+`<!--INITIALIZED-->` body marker, preserves the activation frontmatter, and removes the temporary
+interview directory. A marker alone is not evidence that the documents are accurate.
+
+Start a fresh host session and run its doctor command as described in
+[Protect your first repository](/getting-started/quickstart/). Then select one backlog item and
+follow [Build a feature](/guides/feature-lane/). Do not ask the agent to implement the entire
+project merely because the interview is complete.
+
+## Resume, revise, or reconcile
+
+Re-entering decomposition after an interruption offers the existing draft's resume path.
+Resume preserves completed layers; abort leaves draft records intact. Restart can delete the
+working draft and draft ADRs, so review its proposed scope before explicitly choosing it.
+Do not delete records by hand to make the initialization check pass.
+
+Later, when architecture, roadmap, backlog or prior decisions disagree, `reconcile` reads these
+**exact three filenames**. It presents variances for your choice and records the outcome. It does
+not silently rewrite the documents, fix code or create an ADR itself. A replacement ADR uses the
+ADR lane. Preserve the filenames unless the owning product contract changes.
+
+For verified practice, follow Academy's prerequisites before
+[U04: initialize greenfield and brownfield projects](/academy/u04-initialize-projects/).
+The [decompose reference](/reference/skills/decompose/) contains the exact phase contract.

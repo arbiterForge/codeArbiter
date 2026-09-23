@@ -1,0 +1,26 @@
+---
+import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import Search from './Search.astro';
+import { primaryNavigation } from '../../scripts/journey-navigation';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pathname = Astro.url.pathname.replace(base, '');
+---
+<div class="ca-header">
+  <SiteTitle />
+  <nav class="ca-primary-nav" aria-label="Primary">
+    {primaryNavigation.map((item) => <a href={`${base}/${item.slug}/`} aria-current={pathname === `/${item.slug}/` ? 'page' : undefined}>{item.label}</a>)}
+  </nav>
+  <div class="ca-header-search"><Search /></div>
+  <div class="ca-header-social"><SocialIcons /></div>
+</div>
+<style>
+  .ca-header { display:flex; gap:1rem; align-items:center; height:100%; min-width:0; }
+  .ca-primary-nav { display:flex; align-items:center; gap:0.9rem; margin-inline:auto; }
+  .ca-primary-nav a { color:var(--ca-ink-soft); text-decoration:none; font-size:0.83rem; white-space:nowrap; padding-block:0.8rem; }
+  .ca-primary-nav a:hover, .ca-primary-nav a[aria-current] { color:var(--ca-brand-bright); }
+  .ca-header-search { min-width:0; width:clamp(10rem,20vw,19rem); margin-inline-start:auto; }
+  .ca-header-social { display:flex; flex-shrink:0; }
+  @media (max-width:80rem) { .ca-primary-nav { display:none; } .ca-header-search { width:min(27rem,48vw); } }
+  @media (max-width:30rem) { .ca-header { gap:0.65rem; } .ca-header-social { display:none; } .ca-header-search { width:auto; flex:1; } }
+</style>

@@ -1,0 +1,95 @@
+---
+title: Resume and Recover Work
+description: "Distinguish interrupted work, stale evidence, missing artifact capability and uncertain transactions, then choose the smallest safe recovery."
+journey:
+  level: Practitioner
+  time: "Symptom-driven"
+  outcome: "Continue an existing feature or sprint without fabricating authority, losing records or repeating an uncertain write."
+  prerequisites:
+    - The affected repository and original artifact or operation identity
+  proof: "The coordinator reports a current binding and justified next action, or an explicit block with preserved evidence."
+---
+
+import RecoveryExplorer from '../../../components/RecoveryExplorer.astro';
+
+An interrupted conversation is not a reason to start a new project. First identify the repository,
+branch or worktree, existing slug, artifact format and last known operation. Keep the files and
+failure output. A short excerpt can help diagnosis; redact credentials, private remote URLs,
+user-home paths and confidential code before sharing it publicly.
+
+## Re-enter the owning lane
+
+Use the existing feature or sprint entry and name the original work. Explicit feature spellings
+are `/ca:feature`, `$ca-feature` and `/ca-feature`; sprint follows the same host-specific pattern.
+A useful instruction is: “Resume the existing saved-search export work. Inspect current state and
+report what is safe to continue. Do not recreate the artifacts or discard unrelated edits.”
+
+The lane must inspect durable state rather than infer progress from the previous chat. For typed
+work, the coordinator uses validated reads and current bindings. Browser inspection is useful to
+you, but opening an HTML file does not reconcile or approve anything.
+
+## Read the state before choosing a remedy
+
+| Observed state | What it establishes | Next boundary |
+|---|---|---|
+| Draft spec or draft-preview plan | Content exists, not execution authority | Complete its review/readiness/approval path |
+| `PENDING` task | Work has not been accepted | The engine must still establish eligibility and dependencies |
+| `IN_PROGRESS` after interruption | Work may have partly executed | Inspect changes and reconcile before redispatch |
+| `REVIEW` | Review-stage work exists | Fresh evidence and the owning scope's acceptance requirements still apply |
+| `BLOCKED` | A recorded condition prevents selection | Resolve the named condition; do not clear state merely to retry |
+| `ACCEPTED` | Acceptance was recorded | Check that the associated evidence and bindings are still current |
+
+A sprint may continue independent safe work while a task is blocked. Existing bounded recovery
+can try a genuinely different strategy within approved scope, but it cannot invent user authority,
+repeat an exhausted strategy indefinitely, or promote a task by changing a status label.
+An ordinary feature's attended checkpoints remain distinct from sprint authorization.
+
+## Match the diagnosis to the next action
+
+<RecoveryExplorer />
+
+### Installation and capability
+
+`CAPABILITY_MISSING`, `INVALID_INSTALLATION`, `PACKAGE_INTEGRITY`, `UNVERIFIED_PLATFORM` and
+`UNSUPPORTED_PLATFORM` are capability or package failures. Use doctor and the installed host's
+capability report to identify the exact package and platform. Reinstall a qualified package only
+when that diagnosis calls for it. Do not fetch an arbitrary binary, use a project-supplied engine,
+or set a PATH/environment override to bypass the installation-owned manifest.
+
+### Approval and concurrent changes
+
+`DRAFT_BINDING` and `AUTHORITY_UNVERIFIED` concern authority, not a broken installation.
+Return to the existing approval or evidence-capture boundary. Do not fabricate a receipt.
+`REVISION_CONFLICT` or `STALE_CURSOR` means a read no longer describes the current definition or
+a contributing record. Reread, reconsider the intended change, and obtain fresh contextual
+reads. Never force the previous write through.
+
+### Uncertain writes
+
+`RECOVERY_REQUIRED` or `COMMIT_OUTCOME_UNKNOWN` requires inspection of the recorded transaction
+using its operation ID. Preserve that ID and the original failure. Ask the owning workflow to
+inspect recovery status before retrying. Starting another write with a new operation ID can
+make an uncertain outcome worse. `LOCK_BUSY` is not permission to delete lock files.
+
+### Unsupported formats
+
+`UNSUPPORTED_VERSION` and `UNSUPPORTED_RENDERER` require a reviewed compatibility path. They do
+not authorize reinterpretation, raw JSON repair or replacement of an HTML pair with Markdown.
+Existing legacy Markdown pairs continue on their original path; explicit pair migration is a
+separate operation with drafts, retained legacy bytes and guarded rollback.
+
+## Verify the recovery
+
+Ask for the original artifact IDs, format, current revision/binding, any reconciled changes, and
+the next eligible task or remaining stop. Confirm required tests and reviews refer to the actual
+current change. A successful retry alone does not prove earlier records were preserved.
+
+If authority, capability or transaction outcome remains unknown, leave the work stopped and
+preserve the records. Restore lost governing files from known version-control or transaction
+history through the appropriate recovery path rather than reconstructing approval from chat.
+Do not manually edit HTML, receipts, protected task boards or append-only logs.
+
+The [format](/guides/review-artifacts/) and [troubleshooting](/guides/troubleshooting/) guides
+cover the adjacent boundaries. The repository's
+[migration and recovery contract](https://github.com/arbiterForge/codeArbiter/blob/main/docs/artifacts/migration-and-recovery.md)
+is the detailed current-source protocol, not proof that every installed release supports it.

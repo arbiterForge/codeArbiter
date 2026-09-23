@@ -24,6 +24,24 @@ doesn't cost you the earlier answers. Once all six layers are solid, the survivi
 written to the project's state directory and the project is marked initialized — only then does
 normal operation resume.
 
+## What you receive and approve
+
+Decomposition writes three project-planning deliverables under `.codearbiter/plans/`:
+
+| File | Job |
+|---|---|
+| `01-architecture-breakdown.md` | Components, boundaries, integrations and unresolved architectural choices |
+| `02-phased-build-plan.md` | MVP, v1 and v2 outcomes, deferrals, risks and measurable completion |
+| `03-task-backlog.md` | Prioritized, phase-grouped tasks, roles, dependencies and time-boxed spikes |
+
+Open and review all three. Explicit approval of the complete set precedes project-state
+population and the initialization lock. Later reconciliation locates these exact filenames;
+they remain Markdown and are distinct from typed feature execution plans.
+
+Use [Plan a new project](/guides/plan-a-new-project/) for preparation, examples, review criteria
+and safe resumption. `init --greenfield` is the canonical strategy selector; this command remains
+its compatibility entry.
+
 ## Usage
 
 ```
@@ -47,10 +65,11 @@ Layer 1 — Purpose. What problem does this project solve, in one sentence?
 "Scheduling tool" is broad — walk me through one signup, start to finish: who initiates it, what do
 they choose, what confirms it?
 ...
-[layers 2-6 continue across the session; each answer lands on disk as it's given]
+[layers 2-6 continue; each completed layer is persisted before the next begins]
 
-All six layers complete. Writing tech-stack.md, coding-standards.md, security-controls.md, and the
-rest of the doc set... CONTEXT.md marked initialized.
+All six layers complete. Writing the architecture breakdown, phased build plan and task backlog
+under .codearbiter/plans/. Open and review all three; population waits for your approval.
+[after explicit approval] Populating project context and confirming the initialization lock.
 ```
 
 ## When to reach for it

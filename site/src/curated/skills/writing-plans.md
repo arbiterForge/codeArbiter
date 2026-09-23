@@ -2,31 +2,42 @@
 entity: skills/writing-plans
 related: [commands/feature, commands/sprint, brainstorming, executing-plans]
 gates:
-  - gate: bijective coverage
-    when: before the plan is written to disk
-    effect: every acceptance criterion must map to at least one task, and every task must advance at least one criterion — a task covering nothing is scope creep and is cut
+  - gate: criterion coverage
+    when: before execution is authorized
+    effect: every required criterion must be covered and every task must advance agreed criteria; readiness and approval are separate from draft existence
 ---
 
 ## What it does
 
-This is the bridge between an approved spec and something the implementation engine can actually
-execute. The feature command routes here once a spec is approved, and an autonomous sprint routes
-here before execution begins. It breaks the spec into small, individually verifiable tasks — each
-with an exact file path and a concrete verification step — orders them by dependency, and proves
-every acceptance criterion is covered before the plan is written.
+Writing-plans connects a specification to executable work: tasks, exact paths, dependencies,
+checkpoints and concrete verification. The existing feature or sprint coordinator owns the
+handoff. This skill does not implement code.
 
-## Phases
+## Draft, readiness and approval
 
-1. Pull each acceptance criterion out of the spec word for word and give it a stable ID.
-2. Break the work into small tasks, each carrying an exact path, a concrete verification step, the
-   test-first obligation it maps to, and the criteria it advances.
-3. Order the tasks by dependency and mark the minimal shippable slice within them.
-4. Cross-check coverage both ways so nothing goes untested and nothing is added for no reason,
-   then write the finished plan to disk with every task's status initialized as pending.
+For new full-lane typed work, the specification owns stable acceptance-criterion IDs. The plan
+references those existing IDs rather than minting a second criterion list. Its `draft_preview`
+binding allows a draft to be inspected; it is not authority to execute.
+
+A structurally valid draft may still be incomplete. Readiness checks required content and
+coverage; the owning workflow then establishes the required approval and exact-content binding.
+Coverage is bidirectional and can be many-to-many, not a one-to-one mathematical bijection.
+
+Existing Markdown pairs remain on their exact legacy route. Do not retroactively impose the
+HTML lifecycle on an in-progress Markdown plan or migrate just one file.
+
+## What to review
+
+Check that every task names its affected paths, criterion references, dependencies and
+verification. A verification definition should identify the command's working directory,
+required test and expected observation. Reject a task that adds unrelated scope or relies on an
+invented command or result. Ask for unresolved prerequisites to remain explicit.
 
 ## Exits
 
-A finished plan clears the path to either the checkpointed batch coordinator or the autonomous
-implementation engine, which route every task through the test-first gate — this skill never hands
-off to that gate directly. An uncovered criterion, or a task with no path or verification step,
-keeps the plan from being written at all.
+The coordinator advances only after the relevant readiness, approval and binding gates. It
+selects the attended or autonomous execution path and retains the existing test and review
+boundaries. An incomplete draft is not made executable merely by writing it to disk.
+
+[Review specifications and plans](/guides/review-artifacts/) shows the human review procedure;
+[Resume and recover](/guides/resume-and-recover/) covers stale bindings and interrupted work.

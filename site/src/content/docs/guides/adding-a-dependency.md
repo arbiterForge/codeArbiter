@@ -119,11 +119,38 @@ If you edit `package.json` or a lock file directly, the H-07 advisory fires afte
 
 This is advisory only. It does not block the write. The install gate depends on using the command in the first place.
 
+## One-time inspection tools are a separate bounded case
+
+The owning command distinguishes adopting a dependency from an explicitly requested one-time
+inspection tool. The latter is available only when you named that tool in this session, it runs
+once for analysis, it is not wired into scripts/hooks/CI, and it changes no manifest, lockfile or
+committed artifact. Unclear cases take normal dependency review.
+
+For that bounded case, review the exact pinned command and approved registry before confirming.
+Prefer temporary cache and report locations. Afterward, inspect the manifest/lockfile paths with
+`git status --porcelain` and confirm they did not change. Downloading a tool is not the same as
+adopting it, but an unpinned `npx` invocation is not automatically exempt from review.
+
+A useful request is: “Run this specifically named tool once at the reviewed version for inspection
+only. Do not add it to the project or CI. Show the command and temporary report destination before
+running it.” The command's [bounded-tool contract](/reference/commands/add-dep/) owns the precise
+conditions.
+
+## Read a review outcome
+
+An illustrative review might say: “Version X was reviewed against this repository's allowed
+license identifiers and registry policy. The declared audit command reports a blocking advisory.
+Installation has not run.” This is a stop, not a cleared package because two earlier checks passed.
+
+On a cleared review, compare the exact package/version, policy, source and proposed install
+command with what actually lands. Do not substitute a different version after review or invent a
+CVE verdict for an example package.
+
 ## When Not to Use This Command
 
 - **Removing a dependency.** Use `/ca:fix` or `/ca:feature` and describe the removal.
 - **Updating an existing dependency as part of a code change.** Use `/ca:feature` or `/ca:fix`. Manifest changes reach the `dependency-reviewer` through the PR review at `/ca:pr`.
-- **Researching a package without a plan to install it.** Use `/ca:btw`.
+- **Researching a package without a plan to install it.** Ask the question directly and keep it read-only.
 
 ## Related
 
