@@ -8,8 +8,9 @@ distribution tag to its Git commit, source commit, package cohort digest, and
 archive digest. Promotion uses an expected-head lease and fails on drift.
 
 The repository owner must install GitHub repository rulesets matching
-`.github/codex-distribution-policy.json`: reject deletion or update of
-`ca-codex-dist-v*`; reject deletion and force-push of `ca-codex-marketplace`;
+`.github/codex-distribution-policy.json`: reject creation, deletion, and update of
+`ca-codex-dist-v*`; reject deletion, update, and force-push of
+`ca-codex-marketplace`;
 and grant the sole bypass to a dedicated GitHub App whose App ID is supplied as
 `CODEX_DISTRIBUTION_APP_ID` by the protected `codex-distribution` environment.
 The general GitHub Actions integration (actor 15368) is explicitly refused.

@@ -425,6 +425,9 @@ EOF
 }
 gh() {
   echo "gh $*" >> "$STUB_LOG"
+  if [ "$1" = "auth" ] && [ "${2:-}" = "setup-git" ] && [ "${STUB_FAIL_AUTH:-}" = "1" ]; then
+    return 1
+  fi
   if [ "$1" = "api" ]; then
     case " $* " in
       *"/releases?per_page=100"*)
@@ -871,7 +874,7 @@ class PublishExecutionTest(_ShellHarness):
     def _publish(self, tag, version="9.9.9", *, tag_at=None, release="none",
                   mark_latest="false", summary="", title_prefix="codeArbiter",
                   create_release="true", package_host="", fail_tag=False,
-                  tag_object=None, release_lag=0):
+                  tag_object=None, release_lag=0, fail_auth=False):
         ls_remote = ""
         if tag_at:
             direct = tag_object or ("4" * 40 if package_host else "9" + "0" * 39)
@@ -884,6 +887,7 @@ class PublishExecutionTest(_ShellHarness):
                                "CREATE_RELEASE": create_release,
                                "PACKAGE_HOST": package_host,
                                "STUB_RELEASE_LAG": str(release_lag),
+                               "STUB_FAIL_AUTH": "1" if fail_auth else "0",
                                "STUB_FAIL_TAG": "1" if fail_tag else "0"},
                          ls_remote=ls_remote, release=release, tagname=tag)
 
@@ -894,6 +898,14 @@ class PublishExecutionTest(_ShellHarness):
         self.assertIn("git tag -a v9.9.9", log)
         self.assertIn("git push origin refs/tags/v9.9.9", log)
         self.assertIn("gh release create v9.9.9", log)
+
+    def test_failed_publisher_git_auth_aborts_before_tag_or_release(self):
+        proc, log, _ = self._publish("ca-codex-v9.9.9", fail_auth=True)
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("gh auth setup-git", log)
+        self.assertNotIn("git tag -a", log)
+        self.assertNotIn("git push", log)
+        self.assertNotIn("gh release create", log)
 
     def test_every_namespace_publishes_fresh(self):
         # Proves the namespace parsing, which is the one thing the four lanes do
@@ -2814,7 +2826,8 @@ class TagReceiptExecutionTest(_ShellHarness):
         # Execute the real publish body with a failed Release API mutation.
         # Then model the separately asserted always-step scheduling.
         before = (
-            "gh() { if [ \"$1\" = api ]; then printf '[[]]\\n'; else return 1; fi; }\n"
+            "gh() { if [ \"$1\" = api ]; then printf '[[]]\\n'; "
+            "elif [ \"$1 $2\" = 'auth setup-git' ]; then return 0; else return 1; fi; }\n"
             "set +e\n(\n" + _action_step("Create the tag and GitHub Release") +
             "\n)\nPUBLISH_EXIT=$?\n[ \"$PUBLISH_EXIT\" -ne 0 ] || exit 99\n")
         proc, log, _ = self._capture(before=before)
@@ -3053,6 +3066,18 @@ class DeclaredPreTagExecutionTest(_ShellHarness):
 
 class StructuredArtifactPublicationTest(unittest.TestCase):
     """AC-04/AC-10: publication consumes and reads back one exact CI cohort."""
+
+    def test_codex_tag_pushes_use_the_dedicated_publisher_credential(self):
+        for job in ("release-codex", "auto-release-codex"):
+            with self.subTest(job=job):
+                checkout = re.search(r"(?ms)^      - uses: actions/checkout@.*?"
+                                     r"(?=^      - |\Z)", _jobs()[job]).group(0)
+                self.assertIn("persist-credentials: false", checkout)
+        action = PUBLISH_ACTION.read_text(encoding="utf-8")
+        publish = action.split("name: Create the tag and GitHub Release", 1)[1]
+        self.assertIn("gh auth setup-git", publish)
+        self.assertLess(publish.index("gh auth setup-git"),
+                        publish.index('git push origin "refs/tags/$TAG"'))
 
     def test_release_lanes_use_the_protected_exact_commit_cohort(self):
         text = _release()

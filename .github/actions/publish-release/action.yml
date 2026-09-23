@@ -330,6 +330,9 @@ runs:
         PACKAGE_HOST: ${{ inputs.package-host }}
       run: |
         set -euo pipefail
+        # The publisher App token must own Git credentials before either tag
+        # push; an actions/checkout job token must never shadow it.
+        gh auth setup-git
         PACKAGE_HOST="${PACKAGE_HOST:-}"
         SUM="$SUMMARY"
         if [ -n "$SUM" ]; then TITLE="$TITLE_PREFIX $VER: $SUM"; else TITLE="$TITLE_PREFIX $VER"; fi

@@ -6,7 +6,9 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -15,6 +17,20 @@ from unittest import mock
 
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "core" / "pysrc"))
+from _gitexec import _ROOT_OVERRIDE_ENV, root_bound_git_env  # noqa: E402
+
+
+def git_run(argv, **kwargs):
+    environment = kwargs.pop("env", None)
+    clean = root_bound_git_env()
+    if environment is not None:
+        clean.update(environment)
+    for name in _ROOT_OVERRIDE_ENV:
+        clean.pop(name, None)
+    return subprocess.run(argv, env=clean, **kwargs)
+
+
 SPEC = importlib.util.spec_from_file_location(
     "build_host_packages", REPO / "tools" / "build-host-packages.py"
 )
@@ -90,14 +106,14 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.source = self.root / "source"
         (self.source / ".agents/plugins").mkdir(parents=True)
         (self.source / ".agents/plugins/marketplace.json").write_bytes(self.catalog)
-        subprocess.run(["git", "init", "--quiet"], cwd=self.source, check=True)
-        subprocess.run(["git", "add", "."], cwd=self.source, check=True)
-        environment = {**__import__("os").environ, "GIT_AUTHOR_NAME":"test",
+        git_run(["git", "init", "--quiet"], cwd=self.source, check=True)
+        git_run(["git", "add", "."], cwd=self.source, check=True)
+        environment = {**os.environ, "GIT_AUTHOR_NAME":"test",
             "GIT_AUTHOR_EMAIL":"test@example.invalid","GIT_COMMITTER_NAME":"test",
             "GIT_COMMITTER_EMAIL":"test@example.invalid"}
-        subprocess.run(["git", "commit", "--quiet", "-m", "source"], cwd=self.source,
+        git_run(["git", "commit", "--quiet", "-m", "source"], cwd=self.source,
                        env=environment, check=True)
-        self.source_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=self.source,
+        self.source_commit = git_run(["git", "rev-parse", "HEAD"], cwd=self.source,
             check=True, capture_output=True, text=True).stdout.strip()
         release = b'{"format":"codearbiter.artifact-release/0.1.0"}\n'
         binary = b"qualified-native-binary"
@@ -112,6 +128,21 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         }
         self.archive = self.package_root / "codearbiter-ca-codex-9.8.7.tar.gz"
         self._write_package(self.members)
+
+    def test_fixture_git_commands_ignore_inherited_repository_location(self):
+        environment = dict(os.environ)
+        environment["GIT_DIR"] = str(self.root / "unrelated.git")
+        environment["GIT_WORK_TREE"] = str(self.root)
+        environment["GIT_INDEX_FILE"] = str(self.root / "unrelated.index")
+        result = subprocess.run(
+            [sys.executable, __file__,
+             "CodexMarketplaceDistributionTests.test_fixture_repository_is_under_its_own_root"],
+            env=environment, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_fixture_repository_is_under_its_own_root(self):
+        self.assertTrue((self.source / ".git").exists())
 
     def _write_package(self, members: dict[str, bytes]):
         version = json.loads(members["plugins/ca-codex/.codex-plugin/plugin.json"])["version"]
@@ -217,7 +248,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
 
     def test_git_promotion_is_ordered_immutable_and_fail_closed(self):
         remote = self.root / "remote.git"
-        subprocess.run(["git", "init", "--bare", str(remote)], check=True,
+        git_run(["git", "init", "--bare", str(remote)], check=True,
                        capture_output=True)
 
         # Qualification failure is observed before either remote ref can exist.
@@ -229,7 +260,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 catalog_url="https://github.com/arbiterForge/codeArbiter.git",
                 version="9.8.7", work=self.root / "failed", push=True,
             )
-        self.assertEqual("", subprocess.run(
+        self.assertEqual("", git_run(
             ["git", "--git-dir", str(remote), "show-ref"], check=False,
             capture_output=True, text=True, encoding="utf-8",
         ).stdout)
@@ -241,7 +272,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             catalog_url="https://github.com/arbiterForge/codeArbiter.git",
             version="9.8.7", work=self.root / "promoted", push=True,
         )
-        refs = subprocess.run(
+        refs = git_run(
             ["git", "--git-dir", str(remote), "show-ref"], check=True,
             capture_output=True, text=True, encoding="utf-8",
         ).stdout
@@ -254,17 +285,17 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             version="9.8.7", work=self.root / "advanced", push=True,
             advance_channel=True, expected_marketplace_head=None,
         )
-        refs = subprocess.run(["git","--git-dir",str(remote),"show-ref"],check=True,
+        refs = git_run(["git","--git-dir",str(remote),"show-ref"],check=True,
             capture_output=True,text=True,encoding="utf-8").stdout
         self.assertIn(result["marketplace_commit"], refs)
-        catalog = json.loads(subprocess.run([
+        catalog = json.loads(git_run([
             "git", "--git-dir", str(remote), "show",
             f'{result["marketplace_commit"]}:.agents/plugins/marketplace.json',
         ], check=True, capture_output=True, text=True, encoding="utf-8").stdout)
         self.assertEqual(
             result["distribution_commit"], catalog["plugins"][0]["source"]["sha"]
         )
-        ledger = json.loads(subprocess.run([
+        ledger = json.loads(git_run([
             "git", "--git-dir", str(remote), "show",
             f'{result["marketplace_commit"]}:{PROMOTER.LEDGER_PATH}',
         ], check=True, capture_output=True, text=True, encoding="utf-8").stdout)
@@ -300,7 +331,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 version="9.8.6", work=self.root / "rollback", push=True,
                 advance_channel=True, expected_marketplace_head=result["marketplace_commit"],
             )
-        after_rollback = subprocess.run(
+        after_rollback = git_run(
             ["git", "--git-dir", str(remote), "show-ref"], check=True,
             capture_output=True, text=True, encoding="utf-8",
         ).stdout
@@ -321,7 +352,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 catalog_url="https://github.com/arbiterForge/codeArbiter.git",
                 version="9.8.7", work=self.root / "replacement", push=True,
             )
-        after = subprocess.run(
+        after = git_run(
             ["git", "--git-dir", str(remote), "show-ref"], check=True,
             capture_output=True, text=True, encoding="utf-8",
         ).stdout
@@ -363,7 +394,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
 
     def test_competing_marketplace_update_wins_and_expected_head_lease_fails(self):
         remote = self.root / "race.git"
-        subprocess.run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
+        git_run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
         current = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
             source_repo=self.source, source_commit=self.source_commit,
@@ -393,18 +424,18 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             nonlocal competitor_head
             if args and args[0] == "push" and str(args[-1]).endswith(PROMOTER.MARKETPLACE_REF):
                 competitor = self.root / "competitor"
-                subprocess.run(["git", "clone", "--quiet", str(remote), str(competitor)], check=True)
-                subprocess.run(["git", "-C", str(competitor), "checkout", "--quiet", "ca-codex-marketplace"], check=True)
-                subprocess.run(["git", "-C", str(competitor), "config", "user.email", "race@example.invalid"], check=True)
-                subprocess.run(["git", "-C", str(competitor), "config", "user.name", "Race"], check=True)
+                git_run(["git", "clone", "--quiet", str(remote), str(competitor)], check=True)
+                git_run(["git", "-C", str(competitor), "checkout", "--quiet", "ca-codex-marketplace"], check=True)
+                git_run(["git", "-C", str(competitor), "config", "user.email", "race@example.invalid"], check=True)
+                git_run(["git", "-C", str(competitor), "config", "user.name", "Race"], check=True)
                 (competitor / "competitor.txt").write_text("wins\n", encoding="utf-8")
-                subprocess.run(["git", "-C", str(competitor), "add", "competitor.txt"], check=True)
-                subprocess.run(["git", "-C", str(competitor), "commit", "--quiet", "-m", "competing update"], check=True)
-                competitor_head = subprocess.run(
+                git_run(["git", "-C", str(competitor), "add", "competitor.txt"], check=True)
+                git_run(["git", "-C", str(competitor), "commit", "--quiet", "-m", "competing update"], check=True)
+                competitor_head = git_run(
                     ["git", "-C", str(competitor), "rev-parse", "HEAD"], check=True,
                     capture_output=True, text=True, encoding="utf-8",
                 ).stdout.strip()
-                subprocess.run(["git", "-C", str(competitor), "push", "--quiet", "origin", "HEAD:refs/heads/ca-codex-marketplace"], check=True)
+                git_run(["git", "-C", str(competitor), "push", "--quiet", "origin", "HEAD:refs/heads/ca-codex-marketplace"], check=True)
             return real_git(repo, *args, **kwargs)
 
         with mock.patch.object(PROMOTER, "_git", side_effect=racing_git):
@@ -416,7 +447,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                     version="9.8.8", work=self.root / "race-channel", push=True,
                     advance_channel=True, expected_marketplace_head=current["marketplace_commit"],
                 )
-        observed = subprocess.run(
+        observed = git_run(
             ["git", "--git-dir", str(remote), "rev-parse", "refs/heads/ca-codex-marketplace"],
             check=True, capture_output=True, text=True, encoding="utf-8",
         ).stdout.strip()
@@ -457,7 +488,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
     def test_catalog_comes_from_exact_source_object_not_mutable_checkout(self):
         (self.source / ".agents/plugins/marketplace.json").write_text("{}\n")
         remote = self.root / "source-object.git"
-        subprocess.run(["git","init","--bare",str(remote)],check=True,capture_output=True)
+        git_run(["git","init","--bare",str(remote)],check=True,capture_output=True)
         result = PROMOTER.promote(package_root=self.package_root,cohort_sha256=self.receipt_sha256,
             source_repo=self.source,source_commit=self.source_commit,remote_url=str(remote),
             catalog_url="https://github.com/arbiterForge/codeArbiter.git",version="9.8.7",
@@ -479,6 +510,8 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             "restricted_publisher": True, "expected_head_lease": True,
         }, policy["required_controls"])
         docs = (REPO / ".github/CODEX_DISTRIBUTION.md").read_text()
+        self.assertRegex(docs, r"reject creation, deletion, and update of\s+`ca-codex-dist-v\*`")
+        self.assertRegex(docs, r"reject deletion, update, and force-push of\s+`ca-codex-marketplace`")
         self.assertIn("not\nevidence that the remote rules", docs)
         self.assertIn("fails closed", docs)
         self.assertIn("expected-head lease", docs)

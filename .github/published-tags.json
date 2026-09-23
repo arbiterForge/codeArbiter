@@ -26,7 +26,10 @@
     "into plugins/ca-codex/CHANGELOG.md. Backfilled 2026-08-08 by composing each",
     "section directly from that commit's own CHANGELOG: footer - grounded, not",
     "invented - then tagging normally. See plugins/ca-codex/CHANGELOG.md history",
-    "for the reconstruction commit."
+    "for the reconstruction commit.",
+    "The three 2026-09-23 UTC .8 receipts came from successful hosted release run",
+    "35806985218 attempt 1, tag-publication-auto-release[-codex|-pi] artifacts;",
+    "their identities matched independently read remote annotated refs."
   ],
   "namespaces": [
     "v*",
@@ -799,6 +802,21 @@
     "ca-pi-v0.14.7": {
       "object_sha": "a3fcb053793ee5694083c2025c5e658b9bf995e7",
       "commit_sha": "5c876dd885598c248fa777e951dac4e628688d73",
+      "object_type": "tag"
+    },
+    "v2.21.8": {
+      "commit_sha": "32e3496ae2d7ab3b2373ee669871def3228dedc4",
+      "object_sha": "3264ddc4ad207c44a947cb58f5d39c9e37c850c5",
+      "object_type": "tag"
+    },
+    "ca-codex-v0.13.8": {
+      "commit_sha": "32e3496ae2d7ab3b2373ee669871def3228dedc4",
+      "object_sha": "8012d08b3e23ec1f11e0c634384b48850c85b8a7",
+      "object_type": "tag"
+    },
+    "ca-pi-v0.14.8": {
+      "commit_sha": "32e3496ae2d7ab3b2373ee669871def3228dedc4",
+      "object_sha": "3c33e9c443853f802c3283260169af4ba2f7e7fd",
       "object_type": "tag"
     }
   }
