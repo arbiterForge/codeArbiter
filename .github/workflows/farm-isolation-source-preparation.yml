@@ -1,0 +1,37 @@
+name: Farm isolation source preparation (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/farm-isolation-source-preparation.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: cf90ce4d79c5d87cb88f163535c1035da2315815
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture committed source without executing product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = cf90ce4d79c5d87cb88f163535c1035da2315815
+          OUT="$RUNNER_TEMP/farm-isolation-source"
+          mkdir "$OUT"
+          git archive --format=zip --output="$OUT/source.zip" HEAD
+          git bundle create "$OUT/source.bundle" HEAD
+          git rev-parse HEAD > "$OUT/commit.txt"
+          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
+          cd "$OUT"
+          sha256sum source.zip source.bundle > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: farm-isolation-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/farm-isolation-source/
+          if-no-files-found: error
+          retention-days: 3
