@@ -6,6 +6,33 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.14] - 2026-09-24
+
+### Fixed
+
+- Publish the exact qualified Codex payload as `@arbiterforge/ca-codex`, verify
+  its registry integrity and provenance, and only then point the protected
+  marketplace channel at that exact version.
+- Cold-install the public npm package through real Codex marketplaces at both
+  supported host boundaries and require its installation-pinned artifact engine
+  to answer capabilities before the release and marketplace channel can advance.
+- Keep source-development host checks distinct from qualified consumer-package
+  checks so the checkout's intentionally absent promoted binaries are not
+  mistaken for a release-package failure.
+
+## [0.13.13] - 2026-09-24
+
+### Fixed
+
+- Correct first-release re-entry after a declaration lands through a normal
+  merge, squash, or fast-forward. An empty adoption-bounded payload window
+  now requires an explicit confirm-or-replace decision, never silent widening.
+- Require successful release-tree inspection and empty porcelain output at
+  every direct clean-tree gate. Failed or timed-out probes stop before the
+  next operation instead of being mistaken for a clean tree.
+- Exercise the installed release guards and declaration/ledger re-entry with
+  real consumer histories, and distinguish partial fixtures from full journeys.
+
 ## [0.13.12] - 2026-09-23
 
 ### Fixed

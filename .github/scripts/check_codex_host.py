@@ -39,11 +39,15 @@ right on a laptop and wrong on a merge gate.
 Usage:
     python .github/scripts/check_codex_host.py          # audit, JSON to stdout
     python .github/scripts/check_codex_host.py --json   # same, machine-readable only
+    python .github/scripts/check_codex_host.py --npm-marketplace-version X.Y.Z
+        # cold-install the exact public npm package and require artifact capability
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -92,7 +96,65 @@ def expected_version() -> str:
     return json.loads(MANIFEST.read_text(encoding="utf-8"))["version"]
 
 
-def check_install(home: Path) -> list[dict]:
+def _installed_member_errors(plugin_root: Path, metadata_path: Path) -> list[str]:
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        members = metadata["members"]
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        return [f"qualified npm member receipt is unreadable: {error}"]
+    if not isinstance(members, dict) or not members:
+        return ["qualified npm member receipt is empty or malformed"]
+    expected: dict[str, dict] = {}
+    errors: list[str] = []
+    for name, receipt in members.items():
+        if not isinstance(name, str) or not name.startswith("package/"):
+            errors.append(f"invalid qualified npm member name: {name!r}")
+            continue
+        relative = Path(*name.removeprefix("package/").split("/"))
+        if relative.is_absolute() or ".." in relative.parts or not relative.parts:
+            errors.append(f"unsafe qualified npm member name: {name!r}")
+            continue
+        if (not isinstance(receipt, dict)
+                or not isinstance(receipt.get("size"), int)
+                or not isinstance(receipt.get("sha256"), str)):
+            errors.append(f"invalid qualified npm member receipt: {name!r}")
+            continue
+        expected[relative.as_posix()] = receipt
+    observed: dict[str, Path] = {}
+    try:
+        installed_root = plugin_root.resolve(strict=True)
+        for path in plugin_root.rglob("*"):
+            if path.is_symlink():
+                errors.append(f"installed package contains linked member: {path}")
+                continue
+            if not path.is_file():
+                continue
+            resolved = path.resolve(strict=True)
+            resolved.relative_to(installed_root)
+            observed[path.relative_to(plugin_root).as_posix()] = path
+    except (OSError, RuntimeError, ValueError) as error:
+        errors.append(f"installed package member walk failed: {error}")
+        return errors
+    if set(observed) != set(expected):
+        missing = sorted(set(expected) - set(observed))
+        extra = sorted(set(observed) - set(expected))
+        errors.append(f"installed member set drifted; missing={missing}; extra={extra}")
+    for name in sorted(set(observed) & set(expected)):
+        try:
+            data = observed[name].read_bytes()
+        except OSError as error:
+            errors.append(f"installed member is unreadable: {name}: {error}")
+            continue
+        receipt = expected[name]
+        if (len(data) != receipt["size"]
+                or hashlib.sha256(data).hexdigest() != receipt["sha256"]):
+            errors.append(f"installed member bytes drifted: {name}")
+    return errors
+
+
+def check_install(home: Path, *, marketplace_source: Path = REPO,
+                  require_artifact_capability: bool = False,
+                  qualified_npm_metadata: Path | None = None) -> list[dict]:
     """Install the CHECKED-OUT plugin through the real host and read it back."""
     results: list[dict] = []
 
@@ -100,7 +162,9 @@ def check_install(home: Path) -> list[dict]:
         results.append({"code": code, "status": "pass" if ok else "fail",
                         **({"detail": detail} if detail and not ok else {})})
 
-    added = _run(["codex", "plugin", "marketplace", "add", str(REPO)], home)
+    added = _run(
+        ["codex", "plugin", "marketplace", "add", str(marketplace_source)], home
+    )
     record("CODEX-HOST-MARKETPLACE", added.returncode == 0,
            (added.stderr or added.stdout).strip()[-400:])
     if added.returncode != 0:
@@ -225,6 +289,50 @@ def check_install(home: Path) -> list[dict]:
             route_detail,
         )
 
+        if qualified_npm_metadata is not None:
+            member_errors = _installed_member_errors(
+                plugin_root, qualified_npm_metadata
+            )
+            record(
+                "CODEX-HOST-PACKAGE-MEMBERS",
+                not member_errors,
+                "; ".join(member_errors)[:400],
+            )
+
+        # Issue #839. A qualified consumer package includes a native capability,
+        # not merely Python hooks and Markdown resources. Load the installed
+        # bridge from the cache copy and make a real offline capabilities call
+        # through its installation-pinned helper. Missing, linked, substituted,
+        # or digest-mismatched payloads remain failures in the bridge itself.
+        if not require_artifact_capability:
+            return results
+        try:
+            bridge_path = plugin_root / "hooks" / "_artifactlib.py"
+            spec = importlib.util.spec_from_file_location(
+                "codearbiter_installed_artifact_bridge", bridge_path
+            )
+            if spec is None or spec.loader is None:
+                raise RuntimeError("installed artifact bridge is unavailable")
+            bridge = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(bridge)
+            client = bridge.ArtifactClient(
+                home, bridge.helper_installation(str(bridge_path))
+            )
+            capabilities = client.call("capabilities")
+            capable = (
+                isinstance(capabilities, dict)
+                and capabilities.get("repository_operations_available") is True
+                and capabilities.get("host_default_enabled") is True
+                and capabilities.get("runtime_downloads") is False
+            )
+            record(
+                "CODEX-HOST-ARTIFACT-CAPABILITY",
+                capable,
+                "installed artifact engine did not expose the required offline capability",
+            )
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as error:
+            record("CODEX-HOST-ARTIFACT-CAPABILITY", False, str(error)[:400])
+
     return results
 
 
@@ -232,7 +340,28 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="ca-codex real-host install gate (#408)")
     parser.add_argument("--json", action="store_true",
                         help="print only the JSON report")
+    parser.add_argument(
+        "--npm-marketplace-version",
+        help="install the exact @arbiterforge/ca-codex version through an npm marketplace",
+    )
+    parser.add_argument(
+        "--require-artifact-capability", action="store_true",
+        help="require the installed native artifact engine to answer capabilities",
+    )
+    parser.add_argument(
+        "--qualified-npm-metadata", type=Path,
+        help="exact trusted npm member receipt to compare with the installed cache",
+    )
     arguments = parser.parse_args(argv)
+
+    if arguments.npm_marketplace_version is not None:
+        if arguments.npm_marketplace_version != expected_version():
+            parser.error("npm marketplace version must equal the checked-out manifest version")
+        arguments.require_artifact_capability = True
+        if arguments.qualified_npm_metadata is None:
+            parser.error("npm marketplace verification requires qualified npm metadata")
+    elif arguments.qualified_npm_metadata is not None:
+        parser.error("qualified npm metadata requires npm marketplace verification")
 
     required = os.environ.get("CA_REQUIRE_CODEX") == "1"
     version = codex_version()
@@ -256,7 +385,33 @@ def main(argv=None) -> int:
         shutil.rmtree(CODEX_HOME, ignore_errors=True)
     CODEX_HOME.mkdir(parents=True, exist_ok=True)
     try:
-        results = check_install(CODEX_HOME)
+        marketplace_source = REPO
+        if arguments.npm_marketplace_version is not None:
+            marketplace_source = CODEX_HOME / "marketplace"
+            catalog = marketplace_source / ".agents" / "plugins" / "marketplace.json"
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text(json.dumps({
+                "name": "codearbiter",
+                "plugins": [{
+                    "name": "ca-codex",
+                    "source": {
+                        "source": "npm",
+                        "package": "@arbiterforge/ca-codex",
+                        "version": arguments.npm_marketplace_version,
+                        "registry": "https://registry.npmjs.org",
+                    },
+                    "policy": {
+                        "installation": "AVAILABLE",
+                        "authentication": "ON_INSTALL",
+                    },
+                }],
+            }, sort_keys=True) + "\n", encoding="utf-8")
+        results = check_install(
+            CODEX_HOME,
+            marketplace_source=marketplace_source,
+            require_artifact_capability=arguments.require_artifact_capability,
+            qualified_npm_metadata=arguments.qualified_npm_metadata,
+        )
     finally:
         shutil.rmtree(CODEX_HOME, ignore_errors=True)
 

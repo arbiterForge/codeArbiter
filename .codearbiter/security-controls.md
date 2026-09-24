@@ -135,7 +135,36 @@ six named values belonging to two repository-scoped GitHub Apps:
 `CODEX_DISTRIBUTION_APP_PRIVATE_KEY`, `CODEX_RULESET_VERIFIER_APP_ID`,
 `CODEX_RULESET_VERIFIER_APP_INSTALLATION_ID`, and
 `CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY`. No repository, organization, shell,
-or file-backed fallback is permitted.
+or file-backed fallback is permitted for those GitHub App values.
+
+The owner has separately authorized the existing organization Actions secret
+`NPMJS_TOKEN` for the first `@arbiterforge/ca-codex` publication. GitHub reports
+that secret as available to all organization repositories; its npm package and
+organization privileges have not been inspected. That confirmed broad GitHub
+Actions availability and unknown npm privilege scope are explicit residual
+risks, not evidence that the protected environment narrows either one. The
+secret is passed by name only to the exact Codex publisher call and becomes
+`NODE_AUTH_TOKEN` only in the authenticated publish step. It is never inherited,
+printed, written to an artifact or output, or exposed to the public cold-install
+step. This repository contract does not itself authorize a release run.
+
+The Codex npm tarball is a deterministic projection of the exact retained,
+qualified Codex cohort member; no checkout rebuild, lifecycle script, or runtime
+download participates. Publication is fixed to `@arbiterforge/ca-codex`, an
+exact stable version, and `https://registry.npmjs.org/`, uses npm provenance and
+scripts-disabled publication. The protected release jobs grant `id-token: write`
+at job scope, so GitHub OIDC is available to every step in those jobs, including
+registry readback and the token-free cold-install steps that execute npm and Codex
+code. That broader-than-publish availability is an explicit residual risk; the
+workflow requests an OIDC token only for npm provenance, but step-level isolation
+is not enforced by GitHub permissions.
+The marketplace channel cannot advance until registry integrity, npm's supported
+signature verifier, the SLSA subject/source commit, the independently trusted
+cohort receipt digest, and source archive digest all agree. After readback, a
+token-free npm configuration cold-installs the exact public version through real
+Codex marketplaces at both supported host boundaries and requires the
+installation-pinned artifact engine to answer capabilities. Missing, substituted,
+linked, digest-mismatched, private-only, or differently sourced bytes fail closed.
 
 The publisher App has Actions read, Contents read/write, and Metadata read. It
 is the sole ruleset bypass actor but has no Administration permission. The

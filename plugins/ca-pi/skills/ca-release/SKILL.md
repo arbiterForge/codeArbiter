@@ -21,11 +21,13 @@ Routes to the `release` skill, which resolves everything about the release from 
 
 ## Dry run
 
-`/ca-release --dry-run [target]` runs Flow steps 1 and 2 above — Pre-flight in full, then Version's
+`/ca-release --dry-run [target]` runs the read-only, locally evaluable portion of Pre-flight, then Version's
 read-only derivation: resolving the row, deriving the bump, classifying the window, and verifying
 `CHANGELOG:` footer completeness — then stops before step 3 and reports exactly what a real run would
-do: the target, the derived version and its rationale, the per-commit classification, and any blocker
-Pre-flight or Version would itself have hit. Steps 3 (Surfaces) and 4 (Tag) never run: no changelog
+do from current local refs: the target, the derived version and its rationale, the per-commit classification,
+and any locally evaluable blocker. It does not execute `git fetch`, `commit-gate`, or the declared suite,
+artifact, or post-bump checks, so the report names those limitations instead of claiming their verdicts.
+Steps 3 (Surfaces) and 4 (Tag) never run: no changelog
 edit, no manifest bump, no commit, no declared `pre-tag` check execution, no tag. The report also
 prints the resolved row's fields verbatim, which doubles as a way to validate a freshly authored
 `<project-root>/.codearbiter/release-targets.md` without tagging anything. Declared `pre-tag` checks
@@ -55,4 +57,4 @@ There is no version or `--auto` argument. The version is always derived from the
 
 ## Hard gate
 
-MUST NOT compose a tag on a red suite. MUST NOT guess the version — it is derived from the commit log and the declared manifests. MUST NOT auto-fill a missing `CHANGELOG:` footer. MUST NOT resolve an unrecognised or ambiguous target to a guess. MUST NOT write to the default branch or force-push. MUST NOT push the tag or publish a Release without explicit user authorization. MUST NOT write, commit, or tag anything under `--dry-run` — it stops before Version step 3's writes even reach the working tree. Any BLOCK may be bypassed only via `/ca-override`.
+MUST NOT compose a tag on a red suite. MUST NOT guess the version — it is derived from the commit log and the declared manifests. MUST NOT auto-fill a missing `CHANGELOG:` footer. MUST NOT resolve an unrecognised or ambiguous target to a guess. MUST NOT write to the default branch or force-push. MUST NOT push the tag or publish a Release without explicit user authorization. MUST NOT write, commit, or tag anything under `--dry-run` — including repository metadata through `git fetch`; it stops before Version step 3's writes reach the working tree. Any BLOCK may be bypassed only via `/ca-override`.

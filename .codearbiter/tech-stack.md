@@ -40,7 +40,7 @@ this file is the stale one; fix it here.
   feature and sprint work defaults to typed HTML from a qualified installed
   payload; existing Markdown authority remains exact-format. HTML farm use
   remains disabled pending its separate authority/release/model qualifications.
-- **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure.
+- **Codex release evidence** (`.github/scripts/check_codex_skill_resources.py`) - Python 3 standard-library validation on GitHub-hosted runners. It treats candidate bytes as inert, enforces bounded ZIP parsing, and validates manifest, front matter, resource closure, hooks, generated parity, and deterministic package identity without credentials or desktop infrastructure. Release publication additionally derives `@arbiterforge/ca-codex` from the exact qualified cohort, verifies exact npm integrity and provenance, and cold-installs that exact version through a real Codex marketplace before advancing the protected public channel.
 
 ## Runtime and Git support boundary
 

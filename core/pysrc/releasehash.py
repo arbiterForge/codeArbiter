@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # codeArbiter — executable release-command confirmation (A-2.10).
 #
-# A row's `pre-tag` commands and optional `release-build` are operator-authored
-# shell that `/ca:release` EXECUTES before composing a tag.
+# A row's `pre-tag`, `release-build`, `rebuild`, and `generate` commands are
+# operator-authored shell that `/ca:release` may execute before publication.
 # `.codearbiter/release-targets.md` is
 # marker-gated under H-22, so changing those commands already costs a fresh
 # authoring marker — but that gate is about WRITING the file. Nothing made the
@@ -31,11 +31,13 @@
 # file.
 #
 # Public API:
-#   pre_tag_digest(commands, release_build=None) -> str
+#   pre_tag_digest(commands, release_build=None, rebuild=None, generate=None)
+#       -> str
 #   confirmation_path(root, target) -> str
 #   read_confirmation(root, target) -> str | None
 #   record_confirmation(root, target, digest) -> str
-#   confirmation_state(root, target, commands, release_build=None) -> str
+#   confirmation_state(root, target, commands, release_build=None,
+#                      rebuild=None, generate=None) -> str
 #   main(argv) -> int
 #
 # CLI:
@@ -78,7 +80,7 @@ NEVER = "never-confirmed"
 NO_COMMANDS = "no-commands"
 
 
-def pre_tag_digest(commands, release_build=None):
+def pre_tag_digest(commands, release_build=None, rebuild=None, generate=None):
     """A stable digest of a row's executable release command inputs.
 
     ORDER-SENSITIVE on purpose. The commands run in declared order and a
@@ -91,10 +93,10 @@ def pre_tag_digest(commands, release_build=None):
     change to this construction cannot be mistaken for a content change
     by an old recorded value.
 
-    Rows without `release-build` deliberately retain the exact v1 digest and
-    marker identity, so existing confirmations do not churn. A present build
-    command is appended with a typed, length-prefixed record, so changing only
-    that command invalidates the same per-target confirmation marker.
+    Rows without any newly bound scalar command deliberately retain the exact
+    v1 digest and marker identity, so existing confirmations do not churn.
+    Each present scalar command is appended with a typed, length-prefixed
+    record, so changing only one invalidates the same per-target marker.
 
     Pure and non-raising: malformed values degrade conservatively to their
     absent forms rather than raising inside a release lane.
@@ -108,6 +110,10 @@ def pre_tag_digest(commands, release_build=None):
         parts.append(f"{len(command)}:{command}")
     if isinstance(release_build, str) and release_build:
         parts.append(f"release-build:{len(release_build)}:{release_build}")
+    if isinstance(rebuild, str) and rebuild:
+        parts.append(f"rebuild:{len(rebuild)}:{rebuild}")
+    if isinstance(generate, str) and generate:
+        parts.append(f"generate:{len(generate)}:{generate}")
     joined = "\n".join(parts)
     return hashlib.sha256(joined.encode("utf-8")).hexdigest()
 
@@ -162,22 +168,24 @@ def record_confirmation(root, target, digest):
     return path
 
 
-def confirmation_state(root, target, commands, release_build=None):
+def confirmation_state(root, target, commands, release_build=None,
+                       rebuild=None, generate=None):
     """One of `confirmed` / `changed` / `never-confirmed` / `no-commands`.
 
     `no-commands` is deliberately distinct from `confirmed`: a row that
-    declares neither pre-tag commands nor release-build has nothing to
-    confirm, and reporting it as confirmed would claim an operator approved
-    something that does not exist. A release-build-only row still requires
-    confirmation. The lane treats `no-commands` and `confirmed` as
+    declares none of pre-tag, release-build, rebuild, or generate has nothing
+    to confirm, and reporting it as confirmed would claim an operator approved
+    something that does not exist. A row with any one scalar command still
+    requires confirmation. The lane treats `no-commands` and `confirmed` as
     "proceed", but only one of them is a statement about human review.
     """
-    if not commands and not release_build:
+    if not commands and not release_build and not rebuild and not generate:
         return NO_COMMANDS
     recorded = read_confirmation(root, target)
     if recorded is None:
         return NEVER
-    return (CONFIRMED if recorded == pre_tag_digest(commands, release_build)
+    return (CONFIRMED if recorded == pre_tag_digest(
+        commands, release_build, rebuild, generate)
             else CHANGED)
 
 
@@ -187,7 +195,8 @@ def _row_executable_inputs(target, targets_path=None):
     row = next((r for r in rows if r["target"] == target), None)
     if row is None:
         return None
-    return row.get("pre_tag") or [], row.get("release_build")
+    return (row.get("pre_tag") or [], row.get("release_build"),
+            row.get("rebuild"), row.get("generate"))
 
 
 def main(argv=None):
@@ -207,26 +216,29 @@ def main(argv=None):
     if executable_inputs is None:
         sys.stderr.write(f"unknown release target: {target}\n")
         return 65
-    commands, release_build = executable_inputs
+    commands, release_build, rebuild, generate = executable_inputs
 
     if command == "digest":
-        print(pre_tag_digest(commands, release_build))
+        print(pre_tag_digest(commands, release_build, rebuild, generate))
         return 0
 
     if command == "record":
         path = record_confirmation(
-            root, target, pre_tag_digest(commands, release_build))
+            root, target, pre_tag_digest(
+                commands, release_build, rebuild, generate))
         print(f"recorded executable-command confirmation for {target}: {path}")
         return 0
 
-    state = confirmation_state(root, target, commands, release_build)
+    state = confirmation_state(
+        root, target, commands, release_build, rebuild, generate)
     print(state)
     if state in (CONFIRMED, NO_COMMANDS):
         return 0
     if state == CHANGED:
         sys.stderr.write(
             f"releasehash: {target}'s executable release commands have CHANGED "
-            "since they were last confirmed. Read every pre-tag and release-build "
+            "since they were last confirmed. Read every pre-tag, release-build, "
+            "rebuild, and generate "
             "command, and re-confirm with "
             f"`releasehash.py record {target}` before releasing. These commands "
             "are executed by the release lane, so a change nobody has read is "
@@ -234,7 +246,8 @@ def main(argv=None):
         return 1
     sys.stderr.write(
         f"releasehash: {target}'s executable release commands have never been "
-        f"confirmed. Read every pre-tag and release-build command, then run "
+        f"confirmed. Read every pre-tag, release-build, rebuild, and generate "
+        f"command, then run "
         f"`releasehash.py record {target}`.\n")
     return 2
 

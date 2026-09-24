@@ -710,7 +710,7 @@ class ConsumerFixtureTest(unittest.TestCase):
 #     whole `$PAYLOAD` column from being pulled in as a side effect;
 #   - a dotted module/attribute reference with no slash
 #     (`_releaselib.RELEASE_TAG_PREFIXES`, `MAJOR.MINOR.PATCH`).
-_PLACEHOLDER_PREFIX = r'(?:\$\{[A-Z_]+\}/|<[a-z][a-z-]*>/)?'
+_PLACEHOLDER_PREFIX = r'(?:\$\{[A-Z_]+\}/|\$PROJECT_ROOT/|<[a-z][a-z-]*>/)?'
 _PATH_REF_RE = re.compile(
     _PLACEHOLDER_PREFIX +
     r'(?:\.\./)*(?:[A-Za-z0-9_.*?-]+/)+[A-Za-z0-9_.*?-]+\.[A-Za-z0-9]+'
@@ -946,8 +946,9 @@ def _resolves(ref, plugin_root, consumer_root,
         if not _within_bounds(rel):
             return False
         return os.path.exists(os.path.join(plugin_root, *rel.split("/")))
-    if ref.startswith(project_prefix):
-        rel = ref[len(project_prefix):]
+    if ref.startswith(project_prefix) or ref.startswith("$PROJECT_ROOT/"):
+        rel = ref[len(project_prefix):] if ref.startswith(project_prefix) else \
+            ref[len("$PROJECT_ROOT/"):]
         if not _within_bounds(rel):
             return False
         if _project_dir_is_exempt(rel):
@@ -965,6 +966,8 @@ def _resolves(ref, plugin_root, consumer_root,
         return os.path.isfile(target)
     if not _within_bounds(ref):
         return False
+    if _project_dir_is_exempt(ref):
+        return True
     return os.path.exists(os.path.join(consumer_root, *ref.split("/")))
 
 
@@ -1788,20 +1791,15 @@ def _independent_last_tag(tags, prefix):
 
 
 def _parse_window_log(stdout):
-    """Parse `git log --pretty=format:%H%n%s%n%b%n----`'s output into a list
-    of `{"sha", "subject", "body"}` dicts, oldest-last (git's own order).
-    Entries are delimited by a line that is EXACTLY `----`, matching the
-    skill's own format string byte for byte."""
+    """Parse the skill's NUL-framed `git log` output into commit rows.
+    A printable body delimiter could appear in a commit message."""
     entries = []
-    for chunk in stdout.split("\n----\n"):
-        chunk = chunk.strip("\n")
-        if not chunk:
-            continue
-        lines = chunk.split("\n")
+    fields = stdout.split("\0")
+    for offset in range(0, len(fields) - 1, 3):
         entries.append({
-            "sha": lines[0],
-            "subject": lines[1] if len(lines) > 1 else "",
-            "body": "\n".join(lines[2:]).strip("\n"),
+            "sha": fields[offset].lstrip("\n"),
+            "subject": fields[offset + 1],
+            "body": fields[offset + 2].strip("\n"),
         })
     return entries
 
@@ -1996,7 +1994,8 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
     # invocation this driver runs, mirroring how a real host resolves that
     # placeholder at prompt-render time.
     plugin_root = os.path.dirname(os.path.dirname(core_lane.__file__))
-    root_mapping = {"${CLAUDE_PLUGIN_ROOT}": plugin_root}
+    root_mapping = {"${CLAUDE_PLUGIN_ROOT}": plugin_root,
+                    "$PROJECT_ROOT": consumer_root}
 
     _, tag_prefix, proc = _run_command_substitution(
         result["invocations"]["target_resolution_tag_prefix"], consumer_root,
@@ -2044,7 +2043,7 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
         argv = _substitute_argv(
             shlex.split(result["invocations"][label]),
             {"$EFFECTIVE_WINDOW": window, "$WINDOW": window,
-             "$PAYLOAD": payload})
+             "$PAYLOAD": payload, "$PROJECT_ROOT": consumer_root})
         # The current lane reloads the declared pathspec file into shell
         # positional parameters and passes them as quoted ``"$@"``.  This
         # no-shell driver must perform that one argv expansion explicitly;
@@ -2119,17 +2118,16 @@ def _execute_lane_sequence(skill_text, core_lane, consumer_root,
             fh.write(result["message"])
         argv = _substitute_argv(
             shlex.split(result["invocations"]["tag_message_composition"]),
-            {"${TAG_PREFIX}${VERSION}": result["tag_name"],
+            {"$RELEASE_TAG": result["tag_name"],
              "<message-file>": message_path})
         # A mapping key that no longer appears in the skill's spelling
         # substitutes NOTHING and raises nothing: `git tag -a` happily
-        # creates a ref literally named `${TAG_PREFIX}${VERSION}` and exits
+        # creates a ref literally named `$RELEASE_TAG` and exits
         # 0, so the drift surfaces several assertions later as "tag v1.3.0
         # does not exist" -- a true statement that names neither the cause
         # nor this line. Checking the substituted argv here reports the
         # drift where it happened. (This is not hypothetical: the key read
-        # `${TAG_PREFIX}MAJOR.MINOR.PATCH` until the skill adopted a
-        # `$VERSION` variable.)
+        # `${TAG_PREFIX}${VERSION}` until the skill adopted `$RELEASE_TAG`.)
         if result["tag_name"] not in argv:
             raise RuntimeError(
                 "the tag-name substitution did not apply -- the skill's "
@@ -3603,6 +3601,7 @@ class AdoptionBoundaryBackfillFirstReleaseTest(unittest.TestCase):
         mapping = {
             "{{PROJECT_DIR}}": self.lane.consumer_root,
             "{{PLUGIN_ROOT}}": self.plugin_root,
+            "$PROJECT_ROOT": self.lane.consumer_root,
         }
         return _run_command_substitution(
             self.invocation, self.lane.consumer_root, mapping)
@@ -3709,7 +3708,7 @@ def _extract_protected_branch_names(lane_text):
     return {m.group(1), m.group(2)}
 
 
-_PREREQUISITE_PATH_RE = re.compile(r'\{\{PROJECT_DIR\}\}/\.codearbiter/tech-stack\.md')
+_PREREQUISITE_PATH_RE = re.compile(r'\$PROJECT_ROOT/\.codearbiter/tech-stack\.md')
 
 
 def _extract_prerequisite_path(lane_text):
@@ -3729,7 +3728,7 @@ def _extract_prerequisite_path(lane_text):
     m = _PREREQUISITE_PATH_RE.search(lane_text)
     if m is None:
         raise RuntimeError(
-            "no {{PROJECT_DIR}}/.codearbiter/tech-stack.md path token "
+            "no $PROJECT_ROOT/.codearbiter/tech-stack.md path token "
             "found in this lane's prose -- the T-12 prerequisite check's "
             "own path is missing or reworded")
     return m.group(0)
@@ -3788,7 +3787,7 @@ class PrerequisiteRefusalTest(unittest.TestCase):
 
     def test_both_lanes_check_the_same_real_commit_gate_prerequisite(self):
         self.assertEqual(self.backfill_path_template, self.preflight_path_template)
-        self.assertIn("{{PROJECT_DIR}}", self.backfill_path_template)
+        self.assertIn("$PROJECT_ROOT", self.backfill_path_template)
         self.assertTrue(
             self.backfill_path_template.endswith(".codearbiter/tech-stack.md"))
 
@@ -3796,7 +3795,7 @@ class PrerequisiteRefusalTest(unittest.TestCase):
         lane = _BackfillFixture("t12-zero-state")
         try:
             rendered = self.backfill_path_template.replace(
-                "{{PROJECT_DIR}}", lane.consumer_root)
+                "$PROJECT_ROOT", lane.consumer_root)
             self.assertFalse(
                 os.path.isfile(rendered),
                 "build_consumer_repo's own tree must carry no tech-stack.md "
@@ -3825,7 +3824,7 @@ class PrerequisiteRefusalTest(unittest.TestCase):
                 "# Tech stack\n\ntest: npm test\nlint: npm run lint\n"
                 "secrets-scan: true\n")
             rendered = self.preflight_path_template.replace(
-                "{{PROJECT_DIR}}", lane.consumer_root)
+                "$PROJECT_ROOT", lane.consumer_root)
             self.assertTrue(
                 os.path.isfile(rendered),
                 "adding exactly the declared tech-stack.md must satisfy "
@@ -3985,22 +3984,13 @@ class BackfillBranchRefusalTest(unittest.TestCase):
 # `.codearbiter/reports/release-closure-journeys.md` for the full scenario
 # matrix and the #570-vs-#623 disposition. Three new classes:
 #
-#   ComposedFixLaneJourneyTest       one real consumer repo, driven through
-#                                     THREE #570 fixes in the sequence an
-#                                     operator would actually hit them
-#                                     (prerequisite refusal T-12, branch-
-#                                     scoped back-fill refusal T-13, ancestry
-#                                     refusal T-10/T-11), ending in a genuine
-#                                     clean pass that creates a real
-#                                     annotated tag through the
-#                                     #623-restructured Phase 2. Nothing
-#                                     elsewhere in this module chains these
-#                                     arms against a SINGLE repo in sequence
-#                                     -- each fix's own class (
-#                                     PrerequisiteRefusalTest,
-#                                     BackfillBranchRefusalTest,
-#                                     AncestryDocumentedFlowTest) proves it
-#                                     in isolation only.
+#   ComposedFixLaneJourneyTest       partial ancestry/tag command composition
+#                                     after explicit fixture setup. Its early
+#                                     file/branch assertions are premises,
+#                                     not release refusal evidence. The new
+#                                     test_release_workflow_followup.py suite
+#                                     executes the installed guards and the
+#                                     declaration/ledger/merge re-entry path.
 #   AncestryOldVsNewBehaviorTest      the OLD (pinned pre-sprint commit)
 #                                     lane run for real against the exact
 #                                     hazard #570 finding BODY-03 names,
@@ -4024,31 +4014,21 @@ class BackfillBranchRefusalTest(unittest.TestCase):
 
 
 class ComposedFixLaneJourneyTest(unittest.TestCase):
-    """T-20 (AC-09/AC-10/AC-11/AC-13): drives prerequisite refusal (T-12),
-    branch-scoped back-fill refusal (T-13), and ancestry refusal (T-10/
-    T-11) against ONE real consumer repository, in the order an actual
-    operator hits them, then a genuine clean pass that creates a real
-    annotated tag by re-running T-74/T-75's own `_execute_lane_sequence`
-    lane driver -- proving the #623-restructured Phase 2 still composes and
-    creates a tag at the end of this exact composed journey (cited, not a
-    second prose-structure check; `Phase2StructureTest`/T-17/T-18 already
-    hold the mutation-sensitive proof that the split is behavior-preserving
-    on its own).
+    """Partial ancestry/tag command composition after explicit fixture setup.
 
-    This is the composition proof item 3 of T-20's task description asks
-    for: each individual fix already has its own isolated class in this
-    module, but nothing before this class chains them against a single
-    repo -- proving an EARLIER refusal's fingerprint-preserving no-op
-    leaves the repo in a state the NEXT fix can still correctly act on, and
-    that a consumer who clears every refusal in order eventually reaches a
-    genuine, correctly-derived release.
+    The early stages establish missing-prerequisite and protected-branch
+    preconditions; they do not execute a release refusal or a commit gate.
+    Detection is executed read-only. Later stages exercise the extracted
+    ancestry and tag commands, not a hosted publisher or a complete release.
 
-    Reads the CANONICAL `core/surface/skills/release/SKILL.md` and
-    `core/pysrc/_releaselib.py`/`_gitexec.py` directly -- never the
-    archived `_FIXTURE.plugin_root` (`git archive HEAD` bytes) -- for the same
-    reason `AncestryDocumentedFlowTest`/`PrerequisiteRefusalTest`/
-    `BackfillBranchRefusalTest` do: the canonical source is the immediate
-    candidate under test, while the archived fixture is commit-bound."""
+    Actual pre-write refusal and declaration-plus-ledger publication/re-entry
+    across fast-forward, squash, and merge histories are exercised by
+    plugins/ca/hooks/tests/test_release_workflow_followup.py. Those tests
+    execute the installed shell guards between before/after snapshots.
+
+    This class continues to read current canonical source for ancestry/tag
+    composition; separate archive fixtures establish committed resource closure.
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -4123,28 +4103,24 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
         verify_proc = _run_argv(argv, root)
         return last_tag, last_tag_proc, verify_proc
 
-    def test_fixes_compose_in_sequence_ending_in_a_genuine_clean_release(self):
+    def test_ancestry_and_tag_commands_compose_after_fixture_setup(self):
         root = self.consumer_root
         targets_path = os.path.join(root, ".codearbiter", "release-targets.md")
 
         # --- Stage 1: zero-state consumer -- prerequisite refusal precondition
-        #     (T-12, AC-10). The check itself (a file-existence test the agent
-        #     performs, not a runnable CLI) is proven for real against a
-        #     zero-state consumer by PrerequisiteRefusalTest; this stage
+        #     (T-12, AC-10). PrerequisiteRefusalTest establishes file-state
+        #     premises; the follow-up suite executes the current guard.
+        #     This stage
         #     confirms the SAME precondition holds on THIS repo before the
         #     journey proceeds, and that nothing has been written yet.
         rendered_tech_stack = self.prerequisite_path_template.replace(
-            "{{PROJECT_DIR}}", root)
+            "$PROJECT_ROOT", root)
         self.assertFalse(
             os.path.isfile(rendered_tech_stack),
             "fixture premise: build_consumer_repo carries no tech-stack.md")
         self.assertFalse(os.path.isfile(targets_path))
-        before = self._fingerprint(root)
-        after = self._fingerprint(root)
-        self.assertEqual(
-            before, after,
-            "the unresolved prerequisite must not have mutated the repo "
-            "merely by being checked")
+        # These are fixture premises, not refusal evidence. The follow-up
+        # suite executes the real guard before a controlled write attempt.
 
         # --- Stage 2: clear the prerequisite ---------------------------------
         _write_text(
@@ -4179,8 +4155,9 @@ class ComposedFixLaneJourneyTest(unittest.TestCase):
             "the branch-refusal precondition must not mutate the repo it "
             "protects, mid-journey")
 
-        # --- Stage 4: move to a feature branch (clearing T-13) and declare
-        #     the targets file, as back-fill's own persist step would -------
+        # --- Stage 4: explicit fixture setup, not a Back-fill execution.
+        # The declaration/ledger/merge journey is covered by the follow-up
+        # suite; this fixture prepares only the later ancestry/tag commands.
         _git(["checkout", "-q", "-b", "feat/declare-release-targets"], root)
         current_branch = _git(["branch", "--show-current"], root).stdout.strip()
         self.assertNotIn(current_branch, self.protected_branch_names)
@@ -4549,7 +4526,7 @@ class BreakingChangeRealHistoryClassificationTest(unittest.TestCase):
                 "_breaking_real_history_core")
 
             log = _git(
-                ["log", "--pretty=format:%H%n%s%n%b%n----", "v1.0.0..HEAD"],
+                ["log", "--format=%H%x00%s%x00%b%x00", "v1.0.0..HEAD"],
                 cls.root).stdout
             cls.entries = _parse_window_log(log)
         except Exception:
