@@ -60,5 +60,5 @@
 <text x="1079" y="308" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#f6f7f9" text-anchor="middle" data-max-width="254">auto-heal</text>
 <text x="1079" y="334" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="middle" data-label-kind="annotation" data-max-width="254">only on drift</text>
 <polyline points="636,304 956,304" fill="none" stroke="#f0b92f" stroke-width="2.25" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
-<text x="1188" y="508" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1164">A BLOCK clears only through the logged /ca:override path.</text>
+<text x="1188" y="508" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="end" data-label-kind="annotation" data-max-width="1164">Correct failed conditions first. Only permitted bypasses use /ca:override.</text>
 </svg>

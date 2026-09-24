@@ -364,7 +364,8 @@
         "plugins/ca/skills/commit-gate/SKILL.md",
         "plugins/ca-codex/routines/commit-gate/SKILL.md",
         "plugins/ca-pi/routines/commit-gate/SKILL.md",
-        "site/src/content/docs/reference/skills/commit-gate.md"
+        "site/src/content/docs/reference/skills/commit-gate.md",
+        "site/src/content/docs/reference/commands/commit.md"
       ],
       "reason": "The commit gate verifies current HTML identity, binding, accepted scope, receipts, and review currency through the bridge while retaining the legacy Markdown gate for existing pairs."
     },
@@ -487,6 +488,9 @@
         "site/src/content/docs/guides/review-artifacts.md",
         "site/src/content/docs/guides/review-and-ship.mdx",
         "site/src/content/docs/concepts/artifacts.md",
+        "site/src/content/docs/concepts.mdx",
+        "site/src/content/docs/concepts/gated-lanes.mdx",
+        "site/src/content/docs/concepts/test-first.mdx",
         "site/src/content/docs/guides/first-feature.mdx",
         "site/src/content/docs/guides/resume-and-recover.mdx",
         "site/src/content/docs/product-tour.mdx",

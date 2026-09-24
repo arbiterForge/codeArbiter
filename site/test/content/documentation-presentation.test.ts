@@ -35,7 +35,9 @@ describe("documentation presentation regressions", () => {
     expect(source).not.toMatch(/^\| Question \| Read \|$/m);
     expect(component).toContain("<nav");
     expect(component).toContain('aria-label="Concept map"');
-    expect(component.match(/^\s{4}href:/gm)).toHaveLength(10);
+    expect(component).toContain('buildConceptDirectory(await getCollection');
+    expect(component).toContain('data-ca-layout="peers"');
+    expect(source).toContain('<ExecutionMap');
   });
 
   it("OBL-PRES-02 keeps table layout semantic and moves overflow to a shared shell", () => {

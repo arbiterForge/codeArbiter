@@ -1,0 +1,137 @@
+---
+import { featureMap, validateExecutionMap } from '../../scripts/execution-maps/model';
+import { renderChapterSvg } from '../../scripts/execution-maps/render';
+interface Props { id: string; initial?: string }
+const { id, initial = 'define' } = Astro.props;
+if (!/^[a-z][a-z0-9-]*$/.test(id)) throw new Error('ExecutionMap requires a stable, unique ID');
+const map = featureMap;
+const errors = validateExecutionMap(map);
+if (errors.length) throw new Error(errors.join('; '));
+if (!map.chapters.some(chapter => chapter.id === initial)) throw new Error('Unknown initial chapter');
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const sourceUrl = (key: string) => `https://github.com/arbiterForge/codeArbiter/blob/${map.reviewedAt}/${map.sources[key].path}`;
+const allNodes = map.chapters.flatMap(chapter => chapter.nodes);
+---
+<ca-execution-map class="ca-execution-map not-content" id={id} data-initial={initial} aria-label="Feature execution map">
+  <header class="ca-execution-map__header">
+    <p class="ca-eyebrow">Follow the work, not a catalog</p>
+    <h3>{map.title}</h3>
+    <p>{map.boundary}</p>
+  </header>
+  <div class="ca-execution-map__controls" hidden>
+    <div role="group" aria-label="Choose an execution chapter" data-ca-layout="peers">
+      {map.chapters.map((chapter, i) => <button type="button" data-map-select={chapter.id} aria-pressed="false" aria-controls={`${id}-${chapter.id}`}><span aria-hidden="true">{i + 1}.</span> {chapter.title}</button>)}
+      <button type="button" data-map-select="all" aria-pressed="false">Read whole path</button>
+    </div>
+    <p role="status" aria-live="polite" data-map-status></p>
+  </div>
+  <p class="ca-execution-map__legend"><strong>Rows identify roles.</strong> Gold commands enter or define a procedure; blue skills coordinate work; green agents perform bounded roles. Arrows cross rows in execution order. A dashed arrow reuses a procedure rather than calling its entry again. Dashed nodes are path-selected reviewers, not mandatory roles for every change.</p>
+  {map.chapters.map((chapter, chapterIndex) => <section class="ca-execution-map__chapter" data-map-chapter={chapter.id} id={`${id}-${chapter.id}`} aria-labelledby={`${id}-${chapter.id}-title`}>
+    <header>
+      <p class="ca-eyebrow">Chapter {chapterIndex + 1} / {map.chapters.length}</p>
+      <h4 id={`${id}-${chapter.id}-title`}>{chapter.title}</h4>
+      <p>{chapter.question}</p>
+    </header>
+    <div class="ca-execution-map__plot" aria-hidden="true" data-pagefind-ignore="all" set:html={renderChapterSvg(chapter, `${id}-${chapter.id}`, chapterIndex * 4)} />
+    <ol class="ca-execution-map__reading" start={chapterIndex * 4 + 1} role="list" data-ca-layout="peers">
+      {chapter.nodes.map((node, nodeIndex) => <li data-map-step={node.id} data-role={node.role}>
+        <div class="ca-execution-map__step-heading"><span class="ca-execution-map__number" aria-hidden="true">{String(chapterIndex * 4 + nodeIndex + 1).padStart(2, '0')}</span><span class="ca-execution-map__role">{node.role}{node.conditional && ' · if applicable'}</span></div>
+        <h5><a href={`${base}${node.href}`}>{node.title}</a></h5>
+        <p>{node.detail}</p>
+        <p class="ca-execution-map__result"><strong>Result:</strong> {node.output}</p>
+        {node.checks && <details><summary>Inspect all six TDD phases</summary><ol>{node.checks.map(check => <li>{check}</li>)}</ol></details>}
+        {chapter.edges[nodeIndex] && <p class="ca-execution-map__handoff"><strong>{chapter.edges[nodeIndex].label} →</strong> {chapter.edges[nodeIndex].detail}</p>}
+        <a class="ca-execution-map__source" href={sourceUrl(node.source)}>Source for step {chapterIndex * 4 + nodeIndex + 1}</a>
+      </li>)}
+    </ol>
+    <p class="ca-execution-map__boundary"><strong>Before continuing:</strong> {chapter.output}</p>
+    <details class="ca-execution-map__returns"><summary>Continuations, returns and repeat paths</summary>
+      <ul>{map.alternatives.filter(edge => chapter.nodes.some(node => node.id === edge.from)).map(edge => <li><strong>{edge.label}.</strong> {edge.detail} <span>Next: {allNodes.find(node => node.id === edge.to)?.title}.</span> <a href={sourceUrl(edge.source)}>Owning contract</a></li>)}</ul>
+      {chapter.id === 'deliver' && <p>{map.outcome}</p>}
+    </details>
+  </section>)}
+  <footer>
+    <p><strong>Actual endpoint:</strong> {map.outcome}</p>
+    <p>Command labels use Claude Code spelling for the illustrated route. Codex and Pi use their own entries; shared names do not establish equal execution or authority support. <a href={`${base}/guides/review-artifacts/#check-your-hosts-authority-capability`}>Check the installed-host boundary.</a></p>
+    <details><summary>Source identity and diagram limits</summary><p>Reviewed source: <code>{map.reviewedAt}</code>. The numbered stages explain one ordinary success path. The return notes retain task retries, scope repetition and caller ownership. Optional reviewers depend on the changed paths. Existing Markdown, small-lane and sprint paths retain their separate contracts.</p><p><a href={`${base}/diagrams/lane-feature.svg`}>Open the complete three-row diagram</a>. The reading view and image are generated from the same editorial map. They neither run tools nor record approvals.</p></details>
+  </footer>
+</ca-execution-map>
+<script>
+  /** Progressive chapter selection: no persistence, network, autoplay or product authority. */
+  class ExecutionMap extends HTMLElement {
+    private controller?: AbortController;
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const controls = this.querySelector<HTMLElement>('.ca-execution-map__controls');
+      const status = this.querySelector<HTMLElement>('[data-map-status]');
+      const sections = Array.from(this.querySelectorAll<HTMLElement>('[data-map-chapter]'));
+      const buttons = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-map-select]'));
+      if (!controls || !status || !sections.length || !buttons.length) return;
+      const choose = (selection: string) => {
+        if (selection !== 'all' && !sections.some(section => section.dataset.mapChapter === selection)) return;
+        sections.forEach(section => { section.hidden = selection !== 'all' && section.dataset.mapChapter !== selection; });
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mapSelect === selection)));
+        status.textContent = selection === 'all' ? 'All four chapters. Read in numbered order.'
+          : `Chapter ${sections.findIndex(section => section.dataset.mapChapter === selection) + 1} of ${sections.length}. Choose another chapter or read the whole path.`;
+      };
+      buttons.forEach(button => button.addEventListener('click', () => choose(button.dataset.mapSelect!), { signal: this.controller!.signal }));
+      choose(this.dataset.initial ?? sections[0].dataset.mapChapter!);
+      controls.hidden = false;
+    }
+    disconnectedCallback() { this.controller?.abort(); }
+  }
+  if (!customElements.get('ca-execution-map')) customElements.define('ca-execution-map', ExecutionMap);
+</script>
+<style>
+  .ca-execution-map { display: block; container-type: inline-size; margin-block: var(--ca-space-6); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-lg); background: var(--ca-bg-raised); overflow-wrap: anywhere; }
+  .ca-execution-map [hidden] { display: none !important; }
+  .ca-execution-map :is(h3,h4,h5,p) { margin: 0; }
+  .ca-execution-map__header, .ca-execution-map footer { padding: var(--ca-space-5); }
+  .ca-execution-map__header h3 { margin-block: var(--ca-space-3); font-size: var(--ca-text-xl); line-height: 1.35; }
+  .ca-execution-map p { color: var(--ca-ink-soft); line-height: 1.7; font-size: var(--ca-text-sm); }
+  .ca-execution-map strong { color: var(--ca-ink); }
+  .ca-execution-map a { color: var(--ca-brand-bright); text-underline-offset: 3px; }
+  .ca-execution-map :is(a,button,summary):focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 4px; }
+  .ca-execution-map__controls { padding: 0 var(--ca-space-5) var(--ca-space-4); }
+  .ca-execution-map__controls > div { display: flex; flex-wrap: wrap; gap: var(--ca-space-2); }
+  .ca-execution-map button { flex: 1 1 12rem; padding: var(--ca-space-3); color: var(--ca-ink); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-sm); background: var(--ca-bg); font: 650 var(--ca-text-sm)/1.5 var(--ca-font-sans); cursor: pointer; text-align: start; }
+  .ca-execution-map button[aria-pressed="true"] { border-color: var(--ca-brand-bright); box-shadow: inset 3px 0 var(--ca-brand-bright); }
+  .ca-execution-map [data-map-status] { margin-block-start: var(--ca-space-3); font-size: var(--ca-text-xs); }
+  .ca-execution-map__legend { margin: 0 var(--ca-space-5) var(--ca-space-5) !important; }
+  .ca-execution-map__chapter { border-block-start: 1px solid var(--ca-line-strong); padding: var(--ca-space-5); }
+  .ca-execution-map__chapter h4 { font-size: var(--ca-text-xl); margin-block: var(--ca-space-2); }
+  .ca-execution-map__plot { display: none; margin-block: var(--ca-space-4); }
+  .ca-execution-map__plot :global(svg) { display: block; width: 100%; height: auto; }
+  .ca-execution-map__reading { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ca-space-4); padding: 0; list-style: none; margin-block: var(--ca-space-5); }
+  .ca-execution-map__reading > li { min-inline-size: 0; padding-inline-start: var(--ca-space-4); border-inline-start: 2px solid var(--ca-line-strong); }
+  .ca-execution-map__step-heading { display: flex; align-items: baseline; gap: var(--ca-space-3); font-family: var(--ca-font-mono); font-size: var(--ca-text-xs); }
+  .ca-execution-map__number { color: var(--ca-brand-bright); white-space: nowrap; flex-shrink: 0; }
+  .ca-execution-map__role { color: var(--ca-ink-muted); text-transform: uppercase; letter-spacing: .08em; }
+  .ca-execution-map h5 { font-size: 1rem; margin-block: var(--ca-space-2); line-height: 1.45; }
+  .ca-execution-map__result { margin-block-start: var(--ca-space-3) !important; }
+  .ca-execution-map__handoff { border-block-start: 1px solid var(--ca-line); margin-block: var(--ca-space-3) !important; padding-block-start: var(--ca-space-3); }
+  .ca-execution-map__source { display: inline-block; font-size: var(--ca-text-xs); margin-block-start: var(--ca-space-2); }
+  .ca-execution-map__boundary { padding: var(--ca-space-4); border-inline-start: 3px solid var(--ca-brand); background: var(--ca-bg-panel); }
+  .ca-execution-map details { margin-block-start: var(--ca-space-4); color: var(--ca-ink-soft); font-size: var(--ca-text-sm); }
+  .ca-execution-map summary { cursor: pointer; color: var(--ca-ink); font-weight: 650; padding-block: var(--ca-space-2); }
+  .ca-execution-map details :is(ul,ol) { padding-inline-start: 1.4em; line-height: 1.7; }
+  .ca-execution-map details li + li { margin-block-start: var(--ca-space-3); }
+  .ca-execution-map footer { border-block-start: 1px solid var(--ca-line-strong); }
+  .ca-execution-map footer > p + p { margin-block-start: var(--ca-space-3); }
+  @container (min-width: 45rem) { .ca-execution-map__plot { display: block; } .ca-execution-map__reading { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (forced-colors: active) {
+    .ca-execution-map { --ca-bg: Canvas; --ca-bg-raised: Canvas; --ca-bg-panel: Canvas; --ca-ink: CanvasText; --ca-ink-soft: CanvasText; --ca-ink-muted: CanvasText; --ca-brand: CanvasText; --ca-brand-bright: LinkText; --ca-line: CanvasText; --ca-line-strong: CanvasText; }
+    .ca-execution-map button { background: ButtonFace; color: ButtonText; border-color: ButtonText; }
+    .ca-execution-map button[aria-pressed="true"] { border: 3px solid Highlight; box-shadow: none; }
+    .ca-execution-map__plot { display: none; }
+  }
+  @media print {
+    .ca-execution-map { container-type: normal; }
+    .ca-execution-map__controls, .ca-execution-map__plot { display: none !important; }
+    .ca-execution-map__chapter[hidden] { display: block !important; }
+    .ca-execution-map__reading { display: block; }
+    .ca-execution-map__reading > li { break-inside: avoid; margin-block: 1rem; }
+    .ca-execution-map details::details-content { content-visibility: visible; }
+  }
+</style>

@@ -1,28 +1,67 @@
 ---
 title: Concept Map
-description: "A practical map of codeArbiter's governance model: how work enters a lane, decisions are recorded, context stays current, and evidence becomes auditable."
+description: "Understand how commands, skills, agents, artifacts and gates turn a request into reviewed work. Follow the real handoffs, not a catalog of parts."
 journey:
-  level: "Practitioner"
-  time: "7 minutes"
-  outcome: "Connect lanes, decisions, repository context, review, and audit evidence."
+  level: Foundation
+  time: "Follow one change"
+  outcome: "Explain who routes, who writes, what you approve, and what the retained evidence actually establishes."
   prerequisites:
-    - "What Is codeArbiter"
-  proof: "You can trace one real change from its entry lane to the evidence retained after shipment."
+    - Read What Is codeArbiter
+  proof: "You can trace a feature through its caller and task loop to a PR, and distinguish that route from an approval or release claim."
 ---
 
-import ConceptNavigator from "../../components/ConceptNavigator.astro";
+import ConceptNavigator from '../../components/ConceptNavigator.astro';
+import ExecutionMap from '../../components/ExecutionMap.astro';
 
-codeArbiter is easiest to understand as a chain:
+A coding conversation can contain a request, an implementation and a claim that it works.
+codeArbiter gives those events distinct owners and records. A **lane** determines the path for the
+kind of work. **Skills** define the procedures on that path. **Agents** take bounded author or
+reviewer roles. **Gates** require a decision or evidence before the next transition.
 
-1. **A request enters a lane.** The lane defines the work, its required evidence, and its stops.
-2. **Material choices are explicit.** The user decides hard gates; SMARTS records bounded autonomous
-   choices; ADRs preserve architectural choices.
-3. **The repository carries the context.** Provenance and just-in-time injection keep agents aligned
-   with the checked-in rules that govern the files they touch.
-4. **Independent reviewers challenge the result.** Checkpoints and lane-specific reviewers produce
-   findings without silently rewriting the author's work.
-5. **The audit record explains what happened.** Commits, decisions, overrides, questions, sprint
-   choices, and reports can be assembled for a range after the work is done.
+The useful question is not how many pieces exist. It is **what permits this particular piece of
+work to advance, and what will remain to explain it later?** Concepts answers that question.
+[Guides](/guides/) gives the operating procedures; [Reference](/reference/) retains the exact entries
+and source contracts.
+
+## Follow one change from request to PR
+
+Consider a saved-search export. The request is a starting point, not a complete definition of CSV
+ordering, escaping or empty-result behavior. The specification makes those behaviors explicit.
+The plan turns them into tasks and verifications. Authors implement the tasks test-first;
+review and fresh verification challenge their results. The attended coordinator returns to the
+human between accepted scopes, then hands the complete work to commit and PR preparation.
+
+The map follows the full feature lane, choosing **Open a PR** at its end. Rows classify roles;
+arrows show execution order. The TDD procedure runs inside task authoring, and the task engine
+returns to its caller. Those relationships disappear in a diagram that merely groups every
+command in one box and every skill in another.
+
+<ExecutionMap id="concept-feature" />
+
+## Five connections make the model useful
+
+**Work has a governing definition.** A feature specification describes observable behavior;
+a linked plan describes how to implement and verify it. The project architecture and roadmap
+operate at a broader scale. An item on the task board is not a substitute for any of them.
+
+**A decision has a scope.** Reviewing a document, approving its current content, accepting a task,
+and authorizing a merge establish different things. An accepted architecture decision records a
+choice; implementation and verification require further evidence. SMARTS helps compare alternatives
+where the lane permits that choice. It is not a universal approval mechanism.
+
+**Context is selected, not guessed.** Repository policy, decisions and source-backed knowledge
+inform the work that touches them. Provenance helps identify stale derived knowledge. Just-in-time
+injection points a file read toward its relevant governing record; it does not load the whole
+repository or prove compliance with every rule.
+
+**Review is not authorship.** The coordinator selects the work and the relevant roles. An author
+makes the bounded change. Reviewers challenge it under their own contracts. The caller reads fresh
+verification rather than treating an author's successful-sounding summary as sufficient proof.
+
+**Evidence names its boundary.** A local passing test applies to the exercised behavior and source.
+A task acceptance has its own identity and authority requirements. A PR URL establishes an open
+proposal, not a merge or deployment. An audit packet assembles the records available for its window;
+missing records must remain visible as missing.
 
 ## Start with the problem you are trying to understand
 
@@ -30,21 +69,28 @@ codeArbiter is easiest to understand as a chain:
 
 ## A concrete example
 
-Suppose a feature adds an authentication dependency and changes a security entry point. The feature
-lane provides the specification, tests, and author/reviewer sequence. The dependency lane vets the
-new package before installation. Reading the security file injects the controlling security
-document. An unresolved trust-boundary choice becomes an ADR instead of an implementation guess.
-The commit gate requires the applicable evidence, and the final audit can show the decision,
-dependency review, security findings, override history, and commit together.
+Suppose the export request also introduces a new parser dependency. The feature lane still owns
+the requested behavior. The dependency procedure governs the proposed package before installation.
+The test obligations establish what the CSV must do. A security-relevant path can bring in its
+controlling policy and applicable reviewers. These are related controls, not permission to replace
+one procedure with another or dispatch every reviewer on every task.
 
-No single concept is the product. The value comes from their composition: the lane limits what may
-happen, repository context says what must remain true, reviewers challenge the result, and the audit
-trail makes the path inspectable.
+If the parser decision remains unresolved, it is surfaced rather than hidden in implementation.
+If the implementation fails a regression, the failure requires correction and a fresh run.
+If the completed task lacks current acceptance authority, a passing local test does not supply
+that missing authority. Each problem returns to its actual owner.
+
+The [worked first feature](/guides/first-feature/) has inspectable drafts and local test evidence.
+Its illustrative conversation is deliberately separate from captured test results. Use it to see
+the records, not as proof that the same execution occurred in your repository.
 
 ## Put the model to work
 
-- To complete a task, choose a page under [Workflows](/guides/feature-lane/) and follow its
-  host-native command.
-- To investigate a block, start with [Troubleshooting](/guides/troubleshooting/) and the
-  [Hook Gates reference](/reference/hooks-gates/).
-- To inspect exact command, skill, or agent behavior, use [All Reference](/reference/).
+Name the next intended change, the record that defines it, the role that should act, and the
+condition that permits continuation. Then identify what evidence you expect back and where the
+lane stops for you. A reader who can answer those questions can choose a [guide](/guides/)
+without memorizing an internal catalog.
+
+For a blocked or interrupted installation, use [Troubleshooting](/guides/troubleshooting/).
+For uncertain work state, use [Resume and recover](/guides/resume-and-recover/).
+For hands-on practice with a separate verifier, use [Arbiter Academy](/academy/).
