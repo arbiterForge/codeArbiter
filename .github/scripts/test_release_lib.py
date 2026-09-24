@@ -6985,16 +6985,18 @@ changelog-reconciliations: .codearbiter/reconciliations.json
             ("manifest", "../../outside/package.json"),
             ("generated-manifest", "../generated.json"),
             ("changelog", "C:/outside/CHANGELOG.md"),
-            ("artifact", "../../outside/bundle.js"),
+            ("artifacts", "../../outside/bundle.js"),
             ("provenance-manifest", "../published-tags.json"),
         )
         for key, value in cases:
+            changelog = value if key == "changelog" else "CHANGELOG.md"
+            optional = "" if key == "changelog" else f"{key}: {value}\n"
             with self.subTest(key=key, value=value), \
-                    self.assertRaises(core_releaselib.ReleaseTargetsError):
+                    self.assertRaises(core_releaselib.MalformedBlockError):
                 core_releaselib.parse_release_targets(
                     "<!-- release-targets -->\n[app]\nprefix: v\n"
-                    "changelog: CHANGELOG.md\npayload: .\n"
-                    f"{key}: {value}\n<!-- /release-targets -->\n")
+                    f"changelog: {changelog}\npayload: .\n"
+                    f"{optional}<!-- /release-targets -->\n")
 
     def test_writable_release_surfaces_accept_internal_spaces(self):
         rows = core_releaselib.parse_release_targets(
@@ -10611,7 +10613,8 @@ class BackfillSkillProseTest(unittest.TestCase):
             with self.subTest(field=field):
                 self.assertIn(field, self.section)
         self.assertIn("never invent", self.section.lower())
-        self.assertIn("full SHA", self.section)
+        self.assertIn("40 hexadecimal characters for SHA-1 or 64 for SHA-256",
+                      self.section)
         self.assertIn("validate-reconciliations", self.section)
 
     def test_backfill_lands_declaration_before_release_reentry(self):
