@@ -111,7 +111,7 @@ class CommittedReleaseDistributionTest(unittest.TestCase):
                     ready = self.run_guard(host, c, "release_window_state", args=c.pathspecs,
                                            env={"EFFECTIVE_WINDOW": "HEAD"})
                     self.assertEqual((ready.returncode, ready.stdout.strip()), (0, "ready"), ready.stderr)
-                    log = c.git("log", "HEAD", "--pretty=format:%H%n%s%n%b%n----", "--", *c.pathspecs).stdout
+                    log = c.git("log", "HEAD", "--format=%H%x00%s%x00%b%x00", "--", *c.pathspecs).stdout
                     verdict = c.helper("classify-window", "app", "main", input=log)
                     self.assertEqual(verdict.returncode, 0, verdict.stderr)
                     self.assertIn("[RECONCILED]", verdict.stdout)
@@ -122,7 +122,7 @@ class CommittedReleaseDistributionTest(unittest.TestCase):
             with self.subTest(host=host), tempfile.TemporaryDirectory() as tmp:
                 c = self.consumer(host, tmp, missing_footer=True, ledger="empty")
                 before = c.fingerprint()
-                log = c.git("log", "HEAD", "--pretty=format:%H%n%s%n%b%n----", "--", *c.pathspecs).stdout
+                log = c.git("log", "HEAD", "--format=%H%x00%s%x00%b%x00", "--", *c.pathspecs).stdout
                 verdict = c.helper("classify-window", "app", "main", input=log)
                 self.assertEqual(verdict.returncode, 1, verdict.stderr)
                 self.assertIn("[NEEDS-TRIAGE]", verdict.stdout)
