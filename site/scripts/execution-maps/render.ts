@@ -34,8 +34,10 @@ export function renderChapterSvg(chapter: MapChapter, namespace: string, offset 
   for (const edge of chapter.edges) {
     const start = nodes.find(node => node.node.id === edge.from)!;
     const end = nodes.find(node => node.node.id === edge.to)!;
-    const x1 = start.x + 169; const x2 = end.x - 7; const mid = (x1 + x2) / 2;
-    content.push(`<path data-map-edge="${xml(edge.from)}:${xml(edge.to)}" data-relation="${edge.kind}" d="M${x1} ${start.y}H${mid}V${end.y}H${x2}" fill="none" stroke="#f0b92f" stroke-width="2.5"${edge.kind === 'reuse' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#${namespace}-arrow)"><title>${xml(edge.label + ': ' + edge.detail)}</title></path>`);
+    // A 9-unit head needs a straight approach longer than the head itself.
+    // Stroke-scaled markers previously overlaid the vertical elbow like a flag.
+    const x1 = start.x + 169; const x2 = end.x - 2; const mid = x2 - 13;
+    content.push(`<path data-map-edge="${xml(edge.from)}:${xml(edge.to)}" data-relation="${edge.kind}" d="M${x1} ${start.y}H${mid}V${end.y}H${x2}" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round"${edge.kind === 'reuse' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#${namespace}-arrow)"><title>${xml(edge.label + ': ' + edge.detail)}</title></path>`);
   }
   nodes.forEach(({ node, x, y }, index) => {
     const lines = node.label;
@@ -48,7 +50,7 @@ export function renderChapterSvg(chapter: MapChapter, namespace: string, offset 
   });
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" data-diagram-system="ca-v2" data-execution-chapter="${xml(chapter.id)}">
 <title>${xml(chapter.title)}</title><desc>${xml(chapter.nodes.map(node => `${node.role}: ${node.title}`).join(' → ') + '. ' + chapter.output)}</desc>
-<defs><marker id="${namespace}-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#f0b92f"/></marker></defs>
+<defs><marker id="${namespace}-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 ${text(24, 35, chapter.title, 760, 20)}
 ${content.join('\n')}

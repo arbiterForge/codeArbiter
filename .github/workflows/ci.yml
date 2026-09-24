@@ -433,7 +433,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.artifacts == 'true'
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    # Native macOS qualification can exceed 15 minutes before final evidence binding.
+    timeout-minutes: 30
     permissions:
       contents: read
     env:

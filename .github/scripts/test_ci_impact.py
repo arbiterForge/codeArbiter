@@ -3145,6 +3145,19 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 class ArtifactEngineCIContractTest(unittest.TestCase):
     """The structured-artifact engine is a required six-platform package gate."""
 
+    def test_native_qualification_has_a_bounded_thirty_minute_job_budget(self):
+        # PR859's Intel macOS cell exhausted 15 minutes during conformance after
+        # passing the preceding suites. Preserve the complete qualification path.
+        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        job = jobs["artifact-engine"]
+        self.assertEqual(_JOB_TIMEOUT.findall(job), ["30"])
+        self.assertIn("fail-fast: false", job)
+        self.assertNotIn("continue-on-error:", job)
+        for required in ("test_artifact_conformance.py", "test_artifact_package.py",
+                         "Bind the candidate to this exact-host native result",
+                         "Preserve the exact native candidate and qualification receipt"):
+            self.assertIn(required, job)
+
     def test_artifact_consumer_closure_selects_exactly_one_declared_native_cell(self):
         jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
         job = jobs["artifact-engine"]

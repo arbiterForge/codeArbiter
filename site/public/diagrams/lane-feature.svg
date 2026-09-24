@@ -5,7 +5,7 @@
 <text x="24" y="70" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="852">Definition → task loop → scope acceptance → PR handoff</text>
 <svg x="0" y="94" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="define">
 <title>Define the change</title><desc>command: /ca:feature → skill: brainstorming → skill: writing-plans → skill: executing-plans. A specification, a linked plan, and the current approvals required by the selected artifact format.</desc>
-<defs><marker id="asset-feature-define-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#f0b92f"/></marker></defs>
+<defs><marker id="asset-feature-define-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Define the change</text>
 <rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
@@ -17,9 +17,9 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="entry:spec" data-relation="sequence" d="M299 120H305.5V252H312" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-define-arrow)"><title>full lane: New full-lane work enters brainstorming.</title></path>
-<path data-map-edge="spec:plan" data-relation="sequence" d="M488 252H494.5V252H501" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-define-arrow)"><title>approved: Specification approval precedes implementation planning.</title></path>
-<path data-map-edge="plan:batch" data-relation="sequence" d="M677 252H683.5V252H690" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-define-arrow)"><title>ready plan: The attended coordinator receives the approved, bound plan.</title></path>
+<path data-map-edge="entry:spec" data-relation="sequence" d="M299 120H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>full lane: New full-lane work enters brainstorming.</title></path>
+<path data-map-edge="spec:plan" data-relation="sequence" d="M488 252H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>approved: Specification approval precedes implementation planning.</title></path>
+<path data-map-edge="plan:batch" data-relation="sequence" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-define-arrow)"><title>ready plan: The attended coordinator receives the approved, bound plan.</title></path>
 <g data-map-node="entry" data-role="command"><title>/ca:feature. Resolve existing work before classifying a new request. This map follows new full-lane work; small and resume routes are separate.</title>
 <rect x="130" y="76" width="169" height="88" rx="10" fill="#121a24" stroke="#f0b92f" stroke-width="1.7"/>
 <text x="143" y="96" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#f0b92f" text-anchor="start" data-max-width="147" data-label-kind="annotation">01</text>
@@ -46,7 +46,7 @@
 <text x="24" y="586" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Build and verify each task</text>
 <svg x="0" y="620" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="task">
 <title>Build and verify each task</title><desc>skill: subagent-driven-development: select → agent: backend-author, frontend-author or infra-author → skill: tdd: six gated phases → skill: subagent-driven-development: review and verify. Per-task specification review and fresh verification. This is not yet whole-scope acceptance.</desc>
-<defs><marker id="asset-feature-task-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#f0b92f"/></marker></defs>
+<defs><marker id="asset-feature-task-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Build and verify each task</text>
 <rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
@@ -58,9 +58,9 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="task-select:author" data-relation="dispatch" d="M299 252H305.5V384H312" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-task-arrow)"><title>dispatch: One fresh, scope-selected author receives the task.</title></path>
-<path data-map-edge="author:tdd" data-relation="dispatch" d="M488 384H494.5V252H501" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-task-arrow)"><title>uses tdd: The author follows the test-first procedure, not a separate later test service.</title></path>
-<path data-map-edge="tdd:task-proof" data-relation="return" d="M677 252H683.5V252H690" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-task-arrow)"><title>return: The caller performs specification review and fresh verification after authoring.</title></path>
+<path data-map-edge="task-select:author" data-relation="dispatch" d="M299 252H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>dispatch: One fresh, scope-selected author receives the task.</title></path>
+<path data-map-edge="author:tdd" data-relation="dispatch" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>uses tdd: The author follows the test-first procedure, not a separate later test service.</title></path>
+<path data-map-edge="tdd:task-proof" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-task-arrow)"><title>return: The caller performs specification review and fresh verification after authoring.</title></path>
 <g data-map-node="task-select" data-role="skill"><title>subagent-driven-development: select. Select eligible work inside the caller’s scope and retain its requirement, target paths and verification command. Typed work uses engine eligibility and a current context ticket.</title>
 <rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">05</text>
@@ -87,7 +87,7 @@
 <text x="24" y="1112" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Accept the scope, then checkpoint</text>
 <svg x="0" y="1146" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="accept">
 <title>Accept the scope, then checkpoint</title><desc>agent: Scope-selected quality reviewers → agent: finding-triage → skill: subagent-driven-development: accept → skill: executing-plans: human checkpoint. Accepted scope evidence and a human acknowledgement before the next attended batch.</desc>
-<defs><marker id="asset-feature-accept-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#f0b92f"/></marker></defs>
+<defs><marker id="asset-feature-accept-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Accept the scope, then checkpoint</text>
 <rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
@@ -99,9 +99,9 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="quality:triage" data-relation="sequence" d="M299 384H305.5V384H312" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-accept-arrow)"><title>findings: Applicable reviewer findings are classified before the scope can be accepted.</title></path>
-<path data-map-edge="triage:accept-scope" data-relation="return" d="M488 384H494.5V252H501" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-accept-arrow)"><title>no blocker: Return quality results to the task engine; current evidence still governs acceptance.</title></path>
-<path data-map-edge="accept-scope:checkpoint" data-relation="return" d="M677 252H683.5V252H690" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-accept-arrow)"><title>to caller: A scoped invocation returns to executing-plans, not directly to commit-gate.</title></path>
+<path data-map-edge="quality:triage" data-relation="sequence" d="M299 384H304V384H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>findings: Applicable reviewer findings are classified before the scope can be accepted.</title></path>
+<path data-map-edge="triage:accept-scope" data-relation="return" d="M488 384H493V252H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>no blocker: Return quality results to the task engine; current evidence still governs acceptance.</title></path>
+<path data-map-edge="accept-scope:checkpoint" data-relation="return" d="M677 252H682V252H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-accept-arrow)"><title>to caller: A scoped invocation returns to executing-plans, not directly to commit-gate.</title></path>
 <g data-map-node="quality" data-role="agent"><title>Scope-selected quality reviewers. Review the combined diff once per scope after task review and verification. Dispatch security, auth/crypto, dependency or migration reviewers only where applicable; ordinary work retains its TDD/coverage quality bar.</title>
 <rect x="130" y="340" width="169" height="88" rx="10" fill="#121a24" stroke="#58d68d" stroke-width="1.7" stroke-dasharray="5 4"/>
 <text x="143" y="360" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#58d68d" text-anchor="start" data-max-width="147" data-label-kind="annotation">09 · if applicable</text>
@@ -129,7 +129,7 @@
 <text x="24" y="1638" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#ffd568" text-anchor="start" data-max-width="852">Continue ↓ Commit and open the PR</text>
 <svg x="0" y="1672" width="900" height="456" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 456" role="img" data-diagram-system="ca-v2" data-execution-chapter="deliver">
 <title>Commit and open the PR</title><desc>skill: commit-gate → skill: finishing-a-development-branch → command: /ca:pr procedure, reused by finishing → agent: PR reviewers, finding-triage and verdict-aggregator. The chosen Open a PR outcome, with current source and evidence. The PR is not an automatic merge or release.</desc>
-<defs><marker id="asset-feature-deliver-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#f0b92f"/></marker></defs>
+<defs><marker id="asset-feature-deliver-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#f0b92f"/></marker></defs>
 <rect x="1" y="1" width="898" height="454" rx="14" fill="#090d12" stroke="#3a4c60"/>
 <text x="24" y="35" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#f6f7f9" text-anchor="start" data-max-width="760">Commit and open the PR</text>
 <rect x="12" y="66" width="876" height="108" rx="10" fill="#0e141c"/>
@@ -141,9 +141,9 @@
 <rect x="12" y="330" width="876" height="108" rx="10" fill="#0e141c"/>
 <path d="M118 384H874" fill="none" stroke="#273647" stroke-dasharray="3 6"/>
 <text x="24" y="389" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650" fill="#58d68d" text-anchor="start" data-max-width="91">Agents</text>
-<path data-map-edge="commit:finish" data-relation="sequence" d="M299 252H305.5V252H312" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-deliver-arrow)"><title>committed: The finishing procedure requires a cleared commit gate on current work.</title></path>
-<path data-map-edge="finish:pr-contract" data-relation="reuse" d="M488 252H494.5V120H501" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#asset-feature-deliver-arrow)"><title>reuse: Execute the PR contract in place; do not re-invoke its command.</title></path>
-<path data-map-edge="pr-contract:pr-review" data-relation="dispatch" d="M677 120H683.5V384H690" fill="none" stroke="#f0b92f" stroke-width="2.5" marker-end="url(#asset-feature-deliver-arrow)"><title>review: PR creation includes its own path-selected review and verdict.</title></path>
+<path data-map-edge="commit:finish" data-relation="sequence" d="M299 252H304V252H317" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-deliver-arrow)"><title>committed: The finishing procedure requires a cleared commit gate on current work.</title></path>
+<path data-map-edge="finish:pr-contract" data-relation="reuse" d="M488 252H493V120H506" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="5 4" marker-end="url(#asset-feature-deliver-arrow)"><title>reuse: Execute the PR contract in place; do not re-invoke its command.</title></path>
+<path data-map-edge="pr-contract:pr-review" data-relation="dispatch" d="M677 120H682V384H695" fill="none" stroke="#f0b92f" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#asset-feature-deliver-arrow)"><title>review: PR creation includes its own path-selected review and verdict.</title></path>
 <g data-map-node="commit" data-role="skill"><title>commit-gate. The coordinator hands off only after all required scopes and acknowledgements. The commit gate checks permission, selected work and fresh evidence; /ca:commit is also a standalone entry, not an extra command this path must type.</title>
 <rect x="130" y="208" width="169" height="88" rx="10" fill="#121a24" stroke="#7ab7ff" stroke-width="1.7"/>
 <text x="143" y="228" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="600" fill="#7ab7ff" text-anchor="start" data-max-width="147" data-label-kind="annotation">13</text>
