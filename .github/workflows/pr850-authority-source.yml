@@ -87,7 +87,13 @@ jobs:
           before="subprocess.check_output([scanner,'version'],text=True).strip()=='8.30.1'"
           after="subprocess.check_output([scanner,'version'],text=True).strip()=='v8.30.1'"
           assert source.count(before)==1
-          (out/'driver-effective.py').write_text(source.replace(before,after))
+          source=source.replace(before,after)
+          before="assert set(subprocess.check_output(['git','diff','HEAD','--name-only'],text=True).splitlines())==set(expected)"
+          after="changed=set(subprocess.check_output(['git','diff','HEAD','--name-only'],text=True).splitlines())\nuntracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())\nassert changed|untracked==set(expected),(sorted((changed|untracked)-set(expected)),sorted(set(expected)-(changed|untracked)))"
+          assert source.count(before)==1
+          source=source.replace(before,after)
+          compile(source,'driver-effective.py','exec')
+          (out/'driver-effective.py').write_text(source)
           subprocess.run([sys.executable,str(out/'driver-effective.py')],check=True)
           PY
       - name: Store tested preserving objects without changing a ref
