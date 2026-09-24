@@ -3,7 +3,7 @@
  * Tests run against a temp git repo to avoid touching the main worktree.
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { execSync, spawn } from "node:child_process";
+import { execSync, execFileSync, spawn } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -197,6 +197,7 @@ function runFarmWithArgs(
   // invalidate the "missing key" test case. `unset` deletes it from the
   // child's env after the spread, regardless of the ambient shell.
   unset: string[] = [],
+  entry: "source" | "bundle" = "source",
 ): Promise<{ code: number; out: string }> {
   return new Promise((resolve) => {
     const spawnEnv: NodeJS.ProcessEnv = {
@@ -209,7 +210,7 @@ function runFarmWithArgs(
     for (const k of unset) delete spawnEnv[k];
     const child = spawn(
       process.execPath,
-      ["--import", TSX_LOADER, farmTs, ...extraArgs, planPath],
+      [...(entry === "bundle" ? [join(__dirname, "farm.js")] : ["--import", TSX_LOADER, farmTs]), ...extraArgs, planPath],
       { cwd: repoDir, env: spawnEnv },
     );
     trackChild(child);
@@ -1419,6 +1420,225 @@ describe("farm.ts smoke tests", () => {
     const withoutHook = await runFarm(tmpDir, planPath, { FARM_API_KEY: "test-key" });
     expect(withoutHook.code).toBe(0);
     expect(withoutHook.out).not.toMatch(/mutation hook failed/);
+  });
+
+
+  // Follow-up to #850: execute both the TypeScript entry and the actually shipped
+  // bundle. These tests use real Git refs/worktrees and loopback HTTP only.
+  const gitIn = (dir: string, ...args: string[]) =>
+    execFileSync("git", args, { cwd: dir, encoding: "utf8", stdio: "pipe" }).trim();
+  const identityImpl = [
+    "module.exports = function identity(value) {",
+    "  const copied = value;",
+    "  const wrapped = { copied };",
+    "  const result = wrapped.copied;",
+    "  return result;",
+    "};",
+  ].join("\n");
+  const fileBlock = (file: string, body: string) =>
+    ["```javascript", `// path: ${file}`, body, "```"].join("\n");
+  function identityFixture() {
+    writeFileSync(join(tmpDir, ".gitignore"), ".farm/\nplan.json\n");
+    writeFileSync(join(tmpDir, "src/identity.cjs"), "// BASELINE_IMPLEMENTATION_ONLY\nmodule.exports = () => undefined;\n");
+    writeFileSync(join(tmpDir, "src/identity.test.cjs"),
+      "const assert = require('node:assert/strict');\nconst identity = require('./identity.cjs');\nassert.equal(identity('fixture input'), 'fixture input');\n");
+    gitIn(tmpDir, "add", "--", ".gitignore", "src");
+    gitIn(tmpDir, "commit", "-m", "failing identity obligation");
+    return {
+      id: "identity", description: "Implement identity without changing its argument",
+      filesInScope: ["src/identity.cjs"], test: { path: "src/identity.test.cjs" },
+      gate: { commands: ["node src/identity.test.cjs"] }, maxRetries: 0,
+    };
+  }
+
+  it.each(["source", "bundle"] as const)("dependency-ready predecessor wins over an unready lower ID (%s)", async (entry) => {
+    const first = { ...identityFixture(), id: "task-z" };
+    writeFileSync(join(tmpDir, "src/follow.test.cjs"),
+      "const assert = require('node:assert/strict');\nconst follow = require('./follow.cjs');\nassert.equal(follow('dependent input'), 'dependent input');\n");
+    gitIn(tmpDir, "add", "--", "src/follow.test.cjs");
+    gitIn(tmpDir, "commit", "-m", "dependent obligation");
+    const requests: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((raw) => {
+      const body = raw as { messages: Array<{ content: string }> };
+      const prompt = body.messages[0].content;
+      const dependent = prompt.includes("The failing test is at: src/follow.test.cjs");
+      requests.push(dependent ? "task-a" : "task-z");
+      return dependent
+        ? fileBlock("src/follow.cjs", "const identity = require('./identity.cjs');\nmodule.exports = (value) => identity(value);\n")
+        : fileBlock("src/identity.cjs", identityImpl);
+    }));
+    const plan = { meta: { name: "readiness before lexical scope order", model: "fixture-model" }, tasks: [
+      { ...first, id: "task-a", deps: ["task-z"], filesInScope: ["src/identity.cjs", "src/follow.cjs"],
+        test: { path: "src/follow.test.cjs" }, gate: { commands: ["node src/follow.test.cjs"] } }, first,
+    ] };
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify(plan));
+    const head = gitIn(tmpDir, "rev-parse", "HEAD");
+    const result = await runFarmWithArgs(tmpDir, [], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_SAMPLES: "1", FARM_CONCURRENCY: "4", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(0);
+    expect(requests).toEqual(["task-z", "task-a"]);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+    expect(report.results.map((r: { id: string; status: string }) => [r.id, r.status])).toEqual([
+      ["task-z", "green"], ["task-a", "green"],
+    ]);
+    expect(report.blocked).toEqual([]);
+    expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(head);
+  });
+
+  for (const samples of [1, 2]) {
+    it.each(["source", "bundle"] as const)(`canary isolates every model and preserves existing refs, samples=${samples} (%s)`, async (entry) => {
+      const task = { ...identityFixture(), model: "task-override" };
+      const base = gitIn(tmpDir, "rev-parse", "HEAD");
+      // A canary must neither reset an existing integration branch nor tear down
+      // its checked-out worktree. Old task-ID-based scratch is not ours either.
+      gitIn(tmpDir, "checkout", "-b", "farm/integration");
+      writeFileSync(join(tmpDir, "unrelated.txt"), "preexisting integration work\n");
+      gitIn(tmpDir, "add", "--", "unrelated.txt");
+      gitIn(tmpDir, "commit", "-m", "preserve unrelated integration");
+      gitIn(tmpDir, "checkout", "main");
+      gitIn(tmpDir, "worktree", "add", join(tmpDir, ".farm/preserved-wt"), "farm/integration");
+      gitIn(tmpDir, "worktree", "add", "-b", "farm/canary-identity", join(tmpDir, ".farm/worktrees/canary-identity"), "main");
+      writeFileSync(join(tmpDir, ".farm/worktrees/canary-identity/keep.txt"), "uncommitted prior investigation\n");
+      const refs = gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)");
+      const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+      const prompts: string[] = [], models: string[] = [];
+      ({ server: mockServer, port } = await startMockServer((raw) => {
+        const body = raw as { model: string; max_tokens: number; messages: Array<{ content: string }> };
+        if (body.max_tokens === 1) return "entitled";
+        models.push(body.model); prompts.push(body.messages[0].content);
+        return fileBlock("src/identity.cjs", `// IMPL_GENERATED_BY_${body.model}\n${identityImpl}`);
+      }));
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "canary isolation" }, tasks: [task] }));
+      const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+        FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+        FARM_CANDIDATE_MODELS: "candidate-a,candidate-b", FARM_SAMPLES: String(samples),
+        FARM_API_MAX_RETRIES: "0",
+      }, [], entry);
+      expect(result.code, result.out).toBe(0);
+      expect(models).toEqual([...Array(samples).fill("candidate-a"), ...Array(samples).fill("candidate-b")]);
+      expect(prompts).toHaveLength(samples * 2);
+      expect(new Set(prompts).size).toBe(1);
+      expect(prompts.every(p => p.includes("BASELINE_IMPLEMENTATION_ONLY") && !p.includes("IMPL_GENERATED_BY_"))).toBe(true);
+      expect(gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(refs);
+      expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+      expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(base);
+      expect(readFileSync(join(tmpDir, ".farm/worktrees/canary-identity/keep.txt"), "utf8")).toContain("prior investigation");
+      const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+      expect(report.baseCommit).toBe(base);
+      expect(report.results.map((r: { model: string }) => r.model).sort()).toEqual(["candidate-a", "candidate-b"]);
+      expect(report.results.every((r: { green: boolean; cleanup: unknown[] }) => r.green && r.cleanup.length === 0)).toBe(true);
+    });
+  }
+
+  it.each(["source", "bundle"] as const)("failed canary cleans its own scratch without creating integration (%s)", async (entry) => {
+    const task = identityFixture();
+    const refs = gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)");
+    const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+    ({ server: mockServer, port } = await startMockServer(() => "no implementation files"));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "failed canary" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "candidate-a", FARM_SAMPLES: "1", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(2);
+    expect(gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(refs);
+    expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+    expect(report.results).toHaveLength(1);
+    expect(report.results[0].green).toBe(false);
+    expect(report.results[0].cleanup).toEqual([]);
+  });
+
+  it.each(["source", "bundle"] as const)("canary retains gate failures and evaluates the next model independently (%s)", async (entry) => {
+    const task = { ...identityFixture(), model: "not-the-canary-candidate" };
+    const refs = gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)");
+    const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((raw) => {
+      const body = raw as { model: string; max_tokens: number; messages: Array<{ content: string }> };
+      if (body.max_tokens === 1) return "entitled";
+      prompts.push(body.messages[0].content);
+      return fileBlock("src/identity.cjs", body.model === "bad-candidate"
+        ? "module.exports = () => undefined;\n" : identityImpl);
+    }));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "gate remains mandatory" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "bad-candidate,good-candidate", FARM_SAMPLES: "1", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(0);
+    expect(prompts).toHaveLength(2);
+    expect(prompts[1]).toBe(prompts[0]);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+    const bad = report.results.find((r: { model: string }) => r.model === "bad-candidate");
+    expect(bad.green).toBe(false);
+    expect(bad.note).toBe("failed: node src/identity.test.cjs");
+    expect(report.results[0].model).toBe("good-candidate");
+    expect(report.results[0].green).toBe(true);
+    expect(report.results.every((r: { cleanup: unknown[] }) => r.cleanup.length === 0)).toBe(true);
+    expect(gitIn(tmpDir, "for-each-ref", "--format=%(refname) %(objectname)")).toBe(refs);
+    expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+  });
+
+  it.each(["source", "bundle"] as const)("canary freezes its base before entitlement probes can move the named ref (%s)", async (entry) => {
+    const task = identityFixture();
+    const original = gitIn(tmpDir, "rev-parse", "HEAD");
+    gitIn(tmpDir, "branch", "moving-base", original);
+    writeFileSync(join(tmpDir, "src/identity.cjs"), "// LATER_BASE_NOT_FOR_THIS_TRIAL\n" + identityImpl);
+    gitIn(tmpDir, "add", "--", "src/identity.cjs");
+    gitIn(tmpDir, "commit", "-m", "later named base");
+    const later = gitIn(tmpDir, "rev-parse", "HEAD");
+    const worktrees = gitIn(tmpDir, "worktree", "list", "--porcelain");
+    const prompts: string[] = [];
+    ({ server: mockServer, port } = await startMockServer((raw) => {
+      const body = raw as { max_tokens: number; messages: Array<{ content: string }> };
+      if (body.max_tokens === 1) {
+        // Deliberate fixture mutation, not a dispatcher write. All trial worktrees
+        // must still start from the commit resolved before this network callback.
+        gitIn(tmpDir, "update-ref", "refs/heads/moving-base", later);
+        return "entitled";
+      }
+      prompts.push(body.messages[0].content);
+      return fileBlock("src/identity.cjs", identityImpl);
+    }));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "frozen named base" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "candidate-a,candidate-b", FARM_BASE_BRANCH: "moving-base",
+      FARM_SAMPLES: "1", FARM_API_MAX_RETRIES: "0",
+    }, [], entry);
+    expect(result.code, result.out).toBe(0);
+    expect(prompts).toHaveLength(2);
+    expect(prompts.every(p => p.includes("BASELINE_IMPLEMENTATION_ONLY") && !p.includes("LATER_BASE_NOT_FOR_THIS_TRIAL"))).toBe(true);
+    const report = JSON.parse(readFileSync(join(tmpDir, ".farm/canary-report.json"), "utf8"));
+    expect(report.baseCommit).toBe(original);
+    expect(gitIn(tmpDir, "rev-parse", "moving-base")).toBe(later);
+    expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(later);
+    expect(gitIn(tmpDir, "branch", "--list", "farm/*")).toBe("");
+    expect(gitIn(tmpDir, "worktree", "list", "--porcelain")).toBe(worktrees);
+  });
+
+  it.each(["source", "bundle"] as const)("canary rejects an unresolved base before model requests (%s)", async (entry) => {
+    const task = identityFixture(); let requests = 0;
+    ({ server: mockServer, port } = await startMockServer(() => { requests++; return "not expected"; }));
+    const planPath = join(tmpDir, "plan.json");
+    writeFileSync(planPath, JSON.stringify({ meta: { name: "missing base" }, tasks: [task] }));
+    const result = await runFarmWithArgs(tmpDir, ["--canary"], planPath, {
+      FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+      FARM_CANDIDATE_MODELS: "candidate-a", FARM_BASE_BRANCH: "missing-base", FARM_SAMPLES: "1",
+    }, [], entry);
+    expect(result.code).toBe(1);
+    expect(result.out).toContain("canary base");
+    expect(requests).toBe(0);
+    expect(existsSync(join(tmpDir, ".farm"))).toBe(false);
+    expect(gitIn(tmpDir, "branch", "--list", "farm/*")).toBe("");
   });
 
   // -------------------------------------------------------------------------

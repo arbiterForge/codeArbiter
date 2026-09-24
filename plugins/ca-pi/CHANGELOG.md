@@ -4,6 +4,15 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.13] - 2026-09-24
+
+### Fixed
+
+- Synchronize shared runtime identity with the current candidate cohort and
+  document dependency-ready scheduling and detached canary evaluation in the
+  shared farm resource. Existing preview dispatch authority and HTML farm
+  restrictions remain unchanged.
+
 ## [0.14.12] - 2026-09-23
 
 ### Fixed

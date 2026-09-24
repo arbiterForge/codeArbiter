@@ -8,7 +8,7 @@ import { readFileSync, mkdtempSync, mkdirSync, symlinkSync, rmSync, realpathSync
 import { fileURLToPath } from "node:url";
 import { mkdtemp, writeFile as fsWriteFile, mkdir as fsMkdir, readFile as fsReadFile, rm as fsRm, symlink as fsSymlink, readdir as fsReaddir, chmod as fsChmod, stat as fsStat, open as fsOpen } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId, WINDOWS_PIN_READY_TIMEOUT_MS, releaseWindowsPinGuard } from "./farm.ts";
+import { selectReadyTasks, extractFileBlocks, extractLiterals, codeLineCount, validate, assertSecureBaseUrl, runTask, httpWorker, DEFAULT_API_BASE_URL, parseChatCompletion, checkDrift, screenEntitlements, makeEntitlementProbe, redactSecrets, run, runGate, mintRunId, parseMutationHookOutput, buildChatBody, readSampling, buildPrompt, captureInScope, createLimiter, validateWorktreeRoot, canonicalize, assertContainedWorktree, allowedWorktreeRoot, _resetAllowedWorktreeRoot, numEnv, atomicWriteFile, assertSafeRunId, WINDOWS_PIN_READY_TIMEOUT_MS, releaseWindowsPinGuard } from "./farm.ts";
 import type { InjectedFile, Sampling } from "./farm.ts";
 import type { Worker, WorkerResult, RunTaskDeps, Task } from "./farm.ts";
 import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifactHealth, cleanupReportLines, withWorktreeLock, prepareWorktree } from "./farm.ts";
@@ -3073,5 +3073,73 @@ describe("#398 — verified, retried, reported worktree teardown", () => {
     expect(lines.join("\n")).toMatch(/CLEANUP DEGRADED/);
     expect(lines.join("\n")).toMatch(/integration-wt/);
     expect(lines.join("\n")).toMatch(/still registered after 3 attempt\(s\)/);
+  });
+});
+
+// Readiness is a property of the actual DAG plus occupied write scopes, never
+// of lexicographically earlier work that cannot run. Keep this selector pure.
+
+describe("dependency-ready scope batching", () => {
+  type Item = { deps?: string[]; filesInScope: string[] };
+  const select = (items: Record<string, Item>, pending = Object.keys(items), running: string[] = [], green: string[] = [], failed: string[] = []) =>
+    selectReadyTasks(new Map(Object.entries(items)), new Set(pending), running,
+      new Map<string, { status: "green" | "escalate" }>([...green.map(id => [id, { status: "green" as const }] as const),
+        ...failed.map(id => [id, { status: "escalate" as const }] as const)]));
+
+  it("does not reserve a dependent's file ahead of its higher-ID prerequisite", () => {
+    expect(select({ a: { deps: ["z"], filesInScope: ["x"] }, z: { filesInScope: ["x"] } })).toEqual(["z"]);
+  });
+  it("does not let a failed prerequisite's dependent block independent work", () => {
+    expect(select({ a: { deps: ["failed"], filesInScope: ["x"] }, z: { filesInScope: ["x"] }, failed: { filesInScope: [] } },
+      ["a", "z"], [], [], ["failed"])).toEqual(["z"]);
+  });
+  it("selects compatible ready tasks in stable lexical order", () => {
+    expect(select({ z: { filesInScope: ["x"] }, b: { filesInScope: ["y"] }, a: { filesInScope: ["x"] } })).toEqual(["a", "b"]);
+  });
+  it("preserves existing ID ordering through overlapping ready chains", () => {
+    expect(select({ a: { filesInScope: ["x"] }, b: { filesInScope: ["x", "y"] }, c: { filesInScope: ["y"] } })).toEqual(["a"]);
+  });
+  it("reserves all running scopes while allowing unrelated ready work", () => {
+    expect(select({ a: { filesInScope: ["x"] }, b: { filesInScope: ["y"] }, running: { filesInScope: ["x"] } }, ["a", "b"], ["running"])).toEqual(["b"]);
+  });
+  it("requires every predecessor to be green and permits empty scopes", () => {
+    const items = { a: { deps: ["x", "y"], filesInScope: [] }, b: { filesInScope: [] }, x: { filesInScope: [] }, y: { filesInScope: [] } };
+    expect(select(items, ["a", "b"], [], ["x"])).toEqual(["b"]);
+    expect(select(items, ["a", "b"], [], ["x", "y"])).toEqual(["a", "b"]);
+  });
+  it("neither mutates written dependencies nor its scheduler inputs", () => {
+    const task = { deps: Object.freeze(["z"]), filesInScope: Object.freeze(["x"]) };
+    const byId = new Map([ ["a", { deps: [...task.deps], filesInScope: [...task.filesInScope] }], ["z", { filesInScope: ["x"], deps: [] }] ]);
+    const pending = new Set(["a", "z"]);
+    const before = JSON.stringify([...byId]);
+    expect(selectReadyTasks(byId, pending, [], new Map())).toEqual(["z"]);
+    expect([...pending]).toEqual(["a", "z"]);
+    expect(JSON.stringify([...byId])).toBe(before);
+  });
+  it("makes progress for every three-task DAG order and two-file scope assignment", () => {
+    const orders = [["a", "b", "c"], ["a", "c", "b"], ["b", "a", "c"], ["b", "c", "a"], ["c", "a", "b"], ["c", "b", "a"]];
+    const scopes = [[], ["x"], ["y"], ["x", "y"]];
+    let cases = 0;
+    for (const order of orders) for (let edges = 0; edges < 8; edges++) for (let mask = 0; mask < 64; mask++) {
+      const byId = new Map<string, Item>(order.map((id, i) => [id, { deps: [], filesInScope: scopes[(mask >> (i * 2)) & 3] }]));
+      let bit = 0;
+      for (let to = 1; to < 3; to++) for (let from = 0; from < to; from++, bit++)
+        if (edges & (1 << bit)) byId.get(order[to])!.deps!.push(order[from]);
+      const pending = new Set([...order].reverse());
+      const done = new Map<string, { status: "green" }>();
+      while (pending.size) {
+        const batch = selectReadyTasks(byId, pending, [], done);
+        expect(batch.length, JSON.stringify({ order, edges, mask })).toBeGreaterThan(0);
+        const occupied = new Set<string>();
+        for (const id of batch) {
+          expect(byId.get(id)!.deps!.every(dep => done.has(dep))).toBe(true);
+          for (const file of byId.get(id)!.filesInScope) { expect(occupied.has(file)).toBe(false); occupied.add(file); }
+        }
+        for (const id of batch) { pending.delete(id); done.set(id, { status: "green" }); }
+      }
+      expect(done.size).toBe(3);
+      cases++;
+    }
+    expect(cases).toBe(3072);
   });
 });

@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.13] - 2026-09-24
+
+### Fixed
+
+- Resolve farm dependencies before overlapping-file arbitration, so an unready
+  lower-ID task cannot block its own prerequisite. Preserve ready-sibling ordering.
+- Evaluate canary models and samples on one frozen commit in isolated detached
+  worktrees, without changing integration or existing task branches. Report the
+  effective candidate model and incomplete cleanup instead of hiding it.
+- Keep worker/test/verification gates and the separate HTML farm restriction intact.
+
 ## [2.21.12] - 2026-09-23
 
 ### Fixed

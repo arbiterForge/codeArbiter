@@ -325,3 +325,55 @@ state. It invalidates affected proof but leaves any true block for its existing
 qualified authority path. The paired prompt transitions share the existing
 private cross-process lock facility, outside ordinary input snapshots, to keep
 concurrent observations/cancellation from removing a different pending request.
+
+
+## 2026-09-24: dependency-ready farm scheduling and isolated canaries
+
+Fresh baseline: `arbiterForge/codeArbiter@cf90ce4d79c5d87cb88f163535c1035da2315815`,
+the merge of #850. The subsequent slice uses a new branch/PR and does not alter
+the merged approval/SMARTS producer or command ownership. The old farm TypeScript
+blob still contains both historical defects; they are revalidated here rather
+than inferred from an old report.
+
+F03 is addressed by selecting dependency-ready tasks before scope arbitration.
+Only actual running work and dependency-ready predecessors reserve file scopes.
+Lexical ordering of overlapping ready siblings, including overlap chains, remains
+unchanged; an unready lower-ID dependent no longer deadlocks its prerequisite.
+The scheduler writes no artificial dependency edge and does not manufacture a
+green prerequisite. Existing capacity, escalation and circuit-breaker draining
+remain in their owning runtime.
+
+F05 is addressed through an internal evaluation context in the existing task
+runner. Canary resolves the configured base to an immutable commit before
+entitlement probes. Every candidate and sample uses a unique caller-owned
+detached worktree from that commit. The candidate model explicitly wins over a
+task-level override during the comparison only. The same authoring, containment,
+immutable-test, drift, gate and risk checks run, but evaluation returns before
+staging, committing or merging. It never initializes, resets or advances an
+integration branch. Cleanup uses verified worktree teardown and empty-directory
+removal, records failures, and cannot recursively erase retained scratch. The
+report includes the frozen base identity; it is not a task-acceptance receipt.
+
+Regression coverage belongs to the existing farm unit/integration suites. The
+actual source CLI and shipped bundle are exercised against disposable repositories
+and loopback stubs: dependent overlap, existing dirty legacy canary scratch, a
+checked-out integration branch, per-task model overrides, best-of-N evaluation,
+failed worker and real gate failure, named-base movement during probing, and
+invalid-base refusal before any model request. Pure scheduler tests include all
+3,072 enumerated three-task order/DAG/two-file-scope configurations. The original
+source/bundle fail the new integration obligations. These fixtures do not measure
+provider/model quality, total cost or live user interruption rates. Exact executed
+commands, result counts and SHA identities belong in the new PR's evidence.
+
+Candidate manifests, adapter literals, generated shared copies and the three
+manifest provenance claims advance together under the existing spent-version
+policy. This does not assert that a candidate has been released. The private farm
+card and three projections document evaluation accurately; no public capability
+or resident context is added.
+
+Still separate: F09 best-of-N post-selection qualification, farm process resume,
+heuristic quality improvements, actual model-era evaluation and HTML farm
+enablement. HTML farm remains disabled and real provider/resource authority is
+unchanged. This source correction alone supplies no new promotion evidence.
+Rollback the runtime and rebuilt bundle together with their projections/metadata;
+preserve unrelated worktrees, typed authority records and published-tag history.

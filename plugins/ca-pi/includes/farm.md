@@ -110,8 +110,16 @@ picks a model by *measurement*, not hearsay:
    an acceptable canary pass-rate. Otherwise re-select.
 2. **Discovery** — websearch the current free Zen roster to enumerate candidate ids (codenames included).
    This finds *candidates*; it does not judge quality.
-3. **Canary** — `farm.js --canary` runs the plan's smallest task against each candidate and ranks them by
-   measured pass-rate / attempts / latency (`FARM_CANDIDATE_MODELS` carries the list). The top passer wins.
+3. **Canary** — `farm.js --canary` runs the plan's smallest no-dependency task against each candidate
+   and ranks that task's gate result / attempts / latency (`FARM_CANDIDATE_MODELS` carries the list).
+   It freezes the configured base commit before probing, uses separate detached scratch worktrees
+   for each model and sample, and records `baseCommit` in `.farm/canary-report.json`. Candidate
+   selection overrides `task.model` for the trial only; normal dispatch keeps its task override.
+   Worker containment, immutable tests, drift and verification checks still apply. Evaluation stops
+   before staging, committing or merging: it does not reset or advance an existing integration
+   branch. Existing task branches and worktrees are not its scratch. The top passer wins only after
+   verified cleanup; retained scratch is reported and exits nonzero without recursively erasing it.
+   A single task's result is not a general model pass-rate or promotion qualification.
 4. **Surface** — the choice is presented with its measured basis (and a one-line websearched identity note
    for the audit log), then written to `plan.meta.model` + `.farm/model-cache.json`.
 5. **Fallback ladder** — if the canary can't run or none pass: cached model → unmeasured websearch pick
@@ -230,7 +238,8 @@ own artifacts: `.farm/farm-report.json`, `.farm/farm-report.md`, `.farm/farm-res
 `.farm/diffs/<task-id>.patch`. Under concurrency the pointer is last-writer-wins — always a complete
 artifact, never a truncated one, but attributable only via its `run_id`. Reconcile against the run
 directory when it matters. Also in `.farm/`:
-- `canary-report.json` — model-probe ranking (when `--canary` was run).
+- `canary-report.json` — model-probe ranking, frozen `baseCommit`, and any cleanup failures
+  (when `--canary` was run). This is evaluation evidence, not task acceptance or integration proof.
 - `model-cache.json` — last selected model + timestamp + canary pass-rate.
 
 Every report write is atomic (same-directory temp file, then rename), so a reader of a report path sees

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, mkdtemp, chmod, rm, stat, lstat as lstat2, realpath as realpath2, rename, open as open2 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir2, mkdtemp, chmod, rm, rmdir, stat, lstat as lstat2, realpath as realpath2, rename, open as open2 } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn as spawn3, spawnSync } from "node:child_process";
@@ -1680,11 +1680,11 @@ async function writeFilesInto(wt, files) {
     await writeWorktreeFile(wt, f.path, f.contents.endsWith("\n") ? f.contents : f.contents + "\n");
   }
 }
-async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps) {
-  const taskBranch = `farm/${t.id}`;
+async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden, allowed, n, deps, evaluation) {
+  const taskBranch = evaluation?.baseCommit ?? `farm/${t.id}`;
   const runSample = (k) => workerLimit.run(async () => {
-    const branch = `farm/${t.id}__s${k}`;
-    const wt = path3.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+    const branch = evaluation?.baseCommit ?? `farm/${t.id}__s${k}`;
+    const wt = evaluation ? path3.join(evaluation.worktreeRoot, `sample-${k}`) : path3.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
     const base = {
       green: false,
       filesWritten: [],
@@ -1696,7 +1696,7 @@ async function bestOfN(t, prompt, model, apiBaseUrl, apiKey, sampling, forbidden
       branch
     };
     try {
-      const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+      const prep = evaluation ? await prepareEvaluationWorktree(wt, taskBranch, deps.git) : await deps.prepareWorktree(branch, wt, taskBranch);
       if (prep) return { ...base, note: prep };
       const setupNote = await runSetupPhases(wt, t, deps, { key: null });
       if (setupNote) return { ...base, note: setupNote };
@@ -1731,13 +1731,24 @@ ${gate.tail}`), promptTokens: pt, completionTokens: ct };
   const cleanup = [];
   for (const o of outcomes) {
     cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
-    cleanup.push(await deleteBranchVerified(deps.git, o.branch));
+    if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, o.branch));
   }
   return { winner, bestFailure, promptTokens, completionTokens, cleanup };
 }
-async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()) {
-  const branch = `farm/${t.id}`;
-  const wt = path3.resolve(ENV.worktreeRoot, t.id);
+async function prepareEvaluationWorktree(wt, from, gitFn) {
+  try {
+    assertContainedWorktree(wt);
+  } catch (e) {
+    return msgOf(e);
+  }
+  return withWorktreeLock(async () => {
+    const added = await gitFn(["worktree", "add", "--detach", wt, from]);
+    return added.code === 0 ? null : `canary worktree add failed: ${redactSecrets(added.out).slice(0, 200)}`;
+  });
+}
+async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps(), evaluation) {
+  const branch = evaluation?.baseCommit ?? `farm/${t.id}`;
+  const wt = evaluation ? path3.join(evaluation.worktreeRoot, "task") : path3.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
   const effectiveModel = t.model ?? model;
   const allowed = new Set(t.filesInScope);
@@ -1749,7 +1760,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
     for (const c of outcomes) if (!c.ok) cleanupIssues.push(c);
   };
   const finish = (r) => cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r;
-  const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
+  const prepErr = evaluation ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git) : await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
   const testHashBefore = await deps.fileHash(path3.resolve(wt, t.test.path));
@@ -1790,7 +1801,7 @@ async function runTask(t, model, apiBaseUrl, apiKey, deps = defaultRunTaskDeps()
         continue;
       }
     } else {
-      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps, evaluation);
       noteCleanup(...sel.cleanup);
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
@@ -1875,6 +1886,23 @@ ${gate.tail}`);
       return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
     }
     if (risk === "warn") lastWarning = riskNote;
+    if (evaluation) {
+      return finish({
+        id: t.id,
+        status: "green",
+        attempts: attempt,
+        branch,
+        worktree: wt,
+        warning: lastWarning,
+        filesWritten: worker.filesWritten,
+        promptTokens,
+        completionTokens,
+        mutationScore,
+        samples,
+        acceptedPromptTokens,
+        acceptedCompletionTokens
+      });
+    }
     await deps.git(["add", "--", ...worker.filesWritten], wt);
     const commit = await deps.git([...NOSIGN, "commit", "-m", `farm(${t.id}): ${t.description}`], wt);
     if (commit.code !== 0)
@@ -2157,16 +2185,15 @@ async function runCanary(plan) {
     console.error("Error: FARM_API_KEY is not set.");
     process.exit(1);
   }
-  await mkdir2(ENV.worktreeRoot, { recursive: true });
+  const base = await git(["rev-parse", "--verify", "--end-of-options", `${ENV.base}^{commit}`]);
+  const baseCommit = base.stdout.trim();
+  if (base.code !== 0 || !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(baseCommit)) {
+    console.error("Error: canary base must resolve to an existing commit.");
+    process.exit(1);
+  }
+  const scratchRoot = allowedWorktreeRoot();
+  await mkdir2(scratchRoot, { recursive: true });
   await mkdir2(ENV.reportDir, { recursive: true });
-  await git(["branch", "-f", ENV.integration, ENV.base]);
-  integrationWorktree = path3.resolve(ENV.reportDir, "integration-wt");
-  await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
-  });
-  await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {
-  });
-  await git(["worktree", "add", integrationWorktree, ENV.integration]).catch(() => {
-  });
   const task = [...plan.tasks].filter((t) => (t.deps ?? []).length === 0).sort((a, b) => a.filesInScope.length - b.filesInScope.length)[0] ?? plan.tasks[0];
   const { survivors, skipped } = await screenEntitlements(
     ENV.candidateModels,
@@ -2178,27 +2205,72 @@ async function runCanary(plan) {
   const results = [];
   for (const model of survivors) {
     const t0 = Date.now();
-    const r = await runTask({ ...task, id: `canary-${task.id}` }, model, apiBaseUrl, apiKey);
-    results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note });
-    await git(["worktree", "remove", "--force", path3.resolve(ENV.worktreeRoot, `canary-${task.id}`)]).catch(() => {
-    });
-    await git(["branch", "-D", `farm/canary-${task.id}`]).catch(() => {
-    });
+    const trialRoot = await mkdtemp(path3.join(scratchRoot, "canary-"));
+    const wt = path3.join(trialRoot, "task");
+    let r;
+    const cleanup = [];
+    try {
+      r = await runTask(
+        { ...task, model },
+        model,
+        apiBaseUrl,
+        apiKey,
+        defaultRunTaskDeps(),
+        { baseCommit, worktreeRoot: trialRoot }
+      );
+      cleanup.push(...r.cleanup ?? []);
+    } catch (e) {
+      r = {
+        id: task.id,
+        status: "escalate",
+        attempts: 0,
+        branch: baseCommit,
+        worktree: wt,
+        note: `canary error: ${redactSecrets(msgOf(e)).slice(0, 300)}`
+      };
+    } finally {
+      const removed = await removeWorktreeVerified(git, wt);
+      if (!removed.ok) cleanup.push(removed);
+      try {
+        await rmdir(trialRoot);
+      } catch (e) {
+        cleanup.push({
+          ok: false,
+          target: trialRoot,
+          attempts: 1,
+          detail: `canary scratch retained: ${redactSecrets(msgOf(e)).slice(0, 300)}`
+        });
+      }
+    }
+    results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note, cleanup });
   }
-  await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {
-  });
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
-  await writeFile(path3.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  await atomicWriteFile(path3.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, baseCommit, results, skipped, ts: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  const cleanupComplete = results.every((r) => r.cleanup.length === 0);
   const summary = [
     "\nCanary results (best first):",
     ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
     ...skipped.map((s) => `  SKIP  ${s.model}  (${s.reason}: ${s.note})`),
+    ...results.flatMap((r) => r.cleanup.map((c) => `  CLEANUP FAILED  ${r.model}: ${c.detail ?? c.target}`)),
     `
-Recommended: ${results[0]?.green ? results[0].model : "NONE PASSED \u2014 set FARM_MODEL manually or revise the plan"}`,
+Recommended: ${!cleanupComplete ? "NONE \u2014 canary cleanup remains incomplete" : results[0]?.green ? results[0].model : "NONE PASSED \u2014 set FARM_MODEL manually or revise the plan"}`,
     ""
   ].join("\n");
   await new Promise((resolve) => process.stdout.write(summary, () => resolve()));
-  process.exit(results[0]?.green ? 0 : 2);
+  process.exit(results[0]?.green && cleanupComplete ? 0 : 2);
+}
+function selectReadyTasks(byId, pending, running, done) {
+  const occupied = /* @__PURE__ */ new Set();
+  for (const id of running) for (const file of byId.get(id).filesInScope) occupied.add(file);
+  const selected = [];
+  for (const id of [...pending].sort()) {
+    const task = byId.get(id);
+    if (!(task.deps ?? []).every((dep) => done.get(dep)?.status === "green")) continue;
+    const conflicts = task.filesInScope.some((file) => occupied.has(file));
+    for (const file of task.filesInScope) occupied.add(file);
+    if (!conflicts) selected.push(id);
+  }
+  return selected;
 }
 async function main() {
   const args = process.argv.slice(2);
@@ -2272,26 +2344,7 @@ async function main() {
     const escalated = /* @__PURE__ */ new Set();
     const pending = new Set(plan.tasks.map((t) => t.id));
     const running = /* @__PURE__ */ new Map();
-    const scopeOf = (id) => new Set(byId.get(id).filesInScope ?? []);
-    const overlaps = (a, b) => {
-      for (const f of b) if (a.has(f)) return true;
-      return false;
-    };
-    const ready = () => [...pending].filter((id) => {
-      const deps = byId.get(id).deps ?? [];
-      if (deps.some((d) => escalated.has(d))) return false;
-      if (!deps.every((d) => done.get(d)?.status === "green")) return false;
-      const myScope = scopeOf(id);
-      if (myScope.size === 0) return true;
-      for (const rid of running.keys()) {
-        if (overlaps(myScope, scopeOf(rid))) return false;
-      }
-      for (const pid of pending) {
-        if (pid === id) continue;
-        if (pid < id && overlaps(myScope, scopeOf(pid))) return false;
-      }
-      return true;
-    });
+    const ready = () => selectReadyTasks(byId, pending, running.keys(), done);
     const tripped = () => {
       const settled = done.size;
       if (settled < ENV.abortMinTasks) return false;
@@ -2586,6 +2639,7 @@ export {
   runGate,
   runTask,
   screenEntitlements,
+  selectReadyTasks,
   validate,
   validateWorktreeRoot,
   verifyFarmArtifactBoundary,

@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.13] - 2026-09-24
+
+### Fixed
+
+- Synchronize shared runtime identity with the current candidate cohort and
+  document the isolated farm evaluation contract in the private resource. This
+  does not add a packaged Codex farm backend or enable HTML farm execution.
+
 ## [0.13.12] - 2026-09-23
 
 ### Fixed

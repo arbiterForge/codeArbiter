@@ -32,9 +32,11 @@
  *
  * Canary mode (`--canary <plan.json>`): runs the smallest task against each
  * model in FARM_CANDIDATE_MODELS and reports a measured pass-rate ranking, so
- * model selection is objective rather than web hearsay. No merge, no mutation.
+ * model selection can use task evidence rather than web hearsay. All trials
+ * share one frozen base commit. Scratch worktrees and reports are written, but
+ * canary never commits, creates task branches, or changes integration refs.
  */
-import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
@@ -2123,6 +2125,7 @@ async function bestOfN(
   allowed: Set<string>,
   n: number,
   deps: RunTaskDeps,
+  evaluation?: EvaluationContext,
 ): Promise<{
   winner: SampleOutcome | null;
   bestFailure: SampleOutcome | null;
@@ -2140,16 +2143,20 @@ async function bestOfN(
   // (AC-F1.2). This is immune to a non-overlapping sibling task moving
   // farm/integration mid-flight (which would otherwise gate a sample against a
   // newer baseline than the task worktree, causing a false escalation).
-  const taskBranch = `farm/${t.id}`;
+  const taskBranch = evaluation?.baseCommit ?? `farm/${t.id}`;
   const runSample = (k: number): Promise<SampleOutcome> =>
     workerLimit.run(async () => {
-      const branch = `farm/${t.id}__s${k}`;
-      const wt = path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
+      const branch = evaluation?.baseCommit ?? `farm/${t.id}__s${k}`;
+      const wt = evaluation
+        ? path.join(evaluation.worktreeRoot, `sample-${k}`)
+        : path.resolve(ENV.worktreeRoot, `${t.id}__s${k}`);
       const base: SampleOutcome = {
         green: false, filesWritten: [], files: [], inScope: [], promptTokens: 0, completionTokens: 0, wt, branch,
       };
       try {
-        const prep = await deps.prepareWorktree(branch, wt, taskBranch);
+        const prep = evaluation
+          ? await prepareEvaluationWorktree(wt, taskBranch, deps.git)
+          : await deps.prepareWorktree(branch, wt, taskBranch);
         if (prep) return { ...base, note: prep };
         // Each sample gets a FRESH worktree, so its setup cache starts empty and
         // dies with the sample — a sample never reuses another worktree's install.
@@ -2199,9 +2206,27 @@ async function bestOfN(
   const cleanup: CleanupOutcome[] = [];
   for (const o of outcomes) {
     cleanup.push(await removeWorktreeVerified(deps.git, o.wt));
-    cleanup.push(await deleteBranchVerified(deps.git, o.branch));
+    if (!evaluation) cleanup.push(await deleteBranchVerified(deps.git, o.branch));
   }
   return { winner, bestFailure, promptTokens, completionTokens, cleanup };
+}
+
+// Internal canary context, not a plan field or a new CLI capability. Each caller
+// owns a fresh scratch directory and pins one verified commit before any probes.
+type EvaluationContext = { baseCommit: string; worktreeRoot: string };
+
+async function prepareEvaluationWorktree(wt: string, from: string, gitFn: GitRunner): Promise<string | null> {
+  try {
+    assertContainedWorktree(wt);
+  } catch (e) {
+    return msgOf(e);
+  }
+  // No pre-clean and no -b: evaluation may never reset/delete an existing branch.
+  // The caller owns the fresh namespace; a collision fails without replacing it.
+  return withWorktreeLock(async () => {
+    const added = await gitFn(["worktree", "add", "--detach", wt, from]);
+    return added.code === 0 ? null : `canary worktree add failed: ${redactSecrets(added.out).slice(0, 200)}`;
+  });
 }
 
 export async function runTask(
@@ -2210,9 +2235,10 @@ export async function runTask(
   apiBaseUrl: string,
   apiKey: string,
   deps: RunTaskDeps = defaultRunTaskDeps(),
+  evaluation?: EvaluationContext,
 ): Promise<Result> {
-  const branch = `farm/${t.id}`;
-  const wt = path.resolve(ENV.worktreeRoot, t.id);
+  const branch = evaluation?.baseCommit ?? `farm/${t.id}`;
+  const wt = evaluation ? path.join(evaluation.worktreeRoot, "task") : path.resolve(ENV.worktreeRoot, t.id);
   const limit = t.maxRetries ?? ENV.maxRetries;
   // Per-task model (AC-02): layer the optional task-level override on top of the
   // run-level resolved model (the `model` param, from resolveConfig:
@@ -2246,7 +2272,9 @@ export async function runTask(
   // along regardless of which exit the task takes.
   const finish = (r: Result): Result => (cleanupIssues.length ? { ...r, cleanup: [...cleanupIssues] } : r);
 
-  const prepErr = await deps.prepareWorktree(branch, wt, ENV.integration);
+  const prepErr = evaluation
+    ? await prepareEvaluationWorktree(wt, evaluation.baseCommit, deps.git)
+    : await deps.prepareWorktree(branch, wt, ENV.integration);
   if (prepErr)
     return finish({ id: t.id, status: "escalate", attempts: 0, branch, worktree: wt, note: prepErr });
 
@@ -2327,7 +2355,7 @@ export async function runTask(
       // against `wt` UNCHANGED. No green → seed the retry from the best failure
       // (its in-scope output, per F2) and loop (AC-F1.5). Token spend across ALL
       // samples is summed; the winner's own tokens are recorded separately (AC-F1.6).
-      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps);
+      const sel = await bestOfN(t, prompt, effectiveModel, apiBaseUrl, apiKey, sampling, forbidden, allowed, samples, deps, evaluation);
       noteCleanup(...sel.cleanup); // #398: sample worktrees/branches left behind
       promptTokens += sel.promptTokens;
       completionTokens += sel.completionTokens;
@@ -2458,6 +2486,16 @@ export async function runTask(
       return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt, note: riskNote, filesWritten: worker.filesWritten, promptTokens, completionTokens, mutationScore });
     }
     if (risk === "warn") lastWarning = riskNote;
+
+    if (evaluation) {
+      // Worker, containment, immutable-test, drift, gate and risk checks above
+      // are identical to normal authoring. Qualification stops BEFORE staging,
+      // committing or merging. The canary caller verifies scratch teardown even
+      // after escalation/exception; green here is not integrated/accepted work.
+      return finish({ id: t.id, status: "green", attempts: attempt, branch, worktree: wt,
+        warning: lastWarning, filesWritten: worker.filesWritten, promptTokens, completionTokens,
+        mutationScore, samples, acceptedPromptTokens, acceptedCompletionTokens });
+    }
 
     // Commit + merge into the dedicated integration worktree.
     // B-1: stage only the files the worker actually wrote, not everything in the
@@ -2924,14 +2962,17 @@ async function runCanary(plan: Plan) {
     console.error("Error: FARM_API_KEY is not set.");
     process.exit(1);
   }
-  await mkdir(ENV.worktreeRoot, { recursive: true });
+  // Freeze once BEFORE network/setup work. Never reset or check out integration
+  // for measurement: it may contain useful work or belong to an active dispatch.
+  const base = await git(["rev-parse", "--verify", "--end-of-options", `${ENV.base}^{commit}`]);
+  const baseCommit = base.stdout.trim();
+  if (base.code !== 0 || !/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(baseCommit)) {
+    console.error("Error: canary base must resolve to an existing commit.");
+    process.exit(1);
+  }
+  const scratchRoot = allowedWorktreeRoot();
+  await mkdir(scratchRoot, { recursive: true });
   await mkdir(ENV.reportDir, { recursive: true });
-  // Reset integration to base so canary worktrees branch from a clean point.
-  await git(["branch", "-f", ENV.integration, ENV.base]);
-  integrationWorktree = path.resolve(ENV.reportDir, "integration-wt");
-  await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
-  await rm(integrationWorktree, { recursive: true, force: true }).catch(() => {});
-  await git(["worktree", "add", integrationWorktree, ENV.integration]).catch(() => {});
 
   // smallest task = fewest filesInScope, no deps
   const task = [...plan.tasks]
@@ -2948,29 +2989,80 @@ async function runCanary(plan: Plan) {
   if (skipped.length)
     process.stderr.write(`Entitlement screen dropped ${skipped.length}/${ENV.candidateModels.length}: ${skipped.map((s) => `${s.model} (${s.reason})`).join(", ")}\n`);
 
-  const results: Array<{ model: string; green: boolean; attempts: number; ms: number; note?: string }> = [];
+  const results: Array<{ model: string; green: boolean; attempts: number; ms: number; note?: string; cleanup: CleanupOutcome[] }> = [];
   for (const model of survivors) {
     const t0 = Date.now();
-    const r = await runTask({ ...task, id: `canary-${task.id}` }, model, apiBaseUrl, apiKey);
-    results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note });
-    await git(["worktree", "remove", "--force", path.resolve(ENV.worktreeRoot, `canary-${task.id}`)]).catch(() => {});
-    await git(["branch", "-D", `farm/canary-${task.id}`]).catch(() => {});
+    // Atomic directory reservation gives this trial exclusive scratch ownership.
+    // Neither old canary-<task> worktrees nor normal task branches are touched.
+    const trialRoot = await mkdtemp(path.join(scratchRoot, "canary-"));
+    const wt = path.join(trialRoot, "task");
+    let r: Result;
+    const cleanup: CleanupOutcome[] = [];
+    try {
+      // Candidate selection deliberately overrides task.model ONLY for canary.
+      // Every result label now names the worker model that was actually used.
+      r = await runTask({ ...task, model }, model, apiBaseUrl, apiKey, defaultRunTaskDeps(),
+        { baseCommit, worktreeRoot: trialRoot });
+      cleanup.push(...(r.cleanup ?? []));
+    } catch (e) {
+      r = { id: task.id, status: "escalate", attempts: 0, branch: baseCommit, worktree: wt,
+        note: `canary error: ${redactSecrets(msgOf(e)).slice(0, 300)}` };
+    } finally {
+      const removed = await removeWorktreeVerified(git, wt);
+      if (!removed.ok) cleanup.push(removed);
+      // Remove only an EMPTY namespace. Never recursively erase leaked samples
+      // or conceal a cleanup failure behind an otherwise green model result.
+      try {
+        await rmdir(trialRoot);
+      } catch (e) {
+        cleanup.push({ ok: false, target: trialRoot, attempts: 1,
+          detail: `canary scratch retained: ${redactSecrets(msgOf(e)).slice(0, 300)}` });
+      }
+    }
+    results.push({ model, green: r.status === "green", attempts: r.attempts, ms: Date.now() - t0, note: r.note, cleanup });
   }
-  await git(["worktree", "remove", "--force", integrationWorktree]).catch(() => {});
 
   results.sort((a, b) => Number(b.green) - Number(a.green) || a.attempts - b.attempts || a.ms - b.ms);
   // Skipped candidates are surfaced DISTINCTLY (their own array), never folded
   // into the capability `results` as a FAIL.
-  await writeFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, results, skipped, ts: new Date().toISOString() }, null, 2));
+  await atomicWriteFile(path.join(ENV.reportDir, "canary-report.json"), JSON.stringify({ task: task.id, baseCommit, results, skipped, ts: new Date().toISOString() }, null, 2));
+  const cleanupComplete = results.every((r) => r.cleanup.length === 0);
   const summary = [
     "\nCanary results (best first):",
     ...results.map((r) => `  ${r.green ? "PASS" : "FAIL"}  ${r.model}  attempts=${r.attempts} ${r.ms}ms${r.note ? `  (${r.note})` : ""}`),
     ...skipped.map((s) => `  SKIP  ${s.model}  (${s.reason}: ${s.note})`),
-    `\nRecommended: ${results[0]?.green ? results[0].model : "NONE PASSED — set FARM_MODEL manually or revise the plan"}`,
+    ...results.flatMap((r) => r.cleanup.map((c) => `  CLEANUP FAILED  ${r.model}: ${c.detail ?? c.target}`)),
+    `\nRecommended: ${!cleanupComplete ? "NONE — canary cleanup remains incomplete" : results[0]?.green ? results[0].model : "NONE PASSED — set FARM_MODEL manually or revise the plan"}`,
     "",
   ].join("\n");
   await new Promise<void>((resolve) => process.stdout.write(summary, () => resolve()));
-  process.exit(results[0]?.green ? 0 : 2);
+  process.exit(results[0]?.green && cleanupComplete ? 0 : 2);
+}
+
+// Select a compatible batch from dependency-ready work, then reserve its scopes.
+// Pending but unready tasks cannot reserve a file ahead of their own prerequisite.
+// Preserve ID ordering among overlapping dependency-ready siblings, including
+// one waiting on a running task; no ordering edge is written into the plan.
+export function selectReadyTasks(
+  byId: ReadonlyMap<string, Pick<Task, "deps" | "filesInScope">>,
+  pending: ReadonlySet<string>,
+  running: Iterable<string>,
+  done: ReadonlyMap<string, Pick<Result, "status">>,
+): string[] {
+  const occupied = new Set<string>();
+  for (const id of running) for (const file of byId.get(id)!.filesInScope) occupied.add(file);
+  const selected: string[] = [];
+  for (const id of [...pending].sort()) {
+    const task = byId.get(id)!;
+    if (!(task.deps ?? []).every((dep) => done.get(dep)?.status === "green")) continue;
+    const conflicts = task.filesInScope.some((file) => occupied.has(file));
+    // A dependency-ready predecessor retains its place even when another
+    // running/selected sibling currently owns one of its files. This preserves
+    // the established lexical order across overlapping ready chains.
+    for (const file of task.filesInScope) occupied.add(file);
+    if (!conflicts) selected.push(id);
+  }
+  return selected;
 }
 
 // --------------------------------------------------------------------------
@@ -3092,44 +3184,10 @@ async function main() {
     const pending = new Set(plan.tasks.map((t) => t.id));
     const running = new Map<string, Promise<{ id: string; r: Result }>>();
 
-    // AC-06: scope-aware readiness. Two tasks whose filesInScope intersect
-    // collide at merge time if dispatched concurrently, and a later-cut worktree
-    // would miss the earlier task's merge. This is enforced as a DERIVED
-    // readiness filter — never written as a `deps` edge — so it cannot create a
-    // plan-validation cycle (Risks: "Scheduling deadlock/starvation").
-    const scopeOf = (id: string) => new Set(byId.get(id)!.filesInScope ?? []);
-    const overlaps = (a: Set<string>, b: Iterable<string>) => {
-      for (const f of b) if (a.has(f)) return true;
-      return false;
-    };
-
-    const ready = () =>
-      [...pending].filter((id) => {
-        const deps = byId.get(id)!.deps ?? [];
-        if (deps.some((d) => escalated.has(d))) return false;
-        if (!deps.every((d) => done.get(d)?.status === "green")) return false;
-
-        // A candidate is ready iff its written deps are green (above) AND no
-        // overlapping sibling is still in flight or ordered ahead of it:
-        //   - no currently-RUNNING task with intersecting filesInScope, AND
-        //   - no still-PENDING task with intersecting filesInScope and a lower
-        //     (lexicographic) id.
-        // Effect: among an overlapping group, members run sequentially in id
-        // order, each cutting its worktree from the integration HEAD that already
-        // contains the prior member's merge. A SETTLED sibling (green-merged or
-        // escalated) is neither running nor pending, so it no longer blocks —
-        // hence no deadlock and no starvation.
-        const myScope = scopeOf(id);
-        if (myScope.size === 0) return true;
-        for (const rid of running.keys()) {
-          if (overlaps(myScope, scopeOf(rid))) return false;
-        }
-        for (const pid of pending) {
-          if (pid === id) continue;
-          if (pid < id && overlaps(myScope, scopeOf(pid))) return false;
-        }
-        return true;
-      });
+    // AC-06: reserve overlapping files only among dependency-ready tasks and
+    // actual running work. This preserves sequential integration inheritance
+    // without letting a blocked lower-ID sibling deadlock its prerequisite.
+    const ready = () => selectReadyTasks(byId, pending, running.keys(), done);
 
     const tripped = () => {
       const settled = done.size;
