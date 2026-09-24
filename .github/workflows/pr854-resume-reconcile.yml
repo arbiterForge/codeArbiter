@@ -74,13 +74,21 @@ jobs:
           subprocess.run(['git','merge-base','--is-ancestor',payload['source_parent'],head],check=True)
           assert git('diff','--name-only',payload['source_parent'],head).decode().splitlines()==['.github/workflows/pr854-resume-reconcile.yml']
           assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip()=='go1.27.1'
-          # This is a fresh disposable validation checkout. Materialize exact
-          # committed bytes, not autocrlf aliases, before comparing identities.
-          # No tracked product attributes or developer configuration is changed.
           assert not git('status','--porcelain=v1','--untracked-files=no').strip()
+          preserve=['core/pysrc/_releaselib.py','core/pysrc/releasehash.py','core/surface/skills/release/SKILL.md','core/surface/commands/release.md','.github/published-tags.json','plugins/ca/tools/exec.ts','plugins/ca/tools/worktree-fs.ts','plugins/ca/tools/package-lock.json','core/surface/arbiter.md','core/surface/command-routes.json']
+          # Check Git object identity independently. Only a known CRLF checkout
+          # representation may be replaced by its exact committed bytes in this
+          # disposable source-replay workspace. Do not normalize unknown edits.
+          materialized=[]
           subprocess.run(['git','config','--local','core.autocrlf','false'],check=True)
           subprocess.run(['git','config','--local','core.eol','lf'],check=True)
-          subprocess.run(['git','checkout-index','--all','--force'],check=True)
+          for path in sorted({r['path'] for r in payload['files']}|set(preserve)):
+              raw=git('show',main+':'+path);p=root/path;before=p.read_bytes()
+              assert before==raw or (os.name=='nt' and before.replace(b'\r\n',b'\n')==raw),path
+              if before!=raw:materialized.append({'path':path,'checkout_sha256':hashlib.sha256(before).hexdigest(),'git_blob':oid(raw)})
+              p.write_bytes(raw)
+              assert oid(p.read_bytes())==git('rev-parse',main+':'+path).decode().strip(),path
+          (out/'checkout-byte-replay.json').write_bytes(json.dumps(materialized,indent=2).encode('utf-8'))
           for row in payload['files']:
               p=root/row['path'];assert oid(p.read_bytes())==row['base_blob'],row['path']
               assert git('ls-tree',main,'--',row['path']).decode().split()[0]==row['mode']
@@ -98,8 +106,7 @@ jobs:
           expected={r['path'] for r in payload['files']}
           assert set(git('diff','HEAD','--name-only').decode().splitlines())==expected
           for row in payload['files']: assert oid((root/row['path']).read_bytes())==row['sha'],row['path']
-          for p in ['core/pysrc/_releaselib.py','core/pysrc/releasehash.py','core/surface/skills/release/SKILL.md','core/surface/commands/release.md','.github/published-tags.json','plugins/ca/tools/exec.ts','plugins/ca/tools/worktree-fs.ts','plugins/ca/tools/package-lock.json','core/surface/arbiter.md','core/surface/command-routes.json']:
-              assert (root/p).read_bytes()==git('show',main+':'+p),p
+          for p in preserve:assert (root/p).read_bytes()==git('show',main+':'+p),p
           for p,v in [('CHANGELOG.md','2.21.13'),('plugins/ca-codex/CHANGELOG.md','0.13.13'),('plugins/ca-pi/CHANGELOG.md','0.14.13')]:
               prior=git('show',main+':'+p).decode('utf-8');current=(root/p).read_bytes().decode('utf-8');marker='## ['+v+']'
               assert current[current.index(marker):]==prior[prior.index(marker):],p
