@@ -30,7 +30,12 @@ jobs:
           commit='cf90ce4d79c5d87cb88f163535c1035da2315815';run_id=35957243864
           assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==base
           def api(endpoint):
-              return subprocess.check_output(['gh','api','repos/'+repo+'/'+endpoint],timeout=60)
+              command=['gh','api','repos/'+repo+'/'+endpoint]
+              # Only known original job logs contain ANSI output. Capture these
+              # bytes as data; never print them to a terminal or execute them.
+              if re.fullmatch(r'actions/jobs/[0-9]+/logs',endpoint):
+                  command.append('--allow-escape-sequences')
+              return subprocess.check_output(command,timeout=60)
           run=json.loads(api('actions/runs/'+str(run_id)))
           assert (run['head_sha'],run['path'],run['run_attempt'],run['conclusion'],run['repository']['full_name'])==(commit,'.github/workflows/release.yml',1,'success',repo)
           records=[
@@ -61,7 +66,8 @@ jobs:
               assert obj['object']=={'sha':commit,'type':'commit','url':'https://api.github.com/repos/'+repo+'/git/commits/'+commit}
               job=json.loads(api('actions/jobs/'+str(job_id)))
               assert job['run_id']==run_id and job['conclusion']=='success'
-              log=api('actions/jobs/'+str(job_id)+'/logs').decode('utf-8-sig')
+              log_bytes=api('actions/jobs/'+str(job_id)+'/logs')
+              log=re.sub(r'\x1b\[[0-9;]*[A-Za-z]','',log_bytes.decode('utf-8-sig'))
               fresh=[line for line in log.splitlines() if re.fullmatch(r'\S+Z qualified publish state: marker_durable_tag_created',line)]
               pushed=[line for line in log.splitlines() if '[new tag]' in line and line.rstrip().endswith(tag+' -> '+tag)]
               assert fresh and pushed, 'not original tag creation evidence'
@@ -69,7 +75,7 @@ jobs:
               candidate=out/('candidate-'+str(index)+'.json')
               command=[sys.executable,'.github/scripts/reconcile_tag_receipt.py','--receipt',str(receipt_path),'--manifest',str(current),'--legacy-manifest',str(legacy),'--output',str(candidate),'--expected-manifest-sha256',hashlib.sha256(current.read_bytes()).hexdigest(),'--expected-legacy-sha256',legacy_hash,'--expected-repo',repo,'--expected-tag',tag,'--expected-commit',commit,'--expected-run-id',str(run_id),'--expected-run-attempt','1','--expected-workflow-sha',commit]
               subprocess.run(command,check=True);current=candidate
-              evidence.append({'tag':tag,'artifact_id':artifact_id,'artifact_sha256':digest,'job_id':job_id,'log_sha256':hashlib.sha256(log.encode()).hexdigest(),'original_creation_lines':fresh+pushed,'identity':receipt['identity']})
+              evidence.append({'tag':tag,'artifact_id':artifact_id,'artifact_sha256':digest,'job_id':job_id,'raw_log_sha256':hashlib.sha256(log_bytes).hexdigest(),'original_creation_lines':fresh+pushed,'identity':receipt['identity']})
           payload=current.read_bytes()
           assert hashlib.sha256(payload).hexdigest()=='71bad5f618bfd39d3694c7e8dbd0ba26ac127f507177bd09cf60345db367cdaf'
           assert hashlib.sha1(b'blob '+str(len(payload)).encode()+b'\0'+payload).hexdigest()=='fb242bb1212a31926c48b85e677b9d1e78351a32'
@@ -116,53 +122,3 @@ jobs:
           assert result['sha']=='fb242bb1212a31926c48b85e677b9d1e78351a32'
           print('VERIFIED_UNREFERENCED_BLOB='+result['sha'])
           PY
-  pi-diagnostic:
-    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/prep/pr852-publication-receipts-20260924'
-    runs-on: macos-latest
-    timeout-minutes: 8
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: 831e22bc11ea93eab07098a509ba9ec68f77e073
-          persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: 22.19.0
-          package-manager-cache: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: 3.x
-      - name: Repeat the unchanged pinned install with bounded error output
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import json,os,re,subprocess,sys
-          from pathlib import Path
-          sys.path.insert(0,str(Path('.github/scripts').resolve()))
-          import pi_host_locks
-          out=Path(os.environ['RUNNER_TEMP'])/'pi-diagnostic';out.mkdir()
-          try:
-              result=pi_host_locks.install(Path.cwd(),'0.84.1',out/'host')
-          except subprocess.CalledProcessError as error:
-              streams={}
-              for name,value in [('stdout',error.stdout),('stderr',error.stderr)]:
-                  value=value or ''
-                  value=re.sub(r'\x1b\[[0-9;]*[A-Za-z]','',value)
-                  value=re.sub(r'npm_[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,}','[REDACTED]',value)
-                  streams[name]=value[:12000]
-                  for line in streams[name].splitlines():print('DIAGNOSTIC | '+line)
-              (out/'result.json').write_text(json.dumps({'exit_code':error.returncode,'command_class':error.cmd[1:3],**streams},indent=2)+'\n')
-              raise SystemExit(error.returncode)
-          else:
-              (out/'result.json').write_text(json.dumps({'exit_code':0,'result':result,'signature_audit_unchanged':True},indent=2)+'\n')
-              print('Pinned Pi installation and unchanged signature audit passed')
-          PY
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        if: always()
-        with:
-          name: pr852-pi-install-diagnostic
-          path: ${{ runner.temp }}/pi-diagnostic/result.json
-          if-no-files-found: error
-          retention-days: 3
