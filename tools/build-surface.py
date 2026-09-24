@@ -921,6 +921,7 @@ def _compose_skill_entry(text, where, surface, owners, *, suppress_model=False):
     if not owner.startswith("---\n") or end < 0:
         raise SurfaceError(f"{where}: owner has no complete frontmatter")
     fields = {}
+    quoted = set()
     allowed = {"name", "description", "argument-hint", "disable-model-invocation"}
     for line in owner[4:end].splitlines():
         field = re.fullmatch(r"([a-z][a-z-]*): (.+)", line)
@@ -932,6 +933,7 @@ def _compose_skill_entry(text, where, surface, owners, *, suppress_model=False):
         if value.startswith('"'):
             try:
                 value = json.loads(value)
+                quoted.add(key)
             except json.JSONDecodeError as error:
                 raise SurfaceError(f"{where}: invalid owner scalar {key}") from error
         if not isinstance(value, str) or not value.strip() or "\n" in value or "\r" in value:
@@ -955,7 +957,8 @@ def _compose_skill_entry(text, where, surface, owners, *, suppress_model=False):
     # redundant model listing. Hosts exposing commands as skills need the entry
     # discoverable because their owner copy lives outside discovery (routines/).
     header = "---\n" + "\n".join(
-        f"{key}: {_yaml_safe_scalar(fields[key])}"
+        f"{key}: " + (json.dumps(fields[key], ensure_ascii=False)
+                     if key in quoted else _yaml_safe_scalar(fields[key]))
         for key in ("description", "argument-hint")
     ) + ("\ndisable-model-invocation: true" if suppress_model else "") + "\n---\n"
     return header + body

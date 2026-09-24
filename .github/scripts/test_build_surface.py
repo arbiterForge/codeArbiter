@@ -1420,6 +1420,31 @@ class SkillEntryCompositionTest(_RepoCase):
                 else:
                     self.assertNotIn('name:', _frontmatter(public))
 
+    def test_json_quoted_owner_scalars_remain_strings_in_host_frontmatter(self):
+        """Explicit quoted scalar intent survives comments, YAML types and sigils."""
+        cases = ('Fixes issue #612 now', 'true', "'x'", '*alias', '&anchor',
+                 '!tag', '- item', '@scope', '%directive', '`literal`',
+                 '001', 'null', ' leading and trailing ')
+        for value in cases:
+            owner = self.owner.replace('description: Create the authorized commit.',
+                                       'description: ' + json.dumps(value))
+            owner = owner.replace('argument-hint: (none)',
+                                  'argument-hint: ' + json.dumps(value))
+            _write(self.repo, 'core/surface/skills/commit-gate/SKILL.md', owner)
+            for host, entry in (('claude', 'commands/init.md'),
+                                ('codex', 'skills/ca-init/SKILL.md'),
+                                ('pi', 'skills/ca-init/SKILL.md')):
+                with self.subTest(value=value, host=host):
+                    out = self.render(host)
+                    front = _frontmatter(out[entry].decode())
+                    for key in ('description', 'argument-hint'):
+                        emitted = next(line.split(': ', 1)[1] for line in front.splitlines()
+                                       if line.startswith(key + ': '))
+                        self.assertTrue(emitted.startswith('"'), (key, emitted))
+                        self.assertEqual(json.loads(emitted), value)
+                    catalog = json.loads(out['generated/command-catalog.json'])
+                    self.assertEqual(catalog['commands']['init']['description'], value)
+
     def test_codex_links_are_rendered_from_entry_location(self):
         """Copied procedure resources resolve from the new public entry's directory."""
         out = self.render('codex')

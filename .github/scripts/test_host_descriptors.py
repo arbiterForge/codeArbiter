@@ -382,8 +382,11 @@ def _compose_entry_independently(text, source, surface, rule):
     for key in ("description", "argument-hint"):
         value = fields[key]
         if value.startswith('"'):
-            value = json.loads(value)
-        lines.append(f"{key}: {_yaml_safe_scalar_independently(value)}")
+            # A JSON string is a YAML string; preserve explicit author quoting.
+            rendered = json.dumps(json.loads(value), ensure_ascii=False)
+        else:
+            rendered = _yaml_safe_scalar_independently(value)
+        lines.append(f"{key}: {rendered}")
     if not rule.add_skill_frontmatter:
         lines.append("disable-model-invocation: true")
     return "---\n" + "\n".join(lines) + "\n---\n" + parts[1]
@@ -802,6 +805,30 @@ class DescriptorContractTest(unittest.TestCase):
                 )
                 with self.assertRaises(module.DescriptorError):
                     module.load_host_descriptors(repo)
+
+
+class QuotedOwnerOracleTest(unittest.TestCase):
+    """Check the independent oracle without asking production how to quote values."""
+
+    def test_explicit_owner_quotes_are_preserved(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as tmp:
+            surface = Path(tmp)
+            source = surface / 'commands' / 'commit.md'
+            owner = surface / 'skills' / 'commit-gate' / 'SKILL.md'
+            owner.parent.mkdir(parents=True)
+            for value in ('Fixes issue #612 now', 'true', "'x'", '*alias', '&anchor',
+                          '!tag', '- item', '@scope', '%directive', '`literal`', '001', 'null'):
+                for add_frontmatter in (False, True):
+                    with self.subTest(value=value, add_frontmatter=add_frontmatter):
+                        owner.write_text('---\nname: commit-gate\ndescription: '
+                                         + json.dumps(value) + '\nargument-hint: '
+                                         + json.dumps(value) + '\n---\nBody.\n')
+                        rendered = _compose_entry_independently(
+                            '{{SKILL_ENTRY:commit-gate}}\n', source, surface,
+                            SimpleNamespace(add_skill_frontmatter=add_frontmatter))
+                        for key in ('description', 'argument-hint'):
+                            self.assertIn(key + ': ' + json.dumps(value) + '\n', rendered)
 
 
 class GenerationContractTest(unittest.TestCase):
