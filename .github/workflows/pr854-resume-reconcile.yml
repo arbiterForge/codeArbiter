@@ -1,0 +1,41 @@
+name: PR854 resume reconciliation (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/pr854-resume-reconcile.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture committed identities without executing product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = e0e2b5e8c74a52b0df1da5d2f00e679134b202c3
+          MAIN=53122af871dbef7a463709fe71595c4de37f8952
+          git cat-file -e "$MAIN^{commit}"
+          git update-ref refs/review/pinned-main "$MAIN"
+          OUT="$RUNNER_TEMP/pr854-resume-source"
+          mkdir "$OUT"
+          git bundle create "$OUT/source.bundle" HEAD refs/review/pinned-main
+          git rev-parse HEAD > "$OUT/pr-head.txt"
+          git rev-parse 'HEAD^{tree}' > "$OUT/pr-tree.txt"
+          printf '%s\n' "$MAIN" > "$OUT/main-head.txt"
+          git rev-parse "$MAIN^{tree}" > "$OUT/main-tree.txt"
+          cd "$OUT"
+          sha256sum source.bundle > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-resume-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-resume-source/
+          if-no-files-found: error
+          retention-days: 3
