@@ -28,6 +28,12 @@ func (e *Engine) capture(r object, observedRequired bool) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if _, paired := model.M(ev["payload"])["sprint_pair"]; paired {
+		return nil, fault.New("PAIR_APPROVAL_REQUIRED", "paired approval cannot be captured outside its atomic operation")
+	}
+	if model.S(ev["authority_kind"]) == "smarts_workflow" {
+		return nil, fault.New("SMARTS_PRODUCER_REQUIRED", "use the closed delegated method producer")
+	}
 	subject := model.M(ev["subject"])
 	entry, err := e.Catalog.Resolve(model.S(subject["artifact_id"]))
 	if err != nil {
@@ -86,6 +92,14 @@ func (e *Engine) capture(r object, observedRequired bool) (any, error) {
 			return nil, fault.New("STALE_EVIDENCE", "observed evidence context is no longer current")
 		}
 	}
+	receipt, err := e.storeReceipt(r, ev, eb)
+	if err != nil {
+		return nil, err
+	}
+	return object{"receipt": receipt.Path, "receipt_sha256": receipt.Hash, "event": receipt.EventPath, "event_sha256": canonical.BytesHash(eb), "authority_source": r["source_ref"], "authority_source_sha256": r["source_sha256"], "artifact_approval_changed": false, "trust_model": "host-source-bound cooperative workflow attestation; not independent identity authentication"}, nil
+}
+func (e *Engine) storeReceipt(r, ev object, eb []byte) (*authority.Receipt, error) {
+	subject := model.M(ev["subject"])
 	eh := canonical.BytesHash(eb)
 	receipt := object{"format": "codearbiter.receipt/0.2.0", "kind": ev["kind"], "authority_kind": ev["authority_kind"], "subject": subject, "event_sha256": eh, "authority_source_ref": r["source_ref"], "authority_source_sha256": r["source_sha256"]}
 	rb, err := canonical.Marshal(receipt)
@@ -113,11 +127,9 @@ func (e *Engine) capture(r object, observedRequired bool) (any, error) {
 			return nil, err
 		}
 	}
-	if _, err = authority.Load(e.FS, rp); err != nil {
-		return nil, err
-	}
-	return object{"receipt": rp, "receipt_sha256": rh, "event": ep, "event_sha256": eh, "authority_source": r["source_ref"], "authority_source_sha256": r["source_sha256"], "artifact_approval_changed": false, "trust_model": "host-source-bound cooperative workflow attestation; not independent identity authentication"}, nil
+	return authority.Load(e.FS, rp)
 }
+
 func (e *Engine) export(r object, entry repository.Entry) (any, error) {
 	target := model.S(r["target"])
 	if !validate.Path(target, false) || !strings.HasPrefix(target, ".codearbiter/exports/") || !strings.HasSuffix(target, ".html") || strings.Count(target, "/") != 2 {

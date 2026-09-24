@@ -92,10 +92,19 @@ approval, dispatch, acceptance, commit proof, or finalization. This is the
 repository's cooperative same-user attestation model, not cryptographic identity
 proof or protection from an unrestricted same-user filesystem writer.
 
-Create a plan as `draft_preview`, consume existing criterion IDs, then `plan-bind`
-to the approved spec. Approve the plan through the applicable existing workflow.
+For ordinary sequential planning, create a plan as `draft_preview`, consume existing criterion IDs,
+then `plan-bind` to the approved spec and approve the plan through its existing workflow. Initial
+combined HTML sprint review uses the explicit paired path below instead of separate approvals.
 A normative change invalidates its approval. Rebinding is explicit and preserves
 history; it does not waive coverage or permit silent reinterpretation.
+
+## Initial sprint pair and delegated methods
+
+Only when preparing initial combined approval, replaying an observed reply, or revising a task's
+method under its existing grant, load `${CLAUDE_PLUGIN_ROOT}/includes/sprint-authority.md`. That private
+card owns the `arm-sprint` / `resume-sprint` / `smarts` bridge and the native pair/method operations.
+Do not bulk-load it for ordinary task reads. Scoring is not consent; the initial observed user reply,
+protected scope, real producer, current evidence and existing security/permission gates remain required.
 
 ## Reading and dispatch
 
@@ -148,8 +157,8 @@ python "${CLAUDE_PLUGIN_ROOT}/hooks/_prerequisitelib.py" supersede --root "${CLA
 ```
 
 The adapter fixes `authority_kind: user_workflow` and `verdict: satisfied`;
-there is no caller-selected authority or bulk-satisfaction path. SMARTS remains
-unsupported until a real policy-owned SMARTS decision producer exists. Pi has no
+there is no caller-selected authority or bulk-satisfaction path. SMARTS prerequisite satisfaction remains unsupported; the plan-method producer below does not
+grant prerequisite, security, backend or publication authority. Pi has no
 qualified pre-model prompt seam and must remain blocked. Do not infer eligibility from one satisfied prerequisite:
 rerun `eligible`, and resolve each remaining record independently against the
 new current plan identity.

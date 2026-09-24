@@ -132,3 +132,196 @@ Its result must be inspected before the connector fast-forwards this PR branch.
 Product tests, generated parity, installed-host behavior and live-model routing
 remain distinct evidence layers. Exact executed commands/results are retained in
 the preparation artifact and the PR update, not inferred from this document.
+
+
+## 2026-09-23 revalidation: caller continuation and typed checkpoint scope
+
+This follow-up inspected `arbiterForge/codeArbiter@d0a247f3a78d10b1fc2d0b2b823a58ec5c2a2e3f`.
+PR #843 is merged, including its later durable blocked-state correction and live
+candidate qualification. The earlier unpublished conformance patch was not applied:
+brainstorming still used blob `1667edf9e220016f27705f89c706345c0d9d9f86` and the
+attended executor still used `284b08805b10fe6ae4027e7b2f1c116e8609c08d`.
+The former permitted initial sprint SMARTS approval and unconditional TDD handoff;
+the latter constructed task-count batches without the authored HTML checkpoint partition.
+
+The new correction is deliberately rebased, not a replay of the old patch. Main now
+includes the production authority pipeline from #844. Its exact prompt approval,
+Codex-only verification/review, qualified producer requirements, and supported
+reconciliation mechanisms remain authoritative and are not relaxed here.
+
+| Requirement | Current correction | Owning source |
+|---|---|---|
+| Preserve one coherent sprint rather than force repeated feature interviews | Caller scope explicitly distinguishes a feature from a coherent sprint; unrelated work is excluded | `core/surface/skills/brainstorming/SKILL.md` |
+| Do not make the user select reversible internal methods | Remove the single-answer rule and indiscriminate later/confirmation instructions; retain actual user-owned decisions | same |
+| No self-delegation or skipped planning | Initial spec approval precedes planning; full-lane continuation returns or forwards to writing-plans, not unconditionally TDD | same |
+| Make the existing HTML approval sequence executable | Arm exact spec, observe exact reply and validate approval, create/bind plan, then separately arm and approve it before execution | `core/surface/SPRINT.md` |
+| Keep actual authority distinct from scoring | A score/log is not a receipt; absent production producer is not granted by delegation | brainstorming and SPRINT |
+| Preserve typed checkpoint membership across resume | Keep full task-ID membership including REVIEW and BLOCKED; eligible chooses work, not membership | `core/surface/skills/executing-plans/SKILL.md` |
+| Preserve autonomy versus attended execution | Feature retains its acknowledgments; sprint still goes directly to subagent-driven-development without attended pauses | same |
+| Do not enlarge discovery | Extend existing private procedures/index and generate existing host copies; no new command, skill, agent or persistent tool | `core/surface/skills/INDEX.md`, host projections |
+
+The initial HTML instructions describe the already-implemented single-artifact
+approval adapter, not a new combined authorization protocol. Two exact replies
+within the initial planning phase do not become per-feature interviews or execution
+checkpoints. The user may separately choose a redesigned combined approval experience;
+this change does not invent one. A missing supported authority producer remains a
+real boundary; no event, signature, user prompt or verdict may be fabricated.
+
+### Verification scope
+
+Thirteen additional methods in the existing routing suite pin the operative
+caller, approval, selected-format and checkpoint contracts on core and all three
+host projections. The original nine new methods failed in 36 host subtests against
+unmodified main; four additional current-authority tests failed in 16 host subtests
+before their corrections. The final routing suite has 53 tests. These are prose
+contract regressions, not an authenticated model-driven sprint.
+
+Current local authoring/workflow tests use the authentic Linux native engine from
+producer run 35821596966, attempt 1, artifact 10734185200. Its `core/artifacts` source
+subtree `2d36d8ec5ae04a72f39b14d92d446f5fa04cf5f5` is identical to the inspected main;
+the artifact archive and selected native members were hash-verified. This establishes
+only the native fixture basis, not equality of all host package bytes or live authority.
+Local process-containment coverage hit an absent descendant PID file at the fixture's
+0.5-second deadline; retain that failure and test the unchanged suite on the hosted
+runner rather than weakening its timeout/containment obligation. Exact commands and
+hosted results belong in the follow-up PR evidence, not an unconditional claim here.
+
+### Candidate identity and original publication record
+
+All changed payloads advance from the spent mainline .11 coordinates to candidates
+ca 2.21.12, ca-codex 0.13.12 and ca-pi 0.14.12. Manifests, adapter-version literals,
+generated shared copies, root Pi metadata, notes, badge and the three manifest
+provenance claims advance together. These candidates are not published and the old
+live Codex proof is not relabeled: exact final .12 bytes still require authentic
+live qualification before release readiness.
+
+The missing `v2.21.11` ledger entry is appended through the existing reconciliation
+helper from the original publication artifact 10734983732 of run 35825602367,
+attempt 1. ZIP SHA-256: `89f175f857af88a16a4d9f00b60bdd04c975c4e40eecfa13e3a87c89cca215ad`.
+The successful original CA publisher job is 107066725601; the independently observed
+tag object is `d0a6353cb0716c70fb6b2b627db4a9020645505e`, peeling to the inspected
+main commit. Every prior ledger entry and top-level field is preserved. That release
+run failed later at Codex publisher-token creation, so the successful CA publication
+is not evidence of full cohort completion. No tag, publisher permission or release
+execution is changed by recording its authentic receipt.
+
+### Remaining boundaries
+
+This does not enable HTML farm, implement a SMARTS authority producer, fix the farm
+scheduler/canary runtime, remove public compatibility names, expand host support, or
+complete every historical audit item. General decomposition completeness and
+proof-freshness behavior remain separately testable. Revert the isolated correction
+and generated projections together if rejected, preserving accepted decisions and
+authenticated publication history. Project Sources and public maturity claims are
+not changed. Temporary preparation files must be absent from the final PR tree.
+
+
+## 2026-09-23: command-backed owner consolidation (PR #850)
+
+Baseline: `arbiterForge/codeArbiter@f361d039d329a8a2932bd9dc14ec42d7b32d4ca3`.
+The user requested adding this slice to the existing PR, not opening a second one.
+
+D01 (`commit` / `commit-gate`) and D02 (`new-skill` / `skill-author`) now use a
+whole-file SKILL_ENTRY declaration in the existing command source. The existing
+surface generator composes the complete public entry from the owning skill's
+single description, argument hint and body. It is not a runtime include mechanism.
+No source schema registry, agent, command name, installed helper or permission was added.
+
+The source review found an important approved exception: ADR-0028 retains the
+owning commit skill for plain-language discovery. That decision is preserved.
+Claude keeps `commit-gate` and `skill-author` discoverable, while only their
+redundant command descriptions are model-disabled. Explicit command spellings and
+manual skill compatibility names remain usable. Codex/Pi need their generated entry
+skills discoverable because internal owners reside outside their discovery roots.
+The generator derives this distinction from the existing host projection rule.
+No `user-invocable` control or user-settings override was added.
+
+Every generated entry contains the complete owner, so the model need not load a
+wrapper and then reload the identical procedure. Existing explicit internal resource
+paths remain valid and caller-owned return/forward/branch behavior is unchanged.
+The commit owner's entire Pre-flight-through-Hard-rules suffix is byte-identical
+to the baseline: actual permission, current HTML acceptance, selective staging,
+verification, secrets, security reviewers and terminal commit receipt are preserved.
+
+The compiler fails on non-whole declarations, missing or symlinked owners, duplicate
+public ownership, nested composition, unsupported or repeated metadata, hidden owners
+and unrooted supporting links. Validation happens before any generated files are written.
+The existing independent host-descriptor oracle now understands this small grammar
+without calling the production composition parser. It still detects independently
+mutated generated content. The Codex agent-reference corpus counts increase only
+because two full generated entries now contain the owner's existing references;
+no new agent type, dispatch behavior or native registration was added.
+
+The skill-author owner documents the same single-source convention and permits
+supporting information cards without fabricating skill frontmatter or discovery
+entries. Curated command/skill documentation describes ownership and negative intent
+rather than copying another gate procedure. The resident persona, startup emitters,
+canonical command registry, host descriptors, accepted ADR bodies, core gate code,
+versions and release proof are unchanged by this slice.
+
+Verification must separately cover synthetic compiler negatives, real full-entry
+body equality and gate presence, public entry names and discovery flags, generated
+resources/catalogs, current hook and artifact regressions, and installed-host
+qualification. Byte/file reductions and suppression flags are source observations,
+not measured model tokens or a model-backed routing improvement. The historical
+Claude reserved-name/budget behavior in ADR-0028 means static counts alone cannot
+establish a runtime context saving.
+
+Remaining candidates are not silently migrated: same-named debug/refactor/release,
+initialization/drift aliases, decision modes, cleanup and PR/finishing have meaningful
+side-effect, mode or authority distinctions requiring their own current caller review.
+HTML farm remains disabled. New `.12` package bytes still require genuine final-candidate
+live proof under the existing release gate; no prior receipt can certify this slice.
+Rollback the owner/declaration/compiler changes and generated derivatives together,
+without changing stored artifacts, published-tag history or unrelated PR work.
+
+
+## PR850: requested combined approval and SMARTS producer
+
+The requester explicitly approved this slice on 2026-09-23. It supersedes this
+review's earlier sequential-only initial-sprint constraint and deferral of a
+SMARTS producer; those statements remain historical implementation boundaries.
+No accepted ADR body or Project canon is rewritten by this note.
+
+The private native operations `sprint-approval-context`, `sprint-approve` and
+`smarts-apply` reuse the existing source/observation/receipt and journal stores.
+One exact host-observed reply approves the complete ready spec/draft-plan pair,
+projects its approved binding and optionally grants existing-task method changes.
+The model cannot authorize its initial pair or reinterpret approve-only as a grant.
+The grant protects every normative plan field except existing task steps. The
+producer rejects changed criteria, paths, verification, prerequisites, checkpoint
+membership and running affected writers; it never marks work accepted. The normal
+permission and proof gates, HTML farm block and host-specific limitations remain.
+
+The native regression suite covers one-transaction replay, stale members, wrong
+sources, generic-capture/single-approve refusal, missing delegation, malformed or
+dominated comparisons, ties, revocation by spec change and injected mid-pair crash
+completion/rollback. The installed Python adapter suite exercises actual native
+operations using clearly synthetic host events, including lost response recovery,
+no observed reply, stale cancellation boundaries, cross-root prompt routing and
+fresh method authority. Neither suite is authenticated model-turn release proof.
+
+The earlier secret-scan findings were an exact verified hostapi Git blob hash in
+removed preparation history. Its value-only anchored allowlist must not broaden
+path/commit exclusions, alter generic scanner rules or hide adjacent values. The
+current-candidate live-proof gate remains separate and cannot be satisfied by
+relabelling the old .11 record or these fixture results.
+
+
+### Concurrent upstream release correction
+
+Main advanced to `786a1db5713adc16cdee58e6903fd16099039ccd` through PR #853 while
+this slice was in validation. That merged correction places authenticated live
+Codex proof after publication under ADR-0032, while retaining static candidate
+provenance and exact-head cohort checks before publication. Preserve it when
+reconciling this PR. Earlier sections that called the retained .11 live baseline
+a mandatory .12 pre-tag blocker are historical and superseded, not current policy.
+No old observation is relabeled; this slice does not claim an authenticated user
+model turn, released .12 behavior, or successful publication.
+
+The delegated-method implementation also preserves BLOCKED members and their
+reasons: a new method cannot itself reconcile missing permission or security
+state. It invalidates affected proof but leaves any true block for its existing
+qualified authority path. The paired prompt transitions share the existing
+private cross-process lock facility, outside ordinary input snapshots, to keep
+concurrent observations/cancellation from removing a different pending request.

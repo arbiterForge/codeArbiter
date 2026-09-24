@@ -15,8 +15,9 @@ gates:
 
 ## What it does
 
-This is the only sanctioned way a new skill gets written, invoked through the new-skill command
-with a stated gap. It first proves the gap isn't already covered, settles the new skill's exact
+This owns the procedure for creating a new skill from a stated gap. The explicit new-skill
+entry is generated from this body; natural-language routing and direct internal reads reach
+the same owner without a separately maintained wrapper. It first proves the gap isn't already covered, settles the new skill's exact
 scope with you, writes it to the house format, self-reviews it against that format, and wires it
 into the catalog and routing table so it's actually reachable.
 
@@ -32,6 +33,11 @@ into the catalog and routing table so it's actually reachable.
    the corrected version along with the findings list.
 5. Add the skill's catalog entry and routing-table entry, verify every reference it cites
    resolves, and hand the change to the commit gate.
+
+A pure command wrapper can use the source generator's single-owner declaration instead
+of copying a description and a second set of instructions. Supporting information can
+remain a directly referenced card outside discovery. These options do not waive the
+existing gap, scope, review or commit gates.
 
 ## Exits
 

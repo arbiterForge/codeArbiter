@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: The spec-to-plan bridge. Routed to by /feature once the brainstormed spec is approved, and by /sprint before execution. Decomposes the spec into 2–5 minute tasks, each carrying its exact file path(s) and a concrete verification step that maps to a tdd obligation. Writes the plan in the approved spec's authoritative format, ordered with dependencies flagged and an MVP slice identifiable. Nothing executes until every task has a path and a verification and the task set covers every acceptance criterion.
+description: The spec-to-plan bridge. /feature supplies an approved spec; initial full-lane HTML sprint review may supply a ready draft only through draft_for_pair. Creates the same-format plan with exact paths, tests, dependencies and complete criterion coverage. The initial paired review has no execution authority until one real user reply approves both artifacts. Ordinary sequential planning retains approved-source binding and plan approval.
 disable-model-invocation: true
 ---
 
@@ -17,16 +17,21 @@ Markdown spec continues through the legacy Markdown path without conversion.
 HTML `--farm` dispatch remains blocked.
 
 
-Turn an approved spec into an executable plan. Routed to by `/feature` (after spec approval) and `/sprint`.
+Turn an approved spec into an executable plan, or prepare a ready draft plan for initial combined
+HTML sprint review. Draft preparation is not execution authority. Routed to by `/feature` (after
+spec approval) and `/sprint` under its explicit call mode.
 
 ## Pre-flight
 
-Read these, or STOP and surface the gap — never plan against an unapproved or missing spec:
+Read these, or STOP and surface the gap. Missing specs always block. Ordinary planning requires
+approval; only initial full-lane HTML sprint-pair preparation accepts an exact ready draft:
 
 - The authoritative approved spec selected by `/feature`: for HTML, resolve it
   through the installed engine and verify its ready approval and exact identity;
   for legacy Markdown, read `<project-root>/.codearbiter/specs/<slug>.md`.
-  Absent or unapproved → STOP and route back to `/feature`.
+  Absent → STOP. Unapproved → STOP except the explicit initial sprint `draft_for_pair` mode,
+  which verifies ready/current draft identity through the private preflight and never grants execution.
+  Route a genuine missing prerequisite back to the active caller, not an unrelated feature interview.
 - `<project-root>/.codearbiter/CONTEXT.md` — the `stage:` frontmatter (the maturity value) and project context.
 - `<project-root>/.codearbiter/tech-stack.md` — file layout, build/test/lint invocations. A verification step cites a real command from here, never a guess.
 - `<project-root>/.codearbiter/coding-standards.md` — structure and naming, so a task names the right path.
@@ -107,12 +112,16 @@ that completeness gap is caught earlier, by Phase 1's `uncovered_intent` backsto
 - Every task advances at least one `AC-NN`. A task that covers nothing is scope creep — cut it or surface it.
 
 For an HTML source, pass the selected route, installed client, and the spec
-identity just read from the engine through `_preflight_plan_authoring`. Only its
+identity just read from the engine through `_preflight_plan_authoring`. Initial full-lane sprint
+pair preparation alone sets `draft_for_pair: true`; the ordinary default still requires approval. Only its
 returned same-slug `.codearbiter/plans/<slug>.html` target may be created. Create
 that plan through the installed structured-artifact engine as `draft_preview`,
-using the approved spec's exact artifact ID and normative digest. Populate it only with typed operations,
-validate it at the ready gate, then use `plan-bind` to bind it to that approved
-spec before plan approval. This path must not create `.codearbiter/plans/<slug>.md`;
+using the source spec's exact artifact ID and normative digest. For ordinary sequential planning,
+this must be the approved spec's exact artifact ID and normative digest. Populate it only with typed operations
+and validate it at the ready gate. For initial combined review, retain `draft_preview` and return
+both ready identities to the caller: `sprint-approve` owns the binding and both approvals after one
+actual host-observed reply. Do not separately `plan-bind` or approve that pair. On ordinary approved-spec
+planning, use `plan-bind` to bind it to the approved spec before plan approval. This path must not create `.codearbiter/plans/<slug>.md`;
 that would be a shadow authority.
 
 For an existing authoritative Markdown source, write
@@ -127,7 +136,8 @@ re-entered by `/feature` at the first non-`ACCEPTED` task instead of restarted f
 
 Gate: bijection proven between the plan and the ledger — no criterion without a task, no task without
 a criterion — and the plan written to disk. This proves the two are mutually consistent, nothing more;
-completeness of the ledger itself was Phase 1's gate, not this one. This clears the path to execution:
+completeness of the ledger itself was Phase 1's gate, not this one. Initial combined-review drafts
+return for `arm-sprint`, never execution. Only verified approved spec-and-plan authority clears execution:
 `executing-plans` (checkpointed, via `/feature`) or `subagent-driven-development` (autonomous, via
 `/sprint`) — each routes every task through `tdd`. The plan never hands off to `tdd` directly.
 
@@ -143,7 +153,9 @@ artifacts exist before handing off to `subagent-driven-development` ([routines/s
 
 ## Hard rules
 
-- MUST NOT plan against an absent or unapproved spec — STOP and route back to `/feature`.
+- MUST NOT execute or approve work against an absent or unapproved spec. Only explicit initial
+  full-lane HTML `draft_for_pair` planning accepts a ready draft and must return for combined approval;
+  other unapproved inputs route back to their actual caller.
 - MUST NOT write or parse rendered HTML directly, create a Markdown shadow for
   an HTML spec, or bind a plan from a caller-supplied identity.
 - MUST NOT emit a task without an exact path AND a concrete verification step.

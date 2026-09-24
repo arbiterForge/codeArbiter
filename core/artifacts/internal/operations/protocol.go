@@ -6,6 +6,7 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/kind"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/schema"
 	"sort"
 )
@@ -35,14 +36,14 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
+var operations = []string{"capabilities", "schema", "create", "apply", "read", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "rebrand", "repair-preview", "repair-apply", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback"}
 
 func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
 	switch op {
-	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
+	case "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
 		return true
 	}
 	return false
@@ -144,6 +145,22 @@ func RequestSchema(op string) (object, error) {
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
 		add("expected_bytes_sha256", digestType(), true)
 		add("preview_sha256", digestType(), true)
+	case "sprint-approval-context":
+		artifact()
+		add("spec_id", idType(), true)
+		add("prompt_sha256", digestType(), true)
+		add("delegate_methods", object{"type": "boolean"}, true)
+	case "sprint-approve":
+		cas()
+		add("spec_id", idType(), true)
+		add("spec_expected", closed(object{"revision": object{"type": "integer", "minimum": int64(1)}, "model_sha256": digestType()}, "revision", "model_sha256"), true)
+		source := closed(object{"source_ref": text(), "source_sha256": digestType()}, "source_ref", "source_sha256")
+		add("spec_source", source, true)
+		add("plan_source", source, true)
+	case "smarts-apply":
+		cas()
+		add("grant_receipt", text(), true)
+		add("decision", observation.DecisionSchema(), true)
 	case "approve":
 		cas()
 		add("receipt", text(), true)

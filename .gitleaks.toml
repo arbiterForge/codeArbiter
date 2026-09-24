@@ -204,3 +204,7 @@ regexes = ['''\Ask-proj-ABCDEFGH12345678\z''']
 [[allowlists]]
 description = "Public hostapi.py SHA-256 recorded by the statusline documentation fixture (PR #847)"
 regexes = ['\Ac6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be\z']
+
+[[allowlists]]
+description = 'PR850 historical preparation: exact verified hostapi Git blob identity, not a credential'
+regexes = [ '''\Aa3a2ea319e044db4d53f5e3cc32f97429ba47dba\z''' ]

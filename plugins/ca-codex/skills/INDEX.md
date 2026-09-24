@@ -58,7 +58,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `$ca-commit` | Run the full commit gate — the only sanctioned path to a git commit. |
+| `$ca-commit` | Create a verified local Git commit when committing changes is requested. Not for explaining commit history, drafting a message only, or postponing a commit. Applies every commit gate and never implies a push or PR. |
 | `$ca-pr` | Open a pull request the only sanctioned way — clear every BLOCK-level review finding, then stage the PR. Never a direct write to the default branch. |
 | `$ca-release` | Cut a release the only sanctioned way — derive the target's declared version policy from the commit log, roll its changelog, compose an annotated tag, and optionally publish its exact declared assets. Takes the declared target's name as its only argument, or --dry-run to preview one with no write. The only path to a version tag. |
 
@@ -106,7 +106,7 @@ skill is invoked — never bulk-read this directory.
 
 | Skill | Purpose |
 |---|---|
-| `$ca-new-skill` | Author a new codeArbiter skill: prove the gap is real, get the spec approved, then write it. |
+| `$ca-new-skill` | Assess a request for a new reusable codeArbiter skill, prove the uncovered gap, agree scope, author and integrate it. Questions and one-off tasks do not authorize adding a skill. |
 
 ### Help
 

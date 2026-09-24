@@ -259,6 +259,12 @@ func Run(root, op string, input object) (any, error) {
 			return nil, e
 		}
 		return engine.save(r, entry, next)
+	case "sprint-approval-context":
+		return engine.sprintContext(r, entry)
+	case "sprint-approve":
+		return engine.sprintApprove(r, entry)
+	case "smarts-apply":
+		return engine.smartsApply(r, entry)
 	case "approve":
 		return engine.approve(r, entry)
 	case "plan-bind":

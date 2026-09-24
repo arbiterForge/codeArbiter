@@ -199,6 +199,24 @@ func Load(f *store.FS, p string) (*Receipt, error) {
 			return nil, fault.New("AUTHORITY_UNVERIFIED", "legacy observation remains inspectable but requires fresh production evidence")
 		}
 	}
+	if model.S(r.Data["authority_kind"]) == "smarts_workflow" {
+		record := model.M(r.Payload()["smarts"])
+		grant, err := Inspect(f, model.S(record["grant_receipt"]))
+		if err != nil || model.S(grant.Data["format"]) != "codearbiter.receipt/0.2.0" || model.S(grant.Data["authority_kind"]) != "user_workflow" {
+			return nil, fault.New("DELEGATION_REQUIRED", "SMARTS requires an intact initial user approval")
+		}
+		pair := model.M(grant.Payload()["sprint_pair"])
+		a, _ := canonical.Hash(pair)
+		b, _ := canonical.Hash(record["pair"])
+		subject := model.M(grant.Data["subject"])
+		if a != b || pair["delegate_methods"] != true || model.S(subject["artifact_id"]) != model.S(model.M(pair["plan"])["artifact_id"]) || model.S(subject["normative_sha256"]) != model.S(pair["approved_plan_normative_sha256"]) {
+			return nil, fault.New("DELEGATION_REQUIRED", "grant does not name this protected plan scope")
+		}
+		observed, _, err := observation.Load(f, model.S(grant.Event["observation_ref"]), model.S(grant.Event["observation_sha256"]))
+		if err != nil || model.S(observed["producer_profile"]) != observation.PairProfile {
+			return nil, fault.New("DELEGATION_REQUIRED", "grant must originate from the actual paired user reply")
+		}
+	}
 	return r, nil
 }
 func (r *Receipt) Subject(d *model.Document, id, kind string) error {
