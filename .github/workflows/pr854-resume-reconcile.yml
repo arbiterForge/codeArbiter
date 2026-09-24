@@ -1,4 +1,4 @@
-name: PR854 resumed merge validation (temporary)
+name: PR854 resumed Windows merge validation (temporary)
 on:
   push:
     branches: [codex/farm-readiness-canary-isolation]
@@ -8,20 +8,8 @@ permissions:
 jobs:
   validate:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            node: '22.19.0'
-            label: linux
-          - os: windows-latest
-            node: '20'
-            label: windows
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     timeout-minutes: 15
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -33,7 +21,7 @@ jobs:
           python-version: '3.14'
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '20'
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
           go-version: '1.27.1'
@@ -75,8 +63,6 @@ jobs:
           PY
       - name: Rebuild exact merged candidate and exercise its consumers
         shell: bash
-        env:
-          PLATFORM_LABEL: ${{ matrix.label }}
         run: |
           python - <<'PY'
           import hashlib,json,os,pathlib,subprocess,sys,time,zipfile
@@ -85,8 +71,16 @@ jobs:
           def git(*args): return subprocess.check_output(['git',*args])
           def oid(data): return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
           assert git('rev-parse','HEAD').decode().strip()==main
-          assert git('rev-parse',head+'^').decode().strip()==payload['source_parent']
+          subprocess.run(['git','merge-base','--is-ancestor',payload['source_parent'],head],check=True)
+          assert git('diff','--name-only',payload['source_parent'],head).decode().splitlines()==['.github/workflows/pr854-resume-reconcile.yml']
           assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip()=='go1.27.1'
+          # This is a fresh disposable validation checkout. Materialize exact
+          # committed bytes, not autocrlf aliases, before comparing identities.
+          # No tracked product attributes or developer configuration is changed.
+          assert not git('status','--porcelain=v1','--untracked-files=no').strip()
+          subprocess.run(['git','config','--local','core.autocrlf','false'],check=True)
+          subprocess.run(['git','config','--local','core.eol','lf'],check=True)
+          subprocess.run(['git','checkout-index','--all','--force'],check=True)
           for row in payload['files']:
               p=root/row['path'];assert oid(p.read_bytes())==row['base_blob'],row['path']
               assert git('ls-tree',main,'--',row['path']).decode().split()[0]==row['mode']
@@ -140,37 +134,15 @@ jobs:
           (out/'candidate.diff').write_bytes(git('diff','--binary','--full-index',main,fixture))
           with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as z:
               for row in payload['files']:z.write(root/row['path'],row['path'])
-          report={'main':main,'workflow_head':head,'platform':os.environ['PLATFORM_LABEL'],'tree':tree,'files':payload['files'],'all_commands_passed':all(r['exit_code']==0 for r in results),'command_count':len(results)}
+          report={'main':main,'workflow_head':head,'platform':'windows','tree':tree,'files':payload['files'],'all_commands_passed':all(r['exit_code']==0 for r in results),'command_count':len(results)}
           (out/'manifest.json').write_bytes(json.dumps(report,indent=2).encode('utf-8'))
           assert report['all_commands_passed'],'Inspect actual failures; no candidate publication inferred.'
-          PY
-      - name: Store verified blobs only, without updating any ref
-        if: matrix.label == 'linux'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python - <<'PY'
-          import hashlib,json,os,pathlib,urllib.request
-          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-resumed';report=json.loads((out/'manifest.json').read_bytes())
-          assert report['all_commands_passed'] and report['workflow_head']==os.environ['GITHUB_SHA']
-          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter' and os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
-          class NoRedirect(urllib.request.HTTPRedirectHandler):
-              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
-          def api(method,path,payload=None):
-              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(payload).encode('utf-8') if payload is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
-              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:return json.load(response)
-          assert api('GET','/git/ref/heads/codex/farm-readiness-canary-isolation')['object']['sha']==report['workflow_head']
-          for row in report['files']:
-              data=pathlib.Path(row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
-              assert api('POST','/git/blobs',{'content':data.decode('utf-8'),'encoding':'utf-8'})['sha']==row['sha']
-          (out/'uploaded-blobs.json').write_bytes(json.dumps({'files':report['files'],'branch_updated':False},indent=2).encode('utf-8'))
           PY
       - name: Retain exact platform evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: pr854-resumed-${{ matrix.label }}-${{ github.run_id }}
+          name: pr854-resumed-windows-${{ github.run_id }}
           path: ${{ runner.temp }}/pr854-resumed/
           if-no-files-found: error
           retention-days: 3
