@@ -81,9 +81,11 @@ def claude_main() -> int:
             or event in {"SubagentStart", "SubagentStop"}
         ):
             _artifactauthoritylib.observe_claude_hook(root, payload)
-    except _artifactauthoritylib.AuthorityError as exc:
+    except Exception as exc:  # noqa: BLE001 - an authority seam must fail closed
         reason = f"codeArbiter authority producer blocked: {exc}"
-        if event == "PreToolUse":
+        if event == "PreToolUse" and (
+            isinstance(exc, _artifactauthoritylib.AuthorityError) or _authority_call(payload)
+        ):
             print(json.dumps({"hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
                 "permissionDecision": "deny",
@@ -92,6 +94,24 @@ def claude_main() -> int:
         else:
             sys.stderr.write(reason + "\n")
     return 0
+
+
+def _authority_call(payload: dict) -> bool:
+    """Whether an unexpected failure must deny: an ordinary tool call is never
+    refused, but a SendMessage could steer a running review and an authority
+    launch or wrapper must not proceed unobserved."""
+    tool = payload.get("tool_name")
+    tool_input = payload.get("tool_input")
+    tool_input = tool_input if isinstance(tool_input, dict) else {}
+    if tool == "SendMessage":
+        return True
+    if tool == "Agent":
+        prompt = tool_input.get("prompt")
+        return isinstance(prompt, str) and prompt.startswith("[CODEARBITER_AUTHORITY_REQUEST:")
+    if tool == "Bash":
+        command = tool_input.get("command")
+        return isinstance(command, str) and "artifact-authority" in command.casefold()
+    return False
 
 
 def run(host) -> int:

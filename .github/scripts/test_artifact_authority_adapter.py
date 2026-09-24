@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Regression tests for production structured-artifact authority producers."""
 
+import contextlib
 import hashlib
 import importlib
 import importlib.util
+import io
 import json
 import shutil
 import os
@@ -1046,6 +1048,157 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "shipped"):
             self.adapter.observe_verifier_hook(self.candidate, event, host="claude")
 
+    # -- fail-closed hook seams (PR review F-1) ------------------------------
+    def _hook_main(self, payload):
+        # The hook imports hostapi/_hooklib from core; keep them out of later
+        # tests that load an installed package's copies by the same names.
+        modules = mock.patch.dict(sys.modules)
+        modules.start()
+        self.addCleanup(modules.stop)
+        spec = importlib.util.spec_from_file_location(
+            "claude_authority_hook_under_test", CORE_PYSRC / "artifact-authority-hook.py")
+        hook = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(hook)
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.object(hook._hooklib, "read_input", return_value=payload), \
+                mock.patch.object(hook._hooklib, "utf8_stdio"), \
+                mock.patch.object(hook._hooklib, "project_root", return_value=str(self.root)), \
+                contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            self.assertEqual(hook.claude_main(), 0)
+        return out.getvalue(), err.getvalue()
+
+    def test_message_is_denied_when_rejection_cannot_be_written(self):
+        armed, agent_id = self._running("claude-message-write-fails")
+        message = claude_fixture("bash-pretooluse.json", tool_name="SendMessage",
+                                 tool_input={"to": agent_id, "message": "steer"})
+        with mock.patch.object(self.adapter.os, "replace", side_effect=PermissionError("held open")):
+            out, _err = self._hook_main(message)
+        self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_unexpected_failure_denies_only_authority_calls(self):
+        self._setup_claude()
+        failing = mock.patch.object(self.adapter, "_registered_requests", side_effect=KeyError("boom"))
+        message = claude_fixture("bash-pretooluse.json", tool_name="SendMessage",
+                                 tool_input={"to": "x", "message": "hi"})
+        with failing:
+            out, _err = self._hook_main(message)
+        self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"], "deny")
+        broken = mock.patch.object(self.adapter, "observe_verifier_hook", side_effect=KeyError("boom"))
+        with broken:
+            out, err = self._hook_main(claude_fixture("bash-pretooluse.json", tool_input={"command": "echo hi"}))
+        self.assertEqual(out, "")
+        self.assertIn("boom", err)
+        wrapper = claude_fixture("bash-pretooluse.json", tool_input={
+            "command": f'python "{CORE_PYSRC / "artifact-authority.py"}" verify --root "{self.root}" --request-id {"a" * 64}'})
+        with broken:
+            out, _err = self._hook_main(wrapper)
+        self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"], "deny")
+
+    def test_unreadable_request_blocks_messages_but_not_ordinary_events(self):
+        armed, agent_id = self._running("claude-message-unreadable")
+        pointer = self.adapter._registry_root() / f"{armed['request_id']}.json"
+        original = pointer.read_bytes()
+        pointer.write_bytes(b"{not json")
+        message = claude_fixture("bash-pretooluse.json", tool_name="SendMessage",
+                                 tool_input={"to": agent_id, "message": "steer"})
+        try:
+            with self.assertRaisesRegex(RuntimeError, "AUTHORITY_BUSY.*unreadable"):
+                self.adapter.observe_claude_hook(self.root, message)
+            self.assertIsNone(self.adapter.observe_claude_hook(self.root, claude_fixture("subagentstart.json")))
+        finally:
+            pointer.write_bytes(original)
+        # A pointer whose state was removed is stale, not unreadable.
+        state = self.adapter._spool_root(self.root) / self.adapter._request_path(armed["request_id"])
+        state.unlink()
+        self.assertIsNone(self.adapter.observe_claude_hook(self.root, message))
+
+    def test_message_during_launch_rejects_review(self):
+        armed = self._arm_claude_review("claude-message-launching")
+        self._launch(armed)
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "LAUNCHING")
+        message = claude_fixture("agent-pretooluse.json", tool_name="SendMessage",
+                                 tool_input={"to": "x", "message": "hi"})
+        self.assertEqual(self.adapter.observe_claude_hook(self.root, message)["state"], "REJECTED")
+
+    def test_each_stop_guard_rejects(self):
+        cases = {
+            "hook-active": {"stop_hook_active": True},
+            "event-type": {"agent_type": "general-purpose"},
+            "entry-type": "entry-type",
+            "two-entries": "two-entries",
+        }
+        for label, change in cases.items():
+            with self.subTest(guard=label):
+                armed, agent_id = self._running("claude-stop-guard-" + label)
+                overrides = change if isinstance(change, dict) else {}
+                if change == "entry-type":
+                    overrides = {"background_tasks": [{"id": agent_id, "agent_type": "general-purpose"}]}
+                if change == "two-entries":
+                    entry = {"id": agent_id, "agent_type": REVIEWER}
+                    overrides = {"background_tasks": [entry, dict(entry)]}
+                with self.assertRaisesRegex(RuntimeError, "first clean stop"):
+                    self._stop(agent_id, self._decision(armed), **overrides)
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+
+    def test_second_launch_result_rejects_rebinding(self):
+        armed = self._arm_claude_review("claude-second-post")
+        pre, _ = self._launch(armed)
+        self._post(pre, agentId="agent-first")
+        with self.assertRaisesRegex(RuntimeError, "out of order"):
+            self._post(pre, agentId="agent-second")
+        request = self.adapter._load(self.root, armed["request_id"])
+        self.assertEqual(request["state"], "REJECTED")
+        self.assertEqual(request["launch"]["agent_id"], "agent-first")
+
+    def test_success_after_failure_is_refused(self):
+        armed = self._arm_verification("claude-verify-success-after-failure")
+        pre = self._wrapper_event(armed)
+        self.adapter.observe_verifier_hook(self.candidate, pre, host="claude")
+        completed = self._complete(armed)
+        ids = dict(session_id=pre["session_id"], prompt_id=pre["prompt_id"],
+                   tool_use_id=pre["tool_use_id"], tool_input=pre["tool_input"])
+        failure = claude_fixture("bash-posttoolusefailure.json", **ids)
+        self.assertEqual(self.adapter.observe_verifier_hook(self.candidate, failure, host="claude")["state"], "FAILED")
+        post = claude_fixture("bash-posttooluse.json", **ids)
+        post["tool_response"]["stdout"] = json.dumps(completed, sort_keys=True)
+        for event in (post, failure):
+            with self.subTest(event=event["hook_event_name"]):
+                with self.assertRaisesRegex(RuntimeError, "already observed"):
+                    self.adapter.observe_verifier_hook(self.candidate, event, host="claude")
+                self.assertEqual(self.adapter._load(self.root, armed["request_id"])["wrapper"]["state"], "FAILED")
+
+    def test_shadow_in_the_session_directory_blocks_launch(self):
+        armed = self._arm_claude_review("claude-shadow-session-root")
+        session = self.root.parent / (self.root.name + "-session")
+        session.mkdir()
+        self.addCleanup(shutil.rmtree, session, True)
+        self._shadow(session / ".claude" / "agents", "s.md", "---\nname: authority-reviewer\n---\n")
+        pre = claude_fixture("agent-pretooluse.json", tool_input=dict(armed["launch_envelope"]))
+        with self.assertRaisesRegex(RuntimeError, "SHADOWED_REVIEWER"):
+            self.adapter.observe_claude_hook(session, pre)
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "REJECTED")
+
+    def test_uninspectable_agent_directory_blocks_arm(self):
+        self._setup_claude()
+        (self.root / ".claude" / "agents").mkdir(parents=True, exist_ok=True)
+
+        def walk(top, onerror=None, followlinks=False):
+            onerror(PermissionError(f"cannot list {top}"))
+            return iter(())
+
+        with mock.patch.object(self.adapter.os, "walk", walk):
+            with self.assertRaisesRegex(RuntimeError, "SHADOWED_REVIEWER.*cannot be inspected"):
+                self._arm_claude_review("claude-shadow-walk-error")
+
+    def test_substitution_and_background_markers_are_compound(self):
+        armed = self._arm_verification("claude-verify-substitution")
+        base = self._wrapper_event(armed)["tool_input"]["command"]
+        for command in (base + " & echo x", "$(touch${IFS}x)/" + base):
+            with self.subTest(command=command[:24]):
+                event = claude_fixture("bash-pretooluse.json", tool_input={"command": command})
+                with self.assertRaisesRegex(RuntimeError, "compound"):
+                    self.adapter.observe_verifier_hook(self.candidate, event, host="claude")
+
     def test_codex_seam_ignores_claude_requests(self):
         armed = self._arm_claude_review("claude-request-codex-seam")
         with self.assertRaisesRegex(RuntimeError, "not launchable"):
@@ -1143,10 +1296,14 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
         self.adapter.observe_verifier_hook(self.candidate, pre, host="claude")
         completed = self._complete(armed)
         stdout = json.dumps(completed, sort_keys=True)
+        # A run made outside the observed call leaves this call only the replay.
+        replay = self.adapter.run_verification(self.root, self.client, armed["request_id"])
+        self.assertTrue(replay["replayed"])
         post = claude_fixture("bash-posttooluse.json", session_id=pre["session_id"],
                               prompt_id=pre["prompt_id"], tool_use_id=pre["tool_use_id"],
                               tool_input=pre["tool_input"])
         for bad_stdout, interrupted in (
+            (json.dumps(replay, sort_keys=True), False),
             (json.dumps({**completed, "request_id": "0" * 64}, sort_keys=True), False),
             (stdout + "\nextra", False),
             (stdout, True),
@@ -1450,16 +1607,49 @@ class ClaudeEndToEndTest(unittest.TestCase):
     def _event(self, name, **fields):
         return claude_fixture(name, session_id="e2e-session", prompt_id="e2e-prompt", **fields)
 
-    def _review(self, client, record_id, activity, agent_id, tool_use_id):
-        armed = self.adapter.arm_request(self.root, client, "PLAN-FLOW", record_id, activity, host="claude")
+    def _environment(self):
+        registry = str(Path(self.registry.name).resolve())
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        env.pop("NO_COLOR", None)
+        env.update(TMP=registry, TEMP=registry, TMPDIR=registry, CLAUDE_PROJECT_DIR=str(self.root),
+                   CLAUDE_PLUGIN_ROOT=str(self.plugin), HOME=str(Path(registry) / "home"),
+                   USERPROFILE=str(Path(registry) / "home"), CLAUDE_CONFIG_DIR=str(Path(registry) / "config"))
+        return env
+
+    def _hook(self, event):
+        """Deliver one event to the shipped hook exactly as Claude Code does."""
+        result = subprocess.run(
+            [sys.executable, str(self.plugin / "hooks" / "artifact-authority-hook.py")],
+            input=json.dumps(event).encode(), capture_output=True, env=self._environment(), timeout=120,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        # Claude authority success is silent on both streams.
+        self.assertEqual((result.stdout, result.stderr), (b"", b""), event["hook_event_name"])
+
+    def _cli(self, *args):
+        result = subprocess.run(
+            [sys.executable, str(self.plugin / "hooks" / "artifact-authority.py"), *args],
+            capture_output=True, env=self._environment(), timeout=600,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout.decode("utf-8")
+
+    def _state(self, request_id):
+        return self.adapter._load(self.root, request_id)
+
+    def _review(self, record_id, activity, agent_id, tool_use_id, *model):
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", record_id, "--activity", activity, *model))
+        self.assertEqual(armed["launch_envelope"]["model"], model[1] if model else "opus")
         pre = self._event("agent-pretooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
-        self.adapter.observe_claude_hook(self.root, pre)
+        self._hook(pre)
+        self.assertEqual(self._state(armed["request_id"])["state"], "LAUNCHING")
         post = self._event("agent-posttooluse.json", tool_use_id=tool_use_id, tool_input=armed["launch_envelope"])
         post["tool_response"]["agentId"] = agent_id
-        self.adapter.observe_claude_hook(self.root, post)
-        self.adapter.observe_claude_hook(self.root, claude_fixture(
-            "subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
-        context = self.adapter._load(self.root, armed["request_id"])["context"]
+        self._hook(post)
+        self._hook(claude_fixture("subagentstart.json", agent_id=agent_id, agent_type=REVIEWER))
+        self.assertEqual(self._state(armed["request_id"])["state"], "RUNNING")
+        context = self._state(armed["request_id"])["context"]
         decision = json.dumps({
             "format": "codearbiter.review-decision/0.1.0", "request_id": armed["request_id"],
             "target_sha256": context["input_sha256"], "contract_sha256": armed["review_contract_sha256"],
@@ -1469,12 +1659,13 @@ class ClaudeEndToEndTest(unittest.TestCase):
         stop = claude_fixture("subagentstop-first.json", agent_id=agent_id, agent_type=REVIEWER,
                               prompt_id="e2e-later-prompt", last_assistant_message=decision)
         stop["background_tasks"] = [{**stop["background_tasks"][0], "id": agent_id, "agent_type": REVIEWER}]
-        self.assertEqual(self.adapter.observe_claude_hook(self.root, stop)["state"], "COMPLETED")
-        second = claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER)
-        self.assertIsNone(self.adapter.observe_claude_hook(self.root, second))
-        return self.adapter.publish_request(self.root, client, armed["request_id"])["receipt"]
+        self._hook(stop)
+        self.assertEqual(self._state(armed["request_id"])["state"], "COMPLETED")
+        self._hook(claude_fixture("subagentstop-second.json", agent_id=agent_id, agent_type=REVIEWER))
+        return json.loads(self._cli("publish", "--root", str(self.root), "--request-id", armed["request_id"]))["receipt"]
 
     def test_end_to_end_claude(self):
+        """Arm, verify and publish through the shipped CLI; observe through the shipped hook."""
         bridge = self.host.load_bridge(self.plugin)
         workflow = self.host.Workflow(bridge, self.root, self.installation, "e2e", "claude", self.plugin)
         client = workflow.client
@@ -1495,22 +1686,29 @@ class ClaudeEndToEndTest(unittest.TestCase):
         workflow.satisfy_prerequisite("PLAN-FLOW", "GATE-APPROVAL")
         workflow.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=workflow.ticket())
 
-        armed = self.adapter.arm_request(self.root, client, "PLAN-FLOW", "T-001", "verification", host="claude")
-        # The wrapper must be the artifact-authority.py shipped beside the loaded adapter.
-        command = (f'python "{Path(self.adapter.__file__).parent / "artifact-authority.py"}" verify '
+        # No --host: the CLI defaults to the host this package was built for.
+        armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
+                                     "--record-id", "T-001", "--activity", "verification"))
+        self.assertEqual(self._state(armed["request_id"])["host"], "claude")
+        # The wrapper must be the artifact-authority.py shipped beside the running hook.
+        command = (f'python "{self.plugin / "hooks" / "artifact-authority.py"}" verify '
                    f'--root "{self.root}" --request-id {armed["request_id"]}')
         pre = self._event("bash-pretooluse.json", tool_use_id="e2e-verify", tool_input={"command": command, "description": "verify"})
-        self.assertEqual(self.adapter.observe_verifier_hook(self.root, pre, host="claude")["state"], "AUTHORIZED")
-        completed = self.adapter.run_verification(self.root, client, armed["request_id"])
+        self._hook(pre)
+        self.assertEqual(self._state(armed["request_id"])["wrapper"]["state"], "AUTHORIZED")
+        stdout = self._cli("verify", "--root", str(self.root), "--request-id", armed["request_id"])
         post = self._event("bash-posttooluse.json", tool_use_id="e2e-verify", tool_input=pre["tool_input"])
-        post["tool_response"]["stdout"] = json.dumps(completed, sort_keys=True)
-        self.assertEqual(self.adapter.observe_verifier_hook(self.root, post, host="claude")["state"], "CORROBORATED")
-        verification = self.adapter.publish_request(self.root, client, armed["request_id"])["receipt"]
+        post["tool_response"]["stdout"] = stdout
+        self._hook(post)
+        self.assertEqual(self._state(armed["request_id"])["wrapper"]["state"], "CORROBORATED")
+        verification = json.loads(self._cli("publish", "--root", str(self.root),
+                                            "--request-id", armed["request_id"]))["receipt"]
 
-        review = self._review(client, "T-001", "spec_review", "e2e-spec-reviewer", "e2e-spec-launch")
+        review = self._review("T-001", "spec_review", "e2e-spec-reviewer", "e2e-spec-launch",
+                              "--reviewer-model", "sonnet")
         workflow.mutate("task-review", "PLAN-FLOW", task="T-001",
                         verification_receipt=verification, review_receipt=review)
-        quality = self._review(client, "CP-01", "quality_review", "e2e-quality-reviewer", "e2e-quality-launch")
+        quality = self._review("CP-01", "quality_review", "e2e-quality-reviewer", "e2e-quality-launch")
         workflow.mutate("accept-scope", "PLAN-FLOW", scope="CP-01", receipt=quality)
         eligible = client.call("eligible", {"artifact_id": "PLAN-FLOW"})
         self.assertTrue(eligible["all_accepted_and_current"], eligible)

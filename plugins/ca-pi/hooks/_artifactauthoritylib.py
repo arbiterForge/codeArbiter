@@ -255,9 +255,12 @@ def _spool_root(root: Path) -> Path:
 def _save(root: Path, value: dict[str, Any]) -> None:
     value = dict(value)
     value["integrity_sha256"] = _integrity(value)
-    _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
-    if value["state"] in TERMINAL_STATES:
-        (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+    try:
+        _atomic_replace(_spool_root(root), _request_path(value["request_id"]), _canonical(value))
+        if value["state"] in TERMINAL_STATES:
+            (_registry_root() / f"{value['request_id']}.json").unlink(missing_ok=True)
+    except OSError as exc:
+        raise AuthorityError("AUTHORITY_BUSY", "request state could not be written") from exc
 
 
 def _load(root: Path, request_id: str) -> dict[str, Any]:
@@ -457,7 +460,9 @@ def _register_request(root: Path, request: dict[str, Any]) -> None:
             raise AuthorityError("AUTHORITY_COLLISION", "request registry entry differs")
 
 
-def _registered_requests() -> list[tuple[Path, dict[str, Any]]]:
+def _registered_requests(strict: bool = False) -> list[tuple[Path, dict[str, Any]]]:
+    """Live registered requests. Strict callers refuse, rather than skip, a
+    request whose pointer or state exists but cannot be read."""
     results = []
     for path in _registry_root().glob("*.json"):
         try:
@@ -482,7 +487,17 @@ def _registered_requests() -> list[tuple[Path, dict[str, Any]]]:
                 path.unlink(missing_ok=True)
                 continue
             results.append((root, request))
-        except (AuthorityError, OSError, UnicodeError, ValueError):
+        except (AuthorityError, OSError, UnicodeError, ValueError) as exc:
+            unreadable = (
+                exc.code == "INVALID_AUTHORITY_STATE"
+                if isinstance(exc, AuthorityError) else REQUEST_RE.fullmatch(path.stem) is not None
+            )
+            cause = exc.__cause__ if isinstance(exc, AuthorityError) else exc
+            if strict and unreadable and not isinstance(cause, FileNotFoundError):
+                raise AuthorityError(
+                    "AUTHORITY_BUSY",
+                    f"authority request {path} is unreadable; remove it if no review is running",
+                ) from exc
             continue
     return results
 
@@ -499,9 +514,14 @@ def _claude_start_marker(agent_id: str) -> Path:
     return _registry_root() / f"claude-start-{key}.json"
 
 
-def _claude_agent_dirs(root: Path) -> list[Path]:
-    """Every agent directory whose definitions outrank a plugin agent."""
+def _claude_agent_dirs(root: Path, sessions: tuple[Path, ...] = ()) -> list[Path]:
+    """Every agent directory whose definitions outrank a plugin agent.
+
+    A session opened outside the artifact repository loads project agents
+    from its own directory, so the observing session roots are scanned too.
+    """
     directories = [root / ".claude" / "agents"]
+    directories.extend(Path(session) / ".claude" / "agents" for session in sessions)
     try:
         common = Path(_git_text(root, "rev-parse", "--path-format=absolute", "--git-common-dir"))
         directories.append(common.parent / ".claude" / "agents")
@@ -518,7 +538,11 @@ def _claude_agent_dirs(root: Path) -> list[Path]:
     return directories
 
 
-def _refuse_shadowed_reviewer(root: Path) -> None:
+def _raise_walk_error(exc: OSError) -> None:
+    raise exc
+
+
+def _refuse_shadowed_reviewer(root: Path, *sessions: Path) -> None:
     """Project, user and managed agents outrank plugin agents; refuse any shadow.
 
     Fail closed rather than parse YAML: a definition shadows the reviewer when
@@ -528,19 +552,29 @@ def _refuse_shadowed_reviewer(root: Path) -> None:
     grade its own work.
     """
     short = CLAUDE_REVIEWER.split(":", 1)[1].casefold()
-    for directory in _claude_agent_dirs(root):
+    for directory in _claude_agent_dirs(root, sessions):
+        candidates = []
         try:
-            candidates = [
-                Path(base) / name
-                for base, _dirs, files in os.walk(directory, followlinks=False)
-                for name in files if name.casefold().endswith(".md")
-            ] if directory.is_dir() else []
+            if directory.is_dir():
+                for base, dirs, files in os.walk(directory, onerror=_raise_walk_error, followlinks=False):
+                    for name in dirs:
+                        # A linked subdirectory is not walked, so it cannot be cleared.
+                        info = (Path(base) / name).lstat()
+                        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+                            raise AuthorityError(
+                                "SHADOWED_REVIEWER", f"{Path(base) / name} is a link that cannot be inspected",
+                            )
+                    candidates.extend(Path(base) / name for name in files if name.casefold().endswith(".md"))
         except OSError as exc:
-            raise AuthorityError("SHADOWED_REVIEWER", "agent definitions cannot be inspected") from exc
+            raise AuthorityError("SHADOWED_REVIEWER", f"agent definitions under {directory} cannot be inspected") from exc
         for candidate in candidates:
             if short in candidate.stem.casefold():
                 raise AuthorityError("SHADOWED_REVIEWER", f"{candidate} shadows {CLAUDE_REVIEWER}")
             try:
+                # A linked definition is followed, but only to a regular file:
+                # a pipe or device would hang the hook.
+                if not stat.S_ISREG(os.stat(candidate).st_mode):
+                    raise AuthorityError("SHADOWED_REVIEWER", f"{candidate} is not a regular file")
                 with candidate.open("rb") as stream:
                     raw = stream.read(1 << 20)
             except OSError as exc:
@@ -1270,9 +1304,11 @@ def run_verification(
     if request["activity"] != "verification":
         raise AuthorityError("INVALID_AUTHORITY_REQUEST", "request is not verification")
     if request["state"] == "COMPLETED":
+        # Marked so Claude corroboration, which binds evidence to the
+        # observed call, can tell a replay from the run it authorized.
         return {
             "request_id": request_id, "state": "COMPLETED",
-            "commands": request["payload"]["commands"],
+            "commands": request["payload"]["commands"], "replayed": True,
         }
     if request["state"] != "ARMED":
         raise AuthorityError("INTERRUPTED_ATTEMPT", "verification attempt cannot be rerun")
@@ -1385,7 +1421,7 @@ def _verification_selector(event: dict[str, Any]) -> tuple[str, Path, str] | Non
     command = tool_input.get("command", tool_input.get("cmd"))
     if not isinstance(command, str):
         raise AuthorityError("UNSUPPORTED_HOST_SEAM", "exec command is absent")
-    compound = any(marker in command for marker in ("\n", "\r", ";", "&&", "||", "|", ">", "<", "`"))
+    compound = any(marker in command for marker in ("\n", "\r", ";", "&", "|", ">", "<", "`", "$"))
     try:
         tokens = [token.strip('"') for token in shlex.split(command, posix=False)]
     except ValueError as exc:
@@ -1755,9 +1791,9 @@ def observe_codex_hook(root: str | Path, event: dict[str, Any]) -> dict[str, Any
     raise AuthorityError("UNSUPPORTED_HOST_SEAM", "hook event is not supported")
 
 
-def _claude_requests(state: set[str]) -> list[tuple[Path, dict[str, Any]]]:
+def _claude_requests(state: set[str], strict: bool = False) -> list[tuple[Path, dict[str, Any]]]:
     return [
-        (root, request) for root, request in _registered_requests()
+        (root, request) for root, request in _registered_requests(strict)
         if request.get("host") == "claude" and request["activity"] in REVIEW_ACTIVITIES
         and request["state"] in state
     ]
@@ -1807,7 +1843,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         # message from the reviewer's parent session while it runs could steer it.
         session = event.get("session_id")
         rejected = None
-        for candidate_root, candidate in _claude_requests({"LAUNCHING", "RUNNING"}):
+        for candidate_root, candidate in _claude_requests({"LAUNCHING", "RUNNING"}, strict=True):
             if session is not None and session == (candidate.get("launch") or {}).get("parent_session_id"):
                 _reject(candidate_root, candidate, "reviewer-steered-by-message")
                 rejected = {"request_id": candidate["request_id"], "state": "REJECTED"}
@@ -1818,7 +1854,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
         prompt = tool_input.get("prompt") if isinstance(tool_input, dict) else None
         if not isinstance(prompt, str) or not prompt.startswith("[CODEARBITER_AUTHORITY_REQUEST:"):
             return None
-        _real_root(root)
+        session_root = _real_root(root)
         session_id = _host_id(event.get("session_id"), "session_id")
         prompt_id = _host_id(event.get("prompt_id"), "prompt_id")
         tool_use_id = _host_id(event.get("tool_use_id"), "tool_use_id")
@@ -1833,7 +1869,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             _reject(root, request, "changed-launch-envelope")
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "review launch envelope was changed")
         try:
-            _refuse_shadowed_reviewer(root)
+            _refuse_shadowed_reviewer(root, session_root)
         except AuthorityError:
             _reject(root, request, "shadowed-reviewer")
             raise
@@ -1927,6 +1963,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             return None
         if len(matches) != 1:
             raise AuthorityError("UNSUPPORTED_HOST_SEAM", "subagent correlation is ambiguous")
+        session_root = root
         root, request = matches[0]
         launch = request["launch"]
         if request["state"] == "LAUNCHING" and launch.get("post_confirmed") is True:
@@ -1951,7 +1988,7 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
                 or own[0].get("agent_type") != CLAUDE_REVIEWER
             ):
                 raise AuthorityError("UNSUPPORTED_HOST_SEAM", "reviewer stop is not a first clean stop")
-            _refuse_shadowed_reviewer(root)
+            _refuse_shadowed_reviewer(root, _real_root(session_root))
             decision = _parse_decision(event.get("last_assistant_message"), request)
         except AuthorityError:
             _reject(root, request, "rejected-first-stop")

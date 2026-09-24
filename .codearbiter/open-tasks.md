@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] artifacts.chore.0001 - Prune stale Claude subagent start markers from the authority registry  (from security-review:claude-artifact-authority PR F-7)
+  - Desc: Unbound claude-start markers accumulate in the per-user registry. Prune markers older than a bound, or when no Claude request is LAUNCHING.
+- [ ] artifacts.harden.0002 - Reject a Claude reviewer stop that arrives before its launch binds  (from security-review:claude-artifact-authority PR F-3)
+  - Desc: A SubagentStop for an agent whose launch is not yet bound returns silently, so a later stop becomes the first. Record stop-before-bind in the start marker and reject at bind; add the ordering test. Fails closed today via stop_hook_active.
+- [ ] artifacts.harden.0001 - Pin the verifier wrapper interpreter, not only the script  (from security-review:claude-artifact-authority PR F-4)
+  - Desc: The verifier pin covers the script, not the interpreter: tokens[0] is accepted by basename. Pin it to a resolved trusted interpreter recorded at arm without false-denying py-launcher, venv and MSYS PATH setups.
 - [ ] artifacts.test.0001 - Record a live long-running Claude reviewer event sequence as a fixture  (from spec:claude-artifact-authority T-012)
   - Desc: With maintainer approval, reinstall the hook recorder and capture a reviewer that makes a tool call and outlives the parent turn; add the sanitized sequence as a fixture and confirm the agentId/SubagentStart order and subagent-originated agent_id.
 - [ ] artifacts.feat.0002 - Pin the Claude reviewer model in the engine context  (from security-review:claude-artifact-authority)
