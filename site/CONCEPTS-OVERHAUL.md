@@ -61,7 +61,12 @@ verification, owner review and merge remain distinct; the tracking issue receive
 
 ### C03: repository knowledge and role separation
 
-Status: NOT_STARTED. Depends on C01.
+Status: IMPLEMENTED in [#859](https://github.com/arbiterForge/codeArbiter/pull/859), by the owner's
+2026-09-24 request to fix CI/arrows and run the next slice on the same PR. Depends on merged C01.
+C02 has not been merged. C03 baseline: `aebee1bb753d29e34030ee22c98c9eb8fabb1752`.
+Source tracing and actual-helper capture limits: `site/reviews/CONCEPTS-C03-SOURCES.md`.
+Final verification and owner review are tracked in the PR. Test/capture/merge identities belong
+in its evidence; implemented does not mean verified, merged or released.
 
 - Deepen provenance/drift, just-in-time context and persona/author/reviewer separation.
 - Explain source freshness, governing-file selection, on-demand loading, context budgets, failure behavior and real inspection examples.

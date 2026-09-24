@@ -1,0 +1,145 @@
+---
+title: Provenance & Context Drift
+description: "Follow a repository claim back to its recorded source, distinguish changed bytes from incorrect meaning, and choose re-scout, re-baseline or defer without hiding uncertainty."
+journey:
+  level: Power user
+  time: "12 minutes"
+  outcome: "Explain why a context claim may be stale, what the recorded hashes establish, and how the correct maintenance path preserves that distinction."
+  prerequisites:
+    - A repository with provenance-tracked context
+  proof: "You can identify the backing path, explain its changed or missing status, and justify a disposition without treating silence as fresh evidence."
+---
+
+import ContextExplorer from '../../../components/ContextExplorer.astro';
+
+export const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+Project context is useful only while its claims fit the project. A document might say that the
+package uses one module system, the tests run through one command, or authentication begins at
+one entry point. Code changes can invalidate those statements even though the document still
+looks complete.
+
+**Provenance records where a claim came from. Drift detection identifies recorded source bytes
+that no longer match. Neither one proves that the claim was correct in the first place.**
+
+This is not a promise that every sentence has a provenance record. The mechanism covers the
+entries actually recorded under `.codearbiter/.provenance/`, and routine drift alarms consider
+only entries whose `drift_trigger` is explicitly `true`.
+
+## Follow one claim back to its source
+
+A derived document and its provenance record have different jobs. The document teaches the
+project's conventions. The JSON record identifies the document, its creation date, whether it
+came from an interview, and the backing entries. An entry can name a repository-relative path,
+its recorded Git content hash, claims and their source lines, and whether changes should trigger
+a drift alarm.
+
+For example, a claim in `tech-stack.md` might be backed by `package.json`. If the package changes
+from module syntax to commonjs, the old hash differs and the old statement may now be wrong.
+If only whitespace changes, the hash also differs, but the statement might still hold. **The
+hash tells you to inspect the relationship; it does not choose the interpretation.**
+
+<ContextExplorer id="provenance-observations" initial="fresh" />
+
+The comparison above is actual helper output over a disposable example, not a claim that an
+installed agent examined your repository. Switch between fresh and changed source to see why a
+stale provenance pointer disappears rather than being injected as current knowledge.
+
+<details>
+  <summary>Inspect the static relationship map</summary>
+  <figure class="ca-diagram">
+    <img src={`${baseUrl}/diagrams/provenance-drift-flow.svg`} alt="Changed recorded source can suppress stale read advice. Commit-time re-scout and manual per-document disposition remain distinct paths." width="1128" height="580" loading="lazy" />
+    <figcaption>The full reading explanation remains in this page. This map describes source-defined relationships, not a captured host run.</figcaption>
+  </figure>
+</details>
+
+## What happens when source changes
+
+At SessionStart, the shared provenance helper loads usable records and hashes the existing,
+confined source paths marked as drift triggers. A mismatch is reported as `changed`; a genuinely
+absent path can be reported as `missing`. It produces a concise advisory drift line, not a blocking
+decision or a rewritten document.
+
+Read that line as an invitation to investigate. No line can also mean no recorded sources, no
+eligible trigger, an unreadable or malformed record, or a hashing failure. The startup helper
+intentionally degrades to silence on those failures. A blank startup result is therefore **not** a
+certificate that all repository knowledge is current. One malformed record does not discard the
+remaining valid records, but the ordinary startup path does not promise a per-record warning.
+
+Greenfield context may be interview-derived before source exists. An empty entry set does not
+make an interview answer false; it means this source-hash mechanism cannot yet validate it. Do
+not invent code citations merely to remove that distinction. See
+[Plan a new project](/guides/plan-a-new-project/) and
+[Understand existing code](/guides/understand-an-existing-project/).
+
+## Choose the correct disposition
+
+**Re-scout when meaning may have changed.** The incremental scout reads the changed paths and
+checks the dependent claims. If a claim no longer holds, review the proposed document change
+before the new baseline is recorded. This is a scoped update, not a reason to rescan the entire
+repository or rewrite its architecture.
+
+**Re-baseline when you can justify keeping the claim.** This updates matching source hashes
+without changing the claim text. A cosmetic change can justify it after inspection. A missing
+source is not silently replaced: the helper preserves its old hash when there is no current one.
+Do not use re-baselining as a warning-dismissal button.
+
+**Defer when the work should remain open.** The manual workflow leaves the document and mismatch
+alone so the next session can surface them. Record an owner and reopen condition when the work
+needs to survive this conversation, but do not pretend the defer operation creates a dedicated
+persistent debt record automatically. A defer is not a fresh result.
+
+The choice belongs to the relationship between this document and these sources. One document can
+be safely re-baselined while another needs new claims. A global reset of all hashes would erase
+that distinction.
+
+## The commit path and manual audit are different
+
+During commit-gate Phase 5.5, **before the commit lands**, `heal_worklist` intersects staged paths
+with changed or absent drift-trigger entries. An empty worklist skips re-scouting; that does not
+mean the entire commit has zero cost. For a nonempty worklist, the skill requires an incremental
+re-scout of those paths.
+
+If the claims still hold, the updated provenance file is staged by its exact path to ride the
+same commit, with the required secrets re-scan. If claims changed, the proposed document or
+code-map edits go into the normal diff review. Auto-heal is not an unconditional hash refresh
+and does not silently rewrite conclusions.
+
+The manual context-check route is for drift outside that particular commit path: a merge you did
+not author, an external edit, or a recorded source you are not staging now. Its compatibility
+entry remains available as `/ca:context-check`, `$ca-context-check`, or `/ca-context-check`,
+depending on the host. The catalog also advertises the canonical status-drift route; inspect the
+installed command reference rather than inventing a new command.
+
+The manual skill reports first, asks for a disposition per stale document, and summarizes the
+result. It **does not stage or commit**. Any revised provenance or document rides a later
+user-authorized commit. See the [context-check reference](/reference/commands/context-check/)
+and [commit gate](/reference/skills/commit-gate/).
+
+## Inspect a real repository without changing its history
+
+Start by confirming the checkout, branch and current work. Read the affected document and its
+provenance JSON. Check that the named path exists inside this repository, the record has the
+expected shape, and the reported change concerns that path. Ask for the source diff and the
+claim it could invalidate. A number of commits since a change is not part of the hash-comparison
+report unless separately established from Git history.
+
+Before accepting a re-baseline, explain why the statement remains true. Before accepting new
+text, inspect the supporting source and preserve unresolved questions. After either action,
+repeat the audit and inspect the actual file diff. A re-scouted document should have the intended
+claim and source relationship; a deferred document should still have its unresolved mismatch.
+
+Do not delete markers, clear provenance directories or edit protected authority to manufacture a
+clean result. If a helper is missing or a record cannot be interpreted, preserve its path and the
+observed diagnostic, then use [Troubleshooting](/guides/troubleshooting/). Redact secrets and
+private source content before sharing a diagnostic.
+
+## Freshness is one layer, not the whole authority model
+
+A source hash, an ADR acceptance record, a typed artifact's normative identity, and a fresh test
+result answer different questions. Updating provenance does not approve a feature, verify an ADR,
+or accept a task. Conversely, a passing feature test does not refresh an unrelated project claim.
+
+[Just-in-time context](/concepts/jit-context-injection/) explains how a fresh claim can contribute
+a pointer at a read. [Artifacts](/concepts/artifacts/) explains which records govern a change,
+and [Auditability](/concepts/auditability/) explains how to examine their evidence later.

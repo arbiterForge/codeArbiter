@@ -243,3 +243,27 @@ controls after client navigation; make no request or persistent write. Without J
 print, retain all cases. Pair foreground/background tokens for forced colors and test every state,
 not only the first card. Preserve full-text content and labels under enlarged text and narrow
 widths. Existing guide-table and peer-spacing rules still apply.
+
+
+## Recorded context observations
+
+`ContextExplorer` presents a checked capture, not an emulator or live governance console.
+The capture producer runs real read/provenance helpers and Git content hashing only in a
+disposable repository. Retain exact inputs, source identity and hashes, the emitted text,
+observed deduplication and hash-call scope. A helper observation is not host activation,
+end-to-end execution, authority or verification of the reader's project.
+
+The prose, optional static diagrams and actual observations must distinguish all matching
+candidates from the bounded result. Never display first-match routing when the owning helper
+composes tiers. Distinguish the estimated pointer budget from a model tokenizer or complete
+workflow cost. Do not convert silent, stale, absent or unverifiable results into an all-clear.
+
+All observations are statically readable; selection hides only reading sections and must not
+persist state, change the URL or run a tool. Print restores every case. Serve the machine-readable
+capture from the same JSON import rather than maintaining an independent copy. Historical
+research and hardening notes retain attribution without asserting current efficacy.
+
+Test each state, actual text bounds, enlarged text, normal/forced colors, keyboard focus,
+no-script and print paths, navigation/back and base-prefixed links. Inspect real rendered
+captures after the final build. Keep arrowheads in explicit user-space units with their tips
+centred on the path endpoint; their shafts must approach straight without crossing the head.

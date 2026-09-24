@@ -190,6 +190,26 @@ try {
   }
   process.stdout.write("C02: comparison, caller routes, ADR/audit views and seven-step checkpoint remain beneath /docs/.\n");
 
+  for (const slug of ["provenance-drift", "jit-context-injection", "persona-and-context"]) {
+    const html = readFileSync(join(outputRoot, "concepts", slug, "index.html"), "utf8");
+    if (slug === "persona-and-context") {
+      if (!html.includes('id="roles-task-handoff"') ||
+          (html.match(/data-map-step=/g) ?? []).length !== 16) {
+        throw new Error("C03 role separation lost the complete feature handoff");
+      }
+    } else if ((html.match(/data-context-case=/g) ?? []).length !== 4 ||
+               !html.includes('href="/docs/examples/context-observations.json"')) {
+      throw new Error(`C03 ${slug} lost its recorded helper evidence or data link`);
+    }
+    for (const [, href] of html.matchAll(/(?:href|src)="(\/(?:concepts|guides|reference|diagrams|examples)\/[^"]*)"/g)) {
+      throw new Error(`C03 ${slug} destination escaped the base: ${href}`);
+    }
+  }
+  const servedCapture = JSON.parse(readFileSync(join(outputRoot, "examples", "context-observations.json"), "utf8"));
+  const sourceCapture = JSON.parse(readFileSync(join(siteRoot, "src", "data", "context-examples.json"), "utf8"));
+  if (JSON.stringify(servedCapture) !== JSON.stringify(sourceCapture)) throw new Error("Context evidence endpoint differs from its capture");
+  process.stdout.write("C03: all recorded context cases, full role map and exact JSON evidence remain beneath /docs/.\n");
+
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }

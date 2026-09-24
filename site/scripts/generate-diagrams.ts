@@ -160,8 +160,8 @@ function shell(title: string, desc: string, width: number, height: number, body:
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
       <path d="M32 0H0V32" fill="none" stroke="${C.line}" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
+    <marker id="arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0L9 4L0 8Z" fill="context-stroke"/>
     </marker>
   </defs>
   <rect width="${width}" height="${height}" rx="14" fill="url(#canvas)"/>
@@ -356,29 +356,32 @@ function activationStates(): string {
 }
 
 function fourTierMap(): string {
-  const title = "File-to-knowledge priority map";
-  const desc = "A file read is matched in priority order against security controls, accepted architecture decisions, approved specifications, and fresh provenance.";
+  const title = "Collect governing pointers, then apply a budget";
+  const desc = "All matching security, decision, specification and fresh provenance pointers are collected in that order. A bounded assembler emits advice; reads remain allowed. This is not a first-match switch or approval.";
   const tiers = [
-    ["1", "security-\ncontrols.md", "security-entry\nfiles", C.danger],
-    ["2", "decisions/", "accepted ADR\ngoverns glob", C.gold],
-    ["3", "specs/", "approved Governs\nheader", C.info],
-    ["4", "provenance", "stored hash\nstill matches", C.positive],
+    ["1. Security", "path-token match", C.danger],
+    ["2. Decisions", "accepted + governs", C.gold],
+    ["3. Specifications", "format + authority", C.info],
+    ["4. Provenance", "recorded hash matches", C.positive],
   ] as const;
   const body = [
     label(42, 48, "JUST-IN-TIME CONTEXT", { size: 14, family: "mono", color: C.gold, weight: 750, letterSpacing: 2 }),
-    label(42, 78, "Read(file) checks four tiers in strict priority order.", { size: 18, color: C.white, weight: 700 }),
-    card(42, 154, 188, 92, "Read(file)", "PreToolUse hook", C.info),
+    label(42, 78, "Collect all matches. Priority orders the pointers; it does not choose one winner.", { size: 18, color: C.white, weight: 700 }),
+    card(424, 120, 280, 84, "Read one file", "enabled supported path", C.info),
+    arrow(564, 210, 564, 246, C.info),
+    `<rect x="42" y="254" width="1044" height="204" rx="12" fill="${C.raised}" stroke="${C.gold}" stroke-width="2"/>`,
+    label(66, 286, "ORDERED CANDIDATE SET: ALL APPLICABLE ENTRIES", { size: 13, family: "mono", color: C.goldBright, annotation: true, weight: 650 }),
   ];
-  tiers.forEach(([number, name, subtitle, tone], index) => {
-    const x = 300 + index * 200;
-    body.push(card(x, 132, 184, 136, `${number}\n${name}`, subtitle, tone));
-    if (index === 0) body.push(arrow(236, 200, 290, 200, C.info));
+  tiers.forEach(([name, subtitle, tone], index) => {
+    // Peers within one collection, not sequential calls or first-match branches.
+    body.push(card(62 + index * 256, 318, 236, 102, name, subtitle, tone));
   });
-  body.push(card(300, 310, 375, 82, "Inject highest-priority pointer", "budget ≤ 150 tokens", C.gold));
-  body.push(card(710, 310, 375, 82, "No tier matches", "no injection · zero git calls", C.lineStrong));
-  body.push(elbow([[642, 268], [642, 290], [487, 290], [487, 300]], C.gold));
-  body.push(elbow([[970, 268], [970, 300]], C.lineStrong, true));
-  return shell(title, desc, 1128, 430, body.join("\n"));
+  body.push(card(84, 516, 440, 98, "Bounded additional context", "150-token character proxy; omissions possible", C.gold));
+  body.push(card(610, 516, 440, 98, "Read continues", "advice is not a mutation permission", C.positive));
+  body.push(elbow([[564, 464], [564, 488], [304, 488], [304, 510]], C.gold));
+  body.push(arrow(530, 565, 600, 565, C.gold));
+  body.push(label(42, 658, "No usable pointer or a read-helper failure can be silent. Silence is not proof that no rule applies.", { size: 13, annotation: true, family: "mono", color: C.muted }));
+  return shell(title, desc, 1128, 690, body.join("\n"));
 }
 
 function coreFanout(): string {
@@ -411,17 +414,24 @@ function coreFanout(): string {
 }
 
 function provenanceFlow(): string {
-  return horizontalFlow(
-    "Context-drift provenance",
-    "Detect, surface, and heal stale documentation claims.",
-    [
-      { title: "Source changes", subtitle: "tracked file edited", accent: C.info },
-      { title: "Drift detected", subtitle: "hash mismatch", accent: C.danger },
-      { title: "SessionStart", subtitle: "one passive line", accent: C.gold },
-      { title: "Commit-gate", subtitle: "re-baseline or update", accent: C.positive },
-    ],
-    "A drifted claim is suppressed; /ca:context-check performs the same detection manually.",
-  );
+  const title = "A recorded source change is not yet a corrected claim";
+  const desc = "A provenance hash mismatch can suppress read-time advice and identify stale context. Before commit, scoped re-scout distinguishes unchanged claims from proposed content edits. The manual route asks for re-scout, re-baseline or defer; it does not commit.";
+  const body = [
+    label(42, 48, "PROVENANCE AND CONTEXT DRIFT", { size: 14, family: "mono", color: C.gold, weight: 750, letterSpacing: 2 }),
+    label(42, 78, "Recorded bytes changed. Inspect the meaning before accepting a new baseline.", { size: 18, color: C.white, weight: 700 }),
+    card(42, 142, 264, 94, "Stored / current hash", "only recorded source paths", C.info),
+    card(390, 142, 264, 94, "Mismatch identified", "changed or actually missing", C.danger),
+    card(738, 142, 308, 94, "Stale pointer suppressed", "not a block on reading source", C.gold),
+    arrow(312, 189, 380, 189, C.info), arrow(660, 189, 728, 189, C.danger),
+    card(42, 306, 478, 104, "Before commit: incremental re-scout", "staged drift-trigger paths intersect claims", C.gold),
+    card(590, 306, 478, 104, "Optional manual context check", "you choose the disposition for each document", C.info),
+    elbow([[522, 242], [522, 274], [281, 274], [281, 300]], C.gold),
+    elbow([[522, 242], [522, 274], [829, 274], [829, 300]], C.info),
+    multiline(62, 450, ["Claim unchanged: re-baseline available hashes.", "Claim changed: propose the edit for review.", "Approved updates can join the work commit."], { size: 15, maxWidth: 458 }),
+    multiline(610, 450, ["Re-scout, re-baseline, or defer the mismatch.", "Missing source needs a deliberate resolution.", "This manual path neither stages nor commits."], { size: 15, maxWidth: 458 }),
+    label(42, 550, "Startup summaries are passive. Missing/invalid records and unavailable hashes are not proof of freshness.", { size: 12, annotation: true, family: "mono", color: C.muted }),
+  ];
+  return shell(title, desc, 1128, 580, body.join("\n"));
 }
 
 function sandboxBoundary(): string {

@@ -9,8 +9,8 @@
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
       <path d="M32 0H0V32" fill="none" stroke="#273647" stroke-width="1" stroke-opacity=".24"/>
     </pattern>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
-      <path d="M0 0 8 4 0 8z" fill="context-stroke"/>
+    <marker id="arrow" markerUnits="userSpaceOnUse" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0 0L9 4L0 8Z" fill="context-stroke"/>
     </marker>
   </defs>
   <rect width="976" height="410" rx="14" fill="url(#canvas)"/>

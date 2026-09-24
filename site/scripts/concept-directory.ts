@@ -23,8 +23,8 @@ export const conceptGroups = [
   ] },
 ] as const;
 export const conceptBackground = [
-  { slug: 'concepts/persona-research-basis', title: 'The evidence behind the persona' },
-  { slug: 'concepts/hardening-history', title: 'Selected hardening notes' },
+  { slug: 'concepts/persona-research-basis', title: 'Historical persona research rationale' },
+  { slug: 'concepts/hardening-history', title: 'Historical hardening lessons' },
 ] as const;
 
 type Page = { id: string; data: { title: string; description?: string } };

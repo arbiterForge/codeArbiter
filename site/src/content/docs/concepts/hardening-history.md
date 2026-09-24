@@ -1,54 +1,121 @@
 ---
 title: Selected Hardening Notes
-description: "Design notes for several important enforcement choices, plus selected historical examples; the changelog remains the complete release record."
+description: "Understand the failure patterns behind selected controls while keeping historical fixes, current implementation and verified release behavior distinct."
 journey:
-  level: "Reference"
-  time: "8 minutes"
-  outcome: "Explain why selected controls use digest binding, single writers, and fail-closed reads."
+  level: Reference
+  time: "10 minutes"
+  outcome: "Explain why evidence is bound to content and writers are constrained without treating a historical fix as universal current protection."
   prerequisites:
-    - "Enforcement & Security"
-  proof: "You can connect each design choice to the race, drift, or bypass it prevents."
+    - Enforcement & Security
+    - Auditability
+  proof: "You can name the original failure, its intended control, the current source to inspect and the evidence still needed for an installed release."
 ---
 
-[Enforcement & Security](/enforcement/) states what is enforced. This page explains why some of those gates are built the way they are, and records the hardening work that shaped them over time.
+Hardening is the work of turning an observed failure into a bounded control and a regression
+that detects its return. This page preserves selected design lessons. **It is not a complete
+security history, a claim that every historical weakness is closed in every adapter, or an
+independent audit of the current release.**
+
+The earlier account is retained at
+[its exact source revision](https://github.com/arbiterForge/codeArbiter/blob/aebee1bb753d29e34030ee22c98c9eb8fabb1752/site/src/content/docs/concepts/hardening-history.md).
+Its version-specific examples remain historical. Read [Enforcement & Security](/enforcement/)
+for the product boundary, [Auditability](/concepts/auditability/) for the meaning of retained
+records, and the [Changelog](/changelog/) for the chronological release record.
 
 ## Why the Crypto/Secret Gate Is Digest-Bound (H-09b / H-10b)
 
-The crypto/secret gate does not just check freshness. The crypto-compliance and secret-handling skills record a `security-gate-passed` marker holding the **digest of every sensitive line the gate approved**. At commit time, `pre-bash.py` requires both:
+Consider a review that approves one sensitive change. Another edit arrives a minute later.
+A timestamp-only pass would still look fresh, but it would say nothing about that second edit.
+This is the time-of-check/time-of-use problem the digest-bound design addresses: the permission
+must apply to the content being evaluated, not just to a recent conversation.
 
-- **freshness** (the marker is under 30 minutes old), and
-- **coverage** (every sensitive line in the diff being committed hashes to a line in the approved set).
+The current source's security commit check combines a fresh marker with coverage of the
+sensitive lines in the relevant diff. Its source explicitly considers staged content and the
+applicable worktree content for commit forms that include it. The wrapper delegates to the
+shared guard implementation; an old location in `pre-bash.py` is not a reason to ignore the
+current `_bashguardlib.py` and scan helpers.
 
-Coverage is what closes the time-of-check / time-of-use window: a pass minted for one diff cannot launder a *different* diff committed inside the freshness window. The scan reads the staged diff, plus the worktree diff when the commit uses `-a`/`--all`, stages files in the same command, or names a `git commit <pathspec>` (whose worktree content the `--cached` scan would miss).
+The important distinction is **freshness versus coverage**. Freshness limits how long a record
+may apply. Coverage binds it to the lines actually considered. Neither a recent pass for unrelated
+content nor a nonempty marker file is sufficient. The owning check must also distinguish an empty
+diff from a diff it could not read; an unavailable scan cannot establish that nothing sensitive
+changed.
 
-The gate fails closed when the diff cannot be read. If git is unavailable or times out, `added_lines()` returns `None` (distinct from an empty diff), and codeArbiter treats that as a reason to block the commit rather than wave it through. H-14's file-list read follows the same fail-closed rule.
+That does not make a digest an authenticated human decision or a security proof about the whole
+program. It is one part of a specific supported commit path. Classifier coverage, command parsing,
+marker production, host events and installed payload identity remain separate assumptions to
+verify. [Override guidance](/guides/overriding-a-gate/) explains the sanctioned exception boundary;
+hand-editing marker contents is not that process.
 
-The detection corpus is shared: `CRYPTO_RE` and `SECRET_RE` live once in `_hooklib.py`, so the redactor and the gate stay aligned on what counts as crypto or a secret. There is exactly one place either pattern set can be edited, and both consumers pick up the change together.
+To inspect a claim about this control, identify the installed version, the selected diff, the
+matching scan result, the marker's actual scope, and the next guarded operation. A test of one
+command shape should not be presented as evidence for every shell or every way to invoke Git.
+The [hooks reference](/hooks/) links to the current implementation and exact emitted messages.
 
 ## Why the Board Has One Writer (ADR-0008)
 
-`open-tasks.md` has one sanctioned writer: `/ca:task`. No other agent, hook, or workflow modifies that file directly. The three mutations it performs are a queued add (a new task in `[ ]` state), the start-flip (`[ ]` to `[~]` with a stamped date), and the done-flip (`[~]` to `[x]`).
+A task board is useful only when its transitions remain legible. Free-hand edits can leave a task
+in an impossible state, lose an identifier or remove a record instead of completing it. The
+sanctioned writer validates the transition and preserves the board's schema; callers should use
+that boundary rather than inventing their own Markdown edit.
 
-The commit gate is the single board-sync chokepoint. Phase 6 of the commit-gate skill identifies a schema-valid board transition and exempts it from the scope-creep check; Phase 7 stages it alongside the work. The board flip lands atomically with the code it describes: an abandoned PR abandons the flip with it, and there is no window where the board reads done while the corresponding work is not yet merged.
+The public task route exposes add, start and done. That is not a complete inventory of every
+helper operation. The current task contract also describes the standup-owned archival sweep,
+which requests an individual decision before invoking the helper's archive operation. It is not
+a new public task-archive command, and it does not justify unattended removal of old records.
 
-This design replaced an earlier pattern of a separate, lagging `chore(board)` PR that could drift from the code it described. Cross-session board drift (a task left open after its work lands) is now eliminated by construction rather than by process discipline. See ADR-0008 for the full design rationale.
+Co-locating a relevant board transition with its work commit reduces the risk of a separate,
+lagging board-only PR. It does **not** eliminate every cross-session inconsistency. A branch can
+contain a done marker before it merges; an interrupted or out-of-band workflow can still leave
+records needing reconciliation. The marker describes board state, not independently verified
+production delivery.
 
-`/ca:standup` and `/ca:doctor` each run a read-only reconciliation sweep and surface any merged-but-not-flipped task; they report findings without writing to the board themselves.
+Treat a reconciliation report as a reason to inspect the work's actual source and PR, not as
+permission to blindly flip a task. The correct question is which committed work, transition and
+merge establish the intended relationship. Preserve unrelated work and follow the owning command
+for any repair. [Return to a project](/guides/return-to-a-project/) teaches that inspection, and
+[Review and ship](/guides/review-and-ship/) keeps commit, PR, merge and release distinct.
 
 ## Selected Historical Examples
 
-These examples explain the defenses established in v2.5.2; they are not a complete hardening log.
-Use the generated [Changelog](/changelog/) for the current, chronological release record.
+The earlier account associated these themes with **v2.5.2 (2026-06-25)**. This overhaul preserves
+that attribution; it did not acquire and rerun that release artifact. The examples explain why
+controls were introduced, not which exact current installations are qualified.
 
-- **v2.5.2 (2026-06-25)** — Broadened crypto detection: `CRYPTO_RE` now flags `rc2` and `blowfish` alongside MD5, SHA-1, DES, 3DES, and RC4, plus TLS-disable forms (`rejectUnauthorized: false`, `NODE_TLS_REJECT_UNAUTHORIZED`, `verify=False`, `InsecureSkipVerify`).
-- **v2.5.2 (2026-06-25)** — Compound-name secret detection: `SECRET_RE` now matches compound keys (`aws_secret_access_key`, `client_secret`, `private_key`) and known token shapes (`AKIA…`, `ghp_…`, `sk-ant-…`).
-- **v2.5.2 (2026-06-25)** — Gate-pass markers became atomic and digest-bound, so an unrelated edit inside the freshness window no longer inherits an unrelated approval.
-- **v2.5.2 (2026-06-25)** — Audit-path sets centralized: `AUDIT_LOG_NAMES` and the decisions-path tokens live once in `_hooklib`, so the shell, Write, and Edit flanks can no longer disagree on which files are append-only.
-- **v2.5.2 (2026-06-25)** — `ca-sandbox` isolation hardened for untrusted repositories: non-root (`--user 1000:1000`), `--read-only` root, `--cap-drop ALL`, `--security-opt no-new-privileges`, and a fail-closed network policy (default `--network none`; an unknown policy is a hard error rather than a silent pass-through). No host bind mounts; the docker socket is never mounted.
+**Broader detection.** The historical notes described adding legacy cryptographic identifiers,
+TLS-disable forms, compound secret names and recognizable token shapes. The lesson is to bind
+detection claims to a reviewed corpus and regression cases. A named pattern is not a guarantee
+that every vulnerability or secret can be recognized.
+
+**Atomic, content-bound passes.** The historical notes described gate records becoming atomic
+and digest-bound. The lesson is that an interrupted write and a pass for different content must
+not become permission to proceed. Verification still needs the actual producer and consumer.
+
+**Shared audit-path classification.** The historical notes described centralizing the protected
+path vocabulary. Sharing a catalog reduces inconsistent classifications, but every write surface
+still needs its applicable mediation. “One catalog” does not prove that no unsupported route can
+modify a file.
+
+**Sandbox restrictions.** The historical notes described container user, filesystem, capability
+and network restrictions. Those are boundary-specific settings, not proof that acquisition,
+build, execution and export have identical filesystem exposure. Use the current
+[sandbox guide](/guides/ca-sandbox/) for those distinct phases rather than applying a historical
+“no host mounts” statement to the entire lifecycle.
+
+## How to use a historical fix today
+
+Start with the failure condition: what previously went wrong, on which input and path? Find the
+implementation and regression at the version you are actually evaluating. Then run the relevant
+supported path against the exact installed candidate, preserving its output and identity.
+
+Keep the conclusions narrow. An accepted design explains intent. A merged fix establishes source
+change. A passing test establishes its tested case. A release record establishes publication.
+None of them alone establishes all the others. Missing evidence should remain an explicit gap,
+not be filled by the age of the fix or a strong sentence in a historical note.
 
 ## Related
 
-- [Enforcement & Security](/enforcement/): the user-facing statement of what is enforced.
-- [ADRs and the Decision Log](/concepts/adrs/)
-- [Hooks reference](/hooks/)
-- [Changelog](/changelog/)
+[Enforcement & Security](/enforcement/) owns the user-facing control boundary.
+[ADRs and the Decision Log](/concepts/adrs/) separates accepted choices from implementation and
+verification. [Role separation](/concepts/persona-and-context/) explains caller and writer
+responsibilities, and [Changelog](/changelog/) remains the release chronology.

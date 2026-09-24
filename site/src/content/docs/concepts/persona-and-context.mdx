@@ -1,0 +1,147 @@
+---
+title: The Persona-Register Split
+description: "Trace coordination, authoring, independent review and explicit persistence through the same workflow, without confusing a role charter with host-enforced isolation."
+journey:
+  level: Power user
+  time: "12 minutes"
+  outcome: "Explain who owns each handoff, what context a specialist needs, and what evidence must return before the caller can continue."
+  prerequisites:
+    - Understand command, skill, and agent terminology
+  proof: "You can follow a task from its caller through an author and review, identify any writer, and state the host boundary that remains to be verified."
+---
+
+import ExecutionMap from '../../../components/ExecutionMap.astro';
+
+The split is about **responsibilities**, not a cast of characters. The orchestrator interprets
+the request and coordinates its route. An author produces a bounded change. Reviewers challenge
+that work against defined obligations. A caller decides what the returned evidence permits next.
+Those jobs need different instructions and inputs, even when the same model family performs them.
+
+A persona is the role's communication and decision posture. A skill is a procedure. An agent
+charter describes a bounded worker. None of those labels, by itself, proves process isolation,
+a complete context, enforced read-only access, or correctness. The installed host and the
+workflow's actual evidence determine those boundaries.
+
+## Follow a task across the role rows
+
+The map opens inside the feature task loop. Use the other chapters to see how the request reaches
+it and how scope acceptance, commit and PR follow. Rows identify kinds of participants; they are
+not three consecutive phases and not a list of commands you must type.
+
+<ExecutionMap id="roles-task-handoff" initial="task" />
+
+For a saved-search export, an author might receive the CSV requirement, the selected file paths,
+relevant source and the required regression. Its return should identify what changed and the
+observed test results. The caller then performs the prescribed specification review and fresh
+verification, and the relevant quality reviewers examine the scope. “The author says it passes”
+cannot stand in for those later steps.
+
+## The roster
+
+**The orchestrator owns routing and decisions about continuation.** It selects the applicable
+lane, supplies context and respects the required stops. It is not automatically the person who
+approves the work, and its summary does not authenticate a human decision.
+
+**Authors own bounded implementation.** The `backend-author`, `frontend-author` and `infra-author`
+charters have write-capable tools for their jobs. The task's scope and project mapping select the
+author; the name alone does not authorize unrelated edits. These are not the only write-capable
+roles anywhere in the product.
+
+**Reviewers challenge, rather than silently repair.** Security, authentication/cryptography,
+dependency, migration, coverage, architecture and design review apply under their owning route's
+conditions. A tribunal lens executor is a separate review role reused with selected lens cards.
+Do not dispatch every reviewer for every change merely because its name appears in the roster.
+A read-only review requirement belongs to the charter and supported host path, not to a blanket
+claim that every agent labelled a reviewer lacks all write tools.
+
+**The generic funnel returns a verdict.** `finding-triage` classifies the deduplicated results and
+preserves out-of-scope findings. `verdict-aggregator` returns the single read-only batch result.
+An errored or deferred unit remains visible; incomplete collection cannot become PASS by omission.
+
+**A report writer is an explicit exception.** `checkpoint-aggregator` has a `Write` tool and runs
+after the verdict in the periodic checkpoint path. Its role is to persist the selected report,
+not to approve code. This is why a generic review can remain non-writing while a checkpoint
+produces a file. The charter's `classification: reviewer` metadata does not erase its writer
+behavior. See [Checkpoints](/concepts/checkpoints/) for the complete route.
+
+**Discovery and decision roles have other outputs.** Scouts and mappers return evidence about
+existing source; graders and challengers assess proposals. An inventory, a recommendation, a
+verdict and a persisted report are distinct deliverables. The
+[agent reference](/reference/#agents) preserves each charter's tools and exact contract.
+
+## Where it's decided
+
+The canonical persona and safety instructions are distinct from project context. In the inspected
+shared implementation, persona composition moved out of SessionStart into the mode-aware turn
+path: the safety core and active mode body are composed at the applicable turn boundary.
+SessionStart still establishes startup state. A historical comment describing startup as the
+persona injector is not the current implementation contract.
+
+This separation allows the product's stable safety and interaction instructions to remain apart
+from the repository's changing purpose, stack, decisions and task state. It does not mean that the
+model magically remembers every project document or rereads everything on every turn.
+[Just-in-time context](/concepts/jit-context-injection/) is one advisory mechanism for surfacing
+file-specific pointers; an owning skill's required-reading list is another explicit obligation.
+
+The earlier design rationale is retained in [research notes](/concepts/persona-research-basis/).
+Historical prompt experiments explain a design choice, not the performance of every present
+model or host.
+
+## Give the worker enough context, not the whole conversation
+
+A task needs its intended behavior, boundaries, relevant files and verification obligation. The
+ordinary subagent development path dispatches a fresh author for each selected task. Fresh means
+that earlier assumptions should not carry over implicitly; it does not remove the caller's duty
+to supply the actual context.
+
+For typed work, the coordinator reads the selected artifact identities, obligations, dependency
+state and eligible task through the supported engine. Contextual reads must be followed to
+completion and the required ticket retained before dispatch. A displayed task title or copied
+checkbox is not an equivalent input. Existing Markdown work retains its own contract.
+
+Project-level documents still matter. `CONTEXT.md` describes the intended project and stage;
+`tech-stack.md` supplies actual commands and the scope-to-author mapping; security controls apply
+where the work touches a security boundary. If required information is absent, surface the gap
+rather than choosing a plausible test runner or silently broadening the task.
+
+Fresh context and narrow scope can reduce irrelevant material. They do not establish a universal
+token saving or accuracy improvement. This documentation does not promote historical prompt
+experiments into a guarantee about present model behavior.
+
+## What this means in practice
+
+Invoke or describe the work through the lane. Do not treat internal agent names as another public
+command menu. Expect the caller to explain which procedure and specialist are relevant and what
+will return. The public command, internal skill and worker are complementary interfaces to one
+workflow, not competing ways to bypass its controls.
+
+For a parallel batch, paths that would be mutated by two units require isolation or serialization.
+Every unit must be accounted for as DONE, ERRORED or DEFERRED. Those transport outcomes are not
+whole-feature acceptance states. The funnel preserves problems and contradictions in the returned
+verdict; the caller must still satisfy its own continuation gate.
+
+A narrowly scoped reviewer can miss something outside its assigned context. A complete batch means
+that the specified work was accounted for, not that every possible defect was excluded. Confirm
+the review matrix, inputs and failure states before accepting a reassuring summary.
+
+## Inspect a Dispatch
+
+Start with the public command and follow its owning skill. Identify the condition for each worker,
+the permitted paths, required inputs, expected output and return destination. Open the charter to
+inspect tools and restrictions. Then compare those expectations with the actual run's scope and
+fresh results, not merely the names visible in a transcript.
+
+Claude Code uses its native agent route where supported. Codex's packaged resource charters and
+host-provided threads are not evidence of enforced read-only isolation on every path. The retained
+release evidence distinguishes packaged resources from a bounded installed-charter review; it
+does not certify every dispatch or process cleanup. Pi has its own supervised child route and
+capability boundaries. Consult [host differences](/getting-started/compatibility/#host-differences)
+and the [artifact authority limits](/guides/review-artifacts/#check-your-hosts-authority-capability)
+for the installed workflow. An allowed inline fallback is a particular contract exception, not
+permission to simulate an isolated reviewer whenever spawning is inconvenient.
+
+When a worker fails, preserve its terminal state and relevant diagnostics. Do not invent its
+missing verdict or treat another worker's success as coverage of the failed scope. Return through
+[Investigation](/guides/investigate-and-fix/) or
+[Resume and recover](/guides/resume-and-recover/), then finish through
+[Review and ship](/guides/review-and-ship/) only when the real evidence supports it.
