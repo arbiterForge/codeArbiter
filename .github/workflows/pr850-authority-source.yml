@@ -44,6 +44,7 @@ jobs:
             ('22ae37c8aaf6d24ecca788b6c03a21164001697d','pair-tests.py'),
             ('16f525a313bf34736073ed2be42954c0cd261a6c','apply.py'),
             ('d40a3f994e70e5774841fec8974a7668157365f4','driver.py'),
+            ('a043fa68eb22cc692c08b5da2ed83205142713aa','docs.py'),
           ]
           for sha,name in rows:
               req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
@@ -53,6 +54,10 @@ jobs:
               assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
               (out/name).write_bytes(data)
           (out/'inputs.json').write_text(json.dumps(rows,indent=2))
+          p=out/'sprint-tests.go';text=p.read_text()
+          old='h.run("recover",object{"operation_id":r["operation_id"],"mode":mode})'
+          assert text.count(old)==1
+          p.write_text(text.replace(old,'if _,err:=h.request("recover",object{"operation_id":r["operation_id"],"mode":mode});err!=nil{t.Fatal(err)}'))
           PY
       - name: Execute candidate preparation and regression suite without credentials
         run: python "$RUNNER_TEMP/authority-integration/driver.py"
