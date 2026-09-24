@@ -1,0 +1,48 @@
+name: PR854 next-slice inputs (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/pr854-next-source.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '22.19.0'
+      - name: Capture pinned source and locked tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 76fd953c605b20b140de826406833da190d32aa1
+          MAIN=48c32f3516320469957ed0bd387534a6a76d3594
+          git cat-file -e "$MAIN^{commit}"
+          git update-ref refs/review/pinned-main "$MAIN"
+          OUT="$RUNNER_TEMP/pr854-next-source"
+          mkdir "$OUT"
+          git bundle create "$OUT/source.bundle" HEAD refs/review/pinned-main
+          git rev-parse HEAD > "$OUT/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
+          printf '%s\n' "$MAIN" > "$OUT/main.txt"
+          cd plugins/ca/tools
+          npm ci --ignore-scripts --no-fund --no-audit
+          npm audit --include=dev --audit-level=high
+          tar -czf "$OUT/locked-tools.tgz" node_modules
+          cp package-lock.json "$OUT/package-lock.json"
+          cd "$OUT"
+          sha256sum source.bundle locked-tools.tgz package-lock.json > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-next-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-next-source/
+          if-no-files-found: error
+          retention-days: 3
