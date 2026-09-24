@@ -274,3 +274,54 @@ HTML farm remains disabled. New `.12` package bytes still require genuine final-
 live proof under the existing release gate; no prior receipt can certify this slice.
 Rollback the owner/declaration/compiler changes and generated derivatives together,
 without changing stored artifacts, published-tag history or unrelated PR work.
+
+
+## PR850: requested combined approval and SMARTS producer
+
+The requester explicitly approved this slice on 2026-09-23. It supersedes this
+review's earlier sequential-only initial-sprint constraint and deferral of a
+SMARTS producer; those statements remain historical implementation boundaries.
+No accepted ADR body or Project canon is rewritten by this note.
+
+The private native operations `sprint-approval-context`, `sprint-approve` and
+`smarts-apply` reuse the existing source/observation/receipt and journal stores.
+One exact host-observed reply approves the complete ready spec/draft-plan pair,
+projects its approved binding and optionally grants existing-task method changes.
+The model cannot authorize its initial pair or reinterpret approve-only as a grant.
+The grant protects every normative plan field except existing task steps. The
+producer rejects changed criteria, paths, verification, prerequisites, checkpoint
+membership and running affected writers; it never marks work accepted. The normal
+permission and proof gates, HTML farm block and host-specific limitations remain.
+
+The native regression suite covers one-transaction replay, stale members, wrong
+sources, generic-capture/single-approve refusal, missing delegation, malformed or
+dominated comparisons, ties, revocation by spec change and injected mid-pair crash
+completion/rollback. The installed Python adapter suite exercises actual native
+operations using clearly synthetic host events, including lost response recovery,
+no observed reply, stale cancellation boundaries, cross-root prompt routing and
+fresh method authority. Neither suite is authenticated model-turn release proof.
+
+The earlier secret-scan findings were an exact verified hostapi Git blob hash in
+removed preparation history. Its value-only anchored allowlist must not broaden
+path/commit exclusions, alter generic scanner rules or hide adjacent values. The
+current-candidate live-proof gate remains separate and cannot be satisfied by
+relabelling the old .11 record or these fixture results.
+
+
+### Concurrent upstream release correction
+
+Main advanced to `786a1db5713adc16cdee58e6903fd16099039ccd` through PR #853 while
+this slice was in validation. That merged correction places authenticated live
+Codex proof after publication under ADR-0032, while retaining static candidate
+provenance and exact-head cohort checks before publication. Preserve it when
+reconciling this PR. Earlier sections that called the retained .11 live baseline
+a mandatory .12 pre-tag blocker are historical and superseded, not current policy.
+No old observation is relabeled; this slice does not claim an authenticated user
+model turn, released .12 behavior, or successful publication.
+
+The delegated-method implementation also preserves BLOCKED members and their
+reasons: a new method cannot itself reconcile missing permission or security
+state. It invalidates affected proof but leaves any true block for its existing
+qualified authority path. The paired prompt transitions share the existing
+private cross-process lock facility, outside ordinary input snapshots, to keep
+concurrent observations/cancellation from removing a different pending request.

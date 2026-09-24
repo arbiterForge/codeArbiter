@@ -1,0 +1,86 @@
+---
+import '../styles/academy-wayfinding.css';
+import { academyContent, academyLessons } from '../generated/academy-content';
+interface Props { labId?: string; }
+const { labId } = Astro.props;
+if (labId && !academyLessons.some(lesson => lesson.id === labId)) throw new Error(`Unknown Academy bookmark lesson: ${labId}`);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const lessons = academyLessons.map(lesson => ({ id: lesson.id, title: lesson.guide.title }));
+---
+<ca-academy-bookmark class="academy-bookmark" data-release={academyContent.release} data-commit={academyContent.commit} data-base={base} data-current={labId} data-lessons={JSON.stringify(lessons)}>
+  <div data-bookmark-controls hidden>
+    <p data-bookmark-status role="status" aria-live="polite" aria-atomic="true"></p>
+    <div class="academy-wayfinding__links">
+      <a data-bookmark-resume hidden>Return to saved lesson</a>
+      {labId && <button type="button" data-bookmark-save>Save this lesson in this browser</button>}
+      <button type="button" data-bookmark-clear hidden>Remove saved place</button>
+    </div>
+  </div>
+  <p class="academy-wayfinding__note">
+    Saving is optional. It stores only a lesson ID and curriculum version in this browser.
+    It does not mark a lesson complete, read your repository, or send progress to a server.
+    Your Academy verifier remains the source of completion evidence.
+  </p>
+  <noscript><p>Bookmark the page in your browser or use the curriculum links. Saving a place here requires JavaScript.</p></noscript>
+</ca-academy-bookmark>
+<script>
+  import { readBookmark, saveBookmark, clearBookmark, bookmarkKey } from '../scripts/academy-bookmark';
+  class AcademyBookmark extends HTMLElement {
+    private lifecycle?: AbortController;
+    connectedCallback() {
+      this.lifecycle?.abort();
+      this.lifecycle = new AbortController();
+      const { signal } = this.lifecycle;
+      const lessons = JSON.parse(this.dataset.lessons ?? '[]') as Array<{ id: string; title: string }>;
+      const context = { release: this.dataset.release ?? '', commit: this.dataset.commit ?? '', base: this.dataset.base ?? '', lessonIds: lessons.map(lesson => lesson.id) };
+      const acquire = () => window.localStorage;
+      const status = this.querySelector<HTMLElement>('[data-bookmark-status]')!;
+      const resume = this.querySelector<HTMLAnchorElement>('[data-bookmark-resume]')!;
+      const clear = this.querySelector<HTMLButtonElement>('[data-bookmark-clear]')!;
+      const refresh = () => {
+        const state = readBookmark(acquire, context);
+        resume.hidden = true;
+        resume.removeAttribute('href');
+        clear.hidden = state.state === 'empty' || state.state === 'unavailable';
+        if (state.state === 'ready') {
+          const lesson = lessons.find(lesson => lesson.id === state.lessonId)!;
+          // Never use a persisted URL or HTML. Resolve only a current inventory ID.
+          resume.href = `${context.base}/academy/${lesson.id.toLowerCase()}/`;
+          resume.textContent = `Return to ${lesson.id.split('-')[0]} · ${lesson.title}`;
+          resume.hidden = false;
+          status.textContent = 'Saved reading place. Completion has not been checked.';
+        } else {
+          status.textContent = {
+            empty: 'No saved place in this browser. Open a lesson and choose Save to keep a reading bookmark.',
+            invalid: 'The saved place is not valid for this curriculum. Remove it and choose a lesson from the track list.',
+            stale: 'The saved place belongs to a different curriculum snapshot. Check your verifier and choose a lesson from the current track list.',
+            unavailable: 'Browser storage is unavailable. Use a browser bookmark or the curriculum links instead.',
+          }[state.state];
+        }
+      };
+      this.querySelector<HTMLButtonElement>('[data-bookmark-save]')?.addEventListener('click', () => {
+        const saved = saveBookmark(acquire, context, this.dataset.current ?? '');
+        refresh();
+        status.textContent = saved ? 'Reading place saved. This does not mark the lesson complete.' : 'The reading place could not be saved. Use a browser bookmark instead.';
+      }, { signal });
+      clear.addEventListener('click', () => {
+        const removed = clearBookmark(acquire, context.base);
+        refresh();
+        status.textContent = removed ? 'Saved place removed. Your verifier progress and command preferences are unchanged.' : 'The saved place could not be removed. Check browser storage permissions.';
+        if (removed) {
+          const destination = this.querySelector<HTMLButtonElement>('[data-bookmark-save]') ?? status;
+          if (destination === status) status.tabIndex = -1;
+          destination.focus();
+        }
+      }, { signal });
+      window.addEventListener('storage', event => {
+        if (event.key === null || event.key === bookmarkKey(context.base)) refresh();
+      }, { signal });
+      window.addEventListener('pageshow', refresh, { signal });
+      refresh();
+      this.querySelector<HTMLElement>('[data-bookmark-controls]')!.hidden = false;
+    }
+    disconnectedCallback() { this.lifecycle?.abort(); }
+  }
+  if (!customElements.get('ca-academy-bookmark')) customElements.define('ca-academy-bookmark', AcademyBookmark);
+</script>

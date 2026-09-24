@@ -128,12 +128,12 @@ func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
 		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", "codex-review/0.1.0", "host-user-prompt/0.1.0")},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", "codex-review/0.1.0", "host-user-prompt/0.1.0", PairProfile, SMARTSProfile)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}
 	if current {
-		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(), reviewResultSchema(), promptResultSchema()}}
+		base["producer_result"] = map[string]any{"oneOf": []any{verificationResultSchema(), reviewResultSchema(), promptResultSchema(), smartsResultSchema()}}
 		required = append(required, "producer_result")
 	}
 	return closed(base, required...)
@@ -219,7 +219,7 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		}
 	}
 	kind, profile := model.S(event["kind"]), model.S(observed["producer_profile"])
-	if kind == "verification" && profile != "declared-command/0.1.0" || (kind == "spec_review" || kind == "quality_review") && profile != "codex-review/0.1.0" || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" {
+	if kind == "verification" && profile != "declared-command/0.1.0" || (kind == "spec_review" || kind == "quality_review") && profile != "codex-review/0.1.0" || (kind == "approval" || kind == "prerequisite" || kind == "reconciliation" || kind == "farm_authorization") && profile != "host-user-prompt/0.1.0" && !(kind == "approval" && (profile == PairProfile || profile == SMARTSProfile)) {
 		return fail()
 	}
 	contextBytes, _ := canonical.Marshal(context)
@@ -231,7 +231,15 @@ func ValidateLink(event, observed, context map[string]any, contextRef, contextHa
 		return fail()
 	}
 	if model.S(observed["format"]) == "codearbiter.observation/0.2.0" {
-		if kind == "verification" {
+		if profile == PairProfile {
+			if !validatePairPrompt(observed, event, context) {
+				return fail()
+			}
+		} else if profile == SMARTSProfile {
+			if !validateSMARTS(observed, event, context) {
+				return fail()
+			}
+		} else if kind == "verification" {
 			if !validateVerification(observed, event, context) {
 				return fail()
 			}
@@ -252,6 +260,9 @@ func validatePrompt(observed, event, context map[string]any) bool {
 		return false
 	}
 	kind := model.S(event["kind"])
+	if model.S(event["authority_kind"]) != "user_workflow" {
+		return false
+	}
 	if kind == "approval" {
 		return len(payload) == 0
 	}

@@ -1,0 +1,70 @@
+/* Reading position and bookmarks are deliberately distinct from verified progress. */
+.academy-wayfinding,
+.academy-track-page {
+  display: grid;
+  gap: var(--ca-space-4);
+  min-width: 0;
+  margin-block: var(--ca-space-6);
+}
+.academy-wayfinding {
+  padding: var(--ca-space-5);
+  border-inline-start: 3px solid var(--ca-brand);
+  background: var(--ca-bg-raised);
+}
+/* Use one spacing system here, not prose margins added to grid/flex gaps. */
+.sl-markdown-content :is(.academy-wayfinding, .academy-track-page, .academy-bookmark, [data-bookmark-controls], .academy-wayfinding__links) > * {
+  margin-block: 0;
+}
+.academy-wayfinding > p,
+.academy-bookmark p { margin: 0; }
+.academy-wayfinding__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ca-space-3) var(--ca-space-5);
+}
+.academy-wayfinding__links a,
+.academy-wayfinding__links button {
+  min-block-size: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding-block: var(--ca-space-2);
+  overflow-wrap: anywhere;
+}
+.academy-wayfinding__links button {
+  max-width: 100%;
+  padding-inline: var(--ca-space-3);
+  border: 1px solid var(--ca-line-strong);
+  border-radius: var(--ca-radius-sm);
+  background: var(--ca-bg-panel);
+  color: var(--ca-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.academy-wayfinding__links :is(a, button):focus-visible {
+  outline: 2px solid var(--ca-brand-bright);
+  outline-offset: 3px;
+}
+.academy-wayfinding__note {
+  color: var(--ca-ink-muted);
+  font-size: var(--ca-text-sm);
+  overflow-wrap: anywhere;
+}
+.academy-bookmark { display: grid; gap: var(--ca-space-3); min-width: 0; }
+.academy-bookmark [hidden] { display: none !important; }
+.academy-bookmark [data-bookmark-status] { margin-block-end: var(--ca-space-3); }
+.academy-track-lessons { padding-inline-start: 1.5rem; }
+.academy-track-lessons > li {
+  padding: var(--ca-space-5);
+  margin-block: var(--ca-space-4);
+  border-inline-start: 1px solid var(--ca-line-strong);
+}
+.academy-track-lessons h2 { margin-block-start: var(--ca-space-2); }
+@media (forced-colors: active) {
+  .academy-wayfinding__links :is(a, button):focus-visible { outline-color: Highlight; }
+}
+@media (max-width: 30rem) {
+  .academy-wayfinding,
+  .academy-track-lessons > li { padding: var(--ca-space-3); }
+}

@@ -1,4 +1,5 @@
 import type { AcademySource } from "./academy-source";
+import { academyTracks, buildAcademyWayfinding } from "./academy-wayfinding";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -145,7 +146,13 @@ function renderIndex(source: AcademySource): string {
   ].join("\n");
 }
 
-function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknown): string {
+/** Render a lesson with authored next-lab links and curriculum reading position. */
+function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknown, guides: ParsedGuide[]): string {
+  const place = buildAcademyWayfinding(guides).find(item => item.id === guide.id)!;
+  /** Produce frontmatter pagination without inventing a successor for the final lesson. */
+  const pagination = (direction: "prev" | "next", id: string | null) => id === null
+    ? [`${direction}: false`]
+    : [direction + ":", `  link: ${yamlString(`../${id.toLowerCase()}/`)}`, `  label: ${yamlString(guides.find(item => item.id === id)!.title)}`];
   const prerequisites = guide.prerequisites.length
     ? ["  prerequisites:", ...guide.prerequisites.map((item) => `    - ${yamlString(item)}`)]
     : [];
@@ -153,6 +160,8 @@ function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknow
     "---",
     `title: ${yamlString(guide.title)}`,
     `description: ${yamlString(guide.outcome)}`,
+    ...pagination("prev", place.previousId),
+    ...pagination("next", place.nextId),
     "journey:",
     `  level: ${yamlString(TRACK_LEVEL[guide.track])}`,
     `  time: ${yamlString(`${guide.estimatedMinutes} minutes`)}`,
@@ -163,6 +172,9 @@ function renderLesson(source: AcademySource, guide: ParsedGuide, actions: unknow
     "",
     'import AcademyLesson from "../../../components/AcademyLesson.astro";',
     'import AcademyCommandPreferences from "../../../components/AcademyCommandPreferences.astro";',
+    'import AcademyWayfinding from "../../../components/AcademyWayfinding.astro";',
+    "",
+    `<AcademyWayfinding labId=${yamlString(guide.id)} />`,
     "",
     `<AcademyCommandPreferences labId=${yamlString(guide.id)} />`,
     "",
@@ -216,6 +228,7 @@ function renderTypedContent(source: AcademySource, guides: ParsedGuide[]): strin
     `export const academyLessons = academyContent.lessons;\n`;
 }
 
+/** Generate source-backed Academy lessons, track overviews, and sidebar entries. */
 export function generateAcademy(
   source: AcademySource,
   docsRoot: string,
@@ -228,16 +241,13 @@ export function generateAcademy(
     }
     return guide;
   });
-  const requiredTracks: Array<[AcademyTrack, AcademySidebarGroup["label"]]> = [
-    ["foundations", "Foundation"],
-    ["practitioner", "Practitioner"],
-    ["power-user", "Power user"],
-  ];
+  const requiredTracks = academyTracks.map(track => [track.id, track.label] as const);
   for (const [track, label] of requiredTracks) {
     if (!guides.some((guide) => guide.track === track)) {
       throw new Error(`Academy overview requires a published ${label} lesson`);
     }
   }
+  buildAcademyWayfinding(guides);
   const academyRoot = join(docsRoot, "academy");
   rmSync(academyRoot, { force: true, recursive: true });
   mkdirSync(academyRoot, { recursive: true });
@@ -245,7 +255,19 @@ export function generateAcademy(
 
   writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source));
   for (const [index, guide] of guides.entries()) {
-    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions));
+    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions, guides));
+  }
+
+  const trackRoot = join(academyRoot, "tracks");
+  mkdirSync(trackRoot, { recursive: true });
+  for (const track of academyTracks) {
+    writeFileSync(join(trackRoot, `${track.id}.mdx`), [
+      "---", `title: ${yamlString(`${track.label} track`)}`, `description: ${yamlString(track.description)}`,
+      "prev: false", "next: false", "journey:", '  level: "Academy"', '  time: "Self-paced"',
+      `  outcome: ${yamlString(track.description)}`, academySourceMetadata(source), "---", "",
+      'import AcademyTrack from "../../../../components/AcademyTrack.astro";', "",
+      `<AcademyTrack track=${yamlString(track.id)} />`, "",
+    ].join("\n"));
   }
 
   const sidebarItems = guides.map((guide) => ({
@@ -256,12 +278,12 @@ export function generateAcademy(
   const sidebarGroups = requiredTracks.map(([track, label]) => ({
     label,
     collapsed: true as const,
-    items: guides
+    items: [{ label: "Track overview", slug: `academy/tracks/${track}` }, ...guides
       .filter((guide) => guide.track === track)
       .map((guide) => ({
         label: guide.title,
         slug: `academy/${guide.id.toLowerCase()}`,
-      })),
+      }))],
   })) satisfies AcademySidebarGroup[];
   writeFileSync(join(generatedRoot, "academy-content.ts"), renderTypedContent(source, guides));
   writeFileSync(join(generatedRoot, "academy-sidebar.json"), `${JSON.stringify(sidebarGroups, null, 2)}\n`);

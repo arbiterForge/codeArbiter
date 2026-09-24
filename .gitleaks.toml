@@ -193,3 +193,18 @@ walks that commit's patch regardless of what a later commit changes, so the
 value is waived here instead. Not a credential for any system.
 """
 regexes = ['''\Ask-proj-ABCDEFGH12345678\z''']
+
+# The documentation palette fixture records this public source-file SHA-256,
+# not a credential: plugins/ca/hooks/hostapi.py at
+# b41d9803eacb3acf4b93c8bec81e1aa2f086aec7. The adjacent hostapi.py JSON key
+# triggered generic-api-key in the tree scan. Earlier commits retain the same
+# bytes for PR-range scanning. Exempt only this value, not a path, commit, or
+# general hexadecimal shape.
+# site/test/content/product-example.test.ts binds the exemption to that source.
+[[allowlists]]
+description = "Public hostapi.py SHA-256 recorded by the statusline documentation fixture (PR #847)"
+regexes = ['\Ac6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be\z']
+
+[[allowlists]]
+description = 'PR850 historical preparation: exact verified hostapi Git blob identity, not a credential'
+regexes = [ '''\Aa3a2ea319e044db4d53f5e3cc32f97429ba47dba\z''' ]

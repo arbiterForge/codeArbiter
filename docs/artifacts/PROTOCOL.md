@@ -22,7 +22,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 | Discovery | `capabilities`, `schema`, `index`, `outline`, `identity` |
 | Content | `create`, `apply`, `diff`, `read`, `validate`, `rebrand`, `export` |
 | Integrity/recovery | `repair-preview`, `repair-apply`, `recover` |
-| Authority | `capture`, `approve`, `plan-bind`, `prerequisite` |
+| Authority | `capture`, `approve`, `plan-bind`, `prerequisite`, `sprint-approval-context`, `sprint-approve`, `smarts-apply` |
 | Execution ledger | `snapshot`, `eligible`, `task-start`, `task-review`, `task-block`, `task-reconcile`, `scope-reconcile`, `accept-scope` |
 | Derived farm | `farm-project`, `farm-seal`, `farm-verify` |
 | Legacy transition | `migration-preview`, `migration-apply`, `migration-rollback` |
@@ -33,7 +33,7 @@ Errors are field/symbol-specific and bounded. Do not dispatch or mutate from a p
 
 `artifact_id` and record IDs are stable semantic addresses. Normative content has a separate hash from the full model and rendered file bytes. A document revision increments on state/presentation changes as well as content edits; identity plus hash is the concurrency token. Hashes do not identify a human approver.
 
-A plan's `spec_ref` binds the exact normative specification digest. The initial mode is `draft_preview`. `plan-bind` requires the approved current spec and validates coverage. The newly bound plan must receive its own applicable approval. Normative changes invalidate approval; history is preserved.
+A plan's `spec_ref` binds the exact normative specification digest. The initial mode is `draft_preview`. `plan-bind` requires the approved current spec and validates coverage. The newly bound plan must receive its own applicable approval. Initial combined sprint review is the explicit exception to the sequential order: both documents remain ready drafts until one source-bound `sprint-approve` transaction projects the approved binding and commits both approvals. It cannot replace already-started or previously approved work. Normative changes invalidate approval; history is preserved.
 
 Each canonical HTML contains one authoritative embedded JSON model, inline presentation and generated record boundaries. Normal readers revalidate its structure, hashes and exact renderer correspondence. Human-only HTML edits produce `RENDER_DRIFT`; they are not silently interpreted as semantic edits.
 
@@ -148,3 +148,29 @@ Readiness now requires every declared task path to fall within its verification-
 ## Durable replay results
 
 Journal 0.2.0 records the bounded original completion result. Identical retries preserve that result even after later artifact edits. Journal 0.1.0 remains readable and explicitly requests a fresh identity where original metadata is absent. Rolled-back operations return `OPERATION_ROLLED_BACK`, never a successful mutation result. Export responses use `companion_links` for the disposition of companion links.
+
+
+## Initial paired approval and delegated SMARTS methods
+
+The private workflow card `core/surface/includes/sprint-authority.md` owns the installed invocation
+and consent wording. `sprint-approval-context` freezes both full model/revision identities, projected
+plan binding, protected plan scope and optional method delegation. `sprint-approve` consumes two
+bound observations from the same actual host reply and persists both approvals in one existing
+journal transaction. Generic capture and single-document approval cannot consume its pair sources.
+Arming is not approval; interrupted observed submissions replay the same transaction. Changed or
+rolled-back definitions require a new actual approval rather than a fabricated retry event.
+
+`smarts-apply` is a closed production producer, not a generic model-verdict ingestion endpoint. Its
+original paired user grant must explicitly permit method changes. It changes only an existing task's
+steps and retains every other normative plan field. Qualitative comparisons allow a single evidenced
+option and in-scope ties; recorded reasoning is not independently verified semantic truth. The
+producer refuses affected running writers, retains recorded BLOCKED states/reasons, invalidates
+impacted checkpoint/dependency proof, emits
+a source-bound `smarts_workflow` receipt and approves only the revised plan definition, never its
+work. Original execution, verification, review and security/permission gates still apply.
+
+This extension adds no public skill, command or tool registration. It does not grant prerequisite,
+specification, provider, spending, commit or publication authority; enable HTML farm; qualify Pi's
+missing pre-model prompt seam; or establish a sandbox against arbitrary same-user filesystem writes.
+Native/installed-engine tests use explicitly synthetic host observations. Authenticated host/model
+qualification and exact released-artifact claims remain separate.

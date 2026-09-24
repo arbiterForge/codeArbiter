@@ -1,3 +1,4 @@
+import { buildJourneySidebar } from '../../scripts/journey-navigation';
 import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -45,9 +46,8 @@ describe("canonical Claude Code and Codex support evidence", () => {
     expect(page).toMatch(/Read hook/i);
   });
 
-  it("appears in Getting Started navigation", () => {
-    const config = read("astro.config.mjs");
-    expect(config).toContain("getting-started/claude-code-and-codex");
+  it("appears in the host evidence navigation", () => {
+    expect(buildJourneySidebar([], []).find((group) => group.label === 'Trust')?.items).toContainEqual({ label: 'Claude Code + Codex Evidence', slug: 'getting-started/claude-code-and-codex' });
   });
 
   it("makes the primary getting-started journey host-aware", () => {
@@ -93,7 +93,7 @@ describe("canonical Claude Code and Codex support evidence", () => {
   it("keeps operational guidance host-correct", () => {
     const enforcement = read("src/content/docs/enforcement.md");
     const hooks = read("src/content/docs/hooks.md");
-    const optIn = read("src/content/docs/guides/opt-in-a-repo.md");
+    const optIn = read("src/content/docs/guides/opt-in-a-repo.mdx");
     const faq = read("src/content/docs/faq.md");
     const troubleshooting = read("src/content/docs/guides/troubleshooting.md");
     const uninstalling = read("src/content/docs/guides/uninstalling.md");

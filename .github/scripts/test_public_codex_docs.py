@@ -295,7 +295,7 @@ class PublicCodexDocsTest(unittest.TestCase):
     def _assert_live_baseline_marker(
         self, runbook, manifest, require_current_candidate=REQUIRE_CURRENT_CANDIDATE
     ):
-        """Bind retained live proof; require exact current bytes only for release."""
+        """Bind retained live proof; compare current bytes only on explicit request."""
         marker = live_baseline_marker(runbook)
         self.assertIn(marker["schema_version"], (2, 3))
         self.assertEqual("ca-codex", marker["adapter"])
@@ -333,12 +333,12 @@ class PublicCodexDocsTest(unittest.TestCase):
             self.assertEqual(
                 manifest["version"],
                 marker["adapter_version"],
-                "release preflight requires live proof for the current package manifest",
+                "explicit current-proof check requires the current package manifest",
             )
             self.assertEqual(
                 self._tracked_candidate_package_sha256(),
                 marker["candidate_package_sha256"],
-                "release preflight requires live proof for the exact current candidate package",
+                "explicit current-proof check requires the exact current candidate package",
             )
         self.assertRegex(marker["verified_on"], r"^\d{4}-\d{2}-\d{2}$")
         self.assertIsInstance(marker.get("candidate_ci_run_id"), int)
@@ -464,8 +464,8 @@ class PublicCodexDocsTest(unittest.TestCase):
                 )
             current_digest.assert_called_once_with()
 
-    def test_codex_release_rejects_stale_version_before_digest(self):
-        """A version mismatch remains a release refusal, not a skipped check."""
+    def test_optional_current_proof_rejects_stale_version_before_digest(self):
+        """The optional current-proof check rejects a version mismatch first."""
         runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(encoding="utf-8")
         marker = live_baseline_marker(runbook)
         fixture_manifest = {"version": marker["adapter_version"] + "-different"}
@@ -587,23 +587,51 @@ class PublicCodexDocsTest(unittest.TestCase):
         self.assertEqual(live_baseline_marker(revised)["pr_head_ref"], later["pr_head_ref"])
         self._assert_live_baseline_marker(revised, manifest, require_current_candidate=False)
 
-    def test_ca_codex_release_preflight_enforces_live_baseline_freshness(self):
-        """The ca-codex release row runs the public proof contract check-only."""
+    def test_ca_codex_release_does_not_require_live_model_proof(self):
+        """Release keeps static checks but leaves live host proof post-publication."""
         targets = (ROOT / ".codearbiter" / "release-targets.md").read_text(
             encoding="utf-8"
         )
         codex_row = targets.split("[ca-codex]", 1)[1].split("\n[ca-sandbox]", 1)[0]
-        self.assertIn(
-            'pre-tag: "$PY" .github/scripts/test_public_codex_docs.py '
-            "--require-current-candidate",
-            codex_row,
-        )
+        self.assertNotIn("test_public_codex_docs.py", codex_row)
+        self.assertNotIn("--require-current-candidate", codex_row)
         release = (ROOT / ".github" / "workflows" / "release.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn("Validate Codex live candidate CI", release)
-        self.assertIn("--print-live-candidate", release)
-        self.assertIn("actions: read", release)
+        self.assertNotIn("Validate Codex live candidate CI", release)
+        self.assertNotIn("--print-live-candidate", release)
+        self.assertNotIn("--validate-live-candidate-run", release)
+        self.assertNotIn("--require-current-candidate", release)
+        self.assertIn("verify_codex_candidate_provenance.py", release)
+        ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("Validate the exact live-proof producer and qualification", ci)
+        self.assertNotIn("--print-live-candidate", ci)
+        self.assertNotIn("--validate-live-candidate-run", ci)
+        self.assertNotIn("--require-current-candidate", ci)
+        self.assertIn("check_auto_release_candidate.py", ci)
+
+    def test_post_publication_runbook_uses_promoted_distribution(self):
+        """Manual host proof must exercise published bytes, not a local candidate."""
+        runbook = (ROOT / "docs" / "codex-parity-testing.md").read_text(
+            encoding="utf-8"
+        )
+        installation = runbook.split("## 2. Install ca-codex", 1)[1].split("## 3.", 1)[0]
+        self.assertIn(
+            "codex plugin marketplace add arbiterForge/codeArbiter "
+            "--ref ca-codex-marketplace", installation,
+        )
+        self.assertIn("codex plugin add ca-codex@codearbiter", installation)
+        self.assertIn("check its configured Git ref", installation)
+        self.assertIn("codex plugin marketplace upgrade codearbiter", installation)
+        self.assertIn("codex plugin marketplace remove codearbiter", installation)
+        self.assertRegex(
+            installation, r"installed, enabled version\s+is the version just\s+published"
+        )
+        self.assertIn("fresh task", installation)
+        self.assertIn("$ca-doctor", installation)
+        self.assertNotIn("Install it into\nyour Codex CLI from this local checkout", installation)
 
     def test_codex_live_candidate_ci_binding_fails_closed(self):
         """Legacy proof accepts only an exact successful protected-main CI run."""

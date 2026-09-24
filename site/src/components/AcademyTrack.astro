@@ -1,0 +1,35 @@
+---
+import { academyContent, academyLessons } from '../generated/academy-content';
+import { academyTracks, buildAcademyWayfinding, type AcademyTrackId } from '../../scripts/academy-wayfinding';
+import AcademyBookmark from './AcademyBookmark.astro';
+interface Props { track: AcademyTrackId; }
+const definition = academyTracks.find(track => track.id === Astro.props.track);
+if (!definition) throw new Error(`Unknown Academy track: ${Astro.props.track}`);
+const lessons = academyLessons.filter(lesson => lesson.track === definition.id);
+const navigation = buildAcademyWayfinding(academyLessons.map(lesson => lesson.guide));
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<div class="academy-track-page">
+  <p>{definition.description}</p>
+  <p><strong>{lessons.length} published lessons</strong> · {lessons.reduce((total, lesson) => total + lesson.guide.estimatedMinutes, 0)} minutes of estimated lesson time.</p>
+  <p>Follow the published prerequisites below. A reading link or saved place is not evidence of a passed checkpoint.</p>
+  <nav class="academy-wayfinding__links" aria-label="Academy tracks">
+    <a href={`${base}/academy/#setup`}>Setup and Doctor</a>
+    <a href={`${base}/academy/#academy-curriculum`}>All lessons</a>
+    {academyTracks.filter(track => track.id !== definition.id).map(track => <a href={`${base}/academy/tracks/${track.id}/`}>{track.label}</a>)}
+  </nav>
+  <AcademyBookmark />
+  <ol class="academy-track-lessons" aria-label={`${definition.label} lesson sequence`}>
+    {lessons.map(lesson => {
+      const place = navigation.find(item => item.id === lesson.id)!;
+      return <li data-academy-track-lesson={lesson.id}>
+        <p class="academy-overview__eyebrow">{lesson.id.split('-')[0]} · Lesson {place.position} of {place.total}</p>
+        <h2><a href={`${base}/academy/${lesson.id.toLowerCase()}/`}>{lesson.guide.title}</a></h2>
+        <p>{lesson.guide.outcome}</p>
+        <p>{lesson.guide.estimatedMinutes} minutes · Position {place.trackPosition} of {place.trackTotal} in this track</p>
+        <p><strong>Before you start:</strong>{' '}{place.prerequisites.length ? place.prerequisites.map((item, index) => <>{index > 0 && ' · '}{item.lessonId ? <a href={`${base}/academy/${item.lessonId.toLowerCase()}/`}>{item.label}</a> : item.label}</>) : <a href={`${base}/academy/#setup`}>Complete Academy setup</a>}</p>
+      </li>;
+    })}
+  </ol>
+  <p class="academy-wayfinding__note">Curriculum: {academyContent.release}. Source: <a href={`https://github.com/arbiterForge/arbiter-academy/tree/${academyContent.commit}/academy/`}><code>{academyContent.commit.slice(0, 12)}</code></a>. Lesson estimates and prerequisites come from that snapshot; this page does not establish installed-adapter compatibility.</p>
+</div>

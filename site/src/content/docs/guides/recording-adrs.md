@@ -35,7 +35,7 @@ linked to the paths it governs.
 - Set `git config user.email`. The record and decision ledger use that identity.
 - Be ready to decide the material trade-off. codeArbiter can structure and challenge the options,
   but it cannot attribute its own preference to you.
-- If the question is still exploratory, use `/ca:btw` or a spike first. An ADR records a decision;
+- If the question is still exploratory, ask a read-only question or use a spike first. An ADR records a decision;
   it is not a scratchpad.
 
 ## Create a decision
@@ -71,6 +71,45 @@ Open the new ADR and confirm:
 
 Run `/ca:adr-status --adr 17` (Codex: `$ca-adr-status --adr 17`) to read the decision's current
 health and any challenge result.
+
+## Inspect a complete example
+
+This is an illustrative record, not a newly accepted decision or a receipt from your repository.
+The owning ADR lane supplies the exact current template and lifecycle records.
+
+```markdown
+---
+status: proposed
+decided-by: learner@example.invalid
+governs:
+  - src/export/**
+---
+# 0017: Keep CSV formatting separate from saved-search storage
+
+## Context
+The export action needs stored names and queries, but should not own persistence.
+
+## Decision
+The export module receives validated records and returns CSV or no payload for an empty set.
+Storage and authorization remain with their existing owners.
+
+## Consequences
+Formatting can be tested without a database. The caller must supply validated records.
+
+## Alternatives considered
+Let the exporter query storage directly. Rejected here because it couples formatting tests to storage.
+
+## Risks
+A caller might pass unvalidated data. Test and review that boundary before claiming completion.
+```
+
+Review the rationale, intended paths, omitted paths, alternatives and consequences. A glob such as
+`**` would govern far more than this example needs. Send a separate explicit acceptance decision
+only after review. That acceptance is not proof the module or tests exist. Inspect implementation
+and current verification separately; attribution by Git email is not identity authentication.
+
+If the decision later changes, create its replacement through the lane rather than editing the
+old file to erase the previous choice.
 
 ## Supersede a decision
 

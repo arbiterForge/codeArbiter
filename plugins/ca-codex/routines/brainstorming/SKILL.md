@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: The Socratic spec-refinement front of /feature, and the planning front of /sprint. Routed to BEFORE any code — it takes a one-line idea and drives it to an approved, concrete spec with testable acceptance criteria. Five gated phases — frame, shape, refine, write, review-and-approve. No implementation before an approved spec; the caller retains required planning, execution and delivery ordering. Each acceptance criterion becomes one tdd Phase 1 obligation.
+description: The Socratic spec-refinement front of /feature, and the planning front of /sprint. Routed to BEFORE any code — it turns a one-line idea into a concrete spec with testable criteria, ready for initial combined sprint review or explicit sequential approval. Five gated phases — frame, shape, refine, write, review-and-approve. No implementation before an approved spec; the caller retains required planning, execution and delivery ordering. Each acceptance criterion becomes one tdd Phase 1 obligation.
 disable-model-invocation: true
 ---
 
@@ -29,8 +29,9 @@ Refine the idea before it touches code. Routed to by `/feature` and `/sprint` as
 
 Read the active caller's workflow, selected lane, scope and existing delegation before refining.
 Initial sprint planning is not an approved sprint: this skill does not grant its own delegation.
-A full-lane feature or sprint requires `writing-plans` after its spec is approved; a subordinate
-specification step returns its result to the existing caller. Preserve direct handoffs when they
+A full-lane feature requires `writing-plans` after spec approval. Initial HTML sprint planning instead
+returns a ready draft identity for the combined spec/plan review before either is approved; a
+subordinate specification step returns its result to the existing caller. Preserve direct handoffs when they
 satisfy that caller's ordering, not an unconditional terminal route to implementation.
 
 A sprint may contain several related features under one coherent goal. Keep their boundaries and
@@ -154,22 +155,29 @@ The spec earns its approval; it is not waved through. Two passes over the FILE a
 2. **Adversarial pass** — build the strongest case AGAINST the design before the user reads it: the failure mode most likely to be real, the criterion most likely to be wrong, the assumption that would invalidate the approach if false. Present what survives WITH the spec at approval — the user rules on a challenged design, not a defended one. Finding nothing is a reportable result, stated in one line, not a silent skip.
 3. **Approval:**
    - **Under `/feature`** — present the spec and the adversarial findings, and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.
-   - **Initial `/sprint` planning** — present the spec and adversarial findings for explicit user
-     approval within the caller's initial planning gate. For HTML, use the existing adapter in
-     [includes/artifacts.md](../../includes/artifacts.md): arm the exact current spec, require the exact returned reply,
-     then verify its `approved` gate before planning. The plan is bound to that approved spec and armed
-     separately; one generic reply does not approve both. Spec approval permits the required plan
-     authoring; autonomy begins only after the caller's spec AND plan approval requirement is met.
+   - **Initial `/sprint` planning** — prepare the ready draft spec and adversarial findings for
+     explicit user approval with its complete draft plan at the caller's one initial review gate.
+     For HTML, return the current draft identity to `writing-plans` in `draft_for_pair` mode;
+     the combined `arm-sprint` / `sprint-approve` path in [includes/artifacts.md](../../includes/artifacts.md)
+     observes the exact returned reply and binds/approves both documents atomically. Do not separately approve
+     the spec, synthesize a SMARTS receipt, or execute draft tasks. Do not reinterpret one generic reply
+     as approval of either artifact or delegation. Autonomy begins only after the
+     caller's spec AND plan approval requirement is met. A legacy Markdown caller retains its
+     recorded approval mechanism; there is no implicit conversion.
+
    - **Within an already-approved sprint** — use its existing delegation only for an in-scope choice.
      For HTML, a supported policy-owned adapter must supply the actual event and engine receipt;
      follow [includes/artifacts.md](../../includes/artifacts.md). A SMARTS score or log entry is not an approval receipt.
+     The private `smarts-apply` producer covers only existing plan-method steps under an explicit
+     paired user grant; it cannot approve a specification amendment or widen its protected scope.
      Use only a qualified production producer for the requested authority and host; do not invent a capture event
      or reuse inspection-only evidence. A missing producer is not delegation: retain the pending state and use
      only the existing supported authority path. The native engine's presence does not qualify a host adapter.
      Blocking `[CONFIRM-NN]` decisions are never auto-approved in either phase.
 
-**Continuation follows the caller.** For a full-lane feature or sprint, return the approved spec identity
-and review outcome to its planning step, or forward directly to
+**Continuation follows the caller.** For a full-lane feature or sprint with approved spec authority,
+return the approved spec identity and review outcome to its planning step; for initial HTML sprint
+review, return the ready draft identity without execution authority. Either may forward directly to
 `writing-plans` ([routines/writing-plans/SKILL.md](../writing-plans/SKILL.md)) when that is the caller's declared
 next step. Do not skip required plan creation, binding or approval by jumping to `tdd`. A subordinate
 invocation returns to the named checkpoint in its caller instead of launching another full workflow.
@@ -177,8 +185,9 @@ The inline small feature route belongs to `/feature` and can reach `tdd` without
 specification procedure. Neither path grants commit, PR, merge or publication authority.
 
 Gate: both review passes completed against the authoritative file, adversarial findings presented,
-and actual approval verified with no unresolved blocking `[CONFIRM-NN]`. The next operation obeys
-the active caller's sequence and authority.
+and no unresolved blocking `[CONFIRM-NN]`. Require actual approval verified before execution.
+Only initial combined HTML review may return a ready unapproved draft to its constrained planner.
+The next operation obeys the active caller's sequence and authority.
 
 ## Hard rules
 

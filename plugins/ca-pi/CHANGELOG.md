@@ -8,6 +8,9 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+
+- Add one-reply initial HTML sprint approval and explicitly delegated SMARTS
+  task-method revisions, with native atomic recovery and unchanged acceptance gates.
 - Generate commit and new-skill public entries from the complete owning
   procedures, retaining their private routine paths and exact gates.
 - Preserve the caller's coherent sprint scope and required spec-to-plan

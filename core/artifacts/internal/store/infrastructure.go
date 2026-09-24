@@ -119,3 +119,18 @@ func digest(s string) bool {
 	_, e := hex.DecodeString(s)
 	return e == nil
 }
+
+// PutObservation and PutAuthoritySource have closed content-addressed locations.
+// Callers must validate the producer before these records confer authority.
+func (f *FS) PutObservation(sha string, b []byte) error {
+	if !digest(sha) || canonical.BytesHash(b) != sha || len(b) > canonical.MaxBytes {
+		return fault.New("INVALID_OBSERVATION", "invalid immutable observation")
+	}
+	return f.createOrCompare(meta+"/observations/"+sha+".json", b, 0600)
+}
+func (f *FS) PutAuthoritySource(sha string, b []byte) error {
+	if !digest(sha) || canonical.BytesHash(b) != sha || len(b) > 1<<20 {
+		return fault.New("INVALID_EVENT", "invalid immutable source event")
+	}
+	return f.createOrCompare(meta+"/authority-sources/"+sha+".json", b, 0600)
+}

@@ -16,6 +16,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+
+- Add one-reply initial HTML sprint approval and explicitly delegated SMARTS
+  task-method revisions, with native atomic recovery and unchanged acceptance gates.
 - Generate commit and new-skill command entries from their owning skills,
   preserving plain-language skill discovery and explicit command compatibility
   without independently maintained wrapper policies.

@@ -75,20 +75,30 @@ into autonomous execution unresolved.
 
 ### Initial HTML approval sequence
 
-The one interactive planning phase is not a new approval protocol. The installed adapter in
-`{{PLUGIN_ROOT}}/includes/artifacts.md` approves one artifact at a time:
+Prepare one review packet containing the ready spec, ready draft plan, adversarial findings and
+explicit delegation terms. The installed private pair adapter in
+`{{PLUGIN_ROOT}}/includes/artifacts.md` owns the combined one-reply transaction:
 
-1. Review the sprint scope and findings, then arm the spec at its current identity. Require the
-   exact returned reply and verify the spec's `approved` gate after the host observes it.
-2. Pass that identity through `writing-plans`' approved-spec preflight, create and bind the plan,
-   and review its task breakdown within this same planning phase.
-3. Separately arm the plan, require its exact returned reply, and verify current spec and plan
-   approval and binding. No execution before both approvals; one generic reply does not approve both.
+1. Finish the spec as a ready draft. Let `writing-plans` use `_preflight_plan_authoring` with
+   `draft_for_pair: true` only for this full-lane initial sprint. Populate the same-slug plan as
+   `draft_preview`, validate both, and review their complete criteria, paths, tests and checkpoints.
+   Neither draft has execution authority. Do not separately approve or `plan-bind` this pair.
+2. Arm both exact identities with `arm-sprint`. Include `--delegate-methods` only when the presented
+   terms explicitly ask the user to delegate existing task-method revisions. Present the exact returned reply;
+   it names both artifacts and `delegate-methods` or `approve-only`, not an ambiguous generic yes.
+3. The existing qualified host observes that single reply. `sprint-approve` validates both frozen
+   definitions and commits approval plus plan binding in one recoverable native transaction.
+   Verify both current approved identities before execution. No execution before both approvals.
 
-Use the existing qualified host producer, never a model-authored event or SMARTS score in its place.
-Keep this one scope review with no per-feature interviews, and do not add attended execution checkpoints.
-Existing Markdown approval remains on its legacy path. Within a previously approved sprint, only a
-supported producer can authorize a typed amendment; the delegation does not create an absent adapter.
+One reply approves the reviewed pair, not future unbounded work. `delegate-methods` does not grant
+initial self-approval, product decisions, prerequisite satisfaction, new files, verification changes,
+commit/push, provider/spending/disclosure/publication authority, or any security bypass. Keep
+no per-feature interviews and no attended execution pauses. A declined, changed or unsupported pair
+retains drafts; capability absence is not permission to invent a legacy shadow or receipt.
+If an observed reply was interrupted, `resume-sprint` replays its stored transaction without asking
+for the same reply again. An armed request with no observed reply cannot be resumed as approval.
+The existing sequential single-artifact path remains available for `/feature` and older workflows;
+Markdown retains its original approval contract.
 
 **Recorded-intent read — BEFORE spec approval, fail-soft (ADR-0025):** consult
 `decisions/decision-log.md`, the accepted-ADR index, the `plans/` artifacts' section headings, and
@@ -144,6 +154,26 @@ ambiguity, a trade-off, a non-obvious option — DECIDE rather than stop:
   line — never before it: the harvest's positional parser takes the promoted title as everything
   before `· confidence:`. The `low`-confidence
   entries are exactly what the user reviews in the morning; nothing is hidden behind autonomy.
+
+### Typed SMARTS method authority
+
+After the pair's explicit `delegate-methods` approval, use the private `smarts-apply` producer for a
+material change to an existing task's method steps. First perform SMARTS Step 0 and the existing
+project/ADR/scope checks. Submit the actual options, six-lens comparison, selected option, strength
+and rationale with the exact plan revision/model hash and the retained initial `grant_receipt`.
+Use the private request shape and adapter in `{{PLUGIN_ROOT}}/includes/artifacts.md`; a pasted matrix
+or an append-only log is not itself authority. A single evidenced option is allowed; an in-scope tie
+uses the existing priorities rather than another user interview. Do not manufacture alternatives.
+
+The producer retains all protected plan fields and requires the original user-approved scope. It can
+change only existing task `steps`; paths, tests, criteria, dependencies, prerequisites, rollback and
+checkpoint membership cannot expand. It quiesces affected writers by refusing `IN_PROGRESS` and
+invalidates affected checkpoint/dependency proof before another attempt, without clearing `BLOCKED`
+members or their recorded reasons. A blocked method revision
+therefore resumes through fresh `eligible`, context tickets, verification and review, never auto-pass.
+The original log still records material reasoning and source citations. No result implies accepted
+work or independently proves the truth of model judgment. Changes outside the granted boundary use
+their actual authority owner; this producer does not satisfy prerequisites or waive security stops.
 
 ### Hard gates — true stops, even mid-sprint
 

@@ -4,30 +4,10 @@ import {
   academyLessons,
   type AcademyAction,
   type AcademyCommandVariant,
-  type AcademyTrack,
 } from "../generated/academy-content";
 
-const trackDefinitions: ReadonlyArray<{
-  id: AcademyTrack;
-  label: string;
-  description: string;
-}> = [
-  {
-    id: "foundations",
-    label: "Foundation",
-    description: "Establish safe repository boundaries and learn the evidence-first delivery loop.",
-  },
-  {
-    id: "practitioner",
-    label: "Practitioner",
-    description: "Apply governed workflows to realistic features, fixes, reviews, and decisions.",
-  },
-  {
-    id: "power-user",
-    label: "Power user",
-    description: "Diagnose enforcement, tune governance, and operate advanced delivery paths with proof.",
-  },
-];
+import { academyTracks as trackDefinitions } from "../../scripts/academy-wayfinding";
+import AcademyBookmark from "./AcademyBookmark.astro";
 
 const tracks = trackDefinitions.map((definition) => {
   const lessons = academyLessons.filter((lesson) => lesson.track === definition.id);
@@ -86,6 +66,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
       <a class="ca-button academy-overview__secondary" href="#academy-curriculum">
         Explore the curriculum
       </a>
+      <a class="ca-text-link" href="#academy-return">Return to a lesson</a>
     </div>
   </header>
 
@@ -95,6 +76,16 @@ const variantLabel = (variant: AcademyCommandVariant) =>
     <li><strong>Self-paced</strong> practice</li>
     <li><strong>Learner-owned</strong> proof</li>
   </ul>
+
+  <section class="academy-wayfinding" id="academy-return" aria-labelledby="academy-return-title">
+    <p class="academy-overview__eyebrow">Already started?</p>
+    <h2 id="academy-return-title">Return to your lesson</h2>
+    <p>Choose your track or open a place you explicitly saved. The website cannot inspect your local Academy checkpoint results.</p>
+    <nav class="academy-wayfinding__links" aria-label="Choose an Academy track">
+      {tracks.map(track => <a href={`${basePath}/academy/tracks/${track.id}/`}>{track.label}</a>)}
+    </nav>
+    <AcademyBookmark />
+  </section>
 
   <section
     class="academy-overview__setup"
@@ -122,7 +113,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
                 </nav>
               )}
               {step.action.variants.length > 0 && (
-                <div class="academy-action__commands">
+                <div class="academy-action__commands" data-ca-layout="peers">
                   {step.action.variants.map((variant) => (
                     <section class="academy-command">
                       <p class="academy-command__label">{variantLabel(variant)}</p>
@@ -163,7 +154,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
     <p class="academy-overview__eyebrow">Curriculum</p>
     <h2 id="academy-curriculum-title">Progress from safe foundations to advanced operation.</h2>
 
-    <div class="academy-overview__tracks">
+    <div class="academy-overview__tracks" data-ca-layout="peers">
       {tracks.map((track) => {
         const [firstTrackLesson, ...remainingLessons] = track.lessons;
         return (
@@ -174,6 +165,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
           >
             <h3 id={`track-${track.id}-title`}>{track.label}</h3>
             <p>{track.description}</p>
+            <a class="ca-text-link" href={`${basePath}/academy/tracks/${track.id}/`}>View track and prerequisites</a>
             <p>{track.lessons.length} lessons · {track.totalMinutes} minutes</p>
 
             {firstTrackLesson && (
@@ -190,7 +182,7 @@ const variantLabel = (variant: AcademyCommandVariant) =>
             {remainingLessons.length > 0 && (
               <details class="academy-overview__more" id={`track-${track.id}-more`}>
                 <summary>Show {remainingLessons.length} more {track.label} lessons</summary>
-                <div class="academy-overview__lesson-list">
+                <div class="academy-overview__lesson-list" data-ca-layout="peers">
                   {remainingLessons.map((lesson) => (
                     <article class="academy-overview__lesson ca-panel" data-academy-lesson={lesson.id}>
                       <h4><a href={lessonHref(lesson.id)}>{lesson.guide.title}</a></h4>
@@ -231,22 +223,29 @@ const variantLabel = (variant: AcademyCommandVariant) =>
 </div>
 
 <script>
-  const showAll = document.querySelector<HTMLAnchorElement>("[data-academy-show-all]");
-  const disclosures = [
-    ...document.querySelectorAll<HTMLDetailsElement>(".academy-overview__more"),
-  ];
+  function setupAcademyOverview() {
+    const showAll = document.querySelector<HTMLAnchorElement>("[data-academy-show-all]");
+    if (!showAll || showAll.getAttribute("data-academy-bound") === "true") return;
+    showAll.setAttribute("data-academy-bound", "true");
+    const disclosures = [
+      ...document.querySelectorAll<HTMLDetailsElement>(".academy-overview__more"),
+    ];
 
-  const syncShowAllState = () => {
-    if (!showAll) return;
-    const allOpen = disclosures.every((details) => details.open);
-    showAll.setAttribute("aria-expanded", String(allOpen));
-    const label = showAll.querySelector<HTMLElement>("[data-academy-show-all-label]");
-    if (label) label.textContent = allOpen ? "All lessons shown" : "View all lessons";
-  };
+    const syncShowAllState = () => {
+      if (!showAll) return;
+      const allOpen = disclosures.every((details) => details.open);
+      showAll.setAttribute("aria-expanded", String(allOpen));
+      const label = showAll.querySelector<HTMLElement>("[data-academy-show-all-label]");
+      if (label) label.textContent = allOpen ? "All lessons shown" : "View all lessons";
+    };
 
-  showAll?.addEventListener("click", () => {
-    for (const details of disclosures) details.open = true;
+    showAll?.addEventListener("click", () => {
+      for (const details of disclosures) details.open = true;
+      syncShowAllState();
+    });
+    for (const details of disclosures) details.addEventListener("toggle", syncShowAllState);
     syncShowAllState();
-  });
-  for (const details of disclosures) details.addEventListener("toggle", syncShowAllState);
+  }
+  setupAcademyOverview();
+  document.addEventListener("astro:page-load", setupAcademyOverview);
 </script>

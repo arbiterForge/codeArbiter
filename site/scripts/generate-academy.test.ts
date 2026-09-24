@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -175,16 +175,10 @@ function createOutputRoots(): { docsRoot: string; generatedRoot: string } {
 
 function listGeneratedRoutes(docsRoot: string): string[] {
   const academyRoot = join(docsRoot, "academy");
-  return [
-    "index.mdx",
-    "F01-fork-clone-doctor.mdx",
-    "F02-orient-to-state.mdx",
-    "P01-practice.mdx",
-    "U01-operate.mdx",
-    "U99-private.mdx",
-  ]
-    .filter((path) => existsSync(join(academyRoot, path)))
-    .map((path) => relative(docsRoot, join(academyRoot, path)).replaceAll("\\", "/"));
+  return (readdirSync(academyRoot, { recursive: true }) as string[])
+    .filter(path => path.endsWith(".mdx"))
+    .map(path => relative(docsRoot, join(academyRoot, path)).replaceAll("\\", "/"))
+    .sort();
 }
 
 class InteractiveElement extends EventTarget {
@@ -296,11 +290,11 @@ describe("generateAcademy", () => {
         .map((match) => match[1]),
     ).toEqual(["Foundation", "Practitioner", "Power user"]);
     expect(generatedSidebar.map((group) => [group.label, group.items.length])).toEqual([
-      ["Foundation", 4],
-      ["Practitioner", 8],
-      ["Power user", 7],
+      ["Foundation", 5],
+      ["Practitioner", 9],
+      ["Power user", 8],
     ]);
-    expect(generatedSidebar.flatMap((group) => group.items.map((item) => item.slug))).toEqual(
+    expect(generatedSidebar.flatMap((group) => group.items.map((item) => item.slug)).filter(slug => !slug.startsWith("academy/tracks/"))).toEqual(
       publicLessonIds.map((lessonId) => `academy/${lessonId.toLowerCase()}`),
     );
     for (const lessonId of publicLessonIds) {
@@ -327,11 +321,11 @@ describe("generateAcademy", () => {
         else if (disclosureStack.length > 0) disclosureStack.at(-1)!.label = token[2];
       }
       expect(disclosureStack).toEqual([
-        { label: "Arbiter Academy", open: true },
+        { label: "Academy", open: true },
         { label: trackLabel, open: true },
       ]);
-      expect(lessonHtml).toContain(`href="/academy/${previousSlug}/" rel="prev"`);
-      expect(lessonHtml).toContain(`href="/academy/${nextSlug}/" rel="next"`);
+      expect(lessonHtml).toContain(`href="../${previousSlug}/" rel="prev"`);
+      expect(lessonHtml).toContain(`href="../${nextSlug}/" rel="next"`);
     }
   }, 30_000);
 
@@ -374,6 +368,7 @@ describe("generateAcademy", () => {
     );
     const disclosures = disclosureTags.map((tag) => new InteractiveElement("", parseAttributes(tag)));
     const documentHarness = {
+      addEventListener: () => {},
       querySelector: (selector: string) => showAll.matches(selector) ? showAll : null,
       querySelectorAll: (selector: string) => disclosures.filter((element) => element.matches(selector)),
     };
@@ -408,17 +403,20 @@ describe("generateAcademy", () => {
     }
   }, 30_000);
 
-  it("emits one Academy index plus one MDX route for every public lab", () => {
+  it("emits the index, three source-bound tracks and one route for every public lab", () => {
     const { docsRoot, generatedRoot } = createOutputRoots();
 
     generateAcademy(publicSource, docsRoot, generatedRoot);
 
     expect(listGeneratedRoutes(docsRoot)).toEqual([
-      "academy/index.mdx",
       "academy/F01-fork-clone-doctor.mdx",
       "academy/F02-orient-to-state.mdx",
       "academy/P01-practice.mdx",
       "academy/U01-operate.mdx",
+      "academy/index.mdx",
+      "academy/tracks/foundations.mdx",
+      "academy/tracks/power-user.mdx",
+      "academy/tracks/practitioner.mdx",
     ]);
     const indexPage = readFileSync(join(docsRoot, "academy", "index.mdx"), "utf8");
     expect(existsSync(academyOverviewComponent)).toBe(true);
@@ -442,6 +440,15 @@ describe("generateAcademy", () => {
     expect(lessonPage).toContain("Continue only after the prepared attempt is ready.");
     expect(lessonPage).toContain("[Academy Home](/academy/#setup)");
     expect(lessonPage).toContain("[F02](/academy/f02-orient-to-state/)");
+    expect(lessonPage).toContain('<AcademyWayfinding labId="F01-fork-clone-doctor" />');
+    expect(lessonPage).toContain('prev: false');
+    expect(lessonPage).toContain('next: false');
+    for (const [track] of requiredTracks) {
+      const trackPage = readFileSync(join(docsRoot, "academy", "tracks", `${track}.mdx`), "utf8");
+      expect(trackPage).toContain(`release: "${publicSource.release}"`);
+      expect(trackPage).toContain(`commit: "${publicSource.commit}"`);
+      expect(trackPage).toContain(`<AcademyTrack track="${track}" />`);
+    }
   });
 
   it("extracts scripts with uppercase tags and whitespace before the closing bracket", () => {
@@ -498,6 +505,7 @@ describe("generateAcademy", () => {
         label: "Foundation",
         collapsed: true,
         items: [
+          { label: "Track overview", slug: "academy/tracks/foundations" },
           { label: "Fork, clone, and doctor safety", slug: "academy/f01-fork-clone-doctor" },
           { label: "Orient to repository state", slug: "academy/f02-orient-to-state" },
         ],
@@ -506,6 +514,7 @@ describe("generateAcademy", () => {
         label: "Practitioner",
         collapsed: true,
         items: [
+          { label: "Track overview", slug: "academy/tracks/practitioner" },
           { label: "Practice governed delivery", slug: "academy/p01-practice" },
         ],
       },
@@ -513,6 +522,7 @@ describe("generateAcademy", () => {
         label: "Power user",
         collapsed: true,
         items: [
+          { label: "Track overview", slug: "academy/tracks/power-user" },
           { label: "Operate advanced delivery", slug: "academy/u01-operate" },
         ],
       },

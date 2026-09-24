@@ -1,0 +1,28 @@
+{
+  "red": {
+    "argv": [
+      "python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_export_csv"
+    ],
+    "exit_code": 1,
+    "output": "test_empty (test_export_csv.TestExport.test_empty) ... ok\ntest_round_trip (test_export_csv.TestExport.test_round_trip) ... FAIL\ntest_rows (test_export_csv.TestExport.test_rows) ... FAIL\n\n======================================================================\nFAIL: test_round_trip (test_export_csv.TestExport.test_round_trip)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<fixture-root>/test_export_csv.py\", line 19, in test_round_trip\n    self.assertEqual(self.parse([record]), [[\"name\", \"query\"], [record[\"name\"], record[\"query\"]]])\n                     ~~~~~~~~~~^^^^^^^^^^\n  File \"<fixture-root>/test_export_csv.py\", line 10, in parse\n    self.assertIsInstance(result, str, \"Non-empty searches must produce CSV text\")\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: None is not an instance of <class 'str'> : Non-empty searches must produce CSV text\n\n======================================================================\nFAIL: test_rows (test_export_csv.TestExport.test_rows)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<fixture-root>/test_export_csv.py\", line 14, in test_rows\n    rows = self.parse([{\"name\": \"Open\", \"query\": \"state:open\"}, {\"name\": \"Mine\", \"query\": \"owner:me\"}])\n  File \"<fixture-root>/test_export_csv.py\", line 10, in parse\n    self.assertIsInstance(result, str, \"Non-empty searches must produce CSV text\")\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: None is not an instance of <class 'str'> : Non-empty searches must produce CSV text\n\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nFAILED (failures=2)\n",
+    "implementation_sha256": "bd8e4c66590e3f19528b782ae36ada8af7b4cc482d143089060e46e2137fcb94",
+    "test_sha256": "dcfb6435eae44b482823ac989f9367bcae924299a57b039b1a00e29ac7c91048"
+  },
+  "green": {
+    "argv": [
+      "python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_export_csv"
+    ],
+    "exit_code": 0,
+    "output": "test_empty (test_export_csv.TestExport.test_empty) ... ok\ntest_round_trip (test_export_csv.TestExport.test_round_trip) ... ok\ntest_rows (test_export_csv.TestExport.test_rows) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nOK\n",
+    "implementation_sha256": "0780c6540b532fb86e62db5b959ce3b08272c2f759d72a31a45016186046d6bb",
+    "test_sha256": "dcfb6435eae44b482823ac989f9367bcae924299a57b039b1a00e29ac7c91048"
+  }
+}

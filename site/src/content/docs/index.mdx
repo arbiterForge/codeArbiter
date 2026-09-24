@@ -8,6 +8,7 @@ prev: false
 next: false
 ---
 
+import ArtifactWorkbench from '../../components/ArtifactWorkbench.astro';
 import HookProof from '../../components/HookProof.astro';
 import TrustRow from '../../components/TrustRow.astro';
 import ArbiterIcon from '../../components/ArbiterIcon.astro';
@@ -26,7 +27,8 @@ import heroArt from '../../assets/hero-gates.webp';
     <p class="ca-splash__principle">You decide. codeArbiter enforces.</p>
     <div class="ca-actions">
       <a class="ca-button ca-button--primary" href="./getting-started/install/">Protect a repository</a>
-      <a class="ca-button" href="#proof">Watch a verified hook replay</a>
+      <a class="ca-button" href="./product-tour/">Inspect what you will build</a>
+      <a class="ca-text-link" href="#proof">Watch a verified hook replay</a>
     </div>
     <div class="ca-splash__hosts" aria-label="Supported governance hosts">
       <span class="ca-pill">Claude Code</span>
@@ -46,6 +48,16 @@ import heroArt from '../../assets/hero-gates.webp';
     <HookProof />
     <p class="ca-splash__proof-note">The exact stderr and audit effect from a direct invocation of <code>plugins/ca/hooks/pre-bash.py</code>, rendered as a faithful replay. The denied staging command never ran. This evidence verifies the shipped guard itself, not host discovery or registration; the quickstart's doctor probe verifies that end-to-end path.</p>
   </div>
+</section>
+
+<section class="ca-section" aria-labelledby="ca-artifact-window-title">
+  <div class="ca-section-heading">
+    <p class="ca-eyebrow">Work you can inspect</p>
+    <h2 id="ca-artifact-window-title">From a requirement to a testable plan.</h2>
+    <p>Follow one criterion through a real draft specification and its linked plan. See what needs your review before the work can run.</p>
+  </div>
+  <ArtifactWorkbench />
+  <a class="ca-text-link" href="./product-tour/">Open the complete product tour</a>
 </section>
 
 <section class="ca-proof-strip" aria-labelledby="ca-proof-strip-title">
@@ -78,7 +90,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <p>Every guarantee is backed by a mechanism you can inspect.</p>
   </div>
 
-  <div class="ca-feature-grid">
+  <div class="ca-feature-grid" data-ca-layout="peers">
     <article class="ca-feature ca-panel">
       <span class="ca-feature__icon"><ArbiterIcon name="gate" size="1.55rem" /></span>
       <h3>Stops at the tool boundary</h3>
@@ -107,7 +119,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <p>codeArbiter routes intent into the lane that owns it, scales the gates to the risk, and leaves a resumable record on disk.</p>
     <a class="ca-text-link" href="./concepts/gated-lanes/">Understand gated lanes <span aria-hidden="true">→</span></a>
   </div>
-  <ol class="ca-flow__steps" role="list">
+  <ol class="ca-flow__steps" data-ca-layout="peers" role="list">
     <li class="ca-flow__step">
       <span>1</span>
       <div>
@@ -137,7 +149,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <p class="ca-eyebrow">Start from the job, not the machinery</p>
     <h2 id="ca-lanes-title">A clear entry point for the work in front of you.</h2>
   </div>
-  <div class="ca-lane-grid">
+  <div class="ca-lane-grid" data-ca-layout="peers">
     <a class="ca-lane-card ca-panel" href="./guides/feature-lane/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="feature" size="1.35rem" /></span>
       <code>/ca:feature</code>
@@ -183,7 +195,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <h2 id="ca-hosts-title">One policy core. Native entry points.</h2>
     <p>The project state is shared; command spelling and host capabilities are documented honestly.</p>
   </div>
-  <div class="ca-host-grid">
+  <div class="ca-host-grid" data-ca-layout="peers">
     <article class="ca-host ca-panel">
       <div class="ca-host__top">
         <h3>Claude Code</h3>
@@ -221,7 +233,7 @@ import heroArt from '../../assets/hero-gates.webp';
     <h2 id="ca-fit-title">Built for work that has to remain explainable.</h2>
     <p>codeArbiter adds deliberate process. That pays off when the repository outlives the current session, more than one person or host touches it, or a security and delivery claim needs evidence.</p>
   </div>
-  <div class="ca-fit__columns">
+  <div class="ca-fit__columns" data-ca-layout="peers">
     <div>
       <h3>Use it when</h3>
       <ul>

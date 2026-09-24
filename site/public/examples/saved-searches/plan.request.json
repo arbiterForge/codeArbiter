@@ -1,0 +1,190 @@
+{
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "operation_id": "doc-plan-create-01",
+  "artifact_id": "PLAN-SAVED-SEARCHES",
+  "kind": "plan",
+  "slug": "saved-searches",
+  "title": "Implement the saved-search export",
+  "summary": "Documentation fixture: export saved-search names and queries as CSV; no export is produced for an empty collection.",
+  "spec_id": "SPEC-SAVED-SEARCHES",
+  "normative": {
+    "title": "Implement the saved-search export",
+    "summary": "Documentation fixture: export saved-search names and queries as CSV; no export is produced for an empty collection.",
+    "baseline": {
+      "repository": null,
+      "commit": null,
+      "observed_date": "2026-09-22"
+    },
+    "sections": [],
+    "sources": [],
+    "retired_symbols": [],
+    "tasks": [
+      {
+        "id": "T-001",
+        "title": "Preserve fields and order",
+        "checkpoint": "CP-01",
+        "execution_scope": "CP-01",
+        "depends_on": [],
+        "paths": [
+          {
+            "path": "export_csv.py",
+            "action": "modify"
+          },
+          {
+            "path": "test_export_csv.py",
+            "action": "modify"
+          }
+        ],
+        "criterion_refs": [
+          "SPEC-SAVED-SEARCHES#AC-001"
+        ],
+        "steps": [
+          "Write the named failing regression for this criterion.",
+          "Implement only the behavior needed by the criterion.",
+          "Run the complete export test module."
+        ],
+        "verification": [
+          {
+            "availability": "proposed",
+            "cwd": ".",
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_export_csv.TestExport.test_rows"
+            ],
+            "expected_exit": 0,
+            "assertion": "Parsed CSV has name/query headers and one row for each record in input order.",
+            "required_tests": [
+              "TestExport.test_rows"
+            ]
+          }
+        ],
+        "done_when": [
+          "Parsed CSV has name/query headers and one row for each record in input order.",
+          "Required workflow review is current."
+        ],
+        "rollback": "Revert this bounded implementation change; preserve the spec, plan and existing evidence.",
+        "source_refs": []
+      },
+      {
+        "id": "T-002",
+        "title": "Round-trip special characters",
+        "checkpoint": "CP-01",
+        "execution_scope": "CP-01",
+        "depends_on": [
+          "T-001"
+        ],
+        "paths": [
+          {
+            "path": "export_csv.py",
+            "action": "modify"
+          },
+          {
+            "path": "test_export_csv.py",
+            "action": "modify"
+          }
+        ],
+        "criterion_refs": [
+          "SPEC-SAVED-SEARCHES#AC-002"
+        ],
+        "steps": [
+          "Write the named failing regression for this criterion.",
+          "Implement only the behavior needed by the criterion.",
+          "Run the complete export test module."
+        ],
+        "verification": [
+          {
+            "availability": "proposed",
+            "cwd": ".",
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_export_csv.TestExport.test_round_trip"
+            ],
+            "expected_exit": 0,
+            "assertion": "Every field equals the original text after CSV round-trip.",
+            "required_tests": [
+              "TestExport.test_round_trip"
+            ]
+          }
+        ],
+        "done_when": [
+          "Every field equals the original text after CSV round-trip.",
+          "Required workflow review is current."
+        ],
+        "rollback": "Revert this bounded implementation change; preserve the spec, plan and existing evidence.",
+        "source_refs": []
+      },
+      {
+        "id": "T-003",
+        "title": "Keep an empty result explicit",
+        "checkpoint": "CP-01",
+        "execution_scope": "CP-01",
+        "depends_on": [
+          "T-001"
+        ],
+        "paths": [
+          {
+            "path": "export_csv.py",
+            "action": "modify"
+          },
+          {
+            "path": "test_export_csv.py",
+            "action": "modify"
+          }
+        ],
+        "criterion_refs": [
+          "SPEC-SAVED-SEARCHES#AC-003"
+        ],
+        "steps": [
+          "Write the named failing regression for this criterion.",
+          "Implement only the behavior needed by the criterion.",
+          "Run the complete export test module."
+        ],
+        "verification": [
+          {
+            "availability": "proposed",
+            "cwd": ".",
+            "argv": [
+              "python",
+              "-m",
+              "unittest",
+              "-v",
+              "test_export_csv.TestExport.test_empty"
+            ],
+            "expected_exit": 0,
+            "assertion": "The function returns None, not a header-only export.",
+            "required_tests": [
+              "TestExport.test_empty"
+            ]
+          }
+        ],
+        "done_when": [
+          "The function returns None, not a header-only export.",
+          "Required workflow review is current."
+        ],
+        "rollback": "Revert this bounded implementation change; preserve the spec, plan and existing evidence.",
+        "source_refs": []
+      }
+    ],
+    "checkpoints": [
+      {
+        "id": "CP-01",
+        "title": "Export contract",
+        "tasks": [
+          "T-001",
+          "T-002",
+          "T-003"
+        ],
+        "exit": "All three named checks pass and required workflow review is current.",
+        "depends_on": []
+      }
+    ],
+    "prerequisites": [],
+    "criterion_dispositions": []
+  }
+}

@@ -25,6 +25,20 @@ This page documents every stock path the scaffold or a governed lane produces or
 only while a flow is active or after the owning feature first runs (`.decompose-draft/`,
 `.markers/`, `.provenance/`, `spikes/`, `reports/`); those lifecycles are noted below.
 
+## Project plans are not feature execution plans
+
+Greenfield decomposition creates three named Markdown documents:
+`plans/01-architecture-breakdown.md`, `plans/02-phased-build-plan.md` and
+`plans/03-task-backlog.md`. They own project architecture, phased delivery and the project backlog.
+Reconcile consumes their exact filenames. They are not legacy feature pairs to convert to HTML.
+Brownfield context creation does not manufacture this set.
+
+Feature/sprint specifications and execution plans are a different layer. New full-lane work uses
+a same-slug typed HTML pair when the installed package has its qualified native capability;
+existing Markdown pairs remain on their exact legacy path; small-lane work remains inline with
+its triage record. [Review specifications and plans](/guides/review-artifacts/) explains the
+human review, approval and recovery boundaries.
+
 ## At a glance
 
 | Path | Written by | Read by | Editable by hand? |
@@ -36,7 +50,8 @@ only while a flow is active or after the owning feature first runs (`.decompose-
 | `open-questions.md` | the orchestrator, when a `[CONFIRM-NN]` is raised | `/ca:status`, `SessionStart`, the statusline | Yes |
 | `decisions/*.md`, `decision-log.md` | `/ca:adr` only | `/ca:adr-status`, `/ca:reconcile`, `post-write-edit.py` (H-12) | No: guarded to `/ca:adr` |
 | `specs/*.md` | Legacy feature/sprint workflows already owned by Markdown | `writing-plans`, `/ca:status` | Yes |
-| `plans/*.md` | `writing-plans` for an existing Markdown spec | `executing-plans`, `subagent-driven-development`, `/ca:status` | Yes |
+| `plans/01-architecture-breakdown.md`, `02-phased-build-plan.md`, `03-task-backlog.md` | Greenfield `decompose` | Human project review, `reconcile` | Review through the owning project-planning procedure; preserve exact filenames |
+| Other legacy `plans/*.md` | `writing-plans` for an existing Markdown spec | `executing-plans`, `subagent-driven-development`, `/ca:status` | Legacy format only; preserve approved scope and execution state |
 | `specs/*.html`, `plans/*.html` | New full-lane feature/sprint workflows through the internal typed-artifact engine (default) | The same workflow readers through validated, scoped reads | No: use typed engine operations |
 | `.decompose-draft/` | `/ca:decompose` while an interview is in progress | `/ca:decompose` on resume | No need: temporary resumable interview state |
 | `checkpoints/*.md` | `checkpoint-aggregator` agent (`/ca:checkpoint`) | `/ca:audit`, `/ca:status`-adjacent reads | Yes |
@@ -60,8 +75,8 @@ The activation contract. Its leading YAML frontmatter carries two load-bearing k
   (`plugins/ca/hooks/_hooklib.py`). It must appear inside a *properly closed* frontmatter block:
   `---` opens on line 1, `arbiter: enabled` somewhere inside, `---` closes it. A block that opens
   but never closes is treated as **malformed**, not disabled, and is surfaced as an error rather
-  than silently ignored. A file with no frontmatter at all is simply dormant. No frontmatter,
-  malformed frontmatter, or `arbiter: disabled` all mean: nothing loads, nothing blocks.
+  than silently ignored. A file with no frontmatter at all is simply dormant. Missing activation is dormant. Malformed activation is a separate error state; do not treat it
+  as a documented way to disable enforcement.
 - **`stage: N`** — a single maturity number that `/ca:status` and the statusline surface. It has
   no enforcement effect encoded in this file itself; it is a legible signal for how far the
   project has matured, not a config switch.
@@ -183,12 +198,17 @@ RA-11 compatibility window.
 **Writers:** `brainstorming`. **Readers:** `writing-plans`, `/ca:status`.
 **Editable by hand?** Markdown only. Use typed engine operations for HTML so its model and view
 remain one authority.
-**Delete it:** `/ca:status` no longer lists that pipeline; a plan that referenced the missing spec
-still runs (the plan is self-contained), but nothing can re-derive it from the (now-gone) spec.
+**Delete it:** the governing requirements are lost. Typed execution binds the plan to its spec
+and authority records, so a missing specification cannot be treated as a self-contained plan.
+Preserve remaining files and recover known bytes through version control or the recorded
+transaction. A legacy plan's text may remain readable, but that is not proof that the lost spec
+or its approval can be reconstructed. Do not restart the pair in a different format.
 
 ## plans/
 
-One same-format file per feature's task plan, written by `writing-plans` from an approved spec.
+In addition to the three exact greenfield project documents described above, this directory
+contains one same-format file per feature's execution plan, derived by `writing-plans` from its
+specification.
 New full-lane plans use typed `.html`; existing Markdown specs continue to matching `.md` plans.
 Each task carries an exact file path and a verification step that maps to a `tdd` obligation.
 `executing-plans` and `subagent-driven-development` consume it task by task; `/ca:status` reports

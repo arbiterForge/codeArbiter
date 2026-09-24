@@ -667,14 +667,15 @@ class TestCallerAwareSpecAndCheckpointContract(unittest.TestCase):
         for host, text in sources:
             with self.subTest(host=host):
                 phase = self.section(text, "### Initial HTML approval sequence", "**Recorded-intent read")
-                self.assertLess(phase.index("arm the spec"), phase.index("approved-spec preflight"))
-                self.assertLess(phase.index("approved-spec preflight"), phase.index("arm the plan"))
-                self.assertIn("exact returned reply", phase)
-                self.assertIn("one artifact at a time", phase)
-                self.assertIn("one generic reply does not approve both", phase)
-                self.assertIn("No execution before both approvals", phase)
-                self.assertIn("not a new approval protocol", phase)
-                self.assertIn("no per-feature interviews", phase)
+                for token in ("draft_for_pair: true", "draft_preview", "arm-sprint", "sprint-approve",
+                              "delegate-methods", "approve-only", "exact returned reply",
+                              "No execution before both approvals", "one recoverable native transaction",
+                              "no per-feature interviews", "no observed reply cannot be resumed as approval"):
+                    self.assertIn(token, phase)
+                self.assertNotIn("Separately arm the plan", phase)
+                self.assertIn("Do not separately approve", phase)
+                self.assertIn("not future unbounded work", phase)
+
 
     def test_missing_typed_approval_producer_is_not_filled_by_scoring(self):
         for host, text in self.skills("brainstorming"):
