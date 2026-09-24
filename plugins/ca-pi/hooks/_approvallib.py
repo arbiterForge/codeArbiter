@@ -191,6 +191,9 @@ def _load_pending(root: Path) -> dict[str, Any] | None:
         return None
     except (OSError, UnicodeError, ValueError) as exc:
         raise ApprovalError("INVALID_PENDING_APPROVAL", "pending approval is unreadable") from exc
+    if isinstance(value, dict) and value.get("format") == "codearbiter.pending-user-approval/0.2.0":
+        import _sprintapprovallib
+        return _sprintapprovallib.validate_pending(value)
     expected = {
         "format", "artifact_id", "kind", "revision", "model_sha256",
         "normative_sha256", "token_sha256",
@@ -225,6 +228,9 @@ def cancel_user_approval(root: str | Path, artifact_id: str) -> dict[str, Any]:
             "PENDING_APPROVAL_MISMATCH",
             "the pending approval request belongs to another artifact",
         )
+    if pending["format"] == "codearbiter.pending-user-approval/0.2.0":
+        import _sprintapprovallib
+        return _sprintapprovallib.cancel(root, pending)
     (root / PENDING).unlink()
     _artifactpromptlib.unregister(root, "approval", artifact_id)
     return {"artifact_id": artifact_id, "cancelled": True}
@@ -242,6 +248,9 @@ def consume_user_approval(
     pending = _load_pending(root)
     if pending is None or not isinstance(prompt, str):
         return {"matched": False, "approved": False}
+    if pending["format"] == "codearbiter.pending-user-approval/0.2.0":
+        import _sprintapprovallib
+        return _sprintapprovallib.consume(root, client, pending, prompt, host=host, session_id=session_id)
     parts = prompt.split(" ")
     if len(parts) != 3 or parts[0] != "approve" or parts[1] != pending["artifact_id"]:
         return {"matched": False, "approved": False}
@@ -321,7 +330,7 @@ def consume_from_hook(*, root: str | Path, plugin_root: str | Path, prompt: str,
         )
     except (ApprovalError, _artifactlib.ArtifactError,
             _artifactpromptlib.PromptRouteError, OSError) as exc:
-        if isinstance(prompt, str) and prompt.startswith("approve "):
+        if isinstance(prompt, str) and prompt.startswith(("approve ", "approve-sprint ")):
             return f"codeArbiter: approval capture failed: {exc}"
         return ""
     if not result.get("approved"):
@@ -341,6 +350,17 @@ def main(argv: list[str] | None = None) -> int:
     cancel = sub.add_parser("cancel")
     cancel.add_argument("--root", required=True)
     cancel.add_argument("--artifact-id", required=True)
+    pair = sub.add_parser("arm-sprint")
+    pair.add_argument("--root", required=True)
+    pair.add_argument("--spec-id", required=True)
+    pair.add_argument("--plan-id", required=True)
+    pair.add_argument("--delegate-methods", action="store_true")
+    resume = sub.add_parser("resume-sprint")
+    resume.add_argument("--root", required=True)
+    resume.add_argument("--plan-id", required=True)
+    smarts = sub.add_parser("smarts")
+    smarts.add_argument("--root", required=True)
+    smarts.add_argument("--request-file", required=True)
     args = parser.parse_args(argv)
     if args.command == "cancel":
         print(json.dumps(cancel_user_approval(args.root, args.artifact_id)))
@@ -348,7 +368,17 @@ def main(argv: list[str] | None = None) -> int:
     client = _artifactlib.ArtifactClient(
         args.root, _artifactlib.helper_installation(__file__)
     )
-    print(json.dumps(arm_user_approval(args.root, client, args.artifact_id)))
+    if args.command == "smarts":
+        import _sprintapprovallib
+        print(json.dumps(_sprintapprovallib.apply_decision(client, args.request_file)))
+        return 0
+    if args.command in {"arm-sprint", "resume-sprint"}:
+        import _sprintapprovallib
+        result = (_sprintapprovallib.arm(args.root, client, args.spec_id, args.plan_id, delegate_methods=args.delegate_methods)
+                  if args.command == "arm-sprint" else _sprintapprovallib.resume(args.root, client, args.plan_id))
+    else:
+        result = arm_user_approval(args.root, client, args.artifact_id)
+    print(json.dumps(result))
     return 0
 
 

@@ -12,8 +12,9 @@ gates:
 
 ## What it does
 
-The only permitted entry to creating a new codeArbiter skill. It hands off to the `skill-author`
-skill, which drives the whole job through five gated stages: proving the gap, scoping it,
+The explicit entry for assessing and authoring a new codeArbiter skill. Its complete
+procedure is generated from the `skill-author` owner, so invocation does not require
+loading a second wrapper. The owner drives the job through five gated stages: proving the gap, scoping it,
 authoring the content, a self-review pass, and finally wiring in the routing entry — the
 `INDEX.md` line that actually makes the new skill reachable. Nothing gets written before an
 existing skill or agent is shown not to already handle the need, and nothing is considered done
@@ -21,6 +22,10 @@ until the result has its own gates, hard rules, and a route pointing to it.
 
 Name the skill in verb-noun form (`"dependency-review"`), not as a loose description
 (`"the thing that checks packages"`) — that shape is what the authoring phase expects.
+
+The owning skill remains available to natural-language routing on Claude. The generated
+command stays explicitly usable without a duplicate model-facing description. Codex and
+Pi expose their generated entry skill and keep the owner as a path-loaded routine.
 
 ## Usage
 
@@ -50,4 +55,4 @@ Approve this spec? y
 
 A one-time action belongs in `/ca:feature` or a plain command definition, not a new skill; if an
 existing skill nearly covers the need, extend it via `/ca:feature` instead. "Do we even need a
-skill here?" is a question for `/ca:btw`.
+skill here?" is an ordinary informational question, not permission to create a skill.

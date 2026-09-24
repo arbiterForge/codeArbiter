@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: The Socratic spec-refinement front of /feature, and the planning front of /sprint. Routed to BEFORE any code — it takes a one-line idea and drives it to an approved, concrete spec with testable acceptance criteria. Five gated phases — frame, shape, refine, write, review-and-approve. No implementation and no handoff to tdd until the spec is on disk and approved; each acceptance criterion becomes one tdd Phase 1 obligation.
+description: The Socratic spec-refinement front of /feature, and the planning front of /sprint. Routed to BEFORE any code — it turns a one-line idea into a concrete spec with testable criteria, ready for initial combined sprint review or explicit sequential approval. Five gated phases — frame, shape, refine, write, review-and-approve. No implementation before an approved spec; the caller retains required planning, execution and delivery ordering. Each acceptance criterion becomes one tdd Phase 1 obligation.
 disable-model-invocation: true
 ---
 
@@ -23,7 +23,21 @@ structured-artifact engine and default to canonical `.html`. HTML `--farm`
 dispatch remains blocked.
 
 
-Refine the idea before it touches code. Routed to by `/feature` (before `tdd`) and by `/sprint` (the planning front).
+Refine the idea before it touches code. Routed to by `/feature` and `/sprint` as their specification step.
+
+## Caller scope and authority
+
+Read the active caller's workflow, selected lane, scope and existing delegation before refining.
+Initial sprint planning is not an approved sprint: this skill does not grant its own delegation.
+A full-lane feature requires `writing-plans` after spec approval. Initial HTML sprint planning instead
+returns a ready draft identity for the combined spec/plan review before either is approved; a
+subordinate specification step returns its result to the existing caller. Preserve direct handoffs when they
+satisfy that caller's ordering, not an unconditional terminal route to implementation.
+
+A sprint may contain several related features under one coherent goal. Keep their boundaries and
+criteria explicit without converting the sprint into repeated feature interviews. Parameter and
+method choices follow safety-core; material product decisions and missing authority are not inferred.
+No new registered surface, runtime state or copied procedure is needed for this call contract.
 
 ## Pre-flight
 
@@ -41,7 +55,9 @@ when the feature touches component boundaries or integrations). Index-first, nev
 A missing file or directory here is NOT a gap to surface and never a STOP: record
 `intent: silent — no decomposition record` in the running notes and proceed.
 
-Per-feature and light. NOT decompose's whole-project six-layer interview — one feature, five phases. Depth scales with the feature, not the ceremony: a small feature earns a short pass through every phase, never a skipped one. A spec can be five sentences; it cannot be zero — smallness changes the spec's length, not its existence.
+Scope-sized and light. NOT decompose's whole-project six-layer interview — five phases for the
+caller's feature or coherent sprint. Depth scales with that scope, not the ceremony. The deliberately
+inline small-feature lane remains owned by `/feature`; do not manufacture an HTML pair for it.
 
 ## Phase 1 — Frame the problem · gate: BLOCK
 
@@ -52,52 +68,74 @@ Take the one-line idea and pin its boundaries before designing or asking anythin
 - Name what this feature explicitly does NOT do — the boundary that keeps scope honest.
 - Check the framing against `CONTEXT.md`: it never contradicts the NOT-building list or redefines domain vocabulary. A contradiction is a conflict — surface it, do not reconcile it silently.
 - Check the framing against the recorded intent (pre-flight, when present): an idea that resurrects a capability `plans/02` records as deferred, or that duplicates a backlog item, is a fork to ask — lead with the recorded deferral rationale and your recommendation; never proceed on it silently (ADR-0025).
-- **Split before you spend.** If the idea bundles more than one independently shippable concern — distinct callers, acceptance criteria that would partition into disjoint sets, separable data or surfaces — say so NOW and negotiate the split with the user before any refinement effort is spent on one piece. Each surviving piece is its own spec and its own run of this skill. A bundle discovered in Phase 4 has already wasted every question asked about the piece that gets cut.
+- **Respect the caller's unit of work.** For a feature, split unrelated independently shippable
+  concerns before refining them; record the selected piece and its exclusions. For a sprint, retain
+  related features within the stated sprint goal and identify their separable criteria and dependencies
+  for planning. Do not force one new user interview per feature or silently absorb unrelated work.
+  Ask only when the intended scope or necessary product decision remains unresolved.
 
-Gate: problem, caller, and out-of-scope boundary stated and consistent with `CONTEXT.md`, and the idea is confirmed to be ONE feature — or the split is agreed and this run proceeds on exactly one piece.
+Gate: problem, caller, and out-of-scope boundary stated and consistent with `CONTEXT.md`; the unit is
+the caller's selected feature or coherent sprint, with unrelated scope explicitly excluded.
 
 ## Phase 2 — Shape the approach · gate: BLOCK
 
 Before drilling into details, establish WHICH design the details belong to:
 
-- Propose the genuine candidate approaches — usually two or three — each with its real trade-off stated (`X gives you A but costs B`). Recommend exactly one, with the reasoning that picks it. The user chooses under `/feature`; under `/sprint`, SMARTS chooses and the choice is logged with its scoring.
+- Propose the genuine candidate approaches — usually two or three — each with its real trade-off stated (`X gives you A but costs B`). Recommend exactly one, with the reasoning that picks it. The user rules on material product decisions during initial feature or sprint planning; within an already-approved sprint, its existing delegated decision rules apply and the choice is logged. A recommendation made before approval does not authorize execution.
 - **Never manufacture alternatives.** When only one sane approach exists, say so and say why — a padded list of straw options is noise wearing the costume of rigor, and it trains the reader to skim the one section that matters.
 - **Check each candidate against accepted ADRs** (the pre-flight index; ADR-0025). A contradicting candidate is surfaced WITH the ADR citation, never silently dropped — and it may not be recommended except paired with a supersession fork via `/adr`. When the contradicting candidate is the only sane approach, that IS the fork: present it (the user rules under `/feature`; under `/sprint` this surfaces at the interactive Phase 1 gate, where the user is present to rule).
 - Apply the isolation lens to the recommended shape while it is still soft: can each part be understood without reading its internals, and can its internals change without breaking its consumers? A design that fails this here fails it again in review, after the code exists.
 - Apply the YAGNI lens: strike anything the Phase 1 problem statement does not demand. A capability the caller never asked for is scope creep with a head start.
 
-Gate: one approach chosen (user-chosen, or SMARTS-chosen and logged), its trade-off stated, and nothing in it the problem does not require.
+Gate: one approach selected under the caller's existing authority and recorded with its trade-off;
+nothing in it exceeds the stated problem. Selection during initial planning is not execution authority.
 
 ## Phase 3 — Socratic refinement loop · gate: BLOCK
 
 Turn the chosen approach concrete. The discipline is decide-or-ask, never drift:
 
-- **Decide the parameters; ask the forks.** A parameter-level choice — a naming, a default, a threshold, an ordering with one sensible answer — is yours to make: decide it and record it in this phase's running notes; every recorded decision lands in the spec's **Decided parameters** section when Phase 4 writes the file, which is where the user reads them at approval. A genuine fork — a real trade-off, a scope boundary, anything irreversible or user-visible — is the user's: ask it IN FULL the first time, leading with your recommendation and its reasoning. Never merely mention that an open decision exists; a named-but-unasked question is an omission wearing a disclaimer.
+- **Choose methods; ask missing decisions.** Select reversible parameters and implementation methods
+  within safety-core's decision-authority limits; multiple reasonable methods alone do not require a
+  user choice. Record material decisions in the running notes and the spec's **Decided parameters**.
+  Use the existing delegated decision rules only where the approved sprint covers the choice. A
+  missing product decision, unresolved `[CONFIRM-NN]`, scope expansion or irreversible operation is
+  not a method choice: ask the actual question with its recommendation and counter-consideration.
 - **Batch what is independent.** Forks whose answers do not depend on each other are asked together, not serialized into rounds. One round of three real questions beats three rounds of one.
 - Run every answer through three lenses:
-  - **Vague language** — force concrete nouns, numbers, and verbs. "Manage", "handle", "support" are not verbs. "Fast", "secure", "scalable" are not specifications. "We'll figure it out later" is not an answer — every "later" becomes a `[CONFIRM-NN]`.
+  - **Vague language** — make the required outcome observable: "fast", "secure" and "scalable"
+    need acceptance boundaries. Only unresolved product requirements or missing user-owned decisions
+    become `[CONFIRM-NN]`; a reversible implementation detail deliberately left to planning within
+    the agreed constraints is not an unanswered user question. Do not invent unknowns to fill a template.
   - **Hidden complexity** — name what the user assumes is easy but is hard: state, concurrency, edge cases, failure modes, validation, idempotency, migration of existing data. Surface it now or it surfaces in `tdd`.
-  - **Trade-off forcing** — when a real decision exists, frame it with a recommendation and let the user rule. Do not pick for the user; do not hide that a pick exists.
-- **The loop has a breaker.** When refinement stops converging — an answer contradicts an earlier one, or the same fork resurfaces after being answered — STOP the loop: restate the contradiction plainly, force one adjudication (a user ruling, or a recorded `[CONFIRM-NN]`), and only then continue. A loop that circles is not being thorough; it is failing to close.
+  - **Trade-off forcing** — identify the actual choice and its counter-consideration. Apply the caller's existing authority: ask material user-owned decisions, or choose and log an authorized delegated method. Never hide a choice or widen delegation.
+- **The loop has a breaker.** When refinement stops converging, stop repeating the same question or
+  hypothesis. Reuse an applicable recorded ruling; within delegation, diagnose and choose a different
+  evidence-supported method. A genuine unresolved user decision or rule conflict is surfaced once
+  through its owner, never guessed or treated as permission. Do not manufacture `[CONFIRM-NN]` for
+  the agent's internal choice of method.
 - **Closure is a checklist, not a feeling.** The reasons to stop asking that do not count, each with why:
   - *"The feature is simple enough."* — Simplicity shortens the spec; it does not waive it. The five-sentence spec still names its criteria.
   - *"I've asked enough questions."* — Question fatigue is not an exit condition. The exit is the Phase 5 review passing.
   - *"The user seems eager to move on."* — Eagerness is a signal to compress the asking (decide more parameters, batch harder), never to skip an unresolved fork.
-  - *"We can settle it during implementation."* — Every deferral is a `[CONFIRM-NN]` on record, or it is a guess that `tdd` will faithfully implement.
+  - *"We can settle it during implementation."* — Missing acceptance requirements cannot be deferred
+    as implementation freedom. Record genuine user-owned unknowns; retain method selection within
+    the existing planning and delegated-execution contract.
 
-Record every genuinely-unresolved unknown as `[CONFIRM-NN]` in `<project-root>/.codearbiter/open-questions.md`, numbered sequentially. A finding that belongs to a different feature or a future scope gets an inline `[NEEDS-TRIAGE]` marker in the notes — never route it to a ticket.
+Record every genuinely-unresolved user-owned requirement or decision as `[CONFIRM-NN]` in `<project-root>/.codearbiter/open-questions.md`, numbered sequentially. A finding that belongs to a different feature or a future scope gets an inline `[NEEDS-TRIAGE]` marker in the notes — never route it to a ticket.
 
 **Before closing this loop, check the criteria decided so far against their own stated intent, not merely against each other** (#566: `writing-plans` Phase 4 proves BIJECTION between a plan's tasks and the `AC-NN` ledger — every criterion has a task, every task has a criterion — and that proves the two AGREE, never that the ledger itself is COMPLETE. A criterion missed by both sides passes that check cleanly; catching the miss belongs here, at the source, before Phase 4 writes anything to freeze it in place.) Assemble a scratch file outside the working tree (`mktemp`) shaped like the spec sections Phase 4 is about to write — a `## Scope` heading over the Phase 1 framing, and an `## Acceptance criteria` heading over every criterion decided in this phase's running notes so far — and, when this feature traces to a GitHub issue, its body into a second scratch file (`gh issue view <N> --json body -q .body > <scratch-file>`; omitted when there is no linked issue). Run `"$PY" "<plugin-root>/hooks/_intentlib.py" uncovered-intent <scope-and-criteria-file> [--issue-body <scratch-file>]`. A non-empty result names an in-scope bullet or an issue acceptance checkbox no criterion's text cites — add the missing criterion now, or record it as a `[CONFIRM-NN]` if it is genuinely undecided, never carry it forward uncited. This mechanical pass is the CHEAP half; it catches only an uncited bullet or checkbox.
 
 Then ask the half it cannot mechanize, explicitly, as its own step: **if every criterion decided so far passed and nothing else changed, what would still be broken?** A real answer names a criterion the ledger is still missing even though every scope bullet and checkbox is technically cited — a bullet reading "fix all three contaminated skills" against criteria for two of the three passes the citation check above cleanly, and only this question catches it. Finding nothing broken is a reportable result, stated in one line, never a silent skip.
 
-Gate: every vague term made concrete; every fork resolved by the user or recorded as `[CONFIRM-NN]`; every parameter decision recorded in the running notes that seed Phase 4's **Decided parameters** section; no unresolved "later" outside a `[CONFIRM-NN]`; the `uncovered_intent` backstop returns empty or every finding is resolved; and the negative question above has been asked and answered, not merely named. A blocking `[CONFIRM-NN]` that gates the spec's core stops the loop — surface it and STOP.
+Gate: every vague term made concrete; every material choice resolved under the caller's authority or recorded as a genuine `[CONFIRM-NN]`; every parameter decision recorded in the running notes that seed Phase 4's **Decided parameters** section; no unresolved user-owned acceptance requirement outside a `[CONFIRM-NN]`; the `uncovered_intent` backstop returns empty or every finding is resolved; and the negative question above has been asked and answered, not merely named. A blocking `[CONFIRM-NN]` that gates the spec's core stops the loop — surface it and STOP.
 
 ## Phase 4 — Write the spec · gate: BLOCK
 
-Create the agreed spec through the installed structured-artifact engine at
-`<project-root>/.codearbiter/specs/<slug>.html`; do not write the HTML or its
-embedded model directly. The slug is derived from the feature. The spec holds:
+Create or revise the agreed spec at the route-selected spec path, in its selected format.
+New full-lane work uses `<project-root>/.codearbiter/specs/<slug>.html` through the installed
+structured-artifact engine; do not write HTML or its embedded model directly. An existing `.md`
+spec stays on its exact legacy path; never create a counterpart or implicitly convert it.
+The spec holds:
 
 - **Problem** — the Phase 1 framing in final form.
 - **Approach** — the Phase 2 choice and the trade-off that picked it, in two or three sentences.
@@ -113,29 +151,59 @@ Gate: the spec file exists on disk under `specs/`, with at least one acceptance 
 
 The spec earns its approval; it is not waved through. Two passes over the FILE as written, then the stop:
 
-1. **Mechanical self-review** — one pass, fix inline, no re-review: no placeholder text (`TBD`, `???`, an unfilled section); no criterion that contradicts the scope; nothing that crosses the `CONTEXT.md` NOT-building boundary; no criterion that contradicts an accepted ADR or `plans/01`'s recorded component boundaries (ADR-0025); every criterion still testable by one or more focused tests after the edits; the vague-language lens applied to the spec's own prose.
+1. **Mechanical self-review** — one pass, correct through the selected format's owning writer, no re-review: no placeholder text (`TBD`, `???`, an unfilled section); no criterion that contradicts the scope; nothing that crosses the `CONTEXT.md` NOT-building boundary; no criterion that contradicts an accepted ADR or `plans/01`'s recorded component boundaries (ADR-0025); every criterion still testable by one or more focused tests after the edits; the vague-language lens applied to the spec's own prose.
 2. **Adversarial pass** — build the strongest case AGAINST the design before the user reads it: the failure mode most likely to be real, the criterion most likely to be wrong, the assumption that would invalidate the approach if false. Present what survives WITH the spec at approval — the user rules on a challenged design, not a defended one. Finding nothing is a reportable result, stated in one line, not a silent skip.
 3. **Approval:**
    - **Under `/feature`** — present the spec and the adversarial findings, and request explicit user approval. Iterate on the file in place until the user approves. A blocking `[CONFIRM-NN]` must be resolved by the user before approval — never auto-resolve it.
-   - **Under `/sprint`** — approval may be granted automatically by SMARTS scoring, logged to the `.codearbiter/` audit trail. A blocking `[CONFIRM-NN]` is never auto-approvable; it escalates to the user and STOPs the sprint flow.
+   - **Initial `/sprint` planning** — prepare the ready draft spec and adversarial findings for
+     explicit user approval with its complete draft plan at the caller's one initial review gate.
+     For HTML, return the current draft identity to `writing-plans` in `draft_for_pair` mode;
+     the combined `arm-sprint` / `sprint-approve` path in `<plugin-root>/includes/artifacts.md`
+     observes the exact returned reply and binds/approves both documents atomically. Do not separately approve
+     the spec, synthesize a SMARTS receipt, or execute draft tasks. Do not reinterpret one generic reply
+     as approval of either artifact or delegation. Autonomy begins only after the
+     caller's spec AND plan approval requirement is met. A legacy Markdown caller retains its
+     recorded approval mechanism; there is no implicit conversion.
 
-On approval, hand off to the `tdd` skill (`<plugin-root>/routines/tdd/SKILL.md`), which enters Phase 1 against the approved spec — one obligation per acceptance criterion.
+   - **Within an already-approved sprint** — use its existing delegation only for an in-scope choice.
+     For HTML, a supported policy-owned adapter must supply the actual event and engine receipt;
+     follow `<plugin-root>/includes/artifacts.md`. A SMARTS score or log entry is not an approval receipt.
+     The private `smarts-apply` producer covers only existing plan-method steps under an explicit
+     paired user grant; it cannot approve a specification amendment or widen its protected scope.
+     Use only a qualified production producer for the requested authority and host; do not invent a capture event
+     or reuse inspection-only evidence. A missing producer is not delegation: retain the pending state and use
+     only the existing supported authority path. The native engine's presence does not qualify a host adapter.
+     Blocking `[CONFIRM-NN]` decisions are never auto-approved in either phase.
 
-Gate: both review passes run against the file on disk, adversarial findings presented, and the spec approved (by the user under `/feature`, or by logged SMARTS auto-approval under `/sprint`) with no unresolved blocking `[CONFIRM-NN]`. Only then does control pass to `tdd`.
+**Continuation follows the caller.** For a full-lane feature or sprint with approved spec authority,
+return the approved spec identity and review outcome to its planning step; for initial HTML sprint
+review, return the ready draft identity without execution authority. Either may forward directly to
+`writing-plans` (`<plugin-root>/routines/writing-plans/SKILL.md`) when that is the caller's declared
+next step. Do not skip required plan creation, binding or approval by jumping to `tdd`. A subordinate
+invocation returns to the named checkpoint in its caller instead of launching another full workflow.
+The inline small feature route belongs to `/feature` and can reach `tdd` without invoking this full-lane
+specification procedure. Neither path grants commit, PR, merge or publication authority.
+
+Gate: both review passes completed against the authoritative file, adversarial findings presented,
+and no unresolved blocking `[CONFIRM-NN]`. Require actual approval verified before execution.
+Only initial combined HTML review may return a ready unapproved draft to its constrained planner.
+The next operation obeys the active caller's sequence and authority.
 
 ## Hard rules
 
 - MUST NOT write implementation code or route to `tdd` before the spec is on disk under `specs/` AND approved.
-- MUST NOT refine a bundle — an idea holding more than one independently shippable concern splits in Phase 1, before any question budget is spent.
+- MUST preserve the caller's feature or coherent sprint boundary; unrelated scope is split or excluded, not silently absorbed.
 - MUST NOT manufacture alternatives in Phase 2 — when one sane approach exists, say so and why.
 - MUST NOT write an acceptance criterion that cannot be verified by one or more focused tests.
-- MUST decide parameter-level choices and record them in the spec; MUST ask genuine forks in full, with a recommendation, the first time — never name an open decision without asking it.
-- MUST stop a non-converging refinement loop and force one adjudication — a contradiction or a resurfacing fork is a breaker, not a prompt to circle.
+- MUST record material parameter choices; ask genuine missing user decisions in full, not internal method-selection questions already covered by delegation.
+- MUST stop a non-converging refinement strategy; reuse recorded rulings or authorized diagnosis rather than repeat an answered question. Genuine conflicts still route to their owner.
 - MUST run the `uncovered_intent` mechanical backstop and ask the negative-judgment question ("if every criterion passed and nothing else changed, what would still be broken?") before closing Phase 3 — bijective coverage in `writing-plans` proves the plan and the ledger agree with each other, never that the ledger is complete (#566).
 - MUST run the Phase 5 mechanical self-review and adversarial pass against the file as written, and present the adversarial findings at approval.
 - MUST NOT resolve a `[CONFIRM-NN]` by guessing — surface it and record it in `open-questions.md`.
 - MUST NOT auto-approve a spec carrying a blocking `[CONFIRM-NN]`, even under `/sprint` — it escalates to the user.
 - MUST NOT contradict the NOT-building list or redefine domain vocabulary in `CONTEXT.md` — a contradiction is a conflict to surface, not reconcile.
-- MUST NOT run decompose's six-layer whole-project interview — this is one feature, five phases.
-- MUST log a `/sprint` auto-approval to the `.codearbiter/` audit trail.
-- MUST, at exit, run the follow-up harvest (`<plugin-root>/includes/harvest.md`) over any `[NEEDS-TRIAGE]` notes raised this run — batch-confirm promoting them to `open-tasks.md` (work) or `open-questions.md` (decisions) so out-of-scope ideas don't vanish.
+- MUST NOT run decompose's six-layer whole-project interview or force a coherent sprint through repeated one-feature interviews.
+- MUST NOT use SMARTS to approve the initial sprint; record delegated decisions in the existing audit trail and verify actual authority for the selected artifact format.
+- MUST, at exit, run the follow-up harvest (`<plugin-root>/includes/harvest.md`) in the active caller's mode:
+  batch-confirm interactive work; use autonomous promotion only under existing delegation. A blocking
+  decision is never promoted into authority or silently demoted to a follow-up.

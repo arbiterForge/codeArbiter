@@ -363,6 +363,35 @@ def _frontmatter_description_independently(text, where):
     return value
 
 
+def _compose_entry_independently(text, source, surface, rule):
+    """Independently expand the reviewed single-owner grammar, not production code."""
+    if not text.startswith("{{SKILL_ENTRY:"):
+        return text
+    match = re.fullmatch(r"\{\{SKILL_ENTRY:([a-z][a-z0-9-]*)\}\}\n?", text)
+    if match is None or source.parent != surface / "commands":
+        raise AssertionError(f"{source}: invalid whole-entry declaration")
+    name = match[1]
+    owner = (surface / "skills" / name / "SKILL.md").read_text(encoding="utf-8")
+    parts = owner.split("\n---\n", 1)
+    if len(parts) != 2 or not parts[0].startswith("---\n"):
+        raise AssertionError(f"{source}: incomplete owner")
+    fields = dict(line.split(": ", 1) for line in parts[0][4:].splitlines())
+    if set(fields) != {"name", "description", "argument-hint"} or fields["name"] != name:
+        raise AssertionError(f"{source}: owner frontmatter differs from reviewed contract")
+    lines = []
+    for key in ("description", "argument-hint"):
+        value = fields[key]
+        if value.startswith('"'):
+            # A JSON string is a YAML string; preserve explicit author quoting.
+            rendered = json.dumps(json.loads(value), ensure_ascii=False)
+        else:
+            rendered = _yaml_safe_scalar_independently(value)
+        lines.append(f"{key}: {rendered}")
+    if not rule.add_skill_frontmatter:
+        lines.append("disable-model-invocation: true")
+    return "---\n" + "\n".join(lines) + "\n---\n" + parts[1]
+
+
 def _independent_expected_surfaces(descriptor, descriptors):
     """Map canonical sources to host output without importing the generator."""
     surface = REPO / "core" / "surface"
@@ -380,8 +409,11 @@ def _independent_expected_surfaces(descriptor, descriptors):
         if dst is None:
             continue
         where = f"core/surface/{rel}"
+        source_text = _compose_entry_independently(
+            source.read_text(encoding="utf-8"), source, surface, rule
+        )
         text = _resolve_conditionals_independently(
-            source.read_text(encoding="utf-8"), descriptor.name, host_names, where
+            source_text, descriptor.name, host_names, where
         )
         if rel.startswith("agents/") and descriptor.name != "pi":
             text = _PI_ONLY_AGENT_FRONTMATTER.sub("", text)
@@ -773,6 +805,30 @@ class DescriptorContractTest(unittest.TestCase):
                 )
                 with self.assertRaises(module.DescriptorError):
                     module.load_host_descriptors(repo)
+
+
+class QuotedOwnerOracleTest(unittest.TestCase):
+    """Check the independent oracle without asking production how to quote values."""
+
+    def test_explicit_owner_quotes_are_preserved(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as tmp:
+            surface = Path(tmp)
+            source = surface / 'commands' / 'commit.md'
+            owner = surface / 'skills' / 'commit-gate' / 'SKILL.md'
+            owner.parent.mkdir(parents=True)
+            for value in ('Fixes issue #612 now', 'true', "'x'", '*alias', '&anchor',
+                          '!tag', '- item', '@scope', '%directive', '`literal`', '001', 'null'):
+                for add_frontmatter in (False, True):
+                    with self.subTest(value=value, add_frontmatter=add_frontmatter):
+                        owner.write_text('---\nname: commit-gate\ndescription: '
+                                         + json.dumps(value) + '\nargument-hint: '
+                                         + json.dumps(value) + '\n---\nBody.\n')
+                        rendered = _compose_entry_independently(
+                            '{{SKILL_ENTRY:commit-gate}}\n', source, surface,
+                            SimpleNamespace(add_skill_frontmatter=add_frontmatter))
+                        for key in ('description', 'argument-hint'):
+                            self.assertIn(key + ': ' + json.dumps(value) + '\n', rendered)
 
 
 class GenerationContractTest(unittest.TestCase):

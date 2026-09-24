@@ -319,8 +319,17 @@ def _preflight_plan_authoring(
     *,
     spec_artifact_id: str,
     spec_normative_sha256: str,
+    draft_for_pair: bool = False,
 ) -> Path:
-    """Verify one approved HTML spec and return its unwritten plan target."""
+    """Verify the exact spec. Only initial sprint-pair preparation admits a ready draft.
+
+    Draft preparation never approves the spec or plan and never permits execution.
+    The ordinary feature/sequential path still requires an approved spec.
+    """
+    if type(draft_for_pair) is not bool:
+        raise ArtifactError("INVALID_ROUTE", "draft_for_pair must be an explicit boolean")
+    if draft_for_pair and (not isinstance(selected, dict) or selected.get("workflow") != "sprint" or selected.get("lane") != "full"):
+        raise ArtifactError("INVALID_ROUTE", "draft preview is limited to full-lane initial sprint pairs")
     if not isinstance(selected, dict):
         raise ArtifactError("INVALID_ROUTE", "plan authoring requires a selected route")
     slug = selected.get("slug")
@@ -376,7 +385,7 @@ def _preflight_plan_authoring(
         )
     approved = client.call(
         "validate",
-        {"artifact_id": spec_artifact_id, "gate": "approved"},
+        {"artifact_id": spec_artifact_id, "gate": "ready" if draft_for_pair else "approved"},
         permit_invalid=True,
     )
     authority = approved.get("authority")
@@ -385,8 +394,9 @@ def _preflight_plan_authoring(
         or approved.get("artifact_id") != spec_artifact_id
         or approved.get("normative_sha256") != spec_normative_sha256
         or not isinstance(authority, dict)
-        or authority.get("state") != "approved"
-        or authority.get("authority_verified") is not True
+        or approved.get("model_sha256") != identity.get("model_sha256")
+        or authority.get("state") != ("draft" if draft_for_pair else "approved")
+        or authority.get("authority_verified") is not (not draft_for_pair)
     ):
         raise ArtifactError(
             "AUTHORITY_UNVERIFIED",

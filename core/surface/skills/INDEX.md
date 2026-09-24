@@ -2,7 +2,10 @@
 
 Skill bodies load on routing only. This index is the surface scan; never bulk-read
 `skills/*/SKILL.md`. Each skill is an orchestrator routine with gated phases, routed to, never
-"triggered." This index lists what each skill OWNS; to decide WHERE a trigger routes, load
+"triggered." Command-backed owners `commit-gate` and `skill-author` supply their
+complete public entries at build time. Claude keeps the owner discoverable and the
+command explicit-only; Codex/Pi expose the entry and keep the routine private. Read a needed owner directly or use the complete public body,
+not both merely to repeat the same procedure. This index lists what each skill OWNS; to decide WHERE a trigger routes, load
 `{{PLUGIN_ROOT}}/includes/routing-table.md` (the authoritative trigger→route surface).
 
 | Skill | Routed to by | Owns |
@@ -14,9 +17,9 @@ Skill bodies load on routing only. This index is the surface scan; never bulk-re
 | [refactor](refactor/SKILL.md) | `/refactor` | Behavior-preserving change behind a parity-coverage proof gate; routes to `tdd` Phase 1 only when new test seams are needed. |
 | [context-creation](context-creation/SKILL.md) | `/create-context` (brownfield) | Back-fills `.codearbiter/` from existing source via parallel scouts; writes `CONTEXT.md` (`arbiter: enabled` + `stage:`) and locks it `<!--INITIALIZED-->`. |
 | [decompose](decompose/SKILL.md) | greenfield startup, `/decompose` | Six-layer senior-architect interview, compaction-resilient via per-layer disk drafts + DRAFT ADRs; populates `.codearbiter/` and locks it initialized. |
-| [brainstorming](brainstorming/SKILL.md) | `/feature` (front), `/sprint` planning | Socratic idea→spec: split bundles, shape the approach, then decide parameters / ask forks in full; adversarial self-review before approval; writes new full-lane `specs/<slug>.html` through the installed engine while preserving existing Markdown authority. Its acceptance criteria become `tdd` obligations. Hard-gate: no code until the spec is approved. |
-| [writing-plans](writing-plans/SKILL.md) | `/feature`, `/sprint` (after the spec) | Decomposes an approved spec into small tasks, each with a path + a verification that maps to a `tdd` obligation; writes a same-format plan with bijective criterion↔task coverage (`.html` by default, `.md` for an existing Markdown spec). |
-| [executing-plans](executing-plans/SKILL.md) | `/feature` | Checkpoint coordinator — groups tasks into batches, delegates each to `subagent-driven-development` (fresh author agent per task, full review chain), stops for user acknowledgement between batches. |
+| [brainstorming](brainstorming/SKILL.md) | `/feature` (front), `/sprint` planning | Caller-scoped feature or coherent sprint specification. Initial approval is user-owned; delegated choices require existing authority. Uses the selected artifact format, preserves recorded intent, and returns or forwards to the caller's required planning step before execution. |
+| [writing-plans](writing-plans/SKILL.md) | `/feature`, `/sprint` (after the spec) | Decomposes the exact approved spec, or a ready draft through the initial sprint-only pair preflight. Retains same-format criterion/task coverage, paths and verification; combined drafts return for one real spec-and-plan reply before execution. Ordinary sequential binding remains unchanged. |
+| [executing-plans](executing-plans/SKILL.md) | `/feature` | Attended coordinator: uses authored HTML checkpoint membership or bounded legacy batches, delegates to `subagent-driven-development`, and retains the user checkpoint. A display batch never changes an HTML acceptance scope; sprint does not inherit these pauses. |
 | [subagent-driven-development](subagent-driven-development/SKILL.md) | `/sprint` (engine), `executing-plans` (batch scope) | Fresh subagent per task → spec-compliance then quality review → fresh-run verification; accepts only on proof. A quality failure blocks acceptance; approved sprint recovery owns correction. Security CRITICAL and unresolved `[CONFIRM-NN]` remain stops. |
 | [dispatching-parallel-agents](dispatching-parallel-agents/SKILL.md) | `subagent-driven-development`, `/sprint`, parallel `/review` | Reusable fan-out primitive: bound concurrency, collect, dedupe, funnel through `finding-triage`→`verdict-aggregator`. Results unused until the read-only funnel runs. |
 | [finishing-a-development-branch](finishing-a-development-branch/SKILL.md) | `/feature`, `/sprint` (terminal) | The terminal step after `commit-gate`: open-PR / merge-via-PR / discard. No direct-to-main, no force-push; `/sprint` auto-selects open-PR and never merges. |
