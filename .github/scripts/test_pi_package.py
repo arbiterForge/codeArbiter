@@ -1023,6 +1023,7 @@ class PiPackageTests(unittest.TestCase):
             data["files"],
             [
                 "plugins/ca-pi/*.md",
+                "plugins/ca-pi/LICENSE",
                 "plugins/ca-pi/package.json",
                 "plugins/ca-pi/agents/",
                 "plugins/ca-pi/extensions/",

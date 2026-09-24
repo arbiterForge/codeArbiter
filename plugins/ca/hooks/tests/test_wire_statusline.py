@@ -162,6 +162,15 @@ class TestInstallWithPriorThirdParty(_WireStatuslineTest):
         cmd = (data.get("statusLine") or {}).get("command", "")
         self.assertIn("statusline.py", cmd)
 
+    def test_reinstall_then_uninstall_preserves_the_prior_statusline(self):
+        for action in ("install", "install"):
+            ws.main([action, "--settings", self.settings,
+                "--plugin-root", self.root, "--interp", "python"])
+        self.assertEqual(_read(self.settings)[ws.BACKUP_KEY]["command"], self.prior_cmd)
+        ws.main(["uninstall", "--settings", self.settings,
+            "--plugin-root", self.root])
+        self.assertEqual(_read(self.settings)["statusLine"]["command"], self.prior_cmd)
+
     def test_prior_line_backed_up(self):
         ws.main(["install", "--settings", self.settings,
                  "--plugin-root", self.root, "--interp", "python"])

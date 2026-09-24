@@ -6,6 +6,14 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.13.15] - 2026-09-24
+
+### Fixed
+
+- Include the complete governing license and Go runtime notice in every
+  installable governance-plugin subtree; reject omitted or changed notice bytes
+  during exact-source package assembly.
+
 ## [0.13.14] - 2026-09-24
 
 ### Fixed

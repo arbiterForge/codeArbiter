@@ -12,6 +12,17 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.14] - 2026-09-24
+
+### Fixed
+
+- Include the complete governing license and Go runtime notice in every
+  installable governance-plugin subtree; reject omitted or changed notice bytes
+  during exact-source package assembly.
+- Clarify native-helper and host-workflow qualification in the security policy,
+  retire operative wording from the inactive CLA, and document explicit
+  statusline uninstall rather than treating reinstall as a toggle.
+
 ## [2.21.13] - 2026-09-24
 
 ### Fixed

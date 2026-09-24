@@ -24,7 +24,7 @@ Closes #
 - [ ] `CHANGELOG.md` entry added
 - [ ] ADR recorded via `/ca:adr` for any architectural decision
 - [ ] New behavior ships off-by-default / `preview` where appropriate
-- [ ] Hooks unchanged, or `docs/hooks.md` updated and the no-network invariant preserved
+- [ ] Hooks unchanged, or `docs/hooks.md` updated and the documented execution, storage, and bounded background-network contracts preserved
 
 ## Notes for the reviewer
 

@@ -4,6 +4,14 @@ All notable changes to `ca-pi` are documented in this file.
 
 ## [Unreleased]
 
+## [0.14.14] - 2026-09-24
+
+### Fixed
+
+- Include the complete governing license and Go runtime notice in every
+  installable governance-plugin subtree; reject omitted or changed notice bytes
+  during exact-source package assembly.
+
 ## [0.14.13] - 2026-09-24
 
 ### Fixed

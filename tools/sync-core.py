@@ -53,6 +53,42 @@ def read_bytes(path):
         return f.read()
 
 
+NOTICE_FILES = ("LICENSE", "THIRD_PARTY_NOTICES.md")
+
+
+def sync_notices(plugins, check):
+    """Copy owning notices into the subtree retained by each host installer."""
+    drifted = []
+    written = 0
+    for name in NOTICE_FILES:
+        source = read_bytes(os.path.join(REPO, name))
+        if not source:
+            raise OSError(f"canonical notice is empty: {name}")
+        for rel_hooks in plugins:
+            relative = os.path.join(os.path.dirname(rel_hooks), name)
+            target = os.path.join(REPO, relative)
+            try:
+                same = read_bytes(target) == source
+            except OSError:
+                same = False
+            if same:
+                continue
+            if check:
+                drifted.append(relative.replace(os.sep, "/"))
+                continue
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            temporary = target + ".tmp-sync"
+            try:
+                with open(temporary, "wb") as output:
+                    output.write(source)
+                os.replace(temporary, target)
+            finally:
+                if os.path.exists(temporary):
+                    os.remove(temporary)
+            written += 1
+    return drifted, written
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     check = "--check" in argv
@@ -73,7 +109,13 @@ def main(argv=None):
         sys.stderr.write(f"sync-core: {error}\n")
         return 2
 
-    drifted = []   # (plugin-relative path) whose vendored bytes differ / are absent
+    try:
+        drifted, notices_written = sync_notices(plugins, check)
+    except OSError as error:
+        sys.stderr.write(f"sync-core: cannot synchronize package notices: {error}\n")
+        return 1
+    if not check and notices_written:
+        print(f"sync-core: {notices_written} package notice(s) written")
     written = 0
     for rel_hooks in plugins:
         hooks_dir = os.path.join(REPO, rel_hooks)

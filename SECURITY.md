@@ -11,7 +11,17 @@ governance core. Each adapter connects the host's lifecycle and tool events to t
 generated hook payload. For full transparency about what each hook reads, writes,
 and runs, see **[`docs/hooks.md`](./docs/hooks.md)**. In short:
 
-- Hooks are stdlib-only Python, with no third-party packages and no compiled binaries.
+- Hook entry scripts use the Python standard library without third-party Python
+  packages. Structured HTML workflows also invoke the installation-pinned
+  `ca-artifact` native executable, built with Go. The bridge verifies its packaged
+  manifest, native-platform qualification and binary digest before execution;
+  it does not select a binary from PATH or download one at runtime. See
+  [the artifact workflow contract](./core/surface/includes/artifacts.md) and
+  [third-party notices](./THIRD_PARTY_NOTICES.md).
+- Engine capability is not host workflow qualification. Required approval,
+  prerequisite, verification and review adapters must be available in the exact
+  installed host. An unsupported boundary stops work; it does not authorize
+  fabricated evidence or fallback artifacts.
 - Hooks make exactly two bounded, nonblocking background network operations: a
   detached `git fetch` against your configured remote, which never modifies the
   remote but may update local Git metadata and objects through your configured
@@ -25,6 +35,10 @@ and runs, see **[`docs/hooks.md`](./docs/hooks.md)**. In short:
   ca-owned integration state, such as the Claude Code statusline entry in
   `~/.claude/settings.json` (backed up and restored on removal). Hooks do not write
   source files.
+
+The [privacy policy](./PRIVACY.md) inventories additional host/provider, Pi
+loopback-broker, optional farm, tribunal-feedback and sandbox data flows. The
+startup-hook summary above is not a claim that the whole product is offline.
 
 ## Supported versions
 
