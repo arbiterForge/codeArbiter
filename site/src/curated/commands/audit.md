@@ -13,19 +13,30 @@ the packet itself, saved to
 Every override and low-confidence sprint entry is quoted verbatim, never paraphrased, and an empty
 section is stated as empty — "no overrides in window" is itself part of the record.
 
+`triage.log` contributes small-lane classifications; checkpoint findings come from the latest
+checkpoint report. Currently unresolved questions and latest open findings accompany range-bound
+events, so the packet is not wholly a reconstruction of past open state.
+
 ## Usage
 
 ```
-/ca:audit "[<from-ref> <to-ref> | --since-checkpoint | --since <date>]"
+/ca:audit [<from-ref> <to-ref> | --since-checkpoint | --since <date>]
 ```
 
-Two tags/SHAs bound an explicit range; `--since-checkpoint` runs from the last recorded checkpoint
-to HEAD; `--since <date>` runs from an ISO date to HEAD; no argument defaults to the most recent
-tag (or last checkpoint, or a hard stop asking for an explicit window if neither exists).
+Two tags/SHAs bound an explicit range; `--since <date>` selects a date to HEAD. The command
+also declares `--since-checkpoint` and a checkpoint fallback. The checkpoint writer, however,
+stores a bare override count in `last-checkpoint`, not a commit or date. Require a demonstrated
+resolved commit/time window rather than interpreting that counter as history; use explicit refs
+or a date while this source-contract discrepancy remains. With no usable boundary, the command
+must ask for one.
+
+[Auditability](/concepts/auditability/) explains range selection, temporal limits, missing inputs
+and source-by-source packet validation.
 
 ## Example
 
 ```text
+Illustrative packet summary, not captured execution:
 > /ca:audit v2.4.0 v2.5.0
 
 Window: v2.4.0..v2.5.0 (2026-06-15 to 2026-07-02)

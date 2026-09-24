@@ -175,6 +175,21 @@ try {
   process.stdout.write("Concepts: all three execution maps preserve 16 steps and /docs/ destinations.\n");
 
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
+  for (const slug of ["smarts", "adrs", "checkpoints", "auditability"]) {
+    const html = readFileSync(join(outputRoot, "concepts", slug, "index.html"), "utf8");
+    const contract = {
+      smarts: ['data-smarts-lens="scalable"', 'data-decision-route="reconcile"', 'data-decision-route="sprint"'],
+      adrs: ['data-evidence-case="accepted"', 'data-evidence-case="verified"', 'data-evidence-case="stale"'],
+      checkpoints: ['data-checkpoint-step="sweep-verdict"', 'data-checkpoint-step="sweep-write"', 'data-checkpoint-step="sweep-return"'],
+      auditability: ['data-evidence-case="choice"', 'data-evidence-case="packet"'],
+    }[slug];
+    if (!contract.every(value => html.includes(value))) throw new Error(`C02 ${slug} lost its evidence content`);
+    for (const [, href] of html.matchAll(/href="(\/(?:concepts|guides|reference)\/[^"]*)"/g)) {
+      throw new Error(`C02 ${slug} link escaped the base: ${href}`);
+    }
+  }
+  process.stdout.write("C02: comparison, caller routes, ADR/audit views and seven-step checkpoint remain beneath /docs/.\n");
+
 } finally {
   rmSync(outputRoot, { force: true, recursive: true });
 }

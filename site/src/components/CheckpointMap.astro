@@ -1,0 +1,48 @@
+---
+import { checkpointMap as map } from '../../scripts/execution-maps/checkpoint';
+import { validateExecutionMap } from '../../scripts/execution-maps/model';
+import { renderChapterSvg } from '../../scripts/execution-maps/render';
+const errors = validateExecutionMap(map);
+if (errors.length) throw new Error(errors.join('; '));
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const offsets = map.chapters.map((_, i) => map.chapters.slice(0,i).reduce((n,c) => n+c.nodes.length,0));
+---
+<section class="ca-checkpoint-map not-content" aria-label="Periodic checkpoint execution map">
+  <header><p class="ca-eyebrow">Commands / Skills / Agents</p><h3>{map.title}</h3><p>{map.boundary}</p>
+    <p>Command labels use Claude Code spelling. Codex and Pi use their own entries. This is a source-traced reading map, not a recorded run.</p></header>
+  {map.chapters.map((chapter,i) => <section data-checkpoint-chapter={chapter.id} aria-labelledby={`checkpoint-${chapter.id}`}>
+    <h4 id={`checkpoint-${chapter.id}`}>{chapter.title}</h4><p>{chapter.question}</p>
+    <div class="ca-checkpoint-map__plot" aria-hidden="true" data-pagefind-ignore="all" set:html={renderChapterSvg(chapter,`checkpoint-${chapter.id}`,offsets[i])} />
+    <ol start={offsets[i]+1} role="list" data-ca-layout="peers">{chapter.nodes.map((node,n) => <li data-checkpoint-step={node.id}>
+      <p class="ca-checkpoint-map__role"><span aria-hidden="true">{String(offsets[i]+n+1).padStart(2,'0')} · </span>{node.role}</p>
+      <h5><a href={`${base}${node.href}`}>{node.title}</a></h5><p>{node.detail}</p><p><strong>Result:</strong> {node.output}</p>
+      <a class="ca-checkpoint-map__source" href={`https://github.com/arbiterForge/codeArbiter/blob/${map.reviewedAt}/${map.sources[node.source].path}`}>Source for step {offsets[i]+n+1}</a>
+    </li>)}</ol>
+    <p class="ca-checkpoint-map__boundary">{chapter.output}</p>
+  </section>)}
+  <footer><strong>Actual endpoint:</strong> {map.outcome}</footer>
+</section>
+<style>
+  .ca-checkpoint-map { container-type: inline-size; border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-lg); background: var(--ca-bg-raised); margin-block: var(--ca-space-6); overflow-wrap: anywhere; }
+  .ca-checkpoint-map :is(h3,h4,h5,p,ol) { margin: 0; }
+  .ca-checkpoint-map :is(h3,h4,h5,strong) { color: var(--ca-ink); }
+  .ca-checkpoint-map header, .ca-checkpoint-map > section, .ca-checkpoint-map footer { padding: var(--ca-space-5); }
+  .ca-checkpoint-map > section, .ca-checkpoint-map footer { border-block-start: 1px solid var(--ca-line-strong); }
+  .ca-checkpoint-map h3, .ca-checkpoint-map h4 { font-size: var(--ca-text-xl); margin-block: var(--ca-space-3); line-height: 1.4; }
+  .ca-checkpoint-map p, .ca-checkpoint-map footer { font-size: var(--ca-text-sm); line-height: 1.7; color: var(--ca-ink-soft); }
+  .ca-checkpoint-map header p + p { margin-block-start: var(--ca-space-3); }
+  .ca-checkpoint-map .ca-eyebrow, .ca-checkpoint-map .ca-checkpoint-map__role { color: var(--ca-brand-bright); font-size: var(--ca-text-xs); }
+  .ca-checkpoint-map__plot { display: none; margin-block: var(--ca-space-4); }
+  .ca-checkpoint-map__plot :global(svg) { display: block; inline-size: 100%; block-size: auto; }
+  .ca-checkpoint-map ol { display: grid; grid-template-columns: minmax(0,1fr); list-style: none; padding: 0; gap: var(--ca-space-5); margin-block: var(--ca-space-5); }
+  .ca-checkpoint-map li { min-inline-size: 0; border-inline-start: 2px solid var(--ca-line-strong); padding-inline-start: var(--ca-space-4); }
+  .ca-checkpoint-map h5 { font-size: var(--ca-text-base); margin-block: var(--ca-space-2); }
+  .ca-checkpoint-map li p + p { margin-block-start: var(--ca-space-3); }
+  .ca-checkpoint-map a { color: var(--ca-brand-bright); }
+  .ca-checkpoint-map a:focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 4px; }
+  .ca-checkpoint-map__source { display: inline-block; margin-block-start: var(--ca-space-3); font-size: var(--ca-text-xs); }
+  .ca-checkpoint-map__boundary { padding: var(--ca-space-4); background: var(--ca-bg-panel); border-inline-start: 3px solid var(--ca-brand); }
+  @container (min-width: 45rem) { .ca-checkpoint-map__plot { display: block; } .ca-checkpoint-map ol { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+  @media (forced-colors: active) { .ca-checkpoint-map { --ca-bg-raised: Canvas; --ca-bg-panel: Canvas; --ca-ink: CanvasText; --ca-ink-soft: CanvasText; --ca-brand: CanvasText; --ca-brand-bright: LinkText; --ca-line-strong: CanvasText; } .ca-checkpoint-map__plot { display: none; } }
+  @media print { .ca-checkpoint-map { container-type: normal; } .ca-checkpoint-map__plot { display: none; } .ca-checkpoint-map ol { display: block; } .ca-checkpoint-map li { margin-block: 1rem; break-inside: avoid; } }
+</style>

@@ -227,3 +227,19 @@ explanations; generated pages remain generator-owned. Existing diagram addresses
 Check actual rendered text bounds, all selections, source links, desktop label sizes, keyboard,
 no-script reading, text enlargement, forced colors and exact-candidate screenshots. Do not
 confuse a passing diagram check with installed-host, runtime, release or human approval evidence.
+
+
+## Concepts decision and evidence exhibits
+
+C02 uses a shared, source-bound teaching record rather than a second authority model. SMARTS
+comparisons label hypothetical constraints, keep both options visible for each lens and preserve
+verdict/strength distinctions. Decision handoffs compare caller authority, not a universal lane.
+The periodic checkpoint map retains its command/skill/agent result sequence and its real report
+endpoint; it is not the typed acceptance checkpoint.
+
+Evidence-view controls only change reading visibility. Use separate fields for supported claim,
+unproved claim and next inspection, never an Approve/Verify button on illustrative data. Reconnect
+controls after client navigation; make no request or persistent write. Without JavaScript and in
+print, retain all cases. Pair foreground/background tokens for forced colors and test every state,
+not only the first card. Preserve full-text content and labels under enlarged text and narrow
+widths. Existing guide-table and peer-spacing rules still apply.

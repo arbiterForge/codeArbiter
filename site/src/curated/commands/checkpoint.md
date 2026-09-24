@@ -4,18 +4,24 @@ related: [tribunal, audit, status]
 gates:
   - gate: reviewer fleet, funneled
     when: every invocation
-    effect: security-reviewer, auth-crypto-reviewer, dependency-reviewer, migration-reviewer, coverage-auditor, and architecture-drift-reviewer run read-only over the whole codebase, then funnel through finding-triage and checkpoint-aggregator — the orchestrator never consumes raw reviewer output directly
+    effect: security-reviewer, auth-crypto-reviewer, dependency-reviewer, migration-reviewer, coverage-auditor, and architecture-drift-reviewer run read-only over the whole codebase, then return a finding-triage and verdict-aggregator verdict before the caller separately dispatches the checkpoint writer
 ---
 
 ## What it does
 
-A periodic sweep of the entire codebase with the same reviewer fleet `/ca:review` uses per-diff,
-scoped instead to everything against the `.codearbiter/` docs. Every reviewer's output passes
-through `finding-triage` then `checkpoint-aggregator`, which writes a dated report to
-`.codearbiter/checkpoints/YYYY-MM-DD.md` with findings grouped by severity and file:line. It also
-re-zeros the `over:N` overrides-since-checkpoint counter the statusline shows, by writing the
-current `overrides.log` line count to `.codearbiter/last-checkpoint`. This is a report, not a
-promotion gate — it surfaces findings and enforces no sign-off.
+A periodic whole-repository review. The caller supplies the reviewer unit list to
+`dispatching-parallel-agents`; the read-only results pass through `finding-triage` and
+`verdict-aggregator`. Only after that verdict returns does the caller separately dispatch
+`checkpoint-aggregator` to persist every finding and incomplete-unit result.
+
+The report uses `.codearbiter/checkpoints/YYYY-MM-DD.md`, with `-2`, `-3` suffixes when necessary.
+Existing reports are never overwritten. The command then writes the nonblank, noncomment override
+count to `.codearbiter/last-checkpoint`, re-zeroing the overrides-since-checkpoint display. That
+integer is neither a timestamp nor a commit-gate receipt. A periodic report provides no promotion
+sign-off and does not satisfy typed task acceptance.
+
+[Checkpoints in context](/concepts/checkpoints/) explains the complete handoff and how to inspect
+missing review evidence before routing follow-up work.
 
 Published releases from 0.7.5 include each packaged reviewer resource charter for Codex
 host-provided agent threads. Exact static-package and route-closure checks gate release. A bounded
@@ -35,25 +41,17 @@ Takes no arguments — it sweeps the whole codebase every time.
 ## Example
 
 ```text
+Illustrative output, not captured execution:
 > /ca:checkpoint
 
-Dispatching reviewer fleet (6 reviewers, read-only)...
-Triaging findings...
-
-Checkpoint document written to .codearbiter/checkpoints/2026-07-02.md.
-
-| Reviewer | CRITICAL | HIGH | MEDIUM | LOW |
-|---|---|---|---|---|
-| security-reviewer | 0 | 1 | 2 | 0 |
-| coverage-auditor | 0 | 0 | 3 | 1 |
-| architecture-drift-reviewer | 0 | 0 | 1 | 0 |
-| **Total** | **0** | **1** | **6** | **1** |
-
-1 DEFERRABLE finding surfaced for follow-up harvest.
-last-checkpoint updated: 4 (override count reset)
+Read-only reviewer batch -> triage -> verdict.
+Separate checkpoint writer retains the complete verdict.
+Selected report: .codearbiter/checkpoints/2026-09-24-2.md
+last-checkpoint: 12 (override-count baseline)
+No code repair or delivery sign-off performed.
 ```
 
 ## When to reach for it
 
-The routine, cheap, whole-codebase sweep — not the current diff (`/ca:review`), not the rare
-expensive deep audit (`/ca:tribunal`), and not ADR health alone (`/ca:adr-status`).
+The routine whole-codebase sweep — not the current diff (`/ca:review`), not the rare
+deep audit (`/ca:tribunal`), and not ADR health alone (`/ca:adr-status`).

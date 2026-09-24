@@ -33,7 +33,10 @@ Current implementation and owning canonical contracts must be read at each PR ba
 
 ### C01: orientation and execution-map foundation (first PR)
 
-Status: IN_PROGRESS. Implementation PR: [#857](https://github.com/arbiterForge/codeArbiter/pull/857). Branch: `docs/concepts-execution-foundation`. Implementation exists; final verification, owner acceptance and merge remain separate.
+Status: MERGED. Implementation PR: [#857](https://github.com/arbiterForge/codeArbiter/pull/857).
+Merge commit: `6860daa3c974ae32cd9584d3e60e0a51c185a613`, verified on 2026-09-24. The owner
+merged C01; its earlier PR description's pending state is historical, not the current status.
+Broader cross-browser, assistive-technology and reader-task validation remain separately scoped.
 
 - Revalidate live main and the historical execution-map design.
 - Rebuild the Concepts landing/navigation around connected questions.
@@ -46,7 +49,10 @@ C01 is an independently reviewable foundation, not completion of C02-C04.
 
 ### C02: decisions, autonomy and retained evidence
 
-Status: NOT_STARTED. Depends on C01.
+Status: IN_PROGRESS. Depends on merged C01. Branch: `docs/concepts-decisions-evidence`.
+Current baseline: `6860daa3c974ae32cd9584d3e60e0a51c185a613`. C02 source tracing and known
+contract discrepancies are recorded in `site/reviews/CONCEPTS-C02-SOURCES.md`. Implementation,
+verification, owner review and merge remain distinct; the tracking issue receives the PR link.
 
 - Deepen SMARTS, ADRs, checkpoints and auditability using concrete examples and inspection tasks.
 - Trace sprint and reconcile separately. A recommendation is not user approval; an accepted decision is not implemented or verified work; a periodic checkpoint is not a task-acceptance receipt.
