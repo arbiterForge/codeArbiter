@@ -203,6 +203,38 @@ describe("extractLiterals", () => {
     expect(lits.filter((l) => l === "abc")).toHaveLength(1);
   });
 
+  it("extracts whole numeric spellings rather than their decimal substrings", () => {
+    expect(extractLiterals("const values = [420, 42.5, 1e42, 0x42, 42n];"))
+      .toEqual(["420", "42.5", "1e42", "0x42", "42n"]);
+  });
+
+  it("does not read literals out of comments, identifiers or regular expressions", () => {
+    expect(extractLiterals('/* "magic" 42 */ const item42 = /42/; // "other" 99'))
+      .toEqual([]);
+  });
+
+  it("keeps comment markers within quoted literals and does not split their numbers", () => {
+    expect(extractLiterals('const value = "https://example.test/42#value";'))
+      .toEqual(["https://example.test/42#value"]);
+  });
+
+  it("does not interpret escape spellings or interpolated templates as constants", () => {
+    expect(extractLiterals('const value = `prefix${answer}suffix`;')).toEqual([]);
+    expect(extractLiterals('const value = "escaped\\\\value";'))
+      .toEqual(["escaped\\\\value"]);
+  });
+
+  it.each([
+    ['const value = "unterminated\nconst other = 42;', ["42"]],
+    ['const value = "unterminated', []],
+    ['const value = .42; const other = 42_000;', [".42", "42_000"]],
+    ['const value = 42foo; const 𐐀42 = compute();', []],
+    ['#!/usr/bin/env node\r\n// "ignored" 42\rconst n = 33;', ["33"]],
+    ['const value = /[42\/]/gi; return /"quoted"/;', []],
+  ])("keeps bounded lexical extraction for %s", (source, expected) => {
+    expect(extractLiterals(source as string)).toEqual(expected);
+  });
+
   it("returns empty array for no literals", () => {
     expect(extractLiterals("// just a comment")).toHaveLength(0);
     expect(extractLiterals("")).toHaveLength(0);

@@ -16,6 +16,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
 - Bound built-in farm mutation trials by their remaining budget; retain timeout
   diagnostics and completed adverse evidence without crediting an interrupted score.
 - Credit external farm mutation scores only from successful normalized stdout;

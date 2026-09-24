@@ -568,3 +568,44 @@ runner unchanged. Run normal exact-head cross-platform CI separately from local
 and preparation results; record platform skips and advisory coverage honestly.
 Rollback runtime and its rebuilt bundle together with the canonical private card
 and generated copies. Preserve previous evidence and unrelated repositories.
+
+
+## 2026-09-24 continuation: literal evidence precision
+
+Baseline: `d566f22ccf933cb4a2832f2b9e7e0f8accf1c812`. Normal CI run
+35989708906 and docs completed successfully before this slice. Re-read the actual
+`antiGamingCheck`, its consumers and existing threshold tests. The implementation
+used substring inclusion, so identifiers, comments, larger values and cross-kind
+values could falsely trigger rejection. Its high-risk note also named the first
+match even when only a later, different file supplied the tiny-file evidence.
+
+Keep one private, model-free lexical pass in the existing mutation module. Match
+complete string/number spellings with distinct kinds. Recognize conventional
+slash/hash comments only for the source suffixes declared by this helper, preserve
+comment markers inside strings, and consume whole identifiers and numeric forms.
+Do not turn interpolation, escape normalization or ambiguous language syntax into
+invented semantic evidence. Preserve the existing five-code-line risk boundary,
+single-character filter, read-only test exclusion, missing-file behavior, guarded
+reads, mutation checks, independent review and caller-owned retry/selection.
+High-risk diagnostics name the first actual tiny-file witness; warnings preserve
+their own first substantial match. No new public entry, dependency, provider call,
+authority producer, approval step or resident-context registry.
+
+Regression fixtures compare real literal reuse with prefixes/suffixes, mixed
+kinds, comments, numeric spellings, ordinary regex/template forms and Python floor
+division. Source and rebuilt-bundle CLI tests execute real narrow tests in owned
+repositories, preserve immutable tests and main, and count exactly one worker
+call. A separate adverse mutation control must still reject a candidate after the
+literal-only false positive is removed. These are deterministic fixture results,
+not measured production savings, semantic code review or live model qualification.
+
+Limits remain explicit: labels/inputs/shared constants may still match; this is
+not assertion-aware, an AST parser or escape/constant-expression evaluator. JSX,
+prefixed strings and arbitrary regex/language grammar are not fully interpreted.
+Compiler-versus-assertion mutation validity, process resume, HTML farm enablement
+and other audit work remain separate. Native approval/receipt code, thresholds,
+public registry, lockfile, timing limits and candidate coordinates are unchanged.
+Run the normal exact-head CI and independent review in addition to both platform
+fixture runs. Preserve historical reports and coverage targets; no advisory green
+status is a target achievement. Roll back the owning module and rebuilt bundle
+with its private documentation/projections if rejected, retaining unrelated work.

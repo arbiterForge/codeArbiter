@@ -10,6 +10,9 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Fixed
 
+- Match whole, same-kind farm literals rather than substrings or conventional comments;
+  retain existing rejection thresholds and name the actual small-file risk evidence.
+
 - Document bounded built-in mutation screening and incomplete-evidence handling
   in the shared private farm procedure, without enabling HTML farm.
 - Credit external farm mutation scores only from successful normalized stdout;

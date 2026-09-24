@@ -406,11 +406,90 @@ var MUT = {
   escalateBelow: numEnv("FARM_MUTATION_ESCALATE_BELOW", 0.1, { min: 0 }),
   cmd: process.env.FARM_MUTATION_CMD ?? null
 };
+function commentStyle(file) {
+  if (/\.pyi?$/i.test(file)) return "hash";
+  return /\.(?:[cm]?[jt]sx?|c|cc|cpp|cxx|h|hh|hpp|cs|java|go|rs|swift|kt|kts)$/i.test(file) ? "slash" : "none";
+}
+function literalAtoms(src, comments) {
+  const atoms = [];
+  const ident = /[\p{ID_Continue}$]/u;
+  const identifierAt = (offset) => ident.test(String.fromCodePoint(src.codePointAt(offset) ?? 0));
+  const widthAt = (offset) => (src.codePointAt(offset) ?? 0) > 65535 ? 2 : 1;
+  const number = /(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?[\d_]+)?)[nN]?/y;
+  let i = 0;
+  while (i < src.length) {
+    const ch = src[i];
+    if (comments === "slash" && src.startsWith("//", i) || comments === "hash" && ch === "#" || i === 0 && src.startsWith("#!")) {
+      while (i < src.length && src[i] !== "\n" && src[i] !== "\r") i++;
+      continue;
+    }
+    if (comments === "slash" && src.startsWith("/*", i)) {
+      const end = src.indexOf("*/", i + 2);
+      i = end < 0 ? src.length : end + 2;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      const delimiter = comments === "hash" && src.startsWith(ch.repeat(3), i) ? ch.repeat(3) : ch;
+      const begin = i += delimiter.length;
+      let dynamic = false, closed = false;
+      while (i < src.length) {
+        if (src[i] === "\\") {
+          i += Math.min(2, src.length - i);
+          continue;
+        }
+        if (src.startsWith(delimiter, i)) {
+          closed = true;
+          break;
+        }
+        if (ch === "`" && src.startsWith("${", i)) dynamic = true;
+        if (delimiter.length === 1 && ch !== "`" && /[\r\n]/.test(src[i])) break;
+        i++;
+      }
+      const value = src.slice(begin, i);
+      if (closed) {
+        if (!dynamic && value.length >= 2) atoms.push({ kind: "string", value });
+        i += delimiter.length;
+      }
+      continue;
+    }
+    if (comments === "slash" && ch === "/" && /(?:^|[=(:,;!?\[{}&|]|\breturn|\bthrow|=>)\s*$/.test(src.slice(Math.max(0, i - 16), i))) {
+      let end = i + 1, bracket = false;
+      for (; end < src.length && !/[\r\n]/.test(src[end]); end++) {
+        if (src[end] === "\\") {
+          end++;
+          continue;
+        }
+        if (src[end] === "[") bracket = true;
+        if (src[end] === "]") bracket = false;
+        if (src[end] === "/" && !bracket) break;
+      }
+      if (src[end] === "/") {
+        i = end + 1;
+        while (i < src.length && identifierAt(i)) i += widthAt(i);
+        continue;
+      }
+    }
+    if (/\d/.test(ch) || ch === "." && /\d/.test(src[i + 1] ?? "")) {
+      number.lastIndex = i;
+      const match = number.exec(src);
+      if (match) {
+        i = number.lastIndex;
+        if (i < src.length && identifierAt(i)) {
+          while (i < src.length && identifierAt(i)) i += widthAt(i);
+        } else if (match[0] !== "0" && match[0] !== "1") {
+          atoms.push({ kind: "number", value: match[0] });
+        }
+        continue;
+      }
+    }
+    if (identifierAt(i)) {
+      while (i < src.length && identifierAt(i)) i += widthAt(i);
+    } else i++;
+  }
+  return atoms;
+}
 function extractLiterals(testSrc) {
-  const lits = /* @__PURE__ */ new Set();
-  for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
-  for (const m of testSrc.matchAll(/\b(\d{2,}|[2-9])\b/g)) lits.add(m[1]);
-  return [...lits];
+  return [...new Set(literalAtoms(testSrc, "slash").map((atom) => atom.value))];
 }
 function codeLineCount(src) {
   return src.split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("//") && !l.startsWith("#") && !l.startsWith("*") && !l.startsWith("/*")).length;
@@ -418,25 +497,26 @@ function codeLineCount(src) {
 async function antiGamingCheck(cwd, task) {
   const testSrc = await readWorktreeFile(cwd, task.test.path);
   if (testSrc === null) return { risk: "none" };
-  const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
+  const literals = literalAtoms(testSrc, commentStyle(task.test.path)).filter((atom) => atom.value.length > 1);
   if (literals.length === 0) return { risk: "none" };
-  const hits = [];
-  let anyTiny = false;
+  let firstHit;
+  let firstTinyHit;
   for (const f of task.filesInScope) {
     if (f === task.test.path) continue;
     const src = await readWorktreeFile(cwd, f);
     if (src === null) continue;
+    const observed = new Set(literalAtoms(src, commentStyle(f)).map((atom) => JSON.stringify([atom.kind, atom.value])));
     const tiny = codeLineCount(src) <= 5;
-    for (const lit of literals) {
-      if (src.includes(lit)) {
-        hits.push(`${f} contains test literal ${JSON.stringify(lit)}`);
-        if (tiny) anyTiny = true;
-      }
+    for (const atom of literals) {
+      if (!observed.has(JSON.stringify([atom.kind, atom.value]))) continue;
+      const hit = `${f} contains test literal ${JSON.stringify(atom.value)}`;
+      firstHit ??= hit;
+      if (tiny) firstTinyHit ??= hit;
     }
   }
-  if (hits.length === 0) return { risk: "none" };
-  if (anyTiny) return { risk: "high", note: `gaming: ${hits[0]} (impl is trivial)` };
-  return { risk: "warn", note: `gaming-risk: ${hits[0]}` };
+  if (firstTinyHit) return { risk: "high", note: `gaming: ${firstTinyHit} (impl is trivial)` };
+  if (firstHit) return { risk: "warn", note: `gaming-risk: ${firstHit}` };
+  return { risk: "none" };
 }
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {

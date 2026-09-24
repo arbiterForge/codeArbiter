@@ -54,19 +54,104 @@ export const MUT = {
 };
 
 // --------------------------------------------------------------------------
-// anti-gaming guard — zero-token heuristic. A cheap model can satisfy a narrow
-// test by hard-coding the asserted value. We extract the literals the test
-// asserts and flag an impl file that (a) is tiny and (b) reproduces a
-// non-trivial test literal verbatim. Egregious cases escalate; borderline
-// cases attach a warning that rides into the report for the human reviewer.
+// anti-gaming guard — bounded lexical evidence, not a parser or intent proof.
+// Test descriptions/inputs can still contain legitimate shared constants. Keep
+// the existing size/risk policy, but a substring, comment or different literal
+// kind cannot establish that the implementation repeats an observed value.
 // --------------------------------------------------------------------------
+type LiteralAtom = { kind: "string" | "number"; value: string };
+type CommentStyle = "slash" | "hash" | "none";
+
+/** Recognize only declared conventional comment families; never execute source. */
+function commentStyle(file: string): CommentStyle {
+  if (/\.pyi?$/i.test(file)) return "hash";
+  return /\.(?:[cm]?[jt]sx?|c|cc|cpp|cxx|h|hh|hpp|cs|java|go|rs|swift|kt|kts)$/i.test(file)
+    ? "slash" : "none";
+}
+
+/** Extract complete, kind-tagged literal spellings outside conventional comments.
+ * This deliberately does not evaluate escapes, constant expressions, Python
+ * prefixes or template interpolation. Unknown language forms are not parsed.
+ * Keeping raw spellings is conservative: different encodings are not equality
+ * proof. The exported value-only helper remains for existing callers.
+ */
+function literalAtoms(src: string, comments: CommentStyle): LiteralAtom[] {
+  const atoms: LiteralAtom[] = [];
+  const ident = /[\p{ID_Continue}$]/u;
+  const identifierAt = (offset: number) => ident.test(String.fromCodePoint(src.codePointAt(offset) ?? 0));
+  const widthAt = (offset: number) => (src.codePointAt(offset) ?? 0) > 0xffff ? 2 : 1;
+  const number = /(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?[\d_]+)?)[nN]?/y;
+  let i = 0;
+  while (i < src.length) {
+    const ch = src[i];
+    if ((comments === "slash" && src.startsWith("//", i)) ||
+        (comments === "hash" && ch === "#") || (i === 0 && src.startsWith("#!"))) {
+      while (i < src.length && src[i] !== "\n" && src[i] !== "\r") i++;
+      continue;
+    }
+    if (comments === "slash" && src.startsWith("/*", i)) {
+      const end = src.indexOf("*/", i + 2);
+      i = end < 0 ? src.length : end + 2;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      const delimiter = comments === "hash" && src.startsWith(ch.repeat(3), i) ? ch.repeat(3) : ch;
+      const begin = i += delimiter.length;
+      let dynamic = false, closed = false;
+      while (i < src.length) {
+        if (src[i] === "\\") { i += Math.min(2, src.length - i); continue; }
+        if (src.startsWith(delimiter, i)) { closed = true; break; }
+        if (ch === "`" && src.startsWith("${", i)) dynamic = true;
+        if (delimiter.length === 1 && ch !== "`" && /[\r\n]/.test(src[i])) break;
+        i++;
+      }
+      const value = src.slice(begin, i);
+      if (closed) {
+        if (!dynamic && value.length >= 2) atoms.push({ kind: "string", value });
+        i += delimiter.length;
+      }
+      continue;
+    }
+    // Ignore slash-delimited regex contents in unambiguous expression-start
+    // positions. This is not JavaScript ASI/grammar or arbitrary regex parsing.
+    if (comments === "slash" && ch === "/" &&
+        /(?:^|[=(:,;!?\[{}&|]|\breturn|\bthrow|=>)\s*$/.test(src.slice(Math.max(0, i - 16), i))) {
+      let end = i + 1, bracket = false;
+      for (; end < src.length && !/[\r\n]/.test(src[end]); end++) {
+        if (src[end] === "\\") { end++; continue; }
+        if (src[end] === "[") bracket = true;
+        if (src[end] === "]") bracket = false;
+        if (src[end] === "/" && !bracket) break;
+      }
+      if (src[end] === "/") {
+        i = end + 1;
+        while (i < src.length && identifierAt(i)) i += widthAt(i);
+        continue;
+      }
+    }
+    if (/\d/.test(ch) || (ch === "." && /\d/.test(src[i + 1] ?? ""))) {
+      number.lastIndex = i;
+      const match = number.exec(src);
+      if (match) {
+        i = number.lastIndex;
+        if (i < src.length && identifierAt(i)) {
+          while (i < src.length && identifierAt(i)) i += widthAt(i);
+        } else if (match[0] !== "0" && match[0] !== "1") {
+          atoms.push({ kind: "number", value: match[0] });
+        }
+        continue;
+      }
+    }
+    if (identifierAt(i)) {
+      while (i < src.length && identifierAt(i)) i += widthAt(i);
+    } else i++;
+  }
+  return atoms;
+}
+
+/** Existing value-only API; the guard itself additionally retains literal kind. */
 export function extractLiterals(testSrc: string): string[] {
-  const lits = new Set<string>();
-  // quoted strings
-  for (const m of testSrc.matchAll(/(['"`])((?:\\.|(?!\1).){2,})\1/g)) lits.add(m[2]);
-  // multi-digit / non-0-1 numbers
-  for (const m of testSrc.matchAll(/\b(\d{2,}|[2-9])\b/g)) lits.add(m[1]);
-  return [...lits];
+  return [...new Set(literalAtoms(testSrc, "slash").map((atom) => atom.value))];
 }
 
 export function codeLineCount(src: string): number {
@@ -82,26 +167,29 @@ export async function antiGamingCheck(
 ): Promise<{ risk: "none" | "warn" | "high"; note?: string }> {
   const testSrc = await readWorktreeFile(cwd, task.test.path);
   if (testSrc === null) return { risk: "none" };
-  const literals = extractLiterals(testSrc).filter((l) => l.length > 1 || /\d{2,}/.test(l));
+  const literals = literalAtoms(testSrc, commentStyle(task.test.path))
+    .filter((atom) => atom.value.length > 1);
   if (literals.length === 0) return { risk: "none" };
 
-  const hits: string[] = [];
-  let anyTiny = false;
+  let firstHit: string | undefined;
+  let firstTinyHit: string | undefined;
   for (const f of task.filesInScope) {
     if (f === task.test.path) continue;
     const src = await readWorktreeFile(cwd, f);
     if (src === null) continue;
+    const observed = new Set(literalAtoms(src, commentStyle(f))
+      .map((atom) => JSON.stringify([atom.kind, atom.value])));
     const tiny = codeLineCount(src) <= 5;
-    for (const lit of literals) {
-      if (src.includes(lit)) {
-        hits.push(`${f} contains test literal ${JSON.stringify(lit)}`);
-        if (tiny) anyTiny = true;
-      }
+    for (const atom of literals) {
+      if (!observed.has(JSON.stringify([atom.kind, atom.value]))) continue;
+      const hit = `${f} contains test literal ${JSON.stringify(atom.value)}`;
+      firstHit ??= hit;
+      if (tiny) firstTinyHit ??= hit;
     }
   }
-  if (hits.length === 0) return { risk: "none" };
-  if (anyTiny) return { risk: "high", note: `gaming: ${hits[0]} (impl is trivial)` };
-  return { risk: "warn", note: `gaming-risk: ${hits[0]}` };
+  if (firstTinyHit) return { risk: "high", note: `gaming: ${firstTinyHit} (impl is trivial)` };
+  if (firstHit) return { risk: "warn", note: `gaming-risk: ${firstHit}` };
+  return { risk: "none" };
 }
 
 // --------------------------------------------------------------------------

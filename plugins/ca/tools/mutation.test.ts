@@ -198,9 +198,9 @@ describe("antiGamingCheck", () => {
       [
         "// a comment",
         "",
-        "# another",
-        "* and another",
-        "/* and one more",
+        "// another",
+        "/* and another */",
+        "/* and one more */",
         'export const answer = () => "the-magic-value";',
       ].join("\n"),
     );
@@ -220,11 +220,58 @@ describe("antiGamingCheck", () => {
 
     const result = await antiGamingCheck(wt, task({ filesInScope: ["src/impl.ts", "src/tiny.ts"] }));
     expect(result.risk).toBe("high");
-    // The note names the FIRST hit, not the tiny one — the reviewer gets the
-    // file that matched first plus the fact that something trivial was involved.
-    expect(result.note).toContain("src/impl.ts");
+    // The rejection must name its actual tiny-file witness, not a preceding
+    // substantial match. Warn-only results still keep their first-match order.
+    expect(result.note).toContain("src/tiny.ts");
+    expect(result.note).not.toContain("src/impl.ts");
     expect(result.note).toContain("(impl is trivial)");
   });
+});
+
+describe("literal evidence boundaries", () => {
+  const cases: Array<[string, string, string, string?]> = [
+    ["longer number", "expect(answer()).toBe(42);", "export const answer = 420;"],
+    ["numeric suffix", "expect(answer()).toBe(42);", "export const answer = 142;"],
+    ["decimal part", "expect(answer()).toBe(42);", "export const answer = 42.5;"],
+    ["exponent part", "expect(answer()).toBe(42);", "export const answer = 1e42;"],
+    ["hex digit substring", "expect(answer()).toBe(42);", "export const answer = 0x42;"],
+    ["identifier suffix", "expect(answer()).toBe(42);", "export const answer = item42;"],
+    ["supplementary unicode identifier", "expect(answer()).toBe(42);", "export const answer = 𐐀42;"],
+    ["unicode identifier", "expect(answer()).toBe(42);", "export const answer = 值42;"],
+    ["longer string", 'expect(answer()).toBe("magic-value");', 'export const answer = "prefix-magic-value-suffix";'],
+    ["number versus string", "expect(answer()).toBe(42);", 'export const answer = "42";'],
+    ["string versus number", 'expect(answer()).toBe("42");', "export const answer = 42;"],
+    ["line comment in implementation", "expect(answer()).toBe(42);", "// expected 42\nexport const answer = compute();"],
+    ["block comment in implementation", 'expect(answer()).toBe("magic-value");', '/* "magic-value" */\nexport const answer = compute();'],
+    ["unclosed block comment", "expect(answer()).toBe(42);", "/* 42 is not code"],
+    ["comment-only test evidence", '// expect(answer()).toBe("magic-value");', 'export const answer = "magic-value";'],
+    ["inline Python comment", "assert answer() == 42", "def answer():\n    return compute() # 42", ".py"],
+    ["Python floor division is not a comment", "assert answer() == 42", "def answer():\n    return 420 // 10", ".py"],
+    ["regexp contents", "expect(answer()).toBe(42);", "export const answer = /42/.test(input);"],
+    ["interpolated template is not a constant", 'expect(answer()).toBe("magic-value");', 'export const answer = `magic-value${suffix}`;'],
+  ];
+  it.each(cases)("does not hard-reject a %s substring as a complete typed literal", async (_name, test, impl, extension = ".ts") => {
+    const implPath = "src/value" + extension, testPath = "src/value.test" + extension;
+    await write(testPath, test); await write(implPath, impl);
+    expect(await antiGamingCheck(wt, task({ filesInScope: [implPath], test: { path: testPath } })))
+      .toEqual({ risk: "none" });
+  });
+
+  it.each([
+    ["quoted comment markers", 'expect(answer()).toBe("https://example.test/#value");', 'export const answer = "https://example.test/#value";', ".ts"],
+    ["Python floor division followed by exact value", "assert answer() == 42", "def answer(n):\n    return n // 2 + 42", ".py"],
+    ["closed block comment followed by exact value", "expect(answer()).toBe(42);", '/* no evidence */ export const answer = 42;', ".ts"],
+    ["Python whole triple string", 'assert answer() == "magic-value"', 'def answer():\n    return """magic-value"""', ".py"],
+    ["escaped quote", 'expect(answer()).toBe("a\\\"b");', 'export const answer = "a\\\"b";', ".ts"],
+    ["static template", 'expect(answer()).toBe("magic-value");', 'export const answer = `magic-value`;', ".ts"],
+  ])("preserves high risk for %s", async (_name, test, impl, extension) => {
+    const implPath = "src/value" + extension, testPath = "src/value.test" + extension;
+    await write(testPath, test); await write(implPath, impl);
+    const risk = await antiGamingCheck(wt, task({ filesInScope: [implPath], test: { path: testPath } }));
+    expect(risk.risk).toBe("high");
+    expect(risk.note).toContain(implPath);
+  });
+
 });
 
 describe("mutationCheck — configuration gates", () => {

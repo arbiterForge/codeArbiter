@@ -595,6 +595,46 @@ describe("farm.ts smoke tests", () => {
     expect(report.results[0].note).toMatch(/^gaming:/);
   });
 
+  for (const entry of ["source", "bundle"] as const) {
+    it.each([
+      ["larger numeric literal", "module.exports.answer = () => 420 / 10;", false, "green"],
+      ["comment-only literal", "module.exports.answer = () => 6 * 7; // 42", false, "green"],
+      ["actual repeated literal", "module.exports.answer = () => 42;", false, "escalate"],
+      ["independent adverse mutation", "module.exports.answer = () => 420 / 10;", true, "escalate"],
+    ] as const)(`${entry} literal matching: %s preserves gates without another worker call`, async (_name, implementation, mutation, status) => {
+      let calls = 0;
+      ({ server: mockServer, port } = await startMockServer(() => {
+        calls++;
+        return ["```javascript", "// path: src/value.cjs", implementation, "```"].join("\n");
+      }, { prompt_tokens: 23, completion_tokens: 11 }));
+      const test = 'const assert = require("node:assert/strict");\n' +
+        'const { answer } = require("./value.cjs");\nassert.equal(answer(), 42);\n';
+      writeFileSync(join(tmpDir, "src/value.test.cjs"), test);
+      gitIn(tmpDir, "add", "src/value.test.cjs");
+      gitIn(tmpDir, "commit", "-m", "declare real narrow test");
+      const before = gitIn(tmpDir, "rev-parse", "main");
+      const plan = { meta: { name: "literal-boundary", model: "test-model", apiBaseUrl: `http://127.0.0.1:${port}` },
+        tasks: [{ id: "literal-case", description: "Compute the answer through the declared implementation", deps: [],
+          filesInScope: ["src/value.cjs"], test: { path: "src/value.test.cjs" },
+          gate: { commands: ["node src/value.test.cjs"] }, maxRetries: 0 }] };
+      const planPath = join(tmpDir, "plan.json"); writeFileSync(planPath, JSON.stringify(plan));
+      const done = await runFarmWithArgs(tmpDir, [], planPath, {
+        FARM_API_KEY: "test-key", FARM_SAMPLES: "1", FARM_MUTATION: mutation ? "on" : "off",
+        ...(mutation ? { FARM_MUTATION_CMD: `echo '{"score":0,"evaluated":8}'` } : {}),
+      }, [], entry);
+      expect(done.code, done.out).toBe(status === "green" ? 0 : 2);
+      const result = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8")).results[0];
+      expect(result.status).toBe(status);
+      expect(result.attempts).toBe(1); expect(calls).toBe(1);
+      expect(result.promptTokens).toBe(23); expect(result.completionTokens).toBe(11);
+      if (mutation) expect(result.note).toContain("gaming: mutation");
+      else if (status === "escalate") expect(result.note).toContain("src/value.cjs contains test literal");
+      else expect(result.warning).toBeUndefined();
+      expect(gitIn(tmpDir, "rev-parse", "main")).toBe(before);
+      expect(readFileSync(join(tmpDir, "src/value.test.cjs"), "utf8")).toBe(test);
+    });
+  }
+
   it("mutation guard — flags an impl whose branches the narrow test does not constrain", async () => {
     // Worker returns a multi-branch impl; the narrow test only exercises one path,
     // so mutating the unexercised branch/operator survives → low mutation score.

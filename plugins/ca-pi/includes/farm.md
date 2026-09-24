@@ -47,8 +47,11 @@ capable of the slice).
 
 ### Zero-token quality guards
 
-1. **Literal-leak** — rejects an impl that simply hard-codes the literal value the test asserts
-   (`return 42` for `expect(f()).toBe(42)`).
+1. **Literal-leak** — flags repeated whole, same-kind string or numeric spellings in a small
+   implementation (`return 42` for `expect(f()).toBe(42)`). A number inside an identifier, a larger
+   number/string, or a conventional source comment is not a match. String `"42"` and number `42`
+   are distinct. The existing five-code-line boundary determines rejection versus warning; a
+   rejection names the actual small-file match, not an earlier substantial-file match.
 2. **Mutation** — after the gate is green, mutates the worker's in-scope impl (operator flips, return
    replacement, boolean inversion) and re-runs **only the task's narrow test** (`gate.commands[0]`). A
    surviving mutant is code the test does not constrain — gaming, dead code, or a weak test. The score
@@ -63,6 +66,15 @@ capable of the slice).
    `score` in `[0, 1]`. A wrapper around a percentage-based framework must normalize its measurement;
    stderr diagnostics are not the score channel. Optional counts and survivors remain absent unless
    the hook actually reports them.
+
+The literal check is a bounded lexical heuristic, not an assertion parser or proof of intent. It
+ignores conventional slash comments in recognized C-family source suffixes and hash comments in
+Python; other suffixes do not acquire a guessed comment grammar. Plain quote delimiters and numeric
+spellings are compared without evaluating escapes or constant expressions. Dynamic templates are not
+constant-string evidence; only unambiguous expression-start regex forms are skipped. Language-specific
+prefixes, JSX and other ambiguous grammar are not fully interpreted. Test labels, inputs and legitimate
+shared constants can still match. Normal independent review remains authoritative; an absent lexical
+match neither skips the mutation check nor accepts the work.
 
 A configured hook that fails, times out, or reports invalid output supplies diagnostics, not a
 measured `mutationScore`. Ordinary unavailable measurements retain the existing warning policy and
@@ -89,7 +101,7 @@ user checkpoint. Unverified process cleanup retains the fatal containment bounda
 
 A budget ending between completed trials can still return their heuristic score, subject to the
 existing minimum of three completed reruns. Completed nonzero exits still do not distinguish compiler
-errors from assertion failures. Language-aware mutant validity and the literal-leak heuristic remain
+errors from assertion failures. Language-aware mutant validity and semantic interpretation of literal overlap remain
 separate work; these timeout corrections do not make the built-in score acceptance proof.
 
 Note: `writing-plans --farm` MUST place the task's narrow behavioral test first in `gate.commands` —
