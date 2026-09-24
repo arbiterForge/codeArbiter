@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execSync, execFileSync, spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync, realpathSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
@@ -1469,7 +1469,10 @@ describe("farm.ts smoke tests", () => {
         for (const [key, value] of Object.entries(poisoned)) vi.stubEnv(key, value);
         const created = join(tmpDir, "fresh-fixture");
         createTempRepo(created);
-        expect(gitIn(created, "rev-parse", "--show-toplevel")).toBe(created.replaceAll("\\", "/"));
+        // Git expands Windows 8.3 names (and platform directory aliases).
+        // Compare the actual directories without weakening the foreign-repo check.
+        expect(realpathSync.native(gitIn(created, "rev-parse", "--show-toplevel")))
+          .toBe(realpathSync.native(created));
         const task = identityFixture();
         let calls = 0;
         ({ server: mockServer, port } = await startMockServer(() => {
@@ -2277,11 +2280,11 @@ describe("farm artifact publication (#397 / #387)", () => {
   });
 
   // The heaviest case in the block: 12 tasks at FARM_CONCURRENCY 6, each
-  // spawning a real gate subprocess. Measured at 3553ms isolated on a
-  // developer box and 5331ms under load on a CI runner - which is what first
-  // exposed #542. It inherits the block's 30s budget above; do NOT shrink the
-  // six-way path to buy headroom, since that path is the thing under test
-  // (#515 AC-4, #542 AC-2).
+  // spawning a real gate subprocess. Native Windows coverage hit the 30s
+  // case cap in run 35984421923 while the other 82 CLI cases passed. Give
+  // only this multi-task Windows fixture 60s; retain 30s elsewhere. Do not
+  // shrink its twelve tasks/six-worker path or change production timeouts
+  // to buy headroom (#515 AC-4, #542 AC-2).
   it("#387: the unavailable-diff list is bounded and still reports the true total", async () => {
     ({ server: mockServer, port } = await startMockServer(greenHandler()));
     const ids = Array.from({ length: 12 }, (_, i) => `bulk${i}`);
@@ -2304,5 +2307,5 @@ describe("farm artifact publication (#397 / #387)", () => {
     expect(report.artifacts.diffs.unavailable.length).toBeLessThanOrEqual(11);
     const md = readFileSync(join(tmpDir, ".farm/runs/bounded/farm-report.md"), "utf8");
     expect(md).toMatch(/12 task\(s\) have no diff evidence/i);
-  });
+  }, process.platform === "win32" ? 60_000 : 30_000);
 });
