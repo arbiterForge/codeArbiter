@@ -1935,15 +1935,21 @@ def observe_claude_hook(root: str | Path, event: dict[str, Any]) -> dict[str, An
             # The launch result may not have arrived yet; remember this start.
             marker = _claude_start_marker(agent_id)
             data = _canonical({"agent_id": agent_id, "agent_type": agent_type})
-            try:
-                fd = os.open(marker, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            except FileExistsError:
-                return None
+            # Written aside and linked into place: a concurrent launch result
+            # joining this agent must never read an empty or partial marker.
+            temporary = marker.with_name(f".{marker.name}.{secrets.token_hex(8)}.tmp")
+            fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             try:
                 os.write(fd, data)
                 os.fsync(fd)
             finally:
                 os.close(fd)
+            try:
+                os.link(temporary, marker)
+            except FileExistsError:
+                return None
+            finally:
+                temporary.unlink(missing_ok=True)
             # The launch result may have bound this agent while the marker was
             # being written; finish the join now rather than strand it.
             for candidate_root, candidate in _claude_requests({"LAUNCHING"}):

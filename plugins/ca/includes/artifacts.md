@@ -210,9 +210,12 @@ authority.
 On Claude Code, pass the envelope's four fields as the Agent tool's entire
 input: no `run_in_background`, `isolation` or other option. It launches the
 read-only `ca:authority-reviewer`; arming refuses while a project or user agent
-could shadow that name. Do not message the reviewer while it runs: that rejects
-the request. Run the `verify` wrapper as its own foreground Bash call, without
-disabling the sandbox. A rejected request is never retried; arm a new one.
+could shadow that name. While the reviewer runs, send no SendMessage from this
+session to any recipient: any message rejects the request. For verification,
+`arm` returns `verify_command` with literal absolute paths; run it unchanged as
+its own foreground Bash call, without disabling the sandbox. The hook refuses a
+command that still contains `$` or another shell metacharacter. A rejected
+request is never retried; arm a new one.
 Publish the completed request through the same `publish` command. `task-review`
 records the separate verification and spec-review receipts. After every task in
 the scope reaches `REVIEW`, reverify against one current source snapshot, run the

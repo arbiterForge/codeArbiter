@@ -73,6 +73,13 @@ def main(argv=None) -> int:
             workspace_roots=workspaces or None, host=host,
             reviewer_model=args.reviewer_model,
         )
+        if host == "claude" and args.activity == "verification":
+            # The Claude verifier hook pins this exact shipped script and
+            # refuses shell expansion, so hand back literal paths.
+            script = Path(__file__).resolve().parent / "artifact-authority.py"
+            result["verify_command"] = (
+                f'python "{script}" verify --root "{root}" --request-id {result["request_id"]}'
+            )
     elif args.command == "verify":
         result = _artifactauthoritylib.run_verification(
             root, client, args.request_id,

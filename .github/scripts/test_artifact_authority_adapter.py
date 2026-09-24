@@ -1120,6 +1120,25 @@ class ClaudeAuthorityAdapterTest(unittest.TestCase):
                                  tool_input={"to": "x", "message": "hi"})
         self.assertEqual(self.adapter.observe_claude_hook(self.root, message)["state"], "REJECTED")
 
+    def test_launch_result_during_marker_write_still_binds(self):
+        armed = self._arm_claude_review("claude-race-marker-write")
+        pre, _ = self._launch(armed)
+        agent_id = "agent-mid-write"
+        real_fsync = self.adapter.os.fsync
+        fired = []
+
+        def fsync(fd):
+            # The launch result lands while the start marker is being written.
+            if not fired:
+                fired.append(True)
+                self._post(pre, agentId=agent_id)
+            return real_fsync(fd)
+
+        with mock.patch.object(self.adapter.os, "fsync", fsync):
+            self._start(agent_id)
+        self.assertTrue(fired)
+        self.assertEqual(self.adapter._load(self.root, armed["request_id"])["state"], "RUNNING")
+
     def test_each_stop_guard_rejects(self):
         cases = {
             "hook-active": {"stop_hook_active": True},
@@ -1690,9 +1709,10 @@ class ClaudeEndToEndTest(unittest.TestCase):
         armed = json.loads(self._cli("arm", "--root", str(self.root), "--artifact-id", "PLAN-FLOW",
                                      "--record-id", "T-001", "--activity", "verification"))
         self.assertEqual(self._state(armed["request_id"])["host"], "claude")
-        # The wrapper must be the artifact-authority.py shipped beside the running hook.
-        command = (f'python "{self.plugin / "hooks" / "artifact-authority.py"}" verify '
-                   f'--root "{self.root}" --request-id {armed["request_id"]}')
+        # arm hands back the exact literal command the shipped hook accepts.
+        command = armed["verify_command"]
+        self.assertIn(str(self.plugin / "hooks" / "artifact-authority.py"), command)
+        self.assertNotIn("$", command)
         pre = self._event("bash-pretooluse.json", tool_use_id="e2e-verify", tool_input={"command": command, "description": "verify"})
         self._hook(pre)
         self.assertEqual(self._state(armed["request_id"])["wrapper"]["state"], "AUTHORIZED")
