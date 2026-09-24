@@ -1,0 +1,52 @@
+name: PR850 authority source (temporary)
+on:
+  push:
+    branches: [codex/spec-continuation-checkpoint-remediation]
+    paths: [.github/workflows/pr850-authority-source.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/spec-continuation-checkpoint-remediation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.1'
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Export exact source and public validation tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/pr850-authority-source"
+          mkdir "$OUT"
+          test "$(go env GOVERSION)" = go1.27.1
+          git cat-file -e 75b4d442ea42bdd19241608647419a390e1ee360^{commit}
+          git cat-file -e dfcc5c778f136433c216d480207776a11bed3d1b^{commit}
+          git bundle create "$OUT/source.bundle" HEAD refs/remotes/origin/main
+          git archive --format=zip --output="$OUT/head.zip" dfcc5c778f136433c216d480207776a11bed3d1b
+          git archive --format=zip --output="$OUT/main.zip" 75b4d442ea42bdd19241608647419a390e1ee360
+          tar -czf "$OUT/go-toolchain.tar.gz" -C "$(go env GOROOT)" .
+          IMAGE=ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          docker pull "$IMAGE"
+          CID=$(docker create "$IMAGE")
+          trap 'docker rm "$CID" >/dev/null 2>&1 || true' EXIT
+          docker cp "$CID:/usr/bin/gitleaks" "$OUT/gitleaks"
+          go version > "$OUT/toolchain.txt"
+          printf '%s\n' "$IMAGE" >> "$OUT/toolchain.txt"
+          git rev-parse HEAD > "$OUT/capture-head.txt"
+          cd "$OUT"
+          sha256sum source.bundle head.zip main.zip go-toolchain.tar.gz gitleaks > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr850-authority-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr850-authority-source/
+          if-no-files-found: error
+          retention-days: 3
