@@ -173,9 +173,9 @@ scope evidence. Provisional progress never counts as completion.
 The orchestrator executes the declared verification through its existing governed
 execution tool through the installed production authority adapter; it never
 constructs a successful workflow event itself. Arm an exact task request first.
-Verification and review authority below is currently Codex-only. On Claude or
-Pi, stop at this boundary rather than treating model-authored results as
-authority; their installed prompt approval seams do not imply verification or
+Verification and review authority below is supported on Codex and Claude Code.
+On Pi, stop at this boundary rather than treating model-authored results as
+authority; its installed prompt approval seam does not imply verification or
 review support.
 Every distinct `cwd` label in the engine context must be mapped once to an exact
 linked Git worktree root. Mapped worktrees must share the artifact repository's
@@ -204,8 +204,17 @@ attempt under the same request.
 
 For `spec_review` or `quality_review`, arm the corresponding activity without
 workspace mappings and dispatch the returned `launch_envelope` unchanged to one
-fresh host subagent. The Codex hooks bind the exact spawn call, child start and
-child stop; a pasted or coordinator-authored decision is not review authority.
+fresh host subagent. The host hooks bind the exact launch call, child start and
+the child's first stop; a pasted or coordinator-authored decision is not review
+authority.
+{{IF:claude}}
+On Claude Code, pass the envelope's four fields as the Agent tool's entire
+input: no `run_in_background`, `isolation` or other option. It launches the
+read-only `ca:authority-reviewer`; arming refuses while a project or user agent
+could shadow that name. Do not message the reviewer while it runs: that rejects
+the request. Run the `verify` wrapper as its own foreground Bash call, without
+disabling the sandbox. A rejected request is never retried; arm a new one.
+{{END}}
 Publish the completed request through the same `publish` command. `task-review`
 records the separate verification and spec-review receipts. After every task in
 the scope reaches `REVIEW`, reverify against one current source snapshot, run the

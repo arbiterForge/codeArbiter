@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [ ] artifacts.test.0001 - Record a live long-running Claude reviewer event sequence as a fixture  (from spec:claude-artifact-authority T-012)
+  - Desc: With maintainer approval, reinstall the hook recorder and capture a reviewer that makes a tool call and outlives the parent turn; add the sanitized sequence as a fixture and confirm the agentId/SubagentStart order and subagent-originated agent_id.
+- [ ] artifacts.feat.0002 - Pin the Claude reviewer model in the engine context  (from security-review:claude-artifact-authority)
+  - Desc: The parent chooses --reviewer-model and the engine accepts any model text. Bind the reviewer model into the engine evidence context or pin it per repository.
+- [ ] artifacts.feat.0001 - Freeze the reviewed workspace for the duration of an authority review  (from security-review:claude-artifact-authority M-4)
+  - Desc: A running Claude or Codex reviewer reads live files; the parent can plant text for it and revert before publish. Snapshot the reviewed paths at launch and compare them at the first stop.
 - [ ] release.debt.0004 - `_targets_error_exit_code`'s docstring rationale for avoiding exit code 2 is stale for one of its two real callers (T-05 residual, release-contract-closure sprint)
   - Desc: `core/pysrc/_releaselib.py`'s `_targets_error_exit_code(exc)` (~line 2670) says exit code 2 is deliberately not reused for the declared-file-error states because it "already means 'bad CLI invocation' or 'unrecognised target name' elsewhere in this dispatcher." True for `_releaselib.py`'s own CLI dispatcher (where 2 still means bad invocation / unrecognized target). No longer true for its other real caller: post-T-05, `core/pysrc/releasehash.py`'s dispatcher repurposed exit code 2 to mean solely "never confirmed" (usage/unknown-target moved to 64/65 — see `releasehash.py`'s own header comment at lines 48-59) — so in that caller's context exit 2 does NOT mean "bad invocation"/"unrecognised target" at all, and the shared docstring's rationale sentence misdescribes why 2 is avoided there.
   - Done when: the docstring's rationale sentence in `_targets_error_exit_code` is scoped to the caller(s) it's actually true for, or restated to not imply one shared meaning of exit 2 across both dispatchers.

@@ -36,6 +36,13 @@
           { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-read.py\"" },
           { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-read.py\"" }
         ]
+      },
+      {
+        "matcher": "Bash|Agent|SendMessage",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
+          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
+        ]
       }
     ],
     "PostToolUse": [
@@ -44,6 +51,38 @@
         "hooks": [
           { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" },
           { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/post-write-edit.py\"" }
+        ]
+      },
+      {
+        "matcher": "Bash|Agent",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
+          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
+          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
+          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" },
+          { "type": "command", "command": "python -c \"import sys; raise SystemExit(0 if sys.version_info[0] >= 3 else 1)\" || python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/artifact-authority-hook.py\"" }
         ]
       }
     ],

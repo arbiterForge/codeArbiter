@@ -12,6 +12,18 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [2.21.14] - 2026-09-24
+
+### Added
+
+- Claude Code verification and independent-review authority for structured
+  HTML plans: the verify wrapper is authorized and corroborated from Claude's
+  Bash hooks, and spec and quality reviews run through a pinned read-only
+  `ca:authority-reviewer` bound by launch `tool_use_id`, child `agentId`, and
+  the reviewer's first stop only. The engine accepts a separate
+  `claude-review/0.1.0` profile; Codex behavior is unchanged and Pi still stops
+  at this boundary.
+
 ## [2.21.13] - 2026-09-24
 
 ### Fixed
