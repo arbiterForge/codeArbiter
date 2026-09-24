@@ -1,0 +1,163 @@
+name: Prepare PR852 release metadata
+on:
+  push:
+    branches: [prep/pr852-release-metadata]
+    paths: [.github/workflows/prepare-pr852-metadata.yml]
+permissions: {}
+jobs:
+  verify:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/prep/pr852-release-metadata'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 3261e140b4ff5a350ceb86bfd92931bd5d8df590
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify only the exact metadata source candidate
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, gzip, hashlib, json, os, subprocess, sys
+          from pathlib import Path
+          root=Path(os.environ["GITHUB_WORKSPACE"])/"candidate"
+          out=Path(os.environ["RUNNER_TEMP"])/"metadata-evidence"
+          out.mkdir()
+          BASE='3261e140b4ff5a350ceb86bfd92931bd5d8df590'
+          BASE_TREE='677bf3ad51985f42d8791e9ee3b254cb3faf7d59'
+          TREE='86105c836ab2a708caa1481503f5b2a1024e5601'
+          EXPECTED=[{'path': '.codearbiter/.provenance/code-map.json', 'mode': '100644', 'before': '33d6d40bf53ac8186241e37fc0deb07b167687d3', 'sha': '74d2d1216919bf97aae634ceb958e0b216c98f99'}, {'path': '.codearbiter/.provenance/release-targets.json', 'mode': '100644', 'before': '2f1babc3d0b02756b9a4552e6b5e3ff75227028f', 'sha': '724eba0cfcb9232b57ceded500cac127a4d79ffb'}, {'path': 'CHANGELOG.md', 'mode': '100644', 'before': 'aee6d10203e76d1d7e1e20a546cd2ebe9d24ce50', 'sha': '872e685d88f864753a2cd1b0dde1a0abeb6dd8eb'}, {'path': 'README.md', 'mode': '100644', 'before': '801bc614f00379dc992e3a502152b7f1f82672dd', 'sha': '9fee56f550899aa3abbfbd27b1ceb2f3061ca5ab'}, {'path': 'core/pysrc/hostapi.py', 'mode': '100644', 'before': 'c788e34d4ca42d8bbb071075a483aee0cd3f5501', 'sha': 'a3a2ea319e044db4d53f5e3cc32f97429ba47dba'}, {'path': 'package.json', 'mode': '100644', 'before': '4dbc99163e194486c665808a868f2152c71d6126', 'sha': '317017d38b95bcc786f4cf9378d91e9d92fc48bd'}, {'path': 'plugins/ca-codex/.codex-plugin/plugin.json', 'mode': '100644', 'before': 'faa9e47d6e18824ab09d7cf9c1ec32cc0f01fda6', 'sha': 'a22c16574d76ab72e05ac9c1d780e6d648f9aaec'}, {'path': 'plugins/ca-codex/CHANGELOG.md', 'mode': '100644', 'before': '7f964e56be8532e202507aae46bbf8ccac3767f9', 'sha': 'ed614687635604831d96b473cfbcc534330e3c92'}, {'path': 'plugins/ca-codex/hooks/_host.py', 'mode': '100644', 'before': '6f435be2f83683c023b05fc352f172f9d25ceefb', 'sha': '8d4ade0bb0f411ad608e0fd2196fa96c2b93740b'}, {'path': 'plugins/ca-codex/hooks/hostapi.py', 'mode': '100644', 'before': 'c788e34d4ca42d8bbb071075a483aee0cd3f5501', 'sha': 'a3a2ea319e044db4d53f5e3cc32f97429ba47dba'}, {'path': 'plugins/ca-pi/CHANGELOG.md', 'mode': '100644', 'before': 'cedec51e5a425dd33d6b98e997190053294cf1ad', 'sha': '9016857a7298517291f5fb891ea765bd0158b51a'}, {'path': 'plugins/ca-pi/hooks/_host.py', 'mode': '100644', 'before': 'c5970f93000bb2658819f1618884605eae3a5952', 'sha': 'd4c61613812cf8bdadae2ae58fdf2f90ae2db49e'}, {'path': 'plugins/ca-pi/hooks/hostapi.py', 'mode': '100644', 'before': 'c788e34d4ca42d8bbb071075a483aee0cd3f5501', 'sha': 'a3a2ea319e044db4d53f5e3cc32f97429ba47dba'}, {'path': 'plugins/ca-pi/package.json', 'mode': '100644', 'before': 'bdacd2be45211994a6f1bb4fa44a52fd24cf6f7e', 'sha': '570235b048150875f53a91f680cc27ccdb505226'}, {'path': 'plugins/ca/.claude-plugin/plugin.json', 'mode': '100644', 'before': '9c8c9b50a2b600533b0e8373ec84fd66030489a7', 'sha': '8845840ba9e9a21572651dab5466bd6d83875a78'}, {'path': 'plugins/ca/hooks/_host.py', 'mode': '100644', 'before': '26cb03725d62c7c0b06e3a3f630ce9db0ed186eb', 'sha': '74715fa8611a95380a796febd49f451080cd8d61'}, {'path': 'plugins/ca/hooks/hostapi.py', 'mode': '100644', 'before': 'c788e34d4ca42d8bbb071075a483aee0cd3f5501', 'sha': 'a3a2ea319e044db4d53f5e3cc32f97429ba47dba'}]
+          PATCH='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'
+          PATCH_SHA256='24944a347c4389ce1d3ecfc077e50a9d3980d155ec7e71275ed7c22437b5c114'
+          PACKET_SHA256='b2d725fa34eee66e6e078b73e6bb9b05bb84a9c985981e1d7c7244d0bf8528ff'
+          def git(*args):
+              return subprocess.check_output(["git",*args],cwd=root,text=True).strip()
+          def blob(raw):
+              return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+          assert git("rev-parse","HEAD")==BASE
+          assert git("rev-parse","HEAD^{tree}")==BASE_TREE
+          assert not git("status","--porcelain")
+          for entry in EXPECTED:
+              assert blob((root/entry["path"]).read_bytes())==entry["before"]
+          patch=gzip.decompress(base64.b64decode(PATCH,validate=True))
+          assert len(patch)<100000 and hashlib.sha256(patch).hexdigest()==PATCH_SHA256
+          patch_file=out/"metadata.patch"
+          patch_file.write_bytes(patch)
+          subprocess.run(["git","apply","--check",str(patch_file)],cwd=root,check=True)
+          subprocess.run(["git","apply",str(patch_file)],cwd=root,check=True)
+          # Generators must be idempotent on this exact reviewed patch.
+          for script in ("tools/sync-core.py","tools/build-host-packages.py"):
+              subprocess.run([sys.executable,script],cwd=root,check=True)
+          paths=[e["path"] for e in EXPECTED]
+          assert set(git("diff","--name-only").splitlines())==set(paths)
+          assert not git("ls-files","--others","--exclude-standard")
+          for entry in EXPECTED:
+              path=root/entry["path"]
+              assert path.is_file() and not path.is_symlink()
+              assert blob(path.read_bytes())==entry["sha"], entry["path"]
+          subprocess.run(["git","add","--",*paths],cwd=root,check=True)
+          assert git("write-tree")==TREE
+          # The gates read committed history. A local, unreferenced snapshot establishes
+          # those inputs without updating any remote branch or inventing approval.
+          snapshot=subprocess.check_output(["git","-c","user.name=Verification fixture","-c","user.email=fixture@example.invalid","commit-tree",TREE,"-p",BASE],input="Metadata verification snapshot\n",cwd=root,text=True).strip()
+          subprocess.run(["git","checkout","--detach",snapshot],cwd=root,check=True)
+          checks=[
+           [sys.executable,".github/scripts/payload_version_gate.py","--plugin","plugins/ca","--base","75b4d442ea42bdd19241608647419a390e1ee360"],
+           [sys.executable,".github/scripts/payload_version_gate.py","--plugin","plugins/ca-codex","--base","75b4d442ea42bdd19241608647419a390e1ee360"],
+           [sys.executable,"tools/build-host-packages.py","--release-guard-base","75b4d442ea42bdd19241608647419a390e1ee360"],
+           [sys.executable,".github/scripts/check_auto_release_candidate.py","--candidate","HEAD"],
+           [sys.executable,".github/scripts/test_host_descriptors.py"],
+           [sys.executable,".github/scripts/check_badge_consistency.py"],
+           [sys.executable,".github/scripts/test_public_codex_docs.py"],
+           [sys.executable,".github/scripts/test_provenancelib.py"],
+           [sys.executable,"tools/sync-core.py","--check"],
+           [sys.executable,"tools/build-surface.py","--check"],
+           [sys.executable,"tools/build-host-packages.py","--check"],
+           ["git","diff","--check"],
+          ]
+          results=[]
+          for i,command in enumerate(checks):
+              with (out/f"check-{i:02d}.log").open("w") as log:
+                  run=subprocess.run(command,cwd=root,stdout=log,stderr=subprocess.STDOUT,timeout=180)
+              results.append(dict(command=command,exit_code=run.returncode))
+              print(json.dumps(results[-1]),flush=True)
+          (out/"results.json").write_text(json.dumps(dict(base=BASE,tree=TREE,checks=results,qualification="Metadata and source checks only; independent exercise and live candidate proof still required"),indent=2)+"\n")
+          assert not any(r["exit_code"] for r in results), "Source checks failed; no objects may be stored"
+          assert not git("status","--porcelain"), "Tests mutated the candidate"
+          for entry in EXPECTED:
+              raw=(root/entry["path"]).read_bytes()
+              assert blob(raw)==entry["sha"]
+              entry["content"]=base64.b64encode(raw).decode()
+          packet=dict(base=BASE,base_tree=BASE_TREE,tree=TREE,files=EXPECTED)
+          raw=(json.dumps(packet,sort_keys=True,separators=(",",":"))+"\n").encode()
+          assert hashlib.sha256(raw).hexdigest()==PACKET_SHA256
+          (out/"files.json").write_bytes(raw)
+          PY
+      - name: Retain exact source verification
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr852-metadata-source
+          path: ${{ runner.temp }}/metadata-evidence/
+          if-no-files-found: error
+          retention-days: 3
+  store:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: pr852-metadata-source
+          path: ${{ runner.temp }}/metadata-evidence
+      - name: Store the checked blobs and preserving tree without advancing refs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, os, urllib.request
+          from pathlib import Path
+          out=Path(os.environ["RUNNER_TEMP"])/"metadata-evidence"
+          raw=(out/"files.json").read_bytes()
+          assert len(raw)<2000000 and hashlib.sha256(raw).hexdigest()=='b2d725fa34eee66e6e078b73e6bb9b05bb84a9c985981e1d7c7244d0bf8528ff'
+          packet=json.loads(raw)
+          assert packet["base"]=='3261e140b4ff5a350ceb86bfd92931bd5d8df590' and packet["base_tree"]=='677bf3ad51985f42d8791e9ee3b254cb3faf7d59'
+          assert packet["tree"]=='86105c836ab2a708caa1481503f5b2a1024e5601'
+          # No candidate program or shell command runs in this write-permission job.
+          # Only the two Git-object endpoints are admitted; neither advances a ref.
+          def post(kind,payload):
+              assert kind in ("blobs","trees")
+              request=urllib.request.Request("https://api.github.com/repos/arbiterForge/codeArbiter/git/"+kind,
+                  data=json.dumps(payload).encode(),method="POST",headers={
+                      "Authorization":"Bearer "+os.environ["GH_TOKEN"],
+                      "Accept":"application/vnd.github+json","Content-Type":"application/json",
+                      "X-GitHub-Api-Version":"2022-11-28"})
+              with urllib.request.urlopen(request,timeout=60) as response:return json.load(response)
+          entries=[];stored=set()
+          for entry in packet["files"]:
+              data=base64.b64decode(entry["content"],validate=True)
+              oid=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+              assert oid==entry["sha"]
+              if oid not in stored:
+                  result=post("blobs",dict(content=entry["content"],encoding="base64"))
+                  assert result["sha"]==oid
+                  stored.add(oid)
+              entries.append(dict(path=entry["path"],mode=entry["mode"],type="blob",sha=oid))
+          result=post("trees",dict(base_tree=packet["base_tree"],tree=entries))
+          assert result["sha"]==packet["tree"]
+          (out/"objects.json").write_text(json.dumps(dict(tree=result["sha"],base=packet["base"],refs_modified=False,qualified_for_release=False),indent=2)+"\n")
+          print("VERIFIED_UNREFERENCED_TREE="+result["sha"],flush=True)
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr852-metadata-objects
+          path: ${{ runner.temp }}/metadata-evidence/objects.json
+          if-no-files-found: error
+          retention-days: 3
