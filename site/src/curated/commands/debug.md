@@ -10,7 +10,7 @@ gates:
     effect: at least three distinct candidate causes are required, including one environmental or configuration explanation, before anything is checked against evidence
   - gate: no code changes
     when: for the entire investigation
-    effect: every phase is read-only; a fix is never attempted mid-investigation
+    effect: investigation never edits application code; the no-action exit records a queued note through the task helper
   - gate: single named exit
     when: at the end of the investigation
     effect: the session must close as exactly one of a confirmed bug, a design ambiguity, or a no-action close — never left open
@@ -20,7 +20,7 @@ gates:
 
 This is where an unexplained defect goes before anyone touches code. The investigation is
 deliberately separated from the fix: describing the symptom, forming multiple candidate causes, and
-checking each against logs, traces, and recent commits all happen without editing anything. The
+checking each against logs, traces, and recent commits happen without editing application code. The
 requirement for at least three distinct hypotheses — with one of them a boring explanation like a
 stale cache or a config mismatch — exists because locking onto the first plausible story is the most
 common way a diagnosis goes wrong. Whatever the investigation lands on, it has to close as exactly one
@@ -39,19 +39,25 @@ like "it's flaky" gets a request for more detail before routing begins.
 ## Example
 
 ```text
-> /ca:debug the nightly export job sometimes finishes with a zero-byte file, maybe once a week
+Illustrative investigation entry, not a captured run:
+> /ca:debug export returns no CSV for one saved search
 
-Symptom captured. Repro: intermittent, ~1-in-7 nightly runs, no clear trigger yet identified.
-Hypotheses:
-  H1 (likely): export writer is not flushed before the process exits
-  H2: source query times out silently under load and returns nothing
-  H3 (boring): the export volume mount is occasionally unmounted before the job starts
-Gathering evidence... H1 CONFIRMED (log shows process exit 0.2s after last write, no flush call in
-the writer's shutdown path). H2 and H3 REFUTED (query duration and mount logs are clean on affected runs).
-
-Exit: (a) confirmed bug. Regression test obligation: kill the writer immediately after the last write
-call and assert the output file is complete. Routing to /ca:fix.
+Observed: no CSV for name Open, query state:open.
+Expected: a header and one data row.
+Reproduction: repeats in the identified checkout.
+Candidates: serializer path; empty input reaching
+that path; stale installed or running code.
+Evidence: still required before confirming a cause.
 ```
+
+A symptom record needs an exact reproduction or intermittent-trigger profile. A plausible
+hypothesis is not a confirmed diagnosis. The returned summary names the evidence, result and
+chosen exit. See [Investigate and fix a defect](/guides/investigate-and-fix/) for the complete
+operator procedure and the regression-test handoff.
+
+A no-action close records a queued note through the task helper. Application code stays
+unchanged, but this board write means the complete command is not universally zero-write.
+The investigation does not promise a separate fixed-path report file.
 
 ## When to reach for it
 

@@ -47,10 +47,11 @@ summary. See [the artifact model](/concepts/artifacts/).
 | Intent | Appropriate route or question |
 |---|---|
 | Understand something without changing files | Ask directly and state that the answer should remain read-only |
-| Investigate an unexplained failure | Debug/investigation first, then a bounded fix once the defect is understood |
+| Investigate an unexplained failure | [Investigate and fix](/guides/investigate-and-fix/) with a cited cause and regression obligation |
 | Repair a reproduced defect | Fix, with a regression obligation |
 | Add caller-visible behavior | Feature, or sprint for an explicitly bounded autonomous package |
 | Preserve behavior while changing structure | Refactor, with parity obligations |
+| Adopt a package or run a named inspection tool once | [Dependency decisions](/guides/adding-a-dependency/), with separate scope and confirmation checks |
 | Explore an uncertain approach | A time-boxed spike with a findings-only exit |
 | Inspect a diff without creating a report | Review |
 | Persist a periodic cross-cutting review | Checkpoint; tribunal is the separate deeper review |
@@ -83,3 +84,6 @@ actually reached disk. A conversation summary is useful orientation, not durable
 Use the task command for board transitions; use the owning lane for typed-plan transitions.
 Do not hand-edit protected records to make them match a desired completion claim.
 For a complete example, follow [Your first feature](/guides/first-feature/).
+
+For the handoff from a verdict through commit, PR, current checks and safe cleanup, use
+[Review and ship a change](/guides/review-and-ship/).

@@ -144,14 +144,26 @@ jobs:
         # No exact hosted Chrome version is claimed; this log records the observed one.
         run: google-chrome --version
       - name: Browser publication gate
+        id: browser-gate
         run: npm run test:browser
       - name: Retain browser review evidence
+        # Preserve completed captures even if a later browser assertion fails.
+        # This does not turn a failed browser gate into a publishable build.
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: site-browser-evidence
           path: site/.astro/browser-evidence/
           if-no-files-found: ignore
           retention-days: 5
+      - name: Retain browser failure diagnostics
+        if: ${{ failure() && steps.browser-gate.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: site-browser-failures
+          path: site/.astro/playwright/
+          if-no-files-found: ignore
+          retention-days: 3
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

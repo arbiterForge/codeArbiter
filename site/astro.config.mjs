@@ -162,6 +162,7 @@ export default defineConfig({
       customCss: [
         "./src/styles/design-system.css",
         "./src/styles/theme.css",
+        "./src/styles/guide-tables.css",
         "./src/styles/callouts.css",
         "./src/styles/landing.css",
         "./src/styles/academy.css",

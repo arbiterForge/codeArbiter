@@ -1,0 +1,129 @@
+---
+import { getCollection } from 'astro:content';
+import { buildGuideDirectory } from '../../scripts/guide-directory';
+const groups = buildGuideDirectory(await getCollection('docs'));
+const total = groups.reduce((count, group) => count + group.guides.length, 0);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<ca-guide-directory class="ca-guide-directory not-content">
+  <form class="ca-guide-directory__filters" role="search" aria-label="Find a guide" hidden>
+    <div>
+      <label for="guide-query">What do you need to do?</label>
+      <input id="guide-query" type="search" maxlength="160" autocomplete="off" placeholder="Try review, existing project, or recovery" aria-describedby="guide-filter-note" />
+    </div>
+    <div>
+      <label for="guide-category">Task group</label>
+      <select id="guide-category">
+        <option value="all">All tasks</option>
+        {groups.map(group => <option value={group.id}>{group.title}</option>)}
+      </select>
+    </div>
+    <button class="ca-button" type="button" data-guide-clear>Clear filters</button>
+    <p id="guide-filter-note">Filters run in this page. Search text is not saved or sent by this finder.</p>
+  </form>
+  <p class="ca-guide-directory__count" role="status" aria-live="polite" aria-atomic="true" data-guide-count>{total} guides</p>
+  <p class="ca-guide-directory__empty" data-guide-empty hidden>No matching guide. Try fewer words or choose All tasks. The <a href={`${base}/reference/`}>complete reference</a> covers individual commands.</p>
+  {groups.map(group => (
+    <section data-guide-group={group.id} aria-labelledby={group.id}>
+      <header>
+        <h2 id={group.id}>{group.title}</h2>
+        <p>{group.description}</p>
+      </header>
+      <ul class="ca-guide-directory__grid" data-ca-layout="peers" role="list">
+        {group.guides.map(guide => (
+          <li class="ca-guide-directory__card" data-guide-entry={guide.id} data-category={guide.category} data-search-text={guide.searchText}>
+            <h3><a href={`${base}${guide.href}`}>{guide.title}</a></h3>
+            <p>{guide.outcome}</p>
+            <dl>
+              <div><dt>Level</dt><dd>{guide.level}</dd></div>
+              <div><dt>Guide estimate</dt><dd>{guide.time}</dd></div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</ca-guide-directory>
+<script>
+  import { guideMatches } from '../scripts/guide-filter';
+  /** Each newly rendered directory owns its listeners; navigation cannot retain stale handlers. */
+  class GuideDirectory extends HTMLElement {
+    private controller?: AbortController;
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const form = this.querySelector<HTMLFormElement>('form');
+      const input = this.querySelector<HTMLInputElement>('#guide-query');
+      const select = this.querySelector<HTMLSelectElement>('#guide-category');
+      const clear = this.querySelector<HTMLButtonElement>('[data-guide-clear]');
+      const count = this.querySelector<HTMLElement>('[data-guide-count]');
+      const empty = this.querySelector<HTMLElement>('[data-guide-empty]');
+      const cards = Array.from(this.querySelectorAll<HTMLElement>('[data-guide-entry]'));
+      const groups = Array.from(this.querySelectorAll<HTMLElement>('[data-guide-group]'));
+      if (!form || !input || !select || !clear || !count || !empty || !cards.length) return;
+      const update = () => {
+        let visible = 0;
+        for (const card of cards) {
+          card.hidden = !guideMatches({ category: card.dataset.category ?? '', searchText: card.dataset.searchText ?? '' }, input.value, select.value);
+          if (!card.hidden) visible++;
+        }
+        for (const group of groups) group.hidden = !group.querySelector('[data-guide-entry]:not([hidden])');
+        count.textContent = `${visible} of ${cards.length} guides`;
+        empty.hidden = visible !== 0;
+      };
+      const options = { signal: this.controller.signal };
+      input.addEventListener('input', update, options);
+      select.addEventListener('change', update, options);
+      form.addEventListener('submit', event => event.preventDefault(), options);
+      clear.addEventListener('click', () => { input.value = ''; select.value = 'all'; update(); input.focus(); }, options);
+      update();
+      form.hidden = false;
+    }
+    disconnectedCallback() { this.controller?.abort(); }
+  }
+  if (!customElements.get('ca-guide-directory')) customElements.define('ca-guide-directory', GuideDirectory);
+</script>
+<style>
+  .ca-guide-directory { display: block; container-type: inline-size; margin-block: var(--ca-space-6); overflow-wrap: anywhere; }
+  .ca-guide-directory [hidden] { display: none !important; }
+  .ca-guide-directory__filters { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ca-space-4); align-items: end; padding: var(--ca-space-5); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-md); background: var(--ca-bg-panel); }
+  .ca-guide-directory label { display: block; margin-block-end: var(--ca-space-2); font-weight: 650; font-size: var(--ca-text-sm); }
+  .ca-guide-directory input, .ca-guide-directory select { box-sizing: border-box; inline-size: 100%; min-inline-size: 0; padding: var(--ca-space-3); border: 1px solid var(--ca-line-strong); border-radius: var(--ca-radius-sm); background: var(--ca-bg); color: var(--ca-ink); font: inherit; }
+  .ca-guide-directory :is(input, select, button, a):focus-visible { outline: 2px solid var(--ca-brand-bright); outline-offset: 3px; }
+  #guide-filter-note { grid-column: 1 / -1; color: var(--ca-ink-muted); font-size: var(--ca-text-xs); }
+  .ca-guide-directory__count { margin-block: var(--ca-space-4); color: var(--ca-ink-muted); font-size: var(--ca-text-sm); }
+  .ca-guide-directory section { margin-block-start: var(--ca-space-7); }
+  .ca-guide-directory section > header { margin-block-end: var(--ca-space-4); }
+  .ca-guide-directory h2 { font-size: var(--ca-text-xl); }
+  .ca-guide-directory header p { margin-block-start: var(--ca-space-2); color: var(--ca-ink-soft); }
+  .ca-guide-directory__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ca-space-4); list-style: none; padding: 0; }
+  .ca-guide-directory__card { display: flex; flex-direction: column; gap: var(--ca-space-3); padding: var(--ca-space-5); border: 1px solid var(--ca-line); border-radius: var(--ca-radius-md); background: var(--ca-bg-raised); }
+  .ca-guide-directory h3 { font-size: var(--ca-text-lg); line-height: 1.4; }
+  .ca-guide-directory h3 a { color: var(--ca-brand-bright); text-decoration: none; }
+  .ca-guide-directory h3 a:hover { text-decoration: underline; }
+  .ca-guide-directory__card > p { color: var(--ca-ink-soft); font-size: var(--ca-text-sm); line-height: 1.7; }
+  .ca-guide-directory dl { display: flex; flex-wrap: wrap; gap: var(--ca-space-3) var(--ca-space-5); margin-block-start: auto; padding-block-start: var(--ca-space-3); border-block-start: 1px solid var(--ca-line); font-size: var(--ca-text-xs); }
+  .ca-guide-directory dt { color: var(--ca-ink-muted); }
+  .ca-guide-directory dd { margin: 0; color: var(--ca-ink); }
+  @container (min-width: 36rem) { .ca-guide-directory__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ca-guide-directory__filters { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } .ca-guide-directory__filters button { justify-self: start; } }
+  @media (forced-colors: active) {
+    /* Pair foreground and background system colors; dark-theme ink on a forced
+       light canvas is not a readable fallback. Keep the user's palette in control. */
+    .ca-guide-directory {
+      --ca-bg: Canvas;
+      --ca-bg-raised: Canvas;
+      --ca-bg-panel: Canvas;
+      --ca-ink: CanvasText;
+      --ca-ink-soft: CanvasText;
+      --ca-ink-muted: CanvasText;
+      --ca-brand-bright: LinkText;
+      --ca-line: CanvasText;
+      --ca-line-strong: CanvasText;
+      color: CanvasText;
+    }
+    .ca-guide-directory input, .ca-guide-directory select { color: FieldText; background: Field; }
+    .ca-guide-directory button { color: ButtonText; background: ButtonFace; border-color: ButtonText; }
+    .ca-guide-directory :is(input, select, button, a):focus-visible { outline-color: Highlight; }
+  }
+  @media print { .ca-guide-directory { container-type: normal; } .ca-guide-directory__filters, .ca-guide-directory__count, .ca-guide-directory__empty { display: none !important; } .ca-guide-directory section[hidden], .ca-guide-directory__card[hidden] { display: block !important; } .ca-guide-directory__grid { display: block; } .ca-guide-directory__card { break-inside: avoid; margin-block-end: var(--ca-space-4); } }
+</style>

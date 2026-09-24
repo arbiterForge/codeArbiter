@@ -41,3 +41,9 @@ mandatory before merge.
 A clean run leaves every obligation covered, coverage at threshold, and lint clean — clearing the
 path to the commit gate. Any obligation that cannot be tied to a real test, or any test whose
 assertion had to be weakened to pass, keeps the change from moving forward.
+
+## Where this sits in a complete change
+
+[Test-first evidence](/concepts/test-first/) follows TDD inside a feature task and traces
+its caller through scope review, human checkpoint, commit and PR preparation. TDD is
+not an isolated stage after completed authoring, and local green is not scope acceptance.

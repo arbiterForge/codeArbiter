@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 470" role="img" data-diagram-system="ca-v2">
   <title>Soft gates surface; hard gates stop</title>
-  <desc>Matched soft and hard gate paths. A soft gate waits for a human decision and then continues. A hard gate blocks until the user performs the required action.</desc>
+  <desc>An attended soft decision gate and a human-authority hard gate. This illustrates decision boundaries, not every possible validation failure or recovery path.</desc>
   <defs>
     <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
       <stop stop-color="#090d12"/>
@@ -45,5 +45,5 @@
 <text x="614" y="322" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start" data-label-kind="copy" data-max-width="452">Security, auth/crypto, and irreversible ops stop.</text>
 <text x="614" y="341" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start" data-label-kind="copy" data-max-width="452">Gate bypass and merge-to-default stop.</text>
 <text x="614" y="360" font-family="Manrope Variable, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" fill="#c7d0da" text-anchor="start" data-label-kind="copy" data-max-width="452">Only the user can clear the gate.</text>
-<text x="44" y="436" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation" data-max-width="1072">Frequent hard-gate trips indicate a thin specification, not a normal control loop.</text>
+<text x="44" y="436" font-family="JetBrains Mono Variable, Consolas, Cascadia Mono, monospace" font-size="12" font-weight="500" fill="#91a0b2" text-anchor="start" data-label-kind="annotation" data-max-width="1072">Decision cases only. Failed checks follow their own correction and recovery contracts.</text>
 </svg>

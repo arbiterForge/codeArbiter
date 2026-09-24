@@ -29,6 +29,16 @@ describe('reader-first workflow contract', () => {
     expect(component).not.toMatch(/localStorage|fetch\(|aria-valuenow|role="progressbar"|<script/);
     expect(component).toContain('import.meta.env.BASE_URL');
   });
+  it('pairs shared reader-map tokens in forced colors without disabling user colors', () => {
+    const forced = component.split('@media (forced-colors: active)')[1].split('@media print')[0];
+    for (const token of ['--ca-brand-bright', '--ca-ink', '--ca-ink-soft', '--ca-ink-muted', '--ca-line-strong']) {
+      expect(forced).toContain(`${token}: CanvasText;`);
+    }
+    expect(forced).toContain('--ca-bg-panel: Canvas;');
+    expect(forced).toContain('.ca-reader-journey h2, .ca-reader-journey h3 { color: CanvasText; }');
+    expect(forced).toContain('.ca-reader-journey__step > a { color: LinkText; }');
+    expect(component).not.toContain('forced-color-adjust: none');
+  });
   it('uses one direct-child spacing contract without globally resetting prose', () => {
     const css = readFileSync(join(process.cwd(), 'src/styles/design-system.css'), 'utf8');
     expect(css).toMatch(/\[data-ca-layout="peers"\] > \*\s*\{\s*margin-block: 0;\s*min-inline-size: 0;/);
