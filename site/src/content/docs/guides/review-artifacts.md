@@ -41,8 +41,8 @@ check your exact installed adapter and its qualification evidence before executi
 
 | Host | Typed spec/plan approval | Typed verification and review authority |
 |---|---|---|
-| Claude Code | Host-observed prompt approval | Not supported; stop at this boundary |
-| Codex | Host-observed prompt approval | Codex-only production adapters; exact installed capability still required |
+| Claude Code | Host-observed prompt approval | Production adapters, reviewed by the read-only `ca:authority-reviewer` agent; exact installed capability still required |
+| Codex | Host-observed prompt approval | Production adapters; exact installed capability still required |
 | Pi | Not supported | Not supported; do not arm the prompt adapter |
 
 These limits concern the typed HTML path, not every operation on those hosts. Existing Markdown

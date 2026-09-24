@@ -117,7 +117,7 @@ test('reader maps precede optional implementation detail and preserve authority 
     const result = await new AxeBuilder({ page }).include('[data-reader-journey]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
   }
-  await expect(page.locator('[data-reader-journey]')).toContainText('currently Codex-only');
+  await expect(page.locator('[data-reader-journey]')).toContainText('currently limited to Codex and Claude Code');
   await expect(page.locator('[data-reader-journey]')).toContainText('A generic reply does not approve both files');
 });
 

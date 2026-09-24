@@ -6,7 +6,7 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 
 ## In-flight
 - [ ] artifacts.docs.0001 - Make the documented verify command and agent-directory limits match the wrapper selector  (from security-review:claude-artifact-authority fix pass F-3/F-4)
-  - Desc: The includes show verify commands with ${CLAUDE_PLUGIN_ROOT}/${PLUGIN_ROOT}, which the wrapper selector refuses as compound; have arm return the exact verify command line (or require literal absolute paths), consider a safe-character allowlist, confirm whether the Codex exec shell sets PLUGIN_ROOT, and document that linked agent subdirectories block Claude reviews.
+  - Desc: The includes show verify commands built from the unexpanded plugin-root variables, which the wrapper selector refuses as compound; have arm return the exact verify command line (or require literal absolute paths), consider a safe-character allowlist, confirm whether the Codex exec shell sets PLUGIN_ROOT, and document that linked agent subdirectories block Claude reviews.
 - [ ] artifacts.harden.0004 - Scope strict registry refusals to Claude review pointers and write pointers atomically  (from security-review:claude-artifact-authority fix pass F-2)
   - Desc: One torn or version-skewed pointer in the shared per-user registry denies every SendMessage in every project until removed by hand. Write pointers atomically, record host and activity in the pointer, and escalate only for Claude review pointers.
 - [ ] artifacts.harden.0003 - Close the SendMessage skip when a live review's spool cannot be resolved  (from security-review:claude-artifact-authority fix pass F-1)
