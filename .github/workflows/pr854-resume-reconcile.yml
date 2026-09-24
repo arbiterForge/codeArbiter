@@ -1,4 +1,4 @@
-name: PR854 resume reconciliation (temporary)
+name: PR854 resumed merge validation (temporary)
 on:
   push:
     branches: [codex/farm-readiness-canary-isolation]
@@ -6,36 +6,171 @@ on:
 permissions:
   contents: read
 jobs:
-  capture:
+  validate:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            node: '22.19.0'
+            label: linux
+          - os: windows-latest
+            node: '20'
+            label: windows
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ github.sha }}
+          ref: 53122af871dbef7a463709fe71595c4de37f8952
           fetch-depth: 0
           persist-credentials: false
-      - name: Capture committed identities without executing product code
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD^)" = e0e2b5e8c74a52b0df1da5d2f00e679134b202c3
-          MAIN=53122af871dbef7a463709fe71595c4de37f8952
-          git cat-file -e "$MAIN^{commit}"
-          git update-ref refs/review/pinned-main "$MAIN"
-          OUT="$RUNNER_TEMP/pr854-resume-source"
-          mkdir "$OUT"
-          git bundle create "$OUT/source.bundle" HEAD refs/review/pinned-main
-          git rev-parse HEAD > "$OUT/pr-head.txt"
-          git rev-parse 'HEAD^{tree}' > "$OUT/pr-tree.txt"
-          printf '%s\n' "$MAIN" > "$OUT/main-head.txt"
-          git rev-parse "$MAIN^{tree}" > "$OUT/main-tree.txt"
-          cd "$OUT"
-          sha256sum source.bundle > SHA256SUMS
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          name: pr854-resume-source-${{ github.run_id }}
-          path: ${{ runner.temp }}/pr854-resume-source/
+          python-version: '3.14'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27.1'
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Acquire reviewed merge resolution as inert hash-bound data
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64,hashlib,json,lzma,os,pathlib,urllib.request
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-resumed';out.mkdir()
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
+          sha='5d0eb0bc4707d435949a63ad62faa94a2a783ceb'
+          req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+          with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response: record=json.load(response)
+          assert record['sha']==sha and record['encoding']=='base64'
+          packed=base64.b64decode(record['content'])
+          assert len(packed)==5332 and hashlib.sha1(b'blob '+str(len(packed)).encode()+b'\0'+packed).hexdigest()==sha
+          data=lzma.decompress(packed)
+          assert len(data)==22885 and hashlib.sha256(data).hexdigest()=='5da206329b0ddadbb3ac21284171d5c514023fd0eb99cf1cbbd32cbd4c302553'
+          payload=json.loads(data)
+          assert payload['main']=='53122af871dbef7a463709fe71595c4de37f8952'
+          assert payload['source_parent']=='d699c0e9d4f0c59c3bedc0032505eecc0656dca1'
+          assert payload['tree']=='2fd243b04f879280f9f10f951647caf4723f9c40'
+          assert len(payload['files'])==30 and len({r['path'] for r in payload['files']})==30
+          for row in payload['files']:
+              p=pathlib.PurePosixPath(row['path'])
+              assert not p.is_absolute() and '..' not in p.parts and str(p)==row['path']
+              assert row['mode'] in {'100644','100755'}
+              assert row.get('source_commit',payload['source_parent'])==payload['source_parent']
+          (out/'payload.json').write_bytes(data)
+          (out/'metadata.patch').write_bytes(payload['source_patch'].encode('utf-8'))
+          PY
+      - name: Rebuild exact merged candidate and exercise its consumers
+        shell: bash
+        env:
+          PLATFORM_LABEL: ${{ matrix.label }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,sys,time,zipfile
+          root=pathlib.Path.cwd();out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-resumed'
+          payload=json.loads((out/'payload.json').read_bytes());main=payload['main'];head=os.environ['GITHUB_SHA']
+          def git(*args): return subprocess.check_output(['git',*args])
+          def oid(data): return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          assert git('rev-parse','HEAD').decode().strip()==main
+          assert git('rev-parse',head+'^').decode().strip()==payload['source_parent']
+          assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip()=='go1.27.1'
+          for row in payload['files']:
+              p=root/row['path'];assert oid(p.read_bytes())==row['base_blob'],row['path']
+              assert git('ls-tree',main,'--',row['path']).decode().split()[0]==row['mode']
+              if 'source_commit' in row:
+                  data=git('show',row['source_commit']+':'+row['path'])
+                  assert oid(data)==row['sha'];p.write_bytes(data)
+                  subprocess.run(['git','add','--',row['path']],check=True)
+          subprocess.run(['git','apply','--check','--index',str(out/'metadata.patch')],check=True)
+          subprocess.run(['git','apply','--index',str(out/'metadata.patch')],check=True)
+          tools=root/'plugins/ca/tools'
+          for cmd in [['npm','ci','--ignore-scripts','--no-fund','--no-audit'],['npm','audit','--include=dev','--audit-level=high'],['npm','run','typecheck'],['npm','run','build']]:
+              subprocess.run(cmd,cwd=tools,check=True,shell=os.name=='nt')
+          for tool in ['tools/sync-core.py','tools/build-surface.py','tools/build-host-packages.py']:
+              subprocess.run([sys.executable,tool],check=True)
+          expected={r['path'] for r in payload['files']}
+          assert set(git('diff','HEAD','--name-only').decode().splitlines())==expected
+          for row in payload['files']: assert oid((root/row['path']).read_bytes())==row['sha'],row['path']
+          for p in ['core/pysrc/_releaselib.py','core/pysrc/releasehash.py','core/surface/skills/release/SKILL.md','core/surface/commands/release.md','.github/published-tags.json','plugins/ca/tools/exec.ts','plugins/ca/tools/worktree-fs.ts','plugins/ca/tools/package-lock.json','core/surface/arbiter.md','core/surface/command-routes.json']:
+              assert (root/p).read_bytes()==git('show',main+':'+p),p
+          for p,v in [('CHANGELOG.md','2.21.13'),('plugins/ca-codex/CHANGELOG.md','0.13.13'),('plugins/ca-pi/CHANGELOG.md','0.14.13')]:
+              prior=git('show',main+':'+p).decode('utf-8');current=(root/p).read_bytes().decode('utf-8');marker='## ['+v+']'
+              assert current[current.index(marker):]==prior[prior.index(marker):],p
+          subprocess.run(['git','add','--',*sorted(expected)],check=True)
+          subprocess.run(['git','diff','--cached','--check'],check=True)
+          tree=git('write-tree').decode().strip();assert tree==payload['tree']
+          env=dict(os.environ,GIT_AUTHOR_NAME='Validation fixture',GIT_AUTHOR_EMAIL='validation@example.invalid',GIT_COMMITTER_NAME='Validation fixture',GIT_COMMITTER_EMAIL='validation@example.invalid')
+          fixture=subprocess.check_output(['git','commit-tree',tree,'-p',head,'-p',main],input='Merge current release work with recovered farm validity corrections\n\nCHANGELOG: Preserve release fixes and separate mutation failure evidence.\n',text=True,encoding='utf-8',env=env).strip()
+          subprocess.run(['git','checkout','--detach',fixture],check=True)
+          commands=[(['npm','run','coverage'],tools)]
+          suites=['test_ci_impact','test_host_descriptors','test_routing_and_cleanup_surface','test_build_surface','test_public_codex_docs','test_provenance_wiring','test_payload_version_gate','test_artifact_farm','test_release_lib','test_consumer_smoke']
+          commands += [([sys.executable,'.github/scripts/'+name+'.py'],root) for name in suites]
+          commands += [([sys.executable,'plugins/ca/hooks/tests/'+name+'.py'],root) for name in ['test_release_workflow_followup','test_release_distribution_followup']]
+          commands += [([sys.executable,tool,'--check'],root) for tool in ['tools/build-surface.py','tools/sync-core.py','tools/build-host-packages.py']]
+          commands += [([sys.executable,'.github/scripts/'+name+'.py'],root) for name in ['check_destructive_registry','check_routing_index_parity','check_docs_contract']]
+          commands += [([sys.executable,'.github/scripts/check-plugin-refs.py',host],root) for host in ['ca','ca-codex','ca-pi']]
+          commands += [([sys.executable,'.github/scripts/payload_version_gate.py','--plugin',host,'--base',main],root) for host in ['plugins/ca','plugins/ca-codex']]
+          commands += [([sys.executable,'tools/build-host-packages.py','--release-guard-base',main],root)]
+          results=[]
+          for i,(args,cwd) in enumerate(commands):
+              name=f'{i:02d}-'+('coverage' if args[0]=='npm' else pathlib.Path(args[1]).stem)+'.log';start=time.monotonic()
+              try:
+                  done=subprocess.run(args,cwd=cwd,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=420,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),shell=os.name=='nt' and args[0]=='npm')
+                  code=done.returncode;content=done.stdout+done.stderr
+              except subprocess.TimeoutExpired:
+                  code=124;content='Timed out; not a passing result.\n'
+              (out/name).write_bytes(content.encode('utf-8'))
+              results.append({'command':args,'exit_code':code,'seconds':round(time.monotonic()-start,3),'log':name})
+              (out/'tests.json').write_bytes(json.dumps(results,indent=2).encode('utf-8'));print(code,' '.join(args),flush=True)
+          for row in payload['files']: assert oid((root/row['path']).read_bytes())==row['sha'],row['path']
+          assert not git('diff','--name-only').strip()
+          (out/'candidate.diff').write_bytes(git('diff','--binary','--full-index',main,fixture))
+          with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for row in payload['files']:z.write(root/row['path'],row['path'])
+          report={'main':main,'workflow_head':head,'platform':os.environ['PLATFORM_LABEL'],'tree':tree,'files':payload['files'],'all_commands_passed':all(r['exit_code']==0 for r in results),'command_count':len(results)}
+          (out/'manifest.json').write_bytes(json.dumps(report,indent=2).encode('utf-8'))
+          assert report['all_commands_passed'],'Inspect actual failures; no candidate publication inferred.'
+          PY
+      - name: Store verified blobs only, without updating any ref
+        if: matrix.label == 'linux'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-resumed';report=json.loads((out/'manifest.json').read_bytes())
+          assert report['all_commands_passed'] and report['workflow_head']==os.environ['GITHUB_SHA']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter' and os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
+          def api(method,path,payload=None):
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(payload).encode('utf-8') if payload is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:return json.load(response)
+          assert api('GET','/git/ref/heads/codex/farm-readiness-canary-isolation')['object']['sha']==report['workflow_head']
+          for row in report['files']:
+              data=pathlib.Path(row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              assert api('POST','/git/blobs',{'content':data.decode('utf-8'),'encoding':'utf-8'})['sha']==row['sha']
+          (out/'uploaded-blobs.json').write_bytes(json.dumps({'files':report['files'],'branch_updated':False},indent=2).encode('utf-8'))
+          PY
+      - name: Retain exact platform evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-resumed-${{ matrix.label }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-resumed/
           if-no-files-found: error
           retention-days: 3
