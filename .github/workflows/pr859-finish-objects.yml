@@ -1,0 +1,60 @@
+name: PR859 correction objects
+on:
+  push:
+    branches: [prep/pr859-finish-source-20260924]
+    paths: [.github/workflows/pr859-finish-objects.yml]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: e7ad85b6defb0b7ec4ca39e12cfb08bd8e20dab4
+          persist-credentials: false
+      - name: Reconstruct only the reviewed patch and create unreferenced blobs
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import base64, gzip, hashlib, json, os, pathlib, subprocess, urllib.request
+          expected = {
+              '.github/scripts/test_public_codex_docs.py': '4ff4b50389def5ebe95c38d5567981a5822ae98d',
+              'site/reviews/CONCEPTS-C03-SOURCES.md': '3f61a45dace7699317116184540f7ac6c108ea95',
+              'site/src/content/docs/concepts/persona-and-context.mdx': 'bab5fd4b89c0037af640d2d01b8df4825d27c7b3',
+              'site/test/browser/concepts-context.spec.ts': 'bdc6f5cff75651525921003692003d10e14fc6f8',
+              'site/test/content/concepts-context.test.ts': 'fcc8770ce84ae3c499bff5d82b2f2b9c47328237',
+          }
+          encoded = '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'
+          patch = gzip.decompress(base64.b64decode(encoded, validate=True))
+          assert len(patch) == 13773
+          assert hashlib.sha256(patch).hexdigest() == '2b56721b841d5a973a0e1dc1abf1e5baff1665f6cdf72f69129de0daa2cb4c14'
+          assert subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip() == 'e7ad85b6defb0b7ec4ca39e12cfb08bd8e20dab4'
+          subprocess.run(['git','apply','--check','--index','-'], input=patch, check=True)
+          subprocess.run(['git','apply','--index','-'], input=patch, check=True)
+          paths = subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines()
+          assert sorted(paths) == sorted(expected)
+          tree = subprocess.check_output(['git','write-tree'], text=True).strip()
+          assert tree == 'd475d4924a7db704cf678b3b5ec515462e2cee28'
+          entries = []
+          for path in paths:
+              raw = pathlib.Path(path).read_bytes()
+              digest = hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()
+              assert digest == expected[path]
+              request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs', data=json.dumps({'content':base64.b64encode(raw).decode(),'encoding':'base64'}).encode(), headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'}, method='POST')
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  returned = json.load(response)
+              assert returned['sha'] == digest
+              entries.append({'path':path,'mode':'100644','type':'blob','sha':digest})
+          out = pathlib.Path(os.environ['RUNNER_TEMP'])/'pr859-correction-objects'
+          out.mkdir()
+          (out/'objects.json').write_text(json.dumps({'base':'e7ad85b6defb0b7ec4ca39e12cfb08bd8e20dab4','tree':tree,'entries':entries}, indent=2)+'\n')
+          print(json.dumps({'tree':tree,'blob_count':len(entries)}))
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr859-correction-objects
+          path: ${{ runner.temp }}/pr859-correction-objects/
+          retention-days: 1
+          if-no-files-found: error
