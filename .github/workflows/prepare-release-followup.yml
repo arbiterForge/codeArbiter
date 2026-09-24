@@ -1,0 +1,59 @@
+name: Prepare release follow-up candidate
+
+on:
+  push:
+    branches: [prep/release-followup-20260923]
+    paths:
+      - .github/workflows/prepare-release-followup.yml
+      - .github/release-followup-transfer.json
+      - .github/release-followup-assemble.py
+
+permissions: {}
+
+jobs:
+  verify-and-store:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/prep/release-followup-20260923' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      TRANSFER_SHA256: 5d56f834041acb6446991cf4d5e3d5812a0d542b85488f281bbb33b45b200dd8
+    steps:
+      - name: Read the exact preparation inputs
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          path: control
+          persist-credentials: false
+      - name: Read the inspected source and history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 75b4d442ea42bdd19241608647419a390e1ee360
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply the exact patch and run the real repository checks
+        shell: bash
+        run: |
+          python3 "$GITHUB_WORKSPACE/control/.github/release-followup-assemble.py" verify \
+            "$GITHUB_WORKSPACE/candidate" \
+            "$GITHUB_WORKSPACE/control/.github/release-followup-transfer.json" \
+            "$RUNNER_TEMP/release-followup-evidence"
+      - name: Store verified unreferenced objects only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 "$GITHUB_WORKSPACE/control/.github/release-followup-assemble.py" store \
+            "$GITHUB_WORKSPACE/candidate" \
+            "$GITHUB_WORKSPACE/control/.github/release-followup-transfer.json" \
+            "$RUNNER_TEMP/release-followup-evidence"
+      - name: Retain candidate checks and object identities
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-followup-evidence
+          path: ${{ runner.temp }}/release-followup-evidence/
+          if-no-files-found: error
+          retention-days: 3
