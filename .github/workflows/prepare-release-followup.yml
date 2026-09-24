@@ -33,6 +33,11 @@ jobs:
           path: candidate
           fetch-depth: 0
           persist-credentials: false
+      - name: Retain source objects without checkout configuration or credentials
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-followup-evidence"
+          git -C "$GITHUB_WORKSPACE/candidate" bundle create "$RUNNER_TEMP/release-followup-evidence/source.bundle" --all
       - name: Apply the exact patch and run the real repository checks
         shell: bash
         run: |
