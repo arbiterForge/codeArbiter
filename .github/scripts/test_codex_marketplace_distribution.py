@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import base64
+import argparse
 import importlib.util
 import io
 import json
@@ -51,6 +53,11 @@ TOKEN_SPEC = importlib.util.spec_from_file_location(
 )
 TOKEN = importlib.util.module_from_spec(TOKEN_SPEC)
 TOKEN_SPEC.loader.exec_module(TOKEN)
+NPM_SPEC = importlib.util.spec_from_file_location(
+    "npm_publishlib", REPO / ".github/scripts/_npm_publishlib.py"
+)
+NPM = importlib.util.module_from_spec(NPM_SPEC)
+NPM_SPEC.loader.exec_module(NPM)
 
 
 def archive_bytes(members: dict[str, bytes]) -> bytes:
@@ -121,6 +128,12 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             ".agents/plugins/marketplace.json": self.catalog,
             "plugins/ca-codex/.codex-plugin/plugin.json": (
                 b'{"name":"ca-codex","version":"9.8.7"}\n'
+            ),
+            "plugins/ca-codex/package.json": (
+                b'{"name":"@arbiterforge/ca-codex","version":"9.8.7",'
+                b'"license":"AGPL-3.0-only","repository":{"type":"git",'
+                b'"url":"git+https://github.com/arbiterForge/codeArbiter.git"},'
+                b'"publishConfig":{"access":"public","provenance":true}}\n'
             ),
             "plugins/ca-codex/hooks/bridge.py": b"print('bridge')\n",
             "plugins/ca-codex/helpers/artifacts/release.json": release,
@@ -213,28 +226,266 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 self.assertFalse((self.root / f"distribution-{name}").exists())
         self.archive.write_bytes(original)
 
-    def test_promoted_catalog_pins_git_source_to_exact_commit_and_ref(self):
-        commit = "7" * 40
+    def test_builds_npm_package_from_exact_qualified_plugin_members(self):
+        output = self.root / "npm"
+        result = PACKAGER.build_codex_npm_package(
+            package_root=self.package_root,
+            package_cohort_sha256=self.receipt_sha256,
+            output=output,
+        )
+        package = output / result["file"]
+        observed = PACKAGER._read_archive(package)
+        expected = {
+            "package/" + name.removeprefix("plugins/ca-codex/"): data
+            for name, data in self.members.items()
+            if name.startswith("plugins/ca-codex/")
+        }
+        self.assertEqual(expected, {name: value[0] for name, value in observed.items()})
+        for name, (_data, mode) in observed.items():
+            expected_mode = 0o755 if name.endswith("ca-artifact-linux-amd64") else 0o644
+            self.assertEqual(expected_mode, mode, name)
+        self.assertEqual("@arbiterforge/ca-codex", result["package"])
+        self.assertEqual("9.8.7", result["version"])
+        self.assertEqual(self.receipt_sha256, result["cohort_sha256"])
+        self.assertRegex(result["integrity"], r"^sha512-[A-Za-z0-9+/]+={0,2}$")
+
+    def test_codex_npm_package_rejects_manifest_identity_drift(self):
+        changed = dict(self.members)
+        changed["plugins/ca-codex/package.json"] = (
+            b'{"name":"lookalike","version":"9.8.7"}\n'
+        )
+        self._write_package(changed)
+        with self.assertRaisesRegex(ValueError, "npm package identity"):
+            PACKAGER.build_codex_npm_package(
+                package_root=self.package_root,
+                package_cohort_sha256=self.receipt_sha256,
+                output=self.root / "npm-wrong-identity",
+            )
+
+    def test_registry_readback_accepts_only_the_exact_codex_package(self):
+        integrity = "sha512-" + base64.b64encode(b"x" * 64).decode("ascii")
+        document = {
+            "version": "9.8.7",
+            "dist": {
+                "integrity": integrity,
+                "attestations": {
+                    "url": (
+                        "https://registry.npmjs.org/-/npm/v1/attestations/"
+                        "@arbiterforge%2fca-codex@9.8.7"
+                    ),
+                    "provenance": {"predicateType": NPM.PROVENANCE_PREDICATE},
+                },
+            },
+        }
+        self.assertEqual(
+            "present",
+            NPM.classify_registry_lookup(
+                0, json.dumps(document), "", "9.8.7", integrity,
+                package="@arbiterforge/ca-codex",
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "attestation URL"):
+            NPM.classify_registry_lookup(
+                0, json.dumps(document), "", "9.8.7", integrity,
+                package="@arbiterforge/lookalike",
+            )
+
+    def test_codex_provenance_subject_binds_the_exact_npm_tarball(self):
+        integrity = "sha512-" + base64.b64encode(b"y" * 64).decode("ascii")
+        source_sha = "8" * 40
+        statement = {
+            "_type": "https://in-toto.io/Statement/v1",
+            "predicateType": NPM.PROVENANCE_PREDICATE,
+            "subject": [{
+                "name": "pkg:npm/%40arbiterforge/ca-codex@9.8.7",
+                "digest": {"sha512": (b"y" * 64).hex()},
+            }],
+            "predicate": {
+                "buildDefinition": {
+                    "externalParameters": {"workflow": {
+                        "repository": NPM.SOURCE_REPOSITORY,
+                        "ref": NPM.SOURCE_REF,
+                        "path": ".github/workflows/release.yml",
+                    }},
+                    "resolvedDependencies": [{
+                        "uri": f"git+{NPM.SOURCE_REPOSITORY}@{NPM.SOURCE_REF}",
+                        "digest": {"gitCommit": source_sha},
+                    }],
+                },
+                "runDetails": {"builder": {
+                    "id": "https://github.com/actions/runner/github-hosted"
+                }},
+            },
+        }
+        document = {"attestations": [{
+            "predicateType": NPM.PROVENANCE_PREDICATE,
+            "bundle": {"dsseEnvelope": {"payload": base64.b64encode(
+                json.dumps(statement).encode("utf-8")
+            ).decode("ascii")}},
+        }]}
+        self.assertEqual(
+            source_sha,
+            NPM.validate_attestation_document(
+                document, "9.8.7", integrity, source_sha,
+                package="@arbiterforge/ca-codex",
+            ),
+        )
+
+    def test_codex_prepare_refuses_registry_drift_before_publication(self):
+        tarball = self.root / "qualified.tgz"
+        tarball.write_bytes(b"qualified codex npm package")
+        integrity = "sha512-" + base64.b64encode(
+            hashlib.sha512(tarball.read_bytes()).digest()
+        ).decode("ascii")
+        metadata = self.root / "codex-npm.json"
+        metadata.write_text(json.dumps({
+            "package": "@arbiterforge/ca-codex",
+            "version": "9.8.7",
+            "file": tarball.name,
+            "size": tarball.stat().st_size,
+            "sha256": hashlib.sha256(tarball.read_bytes()).hexdigest(),
+            "integrity": integrity,
+            "cohort_sha256": "1" * 64,
+            "source_commit": self.source_commit,
+            "source_archive": self.archive.name,
+            "source_archive_sha256": hashlib.sha256(self.archive.read_bytes()).hexdigest(),
+            "members": {},
+        }), encoding="utf-8")
+        output = self.root / "outputs"
+        args = argparse.Namespace(
+            metadata=str(metadata), tarball=str(tarball),
+            expected_sha=self.source_commit, trusted_sha=self.source_commit,
+            expected_cohort_sha256="2" * 64,
+            expected_source_archive_sha256=hashlib.sha256(self.archive.read_bytes()).hexdigest(),
+            trusted_repo=str(self.source), npm="npm", output=str(output),
+            allow_continuation=False,
+        )
+        mismatched = subprocess.CompletedProcess(
+            ["npm"], 0,
+            stdout=json.dumps({"version": "9.8.7", "dist": {
+                "integrity": "sha512-wrong", "attestations": {}
+            }}), stderr="",
+        )
+        with mock.patch.object(NPM, "validate_release_source_binding"), \
+             mock.patch.object(NPM, "registry_lookup", return_value=mismatched):
+            with self.assertRaisesRegex(ValueError, "cohort"):
+                NPM.prepare_codex(args)
+            args.expected_cohort_sha256 = "1" * 64
+            with self.assertRaisesRegex(ValueError, "integrity"):
+                NPM.prepare_codex(args)
+        self.assertFalse(output.exists())
+
+    def _verify_codex_args(self, **overrides):
+        values = {
+            "version": "9.8.7",
+            "integrity": "sha512-" + base64.b64encode(b"v" * 64).decode("ascii"),
+            "expected_sha": self.source_commit,
+            "trusted_sha": self.source_commit,
+            "repo": str(self.source),
+            "npm": "npm",
+            "attempts": 2,
+            "delay_seconds": 0,
+            "readback_seconds": 1,
+            "allow_continuation": False,
+        }
+        values.update(overrides)
+        return argparse.Namespace(**values)
+
+    def _present_codex_lookup(self, args):
+        return subprocess.CompletedProcess(
+            ["npm"], 0,
+            stdout=json.dumps({
+                "version": args.version,
+                "dist": {
+                    "integrity": args.integrity,
+                    "attestations": {
+                        "url": (
+                            "https://registry.npmjs.org/-/npm/v1/attestations/"
+                            f"@arbiterforge%2fca-codex@{args.version}"
+                        ),
+                        "provenance": {"predicateType": NPM.PROVENANCE_PREDICATE},
+                    },
+                },
+            }),
+            stderr="",
+        )
+
+    def test_codex_verify_accepts_exact_registry_and_provenance_readback(self):
+        args = self._verify_codex_args()
+        evidence = {"attestations": []}
+        with mock.patch.object(NPM, "validate_release_source_binding"), \
+             mock.patch.object(NPM, "registry_lookup", return_value=self._present_codex_lookup(args)), \
+             mock.patch.object(NPM, "verify_registry_authenticity", return_value=evidence) as authentic, \
+             mock.patch.object(NPM, "validate_publication_attestation") as provenance:
+            self.assertEqual(0, NPM.verify_codex(args))
+        authentic.assert_called_once_with(
+            "npm", "9.8.7", package="@arbiterforge/ca-codex"
+        )
+        provenance.assert_called_once()
+
+    def test_codex_verify_rejects_absent_and_unavailable_readback(self):
+        args = self._verify_codex_args()
+        absent = subprocess.CompletedProcess(
+            ["npm"], 1, stdout=json.dumps({"error": {"code": "E404"}}),
+            stderr="npm error E404",
+        )
+        unavailable = subprocess.CompletedProcess(
+            ["npm"], 1, stdout=json.dumps({"error": {"code": "E503"}}),
+            stderr="npm error E503",
+        )
+        with mock.patch.object(NPM, "validate_release_source_binding"), \
+             mock.patch.object(NPM, "registry_lookup", return_value=absent) as lookup:
+            with self.assertRaisesRegex(ValueError, "did not become observable"):
+                NPM.verify_codex(args)
+            self.assertEqual(2, lookup.call_count)
+        with mock.patch.object(NPM, "validate_release_source_binding"), \
+             mock.patch.object(NPM, "registry_lookup", return_value=unavailable) as lookup:
+            with self.assertRaises(NPM.RegistryUnavailable):
+                NPM.verify_codex(args)
+            self.assertEqual(2, lookup.call_count)
+
+    def test_codex_verify_rejects_invalid_bounds_version_and_provenance(self):
+        with self.assertRaisesRegex(ValueError, "version"):
+            NPM.verify_codex(self._verify_codex_args(version="latest"))
+        for override in (
+            {"attempts": 0}, {"delay_seconds": -1}, {"readback_seconds": 0},
+        ):
+            with self.subTest(override=override):
+                with mock.patch.object(NPM, "validate_release_source_binding"):
+                    with self.assertRaisesRegex(ValueError, "bounds"):
+                        NPM.verify_codex(self._verify_codex_args(**override))
+        args = self._verify_codex_args()
+        with mock.patch.object(NPM, "validate_release_source_binding"), \
+             mock.patch.object(NPM, "registry_lookup", return_value=self._present_codex_lookup(args)) as lookup, \
+             mock.patch.object(NPM, "verify_registry_authenticity", return_value={}), \
+             mock.patch.object(
+                 NPM, "validate_publication_attestation",
+                 side_effect=ValueError("provenance mismatch"),
+             ):
+            with self.assertRaisesRegex(ValueError, "provenance mismatch"):
+                NPM.verify_codex(args)
+            self.assertEqual(1, lookup.call_count)
+
+    def test_promoted_catalog_pins_npm_source_to_exact_verified_version(self):
         promoted = json.loads(PACKAGER.promoted_codex_catalog(
             self.catalog,
-            distribution_url="https://github.com/arbiterForge/codeArbiter.git",
-            distribution_ref="refs/tags/ca-codex-dist-v9.8.7",
-            distribution_commit=commit,
+            package="@arbiterforge/ca-codex",
+            version="9.8.7",
+            registry="https://registry.npmjs.org",
         ))
         source = promoted["plugins"][0]["source"]
         self.assertEqual({
-            "source": "git-subdir",
-            "url": "https://github.com/arbiterForge/codeArbiter.git",
-            "path": "plugins/ca-codex",
-            "ref": "refs/tags/ca-codex-dist-v9.8.7",
-            "sha": commit,
+            "source": "npm",
+            "package": "@arbiterforge/ca-codex",
+            "version": "9.8.7",
+            "registry": "https://registry.npmjs.org",
         }, source)
-        with self.assertRaisesRegex(ValueError, "commit"):
+        with self.assertRaisesRegex(ValueError, "version"):
             PACKAGER.promoted_codex_catalog(
                 self.catalog,
-                distribution_url="https://github.com/arbiterForge/codeArbiter.git",
-                distribution_ref="refs/tags/ca-codex-dist-v9.8.7",
-                distribution_commit="main",
+                package="@arbiterforge/ca-codex",
+                version="latest",
+                registry="https://registry.npmjs.org",
             )
 
     def test_rejects_substituted_package_cohort_receipt(self):
@@ -265,7 +516,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             capture_output=True, text=True, encoding="utf-8",
         ).stdout)
 
-        result = PROMOTER.promote(
+        staged = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
             source_repo=self.source, source_commit=self.source_commit,
             remote_url=str(remote),
@@ -276,7 +527,7 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             ["git", "--git-dir", str(remote), "show-ref"], check=True,
             capture_output=True, text=True, encoding="utf-8",
         ).stdout
-        self.assertIn(result["distribution_commit"], refs)
+        self.assertIn(staged["distribution_commit"], refs)
         self.assertNotIn("refs/heads/ca-codex-marketplace", refs)
         result = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
@@ -284,6 +535,8 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
             version="9.8.7", work=self.root / "advanced", push=True,
             advance_channel=True, expected_marketplace_head=None,
+            expected_npm_integrity=staged["npm_integrity"],
+            expected_npm_sha256=staged["npm_sha256"],
         )
         refs = git_run(["git","--git-dir",str(remote),"show-ref"],check=True,
             capture_output=True,text=True,encoding="utf-8").stdout
@@ -292,9 +545,12 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             "git", "--git-dir", str(remote), "show",
             f'{result["marketplace_commit"]}:.agents/plugins/marketplace.json',
         ], check=True, capture_output=True, text=True, encoding="utf-8").stdout)
-        self.assertEqual(
-            result["distribution_commit"], catalog["plugins"][0]["source"]["sha"]
-        )
+        self.assertEqual({
+            "source": "npm",
+            "package": "@arbiterforge/ca-codex",
+            "version": "9.8.7",
+            "registry": "https://registry.npmjs.org",
+        }, catalog["plugins"][0]["source"])
         ledger = json.loads(git_run([
             "git", "--git-dir", str(remote), "show",
             f'{result["marketplace_commit"]}:{PROMOTER.LEDGER_PATH}',
@@ -303,6 +559,8 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertEqual(result["distribution_commit"], record["commit"])
         self.assertEqual(self.source_commit, record["source_commit"])
         self.assertEqual(self.receipt_sha256, record["cohort_sha256"])
+        self.assertEqual(result["npm_sha256"], record["npm_sha256"])
+        self.assertEqual(result["npm_integrity"], record["npm_integrity"])
         retry = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
             source_repo=self.source, source_commit=self.source_commit,
@@ -310,14 +568,19 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             catalog_url="https://github.com/arbiterForge/codeArbiter.git",
             version="9.8.7", work=self.root / "retry", push=True, advance_channel=True,
             expected_marketplace_head=result["marketplace_commit"],
+            expected_npm_integrity=result["npm_integrity"],
+            expected_npm_sha256=result["npm_sha256"],
         )
         self.assertEqual(result["distribution_commit"], retry["distribution_commit"])
         self.assertEqual(result["marketplace_commit"], retry["marketplace_commit"])
 
         older = dict(self.members)
         older["plugins/ca-codex/.codex-plugin/plugin.json"] = b'{"name":"ca-codex","version":"9.8.6"}\n'
+        older["plugins/ca-codex/package.json"] = older["plugins/ca-codex/package.json"].replace(
+            b'"version":"9.8.7"', b'"version":"9.8.6"'
+        )
         self._write_package(older)
-        PROMOTER.promote(
+        older_staged = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
             source_repo=self.source, source_commit=self.source_commit,
             remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
@@ -330,6 +593,8 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                 remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
                 version="9.8.6", work=self.root / "rollback", push=True,
                 advance_channel=True, expected_marketplace_head=result["marketplace_commit"],
+                expected_npm_integrity=older_staged["npm_integrity"],
+                expected_npm_sha256=older_staged["npm_sha256"],
             )
         after_rollback = git_run(
             ["git", "--git-dir", str(remote), "show-ref"], check=True,
@@ -366,12 +631,23 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         rulesets = action.index("Verify live Codex distribution rulesets")
         cold_receipt = action.index("Retain immutable durable cohort receipt on the Release")
         stage = action.index("Stage immutable qualified Codex distribution tag")
+        prepare_npm = action.index("Prepare exact qualified Codex npm package")
+        auth_npm = action.index("Configure authenticated npm scope for exact qualified Codex package")
+        publish_npm = action.index("Publish exact qualified Codex npm package from authenticated scope")
+        verify_npm = action.index("Verify Codex npm integrity and provenance readback")
+        cold_npm = action.index("Cold-install exact Codex npm package through a real marketplace")
         finalize = action.index("Publish qualified Release only after receipt readback")
         reverify = action.index("Reverify live Codex distribution rulesets before channel advance")
         advance = action.index("Advance protected Codex marketplace channel")
         self.assertLess(verify, cold_receipt)
         self.assertLess(cold_receipt, stage)
         self.assertLess(rulesets, stage)
+        self.assertLess(stage, prepare_npm)
+        self.assertLess(prepare_npm, auth_npm)
+        self.assertLess(auth_npm, publish_npm)
+        self.assertLess(publish_npm, verify_npm)
+        self.assertLess(verify_npm, cold_npm)
+        self.assertLess(cold_npm, finalize)
         self.assertLess(stage, finalize)
         self.assertLess(finalize, reverify)
         self.assertLess(reverify, advance)
@@ -391,11 +667,27 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertNotIn("promote-codex-marketplace.py", reverify_block)
         self.assertIn("git remote get-url origin", action)
         self.assertIn("--remote-url \"$REMOTE_URL\"", action)
+        auth_block = action[auth_npm:publish_npm]
+        self.assertIn("actions/setup-node@820762786026740c76f36085b0efc47a31fe5020", auth_block)
+        self.assertIn("registry-url: https://registry.npmjs.org", auth_block)
+        self.assertIn("scope: '@arbiterforge'", auth_block)
+        publish_block = action[publish_npm:verify_npm]
+        self.assertIn("NODE_AUTH_TOKEN: ${{ inputs.npm-token }}", publish_block)
+        self.assertIn("--registry=https://registry.npmjs.org/", publish_block)
+        cold_block = action[cold_npm:finalize]
+        self.assertIn("for CODEX_VERSION in 0.143.0 0.145.0", cold_block)
+        self.assertIn('"@openai/codex@$CODEX_VERSION"', cold_block)
+        self.assertIn("--npm-marketplace-version \"$VERSION\"", cold_block)
+        self.assertIn("--qualified-npm-metadata \"$NPM_METADATA\"", cold_block)
+        self.assertIn("NPM_METADATA: ${{ steps.codex-npm.outputs.metadata }}", cold_block)
+        self.assertIn("--require-artifact-capability", cold_block)
+        self.assertIn("NPM_CONFIG_USERCONFIG:", cold_block)
+        self.assertNotIn("NODE_AUTH_TOKEN", cold_block)
 
     def test_competing_marketplace_update_wins_and_expected_head_lease_fails(self):
         remote = self.root / "race.git"
         git_run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
-        current = PROMOTER.promote(
+        current_staged = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
             source_repo=self.source, source_commit=self.source_commit,
             remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
@@ -407,11 +699,16 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
             remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
             version="9.8.7", work=self.root / "race-current-channel", push=True,
             advance_channel=True,
+            expected_npm_integrity=current_staged["npm_integrity"],
+            expected_npm_sha256=current_staged["npm_sha256"],
         )
         newer = dict(self.members)
         newer["plugins/ca-codex/.codex-plugin/plugin.json"] = b'{"name":"ca-codex","version":"9.8.8"}\n'
+        newer["plugins/ca-codex/package.json"] = newer["plugins/ca-codex/package.json"].replace(
+            b'"version":"9.8.7"', b'"version":"9.8.8"'
+        )
         self._write_package(newer)
-        PROMOTER.promote(
+        newer_staged = PROMOTER.promote(
             package_root=self.package_root, cohort_sha256=self.receipt_sha256,
             source_repo=self.source, source_commit=self.source_commit,
             remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
@@ -446,6 +743,8 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
                     remote_url=str(remote), catalog_url="https://github.com/arbiterForge/codeArbiter.git",
                     version="9.8.8", work=self.root / "race-channel", push=True,
                     advance_channel=True, expected_marketplace_head=current["marketplace_commit"],
+                    expected_npm_integrity=newer_staged["npm_integrity"],
+                    expected_npm_sha256=newer_staged["npm_sha256"],
                 )
         observed = git_run(
             ["git", "--git-dir", str(remote), "rev-parse", "refs/heads/ca-codex-marketplace"],
@@ -526,6 +825,17 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         self.assertIn("codex-ruleset-verifier-actor-id: ${{ secrets.CODEX_RULESET_VERIFIER_APP_ID }}", release)
         self.assertIn("CODEX_RULESET_VERIFIER_APP_PRIVATE_KEY", release)
         self.assertEqual(4, release.count("umask 077"))
+        manual = release.split("  release-codex:", 1)[1].split("\n  release-sandbox:", 1)[0]
+        automatic = release.split("  auto-release-codex:", 1)[1].split("\n  auto-codex-cohort-gate:", 1)[0]
+        for block in (manual, automatic):
+            self.assertIn("id-token: write", block)
+            self.assertIn("npm-token: ${{ secrets.NPMJS_TOKEN }}", block)
+        security = (REPO / ".codearbiter/security-controls.md").read_text()
+        self.assertIn("first `@arbiterforge/ca-codex` publication", security)
+        self.assertIn("available to all organization repositories", security)
+        self.assertIn("npm privilege scope", security)
+        self.assertIn("only in the authenticated publish step", security)
+        self.assertIn("token-free npm configuration", security)
 
     def test_public_codex_install_uses_promoted_marketplace_ref(self):
         command = (
@@ -539,6 +849,12 @@ class CodexMarketplaceDistributionTests(unittest.TestCase):
         ):
             with self.subTest(path=relative):
                 self.assertIn(command, (REPO / relative).read_text(encoding="utf-8"))
+
+        readme = (REPO / "README.md").read_text(encoding="utf-8")
+        self.assertIn("exact verified `@arbiterforge/ca-codex` npm version", readme)
+        self.assertIn("codex plugin remove ca-codex@codearbiter", readme)
+        self.assertIn("codex plugin marketplace remove codearbiter", readme)
+        self.assertIn("does not migrate it to the npm-backed channel", readme)
 
 
 if __name__ == "__main__":

@@ -1930,3 +1930,78 @@ Securable and Reliable drove the call: the translator's scope is closed and fini
 Author ADR-0038 as proposed, recording the partial supersession of ADR-0014's "multiple-candidate path embedding" alternative for this specific grammar. Route the translator implementation to `/ca:fix`, test-first, per the regression-test obligations in `.codearbiter/specs/hooks-cross-host-path-races.md`. Update `.codearbiter/tech-stack.md`'s WSL-unsupported paragraph once the fix is proven.
 
 ---
+
+## DECISION-0066 — adr-0039-ca-codex-npm-marketplace — Publish qualified ca-codex packages to npm for marketplace installation
+
+**Date:** 2026-09-24
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — explicitly selected npm-backed marketplace distribution for ca-codex and authorized an ADR superseding only ADR-0029's no-npm-for-Codex clause.
+**Decision category:** architecture / release distribution
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** ADR-0029 excludes ca-codex from npm because Codex installs plugins through marketplaces.
+- **Scaffold position:** Codex marketplaces now support npm sources, while the repository-source install omits the native artifact payload added only to the qualified release cohort.
+- **Status type:** divergent
+
+### Decision
+Publish `@arbiterforge/ca-codex` only from the exact qualified Codex cohort member, require npm provenance and exact registry readback, and point the protected public marketplace channel only to the verified exact version. Partially supersede only ADR-0029's exclusion of ca-codex from npm; keep its ca-pi decision and all other host exclusions intact.
+
+### SMARTS rationale
+Reliable and Testable require consumer installs to contain the same native helper bytes exercised by the qualified cohort. Securable requires the publisher to preserve the existing digest boundary, use the protected release environment, and refuse marketplace promotion until registry integrity and provenance bind the exact package to the trusted source commit. Maintainable favors Codex's supported npm marketplace source over a second bespoke Git payload channel.
+
+### Implementation implication
+Generate the ca-codex npm package from the retained qualified Codex archive, add protected publication and readback to the existing release cohort, and replace the promoted public marketplace's Git source with an exact npm package source only after verification. Preserve all missing, substitution, linked-path, digest, and cold-execution refusals.
+
+---
+
+## DECISION-0067 — adr-0039-first-codex-npm-credential — Accept existing npm token residual risk for first publish
+
+**Date:** 2026-09-24
+**Status:** proposed
+**Supersedes:** none
+**Decided by:** SUaDtL@users.noreply.github.com — authorized the existing organization-wide NPMJS_TOKEN for the first @arbiterforge/ca-codex publication while requiring its ALL-repository visibility to remain documented as residual risk.
+**Decision category:** release security / credential scope
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** The protected Codex publisher consumes NPMJS_TOKEN but the available credential has organization-wide repository visibility.
+- **Scaffold position:** A package-scoped environment credential would reduce blast radius, while the protected job, exact registry binding, provenance verification, and cold install already constrain the publication path.
+- **Status type:** divergent
+
+### Decision
+Use the existing organization-wide NPMJS_TOKEN for the first @arbiterforge/ca-codex publish. Document the broader scope as residual risk, keep the credential confined to the protected publication steps, and do not widen or expose it. This decision does not authorize running a release.
+
+### SMARTS rationale
+Reliable favors unblocking the selected npm distribution with the credential already provisioned. Securable keeps the broader scope visible instead of misrepresenting environment protection as npm package scoping, while retaining exact provenance, integrity readback, and a real cold-install gate. Reversible leaves a later move to a dedicated token straightforward.
+
+### Implementation implication
+Document the residual risk in ADR-0039 and CODEX_DISTRIBUTION.md. Pass NPMJS_TOKEN only into the authenticated publish and public cold-install steps, never print it, and preserve the existing release-approval boundary.
+
+---
+
+## DECISION-0068 — adr-0039-credential-free-cold-install — Keep consumer proof anonymous
+
+**Date:** 2026-09-24
+**Status:** proposed
+**Supersedes:** DECISION-0067
+**Decided by:** SUaDtL@users.noreply.github.com — authorized the existing NPMJS_TOKEN for the first publish while retaining protected-job gating and no broader token exposure.
+**Decision category:** release security / consumer proof
+**Artifact-section-hash:** n/a
+
+### Variance summary
+- **Artifact position:** DECISION-0067's implementation implication included the public cold-install step among token consumers.
+- **Scaffold position:** A post-readback public consumer probe must not authenticate, because authentication could conceal a public-access defect and unnecessarily widen secret exposure.
+- **Status type:** divergent
+
+### Decision
+Expose NPMJS_TOKEN only to the authenticated npm publish step. Run the exact-version Codex marketplace cold install with a separate token-free npm configuration after public registry readback. This supersedes only DECISION-0067's cold-install token exposure; its authorization of the existing token for the first publish and its residual-risk record remain in force.
+
+### SMARTS rationale
+Testable and Reliable require the release gate to reproduce the public consumer path. Securable minimizes secret exposure and prevents authenticated access from masking a public package-access failure.
+
+### Implementation implication
+Override setup-node's authenticated user configuration in the cold-install step with a temporary registry-only npmrc, omit NODE_AUTH_TOKEN from that step, and regression-test both properties.
+
+---

@@ -30,6 +30,9 @@ REGISTRY = "https://registry.npmjs.org/"
 SCOPED_REGISTRY_OPTION = f"--@arbiterforge:registry={REGISTRY}"
 REPOSITORY_URL = "git+https://github.com/arbiterForge/codeArbiter.git"
 TAG_RE = re.compile(r"ca-pi-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z")
+CODEX_VERSION_RE = re.compile(
+    r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\Z"
+)
 SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
 PROVENANCE_PREDICATE = "https://slsa.dev/provenance/v1"
 REGISTRY_TIMEOUT_SECONDS = 30
@@ -869,6 +872,8 @@ def classify_registry_lookup(
     stderr: str,
     expected_version: str,
     expected_integrity: str,
+    *,
+    package: str = PACKAGE,
 ) -> str:
     if returncode != 0:
         codes = {
@@ -917,7 +922,7 @@ def classify_registry_lookup(
     provenance = attestations.get("provenance") if isinstance(attestations, dict) else None
     expected_attestation_url = (
         "https://registry.npmjs.org/-/npm/v1/attestations/"
-        f"@arbiterforge%2fca-pi@{expected_version}"
+        f"{package.replace('/', '%2f')}@{expected_version}"
     )
     if not isinstance(attestations, dict) or attestations.get("url") != expected_attestation_url:
         raise ValueError("npm provenance attestation URL is missing or untrusted")
@@ -943,6 +948,8 @@ def validate_attestation_document(
     version: str,
     integrity: str,
     trusted_sha: str | None,
+    *,
+    package: str = PACKAGE,
 ) -> str:
     if trusted_sha is not None:
         validate_sha(trusted_sha, "trusted workflow SHA")
@@ -969,7 +976,7 @@ def validate_attestation_document(
     if statement.get("predicateType") != PROVENANCE_PREDICATE:
         raise ValueError("npm provenance statement predicate is not trusted")
     expected_subject = {
-        "name": f"pkg:npm/%40arbiterforge/ca-pi@{version}",
+        "name": f"pkg:npm/{package.replace('@', '%40', 1)}@{version}",
         "digest": {"sha512": _integrity_hex(integrity)},
     }
     if statement.get("subject") != [expected_subject]:
@@ -1013,10 +1020,15 @@ def validate_attestation_document(
 def validate_publication_attestation(document: dict, version: str, integrity: str,
                                      *, release_source_sha: str,
                                      trusted_sha: str, trusted_repo: Path,
-                                     allow_continuation: bool) -> str:
+                                     allow_continuation: bool,
+                                     package: str = PACKAGE) -> str:
     """Bind npm provenance to this run or a prior authorized continuation run."""
+    attestation_args = {}
+    if package != PACKAGE:
+        attestation_args["package"] = package
     attested = validate_attestation_document(
-        document, version, integrity, None if allow_continuation else trusted_sha
+        document, version, integrity, None if allow_continuation else trusted_sha,
+        **attestation_args,
     )
     if allow_continuation:
         validate_continuation_revision(trusted_repo, release_source_sha, attested)
@@ -1054,7 +1066,7 @@ def _signature_failure_detail(evidence: object) -> str:
     return f"invalid={invalid_detail}; missing={missing_detail}; error={error_detail}"
 
 
-def verify_registry_authenticity(npm: str, version: str) -> dict:
+def verify_registry_authenticity(npm: str, version: str, *, package: str = PACKAGE) -> dict:
     """Use npm's supported Sigstore verifier; do not hand-roll bundle crypto."""
 
     with tempfile.TemporaryDirectory(prefix="codearbiter-npm-signatures-") as tmp:
@@ -1098,7 +1110,7 @@ def verify_registry_authenticity(npm: str, version: str) -> dict:
                     "--no-audit",
                     "--no-fund",
                     "--save-exact",
-                    f"{PACKAGE}@{version}",
+                    f"{package}@{version}",
                     f"--registry={REGISTRY}",
                     SCOPED_REGISTRY_OPTION,
                 ],
@@ -1147,20 +1159,20 @@ def verify_registry_authenticity(npm: str, version: str) -> dict:
         verified = evidence.get("verified")
         if not isinstance(verified, list) or len(verified) != 1:
             raise ValueError("npm signature verification did not identify one exact package")
-        package = verified[0]
-        if not isinstance(package, dict) or {
-            "name": package.get("name"),
-            "version": package.get("version"),
-            "location": package.get("location"),
-            "registry": package.get("registry"),
+        verified_package = verified[0]
+        if not isinstance(verified_package, dict) or {
+            "name": verified_package.get("name"),
+            "version": verified_package.get("version"),
+            "location": verified_package.get("location"),
+            "registry": verified_package.get("registry"),
         } != {
-            "name": PACKAGE,
+            "name": package,
             "version": version,
-            "location": f"node_modules/{PACKAGE}",
+            "location": f"node_modules/{package}",
             "registry": REGISTRY,
         }:
             raise ValueError("npm signature verification returned the wrong package identity")
-        bundles = package.get("attestationBundles")
+        bundles = verified_package.get("attestationBundles")
         if not isinstance(bundles, list) or len(bundles) > 8:
             raise ValueError("npm signature verification returned invalid attestation evidence")
         provenance = [
@@ -1199,6 +1211,7 @@ def registry_lookup(
     npm: str,
     version: str,
     *,
+    package: str = PACKAGE,
     timeout: float = REGISTRY_TIMEOUT_SECONDS,
 ) -> subprocess.CompletedProcess[str]:
     try:
@@ -1206,7 +1219,7 @@ def registry_lookup(
             [
                 npm,
                 "view",
-                f"{PACKAGE}@{version}",
+                f"{package}@{version}",
                 "version",
                 "dist",
                 "--json",
@@ -1259,6 +1272,140 @@ def load_prebuilt_pi_package(cohort_path: Path, tarball_path: Path, *, version: 
         raise ValueError("prebuilt Pi package bytes drifted from the cohort receipt")
     integrity = "sha512-" + base64.b64encode(hashlib.sha512(data).digest()).decode("ascii")
     return str(tarball_path.resolve()), integrity
+
+
+def _codex_npm_metadata(metadata_path: Path, tarball_path: Path,
+                        expected_sha: str, expected_cohort_sha256: str,
+                        expected_source_archive_sha256: str) -> dict:
+    if (metadata_path.is_symlink() or not metadata_path.is_file()
+            or tarball_path.is_symlink() or not tarball_path.is_file()
+            or metadata_path.resolve().parent != tarball_path.resolve().parent):
+        raise ValueError("Codex npm package and metadata must be real sibling files")
+    metadata = json.loads(
+        metadata_path.read_text(encoding="utf-8"), object_pairs_hook=_unique_object
+    )
+    expected_fields = {
+        "package", "version", "file", "size", "sha256", "integrity",
+        "cohort_sha256", "source_commit", "source_archive",
+        "source_archive_sha256", "members",
+    }
+    data = tarball_path.read_bytes()
+    integrity = "sha512-" + base64.b64encode(hashlib.sha512(data).digest()).decode("ascii")
+    if (not isinstance(metadata, dict) or set(metadata) != expected_fields
+            or metadata.get("package") != "@arbiterforge/ca-codex"
+            or CODEX_VERSION_RE.fullmatch(metadata.get("version", "")) is None
+            or metadata.get("source_commit") != expected_sha
+            or metadata.get("file") != tarball_path.name
+            or metadata.get("size") != len(data)
+            or metadata.get("sha256") != hashlib.sha256(data).hexdigest()
+            or metadata.get("integrity") != integrity
+            or re.fullmatch(r"[0-9a-f]{64}", expected_cohort_sha256) is None
+            or metadata.get("cohort_sha256") != expected_cohort_sha256
+            or re.fullmatch(r"[0-9a-f]{64}", expected_source_archive_sha256) is None
+            or metadata.get("source_archive_sha256") != expected_source_archive_sha256
+            or not isinstance(metadata.get("source_archive"), str)
+            or Path(metadata["source_archive"]).name != metadata["source_archive"]
+            or not isinstance(metadata.get("members"), dict)):
+        raise ValueError("Codex npm package metadata is not bound to the exact qualified cohort")
+    return metadata
+
+
+def prepare_codex(args: argparse.Namespace) -> int:
+    trusted_repo = Path(args.trusted_repo).resolve()
+    validate_release_source_binding(
+        trusted_repo, trusted_repo, args.expected_sha, args.trusted_sha,
+        allow_continuation=getattr(args, "allow_continuation", False),
+    )
+    validate_project_registry(trusted_repo)
+    metadata = _codex_npm_metadata(
+        Path(args.metadata), Path(args.tarball), args.expected_sha,
+        args.expected_cohort_sha256, args.expected_source_archive_sha256,
+    )
+    version = metadata["version"]
+    integrity = metadata["integrity"]
+    lookup = registry_lookup(
+        args.npm, version, package="@arbiterforge/ca-codex"
+    )
+    state = classify_registry_lookup(
+        lookup.returncode, lookup.stdout, lookup.stderr, version, integrity,
+        package="@arbiterforge/ca-codex",
+    )
+    if state == "present":
+        verified_document = verify_registry_authenticity(
+            args.npm, version, package="@arbiterforge/ca-codex"
+        )
+        validate_publication_attestation(
+            verified_document, version, integrity,
+            release_source_sha=args.expected_sha, trusted_sha=args.trusted_sha,
+            trusted_repo=trusted_repo,
+            allow_continuation=getattr(args, "allow_continuation", False),
+            package="@arbiterforge/ca-codex",
+        )
+    with Path(args.output).open("a", encoding="utf-8", newline="\n") as stream:
+        stream.write(f"version={version}\n")
+        stream.write(f"tarball={Path(args.tarball).resolve()}\n")
+        stream.write(f"metadata={Path(args.metadata).resolve()}\n")
+        stream.write(f"integrity={integrity}\n")
+        stream.write(f"sha256={metadata['sha256']}\n")
+        stream.write(f"cohort-sha256={metadata['cohort_sha256']}\n")
+        stream.write(f"skip={'true' if state == 'present' else 'false'}\n")
+        stream.write(f"publication-mode={'existing' if state == 'present' else 'new'}\n")
+    return 0
+
+
+def verify_codex(args: argparse.Namespace) -> int:
+    if CODEX_VERSION_RE.fullmatch(args.version) is None:
+        raise ValueError("Codex npm publication version must be exact stable SemVer")
+    trusted_repo = Path(args.repo).resolve()
+    validate_release_source_binding(
+        trusted_repo, trusted_repo, args.expected_sha, args.trusted_sha,
+        allow_continuation=getattr(args, "allow_continuation", False),
+    )
+    if args.attempts < 1 or args.delay_seconds < 0 or args.readback_seconds <= 0:
+        raise ValueError("npm publication readback bounds are invalid")
+    deadline = time.monotonic() + args.readback_seconds
+    last_unavailable: RegistryUnavailable | None = None
+    state = "absent"
+    for attempt in range(args.attempts):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        try:
+            lookup = registry_lookup(
+                args.npm, args.version, package="@arbiterforge/ca-codex",
+                timeout=min(REGISTRY_TIMEOUT_SECONDS, remaining),
+            )
+            state = classify_registry_lookup(
+                lookup.returncode, lookup.stdout, lookup.stderr,
+                args.version, args.integrity, package="@arbiterforge/ca-codex",
+            )
+        except RegistryUnavailable as exc:
+            last_unavailable = exc
+            if attempt + 1 >= args.attempts:
+                raise
+            state = "unavailable"
+        if state == "present":
+            verified_document = verify_registry_authenticity(
+                args.npm, args.version, package="@arbiterforge/ca-codex"
+            )
+            validate_publication_attestation(
+                verified_document, args.version, args.integrity,
+                release_source_sha=args.expected_sha, trusted_sha=args.trusted_sha,
+                trusted_repo=trusted_repo,
+                allow_continuation=getattr(args, "allow_continuation", False),
+                package="@arbiterforge/ca-codex",
+            )
+            print(
+                f"verified @arbiterforge/ca-codex@{args.version} "
+                "integrity and provenance"
+            )
+            return 0
+        remaining = deadline - time.monotonic()
+        if attempt + 1 < args.attempts and remaining > 0:
+            time.sleep(min(args.delay_seconds, remaining))
+    if last_unavailable is not None and state == "unavailable":
+        raise last_unavailable
+    raise ValueError("npm publication did not become observable before the evidence deadline")
 
 
 def prepare(args: argparse.Namespace) -> int:
@@ -1396,6 +1543,28 @@ def parser() -> argparse.ArgumentParser:
     verify_parser.add_argument(
         "--readback-seconds", type=float, default=REGISTRY_READBACK_SECONDS
     )
+    codex_prepare = sub.add_parser("prepare-codex")
+    codex_prepare.add_argument("--metadata", required=True)
+    codex_prepare.add_argument("--tarball", required=True)
+    codex_prepare.add_argument("--expected-sha", required=True)
+    codex_prepare.add_argument("--trusted-sha", required=True)
+    codex_prepare.add_argument("--expected-cohort-sha256", required=True)
+    codex_prepare.add_argument("--expected-source-archive-sha256", required=True)
+    codex_prepare.add_argument("--trusted-repo", default=".")
+    codex_prepare.add_argument("--npm", default="npm")
+    codex_prepare.add_argument("--output", required=True)
+    codex_prepare.add_argument("--allow-continuation", action="store_true")
+    codex_verify = sub.add_parser("verify-codex")
+    codex_verify.add_argument("--version", required=True)
+    codex_verify.add_argument("--integrity", required=True)
+    codex_verify.add_argument("--expected-sha", required=True)
+    codex_verify.add_argument("--trusted-sha", required=True)
+    codex_verify.add_argument("--repo", default=".")
+    codex_verify.add_argument("--npm", default="npm")
+    codex_verify.add_argument("--attempts", type=int, default=REGISTRY_READBACK_ATTEMPTS)
+    codex_verify.add_argument("--delay-seconds", type=float, default=REGISTRY_READBACK_DELAY_SECONDS)
+    codex_verify.add_argument("--readback-seconds", type=float, default=REGISTRY_READBACK_SECONDS)
+    codex_verify.add_argument("--allow-continuation", action="store_true")
     cohort_parser = sub.add_parser("verify-cohort")
     cohort_parser.add_argument("--package-root", required=True)
     cohort_parser.add_argument("--stage-root", required=True)
@@ -1463,6 +1632,10 @@ def main(argv: list[str] | None = None) -> int:
                 stream.write(f"cohort-sha256={hashlib.sha256(cohort_path.read_bytes()).hexdigest()}\n")
                 stream.write(f"source-tree={receipt['source_tree']}\n")
             return 0
+        if args.command == "prepare-codex":
+            return prepare_codex(args)
+        if args.command == "verify-codex":
+            return verify_codex(args)
         if args.command == "reconcile-state":
             current = json.loads(Path(args.current).read_text(encoding="utf-8"),
                                  object_pairs_hook=_unique_object)
