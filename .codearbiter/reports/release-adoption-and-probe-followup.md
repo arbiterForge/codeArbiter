@@ -11,7 +11,7 @@ Scope: the three remaining findings from the post-#845 review. This does not reo
 - RR-02: centralize the direct clean-tree predicate in an executable shell guard: the existing target-aware probe must exit zero AND print no porcelain output. Dirty, failed, and timed-out inspection stop the invoking lane before its following operation. Wire the guard through preparation, post-commit, hosted-build, and recovery call sites without changing the underlying helper exit-code contract.
 - RR-03: execute installed shell definitions in real temporary consumer repositories. The new tests create a local bare origin, publish application history, validate the declaration's reconciliation ledger, land it using three merge methods, fetch it, and re-enter from a new release branch. Refusal tests place an actual guard invocation before a controlled write attempt. Existing partial ancestry/tag fixtures are now labeled as partial; their useful assertions are retained, while a consecutive-snapshot no-op assertion is removed.
 
-Canonical source owns the change. tools/build-surface.py regenerated the Claude, Codex, and Pi release instructions. No public command, hosted publisher, confirmation authority, release-target schema, published tag, or repository setting was changed.
+Canonical source owns the change. tools/build-surface.py regenerated the Claude, Codex, and Pi release instructions. No public command was added or removed; `release --dry-run` preflight behavior changed as described below. No published tag or repository setting was changed.
 
 ## Source verification
 
