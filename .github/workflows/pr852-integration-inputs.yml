@@ -1,0 +1,55 @@
+name: Inspect PR852 integration inputs
+on:
+  push:
+    branches: [prep/pr852-integration-20260924]
+    paths: [.github/workflows/pr852-integration-inputs.yml]
+permissions:
+  contents: read
+  actions: read
+  checks: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/prep/pr852-integration-20260924'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: cf90ce4d79c5d87cb88f163535c1035da2315815
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture only the authorized repository and pinned histories
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pr852-inputs"
+          git fetch --no-tags origin 7fe42851182ac4a231ee2a4c43322d0fd35489e8
+          git update-ref refs/heads/capture-main cf90ce4d79c5d87cb88f163535c1035da2315815
+          git update-ref refs/heads/capture-pr 7fe42851182ac4a231ee2a4c43322d0fd35489e8
+          git bundle create "$RUNNER_TEMP/pr852-inputs/source.bundle" refs/heads/capture-main refs/heads/capture-pr
+          gh api 'repos/arbiterForge/codeArbiter/commits/7fe42851182ac4a231ee2a4c43322d0fd35489e8/check-runs?per_page=100' > "$RUNNER_TEMP/pr852-inputs/checks.json"
+          gh api 'repos/arbiterForge/codeArbiter/actions/runs/35942517509/jobs?per_page=100' > "$RUNNER_TEMP/pr852-inputs/jobs.json"
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr852-inputs'
+          result=json.loads((out/'jobs.json').read_text())
+          jobs=result['jobs']
+          if result['total_count'] != len(jobs):
+              raise RuntimeError('Job listing incomplete')
+          summary=[dict(id=j['id'],name=j['name'],conclusion=j['conclusion']) for j in jobs]
+          (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          for job in jobs:
+              if job['conclusion']=='failure':
+                  with (out/f"job-{job['id']}.log").open('wb') as handle:
+                      subprocess.run(['gh','api',f"repos/arbiterForge/codeArbiter/actions/jobs/{job['id']}/logs"],check=True,stdout=handle)
+          print(json.dumps([j for j in summary if j['conclusion']=='failure'],indent=2))
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr852-integration-inputs
+          path: ${{ runner.temp }}/pr852-inputs/
+          retention-days: 3
+          if-no-files-found: error
