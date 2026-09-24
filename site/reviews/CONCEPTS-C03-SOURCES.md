@@ -85,3 +85,20 @@ the PR rather than claiming this source note is a completed execution receipt.
 C04 broader workflow propagation remains open. Roll back C03 presentation and tests as a coherent
 unit while preserving public addresses, C01/C02, the earlier mobile corrections and the validated
 CI/arrow fix. Do not alter actual project records or historical authority to roll back documentation.
+
+
+## Finalization correction after the interrupted continuation
+
+The resumed inspection at `e7ad85b6defb0b7ec4ca39e12cfb08bd8e20dab4` found that all six native
+artifact jobs passed with the bounded deadline correction. The three platform contract jobs failed
+at `test_public_codex_docs.py`, and aggregate merge readiness rejected those failures. Locally, the
+unchanged validator reproduced four missing-file errors because the role page moved to MDX.
+
+Changing the source path alone exposed fourteen further failures: the rewrite had also dropped
+its exact packaged-role lookup and release-scoped Codex evidence. The repair keeps every existing
+assertion, points all four consumers at one MDX source constant, and restores the complete roster
+and the bounded 0.7.5/0.9.4 evidence under a native disclosure. It does not restore the obsolete
+claim that only three roles write or that all reviewers are read-only by construction. Added source
+and browser tests compare the roster links with actual packaged charters and inspect the expanded
+mobile disclosure with JavaScript disabled and doubled text. Current-head hosted results belong in
+the PR evidence, not in this source note as an assumed pass.

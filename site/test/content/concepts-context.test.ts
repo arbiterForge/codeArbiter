@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import capture from '../../src/data/context-examples.json';
 import { GET } from '../../src/pages/examples/context-observations.json';
@@ -85,6 +85,21 @@ describe('C03 teaching and historical boundaries', () => {
     expect(source('core/pysrc/session-start.py')).toContain('persona injection REMOVED');
     expect(source('core/pysrc/prompt-submit.py')).toContain('_compose_persona');
     expect(roles).toContain('initial="task"');
+  });
+  it('preserves every packaged-role destination and the bounded release evidence', () => {
+    const roles = page('persona-and-context');
+    const reference = roles.match(/<details data-role-reference="packaged-charters">([\s\S]*?)<\/details>/)?.[1] ?? '';
+    const charters = readdirSync('../plugins/ca-codex/agents')
+      .filter(name => name.endsWith('.md') && name !== 'INDEX.md')
+      .map(name => name.slice(0, -3)).sort();
+    const links = [...reference.matchAll(/\]\(\/reference\/agents\/([^/]+)\/\)/g)].map(match => match[1]).sort();
+    expect(links).toEqual(charters);
+    expect(reference).toContain('complete packaged resource charter set for that release');
+    expect(reference).toContain('bounded 0.9.4 receipt');
+    expect(reference).toContain('canonical workflow explicitly permits it and isolation is not mandatory');
+    expect(reference).toContain('writer remains distinct from the read-only funnel');
+    expect(roles).not.toContain('Every reviewer is read-only by construction');
+    expect(roles).not.toContain('Three agents carry write tools');
   });
   it('preserves the historical bibliography verbatim without current benchmark claims', () => {
     const current = read('src/content/docs/concepts/persona-research-basis.md');

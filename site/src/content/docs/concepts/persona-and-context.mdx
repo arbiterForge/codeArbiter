@@ -140,6 +140,49 @@ and the [artifact authority limits](/guides/review-artifacts/#check-your-hosts-a
 for the installed workflow. An allowed inline fallback is a particular contract exception, not
 permission to simulate an isolated reviewer whenever spawning is inconvenient.
 
+<details data-role-reference="packaged-charters">
+<summary>Inspect the packaged role names and release-scoped evidence</summary>
+
+Published releases from 0.7.5 include the complete packaged resource charter set for that release
+for Codex reviewers and authors in host-provided agent threads. Exact static-package and
+route-closure checks establish package contents, not the execution of every possible route.
+A bounded 0.9.4 receipt proves one exact installed-charter review. It does not claim enforced
+read-only isolation, every route, or process cleanup. The bounded inline fallback applies only
+where the canonical workflow explicitly permits it and isolation is not mandatory.
+[Inspect that evidence and its limits](/getting-started/claude-code-and-codex/#intentional-host-differences)
+before extending it to another version or workflow.
+
+The current role names below are lookup destinations, not additional commands. The owning skill
+still determines which roles participate. Read each charter's tools and output contract rather
+than assuming its family label establishes a security boundary.
+
+**Authors:** [backend-author](/reference/agents/backend-author/),
+[frontend-author](/reference/agents/frontend-author/),
+[infra-author](/reference/agents/infra-author/).
+
+**Scoped reviewers:** [security-reviewer](/reference/agents/security-reviewer/),
+[auth-crypto-reviewer](/reference/agents/auth-crypto-reviewer/),
+[dependency-reviewer](/reference/agents/dependency-reviewer/),
+[migration-reviewer](/reference/agents/migration-reviewer/),
+[coverage-auditor](/reference/agents/coverage-auditor/),
+[architecture-drift-reviewer](/reference/agents/architecture-drift-reviewer/),
+[design-quality-reviewer](/reference/agents/design-quality-reviewer/),
+[tribunal-lens-reviewer](/reference/agents/tribunal-lens-reviewer/).
+
+**Discovery:** [scout](/reference/agents/scout/),
+[map-structure](/reference/agents/map-structure/), [map-deps](/reference/agents/map-deps/).
+
+**Decision assessment:** [grader](/reference/agents/grader/),
+[decision-challenger](/reference/agents/decision-challenger/).
+
+**Read-only result processing:** [finding-triage](/reference/agents/finding-triage/),
+[verdict-aggregator](/reference/agents/verdict-aggregator/).
+
+**Explicit report persistence:** [checkpoint-aggregator](/reference/agents/checkpoint-aggregator/).
+This writer remains distinct from the read-only funnel, even though its classification is reviewer.
+
+</details>
+
 When a worker fails, preserve its terminal state and relevant diagnostics. Do not invent its
 missing verdict or treat another worker's success as coverage of the failed scope. Return through
 [Investigation](/guides/investigate-and-fix/) or

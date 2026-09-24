@@ -1,13 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import capture from '../../src/data/context-examples.json' with { type: 'json' };
 
 const concepts = ['provenance-drift', 'jit-context-injection', 'persona-and-context'];
 const roots = 'ca-context-explorer, ca-execution-map';
-const textRoots = 'ca-context-explorer, .ca-execution-map__reading';
+const textRoots = 'ca-context-explorer, .ca-execution-map__reading, [data-role-reference]';
 
 /** Inspect actual text rectangles, not only a containing page's scroll width. */
 async function readable(page: Page) {
@@ -140,6 +140,35 @@ test('historical rationale and hardening remain explicitly separate from current
   }
 });
 
+test('the exact role lookup stays complete and readable without JavaScript or lost release limits', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 1000 } });
+  try {
+    const page = await context.newPage();
+    await page.goto('http://127.0.0.1:4322/concepts/persona-and-context/');
+    const disclosure = page.locator('[data-role-reference="packaged-charters"]');
+    const summary = disclosure.locator('summary');
+    await summary.focus(); await page.keyboard.press('Enter');
+    await expect(disclosure).toHaveAttribute('open', '');
+    const charters = readdirSync(join(process.cwd(), '..', 'plugins', 'ca-codex', 'agents'))
+      .filter(name => name.endsWith('.md') && name !== 'INDEX.md')
+      .map(name => name.slice(0, -3)).sort();
+    const roleLinks = disclosure.locator('a[href^="/reference/agents/"]');
+    expect((await roleLinks.allTextContents()).sort()).toEqual(charters);
+    await expect(disclosure).toContainText('complete packaged resource charter set for that release');
+    await expect(disclosure).toContainText('bounded 0.9.4 receipt');
+    await expect(disclosure).toContainText('isolation is not mandatory');
+    await expect(disclosure).toContainText('writer remains distinct from the read-only funnel');
+    const original = await disclosure.textContent();
+    await readable(page);
+    const size = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+    await page.evaluate(fontSize => { document.documentElement.style.fontSize = `${fontSize * 2}px`; }, size);
+    expect(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize))).toBeCloseTo(size * 2, 2);
+    expect(await disclosure.textContent()).toBe(original);
+    await readable(page);
+    await roleLinks.last().focus(); await expect(roleLinks.last()).toBeFocused();
+  } finally { await context.close(); }
+});
+
 test('record complete C03 pages, pointer cases and aligned arrows from the built candidate', async ({ page }) => {
   const directory = join(process.cwd(), '.astro', 'browser-evidence'); mkdirSync(directory, { recursive: true });
   const observations: Record<string, unknown> = {
@@ -154,6 +183,11 @@ test('record complete C03 pages, pointer cases and aligned arrows from the built
       // The full-page capture shows the ordinary initial view, not an invented state.
       observations[`${slug}-${width}`] = await readable(page);
       await page.screenshot({ path: join(directory, `c03-${slug}-${width}.png`), fullPage: true });
+      if (slug === 'persona-and-context') {
+        await page.locator('[data-role-reference] summary').click();
+        observations[`roles-open-${width}`] = await readable(page);
+        await page.screenshot({ path: join(directory, `c03-roles-open-${width}.png`), fullPage: true });
+      }
     }
     await page.goto('/concepts/jit-context-injection/');
     for (const item of capture.cases) {
