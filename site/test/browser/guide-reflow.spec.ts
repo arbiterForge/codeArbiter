@@ -8,6 +8,7 @@ import { guideGroups } from '../../scripts/guide-directory';
 const targets = ['review-and-ship', 'investigate-and-fix'];
 const tables = (page: Page) => page.locator('table[data-ca-table="stacked"]');
 const values = (page: Page) => page.locator('.ca-table-cell-value').allTextContents();
+const exampleLines = (page: Page) => page.locator('.expressive-code .ec-line .code').allTextContents();
 
 /** Compare the layout with its content-box query, not the outer viewport width. */
 async function assertPresentation(page: Page) {
@@ -62,7 +63,9 @@ async function inspectCells(page: Page) {
         }
       }
     }
-    return { clientWidth: shell.clientWidth, scrollWidth: shell.scrollWidth,
+    const rect = shell.getBoundingClientRect();
+    return { box: { x: rect.x + window.scrollX, y: rect.y + window.scrollY, width: rect.width, height: rect.height },
+      clientWidth: shell.clientWidth, scrollWidth: shell.scrollWidth,
       cellCount: cellValues.length, clips, values: cellValues.map(cell => cell.textContent),
       columnCount: shell.querySelectorAll('thead th').length,
       rowCount: shell.querySelectorAll('tbody tr').length };
@@ -90,10 +93,12 @@ for (const slug of targets) {
       await page.setViewportSize({ width: 1440, height: 1000 });
       await page.goto(`/guides/${slug}/`); await page.evaluate(() => document.fonts.ready);
       const original = await values(page);
+      const code = await exampleLines(page);
       await expect(tables(page)).toHaveCount(3);
       expect(original.length).toBeGreaterThan(20);
       await page.setViewportSize({ width, height: 1000 });
       expect(await values(page)).toEqual(original);
+      expect(await exampleLines(page)).toEqual(code);
       await assertReadable(page);
       await assertPresentation(page);
     });
@@ -154,8 +159,10 @@ test('table content stays readable with enlarged text and without JavaScript', a
     await page.goto(`http://127.0.0.1:4322/guides/${slug}/`);
     await assertReadable(page);
     const original = await values(page);
+    const code = await exampleLines(page);
     await enlargeText(page);
     expect(await values(page)).toEqual(original);
+    expect(await exampleLines(page)).toEqual(code);
     await assertPresentation(page);
     await assertReadable(page);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -215,9 +222,9 @@ test('capture complete corrected tables and the investigation guide at desktop a
       evidence[`${slug}-${width}`] = await inspectCells(page);
       if (width <= 390) await assertReadable(page);
       await page.screenshot({ path: join(directory, `${slug}-reflow-${width}.png`), fullPage: true });
-      for (let index = 0; index < await tables(page).count(); index++) {
-        await page.locator('.ca-table-shell--stackable').nth(index).screenshot({ path: join(directory, `${slug}-table-${index + 1}-${width}.png`) });
-      }
+      // Crop detailed table views from this full-page image using the recorded
+      // document boxes. Element screenshots of tall tables can capture a sticky
+      // navigation bar over the middle of the table after automatic scrolling.
     }
   }
   await page.setViewportSize({ width: 390, height: 1000 });
@@ -227,6 +234,6 @@ test('capture complete corrected tables and the investigation guide at desktop a
   await page.emulateMedia({ forcedColors: 'none' });
   await enlargeText(page);
   evidence['review-and-ship-enlarged-390'] = await assertReadable(page);
-  await page.locator('.ca-table-shell--stackable').nth(1).screenshot({ path: join(directory, 'review-host-entries-enlarged-390.png') });
+  await page.screenshot({ path: join(directory, 'review-and-ship-enlarged-390.png'), fullPage: true });
   writeFileSync(join(directory, 'guide-reflow-evidence.json'), JSON.stringify(evidence, null, 2));
 });

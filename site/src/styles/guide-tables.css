@@ -5,6 +5,14 @@
 .ca-table-cell-label { display: none; }
 .ca-table-cell-value { margin: 0; }
 
+/* An explicit wrap example must fit even after text enlargement. Expressive
+ * Code's default 20ch minimum otherwise exceeds a narrow reading column.
+ * Non-wrapping source blocks keep their existing horizontal-scroll behavior. */
+.sl-markdown-content .expressive-code pre.wrap .ec-line .code {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
 @container (max-width: 40rem) {
   .ca-table-shell--stackable table {
     display: block;
