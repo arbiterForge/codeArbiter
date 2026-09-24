@@ -1,0 +1,36 @@
+name: Prepare PR852 origin integration
+on:
+  push:
+    branches: [prep/pr852-origin-sync-20260924]
+    paths: [.github/workflows/prepare-pr852-origin.yml]
+permissions: {}
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/prep/pr852-origin-sync-20260924'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 7fe42851182ac4a231ee2a4c43322d0fd35489e8
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain only the two inspected histories and release tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 7fe42851182ac4a231ee2a4c43322d0fd35489e8
+          git cat-file -e cf90ce4d79c5d87cb88f163535c1035da2315815^{commit}
+          git update-ref refs/heads/snapshot-pr 7fe42851182ac4a231ee2a4c43322d0fd35489e8
+          git update-ref refs/heads/snapshot-main cf90ce4d79c5d87cb88f163535c1035da2315815
+          mkdir -p "$RUNNER_TEMP/pr852-source"
+          git bundle create "$RUNNER_TEMP/pr852-source/source.bundle" refs/heads/snapshot-pr refs/heads/snapshot-main --tags
+          sha256sum "$RUNNER_TEMP/pr852-source/source.bundle" > "$RUNNER_TEMP/pr852-source/SHA256SUMS"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr852-origin-source
+          path: ${{ runner.temp }}/pr852-source/
+          retention-days: 3
+          if-no-files-found: error
