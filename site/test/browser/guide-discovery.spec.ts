@@ -109,6 +109,21 @@ for (const width of [320, 390, 768, 1024, 1440]) {
   });
 }
 
+test('normal-color directory and delivery map meet scoped accessibility checks', async ({ page }) => {
+  await page.goto('/guides/');
+  await expect(page.getByLabel('What do you need to do?', { exact: true })).toBeVisible();
+  for (const category of ['all', 'review-and-ship']) {
+    await page.getByLabel('Task group', { exact: true }).selectOption(category);
+    const result = await new AxeBuilder({ page }).include('ca-guide-directory')
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(result.violations).toEqual([]);
+  }
+  await page.goto('/guides/review-and-ship/');
+  const result = await new AxeBuilder({ page }).include('[data-reader-journey="review-delivery-map"]')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  expect(result.violations).toEqual([]);
+});
+
 test('keyboard filtering, hidden targets, print and forced colors retain a usable reading path', async ({ page }) => {
   await page.emulateMedia({ forcedColors: 'active' });
   await page.goto('/guides/');
@@ -143,5 +158,11 @@ test('record actual guide discovery and review-to-delivery layouts', async ({ pa
     await page.screenshot({ path: join(directory, `review-and-ship-${width}.png`), fullPage: true });
     await page.locator('[data-reader-journey]').screenshot({ path: join(directory, `review-delivery-map-${width}.png`) });
   }
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.emulateMedia({ forcedColors: 'active' });
+  await page.goto('/guides/');
+  await page.getByLabel('Task group', { exact: true }).selectOption('review-and-ship');
+  await page.getByLabel('What do you need to do?', { exact: true }).focus();
+  await page.screenshot({ path: join(directory, 'guide-directory-forced-colors-390.png'), fullPage: true });
   writeFileSync(join(directory, 'guide-discovery-geometry.json'), JSON.stringify(evidence, null, 2));
 });

@@ -106,6 +106,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .ca-guide-directory dt { color: var(--ca-ink-muted); }
   .ca-guide-directory dd { margin: 0; color: var(--ca-ink); }
   @container (min-width: 36rem) { .ca-guide-directory__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ca-guide-directory__filters { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } .ca-guide-directory__filters button { justify-self: start; } }
-  @media (forced-colors: active) { .ca-guide-directory__card, .ca-guide-directory__filters { border-color: CanvasText; } .ca-guide-directory :is(input, select, button, a):focus-visible { outline-color: Highlight; } }
+  @media (forced-colors: active) {
+    /* Pair foreground and background system colors; dark-theme ink on a forced
+       light canvas is not a readable fallback. Keep the user's palette in control. */
+    .ca-guide-directory {
+      --ca-bg: Canvas;
+      --ca-bg-raised: Canvas;
+      --ca-bg-panel: Canvas;
+      --ca-ink: CanvasText;
+      --ca-ink-soft: CanvasText;
+      --ca-ink-muted: CanvasText;
+      --ca-brand-bright: LinkText;
+      --ca-line: CanvasText;
+      --ca-line-strong: CanvasText;
+      color: CanvasText;
+    }
+    .ca-guide-directory input, .ca-guide-directory select { color: FieldText; background: Field; }
+    .ca-guide-directory button { color: ButtonText; background: ButtonFace; border-color: ButtonText; }
+    .ca-guide-directory :is(input, select, button, a):focus-visible { outline-color: Highlight; }
+  }
   @media print { .ca-guide-directory { container-type: normal; } .ca-guide-directory__filters, .ca-guide-directory__count, .ca-guide-directory__empty { display: none !important; } .ca-guide-directory section[hidden], .ca-guide-directory__card[hidden] { display: block !important; } .ca-guide-directory__grid { display: block; } .ca-guide-directory__card { break-inside: avoid; margin-block-end: var(--ca-space-4); } }
 </style>
