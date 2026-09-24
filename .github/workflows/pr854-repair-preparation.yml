@@ -1,0 +1,39 @@
+name: PR854 repair preparation (temporary)
+on:
+  push:
+    branches: [codex/farm-readiness-canary-isolation]
+    paths: [.github/workflows/pr854-repair-preparation.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Capture the exact committed merge inputs without running product code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = arbiterForge/codeArbiter
+          test "$GITHUB_REF" = refs/heads/codex/farm-readiness-canary-isolation
+          git cat-file -e '6bf1be69352369e07f9c97a221605224d968a4e2^{commit}'
+          git cat-file -e '29f84168ab7592a5d7bb0550cb1f25cf29608a9d^{commit}'
+          OUT="$RUNNER_TEMP/pr854-repair-source"
+          mkdir "$OUT"
+          git bundle create "$OUT/merge-inputs.bundle" HEAD refs/remotes/origin/main --tags
+          git rev-parse HEAD > "$OUT/head.txt"
+          git rev-parse refs/remotes/origin/main > "$OUT/observed-main.txt"
+          cd "$OUT"
+          sha256sum merge-inputs.bundle > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-repair-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-repair-source/
+          if-no-files-found: error
+          retention-days: 3
