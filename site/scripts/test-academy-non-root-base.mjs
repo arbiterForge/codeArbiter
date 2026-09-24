@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync, rmSync } from "node:fs";
+import { readFileSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -102,6 +102,65 @@ try {
     }
   }
   process.stdout.write("Reader maps: all twelve links and three retained diagrams remain beneath /docs/.\n");
+
+  const expectedGuideIds = readdirSync(join(siteRoot, "src", "content", "docs", "guides"))
+    .filter(name => /\.mdx?$/.test(name) && !/^index\./.test(name))
+    .map(name => `guides/${name.replace(/\.mdx?$/, "")}`).sort();
+  const guideIndex = readFileSync(join(outputRoot, "guides", "index.html"), "utf8");
+  // Validate the component's actual substantive content, not just its short MDX shell.
+  const directoryHtml = guideIndex.match(/<ca-guide-directory\b[\s\S]*?<\/ca-guide-directory>/)?.[0] ?? "";
+  const sectionIds = [...directoryHtml.matchAll(/<h2\b[^>]*id="([^"]+)"/g)].map(match => match[1]);
+  const expectedSections = ["initialize-and-understand", "make-a-change", "review-and-ship", "operate-and-recover", "practice-and-advanced-tooling"];
+  // Measure only the generated component's plain text nodes. This is not an HTML
+  // sanitizer and its output is never rendered. Scripts are not valid directory
+  // content; reject them instead of attempting to strip or repair HTML.
+  if (/<\s*script\b/i.test(directoryHtml)) {
+    throw new Error("The guide directory must keep executable scripts outside its content");
+  }
+  const visibleDirectoryText = [...directoryHtml.matchAll(/<(?:h2|a|p|dt|dd)\b[^>]*>([^<>]+)</g)]
+    .map(([, text]) => text).join(" ");
+  const cardContent = [...directoryHtml.matchAll(/<li\b[^>]*data-guide-entry="([^"]+)"[\s\S]*?<\/li>/g)];
+  if (JSON.stringify(sectionIds) !== JSON.stringify(expectedSections) ||
+      (visibleDirectoryText.match(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*\b/gu)?.length ?? 0) < 250 ||
+      cardContent.length !== expectedGuideIds.length || cardContent.some(([card]) =>
+        !/<p\b[^>]*>[^<]+<\/p>/.test(card) || !card.includes("Guide estimate") || !card.includes("Level"))) {
+    throw new Error("The rendered guide directory lost substantive sections, outcomes or context");
+  }
+  const guideCards = [...guideIndex.matchAll(/data-guide-entry="([^"]+)"[\s\S]*?<h3\b[^>]*><a\b[^>]*href="([^"]+)"/g)];
+  if (JSON.stringify(guideCards.map(([, id]) => id).sort()) !== JSON.stringify(expectedGuideIds) || guideCards.some(([, id, href]) => href !== `/docs/${id}/`)) {
+    throw new Error("The guide finder lost an entry or escaped the /docs/ base");
+  }
+  for (const [, id] of guideCards) readFileSync(join(outputRoot, id, "index.html"));
+  const delivery = readFileSync(join(outputRoot, "guides", "review-and-ship", "index.html"), "utf8");
+  const deliveryMap = delivery.match(/<section[^>]*data-reader-journey="review-delivery-map"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const deliveryLinks = [...deliveryMap.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+  if (deliveryLinks.length !== 4 || deliveryLinks.some(href => !href.startsWith("/docs/"))) {
+    throw new Error("The review-to-delivery map escaped the /docs/ base");
+  }
+  const dependency = readFileSync(join(outputRoot, "guides", "adding-a-dependency", "index.html"), "utf8");
+  const dependencyMap = dependency.match(/<section[^>]*data-reader-journey="dependency-decision-map"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const dependencyLinks = [...dependencyMap.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+  if (dependencyLinks.length !== 4 || dependencyLinks.some(href => !href.startsWith("/docs/")) ||
+      !dependency.includes('src="/docs/diagrams/lane-add-dep.svg"') ||
+      !dependency.includes('id="one-time-inspection-nothing-adopted"') ||
+      !dependency.includes('data-ca-table="stacked"') ||
+      !dependency.includes('No package was downloaded or executed')) {
+    throw new Error("The dependency guide lost its base-prefixed reading map, diagram, decision or example boundary");
+  }
+  const dependencyReference = readFileSync(join(outputRoot, "reference", "commands", "add-dep", "index.html"), "utf8");
+  if (!dependencyReference.includes('href="/docs/guides/adding-a-dependency/"') ||
+      !dependencyReference.includes('One-time inspection')) {
+    throw new Error("The dependency reference lost the bounded one-time path or its non-root guide link");
+  }
+  process.stdout.write("Dependency guide: all four map links, bounded-tool decision and retained diagram remain beneath /docs/.\n");
+  // Verify table enhancement on actual MDX output, not only the AST unit fixture.
+  for (const slug of ["review-and-ship", "investigate-and-fix"]) {
+    const html = readFileSync(join(outputRoot, "guides", slug, "index.html"), "utf8");
+    if (!html.includes('data-ca-table="stacked"') || !html.includes('class="ca-table-cell-value"')) {
+      throw new Error(`The ${slug} guide lost its single-source mobile table presentation`);
+    }
+  }
+  process.stdout.write(`Guide discovery: ${expectedGuideIds.length} guides, four delivery-map links and mobile table content remain beneath /docs/.\n`);
 
   process.stdout.write("Academy non-root base build: 19 lesson links, three tracks, bookmarks and lesson pagination remain beneath /docs/.\n");
 } finally {

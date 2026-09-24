@@ -70,6 +70,19 @@ for (const step of steps) {
   .ca-reader-journey__step > a { margin-block-start: auto; padding-block: var(--ca-space-2); color: var(--ca-brand-bright); font-weight: 650; font-size: var(--ca-text-sm); }
   .ca-reader-journey__note { margin-block-start: var(--ca-space-4); color: var(--ca-ink-muted); font-size: var(--ca-text-sm); }
   @container (min-width: 36rem) { .ca-reader-journey__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (forced-colors: active) { .ca-reader-journey__step { border-color: CanvasText; } }
+  @media (forced-colors: active) {
+    /* Pair every inherited ink token with the user's system background. */
+    .ca-reader-journey {
+      --ca-brand-bright: CanvasText;
+      --ca-ink: CanvasText;
+      --ca-ink-soft: CanvasText;
+      --ca-ink-muted: CanvasText;
+      --ca-bg-panel: Canvas;
+      --ca-line-strong: CanvasText;
+      color: CanvasText;
+    }
+    .ca-reader-journey h2, .ca-reader-journey h3 { color: CanvasText; }
+    .ca-reader-journey__step > a { color: LinkText; }
+  }
   @media print { .ca-reader-journey { container-type: normal; } .ca-reader-journey__steps { display: block; } .ca-reader-journey__step { break-inside: avoid; margin-block-end: var(--ca-space-4); } }
 </style>

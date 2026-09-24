@@ -15,6 +15,9 @@ expected. The command is a read-only health check over interpreter, payload, cac
 live-fire enforcement. Claude also checks statusline wiring. Codex instead requires its hook set to
 be trusted through `/hooks`; start a fresh thread after approving a changed set.
 
+For a defect in **your application**, use [Investigate and fix a defect](/guides/investigate-and-fix/).
+Doctor diagnoses codeArbiter installation and enforcement; it is not an application root-cause analysis.
+
 ## Run the Check
 
 Open the project where the problem appears and run the host-native command:
