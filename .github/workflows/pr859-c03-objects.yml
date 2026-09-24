@@ -1,0 +1,122 @@
+name: PR859 C03 checked objects
+on:
+  push:
+    branches: [prep/pr859-c03-resume-20260924]
+    paths: [.github/workflows/pr859-c03-objects.yml]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 1512e265b0c613c7d31a1f378346c47cb686ecf0
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install existing locked site tooling
+        working-directory: site
+        run: npm ci
+      - name: Apply only the reviewed patch and reproduce generated observations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request
+          repo = 'https://api.github.com/repos/arbiterForge/codeArbiter'
+          headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'}
+          request = urllib.request.Request(repo + '/git/blobs/a03759aaf87dde90255b920354562e68f366fc87', headers=headers)
+          with urllib.request.urlopen(request, timeout=30) as response:
+              data = base64.b64decode(json.load(response)['content'])
+          def blob(data):
+              return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+          assert blob(data) == 'a03759aaf87dde90255b920354562e68f366fc87'
+          # Undo the one serialized regexp quote escape; the complete canonical
+          # patch digest below must match before git sees any data.
+          escaped = bytes([91, 94, 92, 34, 93, 42])
+          assert data.count(escaped) == 1
+          data = data.replace(escaped, bytes([91, 94, 34, 93, 42]))
+          assert hashlib.sha256(data).hexdigest() == '4fef0f93dbca6927277101fdd73620b36bda949f501381769bd2a07a6a98da77'
+          patch = pathlib.Path(os.environ['RUNNER_TEMP']) / 'reviewed-c03.patch'
+          patch.write_bytes(data)
+          subprocess.run(['git', 'apply', '--check', str(patch)], check=True)
+          subprocess.run(['git', 'apply', str(patch)], check=True)
+          expected = {
+              'site/CONCEPTS-OVERHAUL.md': '7cdbb757542688d227e0c12260195ac7fb7a4b5a',
+              'site/DESIGN-SYSTEM.md': 'd2d67cebe365e0610d6c5d3c7ddc3fbcffaff419',
+              'site/scripts/generate-diagrams.ts': 'cc4ee3086c19d5301d4e99bc6f382edbc1dcd14a',
+              'site/scripts/test-academy-non-root-base.mjs': '1c127024b5dc79da8154425fb08c4c34cc17005c',
+          }
+          for path, expected_sha in expected.items():
+              assert blob(pathlib.Path(path).read_bytes()) == expected_sha, path
+          PY
+          (cd site && npm run gen:diagrams && npm run audit:diagrams)
+          mkdir -p site/src/data
+          python3 site/scripts/capture-context-examples.py > site/src/data/context-examples.json
+          python3 site/scripts/capture-context-examples.py --check
+      - name: Upload only verified unreferenced blob objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, urllib.request
+          expected = {
+              'site/CONCEPTS-OVERHAUL.md': '7cdbb757542688d227e0c12260195ac7fb7a4b5a',
+              'site/DESIGN-SYSTEM.md': 'd2d67cebe365e0610d6c5d3c7ddc3fbcffaff419',
+              'site/public/diagrams/activation-states.svg': 'd527663d76680fb1d2d4f0b809acc1d72950cc4c',
+              'site/public/diagrams/commit-gate-phases.svg': 'd0c0e8c37aacebb7849cbb0ac032506ffa6e93e9',
+              'site/public/diagrams/core-fanout.svg': 'd811604fa94a5e330babd10e3624beade2c52d9e',
+              'site/public/diagrams/four-tier-map.svg': '7f124f28e6ea80e881f32196bb230256f2981b6d',
+              'site/public/diagrams/gate-model.svg': '64b4550df55a73e17b052d385568cece7e5178c4',
+              'site/public/diagrams/lane-add-dep.svg': '0731620aee70dfa462418238010b483baf15d496',
+              'site/public/diagrams/lane-adr.svg': '96a7b6e307531725a4c6c339f9aa251cee8d94fd',
+              'site/public/diagrams/lane-flow.svg': 'e77d75d4de6e2f136d803065fdaf2cd839c74946',
+              'site/public/diagrams/lane-opt-in.svg': '5f9ccc27c0a3f2a2c459c85b51f6ffece3479afe',
+              'site/public/diagrams/lane-release.svg': '6fa0df72e85efe541ce3c1160dd71846c3c3593a',
+              'site/public/diagrams/lane-sprint.svg': 'a985b2c87eb33aa57ddb538ca73a82f12c5be748',
+              'site/public/diagrams/provenance-drift-flow.svg': 'dcc9954293cde6ec5560d1ae5f6ce9eb5512d480',
+              'site/public/diagrams/sandbox-boundary.svg': '1f84cd225d21858570400d5e34503623083db2e5',
+              'site/public/diagrams/two-axis-model.svg': '3ce9cdb15e3af586c9c80a5c22a16c9b3aee1139',
+              'site/scripts/generate-diagrams.ts': 'cc4ee3086c19d5301d4e99bc6f382edbc1dcd14a',
+              'site/scripts/test-academy-non-root-base.mjs': '1c127024b5dc79da8154425fb08c4c34cc17005c',
+              'site/src/data/context-examples.json': '381437bce26e88da68495531fd4cda66ad1e9416',
+          }
+          contents = {}
+          for path, wanted in expected.items():
+              data = pathlib.Path(path).read_bytes()
+              actual = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+              assert actual == wanted, (path, actual, wanted)
+              contents[path] = data.decode('utf-8')
+          subprocess.run(['git', 'add', '--', *expected], check=True)
+          tree = subprocess.check_output(['git', 'write-tree'], text=True).strip()
+          assert tree == 'f6629552b88c286df6ca20faaa924667a40757c1', tree
+          headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'}
+          entries = []
+          for path, text in contents.items():
+              request = urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs',
+                  data=json.dumps({'content': text, 'encoding': 'utf-8'}).encode(), headers=headers, method='POST')
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  actual = json.load(response)['sha']
+              assert actual == expected[path], path
+              entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': actual})
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'checked-c03-objects'
+          out.mkdir()
+          (out / 'objects.json').write_text(json.dumps({'tree': tree, 'files': entries}, indent=2) + '\n')
+          print('Verified all source and generated objects; no commit or ref was written.')
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr859-checked-c03-objects
+          path: ${{ runner.temp }}/checked-c03-objects/
+          retention-days: 1
+          if-no-files-found: error
