@@ -1,4 +1,4 @@
-name: Farm isolation source preparation (temporary)
+name: Farm isolation toolchain preparation (temporary)
 on:
   push:
     branches: [codex/farm-readiness-canary-isolation]
@@ -6,32 +6,38 @@ on:
 permissions:
   contents: read
 jobs:
-  capture:
+  prepare:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: cf90ce4d79c5d87cb88f163535c1035da2315815
-          fetch-depth: 0
           persist-credentials: false
-      - name: Capture committed source without executing product code
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22.19.0
+      - name: Install the unchanged lockfile
+        working-directory: plugins/ca/tools
+        run: npm ci --no-audit --no-fund
+      - name: Preserve locked Linux test dependencies
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = cf90ce4d79c5d87cb88f163535c1035da2315815
-          OUT="$RUNNER_TEMP/farm-isolation-source"
+          git diff --exit-code
+          OUT="$RUNNER_TEMP/farm-isolation-tools"
           mkdir "$OUT"
-          git archive --format=zip --output="$OUT/source.zip" HEAD
-          git bundle create "$OUT/source.bundle" HEAD
-          git rev-parse HEAD > "$OUT/commit.txt"
-          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
+          tar -czf "$OUT/node_modules.tar.gz" -C plugins/ca/tools node_modules
+          cp plugins/ca/tools/package-lock.json "$OUT/"
+          node --version > "$OUT/node.txt"
+          npm --version > "$OUT/npm.txt"
           cd "$OUT"
-          sha256sum source.zip source.bundle > SHA256SUMS
+          sha256sum node_modules.tar.gz package-lock.json > SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: farm-isolation-source-${{ github.run_id }}
-          path: ${{ runner.temp }}/farm-isolation-source/
+          name: farm-isolation-tools-${{ github.run_id }}
+          path: ${{ runner.temp }}/farm-isolation-tools/
           if-no-files-found: error
           retention-days: 3
