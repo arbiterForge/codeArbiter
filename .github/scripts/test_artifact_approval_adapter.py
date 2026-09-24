@@ -610,12 +610,60 @@ class SprintPairIntegrationTest(unittest.TestCase):
     def test_concurrent_observers_complete_once_without_erasing_a_new_request(self):
         from concurrent.futures import ThreadPoolExecutor
         armed = self.arm()
+        def observe(reply):
+            try:
+                return self.consume(reply)
+            except self.approval.ApprovalError as exc:
+                # The real bounded lock may expire before a slower native
+                # transaction completes. Only this explicit non-writing result
+                # is allowed; unrelated errors and a second approval still fail.
+                if exc.code != "APPROVAL_BUSY":
+                    raise
+                return {"approved": False, "diagnostic": exc.code}
+
         with ThreadPoolExecutor(max_workers=2) as workers:
-            results = list(workers.map(self.consume, [armed["reply"], armed["reply"]]))
+            results = list(workers.map(observe, [armed["reply"], armed["reply"]]))
         self.assertEqual(sum(r["approved"] for r in results), 1)
         self.assertEqual(len(list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))), 2)
-        self.assertTrue(all(v["authority"]["authority_verified"] for v in self.identities()))
+        approved = self.identities()
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in approved))
         self.assertFalse((self.root / self.approval.PENDING).exists())
+        # After the winning observer finishes, retrying the same observed input
+        # is non-mutating and does not require a second interactive decision.
+        self.assertFalse(self.consume(armed["reply"])["approved"])
+        self.assertEqual(self.identities(), approved)
+
+    def test_contended_approval_refuses_without_writing_then_succeeds(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Event
+        prerequisite = importlib.import_module("_prerequisitelib")
+        armed = self.arm()
+        before = self.identities()
+        pending_bytes = (self.root / self.approval.PENDING).read_bytes()
+        entered, release = Event(), Event()
+
+        def hold_real_lock():
+            with prerequisite._pending_transition_lock(self.root, "sprint-pair-approval"):
+                entered.set()
+                if not release.wait(30):
+                    raise AssertionError("test did not release its real approval lock")
+
+        with ThreadPoolExecutor(max_workers=1) as workers:
+            holder = workers.submit(hold_real_lock)
+            try:
+                self.assertTrue(entered.wait(10), "lock holder did not start")
+                with self.assertRaises(self.approval.ApprovalError) as refused:
+                    self.consume(armed["reply"])
+                self.assertEqual(refused.exception.code, "APPROVAL_BUSY")
+                self.assertEqual(self.identities(), before)
+                self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending_bytes)
+                self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
+            finally:
+                release.set()
+            holder.result(timeout=10)
+        self.assertTrue(self.consume(armed["reply"])["approved"])
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in self.identities()))
+        self.assertEqual(len(list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))), 2)
 
     def test_stale_cancel_does_not_remove_a_new_pair_arm(self):
         self.arm()
