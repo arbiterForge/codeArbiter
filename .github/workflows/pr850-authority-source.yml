@@ -1,4 +1,4 @@
-name: PR850 authority integration (temporary)
+name: PR850 final authority validation (temporary)
 on:
   push:
     branches: [codex/spec-continuation-checkpoint-remediation]
@@ -9,12 +9,15 @@ jobs:
   validate:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/spec-continuation-checkpoint-remediation'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+          fetch-tags: true
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
@@ -25,47 +28,101 @@ jobs:
           check-latest: false
           cache: false
           go-download-base-url: https://go.dev/dl
-      - name: Acquire explicitly pinned authored inputs
+      - name: Acquire exact prior candidate and reviewed delta
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import base64,hashlib,json,os,pathlib,urllib.request
+          import base64,hashlib,json,lzma,os,pathlib,urllib.error,urllib.parse,urllib.request
           assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
           assert os.environ['GITHUB_REF']=='refs/heads/codex/spec-continuation-checkpoint-remediation'
-          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'authority-integration';out.mkdir()
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'authority-final';out.mkdir()
           class NoRedirect(urllib.request.HTTPRedirectHandler):
-              def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
-          rows=[
-            ('55863c2e8408dd41f8978ac613c68139e7e3b6bf','observation-sprint.go'),
-            ('d41beb207fbfd8e89ee6677bd1b5532375dd26f2','operations-sprint.go'),
-            ('80c0b4448120c585803082b1d1f844e63ee9669e','sprint-tests.go'),
-            ('d5b715afba8c7d1714add72980ff2f9c81feb554','pair-adapter.py'),
-            ('22ae37c8aaf6d24ecca788b6c03a21164001697d','pair-tests.py'),
-            ('16f525a313bf34736073ed2be42954c0cd261a6c','apply.py'),
-            ('d40a3f994e70e5774841fec8974a7668157365f4','driver.py'),
-            ('a043fa68eb22cc692c08b5da2ed83205142713aa','docs.py'),
-          ]
-          for sha,name in rows:
-              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
-              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response: record=json.load(response)
+              def redirect_request(self,*args,**kwargs):return None
+          opener=urllib.request.build_opener(NoRedirect)
+          def request(path):
+              return urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+          def blob(sha):
+              with opener.open(request('/git/blobs/'+sha),timeout=45) as response:record=json.load(response)
               assert record['sha']==sha and record['encoding']=='base64'
               data=base64.b64decode(record['content'])
               assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
-              (out/name).write_bytes(data)
-          (out/'inputs.json').write_text(json.dumps(rows,indent=2))
-          p=out/'sprint-tests.go';text=p.read_text()
-          old='h.run("recover",object{"operation_id":r["operation_id"],"mode":mode})'
-          assert text.count(old)==1
-          p.write_text(text.replace(old,'if _,err:=h.request("recover",object{"operation_id":r["operation_id"],"mode":mode});err!=nil{t.Fatal(err)}'))
+              return data
+          raw=lzma.decompress(blob('f9b54c910be9bf8beb1c44f2e30e2a83aa16061c'))
+          assert len(raw)==45213 and hashlib.sha256(raw).hexdigest()=='0a90df3739484cc99bcceb6dba35b43e37c847c145839c9e2c400e62711251c6'
+          delta=json.loads(raw);(out/'delta.json').write_bytes(raw)
+          (out/'driver.py').write_bytes(blob('14e4309dcc0aa2e005926904903ca6176ecd96f6'))
+          try:
+              with opener.open(request('/actions/artifacts/'+str(delta['base_artifact'])+'/zip'),timeout=45) as response:data=response.read(4000001)
+          except urllib.error.HTTPError as exc:
+              assert exc.code in (301,302,303,307,308)
+              url=exc.headers['Location'];parts=urllib.parse.urlsplit(url)
+              assert parts.scheme=='https' and not parts.username and not parts.password
+              assert parts.hostname and any(parts.hostname.endswith(s) for s in ('.blob.core.windows.net','.actions.githubusercontent.com','.githubusercontent.com'))
+              # A signed archive URL must never receive the GitHub credential.
+              with opener.open(urllib.request.Request(url),timeout=45) as response:data=response.read(4000001)
+          assert len(data)<=4000000 and hashlib.sha256(data).hexdigest()==delta['base_artifact_sha256']
+          (out/'base.zip').write_bytes(data)
           PY
-      - name: Execute candidate preparation and regression suite without credentials
-        run: python "$RUNNER_TEMP/authority-integration/driver.py"
-      - name: Retain source transformations and actual test results
+      - name: Acquire the existing pinned secret scanner
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE=ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          docker pull "$IMAGE"
+          PROG=$(docker run --rm --entrypoint /bin/sh "$IMAGE" -c 'command -v gitleaks')
+          case "$PROG" in /usr/bin/gitleaks|/usr/local/bin/gitleaks) ;; *) echo 'Unexpected scanner path'; exit 1;; esac
+          CID=$(docker create "$IMAGE")
+          trap 'docker rm "$CID" >/dev/null' EXIT
+          docker cp "$CID:$PROG" "$RUNNER_TEMP/authority-final/gitleaks"
+          chmod 755 "$RUNNER_TEMP/authority-final/gitleaks"
+          test "$("$RUNNER_TEMP/authority-final/gitleaks" version)" = 8.30.1
+      - name: Execute complete-checkout tests without write credentials
+        run: python "$RUNNER_TEMP/authority-final/driver.py"
+      - name: Store tested preserving objects without changing a ref
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'authority-final';report=json.loads((out/'manifest.json').read_text())
+          assert report['all_tests_passed'] and report['parent']==os.environ['GITHUB_SHA']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/spec-continuation-checkpoint-remediation'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
+          def api(method,path,data=None):
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=None if data is None else json.dumps(data).encode(),headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Content-Type':'application/json','Accept':'application/vnd.github+json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:return json.load(response)
+          assert api('GET','/git/ref/heads/codex/spec-continuation-checkpoint-remediation')['object']['sha']==report['parent']
+          assert api('GET','/git/ref/heads/main')['object']['sha']==report['main']
+          entries=[];uploaded=set()
+          for row in report['files']:
+              data=pathlib.Path(row['path']).read_bytes()
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              if row['sha'] not in uploaded:
+                  assert api('POST','/git/blobs',{'content':data.decode('utf-8'),'encoding':'utf-8'})['sha']==row['sha']
+                  uploaded.add(row['sha'])
+              entries.append({'path':row['path'],'type':'blob','mode':row['mode'],'sha':row['sha']})
+          base=api('GET','/git/commits/'+report['main'])['tree']['sha']
+          tree=api('POST','/git/trees',{'base_tree':base,'tree':entries})['sha']
+          assert tree==report['tree']
+          commit=api('POST','/git/commits',{'message':report['message'],'tree':tree,'parents':[report['parent'],report['main']]})['sha']
+          (out/'candidate.json').write_text(json.dumps({'commit':commit,'tree':tree,'parent':report['parent'],'main':report['main'],'branch_updated':False},indent=2))
+          PY
+      - name: Retain actual evidence without executables or installation caches
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: pr850-authority-integration-${{ github.run_id }}
-          path: ${{ runner.temp }}/authority-integration/
+          name: pr850-authority-final-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/authority-final/*.json
+            ${{ runner.temp }}/authority-final/*.log
+            ${{ runner.temp }}/authority-final/*.py
+            ${{ runner.temp }}/authority-final/*.patch
+            ${{ runner.temp }}/authority-final/*.diff
+            ${{ runner.temp }}/authority-final/candidate-files.zip
           if-no-files-found: error
           retention-days: 3
