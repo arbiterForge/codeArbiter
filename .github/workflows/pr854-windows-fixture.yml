@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: '20'
-      - name: Compare actual fixture directories rather than alias spellings
+      - name: Correct fixture identity and its measured multi-task budget
         shell: bash
         run: |
           python - <<'PY'
@@ -44,8 +44,14 @@ jobs:
           old='        expect(gitIn(created, "rev-parse", "--show-toplevel")).toBe(created.replaceAll("\\\\", "/"));'
           new='\n'.join(['        // Git expands Windows 8.3 names (and platform directory aliases).','        // Compare the actual directories without weakening the foreign-repo check.','        expect(realpathSync.native(gitIn(created, "rev-parse", "--show-toplevel")))','          .toBe(realpathSync.native(created));'])
           assert text.count(old)==1;text=text.replace(old,new,1)
+          old='\n'.join(['  // spawning a real gate subprocess. Measured at 3553ms isolated on a','  // developer box and 5331ms under load on a CI runner - which is what first',"  // exposed #542. It inherits the block's 30s budget above; do NOT shrink the",'  // six-way path to buy headroom, since that path is the thing under test','  // (#515 AC-4, #542 AC-2).'])
+          new='\n'.join(['  // spawning a real gate subprocess. Native Windows coverage hit the 30s','  // case cap in run 35984421923 while the other 82 CLI cases passed. Give','  // only this multi-task Windows fixture 60s; retain 30s elsewhere. Do not','  // shrink its twelve tasks/six-worker path or change production timeouts','  // to buy headroom (#515 AC-4, #542 AC-2).'])
+          assert text.count(old)==1;text=text.replace(old,new,1)
+          old='    expect(md).toMatch(/12 task\\(s\\) have no diff evidence/i);\n  });'
+          new='    expect(md).toMatch(/12 task\\(s\\) have no diff evidence/i);\n  }, process.platform === "win32" ? 60_000 : 30_000);'
+          assert text.count(old)==1;text=text.replace(old,new,1)
           data=text.encode()
-          assert oid(data)=='80e17fc0e1f0b92370728caf8d6a1bbdb3fd911b'
+          assert oid(data)=='12a7852b2185966e7253d6f58fb1c78dd658ca62'
           path.write_bytes(data)
           assert subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()==[path.as_posix()]
           subprocess.run(['git','diff','--check'],check=True)
@@ -71,9 +77,10 @@ jobs:
           import hashlib,json,os,pathlib,subprocess
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-windows-fixture'
           report=json.loads((out/'results.json').read_text())
-          assert report['success'] and report['numFailedTests']==0 and report['numTotalTests']>=622
+          assert report['success'] and report['numFailedTests']==0 and report['numTotalTests']==622
+          assert report['numPassedTests']==619 and report['numPendingTests']==3
           test=pathlib.Path('farm.test.ts').read_bytes()
-          assert hashlib.sha1(b'blob '+str(len(test)).encode()+b'\0'+test).hexdigest()=='80e17fc0e1f0b92370728caf8d6a1bbdb3fd911b'
+          assert hashlib.sha1(b'blob '+str(len(test)).encode()+b'\0'+test).hexdigest()=='12a7852b2185966e7253d6f58fb1c78dd658ca62'
           assert subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()==['plugins/ca/tools/farm.test.ts']
           (out/'passed.json').write_text(json.dumps({'total':report['numTotalTests'],'passed':report['numPassedTests'],'pending':report['numPendingTests'],'failed':report['numFailedTests'],'suite_success':report['success'],'product_runtime_changed':False},indent=2))
           PY
@@ -86,7 +93,7 @@ jobs:
           import hashlib,json,os,pathlib,urllib.request
           out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-windows-fixture'
           assert json.loads((out/'passed.json').read_text())['suite_success']
-          data=(out/'farm.test.ts').read_bytes();sha='80e17fc0e1f0b92370728caf8d6a1bbdb3fd911b'
+          data=(out/'farm.test.ts').read_bytes();sha='12a7852b2185966e7253d6f58fb1c78dd658ca62'
           assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
           class NoRedirect(urllib.request.HTTPRedirectHandler):
               def redirect_request(self,*args,**kwargs): raise RuntimeError('Unexpected redirect')
