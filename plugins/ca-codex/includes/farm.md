@@ -152,7 +152,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_CANDIDATE_MODELS` | _(unset)_ | Comma-separated ids for `--canary` probing. Set by the dispatch skill. |
 | `FARM_CONCURRENCY` | `4` | Max concurrent task workers — and the shared ceiling on TOTAL in-flight worker calls, including best-of-N samples. |
 | `FARM_SAMPLES` | `1` | Best-of-N: candidates drawn per attempt; first in index order to pass task-worktree gates and risk qualification is selected. `1` keeps the single-worker path. Shares `FARM_CONCURRENCY`; all candidates' token spend is reported. |
-| `FARM_TEMPERATURE` | `0` | Sampling temperature sent to the worker. Auto-bumped to `0.7` when `FARM_SAMPLES>1` and left at `0` (so samples diversify); set explicitly to override. |
+| `FARM_TEMPERATURE` | `0` (one sample); `0.7` (multiple, unset) | Sampling temperature sent to the worker. Defaults to `0` when `FARM_SAMPLES=1` and `0.7` when `FARM_SAMPLES>1`. Any explicit value, including `0`, overrides the automatic default. |
 | `FARM_MAX_TOKENS` | _(unset)_ | Max completion tokens per worker call. `0`/unset = provider default (today's unbounded behavior). |
 | `FARM_MAX_RETRIES` | `2` | Max gate retries per task before escalating. |
 | `FARM_BASE_BRANCH` | `main` | Branch the integration branch is cut from. |
