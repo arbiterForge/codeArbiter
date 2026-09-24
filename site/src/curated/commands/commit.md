@@ -13,11 +13,17 @@ gates:
 ## What it does
 
 This is the single entry point for turning staged work into a commit — nothing in codeArbiter
-calls `git commit` any other way. Invoking it hands control to a multi-phase check that reads the
+calls `git commit` any other way. This entry contains the complete procedure generated
+from the `commit-gate` owner, not a separately maintained wrapper. The check reads the
 repository's current state itself (what's staged, what changed, whether the applicable local checks
 are green) rather than taking your word for it. It runs impact-bounded local verification, a
 behavioral check, and a diff review before anything is written to history. Exhaustive exact-head
 hosted CI remains a merge gate.
+
+The explicit command name is preserved. Claude keeps the owning skill available to
+natural-language routing while suppressing the redundant command description. Codex and
+Pi use their generated entry skill for discovery. Explaining history or drafting a
+message does not authorize creating a commit, pushing, or opening a PR.
 
 ## Usage
 

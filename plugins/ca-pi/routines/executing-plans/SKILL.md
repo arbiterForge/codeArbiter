@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: The checkpoint coordinator for /feature. Routed to by /feature once a writing-plans plan exists. Groups tasks into batches, delegates each batch to subagent-driven-development (fresh author agent per task, full review chain, fresh verification), then stops for a human checkpoint before the next batch. The checkpointed counterpart to /sprint's autonomous run.
+description: The checkpoint coordinator for /feature. Routed to by /feature once a writing-plans plan exists. Uses authored HTML checkpoints or bounded legacy batches, delegates each scope to subagent-driven-development (fresh author agent per task, full review chain, fresh verification), then stops for a human checkpoint before the next batch. The checkpointed counterpart to /sprint's autonomous run.
 disable-model-invocation: true
 ---
 
@@ -23,6 +23,8 @@ Coordinate the plan in small, user-acknowledged batches. Routed to by `/feature`
 `writing-plans` has produced a plan. Each batch is executed by `subagent-driven-development` — fresh
 author agent per task, spec-compliance review, quality review, fresh verification — and the user
 checkpoints between batches. The orchestrator never implements; it schedules and checkpoints.
+An HTML checkpoint is an acceptance scope, not a new user checkpoint in `/sprint`. Sprint routes
+directly to `subagent-driven-development` and does not inherit this attended coordinator's pauses.
 
 ## Pre-flight
 
@@ -42,22 +44,34 @@ Read these, or STOP and surface the gap — never guess a path, a command, or a 
 
 ## Phase 1 — Batch plan · gate: BLOCK
 
-Group the plan's tasks into small batches. Keep batches tight — three to five tasks is a ceiling, not
-a target. Respect the plan's ordering and dependencies: a task never lands before the task it depends on.
+For Markdown, group remaining tasks into small batches; the three-to-five task ceiling is legacy
+presentation guidance, not a reason to rewrite typed scope. For HTML, read the authored checkpoint partition
+through the installed engine. Build the sequence from the plan's exact checkpoint membership and ordering,
+retaining each checkpoint's full task-ID set as its acceptance scope. Skip a checkpoint only when current
+engine evidence establishes its accepted state. Do not remove `REVIEW` tasks from an unfinished checkpoint:
+they still need the combined review and whole-scope acceptance. Likewise, do not drop `BLOCKED` members:
+excluding one does not make the checkpoint complete. Resume it only through the supported reconciliation path
+and refreshed eligibility. Respect explicit dependencies in either format.
+
+A smaller display grouping must not split an HTML acceptance scope, combine checkpoints, or change their
+membership to fit a task-count ceiling. Execute and accept one authored scope at a time. If the partition
+itself is unsuitable, return the actual problem to `writing-plans` for the existing amendment/approval path;
+do not mutate scope identity in the coordinator or add a new batching registry.
 
 **Resume is the normal re-entry.** For Markdown, a task already `ACCEPTED` in
 the plan's status column was verified before an earlier interruption. For HTML,
-derive the same decision from the current `eligible` result and its exact task
-identities. Exclude accepted tasks from batching and say so ("resuming: T-01–T-03
-already ACCEPTED"). Batch only the remaining tasks, starting at the first. Never
-re-execute an accepted task, and never restart the pipeline at brainstorming
-because the session died mid-plan.
+derive resume from current `eligible` evidence and the authored checkpoint partition above.
+For Markdown, exclude accepted tasks from new batches. For HTML, retain checkpoint membership while
+selecting only eligible work, and say which current accepted checkpoints are already complete.
+Stale proof requires its existing reconciliation and revalidation, not automatic reimplementation.
+Never restart the pipeline at brainstorming merely because the session died mid-plan.
 
 After process recreation on an HTML pair, rediscover the same authoritative pair
 and query `identity` and `eligible` again. An `IN_PROGRESS` task is not proof of
-completion: capture the existing reconciliation authority and apply
-`task-reconcile` before redispatch through `task-start` with a fresh complete
-context ticket. A task in `REVIEW` still requires fresh evidence and the current
+completion. Use the installed reconciliation adapter in `<plugin-root>/includes/artifacts.md` for the exact task,
+including its genuine host-observed decision and exact stored retry identity; do not construct
+an authority event in this coordinator. A supported `task-reconcile` transition must precede
+redispatch through `task-start` with a fresh complete context ticket. A task in `REVIEW` still requires fresh evidence and the current
 scope review before `accept-scope`; conversation memory cannot advance it.
 
 For each task, confirm the plan names its exact target paths and its verification command. A task
@@ -69,8 +83,10 @@ and what follows. Do NOT stop for a separate acknowledgment — the user approve
 surfaces there (or the user interrupts). Each unresolved unknown is a `[CONFIRM-NN]` in
 `open-questions.md` — surface it, do not guess past it.
 
-Gate: a batch sequence exists and every task has a target path and a verification command. A
-`[CONFIRM-NN]` that blocks batch 1 is the only reason to stop here.
+Gate: a batch sequence exists and every task has a target path and a verification command.
+Missing current authority or capability, a stale prerequisite, or a `[CONFIRM-NN]` blocking the
+first scope is a gate failure. Follow the existing diagnostic or reconciliation owner; do not
+invent a plan, drop blocked members, or restart the interview to clear it.
 
 ## Phase 2 — Execute batch · gate: BLOCK
 
@@ -78,8 +94,9 @@ Invoke `subagent-driven-development` (`<plugin-root>/routines/subagent-driven-de
 spec slug so it can read its own pre-flight files. Do not implement anything here — the author agents,
 review chain, and verification all run inside that skill.
 
-For HTML, pass the selected spec/plan identities and task IDs, not copied task
-labels or prose. The nested workflow records dispatch with `task-start`, records
+For HTML, pass the selected spec/plan identities and the complete task-ID set for one authored checkpoint;
+do not pass a partial or cross-checkpoint task set. Labels and presentation batches do not confer acceptance.
+The nested workflow uses engine eligibility to select work inside that scope, records dispatch with `task-start`, records
 the separate verification and spec-review receipts with `task-review`, and
 records whole-scope acceptance once with `accept-scope`. Preserve every returned
 identity and receipt for the checkpoint and later commit proof.

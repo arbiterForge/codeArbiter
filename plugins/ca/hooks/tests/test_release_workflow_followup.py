@@ -57,7 +57,8 @@ def shell_definition(text, name):
 def isolated_env():
     env = {k: v for k, v in os.environ.items()
            if not k.startswith("GIT_") and k not in
-           ("CLAUDE_PROJECT_DIR", "CLAUDE_PLUGIN_ROOT", "BASH_ENV", "ENV", "CDPATH")}
+           ("CLAUDE_PROJECT_DIR", "CLAUDE_PLUGIN_ROOT", "PLUGIN_ROOT", "PYTHONPATH",
+            "PYTHONHOME", "BASH_ENV", "ENV", "CDPATH")}
     env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
                GIT_TERMINAL_PROMPT="0", PY=sys.executable)
     return env
@@ -66,8 +67,11 @@ def isolated_env():
 class Consumer:
     """A real history, declaration PR, published ledger, and fresh release branch."""
 
-    def __init__(self, base, method="merge", missing_footer=False, ledger="valid"):
+    def __init__(self, base, method="merge", missing_footer=False, ledger="valid",
+                 plugin_root=PLUGIN):
         self.base = Path(base)
+        self.plugin_root = Path(plugin_root)
+        self.hooks = self.plugin_root / "hooks"
         self.root = self.base / "consumer with spaces"
         self.remote = self.base / "origin.git"
         self.env = isolated_env()
@@ -89,7 +93,7 @@ class Consumer:
         self.git("checkout", "-qb", "declare-release")
         self.write(".codearbiter/tech-stack.md", "# Fixture commands\n\ntest: true\n")
         helper = subprocess.run(
-            [sys.executable, str(HOOKS / "_releaselib.py"), "backfill-detect"],
+            [sys.executable, str(self.hooks / "_releaselib.py"), "backfill-detect"],
             cwd=self.root, env={**self.env, "CLAUDE_PROJECT_DIR": str(self.root)},
             text=True, capture_output=True, timeout=15)
         if helper.returncode:
@@ -105,7 +109,7 @@ class Consumer:
         draft.write_text(json.dumps({"schema_version": 1, "entries": entries}) + "\n",
                          encoding="utf-8")
         checked = subprocess.run(
-            [sys.executable, str(HOOKS / "_releaselib.py"), "validate-reconciliations", "app", str(draft)],
+            [sys.executable, str(self.hooks / "_releaselib.py"), "validate-reconciliations", "app", str(draft)],
             cwd=self.root, env=self.env, text=True, capture_output=True, timeout=15)
         if checked.returncode:
             raise AssertionError(checked.stderr)
@@ -128,7 +132,7 @@ class Consumer:
         self.git("checkout", "-qb", "release-first", "origin/main")
         self.head = self.git("rev-parse", "HEAD").stdout.strip()
         self.env.update(CLAUDE_PROJECT_DIR=str(self.root),
-                        CLAUDE_PLUGIN_ROOT=str(PLUGIN), PROJECT_ROOT=str(self.root),
+                        CLAUDE_PLUGIN_ROOT=str(self.plugin_root), PROJECT_ROOT=str(self.root),
                         TARGET="app", DEFAULT_BRANCH="main", LAST_TAG="<none>")
         log = self.git("log", "--diff-filter=A", "--format=%H", "--",
                        ".codearbiter/CONTEXT.md", ".codearbiter/release-targets.md").stdout
@@ -152,7 +156,7 @@ class Consumer:
         return result
 
     def helper(self, *args, input=None):
-        return subprocess.run([sys.executable, str(HOOKS / "_releaselib.py"), *args],
+        return subprocess.run([sys.executable, str(self.hooks / "_releaselib.py"), *args],
                               cwd=self.root, env=self.env, input=input,
                               text=True, capture_output=True, timeout=15)
 

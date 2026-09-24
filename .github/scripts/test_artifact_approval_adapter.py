@@ -376,5 +376,305 @@ class ApprovalAdapterTest(unittest.TestCase):
                 path.unlink()
 
 
+
+class SprintPairIntegrationTest(unittest.TestCase):
+    """Real installed-engine fixtures, not authenticated model-turn proof."""
+    @classmethod
+    def setUpClass(cls):
+        from test_artifact_authoring import build_installation
+        cls.owner, cls.installation = build_installation()
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.owner is not None:
+            cls.owner.cleanup()
+
+    def setUp(self):
+        from test_artifact_authoring import physical_test_directory, WorkflowHarness
+        self.temp = tempfile.TemporaryDirectory(prefix="ca-sprint-pair-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = physical_test_directory(self.temp.name) / "repo"
+        self.root.mkdir()
+        self.h = WorkflowHarness(self.root, self.installation)
+        self.spec, self.plan = self.h.create_pair()
+        self.approval = importlib.import_module("_approvallib")
+        self.pair = importlib.import_module("_sprintapprovallib")
+        self.lib = importlib.import_module("_artifactlib")
+        self.routes = importlib.import_module("_artifactpromptlib")
+        previous = self.routes.REGISTRY_PARENT
+        self.routes.REGISTRY_PARENT = self.root.parent
+        self.addCleanup(setattr, self.routes, "REGISTRY_PARENT", previous)
+
+    def arm(self, delegate=True):
+        return self.pair.arm(self.root, self.h.client, "SPEC-FLOW", "PLAN-FLOW", delegate_methods=delegate, token="synthetic-pair-token")
+
+    def consume(self, reply):
+        return self.approval.consume_user_approval(self.root, self.h.client, reply, host="codex", session_id="synthetic-host-turn")
+
+    def identities(self):
+        return [self.h.client.call("identity", {"artifact_id": i}) for i in ("SPEC-FLOW", "PLAN-FLOW")]
+
+    def decision(self):
+        lenses = {k: {"verdict": "Adequate", "reason": "The recorded contract and bounded verification remain unchanged."} for k in ("Scalable", "Maintainable", "Available", "Reliable", "Testable", "Securable")}
+        return {"task_id": "T-001", "options": [{"label": "Explicit precedence table", "steps": ["Retain the negative oracle.", "Implement precedence with a bounded table lookup."], "lenses": lenses}], "selected": 0, "strength": "moderate", "rationale": "The recorded spec requires environment precedence. This method conforms without changing paths, criteria or verification."}
+
+    def test_one_reply_approves_both_without_individual_approve_calls(self):
+        armed = self.arm()
+        before = self.identities()
+        with mock.patch.object(self.h.client, "call", wraps=self.h.client.call) as calls:
+            result = self.consume(armed["reply"])
+        operations = [v.args[0] for v in calls.call_args_list]
+        self.assertEqual(operations.count("sprint-approve"), 1)
+        self.assertNotIn("approve", operations)
+        self.assertNotIn("capture-observation", operations)
+        self.assertTrue(result["approved"])
+        self.assertIsInstance(result["grant_receipt"], str)
+        after = self.identities()
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in after))
+        self.assertEqual(before[0]["normative_sha256"], after[0]["normative_sha256"])
+        self.assertNotEqual(before[1]["normative_sha256"], after[1]["normative_sha256"])
+        sources = list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))
+        self.assertEqual(len(sources), 2)
+        self.assertTrue(all(json.loads(p.read_text())["source_text"] == armed["reply"] for p in sources))
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+        self.assertFalse(list((self.root / ".codearbiter/specs").glob("*.md")))
+        self.assertFalse(list((self.root / ".codearbiter/plans").glob("*.md")))
+
+    def test_reply_mode_and_nonce_are_not_implicit_delegation(self):
+        armed = self.arm(False)
+        before = self.identities()
+        for reply in ("yes", "continue", armed["reply"].replace("approve-only", "delegate-methods"), armed["reply"] + " trailing"):
+            self.assertFalse(self.consume(reply)["matched"])
+        self.assertEqual(self.identities(), before)
+        self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
+        self.assertIsNone(self.consume(armed["reply"])["grant_receipt"])
+
+    def test_stale_spec_refused_before_observation(self):
+        armed = self.arm()
+        self.h.mutate("apply", "SPEC-FLOW", changes=[{"op": "header.update", "fields": {"summary": "Changed during the user review."}}])
+        with self.assertRaisesRegex(RuntimeError, "STALE_APPROVAL"):
+            self.consume(armed["reply"])
+        self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
+
+    def test_stale_plan_refused_before_observation(self):
+        armed = self.arm()
+        self.h.mutate("apply", "PLAN-FLOW", changes=[{"op": "header.update", "fields": {"summary": "Changed during the user review."}}])
+        with self.assertRaisesRegex(RuntimeError, "STALE_APPROVAL"):
+            self.consume(armed["reply"])
+        self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
+
+    def test_unobserved_arm_cannot_be_resumed_as_approval(self):
+        self.arm()
+        with self.assertRaisesRegex(RuntimeError, "NO_OBSERVED_APPROVAL"):
+            self.pair.resume(self.root, self.h.client, "PLAN-FLOW")
+        self.assertFalse(any(v["authority"]["authority_verified"] for v in self.identities()))
+
+    def test_lost_success_response_replays_without_a_second_user_reply(self):
+        armed = self.arm()
+        original = self.h.client.call
+        def lose_response(operation, request=None, **kwargs):
+            result = original(operation, request, **kwargs)
+            if operation == "sprint-approve":
+                raise self.lib.ArtifactError("EXECUTION_FAILED", "Synthetic transport loss after committed response")
+            return result
+        with mock.patch.object(self.h.client, "call", side_effect=lose_response):
+            with self.assertRaisesRegex(RuntimeError, "EXECUTION_FAILED"):
+                self.consume(armed["reply"])
+        approved = self.identities()
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in approved))
+        result = self.pair.resume(self.root, self.h.client, "PLAN-FLOW")
+        self.assertTrue(result["approved"])
+        self.assertEqual(self.identities(), approved)
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+
+    def test_failure_before_native_commit_retains_observed_submission(self):
+        armed = self.arm()
+        original = self.h.client.call
+        def fail(operation, request=None, **kwargs):
+            if operation == "sprint-approve":
+                raise self.lib.ArtifactError("EXECUTION_FAILED", "Synthetic interruption before commit")
+            return original(operation, request, **kwargs)
+        with mock.patch.object(self.h.client, "call", side_effect=fail):
+            with self.assertRaisesRegex(RuntimeError, "EXECUTION_FAILED"):
+                self.consume(armed["reply"])
+        with self.assertRaisesRegex(RuntimeError, "SUBMITTED_APPROVAL"):
+            self.approval.cancel_user_approval(self.root, "PLAN-FLOW")
+        self.assertTrue(self.pair.resume(self.root, self.h.client, "PLAN-FLOW")["approved"])
+
+    def test_cancel_before_reply_retains_no_authority(self):
+        self.arm()
+        self.assertTrue(self.approval.cancel_user_approval(self.root, "PLAN-FLOW")["cancelled"])
+        self.assertFalse(any(v["authority"]["authority_verified"] for v in self.identities()))
+
+    def test_smarts_produces_scoped_approval_without_another_prompt(self):
+        result = self.consume(self.arm()["reply"])
+        before = self.h.client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"})["record"]
+        out = self.h.mutate("smarts-apply", "PLAN-FLOW", grant_receipt=result["grant_receipt"], decision=self.decision())
+        after = self.h.client.call("read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"})["record"]
+        self.assertEqual(out["authority_kind"], "smarts_workflow")
+        self.assertFalse(out["acceptance_granted"])
+        self.assertNotEqual(before["steps"], after["steps"])
+        self.assertEqual({k: v for k, v in before.items() if k != "steps"}, {k: v for k, v in after.items() if k != "steps"})
+        self.assertTrue(self.h.client.call("validate", {"artifact_id": "PLAN-FLOW", "gate": "approved"})["valid"])
+        self.assertFalse(self.h.client.call("eligible", {"artifact_id": "PLAN-FLOW"})["all_accepted_and_current"])
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+
+    def test_no_delegation_and_scope_expansion_refused(self):
+        result = self.consume(self.arm(False)["reply"])
+        before = self.identities()
+        with self.assertRaisesRegex(RuntimeError, "DELEGATION_REQUIRED"):
+            self.h.mutate("smarts-apply", "PLAN-FLOW", grant_receipt=result["receipt"], decision=self.decision())
+        self.assertEqual(self.identities(), before)
+
+    def test_unknown_fields_cannot_weaken_verification(self):
+        result = self.consume(self.arm()["reply"])
+        decision = self.decision()
+        decision["options"][0]["verification"] = []
+        before = self.identities()
+        with self.assertRaises(self.lib.ArtifactError):
+            self.h.mutate("smarts-apply", "PLAN-FLOW", grant_receipt=result["grant_receipt"], decision=decision)
+        self.assertEqual(self.identities(), before)
+
+    def test_preview_is_explicit_and_does_not_relax_feature_preflight(self):
+        from test_artifact_authoring import WorkflowHarness
+        root = self.root.parent / "preview"
+        root.mkdir()
+        h = WorkflowHarness(root, self.installation)
+        spec = h.create_spec()
+        selected = self.lib._select_authoring_route(root, "flow", workflow="sprint", lane="full", client=h.client)
+        kwargs = {"spec_artifact_id": "SPEC-FLOW", "spec_normative_sha256": spec["normative_sha256"]}
+        with self.assertRaisesRegex(RuntimeError, "AUTHORITY_UNVERIFIED"):
+            self.lib._preflight_plan_authoring(selected, h.client, **kwargs)
+        target = self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs)
+        self.assertFalse(target.exists())
+        selected["workflow"] = "feature"
+        with self.assertRaisesRegex(RuntimeError, "INVALID_ROUTE"):
+            self.lib._preflight_plan_authoring(selected, h.client, draft_for_pair=True, **kwargs)
+
+    def test_hook_routes_pair_reply_from_another_working_directory(self):
+        armed = self.arm()
+        other = self.root.parent / "other"
+        other.mkdir()
+        with mock.patch.object(self.approval._artifactlib, "ArtifactClient", return_value=self.h.client):
+            text = self.approval.consume_from_hook(root=other, plugin_root=self.root, prompt=armed["reply"], host="codex", session_id="fixture-route")
+        self.assertIn("workflow approval recorded", text)
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in self.identities()))
+
+    def test_malformed_pair_marker_does_not_route_to_legacy_approval(self):
+        self.arm()
+        p = self.root / self.approval.PENDING
+        pending = json.loads(p.read_text())
+        pending["pair"]["delegate_methods"] = "true"
+        p.write_text(json.dumps(pending))
+        with self.assertRaisesRegex(RuntimeError, "INVALID_PENDING_APPROVAL"):
+            self.approval.consume_user_approval(self.root, self.h.client, "yes", host="codex", session_id="fixture")
+
+
+    def test_changed_spec_after_observation_retires_only_uncommitted_submission(self):
+        armed = self.arm()
+        original = self.h.client.call
+        def fail(operation, request=None, **kwargs):
+            if operation == "sprint-approve":
+                raise self.lib.ArtifactError("EXECUTION_FAILED", "Synthetic interruption before mutation")
+            return original(operation, request, **kwargs)
+        with mock.patch.object(self.h.client, "call", side_effect=fail):
+            with self.assertRaises(self.lib.ArtifactError):
+                self.consume(armed["reply"])
+        self.h.mutate("apply", "SPEC-FLOW", changes=[{"op": "header.update", "fields": {"summary": "A real updated requirement."}}])
+        result = self.pair.resume(self.root, self.h.client, "PLAN-FLOW")
+        self.assertFalse(result["approved"])
+        self.assertTrue(result["reapproval_required"])
+        self.assertEqual(result["diagnostic"], "REVISION_CONFLICT")
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+        self.assertEqual(len(list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))), 2)
+
+    def test_active_task_method_change_refuses_without_mutation(self):
+        result = self.consume(self.arm()["reply"])
+        self.h.mutate("task-start", "PLAN-FLOW", task="T-001", context_ticket=self.h.context_ticket("T-001"))
+        before = self.identities()
+        with self.assertRaisesRegex(RuntimeError, "ACTIVE_WORK"):
+            self.h.mutate("smarts-apply", "PLAN-FLOW", grant_receipt=result["grant_receipt"], decision=self.decision())
+        self.assertEqual(self.identities(), before)
+
+    def test_private_smarts_request_path_executes_the_native_producer(self):
+        result = self.consume(self.arm()["reply"])
+        current = self.h.client.call("identity", {"artifact_id": "PLAN-FLOW"})
+        request = {"artifact_id": "PLAN-FLOW", "operation_id": "fixture-private-smarts-request",
+                   "expected": {key: current[key] for key in ("revision", "model_sha256")},
+                   "grant_receipt": result["grant_receipt"], "decision": self.decision()}
+        path = self.root.parent / "decision-request.json"
+        path.write_text(json.dumps(request))
+        self.assertEqual(self.pair.apply_decision(self.h.client, path)["authority_kind"], "smarts_workflow")
+
+
+    def test_concurrent_observers_complete_once_without_erasing_a_new_request(self):
+        from concurrent.futures import ThreadPoolExecutor
+        armed = self.arm()
+        def observe(reply):
+            try:
+                return self.consume(reply)
+            except self.approval.ApprovalError as exc:
+                # The real bounded lock may expire before a slower native
+                # transaction completes. Only this explicit non-writing result
+                # is allowed; unrelated errors and a second approval still fail.
+                if exc.code != "APPROVAL_BUSY":
+                    raise
+                return {"approved": False, "diagnostic": exc.code}
+
+        with ThreadPoolExecutor(max_workers=2) as workers:
+            results = list(workers.map(observe, [armed["reply"], armed["reply"]]))
+        self.assertEqual(sum(r["approved"] for r in results), 1)
+        self.assertEqual(len(list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))), 2)
+        approved = self.identities()
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in approved))
+        self.assertFalse((self.root / self.approval.PENDING).exists())
+        # After the winning observer finishes, retrying the same observed input
+        # is non-mutating and does not require a second interactive decision.
+        self.assertFalse(self.consume(armed["reply"])["approved"])
+        self.assertEqual(self.identities(), approved)
+
+    def test_contended_approval_refuses_without_writing_then_succeeds(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Event
+        prerequisite = importlib.import_module("_prerequisitelib")
+        armed = self.arm()
+        before = self.identities()
+        pending_bytes = (self.root / self.approval.PENDING).read_bytes()
+        entered, release = Event(), Event()
+
+        def hold_real_lock():
+            with prerequisite._pending_transition_lock(self.root, "sprint-pair-approval"):
+                entered.set()
+                if not release.wait(30):
+                    raise AssertionError("test did not release its real approval lock")
+
+        with ThreadPoolExecutor(max_workers=1) as workers:
+            holder = workers.submit(hold_real_lock)
+            try:
+                self.assertTrue(entered.wait(10), "lock holder did not start")
+                with self.assertRaises(self.approval.ApprovalError) as refused:
+                    self.consume(armed["reply"])
+                self.assertEqual(refused.exception.code, "APPROVAL_BUSY")
+                self.assertEqual(self.identities(), before)
+                self.assertEqual((self.root / self.approval.PENDING).read_bytes(), pending_bytes)
+                self.assertFalse((self.root / ".codearbiter/.artifacts/authority-sources").exists())
+            finally:
+                release.set()
+            holder.result(timeout=10)
+        self.assertTrue(self.consume(armed["reply"])["approved"])
+        self.assertTrue(all(v["authority"]["authority_verified"] for v in self.identities()))
+        self.assertEqual(len(list((self.root / ".codearbiter/.artifacts/authority-sources").glob("*.json"))), 2)
+
+    def test_stale_cancel_does_not_remove_a_new_pair_arm(self):
+        self.arm()
+        original = self.approval._load_pending(self.root)
+        self.assertTrue(self.approval.cancel_user_approval(self.root, "PLAN-FLOW")["cancelled"])
+        new = self.pair.arm(self.root, self.h.client, "SPEC-FLOW", "PLAN-FLOW", token="different-fixture-nonce")
+        with self.assertRaisesRegex(RuntimeError, "PENDING_APPROVAL_MISMATCH"):
+            self.pair.cancel(self.root, original)
+        self.assertFalse(self.consume("approve-sprint SPEC-FLOW PLAN-FLOW delegate-methods synthetic-pair-token")["matched"])
+        self.assertTrue(self.consume(new["reply"])["approved"])
+
+
 if __name__ == "__main__":
     unittest.main()

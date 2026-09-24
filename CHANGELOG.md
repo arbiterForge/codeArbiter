@@ -12,7 +12,7 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
-## [2.21.12] - 2026-09-23
+## [2.21.13] - 2026-09-24
 
 ### Fixed
 
@@ -24,6 +24,23 @@ predate the plugin rewrite and are grouped by date.
   next operation instead of being mistaken for a clean tree.
 - Exercise the installed release guards and declaration/ledger re-entry with
   real consumer histories, and distinguish partial fixtures from full journeys.
+
+## [2.21.12] - 2026-09-23
+
+### Fixed
+
+
+- Add one-reply initial HTML sprint approval and explicitly delegated SMARTS
+  task-method revisions, with native atomic recovery and unchanged acceptance gates.
+- Generate commit and new-skill command entries from their owning skills,
+  preserving plain-language skill discovery and explicit command compatibility
+  without independently maintained wrapper policies.
+- Preserve the caller's coherent sprint scope and required spec-to-plan
+  continuation without manufacturing method-selection approval questions.
+- Distinguish initial artifact approval from existing delegation and require
+  the current qualified host-owned authority path; no new host support is implied.
+- Keep complete authored HTML checkpoint membership across resume and review,
+  without adding attended execution pauses to autonomous sprint work.
 
 ## [2.21.11] - 2026-09-23
 

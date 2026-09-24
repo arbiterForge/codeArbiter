@@ -97,10 +97,8 @@ on:
       - ".github/workflows/npm-publish.yml"
       - ".codearbiter/release-targets.md"
       - "CHANGELOG.md"
-      # The automatic release cohort starts only after this workflow succeeds
-      # on main and consumes this run's exact-head package artifacts. A
-      # live-proof-only correction must therefore start CI rather than leave
-      # the corrected main commit ineligible for release.
+      # Historical live-proof corrections still run their documentation tests
+      # and assemble an exact-head package cohort; they are not release gates.
       - "docs/codex-parity-testing.md"
       # The release skill's agent-judgment proof is enforced by pre-tag. A
       # proof-only refresh must start exact-main CI and produce its packages.
@@ -247,7 +245,7 @@ jobs:
               - '.github/workflows/npm-publish.yml'
               - '.codearbiter/release-targets.md'
               - 'CHANGELOG.md'
-              # This job validates the release-critical live-proof marker.
+              # This job validates the retained historical live-proof record.
               - 'docs/codex-parity-testing.md'
               # Pre-tag validates this release-skill proof against shipped bytes.
               - '.codearbiter/reports/agent-lane-proof.json'
@@ -371,8 +369,8 @@ jobs:
               - 'plugins/ca-codex/includes/artifacts.md'
               - 'plugins/ca-pi/includes/artifacts.md'
               - 'docs/artifacts/**'
-              # A main-branch live-proof correction must produce the exact-head
-              # package cohort consumed by the automatic release workflow.
+              # A historical proof correction still produces an exact-head
+              # package cohort for normal automatic-release eligibility.
               - 'docs/codex-parity-testing.md'
               - '.codearbiter/reports/agent-lane-proof.json'
               - 'site/package.json'
@@ -3026,26 +3024,6 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
-      - name: Validate the exact live-proof producer and qualification
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          LIVE=$(python3 .github/scripts/test_public_codex_docs.py --print-live-candidate)
-          RUN_ID=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_id"])')
-          RUN_ATTEMPT=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_ci_run_attempt"])')
-          ARTIFACT_ID=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["candidate_artifact_id"])')
-          PR_NUMBER=$(printf '%s' "$LIVE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["pr_number"])')
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" > live-run.json
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT/jobs?per_page=100" > live-jobs.json
-          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID" > live-artifact.json
-          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > live-pull.json
-          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/commits?per_page=100" --slurp > live-pull-commit-pages.json
-          jq -n --slurpfile run live-run.json --slurpfile jobs live-jobs.json \
-            --slurpfile artifact live-artifact.json --slurpfile pull live-pull.json \
-            --slurpfile commit_pages live-pull-commit-pages.json \
-            '{run:$run[0],jobs:$jobs[0],artifact:$artifact[0],pull:$pull[0],pull_commits:($commit_pages[0] | add)}' \
-            | python3 .github/scripts/test_public_codex_docs.py --validate-live-candidate-run
       - name: Reject a projected merge that automatic release would reject
         run: |
           set -euo pipefail

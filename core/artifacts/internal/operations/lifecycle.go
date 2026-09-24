@@ -63,6 +63,12 @@ func (e *Engine) approve(r object, entry repository.Entry) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	if _, paired := receipt.Payload()["sprint_pair"]; paired {
+		return nil, fault.New("PAIR_APPROVAL_REQUIRED", "paired receipts require the atomic sprint approval transaction")
+	}
+	if model.S(receipt.Data["authority_kind"]) == "smarts_workflow" {
+		return nil, fault.New("SMARTS_PRODUCER_REQUIRED", "delegated approval must be produced together with its bounded method change")
+	}
 	if err = receipt.Subject(d, d.ID(), "approval"); err != nil {
 		return nil, err
 	}

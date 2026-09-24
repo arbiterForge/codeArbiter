@@ -68,7 +68,6 @@ changelog: plugins/ca-codex/CHANGELOG.md
 payload: plugins/ca-codex/
 provenance-manifest: .github/published-tags.json
 latest-eligible: false
-pre-tag: "$PY" .github/scripts/test_public_codex_docs.py --require-current-candidate
 release-build: "$PY" -c "raise SystemExit('ca-codex package publication is owned by the hosted release.yml cohort')"
 release-asset: codearbiter-ca-codex-{version}.tar.gz
 

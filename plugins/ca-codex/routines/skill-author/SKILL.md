@@ -1,11 +1,17 @@
 ---
 name: skill-author
-description: The authoring gate for new skills. Routed to when the user invokes /new-skill "<gap>". Five gated phases — gap evidence, scope, authoring, self-review against the v2 house style, routing integration. A new skill is not written until an existing one is proven not to cover the gap, and not shipped until it carries gated phases, hard rules, and a routing entry. Every authored skill matches the v2 format (frontmatter name+description, # name, Pre-flight, Phase N · gate, Hard rules).
+description: Assess a request for a new reusable codeArbiter skill, prove the uncovered gap, agree scope, author and integrate it. Questions and one-off tasks do not authorize adding a skill.
+argument-hint: <gap or verb-noun skill name>
 ---
 
 # skill-author
 
-Author a new skill, the right way. Routed to when the user invokes `/new-skill "<gap>"`.
+Author a new skill, the right way. The public entry and natural-language requests route
+here; this complete owner is also available as a directly read internal resource.
+Use a verb-noun name (for example, `dependency-review`), not a descriptive sentence.
+A one-time action belongs to the applicable work procedure. A question about whether a
+skill is needed is answered without authoring; an almost-matching owner is reviewed and
+extended through the existing change workflow rather than duplicated.
 
 ## Pre-flight
 
@@ -13,7 +19,9 @@ Read these, or STOP and surface the gap — never author on assumption:
 
 - The `<gap>` argument. Absent → STOP and ask: "Describe the gap this skill would fill. What situation does no existing skill cover today?"
 - [routines/INDEX.md](../INDEX.md) — the surface scan of every existing skill. This is the gap-overlap check in Phase 1 and the integration target in Phase 5. Never bulk-read the skill bodies.
-- [routines/commit-gate/SKILL.md](../commit-gate/SKILL.md) and [routines/tdd/SKILL.md](../tdd/SKILL.md) — the canonical v2 format the authored skill must mirror. Read them before Phase 3.
+- [routines/commit-gate/SKILL.md](../commit-gate/SKILL.md) and [routines/tdd/SKILL.md](../tdd/SKILL.md) — the canonical v2 format the authored skill must mirror. Read them before Phase 3. The command-backed commit owner also demonstrates the
+  single-source entry convention. Keep its description and argument hint with the
+  owning skill; the generator supplies the compatible public spelling per host.
 - `<project-root>/.codearbiter/CONTEXT.md` — project context, only if the gap is project-specific. A generic skill needs no project state.
 
 ## Phase 1 — Gap evidence · gate: BLOCK
@@ -47,7 +55,7 @@ Gate: explicit user agreement on routed-vs-dispatched, command-vs-internal, and 
 
 Write `SKILL.md` to the v2 house style — mirror `commit-gate` and `tdd` exactly. Start from [routines/skill-author/references/skill-template.md](references/skill-template.md). Required shape:
 
-- **Frontmatter** — `name:` and `description:` only. Description is terse: what routes to it, the phase count, the gate. No cut doc refs, no trigger disclaimer.
+- **Frontmatter** — `name:` and `description:` as the normal base. Description is terse: the requested outcome, when it applies, and important negative intent. A command-backed owner also records its argument hint and keeps its natural-language description on the owner. The generator suppresses only the redundant Claude command description. No cut doc refs, no trigger disclaimer.
 - **`# <name>`** H1, then a one-line intro naming what routes to it (`/<command>` or the parent skill).
 - **`## Pre-flight`** — the docs to read or STOP on. Project state cites `<project-root>/.codearbiter/<doc>`; other skills cite [routines/<name>](../<name>); agents cite [agents/<name>.md](../../agents/<name>.md). Never guess a command — read it or STOP.
 - **`## Phase N — <title> · gate: BLOCK|STOP`** — sequential, each ending in a one-line `Gate:`. A phase with output that could be wrong has a gate; only a purely declarative phase may omit one.
@@ -68,7 +76,11 @@ Re-read the authored skill against the v2 quality bar. Each line below is a chec
 - **Concrete gates** — every non-declarative phase ends in a `Gate:` line stating a checkable condition. "Looks good" / "seems right" is not a gate; rewrite it.
 - **House-style prose** — terse, imperative, matches `commit-gate`/`tdd`. Strip hedging and filler.
 - **No duplicated rules** — a rule stated in a phase is not restated in Hard rules, and Hard rules carry no duplicates. State each rule once.
-- **Format conformance** — frontmatter is `name`+`description`, plus `disable-model-invocation: true` ONLY on a chain-internal skill (never user-typed, reached solely via routing-table path loads — see ADR-0028); H1 matches `name`; phases are numbered with `· gate:`; paths use `the validated selected-skill root` / `<project-root>` correctly; no cut docs/skills, no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
+- **Format conformance** — frontmatter is `name`+`description`, plus `disable-model-invocation: true` on a chain-internal skill (ADR-0028);
+  a command-backed owner instead remains discoverable and also owns its
+  `argument-hint`. The generator suppresses the redundant command listing only on
+  command-native hosts; Codex/Pi entries remain discoverable. Other invocation/tool/model metadata
+  needs explicit generator support, never silent dropping; H1 matches `name`; phases are numbered with `· gate:`; paths use `the validated selected-skill root` / `<project-root>` correctly; no cut docs/skills, no legacy `${FRAMEWORK_ROOT}`/`${PROJECT_ROOT}`/`.agents/` paths.
 - **Frontmatter scalar quoting** — any frontmatter scalar that starts with `[` or `{`, or contains `": "` or `" | "`, MUST be JSON-quoted (the `_yaml_safe_scalar` predicate the surface generator applies to codex/pi wrappers; the claude surface ships frontmatter verbatim, so the author quotes it at the source).
 - **No trigger language** — "routed to" / "dispatched" only, and no `## Trigger` disclaimer block.
 - **Evidence lenses** (issue #612) — each checked where the skill's shape triggers it, skipped where it does not:
@@ -90,6 +102,15 @@ A skill no one routes to is dead code. Wire it in.
 - Add a row to [routines/INDEX.md](../INDEX.md): skill name (linked), "Routed to by", and "Owns" (the one-sentence responsibility from Phase 2).
 - Add the skill to the routing table — the invocation cue (the `/<command>` or condition), the primary route, any dispatched agents, the hard gate. For a command-invoked skill, also register the `/<command>` in the command reference.
 - For an internal skill, update the named parent so it routes to the new skill explicitly.
+- Before adding a command wrapper, check whether it would only repeat the skill's
+  description and route back here. In codeArbiter source, use the existing generator's
+  whole-file SKILL_ENTRY declaration for a genuinely command-backed owner; keep its
+  argument hint and procedure in that one discoverable owner. On Claude the generated
+  command remains explicitly usable without a duplicate model listing; Codex/Pi use
+  their generated entry skill for discovery and keep the owner in private routines.
+  Do not register another public operation solely for an implementation step. A
+  directly referenced information card can remain outside discovery roots, owned by
+  its existing caller; it does not need fabricated skill frontmatter or an INDEX row.
 
 Verify no broken references: every path the skill cites resolves. `INDEX.md` row parity and routing-table dangling-route freedom are no longer a hand-check here — `.github/scripts/check_routing_index_parity.py` enforces both mechanically in CI (issue #592); a missing row, an orphan row, or a route to a name that does not exist fails the build.
 

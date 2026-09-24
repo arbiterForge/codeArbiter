@@ -8800,9 +8800,13 @@ class ThisRepoRowsTest(unittest.TestCase):
             for command in row["pre_tag"]
         ]
         self.assertEqual(
-            len(all_pre_tag), 5,
-            "expected exactly 5 declared pre-tag commands across all rows "
-            "(3 on [ca], 1 on [ca-codex], 1 on [ca-pi]) -- update this count deliberately if "
+            [], self.by_target["ca-codex"]["pre_tag"],
+            "Codex live host proof must not be a pre-tag release requirement",
+        )
+        self.assertEqual(
+            len(all_pre_tag), 4,
+            "expected exactly 4 declared pre-tag commands across all rows "
+            "(3 on [ca], none on [ca-codex], 1 on [ca-pi]) -- update this count deliberately if "
             "a row's pre-tag list ever changes shape")
         for command in all_pre_tag:
             with self.subTest(command=command):

@@ -106,3 +106,64 @@ No independent actor, live model turn, authority receipt, approval, or proof has
 was invented to clear either boundary. Keep the PR draft until those actual
 observations and the exact-head merge-readiness gate succeed. No merge,
 publication, issue closure, or tag mutation is included in this slice.
+
+## Slice 3: origin integration and committed-payload qualification
+
+Date: 2026-09-24. User authorization: update this PR to origin, fix failed CI,
+and add the next slice. The starting PR head was
+`7fe42851182ac4a231ee2a4c43322d0fd35489e8`; the inspected origin/main commit is
+`cf90ce4d79c5d87cb88f163535c1035da2315815`. Preserve both histories with a merge
+commit rather than force-pushing or reconstructing a single-parent replacement.
+
+### Changed upstream authority
+
+PR #853 (`786a1db5713adc16cdee58e6903fd16099039ccd`) explicitly moved live
+Codex model-turn verification after publication. Retain that implementation,
+its historical-proof validation, and all static package/provenance gates. The
+slice-2 statement that a current Codex live turn blocks merge/release is now
+historical and superseded by #853; it must not be reintroduced on this branch.
+PR #850 supplied the newer sprint/approval and command-owner implementation;
+those upstream changes are retained without modification.
+
+Main now owns the `.12` payload versions and their release sections. Resolve the
+three changelog conflicts by preserving origin's `.12` sections byte-for-byte
+and placing this PR's release work under candidate CA `2.21.13`, Codex
+`0.13.13`, and Pi `0.14.13`. Keep the generated package, runtime identities,
+badge, and only the affected provenance entries synchronized. No published
+version identity is reused, and no prior release note is overwritten.
+
+### Added qualification slice
+
+`plugins/ca/hooks/tests/test_release_distribution_followup.py` adds four test
+methods with explicit host/merge-method subcases. It archives the exact
+committed Claude, Codex and Pi payloads into separate temporary installations,
+checks their helper/skill identities against that commit, and executes the
+archived shell definitions and helper CLIs. No canonical `core/` or repository
+state is copied into those installations. It covers nine host-by-merge-method
+first-release re-entries, retained footer/ledger refusal, and actual clean-tree
+and commit-prerequisite guards ahead of controlled write attempts.
+
+The shared consumer fixture now accepts an explicit installed plugin root;
+all of its helper calls use that root. Its subprocess environment excludes
+ambient Python import overrides as well as the existing Git/shell overrides.
+The default fixture behavior and production release instructions are unchanged.
+
+The new tests first failed because the fixture could not bind a selected
+installed payload. After adding that binding, all four methods passed locally.
+These are deterministic, committed-payload tests, not a blind agent exercise,
+a production host session, or an inspection of a published release asset.
+
+### Remaining red gate
+
+The inspected final slice-2 CI run `35942517509` failed candidate readiness at
+`check_skill_proof_fresh.py`: the record still covers the older rendered skill.
+This slice does not replace independent judgment with passing tests or change
+that gate. A distinct reviewer must actually exercise the final rendered skill
+before its receipt can be updated. No independent actor, approval, result, or
+replacement proof hash is manufactured. A requested review is not a completed
+exercise, and ordinary CodeRabbit diff review alone is not this proof.
+
+Normal CI must run on the new merged head. Codex live verification belongs to
+post-publication under #853, not to the merge blockers listed in slice 2. The
+remaining pre-release human/agent-judgment requirement is the release-skill
+exercise; deterministic source and package checks do not waive it.

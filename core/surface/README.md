@@ -37,6 +37,38 @@ including orphans). Workflow: edit the template here, run
 - `core/hosts.json` is the only host registry. Both surface generation and
   Python-core vendoring consume it through `tools/host_descriptors.py`.
 
+## Single-source command-backed owners
+
+A command template that only routes to a skill may contain just the whole-file
+SKILL_ENTRY declaration (double braces, colon, then the skill directory name).
+The current examples are `commands/commit.md` and `commands/new-skill.md`.
+The generator reads the named `skills/<name>/SKILL.md` at build time and emits the
+complete procedure under the existing host-native command or entry-skill name.
+There is no new runtime include service, route registry, or model-facing capability.
+
+The owner contains the sole description, argument hint and behavior and stays
+registry-visible on Claude as required by ADR-0028. Only the generated Claude command
+gets `disable-model-invocation: true`: it remains explicitly usable without advertising
+another description. No `user-invocable` flag or user-level setting is added. On
+Codex/Pi the generated `ca-<command>` entry remains discoverable because its owning
+routine lives outside their discovery directory. Natural-language discovery and
+actual mutation permission remain different: every gate stays in the full body.
+Existing direct resource paths and explicit names remain intact.
+
+The declaration must occupy the entire command template. One owner has one public
+entry. Composition is non-recursive, rejects missing/symlinked owners and unsupported
+frontmatter, and requires rooted resource links so rendering uses the actual output
+location. It never adds `allowed-tools`, changes a mode, or drops a gate. Separate
+wrappers with distinct modes, arguments or continuations must first reconcile those
+obligations with the owner; they are not automatically eligible for consolidation.
+
+Edit the owner, then run the normal generator and resource-closure tests. Generated
+copies on disk are derivatives, not independently authored procedures. Retaining a
+compatibility file does not imply its description is model-visible. Compare actual
+host discovery, invoked payload and retained context separately; file/byte counts
+alone are not measured token savings. A generated full public body avoids a second
+load merely to reach the same owner, but supporting references still load on demand.
+
 ## House rules for shared prose
 
 1. **Name actions, not harness tool names.** Shared bodies say "dispatch a
