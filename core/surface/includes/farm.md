@@ -87,12 +87,18 @@ the selected candidate's own tokens (`acceptedPromptTokens`/`acceptedCompletionT
 makes no additional model requests, but can run local gates and mutation checks for multiple
 candidates. It is not comparative quality ranking or a measured savings claim. Normal independent
 reviews and acceptance still follow. With `FARM_SAMPLES>1` and no explicit temperature, sampling
-defaults to `0.7`; `FARM_TEMPERATURE` remains the operator override.
+defaults to `0.7`; `FARM_TEMPERATURE` remains the operator override. An explicit
+`FARM_TEMPERATURE=0` is respected even with multiple samples and disables this automatic
+bump. Leave the override unset or choose a supported nonzero temperature when seeking
+more varied candidates; a temperature setting is not a guarantee of distinct outputs.
 
 On a **retry** — a failed gate, or a sampling round with no qualified candidate — the worker is shown its own previous
 in-scope output, not just the gate-failure tail, so it refines rather than restarts blind. That prior
 output rides the same byte-cap (`FARM_ENRICH_MAX_BYTES`) and secret-redaction chokepoint as all other
 injected context; out-of-scope drift is never carried forward.
+If the retry cannot reset its worktree, the task escalates without another model call.
+Its report retains the completed attempts' known token usage, last output/risk evidence,
+and any unresolved sample cleanup outcomes; a failed reset cannot erase them.
 
 ## Required
 

@@ -50,7 +50,10 @@ import type { Server } from "node:http";
 // "in flight" while a sibling settles fast enough to trip the circuit breaker.
 type MockHandler = (body: unknown) => string | Promise<string>;
 
-function startMockServer(handler: MockHandler): Promise<{ server: Server; port: number }> {
+function startMockServer(
+  handler: MockHandler,
+  usage?: { prompt_tokens: number; completion_tokens: number },
+): Promise<{ server: Server; port: number }> {
   return new Promise((resolve) => {
     const server = createServer((req: IncomingMessage, res: ServerResponse) => {
       let data = "";
@@ -62,6 +65,7 @@ function startMockServer(handler: MockHandler): Promise<{ server: Server; port: 
           res.end(
             JSON.stringify({
               choices: [{ message: { content } }],
+              ...(usage ? { usage } : {}),
             }),
           );
         });
@@ -1523,6 +1527,65 @@ describe("farm.ts smoke tests", () => {
         }
       });
     }
+
+    it(`retry reset refusal preserves actual worker spend in both reports (${entry})`, async () => {
+      const task = identityFixture();
+      // The trusted test gate plants a lock owned only by this disposable Git
+      // fixture, outside the sample being removed. The real next-attempt Git
+      // reset must fail; no simulated exit code or production timeout change.
+      writeFileSync(join(tmpDir, "src/retry-reset-gate.cjs"), [
+        "const fs = require('node:fs');",
+        "const path = require('node:path');",
+        "const { execFileSync } = require('node:child_process');",
+        "require('./identity.test.cjs');",
+        "if (path.basename(process.cwd()) === 'identity__s0') {",
+        "  const task = path.resolve('..', 'identity');",
+        "  const lock = execFileSync('git', ['rev-parse', '--git-path', 'index.lock'], {cwd: task, encoding: 'utf8'}).trim();",
+        "  fs.writeFileSync(path.resolve(task, lock), 'owned by retry-reset fixture', {flag: 'wx'});",
+        "}",
+        "throw new Error('deliberately reject this sampling round');",
+      ].join("\n"));
+      gitIn(tmpDir, "add", "--", "src/retry-reset-gate.cjs");
+      gitIn(tmpDir, "commit", "-m", "controlled retry reset refusal");
+      const frozen = gitIn(tmpDir, "rev-parse", "HEAD");
+      let calls = 0;
+      ({ server: mockServer, port } = await startMockServer(() => {
+        calls++;
+        return fileBlock("src/identity.cjs", identityImpl);
+      }, { prompt_tokens: 7, completion_tokens: 11 }));
+      const planPath = join(tmpDir, "plan.json");
+      writeFileSync(planPath, JSON.stringify({ meta: { name: "retry evidence", model: "fixture" }, tasks: [
+        { ...task, maxRetries: 1, gate: { commands: ["node src/retry-reset-gate.cjs"] } },
+      ] }));
+      const result = await runFarmWithArgs(tmpDir, [], planPath, {
+        FARM_API_KEY: "fixture-key", FARM_API_BASE_URL: `http://127.0.0.1:${port}`,
+        FARM_SAMPLES: "2", FARM_CONCURRENCY: "1", FARM_TEMPERATURE: "0", FARM_API_MAX_RETRIES: "0",
+      }, ["FARM_MUTATION_CMD"], entry);
+      expect(result.code, result.out).toBe(2);
+      expect(calls).toBe(2); // No second sampling round after a failed reset.
+      const report = JSON.parse(readFileSync(join(tmpDir, ".farm/farm-report.json"), "utf8"));
+      expect(report.results).toHaveLength(1);
+      const recorded = report.results[0];
+      expect(recorded.status).toBe("escalate");
+      expect(recorded.attempts).toBe(2);
+      expect(recorded.note).toContain("retry reset failed:");
+      expect(recorded.note).toContain("index.lock");
+      expect(recorded.promptTokens).toBe(14);
+      expect(recorded.completionTokens).toBe(22);
+      expect(recorded.filesWritten).toEqual(["src/identity.cjs"]);
+      const streamed = readFileSync(join(tmpDir, ".farm/farm-results.jsonl"), "utf8").trim().split("\n").map(line => JSON.parse(line));
+      expect(streamed).toHaveLength(1);
+      expect(streamed[0]).toEqual(recorded);
+      expect(gitIn(tmpDir, "rev-parse", "farm/integration")).toBe(frozen);
+      expect(gitIn(tmpDir, "rev-parse", "HEAD")).toBe(frozen);
+      const taskDir = join(tmpDir, ".farm/worktrees/identity");
+      const lock = resolve(taskDir, gitIn(taskDir, "rev-parse", "--git-path", "index.lock"));
+      expect(readFileSync(lock, "utf8")).toBe("owned by retry-reset fixture");
+      for (const suffix of ["__s0", "__s1"]) {
+        expect(existsSync(join(tmpDir, ".farm/worktrees/identity" + suffix))).toBe(false);
+        expect(gitIn(tmpDir, "branch", "--list", "farm/identity" + suffix)).toBe("");
+      }
+    });
 
     it(`qualified candidate selection also applies to detached canary evaluation (${entry})`, async () => {
       const task = identityFixture();

@@ -441,3 +441,36 @@ runtime, rebuilt bundle, private card and projections together if rejected;
 preserve unrelated main changes, current artifact authority and publication
 history. Farm process resume, heuristic redesign, broader command migration
 and HTML farm enablement remain separate.
+
+
+## 2026-09-24: PR854 retry-reset evidence correction
+
+Revalidation of the continuation at `e57f006b7db585a2a2a0ad0181d8c2ed90b223c8`
+confirmed the independent review's retry exception finding. Retained-candidate
+qualification already recorded sample cleanup and known usage, but a subsequent
+task-worktree reset could reject outside the result finalizer. The scheduler's
+generic fallback then lost the previous attempt count, token totals and cleanup
+record. This is an evidence-loss defect, not permission to continue in a worktree
+whose reset failed.
+
+The owning runner now returns that failure through its existing finalizer,
+preserving last files, risk score, known usage and unresolved sample cleanup. No
+additional worker, reset bypass, acceptance or user approval ceremony is added.
+The note is redacted before being bounded. The private farm card clarifies that
+an explicit zero temperature disables the automatic sampling-temperature bump,
+without promising deterministic or distinct provider output.
+
+Regression fixtures exercise failures after one and two rejected sampling
+rounds, a single-worker retry, and real Git index-lock refusal through both the
+TypeScript entry and rebuilt bundle. The CLI fixtures verify complete JSON and
+streamed results, exactly the original two worker requests, preserved integration
+identity, retained lock ownership and sample teardown. Unit fixtures independently
+retain honest cleanup failures and reject leaking a synthetic credential-shaped
+value through the returned error. These are disposable fixtures, not authenticated
+provider journeys or measured production quality/cost gains.
+
+The conflict merge, bounded CI job-budget repair and F09 first-qualified selection
+remain intact. Public registrations, authority, thresholds, version coordinates,
+input policies and the HTML farm block are unchanged. Coverage completion and
+broader process resume remain separate. Rebuild/revert runtime and bundle together
+with their owning private card; do not erase earlier proof or retained scratch.

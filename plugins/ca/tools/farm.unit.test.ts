@@ -3317,6 +3317,63 @@ describe("qualified best-of-N alternatives", () => {
     expect(r.cleanup?.filter(c => !c.ok)).toHaveLength(2);
   });
 
+  it.each([1, 2])("preserves evidence when retry reset fails after %i rejected sampling rounds", async (rounds) => {
+    const f = await fixture();
+    const reset = f.deps.resetWorktree;
+    let resets = 0;
+    const secret = "ghp_" + "a".repeat(36);
+    f.deps.mutationCheck = async () => ({ score: 0, evaluated: 5, survivors: ["fixture survivor"] });
+    f.deps.resetWorktree = async dir => {
+      // One reset between candidates, then one at the next attempt. Only the
+      // latter fails; sample cleanup and usage already exist by that point.
+      if (++resets === rounds * 2) throw new Error(`reset unavailable\n${secret}\n${"x".repeat(400)}`);
+      await reset(dir);
+    };
+    const r = await runTask({ ...f.task, maxRetries: rounds },
+      "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(rounds + 1);
+    expect(resets).toBe(rounds * 2);
+    expect(f.calls()).toBe(rounds * 2); // Reset failure cannot buy another round.
+    expect(r.promptTokens).toBe(rounds * 21);
+    expect(r.completionTokens).toBe(rounds * 41);
+    expect(r.mutationScore).toBe(0);
+    expect(r.filesWritten).toEqual(["src/impl.ts", "src/rejected-only.ts"]);
+    expect(r.note).toContain("retry reset failed:");
+    expect(r.note).not.toContain(secret);
+    expect(r.note).toContain("[REDACTED");
+    expect(r.note!.length).toBeLessThanOrEqual(300);
+    // This fixture's Git stub leaves the actual sample directories in place.
+    // Each unresolved teardown must survive the subsequent reset exception.
+    expect(r.cleanup).toHaveLength(rounds * 2);
+    expect(r.cleanup!.every(c => !c.ok)).toBe(true);
+    expect(new Set(r.cleanup!.map(c => c.target))).toEqual(new Set([f.wt + "__s0", f.wt + "__s1"]));
+    expect(f.gitCalls.some(args => ["add", "commit", "merge"].includes(args[0]))).toBe(false);
+    const recorded = JSON.parse(JSON.stringify(r));
+    expect(recorded.cleanup).toEqual(r.cleanup);
+    expect(recorded.promptTokens).toBe(rounds * 21);
+    expect(recorded.completionTokens).toBe(rounds * 41);
+  });
+
+  it("preserves single-worker usage when retry reset fails without inventing cleanup", async () => {
+    const f = await fixture();
+    process.env.FARM_SAMPLES = "1";
+    f.deps.runGate = async () => ({ ok: false, failed: "test", tail: "known first-attempt rejection" });
+    f.deps.resetWorktree = async () => { throw new Error("single-worker reset unavailable"); };
+    const r = await runTask({ ...f.task, maxRetries: 1 },
+      "stub", "https://example.invalid", "placeholder", f.deps);
+    expect(r.status).toBe("escalate");
+    expect(r.attempts).toBe(2);
+    expect(f.calls()).toBe(1);
+    expect(r.promptTokens).toBe(11);
+    expect(r.completionTokens).toBe(21);
+    expect(r.filesWritten).toEqual(["src/impl.ts"]);
+    expect(r.note).toContain("retry reset failed: single-worker reset unavailable");
+    expect(r.cleanup).toBeUndefined();
+    expect(f.gitCalls.some(args => ["add", "commit", "merge"].includes(args[0]))).toBe(false);
+    expect(await fsReadFile(path.join(f.wt, "src/impl.ts"), "utf8")).toBe("candidate-1\n");
+  });
+
   it("does not try a sibling after the task's immutable test changes", async () => {
     const f = await fixture();
     let reads = 0;

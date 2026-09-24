@@ -1856,7 +1856,22 @@ ${gate.tail}`) };
   for (let attempt = 1; attempt <= limit + 1; attempt++) {
     if (attempt > 1) {
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
-      await deps.resetWorktree(wt);
+      try {
+        await deps.resetWorktree(wt);
+      } catch (e) {
+        return finish({
+          id: t.id,
+          status: "escalate",
+          attempts: attempt,
+          branch,
+          worktree: wt,
+          note: redactSecrets(`retry reset failed: ${msgOf(e)}`).slice(0, 300),
+          filesWritten: lastFilesWritten,
+          promptTokens,
+          completionTokens,
+          mutationScore
+        });
+      }
     }
     const setupNote = await runSetupPhases(wt, t, deps, setupState);
     if (setupNote)

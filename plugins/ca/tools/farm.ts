@@ -2399,12 +2399,21 @@ export async function runTask(
       // restarting from the baseline blind. Out-of-scope drift is not captured.
       // Only meaningful for the single-sample path (which writes into `wt`); under
       // best-of-N `priorInScope` is seeded explicitly from the best failing sample
-      // below, so the task worktree (which may hold a different rejected\n      // alternative) must not clobber it.
+      // below, so the task worktree (which may hold a different rejected
+      // alternative) must not clobber it.
       // And only re-show output the worker ACTUALLY wrote: if the prior attempt
       // failed at the API level (no files written), captureInScope would return the
       // inherited baseline, which must not be mislabeled "your previous attempt".
       if (samples <= 1) priorInScope = lastFilesWritten.length > 0 ? await captureInScope(wt, t) : [];
-      await deps.resetWorktree(wt); // never accumulate stale files
+      try {
+        await deps.resetWorktree(wt); // never accumulate stale files
+      } catch (e) {
+        // A failed reset cannot admit another worker. Return the evidence we
+        // already own instead of throwing it away in the scheduler's fallback.
+        return finish({ id: t.id, status: "escalate", attempts: attempt, branch, worktree: wt,
+          note: redactSecrets(`retry reset failed: ${msgOf(e)}`).slice(0, 300),
+          filesWritten: lastFilesWritten, promptTokens, completionTokens, mutationScore });
+      }
     }
 
     // Setup (#92/#391): `setup` runs ONCE per worktree — the reset above is
