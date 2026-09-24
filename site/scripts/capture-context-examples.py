@@ -78,7 +78,7 @@ def capture() -> dict:
                     "repeat_hash_calls": len(calls)}
 
         cases = [observe("overlap", "src/auth/session.py"), observe("fresh", "package.json")]
-        (root / "package.json").write_text('{"type":"commonjs"}\n', encoding="utf-8")
+        (root / "package.json").write_text('{"type":"commonjs"}\n', encoding="utf-8", newline="\n")
         cases.append(observe("changed", "package.json"))
         current = provenance.batch_hash(list(hashes), runner)
         drift = provenance.compute_drift(records, current)
