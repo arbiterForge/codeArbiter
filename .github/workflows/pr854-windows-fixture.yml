@@ -42,12 +42,7 @@ jobs:
           new='import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync, realpathSync } from "node:fs";'
           assert text.count(old)==1;text=text.replace(old,new,1)
           old='        expect(gitIn(created, "rev-parse", "--show-toplevel")).toBe(created.replaceAll("\\\\", "/"));'
-          new='''        // Git expands Windows 8.3 names (and platform directory aliases).
-                  // Compare the actual directories without weakening the foreign-repo check.
-                  expect(realpathSync.native(gitIn(created, "rev-parse", "--show-toplevel")))
-                    .toBe(realpathSync.native(created));'''
-          # Remove only the extra YAML/Python indentation on continuation lines.
-          new=new.replace('\n        ','\n')
+          new='\n'.join(['        // Git expands Windows 8.3 names (and platform directory aliases).','        // Compare the actual directories without weakening the foreign-repo check.','        expect(realpathSync.native(gitIn(created, "rev-parse", "--show-toplevel")))','          .toBe(realpathSync.native(created));'])
           assert text.count(old)==1;text=text.replace(old,new,1)
           data=text.encode()
           assert oid(data)=='80e17fc0e1f0b92370728caf8d6a1bbdb3fd911b'
