@@ -5387,6 +5387,19 @@ class CoreCLITest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, command + "\n")
 
+    def test_list_field_prints_nothing_for_an_empty_list(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._pretag_repo(tmp, [])
+            env = dict(os.environ, CLAUDE_PROJECT_DIR=root,
+                       PYTHONDONTWRITEBYTECODE="1")
+            result = subprocess.run(
+                [sys.executable, _CORE_RELEASELIB_PATH,
+                 "list-field", "app", "pre-tag"],
+                cwd=tempfile.gettempdir(), env=env,
+                capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "")
+
     def _run_clean_tree_status(self, root):
         env = dict(os.environ, CLAUDE_PROJECT_DIR=root, PYTHONDONTWRITEBYTECODE="1")
         return subprocess.run(
@@ -6982,6 +6995,17 @@ changelog-reconciliations: .codearbiter/reconciliations.json
                     "<!-- release-targets -->\n[app]\nprefix: v\n"
                     "changelog: CHANGELOG.md\npayload: .\n"
                     f"{key}: {value}\n<!-- /release-targets -->\n")
+
+    def test_writable_release_surfaces_accept_internal_spaces(self):
+        rows = core_releaselib.parse_release_targets(
+            "<!-- release-targets -->\n[app]\nprefix: v\n"
+            "changelog: release notes/CHANGELOG.md\npayload: .\n"
+            "manifest: app dir/package.json\n"
+            "<!-- /release-targets -->\n")
+        self.assertEqual(rows[0]["changelog"], "release notes/CHANGELOG.md")
+        self.assertEqual(rows[0]["manifest"], ["app dir/package.json"])
+        # An ambiguous surface must never hide governance scratch from probes.
+        self.assertEqual(core_releaselib.governance_scratch_exclusions(rows[0]), [])
 
     def test_parse_window_log_round_trips_the_prescribed_format(self):
         text = ("a" * 40 + "\0feat: one\0CHANGELOG: first\n\0\n"

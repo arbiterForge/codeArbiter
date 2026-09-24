@@ -2055,7 +2055,9 @@ def _finish_row(row):
     writable_surfaces = [row["changelog"], row["provenance_manifest"]]
     for field in ("manifest", "generated_manifest", "artifacts"):
         writable_surfaces.extend(row[field])
-    if any(_normalised_release_path(path) in (None, ".")
+    # Literal spaces are valid file names; overlap checks below retain their
+    # conservative default so uncertain paths cannot hide governance scratch.
+    if any(_normalised_release_path(path, allow_internal_spaces=True) in (None, ".")
            for path in writable_surfaces if path is not None):
         raise MalformedBlockError(
             f"target {row['target']!r} declares a writable release surface "
@@ -2100,7 +2102,7 @@ _GOVERNANCE_SCRATCH_PATHS = (
 )
 
 
-def _normalised_release_path(value):
+def _normalised_release_path(value, *, allow_internal_spaces=False):
     """Return a conservative repository-relative path, or None on ambiguity.
 
     A path that cannot be compared safely must prevent a scratch exclusion;
@@ -2109,7 +2111,8 @@ def _normalised_release_path(value):
     if not isinstance(value, str):
         return None
     if (value != value.strip()
-            or any(char.isspace() or ord(char) < 32 or ord(char) == 127
+            or any((char.isspace() and (not allow_internal_spaces or char != " "))
+                   or ord(char) < 32 or ord(char) == 127
                    for char in value)):
         return None
     raw = value.replace("\\", "/")
@@ -3198,7 +3201,8 @@ def main(argv):
                 sys.stderr.write(
                     f"unknown list-valued release field: {list_field}\n")
                 return 2
-            print("\n".join(str(item) for item in row.get(row_field, [])))
+            for item in row.get(row_field, []):
+                print(str(item))
             return 0
 
         # Emitted as SHELL-QUOTED `NAME='value'` pairs, and named for the
