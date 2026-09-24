@@ -126,6 +126,10 @@ inputs:
     description: "Separate non-bypass Codex ruleset verifier GitHub App actor ID"
     required: false
     default: ""
+  npm-token:
+    description: "npm automation token for the qualified ca-codex publication"
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -760,6 +764,95 @@ runs:
           --work "$RUNNER_TEMP/codex-marketplace-promotion-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
           --push
 
+    - name: Prepare exact qualified Codex npm package
+      id: codex-npm
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
+        SOURCE_ARCHIVE_SHA256: ${{ steps.artifact-package.outputs.sha256 }}
+        PACKAGE_ROOT: ${{ runner.temp }}/artifact-publication-packages
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+      run: |
+        set -euo pipefail
+        NPM_ROOT="$RUNNER_TEMP/codex-npm-package"
+        METADATA="$RUNNER_TEMP/codex-npm-package.json"
+        python3 tools/build-host-packages.py \
+          --codex-npm-package-root "$PACKAGE_ROOT" \
+          --codex-npm-cohort-sha256 "$COHORT_SHA256" \
+          --codex-npm-output "$NPM_ROOT" > "$METADATA"
+        TARBALL=$(python3 - "$METADATA" "$NPM_ROOT" <<'PY'
+        import json,pathlib,sys
+        metadata=json.load(open(sys.argv[1],encoding="utf-8"))
+        root=pathlib.Path(sys.argv[2]).resolve(strict=True)
+        path=(root/metadata["file"]).resolve(strict=True)
+        path.relative_to(root)
+        print(path)
+        PY
+        )
+        python3 .github/scripts/_npm_publishlib.py prepare-codex \
+          --metadata "$METADATA" --tarball "$TARBALL" \
+          --expected-sha "$SOURCE_COMMIT" --trusted-sha "$GITHUB_SHA" \
+          --expected-cohort-sha256 "$COHORT_SHA256" \
+          --expected-source-archive-sha256 "$SOURCE_ARCHIVE_SHA256" \
+          --trusted-repo . --npm "$NPM_CLI" --output "$GITHUB_OUTPUT"
+
+    - name: Configure authenticated npm scope for exact qualified Codex package
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        registry-url: https://registry.npmjs.org
+        scope: '@arbiterforge'
+
+    - name: Publish exact qualified Codex npm package from authenticated scope
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' && steps.codex-npm.outputs.skip != 'true' }}
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+        TARBALL: ${{ steps.codex-npm.outputs.tarball }}
+      run: '"$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry=https://registry.npmjs.org/ --@arbiterforge:registry=https://registry.npmjs.org/'
+
+    - name: Verify Codex npm integrity and provenance readback
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        SOURCE_COMMIT: ${{ inputs.source-commit }}
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+        VERSION: ${{ steps.codex-npm.outputs.version }}
+        INTEGRITY: ${{ steps.codex-npm.outputs.integrity }}
+      run: |
+        set -euo pipefail
+        python3 .github/scripts/_npm_publishlib.py verify-codex \
+          --version "$VERSION" --integrity "$INTEGRITY" \
+          --expected-sha "$SOURCE_COMMIT" --trusted-sha "$GITHUB_SHA" \
+          --repo . --npm "$NPM_CLI"
+
+    - name: Cold-install exact Codex npm package through a real marketplace
+      if: ${{ inputs.package-host == 'codex' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
+      shell: bash
+      env:
+        NPM_CLI: ${{ steps.npm-cli.outputs.executable }}
+        VERSION: ${{ steps.codex-npm.outputs.version }}
+        NPM_METADATA: ${{ steps.codex-npm.outputs.metadata }}
+        CA_REQUIRE_CODEX: "1"
+        NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/codex-public-npmrc
+      run: |
+        set -euo pipefail
+        printf '%s\n' \
+          'registry=https://registry.npmjs.org/' \
+          '@arbiterforge:registry=https://registry.npmjs.org/' \
+          > "$NPM_CONFIG_USERCONFIG"
+        for CODEX_VERSION in 0.143.0 0.145.0; do
+          "$NPM_CLI" install --global "@openai/codex@$CODEX_VERSION" \
+            --registry=https://registry.npmjs.org/
+          python3 .github/scripts/check_codex_host.py \
+            --npm-marketplace-version "$VERSION" \
+            --qualified-npm-metadata "$NPM_METADATA" \
+            --require-artifact-capability
+        done
+
     - name: Publish qualified Release only after receipt readback
       if: ${{ inputs.package-host != '' && inputs.attach-package == 'true' && inputs.finalize-release == 'true' }}
       shell: bash
@@ -838,6 +931,8 @@ runs:
         COHORT_SHA256: ${{ steps.artifact-package.outputs.cohort-sha256 }}
         VERSION: ${{ steps.v.outputs.version }}
         PACKAGE_ROOT: ${{ runner.temp }}/artifact-publication-packages
+        NPM_INTEGRITY: ${{ steps.codex-npm.outputs.integrity }}
+        NPM_SHA256: ${{ steps.codex-npm.outputs.sha256 }}
       run: |
         set -euo pipefail
         # Retry/recovery is explicit: rebuilding is deterministic, the immutable
@@ -860,6 +955,8 @@ runs:
           --version "$VERSION" \
           --work "$RUNNER_TEMP/codex-marketplace-channel-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
           --expected-marketplace-head "$EXPECTED_MARKETPLACE_HEAD" \
+          --expected-npm-integrity "$NPM_INTEGRITY" \
+          --expected-npm-sha256 "$NPM_SHA256" \
           --advance-channel \
           --push
 
