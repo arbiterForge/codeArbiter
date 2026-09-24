@@ -1,4 +1,4 @@
-name: PR854 next-slice inputs (temporary)
+name: PR854 response evidence validation (temporary)
 on:
   push:
     branches: [codex/farm-readiness-canary-isolation]
@@ -6,43 +6,200 @@ on:
 permissions:
   contents: read
 jobs:
-  capture:
+  validate:
     if: github.repository == 'arbiterForge/codeArbiter' && github.ref == 'refs/heads/codex/farm-readiness-canary-isolation'
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            node: '22.19.0'
+            label: linux
+          - os: windows-latest
+            node: '20'
+            label: windows
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ github.sha }}
+          ref: 48c32f3516320469957ed0bd387534a6a76d3594
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: '22.19.0'
-      - name: Capture pinned source and locked tooling
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD^)" = 76fd953c605b20b140de826406833da190d32aa1
-          MAIN=48c32f3516320469957ed0bd387534a6a76d3594
-          git cat-file -e "$MAIN^{commit}"
-          git update-ref refs/review/pinned-main "$MAIN"
-          OUT="$RUNNER_TEMP/pr854-next-source"
-          mkdir "$OUT"
-          git bundle create "$OUT/source.bundle" HEAD refs/review/pinned-main
-          git rev-parse HEAD > "$OUT/head.txt"
-          git rev-parse 'HEAD^{tree}' > "$OUT/tree.txt"
-          printf '%s\n' "$MAIN" > "$OUT/main.txt"
-          cd plugins/ca/tools
-          npm ci --ignore-scripts --no-fund --no-audit
-          npm audit --include=dev --audit-level=high
-          tar -czf "$OUT/locked-tools.tgz" node_modules
-          cp package-lock.json "$OUT/package-lock.json"
-          cd "$OUT"
-          sha256sum source.bundle locked-tools.tgz package-lock.json > SHA256SUMS
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+          node-version: ${{ matrix.node }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         with:
-          name: pr854-next-source-${{ github.run_id }}
-          path: ${{ runner.temp }}/pr854-next-source/
+          go-version: '1.27.1'
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Acquire reviewed changes as inert identity-bound data
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64,hashlib,json,lzma,os,pathlib,urllib.request
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter'
+          assert os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-response';out.mkdir()
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
+          def blob(sha):
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:record=json.load(response)
+              assert record['sha']==sha and record['encoding']=='base64'
+              data=base64.b64decode(record['content'])
+              assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==sha
+              return data
+          packed=blob('66c62312636fb6e514fe6b06803124258ed44b4b');assert len(packed)==13456
+          data=lzma.decompress(packed)
+          assert len(data)==49724 and hashlib.sha256(data).hexdigest()=='72815efb1dd68eeec62746cff8e9d762571fb6206f8afa2f1ac14f550ca50c24'
+          payload=json.loads(data);extra=json.loads(blob('4475dcf35677bca7356acd300d5ec7a7b1ac6735'))
+          assert payload['main']=='48c32f3516320469957ed0bd387534a6a76d3594'
+          assert payload['prior']=='76fd953c605b20b140de826406833da190d32aa1'
+          assert payload['expected_parent']=='c506ceab64e943b124744fab4c56e79a1c0224ee'
+          assert payload['tree']=='ff82bf0c2ff1af51b1b4a69016f2ae13f41cfe37'
+          assert extra['file']=='plugins/ca/tools/farm.unit.test.ts'
+          assert extra['tree']=='d14c8131b278e8016e91e61b8d84666ebcbcaba0'
+          assert len(payload['files'])==31 and len({x['path'] for x in payload['files']})==31
+          for row in payload['files']:
+              p=pathlib.PurePosixPath(row['path'])
+              assert not p.is_absolute() and '..' not in p.parts and str(p)==row['path']
+              assert row['mode'] in {'100644','100755'} and row['source_commit'] in {payload['main'],payload['prior']}
+              if row['path']==extra['file']:
+                  assert row['sha']==extra['old_sha'];row['sha']=extra['sha']
+          payload['tree']=extra['tree']
+          (out/'source.patch').write_bytes(payload['source_patch'].encode('utf-8'))
+          (out/'array-values.patch').write_bytes(extra['patch'].encode('utf-8'))
+          (out/'payload.json').write_bytes(json.dumps(payload,indent=2).encode('utf-8'))
+          PY
+      - name: Rebuild and test the exact preserving candidate
+        shell: bash
+        env:
+          PLATFORM_LABEL: ${{ matrix.label }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,sys,time,zipfile
+          root=pathlib.Path.cwd();out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-response'
+          payload=json.loads((out/'payload.json').read_bytes());main=payload['main'];head=os.environ['GITHUB_SHA']
+          def git(*args):return subprocess.check_output(['git',*args])
+          def oid(data):return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          assert git('rev-parse','HEAD').decode().strip()==main
+          subprocess.run(['git','merge-base','--is-ancestor',payload['expected_parent'],head],check=True)
+          assert git('diff','--name-only',payload['expected_parent'],head).decode().splitlines()==['.github/workflows/pr854-next-source.yml']
+          assert subprocess.check_output(['go','env','GOVERSION'],text=True).strip()=='go1.27.1'
+          assert not git('status','--porcelain=v1','--untracked-files=no').strip()
+          paths=[r['path'] for r in payload['files']]
+          # The only normalized inputs are independently verified committed
+          # files in this disposable checkout. Refresh index stat data before
+          # the index-bound patch; the entire baseline tree must stay identical.
+          subprocess.run(['git','config','--local','core.autocrlf','false'],check=True)
+          subprocess.run(['git','config','--local','core.eol','lf'],check=True)
+          for row in payload['files']:
+              p=root/row['path'];raw=git('show',main+':'+row['path']);before=p.read_bytes()
+              assert oid(raw)==row['base_blob']
+              assert before==raw or (os.name=='nt' and before.replace(b'\r\n',b'\n')==raw),row['path']
+              p.write_bytes(raw)
+              assert git('ls-tree',main,'--',row['path']).decode().split()[0]==row['mode']
+          subprocess.run(['git','add','--',*paths],check=True)
+          assert git('write-tree').strip()==git('rev-parse',main+'^{tree}').strip()
+          for row in payload['files']:
+              raw=git('show',row['source_commit']+':'+row['path']);assert oid(raw)==row['source_blob']
+              (root/row['path']).write_bytes(raw)
+          subprocess.run(['git','add','--',*paths],check=True)
+          for name in ['source.patch','array-values.patch']:
+              subprocess.run(['git','apply','--check','--index',str(out/name)],check=True)
+              subprocess.run(['git','apply','--index',str(out/name)],check=True)
+          tools=root/'plugins/ca/tools'
+          for cmd in [['npm','ci','--ignore-scripts','--no-fund','--no-audit'],['npm','audit','--include=dev','--audit-level=high'],['npm','run','typecheck'],['npm','run','build']]:
+              subprocess.run(cmd,cwd=tools,check=True,shell=os.name=='nt')
+          for tool in ['tools/build-surface.py','tools/sync-core.py','tools/build-host-packages.py']:
+              subprocess.run([sys.executable,tool],check=True)
+          assert set(git('diff','HEAD','--name-only').decode().splitlines())==set(paths)
+          for row in payload['files']:assert oid((root/row['path']).read_bytes())==row['sha'],row['path']
+          # Registry, authority, mutation, shared execution and upstream Codex
+          # publication sources remain their owning baseline's exact Git bytes.
+          preserved={
+              main:['.github/published-tags.json','core/surface/arbiter.md','core/surface/command-routes.json','.github/scripts/_npm_publishlib.py','.github/scripts/check_codex_host.py','.github/workflows/release.yml','tools/promote-codex-marketplace.py','core/pysrc/_releaselib.py'],
+              payload['prior']:['plugins/ca/tools/mutation.ts','plugins/ca/tools/exec.ts','plugins/ca/tools/worktree-fs.ts','plugins/ca/tools/package-lock.json','plugins/ca/tools/vitest.config.ts'],
+          }
+          for ref,files in preserved.items():
+              for p in files:
+                  actual=(root/p).read_bytes();raw=git('show',ref+':'+p)
+                  assert actual==raw or (os.name=='nt' and actual.replace(b'\r\n',b'\n')==raw),p
+          for p,v in [('CHANGELOG.md','2.21.13'),('plugins/ca-codex/CHANGELOG.md','0.13.14'),('plugins/ca-pi/CHANGELOG.md','0.14.13')]:
+              prior=git('show',main+':'+p).decode('utf-8');current=(root/p).read_bytes().decode('utf-8');marker='## ['+v+']'
+              assert current[current.index(marker):]==prior[prior.index(marker):],p
+          subprocess.run(['git','add','--',*paths],check=True)
+          subprocess.run(['git','diff','--cached','--check'],check=True)
+          tree=git('write-tree').decode().strip();assert tree==payload['tree']
+          env=dict(os.environ,GIT_AUTHOR_NAME='Validation fixture',GIT_AUTHOR_EMAIL='validation@example.invalid',GIT_COMMITTER_NAME='Validation fixture',GIT_COMMITTER_EMAIL='validation@example.invalid')
+          fixture=subprocess.check_output(['git','commit-tree',tree,'-p',head,'-p',main],input='Preserve rejected-response usage and current Codex distribution\n\nCHANGELOG: Retain known response usage without relaxing worker gates.\n',text=True,encoding='utf-8',env=env).strip()
+          subprocess.run(['git','checkout','--detach',fixture],check=True)
+          commands=[(['npm','run','coverage'],tools)]
+          suites=['test_ci_impact','test_host_descriptors','test_routing_and_cleanup_surface','test_build_surface','test_public_codex_docs','test_provenance_wiring','test_check_codex_host','test_codex_marketplace_distribution','test_payload_version_gate','test_artifact_farm','test_release_lib','test_consumer_smoke']
+          commands += [([sys.executable,'.github/scripts/'+name+'.py'],root) for name in suites]
+          commands += [([sys.executable,'plugins/ca/hooks/tests/'+name+'.py'],root) for name in ['test_release_workflow_followup','test_release_distribution_followup']]
+          commands += [([sys.executable,tool,'--check'],root) for tool in ['tools/build-surface.py','tools/sync-core.py','tools/build-host-packages.py']]
+          commands += [([sys.executable,'.github/scripts/'+name+'.py'],root) for name in ['check_destructive_registry','check_routing_index_parity','check_docs_contract']]
+          commands += [([sys.executable,'.github/scripts/check-plugin-refs.py',host],root) for host in ['ca','ca-codex','ca-pi']]
+          commands += [([sys.executable,'.github/scripts/payload_version_gate.py','--plugin',host,'--base',main],root) for host in ['plugins/ca','plugins/ca-codex']]
+          commands += [([sys.executable,'tools/build-host-packages.py','--release-guard-base',main],root)]
+          results=[]
+          for i,(args,cwd) in enumerate(commands):
+              name=f'{i:02d}-'+('coverage' if args[0]=='npm' else pathlib.Path(args[1]).stem)+'.log';start=time.monotonic()
+              try:
+                  done=subprocess.run(args,cwd=cwd,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=420,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'),shell=os.name=='nt' and args[0]=='npm')
+                  code=done.returncode;content=done.stdout+done.stderr
+              except subprocess.TimeoutExpired:
+                  code=124;content='Timed out; not a passing result.\n'
+              (out/name).write_bytes(content.encode('utf-8'))
+              results.append({'command':args,'exit_code':code,'seconds':round(time.monotonic()-start,3),'log':name})
+              (out/'tests.json').write_bytes(json.dumps(results,indent=2).encode('utf-8'));print(code,' '.join(args),flush=True)
+          for row in payload['files']:assert oid((root/row['path']).read_bytes())==row['sha'],row['path']
+          assert not git('diff','--name-only').strip()
+          (out/'candidate.diff').write_bytes(git('diff','--binary','--full-index',main,fixture))
+          with zipfile.ZipFile(out/'candidate-files.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for row in payload['files']:z.write(root/row['path'],row['path'])
+          report={'main':main,'workflow_head':head,'platform':os.environ['PLATFORM_LABEL'],'tree':tree,'files':payload['files'],'all_commands_passed':all(r['exit_code']==0 for r in results),'command_count':len(results)}
+          (out/'manifest.json').write_bytes(json.dumps(report,indent=2).encode('utf-8'))
+          assert report['all_commands_passed'],'Inspect actual failures; no candidate publication inferred.'
+          PY
+      - name: Store verified candidate blobs without changing any ref
+        if: matrix.label == 'linux'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pr854-response';report=json.loads((out/'manifest.json').read_bytes())
+          assert report['all_commands_passed'] and report['workflow_head']==os.environ['GITHUB_SHA']
+          assert os.environ['GITHUB_REPOSITORY']=='arbiterForge/codeArbiter' and os.environ['GITHUB_REF']=='refs/heads/codex/farm-readiness-canary-isolation'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs):raise RuntimeError('Unexpected redirect')
+          def api(method,path,payload=None):
+              req=urllib.request.Request('https://api.github.com/repos/arbiterForge/codeArbiter'+path,method=method,data=json.dumps(payload).encode('utf-8') if payload is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              with urllib.request.build_opener(NoRedirect).open(req,timeout=45) as response:return json.load(response)
+          assert api('GET','/git/ref/heads/codex/farm-readiness-canary-isolation')['object']['sha']==report['workflow_head']
+          for row in report['files']:
+              data=pathlib.Path(row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()==row['sha']
+              assert api('POST','/git/blobs',{'content':data.decode('utf-8'),'encoding':'utf-8'})['sha']==row['sha']
+          (out/'uploaded-blobs.json').write_bytes(json.dumps({'files':report['files'],'branch_updated':False},indent=2).encode('utf-8'))
+          PY
+      - name: Retain exact platform outcomes
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr854-response-${{ matrix.label }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr854-response/
           if-no-files-found: error
           retention-days: 3
