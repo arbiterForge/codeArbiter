@@ -1,0 +1,137 @@
+---
+title: The Gated-Lane Model
+description: "Understand why the type of change selects a lane, how commands hand work to skills and agents, and what evidence or decision permits each transition."
+journey:
+  level: Foundation
+  time: "Read and trace a change"
+  outcome: "Choose a lane by its behavioral contract and explain the next owner, required evidence and stopping point."
+  prerequisites:
+    - Read What Is codeArbiter
+  proof: "You can follow a feature through task authorship, scope review, its human checkpoint and the PR boundary without confusing those stages."
+---
+
+import ExecutionMap from '../../../components/ExecutionMap.astro';
+
+A **lane** is the sanctioned path for a kind of work. It defines the prerequisites, owners,
+required evidence and exits that apply. It is not a synonym for a command name or a row of
+checkboxes. A command can enter the lane, but much of the work is routed automatically through
+skills and bounded agent roles.
+
+A **gate** is a condition for leaving a phase. It prevents later work from assuming something
+that has not been established. A specification approval establishes agreed behavior; a failing
+regression establishes a defect that the correction must address; fresh verification establishes
+what the current implementation does. None substitutes for the others.
+
+## Choose a lane from the work, not its size
+
+**New observable behavior belongs to feature.** An approved specification or qualifying mini-spec
+establishes the behavioral obligations before implementation. The full path includes planning and
+attended execution; a small lane trims the artifact ceremony only when all of its classification
+conditions hold.
+
+**A confirmed defect belongs to fix.** The regression must reproduce the reported behavior and
+fail for the right reason before the minimum correction. An unknown cause starts with debug:
+[Investigate and fix](/guides/investigate-and-fix/) explains the evidence and named investigation exits.
+
+**A behavior-preserving change belongs to refactor.** Its primary obligation is parity through
+unmodified pre-existing behavioral tests. Changing an expected result to accommodate new behavior
+is not evidence of preservation. The [refactor contract](/reference/skills/refactor/) governs that
+route rather than the feature diagram below.
+
+**Maintenance uses the relevant maintenance contract.** Documentation, dependency changes and
+reverts have different review needs even when grouped under a lighter chore entry. A dependency
+change still needs its applicable [dependency review](/guides/adding-a-dependency/); the word
+“chore” does not waive supply-chain constraints.
+
+**An exploratory spike ends in findings.** It does not become production work by being on a branch.
+The [spike entry](/reference/commands/spike/) owns its disposable scope and non-PR boundary.
+Investigation, initialization and read-only review can also end without a PR. “Every change lands
+through a PR” does not mean every invocation creates one.
+
+The number of changed lines does not choose the lane. One line can alter a public contract;
+hundreds of generated documentation lines can preserve behavior. Start from what must change and
+what must remain true.
+
+## Follow the full feature path
+
+The following map uses the attended full lane. It expands the same task engine that the sprint
+path calls directly. It does not imply that you type a new command at every node or that every
+named reviewer is dispatched for every task.
+
+<ExecutionMap id="lanes-feature" />
+
+The scope boundary is particularly important. `executing-plans` delegates one scope to
+`subagent-driven-development`. The task engine performs task work and the required combined
+review, then returns to that coordinator. It does not jump directly to commit just because one
+batch finished. The coordinator owns the next human acknowledgement and final handoff.
+
+## How many gates, concretely
+
+A phase count is less useful than its condition. TDD has six phases: obligation scan, red, green,
+obligation verification, coverage and lint. The [test-first concept](/concepts/test-first/) explains
+why each exists and why a test run alone is insufficient.
+
+The [commit gate](/reference/skills/commit-gate/) has nine numbered phases covering permission,
+branch, classification, verification, behavioral proof, diff review, selective staging, message and
+commit. Its conditional provenance auto-heal step is not a separate tenth ordinary phase. A prior
+passing result cannot certify a later staged diff merely because both used the same branch name.
+
+The HTML task model also separates task review from whole-scope acceptance. A task displayed as
+`REVIEW` is not automatically accepted. The installed engine and applicable host authority must
+establish current eligibility and acceptance for the selected identities. Existing Markdown pairs
+retain their own supported ledger path; a diagram is not permission to translate between formats.
+
+## STOP, BLOCK and human authority
+
+**STOP surfaces a decision and waits.** A feature checkpoint is an example: the coordinator names
+what completed, what comes next and what is open, then waits for the human acknowledgement.
+
+**BLOCK refuses to advance until its condition is satisfied.** A failing regression, incomplete
+obligation map or missing current authority cannot become a pass through more confident prose.
+Repairing the actual problem and rerunning the check is different from requesting a bypass.
+
+A hard decision boundary can require explicit human authority even during a sprint. Security,
+irreversible operations, overrides and merge decisions retain their applicable rules. Other
+failures may have a supported correction or recovery path. It is inaccurate to treat every BLOCK
+as something only an override can clear, or every user “yes” as enough to clear a mechanical failure.
+
+Where a bypass is permitted, the [override procedure](/guides/overriding-a-gate/) owns its immediate
+scope and audit entry. **H-18 activation protection has no in-session override path.** A diagram
+must not erase that exception by drawing a universal “continue anyway” arrow.
+
+## Mandatory routing at commit time
+
+Certain changed surfaces bring their own review or marker requirements. Crypto/secret handling
+uses its digest-bound marker contract. Migrations have a separate required review marker.
+CI and deployment changes route security review, while their post-write reminders are advisory.
+These are different enforcement mechanisms, not identical colored boxes.
+
+Use [Hook Gates](/reference/hooks-gates/) to inspect the exact condition and effect. A mandatory
+procedure in orchestration prose and a hook that mechanically blocks a tool event have different
+proof boundaries. The [enforcement model](/enforcement/) explains the distinction.
+
+## The terminal lane
+
+When the current work clears commit, finishing offers the supported terminal choices. This map
+illustrates **Open a PR**. A separate authorized merge still requires the repository’s applicable
+exact-head checks. Sprint autonomy ends at the open PR, not at an automatic merge.
+
+Finishing reuses the PR command’s documented procedure in place. It expressly does not call that
+entry again. This is why a chart showing an unconditional `/pr` call after every internal skill can
+misrepresent the actual route. The [delivery guide](/guides/review-and-ship/) describes the human
+handoff and subsequent cleanup.
+
+## Check your understanding
+
+For one real task, identify the behavior being changed or preserved, the lane that owns it, its
+first required evidence and the next owner. Then identify the relevant alternate exit: a correction,
+a missing decision, a supported resume, or findings without implementation.
+
+Compare those answers with the owning [command and skill references](/reference/). A successful
+explanation predicts both the normal path and where that path must stop. Use the
+[feature guide](/guides/feature-lane/) to perform the work, rather than treating this explanatory
+map as a runnable procedure or an execution receipt.
+
+The [decision-boundary illustration](/diagrams/gate-model.svg) and
+[commit-phase diagram](/diagrams/commit-gate-phases.svg) are supplementary views.
+Neither makes every failed check a user-decision case or authorizes a universal override.

@@ -160,3 +160,70 @@ Verify peer geometry from computed browser styles at desktop, tablet and narrow
 widths, including expanded Academy lists and every selectable exhibit state.
 Check reading order, keyboard disclosure, no-script access, forced colors, print,
 and non-root links. Inspect actual captures, not only a green overflow test.
+
+
+## Task-oriented guide discovery
+
+The guide directory reads titles, descriptions, outcomes, levels and estimates from the same
+content collection that renders each guide. `scripts/guide-directory.ts` owns only task grouping
+and reading order. Add each new guide there; missing, duplicate and unclassified routes fail the
+build rather than silently disappearing. Retain section anchors when reorganizing the landing page.
+
+Filtering is a progressive enhancement over the complete static directory. It makes no request
+and persists no query or selection. Hidden results must leave keyboard navigation as well as the
+visual layout; clearing restores the full list and input focus. Printing restores all guides, even
+when the screen is filtered. Keep main site search distinct from this metadata-only finder.
+
+Reuse peer spacing, tokens and content-sized cards. Verify combined filters, empty results,
+client-navigation reattachment, no JavaScript, keyboard, print and non-root paths against rendered
+output. Card labels and estimates are guidance, not release or compatibility claims.
+
+
+## Readable tables in guides
+
+Simple Markdown/MDX guide tables are enhanced at build time by `rehype-table-shell.ts`.
+Their presentation lives in `src/styles/guide-tables.css`, registered with the site styles.
+On content columns up to 40rem, each row stacks its labelled fields so the complete instruction
+and every host entry are visible without lateral scrolling. The original cell nodes exist once.
+Column headers retain native associations and explicit table roles; additional visible labels are
+hidden from assistive technology and search indexing. No JavaScript or saved preference is needed.
+
+Keep the existing scroll presentation for Academy, reference, complex headers, spans, nested tables
+and authored header associations. Do not flatten those relationships by guessing at labels.
+Desktop guide tables retain columns when space permits. Code/path values in stacked rows wrap
+without changing their copied text. Do not shrink fonts, clip values or omit a host to make them fit.
+
+Page-level overflow checks cannot establish cell readability. Test each rendered text range against
+its cell and viewport, compare desktop/mobile content, and inspect all table rows. Verify retained
+semantics, no-script reading, text enlargement, forced colors, print and base-prefixed links.
+Screenshots are reading evidence, not full screen-reader or cross-browser certification.
+
+
+## Concepts and execution-order maps
+
+`CONCEPTS-OVERHAUL.md` owns the approved program and its remaining slices. Concepts explain
+why a mechanism exists, its place in actual work, the record it owns, a concrete example and
+common misinterpretations. Page length is not evidence that a reader can use the model.
+
+The feature execution map is an editorial projection under `scripts/execution-maps/`, not a
+runtime router, new tool or approval protocol. The model pins its reviewed source and gives
+nodes and handoffs explicit owners. Source-excerpt checks catch drift in those anchors; they
+are not automated proof of complete runtime equivalence. Re-review changed behavior before
+updating the pin or its excerpts. Do not make the image match new source by weakening a test.
+
+Commands, skills and agents are role rows, not sequential categories. Draw execution across
+those rows in order. Preserve caller returns, task repetition, applicable reviewers, human
+acknowledgements and the actual final outcome. In particular, the finishing skill reuses the
+PR procedure in place; drawing a fresh `/pr` invocation would misrepresent the contract.
+
+`ExecutionMap.astro` uses the same data for chapter diagrams and an equivalent ordered HTML
+reading path. Chapter selection does not run product actions, persist state or grant authority.
+All chapters remain readable without JavaScript and in print. On narrow content columns,
+use full-sized reading steps instead of shrinking the desktop graphic until it is illegible.
+Optional review roles are visibly conditional, and detailed returns remain inspectable.
+
+The Concepts navigator and sidebar share grouping and order. Curated reference text links to
+explanations; generated pages remain generator-owned. Existing diagram addresses remain stable.
+Check actual rendered text bounds, all selections, source links, desktop label sizes, keyboard,
+no-script reading, text enlargement, forced colors and exact-candidate screenshots. Do not
+confuse a passing diagram check with installed-host, runtime, release or human approval evidence.

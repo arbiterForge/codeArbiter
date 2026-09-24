@@ -65,3 +65,7 @@ Logged to triage.log. Routing to test-first implementation...
 Reach for `/ca:feature` for new, human-checkpointed capability work. For a fully autonomous run
 across the whole plan, use `/ca:sprint` instead — the same spec-and-plan front, but without pausing
 between batches.
+
+For the connected operating model, read [gated lanes](/concepts/gated-lanes/) and
+[test-first evidence](/concepts/test-first/). The map distinguishes a routed procedure
+from a command you must type, and retains the caller’s review and delivery boundaries.
