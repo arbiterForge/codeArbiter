@@ -1,0 +1,41 @@
+name: PR859 C03 exact inputs
+on:
+  push:
+    branches: [prep/pr859-c03-inputs-20260924]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 8c8bf0cb1ff3bbd5f4f2d4ef45224880a97957ac
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '22'
+      - name: Install existing locked documentation tooling
+        working-directory: site
+        run: npm ci --ignore-scripts
+      - name: Archive fixed source and tooling without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 8c8bf0cb1ff3bbd5f4f2d4ef45224880a97957ac
+          mkdir -p "$RUNNER_TEMP/pr859-inputs"
+          git bundle create "$RUNNER_TEMP/pr859-inputs/source.bundle" HEAD
+          git -C academy-source bundle create "$RUNNER_TEMP/pr859-inputs/academy.bundle" HEAD
+          tar -czf "$RUNNER_TEMP/pr859-inputs/site-tooling.tgz" site/node_modules
+          { git rev-parse HEAD HEAD^{tree}; git -C academy-source rev-parse HEAD; node --version; npm --version; } > "$RUNNER_TEMP/pr859-inputs/identity.txt"
+          cd "$RUNNER_TEMP/pr859-inputs"
+          sha256sum source.bundle academy.bundle site-tooling.tgz identity.txt > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr859-c03-inputs
+          path: ${{ runner.temp }}/pr859-inputs/
+          retention-days: 1
+          if-no-files-found: error
