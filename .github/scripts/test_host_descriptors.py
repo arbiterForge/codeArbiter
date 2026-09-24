@@ -512,6 +512,11 @@ def _independent_expected_surfaces(descriptor, descriptors):
     expected["generated/command-catalog.json"] = (
         json.dumps(catalog_document, ensure_ascii=False, indent=2) + "\n"
     )
+    if descriptor.name == "pi":
+        # Notices are canonical package content, not handwritten-policy
+        # exemptions. Derive them from their owners, independently of sync-core.
+        for notice in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+            expected[notice] = (REPO / notice).read_bytes().decode("utf-8")
     return expected
 
 
@@ -944,6 +949,25 @@ class GenerationContractTest(unittest.TestCase):
             for token, value in claude_host.tokens.items():
                 text = text.replace("{{" + token + "}}", value)
             self.assertEqual(text.encode("utf-8"), (claude / name).read_bytes())
+
+    def test_pi_notices_match_owning_bytes_and_are_not_exemptions(self):
+        descriptors = _descriptors().load_host_descriptors(str(REPO))
+        pi_host = next(item for item in descriptors if item.name == "pi")
+        expected = _independent_expected_surfaces(pi_host, descriptors)
+        actual, exemptions = _pi_policy_surfaces_from_disk(pi_host)
+        _assert_pi_policy_matches_core(actual, expected)
+        for notice in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+            self.assertNotIn(notice, exemptions)
+            self.assertEqual(expected[notice], (REPO / notice).read_bytes().decode("utf-8"))
+            for mutation in ("missing", "altered"):
+                changed = dict(actual)
+                if mutation == "missing":
+                    del changed[notice]
+                else:
+                    changed[notice] += "Changed package notice.\n"
+                with self.subTest(notice=notice, mutation=mutation):
+                    with self.assertRaisesRegex(AssertionError, re.escape(notice)):
+                        _assert_pi_policy_matches_core(changed, expected)
 
     def test_pi_ac_04_pi_governance_bodies_are_generated_only(self):
         module = _descriptors()
